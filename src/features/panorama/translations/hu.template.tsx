@@ -50,7 +50,21 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     ridgeStrength: 'Gerincvonalak erőssége',
     ridgeWidth: 'Gerincvonalak vastagsága',
     ridgeColor: 'Gerincek színe',
-    groundColor: 'Terep színe',
+    ground: 'Terep',
+    groundHint:
+      'Egyetlen szín, amelyet a beépített pára a távolsággal az ég színe felé mos — vagy egy színátmenet, amely a terepet a távolsága szerint festi, és a párát teljesen kiváltja.',
+    groundSolid: 'Szín',
+    groundGradient: 'Színátmenet',
+    gradientFar: 'A színátmenet vége',
+    gradientFarAuto: 'Automatikus',
+    gradientFarHint:
+      'Az a távolság, ahol az utolsó szín elérkezik; a sáv közepe ennek a harmadánál van. Az automatikus a képen ténylegesen látható terepből méri, így a teljes paletta arra jut, amit a kép mutat.',
+    gradientSky: 'Olvadjon az égbe',
+    gradientSkyHint:
+      'Az utolsó szín maga az ég, így a távoli hegyláncok beleolvadnak a horizontba ahelyett, hogy elütnének tőle. Kikapcsolva a kemény gerincvonalat adja, amit egy plakát kíván.',
+    gradientClip: 'Az azon túli terep elrejtése',
+    gradientClipHint:
+      'A távolságon túli terep kimarad ahelyett, hogy laposan az utolsó színnel lenne kitöltve, így az egész színátmenet arra jut, amit a kép mutat. Az ott álló csúcsok nem kapnak nevet.',
   },
   preview: 'Előnézet',
   quality: {

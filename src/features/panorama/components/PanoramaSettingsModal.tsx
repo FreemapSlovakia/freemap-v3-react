@@ -18,6 +18,11 @@ import {
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import {
+  gradientFarStepIndex,
+  gradientFarSteps,
+  type PanoramaGradient,
+} from '../gradient.js';
 import { panoramaSetSettings } from '../model/actions.js';
 import {
   ALT_LIMIT,
@@ -38,6 +43,7 @@ import {
 } from '../model/settingsReducer.js';
 import { FREE_RANGE_MAX_KM, grantedRangeKm } from '../quality.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
+import { PanoramaGroundPicker } from './PanoramaGroundPicker.js';
 
 type Props = { show: boolean };
 
@@ -53,6 +59,7 @@ type Draft = Pick<
   | 'ridgeWidth'
   | 'ridgeColor'
   | 'groundColor'
+  | 'groundGradient'
 >;
 
 const EYE_MIN = 0;
@@ -84,6 +91,7 @@ function seedDraft(settings: PanoramaSettingsState): Draft {
     ridgeWidth: settings.ridgeWidth,
     ridgeColor: settings.ridgeColor,
     groundColor: settings.groundColor,
+    groundGradient: settings.groundGradient,
   };
 }
 
@@ -213,6 +221,20 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
   // What the slider shows and what the figure beside it says, both: a lapsed
   // account whose stored range is past the free bound is rendering this one.
   const grantedRange = grantedRangeKm(draft.rangeKm, premium);
+
+  const gradient = draft.groundGradient;
+
+  const patchGradient = (values: Partial<PanoramaGradient>) => {
+    if (gradient) {
+      patch({ groundGradient: { ...gradient, ...values } });
+    }
+  };
+
+  // Cut at how far this render may see: a ramp ending past `range` is a 400,
+  // not a picture.
+  const farSteps = gradientFarSteps(grantedRange);
+
+  const farIndex = gradientFarStepIndex(farSteps, gradient?.farKm ?? null);
 
   return (
     <Modal
@@ -414,17 +436,85 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
             </div>
           </Form.Group>
 
-          <Form.Group>
-            <Form.Label className="mb-0">{m?.settings.groundColor}</Form.Label>
+          {/* One control for both, because they are one thing asked two ways:
+              the picker's own Solid/Gradient tabs say which, and its swatches
+              are ready-made ramps. */}
+          <Form.Group className={gradient ? 'mb-3' : undefined}>
+            <Form.Label className="mb-0">{m?.settings.ground}</Form.Label>
 
             <div>
-              <RgbaColorPicker
-                value={draft.groundColor}
-                onChange={(groundColor) => patch({ groundColor })}
-                alpha={false}
+              <PanoramaGroundPicker
+                color={draft.groundColor}
+                gradient={gradient}
+                onChange={(ground) =>
+                  patch({
+                    groundColor: ground.color,
+                    groundGradient: ground.gradient,
+                  })
+                }
               />
             </div>
+
+            <Form.Text>{m?.settings.groundHint}</Form.Text>
           </Form.Group>
+
+          {gradient && (
+            <>
+              <Form.Group className="mb-3">
+                <LabeledSlider
+                  id="fm-panorama-gradient-far"
+                  label={m?.settings.gradientFar}
+                  // The stop the knob stands on, not the stored figure: a range
+                  // lowered under it leaves the two disagreeing, and the
+                  // request is clamped to the same rung the knob shows.
+                  valueLabel={
+                    farSteps[farIndex] === null
+                      ? m?.settings.gradientFarAuto
+                      : nfKm.format(farSteps[farIndex])
+                  }
+                  hint={m?.settings.gradientFarHint}
+                  min={0}
+                  max={farSteps.length - 1}
+                  value={farIndex}
+                  onChange={(index) =>
+                    patchGradient({ farKm: farSteps[index] })
+                  }
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Check
+                  id="fm-panorama-gradient-sky"
+                  type="checkbox"
+                  label={m?.settings.gradientSky}
+                  checked={gradient.fadeToSky}
+                  onChange={(e) =>
+                    patchGradient({ fadeToSky: e.currentTarget.checked })
+                  }
+                />
+
+                <Form.Text>{m?.settings.gradientSkyHint}</Form.Text>
+              </Form.Group>
+
+              {/* Nothing to decide while the far end is measured from the
+                  terrain in view: what it would drop is the tail past the
+                  percentile, which nobody chose to see. */}
+              <Form.Group>
+                <Form.Check
+                  id="fm-panorama-gradient-clip"
+                  type="checkbox"
+                  label={m?.settings.gradientClip}
+                  checked={gradient.clip}
+                  disabled={farSteps[farIndex] === null}
+                  onChange={(e) =>
+                    patchGradient({ clip: e.currentTarget.checked })
+                  }
+                />
+
+                <Form.Text>{m?.settings.gradientClipHint}</Form.Text>
+              </Form.Group>
+            </>
+          )}
         </Modal.Body>
 
         <Modal.Footer>

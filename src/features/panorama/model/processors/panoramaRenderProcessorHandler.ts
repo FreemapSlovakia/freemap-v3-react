@@ -9,7 +9,7 @@ import { terrainErrorCode } from '@shared/terrainService.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { Dispatch } from 'redux';
-import { renderPanorama } from '../../api.js';
+import { type PanoramaMeta, renderPanorama } from '../../api.js';
 import { labelsFromPeaks } from '../../labels/fromPeaks.js';
 import {
   buildPanoramaRequest,
@@ -59,8 +59,8 @@ const CANCEL: CancelTriggers = {
  * so re-reading the state here would have the second pass quietly render
  * somewhere the user never asked to see, and record it as though they had.
  *
- * Answers whether the panel is still this render's to fill; `false` says
- * something has replaced it since, and that there is nothing more to do.
+ * Answers with what the service said of it, or `null` where something has
+ * replaced this render since and there is nothing more to do.
  */
 async function renderPass(
   viewpoint: LatLon,
@@ -69,11 +69,12 @@ async function renderPass(
   preview: boolean,
   getState: () => RootState,
   dispatch: Dispatch,
-): Promise<boolean> {
+  farM?: number | null,
+): Promise<PanoramaMeta | null> {
   const id = claimPanoramaRender();
 
   const { meta, imageUrl, depth } = await renderPanorama(
-    buildPanoramaRequest(viewpoint, settings, grants),
+    buildPanoramaRequest(viewpoint, settings, grants, farM),
     getState,
     CANCEL,
     (progress) => dispatch(panoramaSetProgress(progress)),
@@ -82,7 +83,7 @@ async function renderPass(
   if (!isCurrentPanoramaRender(id)) {
     URL.revokeObjectURL(imageUrl);
 
-    return false;
+    return null;
   }
 
   setPanoramaRenderData({ id, imageUrl, depth });
@@ -106,7 +107,7 @@ async function renderPass(
     }),
   );
 
-  return true;
+  return meta;
 }
 
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {
@@ -146,19 +147,27 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     // and the payload is the larger half — but the labels then answer for the
     // picture being looked at: visibility is decided by the rays a tier cast,
     // so only the detailed pass knows which marginal summits it actually drew.
-    if (
-      !standing &&
-      grants.quality !== PANORAMA_PREVIEW_QUALITY &&
-      !(await renderPass(
+    let farM: number | null = null;
+
+    if (!standing && grants.quality !== PANORAMA_PREVIEW_QUALITY) {
+      const meta = await renderPass(
         viewpoint,
         settings,
         { ...grants, quality: PANORAMA_PREVIEW_QUALITY },
         true,
         getState,
         dispatch,
-      ))
-    ) {
-      return;
+      );
+
+      if (!meta) {
+        return;
+      }
+
+      // A gradient asking for `auto` measures the frame it is rendering, and
+      // the two passes sample it differently, so the second one is pinned to
+      // what the first found rather than left to recolour the picture under
+      // someone already looking at it.
+      farM = meta.far_distance ?? null;
     }
 
     if (
@@ -169,6 +178,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
         false,
         getState,
         dispatch,
+        farM,
       ))
     ) {
       return;

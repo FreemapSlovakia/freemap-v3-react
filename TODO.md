@@ -579,6 +579,27 @@ distance probe, a premium quality tier. What was deliberately left for later:
 - [ ] **Download the picture** as PNG, and a share link that names the heading.
 - [ ] **Sun path** — the service hasn't implemented it either; the distance
       buffer already holds what it needs.
+- [ ] **Extract a `ColorPickerPopover` shell.** `PanoramaGroundPicker` and
+      `RgbaColorPicker` now carry the same ~60 lines: the `OverlayTrigger` /
+      `Popover` / body-portal, the swatch button, and the `setUrlUpdatingEnabled`
+      drag suspension that keeps Safari's 100-writes-per-10s pushState cap out
+      of a colour drag. That workaround exists in three places counting
+      `ShadingColorPicker`, and will be fixed in one of them. Do *not* bolt a
+      gradient mode onto `RgbaColorPicker` — its value is a string and this
+      one's is `{color, gradient}`; the shell is the shared part.
+- [ ] **Share the `linear-gradient` codec with `ShadingColorPicker`.** Both
+      hand-roll `@zdila/react-gradient-color-picker`'s wire format, including
+      the upper-cased `RGBA(` that marks the selected stop, and their regexes
+      have already drifted (`\s+` vs a literal space). The stop *models* differ
+      legitimately; only the CSS format is shared. `gradient.test.ts` covers
+      this side, the shading side has no tests at all.
+- [ ] **`fadeToSky` could live on the stop.** The wire takes `'sky'` as any
+      stop's colour; the client models it as a gradient-level boolean meaning
+      "and the last one", which `previewStops`, `storedStops` and
+      `gradientRequest` each re-derive. A `{ pos, color, sky? }` stop keeps the
+      UX exactly as it is — the retained colour is what unticking restores — and
+      makes a mid-ramp sky representable. It does not remove the picker
+      round-trip: `SKY_COLOR` still goes out and comes back as a real colour.
 
 ## Weather radar (`src/features/weatherRadar/`, see [`doc/weather-radar.md`](./doc/weather-radar.md))
 

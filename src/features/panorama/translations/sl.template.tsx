@@ -52,7 +52,21 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     ridgeStrength: 'Izrazitost grebenskih črt',
     ridgeWidth: 'Debelina grebenskih črt',
     ridgeColor: 'Barva grebenov',
-    groundColor: 'Barva površja',
+    ground: 'Površje',
+    groundHint:
+      'Ena barva, ki jo vgrajena meglica z razdaljo spira proti barvi neba — ali preliv, ki površje pobarva glede na to, kako daleč je, in meglico povsem nadomesti.',
+    groundSolid: 'Barva',
+    groundGradient: 'Preliv',
+    gradientFar: 'Preliv sega do',
+    gradientFarAuto: 'Samodejno',
+    gradientFarHint:
+      'Razdalja, na kateri je dosežena zadnja barva; sredina traku leži pri njeni tretjini. Samodejno izmeri površje, ki je dejansko v sliki, tako da se vsa paleta porabi za to, kar slika kaže.',
+    gradientSky: 'Zlij z nebom',
+    gradientSkyHint:
+      'Zadnja barva postane nebo samo, tako da se daljna pogorja razblinijo v obzorju, namesto da bi se od njega odbijala. Izklopljeno da ostro obrisano nebesno črto, kakršno hoče plakat.',
+    gradientClip: 'Skrij površje onkraj',
+    gradientClipHint:
+      'Površje onkraj te razdalje se ne nariše, namesto da bi bilo ploskovno zapolnjeno z zadnjo barvo, tako da se ves preliv porabi za to, kar slika kaže. Vrhovi, ki stojijo na njem, niso poimenovani.',
   },
   preview: 'Predogled',
   quality: {

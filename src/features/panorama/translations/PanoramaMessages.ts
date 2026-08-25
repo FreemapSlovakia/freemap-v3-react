@@ -55,7 +55,23 @@ export type PanoramaMessages = {
     ridgeStrength: string;
     ridgeWidth: string;
     ridgeColor: string;
-    groundColor: string;
+    /** Names one control holding both a plain colour and a distance ramp. */
+    ground: string;
+    groundHint: string;
+    /** The picker's own two tabs, which is all the switch there is. */
+    groundSolid: string;
+    groundGradient: string;
+    /** Where the ramp's last colour is reached. */
+    gradientFar: string;
+    /** The step that measures the terrain in view instead. */
+    gradientFarAuto: string;
+    gradientFarHint: string;
+    /** Whether the ramp ends in the sky itself rather than in a colour. */
+    gradientSky: string;
+    gradientSkyHint: string;
+    /** Whether terrain past the ramp is dropped or painted flat. */
+    gradientClip: string;
+    gradientClipHint: string;
   };
   /** Marks the fast pass while the detailed one is still rendering. */
   preview: string;

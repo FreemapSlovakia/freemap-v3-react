@@ -29,6 +29,10 @@ import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
 import {
+  PanoramaGradientSchema,
+  PanoramaGradientStopsSchema,
+} from '@features/panorama/gradient.js';
+import {
   DEPTH_LIFT_MAX,
   LABEL_DENSITY_MAX,
   LABEL_DISTANCE_WEIGHT_MAX,
@@ -188,6 +192,13 @@ const PersistedPanoramaSettingsSchema = z
     ridgeWidth: z.number(),
     ridgeColor: z.string(),
     groundColor: z.string(),
+    // Caught rather than refused, as the viewshed radius is: these are the only
+    // fields here a user can put out of bounds by hand — 33 stops is a few
+    // clicks on the gradient bar — and a refusal takes the whole slice's
+    // defaults with it, resetting the quality, the band and every label slider
+    // over a ramp.
+    groundGradient: PanoramaGradientSchema.nullable().catch(null),
+    recentGradients: z.array(PanoramaGradientStopsSchema).catch([]),
     // Bounded, because the level indexes the menu's icon and word arrays.
     labelDensity: z.number().int().min(0).max(LABEL_DENSITY_MAX),
     showLabelEle: z.boolean(),

@@ -51,7 +51,21 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     ridgeStrength: 'Wyrazistość linii grani',
     ridgeWidth: 'Grubość linii grani',
     ridgeColor: 'Kolor grani',
-    groundColor: 'Kolor terenu',
+    ground: 'Teren',
+    groundHint:
+      'Jeden kolor, który wbudowana mgiełka wraz z odległością zmywa ku barwie nieba — albo gradient, który maluje teren zależnie od tego, jak jest daleko, i zastępuje mgiełkę w całości.',
+    groundSolid: 'Kolor',
+    groundGradient: 'Gradient',
+    gradientFar: 'Gradient sięga do',
+    gradientFarAuto: 'Automatycznie',
+    gradientFarHint:
+      'Odległość, na której osiągany jest ostatni kolor; środek paska leży w jednej trzeciej tej odległości. Automatycznie mierzy teren faktycznie widoczny w kadrze, dzięki czemu cała paleta przypada na to, co pokazuje obraz.',
+    gradientSky: 'Przejście w niebo',
+    gradientSkyHint:
+      'Ostatnim kolorem staje się samo niebo, więc dalekie pasma rozpływają się w horyzoncie, zamiast się na nim odcinać. Wyłączone daje twardą linię grani, jakiej chce plakat.',
+    gradientClip: 'Ukryj teren dalej',
+    gradientClipHint:
+      'Teren za tą odległością nie jest rysowany, zamiast być wypełniony ostatnim kolorem, więc cały gradient przypada na to, co pokazuje obraz. Szczyty na nim stojące nie są nazywane.',
   },
   preview: 'Podgląd',
   quality: {

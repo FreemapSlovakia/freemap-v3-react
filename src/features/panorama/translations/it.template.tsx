@@ -50,7 +50,21 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     ridgeStrength: 'Intensità delle linee di cresta',
     ridgeWidth: 'Spessore delle linee di cresta',
     ridgeColor: 'Colore delle creste',
-    groundColor: 'Colore del terreno',
+    ground: 'Terreno',
+    groundHint:
+      'Un colore solo, che la foschia integrata sbiadisce verso il cielo con la distanza — oppure un gradiente, che colora il terreno in base a quanto è lontano e sostituisce del tutto la foschia.',
+    groundSolid: 'Colore',
+    groundGradient: 'Gradiente',
+    gradientFar: 'Il gradiente arriva a',
+    gradientFarAuto: 'Automatico',
+    gradientFarHint:
+      'La distanza a cui si raggiunge l’ultimo colore; il centro della barra sta a un terzo di essa. In automatico misura il terreno effettivamente inquadrato, così l’intera tavolozza si spende su ciò che l’immagine mostra.',
+    gradientSky: 'Sfumare nel cielo',
+    gradientSkyHint:
+      'L’ultimo colore diventa il cielo stesso, così le catene lontane si dissolvono nell’orizzonte invece di stagliarvisi contro. Disattivato dà il profilo netto che vuole una locandina.',
+    gradientClip: 'Nascondere il terreno oltre',
+    gradientClipHint:
+      'Il terreno oltre quella distanza viene omesso invece di essere dipinto piatto nell’ultimo colore, così tutto il gradiente si spende su ciò che l’immagine mostra. Le cime che vi si trovano non vengono nominate.',
   },
   preview: 'Anteprima',
   quality: {

@@ -54,7 +54,21 @@ const en: PanoramaMessages = {
     ridgeStrength: 'Ridge line strength',
     ridgeWidth: 'Ridge line thickness',
     ridgeColor: 'Ridge colour',
-    groundColor: 'Ground colour',
+    ground: 'Ground',
+    groundHint:
+      'One colour, washed towards the sky as the built-in haze thickens with distance — or a gradient, which paints the ground by how far off it is and replaces the haze altogether.',
+    groundSolid: 'Colour',
+    groundGradient: 'Gradient',
+    gradientFar: 'Gradient reaches',
+    gradientFarAuto: 'Automatic',
+    gradientFarHint:
+      'The distance the last colour is reached at; the middle of the bar sits at a third of it. Automatic measures the terrain actually in view, which is what makes the whole palette land on what the picture shows.',
+    gradientSky: 'Fade into the sky',
+    gradientSkyHint:
+      'The last colour becomes the sky itself, so distant ranges dissolve into the horizon instead of edging against it. Off gives the hard skyline a poster wants.',
+    gradientClip: 'Hide terrain beyond',
+    gradientClipHint:
+      'Terrain past that distance is left out rather than painted flat in the last colour, so the whole gradient is spent on what the picture shows. Summits standing on it are not named.',
   },
   preview: 'Preview',
   quality: {

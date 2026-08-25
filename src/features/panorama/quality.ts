@@ -1,10 +1,12 @@
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaRequest, PeakRankExpression } from './api.js';
+import { gradientRequest } from './gradient.js';
 import { PROM_DOUBTED_TRUST, PROM_TRUSTED_M } from './labels/fromPeaks.js';
 import {
   ALT_LIMIT,
   type PanoramaSettingsState,
   panoramaSettingsInitialState,
+  panoramaStyleKey,
   tiltRange,
 } from './model/settingsReducer.js';
 
@@ -220,12 +222,20 @@ function renderTiltRange(settings: PanoramaSettingsState): [number, number] {
   return [altMin, Math.min(altMax + settings.depthLift, ALT_LIMIT)];
 }
 
+/**
+ * `farM` pins the ramp where a previous pass measured it; without it a
+ * gradient asking for `auto` measures each pass's own frame, and the two can
+ * land on different rungs of the service's ladder.
+ */
 export function buildPanoramaRequest(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
   { quality, rangeKm }: PanoramaGrants,
+  farM?: number | null,
 ): PanoramaRequest {
   const band = renderTiltRange(settings);
+
+  const gradient = settings.groundGradient;
 
   return {
     lon: viewpoint.lon,
@@ -246,7 +256,13 @@ export function buildPanoramaRequest(
     ridge_strength: settings.ridgeStrength,
     ridge_width: settings.ridgeWidth,
     ridge_color: settings.ridgeColor,
-    ground_color: settings.groundColor,
+    // One or the other: a gradient replaces the blend rather than feeding it,
+    // so `ground_color` beside it would only say something untrue.
+    ...(gradient
+      ? {
+          ground_gradient: gradientRequest(gradient, rangeKm * 1000, farM),
+        }
+      : { ground_color: settings.groundColor }),
     depth_lift: settings.depthLift,
     ...PANORAMA_QUALITIES[quality].request,
     step: panoramaStep(quality, band),
@@ -281,9 +297,6 @@ export function panoramaRenderKey(
     quality,
     // The look is asked for, not applied afterwards, so changing it is another
     // render — and the Update button has to say so.
-    settings.ridgeStrength,
-    settings.ridgeWidth,
-    settings.ridgeColor,
-    settings.groundColor,
+    panoramaStyleKey(settings),
   ].join('/');
 }

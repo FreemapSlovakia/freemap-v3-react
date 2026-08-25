@@ -1,5 +1,11 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { nearestStep } from '@shared/mathUtils.js';
+import {
+  gradientKey,
+  type PanoramaGradient,
+  type PanoramaGradientStop,
+  rememberedGradients,
+} from '../gradient.js';
 import { PROMINENCE_WEIGHT } from '../labels/fromPeaks.js';
 import type { PanoramaQuality } from '../quality.js';
 import { panoramaSetSettings } from './actions.js';
@@ -225,13 +231,16 @@ export function tiltRange(settings: PanoramaSettingsState): [number, number] {
 
 /**
  * What a picture is drawn to look like: the ridge silhouettes' alpha gain and
- * thickness, what they are inked in, and the near ground before haze.
+ * thickness, what they are inked in, and the ground — one colour washed towards
+ * the sky by the built-in haze, or a ramp that replaces both.
  */
 export type PanoramaStyle = {
   ridgeStrength: number;
   ridgeWidth: number;
   ridgeColor: string;
   groundColor: string;
+  /** Distance-to-colour ramp; `null` leaves `groundColor` and the haze. */
+  groundGradient: PanoramaGradient | null;
 };
 
 /** What the service draws when asked for nothing; the modal resets to these. */
@@ -240,6 +249,7 @@ export const PANORAMA_STYLE_DEFAULTS: PanoramaStyle = {
   ridgeWidth: 1,
   ridgeColor: '#000000',
   groundColor: '#3a4a34',
+  groundGradient: null,
 };
 
 /**
@@ -267,14 +277,13 @@ export const PANORAMA_LOOKS = {
   // the default is meant to read as drawn, and the width is the half of that
   // the alpha gain can't do.
   drawn: {
+    ...PANORAMA_STYLE_DEFAULTS,
     ridgeStrength: 2.2,
     ridgeWidth: 1.6,
-    ridgeColor: '#000000',
     groundColor: '#7a6a4a',
   },
   engraved: {
-    ridgeStrength: 1,
-    ridgeWidth: 1,
+    ...PANORAMA_STYLE_DEFAULTS,
     ridgeColor: '#2b1a10',
     groundColor: '#d8cfc0',
   },
@@ -293,18 +302,35 @@ export const PANORAMA_LOOK_NAMES = Object.keys(
   PANORAMA_LOOKS,
 ) as PanoramaLook[];
 
-/** Which named look the current settings are, or `custom` where none matches. */
+/**
+ * What a picture is drawn to look like, as one comparable string. Whichever of
+ * the ground colour and the ramp the request will carry, never both, so a
+ * colour left standing under a ramp that ignores it says nothing.
+ */
+export function panoramaStyleKey(style: PanoramaStyle): string {
+  return [
+    style.ridgeStrength,
+    style.ridgeWidth,
+    style.ridgeColor,
+    style.groundGradient
+      ? gradientKey(style.groundGradient)
+      : style.groundColor,
+  ].join('/');
+}
+
+/**
+ * Which named look the current settings are, or `custom` where none matches.
+ * By key rather than field by field: a ramp is a reference, so `===` would make
+ * every look with one `custom` for ever, and silently.
+ */
 export function panoramaLookOf(style: PanoramaStyle): PanoramaLook {
+  const key = panoramaStyleKey(style);
+
   return (
     PANORAMA_LOOK_NAMES.find((name) => {
       const look = PANORAMA_LOOKS[name];
 
-      return (
-        look &&
-        (Object.keys(look) as (keyof PanoramaStyle)[]).every(
-          (key) => look[key] === style[key],
-        )
-      );
+      return look && panoramaStyleKey(look) === key;
     }) ?? 'custom'
   );
 }
@@ -337,11 +363,17 @@ export interface PanoramaSettingsState {
    * the labels in hand, so it is instant; the lift itself costs a render.
    */
   showRevealedLabels: boolean;
-  /** How the picture is drawn; see `PANORAMA_LOOKS`. */
+  /** How the picture is drawn; see `PANORAMA_LOOKS` and `PanoramaStyle`. */
   ridgeStrength: number;
   ridgeWidth: number;
   ridgeColor: string;
   groundColor: string;
+  groundGradient: PanoramaGradient | null;
+  /**
+   * Ramps the user has saved, freshest first — the picker offers them beside
+   * the built-in swatches. Colours only, which is all a swatch is.
+   */
+  recentGradients: PanoramaGradientStop[][];
   /** How many names to draw, `0` for none; see {@link labelLayoutLimits}. */
   labelDensity: number;
   /**
@@ -401,6 +433,7 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   rangeKm: 300,
   showRevealedLabels: true,
   ...PANORAMA_STYLE_DEFAULTS,
+  recentGradients: [],
   labelDensity: 5,
   showLabelEle: false,
   minDominance: NO_DOMINANCE_FILTER,
@@ -413,8 +446,16 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
 export const panoramaSettingsReducer = createReducer(
   panoramaSettingsInitialState,
   (builder) =>
-    builder.addCase(panoramaSetSettings, (state, { payload }) => ({
-      ...state,
-      ...payload,
-    })),
+    builder.addCase(panoramaSetSettings, (state, { payload }) => {
+      Object.assign(state, payload);
+
+      // Saving the settings is the deliberate act — everything before it is the
+      // modal's own draft — so it is where a ramp the user built is kept.
+      if (payload.groundGradient) {
+        state.recentGradients = rememberedGradients(
+          state.recentGradients,
+          payload.groundGradient.stops,
+        );
+      }
+    }),
 );

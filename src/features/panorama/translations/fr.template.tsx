@@ -50,7 +50,21 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     ridgeStrength: 'Intensité des lignes de crête',
     ridgeWidth: 'Épaisseur des lignes de crête',
     ridgeColor: 'Couleur des crêtes',
-    groundColor: 'Couleur du relief',
+    ground: 'Relief',
+    groundHint:
+      'Une seule couleur, que la brume intégrée délave vers celle du ciel avec la distance — ou un dégradé, qui colore le relief selon son éloignement et remplace la brume entièrement.',
+    groundSolid: 'Couleur',
+    groundGradient: 'Dégradé',
+    gradientFar: 'Le dégradé va jusqu’à',
+    gradientFarAuto: 'Automatique',
+    gradientFarHint:
+      'La distance à laquelle la dernière couleur est atteinte ; le milieu de la barre se situe au tiers de celle-ci. En automatique, elle est mesurée sur le relief réellement dans le champ, de sorte que toute la palette se dépense sur ce que l’image montre.',
+    gradientSky: 'Fondre dans le ciel',
+    gradientSkyHint:
+      'La dernière couleur devient le ciel lui-même : les chaînes lointaines se dissolvent dans l’horizon au lieu de s’y découper. Désactivé, on obtient la ligne de crête franche que veut une affiche.',
+    gradientClip: 'Masquer le relief au-delà',
+    gradientClipHint:
+      'Le relief au-delà de cette distance est omis plutôt que peint à plat dans la dernière couleur, de sorte que tout le dégradé se dépense sur ce que l’image montre. Les sommets qui s’y trouvent ne sont pas nommés.',
   },
   preview: 'Aperçu',
   quality: {

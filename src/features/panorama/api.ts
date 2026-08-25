@@ -7,6 +7,7 @@ import {
 } from '@shared/terrainService.js';
 import z from 'zod';
 import { decodeDepth, type PanoramaDepth } from './depth.js';
+import type { GroundGradientRequest } from './gradient.js';
 
 /** One node of the service's ranking language: an operator and its arguments. */
 export type PeakRankExpression = (string | number | PeakRankExpression)[];
@@ -66,6 +67,12 @@ export interface PanoramaRequest {
   ridge_color?: string;
   /** `#rrggbb`, the near terrain before haze washes it towards the sky. */
   ground_color?: string;
+  /**
+   * A distance-to-colour ramp replacing `ground_color` and the haze together.
+   * Unknown keys inside it are a 400 rather than ignored, so nothing may be
+   * sent here speculatively.
+   */
+  ground_gradient?: GroundGradientRequest;
   /**
    * Degrees of extra elevation at `range`, tapering to nothing at the eye,
    * 0–45. It warps the world rather than the picture, so it decides what hides
@@ -166,6 +173,12 @@ const MetaSchema = z.object({
   alt_min: z.number(),
   alt_max: z.number(),
   step_deg: z.number(),
+  /**
+   * Where the ground gradient's ramp ended up, metres; `null` unless one was
+   * asked for. Worth reading back when it was measured rather than given —
+   * several renders only agree about colour if they agree about this.
+   */
+  far_distance: z.number().nullish(),
   depth: DepthMetaSchema.nullish(),
   peaks: z.array(PeakSchema).nullish(),
 });

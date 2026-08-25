@@ -349,6 +349,92 @@ interior of a stroke inks at the same alpha however wide it is, so widening
 thickens without darkening. This one the service does bound (20), because every
 stroke inks a band of rows and the pass costs more the wider they are.
 
+## The ground gradient
+
+`ground_gradient` replaces `ground_color` and the built-in haze **together**, so
+the request carries one or the other and never both — and `panoramaRenderKey`
+carries whichever it sent, or a ground colour left standing under a ramp that
+ignores it would say the picture is out of date.
+
+**One control, not a switch and a control.** The picker's own Solid/Gradient
+tabs are what say which of the two the ground is, so nothing can fall out of
+step with the value; its swatches are ready-made ramps rather than recent
+colours, which is also how the feature is found at all. A ramp is therefore
+always the `custom` look: every entry of `PANORAMA_LOOKS` carries a plain colour,
+so picking one is what clears a gradient.
+
+**A swatch is colours and nothing else.** Taking one leaves the fade, the far
+distance and the clipping where the user set them — a preset that reached into
+the other three would undo settings its own palette says nothing about, and
+every ramp here is written to stand without the fade.
+
+**A ramp the user built is kept beside them**, freshest first, the way
+`drawingSettings.recentColors` are. Saving the modal is where it happens: the
+picker writes to the modal's own draft, so the dispatch is the one deliberate
+act in the whole gesture. `MAX_RECENT_GRADIENTS` is what is left of the picker's
+own eighteen after the built-ins — read off them rather than written down, since
+the picker cuts the list there and a swatch added later would otherwise push the
+newest ramp off the end silently. They go *after* the built-ins so a swatch
+stays where it was found, and one that is already a built-in is not kept at all.
+
+**Positions are not metres.** The service maps distance to `s = 2d / (d + far)`,
+which lands `1` exactly on the far distance — the palette is spent by the time
+the terrain runs out — and `0.5` at a third of it, which is the compression a
+panorama wants. The picker says `%` because that is what a position along the
+ramp is; under an automatic far distance there is no metre figure to say instead.
+
+**The sky is the last stop's business alone.** `"sky"` means the sky colour at
+that row, which is what dissolves far terrain into the horizon rather than
+edging it against the sky — and it is not a colour the picker can hold. So it is
+a checkbox (`fadeToSky`) that rewrites the final stop on the wire. Ending on a
+fixed colour is the hard skyline a poster wants, which is what the checkbox is
+for.
+
+The preview shows `SKY_COLOR` there instead. `sky_colour` clamps below the
+horizon, so for a true view that is the exact colour and not an approximation —
+under a lift it is optimistic, the far terrain then standing degrees up where
+the sky has already deepened towards `rgb(110,156,214)`. Which is also why the
+fade is worth having at all rather than a fixed pale blue.
+
+Shown rather than stored, so what comes back from the picker untouched at that
+end is put back to the colour the stop holds for when the fade is turned off —
+otherwise unticking the box would hand back a sky the user never chose. It is
+off by default: it is a different picture rather than a better one.
+
+**The far distance is measured, and the two passes must agree about it.**
+`auto` measures the frame being rendered, and the preview and the detailed pass
+sample it differently — the ladder the service rounds to usually hides that, but
+where it doesn't the whole picture recolours under someone already looking at
+it. So `renderPass` answers with `meta.far_distance` and the second pass is
+pinned to what the first found. The slider offers that same ladder, so a figure
+read back out of `meta` lands on a stop of it.
+
+Three bounds the client owns, all of them at the wire rather than in the
+control that happens to produce a bad value — a stored gradient is the one thing
+here no control can fix afterwards. A ramp ending past `range` is a `400`, so
+`gradientRequest` clamps it: a stored far distance outlives the premium range it
+was set under. `normalizeStops` sorts, because the service refuses a list that
+goes backwards. And it cuts at `GRADIENT_MAX_STOPS`, because the picker's bar
+adds a stop per click with no ceiling of its own — past the service's every
+render is a `400`, and the ramp is *persisted*, so the settings would carry it
+back after a reload.
+
+That last one is also why `groundGradient` and `recentGradients` are `.catch()`
+in `persistence.ts`, the way the viewshed radius is: a field refused there takes
+the **whole slice** with it, resetting the quality, the band and every label
+slider over a ramp.
+
+`clip` (default on) drops terrain past the far end rather than painting it flat
+in the last colour, which is what keeps the palette on what the picture shows.
+Summits standing on clipped ground come back `visible: false`, so they are
+simply not among the labels. Its checkbox is disabled under a measured far
+distance — what it drops there is the tail past the percentile, which is nobody's
+choice to make — and it goes on the wire at whatever it was left at.
+
+The map's own marks ink in the ramp's **first** stop (`panoramaGroundInk`) where
+there is one — the ramp holds before its first stop, so that is what the near
+ground is actually painted in.
+
 ## Quality, and the pixel cap
 
 Five tiers in `PANORAMA_QUALITIES`, coarsest to finest — `step`/sampling

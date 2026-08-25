@@ -50,7 +50,21 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     ridgeStrength: 'Výraznost hřebenových linií',
     ridgeWidth: 'Tloušťka hřebenových linií',
     ridgeColor: 'Barva hřebenů',
-    groundColor: 'Barva terénu',
+    ground: 'Terén',
+    groundHint:
+      'Jedna barva, kterou vestavěný opar s rostoucí vzdáleností splachuje do barvy oblohy — nebo přechod, který terén obarví podle toho, jak je daleko, a opar zcela nahradí.',
+    groundSolid: 'Barva',
+    groundGradient: 'Přechod',
+    gradientFar: 'Přechod sahá do',
+    gradientFarAuto: 'Automaticky',
+    gradientFarHint:
+      'Vzdálenost, v níž je dosažena poslední barva; střed pruhu leží v její třetině. Automaticky ji změří z terénu, který je právě v záběru, takže se celá paleta spotřebuje na to, co je na obrázku.',
+    gradientSky: 'Splynout s oblohou',
+    gradientSkyHint:
+      'Poslední barvou se stane samotná obloha, takže se vzdálená pohoří rozplynou v horizontu, místo aby se o něj opírala. Vypnuté dá tvrdý obrys, jaký chce plakát.',
+    gradientClip: 'Skrýt terén za tím',
+    gradientClipHint:
+      'Terén za touto vzdáleností se nevykreslí, místo aby byl vyplněn poslední barvou, takže se celý přechod spotřebuje na to, co je na obrázku. Vrcholy, které na něm stojí, se nepojmenují.',
   },
   preview: 'Náhled',
   quality: {

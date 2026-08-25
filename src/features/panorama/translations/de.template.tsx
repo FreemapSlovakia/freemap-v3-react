@@ -50,7 +50,21 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     ridgeStrength: 'Stärke der Gratlinien',
     ridgeWidth: 'Dicke der Gratlinien',
     ridgeColor: 'Farbe der Grate',
-    groundColor: 'Farbe des Geländes',
+    ground: 'Gelände',
+    groundHint:
+      'Eine Farbe, die der eingebaute Dunst mit zunehmender Entfernung zur Himmelsfarbe hin auswäscht — oder ein Verlauf, der das Gelände nach seiner Entfernung einfärbt und den Dunst ganz ersetzt.',
+    groundSolid: 'Farbe',
+    groundGradient: 'Verlauf',
+    gradientFar: 'Verlauf reicht bis',
+    gradientFarAuto: 'Automatisch',
+    gradientFarHint:
+      'Die Entfernung, in der die letzte Farbe erreicht ist; die Mitte des Balkens liegt bei einem Drittel davon. Automatisch misst das tatsächlich im Bild stehende Gelände, sodass die ganze Palette auf das entfällt, was das Bild zeigt.',
+    gradientSky: 'In den Himmel übergehen',
+    gradientSkyHint:
+      'Die letzte Farbe ist der Himmel selbst, sodass ferne Ketten im Horizont verschwimmen, statt sich dagegen abzusetzen. Aus ergibt die harte Kammlinie, die ein Plakat will.',
+    gradientClip: 'Gelände dahinter ausblenden',
+    gradientClipHint:
+      'Gelände jenseits dieser Entfernung wird weggelassen statt flach in der letzten Farbe gemalt, sodass der ganze Verlauf auf das entfällt, was das Bild zeigt. Gipfel, die darauf stehen, werden nicht benannt.',
   },
   preview: 'Vorschau',
   quality: {

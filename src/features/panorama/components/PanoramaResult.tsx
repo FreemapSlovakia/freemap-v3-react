@@ -32,6 +32,7 @@ import {
   useMap,
 } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { panoramaGroundInk } from '../gradient.js';
 import {
   panoramaLookAt,
   panoramaMoveViewpoint,
@@ -104,10 +105,13 @@ export default function PanoramaResult(): ReactElement | null {
   const render = useAppSelector((state) => state.panorama.render);
 
   // Everything drawn here — the eye, the wedge, the sight lines and the marks
-  // they end at — is inked in the picture's own terrain colour, so the map says
-  // which panorama it belongs to.
-  const markColor = useAppSelector(
-    (state) => state.panoramaSettings.groundColor,
+  // they end at — is inked in the picture's own near-ground colour, so the map
+  // says which panorama it belongs to.
+  const markColor = useAppSelector((state) =>
+    panoramaGroundInk(
+      state.panoramaSettings.groundColor,
+      state.panoramaSettings.groundGradient,
+    ),
   );
 
   const view = usePanoramaView();
