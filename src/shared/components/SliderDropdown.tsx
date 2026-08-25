@@ -1,6 +1,6 @@
 import type { Breakpoint } from '@shared/breakpoints.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
-import type { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { LongPressTooltip } from './LongPressTooltip.js';
 
@@ -28,8 +28,29 @@ export function SliderDropdown({
   breakpoint,
   children,
 }: Props): ReactElement {
+  const [show, setShow] = useState(false);
+
   return (
-    <Dropdown autoClose="outside">
+    <Dropdown
+      autoClose="outside"
+      show={show}
+      onToggle={(next, meta) => {
+        // A colour picker's popover renders into <body> so it isn't clipped by
+        // the menu, which makes a click inside it read as a click outside —
+        // and the menu holding the swatch would close as the picker opened.
+        // Only that case is ignored; every other way of closing still works.
+        if (
+          !next &&
+          meta.source === 'rootClose' &&
+          meta.originalEvent?.target instanceof Element &&
+          meta.originalEvent.target.closest('.popover')
+        ) {
+          return;
+        }
+
+        setShow(next);
+      }}
+    >
       <LongPressTooltip
         breakpoint={breakpoint}
         label={toggleLabel ?? '…'}
