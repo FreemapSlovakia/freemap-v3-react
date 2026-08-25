@@ -78,6 +78,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     panoramaFromHere: 'Panorama stąd',
     viewshedFromHere: 'Widoczność stąd',
     toposcopeFromHere: 'Tablica panoramiczna stąd',
+    lookAtInPanorama: 'Spójrz na to w panoramie',
+    placeActions: 'Co można zrobić z tym miejscem',
     simplifyPrompt:
       'Wprowadź współczynnik uproszczenia. Wprowadź zero, aby pominąć uproszczenie.',
     copyUrl: 'Skopiuj URL',

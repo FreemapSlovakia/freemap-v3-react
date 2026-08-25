@@ -18,6 +18,8 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   locate: 'Pohľad z mojej polohy',
   pickViewpoint: 'Vybrať v mape',
   pickViewpointPrompt: 'Kliknite do mapy tam, odkiaľ sa chcete pozerať',
+  lookAt: 'Pozrieť sa na miesto v mape',
+  pickTargetPrompt: 'Kliknite do mapy tam, kam sa chcete pozrieť',
   createToposcope: 'Vytvoriť orientačnú ružicu z tohto výhľadu',
   toposcopeMergeModal: {
     title: 'Mapa nie je prázdna',
@@ -132,6 +134,7 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Diaľka je rozvinutá, takže tento obrázok je kresba, nie fotografia: vrchy so svetlejším názvom zakrýva v skutočnosti hrebeň pred nimi a vzdialenosť odčítaná z obrázka už neznamená priamy výhľad.',
   },
   terrainSource: 'Terén',
+  peakSource: 'Názvy vrchov',
 };
 
 export default sk;

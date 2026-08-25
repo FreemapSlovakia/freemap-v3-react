@@ -6,6 +6,7 @@ const fr: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
     'Placez le centre de la table avec le bouton ◎ de la barre d’outils.',
   addCenter: 'Placer le centre',
   moveCenter: 'Déplacer le centre',
+  centerAtMyPosition: 'Centrer sur ma position',
   pickCenterPrompt: 'Cliquez sur la carte à l’endroit où se dresse la table',
   addPointsHint:
     "Ajoutez des points dessinés ; chacun devient un rayon de la table. Le centre est lui aussi un point dessiné : étiquetez-le et déplacez-le dans l'outil de dessin.",

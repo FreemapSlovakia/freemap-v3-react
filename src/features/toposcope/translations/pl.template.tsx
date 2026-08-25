@@ -5,6 +5,7 @@ const pl: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   pickCenterHint: 'Umieść środek tablicy przyciskiem ◎ na pasku narzędzi.',
   addCenter: 'Umieść środek',
   moveCenter: 'Przenieś środek',
+  centerAtMyPosition: 'Wyśrodkuj na mojej pozycji',
   pickCenterPrompt: 'Kliknij mapę tam, gdzie stoi tablica',
   addPointsHint:
     'Dodaj rysowane punkty; każdy z nich staje się promieniem tablicy. Środek też jest rysowanym punktem — opisz go i przesuwaj w narzędziu rysowania.',

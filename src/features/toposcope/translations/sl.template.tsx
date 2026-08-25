@@ -5,6 +5,7 @@ const sl: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   pickCenterHint: 'Postavite središče table z gumbom ◎ v orodni vrstici.',
   addCenter: 'Postavi središče',
   moveCenter: 'Premakni središče',
+  centerAtMyPosition: 'Sredini na mojem položaju',
   pickCenterPrompt: 'Kliknite na zemljevid tam, kjer tabla stoji',
   addPointsHint:
     'Dodajte narisane točke; vsaka postane žarek table. Tudi središče je narisana točka — označite in premikajte jo v orodju za risanje.',

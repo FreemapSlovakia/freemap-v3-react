@@ -5,6 +5,7 @@ const hu: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   pickCenterHint: 'Helyezze el a tábla középpontját az eszköztár ◎ gombjával.',
   addCenter: 'Középpont elhelyezése',
   moveCenter: 'Középpont áthelyezése',
+  centerAtMyPosition: 'Középre a helyzetemmel',
   pickCenterPrompt: 'Kattintson a térképre oda, ahol a tábla áll',
   addPointsHint:
     'Adjon hozzá rajzolt pontokat; mindegyikből a tábla egy sugara lesz. A középpont is rajzolt pont — a rajzeszközben feliratozhatja és mozgathatja.',

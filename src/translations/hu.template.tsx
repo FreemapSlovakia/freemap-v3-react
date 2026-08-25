@@ -76,6 +76,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     panoramaFromHere: 'Panoráma innen',
     viewshedFromHere: 'Láthatóság innen',
     toposcopeFromHere: 'Panorámatábla innen',
+    lookAtInPanorama: 'Megnézés a panorámában',
+    placeActions: 'Mit lehet kezdeni ezzel a hellyel',
     simplifyPrompt:
       'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
     copyUrl: 'URL másolása',

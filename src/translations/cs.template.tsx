@@ -78,6 +78,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     panoramaFromHere: 'Panorama odsud',
     viewshedFromHere: 'Viditelnost odsud',
     toposcopeFromHere: 'Orientační růžice odsud',
+    lookAtInPanorama: 'Podívat se na to v panoramatu',
+    placeActions: 'Co se dá dělat s tímto místem',
     simplifyPrompt:
       'Prosím zadejte faktor zjednodušení. Zadejte nulu pro vynechání zjednodušení.',
     copyUrl: 'Kopírovat URL',
