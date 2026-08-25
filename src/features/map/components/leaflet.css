@@ -6,6 +6,12 @@
   bottom: 0;
   top: 0;
 
+  /* "Drag me": Leaflet's own is the pointing hand every interactive layer
+     wears, which says nothing about the marker being movable. */
+  & .leaflet-marker-draggable {
+    cursor: grab;
+  }
+
   & .leaflet-tooltip {
     background-color: var(--bs-body-bg);
     border-color: var(--bs-body-bg);
@@ -141,6 +147,19 @@ a.leaflet-control-layers-toggle {
   background-color: #808080;
   animation: fm-wms-pulse 1s ease-in-out infinite;
   pointer-events: none;
+}
+
+/* The closed hand while the drag is in flight. Leaflet says the same at one
+   class less, which a tie would settle by stylesheet order — and the chunked
+   CSS runtime does not guarantee one. The wedge's swing is its own gesture, so
+   Leaflet knows nothing of it: `:active` is what holds there, the pointer being
+   captured for the whole swing. */
+body.leaflet-dragging .leaflet-container .leaflet-marker-draggable {
+  cursor: grabbing;
+}
+
+.leaflet-container .fm-beam-grab:active {
+  cursor: grabbing;
 }
 
 @keyframes fm-wms-pulse {

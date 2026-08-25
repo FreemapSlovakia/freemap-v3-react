@@ -12,7 +12,24 @@ export interface BeamIconOptions {
   innerOpacity: number;
   /** Two beams on one map must not share a gradient id. */
   gradientId: string;
+  /**
+   * The wedge is grabbed and swung. A shape of its own takes the press — the
+   * marker's box is square, and the wedge itself fades to nothing well before
+   * its rim, so either would catch presses over bare map. The marker must stay
+   * **non**-interactive for that: Leaflet's own interactivity is the whole box,
+   * and its absence is what leaves this the only way in. Written as a style
+   * rather than left to the class beside it, which several Leaflet rules of
+   * two classes would outrank.
+   */
+  grabbable?: boolean;
 }
+
+/**
+ * How far out a grabbable wedge takes presses, as a fraction of its radius.
+ * The gradient reaches nothing at the rim, so past this it is map to look at
+ * and would be a swing to press.
+ */
+const GRAB_REACH = 0.65;
 
 /**
  * A wedge fading outwards from its apex, drawn pointing north; the caller turns
@@ -29,16 +46,12 @@ export function makeBeamIcon({
   innerStop,
   innerOpacity,
   gradientId,
+  grabbable,
 }: BeamIconOptions): DivIcon {
   const half = (Math.min(halfAngle, 179.95) * Math.PI) / 180;
 
-  const x1 = (radius * Math.sin(-half)).toFixed(2);
-
-  const y1 = (-radius * Math.cos(-half)).toFixed(2);
-
-  const x2 = (radius * Math.sin(half)).toFixed(2);
-
-  const y2 = (-radius * Math.cos(half)).toFixed(2);
+  const wedge = (r: number) =>
+    `M0 0L${(r * Math.sin(-half)).toFixed(2)} ${(-r * Math.cos(-half)).toFixed(2)}A${r} ${r} 0 ${halfAngle > 90 ? 1 : 0} 1 ${(r * Math.sin(half)).toFixed(2)} ${(-r * Math.cos(half)).toFixed(2)}Z`;
 
   // `display:block` on the svg is load-bearing: inline it would sit on the text
   // baseline, leaving the wrapper taller than the svg (`.leaflet-container` sets
@@ -58,7 +71,11 @@ export function makeBeamIcon({
           <stop offset="${innerStop}" stop-color="${color}" stop-opacity="${innerOpacity}"/>
           <stop offset="1" stop-color="${color}" stop-opacity="0"/>
         </radialGradient>
-        <path fill="url(#${gradientId})" d="M0 0L${x1} ${y1}A${radius} ${radius} 0 ${halfAngle > 90 ? 1 : 0} 1 ${x2} ${y2}Z"/>
+        <path fill="url(#${gradientId})" d="${wedge(radius)}"/>${
+          grabbable
+            ? `\n        <path class="fm-beam-grab" style="pointer-events:all;cursor:grab" fill="none" d="${wedge(radius * GRAB_REACH)}"/>`
+            : ''
+        }
       </svg>
     </div>`,
   });
