@@ -21,6 +21,10 @@ export type PanoramaMessages = {
   pickViewpoint: string;
   /** Title of the toolbar that owns the map while that click is awaited. */
   pickViewpointPrompt: string;
+  /** Turns the view to face a place clicked on the map. */
+  lookAt: string;
+  /** Title of the toolbar that owns the map while that click is awaited. */
+  pickTargetPrompt: string;
   /** Turns the picture into a toposcope: its viewpoint, its names as rays. */
   createToposcope: string;
   /** Asked when that would land the summits among drawings already on the map. */
@@ -140,4 +144,6 @@ export type PanoramaMessages = {
   };
   /** Credits the terrain models the picture was rendered from. */
   terrainSource: string;
+  /** Credits OSM, which every name in the picture comes from. */
+  peakSource: string;
 };

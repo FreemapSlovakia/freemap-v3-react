@@ -3,6 +3,7 @@ import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware
 import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
+import { sameLatLon } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { terrainErrorCode } from '@shared/terrainService.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -100,6 +101,7 @@ async function renderPass(
       altMax: meta.alt_max,
       stepDeg: meta.step_deg,
       depthLift: settings.depthLift,
+      rangeM: grants.rangeKm * 1000,
       labels: labelsFromPeaks(meta.peaks ?? []),
     }),
   );
@@ -108,11 +110,18 @@ async function renderPass(
 }
 
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {
-  const { viewpoint } = getState().panorama;
+  const { viewpoint, render } = getState().panorama;
 
   if (!viewpoint) {
     return;
   }
+
+  // A picture of this very place is already up — a tier, a band or a look
+  // changed, not the viewpoint — so there is already something to turn around
+  // in while the render runs, and it is a better picture than the preview would
+  // be. Waiting behind it also keeps the mark and its readings, which every
+  // render clears.
+  const standing = render !== null && sameLatLon(render.viewpoint, viewpoint);
 
   const settings = getState().panoramaSettings;
 
@@ -127,9 +136,10 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
 
   try {
     // The cheapest pass first, so a long render happens behind a picture the
-    // user can already turn around in. Always, not by preference: that pass is
-    // the coarsest tier there is, so it adds a few percent to a detailed render
-    // rather than the third again it would cost were it a middling one.
+    // user can already turn around in — which is the whole of what it is for,
+    // and why a picture of the same place standing there does instead. It is
+    // the coarsest tier there is, so where it does run it adds a few percent to
+    // a detailed render rather than the third again a middling one would cost.
     //
     // Both passes ask for peaks, and the names are redrawn when the second
     // lands. It is not free — the peak pass costs a render about two seconds,
@@ -137,6 +147,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     // picture being looked at: visibility is decided by the rays a tier cast,
     // so only the detailed pass knows which marginal summits it actually drew.
     if (
+      !standing &&
       grants.quality !== PANORAMA_PREVIEW_QUALITY &&
       !(await renderPass(
         viewpoint,

@@ -75,6 +75,8 @@ const messages: Messages = {
     panoramaFromHere: 'Panorama from here',
     viewshedFromHere: 'Viewshed from here',
     toposcopeFromHere: 'Toposcope from here',
+    lookAtInPanorama: 'Look at this in the panorama',
+    placeActions: 'What to do with this place',
     simplifyPrompt:
       'Please enter simplification factor. Set to zero for no simplification.',
     copyUrl: 'Copy URL',

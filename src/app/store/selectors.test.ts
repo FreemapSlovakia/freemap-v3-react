@@ -44,7 +44,7 @@ function makeState(o: Overrides = {}): RootState {
     drawingLines: { drawing: false, ...o.drawingLines },
     mapArea: { selecting: null, ...o.mapArea },
     toposcope: { pickingCenter: false, ...o.toposcope },
-    panorama: { pickingViewpoint: false, ...o.panorama },
+    panorama: { picking: null, ...o.panorama },
     viewshed: { pickingViewpoint: false, ...o.viewshed },
     tracking: { tracks: [], ...o.tracking },
     trackViewer: { trackGeojson: null, ...o.trackViewer },
@@ -96,7 +96,7 @@ describe('pickingModeSelector', () => {
   });
 
   it('is true while placing the panorama viewpoint', () => {
-    const state = makeState({ panorama: { pickingViewpoint: true } });
+    const state = makeState({ panorama: { picking: 'viewpoint' } });
 
     expect(pickingModeSelector(state)).toBe(true);
   });

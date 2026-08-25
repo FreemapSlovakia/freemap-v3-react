@@ -8,14 +8,16 @@ import type {
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaLabel } from '../labels/types.js';
 import {
+  type PanoramaPicking,
   type PanoramaProbe,
   panoramaCancel,
   panoramaClear,
+  panoramaLookAt,
   panoramaMoveViewpoint,
   panoramaPick,
   panoramaSetAzimuth,
   panoramaSetError,
-  panoramaSetPickingViewpoint,
+  panoramaSetPicking,
   panoramaSetProbe,
   panoramaSetProgress,
   panoramaSetRender,
@@ -50,6 +52,8 @@ export interface PanoramaRenderInfo {
    * ask this instead.
    */
   depthLift: number;
+  /** Farthest terrain it considered, metres — where the lift reaches its full. */
+  rangeM: number;
   labels: PanoramaLabel[];
 }
 
@@ -64,8 +68,8 @@ export interface PanoramaState {
   /** Bearing the middle of the viewer looks at; see `panoramaSetAzimuth`. */
   azimuth: number;
   probe: PanoramaProbe | null;
-  /** The map is waiting for a click that says where to stand. */
-  pickingViewpoint: boolean;
+  /** What the map is waiting for a click to say, or `null` for nothing. */
+  picking: PanoramaPicking | null;
 }
 
 export const panoramaInitialState: PanoramaState = {
@@ -76,7 +80,7 @@ export const panoramaInitialState: PanoramaState = {
   render: null,
   azimuth: 0,
   probe: null,
-  pickingViewpoint: false,
+  picking: null,
 };
 
 export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
@@ -88,10 +92,18 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
 
       state.probe = null;
 
-      state.pickingViewpoint = false;
+      state.picking = null;
     })
-    .addCase(panoramaSetPickingViewpoint, (state, { payload }) => {
-      state.pickingViewpoint = payload;
+    .addCase(panoramaSetPicking, (state, { payload }) => {
+      state.picking = payload;
+    })
+    // The turning and the mark are both `panoramaLookAtProcessor`'s: the
+    // bearing is one reading with where the place shows up in the picture —
+    // or whether it shows up at all — and that is the distance buffer's
+    // answer, which lives outside the store. All this has to do is give the
+    // map back.
+    .addCase(panoramaLookAt, (state) => {
+      state.picking = null;
     })
     .addCase(panoramaMoveViewpoint, (state, { payload }) => {
       state.viewpoint = payload;
@@ -149,7 +161,7 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
 
         state.progress = null;
 
-        state.pickingViewpoint = false;
+        state.picking = null;
       }
     })
     .addCase(clearMapFeatures, () => panoramaInitialState),

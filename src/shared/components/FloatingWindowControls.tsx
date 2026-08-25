@@ -39,7 +39,11 @@ export function FloatingWindowControls({
       >
         <div />
 
-        <div className={classes.controls}>{children}</div>
+        <div
+          className={clsx(classes.controls, !fullscreen && classes.gripReserve)}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -76,6 +80,24 @@ export function FloatingWindowGrips({
   );
 }
 
+/**
+ * What the full-screen control says and shows, for a panel that packs its
+ * buttons into a menu and so needs the pair as props rather than as a button;
+ * see `ResponsiveActions`. Shared with {@link FullscreenButton} so a panel that
+ * folds cannot come to name it differently from one that doesn't.
+ */
+export function useFullscreenAction(fullscreen: boolean): {
+  label: string | undefined;
+  icon: ReactElement;
+} {
+  const m = useMessages();
+
+  return {
+    label: fullscreen ? m?.general.exitFullscreen : m?.general.fullscreen,
+    icon: fullscreen ? <MdFullscreenExit /> : <MdFullscreen />,
+  };
+}
+
 /** The same button in every panel that floats; see `useFloatingWindow`. */
 export function FullscreenButton({
   fullscreen,
@@ -86,15 +108,13 @@ export function FullscreenButton({
   onToggle: () => void;
   size?: 'sm';
 }): ReactElement {
-  const m = useMessages();
+  const { label, icon } = useFullscreenAction(fullscreen);
 
   return (
-    <LongPressTooltip
-      label={fullscreen ? m?.general.exitFullscreen : m?.general.fullscreen}
-    >
+    <LongPressTooltip label={label}>
       {({ props }) => (
         <Button variant="secondary" size={size} onClick={onToggle} {...props}>
-          {fullscreen ? <MdFullscreenExit /> : <MdFullscreen />}
+          {icon}
         </Button>
       )}
     </LongPressTooltip>

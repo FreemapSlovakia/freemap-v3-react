@@ -17,6 +17,20 @@ export type PanoramaProbe = LatLon & {
   distance: number;
   /** Degrees clockwise from north, as read off the picture. */
   azimuth: number;
+  /**
+   * Image row it was read at, where it was read out of the picture rather than
+   * named on the map. Carried so the dot survives the panel closing and opening
+   * again, and so it is not put back by a search that a cliff — many rows at
+   * one distance — would answer at the wrong end of. Always of the picture in
+   * hand: a new render clears the probe.
+   */
+  iy?: number;
+  /**
+   * Roughly how high the ground there stands, worked out from the picture's own
+   * geometry rather than asked of the elevation API; see `groundElevation`. Said
+   * with a `~`, and left off where a summit's own figure is the better one.
+   */
+  ele?: number;
   peak?: {
     /** The label's own id, so the picture can mark which name is picked. */
     id: string;
@@ -32,13 +46,24 @@ export type PanoramaProbe = LatLon & {
  */
 export const panoramaPick = createAction<LatLon>('PANORAMA_PICK');
 
+/** What a click on the map is being asked for; see {@link panoramaSetPicking}. */
+export type PanoramaPicking = 'viewpoint' | 'target';
+
 /**
- * Hands the map over to a click that says where to stand. A mode rather than a
- * map-click tool, so the panel can stay open beside the route planner.
+ * Hands the map over to a click that says where to stand, or what to look at. A
+ * mode rather than a map-click tool, so the panel can stay open beside the
+ * route planner.
  */
-export const panoramaSetPickingViewpoint = createAction<boolean>(
-  'PANORAMA_SET_PICKING_VIEWPOINT',
+export const panoramaSetPicking = createAction<PanoramaPicking | null>(
+  'PANORAMA_SET_PICKING',
 );
+
+/**
+ * Turns the view to face a place on the map — the reverse of a press in the
+ * picture, which answers with one. Measured from where the picture was taken,
+ * so a dragged pin doesn't aim it at country nobody rendered.
+ */
+export const panoramaLookAt = createAction<LatLon>('PANORAMA_LOOK_AT');
 
 /**
  * Moves the viewpoint without rendering, so dragging its marker stages a new

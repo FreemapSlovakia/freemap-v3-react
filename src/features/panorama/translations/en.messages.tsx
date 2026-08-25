@@ -22,6 +22,8 @@ const en: PanoramaMessages = {
   locate: 'View from my position',
   pickViewpoint: 'Pick on the map',
   pickViewpointPrompt: 'Click the map where you want to look from',
+  lookAt: 'Look at a place on the map',
+  pickTargetPrompt: 'Click the map where you want to look at',
   createToposcope: 'Create toposcope from this view',
   toposcopeMergeModal: {
     title: 'Map is not empty',
@@ -140,6 +142,7 @@ const en: PanoramaMessages = {
       'Distance is unfolded, so this picture is a drawing rather than a photograph: faded peak names stand behind a ridge that really hides them, and a distance read off the picture no longer means a clear line of sight.',
   },
   terrainSource: 'Terrain',
+  peakSource: 'Peak names',
 };
 
 export default en;

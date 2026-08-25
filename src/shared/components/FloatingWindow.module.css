@@ -97,6 +97,15 @@
   }
 }
 
+/* Room kept clear at the row's end for the resize grip, which is pinned to the
+   corner rather than laid out in the row. The footer below keeps the same, but
+   it is empty for most of a panel's life and then the grip lands on this row —
+   on its last control, which is a menu toggle rather than something harmless to
+   press. Off in full screen, where there are no grips. */
+.grip-reserve {
+  padding-right: 1.75rem;
+}
+
 /* Room the toolbar row keeps clear at its end for the grip, which is pinned to
    the corner rather than laid out in the row — the row wraps, and the grip
    belongs in the corner on every one of its shapes. Measured from the row's

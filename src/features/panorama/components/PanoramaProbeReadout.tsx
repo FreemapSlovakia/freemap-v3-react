@@ -5,9 +5,32 @@ import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
 import type { PanoramaProbe } from '../model/actions.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
+import type { PanoramaAim } from '../viewStore.js';
+
+/** The whole mark, or the figures alone — a mark being dragged has no name. */
+export type PanoramaReadout = Pick<PanoramaProbe, 'distance' | 'azimuth'> &
+  Partial<Pick<PanoramaProbe, 'peak' | 'ele'>>;
+
+/**
+ * What a mark reads as: where a gesture on the map is holding it, or where the
+ * store says it was left. Said in the same words in the marker's tooltip and in
+ * the panel's own box, which is the point of it being one function.
+ */
+export function readoutOf(
+  aim: PanoramaAim | null,
+  probe: PanoramaProbe | null,
+): PanoramaReadout | null {
+  return aim?.mark
+    ? {
+        distance: aim.mark.distance,
+        azimuth: aim.azimuth,
+        ele: aim.mark.seen?.ele,
+      }
+    : probe;
+}
 
 type Props = {
-  probe: PanoramaProbe;
+  probe: PanoramaReadout;
 };
 
 /**
@@ -58,6 +81,15 @@ export function PanoramaProbeReadout({ probe }: Props): ReactElement {
       {/* Guarded like the title: the messages load as their own chunk, and an
           unguarded div opens the tooltip as an empty box until they land. */}
       {figures && <div>{figures}</div>}
+
+      {/* Read off the picture rather than measured — a row of pixels and a
+          distance — so it wears a `~`. A summit says its own, which the terrain
+          model answered and the title carries. */}
+      {!probe.peak && probe.ele !== undefined && (
+        <div>
+          ~{nfEle.format(probe.ele)} {gm?.general.masl}
+        </div>
+      )}
     </>
   );
 }

@@ -7,8 +7,6 @@ import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { angleDiff, clamp, mod } from '@shared/mathUtils.js';
-import type { LatLon } from '@shared/types/common.js';
-import destination from '@turf/destination';
 import clsx from 'clsx';
 import {
   type ReactElement,
@@ -36,8 +34,13 @@ import {
 } from '../model/actions.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
 import { labelLayoutLimits } from '../model/settingsReducer.js';
+import { columnAt, groundElevation, groundPoint, readAlong } from '../ray.js';
 import type { PanoramaRenderData } from '../renderHolder.js';
-import { setPanoramaHover, setPanoramaView } from '../viewStore.js';
+import {
+  setPanoramaHover,
+  setPanoramaView,
+  usePanoramaAim,
+} from '../viewStore.js';
 import classes from './Panorama.module.css';
 
 /** Matches `.label` in the stylesheet, which is what `measure` measures. */
@@ -93,7 +96,7 @@ const SETTLE_MS = 500;
  * `COLORS.normal` is too dark to read. Near enough to say "the same summit",
  * far enough to be legible.
  */
-const PICKED_INK = '#ff6a6a';
+export const PICKED_INK = '#ff6a6a';
 
 /**
  * How far a summit the lift revealed is faded: it is drawn and named, but a
@@ -101,22 +104,6 @@ const PICKED_INK = '#ff6a6a';
  * which fades the name itself.
  */
 const REVEALED_OPACITY = 0.65;
-
-/** Where a bearing and a distance from the viewpoint land on the ground. */
-function groundPoint(
-  viewpoint: LatLon,
-  azimuth: number,
-  distance: number,
-): LatLon {
-  const [lon, lat] = destination(
-    [viewpoint.lon, viewpoint.lat],
-    distance,
-    azimuth,
-    { units: 'meters' },
-  ).geometry.coordinates as [number, number];
-
-  return { lat, lon };
-}
 
 let measureCtx: CanvasRenderingContext2D | null | undefined;
 
@@ -195,14 +182,14 @@ export function PanoramaView({
 
   const storedAzimuth = useAppSelector((state) => state.panorama.azimuth);
 
-  /** Which name is picked, if the mark on the map came from one. */
-  const pickedId = useAppSelector(
-    (state) => state.panorama.probe?.peak?.id ?? null,
-  );
-
   // What the dot in the picture answers to: a new viewpoint clears the mark on
   // the map while this picture is still up, and the two must go together.
-  const marked = useAppSelector((state) => state.panorama.probe !== null);
+  const probe = useAppSelector((state) => state.panorama.probe);
+
+  /** Which name is picked, if the mark on the map came from one. */
+  const pickedId = probe?.peak?.id ?? null;
+
+  const marked = probe !== null;
 
   // The bearing lives here frame by frame and reaches the store once the
   // turning settles — every action writes the persisted state to localStorage,
@@ -290,6 +277,26 @@ export function PanoramaView({
     return () => clearTimeout(timer);
   }, [azimuth, dispatch]);
 
+  // The map's wedge being swung: it turns the picture frame by frame without
+  // touching the store — the gesture ending is what writes the bearing down,
+  // and this component's own settle timer would have done it anyway.
+  const aim = usePanoramaAim();
+
+  useEffect(() => {
+    if (aim) {
+      setAzimuth(aim.azimuth);
+    }
+  }, [aim]);
+
+  // Where a gesture on the map is holding the mark, while it holds it: the row
+  // the gesture already read, rather than the same column walked twice a frame.
+  // The picture is turned to that bearing, so the dot rides the middle of it
+  // and climbs towards the horizon as the mark is dragged away.
+  const aimedAt = aim?.mark?.seen && {
+    az: aim.azimuth,
+    iy: aim.mark.seen.iy,
+  };
+
   // A bearing set from the URL — a reload, or stepping through the history —
   // turns the view. Ignoring what this component itself wrote is what keeps a
   // settle mid-drag from snapping the picture back to where it was half a
@@ -316,6 +323,25 @@ export function PanoramaView({
 
     setPanoramaHover(null);
   }, [render.id]);
+
+  // A mark named on the map — a place to look at — carries no row of its own,
+  // so the dot is found rather than remembered: down the column at its bearing
+  // to where the terrain stands at its distance. The place is already one this
+  // picture can see, `panoramaLookAtProcessor` having moved it there, so the
+  // search only has to say which row. One read out of the picture brings its
+  // own row and keeps it. A named summit is left alone, its own anchor dot
+  // being the mark.
+  useEffect(() => {
+    if (!probe || probe.peak) {
+      return;
+    }
+
+    const iy =
+      probe.iy ??
+      readAlong(render, data.depth, probe.azimuth, probe.distance).seen?.iy;
+
+    setPicked(iy === undefined ? null : { az: probe.azimuth, iy });
+  }, [probe, data.depth, render]);
 
   // What the map's wedge follows. Its own store rather than Redux: the wedge
   // needs the field of view too, and that is nobody else's business.
@@ -558,7 +584,7 @@ export function PanoramaView({
 
       const az = azLeft + px * degPerPx;
 
-      const ix = mod((az - render.azStart) / render.stepDeg, render.width);
+      const ix = columnAt(render, az);
 
       // Clamped off the last row: at the very bottom of the frame `py / scale`
       // lands exactly on the row past the end, which reads as no data at all.
@@ -582,18 +608,7 @@ export function PanoramaView({
               },
       };
     },
-    [
-      azLeft,
-      clampedOffsetY,
-      data.depth,
-      degPerPx,
-      render.azStart,
-      render.height,
-      render.stepDeg,
-      render.viewpoint,
-      render.width,
-      scale,
-    ],
+    [azLeft, clampedOffsetY, data.depth, degPerPx, render, scale],
   );
 
   const handlePointerMove = useCallback(
@@ -722,7 +737,15 @@ export function PanoramaView({
         const sample = sampleGround(e);
 
         if (sample) {
-          dispatch(panoramaSetProbe(sample.ground));
+          dispatch(
+            panoramaSetProbe(
+              sample.ground && {
+                ...sample.ground,
+                iy: sample.iy,
+                ele: groundElevation(render, sample.iy, sample.ground.distance),
+              },
+            ),
+          );
 
           // A finger has no hover, so the press has to say the distance as well
           // as mark it — otherwise the readout is a thing only a mouse ever
@@ -733,7 +756,7 @@ export function PanoramaView({
         }
       }
     },
-    [dispatch, sampleGround],
+    [dispatch, render, sampleGround],
   );
 
   /**
@@ -797,16 +820,20 @@ export function PanoramaView({
 
   // The dot put back over its own terrain as the view turns, the same way the
   // readout is. Gone with the mark on the map, whoever cleared it.
-  const pickedAt = useMemo(
-    () =>
-      picked && marked
-        ? {
-            x: screenX(picked.az),
-            y: (picked.iy - clampedOffsetY) * scale,
-          }
-        : null,
-    [clampedOffsetY, marked, picked, scale, screenX],
-  );
+  const pickedAt = useMemo(() => {
+    // While the mark is being dragged it is the only thing the dot answers to,
+    // and over ground the picture cannot see it answers to nothing: the place
+    // it was dragged from is not where the hand is, and drawing it there would
+    // say the mark had gone back.
+    const at = aim?.mark ? aimedAt : picked;
+
+    return at && marked
+      ? {
+          x: screenX(at.az),
+          y: (at.iy - clampedOffsetY) * scale,
+        }
+      : null;
+  }, [aim?.mark, aimedAt, clampedOffsetY, marked, picked, scale, screenX]);
 
   const weighting = useMemo(
     () => ({

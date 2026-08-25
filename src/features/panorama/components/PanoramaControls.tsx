@@ -11,22 +11,31 @@ import { useConfirmChoice } from '@shared/components/ConfirmProvider.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import {
   FloatingWindowControls,
-  FullscreenButton,
+  useFullscreenAction,
 } from '@shared/components/FloatingWindowControls.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
+import {
+  Action,
+  ActionDivider,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
+import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { usePlaceActions } from '@shared/hooks/usePlaceActions.js';
+import { nearestStep } from '@shared/mathUtils.js';
 import { type ReactElement, useCallback } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import {
   FaCog,
   FaCompass,
+  FaCrosshairs,
   FaInfoCircle,
   FaPlay,
   FaStop,
@@ -46,7 +55,7 @@ import {
 import { useDispatch } from 'react-redux';
 import {
   panoramaRender,
-  panoramaSetPickingViewpoint,
+  panoramaSetPicking,
   panoramaSetSettings,
   panoramaToToposcope,
 } from '../model/actions.js';
@@ -58,7 +67,6 @@ import {
   LABEL_HAZE_STEPS_KM,
   labelWeightBand,
   NO_DOMINANCE_FILTER,
-  nearestStep,
   type PanoramaTilt,
   PROMINENCE_WEIGHT_MAX,
   PROMINENCE_WEIGHT_STEP,
@@ -87,6 +95,13 @@ const LABEL_DEFAULTS = {
   labelHazeKm: panoramaSettingsInitialState.labelHazeKm,
   showRevealedLabels: panoramaSettingsInitialState.showRevealedLabels,
 };
+
+/**
+ * What the viewpoint's menu leaves out: the picture on screen is the panorama
+ * from here, and aiming it at the place it is taken from would turn it due
+ * north and mark the ground at the viewer's feet.
+ */
+const VIEWPOINT_OMIT: ViewFromHere[] = ['panorama', 'lookAt'];
 
 const LABEL_SETTING_KEYS = Object.keys(
   LABEL_DEFAULTS,
@@ -128,6 +143,23 @@ export function PanoramaControls({
   );
 
   const confirmChoice = useConfirmChoice();
+
+  const fullscreenAction = useFullscreenAction(fullscreen);
+
+  // Only while the pin still stands where the picture was taken from: dragged
+  // somewhere else it is an ordinary place, and the two the picture answers
+  // for — a panorama from here, aiming this one at it — are worth offering
+  // again. See `VIEWPOINT_OMIT`.
+  const { actions: placeActions, onSelect } = usePlaceActions({
+    at: viewpoint,
+    omit:
+      viewpoint &&
+      render &&
+      render.viewpoint.lat === viewpoint.lat &&
+      render.viewpoint.lon === viewpoint.lon
+        ? VIEWPOINT_OMIT
+        : undefined,
+  });
 
   // Asked rather than decided here: the summits are drawn points like any
   // others, so a map that already carries some can as well gain a dial as be
@@ -247,7 +279,7 @@ export function PanoramaControls({
         // iOS grants the magnetometer only from a gesture, and the pick itself
         // happens later in a processor, nowhere near one.
         onAct={requestCompassPermission}
-        onPick={() => dispatch(panoramaSetPickingViewpoint(true))}
+        onPick={() => dispatch(panoramaSetPicking('viewpoint'))}
       />
 
       <SelectDropdown
@@ -473,38 +505,6 @@ export function PanoramaControls({
         />
       </SliderDropdown>
 
-      {/* Set-once settings — eye height, an exact vertical band, the look —
-      which all cost a render, so they sit behind a modal rather than in
-      reach of a stray click. */}
-      <LongPressTooltip label={m?.settings.title}>
-        {({ props }) => (
-          <Button
-            variant="secondary"
-            onClick={() =>
-              dispatch(setActiveModal({ type: 'panorama-settings' }))
-            }
-            {...props}
-          >
-            <FaCog />
-          </Button>
-        )}
-      </LongPressTooltip>
-
-      {/* The picture's own names taken round to a dial, which is a drawing and
-          so can be printed and saved. */}
-      <LongPressTooltip label={m?.createToposcope}>
-        {({ props }) => (
-          <Button
-            variant="secondary"
-            disabled={!render}
-            onClick={() => void createToposcope()}
-            {...props}
-          >
-            <PiCompassRoseBold />
-          </Button>
-        )}
-      </LongPressTooltip>
-
       {outdated && !rendering && (
         <LongPressTooltip label={m?.outdated}>
           {({ props }) => (
@@ -520,58 +520,100 @@ export function PanoramaControls({
       )}
 
       {/* What the picture is looked at with, as against what it is made of:
-            pushed to the far end so the row reads render settings first, and
-            these last. */}
-      <span className="ms-auto d-flex align-items-center gap-1">
-        {/* The icon is what says which state it is in, so this is an ordinary
-              action rather than a toggle wearing an outline. */}
-        <LongPressTooltip label={m?.autoPan}>
-          {({ props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                // Asked on either edge, not just when turning it on: a phone
-                // starts out following, so the press that gets here first is
-                // as often the one stopping it. Straight out of the click,
-                // since that is the only place iOS grants it from.
-                void requestCompassPermission();
-
-                dispatch(panoramaSetSettings({ autoPan: !settings.autoPan }));
-              }}
-              {...props}
-            >
-              {/* Where there is a magnetometer the view follows it rather than
-                  turning by itself, so a play mark would promise the wrong
-                  thing — see `PanoramaView`. */}
-              {settings.autoPan ? (
-                <FaStop />
-              ) : isCompassSupported() ? (
-                <FaCompass />
-              ) : (
-                <FaPlay />
-              )}
-            </Button>
-          )}
-        </LongPressTooltip>
-
-        <FullscreenButton
-          fullscreen={fullscreen}
-          onToggle={onToggleFullscreen}
+          pushed to the far end so the row reads render settings first, and
+          these last. Every one of them is a plain button, so they collapse
+          into the menu as the window narrows — measured against the window
+          itself; see `BreakpointsProvider` in `Panorama`. The order they go in
+          is the order of their `showFrom`: the ⓘ panel of prose first, full
+          screen last, that one being worth most where there is least room. */}
+      <ResponsiveActions
+        className="ms-auto"
+        // The row's own spacing, which is a step tighter than this component's
+        // default — a toolbar of icons, not a form.
+        gap={1}
+        fit
+        toggleLabel={gm?.general.actions}
+        onSelect={onSelect}
+      >
+        {/* The reverse of a press in the picture, which answers with a place on
+            the map: nothing to aim until there is a picture. */}
+        <Action
+          label={m?.lookAt}
+          icon={<FaCrosshairs />}
+          showFrom="sm"
+          disabled={!render}
+          onClick={() => dispatch(panoramaSetPicking('target'))}
         />
 
-        <LongPressTooltip label={m?.caveats.title}>
-          {({ props }) => (
-            <Button
-              variant="secondary"
-              active={showCaveats}
-              onClick={onToggleCaveats}
-              {...props}
-            >
-              <FaInfoCircle />
-            </Button>
-          )}
-        </LongPressTooltip>
-      </span>
+        {/* Set-once settings — eye height, an exact vertical band, the look —
+            which all cost a render, so they sit behind a modal rather than in
+            reach of a stray click. */}
+        <Action
+          label={m?.settings.title}
+          icon={<FaCog />}
+          showFrom="md"
+          onClick={() =>
+            dispatch(setActiveModal({ type: 'panorama-settings' }))
+          }
+        />
+
+        {/* The icon is what says which state it is in, so this is an ordinary
+            action rather than a toggle wearing an outline. Where there is a
+            magnetometer the view follows it rather than turning by itself, so a
+            play mark would promise the wrong thing — see `PanoramaView`. */}
+        <Action
+          label={m?.autoPan}
+          icon={
+            settings.autoPan ? (
+              <FaStop />
+            ) : isCompassSupported() ? (
+              <FaCompass />
+            ) : (
+              <FaPlay />
+            )
+          }
+          showFrom="lg"
+          onClick={() => {
+            // Asked on either edge, not just when turning it on: a phone starts
+            // out following, so the press that gets here first is as often the
+            // one stopping it. Straight out of the click, since that is the
+            // only place iOS grants it from.
+            void requestCompassPermission();
+
+            dispatch(panoramaSetSettings({ autoPan: !settings.autoPan }));
+          }}
+        />
+
+        <Action
+          label={showCaveats ? gm?.general.close : m?.caveats.title}
+          icon={<FaInfoCircle />}
+          showFrom="xl"
+          active={showCaveats}
+          onClick={onToggleCaveats}
+        />
+
+        <Action {...fullscreenAction} onClick={onToggleFullscreen} />
+
+        {/* Never inline: what can be done with the place the picture is taken
+            from, which is a menu's worth on its own. */}
+        <ActionDivider />
+
+        {/* Not the "Toposcope from here" below it, which stands the dial here
+            and leaves the rays to whatever is drawn: this one carries the
+            picture's own names round to it. */}
+        <Action
+          label={m?.createToposcope}
+          icon={<PiCompassRoseBold />}
+          showFrom="never"
+          disabled={!render}
+          onClick={() => void createToposcope()}
+        />
+
+        {/* What follows is about the place rather than about the picture. */}
+        <ActionDivider />
+
+        {placeActions}
+      </ResponsiveActions>
     </FloatingWindowControls>
   );
 }

@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { nearestStep } from '@shared/mathUtils.js';
 import { PROMINENCE_WEIGHT } from '../labels/fromPeaks.js';
 import type { PanoramaQuality } from '../quality.js';
 import { panoramaSetSettings } from './actions.js';
@@ -152,19 +153,6 @@ export function prominenceWeightStep(weight: number): number {
           PROMINENCE_WEIGHT_STEP,
       ) * PROMINENCE_WEIGHT_STEP
     ).toFixed(2),
-  );
-}
-
-/**
- * Which stop a stored value sits on. One between two — an older setting, a
- * hand-edited store — snaps to the nearest rather than leaving the slider
- * somewhere it cannot be moved back to.
- */
-export function nearestStep(steps: readonly number[], value: number): number {
-  return steps.reduce(
-    (best, step, i) =>
-      Math.abs(step - value) < Math.abs((steps[best] ?? 0) - value) ? i : best,
-    0,
   );
 }
 

@@ -72,10 +72,125 @@ wears (the viewshed's pair wear an eye, the toposcope's the viewpoint starburst
 — one glyph per observer, so a map carrying several says which is which; the
 binoculars are the viewshed *layer's* own mark, in the switcher and its toolbar
 title): its own
-press raises `pickingViewpoint`, a picking mode like the toposcope's centre (see
-`pickingModeSelector`), and its one menu item takes the GPS instead. The
+press raises `picking: 'viewpoint'`, a picking mode like the toposcope's centre
+(see `pickingModeSelector`), and its one menu item takes the GPS instead. The
 toposcope's centre is placed by the same pair in the same order — the two panels
 ask the same question, so they must not answer it in opposite orders.
+
+**The wedge is swung to turn the view.** The slice of horizon drawn from the
+viewpoint takes a press and follows the pointer: the bearing from the render's
+viewpoint reaches the viewer through `viewStore`'s aim slot frame by frame, and
+only the release dispatches `panoramaSetAzimuth` — every dispatch writes the
+persisted state and rewrites the URL. No mode, so the panel stays open and
+answers as the wedge moves, and no tool loses its click.
+
+Three things make it work. A shape of its own takes the press (`grabbable` in
+`makeBeamIcon`): the marker's box is 240 px square and the wedge itself fades to
+nothing well before its rim, so either would eat presses over bare map — the hit
+shape reaches `GRAB_REACH` of the radius, which is about as far as the gradient
+can still be seen. `mousedown` and `touchstart` are stopped so the map does not
+pan from under it (it starts its pan from those, which a stopped `pointerdown`
+never reaches) — those two alone, since `disableClickPropagation` would take the
+click as well, and a press on the wedge is a press on the map under every mode
+that wants one, with the wedge standing over the very ground being pointed at;
+only the click that ends a swing is swallowed. And the pointer is captured,
+since a swing leaves the wedge at once. A view turning by itself is stopped on the way in, as a drag
+in the picture stops it. The eye marker underneath keeps the drag that *moves*
+the viewpoint: the eye moves house, the wedge looks elsewhere.
+
+**The mark it leaves is dragged the same way.** The crosshair takes a drag: the
+view turns to it frame by frame through the same aim slot, and the drop
+dispatches `panoramaLookAt`, which takes the reading again and may put the mark
+somewhere else — a place the picture cannot see is moved to the ridge that hides
+it. The sight line follows the aim rather than the store, which only hears about
+the drag at the end.
+
+**The aim carries the reading, not just the bearing**, where the gesture names a
+place — a dragged mark does, a swung wedge does not. `mark.seen` is what the
+picture makes of it: the row for the red dot and the elevation for the readouts,
+taken once by the gesture rather than looked up again by the picture. The view
+is turned to that bearing, so the dot rides the middle of it and climbs towards
+the horizon as the mark is dragged away, and the readings follow it — the
+marker's tooltip and the panel's own box (`readoutOf`, so the two cannot
+disagree) say where the mark is now, not where it came from.
+
+**How high the marked place stands is read off the picture too.**
+`groundElevation` takes the eye's own elevation, adds what the line of sight
+climbs over that distance — the row's angle, less the unfolding, which raises
+terrain in proportion to how far off it is (`render.rangeM` is stored for
+exactly that) — and adds back the curvature it falls away by. It is rough by
+construction: a row is a pixel, so a frame's worth of degrees is tens of metres
+at fifty kilometres, and the refraction is the standard coefficient rather than
+whatever the renderer used. Hence the `~` in front of it, and hence a summit
+keeps saying the terrain model's own figure instead.
+
+**Over ground the picture cannot see, only the dot goes.** `mark.seen` is
+`null` there (that is what `PanoramaSample.visible` decides) and the picture
+draws nothing — but the two figures keep being said, in the tooltip and in the
+box: they are of the place on the map, which is where the mark is, and only the
+dot is a claim about the picture. Emptying the tooltip instead was worse than
+useless: Leaflet opens one on a hover, so a tooltip unmounted mid-drag never
+came back for the rest of it. The snap is the *drop*'s business, not the drag's:
+letting go there still puts the mark on the nearest thing that can be seen.
+
+**Aiming is a mode asking a different question**, and the one that leaves the
+first mark. The crosshair button raises `picking: 'target'`, and the click
+answers `panoramaLookAt`. Nothing renders, so it needs a picture rather than a
+viewpoint.
+
+All of that is `panoramaLookAtProcessor`'s — the reducer only gives the map
+back. Both the turning and the mark come out of **one** reading (`readTowards`),
+because a bearing computed twice is a bearing that can disagree with itself; and
+the reading needs the distance buffer, which lives in `renderHolder`, where a
+reducer may not read it. The view turns because `PanoramaView` follows a bearing
+arriving from outside — that is how a `panorama-az=` link restores one.
+
+`readTowards` is where every caller goes: the drag handler, the processor, and
+the picture putting a probe's row back. It measures the bearing and the distance
+from `render.viewpoint` (a dragged pin stands somewhere this picture never saw),
+then `visibleAtDistance` walks the column to where the terrain stands at that
+distance — distance falls monotonically down a column (a ray raised clears what
+is in front of it), so it is a binary search on the encoded values, which are
+already logarithmic in distance — and `groundElevation` answers how high that
+row stands. One helper, because the same five steps written out four times had
+already begun to disagree about which distance the elevation belongs to.
+
+**A place that cannot be seen is moved to one that can.** A hidden place lies in
+a jump between two adjacent rows — the ridge that hides it, and the first
+terrain visible beyond it — and the mark goes to whichever of the two stands
+nearer to it, in the picture and on the map alike. Marking where it *would* be
+would draw a crosshair and a line of sight over ground this picture never saw.
+Beyond everything the column holds it is the last silhouette; nearer than the
+frame reaches, the bottom row; a column of nothing but sky leaves no mark.
+
+Whether a step down a column is a silhouette or a slope is a **heuristic**
+(`OCCLUSION_STEP`, a quarter of the step's own distance), and a heuristic is all
+a column of distances allows: telling them apart properly needs the hidden
+place's own elevation. It is generous, so ordinary terrain keeps the place
+exactly as it was named.
+
+**What it misses, resolution answers.** Far off the rows are already kilometres
+apart, so a ridge hiding a whole valley can step less than a quarter of its
+distance and pass for a slope — and at the coarse tiers the far field is
+squeezed into so few rows that nothing about a step stands out at all. Rendering
+finer separates them, and does it better than any rule read off the column: a
+neighbour-relative test was tried against a case at 15 km and did not fire
+either, while raising the quality tier fixed it outright.
+
+The exact test needs the place's own height: it is visible where that height
+clears the sight line grazing everything nearer, and the column gives the
+grazing angle — so one elevation lookup would settle it, which is a network
+round trip and could only belong to a drop rather than to a drag. The viewshed
+overlay from the same eye is the standing cross-check meanwhile: where the two
+disagree, the viewshed is right.
+
+A press keeps its own row rather than deriving one — it travels on the probe as
+`iy`, which is what tells the two apart. A cliff face is many rows at one
+distance, and a press halfway up it would otherwise be relocated to whichever
+end of the cliff the search settled on. On the probe rather than in the
+component so it survives the panel closing and opening again, which keeps both
+the picture and the mark; it is always of the picture in hand, a new render
+clearing the probe.
 
 Whether the picture still answers for the controls is **derived**, not tracked:
 `panoramaRenderKey(viewpoint, settings, quality)` is stored on the render and
@@ -141,6 +256,40 @@ picture's height. They belong to the picture and the picture floats — and full
 screen made the point plainly, since the panel covered the tool's own toolbar
 and left the controls unreachable. What `ToolMenu` also carried had to be
 carried here: the experimental and offline badges, and the close button.
+
+**The window is its own box.** The panel wraps itself in a
+`BreakpointsProvider` fed by the width it already measures for the picture, so
+every `breakpoint`/`showFrom` inside it is matched against the window rather
+than the viewport — a resizable panel on a wide screen is otherwise told it has
+room it does not have. Outside such a provider `useBreakpointMatches` is the
+shared `matchMedia` store, unchanged.
+
+**The row ends in one ⋮ menu, and packs into it by what fits.** The plain
+buttons — aim, settings, the compass/play toggle, the caveats panel, full
+screen — are `Action`s of a single `ResponsiveActions` with `fit`, which
+measures the row's own scroller and folds one only while it overflows: a
+breakpoint would pack while the row still had room to spare, since it knows
+nothing of the dropdowns sharing the width. `showFrom` is then read as the
+order to fold in — the ⓘ panel of prose first, the crosshair last — and no
+`showFrom` at all means never folding, which is what full screen asks for,
+being worth most where there is least room. One menu rather than two, since a second
+toggle in a row short of space defeats the packing. The dropdowns are not in it:
+quality, tilt and the peak-name sliders are not buttons, and sliders do not live
+in a dropdown item — they collapse their labels instead. The picker, Update and
+the render's progress never collapse, nothing else in the row meaning anything
+without them.
+
+The row also keeps its end clear of the resize grip (`gripReserve`): the footer
+below it does the same, but that footer is empty for most of a panel's life, and
+then the grip lands on the menu toggle.
+
+Below the divider the menu carries what can be done with the *place* rather than
+with the picture: `usePlaceActions`, the map context menu's own items, so the
+answer is the same wherever a place is named. The same menu hangs under the
+probe readout for whatever was last picked out of the picture. Above the
+divider, one of the panel's own: rounding the picture to a toposcope, which is
+not the "Toposcope from here" below it — that one only stands the dial here and
+leaves the rays to whatever is already drawn.
 
 One line decides: **the toolbar carries what rearranges the picture already in
 hand; the modal carries what has to be asked for again.** Cost, not frequency —
@@ -284,9 +433,16 @@ hides it.
 A fine tier would leave the panel blank for half a minute or more, so the
 handler renders `PANORAMA_PREVIEW_QUALITY` first — the cheapest tier there is,
 about a second — publishes it marked `preview`, and renders the asked-for one
-behind it. Always, with nothing to turn it off: because the preview is the
-*coarsest* tier it adds a few percent to a detailed render, where a middling
-preview would have cost the third again that once made it worth asking about.
+behind it. Nothing turns it off, because being the *coarsest* tier it adds a few
+percent to a detailed render, where a middling preview would have cost the third
+again that once made it worth asking about.
+
+**Except where a picture of that very place is already up.** Filling a blank
+panel is the whole of what the preview is for, and a tier, a band or a look
+changed without the viewpoint moving leaves a better picture standing than the
+preview would draw — one already turned to where the user was looking, with the
+mark and its readings still on it, all of which a published render clears.
+Waiting behind it costs nothing and takes a coarse flash away.
 
 **Both passes ask for peaks**, and the names are redrawn when the second lands.
 They do not fully agree: `visible` is decided by the two rays bracketing a
@@ -802,7 +958,7 @@ the thing it described was still on screen.
 
 ## Round to a toposcope
 
-The toolbar's compass-rose button turns the picture into a
+The first item of the toolbar's ⋮ menu turns the picture into a
 [toposcope](../src/features/toposcope/): `panoramaToposcopeProcessor` stands the
 dial's centre on the render's viewpoint (`makeToposcopeCenter`, or the existing
 centre moved rather than a second one appearing) and adds one drawn point per

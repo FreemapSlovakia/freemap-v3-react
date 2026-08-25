@@ -57,8 +57,8 @@ export const mapAreaSelectingSelector = (state: RootState): boolean =>
 export const toposcopePickingCenterSelector = (state: RootState): boolean =>
   state.toposcope.pickingCenter;
 
-export const panoramaPickingViewpointSelector = (state: RootState): boolean =>
-  state.panorama.pickingViewpoint;
+export const panoramaPickingSelector = (state: RootState): boolean =>
+  state.panorama.picking !== null;
 
 export const viewshedPickingViewpointSelector = (state: RootState): boolean =>
   state.viewshed.pickingViewpoint;
@@ -72,7 +72,7 @@ export const viewshedPickingViewpointSelector = (state: RootState): boolean =>
 export const pickingModeSelector = (state: RootState): boolean =>
   selectingHomeLocationSelector(state) ||
   toposcopePickingCenterSelector(state) ||
-  panoramaPickingViewpointSelector(state) ||
+  panoramaPickingSelector(state) ||
   viewshedPickingViewpointSelector(state) ||
   galleryPickingPositionForIdSelector(state) !== null ||
   galleryShowPositionSelector(state) ||
@@ -112,7 +112,7 @@ export const mouseCursorSelector = createSelector(
   galleryShowPositionSelector,
   (state: RootState) => state.drawingLines.drawing,
   toposcopePickingCenterSelector,
-  panoramaPickingViewpointSelector,
+  panoramaPickingSelector,
   viewshedPickingViewpointSelector,
   (
     selectingHomeLocation,
@@ -122,7 +122,7 @@ export const mouseCursorSelector = createSelector(
     galleryShowPosition,
     drawing,
     toposcopePickingCenter,
-    panoramaPickingViewpoint,
+    panoramaPicking,
     viewshedPickingViewpoint,
   ) => {
     if (galleryShowPosition) {
@@ -133,7 +133,7 @@ export const mouseCursorSelector = createSelector(
       selectingHomeLocation ||
       showGalleryPicker ||
       toposcopePickingCenter ||
-      panoramaPickingViewpoint ||
+      panoramaPicking ||
       viewshedPickingViewpoint
     ) {
       return 'crosshair';

@@ -27,3 +27,16 @@ export function angleDiff(a: number, b: number): number {
 export function mod(value: number, n: number): number {
   return ((value % n) + n) % n;
 }
+
+/**
+ * Which stop a stored value sits on. One between two — an older setting, a
+ * hand-edited store, a link written when the stops were different — snaps to
+ * the nearest rather than being left somewhere the control cannot go back to.
+ */
+export function nearestStep(steps: readonly number[], value: number): number {
+  return steps.reduce(
+    (best, step, i) =>
+      Math.abs(step - value) < Math.abs((steps[best] ?? 0) - value) ? i : best,
+    0,
+  );
+}

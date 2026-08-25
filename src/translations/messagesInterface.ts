@@ -57,6 +57,10 @@ export type Messages = {
     panoramaFromHere: string;
     viewshedFromHere: string;
     toposcopeFromHere: string;
+    /** Turns the panorama already on screen to face this place. */
+    lookAtInPanorama: string;
+    /** Names the ⋮ menu a panel carries for the place it is about. */
+    placeActions: string;
     simplifyPrompt: string;
     copyUrl: string;
     copyPageUrl: string;

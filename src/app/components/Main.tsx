@@ -264,16 +264,16 @@ const toposcopeCenterPickingMenuFactory = () =>
     '@features/toposcope/components/ToposcopeCenterPickingMenu.js'
   );
 
-const panoramaViewpointPickingFactory = () =>
+const panoramaPickingFactory = () =>
   import(
-    /* webpackChunkName: "panorama-viewpoint-picking" */
-    '@features/panorama/components/PanoramaViewpointPicking.js'
+    /* webpackChunkName: "panorama-picking" */
+    '@features/panorama/components/PanoramaPicking.js'
   );
 
-const panoramaViewpointPickingMenuFactory = () =>
+const panoramaPickingMenuFactory = () =>
   import(
-    /* webpackChunkName: "panorama-viewpoint-picking-menu" */
-    '@features/panorama/components/PanoramaViewpointPickingMenu.js'
+    /* webpackChunkName: "panorama-picking-menu" */
+    '@features/panorama/components/PanoramaPickingMenu.js'
   );
 
 const panoramaSettingsModalFactory = () =>
@@ -533,8 +533,8 @@ export function Main(): ReactElement {
     (state) => state.toposcope.pickingCenter,
   );
 
-  const pickingPanoramaViewpoint = useAppSelector(
-    (state) => state.panorama.pickingViewpoint,
+  const pickingPanorama = useAppSelector(
+    (state) => state.panorama.picking !== null,
   );
 
   const pickingViewshedViewpoint = useAppSelector(
@@ -916,8 +916,8 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={toposcopeCenterPickingMenuFactory} />
               )}
 
-              {pickingPanoramaViewpoint && (
-                <AsyncComponent factory={panoramaViewpointPickingMenuFactory} />
+              {pickingPanorama && (
+                <AsyncComponent factory={panoramaPickingMenuFactory} />
               )}
 
               {pickingViewshedViewpoint && (
@@ -1016,8 +1016,8 @@ export function Main(): ReactElement {
               <AsyncComponent factory={toposcopeCenterPickingFactory} />
             )}
 
-            {pickingPanoramaViewpoint && (
-              <AsyncComponent factory={panoramaViewpointPickingFactory} />
+            {pickingPanorama && (
+              <AsyncComponent factory={panoramaPickingFactory} />
             )}
 
             {pickingViewshedViewpoint && (

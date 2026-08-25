@@ -17,7 +17,7 @@ import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.j
 import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
-import { panoramaSetPickingViewpoint } from '@features/panorama/model/actions.js';
+import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
@@ -90,8 +90,8 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       return toposcopeSetPickingCenter(false);
     }
 
-    if (state.panorama.pickingViewpoint) {
-      return panoramaSetPickingViewpoint(false);
+    if (state.panorama.picking) {
+      return panoramaSetPicking(null);
     }
 
     if (state.elevationChart.target) {
