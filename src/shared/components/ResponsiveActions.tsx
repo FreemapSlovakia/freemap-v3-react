@@ -1,5 +1,9 @@
 import type { SelectCallback } from '@restart/ui/types';
-import { type Breakpoint, useBreakpointMatches } from '@shared/breakpoints.js';
+import {
+  type Breakpoint,
+  getMinWidthForBreakpoint,
+  useBreakpointMatches,
+} from '@shared/breakpoints.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import clsx from 'clsx';
@@ -11,6 +15,9 @@ import {
   type ReactElement,
   type ReactNode,
   type Ref,
+  useEffect,
+  useLayoutEffect,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -123,7 +130,46 @@ type Props = {
   onSelect?: SelectCallback;
   toggleRef?: Ref<HTMLButtonElement>;
   className?: string;
+  /**
+   * Pack by what fits rather than by the breakpoints: the row's own scroller is
+   * measured, and actions fold into the menu only while it overflows. Then
+   * `showFrom` is read as an order — the largest breakpoint folds first — and
+   * `xs` (or none) stays inline whatever happens. For a row sharing its width
+   * with controls this component knows nothing about, where a breakpoint packs
+   * while the row still has room to spare.
+   */
+  fit?: boolean;
 };
+
+/** What an unmeasured action is assumed to take: an icon button and its gap. */
+const ESTIMATED_ACTION_PX = 44;
+
+/** Room a folded action must find over its own width before it comes back. */
+const UNFOLD_SLACK_PX = 8;
+
+/** The gaps and padding the measurement has to add back, in pixels. */
+function readSpacing(root: HTMLElement, row: HTMLElement) {
+  const rowStyle = getComputedStyle(row);
+
+  return {
+    ownGap: Number.parseFloat(getComputedStyle(root).columnGap) || 0,
+    rowGap: Number.parseFloat(rowStyle.columnGap) || 0,
+    rowPadding:
+      Number.parseFloat(rowStyle.paddingLeft) +
+      Number.parseFloat(rowStyle.paddingRight),
+  };
+}
+
+/**
+ * Where an action stands in the folding order, which is the width it asks for:
+ * the one wanting most room goes first, and `0` never folds. The breakpoints'
+ * own widths rather than an order of this component's own, so a new breakpoint
+ * is one edit rather than two.
+ */
+const foldOrder = (showFrom: ActionProps['showFrom']): number =>
+  showFrom === undefined || showFrom === 'never' || showFrom === 'xs'
+    ? 0
+    : getMinWidthForBreakpoint(showFrom);
 
 export function ResponsiveActions({
   children,
@@ -136,6 +182,7 @@ export function ResponsiveActions({
   toggleRef,
   onSelect,
   className,
+  fit,
 }: Props): ReactElement {
   const matches = useBreakpointMatches();
 
@@ -145,6 +192,19 @@ export function ResponsiveActions({
 
   // Which submenu the packed menu is showing, by the index of its entry.
   const [submenu, setSubmenu] = useState<number | null>(null);
+
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  /** How many of the folding order are packed, while `fit` measures. */
+  const [folded, setFolded] = useState(0);
+
+  /** Bumped by the row's own resize, which re-runs the measurement below. */
+  const [, setResized] = useState(0);
+
+  /** What each action took when it was last inline, by its child index. */
+  const widths = useRef(new Map<number, number>());
+
+  const spacingRef = useRef<ReturnType<typeof readSpacing> | null>(null);
 
   const isOff = (props: Pick<ActionProps, 'disabled' | 'requiresOnline'>) =>
     props.disabled || (props.requiresOnline && !online);
@@ -206,6 +266,26 @@ export function ResponsiveActions({
     }
   });
 
+  // The order they fold in: the largest breakpoint first, as it is the one
+  // asking for most room. `never` is already packed and `xs` never folds, so
+  // neither is in it.
+  const folding = entries
+    .filter(
+      (e): e is Extract<Entry, { kind: 'action' }> =>
+        e.kind === 'action' && foldOrder(e.props.showFrom) > 0,
+    )
+    .sort((a, b) => foldOrder(b.props.showFrom) - foldOrder(a.props.showFrom));
+
+  if (fit) {
+    const packedByFit = new Set(folding.slice(0, folded).map((e) => e.index));
+
+    for (const entry of entries) {
+      if (entry.kind === 'action' && entry.props.showFrom !== 'never') {
+        entry.inline = !packedByFit.has(entry.index);
+      }
+    }
+  }
+
   const isPacked = (entry: Entry) =>
     entry.kind === 'items' ||
     entry.kind === 'submenu' ||
@@ -221,6 +301,7 @@ export function ResponsiveActions({
   );
 
   if (
+    !fit &&
     packedActions.length === 1 &&
     packedActions[0].props.showFrom !== 'never' &&
     !entries.some((e) => e.kind === 'items' || e.kind === 'submenu')
@@ -336,14 +417,112 @@ export function ResponsiveActions({
     );
   };
 
-  const inline = entries
-    .filter(
-      (e): e is Extract<Entry, { kind: 'action' }> =>
-        e.kind === 'action' && e.inline,
-    )
-    .map((e) => renderButton(e.props, e.index));
+  const inlineEntries = entries.filter(
+    (e): e is Extract<Entry, { kind: 'action' }> =>
+      e.kind === 'action' && e.inline,
+  );
+
+  const inline = inlineEntries.map((e) => renderButton(e.props, e.index));
 
   const hasPacked = packed.some((entry) => entry.kind !== 'divider');
+
+  // What fits, measured on the row this sits in rather than guessed from the
+  // window: the rest of the row is nobody's business here, so only its own
+  // scroller can say whether there is room. Each inline action's width is kept
+  // as it is rendered, which is what lets a folded one be counted back in — it
+  // is not in the DOM to measure. One pass settles it: the natural width is the
+  // same however many are folded, so the count cannot oscillate.
+  useLayoutEffect(() => {
+    // First, and before the walk up the tree: every row of every list that
+    // carries one of these renders this component, and none of them measures.
+    if (!fit) {
+      return;
+    }
+
+    const root = rootRef.current;
+
+    const row = root?.parentElement;
+
+    const scroller = root?.closest('.fm-ib-scroller');
+
+    if (!root || !row || !(scroller instanceof HTMLElement)) {
+      return;
+    }
+
+    // Read once and kept between resizes: this runs on every render, and the
+    // gaps and padding move only with the box — full screen drops the room a
+    // floating panel keeps clear for its resize grip, which is a padding
+    // change and a resize at once.
+    spacingRef.current ??= readSpacing(root, row);
+
+    const spacing = spacingRef.current;
+
+    const kids = [...root.children];
+
+    inlineEntries.forEach((entry, i) => {
+      const el = kids[i];
+
+      if (el instanceof HTMLElement && el.offsetWidth > 0) {
+        widths.current.set(entry.index, el.offsetWidth + spacing.ownGap);
+      }
+    });
+
+    const width = (entry: Extract<Entry, { kind: 'action' }>) =>
+      widths.current.get(entry.index) ?? ESTIMATED_ACTION_PX;
+
+    // Added up rather than read off the row's `scrollWidth`: an `ms-auto` on
+    // this element eats the slack into a margin, so an overflowing row and a
+    // half-empty one measure exactly the same there.
+    let rowWidth =
+      spacing.rowPadding +
+      folding.slice(0, folded).reduce((sum, e) => sum + width(e), 0);
+
+    for (const kid of row.children) {
+      if (kid instanceof HTMLElement && kid.offsetWidth > 0) {
+        rowWidth += kid.offsetWidth + spacing.rowGap;
+      }
+    }
+
+    let need = 0;
+
+    while (rowWidth > scroller.clientWidth + 1 && need < folding.length) {
+      rowWidth -= width(folding[need]!);
+
+      need++;
+    }
+
+    // Unfolding only where the row has room to spare, not merely enough:
+    // widths move by a pixel with a label or a scrollbar, and a button that
+    // came back only to be folded again on the next pass would flicker.
+    if (need < folded && rowWidth + UNFOLD_SLACK_PX > scroller.clientWidth) {
+      return;
+    }
+
+    if (need !== folded) {
+      setFolded(need);
+    }
+  });
+
+  // A panel resized by its grip doesn't re-render this on its own.
+  useEffect(() => {
+    const scroller = rootRef.current?.closest('.fm-ib-scroller');
+
+    if (!fit || !scroller) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      // The spacing goes with it: a panel going full screen drops the room it
+      // keeps clear for its grip, and that arrives as a resize.
+      spacingRef.current = null;
+
+      setResized((n) => n + 1);
+    });
+
+    observer.observe(scroller);
+
+    return () => observer.disconnect();
+  }, [fit]);
 
   const openSubmenu = entries.find(
     (entry): entry is Extract<Entry, { kind: 'submenu' }> =>
@@ -391,6 +570,7 @@ export function ResponsiveActions({
 
   return (
     <div
+      ref={rootRef}
       className={clsx(
         'd-inline-flex flex-nowrap align-items-center',
         `gap-${gap}`,

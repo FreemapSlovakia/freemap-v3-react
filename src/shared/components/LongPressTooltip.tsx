@@ -1,7 +1,4 @@
-import {
-  type Breakpoint,
-  getMinWidthForBreakpoint,
-} from '@shared/breakpoints.js';
+import { type Breakpoint, useBreakpointMatches } from '@shared/breakpoints.js';
 import {
   createContext,
   Fragment,
@@ -10,7 +7,6 @@ import {
   type ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -74,32 +70,19 @@ export function LongPressTooltip({
 
   const [target, setTarget] = useState<HTMLElement | null>(null);
 
-  const [labelHidden, setLabelHidden] = useState(false);
-
   // Whether the pointer that opened the tooltip was a finger or a stylus, which
   // covers the control it points at and so needs the tooltip pushed clear of it.
   const [coarse, setCoarse] = useState(false);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (!breakpoint) {
-      setLabelHidden(true);
-      return;
-    }
+  const matches = useBreakpointMatches();
 
-    const breakpoint1 = breakpoint;
-
-    function checkVisibility() {
-      setLabelHidden(window.innerWidth < getMinWidthForBreakpoint(breakpoint1));
-    }
-
-    checkVisibility();
-
-    window.addEventListener('resize', checkVisibility);
-
-    return () => window.removeEventListener('resize', checkVisibility);
-  }, [breakpoint]);
+  // Named through the tooltip alone where no breakpoint prints the label; the
+  // matches may be a panel's own width rather than the viewport's, so the class
+  // is decided here rather than by a `d-{bp}-inline` utility.
+  const labelHidden =
+    breakpoint === undefined || (breakpoint !== 'xs' && !matches[breakpoint]);
 
   const handleStart = useCallback(
     (e: PointerEvent) => {
@@ -208,7 +191,7 @@ export function LongPressTooltip({
         ) : (
           label
         ),
-        labelClassName: `d-none d-${breakpoint}-inline`,
+        labelClassName: labelHidden ? 'd-none' : 'd-inline',
       })}
 
       {target && (labelHidden || name != null) && (
