@@ -33,15 +33,20 @@ export function resolveGenericNameWithMeta(
         continue;
       }
 
-      if (valMapping[v]) {
+      if (Object.hasOwn(valMapping, v)) {
         const subkeyMapping = valMapping[v];
 
         if (typeof subkeyMapping === 'string') {
-          parts.push({
-            text: subkeyMapping.replace('{}', v),
-            tags: { ...usedTags, [k]: v },
-            case: 'b',
-          });
+          // An empty mapping is a deliberate silence — `bridge: { no: '' }` —
+          // and has to stop here, or the key's fallback below claims the
+          // feature is exactly what the tag denies.
+          if (subkeyMapping) {
+            parts.push({
+              text: subkeyMapping.replace('{}', v),
+              tags: { ...usedTags, [k]: v },
+              case: 'b',
+            });
+          }
 
           continue;
         }
@@ -94,6 +99,14 @@ export function resolveGenericNameWithMeta(
               case: `${item.case}f`,
             })),
           );
+        } else if (typeof valMapping['*']['*'] === 'string') {
+          // The subtree needs a second tag to say more (`bridge` + `highway`),
+          // and a geocoding hit carries only one — so take its own fallback.
+          parts.push({
+            text: valMapping['*']['*'].replace('{}', v),
+            tags: { ...usedTags, [k]: v },
+            case: 'g',
+          });
         }
       }
     }
@@ -136,9 +149,15 @@ export function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
 ): string[] {
-  return eliminateMoreGenericNames(
-    resolveGenericNameWithMeta(m, adjustTags(tags), {}),
-  ).map((part) => part.text);
+  // Deduplicated: two keys can name the same thing — `amenity=pharmacy` beside
+  // `healthcare=pharmacy` is the recommended tagging — and it reads once.
+  return [
+    ...new Set(
+      eliminateMoreGenericNames(
+        resolveGenericNameWithMeta(m, adjustTags(tags), {}),
+      ).map((part) => part.text),
+    ),
+  ];
 }
 
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
@@ -279,13 +298,17 @@ export const categoryKeys = new Set([
   'boundary',
   'building',
   'bus',
+  'club',
   'cusine',
+  'healthcare',
   'highway',
   'historic',
   'information',
+  'junction',
   'landuse',
   'leaf_type',
   'leisure',
+  'lock',
   'man_made',
   'natural',
   'network',

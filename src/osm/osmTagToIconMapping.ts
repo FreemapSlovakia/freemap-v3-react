@@ -275,9 +275,6 @@ export const osmTagToIconMapping: IconNode = {
     primary: 'id:highway-primary',
     primary_link: 'id:highway-primary',
     secondary: 'id:highway-secondary',
-    // The label mapping spells this one with a typo; both are kept so the icon
-    // shows either way.
-    secondaty_link: 'id:highway-secondary',
     secondary_link: 'id:highway-secondary',
     tertiary: 'id:highway-tertiary',
     tertiary_link: 'id:highway-tertiary',

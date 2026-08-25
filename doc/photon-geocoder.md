@@ -234,6 +234,27 @@ Three things about the response that the mapping exists for:
   which `photonDisplayName` joins, dropping repeats (a place and the city it
   names are one word twice).
 
+### `osm_key`/`osm_value` are Nominatim's classification, not the element's tags
+
+Photon carries one classifying tag per hit, taken from Nominatim's `class`/
+`type`, and drops the rest — an entrance node with `addr:*` tags arrives with no
+`entrance` at all. Two consequences for the tag→name and tag→icon mappings,
+which are otherwise keyed the way OSM tags an element:
+
+- **Some classes are invented.** Nominatim labels an object that has address
+  tags but no main tag `place=house`, an interpolation `place=house_number`, and
+  a computed postcode area `place=postcode` (that one carries *no* `osm_id`, so
+  the app mints a synthetic feature id and never upgrades it); Photon falls back
+  to `place=yes` for a class it cannot use. They are mapped under `place:` in
+  `osmTagToNameMapping-*`, marked by a comment — `place=house` is genuinely
+  three ways worldwide in OSM, so treating it as "address" is safe.
+- **An extra `place`/`linked_place` tag overrides the class**
+  (`PlaceRowMapper.java`). Every Slovak okres is `boundary=administrative` plus
+  `place=district`, so it arrives as `place=district`, never as a boundary.
+
+`-extra-tags` would have Photon return the real tags alongside, at the cost of a
+re-import and a bigger index. Our instance is imported without it.
+
 Geometry is always the centroid — Photon indexes no outlines, so a hit that
 Nominatim would have returned with `polygon_geojson` now arrives as a point.
 This is not a loss in the UI: results are already `incomplete`, and picking one
