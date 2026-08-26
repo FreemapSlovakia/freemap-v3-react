@@ -651,6 +651,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           }),
         expectedStatus: [200, 400],
         cancelActions: cancelTypes,
+        // FOSSGIS ask for an origin on their routing servers where it is
+        // technically possible, and it is: the app is served with
+        // `Referrer-Policy: no-referrer`, so only an override sends one.
+        referrerPolicy: 'strict-origin-when-cross-origin',
       });
 
       const result = OsrmResultSchema.parse(await response.json());

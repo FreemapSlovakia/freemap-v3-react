@@ -265,10 +265,17 @@ separately, so one table resolves both.
 
 That model also weights the graph, so it shapes **every** GraphHopper route — including a
 premium one, whose profile is re-read from the national models and so never names it. Its
-open licence is met the other way round: `SONNY_ROUTING_ATTR` (`type: 'routing'`) joins the
-map's attribution list in `Attribution.tsx` whenever a GraphHopper route or isochrone
-stands, which is also what `useResolvedAttributionText` bakes into an exported map — there
-only when the route is among the exportables, since that credit belongs to the drawn route.
+open licence is met the other way round: `useRoutingAttributions` in `Attribution.tsx` adds
+`SONNY_ATTR` to the map's attribution list whenever a GraphHopper route or isochrone stands,
+which is also what `useResolvedAttributionText` bakes into an exported map — there only when
+the route is among the exportables, since that credit belongs to the drawn route.
+
+The same hook adds `OSM_DATA_ATTR` for any standing result (a route is OSM-derived whatever
+layer is drawn under it, and an aerial base credits nothing else) and `OSRM_ROUTING_ATTR`
+where OSRM answered. All three dedupe against the layers' own copies in `categorize`. Only
+the last is `type: 'routing'` — the credits above it are for *data the route is derived
+from*, whereas `routing` names the service that answered, and the GraphHopper behind it is
+ours to run rather than anyone's to credit.
 
 A multimodal route is asked of both routers leg by leg, so one GraphHopper leg earns the
 credit whatever the default transport is. `legTransports` is the single reading of that rule

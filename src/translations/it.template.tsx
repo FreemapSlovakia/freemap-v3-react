@@ -437,6 +437,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     attr: {
       osmData: '© contributori di OpenStreetMap',
+      fixTheMap: 'segnala un errore sulla mappa',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Tasselli vettoriali da"

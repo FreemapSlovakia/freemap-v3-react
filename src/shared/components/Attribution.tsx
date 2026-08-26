@@ -1,15 +1,22 @@
+import type { RootState } from '@app/store/store.js';
 import {
   DocumentSchema,
   documentShow,
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
-import { SONNY_ROUTING_ATTR } from '@shared/elevationSources.js';
+import { SONNY_ATTR } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
-import { Fragment, type ReactElement } from 'react';
+import { Fragment, type ReactElement, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { type AttributionDef, integratedLayerDefs } from '../mapDefinitions.js';
+import {
+  type AttributionDef,
+  FIXTHEMAP_ATTR,
+  integratedLayerDefs,
+  OSM_DATA_ATTR,
+  OSRM_ROUTING_ATTR,
+} from '../mapDefinitions.js';
 
 type Props = { unknown: string };
 
@@ -71,39 +78,80 @@ export function Attribution({ unknown }: Props): ReactElement {
 }
 
 /**
- * Whether a GraphHopper result stands. Its graph is weighted by Sonny's terrain
- * model, so the model is credited for any route or isochrone it produced — the
- * elevation chart credits only what the drawn profile displays, which past the
- * free tier is our own terrain model instead.
- *
- * A multimodal route is asked of both routers leg by leg, so one GraphHopper leg
- * under an OSRM default is enough. The free tier ignores the per-leg overrides,
- * which this doesn't model: crediting a source that didn't answer is the lesser
- * error, dropping one that did is the licence breach.
+ * Whether a standing result was answered by `api`. A multimodal route is asked
+ * of both routers leg by leg, so both can be true at once. The free tier ignores
+ * the per-leg overrides, which this doesn't model: crediting a router that
+ * didn't answer is the lesser error, dropping one that did is the licence
+ * breach.
  */
-function useHasGraphhopperResult(): boolean {
-  return useAppSelector((state) => {
-    const { alternatives, isochrones, mode, points, transportType } =
-      state.routePlanner;
+function answeredBy(
+  routePlanner: RootState['routePlanner'],
+  api: 'gh' | 'osrm',
+): boolean {
+  const { alternatives, isochrones, mode, points, transportType } =
+    routePlanner;
 
-    if (alternatives.length === 0 && !isochrones?.length) {
-      return false;
-    }
+  if (alternatives.length === 0 && !isochrones?.length) {
+    return false;
+  }
 
-    // Only an ordered route is planned leg by leg; every other mode — and a
-    // result with no legs to read, an isochrone above all — goes by the default.
-    const legs = mode === 'route' ? legTransports(points, transportType) : [];
+  // Only an ordered route is planned leg by leg; every other mode — and a
+  // result with no legs to read, an isochrone above all — goes by the default.
+  const legs = mode === 'route' ? legTransports(points, transportType) : [];
 
-    return (legs.length > 0 ? legs : [transportType]).some(
-      (transport) => transportTypeDefs[transport]?.api === 'gh',
-    );
-  });
+  return (legs.length > 0 ? legs : [transportType]).some(
+    (transport) => transportTypeDefs[transport]?.api === api,
+  );
 }
 
+/**
+ * The credits a standing route or isochrone earns.
+ *
+ * The data it is derived from: both routers read OSM, so the line on screen is
+ * OSM-derived whatever is drawn under it — over an aerial layer nothing else
+ * would credit it — and GraphHopper's graph is weighted by Sonny's terrain
+ * model, so that shapes every route it returns, not only the profiles that
+ * display its values. Either may already be credited by a layer; {@link
+ * categorize} drops the duplicate.
+ *
+ * `routing` is left to the service that answered, and only OSRM is somebody
+ * else's to name — the GraphHopper behind it is ours to run.
+ *
+ * Selected as two booleans and assembled here: a selector returning a fresh
+ * array would compare unequal on every store change.
+ */
+export function useRoutingAttributions(): AttributionDef[] {
+  const graphhopper = useAppSelector((state) =>
+    answeredBy(state.routePlanner, 'gh'),
+  );
+
+  const osrm = useAppSelector((state) =>
+    answeredBy(state.routePlanner, 'osrm'),
+  );
+
+  return useMemo(
+    () =>
+      graphhopper || osrm
+        ? [
+            OSM_DATA_ATTR,
+            ...(graphhopper ? [SONNY_ATTR] : []),
+            ...(osrm ? [OSRM_ROUTING_ATTR] : []),
+          ]
+        : [],
+    [graphhopper, osrm],
+  );
+}
+
+/**
+ * `linked` says the output renders anchors, which is what decides whether the
+ * "fix the map" obligation applies: it is a link or it is nothing, and baking
+ * its label into an exported image would only add noise.
+ */
 function useCategorizedAttribution(
   layers: string[],
   countries?: string[],
   creditRouting = true,
+  linked = false,
 ) {
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
@@ -111,16 +159,20 @@ function useCategorizedAttribution(
     .filter((cm) => layers.includes(cm.type) && cm.attribution)
     .flatMap((cm) => cm.attribution!);
 
-  const graphhopperResult = useHasGraphhopperResult();
+  const routingAttrs = useRoutingAttributions();
+
+  const defs = [
+    ...integratedLayerDefs
+      .filter(({ type }) => layers.includes(type))
+      .flatMap((def) => def.attribution),
+    ...cachedAttrs,
+    ...(creditRouting ? routingAttrs : []),
+  ].filter((def) => coversCountries(def, countries));
 
   const categorized = categorize(
-    [
-      ...integratedLayerDefs
-        .filter(({ type }) => layers.includes(type))
-        .flatMap((def) => def.attribution),
-      ...cachedAttrs,
-      ...(creditRouting && graphhopperResult ? [SONNY_ROUTING_ATTR] : []),
-    ].filter((def) => coversCountries(def, countries)),
+    linked && defs.some((def) => def.nameKey === 'osmData')
+      ? [...defs, FIXTHEMAP_ATTR]
+      : defs,
   );
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
@@ -185,6 +237,7 @@ export function useResolvedAttribution(
     layers,
     countries,
     creditRouting,
+    true,
   );
 
   const dispatch = useDispatch();
@@ -201,7 +254,7 @@ export function useResolvedAttribution(
                 j > 0 ? ', ' : '',
                 a.url ? (
                   <a
-                    key={a.type}
+                    key={j}
                     href={a.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -226,7 +279,7 @@ export function useResolvedAttribution(
                     {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
                   </a>
                 ) : (
-                  <Fragment key={a.type}>
+                  <Fragment key={j}>
                     {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
                   </Fragment>
                 ),

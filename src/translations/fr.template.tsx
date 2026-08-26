@@ -418,6 +418,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         />
       ),
       osmData: '©\xa0contributeurs d’OpenStreetMap',
+      fixTheMap: 'signaler une erreur sur la carte',
       photosCc: 'diverses licences Creative Commons',
     },
     technologies: {

@@ -408,6 +408,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     attr: {
       osmData: '© współtwórcy OpenStreetMap',
+      fixTheMap: 'zgłoś błąd na mapie',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Wektory kafelków od"

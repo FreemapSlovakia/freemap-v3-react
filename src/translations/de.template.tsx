@@ -423,6 +423,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
     attr: {
       osmData: '© OpenStreetMap-Mitwirkende',
+      fixTheMap: 'Kartenfehler melden',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorkacheln von"

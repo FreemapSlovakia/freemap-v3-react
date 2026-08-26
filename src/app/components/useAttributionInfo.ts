@@ -1,6 +1,7 @@
 import { mapSetEsriAttribution } from '@features/map/model/actions.js';
 import toastsClasses from '@features/toasts/components/Toasts.module.css';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
+import { useRoutingAttributions } from '@shared/components/Attribution.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -46,7 +47,12 @@ export function useAttributionInfo() {
 
   const layers = useAppSelector((state) => state.map.layers);
 
+  const routingAttrs = useRoutingAttributions();
+
+  // Map layers, Esri contributors, routing credits — what the toast has already
+  // said this session, so each source raises it once.
   const licenceShownForRef = useRef([
+    new Set<string>(),
     new Set<string>(),
     new Set<string>(),
   ] as const);
@@ -210,11 +216,17 @@ export function useAttributionInfo() {
       return;
     }
 
-    const [mapLayers, esriAttributions] = licenceShownForRef.current;
+    const [mapLayers, esriAttributions, routingSources] =
+      licenceShownForRef.current;
+
+    // A route is content from a source the layers never named, so the first one
+    // a router answers raises the toast the way a new layer does.
+    const routingKeys = routingAttrs.map((a) => a.name ?? a.nameKey ?? '');
 
     if (
       layers.every((o) => mapLayers.has(o)) &&
       esriAttribution.every((a) => esriAttributions.has(a)) &&
+      routingKeys.every((a) => routingSources.has(a)) &&
       prevNonceRef.current === nonce
     ) {
       return;
@@ -230,11 +242,16 @@ export function useAttributionInfo() {
       esriAttributions.add(a);
     }
 
+    for (const a of routingKeys) {
+      routingSources.add(a);
+    }
+
     showAttributionToast(askingCookieConsent ? undefined : 5000);
   }, [
     layers,
     nonce,
     esriAttribution,
+    routingAttrs,
     askingCookieConsent,
     showAttributionToast,
   ]);

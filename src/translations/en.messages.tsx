@@ -416,6 +416,7 @@ const messages: Messages = {
     },
     attr: {
       osmData: '©\xa0OpenStreetMap contributors',
+      fixTheMap: 'report a map error',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vector tiles from"

@@ -423,6 +423,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     attr: {
       osmData: '©\xa0sodelavci OpenStreetMap',
+      fixTheMap: 'prijavi napako na zemljevidu',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorske ploščice od"

@@ -432,6 +432,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
     attr: {
       osmData: '©\xa0OpenStreetMap közreműködők',
+      fixTheMap: 'térképhiba jelentése',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorcsempék innen:"

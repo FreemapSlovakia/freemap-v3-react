@@ -431,6 +431,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     attr: {
       osmData: '©\xa0přispěvatelé OpenStreetMap',
+      fixTheMap: 'nahlásit chybu v mapě',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorové dlaždice z"

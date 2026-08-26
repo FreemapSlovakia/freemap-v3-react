@@ -27,6 +27,7 @@ export interface AttributionDef {
   name?: string;
   nameKey?:
     | 'osmData'
+    | 'fixTheMap'
     | 'freemap'
     | 'srtm'
     | 'maptiler'
@@ -47,10 +48,32 @@ const OSM_MAP_ATTR: AttributionDef = {
   url: 'https://osm.org/',
 };
 
-const OSM_DATA_ATTR: AttributionDef = {
+export const OSM_DATA_ATTR: AttributionDef = {
   type: 'data',
   nameKey: 'osmData',
   url: 'https://osm.org/copyright',
+};
+
+/**
+ * Follows {@link OSM_DATA_ATTR} wherever it is shown as a link — an OSMF
+ * guideline, and a condition of the FOSSGIS services the OSRM profiles route
+ * through.
+ */
+export const FIXTHEMAP_ATTR: AttributionDef = {
+  type: 'data',
+  nameKey: 'fixTheMap',
+  url: 'https://www.openstreetmap.org/fixthemap',
+};
+
+/**
+ * The volunteers whose server answers the OSRM profiles. Their terms ask for the
+ * data's credit rather than their own, so this is courtesy — the GraphHopper
+ * ones are ours to run, and only these are somebody's donated time.
+ */
+export const OSRM_ROUTING_ATTR: AttributionDef = {
+  type: 'routing',
+  name: 'OSRM / FOSSGIS e.\xa0V.',
+  url: 'https://routing.openstreetmap.de/about.html',
 };
 
 const FM_ATTR: AttributionDef = {

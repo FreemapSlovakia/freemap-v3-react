@@ -61,7 +61,7 @@ export const SRTM_TOKEN = 'srtm';
  * elevation from it, which a route's profile keeps on the free tier, and weighs
  * every route by it — so a premium route, whose profile is re-read from the
  * national models, is still shaped by this one. Its open licence asks to be
- * credited, so {@link SONNY_ROUTING_ATTR} credits it beside the router too.
+ * credited, which is why a standing GraphHopper result names it as well.
  */
 export const SONNY_ATTR: AttributionDef = {
   type: 'data',
@@ -70,15 +70,6 @@ export const SONNY_ATTR: AttributionDef = {
 };
 
 export const SONNY_TOKEN = 'sonny';
-
-/**
- * The same model credited as the router's, for the map's attribution list: it
- * shapes every GraphHopper route, not only the profiles that display its values.
- */
-export const SONNY_ROUTING_ATTR: AttributionDef = {
-  ...SONNY_ATTR,
-  type: 'routing',
-};
 
 /**
  * The models that aren't scoped to a country, by the token they're reported
