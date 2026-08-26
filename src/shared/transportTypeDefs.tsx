@@ -13,6 +13,7 @@ export const TransportTypeSchema = z.enum([
   'bike-osrm',
   'car-osrm',
   'foot-osrm',
+  'bike',
   'car',
   'car4wd',
   'foot',
@@ -38,7 +39,6 @@ export const TransportTypeCompatSchema = z
           bicycle_touring: 'racingbike',
           nordic: 'hiking',
           ski: 'hiking',
-          bike: 'bike-osrm',
           'car-osm': 'car-osrm',
           'bike-osm': 'bike-osrm',
           'foot-osm': 'foot-osrm',
@@ -128,6 +128,12 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaMotorcycle />,
     profile: 'motorcycle',
+  },
+  bike: {
+    msgKey: 'bike',
+    api: 'gh',
+    icon: <FaBicycle />,
+    profile: 'bike',
   },
   racingbike: {
     msgKey: 'racingbike',

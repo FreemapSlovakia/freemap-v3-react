@@ -722,7 +722,9 @@ function fromGraphhopper(
         },
         name: instruction.text,
         mode:
-          transportType === 'mtb' || transportType === 'racingbike'
+          transportType === 'bike' ||
+          transportType === 'mtb' ||
+          transportType === 'racingbike'
             ? gob.some((seg) => start >= seg[0] && end <= seg[1])
               ? 'pushing bike' // TODO can it happen that not whole interval has the same GOB value?
               : 'cycling'

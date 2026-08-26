@@ -25,6 +25,7 @@ export function pathDetailKeys(transport: TransportType): string[] {
 
       break;
 
+    case 'bike':
     case 'mtb':
     case 'racingbike':
       keys.push('mtb_rating');

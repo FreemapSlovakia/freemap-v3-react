@@ -230,6 +230,7 @@ Supported vehicles (the transport dropdown also offers "Straight line" for fully
   - Car
   - Car (4WD)
   - Motorcycle
+  - Bicycle
   - Racing bike
   - Mountain bike
   - Walking
@@ -238,6 +239,8 @@ Supported vehicles (the transport dropdown also offers "Straight line" for fully
   - Car
   - Bicycle
   - Walking
+
+Bicycle, Walking and Car appear under both engines. The GraphHopper ones are the self-hosted router — weighted by the terrain model, so they avoid climbs, and the only ones that offer isochrones, round trips and the colorize modes that read the router's own data.
 
 Routing modes:
 
