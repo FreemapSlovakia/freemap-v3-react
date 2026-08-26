@@ -16,6 +16,9 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Počet delení',
     timeLimit: 'Časový limit',
     distanceLimit: 'Limit vzdialenosti',
+    reverseFlow: 'Cesta do bodu',
+    reverseFlowHint:
+      'Oblasti potom pokrývajú, odkiaľ sa dá do tohto bodu doraziť; bez zaškrtnutia to, kam sa z neho dá dostať. Rozdiel robia jednosmerky a zákazy odbočenia.',
   },
   milestones: 'Kilometrovník',
   recompute: 'Prepočítať trasu',

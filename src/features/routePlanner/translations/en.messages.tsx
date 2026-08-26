@@ -15,6 +15,9 @@ const en: RoutePlannerMessages = {
     buckets: 'Buckets',
     timeLimit: 'Time limit',
     distanceLimit: 'Distance limit',
+    reverseFlow: 'Travel to the point',
+    reverseFlowHint:
+      'The rings then cover where a journey to this point can start; unchecked, where a journey from it can end. One-way streets and turn restrictions tell the two apart.',
   },
   milestones: 'Milestones',
   recompute: 'Recompute route',

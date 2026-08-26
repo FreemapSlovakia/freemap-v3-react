@@ -26,6 +26,7 @@ import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
@@ -293,6 +294,21 @@ function IsochroneSettings() {
     ),
   );
 
+  const reverseFlow = useAppSelector(
+    (state) => state.routePlanner.isochroneParams.reverseFlow,
+  );
+
+  const handleReverseFlowChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      dispatch(
+        routePlannerSetIsochroneParams({
+          reverseFlow: e.currentTarget.checked,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
   const m = useMessages();
 
   const rpm = useRoutePlannerMessages();
@@ -364,6 +380,18 @@ function IsochroneSettings() {
             step={1}
             max={5}
           />
+        </Form.Group>
+
+        <Form.Group className="mt-2 d-flex">
+          <Form.Check
+            id="isoReverseFlow"
+            type="checkbox"
+            checked={reverseFlow}
+            label={ghParams?.reverseFlow}
+            onChange={handleReverseFlowChange}
+          />
+
+          <HintMark hint={ghParams?.reverseFlowHint} />
         </Form.Group>
       </fieldset>
     </>

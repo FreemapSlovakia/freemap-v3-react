@@ -16,6 +16,9 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Število razdelkov',
     timeLimit: 'Časovna omejitev',
     distanceLimit: 'Omejitev razdalje',
+    reverseFlow: 'Pot do točke',
+    reverseFlowHint:
+      'Območja tedaj kažejo, od kod je mogoče priti do te točke; brez kljukice pa, kam je mogoče priti z nje. Razliko delajo enosmerne ceste in prepovedi zavijanja.',
   },
   milestones: 'Kilometrski kažipoti',
   recompute: 'Preračunaj pot',

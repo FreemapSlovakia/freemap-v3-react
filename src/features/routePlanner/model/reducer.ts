@@ -128,6 +128,7 @@ export const cleanState: RoutePlannerCleanState = {
     distanceLimit: 0,
     timeLimit: 600,
     buckets: 1,
+    reverseFlow: false,
   },
   ...clearResult,
 };

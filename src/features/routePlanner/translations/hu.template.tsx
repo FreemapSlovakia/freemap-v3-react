@@ -13,6 +13,9 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Vödrök',
     timeLimit: 'Időkorlát',
     distanceLimit: 'Távolságkorlát',
+    reverseFlow: 'Utazás a pontba',
+    reverseFlowHint:
+      'A gyűrűk ekkor azt mutatják, honnan érhető el ez a pont; pipa nélkül azt, hova lehet innen eljutni. A különbséget az egyirányú utcák és a kanyarodási tilalmak adják.',
   },
   milestones: 'Távolságszelvények',
   recompute: 'Útvonal újraszámítása',

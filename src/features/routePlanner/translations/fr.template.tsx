@@ -16,6 +16,9 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Intervalles',
     timeLimit: 'Limite de temps',
     distanceLimit: 'Limite de distance',
+    reverseFlow: 'Trajet vers le point',
+    reverseFlowHint:
+      'Les zones indiquent alors d’où l’on peut atteindre ce point ; sans la case cochée, jusqu’où l’on peut aller depuis celui-ci. Les sens uniques et les interdictions de tourner font la différence.',
   },
   milestones: 'Bornes kilométriques',
   recompute: 'Recalculer l’itinéraire',

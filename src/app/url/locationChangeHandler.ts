@@ -365,7 +365,9 @@ export function handleLocationChange(store: MyStore): void {
         String(isochroneParams.buckets) !== (query['iso-buckets'] ?? '1') ||
         String(isochroneParams.distanceLimit) !==
           (query['iso-distance-limit'] ?? '0') ||
-        String(isochroneParams.timeLimit) !== (query['iso-time-limit'] ?? '600')
+        String(isochroneParams.timeLimit) !==
+          (query['iso-time-limit'] ?? '600') ||
+        isochroneParams.reverseFlow !== (query['iso-reverse'] === '1')
       ) {
         const routeMode = query['route-mode'];
 
@@ -389,6 +391,7 @@ export function handleLocationChange(store: MyStore): void {
               distanceLimit: Number(query['iso-distance-limit']) || 0,
               timeLimit: Number(query['iso-time-limit']) || 600,
               buckets: Number(query['iso-buckets']) || 1,
+              reverseFlow: query['iso-reverse'] === '1',
             },
             hash: String(query['route-params-hash']),
             deferRouting: restore !== null,

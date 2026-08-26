@@ -13,6 +13,9 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Segmenty',
     timeLimit: 'Limit czasu',
     distanceLimit: 'Limit dystansu',
+    reverseFlow: 'Podróż do punktu',
+    reverseFlowHint:
+      'Obszary pokazują wtedy, skąd można dotrzeć do tego punktu; bez zaznaczenia — dokąd można z niego dojechać. Różnicę robią jednokierunkowe ulice i zakazy skrętu.',
   },
   point: {
     pick: 'Wybierz na mapie',

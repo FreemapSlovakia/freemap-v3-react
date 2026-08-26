@@ -233,7 +233,12 @@ describe('fingerprintDocument — a saved map matches its own document', () => {
         points: [{ lat: 48, lon: 17 }],
         transportType: 'car',
         mode: 'isochrone',
-        isochroneParams: { buckets: 4, distanceLimit: 0, timeLimit: 1800 },
+        isochroneParams: {
+          buckets: 4,
+          distanceLimit: 0,
+          timeLimit: 1800,
+          reverseFlow: true,
+        },
       }),
     });
   });

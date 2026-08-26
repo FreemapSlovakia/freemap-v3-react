@@ -119,6 +119,10 @@ export function getMapContentParts(state: RootState): QueryPart[] {
       } else {
         parts.push(['iso-time-limit', routePlanner.isochroneParams.timeLimit]);
       }
+
+      if (routePlanner.isochroneParams.reverseFlow) {
+        parts.push(['iso-reverse', 1]);
+      }
     }
   }
 

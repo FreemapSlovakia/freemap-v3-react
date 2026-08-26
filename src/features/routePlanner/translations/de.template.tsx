@@ -13,6 +13,9 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Intervalle',
     timeLimit: 'Zeitlimit',
     distanceLimit: 'Entfernungslimit',
+    reverseFlow: 'Fahrt zum Punkt',
+    reverseFlowHint:
+      'Die Ringe zeigen dann, von wo aus dieser Punkt erreichbar ist; ohne Haken, wohin man von ihm aus kommt. Einbahnstraßen und Abbiegeverbote machen den Unterschied.',
   },
   point: {
     pick: 'Auf der Karte auswählen',

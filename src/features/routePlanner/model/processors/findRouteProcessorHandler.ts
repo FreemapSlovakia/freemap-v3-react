@@ -217,6 +217,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
           time_limit: isochroneParams.timeLimit,
           distance_limit: isochroneParams.distanceLimit || -1,
+          reverse_flow: isochroneParams.reverseFlow,
           point: `${points[0]!.lat},${points[0]!.lon}`,
         }),
       expectedStatus: 200,

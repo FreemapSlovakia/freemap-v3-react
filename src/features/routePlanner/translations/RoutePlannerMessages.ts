@@ -17,6 +17,8 @@ export type RoutePlannerMessages = {
     buckets: string;
     timeLimit: string;
     distanceLimit: string;
+    reverseFlow: string;
+    reverseFlowHint: string;
   };
   milestones: string;
   /** Discards the route a saved map carried and asks the router again. */

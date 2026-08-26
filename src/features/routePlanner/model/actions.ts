@@ -49,6 +49,8 @@ export type IsochroneParams = {
   buckets: number;
   distanceLimit: number;
   timeLimit: number;
+  /** Reach the point rather than set out from it — the router's `reverse_flow`. */
+  reverseFlow: boolean;
 };
 
 // The route result is schema-first: a saved map document carries it, so the

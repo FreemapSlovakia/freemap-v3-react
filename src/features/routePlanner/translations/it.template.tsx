@@ -13,6 +13,9 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Buckets',
     timeLimit: 'Limite tempo',
     distanceLimit: 'Limite distanza',
+    reverseFlow: 'Viaggio verso il punto',
+    reverseFlowHint:
+      'Le aree mostrano allora da dove si può raggiungere questo punto; senza spunta, dove si può arrivare partendo da esso. La differenza la fanno sensi unici e divieti di svolta.',
   },
   milestones: 'Marcatori',
   recompute: 'Ricalcola il percorso',

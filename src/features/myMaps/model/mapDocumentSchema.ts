@@ -60,6 +60,9 @@ const RoutePlannerMapDataCompatSchema = z.preprocess(
         buckets: z.number(),
         distanceLimit: z.number(),
         timeLimit: z.number(),
+        // Defaulted, not optional: a document written before reverse isochrones
+        // has to read back as the outward one it was saved as.
+        reverseFlow: z.boolean().default(false),
       })
       .optional(),
     // Optional, and only ever read as a whole: a document written before routes
