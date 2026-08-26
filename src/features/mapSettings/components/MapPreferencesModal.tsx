@@ -11,6 +11,7 @@ import { ensureCompassPermission } from '@features/location/ensureCompassPermiss
 import { locationSettingsInitialState } from '@features/location/model/settingsReducer.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -241,7 +242,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group className="mt-3">
-            <Form.Label className="d-block">{m?.mapLayers.zoomSnap}</Form.Label>
+            <Form.Label className="d-block">
+              {m?.mapLayers.zoomSnap}
+              <HintMark hint={m?.mapLayers.zoomSnapHelp} />
+            </Form.Label>
 
             <ToggleButtonGroup
               type="radio"
@@ -260,15 +264,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
-
-            <Form.Text muted className="d-block">
-              {m?.mapLayers.zoomSnapHelp}
-            </Form.Text>
           </Form.Group>
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
               {m?.mapLayers.resolutionScale}
+              <HintMark hint={m?.mapLayers.resolutionScaleHelp} />
             </Form.Label>
 
             <ToggleButtonGroup
@@ -292,15 +293,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
-
-            <Form.Text muted className="d-block">
-              {m?.mapLayers.resolutionScaleHelp}
-            </Form.Text>
           </Form.Group>
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
               {m?.mapLayers.featureScale}
+              <HintMark hint={m?.mapLayers.featureScaleHelp} />
             </Form.Label>
 
             <ToggleButtonGroup
@@ -320,14 +318,13 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
-
-            <Form.Text muted className="d-block">
-              {m?.mapLayers.featureScaleHelp}
-            </Form.Text>
           </Form.Group>
 
           <Form.Group className="mt-3">
-            <Form.Label className="d-block">{m?.main.headingSource}</Form.Label>
+            <Form.Label className="d-block">
+              {m?.main.headingSource}
+              <HintMark hint={m?.main.headingSourceHelp} />
+            </Form.Label>
 
             <ToggleButtonGroup
               type="radio"
@@ -358,13 +355,9 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                   </ToggleButton>
                 ))}
             </ToggleButtonGroup>
-
-            <Form.Text muted className="d-block">
-              {m?.main.headingSourceHelp}
-            </Form.Text>
           </Form.Group>
 
-          <Form.Group className="mt-3">
+          <Form.Group className="mt-3 d-flex align-items-center gap-1">
             <Form.Check
               id="chk-bearing-line"
               label={m?.main.bearingLine}
@@ -372,9 +365,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               onChange={handleShowBearingLineChange}
             />
 
-            <Form.Text muted className="d-block">
-              {m?.main.bearingLineHelp}
-            </Form.Text>
+            <HintMark hint={m?.main.bearingLineHelp} />
           </Form.Group>
         </Modal.Body>
 

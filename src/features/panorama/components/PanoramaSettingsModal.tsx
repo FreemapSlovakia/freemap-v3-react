@@ -3,6 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
@@ -258,6 +259,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
           <Form.Group className="mb-3">
             <Form.Label htmlFor="fm-panorama-eye">
               {gm?.general.eyeHeight}
+              <HintMark hint={gm?.general.eyeHeightHint} />
             </Form.Label>
 
             <InputGroup>
@@ -279,8 +281,6 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                   is the sam */}
               <InputGroup.Text>m</InputGroup.Text>
             </InputGroup>
-
-            <Form.Text>{gm?.general.eyeHeightHint}</Form.Text>
           </Form.Group>
 
           {/* The angles themselves, not another preset list — picking a preset
@@ -293,7 +293,10 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                 setting, written as its numbers. The toolbar item that opens
                 this modal is the one thing "Exact angles" names, and that is a
                 door rather than a setting. */}
-            <Form.Label>{m?.tilt.label}</Form.Label>
+            <Form.Label>
+              {m?.tilt.label}
+              <HintMark hint={m?.settings.tiltHint} />
+            </Form.Label>
 
             {/* An en dash rather than a hyphen: the lower angle is normally
                 negative, and a hyphen beside a minus sign reads as arithmetic. */}
@@ -324,8 +327,6 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
 
               <InputGroup.Text>°</InputGroup.Text>
             </InputGroup>
-
-            <Form.Text>{m?.settings.tiltHint}</Form.Text>
           </Form.Group>
 
           {/* Beside the band because it moves it: the horizon rises by exactly
@@ -440,7 +441,10 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               the picker's own Solid/Gradient tabs say which, and its swatches
               are ready-made ramps. */}
           <Form.Group className={gradient ? 'mb-3' : undefined}>
-            <Form.Label className="mb-0">{m?.settings.ground}</Form.Label>
+            <Form.Label className="mb-0">
+              {m?.settings.ground}
+              <HintMark hint={m?.settings.groundHint} />
+            </Form.Label>
 
             <div>
               <PanoramaGroundPicker
@@ -454,8 +458,6 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                 }
               />
             </div>
-
-            <Form.Text>{m?.settings.groundHint}</Form.Text>
           </Form.Group>
 
           {gradient && (
@@ -482,7 +484,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-3">
+              <Form.Group className="mb-3 d-flex align-items-center gap-1">
                 <Form.Check
                   id="fm-panorama-gradient-sky"
                   type="checkbox"
@@ -493,13 +495,13 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                   }
                 />
 
-                <Form.Text>{m?.settings.gradientSkyHint}</Form.Text>
+                <HintMark hint={m?.settings.gradientSkyHint} />
               </Form.Group>
 
               {/* Nothing to decide while the far end is measured from the
                   terrain in view: what it would drop is the tail past the
                   percentile, which nobody chose to see. */}
-              <Form.Group>
+              <Form.Group className="d-flex align-items-center gap-1">
                 <Form.Check
                   id="fm-panorama-gradient-clip"
                   type="checkbox"
@@ -511,7 +513,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                   }
                 />
 
-                <Form.Text>{m?.settings.gradientClipHint}</Form.Text>
+                <HintMark hint={m?.settings.gradientClipHint} />
               </Form.Group>
             </>
           )}

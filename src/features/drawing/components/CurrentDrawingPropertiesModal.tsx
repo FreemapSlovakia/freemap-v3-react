@@ -10,6 +10,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COLORS } from '@shared/colors.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
+import { PlaceholderHint } from '@shared/components/PlaceholderHint.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -477,12 +478,16 @@ export default function CurrentDrawingPropertiesModal({
 
             <Form.Text muted>
               {dm?.edit.hint}{' '}
-              {drawType === 'draw-points'
-                ? dm?.edit.pointKeys
-                : editedType === 'polygon'
-                  ? dm?.edit.polygonKeys
-                  : dm?.edit.lineKeys}{' '}
-              {dm?.edit.optionalKeys}
+              <PlaceholderHint
+                text={
+                  drawType === 'draw-points'
+                    ? dm?.edit.pointKeys
+                    : editedType === 'polygon'
+                      ? dm?.edit.polygonKeys
+                      : dm?.edit.lineKeys
+                }
+              />{' '}
+              <PlaceholderHint text={dm?.edit.optionalKeys} />
             </Form.Text>
           </Form.Group>
 

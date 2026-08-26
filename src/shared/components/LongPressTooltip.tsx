@@ -49,6 +49,11 @@ type Props = {
   delay?: number;
   breakpoint?: Breakpoint;
   kbd?: string;
+  /**
+   * Opens on a plain click or tap as well. Only for a mark that does nothing
+   * else — on a control the same tap would activate it.
+   */
+  toggleOnClick?: boolean;
   children: (props: {
     props: TooltipTargetProps;
     label: ReactNode;
@@ -62,6 +67,7 @@ export function LongPressTooltip({
   kbd,
   delay = 500,
   breakpoint,
+  toggleOnClick,
   children,
 }: Props) {
   const preventClickRef = useRef(false);
@@ -70,9 +76,17 @@ export function LongPressTooltip({
 
   const [target, setTarget] = useState<HTMLElement | null>(null);
 
+  // Stable, or React detaches and re-attaches the ref on every render.
+  const attachTarget = useCallback((el: HTMLElement | null) => {
+    setTarget(el);
+  }, []);
+
   // Whether the pointer that opened the tooltip was a finger or a stylus, which
   // covers the control it points at and so needs the tooltip pushed clear of it.
   const [coarse, setCoarse] = useState(false);
+
+  // The same, readable from a handler of the gesture that set it.
+  const coarseRef = useRef(false);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -86,7 +100,11 @@ export function LongPressTooltip({
 
   const handleStart = useCallback(
     (e: PointerEvent) => {
-      setCoarse(e.pointerType === 'touch' || e.pointerType === 'pen');
+      const isCoarse = e.pointerType === 'touch' || e.pointerType === 'pen';
+
+      coarseRef.current = isCoarse;
+
+      setCoarse(isCoarse);
 
       if ((!labelHidden && name == null) || timeoutRef.current) {
         return;
@@ -114,17 +132,26 @@ export function LongPressTooltip({
       preventClickRef.current = false;
     });
 
-    setShow(false);
-  }, []);
-
-  const handleClickCapture = useCallback((e: MouseEvent) => {
-    if (preventClickRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-    } else {
+    // A finger's pointerleave is the lift, not a move away, and it lands before
+    // the click — closing here would leave the tap below with nothing to close.
+    if (!(toggleOnClick && coarseRef.current)) {
       setShow(false);
     }
-  }, []);
+  }, [toggleOnClick]);
+
+  const handleClickCapture = useCallback(
+    (e: MouseEvent) => {
+      if (preventClickRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+      } else if (toggleOnClick) {
+        setShow((show) => !show);
+      } else {
+        setShow(false);
+      }
+    },
+    [toggleOnClick],
+  );
 
   const handleContextMenuCapture = useCallback((e: MouseEvent) => {
     e.preventDefault();
@@ -176,9 +203,7 @@ export function LongPressTooltip({
     <>
       {children({
         props: {
-          ref: (el) => {
-            setTarget(el);
-          },
+          ref: attachTarget,
           onPointerEnter: handleStart,
           onPointerLeave: handleClear,
           onClickCapture: handleClickCapture,
@@ -202,6 +227,14 @@ export function LongPressTooltip({
           flip
           offset={offset}
           popperConfig={popperConfig}
+          rootClose={toggleOnClick}
+          // The click on the mark itself reaches here too, after the capture
+          // handler above has already toggled it.
+          onHide={(e) => {
+            if (!target.contains(e.target as Node)) {
+              setShow(false);
+            }
+          }}
         >
           {(props) => (
             <Tooltip {...props}>

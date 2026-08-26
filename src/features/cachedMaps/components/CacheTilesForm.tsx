@@ -6,6 +6,7 @@ import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVis
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
@@ -564,7 +565,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="downloadArea">
-          <Form.Label>{ome?.downloadArea}</Form.Label>
+          <Form.Label className="d-block">{ome?.downloadArea}</Form.Label>
 
           <MapAreaToggle
             className="mb-3"
@@ -654,14 +655,13 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
             )
           : scales && (
               <Form.Group controlId="scale" className="mb-3">
-                <Form.Label>{ome?.scale}</Form.Label>
+                <Form.Label className="d-block">{ome?.scale}</Form.Label>
 
                 <ToggleButtonGroup
                   type="radio"
                   name="scale"
                   value={scale}
                   onChange={setScale}
-                  className="d-flex"
                 >
                   {scales.map((s) => (
                     <ToggleButton
@@ -677,7 +677,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
               </Form.Group>
             )}
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3 d-flex align-items-center gap-1">
           <Form.Check
             id="networkFallback"
             type="checkbox"
@@ -686,7 +686,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
             onChange={(e) => setNetworkFallback(e.currentTarget.checked)}
           />
 
-          <Form.Text>{cm?.networkFallbackHint}</Form.Text>
+          <HintMark hint={cm?.networkFallbackHint} />
         </Form.Group>
 
         <Form.Group>

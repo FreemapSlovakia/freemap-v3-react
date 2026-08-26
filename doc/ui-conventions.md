@@ -7,6 +7,7 @@ Covered here: [button variants](#button-variants),
 [single vs. multiple selection](#single-vs-multiple-selection),
 [tokens](#tokens-come-from-bootstrap), [icon sizes](#icon-sizes),
 [touch targets](#touch-targets-and-the-marker-primitive),
+[where a hint goes](#where-a-hint-goes),
 [spacing](#spacing-the-container-decides), [toolbar outlines](#toolbar-outlines).
 
 ## Button variants
@@ -79,11 +80,19 @@ out, and the label lengths decide which:
 Nothing here wraps a joined group into rows: Bootstrap rounds corners per group,
 not per row, so every wrapped row after the first comes out square-cornered.
 
-`MapAreaToggle` takes a third route — `d-flex` plus `fm-ellipsis` on each
-button, so the two options split the width and truncate. It reads well because
-there are exactly two of them and each stays recognizable clipped. Treat it as
-the exception: it costs label text, and with more options, or options that
-differ only near the end, it stops being readable.
+`MapAreaToggle` takes a third route — `fm-ellipsis` on each button, so where the
+room runs out the two options truncate instead of pushing the surface wider. It
+reads well because there are exactly two of them and each stays recognizable
+clipped. Treat it as the exception: it costs label text, and with more options,
+or options that differ only near the end, it stops being readable.
+
+A joined group is `inline-flex`, so it takes its content's width and no more —
+which is what a group of short options (`1×`, `2×`, `4×`) should do. Don't add
+`d-flex` to stretch one across the surface: `.btn-group > .btn` is
+`flex: 1 1 auto`, so that stretches every option too, and a two-character label
+in a full-width button reads as a mistake. A `<Form.Label>` above it then needs
+`d-block` of its own, since `label` is `inline-block` and the group no longer
+forces the break.
 
 ## Tokens come from Bootstrap
 
@@ -240,6 +249,27 @@ read without opening a stylesheet:
 | A taller target on a phrase in prose | `py-2` — vertical padding on an inline box doesn't move the line |
 | A target on a standalone icon link | `p-2 m-n2`, with the row's `gap-3` so the targets meet rather than overlap |
 | A mark where the sentence already puts a space after it | `me-n1 position-relative` — reach over that space instead of adding a second one. `position-relative` is the point: inline content that follows paints over an in-flow box, so without it the gap looks right but answers to the sentence rather than to the mark (see `UserChip`). |
+
+## Where a hint goes
+
+A sentence explaining a setting goes behind a `HintMark` — the `?` beside the
+control — not into a `Form.Text` under it. A panel of eight settings each
+carrying its own paragraph is a wall of prose: the labels stop standing out, and
+the footer gets pushed off a phone screen. The `?` sits **inside** the
+`<Form.Label>`, like any other mark; beside a `Form.Check` it goes outside the
+`<label>` in a `d-flex align-items-center gap-1` row, or tapping the explanation
+would toggle the setting.
+
+`Form.Text` stays for what a `?` would hide at the moment it is needed:
+
+- **Conditional or state text** — why a control is disabled, what the current
+  filter excludes, a warning about what won't be exported.
+- **A consequence at the point of entry** — what happens to the email address
+  being typed into the field above it.
+- **A reference consulted while typing** — the placeholder keys a label may
+  carry. A tooltip closes as soon as the field is touched.
+- **A description of the current value**, which changes with the selection — a
+  licence's terms, not a fixed explanation of the picker.
 
 ## Spacing: the container decides
 

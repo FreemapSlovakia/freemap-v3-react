@@ -13,6 +13,7 @@ import {
   FloatingWindowControls,
   useFullscreenAction,
 } from '@shared/components/FloatingWindowControls.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
@@ -390,7 +391,7 @@ export function PanoramaControls({
         {/* Beside the count, because it is the other half of the same
             question: a second line makes every label taller, so fewer of them
             fit the picture. */}
-        <div>
+        <div className="d-flex align-items-center gap-1">
           <Form.Check
             id="fm-panorama-label-ele"
             type="checkbox"
@@ -403,7 +404,7 @@ export function PanoramaControls({
             }
           />
 
-          <Form.Text className="mt-0">{m?.labels.showEleHint}</Form.Text>
+          <HintMark hint={m?.labels.showEleHint} />
         </div>
 
         <LabeledSlider
@@ -489,7 +490,7 @@ export function PanoramaControls({
             two above and instant like them, so it belongs here rather than
             beside the lift itself, which costs a render. */}
         {(render?.depthLift ?? 0) > 0 && (
-          <div>
+          <div className="d-flex align-items-center gap-1">
             <Form.Check
               id="fm-panorama-revealed"
               type="checkbox"
@@ -504,7 +505,7 @@ export function PanoramaControls({
               }
             />
 
-            <Form.Text className="mt-0">{m?.labels.showRevealedHint}</Form.Text>
+            <HintMark hint={m?.labels.showRevealedHint} />
           </div>
         )}
 

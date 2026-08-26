@@ -1,6 +1,8 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { HintMark } from '@shared/components/HintMark.js';
+import { PlaceholderHint } from '@shared/components/PlaceholderHint.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback } from 'react';
@@ -74,7 +76,9 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
             }
           />
 
-          <Form.Text muted>{tm?.settings.lineHint}</Form.Text>
+          <Form.Text muted>
+            <PlaceholderHint text={tm?.settings.lineHint} />
+          </Form.Text>
         </Form.Group>
 
         <p className="mt-3 mb-1">{tm?.settings.inscriptions}</p>
@@ -104,11 +108,14 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
           </Form.Group>
         ))}
 
-        <Form.Text muted>{tm?.settings.placeholders}</Form.Text>
+        <Form.Text muted>
+          <PlaceholderHint text={tm?.settings.placeholders} />
+        </Form.Text>
 
         <Form.Group controlId="toposcope-scale" className="mt-3">
           <Form.Label>
             {tm?.settings.scale}: {settings.scale}&nbsp;%
+            <HintMark hint={tm?.settings.scaleHint} />
           </Form.Label>
 
           <Form.Range
@@ -120,8 +127,6 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
               dispatch(toposcopeSet({ scale: e.currentTarget.valueAsNumber }))
             }
           />
-
-          <Form.Text muted>{tm?.settings.scaleHint}</Form.Text>
         </Form.Group>
 
         <Form.Group controlId="toposcope-outer-circle" className="mt-3">

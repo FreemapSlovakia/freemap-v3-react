@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import type { ReactElement } from 'react';
 import { ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { FaDrawPolygon, FaEye } from 'react-icons/fa';
@@ -26,7 +25,7 @@ export function MapAreaToggle({
       type="radio"
       name="mapArea"
       value={area}
-      className={clsx('d-flex', className)}
+      className={className}
     >
       <ToggleButton
         id="mapArea-visible"

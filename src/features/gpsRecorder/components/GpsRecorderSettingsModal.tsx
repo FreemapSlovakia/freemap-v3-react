@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
@@ -168,7 +169,10 @@ export default function GpsRecorderSettingsModal({
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>{grm?.settingsModal.source}</Form.Label>
+            <Form.Label>
+              {grm?.settingsModal.source}
+              <HintMark hint={grm?.settingsModal.sourceHint} />
+            </Form.Label>
 
             <Form.Select
               value={draft.source}
@@ -182,8 +186,6 @@ export default function GpsRecorderSettingsModal({
 
               <option value="fused">{grm?.settingsModal.sourceFused}</option>
             </Form.Select>
-
-            <Form.Text>{grm?.settingsModal.sourceHint}</Form.Text>
           </Form.Group>
 
           {/* Only the fused provider has modes to trade off, and the recorder
@@ -221,7 +223,10 @@ export default function GpsRecorderSettingsModal({
           <h6>{grm?.settingsModal.displaySection}</h6>
 
           <Form.Group className="mb-3">
-            <Form.Label>{grm?.settingsModal.splitGapS}</Form.Label>
+            <Form.Label>
+              {grm?.settingsModal.splitGapS}
+              <HintMark hint={grm?.settingsModal.splitGapHint} />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -245,11 +250,9 @@ export default function GpsRecorderSettingsModal({
 
               <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
             </InputGroup>
-
-            <Form.Text>{grm?.settingsModal.splitGapHint}</Form.Text>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-3 d-flex align-items-center gap-1">
             <Form.Check
               id="chkGpsRecorderFeedLocation"
               type="checkbox"
@@ -258,7 +261,7 @@ export default function GpsRecorderSettingsModal({
               onChange={(e) => set({ feedLocation: e.currentTarget.checked })}
             />
 
-            <Form.Text>{grm?.settingsModal.feedLocationHint}</Form.Text>
+            <HintMark hint={grm?.settingsModal.feedLocationHint} />
           </Form.Group>
 
           <Form.Check

@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
@@ -57,6 +58,7 @@ function WindowSlider({
     <Form.Group controlId={id} className="mt-3">
       <Form.Label>
         {label} <span className="text-body-secondary">{display}</span>
+        <HintMark hint={help} />
       </Form.Label>
 
       <Form.Range
@@ -68,10 +70,6 @@ function WindowSlider({
           onChange(e.currentTarget.value);
         }}
       />
-
-      <Form.Text muted className="d-block">
-        {help}
-      </Form.Text>
     </Form.Group>
   );
 }

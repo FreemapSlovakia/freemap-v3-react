@@ -1,3 +1,4 @@
+import { HintMark } from '@shared/components/HintMark.js';
 import type { ReactElement, ReactNode } from 'react';
 import { Form } from 'react-bootstrap';
 
@@ -8,7 +9,7 @@ type Props = {
   label: ReactNode;
   /** Says where it stands, beside the name. */
   valueLabel: ReactNode;
-  /** What the setting means, for one whose name cannot carry it. */
+  /** What the setting means, behind the name, for one whose name can't carry it. */
   hint?: ReactNode;
   min: number;
   max: number;
@@ -40,9 +41,10 @@ export function LabeledSlider({
       <div className="d-flex justify-content-between align-items-baseline gap-2">
         <Form.Label className="mb-0" htmlFor={id}>
           {label}
+          <HintMark hint={hint} />
         </Form.Label>
 
-        <span className="fw-semibold">{valueLabel}</span>
+        <span className="fw-semibold text-end">{valueLabel}</span>
       </div>
 
       <Form.Range
@@ -53,8 +55,6 @@ export function LabeledSlider({
         value={value}
         onChange={(e) => onChange(Number(e.currentTarget.value))}
       />
-
-      {hint && <Form.Text className="mt-0">{hint}</Form.Text>}
     </div>
   );
 }

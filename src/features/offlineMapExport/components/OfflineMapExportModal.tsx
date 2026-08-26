@@ -431,7 +431,7 @@ export default function OfflineMapExportModal({
           </Form.Group>
 
           <Form.Group controlId="downloadArea">
-            <Form.Label>{ome?.downloadArea}</Form.Label>
+            <Form.Label className="d-block">{ome?.downloadArea}</Form.Label>
 
             <MapAreaToggle
               className="mb-3"
@@ -524,14 +524,13 @@ export default function OfflineMapExportModal({
 
           {mapDef?.extraScales && (
             <Form.Group controlId="scale" className="mb-3">
-              <Form.Label>{ome?.scale}</Form.Label>
+              <Form.Label className="d-block">{ome?.scale}</Form.Label>
 
               <ToggleButtonGroup
                 type="radio"
                 name="scale"
                 value={scale}
                 onChange={setScale}
-                className="d-flex"
               >
                 {[1, ...mapDef.extraScales].map((scale) => (
                   <ToggleButton

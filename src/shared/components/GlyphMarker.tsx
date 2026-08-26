@@ -38,6 +38,8 @@ type Props = Omit<HTMLAttributes<HTMLElement>, 'children' | 'color'> & {
    * own. Set `pointer` for a mark acted on by its container's handler instead.
    */
   cursor?: 'help' | 'pointer';
+  /** Opens the hint on a plain click or tap too — see `LongPressTooltip`. */
+  toggleOnClick?: boolean;
 };
 
 const sizeClass = { sm: 'fm-icon-sm', md: 'fm-icon', lg: 'fm-icon-lg' };
@@ -62,6 +64,7 @@ export function GlyphMarker({
   href,
   bare,
   cursor,
+  toggleOnClick,
   className,
   onClick,
   onClickCapture,
@@ -102,7 +105,7 @@ export function GlyphMarker({
   }
 
   return (
-    <LongPressTooltip label={hint}>
+    <LongPressTooltip label={hint} toggleOnClick={toggleOnClick}>
       {({ props }) => {
         const shared = {
           ...rest,

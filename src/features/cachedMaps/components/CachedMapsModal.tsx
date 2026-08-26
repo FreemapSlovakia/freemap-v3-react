@@ -23,12 +23,16 @@ export default function CachedMapsModal({ show }: Props): ReactElement {
     (state) => state.mapArea.selecting !== null,
   );
 
+  // a map deleted while its edit form was open falls back to the list
+  const list = view === 'list' || (view === 'edit' && !editing);
+
   return (
     <Modal
       scrollable
       show={show}
       onHide={() => dispatch(setActiveModal(null))}
-      size="lg"
+      // Only the list needs the width; the form is a single column of fields.
+      size={list ? 'lg' : undefined}
       contentClassName="bg-body-tertiary"
       className={selectingArea ? 'd-none' : undefined}
       backdropClassName={selectingArea ? 'd-none' : undefined}
@@ -36,12 +40,7 @@ export default function CachedMapsModal({ show }: Props): ReactElement {
       // would take focus away from its search field.
       enforceFocus={false}
     >
-      {/* a map deleted while its edit form was open falls back to the list */}
-      {view === 'list' || (view === 'edit' && !editing) ? (
-        <CachedMapsList />
-      ) : (
-        <CacheTilesForm editing={editing} />
-      )}
+      {list ? <CachedMapsList /> : <CacheTilesForm editing={editing} />}
     </Modal>
   );
 }

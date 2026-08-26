@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBreakpointMatches } from '@shared/breakpoints.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
@@ -647,7 +648,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           )}
 
           {model.technology === 'wms' && (
-            <div className="mt-3">
+            <div className="mt-3 d-flex align-items-center gap-1">
               <Form.Check
                 id="chk-tiled"
                 label={m?.mapLayers.tiled}
@@ -655,7 +656,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
                 onChange={handlers.tiled}
               />
 
-              <Form.Text>{m?.mapLayers.tiledHelp}</Form.Text>
+              <HintMark hint={m?.mapLayers.tiledHelp} />
             </div>
           )}
         </>

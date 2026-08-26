@@ -35,15 +35,14 @@ export function SliderDropdown({
       autoClose="outside"
       show={show}
       onToggle={(next, meta) => {
-        // A colour picker's popover renders into <body> so it isn't clipped by
-        // the menu, which makes a click inside it read as a click outside —
-        // and the menu holding the swatch would close as the picker opened.
-        // Only that case is ignored; every other way of closing still works.
+        // An overlay opened from inside the menu — a colour picker's popover, a
+        // hint's tooltip — renders into <body>, so a click in it reads as a
+        // click outside and would close the menu that opened it.
         if (
           !next &&
           meta.source === 'rootClose' &&
           meta.originalEvent?.target instanceof Element &&
-          meta.originalEvent.target.closest('.popover')
+          meta.originalEvent.target.closest('.popover, .tooltip')
         ) {
           return;
         }
@@ -75,11 +74,11 @@ export function SliderDropdown({
         {/* A column, because everything inside a toolbar inherits
             `white-space: nowrap` — without it the label and the slider sit
             side by side on one line. */}
-        {/* Capped: uncapped, a slider carrying a hint sizes the menu to the
-            whole sentence and it grows to the width of the window. */}
+        {/* Fixed rather than shrink-to-fit: a value label grows as the slider
+            moves, and the menu would resize under the finger dragging it. */}
         <div
-          className="px-3 py-1 d-flex flex-column gap-3"
-          style={{ minWidth: '15rem', maxWidth: '20rem' }}
+          className="px-3 py-1 d-flex flex-column gap-3 text-wrap"
+          style={{ width: 'min(20rem, calc(100vw - 1rem))' }}
         >
           {children}
         </div>

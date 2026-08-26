@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import '@shared/styles/react-tags.scss';
@@ -261,7 +262,10 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
             </Form.Group>
           )}
 
-          <Form.Group controlId="offline" className="mb-3">
+          <Form.Group
+            controlId="offline"
+            className="mb-3 d-flex align-items-center gap-1"
+          >
             <Form.Check
               type="checkbox"
               label={mm?.availableOffline}
@@ -269,7 +273,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
               onChange={(e) => setOffline(e.currentTarget.checked)}
             />
 
-            <Form.Text muted>{mm?.availableOfflineHint}</Form.Text>
+            <HintMark hint={mm?.availableOfflineHint} />
           </Form.Group>
         </Form>
       </Modal.Body>
