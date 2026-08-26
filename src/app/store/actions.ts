@@ -199,6 +199,7 @@ export const convertToDataViewer = createAction<{
 }>('CONVERT_TO_DATA_VIEWER');
 
 export type ExternalTarget =
+  | 'apple'
   | 'copy'
   | 'f4map'
   | 'google'
@@ -208,13 +209,15 @@ export type ExternalTarget =
   | 'mapillary'
   | 'mapy.com'
   | 'oma.sk'
-  | 'openstreetcam'
   | 'osm.org'
   | 'osm.org/id'
+  | 'panoramax'
   | 'peakfinder'
+  | 'streetview'
   | 'url'
   | 'waze'
   | 'window'
+  | 'windy'
   | 'zbgis';
 
 export const openInExternalApp = createAction<{

@@ -59,6 +59,10 @@ export const chordDefinitions: ChordDefinition[] = [
   { codes: ['KeyJ', 'KeyP'], external: 'peakfinder' },
   { codes: ['KeyJ', 'KeyL'], external: 'mapillary' },
   { codes: ['KeyJ', 'Digit4'], external: 'f4map' },
+  { codes: ['KeyJ', 'KeyA'], external: 'apple' },
+  { codes: ['KeyJ', 'KeyS'], external: 'streetview' },
+  { codes: ['KeyJ', 'KeyX'], external: 'panoramax' },
+  { codes: ['KeyJ', 'KeyW'], external: 'windy' },
 ];
 
 /** The keys that start a chord — a tool's `g` among them. */

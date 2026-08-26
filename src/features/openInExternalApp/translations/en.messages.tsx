@@ -6,6 +6,7 @@ const en: OpenInExternalAppMessages = {
   osm: 'OpenStreetMap',
   oma: 'OMA',
   googleMaps: 'Google Maps',
+  appleMaps: 'Apple Maps',
   hiking_sk: 'Hiking.sk',
   zbgis: 'ZBGIS',
   mapy_cz: 'Mapy.com',

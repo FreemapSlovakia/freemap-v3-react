@@ -15,21 +15,51 @@ import {
   FaWindowMaximize,
 } from 'react-icons/fa';
 import {
+  SiApple,
+  SiGeocaching,
+  SiGooglemaps,
+  SiGooglestreetview,
+  SiMapillary,
+  SiOpenstreetmap,
+  SiStrava,
+  SiWaze,
+} from 'react-icons/si';
+import { TbBrandWindy } from 'react-icons/tb';
+import {
+  getAppleMapsUrl,
+  getArkodUrl,
+  getAtlasOkoljaUrl,
+  getBasemapAtUrl,
+  getCuzkUrl,
   getF4mapUrl,
   getGeocachingUrl,
+  getGeoportailUrl,
+  getGeoportalPlUrl,
   getGoogleUrl,
   getHikingSkUrl,
+  getIberpixUrl,
   getIdUrl,
+  getKarttapaikkaUrl,
+  getMapasPtUrl,
   getMapillaryUrl,
   getMapyCzUrl,
+  getMinKartaUrl,
+  getNorgeskartUrl,
   getOmaUrl,
-  getOpenStreetCamUrl,
+  getOsmoseUrl,
   getOsmUrl,
+  getPanoramaxUrl,
+  getPcnUrl,
+  getPdokUrl,
   getPeakfinderUrl,
   getStravaUrl,
+  getStreetViewUrl,
+  getTopomapviewerUrl,
   getWazeUrl,
+  getWindyUrl,
   getZbgisUrl,
 } from '../externalUrlUtils.js';
+import { usePlaceCountries } from '../usePlaceCountries.js';
 
 interface PageProps {
   /** The page this menu is about: opened in a window, or shared as a link. */
@@ -54,6 +84,13 @@ interface TargetProps
   /** Targets of the caller's own, standing before the rest. */
   children?: ReactNode;
 }
+
+/**
+ * Stands where a target has no brand mark, keeping the labels in one column.
+ * An empty `<svg>` rather than a sized box: a menu row lays a glyph out by the
+ * rules it has for `svg`, so only an `svg` gets exactly the same width.
+ */
+const noIcon = <svg width="1em" height="1em" />;
 
 export function openMenuItemProps(externalTarget: ExternalTarget) {
   return {
@@ -142,6 +179,43 @@ export function OpenInExternalTargetItems({
 
   const oeam = useOpenInExternalAppMessages();
 
+  // `includePoint` is what tells the two apart: a menu about one place marks it
+  // in the addresses it builds, a menu about the visible map has none to mark.
+  const countries = usePlaceCountries(lat, lon, Boolean(includePoint));
+
+  const sk = countries.includes('sk');
+
+  const fr = countries.includes('fr');
+
+  const pl = countries.includes('pl');
+
+  const at = countries.includes('at');
+
+  const si = countries.includes('si');
+
+  const it = countries.includes('it');
+
+  const no = countries.includes('no');
+
+  const se = countries.includes('se');
+
+  const fi = countries.includes('fi');
+
+  const nl = countries.includes('nl');
+
+  const be = countries.includes('be');
+
+  const es = countries.includes('es');
+
+  const hr = countries.includes('hr');
+
+  const pt = countries.includes('pt');
+
+  const cz = countries.includes('cz');
+
+  // hiking.sk maps Czechia too.
+  const skcz = sk || cz;
+
   return (
     <>
       {url && (
@@ -152,12 +226,15 @@ export function OpenInExternalTargetItems({
 
       {children}
 
+      {(url || children) && <Dropdown.Divider />}
+
+      {/* The map data itself, and the tools that work on it. */}
       <OnlineOnlyItem
         href={getOsmUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
-        {oeam?.osm}
+        <SiOpenstreetmap /> {oeam?.osm}
         {showKbdShortcut && (
           <>
             {' '}
@@ -170,7 +247,7 @@ export function OpenInExternalTargetItems({
       {editors && (
         <>
           <Dropdown.Item as="button" {...openMenuItemProps('josm')}>
-            {oeam?.josm}
+            {noIcon} {oeam?.josm}
             {showKbdShortcut && (
               <>
                 {' '}
@@ -184,7 +261,7 @@ export function OpenInExternalTargetItems({
             target="_blank"
             eventKey="url"
           >
-            {oeam?.id}
+            {noIcon} {oeam?.id}
             {showKbdShortcut && (
               <>
                 {' '}
@@ -196,11 +273,22 @@ export function OpenInExternalTargetItems({
       )}
 
       <OnlineOnlyItem
+        href={getOsmoseUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        {noIcon} Osmose
+      </OnlineOnlyItem>
+
+      <Dropdown.Divider />
+
+      {/* General-purpose maps. */}
+      <OnlineOnlyItem
         href={getMapyCzUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
-        {oeam?.mapy_cz}
+        {noIcon} {oeam?.mapy_cz}
         {showKbdShortcut && (
           <>
             {' '}
@@ -214,7 +302,7 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {oeam?.googleMaps}
+        <SiGooglemaps /> {oeam?.googleMaps}
         {showKbdShortcut && (
           <>
             {' '}
@@ -224,11 +312,70 @@ export function OpenInExternalTargetItems({
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
-        href={getGeocachingUrl(lat, lon, zoom)}
+        href={getAppleMapsUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
-        Geocaching
+        <SiApple /> {oeam?.appleMaps}
+        {showKbdShortcut && (
+          <>
+            {' '}
+            <Chord external="apple" />
+          </>
+        )}
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        href={getWazeUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        <SiWaze /> Waze
+      </OnlineOnlyItem>
+
+      <Dropdown.Divider />
+
+      {/* Seeing the place rather than a map of it. */}
+      <OnlineOnlyItem
+        href={getStreetViewUrl(lat, lon)}
+        target="_blank"
+        eventKey="url"
+      >
+        <SiGooglestreetview /> Google Street View
+        {showKbdShortcut && (
+          <>
+            {' '}
+            <Chord external="streetview" />
+          </>
+        )}
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        href={getMapillaryUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        <SiMapillary /> Mapillary
+        {showKbdShortcut && (
+          <>
+            {' '}
+            <Chord external="mapillary" />
+          </>
+        )}
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        href={getPanoramaxUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        {noIcon} Panoramax
+        {showKbdShortcut && (
+          <>
+            {' '}
+            <Chord external="panoramax" />
+          </>
+        )}
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -236,7 +383,7 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        F4Map
+        {noIcon} F4Map
         {showKbdShortcut && (
           <>
             {' '}
@@ -250,7 +397,7 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        Peakfinder
+        {noIcon} Peakfinder
         {showKbdShortcut && (
           <>
             {' '}
@@ -259,79 +406,237 @@ export function OpenInExternalTargetItems({
         )}
       </OnlineOnlyItem>
 
-      <OnlineOnlyItem
-        href={getMapillaryUrl(lat, lon, zoom)}
-        target="_blank"
-        eventKey="url"
-      >
-        Mapillary
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <Chord external="mapillary" />
-          </>
-        )}
-      </OnlineOnlyItem>
+      <Dropdown.Divider />
 
-      <OnlineOnlyItem
-        href={getOpenStreetCamUrl(lat, lon, zoom)}
-        target="_blank"
-        eventKey="url"
-      >
-        OpenStreetCam
-      </OnlineOnlyItem>
-
+      {/* Being out there. */}
       <OnlineOnlyItem
         href={getStravaUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >
-        Strava
+        <SiStrava /> Strava
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
-        href={getWazeUrl(lat, lon, zoom)}
+        href={getGeocachingUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >
-        Waze
+        <SiGeocaching /> Geocaching
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
-        href={getOmaUrl(lat, lon, zoom)}
+        href={getWindyUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >
-        {oeam?.oma} <CountryFlag country="sk" />
-      </OnlineOnlyItem>
-
-      <OnlineOnlyItem
-        href={getHikingSkUrl(lat, lon, zoom, includePoint)}
-        target="_blank"
-        eventKey="url"
-      >
-        {oeam?.hiking_sk} <CountryFlag country="sk" />
+        <TbBrandWindy /> Windy
         {showKbdShortcut && (
           <>
             {' '}
-            <Chord external="hiking.sk" />
+            <Chord external="windy" />
           </>
         )}
       </OnlineOnlyItem>
 
-      <OnlineOnlyItem
-        href={getZbgisUrl(lat, lon, zoom)}
-        target="_blank"
-        eventKey="url"
-      >
-        {oeam?.zbgis} <CountryFlag country="sk" />
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <Chord external="zbgis" />
-          </>
-        )}
-      </OnlineOnlyItem>
+      {/* Targets with data in some countries only, offered where the place is in one. */}
+      {(skcz ||
+        at ||
+        pl ||
+        si ||
+        it ||
+        hr ||
+        fr ||
+        es ||
+        pt ||
+        no ||
+        se ||
+        fi ||
+        nl ||
+        be) && <Dropdown.Divider />}
+
+      {sk && (
+        <OnlineOnlyItem
+          href={getOmaUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} {oeam?.oma} <CountryFlag country="sk" />
+        </OnlineOnlyItem>
+      )}
+
+      {skcz && (
+        <OnlineOnlyItem
+          href={getHikingSkUrl(lat, lon, zoom, includePoint)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} {oeam?.hiking_sk} <CountryFlag country="sk" />{' '}
+          <CountryFlag country="cz" />
+          {showKbdShortcut && (
+            <>
+              {' '}
+              <Chord external="hiking.sk" />
+            </>
+          )}
+        </OnlineOnlyItem>
+      )}
+
+      {sk && (
+        <OnlineOnlyItem
+          href={getZbgisUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} {oeam?.zbgis} <CountryFlag country="sk" />
+          {showKbdShortcut && (
+            <>
+              {' '}
+              <Chord external="zbgis" />
+            </>
+          )}
+        </OnlineOnlyItem>
+      )}
+
+      {cz && (
+        <OnlineOnlyItem
+          href={getCuzkUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} ČÚZK <CountryFlag country="cz" />
+        </OnlineOnlyItem>
+      )}
+
+      {at && (
+        <OnlineOnlyItem
+          href={getBasemapAtUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} basemap.at <CountryFlag country="at" />
+        </OnlineOnlyItem>
+      )}
+
+      {pl && (
+        <OnlineOnlyItem
+          href={getGeoportalPlUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Geoportal <CountryFlag country="pl" />
+        </OnlineOnlyItem>
+      )}
+
+      {si && (
+        <OnlineOnlyItem
+          href={getAtlasOkoljaUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Atlas okolja <CountryFlag country="si" />
+        </OnlineOnlyItem>
+      )}
+
+      {it && (
+        <OnlineOnlyItem
+          href={getPcnUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Geoportale Nazionale <CountryFlag country="it" />
+        </OnlineOnlyItem>
+      )}
+
+      {fr && (
+        <OnlineOnlyItem
+          href={getGeoportailUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Géoportail <CountryFlag country="fr" />
+        </OnlineOnlyItem>
+      )}
+
+      {hr && (
+        <OnlineOnlyItem
+          href={getArkodUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} ARKOD <CountryFlag country="hr" />
+        </OnlineOnlyItem>
+      )}
+
+      {es && (
+        <OnlineOnlyItem
+          href={getIberpixUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Iberpix <CountryFlag country="es" />
+        </OnlineOnlyItem>
+      )}
+
+      {pt && (
+        <OnlineOnlyItem
+          href={getMapasPtUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} MapasPT <CountryFlag country="pt" />
+        </OnlineOnlyItem>
+      )}
+
+      {be && (
+        <OnlineOnlyItem
+          href={getTopomapviewerUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Topomapviewer <CountryFlag country="be" />
+        </OnlineOnlyItem>
+      )}
+
+      {nl && (
+        <OnlineOnlyItem
+          href={getPdokUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} PDOK <CountryFlag country="nl" />
+        </OnlineOnlyItem>
+      )}
+
+      {no && (
+        <OnlineOnlyItem
+          href={getNorgeskartUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Norgeskart <CountryFlag country="no" />
+        </OnlineOnlyItem>
+      )}
+
+      {se && (
+        <OnlineOnlyItem
+          href={getMinKartaUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Min karta <CountryFlag country="se" />
+        </OnlineOnlyItem>
+      )}
+
+      {fi && (
+        <OnlineOnlyItem
+          href={getKarttapaikkaUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Karttapaikka <CountryFlag country="fi" />
+        </OnlineOnlyItem>
+      )}
     </>
   );
 }

@@ -7,6 +7,7 @@ const sk: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   osm: 'OpenStreetMap',
   oma: 'OMA',
   googleMaps: 'Google Mapy',
+  appleMaps: 'Apple Mapy',
   hiking_sk: 'Hiking.sk',
   zbgis: 'ZBGIS',
   mapy_cz: 'Mapy.com',

@@ -447,19 +447,41 @@ Opens a submenu:
 - Copy page URL <kbd>j</kbd> <kbd>c</kbd>
 - Share location
 - OpenStreetMap <kbd>j</kbd> <kbd>o</kbd>
-- Mapy.com <kbd>j</kbd> <kbd>m</kbd>
-- Google Maps <kbd>j</kbd> <kbd>g</kbd>
-- Geocaching
-- F4Map <kbd>j</kbd> <kbd>4</kbd>
-- Peakfinder <kbd>j</kbd> <kbd>p</kbd>
-- Mapillary <kbd>j</kbd> <kbd>l</kbd>
-- OpenStreetCam
-- Waze
-- OMA (SK)
-- Hiking.sk (SK) <kbd>j</kbd> <kbd>h</kbd>
-- ZBGIS (SK) <kbd>j</kbd> <kbd>z</kbd>
 - JOSM <kbd>j</kbd> <kbd>j</kbd>
 - iD <kbd>j</kbd> <kbd>i</kbd>
+- Osmose
+- Mapy.com <kbd>j</kbd> <kbd>m</kbd>
+- Google Maps <kbd>j</kbd> <kbd>g</kbd>
+- Apple Maps <kbd>j</kbd> <kbd>a</kbd>
+- Waze
+- Google Street View <kbd>j</kbd> <kbd>s</kbd>
+- Mapillary <kbd>j</kbd> <kbd>l</kbd>
+- Panoramax <kbd>j</kbd> <kbd>x</kbd>
+- F4Map <kbd>j</kbd> <kbd>4</kbd>
+- Peakfinder <kbd>j</kbd> <kbd>p</kbd>
+- Strava
+- Geocaching
+- Windy <kbd>j</kbd> <kbd>w</kbd>
+
+Targets with data in one country only appear when the shared place lies in it:
+
+- OMA (SK)
+- Hiking.sk (SK, CZ) <kbd>j</kbd> <kbd>h</kbd>
+- ZBGIS (SK) <kbd>j</kbd> <kbd>z</kbd>
+- ČÚZK (CZ)
+- basemap.at (AT)
+- Geoportal (PL)
+- Atlas okolja (SI)
+- Geoportale Nazionale (IT)
+- ARKOD (HR)
+- Géoportail (FR)
+- Iberpix (ES)
+- MapasPT (PT)
+- Topomapviewer (BE)
+- PDOK (NL)
+- Norgeskart (NO)
+- Min karta (SE)
+- Karttapaikka (FI)
 
 ### Map export to image/document
 

@@ -461,6 +461,27 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       before downloading. Needs a big shrink interrupted mid-flight to matter,
       hence deferred.
 
+## Open in external app (`src/features/openInExternalApp/`)
+
+- [ ] **Add Ukraine's cadastral map if it reopens.** `map.land.gov.ua` has a
+      clean deep-link format, but the host has been firewalled to the outside
+      world since 2022-02-24 — it times out from every vantage point tried,
+      including one inside Ukraine, and the Internet Archive has no capture
+      after that date. `nsdi.gov.ua` is login-gated, so there is no substitute.
+      The template, recovered from the viewer's own bundle, is
+      `https://map.land.gov.ua/?cc={x3857},{y3857}&z={zoom}&l=kadastr&bl=ortho10k_all`
+      — EPSG:3857 metres, a plain web-mercator zoom, and two traps: `cc` must be
+      the first query parameter, and `z`/`l`/`bl` must all be present or its
+      parser throws.
+
+- Romania has no linkable viewer, and re-checking is unlikely to change that.
+  ANCPI's public cadastral map (`geoportal.ancpi.ro/imobile.html`) reads no URL
+  parameters at all — its `MapView` is built with no position. Its Web AppBuilder
+  viewers do take `center`/`level`, but their basemaps are Stereo 70 (EPSG:3844)
+  with bespoke 11–13-step LOD ladders, so `level` cannot be derived from a
+  web-mercator zoom. The whole host has also been down since the August 2026
+  ANCPI incident.
+
 ## Search / Photon geocoder (see [`doc/photon-geocoder.md`](./doc/photon-geocoder.md))
 
 - [ ] **Report the duplicate hits upstream.** Photon answers with one OSM element

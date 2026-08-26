@@ -10,6 +10,7 @@ import { bbox } from '@turf/bbox';
 import { buffer } from '@turf/buffer';
 import { point } from '@turf/helpers';
 import {
+  getAppleMapsUrl,
   getF4mapUrl,
   getGoogleUrl,
   getHikingSkUrl,
@@ -17,10 +18,12 @@ import {
   getMapillaryUrl,
   getMapyCzUrl,
   getOmaUrl,
-  getOpenStreetCamUrl,
   getOsmUrl,
+  getPanoramaxUrl,
   getPeakfinderUrl,
+  getStreetViewUrl,
   getWazeUrl,
+  getWindyUrl,
   getZbgisUrl,
 } from './externalUrlUtils.js';
 
@@ -242,13 +245,28 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
         break;
 
-      case 'openstreetcam':
-        window.open(getOpenStreetCamUrl(lat, lon, zoom));
+      case 'mapillary':
+        window.open(getMapillaryUrl(lat, lon, zoom));
 
         break;
 
-      case 'mapillary':
-        window.open(getMapillaryUrl(lat, lon, zoom));
+      case 'panoramax':
+        window.open(getPanoramaxUrl(lat, lon, zoom));
+
+        break;
+
+      case 'streetview':
+        window.open(getStreetViewUrl(lat, lon));
+
+        break;
+
+      case 'apple':
+        window.open(getAppleMapsUrl(lat, lon, zoom, includePoint));
+
+        break;
+
+      case 'windy':
+        window.open(getWindyUrl(lat, lon, zoom));
 
         break;
 

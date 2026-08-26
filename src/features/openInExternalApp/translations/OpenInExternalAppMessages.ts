@@ -5,6 +5,7 @@ export type OpenInExternalAppMessages = {
   osm: string;
   oma: string;
   googleMaps: string;
+  appleMaps: string;
   hiking_sk: string;
   zbgis: string;
   mapy_cz: string;
