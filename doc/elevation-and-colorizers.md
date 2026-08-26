@@ -447,13 +447,41 @@ tool, so it has none).
 
 Imported via `@shared/colorizers/…`. One colorizer per visual variable lives in
 `modes/` (`elevation`, `steepness`, `speed`, `heading`, `time`, `heartRate`, `cadence`,
-`power`, `temperature`, `battery`, `gsmSignal`); `index.ts` aggregates them
+`power`, `temperature`, `battery`, `gsmSignal`, plus the categorical `surface`,
+`roadType`, `hikeRating`, `mtbRating`); `index.ts` aggregates them
 (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
 
 - Each `Colorizer` exposes **`isAvailable`**, which gates whether a mode is offered for a
   given feature — routes expose Elevation/Steepness/Time/Heading; a track exposes a mode
   only when it carries that channel's data. This is why the "Colorize by" dropdown
   differs per consumer.
+- **Categorical modes** (`modes/pathDetail.ts`) paint named values instead of a scale.
+  They read GraphHopper path details that ride on the feature as
+  `properties['fm:pathDetails']` — stretches in **metres** along the line, because the
+  line is densified for premium users and every point index shifts with it (the same
+  reason `structureElevation.ts` measures bridges that way). `compute` returns the whole
+  line as **one** list of points — every list drawn becomes its own canvas layer, and a
+  route changes surface hundreds of times — with the stretch boundary interpolated onto
+  the exact metre the value changes and emitted twice, once per color. The zero-length
+  segment between the two paints nothing, which is what makes the change a hard edge
+  instead of a blend across the segment spanning it. For the same reason a value no
+  category claims is **not** a gap: `categoricalColorizer` appends an `unknown` category
+  in `NO_DATA_COLOR` grey, so it reads like the no-data line without splitting the layer,
+  and the legend can say how much of the route nobody has mapped. One `covering()`
+  generator yields the stretches as painted — holes and unclaimed values already resolved
+  to `unknown` — and both `compute` and the legend's `categories` consume it, so the
+  distances the legend lists cannot drift from the line drawn.
+- **Two fields carry all of that**, so no component asks "is this mode categorical":
+  **`categories(features, messages)`** returns the legend's rows (key, label, color,
+  metres) — the same shape of contract as the scalar `legend: { unit, values }`, which is
+  why `ColorizeLegend` imports nothing from `modes/`; and **`spanBased`** says the mode
+  paints router-reported stretches, which is what tells the route planner to colorize the
+  plain line rather than the densified one, `RoutePlannerResult` to set Leaflet's
+  `smoothFactor: 0` (simplification would collapse the coincident boundary pair — see the
+  `react-leaflet-hotline` patch), `useZoomColorize` that one cache entry answers every
+  zoom, and the data-viewer/tracking menus that the mode can never apply to a track. A
+  future *scalar* span mode (`average_speed`, `curvature`) sets `spanBased` and a normal
+  `legend`.
 - `colorizeByValues` (`colorize.ts`) maps values to a Hotline palette and flags missing
   values as gaps on `ColorizedPoint`; `splitOnGaps`/`noDataRuns` split a feature's points
   into gap-free runs so the Hotline render loop can break the line at gaps.
@@ -462,7 +490,16 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   use `coordPropColorizerAbsolute` (`coordPropColorizer.ts`) so a given color means the
   same thing across tracks. Battery/GSM use a fixed 0–100 % scale.
 - Colorize-mode labels live in `src/shared/colorizers/translations/`
-  (`useColorizerMessages`), not the global message blob.
+  (`useColorizerMessages`), not the global message blob. A categorical mode's category
+  labels sit beside them, under `categories`.
+- **Where the details come from** — `pathDetailKeys` (`routePlanner/model/pathDetails.ts`)
+  names what each profile asks GraphHopper for, so a car route doesn't pay for a hiking
+  rating. The response's ranges are stored **per step** (`Step.details`), which is what
+  survives the legs of independently-routed segments being concatenated;
+  `flattenPathDetails` turns them into metre stretches over the whole line, rejoining the
+  parts of one stretch that the step boundaries clipped apart. `routeColorizeFeatures`
+  (`routeGeometry.ts`) is what stamps them onto the feature — a `Colorizer` is handed
+  nothing else.
 - **Premium gate** — `premiumColorize.ts` names the free modes (elevation, speed, time);
   every other mode needs premium access. It is enforced twice: `usePremiumColorizeLock`
   (`components/`) disables the option and badges it with a clickable `PremiumGem` in the

@@ -17,6 +17,37 @@ const cs: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     heading: 'Směr',
     battery: 'Baterie',
     gsmSignal: 'GSM signál',
+    surface: 'Povrch',
+    roadType: 'Typ cesty',
+    hikeRating: 'Náročnost pěšky',
+    mtbRating: 'Náročnost MTB',
+  },
+  categories: {
+    unknown: 'Neznámé',
+    surface: {
+      paved: 'Zpevněný',
+      cobbles: 'Dlažba',
+      compacted: 'Šotolina',
+      gravel: 'Štěrk',
+      ground: 'Zemitý',
+    },
+    roadType: {
+      major: 'Hlavní silnice',
+      minor: 'Vedlejší silnice',
+      track: 'Lesní cesta',
+      path: 'Pěšina',
+      footway: 'Cesta pro pěší',
+      cycleway: 'Cyklostezka',
+      steps: 'Schody',
+    },
+    hikeRating: {
+      t1: 'T1 – turistika',
+      t2: 'T2 – horská',
+      t3: 'T3 – náročná horská',
+      t4: 'T4 – alpská',
+      t5: 'T5 – náročná alpská',
+      t6: 'T6 – těžká alpská',
+    },
   },
 };
 

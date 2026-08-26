@@ -1,6 +1,7 @@
-import { distance } from '@turf/distance';
+import { cumulativeDistances } from '@shared/geoutils.js';
 import type { Feature, LineString, Position } from 'geojson';
 import type { Alternative } from './actions.js';
+import { flattenSteps } from './routeGeometry.js';
 
 /**
  * A stretch of a route carried by a bridge or running through a tunnel,
@@ -19,19 +20,6 @@ export interface StructureSpan {
   kind: 'bridge' | 'tunnel';
 }
 
-function cumulativeMeters(coordinates: Position[]): number[] {
-  const cum = [0];
-
-  for (let i = 1; i < coordinates.length; i++) {
-    cum.push(
-      cum[i - 1]! +
-        distance(coordinates[i - 1]!, coordinates[i]!, { units: 'meters' }),
-    );
-  }
-
-  return cum;
-}
-
 /**
  * Flattens an alternative's legs and steps into a single coordinate list,
  * dropping the vertex that consecutive steps share, and collects the bridge and
@@ -42,48 +30,31 @@ export function flattenWithStructures(alternative: Alternative): {
   coordinates: Position[];
   structures: StructureSpan[];
 } {
-  const coordinates: Position[] = [];
+  const { coordinates, steps } = flattenSteps(alternative);
 
   const ranges: [number, number, StructureSpan['kind']][] = [];
 
-  for (const leg of alternative.legs) {
-    for (const step of leg.steps) {
-      // Where each of the step's own coordinates ended up in the flat list.
-      const indices: number[] = [];
+  for (const { step, indices } of steps) {
+    for (const { from, to, kind } of step.structures ?? []) {
+      const a = indices[from];
 
-      for (const coord of step.geometry.coordinates) {
-        const prev = coordinates.at(-1);
+      const b = indices[to];
 
-        if (prev && prev[0] === coord[0] && prev[1] === coord[1]) {
-          indices.push(coordinates.length - 1);
-        } else {
-          indices.push(coordinates.length);
-
-          coordinates.push(coord);
-        }
+      if (a === undefined || b === undefined || b <= a) {
+        continue;
       }
 
-      for (const { from, to, kind } of step.structures ?? []) {
-        const a = indices[from];
+      const last = ranges.at(-1);
 
-        const b = indices[to];
-
-        if (a === undefined || b === undefined || b <= a) {
-          continue;
-        }
-
-        const last = ranges.at(-1);
-
-        if (last && a <= last[1]) {
-          last[1] = Math.max(last[1], b);
-        } else {
-          ranges.push([a, b, kind]);
-        }
+      if (last && a <= last[1]) {
+        last[1] = Math.max(last[1], b);
+      } else {
+        ranges.push([a, b, kind]);
       }
     }
   }
 
-  const cum = ranges.length === 0 ? [] : cumulativeMeters(coordinates);
+  const cum = ranges.length === 0 ? [] : cumulativeDistances(coordinates);
 
   return {
     coordinates,
@@ -164,7 +135,7 @@ export function straightenStructures(
     return feature;
   }
 
-  const cum = cumulativeMeters(feature.geometry.coordinates);
+  const cum = cumulativeDistances(feature.geometry.coordinates);
 
   // Distances are re-accumulated on the densified line, so the spans' own ends
   // land on their vertices only to within rounding.

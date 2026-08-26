@@ -192,7 +192,12 @@ export function TrackingMenu(): ReactElement {
           }}
           options={[
             ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
-            ...[undefined, ...colorizingModes].map((mode) => {
+            // Span-based modes read what a router reported, which a live track
+            // never carries — they would be rows nothing can ever enable.
+            ...[
+              undefined,
+              ...colorizingModes.filter((mode) => !colorizers[mode].spanBased),
+            ].map((mode) => {
               const { locked, gem } = premiumColorize(mode);
 
               return {

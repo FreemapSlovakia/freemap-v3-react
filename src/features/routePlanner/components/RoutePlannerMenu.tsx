@@ -98,6 +98,7 @@ import {
   routePlannerSwapEnds,
   routePlannerToggleMilestones,
 } from '../model/actions.js';
+import { routeColorizeFeatures } from '../model/pathDetails.js';
 import {
   getFinish,
   getStart,
@@ -513,28 +514,20 @@ export default function RoutePlannerMenu(): ReactElement {
 
   // The active alternative as a single line, used only to gate which colorize
   // modes apply (e.g. speed needs timestamps a planned route lacks).
-  const lineFeatures = useMemo<Feature<LineString>[]>(() => {
-    const coordinates =
-      alternatives[activeAlternativeIndex]?.legs
-        .flatMap((leg) => leg.steps)
-        .flatMap((step) => step.geometry.coordinates) ?? [];
+  const lineFeatures = useMemo<Feature<LineString>[]>(
+    () => routeColorizeFeatures(alternatives[activeAlternativeIndex]),
+    [alternatives, activeAlternativeIndex],
+  );
 
-    return coordinates.length < 2
-      ? []
-      : [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: { type: 'LineString', coordinates },
-          },
-        ];
-  }, [alternatives, activeAlternativeIndex]);
-
-  // The elevation-bearing line for the legend's real labels; kept referentially
-  // stable so the legend's per-coordinate scan stays memoized.
+  // What the legend measures, which has to be the line the map draws: the
+  // elevation-bearing one where the mode reads it, the plain route otherwise.
   const colorizeFeatures = useMemo<Feature<LineString>[]>(
-    () => (renderGeojson ? [renderGeojson] : lineFeatures),
-    [renderGeojson, lineFeatures],
+    () =>
+      routeColorizeFeatures(
+        alternatives[activeAlternativeIndex],
+        colorizeBy && colorizers[colorizeBy].spanBased ? null : renderGeojson,
+      ),
+    [renderGeojson, colorizeBy, alternatives, activeAlternativeIndex],
   );
 
   const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {

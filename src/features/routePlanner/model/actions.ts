@@ -149,6 +149,16 @@ export const StepSchema = z.object({
   /** Bridges/tunnels along the step; only GraphHopper reports them. */
   structures: z.array(StepStructureSchema).optional(),
   /**
+   * Path details GraphHopper valued the route with (surface, road class, a
+   * difficulty rating), keyed as it names them and clipped to the step's own
+   * coordinates as `[from, to, value]`. Per step rather than per route because
+   * the legs of independently-routed segments get concatenated, which would
+   * shift a range measured against the whole line.
+   */
+  details: z
+    .record(z.string(), z.array(z.tuple([z.number(), z.number(), z.string()])))
+    .optional(),
+  /**
    * Marks a synthetic straight bridge between two independently-routed
    * segments. Rendered like a `manual` step but not selectable or draggable.
    */

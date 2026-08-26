@@ -23,8 +23,9 @@ export function useZoomColorize(
 
   // Round so a fractional zoom (mid-gesture, or a `zoomSnap` under 1) can't
   // spawn an unbounded set of near-duplicate cache entries that never hit;
-  // smoothing at the nearest whole zoom is indistinguishable.
-  const z = Math.round(zoom);
+  // smoothing at the nearest whole zoom is indistinguishable. A span-based mode
+  // reads no smoothing window at all, so one entry answers every zoom.
+  const z = colorizer?.spanBased ? 0 : Math.round(zoom);
 
   return useMemo(() => {
     if (!colorizer || features.length === 0) {

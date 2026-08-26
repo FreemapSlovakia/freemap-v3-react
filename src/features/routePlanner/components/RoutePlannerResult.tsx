@@ -56,6 +56,7 @@ import {
   type StepCoordinate,
 } from '../model/actions.js';
 import { ISOCHRONE_FILL_OPACITY, isochroneColor } from '../model/isochrones.js';
+import { routeColorizeFeatures } from '../model/pathDetails.js';
 import {
   INACTIVE_ALTERNATIVE_COLOR,
   STEP_MODE_COLORS,
@@ -638,44 +639,18 @@ export function RoutePlannerResult(): ReactElement {
   // carries its own white outline, so the route's halo is hidden underneath.
   // Elevation-derived modes use the densified DEM render line once it's ready
   // (`renderGeojson`); otherwise the alternative's own coordinates.
-  const colorizeFeatures = useMemo<Feature<LineString>[]>(() => {
-    if (!activeColorizer) {
-      return [];
-    }
-
-    if (renderGeojson) {
-      return [renderGeojson];
-    }
-
-    const alternative = alternatives[activeAlternativeIndex];
-
-    if (!alternative) {
-      return [];
-    }
-
-    // Consecutive steps share their boundary vertex, so drop the duplicate to
-    // avoid a zero-length segment at each step end (which would, e.g., snap
-    // the heading colorize to north there).
-    const coordinates = alternative.legs
-      .flatMap((leg) => leg.steps)
-      .flatMap((step) => step.geometry.coordinates)
-      .filter(
-        (c, i, all) =>
-          i === 0 || c[0] !== all[i - 1]![0] || c[1] !== all[i - 1]![1],
-      );
-
-    if (coordinates.length < 2) {
-      return [];
-    }
-
-    return [
-      {
-        type: 'Feature',
-        properties: {},
-        geometry: { type: 'LineString', coordinates },
-      },
-    ];
-  }, [activeColorizer, renderGeojson, alternatives, activeAlternativeIndex]);
+  const colorizeFeatures = useMemo<Feature<LineString>[]>(
+    () =>
+      activeColorizer
+        ? routeColorizeFeatures(
+            alternatives[activeAlternativeIndex],
+            // The densified line is for the elevation profile; a span-based mode
+            // reads the router's own values off the plain route.
+            activeColorizer.spanBased ? null : renderGeojson,
+          )
+        : [],
+    [activeColorizer, renderGeojson, alternatives, activeAlternativeIndex],
+  );
 
   const colorizedPositions = useZoomColorize(
     activeColorizer,
@@ -709,6 +684,9 @@ export function RoutePlannerResult(): ReactElement {
       // showing through beneath the canvas, so the hotline carries none.
       outlineWidth: 0,
       palette: activeColorizer?.palette,
+      // Leaflet's simplification would drop one of the coincident points a
+      // span-based mode changes color across (see `pathDetail.ts`).
+      ...(activeColorizer?.spanBased && { smoothFactor: 0 }),
       // Render the colorize canvas into the route pane too (a patched
       // react-leaflet-hotline forwards this to its L.Canvas), so it composites
       // above the outline and picks up the pane's `lineOpacity`.
@@ -863,7 +841,11 @@ export function RoutePlannerResult(): ReactElement {
 
         {noDataRunsList.map((run, i) => (
           <Polyline
-            key={`nodata-${colorizeBy}-${timestamp}-${activeAlternativeIndex}-${i}`}
+            // `selectedSegment` is in the key, and the layer brought to front,
+            // for the same reason as the foreground slices above: selecting a
+            // leg re-adds the halo, which would otherwise cover this line.
+            key={`nodata-${colorizeBy}-${timestamp}-${activeAlternativeIndex}-${selectedSegment}-${i}`}
+            ref={bringToFront}
             positions={run.map((p): [number, number] => [p.lat, p.lon])}
             pathOptions={{
               weight: Math.max(1, lineWidth - 2),

@@ -201,6 +201,32 @@ export function metersPerPixel(zoom: number, lat: number): number {
 }
 
 /**
+ * The first index in `[0, length)` for which `holds` is true, or `length` if
+ * none is — for a sorted sequence, where scanning it whole is what the sorting
+ * was meant to spare. `holds` must be false up to that index and true from it.
+ */
+export function lowerBound(
+  length: number,
+  holds: (index: number) => boolean,
+): number {
+  let lo = 0;
+
+  let hi = length;
+
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+
+    if (holds(mid)) {
+      hi = mid;
+    } else {
+      lo = mid + 1;
+    }
+  }
+
+  return lo;
+}
+
+/**
  * Cumulative horizontal distance (metres) along the path, so any windowing can
  * span a fixed metric length regardless of how densely the vertices are spaced.
  * `cum[0]` is `0`; `cum[i]` is the distance from the first vertex to vertex `i`.

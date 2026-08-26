@@ -22,7 +22,7 @@ diff --git a/node_modules/react-leaflet-hotline/dist/esm/core/HotPolyline.js b/n
 index 0000000..0000002 100644
 --- a/node_modules/react-leaflet-hotline/dist/esm/core/HotPolyline.js
 +++ b/node_modules/react-leaflet-hotline/dist/esm/core/HotPolyline.js
-@@ -4,7 +4,10 @@ import Converter from '../converter';
+@@ -4,9 +4,22 @@ import Converter from '../converter';
  import clipSegment from './clipSegment';
  export default class HotPolyline extends L.Polyline {
      constructor(renderer, coords, getLat, getLng, getVal) {
@@ -32,5 +32,18 @@ index 0000000..0000002 100644
 +        // landing in the default overlayPane.
 +        const canvas = new HotlineCanvas(renderer, renderer._options);
          const latlngs = Converter.toLatLngs(coords, getLat, getLng, getVal);
-         super(latlngs, { renderer: canvas, interactive: false });
+-        super(latlngs, { renderer: canvas, interactive: false });
++        // `smoothFactor` too: Leaflet drops vertices closer than it to the last
++        // kept one, and a categorical line changes color across a pair of
++        // coincident points — which simplification is guaranteed to collapse,
++        // turning every hard edge into a gradient over the surrounding segment.
++        super(latlngs, {
++            renderer: canvas,
++            interactive: false,
++            ...(renderer._options.smoothFactor === undefined
++                ? {}
++                : { smoothFactor: renderer._options.smoothFactor }),
++        });
          this.projectMap = renderer.projectLatLngs;
+         this._canvas = canvas;
+     }

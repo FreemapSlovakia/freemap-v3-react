@@ -5,7 +5,7 @@ import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
-import { positionsEqual } from '@shared/geoutils.js';
+import { lowerBound, positionsEqual } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -52,6 +52,7 @@ import {
 } from '../graphhopperRoute.js';
 import { withIsochroneLimits } from '../isochrones.js';
 import { legTransports } from '../legTransports.js';
+import { pathDetailKeys } from '../pathDetails.js';
 import { standingSavedRoute, storedRouteIsShowing } from '../reducer.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
 
@@ -555,8 +556,9 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           'alternative_route.max_paths': 2,
           instructions: true,
           // Bridges and tunnels, so the elevation profile can ignore the
-          // terrain model where it describes the ground instead of the road.
-          details: ['road_environment'],
+          // terrain model where it describes the ground instead of the road;
+          // the rest is what the categorical colorize modes paint.
+          details: ['road_environment', ...pathDetailKeys(segment.transport)],
           profile: ttDef.profile,
           points_encoded: false,
           locale: getState().l10n.language,
@@ -696,6 +698,13 @@ function fromGraphhopper(
           : [],
     );
 
+    // The remaining details, same story. A null value is what the router
+    // reports where it has none, and is dropped so the stretch reads as
+    // unknown rather than as a category of its own.
+    const details = Object.entries(path.details).filter(
+      ([key]) => key !== 'road_environment',
+    );
+
     for (const instruction of path.instructions) {
       const [start, end] = instruction.interval;
 
@@ -746,6 +755,7 @@ function fromGraphhopper(
           // the flattening in `ensureRouteRenderGeojson` joins the parts again.
           return b > a ? [{ from: a - start, to: b - start, kind }] : [];
         }),
+        details: clipDetails(details, start, end),
       });
 
       if (
@@ -772,4 +782,45 @@ function fromGraphhopper(
       legs,
     };
   });
+}
+
+/**
+ * The details covering `[start, end]`, as ranges into that slice's own points.
+ * Both lists run ascending, so the overlap is found by search rather than by
+ * rescanning every segment for every step.
+ */
+function clipDetails(
+  details: [string, z.infer<typeof GraphhopperDetailSegmentSchema>[]][],
+  start: number,
+  end: number,
+): Step['details'] {
+  const clipped: NonNullable<Step['details']> = {};
+
+  for (const [key, segments] of details) {
+    const spans: [number, number, string][] = [];
+
+    const first = lowerBound(segments.length, (i) => segments[i]![1] > start);
+
+    for (let i = first; i < segments.length; i++) {
+      const [from, to, value] = segments[i]!;
+
+      if (from >= end) {
+        break;
+      }
+
+      const a = Math.max(from, start);
+
+      const b = Math.min(to, end);
+
+      if (b > a && value !== null && value !== undefined) {
+        spans.push([a - start, b - start, String(value)]);
+      }
+    }
+
+    if (spans.length > 0) {
+      clipped[key] = spans;
+    }
+  }
+
+  return Object.keys(clipped).length > 0 ? clipped : undefined;
 }

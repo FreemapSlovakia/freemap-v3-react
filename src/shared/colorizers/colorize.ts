@@ -1,5 +1,6 @@
 import { smoothSeries, trackTimeSegments } from '@shared/geoutils.js';
 import type { Feature, LineString } from 'geojson';
+import type { ColorizerMessages } from './translations/ColorizerMessages.js';
 
 export type HotlinePalette = Array<{
   r: number;
@@ -7,6 +8,43 @@ export type HotlinePalette = Array<{
   b: number;
   t: number;
 }>;
+
+/** A palette color as CSS, the one spelling both the line and the legend use. */
+export function rgbCss(color: [r: number, g: number, b: number]): string {
+  return `rgb(${color.join(' ')})`;
+}
+
+/**
+ * A stretch of a route the router reported one value for, in metres along the
+ * line. Metres rather than point indices because the line colorize draws is
+ * densified for premium users, which shifts every index.
+ */
+export type PathDetailSpan = { start: number; end: number; value: string };
+
+export type PathDetails = Record<string, PathDetailSpan[]>;
+
+/** Where {@link PathDetailSpan}s ride on the feature being colorized. */
+export const PATH_DETAILS_PROP = 'fm:pathDetails';
+
+export function readPathDetails(
+  feature: Feature<LineString>,
+  key: string,
+): PathDetailSpan[] | undefined {
+  const details = feature.properties?.[PATH_DETAILS_PROP] as
+    | PathDetails
+    | undefined;
+
+  return details?.[key];
+}
+
+/** One row of a legend that names categories instead of drawing a scale. */
+export type CategoryShare = {
+  key: string;
+  label: string;
+  color: string;
+  /** How far it runs, so the legend doubles as what the route is made of. */
+  meters: number;
+};
 
 export interface ColorizedPoint {
   lat: number;
@@ -114,6 +152,19 @@ export interface Colorizer {
       options?: ColorizeOptions,
     ) => number[];
   };
+  // The legend for a mode that names categories instead of drawing a scale: the
+  // ones the lines actually hold, with how far each runs. The colorizer answers
+  // it, so the legend never has to know how a mode stores its values.
+  categories?: (
+    features: Feature<LineString>[],
+    messages: ColorizerMessages,
+  ) => CategoryShare[];
+  // Set by a mode that paints stretches the router reported rather than a value
+  // per point. Such a line changes color across two coincident points, so
+  // Leaflet's vertex simplification has to be off for it (`smoothFactor`); it
+  // reads nothing from the elevation-densified line, and its result is the same
+  // at every zoom.
+  spanBased?: true;
 }
 
 /**

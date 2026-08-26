@@ -630,3 +630,38 @@ and what landed. Nothing is outstanding there.
 - [ ] **Leftovers of the old LibreWXR instance on fm5.** The container is gone,
       but the `weather.freemap.sk` vhost and its cert still point at the dead
       upstream, and `/fm/data4/librewxr` still holds ~3 GB of its tiles.
+
+## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
+
+- [ ] **Two legends, built twice.** `PictureLegend` (gallery) and `ColorizeLegend`
+      (colorizers) each carry their own copy of the same shell — the toolbar, the
+      icon pair, the fit-vs-400px sizing — and now of the same swatch row as
+      well, since both grew a categorical variant. Lift `LegendShell` and a
+      swatch item into `src/shared/components/`, parameterized by icons and
+      label, and render both through them.
+
+- [ ] **A detail the graph lacks fails the whole route.** GraphHopper answers
+      `400 Cannot find the path details: [toll, …]` when `details` names an
+      encoded value the graph was not imported with, and `fetchService` reads
+      that as a routing failure: error toast, result cleared. So `pathDetailKeys`
+      may never run ahead of the server — shipping a new key before the next
+      import breaks every route. Decouple it by reading `encoded_values` from
+      `/info` once and intersecting the wish list with it; the same response
+      carries `import_date`, which the UI wants anyway for a "map data from…"
+      line.
+- [ ] **Facts about a stretch, not a way to read the line.** `road_access`
+      (`DESTINATION`, `FORESTRY`, `AGRICULTURAL` and friends stay routable, only
+      penalized), `toll`, and the `*_temporal_access` seasonal closures each
+      describe a few stretches of a route rather than all of it — a colorize mode
+      whose line is 95 % one color earns its dropdown slot poorly. They belong in
+      the result header instead, as chips reading like "300 m on forestry roads",
+      built from the same metre spans `flattenPathDetails` already produces. The
+      last two need the encoded values the config commit adds.
+- [ ] **Modes still worth adding.** *Marked route* (`foot_network` /
+      `bike_network`, keyed per transport like the ratings) — the one that says
+      which parts follow a waymarked trail, and the most valuable to this
+      audience. *Track grade* (`track_type`). `smoothness` folded in beside
+      Surface. All three are in the live graph already. A *scalar* span colorizer
+      would additionally unlock `average_speed` (our Speed mode needs GPS
+      timestamps, so a planned route can never offer it), `max_speed` and
+      `curvature`.

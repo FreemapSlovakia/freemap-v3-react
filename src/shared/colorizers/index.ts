@@ -6,15 +6,23 @@ import { elevationColorizer } from './modes/elevation.js';
 import { gsmSignalColorizer } from './modes/gsmSignal.js';
 import { headingColorizer } from './modes/heading.js';
 import { heartRateColorizer } from './modes/heartRate.js';
+import { hikeRatingColorizer } from './modes/hikeRating.js';
+import { mtbRatingColorizer } from './modes/mtbRating.js';
 import { powerColorizer } from './modes/power.js';
+import { roadTypeColorizer } from './modes/roadType.js';
 import { speedColorizer } from './modes/speed.js';
 import { steepnessColorizer } from './modes/steepness.js';
+import { surfaceColorizer } from './modes/surface.js';
 import { temperatureColorizer } from './modes/temperature.js';
 import { timeColorizer } from './modes/time.js';
 
 export const colorizers = {
   elevation: elevationColorizer,
   steepness: steepnessColorizer,
+  surface: surfaceColorizer,
+  roadType: roadTypeColorizer,
+  hikeRating: hikeRatingColorizer,
+  mtbRating: mtbRatingColorizer,
   speed: speedColorizer,
   heartRate: heartRateColorizer,
   cadence: cadenceColorizer,
@@ -31,6 +39,10 @@ export const colorizingModes = [
   'time',
   'elevation',
   'steepness',
+  'surface',
+  'roadType',
+  'hikeRating',
+  'mtbRating',
   'speed',
   'heading',
   'heartRate',
