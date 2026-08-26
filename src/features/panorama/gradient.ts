@@ -173,9 +173,9 @@ const GRADIENT_PRESET_STOPS: PanoramaGradientStop[][] = [
 ];
 
 /**
- * What a ramp is when there was none: the first preset, ending in its own
- * colour. Fading is asked for rather than assumed — every preset is written to
- * stand on its own, and the sky is a different picture rather than a better one.
+ * The ground the panorama ships with, and what a ramp is when there was none:
+ * the first preset, ending in its own colour. Fading is asked for rather than
+ * assumed — every preset is written to stand without it.
  */
 export const PANORAMA_GRADIENT_DEFAULT: PanoramaGradient = {
   stops: [...GRADIENT_PRESET_STOPS[0]],

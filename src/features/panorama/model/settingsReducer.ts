@@ -2,6 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { nearestStep } from '@shared/mathUtils.js';
 import {
   gradientKey,
+  PANORAMA_GRADIENT_DEFAULT,
   type PanoramaGradient,
   type PanoramaGradientStop,
   rememberedGradients,
@@ -243,7 +244,8 @@ export type PanoramaStyle = {
   groundGradient: PanoramaGradient | null;
 };
 
-/** What the service draws when asked for nothing; the modal resets to these. */
+/** What the service draws when asked for nothing — the flat ground the named
+ * looks are built on, not what the panorama ships with. */
 export const PANORAMA_STYLE_DEFAULTS: PanoramaStyle = {
   ridgeStrength: 1,
   ridgeWidth: 1,
@@ -266,12 +268,16 @@ export const RIDGE_WIDTH_MAX = 20;
  * Named looks, so the usual answer is one press rather than three numbers
  * chosen blind — the only preview a colour has is a whole render.
  *
- * `natural` is the service's own default. The rest are the API's worked
- * examples: no linework at all, an inked map-like one, and a light ground under
- * dark ink. Haze is untouched by any of them, so distance still reads.
+ * `natural` is what the panorama ships with, and the only one carrying a ramp:
+ * the rest are the API's worked examples over the service's flat ground — no
+ * linework at all, an inked map-like one, and a light ground under dark ink —
+ * and a ramp beside them would ignore the very colour they are about.
  */
 export const PANORAMA_LOOKS = {
-  natural: PANORAMA_STYLE_DEFAULTS,
+  natural: {
+    ...PANORAMA_STYLE_DEFAULTS,
+    groundGradient: PANORAMA_GRADIENT_DEFAULT,
+  },
   relief: { ...PANORAMA_STYLE_DEFAULTS, ridgeStrength: 0 },
   // A heavier stroke than the API's example asks for: what separates this from
   // the default is meant to read as drawn, and the width is the half of that
@@ -432,7 +438,7 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   // a control: free accounts see no change.
   rangeKm: 300,
   showRevealedLabels: true,
-  ...PANORAMA_STYLE_DEFAULTS,
+  ...PANORAMA_LOOKS.natural,
   recentGradients: [],
   labelDensity: 5,
   showLabelEle: false,

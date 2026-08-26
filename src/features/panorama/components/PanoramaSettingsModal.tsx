@@ -30,7 +30,6 @@ import {
   DEPTH_LIFT_MAX,
   PANORAMA_LOOK_NAMES,
   PANORAMA_LOOKS,
-  PANORAMA_STYLE_DEFAULTS,
   PANORAMA_TILTS,
   type PanoramaLook,
   type PanoramaSettingsState,
@@ -97,14 +96,7 @@ function seedDraft(settings: PanoramaSettingsState): Draft {
 }
 
 /** What "reset" means here: the initial state, for everything this form owns. */
-const defaults: Draft = {
-  eye: panoramaSettingsInitialState.eye,
-  altMin: tiltRange(panoramaSettingsInitialState)[0],
-  altMax: tiltRange(panoramaSettingsInitialState)[1],
-  depthLift: panoramaSettingsInitialState.depthLift,
-  rangeKm: panoramaSettingsInitialState.rangeKm,
-  ...PANORAMA_STYLE_DEFAULTS,
-};
+const defaults: Draft = seedDraft(panoramaSettingsInitialState);
 
 /**
  * The panorama's set-once settings: how high the eye stands, the exact vertical

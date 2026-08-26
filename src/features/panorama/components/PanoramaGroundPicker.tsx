@@ -144,7 +144,8 @@ export function PanoramaGroundPicker({
               hideEyeDrop
               hideAdvancedSliders
               hideColorGuide
-              hideInputs
+              // The hex/RGB fields stay, as the ridge colour's picker has them;
+              // only the model dropdown goes, the same as there.
               hideInputType
               // Suspend history writes for the whole pointer drag so the stream
               // of intermediate colours collapses into one entry instead of

@@ -359,9 +359,15 @@ ignores it would say the picture is out of date.
 **One control, not a switch and a control.** The picker's own Solid/Gradient
 tabs are what say which of the two the ground is, so nothing can fall out of
 step with the value; its swatches are ready-made ramps rather than recent
-colours, which is also how the feature is found at all. A ramp is therefore
-always the `custom` look: every entry of `PANORAMA_LOOKS` carries a plain colour,
-so picking one is what clears a gradient.
+colours, which is also how the feature is found at all.
+
+**The panorama ships with the first preset**, carried by the `natural` look, so
+what it draws out of the box is a ramp. The other three looks are the API's
+worked examples over the service's flat ground and carry `groundGradient: null`
+— a ramp beside them would ignore the very colour they are about — so picking
+one clears the gradient, and picking Natural brings it back. `panoramaLookOf`
+compares `panoramaStyleKey`, not field by field: a ramp is a reference, so `===`
+would have made every look carrying one read `custom` for ever, and silently.
 
 **A swatch is colours and nothing else.** Taking one leaves the fade, the far
 distance and the clipping where the user set them — a preset that reached into
