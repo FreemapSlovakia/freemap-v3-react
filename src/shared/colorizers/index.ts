@@ -10,17 +10,21 @@ import { hikeRatingColorizer } from './modes/hikeRating.js';
 import { mtbRatingColorizer } from './modes/mtbRating.js';
 import { powerColorizer } from './modes/power.js';
 import { roadTypeColorizer } from './modes/roadType.js';
+import { smoothnessColorizer } from './modes/smoothness.js';
 import { speedColorizer } from './modes/speed.js';
 import { steepnessColorizer } from './modes/steepness.js';
 import { surfaceColorizer } from './modes/surface.js';
 import { temperatureColorizer } from './modes/temperature.js';
 import { timeColorizer } from './modes/time.js';
+import { trackTypeColorizer } from './modes/trackType.js';
 
 export const colorizers = {
   elevation: elevationColorizer,
   steepness: steepnessColorizer,
   surface: surfaceColorizer,
+  smoothness: smoothnessColorizer,
   roadType: roadTypeColorizer,
+  trackType: trackTypeColorizer,
   hikeRating: hikeRatingColorizer,
   mtbRating: mtbRatingColorizer,
   speed: speedColorizer,
@@ -40,7 +44,9 @@ export const colorizingModes = [
   'elevation',
   'steepness',
   'surface',
+  'smoothness',
   'roadType',
+  'trackType',
   'hikeRating',
   'mtbRating',
   'speed',

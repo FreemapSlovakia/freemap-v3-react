@@ -18,7 +18,9 @@ const it: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     battery: 'Batteria',
     gsmSignal: 'Segnale GSM',
     surface: 'Fondo',
+    smoothness: 'Qualità del fondo',
     roadType: 'Tipo di strada',
+    trackType: 'Qualità della sterrata',
     hikeRating: 'Difficoltà a piedi',
     mtbRating: 'Difficoltà MTB',
   },
@@ -31,6 +33,13 @@ const it: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       gravel: 'Ghiaia',
       ground: 'Sterrato',
     },
+    smoothness: {
+      good: 'Buona',
+      intermediate: 'Media',
+      bad: 'Scarsa',
+      veryBad: 'Molto scarsa',
+      impassable: 'Impraticabile',
+    },
     roadType: {
       major: 'Strada principale',
       minor: 'Strada secondaria',
@@ -39,6 +48,13 @@ const it: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       footway: 'Percorso pedonale',
       cycleway: 'Pista ciclabile',
       steps: 'Scalini',
+    },
+    trackType: {
+      grade1: '1 – compatta',
+      grade2: '2 – perlopiù compatta',
+      grade3: '3 – mista',
+      grade4: '4 – perlopiù cedevole',
+      grade5: '5 – cedevole',
     },
     hikeRating: {
       t1: 'T1 – escursionismo',

@@ -47,7 +47,24 @@ describe('pathDetailKeys', () => {
     expect(pathDetailKeys('hiking')).toContain('hike_rating');
     expect(pathDetailKeys('hiking')).not.toContain('mtb_rating');
     expect(pathDetailKeys('mtb')).toContain('mtb_rating');
-    expect(pathDetailKeys('car')).toEqual(['surface', 'road_class']);
+  });
+
+  it('asks every profile for what any of them can be described by', () => {
+    for (const transport of [
+      'car',
+      'car4wd',
+      'hiking',
+      'racingbike',
+    ] as const) {
+      expect(pathDetailKeys(transport)).toEqual(
+        expect.arrayContaining([
+          'surface',
+          'road_class',
+          'track_type',
+          'smoothness',
+        ]),
+      );
+    }
   });
 });
 
@@ -171,6 +188,26 @@ describe('categoricalColorizer', () => {
               [0, 0],
               [0.01, 0],
             ]),
+          ]),
+        ),
+      ),
+    ).toBeFalsy();
+  });
+
+  // The router values the whole line, `missing` included, so the detail coming
+  // back says nothing about whether anything is mapped.
+  it('is not offered where every stretch is unnamed', () => {
+    expect(
+      colorizer.isAvailable?.(
+        routeColorizeFeatures(
+          alternative([
+            step(
+              [
+                [0, 0],
+                [0.01, 0],
+              ],
+              { surface: [[0, 1, 'missing']] },
+            ),
           ]),
         ),
       ),

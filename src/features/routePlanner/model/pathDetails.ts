@@ -11,14 +11,18 @@ import { flattenSteps } from './routeGeometry.js';
 import { flattenLevelledSpans } from './structureElevation.js';
 
 /**
- * The path details asked of GraphHopper, by what is riding: every extra detail
- * costs response size on every route, so a profile asks only for what its own
- * colorize modes can show. `road_environment` is not here — it is read as
- * bridges and tunnels rather than as a detail.
+ * The path details asked of GraphHopper: the ones describing the way itself for
+ * every profile, plus the difficulty scale the riding profile is graded on.
+ * `road_environment` is not here — it is read as bridges and tunnels rather
+ * than as a detail.
  */
 export function pathDetailKeys(transport: TransportType): string[] {
-  const keys = ['surface', 'road_class'];
+  // The ones every profile can be described by. Two extra cost 2.9 % of an
+  // uncompressed 200 km response, so asking always beats guessing which profile
+  // will want them — a mode with nothing mapped hides itself anyway.
+  const keys = ['surface', 'road_class', 'track_type', 'smoothness'];
 
+  // A difficulty scale, though, is the profile's own and means nothing off it.
   switch (transport) {
     case 'foot':
     case 'hiking':

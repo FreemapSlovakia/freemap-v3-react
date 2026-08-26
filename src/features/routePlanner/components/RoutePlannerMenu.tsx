@@ -600,6 +600,13 @@ export default function RoutePlannerMenu(): ReactElement {
   );
 
   const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {
+    // The active mode keeps its slot whatever the route holds: it still paints
+    // the line, and dropping it from the list would leave the toggle unable to
+    // name what is on — with no way to switch it off but picking something else.
+    if (mode === colorizeBy) {
+      return true;
+    }
+
     const { isAvailable } = colorizers[mode];
 
     return !isAvailable || isAvailable(lineFeatures);

@@ -103,8 +103,17 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
   return {
     palette,
     spanBased: true,
+
+    // At least one stretch the route can be *named* by. The router values the
+    // whole line, `missing` included, so a detail coming back says nothing
+    // about whether anything is mapped — and a mode that paints the route grey
+    // end to end earns its dropdown slot no better than one with no data.
     isAvailable: (features) =>
-      features.some((feature) => readPathDetails(feature, spec.detail)?.length),
+      features.some((feature) =>
+        readPathDetails(feature, spec.detail)?.some((span) =>
+          indexOf.has(span.value),
+        ),
+      ),
 
     categories: (features, cm) => {
       const labels: Record<string, string> = {

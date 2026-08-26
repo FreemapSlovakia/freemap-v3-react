@@ -17,7 +17,9 @@ const en: ColorizerMessages = {
     battery: 'Battery',
     gsmSignal: 'GSM signal',
     surface: 'Surface',
+    smoothness: 'Smoothness',
     roadType: 'Road type',
+    trackType: 'Track grade',
     hikeRating: 'Hiking difficulty',
     mtbRating: 'MTB difficulty',
   },
@@ -30,6 +32,13 @@ const en: ColorizerMessages = {
       gravel: 'Gravel',
       ground: 'Ground',
     },
+    smoothness: {
+      good: 'Good',
+      intermediate: 'Intermediate',
+      bad: 'Bad',
+      veryBad: 'Very bad',
+      impassable: 'Impassable',
+    },
     roadType: {
       major: 'Main road',
       minor: 'Minor road',
@@ -38,6 +47,13 @@ const en: ColorizerMessages = {
       footway: 'Footway',
       cycleway: 'Cycleway',
       steps: 'Steps',
+    },
+    trackType: {
+      grade1: 'Grade 1 – solid',
+      grade2: 'Grade 2 – mostly solid',
+      grade3: 'Grade 3 – mixed',
+      grade4: 'Grade 4 – mostly soft',
+      grade5: 'Grade 5 – soft',
     },
     hikeRating: {
       t1: 'T1 – hiking',

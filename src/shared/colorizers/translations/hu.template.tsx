@@ -18,7 +18,9 @@ const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     battery: 'Akkumulátor',
     gsmSignal: 'GSM-jel',
     surface: 'Burkolat',
+    smoothness: 'Burkolatminőség',
     roadType: 'Úttípus',
+    trackType: 'Erdei út minősége',
     hikeRating: 'Gyalogos nehézség',
     mtbRating: 'MTB-nehézség',
   },
@@ -31,6 +33,13 @@ const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       gravel: 'Kavics',
       ground: 'Földes',
     },
+    smoothness: {
+      good: 'Jó',
+      intermediate: 'Közepes',
+      bad: 'Rossz',
+      veryBad: 'Nagyon rossz',
+      impassable: 'Járhatatlan',
+    },
     roadType: {
       major: 'Főút',
       minor: 'Mellékút',
@@ -39,6 +48,13 @@ const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       footway: 'Gyalogút',
       cycleway: 'Kerékpárút',
       steps: 'Lépcső',
+    },
+    trackType: {
+      grade1: '1 – szilárd',
+      grade2: '2 – többnyire szilárd',
+      grade3: '3 – vegyes',
+      grade4: '4 – többnyire puha',
+      grade5: '5 – puha',
     },
     hikeRating: {
       t1: 'T1 – túra',

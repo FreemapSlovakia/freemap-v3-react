@@ -693,8 +693,7 @@ and what landed. Nothing is outstanding there.
 - [ ] **Modes still worth adding.** *Marked route* (`foot_network` /
       `bike_network`, keyed per transport like the ratings) — the one that says
       which parts follow a waymarked trail, and the most valuable to this
-      audience. *Track grade* (`track_type`). `smoothness` folded in beside
-      Surface. All three are in the live graph already. A *scalar* span colorizer
-      would additionally unlock `average_speed` (our Speed mode needs GPS
-      timestamps, so a planned route can never offer it), `max_speed` and
-      `curvature`.
+      audience; it is in the live graph already (`/info` lists it). A *scalar*
+      span colorizer would additionally unlock `average_speed` (our Speed mode
+      needs GPS timestamps, so a planned route can never offer it), `max_speed`
+      and `curvature`.

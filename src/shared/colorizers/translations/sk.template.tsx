@@ -18,7 +18,9 @@ const sk: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     battery: 'Batéria',
     gsmSignal: 'GSM signál',
     surface: 'Povrch',
+    smoothness: 'Kvalita povrchu',
     roadType: 'Typ cesty',
+    trackType: 'Kvalita lesnej cesty',
     hikeRating: 'Náročnosť pešo',
     mtbRating: 'Náročnosť MTB',
   },
@@ -31,6 +33,13 @@ const sk: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       gravel: 'Štrk',
       ground: 'Zemitý',
     },
+    smoothness: {
+      good: 'Dobrá',
+      intermediate: 'Priemerná',
+      bad: 'Zlá',
+      veryBad: 'Veľmi zlá',
+      impassable: 'Neprejazdná',
+    },
     roadType: {
       major: 'Hlavná cesta',
       minor: 'Vedľajšia cesta',
@@ -39,6 +48,13 @@ const sk: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       footway: 'Cesta pre peších',
       cycleway: 'Cyklotrasa',
       steps: 'Schody',
+    },
+    trackType: {
+      grade1: '1 – spevnená',
+      grade2: '2 – prevažne spevnená',
+      grade3: '3 – zmiešaná',
+      grade4: '4 – prevažne mäkká',
+      grade5: '5 – mäkká',
     },
     hikeRating: {
       t1: 'T1 – turistika',

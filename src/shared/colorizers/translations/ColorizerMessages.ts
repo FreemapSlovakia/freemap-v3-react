@@ -15,7 +15,9 @@ export type ColorizerMessages = {
     battery: string;
     gsmSignal: string;
     surface: string;
+    smoothness: string;
     roadType: string;
+    trackType: string;
     hikeRating: string;
     mtbRating: string;
   };
@@ -34,6 +36,14 @@ export type ColorizerMessages = {
       gravel: string;
       ground: string;
     };
+    /** OSM's nine-step `smoothness` grouped into five. */
+    smoothness: {
+      good: string;
+      intermediate: string;
+      bad: string;
+      veryBad: string;
+      impassable: string;
+    };
     roadType: {
       major: string;
       minor: string;
@@ -42,6 +52,14 @@ export type ColorizerMessages = {
       footway: string;
       cycleway: string;
       steps: string;
+    };
+    /** OSM's `tracktype`, grade1 solid to grade5 soft. */
+    trackType: {
+      grade1: string;
+      grade2: string;
+      grade3: string;
+      grade4: string;
+      grade5: string;
     };
     /** The SAC scale, T1 to T6. */
     hikeRating: {

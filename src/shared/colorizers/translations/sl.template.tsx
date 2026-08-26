@@ -18,7 +18,9 @@ const sl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     battery: 'Baterija',
     gsmSignal: 'Signal GSM',
     surface: 'Podlaga',
+    smoothness: 'Kakovost podlage',
     roadType: 'Vrsta poti',
+    trackType: 'Kakovost gozdne ceste',
     hikeRating: 'Peš zahtevnost',
     mtbRating: 'Zahtevnost MTB',
   },
@@ -31,6 +33,13 @@ const sl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       gravel: 'Gramoz',
       ground: 'Zemljena',
     },
+    smoothness: {
+      good: 'Dobra',
+      intermediate: 'Povprečna',
+      bad: 'Slaba',
+      veryBad: 'Zelo slaba',
+      impassable: 'Neprevozna',
+    },
     roadType: {
       major: 'Glavna cesta',
       minor: 'Stranska cesta',
@@ -39,6 +48,13 @@ const sl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       footway: 'Pešpot',
       cycleway: 'Kolesarska pot',
       steps: 'Stopnice',
+    },
+    trackType: {
+      grade1: '1 – utrjena',
+      grade2: '2 – pretežno utrjena',
+      grade3: '3 – mešana',
+      grade4: '4 – pretežno mehka',
+      grade5: '5 – mehka',
     },
     hikeRating: {
       t1: 'T1 – pohodništvo',

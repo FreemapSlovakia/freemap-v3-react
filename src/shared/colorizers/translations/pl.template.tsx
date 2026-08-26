@@ -18,7 +18,9 @@ const pl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     battery: 'Bateria',
     gsmSignal: 'Sygnał GSM',
     surface: 'Nawierzchnia',
+    smoothness: 'Jakość nawierzchni',
     roadType: 'Rodzaj drogi',
+    trackType: 'Jakość drogi leśnej',
     hikeRating: 'Trudność pieszo',
     mtbRating: 'Trudność MTB',
   },
@@ -31,6 +33,13 @@ const pl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       gravel: 'Żwir',
       ground: 'Gruntowa',
     },
+    smoothness: {
+      good: 'Dobra',
+      intermediate: 'Przeciętna',
+      bad: 'Zła',
+      veryBad: 'Bardzo zła',
+      impassable: 'Nieprzejezdna',
+    },
     roadType: {
       major: 'Droga główna',
       minor: 'Droga lokalna',
@@ -39,6 +48,13 @@ const pl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       footway: 'Chodnik',
       cycleway: 'Droga rowerowa',
       steps: 'Schody',
+    },
+    trackType: {
+      grade1: '1 – utwardzona',
+      grade2: '2 – przeważnie utwardzona',
+      grade3: '3 – mieszana',
+      grade4: '4 – przeważnie miękka',
+      grade5: '5 – miękka',
     },
     hikeRating: {
       t1: 'T1 – turystyczna',
