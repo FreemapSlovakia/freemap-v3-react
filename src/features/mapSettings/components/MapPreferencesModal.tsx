@@ -357,7 +357,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
             </ToggleButtonGroup>
           </Form.Group>
 
-          <Form.Group className="mt-3 d-flex align-items-center gap-1">
+          <Form.Group className="mt-3 d-flex">
             <Form.Check
               id="chk-bearing-line"
               label={m?.main.bearingLine}

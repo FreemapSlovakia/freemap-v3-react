@@ -677,7 +677,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
               </Form.Group>
             )}
 
-        <Form.Group className="mb-3 d-flex align-items-center gap-1">
+        <Form.Group className="mb-3 d-flex">
           <Form.Check
             id="networkFallback"
             type="checkbox"

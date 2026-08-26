@@ -484,7 +484,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-3 d-flex align-items-center gap-1">
+              <Form.Group className="mb-3 d-flex">
                 <Form.Check
                   id="fm-panorama-gradient-sky"
                   type="checkbox"
@@ -501,7 +501,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               {/* Nothing to decide while the far end is measured from the
                   terrain in view: what it would drop is the tail past the
                   percentile, which nobody chose to see. */}
-              <Form.Group className="d-flex align-items-center gap-1">
+              <Form.Group className="d-flex">
                 <Form.Check
                   id="fm-panorama-gradient-clip"
                   type="checkbox"

@@ -262,10 +262,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
             </Form.Group>
           )}
 
-          <Form.Group
-            controlId="offline"
-            className="mb-3 d-flex align-items-center gap-1"
-          >
+          <Form.Group controlId="offline" className="mb-3 d-flex">
             <Form.Check
               type="checkbox"
               label={mm?.availableOffline}

@@ -252,7 +252,7 @@ export default function GpsRecorderSettingsModal({
             </InputGroup>
           </Form.Group>
 
-          <Form.Group className="mb-3 d-flex align-items-center gap-1">
+          <Form.Group className="mb-3 d-flex">
             <Form.Check
               id="chkGpsRecorderFeedLocation"
               type="checkbox"

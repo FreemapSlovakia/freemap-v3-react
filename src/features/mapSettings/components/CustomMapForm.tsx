@@ -648,7 +648,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           )}
 
           {model.technology === 'wms' && (
-            <div className="mt-3 d-flex align-items-center gap-1">
+            <div className="mt-3 d-flex">
               <Form.Check
                 id="chk-tiled"
                 label={m?.mapLayers.tiled}

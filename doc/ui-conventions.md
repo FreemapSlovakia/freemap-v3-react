@@ -257,8 +257,9 @@ control — not into a `Form.Text` under it. A panel of eight settings each
 carrying its own paragraph is a wall of prose: the labels stop standing out, and
 the footer gets pushed off a phone screen. The `?` sits **inside** the
 `<Form.Label>`, like any other mark; beside a `Form.Check` it goes outside the
-`<label>` in a `d-flex align-items-center gap-1` row, or tapping the explanation
-would toggle the setting.
+`<label>`, in a bare `d-flex` row, or tapping the explanation would toggle the
+setting. No `gap` on that row — the mark brings its own step, and a gap on top
+of it reads as a mark that has drifted away from what it explains.
 
 `Form.Text` stays for what a `?` would hide at the moment it is needed:
 

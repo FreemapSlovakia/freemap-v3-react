@@ -391,7 +391,7 @@ export function PanoramaControls({
         {/* Beside the count, because it is the other half of the same
             question: a second line makes every label taller, so fewer of them
             fit the picture. */}
-        <div className="d-flex align-items-center gap-1">
+        <div className="d-flex">
           <Form.Check
             id="fm-panorama-label-ele"
             type="checkbox"
@@ -490,7 +490,7 @@ export function PanoramaControls({
             two above and instant like them, so it belongs here rather than
             beside the lift itself, which costs a render. */}
         {(render?.depthLift ?? 0) > 0 && (
-          <div className="d-flex align-items-center gap-1">
+          <div className="d-flex">
             <Form.Check
               id="fm-panorama-revealed"
               type="checkbox"
