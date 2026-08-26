@@ -1,10 +1,12 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { toggleColorizeLegend } from '@shared/colorizers/colorizeSettings.js';
 import type { ColorizingMode } from '@shared/colorizers/index.js';
+import { clamp } from '@shared/mathUtils.js';
 import {
   routePlannerColorizeBy,
   routePlannerPreventHint,
   routePlannerSetColorizeLegend,
+  routePlannerSetMaxAlternatives,
   routePlannerSetStyle,
 } from './actions.js';
 
@@ -23,7 +25,16 @@ export interface RoutePlannerSettingsState {
   lineOpacity: number;
   // Opacity of the start/finish/midpoint markers, 0–1.
   markerOpacity: number;
+  /**
+   * How many routes to ask the router for, 1 to {@link MAX_ALTERNATIVES}. A
+   * ceiling rather than a count: the router returns fewer where nothing else is
+   * both near enough in time and different enough to be worth offering.
+   */
+  maxAlternatives: number;
 }
+
+/** As many as the router is ever asked for; each one costs its own geometry. */
+export const MAX_ALTERNATIVES = 5;
 
 export const routePlannerSettingsInitialState: RoutePlannerSettingsState = {
   colorizeBy: null,
@@ -32,6 +43,7 @@ export const routePlannerSettingsInitialState: RoutePlannerSettingsState = {
   lineWidth: 6,
   lineOpacity: 1,
   markerOpacity: 1,
+  maxAlternatives: 2,
 };
 
 export const routePlannerSettingsReducer = createReducer(
@@ -51,5 +63,8 @@ export const routePlannerSettingsReducer = createReducer(
         state.lineWidth = payload.lineWidth;
         state.lineOpacity = payload.lineOpacity;
         state.markerOpacity = payload.markerOpacity;
+      })
+      .addCase(routePlannerSetMaxAlternatives, (state, { payload }) => {
+        state.maxAlternatives = clamp(payload, 1, MAX_ALTERNATIVES);
       }),
 );

@@ -58,6 +58,9 @@ import { updateRouteTypes } from './findRouteProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures];
 
+/** `osrm-routed`'s own `--max-alternatives` default, which the OSRM we use runs. */
+const OSRM_MAX_ALTERNATIVES = 3;
+
 const routePlannerClosed = (state: RootState) =>
   state.main.mapTool !== 'route-planner';
 
@@ -157,6 +160,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     roundtripParams,
     isochroneParams,
   } = getState().routePlanner;
+
+  const { maxAlternatives } = getState().routePlannerSettings;
 
   // Getting past the stored route is what a recompute is for.
   const recomputing = routePlannerRecompute.match(action);
@@ -547,13 +552,19 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           algorithm:
             mode === 'roundtrip'
               ? 'round_trip'
-              : multiModal || segment.points.length > 2
+              : multiModal ||
+                  segment.points.length > 2 ||
+                  // Asking the alternatives algorithm for one route is asking
+                  // it to do its work and throw the point of it away.
+                  maxAlternatives < 2
                 ? undefined
                 : 'alternative_route',
           'round_trip.distance': roundtripParams.distance,
           'round_trip.seed': roundtripParams.seed,
           'ch.disable': mode === 'roundtrip',
-          'alternative_route.max_paths': 2,
+          // A ceiling, not a count: `max_weight_factor` (1.4) and
+          // `max_share_factor` (0.6) decide how many the router actually finds.
+          'alternative_route.max_paths': maxAlternatives,
           instructions: true,
           // Bridges and tunnels, so the elevation profile can ignore the
           // terrain model where it describes the ground instead of the road;
@@ -622,7 +633,13 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             mode === 'route' ? 'route' : 'trip',
           )}/${allPoints}?` +
           objectToURLSearchParams({
-            alternatives: (mode === 'route' && !multiModal) || undefined,
+            // OSRM counts alternatives *besides* the route it returns anyway,
+            // where GraphHopper's `max_paths` counts them all. Over
+            // `osrm-routed`'s limit the whole request is refused as `TooBig`.
+            alternatives:
+              mode === 'route' && !multiModal && maxAlternatives > 1
+                ? Math.min(maxAlternatives - 1, OSRM_MAX_ALTERNATIVES)
+                : undefined,
             steps: true,
             geometries: 'geojson',
             roundtrip:

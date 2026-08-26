@@ -1,6 +1,8 @@
+import { readPathDetails } from '@shared/colorizers/colorize.js';
 import { categoricalColorizer } from '@shared/colorizers/modes/pathDetail.js';
 import type { ColorizerMessages } from '@shared/colorizers/translations/ColorizerMessages.js';
 import { distance } from '@turf/distance';
+import type { Feature, LineString } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import type { Alternative, Step, StepCoordinate } from './actions.js';
 import {
@@ -21,6 +23,11 @@ function step(coordinates: StepCoordinate[], details?: Step['details']): Step {
     geometry: { coordinates },
     ...(details && { details }),
   };
+}
+
+/** The straight line the router leaves behind where it found no route. */
+function errorStep(coordinates: StepCoordinate[]): Step {
+  return { ...step(coordinates), mode: 'error' };
 }
 
 /** Two legs of two steps each, so the leg joint is exercised too. */
@@ -124,16 +131,17 @@ describe('flattenPathDetails', () => {
   });
 });
 
-describe('categoricalColorizer', () => {
-  const colorizer = categoricalColorizer({
-    detail: 'surface',
-    categories: [
-      { key: 'paved', values: ['asphalt'], color: [0, 0, 0] },
-      { key: 'ground', values: ['ground'], color: [255, 255, 255] },
-    ],
-    labels: () => ({}),
-  });
+/** Two categories and the implicit Unknown, so a color is 0, 0.5 or 1. */
+const colorizer = categoricalColorizer({
+  detail: 'surface',
+  categories: [
+    { key: 'paved', values: ['asphalt'], color: [0, 0, 0] },
+    { key: 'ground', values: ['ground'], color: [255, 255, 255] },
+  ],
+  labels: () => ({}),
+});
 
+describe('categoricalColorizer', () => {
   const features = routeColorizeFeatures(
     alternative([
       step(
@@ -281,5 +289,115 @@ describe('categoricalColorizer', () => {
     expect(colorizer.compute(unmapped)[0]?.some((point) => point.gap)).toBe(
       false,
     );
+  });
+});
+
+// Colorizing the straight line a failed leg leaves behind would replace the red
+// dotted line that says so with a confident scale over whatever terrain it
+// happens to cross.
+describe('routeColorizeFeatures — a stretch that failed to route', () => {
+  const partlyRouted = alternative([
+    step(
+      [
+        [0, 0],
+        [0.01, 0],
+      ],
+      { surface: [[0, 1, 'asphalt']] },
+    ),
+    errorStep([
+      [0.01, 0],
+      [0.03, 0],
+    ]),
+    step(
+      [
+        [0.03, 0],
+        [0.04, 0],
+      ],
+      { surface: [[0, 1, 'gravel']] },
+    ),
+  ]);
+
+  // The plain line steps aside wherever anything is colorized, so a run the
+  // colorizer declined to paint would be a hole in the route.
+  it('paints a run holding none of the detail rather than leaving it undrawn', () => {
+    const features = routeColorizeFeatures(
+      alternative([
+        step(
+          [
+            [0, 0],
+            [0.01, 0],
+          ],
+          { surface: [[0, 1, 'asphalt']] },
+        ),
+        errorStep([
+          [0.01, 0],
+          [0.03, 0],
+        ]),
+        // A manual leg: no detail of any kind reaches this run.
+        step([
+          [0.03, 0],
+          [0.04, 0],
+        ]),
+      ]),
+    );
+
+    const runs = colorizer.compute(features);
+
+    expect(runs).toHaveLength(2);
+
+    // Unknown is the last of the palette, and covers that run end to end.
+    expect(runs[1]!.every((point) => point.color === 1)).toBe(true);
+
+    expect(runs[1]!.at(0)!.lon).toBeCloseTo(0.03, 9);
+
+    expect(runs[1]!.at(-1)!.lon).toBeCloseTo(0.04, 9);
+  });
+
+  it('is cut out, leaving a feature per routed run', () => {
+    const features = routeColorizeFeatures(partlyRouted);
+
+    expect(features).toHaveLength(2);
+
+    expect(features[0]!.geometry.coordinates).toEqual([
+      [0, 0],
+      [0.01, 0],
+    ]);
+
+    expect(features[1]!.geometry.coordinates).toEqual([
+      [0.03, 0],
+      [0.04, 0],
+    ]);
+  });
+
+  it('measures a run’s details from its own start', () => {
+    const surfaceOf = (feature: Feature<LineString> | undefined) =>
+      feature && readPathDetails(feature, 'surface');
+
+    const [first, second] = routeColorizeFeatures(partlyRouted);
+
+    expect(surfaceOf(first)?.[0]?.value).toBe('asphalt');
+
+    expect(surfaceOf(first)?.[0]?.start).toBe(0);
+
+    // The second run begins three spacings along the whole line, so its own
+    // span has to start at zero — or its color would land a run's length away.
+    expect(surfaceOf(second)?.[0]?.value).toBe('gravel');
+
+    expect(surfaceOf(second)?.[0]?.start).toBe(0);
+
+    expect(surfaceOf(second)?.[0]?.end).toBeCloseTo(spacing, 3);
+  });
+
+  it('leaves a fully failed route with nothing to colorize', () => {
+    expect(
+      routeColorizeFeatures(
+        alternative([
+          errorStep([
+            [0, 0],
+            [0.02, 0],
+          ]),
+        ]),
+      ),
+    ).toEqual([]);
   });
 });

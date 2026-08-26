@@ -633,6 +633,39 @@ and what landed. Nothing is outstanding there.
 
 ## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
 
+- [ ] **Consider exposing the two other alternative-route knobs.** The count is
+      settable (`maxAlternatives`), but what the router *finds* is bounded by
+      `alternative_route.max_weight_factor` (1.4 — how much worse an alternative
+      may be) and `max_share_factor` (0.6 — how much of the main route it may
+      reuse), both left at GraphHopper's defaults. Measured: Banská Bystrica →
+      Prešov returns one path however many are asked for, while across Bratislava
+      the defaults give four and relaxing to 2.0/0.9 gives five. Against exposing
+      them: they are not user concepts, and both trade quality for quantity —
+      "fewer than asked" is usually the honest answer that no other way exists.
+      If they are exposed, one slider moving both (distinct ↔ many) beats two
+      raw ones.
+- [ ] **A route cut in two colorizes as two scales.** Where a leg fails to route,
+      the colorize line becomes one feature per routed run
+      (`routeColorizeFeatures`), and `colorizeByValues` normalizes a scalar mode
+      per feature unless given a fixed `range` — so with Elevation or Speed the
+      same value reads as a different color either side of the gap, and
+      `ColorizeLegend` drops its labels, which it only draws for a single
+      feature. Each mode would have to pre-scan all the features for a shared
+      min/max and pass it as `range`; what makes that wrong as a blanket rule is
+      that the shared layer cannot tell one route cut into runs from several
+      separate tracks, which *should* keep their own scales.
+- [ ] **The elevation chart says nothing about how the line is colored.** The map
+      can paint a route by surface, road type, difficulty, steepness or elevation;
+      the chart beside it draws one uniform profile, so the two views of the same
+      route answer different questions and the chart is the poorer for it. Color
+      the profile by the active colorize mode — the same palette, off the same
+      `ColorizedPoint` runs, which are already keyed to distance along the line
+      exactly as the chart's x-axis is. Two things fall out of it: a categorical
+      mode's legend is then the chart's legend too, and an `unrouted` stretch
+      (`structureElevation.ts`) can finally *read* as unrouted — today it is
+      levelled to a straight line, which is unmistakable in a mountain profile
+      but only implies what a dash or the map's own red would say outright.
+
 - [ ] **Two legends, built twice.** `PictureLegend` (gallery) and `ColorizeLegend`
       (colorizers) each carry their own copy of the same shell — the toolbar, the
       icon pair, the fit-vs-400px sizing — and now of the same swatch row as

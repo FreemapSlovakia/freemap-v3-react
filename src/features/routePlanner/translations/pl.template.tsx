@@ -48,7 +48,9 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     setHome: 'Ustaw',
   },
   milestones: 'Słupki kilometrowe',
+  milestonesOff: 'Wyłączone',
   recompute: 'Przelicz trasę ponownie',
+  maxAlternatives: 'Maks. liczba proponowanych tras',
   style: {
     menuItem: 'Styl trasy',
     title: 'Styl trasy',

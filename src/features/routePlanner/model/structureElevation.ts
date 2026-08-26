@@ -4,53 +4,91 @@ import type { Alternative } from './actions.js';
 import { flattenSteps } from './routeGeometry.js';
 
 /**
- * A stretch of a route carried by a bridge or running through a tunnel,
- * measured in metres along the route. Metres rather than point indices because
+ * A stretch of a route whose elevation is laid down straight rather than
+ * sampled, in metres along the route. Metres rather than point indices because
  * the profile line gets densified afterwards, which shifts every index but
  * leaves distances along the line untouched.
  */
-export interface StructureSpan {
+export interface LevelledSpan {
   start: number;
   end: number;
   /**
-   * A deck is at or above the ground it spans, a bore at or below it, which is
-   * what lets the straight line be clamped against the terrain rather than
-   * replacing it outright.
+   * A deck is at or above the ground it spans and a bore at or below it, so
+   * each is clamped against the terrain; `unrouted` — the straight line drawn
+   * where routing failed — has no road either side of it to clamp to.
    */
-  kind: 'bridge' | 'tunnel';
+  kind: 'bridge' | 'tunnel' | 'unrouted';
 }
 
 /**
  * Flattens an alternative's legs and steps into a single coordinate list,
- * dropping the vertex that consecutive steps share, and collects the bridge and
- * tunnel stretches reported per step as spans along the resulting line. Parts
- * of one structure reported by adjacent steps are joined back together.
+ * dropping the vertex that consecutive steps share, and collects the stretches
+ * whose elevation is laid down straight as spans along the resulting line.
+ * Parts of one stretch reported by adjacent steps are joined back together.
  */
-export function flattenWithStructures(alternative: Alternative): {
+export function flattenLevelledSpans(alternative: Alternative): {
   coordinates: Position[];
-  structures: StructureSpan[];
+  spans: LevelledSpan[];
 } {
+  const hit = flattened.get(alternative);
+
+  if (hit) {
+    return hit;
+  }
+
+  const result = flatten(alternative);
+
+  flattened.set(alternative, result);
+
+  return result;
+}
+
+/**
+ * Both the profile and colorize ask for this, and it walks every coordinate —
+ * but an alternative is immutable, so it is walked once and remembered until it
+ * is dropped.
+ */
+const flattened = new WeakMap<
+  Alternative,
+  ReturnType<typeof flattenLevelledSpans>
+>();
+
+function flatten(alternative: Alternative) {
   const { coordinates, steps } = flattenSteps(alternative);
 
-  const ranges: [number, number, StructureSpan['kind']][] = [];
+  const ranges: [number, number, LevelledSpan['kind']][] = [];
+
+  const push = (
+    a: number | undefined,
+    b: number | undefined,
+    kind: LevelledSpan['kind'],
+  ) => {
+    if (a === undefined || b === undefined || b <= a) {
+      return;
+    }
+
+    const last = ranges.at(-1);
+
+    // Only a stretch of the same kind is joined: a bridge and the tunnel after
+    // it are levelled against the terrain by opposite rules.
+    if (last && a <= last[1] && last[2] === kind) {
+      last[1] = Math.max(last[1], b);
+    } else {
+      ranges.push([a, b, kind]);
+    }
+  };
 
   for (const { step, indices } of steps) {
+    // A step that failed to route is a straight line between two waypoints, so
+    // the whole of it is unrouted.
+    if (step.mode === 'error') {
+      push(indices[0], indices.at(-1), 'unrouted');
+
+      continue;
+    }
+
     for (const { from, to, kind } of step.structures ?? []) {
-      const a = indices[from];
-
-      const b = indices[to];
-
-      if (a === undefined || b === undefined || b <= a) {
-        continue;
-      }
-
-      const last = ranges.at(-1);
-
-      if (last && a <= last[1]) {
-        last[1] = Math.max(last[1], b);
-      } else {
-        ranges.push([a, b, kind]);
-      }
+      push(indices[from], indices[to], kind);
     }
   }
 
@@ -58,7 +96,7 @@ export function flattenWithStructures(alternative: Alternative): {
 
   return {
     coordinates,
-    structures: ranges.map(([a, b, kind]) => ({
+    spans: ranges.map(([a, b, kind]) => ({
       start: cum[a]!,
       end: cum[b]!,
       kind,
@@ -127,9 +165,9 @@ function anchorElevation(
  * outside a span keep their sampled elevation. The input is not mutated; a
  * route with no structures is returned as-is.
  */
-export function straightenStructures(
+export function levelSpans(
   feature: Feature<LineString>,
-  structures: StructureSpan[],
+  structures: LevelledSpan[],
 ): Feature<LineString> {
   if (structures.length === 0) {
     return feature;
@@ -182,7 +220,7 @@ export function straightenStructures(
       const line = za + ((zb - za) * (cum[i]! - cum[a]!)) / span;
 
       const levelled =
-        z === undefined
+        z === undefined || kind === 'unrouted'
           ? line
           : kind === 'tunnel'
             ? Math.min(z, line)

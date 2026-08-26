@@ -44,7 +44,10 @@ import {
 } from '@features/panorama/model/settingsReducer.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
-import { routePlannerSettingsInitialState } from '@features/routePlanner/model/settingsReducer.js';
+import {
+  MAX_ALTERNATIVES,
+  routePlannerSettingsInitialState,
+} from '@features/routePlanner/model/settingsReducer.js';
 import { SearchResultStyleSchema } from '@features/search/model/actions.js';
 import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
 import { trackingSettingsInitialState } from '@features/tracking/model/settingsReducer.js';
@@ -160,6 +163,14 @@ export const PersistedRoutePlannerSettingsSchema = z
     lineWidth: z.number(),
     lineOpacity: z.number(),
     markerOpacity: z.number(),
+    // Clamped here: rehydration bypasses the reducer. Caught rather than
+    // rejected — a rejected field takes the whole slice down (see `rehydrate`).
+    maxAlternatives: z
+      .number()
+      .int()
+      .min(1)
+      .max(MAX_ALTERNATIVES)
+      .catch(routePlannerSettingsInitialState.maxAlternatives),
   })
   .partial();
 
@@ -475,6 +486,7 @@ const PERSIST: PersistEntry[] = [
       lineWidth: s.lineWidth,
       lineOpacity: s.lineOpacity,
       markerOpacity: s.markerOpacity,
+      maxAlternatives: s.maxAlternatives,
     }),
   }),
   defineEntry({

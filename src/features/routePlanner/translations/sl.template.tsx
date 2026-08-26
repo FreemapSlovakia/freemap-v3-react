@@ -21,7 +21,9 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       'Območja tedaj kažejo, od kod je mogoče priti do te točke; brez kljukice pa, kam je mogoče priti z nje. Razliko delajo enosmerne ceste in prepovedi zavijanja.',
   },
   milestones: 'Kilometrski kažipoti',
+  milestonesOff: 'Izklopljeno',
   recompute: 'Preračunaj pot',
+  maxAlternatives: 'Največje število ponujenih poti',
   style: {
     menuItem: 'Slog poti',
     title: 'Slog poti',

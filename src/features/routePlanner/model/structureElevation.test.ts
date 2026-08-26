@@ -2,10 +2,7 @@ import { distance } from '@turf/distance';
 import type { Feature, LineString } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import type { Alternative, Step, StepCoordinate } from './actions.js';
-import {
-  flattenWithStructures,
-  straightenStructures,
-} from './structureElevation.js';
+import { flattenLevelledSpans, levelSpans } from './structureElevation.js';
 
 /** Pure tests for levelling the profile across bridges and tunnels. */
 
@@ -59,9 +56,9 @@ const at = (i: number) => distance([0, 0], [i * metre, 0], { units: 'meters' });
 const holed = (length: number, from: number, to: number, depth: number) =>
   Array.from({ length }, (_, i) => (i >= from && i <= to ? 100 - depth : 100));
 
-describe('flattenWithStructures', () => {
+describe('flattenLevelledSpans', () => {
   it('drops the vertex consecutive steps share', () => {
-    const { coordinates } = flattenWithStructures(
+    const { coordinates } = flattenLevelledSpans(
       alternative([
         step([
           [0, 0],
@@ -82,7 +79,7 @@ describe('flattenWithStructures', () => {
   });
 
   it('reports a structure as a span in metres along the line', () => {
-    const { structures } = flattenWithStructures(
+    const { spans } = flattenLevelledSpans(
       alternative([
         step(
           [
@@ -95,13 +92,13 @@ describe('flattenWithStructures', () => {
       ]),
     );
 
-    expect(structures).toHaveLength(1);
-    expect(structures[0]!.start).toBeCloseTo(spacing, 6);
-    expect(structures[0]!.end).toBeCloseTo(spacing * 2, 6);
+    expect(spans).toHaveLength(1);
+    expect(spans[0]!.start).toBeCloseTo(spacing, 6);
+    expect(spans[0]!.end).toBeCloseTo(spacing * 2, 6);
   });
 
   it('joins the parts of a structure clipped into adjacent steps', () => {
-    const { structures } = flattenWithStructures(
+    const { spans } = flattenLevelledSpans(
       alternative([
         step(
           [
@@ -120,36 +117,36 @@ describe('flattenWithStructures', () => {
       ]),
     );
 
-    expect(structures).toHaveLength(1);
-    expect(structures[0]!.start).toBe(0);
-    expect(structures[0]!.end).toBeCloseTo(spacing * 2, 6);
+    expect(spans).toHaveLength(1);
+    expect(spans[0]!.start).toBe(0);
+    expect(spans[0]!.end).toBeCloseTo(spacing * 2, 6);
   });
 
-  it('ignores steps without structures', () => {
+  it('ignores steps without spans', () => {
     expect(
-      flattenWithStructures(
+      flattenLevelledSpans(
         alternative([
           step([
             [0, 0],
             [1, 0],
           ]),
         ]),
-      ).structures,
+      ).spans,
     ).toEqual([]);
   });
 });
 
-describe('straightenStructures', () => {
+describe('levelSpans', () => {
   it('returns the input feature when there is nothing to level', () => {
     const feature = line([100, 100, 100]);
 
-    expect(straightenStructures(feature, [])).toBe(feature);
+    expect(levelSpans(feature, [])).toBe(feature);
   });
 
   it('replaces the hole under a structure with a straight line', () => {
     const feature = line(holed(60, 25, 34, 8));
 
-    const levelled = straightenStructures(feature, [
+    const levelled = levelSpans(feature, [
       { start: at(25), end: at(34), kind: 'bridge' },
     ]);
 
@@ -165,7 +162,7 @@ describe('straightenStructures', () => {
 
     raw[55] = 109;
 
-    const levelled = straightenStructures(line(raw), [
+    const levelled = levelSpans(line(raw), [
       { start: at(25), end: at(34), kind: 'bridge' },
     ]);
 
@@ -183,7 +180,7 @@ describe('straightenStructures', () => {
 
     raw[25] = 104;
 
-    const levelled = straightenStructures(line(raw), [
+    const levelled = levelSpans(line(raw), [
       { start: at(25), end: at(34), kind: 'tunnel' },
     ]);
 
@@ -197,7 +194,7 @@ describe('straightenStructures', () => {
     // leave the whole notch in place.
     const raw = holed(60, 25, 26, 8);
 
-    const levelled = straightenStructures(line(raw), [
+    const levelled = levelSpans(line(raw), [
       { start: at(25), end: at(26), kind: 'bridge' },
     ]);
 
@@ -215,7 +212,7 @@ describe('straightenStructures', () => {
 
     raw[35] = 106;
 
-    const levelled = straightenStructures(line(raw), [
+    const levelled = levelSpans(line(raw), [
       { start: at(25), end: at(34), kind: 'bridge' },
     ]);
 
@@ -234,18 +231,14 @@ describe('straightenStructures', () => {
     const feature = line(raw);
 
     expect(
-      straightenStructures(feature, [
-        { start: at(25), end: at(34), kind: 'bridge' },
-      ]),
+      levelSpans(feature, [{ start: at(25), end: at(34), kind: 'bridge' }]),
     ).toBe(feature);
   });
 
   it('does not mutate its input', () => {
     const feature = line(holed(60, 25, 34, 8));
 
-    straightenStructures(feature, [
-      { start: at(25), end: at(34), kind: 'bridge' },
-    ]);
+    levelSpans(feature, [{ start: at(25), end: at(34), kind: 'bridge' }]);
 
     expect(feature.geometry.coordinates[30]![2]).toBe(92);
   });

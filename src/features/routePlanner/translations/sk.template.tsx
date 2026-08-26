@@ -21,7 +21,9 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       'Oblasti potom pokrývajú, odkiaľ sa dá do tohto bodu doraziť; bez zaškrtnutia to, kam sa z neho dá dostať. Rozdiel robia jednosmerky a zákazy odbočenia.',
   },
   milestones: 'Kilometrovník',
+  milestonesOff: 'Vypnuté',
   recompute: 'Prepočítať trasu',
+  maxAlternatives: 'Max. počet ponúkaných trás',
   style: {
     menuItem: 'Štýl trasy',
     title: 'Štýl trasy',

@@ -365,6 +365,11 @@ export const routePlannerSetStyle = createAction<RouteStyle>(
   'ROUTE_PLANNER_SET_STYLE',
 );
 
+/** How many routes to ask for. Re-routes; how many come back is the router's. */
+export const routePlannerSetMaxAlternatives = createAction<number>(
+  'ROUTE_PLANNER_SET_MAX_ALTERNATIVES',
+);
+
 /**
  * Caches the DEM-sampled line for the active alternative: every elevation comes
  * from our terrain model (the router's own elevation is ignored) and long
@@ -428,10 +433,10 @@ export const routePlannerFindRoute = createAction('ROUTE_PLANNER_FIND_ROUTE');
 
 export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS');
 
-export const routePlannerToggleMilestones = createAction<{
-  type: 'abs' | 'rel';
-  toggle?: boolean;
-}>('ROUTE_PLANNER_TOGGLE_MILESTONES');
+/** Distance markers along the route: every kilometre, every percent, or none. */
+export const routePlannerSetMilestones = createAction<'abs' | 'rel' | false>(
+  'ROUTE_PLANNER_SET_MILESTONES',
+);
 
 export const routePlannerSetRoundtripParams = createAction<
   Partial<RoundtripParams>

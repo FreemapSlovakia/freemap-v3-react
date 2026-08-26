@@ -19,10 +19,7 @@ import {
   routePlannerSetResult,
   routePlannerSetSampledGeojson,
 } from './actions.js';
-import {
-  flattenWithStructures,
-  straightenStructures,
-} from './structureElevation.js';
+import { flattenLevelledSpans, levelSpans } from './structureElevation.js';
 
 const cancelActions = [
   routePlannerSetResult,
@@ -85,7 +82,7 @@ export async function ensureRouteRenderGeojson(
     return;
   }
 
-  const { coordinates, structures } = flattenWithStructures(alternative);
+  const { coordinates, spans } = flattenLevelledSpans(alternative);
 
   if (coordinates.length < 2) {
     return;
@@ -103,7 +100,7 @@ export async function ensureRouteRenderGeojson(
   // terrain model too, so they'd put the artifact straight back inside a long
   // bridge.
   const render = smoothElevation(
-    straightenStructures(sampled, structures),
+    levelSpans(sampled, spans),
     getState().elevationSettings,
   );
 

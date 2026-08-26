@@ -32,6 +32,7 @@ import {
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
   routePlannerSetIsochrones,
+  routePlannerSetMilestones,
   routePlannerSetMode,
   routePlannerSetParams,
   routePlannerSetPickMode,
@@ -47,7 +48,6 @@ import {
   routePlannerSupersedeSavedRoute,
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
-  routePlannerToggleMilestones,
   type SavedRoute,
   type Waypoint,
 } from './actions.js';
@@ -261,15 +261,10 @@ export const routePlannerReducer = createReducer(
         milestones: state.milestones,
         pickMode: 'start',
       }))
-      .addCase(routePlannerToggleMilestones, (state, action) => {
-        return {
-          ...state,
-          milestones:
-            action.payload.toggle && state.milestones === action.payload.type
-              ? false
-              : action.payload.type,
-        };
-      })
+      .addCase(routePlannerSetMilestones, (state, { payload }) => ({
+        ...state,
+        milestones: payload,
+      }))
       .addCase(selectFeature, (state, { payload }) => ({
         ...state,
         pickMode:
@@ -567,6 +562,22 @@ export function routePlannerOptimizeApplicable(
     transportTypeDefs[state.transportType].api === 'gh' &&
     state.mode === 'route' &&
     state.points.length >= 3
+  );
+}
+
+/**
+ * Whether the routers are asked for alternatives at all, and so whether how
+ * many to ask for is worth offering: point-to-point routing between two
+ * waypoints under one profile, which is all either router will do them for.
+ */
+export function routePlannerAlternativesApplicable(
+  state: RoutePlannerState,
+): boolean {
+  return (
+    transportTypeDefs[state.transportType].api !== 'manual' &&
+    state.mode === 'route' &&
+    state.points.length === 2 &&
+    !routePlannerHasTransportOverride(state)
   );
 }
 

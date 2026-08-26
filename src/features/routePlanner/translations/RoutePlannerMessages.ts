@@ -21,8 +21,12 @@ export type RoutePlannerMessages = {
     reverseFlowHint: string;
   };
   milestones: string;
+  /** The milestone setting's third state, beside the km and % ones. */
+  milestonesOff: string;
   /** Discards the route a saved map carried and asks the router again. */
   recompute: string;
+  /** How many routes to ask for — a ceiling, not a promise. */
+  maxAlternatives: string;
   style: {
     menuItem: string;
     title: string;

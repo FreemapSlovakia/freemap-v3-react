@@ -20,7 +20,9 @@ const en: RoutePlannerMessages = {
       'The rings then cover where a journey to this point can start; unchecked, where a journey from it can end. One-way streets and turn restrictions tell the two apart.',
   },
   milestones: 'Milestones',
+  milestonesOff: 'Off',
   recompute: 'Recompute route',
+  maxAlternatives: 'Max routes to offer',
   style: {
     menuItem: 'Route style',
     title: 'Route style',

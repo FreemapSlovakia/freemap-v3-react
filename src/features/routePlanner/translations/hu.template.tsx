@@ -18,7 +18,9 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       'A gyűrűk ekkor azt mutatják, honnan érhető el ez a pont; pipa nélkül azt, hova lehet innen eljutni. A különbséget az egyirányú utcák és a kanyarodási tilalmak adják.',
   },
   milestones: 'Távolságszelvények',
+  milestonesOff: 'Ki',
   recompute: 'Útvonal újraszámítása',
+  maxAlternatives: 'Felkínált útvonalak max. száma',
   style: {
     menuItem: 'Útvonal stílusa',
     title: 'Útvonal stílusa',

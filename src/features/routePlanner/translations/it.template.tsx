@@ -18,7 +18,9 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       'Le aree mostrano allora da dove si può raggiungere questo punto; senza spunta, dove si può arrivare partendo da esso. La differenza la fanno sensi unici e divieti di svolta.',
   },
   milestones: 'Marcatori',
+  milestonesOff: 'Spenti',
   recompute: 'Ricalcola il percorso',
+  maxAlternatives: 'Numero massimo di percorsi proposti',
   style: {
     menuItem: 'Stile del percorso',
     title: 'Stile del percorso',

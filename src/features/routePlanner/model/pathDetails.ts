@@ -3,11 +3,12 @@ import {
   type PathDetailSpan,
   type PathDetails,
 } from '@shared/colorizers/colorize.js';
-import { cumulativeDistances } from '@shared/geoutils.js';
+import { cumulativeDistances, lowerBound } from '@shared/geoutils.js';
 import type { TransportType } from '@shared/transportTypeDefs.js';
-import type { Feature, LineString } from 'geojson';
+import type { Feature, GeoJsonProperties, LineString, Position } from 'geojson';
 import type { Alternative } from './actions.js';
-import { alternativeCoordinates, flattenSteps } from './routeGeometry.js';
+import { flattenSteps } from './routeGeometry.js';
+import { flattenLevelledSpans } from './structureElevation.js';
 
 /**
  * The path details asked of GraphHopper, by what is riding: every extra detail
@@ -118,11 +119,14 @@ function flattenPathDetailsUncached(alternative: Alternative): PathDetails {
 }
 
 /**
- * The active alternative as the single feature the colorize modes and their
- * legend read: `line` where the elevation pipeline has already built one (it is
- * the same path, densified), else the alternative's own coordinates. The path
+ * The active alternative as the features the colorize modes and their legend
+ * read: `line` where the elevation pipeline has already built one (it is the
+ * same path, densified), else the alternative's own coordinates. The path
  * details ride along as a property, since a `Colorizer` is given nothing but
  * the feature.
+ *
+ * A stretch that failed to route is cut out rather than colorized, leaving one
+ * feature per routed run — see `doc/elevation-and-colorizers.md`.
  */
 export function routeColorizeFeatures(
   alternative: Alternative | undefined,
@@ -132,24 +136,116 @@ export function routeColorizeFeatures(
     return [];
   }
 
-  const properties = {
-    ...line?.properties,
-    [PATH_DETAILS_PROP]: flattenPathDetails(alternative),
-  };
+  const { coordinates: plain, spans } = flattenLevelledSpans(alternative);
 
-  if (line) {
-    return [{ ...line, properties }];
+  const coordinates = line?.geometry.coordinates ?? plain;
+
+  if (coordinates.length < 2) {
+    return [];
   }
 
-  const coordinates = alternativeCoordinates(alternative);
+  const details = flattenPathDetails(alternative);
 
-  return coordinates.length < 2
-    ? []
-    : [
-        {
-          type: 'Feature',
-          properties,
-          geometry: { type: 'LineString', coordinates },
-        },
-      ];
+  const unrouted = spans.filter(({ kind }) => kind === 'unrouted');
+
+  return routedRuns(coordinates, unrouted).map(({ from, to, coordinates }) => ({
+    type: 'Feature',
+    properties: {
+      ...(unrouted.length === 0
+        ? line?.properties
+        : // A run is a piece of the line, so anything of the line's that answers
+          // to its length cannot come along.
+          withoutCoordinateProperties(line?.properties)),
+      [PATH_DETAILS_PROP]:
+        unrouted.length === 0 ? details : clipDetails(details, from, to),
+    },
+    geometry: { type: 'LineString', coordinates },
+  }));
+}
+
+function withoutCoordinateProperties(properties?: GeoJsonProperties) {
+  const { coordinateProperties: _, ...rest } = properties ?? {};
+
+  return rest;
+}
+
+/**
+ * The line's runs between the unrouted stretches, each measured along the whole
+ * line — which is what the details have to be clipped to. A boundary vertex
+ * belongs to the run beside it, so a run reaches the waypoint routing gave up
+ * at.
+ */
+function routedRuns(
+  coordinates: Position[],
+  unrouted: { start: number; end: number }[],
+): { from: number; to: number; coordinates: Position[] }[] {
+  const cum = cumulativeDistances(coordinates);
+
+  const total = cum[cum.length - 1] ?? 0;
+
+  if (unrouted.length === 0) {
+    return [{ from: 0, to: total, coordinates }];
+  }
+
+  // The complement of the unrouted stretches, rather than the vertices outside
+  // them: a failed leg is a straight line between two waypoints and so has no
+  // vertex of its own to drop.
+  const kept: [number, number][] = [];
+
+  let from = 0;
+
+  for (const { start, end } of unrouted) {
+    if (start > from) {
+      kept.push([from, start]);
+    }
+
+    from = Math.max(from, end);
+  }
+
+  if (total > from) {
+    kept.push([from, total]);
+  }
+
+  return kept
+    .map(([start, end]) => {
+      // Distances are re-accumulated on the densified line, so a stretch's ends
+      // land on their vertices only to within rounding.
+      const eps = 1e-6;
+
+      const lo = lowerBound(cum.length, (i) => cum[i]! >= start - eps);
+
+      const hi = lowerBound(cum.length, (i) => cum[i]! > end + eps);
+
+      return { from: start, to: end, coordinates: coordinates.slice(lo, hi) };
+    })
+    .filter((run) => run.coordinates.length >= 2);
+}
+
+/** The details covering `[from, to]`, measured from `from`. */
+function clipDetails(
+  details: PathDetails,
+  from: number,
+  to: number,
+): PathDetails {
+  return Object.fromEntries(
+    Object.entries(details).flatMap(([key, spans]) => {
+      const clipped: PathDetailSpan[] = [];
+
+      for (const span of spans) {
+        const start = Math.max(span.start, from);
+
+        const end = Math.min(span.end, to);
+
+        if (end > start) {
+          clipped.push({
+            start: start - from,
+            end: end - from,
+            value: span.value,
+          });
+        }
+      }
+
+      return clipped.length > 0 ? [[key, clipped] as const] : [];
+    }),
+  );
 }

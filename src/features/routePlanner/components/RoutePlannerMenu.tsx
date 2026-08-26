@@ -28,6 +28,11 @@ import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  Action,
+  ActionItems,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -55,6 +60,8 @@ import {
   Dropdown,
   Form,
   InputGroup,
+  ToggleButton,
+  ToggleButtonGroup,
 } from 'react-bootstrap';
 import { BiShapePolygon } from 'react-icons/bi';
 import {
@@ -62,7 +69,6 @@ import {
   FaChartArea,
   FaCrosshairs,
   FaDiceThree,
-  FaEllipsisV,
   FaHome,
   FaMapMarkerAlt,
   FaPaintBrush,
@@ -70,8 +76,6 @@ import {
   FaPencilAlt,
   FaPlay,
   FaRandom,
-  FaRegCheckSquare,
-  FaRegSquare,
   FaRoute,
   FaStop,
   FaSync,
@@ -90,23 +94,26 @@ import {
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
   routePlannerSetIsochroneParams,
+  routePlannerSetMaxAlternatives,
+  routePlannerSetMilestones,
   routePlannerSetMode,
   routePlannerSetPickMode,
   routePlannerSetRoundtripParams,
   routePlannerSetStart,
   routePlannerSetTransportType,
   routePlannerSwapEnds,
-  routePlannerToggleMilestones,
 } from '../model/actions.js';
 import { routeColorizeFeatures } from '../model/pathDetails.js';
 import {
   getFinish,
   getStart,
+  routePlannerAlternativesApplicable,
   routePlannerHasTransportOverride,
   routePlannerOptimizeApplicable,
   storedRouteIsShowingSelector,
 } from '../model/reducer.js';
 import { plannedRouteLines } from '../model/routeGeometry.js';
+import { MAX_ALTERNATIVES } from '../model/settingsReducer.js';
 import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
@@ -156,6 +163,60 @@ function useParam(
   );
 
   return [value, handleChange, handleSubmit, setValue] as const;
+}
+
+/**
+ * A setting of the ⋮ menu whose values are few and short enough to sit side by
+ * side. Full width, against the usual rule for short options: these read as a
+ * scale, and an even row of them shows it.
+ */
+function MenuToggleGroup({
+  icon,
+  title,
+  name,
+  value,
+  options,
+  onChange,
+}: {
+  icon: ReactElement;
+  title: ReactNode;
+  name: string;
+  value: string;
+  options: readonly (readonly [value: string, label: ReactNode])[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <>
+      <Dropdown.Divider />
+
+      <Dropdown.Header>
+        {icon}
+        &nbsp;{title ?? '…'}
+      </Dropdown.Header>
+
+      <div className="px-3 pb-2">
+        <ToggleButtonGroup
+          className="d-flex"
+          type="radio"
+          name={name}
+          value={value}
+          onChange={onChange}
+        >
+          {options.map(([optionValue, label]) => (
+            <ToggleButton
+              key={optionValue}
+              id={`${name}-${optionValue}`}
+              value={optionValue}
+              variant="outline-primary"
+              size="sm"
+            >
+              {label ?? '…'}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </div>
+    </>
+  );
 }
 
 function TripSettings() {
@@ -214,7 +275,7 @@ function TripSettings() {
               max={1000}
             />
 
-            <InputGroup.Text>㎞</InputGroup.Text>
+            <InputGroup.Text>km</InputGroup.Text>
           </InputGroup>
         </Form.Group>
 
@@ -362,7 +423,7 @@ function IsochroneSettings() {
               max={1000}
             />
 
-            <InputGroup.Text>㎞</InputGroup.Text>
+            <InputGroup.Text>km</InputGroup.Text>
           </InputGroup>
         </Form.Group>
 
@@ -468,6 +529,14 @@ export default function RoutePlannerMenu(): ReactElement {
   // router was just asked for.
   const storedRouteShowing = useAppSelector(storedRouteIsShowingSelector);
 
+  const maxAlternatives = useAppSelector(
+    (state) => state.routePlannerSettings.maxAlternatives,
+  );
+
+  const alternativesApplicable = useAppSelector((state) =>
+    routePlannerAlternativesApplicable(state.routePlanner),
+  );
+
   // Isochrones replace the route alternatives, so the result-dependent controls
   // key off either. Most of them (colorize, elevation profile, milestones,
   // optimization) only make sense for a route and stay route-only.
@@ -567,49 +636,20 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => getFinish(state.routePlanner) ?? null,
   );
 
+  function convertRouteToDrawing() {
+    const tolerance = askSimplification(
+      plannedRouteLines(isochrones, alternatives[activeAlternativeIndex]),
+    );
+
+    if (tolerance !== null) {
+      dispatch(convertToDrawing({ type: 'planned-route', tolerance }));
+    }
+  }
+
+  // Only the optimize items still come in as event keys; every other action
+  // dispatches from where it is declared.
   const handleMoreSelect = (eventKey: string | null) => {
     switch (eventKey) {
-      case 'toggle-elevation-chart':
-        dispatch(
-          elevationProfileIsVisible
-            ? elevationChartClose()
-            : elevationChartOpen({ type: 'route-planner' }),
-        );
-
-        break;
-
-      case 'convert-to-drawing': {
-        const tolerance = askSimplification(
-          plannedRouteLines(isochrones, alternatives[activeAlternativeIndex]),
-        );
-
-        if (tolerance !== null) {
-          dispatch(convertToDrawing({ type: 'planned-route', tolerance }));
-        }
-
-        break;
-      }
-
-      case 'route-style':
-        dispatch(setActiveModal({ type: 'route-planner-style' }));
-
-        break;
-
-      case 'recompute':
-        dispatch(routePlannerRecompute());
-
-        break;
-
-      case 'toggle-milestones-km':
-        dispatch(routePlannerToggleMilestones({ type: 'abs', toggle: true }));
-
-        break;
-
-      case 'toggle-milestones-%':
-        dispatch(routePlannerToggleMilestones({ type: 'rel', toggle: true }));
-
-        break;
-
       case 'optimize-fixed-start':
         dispatch(routePlannerOptimizeOrder('fixed-start'));
 
@@ -699,7 +739,7 @@ export default function RoutePlannerMenu(): ReactElement {
                 ]
               }
               name={rpm?.modeLabel}
-              breakpoint="lg"
+              breakpoint="md"
             >
               {({ props, label, labelClassName }) => (
                 <Dropdown.Toggle id="mode" variant="secondary" {...props}>
@@ -774,7 +814,7 @@ export default function RoutePlannerMenu(): ReactElement {
               }
             }}
           >
-            <LongPressTooltip breakpoint="md" label={rpm?.start}>
+            <LongPressTooltip breakpoint="lg" label={rpm?.start}>
               {({ label, labelClassName, props }) => (
                 <Dropdown.Toggle
                   variant="secondary"
@@ -864,7 +904,7 @@ export default function RoutePlannerMenu(): ReactElement {
                   }
                 }}
               >
-                <LongPressTooltip breakpoint="md" label={rpm?.finish}>
+                <LongPressTooltip breakpoint="lg" label={rpm?.finish}>
                   {({ label, labelClassName, props }) => (
                     <Dropdown.Toggle
                       variant="secondary"
@@ -925,7 +965,7 @@ export default function RoutePlannerMenu(): ReactElement {
         {routeFound && (
           <SelectDropdown
             id="route-colorizing-mode"
-            breakpoint="lg"
+            breakpoint="md"
             toggleIcon={<FaPalette />}
             name={cm?.colorizeBy}
             value={colorizeBy ?? 'none'}
@@ -944,9 +984,8 @@ export default function RoutePlannerMenu(): ReactElement {
                 ),
               );
             }}
-            // Unlike imported tracks, a planned route can never carry recorded
-            // sensor data (heart rate, cadence, …), so those modes are hidden
-            // rather than shown disabled.
+            // A planned route can never carry recorded sensor data, so those
+            // modes are hidden rather than shown disabled.
             options={[
               ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
               ...[undefined, ...colorizingModes.filter(isModeAvailable)].map(
@@ -966,64 +1005,98 @@ export default function RoutePlannerMenu(): ReactElement {
         )}
 
         {resultFound && (
-          <Dropdown id="more" onSelect={handleMoreSelect}>
-            <Dropdown.Toggle variant="secondary">
-              <FaEllipsisV />
-            </Dropdown.Toggle>
+          <ResponsiveActions
+            // The gap the buttons beside it are set in.
+            gap={1}
+            onSelect={handleMoreSelect}
+          >
+            {routeFound && (
+              <Action
+                label={m?.general.elevationProfile}
+                icon={<FaChartArea />}
+                // Breakpoints, not `fit`: this toolbar wraps onto a line of its
+                // own, where measuring what fits has no stable answer.
+                showFrom="lg"
+                showLabelFrom="xl"
+                active={elevationProfileIsVisible}
+                onClick={() => {
+                  dispatch(
+                    elevationProfileIsVisible
+                      ? elevationChartClose()
+                      : elevationChartOpen({ type: 'route-planner' }),
+                  );
+                }}
+              />
+            )}
 
-            <FmDropdownMenu>
+            <Action
+              label={m?.general.convertToDrawing}
+              icon={<FaPencilAlt />}
+              showFrom="never"
+              onClick={convertRouteToDrawing}
+            />
+
+            <Action
+              label={rpm?.style.menuItem}
+              icon={<FaPaintBrush />}
+              showFrom="never"
+              onClick={() => {
+                dispatch(setActiveModal({ type: 'route-planner-style' }));
+              }}
+            />
+
+            {/* Only a route that came with the map is not already fresh. */}
+            {storedRouteShowing && (
+              <Action
+                label={rpm?.recompute}
+                icon={<FaSync />}
+                showFrom="never"
+                onClick={() => {
+                  dispatch(routePlannerRecompute());
+                }}
+              />
+            )}
+
+            <ActionItems>
               {routeFound && (
-                <Dropdown.Item
-                  as="button"
-                  active={elevationProfileIsVisible}
-                  eventKey="toggle-elevation-chart"
-                >
-                  <FaChartArea />
-                  &nbsp;{m?.general.elevationProfile ?? '…'}
-                </Dropdown.Item>
+                <MenuToggleGroup
+                  icon={<FaMapMarkerAlt />}
+                  title={rpm?.milestones}
+                  name="milestones"
+                  // A group's value is a string, so the off state is spelled
+                  // rather than being the `false` the setting holds.
+                  value={milestones || 'off'}
+                  options={[
+                    ['off', rpm?.milestonesOff],
+                    ['abs', 'km'],
+                    ['rel', '%'],
+                  ]}
+                  onChange={(value) => {
+                    dispatch(
+                      routePlannerSetMilestones(
+                        value === 'off' ? false : (value as 'abs' | 'rel'),
+                      ),
+                    );
+                  }}
+                />
               )}
 
-              <Dropdown.Item as="button" eventKey="convert-to-drawing">
-                <FaPencilAlt />
-                &nbsp;{m?.general.convertToDrawing ?? '…'}
-              </Dropdown.Item>
-
-              <Dropdown.Item as="button" eventKey="route-style">
-                <FaPaintBrush />
-                &nbsp;{rpm?.style.menuItem ?? '…'}
-              </Dropdown.Item>
-
-              {/* Only a route that came with the map has anything to recompute
-                  — every other one is as fresh as the router can make it. */}
-              {storedRouteShowing && (
-                <Dropdown.Item as="button" eventKey="recompute">
-                  <FaSync />
-                  &nbsp;{rpm?.recompute ?? '…'}
-                </Dropdown.Item>
-              )}
-
-              {routeFound && (
-                <>
-                  <Dropdown.Divider />
-
-                  <Dropdown.Item as="button" eventKey="toggle-milestones-km">
-                    {milestones === 'abs' ? (
-                      <FaRegCheckSquare />
-                    ) : (
-                      <FaRegSquare />
-                    )}
-                    &nbsp;{rpm?.milestones ?? '…'} (km)
-                  </Dropdown.Item>
-
-                  <Dropdown.Item as="button" eventKey="toggle-milestones-%">
-                    {milestones === 'rel' ? (
-                      <FaRegCheckSquare />
-                    ) : (
-                      <FaRegSquare />
-                    )}
-                    &nbsp;{rpm?.milestones ?? '…'} (%)
-                  </Dropdown.Item>
-                </>
+              {/* Not for the map's own stored route: the count is not part of
+                  `routeKey`, so nothing would re-route. */}
+              {alternativesApplicable && !storedRouteShowing && (
+                <MenuToggleGroup
+                  icon={<FaRoute />}
+                  title={rpm?.maxAlternatives}
+                  name="maxAlternatives"
+                  value={String(maxAlternatives)}
+                  options={Array.from(
+                    { length: MAX_ALTERNATIVES },
+                    (_, i) => [String(i + 1), String(i + 1)] as const,
+                  )}
+                  onChange={(value) => {
+                    dispatch(routePlannerSetMaxAlternatives(Number(value)));
+                  }}
+                />
               )}
 
               {optimizeApplicable && (
@@ -1056,8 +1129,8 @@ export default function RoutePlannerMenu(): ReactElement {
                   ))}
                 </>
               )}
-            </FmDropdownMenu>
-          </Dropdown>
+            </ActionItems>
+          </ResponsiveActions>
         )}
 
         {hasRoute && <DeleteButton action={routePlannerDelete()} />}

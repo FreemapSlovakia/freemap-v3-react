@@ -10,6 +10,7 @@ import {
   routePlannerRemovePoint,
   routePlannerRestoreSavedRoute,
   routePlannerSetActiveAlternativeIndex,
+  routePlannerSetMilestones,
   routePlannerSetMode,
   routePlannerSetPoint,
   routePlannerSetResult,
@@ -18,7 +19,6 @@ import {
   routePlannerSupersedeSavedRoute,
   routePlannerSwapEnds,
   routePlannerToggleItineraryVisibility,
-  routePlannerToggleMilestones,
 } from './actions.js';
 import {
   routePlannerInitialState,
@@ -115,30 +115,24 @@ describe('routePlannerReducer — milestones', () => {
   it('sets the milestone type', () => {
     const next = routePlannerReducer(
       routePlannerInitialState,
-      routePlannerToggleMilestones({ type: 'abs' }),
+      routePlannerSetMilestones('abs'),
     );
 
     expect(next.milestones).toBe('abs');
   });
 
-  it('toggle:true on the active type turns milestones off', () => {
+  it('turns milestones off', () => {
     const state = { ...routePlannerInitialState, milestones: 'abs' as const };
 
-    const next = routePlannerReducer(
-      state,
-      routePlannerToggleMilestones({ type: 'abs', toggle: true }),
-    );
+    const next = routePlannerReducer(state, routePlannerSetMilestones(false));
 
     expect(next.milestones).toBe(false);
   });
 
-  it('toggle:true on a different type switches to it', () => {
+  it('switches from one type to the other', () => {
     const state = { ...routePlannerInitialState, milestones: 'abs' as const };
 
-    const next = routePlannerReducer(
-      state,
-      routePlannerToggleMilestones({ type: 'rel', toggle: true }),
-    );
+    const next = routePlannerReducer(state, routePlannerSetMilestones('rel'));
 
     expect(next.milestones).toBe('rel');
   });

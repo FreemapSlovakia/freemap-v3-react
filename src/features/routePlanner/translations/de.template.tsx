@@ -44,7 +44,9 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     isochrone: 'Isochronen',
   },
   milestones: 'Kilometermarkierungen',
+  milestonesOff: 'Aus',
   recompute: 'Route neu berechnen',
+  maxAlternatives: 'Max. Anzahl der Routenvorschläge',
   style: {
     menuItem: 'Routenstil',
     title: 'Routenstil',

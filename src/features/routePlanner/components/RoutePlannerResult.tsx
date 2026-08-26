@@ -769,8 +769,11 @@ export function RoutePlannerResult(): ReactElement {
                 routeSlice.geometry.coordinates.length < 2 ||
                 // The colorized Hotline canvas replaces the active
                 // alternative's foreground line; the halo above carries its
-                // outline.
-                (showColorized && alt === activeAlternativeIndex) ? null : (
+                // outline. A failed leg keeps its line — the canvas leaves
+                // those metres unpainted, and nothing else says routing gave up.
+                (showColorized &&
+                  alt === activeAlternativeIndex &&
+                  routeSlice.mode !== 'error') ? null : (
                   // foreground
                   <Polyline
                     // `interactive` is in the key even though the layer is never

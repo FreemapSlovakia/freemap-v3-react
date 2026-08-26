@@ -1,7 +1,7 @@
 import type { Feature, LineString } from 'geojson';
 import { type Alternative, routeKey, type SavedRoute } from './actions.js';
 import type { RoutePlannerState } from './reducer.js';
-import { flattenWithStructures } from './structureElevation.js';
+import { flattenLevelledSpans } from './structureElevation.js';
 
 /**
  * Whether any leg is a straight line standing in for a segment the router didn't
@@ -22,7 +22,7 @@ function sampledLineIsWorthStoring(
   line: Feature<LineString>,
   alternative: Alternative,
 ): boolean {
-  const { coordinates } = flattenWithStructures(alternative);
+  const { coordinates } = flattenLevelledSpans(alternative);
 
   return (
     coordinates.length !== line.geometry.coordinates.length ||

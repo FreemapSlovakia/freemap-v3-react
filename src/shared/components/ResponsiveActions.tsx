@@ -106,9 +106,9 @@ export function ActionSubmenu(_props: {
 }
 
 /**
- * Raw `Dropdown.Item`s for the packed menu — a set that only reads as a list,
- * such as the external-app targets. They never go inline, and their `eventKey`s
- * reach the `onSelect` given to {@link ResponsiveActions}.
+ * Menu-only content: `Dropdown.Item`s, headers, or a control of its own. It
+ * never goes inline, and any `eventKey` it carries reaches the `onSelect` given
+ * to {@link ResponsiveActions}.
  */
 export function ActionItems(_props: { children: ReactNode }): null {
   return null;
@@ -132,11 +132,13 @@ type Props = {
   className?: string;
   /**
    * Pack by what fits rather than by the breakpoints: the row's own scroller is
-   * measured, and actions fold into the menu only while it overflows. Then
-   * `showFrom` is read as an order — the largest breakpoint folds first — and
-   * `xs` (or none) stays inline whatever happens. For a row sharing its width
-   * with controls this component knows nothing about, where a breakpoint packs
-   * while the row still has room to spare.
+   * measured, and actions fold into the menu only while it overflows, largest
+   * `showFrom` first (`xs` or none never folds).
+   *
+   * Only where the scroller's width is given to it — a panel, a modal. Where it
+   * is shrink-to-fit or may wrap onto a line of its own, folding shrinks the
+   * very box the fit is measured against, so both states are self-consistent
+   * and what shows at a given width depends on how that width was arrived at.
    */
   fit?: boolean;
 };
@@ -201,17 +203,28 @@ export function ResponsiveActions({
   /** Bumped by the row's own resize, which re-runs the measurement below. */
   const [, setResized] = useState(0);
 
-  /** What each action took when it was last inline, by its child index. */
-  const widths = useRef(new Map<number, number>());
+  /**
+   * What each action took when it was last inline. Keyed by whether its label
+   * was showing as well as by its child index: an action wide with its label is
+   * narrow without it, and asking for the wrong one keeps a folded action
+   * folded through every width where it would in fact fit.
+   */
+  const widths = useRef(new Map<string, number>());
 
   const spacingRef = useRef<ReturnType<typeof readSpacing> | null>(null);
 
   const isOff = (props: Pick<ActionProps, 'disabled' | 'requiresOnline'>) =>
     props.disabled || (props.requiresOnline && !online);
 
-  const isInline = (showFrom: NonNullable<ActionProps['showFrom']> = 'xs') => {
-    return showFrom !== 'never' && (showFrom === 'xs' || matches[showFrom]);
-  };
+  // `xs` has no min-width to match, so it is always on.
+  const atLeast = (breakpoint: Breakpoint) =>
+    breakpoint === 'xs' || matches[breakpoint];
+
+  const isInline = (showFrom: NonNullable<ActionProps['showFrom']> = 'xs') =>
+    showFrom !== 'never' && atLeast(showFrom);
+
+  const showsLabel = ({ showLabelFrom }: ActionProps) =>
+    showLabelFrom !== undefined && atLeast(showLabelFrom);
 
   type Entry =
     | { kind: 'divider' }
@@ -459,16 +472,19 @@ export function ResponsiveActions({
 
     const kids = [...root.children];
 
+    const widthKey = (entry: Extract<Entry, { kind: 'action' }>) =>
+      `${entry.index}:${showsLabel(entry.props)}`;
+
     inlineEntries.forEach((entry, i) => {
       const el = kids[i];
 
       if (el instanceof HTMLElement && el.offsetWidth > 0) {
-        widths.current.set(entry.index, el.offsetWidth + spacing.ownGap);
+        widths.current.set(widthKey(entry), el.offsetWidth + spacing.ownGap);
       }
     });
 
     const width = (entry: Extract<Entry, { kind: 'action' }>) =>
-      widths.current.get(entry.index) ?? ESTIMATED_ACTION_PX;
+      widths.current.get(widthKey(entry)) ?? ESTIMATED_ACTION_PX;
 
     // Added up rather than read off the row's `scrollWidth`: an `ms-auto` on
     // this element eats the slack into a margin, so an overflowing row and a

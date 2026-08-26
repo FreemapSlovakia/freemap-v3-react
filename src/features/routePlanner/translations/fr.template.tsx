@@ -21,7 +21,9 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       'Les zones indiquent alors d’où l’on peut atteindre ce point ; sans la case cochée, jusqu’où l’on peut aller depuis celui-ci. Les sens uniques et les interdictions de tourner font la différence.',
   },
   milestones: 'Bornes kilométriques',
+  milestonesOff: 'Aucune',
   recompute: 'Recalculer l’itinéraire',
+  maxAlternatives: 'Nombre max. d’itinéraires proposés',
   style: {
     menuItem: 'Style de l’itinéraire',
     title: 'Style de l’itinéraire',

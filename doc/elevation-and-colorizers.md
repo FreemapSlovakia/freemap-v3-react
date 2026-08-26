@@ -82,11 +82,10 @@ step's own coordinates).
 
 `ensureRouteRenderGeojson` then:
 
-1. `flattenWithStructures` merges legs/steps into one coordinate list (dropping the vertex
+1. `flattenLevelledSpans` merges legs/steps into one coordinate list (dropping the vertex
    consecutive steps share) and converts the structure ranges into **spans in metres along
    the line** — a structure split across a step boundary is rejoined here;
-2. `straightenStructures` runs **after** `densifyAlong` and lays a straight line across
-   each span.
+2. `levelSpans` runs **after** `densifyAlong` and lays a straight line across each span.
 
 The line covers the span's **own end samples**, not just what lies between them: a short
 bridge on a long route often has no sample strictly inside it (the densification step
@@ -98,7 +97,7 @@ abutment would otherwise tilt the entire span.
 
 Rather than replacing the terrain outright, the line is **clamped** against it: a deck is
 never below the ground it spans (`Math.max`), a bore never above it (`Math.min`) — which
-is why `StructureSpan` carries the `kind`. That is what makes reaching past the mapped
+is why `LevelledSpan` carries the `kind`. That is what makes reaching past the mapped
 ends safe: beyond the real structure the terrain is already on the right side of the line,
 so nothing changes there.
 
@@ -107,6 +106,18 @@ along the line alone — and it must run last, since the inserted points are DEM
 and would otherwise put the notch straight back inside a long bridge. It applies on the
 free tier as well (GraphHopper's own DEM has the same holes) at no request cost. Only
 `renderGeojson` is affected; exports keep the router's raw elevation.
+
+**A third kind, `unrouted`, is not a structure.** Where routing fails, the result carries a
+straight `mode: 'error'` leg between the waypoints so the map has something to draw, and
+the DTM happily reports every ridge that line crosses — as a profile, as ascent, and as
+colorize. `flattenLevelledSpans` emits those legs as spans too, and they are the one kind
+levelled **without** the clamp: clamping a straight line up onto a 2500 m ridge would
+restore the exact fiction being removed. The same spans are what `routeColorizeFeatures`
+cuts the colorize line at, leaving one feature per routed run so the red dotted line — the
+only thing still saying routing gave up there — is not painted over. A partly-failed route
+therefore colorizes as several features, which per-feature-normalized modes scale
+independently and the legend declines to label; that is the honest reading of two runs
+with a hole between them.
 
 **OSRM routes** (`car-osrm`/`bike-osrm`/`foot-osrm`) keep the artifacts: the OSRM route
 response carries no bridge or tunnel data at all (only name/ref/mode/intersections), and
@@ -162,7 +173,7 @@ flattens real terrain. The honest fix there is to move the way in OSM.
 
 `smoothElevationSeries` is the single entry point for both passes, so every consumer of
 terrain-model elevation applies them in the same order: `ensureRouteRenderGeojson` (after
-`straightenStructures`), dataViewer's `ensureRenderGeojson` (which already runs only
+`levelSpans`), dataViewer's `ensureRenderGeojson` (which already runs only
 after a server elevation override), and the elevation chart's own
 `processorHandler.ts`, which samples a drawn line or a measurement straight from the API.
 Never on recorded altitude — these correct a terrain model, not a barometer — and never on

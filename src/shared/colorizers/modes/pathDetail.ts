@@ -115,11 +115,9 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
       const meters = new Map<string, number>();
 
       for (const feature of features) {
-        const spans = readPathDetails(feature, spec.detail);
-
-        if (!spans?.length) {
-          continue;
-        }
+        // A line the router valued nothing of is Unknown from end to end, which
+        // is what `covering` makes of no stretches at all.
+        const spans = readPathDetails(feature, spec.detail) ?? [];
 
         for (const { start, end, index } of covering(
           spans,
@@ -149,11 +147,13 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
 
     compute: (features) =>
       features.flatMap((feature) => {
-        const spans = readPathDetails(feature, spec.detail);
+        // No stretches means Unknown end to end, not an undrawn line: the plain
+        // route has stepped aside for this one, so a gap would be a hole.
+        const spans = readPathDetails(feature, spec.detail) ?? [];
 
         const coordinates = feature.geometry.coordinates;
 
-        if (!spans?.length || coordinates.length < 2) {
+        if (coordinates.length < 2) {
           return [];
         }
 

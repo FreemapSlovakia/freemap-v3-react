@@ -7,6 +7,7 @@ import {
   routePlannerRemovePoint,
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
+  routePlannerSetMaxAlternatives,
   routePlannerSetMode,
   routePlannerSetParams,
   routePlannerSetPoint,
@@ -31,6 +32,8 @@ export const updateRouteTypes = [
   routePlannerSetParams,
   routePlannerSetRoundtripParams,
   routePlannerSetIsochroneParams,
+  // Asking for a different number of routes is asking for a different answer.
+  routePlannerSetMaxAlternatives,
   routePlannerRecompute,
   routePlannerFindRoute,
   mapsLoaded,
