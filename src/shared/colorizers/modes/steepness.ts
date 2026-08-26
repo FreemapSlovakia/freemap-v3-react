@@ -15,12 +15,58 @@ import { featureSmoothingSpan } from '../smoothing.js';
 const BASELINE_METERS = DEM_RESOLUTION_METERS;
 
 /**
- * The grade each end of the palette stands for, as a ratio — the scale runs
- * from `-STEEPNESS_FULL_SCALE` to `+STEEPNESS_FULL_SCALE` and clamps beyond
- * that. The legend labels itself from this, so the colored line and the labels
- * can't drift apart.
+ * The grades the ends of the palette can be set to, as ratios: the scale runs
+ * from `-scale` to `+scale` and clamps beyond. No one value serves every route
+ * — measured against real ones, the widest scale that clamps almost nothing is
+ * 5 % for a road ride, 15 % for a car, 25 % on rolling hills and 60 % in the
+ * Tatras — so the reader picks, and each of these is somebody's best fit.
  */
-export const STEEPNESS_FULL_SCALE = 0.5;
+export const STEEPNESS_SCALES = [0.05, 0.1, 0.15, 0.25, 0.4, 0.6, 1] as const;
+
+/** 100 % is 45°, past which nobody is walking, so it clamps nothing anywhere. */
+export const STEEPNESS_DEFAULT_SCALE = 1;
+
+/**
+ * Where the scale stops being straight: grades under this keep their spacing,
+ * past it the palette compresses. Both ends have to fit one ramp — an alpine
+ * path reaches 50 %, a road route's whole range is a couple of per cent and was
+ * one black line. Measured over real routes, 1 % is what makes a gentle ride
+ * legible without painting the terrain model's own noise.
+ */
+const STEEPNESS_KNEE = 0.01;
+
+const fullScaleT = (scale: number) => Math.asinh(scale / STEEPNESS_KNEE);
+
+/**
+ * A grade as its place in the palette, 0…1 with 0.5 flat. `asinh` rather than a
+ * plain log because grade is signed and crosses zero: it is odd-symmetric,
+ * defined at 0, and straight either side of it.
+ */
+export function steepnessColor(
+  grade: number,
+  scale: number = STEEPNESS_DEFAULT_SCALE,
+): number {
+  return Number.isFinite(grade)
+    ? Math.max(
+        0,
+        Math.min(
+          1,
+          0.5 + (0.5 * Math.asinh(grade / STEEPNESS_KNEE)) / fullScaleT(scale),
+        ),
+      )
+    : 0.5;
+}
+
+/**
+ * The grade a palette position stands for. The legend labels itself through
+ * this, so the colored line and the labels can't drift apart.
+ */
+export function steepnessGradeAt(
+  t: number,
+  scale: number = STEEPNESS_DEFAULT_SCALE,
+): number {
+  return STEEPNESS_KNEE * Math.sinh((2 * t - 1) * fullScaleT(scale));
+}
 
 export const steepnessColorizer: Colorizer = {
   needsElevation: true,
@@ -92,11 +138,12 @@ export const steepnessColorizer: Colorizer = {
         // from the original coordinate, not the smoothed one.
         const gap = !(coords[i]!.length >= 3 && Number.isFinite(coords[i]![2]));
 
-        const color = Number.isFinite(angle)
-          ? Math.max(0, Math.min(1, angle / (2 * STEEPNESS_FULL_SCALE) + 0.5))
-          : 0.5;
-
-        return { lat: lat!, lon: lon!, color, gap };
+        return {
+          lat: lat!,
+          lon: lon!,
+          color: steepnessColor(angle, options?.steepnessScale),
+          gap,
+        };
       });
     }),
 };

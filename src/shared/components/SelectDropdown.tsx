@@ -49,6 +49,11 @@ type Props = {
   kbd?: string;
   /** Render the toggle as a native-like `<select>` with an always-visible label. */
   asSelect?: boolean;
+  /**
+   * Menu content after the options — a control of its own rather than something
+   * to pick, so it is not an option and its clicks must not reach `onSelect`.
+   */
+  footer?: ReactNode;
   /** Dims the whole control, for when none of the options can be acted on. */
   disabled?: boolean;
   className?: string;
@@ -70,6 +75,7 @@ export function SelectDropdown({
   breakpoint,
   kbd,
   asSelect,
+  footer,
   disabled,
   className,
   id,
@@ -155,7 +161,10 @@ export function SelectDropdown({
         </LongPressTooltip>
       )}
 
-      <FmDropdownMenu>{items}</FmDropdownMenu>
+      <FmDropdownMenu>
+        {items}
+        {footer}
+      </FmDropdownMenu>
     </Dropdown>
   );
 }

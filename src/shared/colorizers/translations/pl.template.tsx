@@ -4,6 +4,7 @@ import type { ColorizerMessages } from './ColorizerMessages.js';
 const pl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Koloruj według',
   legend: 'Legenda',
+  steepnessScale: 'Zakres nachylenia',
   mode: {
     none: 'Nieaktywne',
     elevation: 'Wysokość',

@@ -3,7 +3,11 @@ import type { Feature, LineString } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import { headingColorizer } from './modes/heading.js';
 import { speedColorizer } from './modes/speed.js';
-import { STEEPNESS_FULL_SCALE, steepnessColorizer } from './modes/steepness.js';
+import {
+  STEEPNESS_DEFAULT_SCALE,
+  steepnessColorizer,
+  steepnessGradeAt,
+} from './modes/steepness.js';
 import { timeColorizer } from './modes/time.js';
 
 // Builds a single-segment LineString feature with the given coordinates and
@@ -155,31 +159,37 @@ describe('steepnessColorizer', () => {
     );
   }
 
-  // The grade a palette position stands for, the inverse of what the colorizer
-  // maps with — so a wrongly scaled mapping reads back as the wrong grade
-  // rather than merely as a different color.
-  function gradeOf(color: number): number {
-    return (color - 0.5) * 2 * STEEPNESS_FULL_SCALE;
-  }
-
   it('reads a constant slope back at its own grade', () => {
-    for (const grade of [-0.3, -0.1, 0, 0.1, 0.3]) {
+    // Through the scale's own inverse, so a wrongly mapped grade reads back as
+    // the wrong grade rather than merely as a different color.
+    for (const grade of [-0.3, -0.1, -0.01, 0, 0.01, 0.1, 0.3]) {
       const [points] = steepnessColorizer.compute([slope(grade)]);
 
       // The ends are measured over a window shifted inward, so only the middle
       // is a clean centered reading.
       for (const point of points!.slice(20, 40)) {
-        expect(gradeOf(point.color)).toBeCloseTo(grade, 3);
+        expect(steepnessGradeAt(point.color)).toBeCloseTo(grade, 3);
       }
     }
   });
 
+  // What the non-linear scale is for: a gentle grade has to move the color
+  // enough to see, where a straight ±50 % ramp left a road route black.
+  it('spends real palette on a gentle grade', () => {
+    const [points] = steepnessColorizer.compute([slope(0.02)]);
+
+    // A straight ramp would put 2 % at 0.52, indistinguishable from flat.
+    expect(points![30]!.color).toBeGreaterThan(0.55);
+  });
+
   it('clamps beyond the scale ends', () => {
     const [down] = steepnessColorizer.compute([
-      slope(-STEEPNESS_FULL_SCALE * 2),
+      slope(-STEEPNESS_DEFAULT_SCALE * 2),
     ]);
 
-    const [up] = steepnessColorizer.compute([slope(STEEPNESS_FULL_SCALE * 2)]);
+    const [up] = steepnessColorizer.compute([
+      slope(STEEPNESS_DEFAULT_SCALE * 2),
+    ]);
 
     expect(down![30]!.color).toBe(0);
 

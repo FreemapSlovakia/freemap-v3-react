@@ -128,6 +128,8 @@ export interface ColorizeOptions {
   // sub-pixel wiggle in the source data doesn't read as color noise; omitted
   // (e.g. export, tests) the colorizer keeps its intrinsic baseline span.
   zoom?: number;
+  // The grade the steepness palette ends at, as a ratio; omitted, its default.
+  steepnessScale?: number;
 }
 
 export interface Colorizer {

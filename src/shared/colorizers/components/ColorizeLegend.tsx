@@ -10,7 +10,7 @@ import type { Messages } from '@/translations/messagesInterface.js';
 import { readCoordTimes, rgbCss } from '../colorize.js';
 import type { ColorizingMode, HotlinePalette } from '../index.js';
 import { colorizers } from '../index.js';
-import { STEEPNESS_FULL_SCALE } from '../modes/steepness.js';
+import { steepnessGradeAt } from '../modes/steepness.js';
 import { useColorizerMessages } from '../translations/useColorizerMessages.js';
 
 type Tick = { t: number; label: ReactNode };
@@ -81,15 +81,26 @@ function legendSpec(
   features: Feature<LineString>[] | undefined,
   language: string,
   zoom: number,
+  steepnessScale: number,
 ): LegendSpec {
   switch (mode) {
     case 'steepness':
       return {
         unit: '%',
-        ticks: [0, 0.25, 0.5, 0.75, 1].map((t) => {
-          const v = Math.round((2 * t - 1) * STEEPNESS_FULL_SCALE * 100);
+        // Evenly spaced, labelled with whatever grade lands there — round
+        // grades cannot be had at every scale (at ±5 % they collapse onto
+        // zero), and the labels closing up toward the middle is itself what
+        // shows the scale bending.
+        ticks: [0, 1 / 6, 2 / 6, 0.5, 4 / 6, 5 / 6, 1].map((t) => {
+          const v = steepnessGradeAt(t, steepnessScale) * 100;
 
-          return { t, label: `${v > 0 ? '+' : ''}${v}` };
+          return {
+            t,
+            label:
+              Math.abs(v) < 0.05
+                ? '0'
+                : `${v > 0 ? '+' : ''}${Math.abs(v) < 10 ? v.toFixed(1) : Math.round(v)}`,
+          };
         }),
       };
     case 'battery':
@@ -184,6 +195,10 @@ export function ColorizeLegend({ mode, icon, features }: Props) {
   // with it, and the labels describe the smoothed values, not the raw samples.
   const zoom = useAppSelector((state) => Math.round(state.map.zoom));
 
+  const steepnessScale = useAppSelector(
+    (state) => state.elevationSettings.steepnessScale,
+  );
+
   const named = colorizers[mode].categories;
 
   // Walks the lines, so it is memoized like the tick labels below.
@@ -198,9 +213,16 @@ export function ColorizeLegend({ mode, icon, features }: Props) {
   const { unit, ticks } = useMemo(
     () =>
       cm && m && !named
-        ? legendSpec(mode, m.cardinals, features, language, zoom)
+        ? legendSpec(
+            mode,
+            m.cardinals,
+            features,
+            language,
+            zoom,
+            steepnessScale,
+          )
         : { ticks: [] },
-    [mode, cm, m, named, features, language, zoom],
+    [mode, cm, m, named, features, language, zoom, steepnessScale],
   );
 
   // A mode outlives the result it was picked for — it is persisted, and only the

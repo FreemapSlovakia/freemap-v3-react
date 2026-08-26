@@ -4,6 +4,7 @@ import type { ColorizerMessages } from './ColorizerMessages.js';
 const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Színezés szerint',
   legend: 'Jelmagyarázat',
+  steepnessScale: 'Meredekségi tartomány',
   mode: {
     none: 'Inaktív',
     elevation: 'Magasság',

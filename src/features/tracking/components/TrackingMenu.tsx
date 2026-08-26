@@ -9,6 +9,7 @@ import {
   LEGEND_ITEM,
   legendToggleOption,
 } from '@shared/colorizers/components/legendToggleOption.js';
+import { SteepnessScaleSlider } from '@shared/colorizers/components/SteepnessScaleSlider.js';
 import { usePremiumColorizeLock } from '@shared/colorizers/components/usePremiumColorizeLock.js';
 import {
   ColorizingModeSchema,
@@ -209,6 +210,7 @@ export function TrackingMenu(): ReactElement {
               };
             }),
           ]}
+          footer={<SteepnessScaleSlider mode={colorizeBy} />}
         />
 
         {chartTrack && (

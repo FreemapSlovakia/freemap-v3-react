@@ -4,6 +4,7 @@ import type { ColorizerMessages } from './ColorizerMessages.js';
 const de: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Einfärben nach',
   legend: 'Legende',
+  steepnessScale: 'Steigungsbereich',
   mode: {
     none: 'Inaktiv',
     elevation: 'Höhe',

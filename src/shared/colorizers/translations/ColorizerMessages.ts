@@ -1,6 +1,8 @@
 export type ColorizerMessages = {
   colorizeBy: string;
   legend: string;
+  /** Label of the slider setting where the steepness palette ends. */
+  steepnessScale: string;
   mode: {
     none: string;
     elevation: string;

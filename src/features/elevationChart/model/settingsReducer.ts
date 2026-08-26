@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
+import { STEEPNESS_DEFAULT_SCALE } from '@shared/colorizers/modes/steepness.js';
 import { elevationSetSettings } from './actions.js';
 
 // Preferences governing every elevation read and the profiles derived from it,
@@ -27,6 +28,13 @@ export interface ElevationSettingsState {
    * `GRADE_WINDOW_WHOLE_LINE` measures across the whole line at once.
    */
   gradeWindow: number;
+  /**
+   * The grade the steepness colorize palette ends at, as a ratio — see
+   * `STEEPNESS_SCALES`. Like `gradeWindow` it corrects nothing, it only says
+   * what a reading is shown against, and it belongs to the reader rather than
+   * to a map feature, so all three colorize consumers share this one.
+   */
+  steepnessScale: number;
 }
 
 /**
@@ -49,8 +57,8 @@ export function gradeWindowMeters(gradeWindow: number): number {
 /**
  * Whether an `elevationSetSettings` payload alters the smoothing every derived
  * elevation cache and profile is built from — the one reason to drop those
- * caches and resample. `gradeWindow` is measured off the drawn points by
- * whoever shows the readout, so a change to it alone rebuilds nothing. Every
+ * caches and resample. The other fields are read off the drawn points by
+ * whoever displays them, so a change to those alone rebuilds nothing. Every
  * consumer of the action asks this rather than reacting to the bare action.
  */
 export function affectsElevationSmoothing(
@@ -63,6 +71,7 @@ export const elevationSettingsInitialState: ElevationSettingsState = {
   despikeWindow: 25,
   ditchFillWindow: 25,
   gradeWindow: 50,
+  steepnessScale: STEEPNESS_DEFAULT_SCALE,
 };
 
 export const elevationSettingsReducer = createReducer(

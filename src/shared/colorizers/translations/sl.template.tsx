@@ -4,6 +4,7 @@ import type { ColorizerMessages } from './ColorizerMessages.js';
 const sl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Obarvaj po',
   legend: 'Legenda',
+  steepnessScale: 'Razpon naklona',
   mode: {
     none: 'Neaktivno',
     elevation: 'Nadmorska višina',

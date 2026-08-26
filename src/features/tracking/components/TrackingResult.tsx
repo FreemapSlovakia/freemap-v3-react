@@ -61,6 +61,12 @@ export function TrackingResult(): ReactElement {
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
+  // Colorized here rather than through `useZoomColorize` (the tracks are kept
+  // apart), so the option that hook passes has to be read here too.
+  const steepnessScale = useAppSelector(
+    (state) => state.elevationSettings.steepnessScale,
+  );
+
   const activeColorizer = colorizeBy ? colorizers[colorizeBy] : null;
 
   // Stable per (colorizer, width) so the Hotline's options-effect doesn't fire
@@ -130,7 +136,10 @@ export function TrackingResult(): ReactElement {
       // for this track, in which case the plain colored line is kept.
       const colorizedPositions = activeColorizer
         ? segments.flatMap((segment) =>
-            activeColorizer.compute([trackPointsToFeature(segment)], { zoom }),
+            activeColorizer.compute([trackPointsToFeature(segment)], {
+              zoom,
+              steepnessScale,
+            }),
           )
         : [];
 
@@ -138,7 +147,7 @@ export function TrackingResult(): ReactElement {
     }
 
     return map;
-  }, [tracks1, activeColorizer, zoom]);
+  }, [tracks1, activeColorizer, zoom, steepnessScale]);
 
   return (
     <>

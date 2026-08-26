@@ -3,6 +3,7 @@ import type { ColorizerMessages } from './ColorizerMessages.js';
 const en: ColorizerMessages = {
   colorizeBy: 'Colorize by',
   legend: 'Legend',
+  steepnessScale: 'Steepness range',
   mode: {
     none: 'Inactive',
     elevation: 'Elevation',

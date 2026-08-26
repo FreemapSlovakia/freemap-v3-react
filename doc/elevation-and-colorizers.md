@@ -466,8 +466,30 @@ tool, so it has none).
 Imported via `@shared/colorizers/…`. One colorizer per visual variable lives in
 `modes/` (`elevation`, `steepness`, `speed`, `heading`, `time`, `heartRate`, `cadence`,
 `power`, `temperature`, `battery`, `gsmSignal`, plus the categorical `surface`,
-`roadType`, `hikeRating`, `mtbRating`); `index.ts` aggregates them
-(`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
+`smoothness`, `roadType`, `trackType`, `hikeRating`, `mtbRating`); `index.ts` aggregates
+them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
+
+- **Steepness is not a straight ramp.** A grade reaches its colour through
+  `asinh(grade / STEEPNESS_KNEE)` — odd-symmetric, defined at zero and straight either side
+  of it, which a plain log is not. One ramp has to hold an alpine path and a road route
+  whose entire range is a couple of per cent; measured over real routes, a 3 % knee is what
+  makes the second legible without painting the terrain model's own noise.
+- **The ends are the reader's to set** (`STEEPNESS_SCALES`, ±5 % to ±100 %, default 100 %).
+  No one value serves every route: measured against real ones, the widest scale that clamps
+  almost nothing is 5 % for a road ride, 15 % for a car, 25 % on rolling hills and 60 % in
+  the Tatras. The slider steps through the list *by index* — the useful settings are
+  geometric, and a linear slider would spend half its travel above 50 % where nothing
+  changes.
+- **It lives in `elevationSettings`**, beside `gradeWindow`: like that one it corrects
+  nothing and belongs to the reader rather than to a map feature, so one field serves route
+  planner, track viewer and tracking at once. `useZoomColorize` reads it and passes it in
+  `ColorizeOptions` — one place, rather than threaded through three call sites — and it is
+  part of that hook's cache-reset key, or a changed scale would redraw from the old colors.
+- `steepnessColor` and `steepnessGradeAt` are inverses; `ColorizeLegend` labels seven evenly
+  spaced ticks through the latter, so the line and its legend cannot drift apart. Even
+  positions rather than round grades because round ones cannot be had at every scale — at
+  ±5 % they collapse onto zero — and the labels closing up toward the middle is itself what
+  shows the compression.
 
 - Each `Colorizer` exposes **`isAvailable`**, which gates whether a mode is offered for a
   given feature — routes expose Elevation/Steepness/Time/Heading; a track exposes a mode

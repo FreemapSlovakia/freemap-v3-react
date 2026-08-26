@@ -59,6 +59,10 @@ import {
 import { weatherRadarSettingsInitialState } from '@features/weatherRadar/model/settingsReducer.js';
 import { ColorizeSettingsShape } from '@shared/colorizers/colorizeSettings.js';
 import { ColorizingModeSchema } from '@shared/colorizers/index.js';
+import {
+  STEEPNESS_DEFAULT_SCALE,
+  STEEPNESS_SCALES,
+} from '@shared/colorizers/modes/steepness.js';
 import { LanguageSchema } from '@shared/langUtils.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
@@ -182,6 +186,15 @@ export const PersistedElevationSettingsSchema = z
       z.literal(GRADE_WINDOW_WHOLE_LINE),
       z.number().min(0).max(200),
     ]),
+    // Only one of the offered scales: anything else would leave the slider
+    // between its stops. Caught rather than rejected — a rejected field takes
+    // the whole slice down (see `rehydrate`).
+    steepnessScale: z
+      .number()
+      .refine((scale) =>
+        (STEEPNESS_SCALES as readonly number[]).includes(scale),
+      )
+      .catch(STEEPNESS_DEFAULT_SCALE),
   })
   .partial();
 
@@ -513,6 +526,7 @@ const PERSIST: PersistEntry[] = [
       despikeWindow: e.despikeWindow,
       ditchFillWindow: e.ditchFillWindow,
       gradeWindow: e.gradeWindow,
+      steepnessScale: e.steepnessScale,
     }),
   }),
   defineEntry({

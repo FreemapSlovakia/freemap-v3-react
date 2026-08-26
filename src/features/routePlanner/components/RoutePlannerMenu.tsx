@@ -16,6 +16,7 @@ import {
   LEGEND_ITEM,
   legendToggleOption,
 } from '@shared/colorizers/components/legendToggleOption.js';
+import { SteepnessScaleSlider } from '@shared/colorizers/components/SteepnessScaleSlider.js';
 import { usePremiumColorizeLock } from '@shared/colorizers/components/usePremiumColorizeLock.js';
 import {
   ColorizingModeSchema,
@@ -1008,6 +1009,7 @@ export default function RoutePlannerMenu(): ReactElement {
                 },
               ),
             ]}
+            footer={<SteepnessScaleSlider mode={colorizeBy} />}
           />
         )}
 
