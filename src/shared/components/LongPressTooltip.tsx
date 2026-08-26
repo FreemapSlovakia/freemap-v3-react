@@ -70,8 +70,6 @@ export function LongPressTooltip({
   toggleOnClick,
   children,
 }: Props) {
-  const preventClickRef = useRef(false);
-
   const [show, setShow] = useState(false);
 
   const [target, setTarget] = useState<HTMLElement | null>(null);
@@ -110,11 +108,7 @@ export function LongPressTooltip({
         return;
       }
 
-      const type = e.type;
-
       timeoutRef.current = setTimeout(() => {
-        preventClickRef.current = type !== 'pointerenter';
-
         setShow(true);
       }, delay);
     },
@@ -128,10 +122,6 @@ export function LongPressTooltip({
 
     timeoutRef.current = null;
 
-    setTimeout(() => {
-      preventClickRef.current = false;
-    });
-
     // A finger's pointerleave is the lift, not a move away, and it lands before
     // the click — closing here would leave the tap below with nothing to close.
     if (!(toggleOnClick && coarseRef.current)) {
@@ -139,20 +129,12 @@ export function LongPressTooltip({
     }
   }, [toggleOnClick]);
 
-  const handleClickCapture = useCallback(
-    (e: MouseEvent) => {
-      if (preventClickRef.current) {
-        e.preventDefault();
-        e.stopPropagation();
-      } else if (toggleOnClick) {
-        setShow((show) => !show);
-      } else {
-        setShow(false);
-      }
-    },
-    [toggleOnClick],
-  );
+  const handleClickCapture = useCallback(() => {
+    setShow((show) => (toggleOnClick ? !show : false));
+  }, [toggleOnClick]);
 
+  // Stops the native menu on a long press. The tap that ended it raises no
+  // click of its own — the browser has already cancelled the gesture.
   const handleContextMenuCapture = useCallback((e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();

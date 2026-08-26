@@ -52,8 +52,8 @@ const sizeClass = { sm: 'fm-icon-sm', md: 'fm-icon', lg: 'fm-icon-lg' };
  * on, and pointer events inside a disabled container.
  *
  * `onClick` / `onClickCapture` are composed with the tooltip's own capture
- * handler, so a click that merely ended a long-press arrives with
- * `defaultPrevented` set rather than acting.
+ * handler, which runs first. A long press raises no click to compose with: the
+ * browser reclassifies the gesture and cancels it.
  */
 export function GlyphMarker({
   children,
