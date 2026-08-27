@@ -46,15 +46,16 @@ class MaplibreWithLang extends L.MaplibreGL {
 
   onRemove(map: L.Map) {
     const self = this as unknown as {
-      _glMap?: { remove(): void } | null;
+      _glMap?: { remove(): void; painter?: unknown } | null;
       _container?: HTMLElement;
     };
 
     // When GL initialization failed (e.g. no WebGL context on a low-end
-    // device), `_glMap` is never assigned and the upstream onRemove throws
-    // dereferencing it. Stub it so the rest of teardown (detaching the pane
-    // container) still runs.
-    if (!self._glMap) {
+    // device), `_glMap` is either missing or a map whose constructor bailed out
+    // before assigning `painter`, and either way `remove()` throws. `painter`
+    // is only ever set on a successful init, so stub on its absence and let the
+    // rest of teardown (detaching the pane container) run.
+    if (!self._glMap?.painter) {
       self._glMap = { remove() {} };
     }
 
