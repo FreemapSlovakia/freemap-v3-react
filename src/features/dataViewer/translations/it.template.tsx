@@ -8,6 +8,23 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Stile predefinito',
   },
+  match: {
+    menuItem: 'Aggancia ai percorsi',
+    title: 'Aggancia ai percorsi',
+    help: 'Aggancia la traccia alla rete di strade e sentieri mappati, eliminando la dispersione del GPS e — questo è il punto — determinando su cosa passa la traccia, così da poterla colorare per fondo, tipo di strada, qualità della sterrata e difficoltà.',
+    transport: 'Mezzo',
+    dataLoss:
+      'La linea agganciata ha punti propri, quindi le marche temporali e i dati registrati dai sensori (frequenza cardiaca, cadenza, velocità) andranno persi.',
+    run: 'Aggancia',
+    tooLong: 'Questa traccia ha troppi punti per essere agganciata.',
+    tooShort: 'La traccia è troppo corta per essere agganciata.',
+    brokenSequence:
+      'La traccia esce da qualche parte dalla rete mappata, quindi non può essere agganciata. Prova un altro mezzo oppure lascia la traccia com’è.',
+    offNetwork:
+      'Il percorso agganciato è risultato molto più lungo della traccia, il che significa che la traccia non seguiva percorsi mappati — attraverso un prato, ad esempio. L’aggancio può rispondere solo con percorsi esistenti, quindi il risultato non sarebbe dove sei passato. La traccia resta invariata.',
+    partial:
+      'Alcune parti della traccia non sono state agganciate — restano come registrate. Una traccia che cambia mezzo a metà strada (una camminata, poi il rientro in auto) va prima divisa.',
+  },
   info: () => <DataViewerDetails />,
   upload: 'Carica',
   trackLabel: 'Traccia',

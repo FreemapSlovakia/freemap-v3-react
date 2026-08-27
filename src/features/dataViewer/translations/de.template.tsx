@@ -8,6 +8,23 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Standardstil',
   },
+  match: {
+    menuItem: 'An Wege anpassen',
+    title: 'An Wege anpassen',
+    help: 'Legt den Track auf das erfasste Wegenetz, was GPS-Streuung beseitigt und — darum geht es — ermittelt, worüber der Track führt, sodass er nach Belag, Wegtyp, Wegqualität und Schwierigkeit eingefärbt werden kann.',
+    transport: 'Fortbewegung',
+    dataLoss:
+      'Die angepasste Linie hat eigene Punkte, daher gehen Zeitstempel und aufgezeichnete Sensordaten (Herzfrequenz, Trittfrequenz, Geschwindigkeit) verloren.',
+    run: 'Anpassen',
+    tooLong: 'Dieser Track hat zu viele Punkte für die Anpassung.',
+    tooShort: 'Der Track ist zu kurz zum Anpassen.',
+    brokenSequence:
+      'Der Track verlässt irgendwo das erfasste Wegenetz und kann daher nicht angepasst werden. Versuchen Sie eine andere Fortbewegung oder lassen Sie den Track, wie er ist.',
+    offNetwork:
+      'Die angepasste Route wurde viel länger als der Track, was bedeutet, dass der Track nicht erfassten Wegen folgte — etwa über eine Wiese. Die Anpassung kann nur mit vorhandenen Wegen antworten, das Ergebnis wäre also nicht Ihr Weg. Der Track bleibt unverändert.',
+    partial:
+      'Einige Teile des Tracks konnten nicht angepasst werden — sie bleiben, wie sie aufgezeichnet wurden. Ein Track, der unterwegs die Fortbewegung wechselt (eine Wanderung, dann die Heimfahrt), muss zuerst geteilt werden.',
+  },
   info: () => <DataViewerDetails />,
   details: {
     startTime: 'Startzeit',
@@ -79,6 +96,8 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     'Melde dich zuerst an, um die Strecke in deinen Karten zu speichern.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Streckendaten', err),
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Fehler beim Anpassen des Tracks', err),
   loadingError: 'Fehler beim Laden der Datei.',
   onlyOne: 'Es wird nur eine einzelne Datei erwartet.',
   invalidFormat: 'Die Datei hat kein unterstütztes Format oder ist ungültig.',

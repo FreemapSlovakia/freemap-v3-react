@@ -8,6 +8,23 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Výchozí styl',
   },
+  match: {
+    menuItem: 'Přiřadit k cestám',
+    title: 'Přiřadit k cestám',
+    help: 'Přichytí trasu k síti zmapovaných cest a stezek, čímž odstraní rozptyl GPS a — hlavně — zjistí, po čem trasa vede, takže ji lze obarvit podle povrchu, typu cesty, kvality lesní cesty či náročnosti.',
+    transport: 'Způsob dopravy',
+    dataLoss:
+      'Přiřazená linie má vlastní body, takže časové značky a naměřená data ze senzorů (tep, kadence, rychlost) se ztratí.',
+    run: 'Přiřadit',
+    tooLong: 'Tato trasa má příliš mnoho bodů na přiřazení.',
+    tooShort: 'Trasa je příliš krátká na přiřazení.',
+    brokenSequence:
+      'Trasa někde opouští síť zmapovaných cest, proto ji nelze přiřadit. Zkuste jiný způsob dopravy nebo ji nechte tak, jak je.',
+    offNetwork:
+      'Přiřazená trasa vyšla mnohem delší než původní, což znamená, že trasa nešla po zmapovaných cestách — třeba přes louku. Přiřazení umí odpovědět jen existujícími cestami, takže výsledek by nebyl tam, kudy jste šli. Trasa zůstává beze změny.',
+    partial:
+      'Některé části trasy se nepodařilo přiřadit — zůstávají tak, jak byly zaznamenány. Trasu, která v polovině mění způsob dopravy (túra a poté cesta autem domů), je třeba nejdřív rozdělit.',
+  },
   info: () => <DataViewerDetails />,
   upload: 'Nahrát',
   trackLabel: 'Trasa',
@@ -77,6 +94,8 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při získávání záznamu trasy', err),
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Nastala chyba při přiřazování trasy', err),
   loadingError: 'Soubor se nepodařilo načíst.',
   onlyOne: 'Očekává se pouze jeden soubor.',
   invalidFormat: 'Soubor není v podporovaném formátu nebo je neplatný.',

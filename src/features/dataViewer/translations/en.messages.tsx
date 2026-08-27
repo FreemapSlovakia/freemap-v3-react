@@ -19,6 +19,23 @@ const en: DataViewerMessages = {
   style: {
     title: 'Default style',
   },
+  match: {
+    menuItem: 'Match to paths',
+    title: 'Match to paths',
+    help: 'Snaps the track onto the mapped path network, which cleans up GPS wander and — the point of it — tells the map what the track is made of, so it can be colorized by surface, road type, track grade and difficulty.',
+    transport: 'Travelled by',
+    dataLoss:
+      'The matched line has its own points, so this track’s timestamps and recorded sensor data (heart rate, cadence, speed) will be lost.',
+    run: 'Match',
+    tooLong: 'This track has too many points to match.',
+    tooShort: 'The track is too short to match.',
+    brokenSequence:
+      'The track leaves the mapped path network somewhere, so it cannot be matched. Try a different transport, or leave the track as it is.',
+    offNetwork:
+      'The matched route came out much longer than the track, which means the track did not follow mapped paths — across a meadow, say. Matching can only answer with paths that exist, so the result would not be where you went. The track is left as it is.',
+    partial:
+      'Some parts of the track could not be matched — they are left as they were recorded. A track that changes transport partway (a walk, then the drive home) needs splitting first.',
+  },
   details: {
     startTime: 'Start time',
     finishTime: 'Finish time',
@@ -80,6 +97,8 @@ const en: DataViewerMessages = {
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Error fetching track data', err),
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Error matching the track', err),
   loadingError: 'Error loading file.',
   onlyOne: 'Only a single file is expected.',
   invalidFormat: 'The file is not in a supported format or is invalid.',

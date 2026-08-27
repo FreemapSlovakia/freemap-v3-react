@@ -9,6 +9,32 @@ export type HotlinePalette = Array<{
   t: number;
 }>;
 
+/**
+ * The Hotline options a colorizer imposes, taken from the same place as the
+ * palette so a new caller cannot forget them: a span-based mode changes color
+ * across coincident points, which Leaflet's simplification would drop.
+ */
+export function colorizerHotlineOptions(
+  colorizer: Colorizer | null | undefined,
+): { palette: HotlinePalette | undefined; smoothFactor?: number } {
+  return {
+    palette: colorizer?.palette,
+    ...(colorizer?.spanBased && { smoothFactor: 0 }),
+  };
+}
+
+/**
+ * The geometry a colorizer should read: a span-based mode takes the router's own
+ * values off the plain line, where every other mode wants the densified one the
+ * elevation pipeline built.
+ */
+export function colorizeGeometrySource<T>(
+  colorizer: Colorizer | null | undefined,
+  densified: T | null | undefined,
+): T | null {
+  return !colorizer || colorizer.spanBased ? null : (densified ?? null);
+}
+
 /** A palette color as CSS, the one spelling both the line and the legend use. */
 export function rgbCss(color: [r: number, g: number, b: number]): string {
   return `rgb(${color.join(' ')})`;

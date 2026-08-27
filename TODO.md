@@ -697,3 +697,62 @@ and what landed. Nothing is outstanding there.
       span colorizer would additionally unlock `average_speed` (our Speed mode
       needs GPS timestamps, so a planned route can never offer it), `max_speed`
       and `curvature`.
+- [ ] **Matching reshapes the document to work around `@turf/flatten`.** It
+      emits one `LineString` feature per recorded segment because span-based
+      colorize reads `feature.geometry.coordinates` as a line and flatten would
+      give every part of a `MultiLineString` the same detail spans. The
+      workaround costs real things: the Track dropdown turns one recording into
+      N, `useStartFinishPoints` draws a flag pair per part, the elevation chart
+      can only profile one at a time, and "More info" reports a part rather than
+      the track. The fix belongs where the flatten happens — let
+      `PATH_DETAILS_PROP` hold `PathDetails[]`, give `readPathDetails` a part
+      index, and have one shared `flattenTracks()` hand part *i* its own spans.
+      dataViewer funnels through two flatten call sites, so it is contained.
+- [ ] **An unmatched segment loses its sensors for no reason.** `asRecorded`
+      strips `coordinateProperties`/`coordTimes` from segments kept *exactly* as
+      recorded, because those arrays index the whole track. Their points are the
+      recorded ones, so the right answer is to slice the arrays per segment —
+      `trackSegments` already slices times and would need to carry the rest.
+      Folds naturally into the item above, which wants per-part properties too.
+- [ ] **Matching a fragmented recording is silent and re-triggerable.** The
+      processor issues one sequential POST per matchable segment, and the modal
+      has already closed — so a recorder that paused often gives the reader a
+      long nothing, with the menu item still live to start a second run over the
+      same track. Neither corrupts anything (the last dispatch wins), but both
+      are worth fixing together: a progress toast keyed to the segment count, and
+      a guard on a run already in flight.
+- [ ] **Split a recording where the transport changes.** A recording routinely
+      holds more than one kind of travel — the walk, then the drive home, with
+      the recorder never stopped — and one profile cannot match both. Measured on
+      a real 165 km file: matched as `bike` its 14 km leg came back at ratio
+      1.066 (good) while its 151 km leg came back 3.14× too long; matched as
+      `car` the first leg was 0.996 and the second failed outright. Matching now
+      works segment by segment and leaves what it cannot match as recorded, so
+      such a track is refused rather than mangled — but the useful answer is to
+      cut it. Timestamps make the cut findable: walking sits near 1.5 m/s and
+      driving above 15, so a speed profile shows the change plainly, and the
+      tracks that need this all carry `<time>`. Offer the split points and let
+      the reader confirm them, then match each part with its own transport.
+      Manual splitting of a loaded track is worth having on its own account.
+- [ ] **Export what a route is made of, as a summary — not as spans.** An
+      exported route carries elevation (it rides in the geometry) and styling,
+      and nothing else: `addPlannedRoute` never reads `step.details` or
+      `step.structures`, so surface, smoothness, road class, track grade, the
+      ratings and the bridge/tunnel spans all stop at the export. Carrying the
+      **metre spans** through would be the wrong fix — no external tool
+      (Garmin, OsmAnd, Locus, Komoot) reads an `fm:` extension, it would weigh
+      down every GPX, and the only consumer would be our own importer, which
+      would additionally need `TrackingMenu`'s `spanBased` filter lifted — the
+      dataViewer's already is, since matching makes those modes reachable there,
+      whereas a live track has no way to acquire path details at all. It is also a loop My Maps already closes better:
+      `SavedRouteSchema` stores the whole alternative, details and structures
+      intact, so saving (or sharing the map link) keeps everything a re-import
+      would lose. What has no other answer is *the route's composition in a
+      file* — "how much of this is gravel". `categories()` already computes
+      exactly that (key, label, metres) for the legend, so a handful of flat
+      properties on the route feature (`fm:surface:asphalt: 12460`, …) is a few
+      lines, survives GPX/KML extensions as plain values, needs no importer
+      work, and is the form a spreadsheet or QGIS actually wants. Do that if a
+      user asks; leave the spans alone.
+      - Worth knowing either way: a route exported and re-imported loses its
+        bridge/tunnel levelling, so its profile picks the stream bed back up.

@@ -18,6 +18,23 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Style par défaut',
   },
+  match: {
+    menuItem: 'Caler sur les chemins',
+    title: 'Caler sur les chemins',
+    help: 'Cale la trace sur le réseau de voies cartographiées, ce qui supprime la dispersion du GPS et — c’est l’essentiel — détermine sur quoi passe la trace, permettant de la colorer par revêtement, type de voie, qualité du chemin et difficulté.',
+    transport: 'Mode de déplacement',
+    dataLoss:
+      'La ligne calée a ses propres points : les horodatages et les données enregistrées par les capteurs (fréquence cardiaque, cadence, vitesse) seront perdus.',
+    run: 'Caler',
+    tooLong: 'Cette trace a trop de points pour être calée.',
+    tooShort: 'La trace est trop courte pour être calée.',
+    brokenSequence:
+      'La trace quitte quelque part le réseau cartographié, elle ne peut donc pas être calée. Essayez un autre mode de déplacement, ou laissez la trace telle quelle.',
+    offNetwork:
+      'L’itinéraire calé est ressorti bien plus long que la trace, ce qui signifie que la trace ne suivait pas de voies cartographiées — à travers un pré, par exemple. Le calage ne peut répondre qu’avec des voies existantes : le résultat ne serait donc pas votre passage. La trace est laissée telle quelle.',
+    partial:
+      'Certaines parties de la trace n’ont pas pu être calées — elles restent telles qu’enregistrées. Une trace qui change de mode en cours de route (une marche, puis le retour en voiture) doit d’abord être découpée.',
+  },
   details: {
     startTime: 'Heure de départ',
     finishTime: 'Heure d’arrivée',

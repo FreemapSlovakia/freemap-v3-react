@@ -8,6 +8,23 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Alapértelmezett stílus',
   },
+  match: {
+    menuItem: 'Utakhoz illesztés',
+    title: 'Utakhoz illesztés',
+    help: 'A nyomvonalat a feltérképezett úthálózatra illeszti, ami megszünteti a GPS szórását, és — ez a lényeg — kideríti, min halad a nyomvonal, így színezhető burkolat, úttípus, erdei út minősége és nehézség szerint.',
+    transport: 'Közlekedési mód',
+    dataLoss:
+      'Az illesztett vonalnak saját pontjai vannak, ezért az időbélyegek és a rögzített szenzoradatok (pulzus, kadencia, sebesség) elvesznek.',
+    run: 'Illesztés',
+    tooLong: 'Ennek a nyomvonalnak túl sok pontja van az illesztéshez.',
+    tooShort: 'A nyomvonal túl rövid az illesztéshez.',
+    brokenSequence:
+      'A nyomvonal valahol elhagyja a feltérképezett úthálózatot, ezért nem illeszthető. Próbáljon másik közlekedési módot, vagy hagyja a nyomvonalat úgy, ahogy van.',
+    offNetwork:
+      'Az illesztett útvonal sokkal hosszabb lett a nyomvonalnál, ami azt jelenti, hogy a nyomvonal nem feltérképezett utakon haladt — például egy réten át. Az illesztés csak létező utakkal tud válaszolni, így az eredmény nem ott lenne, amerre járt. A nyomvonal változatlan marad.',
+    partial:
+      'A nyomvonal egyes részeit nem sikerült illeszteni — úgy maradnak, ahogy rögzítve lettek. Az útközben közlekedési módot váltó nyomvonalat (túra, majd autóút haza) előbb fel kell darabolni.',
+  },
   info: () => <DataViewerDetails />,
   upload: 'Feltöltés',
   trackLabel: 'Nyomvonal',

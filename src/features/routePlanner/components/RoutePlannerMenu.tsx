@@ -11,6 +11,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { colorizeGeometrySource } from '@shared/colorizers/colorize.js';
 import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import {
   LEGEND_ITEM,
@@ -595,7 +596,10 @@ export default function RoutePlannerMenu(): ReactElement {
     () =>
       routeColorizeFeatures(
         alternatives[activeAlternativeIndex],
-        colorizeBy && colorizers[colorizeBy].spanBased ? null : renderGeojson,
+        colorizeGeometrySource(
+          colorizeBy && colorizers[colorizeBy],
+          renderGeojson,
+        ),
       ),
     [renderGeojson, colorizeBy, alternatives, activeAlternativeIndex],
   );

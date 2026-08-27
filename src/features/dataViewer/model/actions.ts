@@ -4,6 +4,7 @@ import {
   type ColorizingMode,
   ColorizingModeSchema,
 } from '@shared/colorizers/index.js';
+import type { TransportType } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { FeatureCollection } from 'geojson';
 
@@ -119,6 +120,16 @@ export const dataViewerSetElevation = createAction<{
 export const dataViewerSetRenderGeojson = createAction<FeatureCollection>(
   'DATA_VIEWER_SET_RENDER_GEOJSON',
 );
+
+/**
+ * Snaps the selected track onto GraphHopper's routing graph, which is what lets
+ * a recording be colorized by surface, road type and the rest. The matched line
+ * has its own points, so the per-point channels (times, heart rate, cadence)
+ * do not survive.
+ */
+export const dataViewerMatchTrack = createAction<{
+  transport: TransportType;
+}>('DATA_VIEWER_MATCH_TRACK');
 
 /** Records the source URL without re-fetching, when the track is already here. */
 export const dataViewerSetGpxUrl = createAction<string | null>(

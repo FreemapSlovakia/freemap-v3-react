@@ -4,7 +4,7 @@ import type {
   ActionCreatorMatchable,
   CancelTriggers,
 } from '@shared/cancelRegister.js';
-import { lineSegments } from '@shared/geoutils.js';
+import { lineSegments, withoutPerPointData } from '@shared/geoutils.js';
 import { along } from '@turf/along';
 import { distance } from '@turf/distance';
 import { getCoord } from '@turf/invariant';
@@ -332,11 +332,7 @@ export async function densifyAlong<G extends LineString | MultiLineString>(
     return out;
   });
 
-  const properties = { ...(feature.properties ?? {}) };
-
-  delete properties['coordTimes'];
-
-  delete properties['coordinateProperties'];
+  const properties = withoutPerPointData(feature.properties);
 
   const geometry =
     feature.geometry.type === 'LineString'

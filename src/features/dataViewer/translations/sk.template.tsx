@@ -20,6 +20,23 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Predvolený štýl',
   },
+  match: {
+    menuItem: 'Priradiť k cestám',
+    title: 'Priradiť k cestám',
+    help: 'Prichytí trasu na sieť zmapovaných ciest a chodníkov, čím odstráni rozptyl GPS a — hlavne — zistí, po čom trasa vedie, takže ju možno vyfarbiť podľa povrchu, typu cesty, kvality lesnej cesty či náročnosti.',
+    transport: 'Spôsob prepravy',
+    dataLoss:
+      'Priradená línia má vlastné body, takže časové značky a namerané údaje zo senzorov (tep, kadencia, rýchlosť) sa stratia.',
+    run: 'Priradiť',
+    tooLong: 'Táto trasa má priveľa bodov na priradenie.',
+    tooShort: 'Trasa je príliš krátka na priradenie.',
+    brokenSequence:
+      'Trasa niekde opúšťa sieť zmapovaných ciest, preto ju nemožno priradiť. Skúste iný spôsob prepravy alebo ju nechajte tak, ako je.',
+    offNetwork:
+      'Priradená trasa vyšla oveľa dlhšia než pôvodná, čo znamená, že trasa nešla po zmapovaných cestách — napríklad cez lúku. Priradenie vie odpovedať len existujúcimi cestami, takže výsledok by nebol tam, kade ste šli. Trasa zostáva nezmenená.',
+    partial:
+      'Niektoré časti trasy sa nepodarilo priradiť — zostávajú tak, ako boli zaznamenané. Trasu, ktorá v polovici mení spôsob prepravy (túra a potom cesta autom domov), treba najprv rozdeliť.',
+  },
   details: {
     startTime: 'Čas štartu',
     finishTime: 'Čas v cieli',
@@ -79,6 +96,8 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri získavaní záznamu trasy', err),
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Nastala chyba pri priraďovaní trasy', err),
   loadingError: 'Súbor sa nepodarilo načítať.',
   onlyOne: 'Očakáva sa iba jeden súbor.',
   invalidFormat: 'Súbor nie je v podporovanom formáte alebo je neplatný.',

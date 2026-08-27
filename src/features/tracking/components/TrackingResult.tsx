@@ -2,6 +2,7 @@ import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import {
   type ColorizedPoint,
+  colorizerHotlineOptions,
   NO_DATA_COLOR,
   NO_DATA_OPACITY,
   noDataRuns,
@@ -81,7 +82,7 @@ export function TrackingResult(): ReactElement {
         opts = {
           weight: w,
           outlineWidth: 0,
-          palette: activeColorizer?.palette,
+          ...colorizerHotlineOptions(activeColorizer),
         };
 
         cache.set(w, opts);

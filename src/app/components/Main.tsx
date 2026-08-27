@@ -456,6 +456,12 @@ const dataViewerStyleModalFactory = () =>
     '@features/dataViewer/components/DataViewerStyleModal.js'
   );
 
+const dataViewerMatchModalFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-match-modal" */
+    '@features/dataViewer/components/DataViewerMatchModal.js'
+  );
+
 const objectsStyleModalFactory = () =>
   import(
     /* webpackChunkName: "objects-style-modal" */
@@ -1177,6 +1183,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'track-viewer-style'}
         factory={dataViewerStyleModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'track-viewer-match'}
+        factory={dataViewerMatchModalFactory}
       />
 
       <AsyncModal

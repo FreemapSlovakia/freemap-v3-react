@@ -38,6 +38,7 @@ const URL_MODAL_IDS = [
   'support-us',
   'toposcope-settings',
   'track-viewer-style',
+  'track-viewer-match',
   'tracking-my',
   'tracking-watched',
 ] as const;

@@ -3,9 +3,13 @@ import {
   type PathDetailSpan,
   type PathDetails,
 } from '@shared/colorizers/colorize.js';
-import { cumulativeDistances, lowerBound } from '@shared/geoutils.js';
+import {
+  cumulativeDistances,
+  lowerBound,
+  withoutPerPointData,
+} from '@shared/geoutils.js';
 import type { TransportType } from '@shared/transportTypeDefs.js';
-import type { Feature, GeoJsonProperties, LineString, Position } from 'geojson';
+import type { Feature, LineString, Position } from 'geojson';
 import type { Alternative } from './actions.js';
 import { flattenSteps } from './routeGeometry.js';
 import { flattenLevelledSpans } from './structureElevation.js';
@@ -159,18 +163,12 @@ export function routeColorizeFeatures(
         ? line?.properties
         : // A run is a piece of the line, so anything of the line's that answers
           // to its length cannot come along.
-          withoutCoordinateProperties(line?.properties)),
+          withoutPerPointData(line?.properties ?? null)),
       [PATH_DETAILS_PROP]:
         unrouted.length === 0 ? details : clipDetails(details, from, to),
     },
     geometry: { type: 'LineString', coordinates },
   }));
-}
-
-function withoutCoordinateProperties(properties?: GeoJsonProperties) {
-  const { coordinateProperties: _, ...rest } = properties ?? {};
-
-  return rest;
 }
 
 /**

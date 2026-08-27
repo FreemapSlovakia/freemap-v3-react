@@ -2,6 +2,7 @@ import { openTool } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import {
+  colorizerHotlineOptions,
   NO_DATA_COLOR,
   NO_DATA_OPACITY,
   noDataRuns,
@@ -90,7 +91,7 @@ export default function DataViewerResult({
     () => ({
       weight: 6,
       outlineWidth: 0,
-      palette: activeColorizer?.palette,
+      ...colorizerHotlineOptions(activeColorizer),
     }),
     [activeColorizer],
   );

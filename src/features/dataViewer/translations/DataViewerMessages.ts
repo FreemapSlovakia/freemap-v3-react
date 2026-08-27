@@ -14,6 +14,20 @@ export type DataViewerMessages = {
   style: {
     title: string;
   };
+  /** Snapping a recorded track onto the routing graph. */
+  match: {
+    menuItem: string;
+    title: string;
+    help: string;
+    transport: string;
+    dataLoss: string;
+    run: string;
+    tooLong: string;
+    tooShort: string;
+    brokenSequence: string;
+    offNetwork: string;
+    partial: string;
+  };
   details: {
     startTime: string;
     finishTime: string;
@@ -58,6 +72,8 @@ export type DataViewerMessages = {
     updatedToast: (props: { mode: 'missing' | 'all' }) => string;
   };
   fetchingError: (props: { err: unknown }) => string;
+  /** Matching a track to the routing graph failed for a reason worth showing. */
+  matchingError: (props: { err: unknown }) => string;
   loadingError: string;
   onlyOne: string;
   invalidFormat: string;

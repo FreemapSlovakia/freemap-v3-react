@@ -27,6 +27,7 @@ import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.
 import { dataViewerDensifyProcessor } from '@features/dataViewer/model/processors/dataViewerDensifyProcessor.js';
 import { dataViewerDownloadTrackProcessor } from '@features/dataViewer/model/processors/dataViewerDownloadTrackProcessor.js';
 import { dataViewerGpxLoadProcessor } from '@features/dataViewer/model/processors/dataViewerGpxLoadProcessor.js';
+import { dataViewerMatchTrackProcessor } from '@features/dataViewer/model/processors/dataViewerMatchTrackProcessor.js';
 import { dataViewerResolveElevationPromptProcessor } from '@features/dataViewer/model/processors/dataViewerResolveElevationPromptProcessor.js';
 import { dataViewerSetTrackDataProcessor } from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
 import {
@@ -208,6 +209,7 @@ export const processors = [
   dataViewerRestoreStoredProcessor,
   dataViewerDownloadTrackProcessor,
   dataViewerGpxLoadProcessor,
+  dataViewerMatchTrackProcessor,
   dataViewerToggleElevationChartProcessor,
   dataViewerResolveElevationPromptProcessor,
   dataViewerDensifyProcessor,

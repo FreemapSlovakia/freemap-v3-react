@@ -39,6 +39,7 @@ import {
   FaChartArea,
   FaEllipsisV,
   FaInfoCircle,
+  FaMagic,
   FaMountain,
   FaPaintBrush,
   FaPalette,
@@ -289,6 +290,11 @@ export function DataViewerMenu(): ReactElement {
         dispatch(setActiveModal({ type: 'track-viewer-style' }));
 
         break;
+
+      case 'match-to-network':
+        dispatch(setActiveModal({ type: 'track-viewer-match' }));
+
+        break;
     }
   };
 
@@ -402,14 +408,10 @@ export function DataViewerMenu(): ReactElement {
                 colorizeLegend,
                 cm?.legend,
               ),
-              // Span-based modes read what a router reported, which no imported
-              // track carries — they would be rows nothing can ever enable.
-              ...[
-                undefined,
-                ...colorizingModes.filter(
-                  (mode) => !colorizers[mode].spanBased,
-                ),
-              ].map((mode) => {
+              // Span-based modes read what a router reported. A recording
+              // carries none until it is matched to the network, and each
+              // mode's own `isAvailable` is what decides once it has been.
+              ...[undefined, ...colorizingModes].map((mode) => {
                 const { locked, gem } = premiumColorize(mode);
 
                 return {
@@ -472,6 +474,14 @@ export function DataViewerMenu(): ReactElement {
               {!hasActiveMap && (
                 <Dropdown.Item as="button" eventKey="save-as-map">
                   <FaSave /> &nbsp;{tvm?.saveAsMap ?? '…'}
+                </Dropdown.Item>
+              )}
+
+              {/* Only a line can be matched — a collection of waypoints or
+                  polygons would open the modal onto nothing. */}
+              {lineFeatures.length > 0 && (
+                <Dropdown.Item as="button" eventKey="match-to-network">
+                  <FaMagic /> &nbsp;{tvm?.match.menuItem ?? '…'}
                 </Dropdown.Item>
               )}
 

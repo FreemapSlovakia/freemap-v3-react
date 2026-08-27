@@ -18,6 +18,23 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Privzeti slog',
   },
+  match: {
+    menuItem: 'Pripni na poti',
+    title: 'Pripni na poti',
+    help: 'Pripne sled na omrežje popisanih poti, kar odpravi razpršenost GPS in — to je bistvo — ugotovi, po čem sled poteka, tako da jo je mogoče obarvati po podlagi, vrsti poti, kakovosti gozdne ceste in zahtevnosti.',
+    transport: 'Način potovanja',
+    dataLoss:
+      'Pripeta črta ima svoje točke, zato bodo časovne oznake in zabeleženi podatki senzorjev (srčni utrip, kadenca, hitrost) izgubljeni.',
+    run: 'Pripni',
+    tooLong: 'Ta sled ima preveč točk za pripenjanje.',
+    tooShort: 'Sled je prekratka za pripenjanje.',
+    brokenSequence:
+      'Sled nekje zapusti omrežje popisanih poti, zato je ni mogoče pripeti. Poskusite drug način potovanja ali pustite sled takšno, kot je.',
+    offNetwork:
+      'Pripeta pot je izšla precej daljša od sledi, kar pomeni, da sled ni potekala po popisanih poteh — denimo čez travnik. Pripenjanje lahko odgovori le z obstoječimi potmi, zato rezultat ne bi bil tam, kjer ste hodili. Sled ostaja nespremenjena.',
+    partial:
+      'Nekaterih delov sledi ni bilo mogoče pripeti — ostajajo takšni, kot so bili zabeleženi. Sled, ki na sredi zamenja način potovanja (pohod, nato vožnja domov), je treba najprej razdeliti.',
+  },
   details: {
     startTime: 'Čas začetka',
     finishTime: 'Čas v cilju',
@@ -77,6 +94,8 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri pridobivanju podatkov o sledi', err),
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Napaka pri pripenjanju sledi', err),
   loadingError: 'Datoteke ni bilo mogoče naložiti.',
   onlyOne: 'Pričakovana je samo ena datoteka.',
   invalidFormat: 'Datoteka ni v podprti obliki ali je neveljavna.',

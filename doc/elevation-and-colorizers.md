@@ -603,6 +603,76 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   per-vertex data to lose, so it shows one `window.prompt` that both warns and asks for a
   simplification factor (Cancel aborts); routes/generic geometry convert straight away.
 
+### Matching a track to the graph — `src/features/dataViewer/matchTrack.ts`
+
+**Match to paths** (the dataViewer ⋮ menu) POSTs the selected track to GraphHopper's
+`/match` and replaces it with what comes back. The point is not the snapping — it is that
+a matched line carries `details`, so a *recording* can be colorized by Surface, Smoothness,
+Road type, Track grade and the ratings, which no imported track can otherwise be. That is
+why `DataViewerMenu` no longer filters `spanBased` modes out of its dropdown: each mode's
+own `isAvailable` decides, and it is false until a track has been matched.
+
+Facts that decide the implementation, all measured against the live server:
+
+- **GPX only.** A JSON body is a 415. `segmentToGpx` writes the `<trkpt>`s, with `<ele>`
+  and `<time>` where the segment has them — the matcher is a walk over time steps, so times
+  are what tell it how fast the fix could have been moving. All of them or none:
+  an unparseable stamp reads as `NaN` without shortening the array, and a half-timed
+  sequence is worse than an untimed one.
+- **`gps_accuracy` is a constant** (`MATCH_ACCURACY`, 25), not a control. GraphHopper's own
+  default of 10 is tighter than a real fix and sends the matcher hunting detours that fit
+  the noise: a 15 km track jittered by 12 m came back **4.3 % long** at 10, against 0.3 %
+  at 20 and 0.1 % at 40. Raising it is no better — a track laid 400 m off any path failed
+  outright at 5 and came back as a confident 90 km at 25 — so exposing it would mostly let
+  a reader turn a loud failure into a silent one. The modal asks only which transport.
+- **A broken sequence fails its segment, not the track.** Where the graph offers no way
+  from one observation to the next — off-trail, a lift, a ferry — it answers 400 with
+  `Sequence is broken for submitted track at time step N`, and there is no partial result
+  for that segment. The processor matches that string, keeps the segment as recorded and
+  carries on, since one leg of a mixed track routinely defeats the profile the other needs;
+  only a track where *nothing* matched is refused outright.
+- **Observations are thinned to 50 m.** Two fixes closer together than their own error
+  carry no direction, only noise, and the matcher rationalizes that by detouring — one
+  track sent at 10 m spacing under 10 m of scatter came back four times its true length,
+  falling back toward it as the spacing widened (62 → 48 → 36 → 29 → 18 km at
+  10/20/30/50/80 m). So `segmentToGpx` sends points no closer than `2 × MATCH_ACCURACY`,
+  and
+  nothing is lost by it: what comes back is the graph's own path, not the points put in.
+  It also keeps the body well under the nginx limit in front of GraphHopper. (The multiple
+  is the one constant here not settled against a real recording: synthetic noise is
+  independent per point, where a real receiver's drifts.)
+- **One request per segment.** GraphHopper reads a GPX as a single sequence of
+  observations, so a paused recording sent whole has it *route across the pause*: a real
+  recording carrying a stray three-point fragment 28 km from the walk matched at four
+  times its length. `trackSegments` keeps them apart, measuring each on its own, and the
+  result is a feature per segment rather than one `MultiLineString` — the details are
+  metres along their own line, and `@turf/flatten` would hand every part the same spans.
+  A segment the graph cannot get through is kept as recorded rather than failing the lot,
+  since one leg of a mixed track routinely defeats whatever profile the other leg needs.
+- **A match longer than the recording is refused** (`MATCH_MAX_LENGTH_RATIO`). Matching can
+  only answer with paths the graph holds, so a stretch someone took across open ground —
+  or by a transport the profile cannot follow — comes back routed *around* it: one 0.94 km
+  meadow crossing in a 12.7 km walk added 5 km, at every accuracy alike. Measured across
+  real recordings, a good match lands between **0.96 and 1.00** (under 1, since GPS wander
+  inflates the raw track) while everything wrong sat at **1.17 and above** — a mixed
+  walk-then-drive at 1.17 and 1.44, that meadow at 1.41, a ride matched as a bike at 3.14.
+  Compared against the track's own length rather than GraphHopper's `original_distance`,
+  which is measured on what we *sent* — thinned, and so ~6 % short.
+- **What it cannot do is a track that changes transport partway** — the walk, then the
+  drive home, recorder never stopped. No profile matches both, and the refusal above is all
+  that saves it from being mangled. Splitting is the real answer; see `TODO.md`.
+- **Details arrive as point indices**, not metres; `toMetreSpans` converts them against the
+  cumulative distances `matchedSegment` walks once — the same walk gives the matched length,
+  which is measured this way rather than read from the response's own `distance` (the
+  graph's edge distance, ~2 % above a walk of the points it returns) so that both sides of
+  the ratio check are measured alike.
+- **Per-point channels do not survive.** The matched line has its own points (1010 for a
+  286-point input in one measurement) and nothing maps the recorded ones onto them, so
+  `coordinateProperties` is dropped and the feature keeps its name alone. The modal warns
+  only when the track actually carries times or sensors. Transferring them would need a
+  correspondence between the two lines — `nearestPointOnLine` would give it, in either
+  direction, and it is the obvious next step if the loss proves unpopular.
+
 ### Lossless GeoJSON↔GPX transfer
 
 dataViewer keeps **no retained raw source string** — a loaded track is GeoJSON in state,

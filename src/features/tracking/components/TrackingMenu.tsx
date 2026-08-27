@@ -193,8 +193,9 @@ export function TrackingMenu(): ReactElement {
           }}
           options={[
             ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
-            // Span-based modes read what a router reported, which a live track
-            // never carries — they would be rows nothing can ever enable.
+            // Span-based modes read what a router reported. A live track has no
+            // way to acquire that — dataViewer's can, by matching — so they
+            // would be rows nothing can ever enable.
             ...[
               undefined,
               ...colorizingModes.filter((mode) => !colorizers[mode].spanBased),

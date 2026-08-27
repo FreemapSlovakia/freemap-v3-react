@@ -183,6 +183,23 @@ export function elevationCoverage(
 }
 
 /**
+ * Properties minus everything indexed per recorded point — `coordinateProperties`
+ * and the top-level `coordTimes`. Readers pair those positionally, so a line
+ * whose points are not the original's must carry neither.
+ */
+export function withoutPerPointData(
+  properties: GeoJsonProperties,
+): GeoJsonProperties {
+  const {
+    coordinateProperties: _cp,
+    coordTimes: _ct,
+    ...rest
+  } = properties ?? {};
+
+  return rest;
+}
+
+/**
  * Horizontal span (in metres) over which elevation is low-pass filtered, and
  * the baseline over which slope is measured. SRTM is ~30 m, so relief finer
  * than this is DEM noise rather than real terrain; smoothing toward it also

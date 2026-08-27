@@ -202,7 +202,11 @@ function resolveElevationProfilePointsLocally(
 
     const segment = segments[s]!;
 
-    const segTimes = coordTimes[s] ?? [];
+    // Positional, so a mismatched pair would time every point by its neighbour
+    // rather than itself — a producer that reshapes the line has to drop them.
+    const raw = coordTimes[s];
+
+    const segTimes = raw?.length === segment.length ? raw : [];
 
     for (let j = 0; j < segment.length; j++) {
       const pt = segment[j]!;

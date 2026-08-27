@@ -4,6 +4,10 @@ import z from 'zod';
 export const graphhopperRouteUrl = (): string =>
   `${process.env['GRAPHHOPPER_URL']}/route`;
 
+/** The map-matching endpoint, which snaps a recorded track onto the graph. */
+export const graphhopperMatchUrl = (): string =>
+  `${process.env['GRAPHHOPPER_URL']}/match`;
+
 /** Edge types kept off the route (shared by the router and the cost-matrix builder). */
 export const ghSnapPreventions = ['trunk', 'motorway', 'tunnel', 'ferry'];
 

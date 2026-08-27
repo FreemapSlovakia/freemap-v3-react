@@ -5,6 +5,8 @@ import {
 } from '@app/store/selectors.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import {
+  colorizeGeometrySource,
+  colorizerHotlineOptions,
   NO_DATA_COLOR,
   NO_DATA_OPACITY,
   noDataRuns,
@@ -644,9 +646,7 @@ export function RoutePlannerResult(): ReactElement {
       activeColorizer
         ? routeColorizeFeatures(
             alternatives[activeAlternativeIndex],
-            // The densified line is for the elevation profile; a span-based mode
-            // reads the router's own values off the plain route.
-            activeColorizer.spanBased ? null : renderGeojson,
+            colorizeGeometrySource(activeColorizer, renderGeojson),
           )
         : [],
     [activeColorizer, renderGeojson, alternatives, activeAlternativeIndex],
@@ -683,10 +683,7 @@ export function RoutePlannerResult(): ReactElement {
       // The white/blue selection outline comes from the wider background halo
       // showing through beneath the canvas, so the hotline carries none.
       outlineWidth: 0,
-      palette: activeColorizer?.palette,
-      // Leaflet's simplification would drop one of the coincident points a
-      // span-based mode changes color across (see `pathDetail.ts`).
-      ...(activeColorizer?.spanBased && { smoothFactor: 0 }),
+      ...colorizerHotlineOptions(activeColorizer),
       // Render the colorize canvas into the route pane too (a patched
       // react-leaflet-hotline forwards this to its L.Canvas), so it composites
       // above the outline and picks up the pane's `lineOpacity`.

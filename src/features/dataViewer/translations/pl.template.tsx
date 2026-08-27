@@ -8,6 +8,23 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Domyślny styl',
   },
+  match: {
+    menuItem: 'Dopasuj do dróg',
+    title: 'Dopasuj do dróg',
+    help: 'Przyciąga ślad do sieci zmapowanych dróg i ścieżek, co usuwa rozrzut GPS i — co najważniejsze — ustala, po czym ślad prowadzi, dzięki czemu można go pokolorować według nawierzchni, rodzaju drogi, jakości drogi leśnej czy trudności.',
+    transport: 'Środek transportu',
+    dataLoss:
+      'Dopasowana linia ma własne punkty, więc znaczniki czasu i zapisane dane z czujników (tętno, kadencja, prędkość) zostaną utracone.',
+    run: 'Dopasuj',
+    tooLong: 'Ten ślad ma zbyt wiele punktów, aby go dopasować.',
+    tooShort: 'Ślad jest zbyt krótki, aby go dopasować.',
+    brokenSequence:
+      'Ślad gdzieś opuszcza sieć zmapowanych dróg, więc nie można go dopasować. Spróbuj innego środka transportu albo zostaw ślad bez zmian.',
+    offNetwork:
+      'Dopasowana trasa wyszła znacznie dłuższa niż ślad, co oznacza, że ślad nie prowadził po zmapowanych drogach — na przykład przez łąkę. Dopasowanie może odpowiedzieć tylko istniejącymi drogami, więc wynik nie byłby tam, gdzie szedłeś. Ślad pozostaje bez zmian.',
+    partial:
+      'Niektórych części śladu nie udało się dopasować — pozostają takie, jakie zostały zapisane. Ślad zmieniający środek transportu w połowie (wędrówka, a potem powrót samochodem) trzeba najpierw podzielić.',
+  },
   info: () => <DataViewerDetails />,
   details: {
     startTime: 'Czas rozpoczęcia',
