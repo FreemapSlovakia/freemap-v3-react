@@ -133,11 +133,12 @@ export function hasPerPointData(feature: TrackLine): boolean {
     | Record<string, unknown>
     | undefined;
 
+  const nonEmpty = (values: unknown) =>
+    Array.isArray(values) && values.length > 0;
+
   return (
-    Boolean(feature.properties?.['coordTimes']) ||
-    Object.values(cp ?? {}).some(
-      (values) => Array.isArray(values) && values.length > 0,
-    )
+    nonEmpty(feature.properties?.['coordTimes']) ||
+    Object.values(cp ?? {}).some(nonEmpty)
   );
 }
 

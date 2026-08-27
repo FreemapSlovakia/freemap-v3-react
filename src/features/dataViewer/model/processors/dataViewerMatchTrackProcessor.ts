@@ -171,16 +171,6 @@ export const dataViewerMatchTrackProcessor: Processor<
       return;
     }
 
-    if (broken > 0) {
-      dispatch(
-        toastsAdd({
-          messageKey: 'match.partial',
-          messageLoader: loadDataViewerMessages,
-          style: 'warning',
-        }),
-      );
-    }
-
     // The track may have been replaced while the segments were in flight —
     // another file dropped on the map, the recorder appending, an elevation
     // refill — and none of those cancel this run. Writing the captured copy
@@ -189,6 +179,16 @@ export const dataViewerMatchTrackProcessor: Processor<
 
     if (current !== trackGeojson) {
       return;
+    }
+
+    if (broken > 0) {
+      dispatch(
+        toastsAdd({
+          messageKey: 'match.partial',
+          messageLoader: loadDataViewerMessages,
+          style: 'warning',
+        }),
+      );
     }
 
     // A feature per segment rather than one `MultiLineString`: the details are

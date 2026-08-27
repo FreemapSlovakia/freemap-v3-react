@@ -71,13 +71,21 @@ export default function DataViewerResult({
   const getFeatures: GetFeatures = (type: 'LineString' | 'Point' | 'Polygon') =>
     flatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
 
-  const activeColorizer = colorizeTrackBy ? colorizers[colorizeTrackBy] : null;
-
   const zoom = useAppSelector((state) => state.map.zoom);
 
   // Memoized so the per-zoom colorize cache survives across renders.
   // biome-ignore lint/correctness/useExhaustiveDependencies: getFeatures derives only from trackGeojson
   const lineFeatures = useMemo(() => getFeatures('LineString'), [trackGeojson]);
+
+  // The mode is persisted, so it outlives the track it was picked for. Where it
+  // has nothing to say about this one, the plain styled line stands: painting
+  // the whole track Unknown grey would hide its own style and say nothing.
+  const picked = colorizeTrackBy ? colorizers[colorizeTrackBy] : null;
+
+  const activeColorizer =
+    picked && (!picked.isAvailable || picked.isAvailable(lineFeatures))
+      ? picked
+      : null;
 
   const colorizedPositions = useZoomColorize(
     activeColorizer,
@@ -314,7 +322,7 @@ export default function DataViewerResult({
           )),
         ])}
 
-      {colorizeTrackBy === null &&
+      {!activeColorizer &&
         features.map(({ lineData, style, featureIndex }, i) => {
           const pathOptions = {
             color: style.strokeColor,

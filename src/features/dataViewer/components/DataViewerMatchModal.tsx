@@ -48,16 +48,17 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
     return transportTypeDefs[last].api === 'gh' ? last : 'hiking';
   });
 
-  // What the matched line cannot carry: it has its own points, and nothing maps
-  // the recorded ones onto them.
-  const loses = useAppSelector((state) => {
-    const active = resolveActiveTrack(
+  // The modal has a URL id of its own, so it can be opened with nothing loaded.
+  const active = useAppSelector((state) =>
+    resolveActiveTrack(
       state.trackViewer.trackGeojson,
       state.trackViewer.selectedTrackIndex,
-    );
+    ),
+  );
 
-    return Boolean(active && hasPerPointData(active.feature));
-  });
+  // What the matched line cannot carry: it has its own points, and nothing maps
+  // the recorded ones onto them.
+  const loses = Boolean(active && hasPerPointData(active.feature));
 
   useDocumentTitle(show ? dvm?.match.title : undefined);
 
@@ -112,7 +113,7 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" disabled={!active}>
             <FaCheck /> {dvm?.match.run}
           </Button>
 
