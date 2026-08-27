@@ -36,6 +36,7 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   convertLossWarning:
     'A rajzzá alakítás lecseréli a nyomvonalat, és eldobja a rögzített adatait (magasság, pulzusszám, sebesség, idő).',
   convertAllToDrawing: 'Összes átalakítása rajzzá',
+  simplifyAll: 'Összes egyszerűsítése',
   moreInfo: 'További információ',
   saveAsMap: 'Mentés a térképeim közé',
   loginToSaveMap:

@@ -18,6 +18,7 @@ import {
   dataViewerSetElevation,
   dataViewerSetGpxUrl,
   dataViewerSetTrackUID,
+  dataViewerSimplify,
   dataViewerSplitTrack,
 } from '../actions.js';
 
@@ -67,9 +68,10 @@ export const dataViewerStoreProcessor: Processor = {
     // Deleting one feature edits the data in place, and takes `trackUID` /
     // `gpxUrl` with it — what is left is this browser's, so it is stored.
     dataViewerDeleteFeature,
-    // The same for cutting a track up.
+    // The same for cutting a track up, and for thinning it.
     dataViewerSplitTrack,
     dataViewerExplodeTrack,
+    dataViewerSimplify,
     dataViewerSetTrackUID,
     dataViewerSetGpxUrl,
     // The URL's own loaders: their reducer cases are what set `trackUID` and

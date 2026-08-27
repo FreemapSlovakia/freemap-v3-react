@@ -1,4 +1,4 @@
-/* Confirm dialog always stacks above the single app-level modal, so it and its
+/* This dialog always stacks above the single app-level modal, so it and its
    backdrop must sit above the default Bootstrap modal z-index (1055 / 1050).
    The selectors are doubled to outrank Bootstrap's own `.modal` /
    `.modal-backdrop` rules regardless of stylesheet load order. */

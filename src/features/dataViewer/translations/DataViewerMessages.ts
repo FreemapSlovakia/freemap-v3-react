@@ -8,6 +8,8 @@ export type DataViewerMessages = {
   convertLossWarning: string;
   /** The tool menu's conversion, which takes every loaded feature. */
   convertAllToDrawing: string;
+  /** The tool menu's simplification, which takes every loaded feature. */
+  simplifyAll: string;
   moreInfo: string;
   saveAsMap: string;
   unsaved: string;

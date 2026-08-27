@@ -11,6 +11,7 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   convertLossWarning:
     'La conversion en dessin remplace la trace et supprime ses données enregistrées (altitude, fréquence cardiaque, vitesse, temps).',
   convertAllToDrawing: 'Tout convertir en dessin',
+  simplifyAll: 'Tout simplifier',
   moreInfo: 'Plus d’infos',
   saveAsMap: 'Enregistrer dans mes cartes',
   loginToSaveMap:

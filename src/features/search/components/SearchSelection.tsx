@@ -10,7 +10,7 @@ import {
 } from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useSimplifyPrompt } from '@shared/hooks/useSimplifyPrompt.js';
+import { useSimplifyPrompt } from '@shared/simplifyDialog.js';
 import { convertibleLines } from '@shared/simplifyTolerance.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
@@ -72,15 +72,17 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
           icon={<FaPencilAlt />}
           label={m?.general.convertToDrawing}
           onClick={() => {
-            const tolerance = askSimplification(
-              selectedResult.geojson
+            void askSimplification({
+              lines: selectedResult.geojson
                 ? convertibleLines(selectedResult.geojson)
                 : [],
-            );
-
-            if (tolerance !== null) {
-              dispatch(convertToDrawing({ type: 'search-result', tolerance }));
-            }
+            }).then((tolerance) => {
+              if (tolerance !== null) {
+                dispatch(
+                  convertToDrawing({ type: 'search-result', tolerance }),
+                );
+              }
+            });
           }}
           showFrom="never"
         />

@@ -10,6 +10,7 @@ const en: DataViewerMessages = {
   convertLossWarning:
     'Converting to a drawing replaces the track and discards its recorded data (elevation, heart rate, speed, time).',
   convertAllToDrawing: 'Convert all to drawing',
+  simplifyAll: 'Simplify all',
   moreInfo: 'More info',
   saveAsMap: 'Save to my maps',
   unsaved: 'Unsaved',

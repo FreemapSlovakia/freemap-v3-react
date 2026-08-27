@@ -62,7 +62,15 @@ export type Messages = {
     lookAtInPanorama: string;
     /** Names the ⋮ menu a panel carries for the place it is about. */
     placeActions: string;
-    simplifyPrompt: string;
+    simplify: {
+      /** Names the action, the dialog and its confirm button. */
+      title: string;
+      /** Names the slider: how far a point may sit off the simplified line. */
+      deviation: string;
+      /** Reads where the slider sits at zero. */
+      none: string;
+      vertices: (props: { from: ReactNode; to: ReactNode }) => JSX.Element;
+    };
     copyUrl: string;
     copyPageUrl: string;
     savingError: (props: Err) => string;

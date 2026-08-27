@@ -11,6 +11,7 @@ import {
   dataViewerExplodeTrack,
   dataViewerSetData,
   dataViewerSetRenderGeojson,
+  dataViewerSimplify,
   dataViewerSplitTrack,
 } from './actions.js';
 
@@ -57,6 +58,7 @@ export async function ensureRenderGeojson(
           dataViewerDeleteFeature,
           dataViewerSplitTrack,
           dataViewerExplodeTrack,
+          dataViewerSimplify,
           clearMapFeatures,
         ],
         sources,

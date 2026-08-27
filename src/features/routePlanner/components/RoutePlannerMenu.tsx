@@ -39,7 +39,7 @@ import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useSimplifyPrompt } from '@shared/hooks/useSimplifyPrompt.js';
+import { useSimplifyPrompt } from '@shared/simplifyDialog.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { Feature, LineString } from 'geojson';
 import {
@@ -648,10 +648,13 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => getFinish(state.routePlanner) ?? null,
   );
 
-  function convertRouteToDrawing() {
-    const tolerance = askSimplification(
-      plannedRouteLines(isochrones, alternatives[activeAlternativeIndex]),
-    );
+  async function convertRouteToDrawing() {
+    const tolerance = await askSimplification({
+      lines: plannedRouteLines(
+        isochrones,
+        alternatives[activeAlternativeIndex],
+      ),
+    });
 
     if (tolerance !== null) {
       dispatch(convertToDrawing({ type: 'planned-route', tolerance }));
@@ -1046,7 +1049,9 @@ export default function RoutePlannerMenu(): ReactElement {
               label={m?.general.convertToDrawing}
               icon={<FaPencilAlt />}
               showFrom="never"
-              onClick={convertRouteToDrawing}
+              onClick={() => {
+                void convertRouteToDrawing();
+              }}
             />
 
             <Action

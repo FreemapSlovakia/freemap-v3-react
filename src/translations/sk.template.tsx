@@ -79,8 +79,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Orientačná ružica odtiaľto',
     lookAtInPanorama: 'Pozrieť sa na to v panoráme',
     placeActions: 'Čo sa dá robiť s týmto miestom',
-    simplifyPrompt:
-      'Prosím, zadajte faktor zjednodušenia. Zadajte nulu pre vynechanie zjednodušenia.',
+    simplify: {
+      title: 'Zjednodušiť',
+      deviation: 'Maximálna odchýlka',
+      none: 'žiadne',
+      vertices: ({ from, to }) => (
+        <>
+          Bodov: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'Kopírovať URL',
     copyPageUrl: 'Kopírovať URL stránky',
     savingError: ({ err }) => addError(messages, 'Chyba ukladania', err),

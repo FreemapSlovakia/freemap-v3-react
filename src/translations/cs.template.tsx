@@ -80,8 +80,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Orientační růžice odsud',
     lookAtInPanorama: 'Podívat se na to v panoramatu',
     placeActions: 'Co se dá dělat s tímto místem',
-    simplifyPrompt:
-      'Prosím zadejte faktor zjednodušení. Zadejte nulu pro vynechání zjednodušení.',
+    simplify: {
+      title: 'Zjednodušit',
+      deviation: 'Maximální odchylka',
+      none: 'žádné',
+      vertices: ({ from, to }) => (
+        <>
+          Bodů: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'Kopírovat URL',
     copyPageUrl: 'Kopírovat URL stránky',
     savingError: ({ err }) => addError(messages, 'Chyba ukládání', err),

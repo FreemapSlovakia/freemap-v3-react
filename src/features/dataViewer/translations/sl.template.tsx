@@ -11,6 +11,7 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   convertLossWarning:
     'Pretvorba v risbo nadomesti sled in zavrže njene zabeležene podatke (nadmorska višina, srčni utrip, hitrost, čas).',
   convertAllToDrawing: 'Pretvori vse v risbo',
+  simplifyAll: 'Poenostavi vse',
   moreInfo: 'Več informacij',
   saveAsMap: 'Shrani med moje zemljevide',
   loginToSaveMap:

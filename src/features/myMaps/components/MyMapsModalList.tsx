@@ -1,10 +1,10 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   useConfirm,
   useConfirmChoice,
-} from '@shared/components/ConfirmProvider.js';
-import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+} from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import {

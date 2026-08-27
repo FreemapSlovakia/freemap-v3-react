@@ -13,7 +13,7 @@ import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessag
 import { PurchasesSection } from '@features/purchases/components/PurchasesSection.js';
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';

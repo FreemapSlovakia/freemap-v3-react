@@ -4,6 +4,7 @@ import { affectsElevationSmoothing } from '@features/elevationChart/model/settin
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { FeatureCollection } from 'geojson';
+import { simplifyDataFeature } from '../simplifyTrack.js';
 import {
   explodeTrackFeature,
   splitTrackFeature,
@@ -26,6 +27,7 @@ import {
   dataViewerSetSplitPoint,
   dataViewerSetSplitting,
   dataViewerSetTrackUID,
+  dataViewerSimplify,
   dataViewerSplitTrack,
   type ElevationConsumer,
   type ElevationFillMode,
@@ -93,9 +95,22 @@ function clearSplit(state: DataViewerState) {
 }
 
 /**
+ * Drops everything derived from the geometry as it was. Editing it makes the
+ * data no longer the file it came from, so `trackUID` / `gpxUrl` go with it.
+ */
+function markEdited(state: DataViewerState) {
+  state.renderTrackGeojson = null;
+
+  clearSplit(state);
+
+  state.trackUID = null;
+
+  state.gpxUrl = null;
+}
+
+/**
  * Puts the given features in the place of one, shifting whatever a later index
- * names, and drops everything derived from the old collection. Editing it makes
- * it no longer the file it came from, so `trackUID` / `gpxUrl` go with it.
+ * names.
  */
 function replaceFeature(
   state: DataViewerState,
@@ -104,9 +119,7 @@ function replaceFeature(
 ) {
   state.trackGeojson?.features.splice(index, 1, ...replacement);
 
-  state.renderTrackGeojson = null;
-
-  clearSplit(state);
+  markEdited(state);
 
   const active = state.activeTrackIndex;
 
@@ -114,10 +127,6 @@ function replaceFeature(
   if (active !== null && active > index) {
     state.activeTrackIndex = active + replacement.length - 1;
   }
-
-  state.trackUID = null;
-
-  state.gpxUrl = null;
 }
 
 export const dataViewerReducer = createReducer(
@@ -232,6 +241,34 @@ export const dataViewerReducer = createReducer(
 
         if (parts) {
           replaceFeature(state, payload, parts);
+        }
+      })
+      .addCase(dataViewerSimplify, (state, { payload }) => {
+        const features = state.trackGeojson?.features;
+
+        if (!features || payload.tolerance <= 0) {
+          return;
+        }
+
+        let changed = false;
+
+        for (const [index, feature] of features.entries()) {
+          if (payload.id !== undefined && payload.id !== index) {
+            continue;
+          }
+
+          const simplified = simplifyDataFeature(feature, payload.tolerance);
+
+          if (simplified) {
+            features[index] = simplified;
+
+            changed = true;
+          }
+        }
+
+        // Indices are untouched, so the selection and the active line stand.
+        if (changed) {
+          markEdited(state);
         }
       })
       .addCase(dataViewerSetElevationPrompt, (state, action) => {

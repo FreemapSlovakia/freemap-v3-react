@@ -248,6 +248,26 @@ describe('drawingLinesReducer — simplify', () => {
       [0, 2],
     ]);
   });
+
+  // Nothing here could undo a shape flattened into a line, so the tolerance is
+  // eased instead — the slider reaches a kilometre in one drag.
+  it('will not collapse a polygon, however coarse the tolerance', () => {
+    const state = withLines([
+      line('polygon', [
+        { id: 0, lat: 0, lon: 0 },
+        { id: 1, lat: 0, lon: 0.001 },
+        { id: 2, lat: 0.001, lon: 0.001 },
+        { id: 3, lat: 0.001, lon: 0 },
+      ]),
+    ]);
+
+    const next = drawingLinesReducer(
+      state,
+      drawingLineSimplify({ lineIndex: 0, tolerance: 1000 }),
+    );
+
+    expect(next.lines[0].points.length).toBeGreaterThanOrEqual(3);
+  });
 });
 
 describe('drawingLinesReducer — continue & drawing flag', () => {

@@ -36,6 +36,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   convertLossWarning:
     'La conversione in disegno sostituisce la traccia e ne scarta i dati registrati (quota, frequenza cardiaca, velocità, tempo).',
   convertAllToDrawing: 'Converti tutto in disegno',
+  simplifyAll: 'Semplifica tutto',
   moreInfo: 'Maggiori info',
   saveAsMap: 'Salva nelle mie mappe',
   loginToSaveMap: 'Accedi prima per salvare la traccia nelle tue mappe.',

@@ -1,4 +1,4 @@
-import { useConfirmChoice } from '@shared/components/ConfirmProvider.js';
+import { useConfirmChoice } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCallback } from 'react';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';

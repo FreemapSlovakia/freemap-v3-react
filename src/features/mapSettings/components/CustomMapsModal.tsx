@@ -3,8 +3,8 @@ import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
   Action,

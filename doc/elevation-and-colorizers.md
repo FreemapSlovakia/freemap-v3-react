@@ -608,8 +608,28 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   else nearest in space.
 - **Convert-to-drawing replaces.** Drawing state lives in the URL hash, so per-vertex
   HR/cadence/elevation can't be carried. Only a dense `fm:kind === 'track'` has rich
-  per-vertex data to lose, so it shows one `window.prompt` that both warns and asks for a
-  simplification factor (Cancel aborts); routes/generic geometry convert straight away.
+  per-vertex data to lose, so it gets the shared simplify dialog
+  (`src/shared/simplifyDialog.tsx`) with that warning as its preamble (Cancel aborts);
+  routes/generic geometry convert straight away, and are asked at all only when dense
+  enough to be worth thinning.
+
+- **Simplify in place.** The dataViewer's own **Simplify** / **Simplify all**
+  (`dataViewerSimplify` → `simplifyTrack.ts`) thins the loaded data without converting it.
+  The tolerance is a **maximum deviation in metres**: `src/shared/simplifyGeo.ts` scales
+  longitude by cos(latitude) before Douglas–Peucker, so it means the same distance
+  whichever way a line runs. It reports the surviving indices rather than the geometry,
+  which is what lets the per-point channels — and, re-measured along the shortened line,
+  the matched `fm:pathDetails` spans — be thinned alongside the coordinates.
+
+- **Sensor channels are averaged, not decimated.** A surviving vertex carries the mean of
+  the samples it now stands for (the run up to the midpoint of the gap either side). DP
+  keeps *corners*, and corners are junctions and switchbacks, so one-sample-per-survivor
+  would bias a recording towards wherever it slowed down. `PER_VERTEX` in
+  `trackChannels.ts` lists what keeps its own vertex's value instead — times (they have to
+  keep matching the place recorded) and angles (`courses`/`bearings`: the mean of 350° and
+  10° is 180°). Elevation is in `coord[2]`, not a channel, so it is never averaged; note
+  that DP is horizontal-only, so simplifying drops elevation extremes that sit on a
+  straight plan line and lowers the computed climb/descent.
 
 ### Matching a track to the graph — `src/features/dataViewer/matchTrack.ts`
 

@@ -5,6 +5,7 @@ import {
 } from '@shared/colorizers/colorize.js';
 import { cumulativeDistances, lineSegments } from '@shared/geoutils.js';
 import type { LineString, MultiLineString, Position } from 'geojson';
+import { type Channel, readChannels, writeChannels } from './trackChannels.js';
 import type { TrackLine } from './trackSelection.js';
 
 /**
@@ -17,23 +18,11 @@ export interface TrackSplitPoint {
   pointIndex: number;
 }
 
-/** Per-point channels live under this property, one array per channel. */
-const COORD_PROPERTIES = 'coordinateProperties';
-
-/** Live tracking writes its times here instead. */
-const COORD_TIMES = 'coordTimes';
-
 /** A run of one source segment, `to` exclusive. */
 interface Run {
   segment: number;
   from: number;
   to: number;
-}
-
-interface Channel {
-  root: boolean;
-  key: string;
-  segments: unknown[][];
 }
 
 /** What the pieces of one edit are all cut from, read once for the lot. */
@@ -45,12 +34,6 @@ interface Source {
   distances: number[][] | null;
 }
 
-function asRecord(value: unknown): Record<string, unknown> | undefined {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : undefined;
-}
-
 /** A run with a line in it; a lone point draws nothing and is dropped. */
 function drawableRuns(runs: Run[]): Run[] {
   return runs.filter((run) => run.to - run.from > 1);
@@ -58,55 +41,6 @@ function drawableRuns(runs: Run[]): Run[] {
 
 function drawableSegments(segments: Position[][]): number {
   return segments.filter((segment) => segment.length > 1).length;
-}
-
-/**
- * A per-point array laid out per segment, or `null` where it does not line up
- * with the coordinates — togeojson nests it per segment for a `MultiLineString`
- * and keeps it flat for a `LineString`. A misfit is carried over untouched.
- */
-function alignToSegments(raw: unknown, lengths: number[]): unknown[][] | null {
-  if (!Array.isArray(raw)) {
-    return null;
-  }
-
-  if (
-    raw.length === lengths.length &&
-    raw.every((s, i) => Array.isArray(s) && s.length === lengths[i])
-  ) {
-    return raw as unknown[][];
-  }
-
-  if (raw.length === lengths.reduce((a, b) => a + b, 0)) {
-    let at = 0;
-
-    return lengths.map((len) => {
-      const from = at;
-
-      at += len;
-
-      return raw.slice(from, at);
-    });
-  }
-
-  return null;
-}
-
-function perPointChannels(feature: TrackLine, lengths: number[]): Channel[] {
-  const props = feature.properties;
-
-  const candidates = [
-    ...Object.entries(asRecord(props?.[COORD_PROPERTIES]) ?? {}).map(
-      ([key, value]) => ({ root: false, key, value }),
-    ),
-    { root: true, key: COORD_TIMES, value: props?.[COORD_TIMES] },
-  ];
-
-  return candidates.flatMap(({ root, key, value }) => {
-    const segments = alignToSegments(value, lengths);
-
-    return segments ? [{ root, key, segments }] : [];
-  });
 }
 
 function readSource(feature: TrackLine): Source {
@@ -118,7 +52,7 @@ function readSource(feature: TrackLine): Source {
 
   return {
     segments,
-    channels: perPointChannels(
+    channels: readChannels(
       feature,
       segments.map((segment) => segment.length),
     ),
@@ -173,37 +107,24 @@ function takeRuns(
     return null;
   }
 
-  const single = kept.length === 1;
-
   const coordinates = kept.map((run) =>
     source.segments[run.segment]!.slice(run.from, run.to),
   );
 
-  const geometry: LineString | MultiLineString = single
-    ? { type: 'LineString', coordinates: coordinates[0]! }
-    : { type: 'MultiLineString', coordinates };
+  const geometry: LineString | MultiLineString =
+    kept.length === 1
+      ? { type: 'LineString', coordinates: coordinates[0]! }
+      : { type: 'MultiLineString', coordinates };
 
   const properties = { ...feature.properties };
 
-  const cp = { ...asRecord(properties[COORD_PROPERTIES]) };
-
-  for (const channel of source.channels) {
-    const sliced = kept.map((run) =>
-      channel.segments[run.segment]!.slice(run.from, run.to),
-    );
-
-    const value = single ? sliced[0]! : sliced;
-
-    if (channel.root) {
-      properties[channel.key] = value;
-    } else {
-      cp[channel.key] = value;
-    }
-  }
-
-  if (Object.keys(cp).length > 0) {
-    properties[COORD_PROPERTIES] = cp;
-  }
+  writeChannels(
+    properties,
+    source.channels,
+    geometry.type === 'LineString',
+    (channel: Channel) =>
+      kept.map((run) => channel.segments[run.segment]!.slice(run.from, run.to)),
+  );
 
   if (source.details && source.distances) {
     const first = kept[0]!;

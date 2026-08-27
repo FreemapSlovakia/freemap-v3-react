@@ -77,8 +77,16 @@ const messages: Messages = {
     toposcopeFromHere: 'Toposcope from here',
     lookAtInPanorama: 'Look at this in the panorama',
     placeActions: 'What to do with this place',
-    simplifyPrompt:
-      'Please enter simplification factor. Set to zero for no simplification.',
+    simplify: {
+      title: 'Simplify',
+      deviation: 'Maximum deviation',
+      none: 'none',
+      vertices: ({ from, to }) => (
+        <>
+          Points: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'Copy URL',
     copyPageUrl: 'Copy page URL',
     savingError: ({ err }) => addError(messages, 'Save error', err),

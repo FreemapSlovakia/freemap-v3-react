@@ -94,6 +94,7 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   convertLossWarning:
     'Konwersja na rysunek zastępuje ślad i odrzuca jego zarejestrowane dane (wysokość, tętno, prędkość, czas).',
   convertAllToDrawing: 'Przekształć wszystko na rysunek',
+  simplifyAll: 'Uprość wszystko',
   moreInfo: 'Więcej informacji',
   saveAsMap: 'Zapisz w moich mapach',
   loginToSaveMap: 'Zaloguj się, aby zapisać trasę w swoich mapach.',

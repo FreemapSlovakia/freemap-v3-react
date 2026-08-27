@@ -1,8 +1,8 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import {
   Action,
   ActionDivider,

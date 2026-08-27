@@ -78,8 +78,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Panorámatábla innen',
     lookAtInPanorama: 'Megnézés a panorámában',
     placeActions: 'Mit lehet kezdeni ezzel a hellyel',
-    simplifyPrompt:
-      'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
+    simplify: {
+      title: 'Egyszerűsítés',
+      deviation: 'Maximális eltérés',
+      none: 'nincs',
+      vertices: ({ from, to }) => (
+        <>
+          Pontok: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'URL másolása',
     copyPageUrl: 'Oldal URL-jének másolása',
     savingError: ({ err }) => addError(messages, 'Mentési hiba', err),

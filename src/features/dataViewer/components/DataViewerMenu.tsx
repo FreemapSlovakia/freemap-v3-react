@@ -16,13 +16,13 @@ import {
 } from '@shared/colorizers/index.js';
 import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
-import {
-  useConfirm,
-  useConfirmCancel,
-} from '@shared/components/ConfirmProvider.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  useConfirm,
+  useConfirmCancel,
+} from '@shared/components/ModalProvider.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
@@ -33,6 +33,7 @@ import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
+  FaCompressAlt,
   FaEllipsisV,
   FaMountain,
   FaPaintBrush,
@@ -44,6 +45,7 @@ import {
 import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
+import { useSimplifyData } from '../hooks/useSimplifyData.js';
 import {
   ColorizingModeSchema,
   dataViewerColorizeTrackBy,
@@ -52,6 +54,7 @@ import {
   dataViewerSetColorizeLegend,
   dataViewerSetElevationPrompt,
 } from '../model/actions.js';
+import { isSimplifiable } from '../simplifyTrack.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 import DataViewerElevationPromptModal from './DataViewerElevationPromptModal.js';
@@ -68,6 +71,8 @@ export function DataViewerMenu(): ReactElement {
   const confirm = useConfirm();
 
   const convertToDrawing = useConvertTrackToDrawing();
+
+  const simplify = useSimplifyData();
 
   const cancelConfirm = useConfirmCancel();
 
@@ -151,6 +156,12 @@ export function DataViewerMenu(): ReactElement {
     [trackGeojson],
   );
 
+  // Points alone have nothing a tolerance could thin.
+  const canSimplify = useMemo(
+    () => (trackGeojson?.features ?? []).some(isSimplifiable),
+    [trackGeojson],
+  );
+
   const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {
     const { isAvailable } = colorizers[mode];
 
@@ -220,7 +231,12 @@ export function DataViewerMenu(): ReactElement {
         break;
 
       case 'convert-to-drawing':
-        convertToDrawing();
+        void convertToDrawing();
+
+        break;
+
+      case 'simplify':
+        void simplify();
 
         break;
 
@@ -335,6 +351,12 @@ export function DataViewerMenu(): ReactElement {
               {hasLines && canUpdateElevation && (
                 <Dropdown.Item as="button" eventKey="update-elevation">
                   <FaMountain /> &nbsp;{tvm?.elevationFill.update ?? '…'}
+                </Dropdown.Item>
+              )}
+
+              {canSimplify && (
+                <Dropdown.Item as="button" eventKey="simplify">
+                  <FaCompressAlt /> &nbsp;{tvm?.simplifyAll ?? '…'}
                 </Dropdown.Item>
               )}
 

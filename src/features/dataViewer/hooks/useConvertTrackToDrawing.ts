@@ -1,6 +1,6 @@
 import { convertToDrawing } from '@app/store/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useSimplifyPrompt } from '@shared/hooks/useSimplifyPrompt.js';
+import { useSimplifyPrompt } from '@shared/simplifyDialog.js';
 import { convertibleLines } from '@shared/simplifyTolerance.js';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
@@ -13,7 +13,7 @@ import { useDataViewerMessages } from '../translations/useDataViewerMessages.js'
  * how much to simplify, filled in from the geometry's own density. Cancel
  * aborts; geometry thin enough to convert whole is asked nothing.
  */
-export function useConvertTrackToDrawing(): (id?: number) => void {
+export function useConvertTrackToDrawing(): (id?: number) => Promise<void> {
   const dispatch = useDispatch();
 
   const dvm = useDataViewerMessages();
@@ -25,7 +25,7 @@ export function useConvertTrackToDrawing(): (id?: number) => void {
   );
 
   return useCallback(
-    (id?: number) => {
+    async (id?: number) => {
       const source =
         id === undefined ? trackGeojson : trackGeojson?.features[id];
 
@@ -39,10 +39,10 @@ export function useConvertTrackToDrawing(): (id?: number) => void {
         source.type === 'Feature' ? [source] : source.features
       ).some((feature) => featureKind(feature) === 'track');
 
-      const tolerance = askSimplification(
-        convertibleLines(source),
-        dense ? dvm?.convertLossWarning : undefined,
-      );
+      const tolerance = await askSimplification({
+        lines: convertibleLines(source),
+        preamble: dense ? dvm?.convertLossWarning : undefined,
+      });
 
       if (tolerance !== null) {
         dispatch(convertToDrawing({ type: 'track', tolerance, id }));

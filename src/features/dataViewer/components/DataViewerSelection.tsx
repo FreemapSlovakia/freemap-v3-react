@@ -15,6 +15,7 @@ import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaCheck,
+  FaCompressAlt,
   FaDrawPolygon,
   FaEllipsisV,
   FaInfoCircle,
@@ -26,6 +27,7 @@ import { RiScissorsFill } from 'react-icons/ri';
 import { TbArrowsSplit, TbTimeline } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
+import { useSimplifyData } from '../hooks/useSimplifyData.js';
 import {
   dataViewerExplodeTrack,
   dataViewerSetElevationPrompt,
@@ -37,6 +39,7 @@ import {
   TRACK_INFO_TOAST_ID,
   trackInfoToast,
 } from '../model/trackInfoToast.js';
+import { isSimplifiable } from '../simplifyTrack.js';
 import { isExplodable, isSplittable } from '../splitTrack.js';
 import { isTrackLine, trackLineFeatures } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
@@ -49,6 +52,8 @@ export default function DataViewerSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const convertToDrawing = useConvertTrackToDrawing();
+
+  const simplify = useSimplifyData();
 
   const index = useAppSelector((state) =>
     state.main.selection?.type === 'data-viewer'
@@ -89,7 +94,12 @@ export default function DataViewerSelection(): ReactElement | null {
   const handleMoreSelect = (eventKey: string | null) => {
     switch (eventKey) {
       case 'convert-to-drawing':
-        convertToDrawing(index);
+        void convertToDrawing(index);
+
+        break;
+
+      case 'simplify':
+        void simplify(index);
 
         break;
 
@@ -244,7 +254,9 @@ export default function DataViewerSelection(): ReactElement | null {
                 <>
                   <Dropdown.Item
                     as="button"
-                    onClick={() => convertToDrawing(index)}
+                    onClick={() => {
+                      void convertToDrawing(index);
+                    }}
                   >
                     <FaPencilAlt /> {m?.general.convertToDrawing}
                   </Dropdown.Item>
@@ -275,6 +287,12 @@ export default function DataViewerSelection(): ReactElement | null {
             {line && isExplodable(line) && (
               <Dropdown.Item as="button" eventKey="explode">
                 <TbArrowsSplit /> &nbsp;{dvm?.split.segments ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {isSimplifiable(feature) && (
+              <Dropdown.Item as="button" eventKey="simplify">
+                <FaCompressAlt /> &nbsp;{m?.general.simplify.title ?? '…'}
               </Dropdown.Item>
             )}
 

@@ -80,8 +80,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Tablica panoramiczna stąd',
     lookAtInPanorama: 'Spójrz na to w panoramie',
     placeActions: 'Co można zrobić z tym miejscem',
-    simplifyPrompt:
-      'Wprowadź współczynnik uproszczenia. Wprowadź zero, aby pominąć uproszczenie.',
+    simplify: {
+      title: 'Uprość',
+      deviation: 'Maksymalne odchylenie',
+      none: 'brak',
+      vertices: ({ from, to }) => (
+        <>
+          Punkty: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'Skopiuj URL',
     copyPageUrl: 'Skopiuj URL strony',
     savingError: ({ err }) => addError(messages, 'Błąd zapisu', err),

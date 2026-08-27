@@ -12,11 +12,12 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { parseTolerance } from '@shared/simplifyPrompt.js';
+import { useSimplifyPrompt } from '@shared/simplifyDialog.js';
 import { area } from '@turf/area';
 import { booleanContains } from '@turf/boolean-contains';
 import { destination } from '@turf/destination';
 import { polygon } from '@turf/helpers';
+import type { Position } from 'geojson';
 import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
@@ -69,6 +70,8 @@ export default function DrawingLineSelection(): ReactElement | null {
   const oeam = useOpenInExternalAppMessages();
 
   const convertToDataViewer = useConvertToDataViewer();
+
+  const askSimplification = useSimplifyPrompt();
 
   const drawing = useAppSelector((state) => state.drawingLines.drawing);
 
@@ -304,22 +307,34 @@ export default function DrawingLineSelection(): ReactElement | null {
           break;
 
         case 'simplify': {
-          // Asked for outright rather than derived: the line is being
-          // simplified because the user says so, and one already thin would be
-          // offered nothing to do.
-          const tolerance = parseTolerance(
-            window.prompt(m?.general.simplifyPrompt, '50') ?? '',
-          );
-
-          if (tolerance) {
-            dispatch(drawingLineSimplify({ lineIndex, tolerance }));
+          if (!line) {
+            break;
           }
+
+          const points = line.points.map((p): Position => [p.lon, p.lat]);
+
+          // `always`: the line is being simplified because the user says so,
+          // and one already thin would otherwise be asked nothing. A polygon is
+          // closed first, as the reducer closes it — counted open, the readout
+          // would promise a reduction the ring minimum then refuses.
+          const ring = line.type === 'polygon';
+
+          void askSimplification({
+            lines: [ring ? [...points, points[0]!] : points],
+            rings: ring,
+            always: true,
+          }).then((tolerance) => {
+            if (tolerance) {
+              dispatch(drawingLineSimplify({ lineIndex, tolerance }));
+            }
+          });
 
           break;
         }
       }
     },
     [
+      askSimplification,
       canRememberHintPref,
       convertToDataViewer,
       dispatch,
@@ -327,7 +342,6 @@ export default function DrawingLineSelection(): ReactElement | null {
       line,
       lineIndex,
       lines,
-      m,
       preventCutHoleHint,
       toggleElevationChart,
     ],

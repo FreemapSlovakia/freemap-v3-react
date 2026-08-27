@@ -8,10 +8,10 @@ import {
 import { normalizeProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import { simplifyPositions, simplifyRing } from '@shared/simplifyGeo.js';
 import { isDrawTool, isMapClickTool } from '@shared/toolDefinitions.js';
 import { serializeDrawingLine } from '@shared/urlSerialization.js';
-import { lineString } from '@turf/helpers';
-import { simplify as turfSimplify } from '@turf/simplify';
+import type { Position } from 'geojson';
 import {
   type DrawnLine,
   drawingLineAdd,
@@ -282,15 +282,17 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
           return;
         }
 
-        const ls = lineString(line.points.map((p) => [p.lon, p.lat]));
+        const points = line.points.map((p): Position => [p.lon, p.lat]);
 
-        turfSimplify(ls, { mutate: true, highQuality: true, tolerance });
+        // Rings are stored open, so a polygon is closed for the thinning and
+        // reopened after: `simplifyRing` eases the tolerance rather than letting
+        // it collapse the shape into a line, which nothing here could undo.
+        const kept =
+          line.type === 'polygon'
+            ? simplifyRing([...points, points[0]!], tolerance).slice(0, -1)
+            : simplifyPositions(points, tolerance);
 
-        line.points = ls.geometry.coordinates.map((c, id) => ({
-          lat: c[1]!,
-          lon: c[0]!,
-          id,
-        }));
+        line.points = kept.map((c, id) => ({ lat: c[1]!, lon: c[0]!, id }));
       },
     )
     .addCase(drawingLineSplit, (state, action) => {

@@ -7,7 +7,6 @@ import {
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
-import { useConfirmChoice } from '@shared/components/ConfirmProvider.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import {
   FloatingWindowControls,
@@ -16,6 +15,7 @@ import {
 import { HintMark } from '@shared/components/HintMark.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useConfirmChoice } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';

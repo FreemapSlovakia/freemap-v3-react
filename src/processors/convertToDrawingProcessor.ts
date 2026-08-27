@@ -21,9 +21,9 @@ import {
   normalizeProps,
   pickDrawingProps,
 } from '@features/drawing/model/actions/drawingPointActions.js';
-import { getMessages } from '@features/l10n/messagesStore.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
+import type { OsmGeojson } from '@features/osm/model/assembleOsmGeojson.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import {
@@ -56,7 +56,12 @@ import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import { mergeLines } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
-import { promptSimplification } from '@shared/simplifyPrompt.js';
+import { askSimplification } from '@shared/simplifyDialog.js';
+import {
+  simplifyFeature,
+  simplifyPositions,
+  simplifyRing,
+} from '@shared/simplifyGeo.js';
 import { convertibleLines } from '@shared/simplifyTolerance.js';
 import {
   lineStyleFromProperties,
@@ -64,7 +69,6 @@ import {
 } from '@shared/styleFromProperties.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { flatten as turfFlatten } from '@turf/flatten';
-import { simplify } from '@turf/simplify';
 import type { Feature, FeatureCollection, Position } from 'geojson';
 import type { Dispatch } from 'redux';
 
@@ -77,17 +81,6 @@ function ringToPoints(ring: Position[], dropClosing: boolean): Point[] {
     lon: node[0],
     id,
   }));
-}
-
-// A polygon ring simplified as a ring: `simplify` keeps one from degenerating
-// into fewer points than a polygon can be made of.
-function simplifyRing(ring: Position[], tolerance: number): Position[] {
-  return tolerance
-    ? simplify(
-        { type: 'Polygon', coordinates: [ring] },
-        { mutate: true, highQuality: true, tolerance },
-      ).coordinates[0]!
-    : ring;
 }
 
 /** The label as the author wrote it, template and all, where the file carries one. */
@@ -223,11 +216,7 @@ function geojsonToDrawing(
 
   if (tolerance) {
     for (const [i, feature] of features.entries()) {
-      features[i] = simplify(feature, {
-        mutate: false,
-        highQuality: true,
-        tolerance,
-      });
+      features[i] = simplifyFeature(feature, tolerance);
     }
   }
 
@@ -400,12 +389,7 @@ async function convertPlannedRoute(
   } else if (alternative) {
     const raw = alternativeCoordinates(alternative);
 
-    const coords = tolerance
-      ? simplify(
-          { type: 'LineString', coordinates: raw },
-          { mutate: true, highQuality: true, tolerance },
-        ).coordinates
-      : raw;
+    const coords = simplifyPositions(raw, tolerance);
 
     const dominant = dominantStepMode(alternative);
 
@@ -539,13 +523,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       let pointCount = 0;
 
       const features = turfFlatten(source).features.map((feature) =>
-        payload.tolerance
-          ? simplify(feature, {
-              mutate: false,
-              highQuality: true,
-              tolerance: payload.tolerance,
-            })
-          : feature,
+        simplifyFeature(feature, payload.tolerance),
       );
 
       for (const feature of features) {
@@ -635,16 +613,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
             color: track.color || DEFAULT_TRACK_COLOR,
             width: track.width || DEFAULT_TRACK_WIDTH,
             points: ringToPoints(
-              payload.tolerance
-                ? simplify(
-                    { type: 'LineString', coordinates: coords },
-                    {
-                      mutate: true,
-                      highQuality: true,
-                      tolerance: payload.tolerance,
-                    },
-                  ).coordinates
-                : coords,
+              simplifyPositions(coords, payload.tolerance),
               false,
             ),
           };
@@ -734,44 +703,62 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
     const { id } = action.payload;
 
+    const report = (err: unknown) => {
+      if (!isAbortError(err)) {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'fetchingError',
+            messageParams: { err },
+            messageLoader: loadObjectsMessages,
+          }),
+        );
+      }
+    };
+
+    let geojson: OsmGeojson;
+
     try {
-      const geojson = await fetchOsmFullGeojson(id, getState);
-
-      // Asked here rather than in the menu, which is the one conversion that
-      // doesn't know its own geometry until it has been fetched — a relation
-      // can be tens of thousands of nodes.
-      const tolerance = promptSimplification(
-        convertibleLines(geojson),
-        getMessages()?.general.simplifyPrompt,
-      );
-
-      if (tolerance === null) {
-        return;
-      }
-
-      const first = firstIndexes(getState());
-
-      const { lineCount, pointCount } = geojsonToDrawing(
-        geojson,
-        getState,
-        dispatch,
-        tolerance,
-      );
-
-      selectAfterConvert(dispatch, first, lineCount, pointCount);
+      geojson = await fetchOsmFullGeojson(id, getState);
     } catch (err) {
-      if (isAbortError(err)) {
-        return;
-      }
+      report(err);
 
-      dispatch(
-        toastsAdd({
-          style: 'danger',
-          messageKey: 'fetchingError',
-          messageParams: { err },
-          messageLoader: loadObjectsMessages,
-        }),
-      );
+      return;
     }
+
+    // Asked here rather than in the menu, which is the one conversion that
+    // doesn't know its own geometry until it has been fetched — a relation can
+    // be tens of thousands of nodes. Left unawaited so `handle` settles with the
+    // fetch: the middleware runs the busy indicator until it does, and the
+    // dialog waits on the user.
+    void askSimplification({ lines: convertibleLines(geojson) })
+      .then((tolerance) => {
+        if (tolerance === null) {
+          return;
+        }
+
+        const first = firstIndexes(getState());
+
+        const { lineCount, pointCount } = geojsonToDrawing(
+          geojson,
+          getState,
+          dispatch,
+          tolerance,
+        );
+
+        selectAfterConvert(dispatch, first, lineCount, pointCount);
+      })
+      // Nothing awaits this any more, so the conversion has to report for
+      // itself. Not as a fetch error: that is done by here, and naming it one
+      // would send the user looking in the wrong place.
+      .catch((err) => {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.operationError',
+            messageParams: { err },
+          }),
+        );
+      });
   },
 };

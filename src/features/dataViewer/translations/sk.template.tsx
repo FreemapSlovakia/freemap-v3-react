@@ -11,6 +11,7 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   convertLossWarning:
     'Prevod na kresbu nahradí trasu a zahodí jej zaznamenané údaje (nadmorská výška, tep, rýchlosť, čas).',
   convertAllToDrawing: 'Skonvertovať všetko na kreslenie',
+  simplifyAll: 'Zjednodušiť všetko',
   moreInfo: 'Viac info',
   saveAsMap: 'Uložiť do mojich máp',
   unsaved: 'Neuložené',

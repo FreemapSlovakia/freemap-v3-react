@@ -82,8 +82,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Tavola d’orientamento da qui',
     lookAtInPanorama: 'Guarda questo nel panorama',
     placeActions: 'Cosa fare con questo luogo',
-    simplifyPrompt:
-      'Per favore inserisci il fattore di semplificazione. Imposta lo zero per nessuna semplificazione.',
+    simplify: {
+      title: 'Semplifica',
+      deviation: 'Scostamento massimo',
+      none: 'nessuna',
+      vertices: ({ from, to }) => (
+        <>
+          Punti: {from} → {to}
+        </>
+      ),
+    },
 
     copyUrl: 'Copia URL',
     copyPageUrl: 'Copia URL della pagina',

@@ -79,8 +79,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Panoramska tabla od tu',
     lookAtInPanorama: 'Poglej to v panorami',
     placeActions: 'Kaj se da narediti s tem krajem',
-    simplifyPrompt:
-      'Vnesite faktor poenostavitve. Za brez poenostavitve vnesite nič.',
+    simplify: {
+      title: 'Poenostavi',
+      deviation: 'Največji odklon',
+      none: 'brez',
+      vertices: ({ from, to }) => (
+        <>
+          Točke: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'Kopiraj URL',
     copyPageUrl: 'Kopiraj URL strani',
     savingError: ({ err }) =>

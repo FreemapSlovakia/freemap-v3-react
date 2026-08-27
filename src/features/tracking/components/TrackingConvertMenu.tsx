@@ -6,7 +6,7 @@ import {
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useSimplifyPrompt } from '@shared/hooks/useSimplifyPrompt.js';
+import { useSimplifyPrompt } from '@shared/simplifyDialog.js';
 import type { Position } from 'geojson';
 import type { ReactElement } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
@@ -53,10 +53,10 @@ export function TrackingConvertMenu({ token }: Props): ReactElement {
     }
   }
 
-  function copyToDrawing() {
-    // Deliberately computed on the click, off the live points as they stand:
-    // the suggestion is about the recording that is being copied, and it grows
-    // with every fix that arrives.
+  async function copyToDrawing() {
+    // Measured off the live points as they stand at the click. Fixes keep
+    // arriving while the dialog is open, so the conversion takes a few more
+    // points than the suggestion was measured on.
     const lines: Position[][] = resolveTracks(tracks, trackedDevices)
       .filter((track) => token === undefined || track.token === token)
       .flatMap((track) =>
@@ -65,7 +65,7 @@ export function TrackingConvertMenu({ token }: Props): ReactElement {
         ),
       );
 
-    const tolerance = askSimplification(lines);
+    const tolerance = await askSimplification({ lines });
 
     if (tolerance !== null) {
       dispatch(convertToDrawing({ type: 'tracking', id: token, tolerance }));
@@ -86,7 +86,9 @@ export function TrackingConvertMenu({ token }: Props): ReactElement {
       <Action
         icon={<FaPencilAlt />}
         label={m?.general.copyToDrawing}
-        onClick={copyToDrawing}
+        onClick={() => {
+          void copyToDrawing();
+        }}
         showFrom="never"
       />
     </ResponsiveActions>

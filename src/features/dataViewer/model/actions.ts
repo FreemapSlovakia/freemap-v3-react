@@ -190,3 +190,13 @@ export const dataViewerSplitTrack = createAction<TrackSplitPoint>(
 export const dataViewerExplodeTrack = createAction<number>(
   'DATA_VIEWER_EXPLODE_TRACK',
 );
+
+/**
+ * Thins the loaded lines and polygons — the one feature `id` names, or all of
+ * them — by the given Douglas–Peucker tolerance, in metres. Like
+ * {@link dataViewerSplitTrack} this edits the loaded data in place.
+ */
+export const dataViewerSimplify = createAction<{
+  tolerance: number;
+  id?: number;
+}>('DATA_VIEWER_SIMPLIFY');

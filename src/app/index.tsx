@@ -19,7 +19,7 @@ import {
 } from '@features/myMaps/offlineStore.js';
 import { getPendingCount } from '@features/myMaps/outboxStore.js';
 import { attachOutboxSync } from '@features/myMaps/outboxSync.js';
-import { ConfirmProvider } from '@shared/components/ConfirmProvider.js';
+import { ModalProvider } from '@shared/components/ModalProvider.js';
 import {
   registerOfflineContentProvider,
   syncStaticCache,
@@ -204,11 +204,11 @@ createRoot(rootElement).render(
         style: { verticalAlign: 'middle', position: 'relative', top: '-1px' },
       }}
     >
-      <ConfirmProvider>
+      <ModalProvider>
         <ErrorCatcher>
           <Main />
         </ErrorCatcher>
-      </ConfirmProvider>
+      </ModalProvider>
     </IconContext.Provider>
   </Provider>,
 );

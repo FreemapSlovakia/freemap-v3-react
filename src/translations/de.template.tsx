@@ -79,8 +79,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Panoramatafel von hier',
     lookAtInPanorama: 'Das im Panorama anschauen',
     placeActions: 'Was man mit diesem Ort tun kann',
-    simplifyPrompt:
-      'Bitte den Vereinfachungsfaktor eingeben. Null für keine Vereinfachung eingeben.',
+    simplify: {
+      title: 'Vereinfachen',
+      deviation: 'Maximale Abweichung',
+      none: 'keine',
+      vertices: ({ from, to }) => (
+        <>
+          Punkte: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'URL kopieren',
     copyPageUrl: 'Seiten-URL kopieren',
     savingError: ({ err }) => addError(messages, 'Fehler beim Speichern', err),

@@ -95,6 +95,7 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   convertLossWarning:
     'Beim Umwandeln in eine Zeichnung wird der Track ersetzt und seine aufgezeichneten Daten (Höhe, Herzfrequenz, Geschwindigkeit, Zeit) verworfen.',
   convertAllToDrawing: 'Alles in Zeichnung umwandeln',
+  simplifyAll: 'Alles vereinfachen',
   moreInfo: 'Mehr Infos',
   saveAsMap: 'In meinen Karten speichern',
   loginToSaveMap:
