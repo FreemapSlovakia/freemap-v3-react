@@ -153,10 +153,6 @@ export const convertToDataViewerProcessor: Processor<
     // Not a server-shared track, so it carries no id to share it back by.
     dispatch(dataViewerSetTrackUID(null));
 
-    dispatch(dataViewerSetData({ trackGeojson }));
-
-    dispatch(openTool('import-file'));
-
     switch (source.type) {
       case 'drawing-point':
         dispatch(selectFeature(null));
@@ -198,5 +194,11 @@ export const convertToDataViewerProcessor: Processor<
       case 'objects-geometry':
         break;
     }
+
+    // After the source is let go of: dropping a drawing selection would
+    // otherwise take the converted feature's own selection with it.
+    dispatch(dataViewerSetData({ trackGeojson, select: true }));
+
+    dispatch(openTool('import-file'));
   },
 };

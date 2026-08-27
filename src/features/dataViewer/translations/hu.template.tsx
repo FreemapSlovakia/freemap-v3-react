@@ -27,10 +27,10 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   info: () => <DataViewerDetails />,
   upload: 'Feltöltés',
-  trackLabel: 'Nyomvonal',
   unnamedTrack: ({ n }) => `${n}. nyomvonal`,
   convertLossWarning:
     'A rajzzá alakítás lecseréli a nyomvonalat, és eldobja a rögzített adatait (magasság, pulzusszám, sebesség, idő).',
+  convertAllToDrawing: 'Összes átalakítása rajzzá',
   moreInfo: 'További információ',
   saveAsMap: 'Mentés a térképeim közé',
   loginToSaveMap:

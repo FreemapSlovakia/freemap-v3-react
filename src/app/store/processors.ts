@@ -24,11 +24,13 @@ import {
   changesetsTrackProcessor,
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
+import { dataViewerDeleteFeatureProcessor } from '@features/dataViewer/model/processors/dataViewerDeleteFeatureProcessor.js';
 import { dataViewerDensifyProcessor } from '@features/dataViewer/model/processors/dataViewerDensifyProcessor.js';
 import { dataViewerDownloadTrackProcessor } from '@features/dataViewer/model/processors/dataViewerDownloadTrackProcessor.js';
 import { dataViewerGpxLoadProcessor } from '@features/dataViewer/model/processors/dataViewerGpxLoadProcessor.js';
 import { dataViewerMatchTrackProcessor } from '@features/dataViewer/model/processors/dataViewerMatchTrackProcessor.js';
 import { dataViewerResolveElevationPromptProcessor } from '@features/dataViewer/model/processors/dataViewerResolveElevationPromptProcessor.js';
+import { dataViewerSelectProcessor } from '@features/dataViewer/model/processors/dataViewerSelectProcessor.js';
 import { dataViewerSetTrackDataProcessor } from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
 import {
   dataViewerForgetStoredProcessor,
@@ -212,6 +214,8 @@ export const processors = [
   dataViewerMatchTrackProcessor,
   dataViewerToggleElevationChartProcessor,
   dataViewerResolveElevationPromptProcessor,
+  dataViewerSelectProcessor,
+  dataViewerDeleteFeatureProcessor,
   dataViewerDensifyProcessor,
   routePlannerFindRouteProcessor,
   routePlannerOptimizeOrderProcessor,

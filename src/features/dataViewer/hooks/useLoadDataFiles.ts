@@ -68,7 +68,7 @@ export function useLoadDataFiles(): (files: File[]) => Promise<void> {
       // A fresh local import has no server-shared track id.
       dispatch(dataViewerSetTrackUID(null));
 
-      dispatch(dataViewerSetData({ trackGeojson, focus: true }));
+      dispatch(dataViewerSetData({ trackGeojson, focus: true, select: true }));
 
       dispatch(setActiveModal(null));
 

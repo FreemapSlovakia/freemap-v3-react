@@ -5,6 +5,9 @@ import { isTrackOrRoute } from '../provenance.js';
 import { trackEndpoints } from '../trackEndpoints.js';
 import { isTrackLine } from '../trackSelection.js';
 
+/** A start/finish marker, with the feature it marks so a click can select it. */
+export type TrackEndpoint = TrackPoint & { featureIndex: number };
+
 /**
  * Start/finish markers for the loaded geodata: one pair per recorded track or
  * planned route (`fm:kind`), never for generic imported geometry — that would
@@ -12,7 +15,10 @@ import { isTrackLine } from '../trackSelection.js';
  * `MultiLineString`) is one track: one start, one finish, total distance
  * summed across its segments (the inter-segment gap doesn't count).
  */
-export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
+export function useStartFinishPoints(): readonly [
+  TrackEndpoint[],
+  TrackEndpoint[],
+] {
   const features = useAppSelector(
     (state) => state.trackViewer.trackGeojson?.features,
   );
@@ -22,11 +28,11 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
       return [[], []];
     }
 
-    const startPoints: TrackPoint[] = [];
+    const startPoints: TrackEndpoint[] = [];
 
-    const finishPoints: TrackPoint[] = [];
+    const finishPoints: TrackEndpoint[] = [];
 
-    for (const feature of features) {
+    for (const [featureIndex, feature] of features.entries()) {
       if (!isTrackLine(feature) || !isTrackOrRoute(feature)) {
         continue;
       }
@@ -44,6 +50,7 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
         lon: start[0]!,
         length: 0,
         startTime,
+        featureIndex,
       });
 
       finishPoints.push({
@@ -51,6 +58,7 @@ export function useStartFinishPoints(): readonly [TrackPoint[], TrackPoint[]] {
         lon: finish[0]!,
         length,
         finishTime,
+        featureIndex,
       });
     }
 

@@ -365,7 +365,7 @@ somewhere and renaming it would strand existing data:**
 - [ ] **Generalize the track-flavoured helpers inside the feature** —
       `trackStore`, `trackSelection`, `trackEndpoints`, `trackInfoToast`,
       `useStartFinishPoints`, `trackWaypoints`, `TrackPoint`,
-      `renderTrackGeojson`, `selectedTrackIndex` still read as track-only. A
+      `renderTrackGeojson`, `activeTrackIndex` still read as track-only. A
       semantic rename, not the mechanical one that's done.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))

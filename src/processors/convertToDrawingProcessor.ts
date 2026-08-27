@@ -1,8 +1,15 @@
-import { convertToDrawing, selectFeature } from '@app/store/actions.js';
+import {
+  closeTool,
+  convertToDrawing,
+  selectFeature,
+} from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { changesetsSet } from '@features/changesets/model/actions.js';
-import { dataViewerDelete } from '@features/dataViewer/model/actions.js';
+import {
+  dataViewerDelete,
+  dataViewerDeleteFeature,
+} from '@features/dataViewer/model/actions.js';
 import {
   drawingLineAdd,
   type Line,
@@ -513,7 +520,15 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       // Async fetch path — leave the action alone so `handle` picks it up.
       return action;
     } else if (payload.type === 'track') {
-      if (!state.trackViewer.trackGeojson) {
+      const { trackGeojson } = state.trackViewer;
+
+      // `id` present → convert just that feature, from its own toolbar.
+      const source =
+        payload.id === undefined
+          ? trackGeojson
+          : trackGeojson?.features[payload.id];
+
+      if (!source) {
         return;
       }
 
@@ -523,15 +538,14 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       let pointCount = 0;
 
-      const features = turfFlatten(state.trackViewer.trackGeojson).features.map(
-        (feature) =>
-          payload.tolerance
-            ? simplify(feature, {
-                mutate: false,
-                highQuality: true,
-                tolerance: payload.tolerance,
-              })
-            : feature,
+      const features = turfFlatten(source).features.map((feature) =>
+        payload.tolerance
+          ? simplify(feature, {
+              mutate: false,
+              highQuality: true,
+              tolerance: payload.tolerance,
+            })
+          : feature,
       );
 
       for (const feature of features) {
@@ -581,7 +595,18 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       // rather than leave both: a static duplicate over the original would
       // double the geometry and its click hit-area. The menu warns first when
       // there's recorded data to lose.
-      dispatch(dataViewerDelete());
+      dispatch(
+        payload.id === undefined
+          ? dataViewerDelete()
+          : dataViewerDeleteFeature(payload.id),
+      );
+
+      // Converting the only feature empties the viewer, and the main reducer
+      // keeps the tool open for a conversion of one — so an emptied toolbar
+      // would be left behind.
+      if (!getState().trackViewer.trackGeojson) {
+        dispatch(closeTool('import-file'));
+      }
 
       selectAfterConvert(dispatch, first, lineCount, pointCount);
     } else if (payload.type === 'tracking') {

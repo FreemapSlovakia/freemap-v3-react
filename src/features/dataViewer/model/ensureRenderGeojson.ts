@@ -7,6 +7,7 @@ import type { Dispatch } from 'redux';
 import { isTrackLine } from '../trackSelection.js';
 import {
   dataViewerDelete,
+  dataViewerDeleteFeature,
   dataViewerSetData,
   dataViewerSetRenderGeojson,
 } from './actions.js';
@@ -48,7 +49,12 @@ export async function ensureRenderGeojson(
       densifyAlong(
         line,
         getState,
-        [dataViewerSetData, dataViewerDelete, clearMapFeatures],
+        [
+          dataViewerSetData,
+          dataViewerDelete,
+          dataViewerDeleteFeature,
+          clearMapFeatures,
+        ],
         sources,
       ),
     ),

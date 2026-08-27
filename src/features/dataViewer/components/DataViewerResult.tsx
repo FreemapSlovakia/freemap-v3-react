@@ -1,6 +1,7 @@
-import { openTool } from '@app/store/actions.js';
+import { openTool, selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
-import { splitColorAlpha } from '@shared/colorAlpha.js';
+import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
+import { paleColor, splitColorAlpha } from '@shared/colorAlpha.js';
 import {
   colorizerHotlineOptions,
   NO_DATA_COLOR,
@@ -24,9 +25,9 @@ import { flatten } from '@turf/flatten';
 import type {
   Feature,
   FeatureCollection,
+  GeoJsonProperties,
   LineString,
-  Point,
-  Polygon as PolygonGeometry,
+  Position,
 } from 'geojson';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, type ReactElement, useMemo } from 'react';
@@ -35,13 +36,48 @@ import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
-import { dataViewerSetSelectedTrack } from '../model/actions.js';
-import { isTrackLine, resolveActiveTrack } from '../trackSelection.js';
 
-interface GetFeatures {
-  (type: 'LineString'): Feature<LineString>[];
-  (type: 'Point'): Feature<Point>[];
-  (type: 'Polygon'): Feature<PolygonGeometry>[];
+// Fallback fill opacity, used only when no fill color is resolvable at all
+// (e.g. the user cleared drawingFillColor). Passing an explicit number is
+// required: Leaflet's `setOptions` copies `fillOpacity: undefined` over its own
+// 0.2 default, which renders the fill fully opaque.
+const defaultFillOpacity = 0.2;
+
+/** One drawn ring set of a polygon feature, in the style it is drawn with. */
+function polygonEntry(
+  feature: Feature,
+  // [outerRing, ...holes], which Leaflet's Polygon renders as positions.
+  coordinates: Position[][],
+  featureIndex: number,
+  defaultStyle: DrawingStyle,
+) {
+  const style = lineStyleFromProperties(feature.properties, true);
+
+  const stroke = splitColorAlpha(style.color ?? defaultStyle.color);
+
+  // With no explicit fill, fall back to the default fill so an unstyled
+  // imported polygon looks semitransparent rather than a solid blob.
+  const fillSpec = style.fillColor ?? defaultStyle.fillColor;
+
+  const fill = splitColorAlpha(fillSpec ?? style.color ?? defaultStyle.color);
+
+  return {
+    name: feature.properties?.['name'],
+    featureIndex,
+    positions: coordinates.map((ring) =>
+      ring.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
+    ),
+    style: {
+      strokeColor: stroke.color,
+      strokeOpacity: stroke.opacity,
+      fillColor: fill.color,
+      fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
+      width: style.width ?? defaultStyle.width,
+      dashArray: style.dashArray ?? defaultStyle.dashArray,
+      lineCap: style.lineCap ?? defaultStyle.lineCap,
+      lineJoin: style.lineJoin ?? defaultStyle.lineJoin,
+    },
+  };
 }
 
 export default function DataViewerResult({
@@ -68,14 +104,16 @@ export default function DataViewerResult({
     (state) => state.trackViewerSettings.style,
   );
 
-  const getFeatures: GetFeatures = (type: 'LineString' | 'Point' | 'Polygon') =>
-    flatten(trackGeojson).features.filter((f) => f.geometry?.type === type);
-
   const zoom = useAppSelector((state) => state.map.zoom);
 
   // Memoized so the per-zoom colorize cache survives across renders.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: getFeatures derives only from trackGeojson
-  const lineFeatures = useMemo(() => getFeatures('LineString'), [trackGeojson]);
+  const lineFeatures = useMemo(
+    () =>
+      flatten(trackGeojson).features.filter(
+        (f): f is Feature<LineString> => f.geometry?.type === 'LineString',
+      ),
+    [trackGeojson],
+  );
 
   // The mode is persisted, so it outlives the track it was picked for. Where it
   // has nothing to say about this one, the plain styled line stands: painting
@@ -106,18 +144,11 @@ export default function DataViewerResult({
 
   const interactive = useAppSelector(selectingModeSelector);
 
-  const selectedTrackIndex = useAppSelector(
-    (state) => state.trackViewer.selectedTrackIndex,
+  const selectedIndex = useAppSelector((state) =>
+    state.main.selection?.type === 'data-viewer'
+      ? state.main.selection.id
+      : undefined,
   );
-
-  // The active track only matters (and is only selectable/highlighted) when
-  // several lines are loaded; otherwise the single line is implicitly active.
-  const multipleTracks = trackGeojson.features.filter(isTrackLine).length > 1;
-
-  const activeTrackIndex = resolveActiveTrack(
-    trackGeojson,
-    selectedTrackIndex,
-  )?.index;
 
   const dispatch = useDispatch();
 
@@ -125,14 +156,13 @@ export default function DataViewerResult({
     dispatch(openTool('import-file'));
   };
 
-  // Clicking a line focuses the import tool and, when several tracks are
-  // loaded, makes the clicked one active for the chart / "more info".
-  const selectTrack = (featureIndex: number) => {
-    if (multipleTracks) {
-      dispatch(dataViewerSetSelectedTrack(featureIndex));
-    }
-
+  // Clicking a feature opens the import tool's panel and gives the feature its
+  // own toolbar; a line also becomes the one the chart / "more info" act on
+  // (`dataViewerSelectProcessor`).
+  const select = (featureIndex: number) => {
     setThisTool();
+
+    dispatch(selectFeature({ type: 'data-viewer', id: featureIndex }));
   };
 
   // TODO rather compute some hash or better - detect real change
@@ -140,17 +170,11 @@ export default function DataViewerResult({
     (JSON.stringify(trackGeojson) + displayingElevationChart).length
   }`; // otherwise GeoJSON will still display the first data
 
-  // Fallback fill opacity, used only when no fill color is resolvable at all
-  // (e.g. the user cleared drawingFillColor). Passing an explicit number is
-  // required: Leaflet's `setOptions` copies `fillOpacity: undefined` over its
-  // own 0.2 default, which renders the fill fully opaque.
-  const defaultFillOpacity = 0.2;
-
   // Flatten line-like features into per-segment render entries, keeping each
-  // segment's source feature index so a click can select that whole track and
-  // the active one can be highlighted (a `MultiLineString` is one track over
-  // several segments). Memoized so it doesn't re-traverse every coordinate on
-  // unrelated re-renders (zoom, selection, …).
+  // segment's source feature index so a click selects that whole track and the
+  // selected one is highlighted (a `MultiLineString` is one track over several
+  // segments). Memoized so it doesn't re-traverse every coordinate on unrelated
+  // re-renders (zoom, selection, …).
   const features = useMemo(
     () =>
       trackGeojson.features.flatMap((feature, featureIndex) => {
@@ -202,39 +226,45 @@ export default function DataViewerResult({
     [trackGeojson, defaultStyle],
   );
 
-  // Native GeoJSON Polygon geometry (e.g. an imported .geojson; MultiPolygon
-  // is split into Polygon features by `flatten`). GPX never produces these —
-  // its "polygons" arrive as closed LineStrings handled above. Each Polygon's
-  // coordinates are [outerRing, ...holes], which Leaflet's Polygon renders
-  // directly as positions.
-  const polygons = getFeatures('Polygon').map((feature) => {
-    const style = lineStyleFromProperties(feature.properties, true);
+  // Native GeoJSON Polygon geometry (e.g. an imported .geojson) and standalone
+  // points (GPX `<wpt>`), in one pass: `flatten` splits Multi* and opens a
+  // GeometryCollection, and the source feature index rides along so a click
+  // selects the whole feature a part came from.
+  const [polygons, points] = useMemo(() => {
+    const polygons: ReturnType<typeof polygonEntry>[] = [];
 
-    const stroke = splitColorAlpha(style.color ?? defaultStyle.color);
+    const points: {
+      lat: number;
+      lon: number;
+      featureIndex: number;
+      properties: GeoJsonProperties;
+    }[] = [];
 
-    // With no explicit fill, fall back to the default fill so an unstyled
-    // imported polygon looks semitransparent rather than a solid blob.
-    const fillSpec = style.fillColor ?? defaultStyle.fillColor;
+    for (const [featureIndex, feature] of trackGeojson.features.entries()) {
+      for (const part of flatten(feature).features) {
+        const geom = part.geometry;
 
-    const fill = splitColorAlpha(fillSpec ?? style.color ?? defaultStyle.color);
+        if (geom.type === 'Point') {
+          points.push({
+            lat: geom.coordinates[1]!,
+            lon: geom.coordinates[0]!,
+            featureIndex,
+            properties: feature.properties,
+          });
 
-    return {
-      name: feature.properties?.['name'],
-      positions: feature.geometry.coordinates.map((ring) =>
-        ring.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
-      ),
-      style: {
-        strokeColor: stroke.color,
-        strokeOpacity: stroke.opacity,
-        fillColor: fill.color,
-        fillOpacity: fillSpec ? fill.opacity : defaultFillOpacity,
-        width: style.width ?? defaultStyle.width,
-        dashArray: style.dashArray ?? defaultStyle.dashArray,
-        lineCap: style.lineCap ?? defaultStyle.lineCap,
-        lineJoin: style.lineJoin ?? defaultStyle.lineJoin,
-      },
-    };
-  });
+          continue;
+        }
+
+        if (geom.type === 'Polygon') {
+          polygons.push(
+            polygonEntry(feature, geom.coordinates, featureIndex, defaultStyle),
+          );
+        }
+      }
+    }
+
+    return [polygons, points] as const;
+  }, [trackGeojson, defaultStyle]);
 
   const timeFormat = useDateTimeFormat({
     hour: 'numeric',
@@ -255,24 +285,41 @@ export default function DataViewerResult({
           colorized; below markerPane (600) so waypoints stay clickable. */}
       <Pane name="fm-trackviewer-hit" style={{ zIndex: 450 }} />
 
-      {multipleTracks &&
-        features
-          .filter(({ featureIndex }) => featureIndex === activeTrackIndex)
-          .map(({ lineData, style }, i) => (
-            <Polyline
-              key={`highlight-${i}`}
-              pane="fm-trackviewer-highlight"
-              weight={style.width + 6}
-              positions={lineData}
-              pathOptions={{
-                color: '#156efd',
-                opacity: 1,
-                lineCap: 'round',
-                lineJoin: 'round',
-              }}
-              interactive={false}
-            />
-          ))}
+      {features
+        .filter(({ featureIndex }) => featureIndex === selectedIndex)
+        .map(({ lineData, style }, i) => (
+          <Polyline
+            key={`highlight-${i}`}
+            pane="fm-trackviewer-highlight"
+            weight={style.width + 6}
+            positions={lineData}
+            pathOptions={{
+              color: '#156efd',
+              opacity: 1,
+              lineCap: 'round',
+              lineJoin: 'round',
+            }}
+            interactive={false}
+          />
+        ))}
+
+      {polygons
+        .filter(({ featureIndex }) => featureIndex === selectedIndex)
+        .map(({ positions, style }, i) => (
+          <Polygon
+            key={`poly-highlight-${i}`}
+            pane="fm-trackviewer-highlight"
+            weight={style.width + 6}
+            positions={positions}
+            pathOptions={{
+              color: '#156efd',
+              opacity: 1,
+              fill: false,
+              lineJoin: 'round',
+            }}
+            interactive={false}
+          />
+        ))}
 
       {features.map(({ lineData, name, style, featureIndex }, i) => (
         <Polyline
@@ -284,7 +331,7 @@ export default function DataViewerResult({
           opacity={0}
           bubblingMouseEvents={false}
           eventHandlers={{
-            click: () => selectTrack(featureIndex),
+            click: () => select(featureIndex),
           }}
         >
           {name && (
@@ -344,7 +391,7 @@ export default function DataViewerResult({
               interactive={interactive}
               bubblingMouseEvents={false}
               eventHandlers={{
-                click: () => selectTrack(featureIndex),
+                click: () => select(featureIndex),
               }}
             />
           ) : (
@@ -356,13 +403,13 @@ export default function DataViewerResult({
               interactive={interactive}
               bubblingMouseEvents={false}
               eventHandlers={{
-                click: () => selectTrack(featureIndex),
+                click: () => select(featureIndex),
               }}
             />
           );
         })}
 
-      {polygons.map(({ positions, name, style }, i) => (
+      {polygons.map(({ positions, name, style, featureIndex }, i) => (
         <Polygon
           key={`mpoly-${i}-${interactive ? 'a' : 'b'}`}
           pane="fm-trackviewer-polygons"
@@ -380,7 +427,7 @@ export default function DataViewerResult({
           interactive={interactive}
           bubblingMouseEvents={false}
           eventHandlers={{
-            click: setThisTool,
+            click: () => select(featureIndex),
           }}
         >
           {name && (
@@ -391,15 +438,16 @@ export default function DataViewerResult({
         </Polygon>
       ))}
 
-      {getFeatures('Point').map(({ geometry, properties }, i) => (
+      {points.map(({ lat, lon, properties, featureIndex }, i) => (
         <WaypointMarker
           key={`point-${i}`}
-          lat={geometry.coordinates[1]!}
-          lon={geometry.coordinates[0]!}
+          lat={lat}
+          lon={lon}
           name={properties?.['name']}
           properties={properties}
           interactive={interactive}
-          onClick={setThisTool}
+          selected={featureIndex === selectedIndex}
+          onClick={() => select(featureIndex)}
         />
       ))}
 
@@ -411,7 +459,7 @@ export default function DataViewerResult({
           interactive={interactive}
           position={{ lat: p.lat, lng: p.lon }}
           eventHandlers={{
-            click: setThisTool,
+            click: () => select(p.featureIndex),
           }}
         >
           {p.startTime && !Number.isNaN(new Date(p.startTime).getTime()) && (
@@ -435,7 +483,7 @@ export default function DataViewerResult({
           interactive={interactive}
           position={{ lat: p.lat, lng: p.lon }}
           eventHandlers={{
-            click: setThisTool,
+            click: () => select(p.featureIndex),
           }}
         >
           <Tooltip
@@ -469,6 +517,7 @@ function WaypointMarker({
   name,
   properties,
   interactive,
+  selected,
   onClick,
 }: {
   lat: number;
@@ -476,6 +525,7 @@ function WaypointMarker({
   name: string | undefined;
   properties: Record<string, unknown> | null | undefined;
   interactive: boolean;
+  selected: boolean;
   onClick: () => void;
 }): ReactElement {
   const style = pointStyleFromProperties(properties);
@@ -489,6 +539,12 @@ function WaypointMarker({
 
   const color = style.color ?? defaultStyle.color;
 
+  // Selection pales the shape and keeps the glyph in the point's own color, as
+  // a selected drawing point is drawn.
+  const renderColor = selected ? paleColor(color) : color;
+
+  const glyphColor = selected ? splitColorAlpha(color).color : undefined;
+
   // No icon spec resolved → fall back to the legacy flag glyph.
   const hasIconContent =
     contentProps.poi || contentProps.iconSvg || contentProps.label;
@@ -496,7 +552,8 @@ function WaypointMarker({
   return (
     <RichMarker
       position={{ lat, lng: lon }}
-      color={color}
+      color={renderColor}
+      glyphColor={glyphColor}
       markerType={style.markerType ?? defaultStyle.markerType}
       interactive={interactive}
       eventHandlers={{ click: onClick }}

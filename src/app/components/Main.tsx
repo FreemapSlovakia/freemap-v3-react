@@ -159,6 +159,12 @@ const drawingPointSelectionFactory = () =>
     '@features/drawing/components/DrawingPointSelection.js'
   );
 
+const dataViewerSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-selection" */
+    '@features/dataViewer/components/DataViewerSelection.js'
+  );
+
 const objectSelectionFactory = () =>
   import(
     /* webpackChunkName: "object-selection" */
@@ -896,6 +902,8 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={drawingLinePointSelectionFactory} />
               ) : selectionMenu === 'draw-points' ? (
                 <AsyncComponent factory={drawingPointSelectionFactory} />
+              ) : selectionMenu === 'data-viewer' ? (
+                <AsyncComponent factory={dataViewerSelectionFactory} />
               ) : selectionMenu === 'objects' ? (
                 <AsyncComponent factory={objectSelectionFactory} />
               ) : selectionMenu === 'tracking' ? (

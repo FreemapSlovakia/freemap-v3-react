@@ -1,5 +1,5 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { dataViewerSetSelectedTrack } from '@features/dataViewer/model/actions.js';
+import { dataViewerSetActiveTrack } from '@features/dataViewer/model/actions.js';
 import { gpsRecorderSetSettings } from '@features/gpsRecorder/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
@@ -55,7 +55,7 @@ export const elevationChartProcessor: Processor = {
     // Which track is active isn't part of the identity below — resolving that
     // would mean scanning every imported feature on every action — so the
     // switch is listened for instead.
-    dataViewerSetSelectedTrack,
+    dataViewerSetActiveTrack,
     // Same reason: `splitGapS` decides where a recording breaks into segments,
     // and so where its profile breaks, but the split itself is too costly to
     // put in the identity.

@@ -26,6 +26,21 @@ export function splitColorAlpha(input: string | undefined): RgbAlpha {
   }
 }
 
+/**
+ * The color mixed toward white, as a selected marker is drawn, keeping its
+ * alpha; unparseable input is returned as-is. Mixed, not `lighten`ed — that
+ * clips anything already lighter than ~57% to pure white.
+ */
+export function paleColor(input: string): string {
+  const { color, opacity } = splitColorAlpha(input);
+
+  try {
+    return joinColorAlpha(Color(color).mix(Color('white'), 0.6).hex(), opacity);
+  } catch {
+    return input;
+  }
+}
+
 export function joinColorAlpha(color: string, opacity: number): string {
   const lc = color.toLowerCase();
 

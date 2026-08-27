@@ -85,10 +85,10 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
         : 'Wysokość została nadpisana.',
   },
   upload: 'Prześlij',
-  trackLabel: 'Ślad',
   unnamedTrack: ({ n }) => `Ślad ${n}`,
   convertLossWarning:
     'Konwersja na rysunek zastępuje ślad i odrzuca jego zarejestrowane dane (wysokość, tętno, prędkość, czas).',
+  convertAllToDrawing: 'Przekształć wszystko na rysunek',
   moreInfo: 'Więcej informacji',
   saveAsMap: 'Zapisz w moich mapach',
   loginToSaveMap: 'Zaloguj się, aby zapisać trasę w swoich mapach.',

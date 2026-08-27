@@ -15,9 +15,9 @@ const resolve: ProfileResolver = async (getState, dispatch) => {
 
   const trackViewer = getState().trackViewer;
 
-  const { trackGeojson, renderTrackGeojson, selectedTrackIndex } = trackViewer;
+  const { trackGeojson, renderTrackGeojson, activeTrackIndex } = trackViewer;
 
-  const active = resolveActiveTrack(trackGeojson, selectedTrackIndex);
+  const active = resolveActiveTrack(trackGeojson, activeTrackIndex);
 
   if (!active) {
     // A track the URL also names is still on its way; anything else means the

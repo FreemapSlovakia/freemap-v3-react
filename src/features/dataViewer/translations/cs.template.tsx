@@ -27,10 +27,10 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   info: () => <DataViewerDetails />,
   upload: 'Nahrát',
-  trackLabel: 'Trasa',
   unnamedTrack: ({ n }) => `Trasa ${n}`,
   convertLossWarning:
     'Převod na kresbu nahradí trasu a zahodí její zaznamenaná data (nadmořská výška, tep, rychlost, čas).',
+  convertAllToDrawing: 'Zkonvertovat vše na kreslení',
   moreInfo: 'Více info',
   saveAsMap: 'Uložit do mých map',
   loginToSaveMap: 'Pro uložení trasy do vašich map se nejprve přihlaste.',

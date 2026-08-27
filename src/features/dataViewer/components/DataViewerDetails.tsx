@@ -29,11 +29,11 @@ export function DataViewerDetails(): ReactElement | null {
     (state) => state.trackViewer.renderTrackGeojson,
   );
 
-  const selectedTrackIndex = useAppSelector(
-    (state) => state.trackViewer.selectedTrackIndex,
+  const activeTrackIndex = useAppSelector(
+    (state) => state.trackViewer.activeTrackIndex,
   );
 
-  const active = resolveActiveTrack(source, selectedTrackIndex);
+  const active = resolveActiveTrack(source, activeTrackIndex);
 
   if (!active) {
     return null;

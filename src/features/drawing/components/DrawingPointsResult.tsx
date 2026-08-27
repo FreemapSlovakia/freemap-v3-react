@@ -1,12 +1,11 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
-import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
+import { paleColor, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import Color from 'color';
 import type {
   DragEndEvent,
   LeafletEvent,
@@ -105,16 +104,13 @@ export function DrawingPointsResult(): ReactElement {
 
         const { color } = point;
 
-        const { color: rgb, opacity } = splitColorAlpha(color || COLORS.normal);
+        const { color: rgb } = splitColorAlpha(color || COLORS.normal);
 
-        // Selection pales the shape by mixing it toward white. A multiplicative
-        // `lighten` would clip any color already lighter than ~57% to pure white
-        // (a red pin vanished entirely); mixing keeps the hue at every input
-        // lightness. The glyph keeps the point's own color so it stays readable
-        // on the paled shape, matching how a selected route waypoint is drawn.
+        // The glyph keeps the point's own color so it stays readable on the
+        // paled shape, matching how a selected route waypoint is drawn.
         const renderColor =
           activeIndex === i
-            ? joinColorAlpha(Color(rgb).mix(Color('white'), 0.6).hex(), opacity)
+            ? paleColor(color || COLORS.normal)
             : color || COLORS.normal;
 
         return (

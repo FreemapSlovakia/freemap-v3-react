@@ -5,6 +5,11 @@ import {
   authWithGoogle,
   authWithPopupOAuth,
 } from '@features/auth/model/actions.js';
+import {
+  dataViewerDelete,
+  dataViewerDeleteFeature,
+  dataViewerSetData,
+} from '@features/dataViewer/model/actions.js';
 import { documentShow } from '@features/documents/model/actions.js';
 import {
   drawingLineAddPoint,
@@ -159,6 +164,12 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       if (state.panelTools.includes(tool)) {
         state.panelTools = state.panelTools.filter((t) => t !== tool);
       }
+
+      // The data viewer's panel hosts the dialogs its selection toolbar opens,
+      // so the selection goes with it.
+      if (tool === 'import-file' && state.selection?.type === 'data-viewer') {
+        state.selection = null;
+      }
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;
@@ -304,6 +315,17 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
             selection: { type: 'route-point', id: action.payload.position },
           };
     })
+    // Loading renumbers the imported features and deleting takes them away, so
+    // a selection that survived either would name another feature or none. What
+    // a fresh load selects instead is `dataViewerSetTrackDataProcessor`.
+    .addMatcher(
+      isAnyOf(dataViewerSetData, dataViewerDelete, dataViewerDeleteFeature),
+      (state) => {
+        if (state.selection?.type === 'data-viewer') {
+          state.selection = null;
+        }
+      },
+    )
     .addMatcher(isAnyOf(drawingLineSetLines, deleteFeature), (state) => {
       state.selection =
         state.selection?.type === 'line-point'

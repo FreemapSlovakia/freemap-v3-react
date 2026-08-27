@@ -1,4 +1,5 @@
 import { HttpError, httpRequest } from '@app/httpRequest.js';
+import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   isMatchable,
@@ -12,7 +13,6 @@ import {
 import {
   dataViewerMatchTrack,
   dataViewerSetData,
-  dataViewerSetSelectedTrack,
 } from '@features/dataViewer/model/actions.js';
 import { resolveActiveTrack } from '@features/dataViewer/trackSelection.js';
 import { loadDataViewerMessages } from '@features/dataViewer/translations/loadDataViewerMessages.js';
@@ -36,9 +36,9 @@ export const dataViewerMatchTrackProcessor: Processor<
   handle: async ({ dispatch, getState, action, toastError }) => {
     const { transport } = action.payload;
 
-    const { trackGeojson, selectedTrackIndex } = getState().trackViewer;
+    const { trackGeojson, activeTrackIndex } = getState().trackViewer;
 
-    const active = resolveActiveTrack(trackGeojson, selectedTrackIndex);
+    const active = resolveActiveTrack(trackGeojson, activeTrackIndex);
 
     const def = transportTypeDefs[transport];
 
@@ -205,8 +205,9 @@ export const dataViewerMatchTrackProcessor: Processor<
       }),
     );
 
-    // Loading data resets the selection, and the matched features begin where
-    // the original stood.
-    dispatch(dataViewerSetSelectedTrack(active.index));
+    // Loading data drops the selection and resets the active track; the matched
+    // features begin where the original stood, so the toolbar this was reached
+    // from stays on the line it acted upon.
+    dispatch(selectFeature({ type: 'data-viewer', id: active.index }));
   },
 };

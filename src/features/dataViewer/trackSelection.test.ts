@@ -2,6 +2,7 @@ import type { Feature, FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
   resolveActiveTrack,
+  soleTrackLine,
   trackLineFeatures,
   trackWaypoints,
 } from './trackSelection.js';
@@ -43,6 +44,18 @@ describe('trackLineFeatures', () => {
   it('is empty for null or line-less collections', () => {
     expect(trackLineFeatures(null)).toEqual([]);
     expect(trackLineFeatures(fc([point]))).toEqual([]);
+  });
+});
+
+describe('soleTrackLine', () => {
+  it('returns the only line, whatever else is loaded beside it', () => {
+    expect(soleTrackLine(fc([point, line('a'), point]))?.index).toBe(1);
+  });
+
+  it('returns nothing for several lines, no line, or no collection', () => {
+    expect(soleTrackLine(fc([line('a'), line('b')]))).toBeUndefined();
+    expect(soleTrackLine(fc([point]))).toBeUndefined();
+    expect(soleTrackLine(null)).toBeUndefined();
   });
 });
 

@@ -1,5 +1,7 @@
+import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { dataViewerSetData } from '@features/dataViewer/model/actions.js';
+import { soleTrackLine } from '@features/dataViewer/trackSelection.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
 import bbox from '@turf/bbox';
 
@@ -23,5 +25,15 @@ export const dataViewerSetTrackDataProcessor: Processor<
     }
 
     return action;
+  },
+  // After the reducer, which drops the selection the old indices named.
+  handle: ({ action, dispatch }) => {
+    const line = action.payload.select
+      ? soleTrackLine(action.payload.trackGeojson)
+      : undefined;
+
+    if (line) {
+      dispatch(selectFeature({ type: 'data-viewer', id: line.index }));
+    }
   },
 };

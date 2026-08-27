@@ -27,6 +27,12 @@ export interface TrackPoint extends LatLon {
 export const dataViewerSetData = createAction<{
   trackGeojson?: FeatureCollection;
   focus?: boolean;
+  /**
+   * Select the loaded data's only line, so it arrives with its own toolbar. Set
+   * by the loaders the user reaches for outright (an import, a finished
+   * recording, a conversion), not by a link or a reload.
+   */
+  select?: boolean;
 }>('DATA_VIEWER_SET_TRACK_DATA');
 
 export const dataViewerSetTrackUID = createAction<string | null>(
@@ -56,11 +62,10 @@ export const dataViewerSetColorizeLegend = createAction<boolean | undefined>(
 
 /**
  * Index (into `trackGeojson.features`) of the track the elevation chart, "more
- * info" and the map highlight act on when several are loaded; `null` falls back
- * to the first line. Reset whenever the loaded data changes.
+ * info" and matching act on; `null` falls back to the first line.
  */
-export const dataViewerSetSelectedTrack = createAction<number | null>(
-  'DATA_VIEWER_SET_SELECTED_TRACK',
+export const dataViewerSetActiveTrack = createAction<number | null>(
+  'DATA_VIEWER_SET_ACTIVE_TRACK',
 );
 
 export const dataViewerToggleElevationChart = createAction(
@@ -139,3 +144,13 @@ export const dataViewerSetGpxUrl = createAction<string | null>(
 export const dataViewerGpxLoad = createAction<string>('DATA_VIEWER_GPX_LOAD');
 
 export const dataViewerDelete = createAction('DATA_VIEWER_DELETE');
+
+/**
+ * Removes one feature (by index into `trackGeojson.features`) from the loaded
+ * data; the last one takes the whole collection with it. The remaining data no
+ * longer matches the file it came from, so the reducer also drops `trackUID` /
+ * `gpxUrl` — the edit is now this browser's own.
+ */
+export const dataViewerDeleteFeature = createAction<number>(
+  'DATA_VIEWER_DELETE_FEATURE',
+);

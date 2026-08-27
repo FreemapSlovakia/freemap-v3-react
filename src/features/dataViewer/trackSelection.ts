@@ -28,6 +28,18 @@ export function trackLineFeatures(
 }
 
 /**
+ * The collection's only line, if it has exactly one — what a fresh load
+ * selects. Several lines have no obvious pick, so nothing is selected then.
+ */
+export function soleTrackLine(
+  fc: FeatureCollection | null | undefined,
+): { feature: TrackLine; index: number } | undefined {
+  const lines = trackLineFeatures(fc);
+
+  return lines.length === 1 ? lines[0] : undefined;
+}
+
+/**
  * The track the chart / info / highlight act on: the explicitly selected one
  * when it's still a valid line, otherwise the first line. `undefined` when the
  * collection holds no line.

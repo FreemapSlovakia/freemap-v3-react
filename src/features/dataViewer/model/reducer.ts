@@ -6,15 +6,16 @@ import { createReducer } from '@reduxjs/toolkit';
 import type { FeatureCollection } from 'geojson';
 import {
   dataViewerDelete,
+  dataViewerDeleteFeature,
   dataViewerDownloadTrack,
   dataViewerGpxLoad,
   dataViewerResolveElevationPrompt,
+  dataViewerSetActiveTrack,
   dataViewerSetData,
   dataViewerSetElevation,
   dataViewerSetElevationPrompt,
   dataViewerSetGpxUrl,
   dataViewerSetRenderGeojson,
-  dataViewerSetSelectedTrack,
   dataViewerSetTrackUID,
   type ElevationConsumer,
   type ElevationFillMode,
@@ -43,9 +44,11 @@ export interface DataViewerState extends DataViewerStateBase {
   // later — and a dense recording densifies to nothing, so the render copy alone
   // would name no source. Tracks `elevationDecision`: emptied whenever that is.
   elevationSources: string[];
-  // Which line the chart / "more info" / highlight act on, by index into
+  // Which line the chart / "more info" / matching act on, by index into
   // `trackGeojson.features`; `null` falls back to the first line. Reset on load.
-  selectedTrackIndex: number | null;
+  // Selecting a line aims it here; deselecting leaves it, so an open chart
+  // stays on its track.
+  activeTrackIndex: number | null;
 }
 
 export type ElevationDecision = 'undecided' | ElevationFillMode;
@@ -61,7 +64,7 @@ export const dataViewerInitialState: DataViewerState = {
   elevationPrompt: null,
   elevationDecision: 'undecided',
   elevationSources: [],
-  selectedTrackIndex: null,
+  activeTrackIndex: null,
   ...cleanState,
 };
 
@@ -84,8 +87,38 @@ export const dataViewerReducer = createReducer(
           state.elevationSources = [];
 
           // The feature indices changed; fall back to the first line.
-          state.selectedTrackIndex = null;
+          state.activeTrackIndex = null;
         }
+      })
+      .addCase(dataViewerDeleteFeature, (state, { payload }) => {
+        const features = state.trackGeojson?.features;
+
+        if (!features?.[payload]) {
+          return;
+        }
+
+        if (features.length === 1) {
+          return dataViewerInitialState;
+        }
+
+        features.splice(payload, 1);
+
+        state.renderTrackGeojson = null;
+
+        // Indices after the removed one shift down; the active line is dropped
+        // when it is the one that went.
+        const active = state.activeTrackIndex;
+
+        if (active === payload) {
+          state.activeTrackIndex = null;
+        } else if (active !== null && active > payload) {
+          state.activeTrackIndex = active - 1;
+        }
+
+        // What is on screen is no longer the file the link names.
+        state.trackUID = null;
+
+        state.gpxUrl = null;
       })
       .addCase(dataViewerSetElevation, (state, action) => {
         state.trackGeojson = action.payload.trackGeojson;
@@ -112,8 +145,8 @@ export const dataViewerReducer = createReducer(
       .addCase(dataViewerDownloadTrack, (state, action) => {
         state.trackUID = action.payload;
       })
-      .addCase(dataViewerSetSelectedTrack, (state, action) => {
-        state.selectedTrackIndex = action.payload;
+      .addCase(dataViewerSetActiveTrack, (state, action) => {
+        state.activeTrackIndex = action.payload;
       })
       .addCase(dataViewerSetElevationPrompt, (state, action) => {
         state.elevationPrompt = action.payload;

@@ -52,7 +52,7 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
   const active = useAppSelector((state) =>
     resolveActiveTrack(
       state.trackViewer.trackGeojson,
-      state.trackViewer.selectedTrackIndex,
+      state.trackViewer.activeTrackIndex,
     ),
   );
 

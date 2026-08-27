@@ -4,6 +4,7 @@ import {
   openTool,
   selectFeature,
 } from '@app/store/actions.js';
+import { dataViewerSetData } from '@features/dataViewer/model/actions.js';
 import { drawingLineStopDrawing } from '@features/drawing/model/actions/drawingLineActions.js';
 import { objectsSetResult } from '@features/objects/model/actions.js';
 import {
@@ -12,6 +13,7 @@ import {
   searchUnselectResult,
 } from '@features/search/model/actions.js';
 import type { Action } from '@reduxjs/toolkit';
+import type { Feature, FeatureCollection } from 'geojson';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { type MainState, mainInitialState, mainReducer } from './reducer.js';
 
@@ -281,6 +283,34 @@ describe('objectsSetResult', () => {
     const s = run(selectFeature(aLine), objectsSetResult([]));
 
     expect(s.selection).toEqual(aLine);
+  });
+});
+
+describe('dataViewerSetData', () => {
+  const line: Feature = {
+    type: 'Feature',
+    properties: null,
+    geometry: { type: 'LineString', coordinates: [] },
+  };
+
+  const fc = (...features: Feature[]): FeatureCollection => ({
+    type: 'FeatureCollection',
+    features,
+  });
+
+  // What a fresh load selects instead is `dataViewerSetTrackDataProcessor`.
+  it('drops a stale data-viewer selection but leaves another feature selected', () => {
+    expect(
+      run(
+        selectFeature({ type: 'data-viewer', id: 3 }),
+        dataViewerSetData({ trackGeojson: fc(line) }),
+      ).selection,
+    ).toBe(null);
+
+    expect(
+      run(selectFeature(aLine), dataViewerSetData({ trackGeojson: fc(line) }))
+        .selection,
+    ).toEqual(aLine);
   });
 });
 

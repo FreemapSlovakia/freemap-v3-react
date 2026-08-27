@@ -1,8 +1,9 @@
 import { clearMapFeatures } from '@app/store/actions.js';
-import type { FeatureCollection } from 'geojson';
+import type { Feature, FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
   dataViewerDelete,
+  dataViewerDeleteFeature,
   dataViewerGpxLoad,
   dataViewerSetData,
   dataViewerSetTrackUID,
@@ -72,5 +73,78 @@ describe('dataViewerReducer — reset actions', () => {
     expect(dataViewerReducer(state, clearMapFeatures())).toEqual(
       dataViewerInitialState,
     );
+  });
+});
+
+describe('dataViewerReducer — deleteFeature', () => {
+  const line = (name: string): Feature => ({
+    type: 'Feature',
+    properties: { name },
+    geometry: { type: 'LineString', coordinates: [] },
+  });
+
+  const three: FeatureCollection = {
+    type: 'FeatureCollection',
+    features: [line('a'), line('b'), line('c')],
+  };
+
+  const stateOf = (activeTrackIndex: number | null) => ({
+    ...dataViewerInitialState,
+    trackGeojson: three,
+    activeTrackIndex,
+    trackUID: 'u',
+    gpxUrl: 'https://x/y.gpx',
+  });
+
+  it('removes the feature and forgets where the data came from', () => {
+    const next = dataViewerReducer(stateOf(null), dataViewerDeleteFeature(1));
+
+    expect(
+      next.trackGeojson?.features.map((f) => f.properties?.['name']),
+    ).toEqual(['a', 'c']);
+
+    expect(next.trackUID).toBeNull();
+    expect(next.gpxUrl).toBeNull();
+  });
+
+  it('renumbers an active track that sat after the removed one', () => {
+    expect(
+      dataViewerReducer(stateOf(2), dataViewerDeleteFeature(0))
+        .activeTrackIndex,
+    ).toBe(1);
+  });
+
+  it('drops the active track when it is the one removed', () => {
+    expect(
+      dataViewerReducer(stateOf(1), dataViewerDeleteFeature(1))
+        .activeTrackIndex,
+    ).toBeNull();
+  });
+
+  it('leaves an active track that sat before the removed one', () => {
+    expect(
+      dataViewerReducer(stateOf(0), dataViewerDeleteFeature(2))
+        .activeTrackIndex,
+    ).toBe(0);
+  });
+
+  it('clears the view with the last feature', () => {
+    const state = {
+      ...dataViewerInitialState,
+      trackGeojson: {
+        type: 'FeatureCollection',
+        features: [line('a')],
+      } as FeatureCollection,
+    };
+
+    expect(dataViewerReducer(state, dataViewerDeleteFeature(0))).toEqual(
+      dataViewerInitialState,
+    );
+  });
+
+  it('ignores an index that names no feature', () => {
+    const state = stateOf(null);
+
+    expect(dataViewerReducer(state, dataViewerDeleteFeature(9))).toBe(state);
   });
 });

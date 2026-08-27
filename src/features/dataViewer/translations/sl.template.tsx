@@ -7,10 +7,10 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Naloži',
-  trackLabel: 'Sled',
   unnamedTrack: ({ n }) => `Sled ${n}`,
   convertLossWarning:
     'Pretvorba v risbo nadomesti sled in zavrže njene zabeležene podatke (nadmorska višina, srčni utrip, hitrost, čas).',
+  convertAllToDrawing: 'Pretvori vse v risbo',
   moreInfo: 'Več informacij',
   saveAsMap: 'Shrani med moje zemljevide',
   loginToSaveMap:

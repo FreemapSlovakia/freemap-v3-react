@@ -7,10 +7,10 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Importer',
-  trackLabel: 'Trace',
   unnamedTrack: ({ n }) => `Trace ${n}`,
   convertLossWarning:
     'La conversion en dessin remplace la trace et supprime ses données enregistrées (altitude, fréquence cardiaque, vitesse, temps).',
+  convertAllToDrawing: 'Tout convertir en dessin',
   moreInfo: 'Plus d’infos',
   saveAsMap: 'Enregistrer dans mes cartes',
   loginToSaveMap:

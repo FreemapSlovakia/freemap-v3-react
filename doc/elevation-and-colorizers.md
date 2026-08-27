@@ -396,7 +396,7 @@ That price is also what keeps a derived value out of the identity. A recording's
 drawn from its *segments*, but splitting the whole track twice per action is not a lookup —
 so the identity names the flat `gpsRecorder.points` the split reads, and `splitGapS`, the
 only other thing that can move the breaks, is listened for as `gpsRecorderSetSettings`
-alongside `dataViewerSetSelectedTrack`. (Calling the memoized `selectRecorderSegments` here
+alongside `dataViewerSetActiveTrack`. (Calling the memoized `selectRecorderSegments` here
 would be worse than recomputing: alternating it between the new and the previous state
 thrashes its one-entry cache, and the map's own consumer of it re-renders on every action.)
 
@@ -589,11 +589,16 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   climb-baseline reset between segments), `containsElevations`/`elevationCoverage`/
   `enrichElevations`, and `densifyAlong` (densifies per segment, no inserts across the
   gap) are all segment-aware.
-- **Operate on a chosen track, not `features[0]`.** `selectedTrackIndex`
+- **Operate on a chosen track, not `features[0]`.** `activeTrackIndex`
   (`trackSelection.ts`) picks the active line among loaded line-like features; the chart,
-  "more info", and map highlight act on it. Chosen via a toolbar `Track` dropdown (≥2
-  lines) or clicking a line (blue halo pane below the foreground); resets on load. No
-  "All tracks" aggregate — separate activities aren't auto-concatenated.
+  "more info" and matching act on it. Clicking a line selects it
+  (`main.selection.type === 'data-viewer'`, blue halo pane below the foreground) and
+  `dataViewerSelectProcessor` aims the active index at it; deselecting leaves the index
+  alone, so an open chart doesn't jump to another track. Resets on load —
+  `dataViewerSetData({ select: true })` (an import, a saved recording, a conversion, not a
+  link or a reload) selects the loaded line where the data holds exactly one, so the usual
+  single-track import arrives ready to chart. No "All tracks" aggregate — separate
+  activities aren't auto-concatenated.
 - **Waypoints on the profile.** Standalone Points are pinned where the profile passes
   within `WAYPOINT_SNAP_METERS` (100 m); among candidates, the one closest in **time**
   when both waypoint and track carry timestamps (disambiguates a self-crossing track),

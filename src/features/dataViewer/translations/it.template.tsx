@@ -27,10 +27,10 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   info: () => <DataViewerDetails />,
   upload: 'Carica',
-  trackLabel: 'Traccia',
   unnamedTrack: ({ n }) => `Traccia ${n}`,
   convertLossWarning:
     'La conversione in disegno sostituisce la traccia e ne scarta i dati registrati (quota, frequenza cardiaca, velocità, tempo).',
+  convertAllToDrawing: 'Converti tutto in disegno',
   moreInfo: 'Maggiori info',
   saveAsMap: 'Salva nelle mie mappe',
   loginToSaveMap: 'Accedi prima per salvare la traccia nelle tue mappe.',

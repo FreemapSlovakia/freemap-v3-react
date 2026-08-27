@@ -53,7 +53,7 @@ export const trackingCopyToDataViewerProcessor: Processor<
     // Not a server-shared track, so it carries no id to share it back by.
     dispatch(dataViewerSetTrackUID(null));
 
-    dispatch(dataViewerSetData({ trackGeojson }));
+    dispatch(dataViewerSetData({ trackGeojson, select: true }));
 
     // The copy is worked on from the track viewer's own toolbar.
     dispatch(openTool('import-file'));

@@ -1,7 +1,10 @@
 import { deleteFeature, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { isToolOpen } from '@app/store/selectors.js';
-import { dataViewerDelete } from '@features/dataViewer/model/actions.js';
+import {
+  dataViewerDelete,
+  dataViewerDeleteFeature,
+} from '@features/dataViewer/model/actions.js';
 import {
   drawingLineDelete,
   drawingLineDeletePoint,
@@ -44,6 +47,9 @@ export const deleteProcessor: Processor = {
       dispatch(selectFeature(null));
 
       dispatch(routePlannerRemovePoint(state.main.selection.id));
+    } else if (state.main.selection?.type === 'data-viewer') {
+      // Only the selected feature goes; the rest of the imported data stays.
+      dispatch(dataViewerDeleteFeature(state.main.selection.id));
     } else if (state.main.selection?.type === 'search') {
       // Only the result acted upon goes; the others stay on the map. This is
       // the shortcut for the toolbar's delete button, and for a result being

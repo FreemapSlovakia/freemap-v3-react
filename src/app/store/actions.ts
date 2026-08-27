@@ -153,6 +153,12 @@ export interface SearchSelection {
   id: FeatureId;
 }
 
+export interface DataViewerSelection {
+  type: 'data-viewer';
+  /** Index into `trackViewer.trackGeojson.features`. */
+  id: number;
+}
+
 export type Selection =
   | LinePointSelection
   | DrawPointSelection
@@ -161,7 +167,8 @@ export type Selection =
   | TrackingSelection
   | RoutePointSelection
   | RouteSegmentSelection
-  | SearchSelection;
+  | SearchSelection
+  | DataViewerSelection;
 
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 
@@ -170,7 +177,8 @@ export const convertToDrawing = createAction<
   | { type: 'objects'; id?: OsmFeatureId }
   | { type: 'objects-geometry'; id: OsmFeatureId }
   | { type: 'planned-route'; tolerance: number }
-  | { type: 'track'; tolerance: number }
+  // track: `id` indexes the loaded collection; omitted converts every feature
+  | { type: 'track'; tolerance: number; id?: number }
   // tracking: `id` is a watched device's token; omitted converts every one of them
   | { type: 'tracking'; id?: string; tolerance: number }
   | { type: 'search-result'; tolerance: number }

@@ -86,10 +86,10 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
         : 'Die Höhe wurde überschrieben.',
   },
   upload: 'Hochladen',
-  trackLabel: 'Track',
   unnamedTrack: ({ n }) => `Track ${n}`,
   convertLossWarning:
     'Beim Umwandeln in eine Zeichnung wird der Track ersetzt und seine aufgezeichneten Daten (Höhe, Herzfrequenz, Geschwindigkeit, Zeit) verworfen.',
+  convertAllToDrawing: 'Alles in Zeichnung umwandeln',
   moreInfo: 'Mehr Infos',
   saveAsMap: 'In meinen Karten speichern',
   loginToSaveMap:

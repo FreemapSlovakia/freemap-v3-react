@@ -1,8 +1,7 @@
-import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
+import { setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
-import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import {
   LEGEND_ITEM,
@@ -29,27 +28,22 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useSimplifyPrompt } from '@shared/hooks/useSimplifyPrompt.js';
-import { convertibleLines } from '@shared/simplifyTolerance.js';
 import { flatten } from '@turf/flatten';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
-  FaChartArea,
   FaEllipsisV,
-  FaInfoCircle,
-  FaMagic,
   FaMountain,
   FaPaintBrush,
   FaPalette,
   FaPencilAlt,
-  FaRoute,
   FaSave,
   FaUpload,
 } from 'react-icons/fa';
 import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
+import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
 import {
   ColorizingModeSchema,
   dataViewerColorizeTrackBy,
@@ -57,15 +51,7 @@ import {
   dataViewerResolveElevationPrompt,
   dataViewerSetColorizeLegend,
   dataViewerSetElevationPrompt,
-  dataViewerSetSelectedTrack,
-  dataViewerToggleElevationChart,
 } from '../model/actions.js';
-import {
-  TRACK_INFO_TOAST_ID,
-  trackInfoToast,
-} from '../model/trackInfoToast.js';
-import { featureKind } from '../provenance.js';
-import { resolveActiveTrack, trackLineFeatures } from '../trackSelection.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 import DataViewerElevationPromptModal from './DataViewerElevationPromptModal.js';
@@ -73,8 +59,6 @@ import DataViewerElevationPromptModal from './DataViewerElevationPromptModal.js'
 export default DataViewerMenu;
 
 export function DataViewerMenu(): ReactElement {
-  const m = useMessages();
-
   const tvm = useDataViewerMessages();
 
   const cm = useColorizerMessages();
@@ -83,7 +67,7 @@ export function DataViewerMenu(): ReactElement {
 
   const confirm = useConfirm();
 
-  const askSimplification = useSimplifyPrompt();
+  const convertToDrawing = useConvertTrackToDrawing();
 
   const cancelConfirm = useConfirmCancel();
 
@@ -132,16 +116,6 @@ export function DataViewerMenu(): ReactElement {
     }
   }, [dispatch, loggedIn]);
 
-  const elevationChartActive = useAppSelector(
-    (state) => state.elevationChart.target?.type === 'track-viewer',
-  );
-
-  // Read off the toast itself rather than a setting: the info panel is about
-  // the track currently loaded, so wanting it is not a lasting preference.
-  const trackInfoActive = useAppSelector(
-    (state) => TRACK_INFO_TOAST_ID in state.toasts.toasts,
-  );
-
   const colorizeTrackBy = useUnlockedColorizingMode(
     useAppSelector((state) => state.trackViewerSettings.colorizeTrackBy),
   );
@@ -156,12 +130,10 @@ export function DataViewerMenu(): ReactElement {
     (state) => state.trackViewer.elevationDecision,
   );
 
-  const enableElevationChart = useAppSelector(
-    trackGeojsonIsSuitableForElevationChart,
-  );
+  // Colorizing and the elevation update are about lines; a file of waypoints or
+  // polygons alone is offered neither.
+  const hasLines = useAppSelector(trackGeojsonIsSuitableForElevationChart);
 
-  // The line-like features (each track/route as one entry, multi-segment
-  // included) the user picks among when several are loaded.
   const trackGeojson = useAppSelector(
     (state) => state.trackViewer.trackGeojson,
   );
@@ -178,17 +150,6 @@ export function DataViewerMenu(): ReactElement {
         : [],
     [trackGeojson],
   );
-
-  const selectedTrackIndex = useAppSelector(
-    (state) => state.trackViewer.selectedTrackIndex,
-  );
-
-  const trackLines = trackLineFeatures(trackGeojson);
-
-  const activeTrackIndex = resolveActiveTrack(
-    trackGeojson,
-    selectedTrackIndex,
-  )?.index;
 
   const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {
     const { isAvailable } = colorizers[mode];
@@ -207,29 +168,6 @@ export function DataViewerMenu(): ReactElement {
   // straight away — the explicit "update" button covers overriding them.
   const needsElevationDecision =
     coverage !== 'full' && elevationDecision === 'undecided';
-
-  // A GPS recording (`fm:kind === 'track'`) is the one thing converting can
-  // lose data from, so it is what the warning is about. Routes and generic
-  // imported geometry have nothing rich to lose.
-  const hasDenseTrack = (trackGeojson?.features ?? []).some(
-    (f) => featureKind(f) === 'track',
-  );
-
-  const handleConvertToDrawing = useCallback(() => {
-    // One question for a dense recording: it both warns that the recorded data
-    // is dropped (the track is replaced) and asks how much to simplify, filled
-    // in from the track's own density; Cancel aborts. Routes and generic
-    // geometry have nothing rich to lose, so they only ever get the question
-    // when there is enough of them to be worth thinning.
-    const tolerance = askSimplification(
-      trackGeojson ? convertibleLines(trackGeojson) : [],
-      hasDenseTrack ? tvm?.convertLossWarning : undefined,
-    );
-
-    if (tolerance !== null) {
-      dispatch(convertToDrawing({ type: 'track', tolerance }));
-    }
-  }, [dispatch, tvm, hasDenseTrack, trackGeojson, askSimplification]);
 
   const handleUpdateElevation = useCallback(async () => {
     // With only some points missing, defer to the adaptive modal so the user
@@ -282,17 +220,12 @@ export function DataViewerMenu(): ReactElement {
         break;
 
       case 'convert-to-drawing':
-        handleConvertToDrawing();
+        convertToDrawing();
 
         break;
 
       case 'edit-style':
         dispatch(setActiveModal({ type: 'track-viewer-style' }));
-
-        break;
-
-      case 'match-to-network':
-        dispatch(setActiveModal({ type: 'track-viewer-match' }));
 
         break;
     }
@@ -330,46 +263,7 @@ export function DataViewerMenu(): ReactElement {
         {/* Separate the import action from the loaded-track actions. */}
         {canUpload && hasTrack && <div className="vr align-self-stretch" />}
 
-        {/* Pick which track the chart / "more info" act on, shown only when
-            several lines are loaded. */}
-        {trackLines.length > 1 && (
-          <SelectDropdown
-            asSelect
-            id="track_selector"
-            toggleIcon={<FaRoute />}
-            name={tvm?.trackLabel}
-            value={String(activeTrackIndex ?? '')}
-            onSelect={(value) => {
-              dispatch(dataViewerSetSelectedTrack(Number(value)));
-            }}
-            options={trackLines.map(({ feature, index }, i) => ({
-              value: String(index),
-              label:
-                (feature.properties?.['name'] as string | undefined) ||
-                tvm?.unnamedTrack({ n: i + 1 }),
-            }))}
-          />
-        )}
-
-        {enableElevationChart && (
-          <LongPressTooltip breakpoint="md" label={m?.general.elevationProfile}>
-            {({ label, labelClassName, props }) => (
-              <Button
-                variant="secondary"
-                active={elevationChartActive}
-                onClick={() => {
-                  dispatch(dataViewerToggleElevationChart());
-                }}
-                {...props}
-              >
-                <FaChartArea />
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
-
-        {enableElevationChart && (
+        {hasLines && (
           <SelectDropdown
             id="colorizing_mode"
             breakpoint="lg"
@@ -427,33 +321,6 @@ export function DataViewerMenu(): ReactElement {
           />
         )}
 
-        {enableElevationChart && (
-          <LongPressTooltip breakpoint="md" label={tvm?.moreInfo}>
-            {({ label, labelClassName, props }) => (
-              <Button
-                variant="secondary"
-                active={trackInfoActive}
-                aria-pressed={trackInfoActive}
-                onClick={() => {
-                  if (trackInfoActive) {
-                    dispatch(toastsRemove(TRACK_INFO_TOAST_ID));
-                  } else if (needsElevationDecision) {
-                    // The info stats depend on elevation, so settle it first
-                    // when some is missing and the user hasn't decided yet.
-                    dispatch(dataViewerSetElevationPrompt({ type: 'info' }));
-                  } else {
-                    dispatch(trackInfoToast);
-                  }
-                }}
-                {...props}
-              >
-                <FaInfoCircle />
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
-
         {hasTrack && (
           <Dropdown id="more" onSelect={handleMoreSelect}>
             <Dropdown.Toggle variant="secondary">
@@ -465,7 +332,7 @@ export function DataViewerMenu(): ReactElement {
                 <FaPaintBrush /> &nbsp;{tvm?.style.title ?? '…'}
               </Dropdown.Item>
 
-              {enableElevationChart && canUpdateElevation && (
+              {hasLines && canUpdateElevation && (
                 <Dropdown.Item as="button" eventKey="update-elevation">
                   <FaMountain /> &nbsp;{tvm?.elevationFill.update ?? '…'}
                 </Dropdown.Item>
@@ -477,16 +344,8 @@ export function DataViewerMenu(): ReactElement {
                 </Dropdown.Item>
               )}
 
-              {/* Only a line can be matched — a collection of waypoints or
-                  polygons would open the modal onto nothing. */}
-              {lineFeatures.length > 0 && (
-                <Dropdown.Item as="button" eventKey="match-to-network">
-                  <FaMagic /> &nbsp;{tvm?.match.menuItem ?? '…'}
-                </Dropdown.Item>
-              )}
-
               <Dropdown.Item as="button" eventKey="convert-to-drawing">
-                <FaPencilAlt /> &nbsp;{m?.general.convertToDrawing ?? '…'}
+                <FaPencilAlt /> &nbsp;{tvm?.convertAllToDrawing ?? '…'}
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>
@@ -495,7 +354,7 @@ export function DataViewerMenu(): ReactElement {
         {hasTrack && <DeleteButton action={dataViewerDelete()} />}
       </ToolMenu>
 
-      {enableElevationChart && colorizeLegend && colorizeTrackBy && (
+      {hasLines && colorizeLegend && colorizeTrackBy && (
         <ColorizeLegend
           mode={colorizeTrackBy}
           icon={<MdShapeLine />}

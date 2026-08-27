@@ -19,10 +19,10 @@ export const dataViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    const { trackGeojson, elevationDecision, selectedTrackIndex } =
+    const { trackGeojson, elevationDecision, activeTrackIndex } =
       getState().trackViewer;
 
-    const active = resolveActiveTrack(trackGeojson, selectedTrackIndex);
+    const active = resolveActiveTrack(trackGeojson, activeTrackIndex);
 
     if (!active) {
       return;

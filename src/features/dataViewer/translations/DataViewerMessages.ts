@@ -3,9 +3,11 @@ import type { JSX, ReactNode } from 'react';
 export type DataViewerMessages = {
   info: () => JSX.Element;
   upload: string;
-  trackLabel: string;
+  /** Name for a line the file didn't name, by its position among the lines. */
   unnamedTrack: (props: { n: number }) => string;
   convertLossWarning: string;
+  /** The tool menu's conversion, which takes every loaded feature. */
+  convertAllToDrawing: string;
   moreInfo: string;
   saveAsMap: string;
   unsaved: string;

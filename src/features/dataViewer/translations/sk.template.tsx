@@ -7,10 +7,10 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Nahrať',
-  trackLabel: 'Trasa',
   unnamedTrack: ({ n }) => `Trasa ${n}`,
   convertLossWarning:
     'Prevod na kresbu nahradí trasu a zahodí jej zaznamenané údaje (nadmorská výška, tep, rýchlosť, čas).',
+  convertAllToDrawing: 'Skonvertovať všetko na kreslenie',
   moreInfo: 'Viac info',
   saveAsMap: 'Uložiť do mojich máp',
   unsaved: 'Neuložené',

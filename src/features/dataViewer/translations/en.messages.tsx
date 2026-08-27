@@ -6,10 +6,10 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 const en: DataViewerMessages = {
   info: () => <DataViewerDetails />,
   upload: 'Upload',
-  trackLabel: 'Track',
   unnamedTrack: ({ n }) => `Track ${n}`,
   convertLossWarning:
     'Converting to a drawing replaces the track and discards its recorded data (elevation, heart rate, speed, time).',
+  convertAllToDrawing: 'Convert all to drawing',
   moreInfo: 'More info',
   saveAsMap: 'Save to my maps',
   unsaved: 'Unsaved',

@@ -102,7 +102,7 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
     // line first, so the profile isn't coarse).
     const after = getState().trackViewer;
 
-    if (resolveActiveTrack(after.trackGeojson, after.selectedTrackIndex)) {
+    if (resolveActiveTrack(after.trackGeojson, after.activeTrackIndex)) {
       dispatch(elevationChartOpen({ type: 'track-viewer' }));
     }
   },

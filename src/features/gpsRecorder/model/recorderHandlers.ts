@@ -513,7 +513,7 @@ function handOverTrack(
   // Not a server-shared track, so it carries no id to share it back by.
   dispatch(dataViewerSetTrackUID(null));
 
-  dispatch(dataViewerSetData({ trackGeojson }));
+  dispatch(dataViewerSetData({ trackGeojson, select: true }));
 
   // The track viewer's own toolbar is where the saved copy is worked on, so it
   // takes over from the recorder's.
