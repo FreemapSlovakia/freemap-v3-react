@@ -1,12 +1,15 @@
-import { clearMapFeatures } from '@app/store/actions.js';
+import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { Feature, FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
   dataViewerDelete,
   dataViewerDeleteFeature,
+  dataViewerExplodeTrack,
   dataViewerGpxLoad,
   dataViewerSetData,
+  dataViewerSetSplitting,
   dataViewerSetTrackUID,
+  dataViewerSplitTrack,
 } from './actions.js';
 import { dataViewerInitialState, dataViewerReducer } from './reducer.js';
 
@@ -146,5 +149,93 @@ describe('dataViewerReducer — deleteFeature', () => {
     const state = stateOf(null);
 
     expect(dataViewerReducer(state, dataViewerDeleteFeature(9))).toBe(state);
+  });
+});
+
+const track = (name: string, segments: number[][][]): Feature => ({
+  type: 'Feature',
+  properties: { name },
+  geometry:
+    segments.length === 1
+      ? { type: 'LineString', coordinates: segments[0]! }
+      : { type: 'MultiLineString', coordinates: segments },
+});
+
+const straight = (n: number) =>
+  Array.from({ length: n }, (_, i): number[] => [i, 0]);
+
+const loaded = (features: Feature[]) => ({
+  ...dataViewerInitialState,
+  trackGeojson: { type: 'FeatureCollection', features } as FeatureCollection,
+  trackUID: 'abc',
+  gpxUrl: 'https://x/y.gpx',
+  splitting: true,
+});
+
+const cutInTwo = (features: Feature[], pointIndex = 2) =>
+  dataViewerReducer(
+    loaded(features),
+    dataViewerSplitTrack({ featureIndex: 0, segmentIndex: 0, pointIndex }),
+  );
+
+describe('dataViewerReducer — splitting', () => {
+  it('puts the two halves in the place of the track', () => {
+    const next = cutInTwo([track('a', [straight(5)])]);
+
+    expect(next.trackGeojson?.features).toHaveLength(2);
+    expect(
+      next.trackGeojson?.features.map(
+        (f) => (f.geometry as { coordinates: unknown[] }).coordinates.length,
+      ),
+    ).toEqual([3, 3]);
+
+    // The edit makes it this browser own copy, and drops what derived from it.
+    expect(next.trackUID).toBeNull();
+    expect(next.gpxUrl).toBeNull();
+    expect(next.renderTrackGeojson).toBeNull();
+    expect(next.splitting).toBe(false);
+  });
+
+  it('shifts an active track that came after the one cut', () => {
+    const next = dataViewerReducer(
+      {
+        ...loaded([track('a', [straight(5)]), track('b', [straight(5)])]),
+        activeTrackIndex: 1,
+      },
+      dataViewerSplitTrack({ featureIndex: 0, segmentIndex: 0, pointIndex: 2 }),
+    );
+
+    expect(next.activeTrackIndex).toBe(2);
+    expect(next.trackGeojson?.features.at(-1)?.properties?.['name']).toBe('b');
+  });
+
+  it('leaves the collection alone when the cut is at an end', () => {
+    const next = cutInTwo([track('a', [straight(5)])], 0);
+
+    expect(next.trackGeojson?.features).toHaveLength(1);
+    expect(next.trackUID).toBe('abc');
+  });
+
+  it('explodes a paused recording into a feature per segment', () => {
+    const next = dataViewerReducer(
+      loaded([track('a', [straight(3), straight(4)])]),
+      dataViewerExplodeTrack(0),
+    );
+
+    expect(next.trackGeojson?.features).toHaveLength(2);
+    expect(next.trackGeojson?.features.map((f) => f.geometry.type)).toEqual([
+      'LineString',
+      'LineString',
+    ]);
+  });
+
+  it('disarms when the selection moves on', () => {
+    const state = dataViewerReducer(
+      dataViewerInitialState,
+      dataViewerSetSplitting(true),
+    );
+
+    expect(state.splitting).toBe(true);
+    expect(dataViewerReducer(state, selectFeature(null)).splitting).toBe(false);
   });
 });

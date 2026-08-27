@@ -14,6 +14,7 @@ import type { ReactElement } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
+  FaCheck,
   FaDrawPolygon,
   FaEllipsisV,
   FaInfoCircle,
@@ -21,17 +22,22 @@ import {
   FaMapMarkerAlt,
   FaPencilAlt,
 } from 'react-icons/fa';
-import { TbTimeline } from 'react-icons/tb';
+import { RiScissorsFill } from 'react-icons/ri';
+import { TbArrowsSplit, TbTimeline } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
 import {
+  dataViewerExplodeTrack,
   dataViewerSetElevationPrompt,
+  dataViewerSetSplitting,
+  dataViewerSplitTrack,
   dataViewerToggleElevationChart,
 } from '../model/actions.js';
 import {
   TRACK_INFO_TOAST_ID,
   trackInfoToast,
 } from '../model/trackInfoToast.js';
+import { isExplodable, isSplittable } from '../splitTrack.js';
 import { isTrackLine, trackLineFeatures } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 
@@ -69,7 +75,12 @@ export default function DataViewerSelection(): ReactElement | null {
     (state) => TRACK_INFO_TOAST_ID in state.toasts.toasts,
   );
 
-  const isLine = feature !== undefined && isTrackLine(feature);
+  const splitting = useAppSelector((state) => state.trackViewer.splitting);
+
+  const splitPoint = useAppSelector((state) => state.trackViewer.splitPoint);
+
+  const line =
+    feature !== undefined && isTrackLine(feature) ? feature : undefined;
 
   if (!feature || index === undefined) {
     return null;
@@ -86,6 +97,11 @@ export default function DataViewerSelection(): ReactElement | null {
         dispatch(setActiveModal({ type: 'track-viewer-match' }));
 
         break;
+
+      case 'explode':
+        dispatch(dataViewerExplodeTrack(index));
+
+        break;
     }
   };
 
@@ -99,11 +115,11 @@ export default function DataViewerSelection(): ReactElement | null {
   // position among the loaded lines.
   const label =
     (typeof name === 'string' && name) ||
-    (isLine
+    (line
       ? dvm?.unnamedTrack({
           n:
             trackLineFeatures(trackGeojson).findIndex(
-              (line) => line.index === index,
+              (candidate) => candidate.index === index,
             ) + 1,
         })
       : isPoint
@@ -122,18 +138,12 @@ export default function DataViewerSelection(): ReactElement | null {
   return (
     <Selection
       icon={
-        isLine ? (
-          <TbTimeline />
-        ) : isPoint ? (
-          <FaMapMarkerAlt />
-        ) : (
-          <FaDrawPolygon />
-        )
+        line ? <TbTimeline /> : isPoint ? <FaMapMarkerAlt /> : <FaDrawPolygon />
       }
       label={label}
       deletable
     >
-      {isLine && (
+      {line && (
         <LongPressTooltip breakpoint="md" label={m?.general.elevationProfile}>
           {({ label, labelClassName, props }) => (
             <Button
@@ -151,7 +161,7 @@ export default function DataViewerSelection(): ReactElement | null {
         </LongPressTooltip>
       )}
 
-      {isLine && (
+      {line && (
         <LongPressTooltip breakpoint="md" label={dvm?.moreInfo}>
           {({ label, labelClassName, props }) => (
             <Button
@@ -165,7 +175,7 @@ export default function DataViewerSelection(): ReactElement | null {
                   dispatch(toastsRemove(TRACK_INFO_TOAST_ID));
                 } else if (
                   elevationDecision === 'undecided' &&
-                  elevationCoverage([feature]) !== 'full'
+                  elevationCoverage([line]) !== 'full'
                 ) {
                   dispatch(dataViewerSetElevationPrompt({ type: 'info' }));
                 } else {
@@ -175,6 +185,43 @@ export default function DataViewerSelection(): ReactElement | null {
               {...props}
             >
               <FaInfoCircle />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
+
+      {line && isSplittable(line) && (
+        <LongPressTooltip breakpoint="md" label={dvm?.split.action}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              variant="secondary"
+              active={splitting}
+              onClick={() => {
+                dispatch(dataViewerSetSplitting(!splitting));
+              }}
+              {...props}
+            >
+              <RiScissorsFill />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
+
+      {/* Only a finger ever gets this far: a pointer that can hover cuts where
+          it points, and leaves nothing to confirm. */}
+      {splitPoint && (
+        <LongPressTooltip breakpoint="md" label={dvm?.split.here}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              variant="primary"
+              onClick={() => {
+                dispatch(dataViewerSplitTrack(splitPoint));
+              }}
+              {...props}
+            >
+              <FaCheck />
               <span className={labelClassName}> {label}</span>
             </Button>
           )}
@@ -219,9 +266,15 @@ export default function DataViewerSelection(): ReactElement | null {
           </Dropdown.Toggle>
 
           <FmDropdownMenu>
-            {isLine && (
+            {line && (
               <Dropdown.Item as="button" eventKey="match-to-network">
                 <FaMagic /> &nbsp;{dvm?.match.menuItem ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {line && isExplodable(line) && (
+              <Dropdown.Item as="button" eventKey="explode">
+                <TbArrowsSplit /> &nbsp;{dvm?.split.segments ?? '…'}
               </Dropdown.Item>
             )}
 

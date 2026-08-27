@@ -18,6 +18,11 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Style par défaut',
   },
+  split: {
+    action: 'Diviser',
+    here: 'Diviser ici',
+    segments: 'Diviser en segments',
+  },
   match: {
     menuItem: 'Caler sur les chemins',
     title: 'Caler sur les chemins',

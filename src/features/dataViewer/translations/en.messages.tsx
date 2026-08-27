@@ -19,6 +19,11 @@ const en: DataViewerMessages = {
   style: {
     title: 'Default style',
   },
+  split: {
+    action: 'Split',
+    here: 'Split here',
+    segments: 'Split into segments',
+  },
   match: {
     menuItem: 'Match to paths',
     title: 'Match to paths',

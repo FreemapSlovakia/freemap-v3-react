@@ -20,6 +20,11 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Predvolený štýl',
   },
+  split: {
+    action: 'Rozdeliť',
+    here: 'Rozdeliť tu',
+    segments: 'Rozdeliť na úseky',
+  },
   match: {
     menuItem: 'Priradiť k cestám',
     title: 'Priradiť k cestám',

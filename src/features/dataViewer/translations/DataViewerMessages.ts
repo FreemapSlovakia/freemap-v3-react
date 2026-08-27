@@ -16,6 +16,12 @@ export type DataViewerMessages = {
   style: {
     title: string;
   };
+  /** Cutting a track in two, or into the segments a paused recording left. */
+  split: {
+    action: string;
+    here: string;
+    segments: string;
+  };
   /** Snapping a recorded track onto the routing graph. */
   match: {
     menuItem: string;

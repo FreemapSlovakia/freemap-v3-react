@@ -29,13 +29,30 @@ import type {
   LineString,
   Position,
 } from 'geojson';
-import { Point as LPoint } from 'leaflet';
+import { type LeafletMouseEvent, Point as LPoint } from 'leaflet';
 import { Fragment, type ReactElement, useMemo } from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
+import { RiScissorsFill } from 'react-icons/ri';
 import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
+import { useTrackSplit } from '../hooks/useTrackSplit.js';
+
+// The selection halo, and the colour the far half of a pending cut is told
+// apart by. Whole objects, so a re-render hands Leaflet the same options back
+// instead of restyling every path.
+const SELECTION_COLOR = '#156efd';
+
+const HALO_OPTIONS = {
+  opacity: 1,
+  lineCap: 'round',
+  lineJoin: 'round',
+} as const;
+
+const HEAD_HALO = { ...HALO_OPTIONS, color: SELECTION_COLOR };
+
+const TAIL_HALO = { ...HALO_OPTIONS, color: '#ff8c00' };
 
 // Fallback fill opacity, used only when no fill color is resolvable at all
 // (e.g. the user cleared drawingFillColor). Passing an explicit number is
@@ -142,6 +159,15 @@ export default function DataViewerResult({
     [activeColorizer],
   );
 
+  const colorizedRuns = useMemo(
+    () =>
+      colorizedPositions.map((positions) => ({
+        noData: noDataRuns(positions),
+        runs: splitOnGaps(positions),
+      })),
+    [colorizedPositions],
+  );
+
   const interactive = useAppSelector(selectingModeSelector);
 
   const selectedIndex = useAppSelector((state) =>
@@ -151,6 +177,8 @@ export default function DataViewerResult({
   );
 
   const dispatch = useDispatch();
+
+  const split = useTrackSplit(selectedIndex);
 
   const setThisTool = () => {
     dispatch(openTool('import-file'));
@@ -166,9 +194,14 @@ export default function DataViewerResult({
   };
 
   // TODO rather compute some hash or better - detect real change
-  const keyToAssureProperRefresh = `OOXlDWrtVn-${
-    (JSON.stringify(trackGeojson) + displayingElevationChart).length
-  }`; // otherwise GeoJSON will still display the first data
+  const keyToAssureProperRefresh = useMemo(
+    // otherwise GeoJSON will still display the first data
+    () =>
+      `OOXlDWrtVn-${
+        (JSON.stringify(trackGeojson) + displayingElevationChart).length
+      }`,
+    [trackGeojson, displayingElevationChart],
+  );
 
   // Flatten line-like features into per-segment render entries, keeping each
   // segment's source feature index so a click selects that whole track and the
@@ -266,6 +299,29 @@ export default function DataViewerResult({
     return [polygons, points] as const;
   }, [trackGeojson, defaultStyle]);
 
+  // Width comes from the feature properties alone, so every segment of the
+  // selected one shares it.
+  const haloWidth =
+    features.find(({ featureIndex }) => featureIndex === selectedIndex)?.style
+      .width ?? defaultStyle.width;
+
+  // The halo of the selected feature — or, with a cut aimed, the two halves it
+  // would come out as, each in its own colour.
+  const halos = split.preview
+    ? [
+        ...split.preview.head.map((positions) => ({
+          positions,
+          options: HEAD_HALO,
+        })),
+        ...split.preview.tail.map((positions) => ({
+          positions,
+          options: TAIL_HALO,
+        })),
+      ]
+    : features
+        .filter(({ featureIndex }) => featureIndex === selectedIndex)
+        .map(({ lineData }) => ({ positions: lineData, options: HEAD_HALO }));
+
   const timeFormat = useDateTimeFormat({
     hour: 'numeric',
     minute: '2-digit',
@@ -285,23 +341,16 @@ export default function DataViewerResult({
           colorized; below markerPane (600) so waypoints stay clickable. */}
       <Pane name="fm-trackviewer-hit" style={{ zIndex: 450 }} />
 
-      {features
-        .filter(({ featureIndex }) => featureIndex === selectedIndex)
-        .map(({ lineData, style }, i) => (
-          <Polyline
-            key={`highlight-${i}`}
-            pane="fm-trackviewer-highlight"
-            weight={style.width + 6}
-            positions={lineData}
-            pathOptions={{
-              color: '#156efd',
-              opacity: 1,
-              lineCap: 'round',
-              lineJoin: 'round',
-            }}
-            interactive={false}
-          />
-        ))}
+      {halos.map(({ positions, options }, i) => (
+        <Polyline
+          key={`halo-${i}`}
+          pane="fm-trackviewer-highlight"
+          weight={haloWidth + 6}
+          positions={positions}
+          pathOptions={options}
+          interactive={false}
+        />
+      ))}
 
       {polygons
         .filter(({ featureIndex }) => featureIndex === selectedIndex)
@@ -312,7 +361,7 @@ export default function DataViewerResult({
             weight={style.width + 6}
             positions={positions}
             pathOptions={{
-              color: '#156efd',
+              color: SELECTION_COLOR,
               opacity: 1,
               fill: false,
               lineJoin: 'round',
@@ -331,7 +380,26 @@ export default function DataViewerResult({
           opacity={0}
           bubblingMouseEvents={false}
           eventHandlers={{
-            click: () => select(featureIndex),
+            // With the split cursor armed the click is the cut, and only the
+            // selected track answers it — everything else still selects.
+            click: (e) => {
+              if (!split.handleClick(featureIndex, e.latlng)) {
+                select(featureIndex);
+              }
+            },
+            // Only while armed: a `mouseout` listener here makes the outline
+            // the sole target of the event, and the map stops getting its own —
+            // which is what clears the elevation chart readout.
+            ...(split.armed
+              ? {
+                  mousemove: (e: LeafletMouseEvent) => {
+                    split.handleMove(featureIndex, e.latlng);
+                  },
+                  mouseout: () => {
+                    split.handleOut();
+                  },
+                }
+              : {}),
           }}
         >
           {name && (
@@ -343,8 +411,8 @@ export default function DataViewerResult({
       ))}
 
       {activeColorizer &&
-        colorizedPositions.flatMap((positions, i) => [
-          ...noDataRuns(positions).map((run, j) => (
+        colorizedRuns.flatMap(({ noData, runs }, i) => [
+          ...noData.map((run, j) => (
             <Polyline
               key={`nodata-${colorizeTrackBy}-${i}-${j}`}
               positions={run.map((p): [number, number] => [p.lat, p.lon])}
@@ -357,7 +425,7 @@ export default function DataViewerResult({
               interactive={false}
             />
           )),
-          ...splitOnGaps(positions).map((run, j) => (
+          ...runs.map((run, j) => (
             <Hotline
               key={`${colorizeTrackBy}-${i}-${j}`}
               data={run}
@@ -507,6 +575,43 @@ export default function DataViewerResult({
           </Tooltip>
         </RichMarker>
       ))}
+
+      {split.cursor && (
+        <RichMarker
+          faIcon={
+            <RiScissorsFill
+              color={split.cursor.frozen ? SELECTION_COLOR : 'grey'}
+            />
+          }
+          color={split.cursor.frozen ? SELECTION_COLOR : 'grey'}
+          position={{ lat: split.cursor.lat, lng: split.cursor.lon }}
+          // A frozen cut can be dragged along the track to adjust it, which is
+          // the only way to aim one with a finger.
+          interactive={split.cursor.frozen}
+          draggable={split.cursor.frozen}
+          eventHandlers={{
+            dragend: (e) => {
+              const position = split.handleDragEnd(e.target.getLatLng());
+
+              if (position) {
+                e.target.setLatLng(position);
+              }
+            },
+          }}
+        >
+          <Tooltip
+            className="compact"
+            offset={new LPoint(10, 10)}
+            direction="right"
+            permanent
+          >
+            <span>
+              ← {formatDistance(split.cursor.distance, language)}
+              <br />→ {formatDistance(split.cursor.remaining, language)}
+            </span>
+          </Tooltip>
+        </RichMarker>
+      )}
     </Fragment>
   );
 }

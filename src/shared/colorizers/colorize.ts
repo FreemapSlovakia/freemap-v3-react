@@ -63,6 +63,35 @@ export function readPathDetails(
   return details?.[key];
 }
 
+/** The spans covering `[from, to]`, measured from `from`. */
+export function clipPathDetails(
+  details: PathDetails,
+  from: number,
+  to: number,
+): PathDetails {
+  return Object.fromEntries(
+    Object.entries(details).flatMap(([key, spans]) => {
+      const clipped: PathDetailSpan[] = [];
+
+      for (const span of spans) {
+        const start = Math.max(span.start, from);
+
+        const end = Math.min(span.end, to);
+
+        if (end > start) {
+          clipped.push({
+            start: start - from,
+            end: end - from,
+            value: span.value,
+          });
+        }
+      }
+
+      return clipped.length > 0 ? [[key, clipped] as const] : [];
+    }),
+  );
+}
+
 /** One row of a legend that names categories instead of drawing a scale. */
 export type CategoryShare = {
   key: string;

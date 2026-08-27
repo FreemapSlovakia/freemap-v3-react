@@ -1,13 +1,20 @@
-import { clearMapFeatures } from '@app/store/actions.js';
+import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { FeatureCollection } from 'geojson';
 import {
+  explodeTrackFeature,
+  splitTrackFeature,
+  type TrackSplitPoint,
+} from '../splitTrack.js';
+import { isTrackLine, type TrackLine } from '../trackSelection.js';
+import {
   dataViewerDelete,
   dataViewerDeleteFeature,
   dataViewerDownloadTrack,
+  dataViewerExplodeTrack,
   dataViewerGpxLoad,
   dataViewerResolveElevationPrompt,
   dataViewerSetActiveTrack,
@@ -16,7 +23,10 @@ import {
   dataViewerSetElevationPrompt,
   dataViewerSetGpxUrl,
   dataViewerSetRenderGeojson,
+  dataViewerSetSplitPoint,
+  dataViewerSetSplitting,
   dataViewerSetTrackUID,
+  dataViewerSplitTrack,
   type ElevationConsumer,
   type ElevationFillMode,
 } from './actions.js';
@@ -49,6 +59,12 @@ export interface DataViewerState extends DataViewerStateBase {
   // Selecting a line aims it here; deselecting leaves it, so an open chart
   // stays on its track.
   activeTrackIndex: number | null;
+  // Whether the split cursor is armed on the selected track.
+  splitting: boolean;
+  // The vertex the armed cursor is frozen at, which a finger picks before
+  // confirming the cut from the toolbar. A pointer that can hover cuts outright
+  // and never sets this.
+  splitPoint: TrackSplitPoint | null;
 }
 
 export type ElevationDecision = 'undecided' | ElevationFillMode;
@@ -65,8 +81,44 @@ export const dataViewerInitialState: DataViewerState = {
   elevationDecision: 'undecided',
   elevationSources: [],
   activeTrackIndex: null,
+  splitting: false,
+  splitPoint: null,
   ...cleanState,
 };
+
+function clearSplit(state: DataViewerState) {
+  state.splitting = false;
+
+  state.splitPoint = null;
+}
+
+/**
+ * Puts the given features in the place of one, shifting whatever a later index
+ * names, and drops everything derived from the old collection. Editing it makes
+ * it no longer the file it came from, so `trackUID` / `gpxUrl` go with it.
+ */
+function replaceFeature(
+  state: DataViewerState,
+  index: number,
+  replacement: TrackLine[],
+) {
+  state.trackGeojson?.features.splice(index, 1, ...replacement);
+
+  state.renderTrackGeojson = null;
+
+  clearSplit(state);
+
+  const active = state.activeTrackIndex;
+
+  // The first piece keeps the original index, so only what came after moves.
+  if (active !== null && active > index) {
+    state.activeTrackIndex = active + replacement.length - 1;
+  }
+
+  state.trackUID = null;
+
+  state.gpxUrl = null;
+}
 
 export const dataViewerReducer = createReducer(
   dataViewerInitialState,
@@ -88,6 +140,8 @@ export const dataViewerReducer = createReducer(
 
           // The feature indices changed; fall back to the first line.
           state.activeTrackIndex = null;
+
+          clearSplit(state);
         }
       })
       .addCase(dataViewerDeleteFeature, (state, { payload }) => {
@@ -101,24 +155,15 @@ export const dataViewerReducer = createReducer(
           return dataViewerInitialState;
         }
 
-        features.splice(payload, 1);
+        const wasActive = state.activeTrackIndex === payload;
 
-        state.renderTrackGeojson = null;
+        // A delete is a replacement with nothing, but the active line cannot
+        // fall through to the piece that took its place — there is none.
+        replaceFeature(state, payload, []);
 
-        // Indices after the removed one shift down; the active line is dropped
-        // when it is the one that went.
-        const active = state.activeTrackIndex;
-
-        if (active === payload) {
+        if (wasActive) {
           state.activeTrackIndex = null;
-        } else if (active !== null && active > payload) {
-          state.activeTrackIndex = active - 1;
         }
-
-        // What is on screen is no longer the file the link names.
-        state.trackUID = null;
-
-        state.gpxUrl = null;
       })
       .addCase(dataViewerSetElevation, (state, action) => {
         state.trackGeojson = action.payload.trackGeojson;
@@ -147,6 +192,47 @@ export const dataViewerReducer = createReducer(
       })
       .addCase(dataViewerSetActiveTrack, (state, action) => {
         state.activeTrackIndex = action.payload;
+      })
+      .addCase(dataViewerSetSplitting, (state, { payload }) => {
+        state.splitting = payload;
+
+        state.splitPoint = null;
+      })
+      .addCase(dataViewerSetSplitPoint, (state, { payload }) => {
+        state.splitPoint = payload;
+      })
+      // The cursor is armed for one track; anything else being selected (or the
+      // selection going) leaves it aimed at nothing.
+      .addCase(selectFeature, clearSplit)
+      .addCase(dataViewerSplitTrack, (state, { payload }) => {
+        const feature = state.trackGeojson?.features[payload.featureIndex];
+
+        if (!feature || !isTrackLine(feature)) {
+          return;
+        }
+
+        const halves = splitTrackFeature(
+          feature,
+          payload.segmentIndex,
+          payload.pointIndex,
+        );
+
+        if (halves) {
+          replaceFeature(state, payload.featureIndex, halves);
+        }
+      })
+      .addCase(dataViewerExplodeTrack, (state, { payload }) => {
+        const feature = state.trackGeojson?.features[payload];
+
+        if (!feature || !isTrackLine(feature)) {
+          return;
+        }
+
+        const parts = explodeTrackFeature(feature);
+
+        if (parts) {
+          replaceFeature(state, payload, parts);
+        }
       })
       .addCase(dataViewerSetElevationPrompt, (state, action) => {
         state.elevationPrompt = action.payload;

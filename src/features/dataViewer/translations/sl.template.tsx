@@ -18,6 +18,11 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Privzeti slog',
   },
+  split: {
+    action: 'Razdeli',
+    here: 'Razdeli tukaj',
+    segments: 'Razdeli na odseke',
+  },
   match: {
     menuItem: 'Pripni na poti',
     title: 'Pripni na poti',

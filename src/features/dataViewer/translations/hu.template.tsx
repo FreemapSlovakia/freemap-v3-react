@@ -8,6 +8,11 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Alapértelmezett stílus',
   },
+  split: {
+    action: 'Felosztás',
+    here: 'Felosztás itt',
+    segments: 'Felosztás szakaszokra',
+  },
   match: {
     menuItem: 'Utakhoz illesztés',
     title: 'Utakhoz illesztés',

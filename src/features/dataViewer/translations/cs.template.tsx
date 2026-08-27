@@ -8,6 +8,11 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Výchozí styl',
   },
+  split: {
+    action: 'Rozdělit',
+    here: 'Rozdělit zde',
+    segments: 'Rozdělit na úseky',
+  },
   match: {
     menuItem: 'Přiřadit k cestám',
     title: 'Přiřadit k cestám',

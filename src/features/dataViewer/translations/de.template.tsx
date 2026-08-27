@@ -8,6 +8,11 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Standardstil',
   },
+  split: {
+    action: 'Teilen',
+    here: 'Hier teilen',
+    segments: 'In Abschnitte teilen',
+  },
   match: {
     menuItem: 'An Wege anpassen',
     title: 'An Wege anpassen',

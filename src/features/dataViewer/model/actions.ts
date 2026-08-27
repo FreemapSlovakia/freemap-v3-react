@@ -7,6 +7,7 @@ import {
 import type { TransportType } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { FeatureCollection } from 'geojson';
+import type { TrackSplitPoint } from '../splitTrack.js';
 
 export { type ColorizingMode, ColorizingModeSchema };
 
@@ -153,4 +154,39 @@ export const dataViewerDelete = createAction('DATA_VIEWER_DELETE');
  */
 export const dataViewerDeleteFeature = createAction<number>(
   'DATA_VIEWER_DELETE_FEATURE',
+);
+
+/**
+ * Arms the split cursor on the selected track: while it is on, the track offers
+ * the vertex nearest the pointer to cut at, and a click there cuts it. Disarming
+ * takes the cursor with it.
+ */
+export const dataViewerSetSplitting = createAction<boolean>(
+  'DATA_VIEWER_SET_SPLITTING',
+);
+
+/**
+ * Freezes the armed cursor at a vertex, which is how a finger picks the cut: it
+ * has no hover to aim with, so it taps first and confirms from the toolbar.
+ */
+export const dataViewerSetSplitPoint = createAction<TrackSplitPoint | null>(
+  'DATA_VIEWER_SET_SPLIT_POINT',
+);
+
+/**
+ * Cuts a track in two at one of its vertices, which both halves keep. Like
+ * {@link dataViewerDeleteFeature} this edits the loaded data, so the result is
+ * no longer the file it came from.
+ */
+export const dataViewerSplitTrack = createAction<TrackSplitPoint>(
+  'DATA_VIEWER_SPLIT_TRACK',
+);
+
+/**
+ * Breaks a multi-segment recording (a `MultiLineString`, one segment per
+ * recording pause) into a feature per segment, by index into
+ * `trackGeojson.features`.
+ */
+export const dataViewerExplodeTrack = createAction<number>(
+  'DATA_VIEWER_EXPLODE_TRACK',
 );

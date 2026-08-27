@@ -1,4 +1,5 @@
 import {
+  clipPathDetails,
   PATH_DETAILS_PROP,
   type PathDetailSpan,
   type PathDetails,
@@ -165,7 +166,7 @@ export function routeColorizeFeatures(
           // to its length cannot come along.
           withoutPerPointData(line?.properties ?? null)),
       [PATH_DETAILS_PROP]:
-        unrouted.length === 0 ? details : clipDetails(details, from, to),
+        unrouted.length === 0 ? details : clipPathDetails(details, from, to),
     },
     geometry: { type: 'LineString', coordinates },
   }));
@@ -221,33 +222,4 @@ function routedRuns(
       return { from: start, to: end, coordinates: coordinates.slice(lo, hi) };
     })
     .filter((run) => run.coordinates.length >= 2);
-}
-
-/** The details covering `[from, to]`, measured from `from`. */
-function clipDetails(
-  details: PathDetails,
-  from: number,
-  to: number,
-): PathDetails {
-  return Object.fromEntries(
-    Object.entries(details).flatMap(([key, spans]) => {
-      const clipped: PathDetailSpan[] = [];
-
-      for (const span of spans) {
-        const start = Math.max(span.start, from);
-
-        const end = Math.min(span.end, to);
-
-        if (end > start) {
-          clipped.push({
-            start: start - from,
-            end: end - from,
-            value: span.value,
-          });
-        }
-      }
-
-      return clipped.length > 0 ? [[key, clipped] as const] : [];
-    }),
-  );
 }

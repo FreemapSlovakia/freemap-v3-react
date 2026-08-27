@@ -499,7 +499,10 @@ them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
   They read GraphHopper path details that ride on the feature as
   `properties['fm:pathDetails']` — stretches in **metres** along the line, because the
   line is densified for premium users and every point index shifts with it (the same
-  reason `structureElevation.ts` measures bridges that way). `compute` returns the whole
+  reason `structureElevation.ts` measures bridges that way). Because they are measured
+  from the start of the line, an edit that shortens it has to move them: `splitTrack.ts`
+  re-bases and clips them onto each piece a cut or an explode gives, or a tail would be
+  painted with the categories of the original beginning. `compute` returns the whole
   line as **one** list of points — every list drawn becomes its own canvas layer, and a
   route changes surface hundreds of times — with the stretch boundary interpolated onto
   the exact metre the value changes and emitted twice, once per color. The zero-length

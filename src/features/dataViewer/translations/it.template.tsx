@@ -8,6 +8,11 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   style: {
     title: 'Stile predefinito',
   },
+  split: {
+    action: 'Dividi',
+    here: 'Dividi qui',
+    segments: 'Dividi in segmenti',
+  },
   match: {
     menuItem: 'Aggancia ai percorsi',
     title: 'Aggancia ai percorsi',

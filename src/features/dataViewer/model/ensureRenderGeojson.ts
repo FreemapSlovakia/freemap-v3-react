@@ -8,8 +8,10 @@ import { isTrackLine } from '../trackSelection.js';
 import {
   dataViewerDelete,
   dataViewerDeleteFeature,
+  dataViewerExplodeTrack,
   dataViewerSetData,
   dataViewerSetRenderGeojson,
+  dataViewerSplitTrack,
 } from './actions.js';
 
 /**
@@ -53,6 +55,8 @@ export async function ensureRenderGeojson(
           dataViewerSetData,
           dataViewerDelete,
           dataViewerDeleteFeature,
+          dataViewerSplitTrack,
+          dataViewerExplodeTrack,
           clearMapFeatures,
         ],
         sources,
