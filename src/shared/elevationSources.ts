@@ -31,6 +31,7 @@ export const ELEVATION_API_DTM_COUNTRIES = [
   'gb',
   'hr',
   'it',
+  'lu',
   'no',
   'pl',
   'se',

@@ -249,6 +249,13 @@ export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
   },
   {
     type: 'data',
+    // CC0, so the credit is courtesy rather than a condition.
+    country: 'lu',
+    name: 'MNT LiDAR\xa02024: Administration du cadastre et de la topographie (CC0)',
+    url: 'https://data.public.lu/en/datasets/lidar-2024-releve-3d-du-territoire-luxembourgeois/',
+  },
+  {
+    type: 'data',
     // The copyright line is what the OGL v3 licence asks for verbatim.
     country: 'gb',
     partial: true,
