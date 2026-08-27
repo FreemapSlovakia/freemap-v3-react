@@ -145,7 +145,8 @@ export function useRoutingAttributions(): AttributionDef[] {
 /**
  * `linked` says the output renders anchors, which is what decides whether the
  * "fix the map" obligation applies: it is a link or it is nothing, and baking
- * its label into an exported image would only add noise.
+ * its label into an exported image would only add noise. It is FOSSGIS' term,
+ * so it rides along with the OSRM credit and nothing else.
  */
 function useCategorizedAttribution(
   layers: string[],
@@ -170,7 +171,7 @@ function useCategorizedAttribution(
   ].filter((def) => coversCountries(def, countries));
 
   const categorized = categorize(
-    linked && defs.some((def) => def.nameKey === 'osmData')
+    linked && defs.includes(OSRM_ROUTING_ATTR)
       ? [...defs, FIXTHEMAP_ATTR]
       : defs,
   );

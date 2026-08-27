@@ -55,9 +55,8 @@ export const OSM_DATA_ATTR: AttributionDef = {
 };
 
 /**
- * Follows {@link OSM_DATA_ATTR} wherever it is shown as a link — an OSMF
- * guideline, and a condition of the FOSSGIS services the OSRM profiles route
- * through.
+ * Follows {@link OSRM_ROUTING_ATTR} wherever it is shown as a link — a condition
+ * of the FOSSGIS services the OSRM profiles route through.
  */
 export const FIXTHEMAP_ATTR: AttributionDef = {
   type: 'data',
