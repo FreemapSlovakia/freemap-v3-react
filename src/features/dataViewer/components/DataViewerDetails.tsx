@@ -1,14 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
-import {
-  elevationCoverage,
-  lineSegments,
-  smoothElevations,
-} from '@shared/geoutils.js';
+import { elevationCoverage, elevationStats } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { distance } from '@turf/distance';
 import type { ReactElement } from 'react';
 import { trackEndpoints } from '../trackEndpoints.js';
 import {
@@ -70,10 +65,6 @@ function DataViewerDetailsInt({
   // Coverage of the recorded active track (not the densified render copy) to
   // distinguish complete from partial recorded elevation in the source row.
   const elevationCov = elevationCoverage([feature]);
-
-  // Only count elevation change between points at least this far apart, so a
-  // dense, jittery profile doesn't inflate the climb/descent totals.
-  const gainStepMeters = 50;
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -138,73 +129,29 @@ function DataViewerDetailsInt({
     }
   }
 
-  let minEle = Infinity;
+  const { minEle, maxEle, ascent, descent } = elevationStats(
+    statsFeature.geometry,
+  );
 
-  let maxEle = -Infinity;
-
-  let uphillEleSum = 0;
-
-  let downhillEleSum = 0;
-
-  // Each segment of a multi-segment recording is measured on its own — no
-  // climb/descent is counted across the gap between segments.
-  for (const segment of lineSegments(statsFeature.geometry)) {
-    const smoothed = smoothElevations(segment);
-
-    let prevCoord = smoothed[0];
-
-    for (const coord of smoothed) {
-      const distanceFromPrevPointInMeters = distance(coord, prevCoord!, {
-        units: 'meters',
-      });
-
-      if (gainStepMeters < distanceFromPrevPointInMeters) {
-        // otherwise the ele sums are very high
-        const ele = coord[2]!;
-
-        if (ele < minEle) {
-          minEle = ele;
-        }
-
-        if (maxEle < ele) {
-          maxEle = ele;
-        }
-
-        const eleDiff = ele - prevCoord![2]!;
-
-        if (eleDiff < 0) {
-          downhillEleSum += eleDiff * -1;
-        } else if (eleDiff > 0) {
-          uphillEleSum += eleDiff;
-        }
-
-        prevCoord = coord;
-      }
-    }
-  }
-
-  if (minEle !== Infinity) {
+  if (minEle !== null) {
     tableData.push([
       'minEle',
       `${noDecimalDigitsNumberFormat.format(minEle)} ${m?.general.masl}`,
     ]);
   }
 
-  if (maxEle !== -Infinity) {
+  if (maxEle !== null) {
     tableData.push([
       'maxEle',
       `${noDecimalDigitsNumberFormat.format(maxEle)} ${m?.general.masl}`,
     ]);
   }
 
-  tableData.push([
-    'uphill',
-    `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`,
-  ]);
+  tableData.push(['uphill', `${noDecimalDigitsNumberFormat.format(ascent)} m`]);
 
   tableData.push([
     'downhill',
-    `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`,
+    `${noDecimalDigitsNumberFormat.format(descent)} m`,
   ]);
 
   if (elevationCov !== 'none') {

@@ -19,6 +19,7 @@ import {
 } from '@features/myMaps/offlineStore.js';
 import { getPendingCount } from '@features/myMaps/outboxStore.js';
 import { attachOutboxSync } from '@features/myMaps/outboxSync.js';
+import { attachWebMcp } from '@features/webMcp/attachWebMcp.js';
 import { ModalProvider } from '@shared/components/ModalProvider.js';
 import {
   registerOfflineContentProvider,
@@ -176,6 +177,13 @@ attachMapStateHandler(store);
 attachWheelZoomCalibration(store);
 
 attachOutboxSync(store);
+
+// An embedded map is a slice of someone else's page, and a crawler runs no agent.
+if (!window.fmEmbedded && !window.isRobot) {
+  attachWebMcp(store).catch((err) => {
+    console.warn('Registering WebMCP tools failed:', err);
+  });
+}
 
 setUrlUpdatingEnabled(true);
 

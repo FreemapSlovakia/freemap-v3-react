@@ -3,7 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HideArrow } from '@features/search/components/SearchMenu.js';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import type { Node, OsmMapping } from '@osm/types.js';
+import type { OsmMapping } from '@osm/types.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -26,6 +26,7 @@ import { Button, Dropdown, type DropdownProps, Form } from 'react-bootstrap';
 import { FaPaintBrush, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { objectsSetFilter } from '../model/actions.js';
+import { objectCategories } from '../objectCategories.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { ObjectsConvertMenu } from './ObjectsConvertMenu.js';
 
@@ -50,52 +51,10 @@ export default function ObjectsMenu(): ReactElement {
 
   const [osmMapping, setOsmMapping] = useState<OsmMapping>();
 
-  const items = useMemo(() => {
-    if (!osmMapping) {
-      return;
-    }
-
-    const res: { name: string; tags: { key: string; value?: string }[] }[] = [];
-
-    function rec(
-      n: Node,
-      tags: { key: string; value: string }[],
-      key?: string,
-    ) {
-      for (const [tagKeyOrValue, nodeOrName] of Object.entries(n)) {
-        if (nodeOrName === '{}') {
-          continue;
-        }
-
-        if (typeof nodeOrName === 'string') {
-          if (key && tagKeyOrValue === '*') {
-            continue;
-          }
-
-          res.push({
-            name: nodeOrName.replace('{}', '').trim(),
-            tags:
-              !key && tagKeyOrValue === '*'
-                ? tags
-                : [
-                    ...tags,
-                    key
-                      ? { key, value: tagKeyOrValue }
-                      : { key: tagKeyOrValue },
-                  ],
-          });
-        } else if (key) {
-          rec(nodeOrName, [...tags, { key, value: tagKeyOrValue }]);
-        } else {
-          rec(nodeOrName, tags, tagKeyOrValue);
-        }
-      }
-    }
-
-    rec(osmMapping.osmTagToNameMapping, []);
-
-    return res;
-  }, [osmMapping]);
+  const items = useMemo(
+    () => osmMapping && objectCategories(osmMapping),
+    [osmMapping],
+  );
 
   const active = useAppSelector((state) => state.objects.active);
 
@@ -181,10 +140,6 @@ export default function ObjectsMenu(): ReactElement {
     }
 
     return items
-      .map((item) => ({
-        ...item,
-        key: item.tags.map((tag) => `${tag.key}=${tag.value}`).join(','),
-      }))
       .filter(
         (item) =>
           item.name &&

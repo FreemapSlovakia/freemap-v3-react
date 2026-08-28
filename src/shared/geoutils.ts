@@ -519,6 +519,75 @@ export function smoothElevations(
   return coords.map((c, i) => [c[0]!, c[1]!, smoothed[i]!]);
 }
 
+export type ElevationStats = {
+  /** `null` where the line carries no elevation at all. */
+  minEle: number | null;
+  maxEle: number | null;
+  ascent: number;
+  descent: number;
+};
+
+/**
+ * Climb, drop and extremes of a line. Each segment is measured on its own, so
+ * nothing is counted across the gap between two of them, and a step is only
+ * counted between points at least `gainStepMeters` apart — a dense, jittery
+ * profile would otherwise inflate the totals. A segment's first point sets the
+ * reference for the climb but is not itself an extreme.
+ */
+export function elevationStats(
+  geometry: LineString | MultiLineString,
+  gainStepMeters = 50,
+): ElevationStats {
+  let minEle = Infinity;
+
+  let maxEle = -Infinity;
+
+  let ascent = 0;
+
+  let descent = 0;
+
+  for (const segment of lineSegments(geometry)) {
+    const smoothed = smoothElevations(segment);
+
+    let prevCoord = smoothed[0];
+
+    for (const coord of smoothed) {
+      const distanceFromPrevPointInMeters = distance(coord, prevCoord!, {
+        units: 'meters',
+      });
+
+      if (gainStepMeters < distanceFromPrevPointInMeters) {
+        const ele = coord[2]!;
+
+        if (ele < minEle) {
+          minEle = ele;
+        }
+
+        if (maxEle < ele) {
+          maxEle = ele;
+        }
+
+        const eleDiff = ele - prevCoord![2]!;
+
+        if (eleDiff < 0) {
+          descent += eleDiff * -1;
+        } else if (eleDiff > 0) {
+          ascent += eleDiff;
+        }
+
+        prevCoord = coord;
+      }
+    }
+  }
+
+  return {
+    minEle: minEle === Infinity ? null : minEle,
+    maxEle: maxEle === -Infinity ? null : maxEle,
+    ascent,
+    descent,
+  };
+}
+
 export function toLatLng({ lat, lon }: LatLon): LatLngLiteral {
   return { lat, lng: lon };
 }
