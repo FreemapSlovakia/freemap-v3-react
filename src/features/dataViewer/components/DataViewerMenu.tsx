@@ -57,7 +57,6 @@ import { isSimplifiable } from '../simplifyTrack.js';
 import { trackLineParts } from '../trackLineParts.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
-import DataViewerElevationPromptModal from './DataViewerElevationPromptModal.js';
 
 export default DataViewerMenu;
 
@@ -244,8 +243,6 @@ export function DataViewerMenu(): ReactElement {
 
   return (
     <>
-      <DataViewerElevationPromptModal />
-
       <ToolMenu tool="import-file">
         {unsaved && (
           <UnsavedWarningIcon

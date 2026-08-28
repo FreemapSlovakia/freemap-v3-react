@@ -3,7 +3,7 @@ import type { JSX, ReactNode } from 'react';
 export type DataViewerMessages = {
   info: () => JSX.Element;
   upload: string;
-  /** Name for a line the file didn't name, by its position among the lines. */
+  /** Label for a selected line, by its position among the loaded lines. */
   unnamedTrack: (props: { n: number }) => string;
   convertLossWarning: string;
   /** The tool menu's conversion, which takes every loaded feature. */

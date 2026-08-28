@@ -1,4 +1,4 @@
-import { openTool, selectFeature } from '@app/store/actions.js';
+import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { paleColor, splitColorAlpha } from '@shared/colorAlpha.js';
@@ -197,16 +197,10 @@ export default function DataViewerResult({
 
   const join = useTrackJoin();
 
-  const setThisTool = () => {
-    dispatch(openTool('import-file'));
-  };
-
-  // Clicking a feature opens the import tool's panel and gives the feature its
-  // own toolbar; a line also becomes the one the chart / "more info" act on
-  // (`dataViewerSelectProcessor`).
+  // Clicking a feature gives it its own toolbar, which reaches the tool's panel
+  // by a button of its own; a line also becomes the one the chart / "more info"
+  // act on (`dataViewerSelectProcessor`).
   const select = (featureIndex: number) => {
-    setThisTool();
-
     dispatch(selectFeature({ type: 'data-viewer', id: featureIndex }));
   };
 

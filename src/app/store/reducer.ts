@@ -164,12 +164,6 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       if (state.panelTools.includes(tool)) {
         state.panelTools = state.panelTools.filter((t) => t !== tool);
       }
-
-      // The data viewer's panel hosts the dialogs its selection toolbar opens,
-      // so the selection goes with it.
-      if (tool === 'import-file' && state.selection?.type === 'data-viewer') {
-        state.selection = null;
-      }
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;

@@ -55,6 +55,7 @@ import { isSimplifiable } from '../simplifyTrack.js';
 import { isExplodable, isSplittable } from '../splitTrack.js';
 import { isTrackLine, trackLineFeatures } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
+import { DataViewerToggleButton } from './DataViewerToggleButton.js';
 
 export default function DataViewerSelection(): ReactElement | null {
   const m = useMessages();
@@ -161,17 +162,15 @@ export default function DataViewerSelection(): ReactElement | null {
 
   const name = feature.properties?.['name'];
 
-  // Unnamed features are told apart by their kind, a line additionally by its
-  // position among the loaded lines.
-  const label =
-    (typeof name === 'string' && name) ||
-    (line
-      ? dvm?.unnamedTrack({
-          n: lines.findIndex((candidate) => candidate.index === index) + 1,
-        })
-      : isPoint
-        ? m?.selections.drawPoints
-        : m?.selections.drawPolygons);
+  // The kind of the selected feature, a line additionally by its position among
+  // the loaded lines — not its name, which the properties dialog shows.
+  const label = line
+    ? dvm?.unnamedTrack({
+        n: lines.findIndex((candidate) => candidate.index === index) + 1,
+      })
+    : isPoint
+      ? m?.selections.drawPoints
+      : m?.selections.drawPolygons;
 
   // A MultiPoint has no single position; its first stands for the feature the
   // toolbar acts on.
@@ -188,6 +187,7 @@ export default function DataViewerSelection(): ReactElement | null {
 
   return (
     <Selection
+      control={<DataViewerToggleButton />}
       icon={
         line ? <TbTimeline /> : isPoint ? <FaMapMarkerAlt /> : <FaDrawPolygon />
       }

@@ -475,6 +475,12 @@ const dataViewerPropertiesModalFactory = () =>
     '@features/dataViewer/components/DataViewerPropertiesModal.js'
   );
 
+const dataViewerElevationPromptModalFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-elevation-prompt-modal" */
+    '@features/dataViewer/components/DataViewerElevationPromptModal.js'
+  );
+
 const objectsStyleModalFactory = () =>
   import(
     /* webpackChunkName: "objects-style-modal" */
@@ -501,6 +507,10 @@ export function Main(): ReactElement {
   const layers = useAppSelector((state) => state.map.layers);
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
+
+  const dataViewerElevationPrompt = useAppSelector(
+    (state) => state.trackViewer.elevationPrompt !== null,
+  );
 
   const openTools = useAppSelector(openToolsSelector);
 
@@ -1213,6 +1223,13 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'data-viewer-properties'}
         factory={dataViewerPropertiesModalFactory}
+      />
+
+      {/* Not in the tool's panel: the selection toolbar asks for elevation too,
+          and it stands without the panel. */}
+      <AsyncModal
+        show={dataViewerElevationPrompt}
+        factory={dataViewerElevationPromptModalFactory}
       />
 
       <AsyncModal
