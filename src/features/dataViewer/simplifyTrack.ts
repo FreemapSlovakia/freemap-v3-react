@@ -1,6 +1,7 @@
 import {
   PATH_DETAILS_PROP,
   type PathDetails,
+  remapPathDetails,
 } from '@shared/colorizers/colorize.js';
 import { lineSegments } from '@shared/geoutils.js';
 import {
@@ -23,57 +24,6 @@ import {
   writeChannels,
 } from './trackChannels.js';
 import { isTrackLine, type TrackLine } from './trackSelection.js';
-
-/** `d` measured along the simplified line, by the anchors either side of it. */
-function mapDistance(d: number, from: number[], to: number[]): number {
-  let lo = 0;
-
-  let hi = from.length - 1;
-
-  while (lo < hi) {
-    const mid = (lo + hi + 1) >> 1;
-
-    if (from[mid]! <= d) {
-      lo = mid;
-    } else {
-      hi = mid - 1;
-    }
-  }
-
-  const next = lo + 1;
-
-  if (next >= from.length) {
-    return to[lo] ?? d;
-  }
-
-  const span = from[next]! - from[lo]!;
-
-  const ratio = span > 0 ? (d - from[lo]!) / span : 0;
-
-  return to[lo]! + (to[next]! - to[lo]!) * ratio;
-}
-
-/**
- * Path-detail spans re-measured along the shortened line. They are metres from
- * the start, so dropping vertices would otherwise drift them off the geometry
- * they describe.
- */
-function remapPathDetails(
-  details: PathDetails,
-  from: number[],
-  to: number[],
-): PathDetails {
-  return Object.fromEntries(
-    Object.entries(details).map(([key, spans]) => [
-      key,
-      spans.map((span) => ({
-        ...span,
-        start: mapDistance(span.start, from, to),
-        end: mapDistance(span.end, from, to),
-      })),
-    ]),
-  );
-}
 
 /**
  * The stretch of source points each surviving vertex stands for, `to`

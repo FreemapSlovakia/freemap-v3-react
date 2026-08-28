@@ -28,7 +28,6 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { flatten } from '@turf/flatten';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
@@ -55,6 +54,7 @@ import {
   dataViewerSetElevationPrompt,
 } from '../model/actions.js';
 import { isSimplifiable } from '../simplifyTrack.js';
+import { trackLineParts } from '../trackLineParts.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 import DataViewerElevationPromptModal from './DataViewerElevationPromptModal.js';
@@ -147,12 +147,7 @@ export function DataViewerMenu(): ReactElement {
   // render, so consumers — mode availability, elevation coverage, the colorize
   // legend's memo — don't recompute on every unrelated store dispatch.
   const lineFeatures = useMemo<Feature<LineString>[]>(
-    () =>
-      trackGeojson
-        ? (flatten(trackGeojson).features.filter(
-            (f) => f.geometry?.type === 'LineString',
-          ) as Feature<LineString>[])
-        : [],
+    () => trackLineParts(trackGeojson),
     [trackGeojson],
   );
 

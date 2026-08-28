@@ -128,6 +128,23 @@ export function trackTimeSegments(feature: Feature): unknown[][] {
 }
 
 /**
+ * The track's first recorded time, points carrying none skipped — a times
+ * channel merged from a timed and an untimed track is padded with nulls, and
+ * taking the very first entry would read the whole track as untimed.
+ */
+export function firstTrackTime(feature: Feature): string | undefined {
+  for (const segment of trackTimeSegments(feature)) {
+    for (const time of segment) {
+      if (typeof time === 'string') {
+        return time;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+/**
  * True only when every coordinate of a line-like geometry (`LineString` or
  * multi-segment `MultiLineString`) carries elevation. Any gap (an all-2D OSRM
  * track, or a GraphHopper route with no-data points) yields `false` so the
@@ -260,6 +277,27 @@ export function cumulativeDistances(coords: number[][]): number[] {
   }
 
   return cum;
+}
+
+/**
+ * Cumulative distance to each vertex across segments, the gaps between them
+ * left out — the metric a multi-segment track's length and its path-detail
+ * spans are measured in.
+ */
+export function segmentDistances(segments: Position[][]): number[][] {
+  let total = 0;
+
+  return segments.map((segment) => {
+    if (segment.length === 0) {
+      return [];
+    }
+
+    const cum = cumulativeDistances(segment).map((d) => d + total);
+
+    total = cum.at(-1)!;
+
+    return cum;
+  });
 }
 
 /**

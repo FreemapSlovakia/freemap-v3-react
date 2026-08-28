@@ -86,8 +86,10 @@ export const pickingModeSelector = (state: RootState): boolean =>
  */
 export const armedModeSelector = (state: RootState): boolean =>
   state.drawingLines.joinWith !== undefined ||
-  state.trackViewer.joinWith !== null ||
-  state.trackViewer.splitting;
+  // The data viewer's toolbar rides its selection, so a mode can never take
+  // the chrome away without it.
+  (state.main.selection?.type === 'data-viewer' &&
+    (state.trackViewer.joinWith !== null || state.trackViewer.splitting));
 
 /** Whether the map is in a mode of its own, whichever kind. */
 export const mapModeSelector = (state: RootState): boolean =>

@@ -1,19 +1,26 @@
 import {
   PATH_DETAILS_PROP,
   type PathDetails,
+  remapPathDetails,
 } from '@shared/colorizers/colorize.js';
 import { ELEVATION_SOURCES_PROP } from '@shared/elevation.js';
 import {
   cumulativeDistances,
   distanceTo,
+  firstTrackTime,
   lineSegments,
   positionsEqual,
-  trackTimeSegments,
+  segmentDistances,
   withoutPerPointData,
 } from '@shared/geoutils.js';
 import type { Feature, LineString, MultiLineString, Position } from 'geojson';
-import { type Channel, readChannels, writeChannels } from './trackChannels.js';
-import { trackEndpoints } from './trackEndpoints.js';
+import {
+  type Channel,
+  COORD_TIMES,
+  readChannels,
+  TIMES,
+  writeChannels,
+} from './trackChannels.js';
 import { isTrackLine, type TrackLine } from './trackSelection.js';
 
 /** How two tracks are put together: end to end, or a segment each. */
@@ -44,8 +51,8 @@ interface Side {
   channels: Channel[];
   details: PathDetails | undefined;
   properties: Record<string, unknown>;
-  /** Total length, gaps between segments excluded; 0 where nothing measured it. */
-  length: number;
+  /** Distance to each vertex, segment gaps excluded; empty unless measured. */
+  distances: number[];
   /** Set only where the track was recorded with times, which fix its direction. */
   startTime: number | undefined;
 }
@@ -64,25 +71,48 @@ const channelKey = ({ root, key }: Channel) => `${root}:${key}`;
 
 /** The first recorded time, which is what orders two timed tracks. */
 function startTimeOf(feature: TrackLine): number | undefined {
-  const first = trackTimeSegments(feature)[0]?.[0];
+  const first = firstTrackTime(feature);
 
-  const time =
-    typeof first === 'string' ? new Date(first).getTime() : Number.NaN;
+  const time = first === undefined ? Number.NaN : new Date(first).getTime();
 
   return Number.isNaN(time) ? undefined : time;
 }
 
+/**
+ * Both spellings of the times as one channel: live tracking writes `coordTimes`,
+ * GPX imports `coordinateProperties.times`. Left apart they would join as two
+ * channels, each half `null`, and a reader only ever looks at one of them.
+ */
+function withMergedTimes(channels: Channel[]): Channel[] {
+  const nested = channels.some(
+    (channel) => !channel.root && channel.key === TIMES,
+  );
+
+  return channels.flatMap((channel) =>
+    channel.root && channel.key === COORD_TIMES
+      ? nested
+        ? []
+        : [{ ...channel, root: false, key: TIMES }]
+      : [channel],
+  );
+}
+
 /** `measure` walks the whole track, so only the path-detail spans ask for it. */
 function readSide(feature: TrackLine, measure: boolean): Side {
+  const segments = lineSegments(feature.geometry);
+
   return {
-    segments: lineSegments(feature.geometry),
-    channels: readChannels(feature),
+    segments,
+    channels: withMergedTimes(readChannels(feature)),
     details: pathDetailsOf(feature),
     properties: feature.properties ?? {},
-    length: measure ? (trackEndpoints(feature)?.length ?? 0) : 0,
+    distances: measure ? segmentDistances(segments).flat() : [],
     startTime: startTimeOf(feature),
   };
 }
+
+/** Total length, the gaps between segments excluded. */
+const sideLength = (side: Side) => side.distances.at(-1) ?? 0;
 
 /** The side without its first vertex, channels alongside — a shared seam. */
 function dropLeadingPoint(side: Side): Side {
@@ -123,6 +153,8 @@ function reversePathDetails(details: PathDetails, length: number): PathDetails {
 }
 
 function reverseSide(side: Side): Side {
+  const length = sideLength(side);
+
   return {
     ...side,
     segments: reversedRows(side.segments),
@@ -130,7 +162,10 @@ function reverseSide(side: Side): Side {
       ...channel,
       segments: reversedRows(channel.segments),
     })),
-    details: side.details && reversePathDetails(side.details, side.length),
+    // The axis runs the other way now, so each vertex sits as far from the new
+    // start as it did from the old finish.
+    distances: side.distances.map((d) => length - d).reverse(),
+    details: side.details && reversePathDetails(side.details, length),
   };
 }
 
@@ -154,13 +189,16 @@ function gap(from: Position | undefined, to: Position | undefined): number {
  * where both have them; otherwise the pairing whose endpoints are nearest wins.
  * A track with times is never reversed — its times would then run backwards.
  */
-function orient(a: Side, b: Side): [Side, Side] {
+function orient(a: Side, b: Side, mode: TrackJoinMode): [Side, Side] {
   if (a.startTime !== undefined && b.startTime !== undefined) {
     return b.startTime < a.startTime ? [b, a] : [a, b];
   }
 
+  // Turning a track round only ever closes the seam of a `line` join; kept as
+  // segments the two stay apart, so its points would come back reversed for a
+  // gap that isn't there.
   const flips = (side: Side) =>
-    side.startTime === undefined ? [false, true] : [false];
+    mode === 'line' && side.startTime === undefined ? [false, true] : [false];
 
   const candidates = (
     [
@@ -199,6 +237,33 @@ function orient(a: Side, b: Side): [Side, Side] {
     flipFirst ? reverseSide(first) : first,
     flipSecond ? reverseSide(second) : second,
   ];
+}
+
+/**
+ * Both sides' spans on the joined line's own axis. Each was measured with its
+ * own segment gaps left out, and drawn as one line those gaps are edges that
+ * count.
+ */
+function joinedPathDetails(
+  first: Side,
+  second: Side,
+  joined: Position[],
+  startsAt: number,
+): PathDetails | undefined {
+  if (!first.details && !second.details) {
+    return undefined;
+  }
+
+  const cum = cumulativeDistances(joined);
+
+  return mergePathDetails(
+    first.details && remapPathDetails(first.details, first.distances, cum),
+    // The second's spans measure from its own first vertex — the one a shared
+    // seam dropped, which is where it starts in the result.
+    second.details &&
+      remapPathDetails(second.details, second.distances, cum.slice(startsAt)),
+    0,
+  );
 }
 
 /** The spans of both, the second's re-based to where it starts in the result. */
@@ -242,7 +307,11 @@ export function joinTrackFeatures(
   // track without them is never walked for one.
   const measure = Boolean(pathDetailsOf(a) ?? pathDetailsOf(b));
 
-  const [first, oriented] = orient(readSide(a, measure), readSide(b, measure));
+  const [first, oriented] = orient(
+    readSide(a, measure),
+    readSide(b, measure),
+    mode,
+  );
 
   // A vertex the two tracks share would otherwise sit in the line twice.
   const shared =
@@ -253,19 +322,23 @@ export function joinTrackFeatures(
 
   const second = shared ? dropLeadingPoint(oriented) : oriented;
 
-  const sides = [first, second];
+  const sides: [Side, Side] = [first, second];
 
-  const runs = [0, 1].flatMap((side) =>
-    sides[side]!.segments.map(
-      (_, segment): Run => ({ side: side as 0 | 1, segment }),
-    ),
+  const segmentOf = (run: Run) => sides[run.side].segments[run.segment]!;
+
+  const all = ([0, 1] as const).flatMap((side) =>
+    sides[side].segments.map((_, segment): Run => ({ side, segment })),
   );
+
+  // A segment with no line in it is a member no GeoJSON reader accepts, so as
+  // segments it is dropped — unless that would leave nothing.
+  const drawn = all.filter((run) => segmentOf(run).length > 1);
+
+  const runs = mode === 'line' || drawn.length === 0 ? all : drawn;
 
   const out: Run[][] = mode === 'line' ? [runs] : runs.map((run) => [run]);
 
-  const coordinates = out.map((runs) =>
-    runs.flatMap((run) => sides[run.side]!.segments[run.segment]!),
-  );
+  const coordinates = out.map((runs) => runs.flatMap(segmentOf));
 
   const geometry: LineString | MultiLineString =
     mode === 'line'
@@ -290,9 +363,7 @@ export function joinTrackFeatures(
         // what togeojson itself leaves for a point that carries no value.
         return (
           source?.segments[run.segment] ??
-          new Array<unknown>(
-            sides[run.side]!.segments[run.segment]!.length,
-          ).fill(null)
+          new Array<unknown>(segmentOf(run).length).fill(null)
         );
       }),
     ),
@@ -327,17 +398,14 @@ export function joinTrackFeatures(
     first.segments.reduce((n, segment) => n + segment.length, 0) -
     (shared ? 1 : 0);
 
-  // Where that vertex falls, measured along the result: joined into one line the
-  // gap between the two becomes an edge that counts. The first track's own spans
-  // stand as they are, so its segment gaps shift them by their length.
-  const offset = !measure
-    ? 0
-    : mode === 'line'
-      ? (cumulativeDistances(coordinates[0]!.slice(0, startsAt + 1)).at(-1) ??
-        first.length)
-      : first.length;
-
-  const details = mergePathDetails(first.details, second.details, offset);
+  const details =
+    mode === 'line'
+      ? // The oriented second, not the trimmed one: its spans still measure
+        // from the vertex a shared seam dropped.
+        joinedPathDetails(first, oriented, coordinates[0]!, startsAt)
+      : // Segment gaps count on neither axis here, so the second's spans only
+        // move by the first track's length.
+        mergePathDetails(first.details, second.details, sideLength(first));
 
   if (details) {
     properties[PATH_DETAILS_PROP] = details;

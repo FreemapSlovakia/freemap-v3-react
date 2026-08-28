@@ -495,14 +495,22 @@ them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
   given feature — routes expose Elevation/Steepness/Time/Heading; a track exposes a mode
   only when it carries that channel's data. This is why the "Colorize by" dropdown
   differs per consumer.
+- **A colorizer is handed single-`LineString` features**, so a multi-segment track has to
+  be split first — and the split has to take the per-point channels and the path-detail
+  spans with it: `@turf/flatten` copies the whole of `properties` onto every part, leaving
+  a nested `coordinateProperties` that lines up with no part's coordinates, which reads as
+  "no data" and takes Time/Speed/HR off the dropdown. `trackLineParts.ts` is the data
+  viewer's own flatten, over the same `trackSegmentFeatures` that **Explode** cuts with —
+  one feature per segment, channels cut to it and the spans clipped onto its own start.
 - **Categorical modes** (`modes/pathDetail.ts`) paint named values instead of a scale.
   They read GraphHopper path details that ride on the feature as
   `properties['fm:pathDetails']` — stretches in **metres** along the line, because the
   line is densified for premium users and every point index shifts with it (the same
   reason `structureElevation.ts` measures bridges that way). Because they are measured
-  from the start of the line, an edit that shortens it has to move them: `splitTrack.ts`
-  re-bases and clips them onto each piece a cut or an explode gives, or a tail would be
-  painted with the categories of the original beginning. `compute` returns the whole
+  from the start of the line, an edit that moves a vertex has to move them too:
+  `clipPathDetails` re-bases them onto each piece a cut or an explode gives (or a tail
+  would be painted with the categories of the original beginning), and `remapPathDetails`
+  reads them off a new axis when simplifying or joining moves every vertex along it. `compute` returns the whole
   line as **one** list of points — every list drawn becomes its own canvas layer, and a
   route changes surface hundreds of times — with the stretch boundary interpolated onto
   the exact metre the value changes and emitted twice, once per color. The zero-length
@@ -643,9 +651,19 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   value, so the readers already tolerate it. Recorded times fix a track's direction (a
   reversed one would count backwards) and decide the order where both sides have them;
   otherwise the endpoint pairing with the smallest gap wins, ties going to the arrangement
-  that turns and reorders the least. The second track's spans are re-based by the distance
-  the first covers **in the result** — joined into one line, the gap between the two
-  becomes an edge that counts, unless they meet at a shared vertex, which is dropped.
+  that turns and reorders the least — and only for a `line` join, since as segments the two
+  stay apart and there is no gap turning one round could close. Both spellings of the times
+  (`coordTimes`, `coordinateProperties.times`) are read as one channel, or a tracking copy
+  joined with a GPX import would make two, each half `null`.
+
+  Path details take the bigger correction. Their metres are measured with the track's own
+  segment gaps left out; joined into one line those gaps become edges that count, so *both*
+  sides' spans are remapped vertex by vertex onto the result's distances
+  (`remapPathDetails`, shared with the simplifier) —
+  re-basing only the second's would slide a multi-segment first track's bands by the length
+  of its own gaps. A `segments` join needs no remapping at all: gaps count on neither axis,
+  so the second's spans only shift by the first's length. A vertex the two share is dropped,
+  and the second's spans still measure from it.
 
 ### Matching a track to the graph — `src/features/dataViewer/matchTrack.ts`
 

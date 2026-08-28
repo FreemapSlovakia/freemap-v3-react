@@ -5,7 +5,10 @@ import type { TrackLine } from './trackSelection.js';
 const COORD_PROPERTIES = 'coordinateProperties';
 
 /** Live tracking writes its times here instead. */
-const COORD_TIMES = 'coordTimes';
+export const COORD_TIMES = 'coordTimes';
+
+/** The times channel under {@link COORD_PROPERTIES}, which readers prefer. */
+export const TIMES = 'times';
 
 /** One per-point array, laid out per segment alongside the coordinates. */
 export interface Channel {
@@ -19,7 +22,7 @@ export interface Channel {
  * around it: a time has to keep matching the place it was recorded at, and an
  * arithmetic mean of 350° and 10° is 180°.
  */
-const PER_VERTEX = new Set(['coordTimes', 'times', 'courses', 'bearings']);
+const PER_VERTEX = new Set([COORD_TIMES, TIMES, 'courses', 'bearings']);
 
 /**
  * The mean of a run of samples, or `undefined` where they are not all numbers —

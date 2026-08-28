@@ -3,7 +3,7 @@ import {
   PATH_DETAILS_PROP,
   type PathDetails,
 } from '@shared/colorizers/colorize.js';
-import { cumulativeDistances, lineSegments } from '@shared/geoutils.js';
+import { lineSegments, segmentDistances } from '@shared/geoutils.js';
 import type { LineString, MultiLineString, Position } from 'geojson';
 import { type Channel, readChannels, writeChannels } from './trackChannels.js';
 import type { TrackLine } from './trackSelection.js';
@@ -186,19 +186,7 @@ export function vertexAt(
  * recording leaves does not count.
  */
 export function vertexDistances(feature: TrackLine): number[][] {
-  let total = 0;
-
-  return lineSegments(feature.geometry).map((segment) => {
-    if (segment.length === 0) {
-      return [];
-    }
-
-    const cum = cumulativeDistances(segment).map((d) => d + total);
-
-    total = cum.at(-1)!;
-
-    return cum;
-  });
+  return segmentDistances(lineSegments(feature.geometry));
 }
 
 /** The coordinates either side of a cut, for drawing the halves apart. */
@@ -242,15 +230,11 @@ export function splitTrackFeature(
 }
 
 /**
- * A multi-segment recording as one feature per segment — the cut a paused
- * recording asks for. `null` when there is only one segment to give.
+ * One `LineString` feature per segment, each with the channels and path-detail
+ * spans cut to it. Segments with no line in them are left out.
  */
-export function explodeTrackFeature(feature: TrackLine): TrackLine[] | null {
+export function trackSegmentFeatures(feature: TrackLine): TrackLine[] {
   const source = readSource(feature);
-
-  if (drawableSegments(source.segments) < 2) {
-    return null;
-  }
 
   return source.segments.flatMap((segment, i) => {
     const part = takeRuns(feature, source, [
@@ -259,6 +243,16 @@ export function explodeTrackFeature(feature: TrackLine): TrackLine[] | null {
 
     return part ? [part] : [];
   });
+}
+
+/**
+ * A multi-segment recording as one feature per segment — the cut a paused
+ * recording asks for. `null` when there is only one segment to give.
+ */
+export function explodeTrackFeature(feature: TrackLine): TrackLine[] | null {
+  return drawableSegments(lineSegments(feature.geometry)) < 2
+    ? null
+    : trackSegmentFeatures(feature);
 }
 
 /**

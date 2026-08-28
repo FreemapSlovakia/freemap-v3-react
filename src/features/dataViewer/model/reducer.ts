@@ -1,8 +1,13 @@
-import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
+import {
+  clearMapFeatures,
+  closeTool,
+  openTool,
+  selectFeature,
+} from '@app/store/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import { ELEVATION_SOURCES_PROP } from '@shared/elevation.js';
 import { withoutPerPointData } from '@shared/geoutils.js';
 import type { FeatureCollection } from 'geojson';
@@ -262,7 +267,9 @@ export const dataViewerReducer = createReducer(
         state.joinWith = payload;
       })
       // The cursor is armed for one track; anything else being selected (or the
-      // selection going) leaves it aimed at nothing.
+      // selection going) leaves it aimed at nothing. Reaching for a tool takes
+      // the selection away without saying so, and the armed click would
+      // otherwise stay live on a map that no longer offers a way to cancel it.
       .addCase(selectFeature, clearModes)
       .addCase(dataViewerSplitTrack, (state, { payload }) => {
         const feature = state.trackGeojson?.features[payload.featureIndex];
@@ -393,5 +400,6 @@ export const dataViewerReducer = createReducer(
             },
           },
         ) => ({ ...dataViewerInitialState, ...trackViewer }),
-      ),
+      )
+      .addMatcher(isAnyOf(openTool, closeTool), clearModes),
 );

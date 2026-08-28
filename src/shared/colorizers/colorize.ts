@@ -1,4 +1,8 @@
-import { smoothSeries, trackTimeSegments } from '@shared/geoutils.js';
+import {
+  lowerBound,
+  smoothSeries,
+  trackTimeSegments,
+} from '@shared/geoutils.js';
 import type { Feature, LineString } from 'geojson';
 import type { ColorizerMessages } from './translations/ColorizerMessages.js';
 
@@ -89,6 +93,59 @@ export function clipPathDetails(
 
       return clipped.length > 0 ? [[key, clipped] as const] : [];
     }),
+  );
+}
+
+/**
+ * The same spans read off another measure of the same vertices: `from` and `to`
+ * hold one distance per vertex, each along its own axis, and a span between two
+ * vertices is interpolated. Simplifying a line and joining two both move every
+ * vertex along the axis the spans are metres of.
+ *
+ * A gap an axis leaves out is two vertices at the same distance, so a span
+ * starting there takes the later of them and one ending there the earlier —
+ * both taking the same one would stretch the span across the gap.
+ */
+export function remapPathDetails(
+  details: PathDetails,
+  from: number[],
+  to: number[],
+): PathDetails {
+  const last = from.length - 1;
+
+  const at = (meters: number, starting: boolean) => {
+    if (last < 0) {
+      return meters;
+    }
+
+    const i = lowerBound(from.length, (index) =>
+      starting ? from[index]! > meters : from[index]! >= meters,
+    );
+
+    if (i <= 0) {
+      return to[0]!;
+    }
+
+    if (i > last) {
+      return to[last]!;
+    }
+
+    const width = from[i]! - from[i - 1]!;
+
+    const f = width > 0 ? (meters - from[i - 1]!) / width : 0;
+
+    return to[i - 1]! + f * (to[i]! - to[i - 1]!);
+  };
+
+  return Object.fromEntries(
+    Object.entries(details).map(([key, spans]) => [
+      key,
+      spans.map((span) => ({
+        ...span,
+        start: at(span.start, true),
+        end: at(span.end, false),
+      })),
+    ]),
   );
 }
 

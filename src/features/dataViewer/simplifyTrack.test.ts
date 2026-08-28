@@ -128,6 +128,57 @@ describe('simplifyTrackFeature', () => {
     expect(span!.end).toBeCloseTo(after, 6);
   });
 
+  it('keeps the spans either side of a segment gap apart', () => {
+    // Two bulging segments far apart. Their own axis leaves the gap out, so the
+    // second's first vertex sits at the same distance as the first's last —
+    // the two spans must not run into one another across it.
+    const segment = (lon: number): Position[] => [
+      [lon, 0],
+      [lon + 0.0005, 0.5],
+      [lon, 1],
+    ];
+
+    const coordinates = [segment(0), segment(10)];
+
+    const feature: TrackLine = {
+      type: 'Feature',
+      properties: { name: 'a' },
+      geometry: { type: 'MultiLineString', coordinates },
+    };
+
+    const half = vertexDistances(feature)[0]!.at(-1)!;
+
+    const whole = vertexDistances(feature)[1]!.at(-1)!;
+
+    const simplified = simplifyTrackFeature(
+      {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          [PATH_DETAILS_PROP]: {
+            surface: [
+              { start: 0, end: half, value: 'asphalt' },
+              { start: half, end: whole, value: 'gravel' },
+            ],
+          },
+        },
+      },
+      100,
+    )!;
+
+    const kept = vertexDistances(simplified);
+
+    const { surface } = simplified.properties![PATH_DETAILS_PROP] as {
+      surface: { start: number; end: number; value: string }[];
+    };
+
+    // Each span still covers exactly its own segment of the shortened line.
+    expect(surface[0]!.start).toBe(0);
+    expect(surface[0]!.end).toBeCloseTo(kept[0]!.at(-1)!, 6);
+    expect(surface[1]!.start).toBeCloseTo(kept[1]![0]!, 6);
+    expect(surface[1]!.end).toBeCloseTo(kept[1]!.at(-1)!, 6);
+  });
+
   it('leaves a line the tolerance cannot thin alone', () => {
     expect(simplifyTrackFeature(lineString(zigzag(5, 10)), 5)).toBeNull();
   });

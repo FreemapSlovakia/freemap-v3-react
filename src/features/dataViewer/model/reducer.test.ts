@@ -1,4 +1,9 @@
-import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
+import {
+  clearMapFeatures,
+  closeTool,
+  openTool,
+  selectFeature,
+} from '@app/store/actions.js';
 import type { Feature, FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
@@ -250,6 +255,20 @@ describe('dataViewerReducer — splitting', () => {
 
     expect(state.splitting).toBe(true);
     expect(dataViewerReducer(state, selectFeature(null)).splitting).toBe(false);
+  });
+
+  // Reaching for a tool drops the selection without a `selectFeature`, and the
+  // armed click would otherwise stay live with its toolbar gone.
+  it.each([
+    ['a tool opening', openTool('draw-points')],
+    ['the panel closing', closeTool('import-file')],
+  ])('disarms on %s', (_what, action) => {
+    const state = dataViewerReducer(
+      dataViewerInitialState,
+      dataViewerSetSplitting(true),
+    );
+
+    expect(dataViewerReducer(state, action).splitting).toBe(false);
   });
 });
 

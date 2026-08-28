@@ -12,7 +12,12 @@ export interface TrackEndpoints {
   length: number;
 }
 
-// The very first and very last recorded timestamps of a track.
+/**
+ * The times of the very first and very last vertex — not the first and last
+ * recorded ones. A track timed over only part of its length (what a join with
+ * an untimed track leaves) has no duration to speak of, so both come back
+ * undefined rather than spanning a stretch the times never covered.
+ */
 function endpointTimes(feature: Feature): [Date | undefined, Date | undefined] {
   const segments = trackTimeSegments(feature);
 

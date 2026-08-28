@@ -26,7 +26,6 @@ import type {
   Feature,
   FeatureCollection,
   GeoJsonProperties,
-  LineString,
   Position,
 } from 'geojson';
 import { type LeafletMouseEvent, Point as LPoint } from 'leaflet';
@@ -39,6 +38,7 @@ import { useDispatch } from 'react-redux';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 import { useTrackJoin } from '../hooks/useTrackJoin.js';
 import { useTrackSplit } from '../hooks/useTrackSplit.js';
+import { trackLineParts } from '../trackLineParts.js';
 
 // The selection halo, and the colour the far half of a pending cut is told
 // apart by. Whole objects, so a re-render hands Leaflet the same options back
@@ -126,10 +126,7 @@ export default function DataViewerResult({
 
   // Memoized so the per-zoom colorize cache survives across renders.
   const lineFeatures = useMemo(
-    () =>
-      flatten(trackGeojson).features.filter(
-        (f): f is Feature<LineString> => f.geometry?.type === 'LineString',
-      ),
+    () => trackLineParts(trackGeojson),
     [trackGeojson],
   );
 

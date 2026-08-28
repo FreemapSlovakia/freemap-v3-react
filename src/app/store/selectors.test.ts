@@ -123,16 +123,33 @@ describe('armedModeSelector', () => {
     expect(mapModeSelector(makeState())).toBe(false);
   });
 
+  // The data viewer's own modes are armed on a selected feature, and its
+  // toolbar — the only way to cancel them — rides that selection.
+  const selected = { selection: { type: 'data-viewer', id: 0 } };
+
   it.each([
     ['a drawing line join', { drawingLines: { joinWith: { lineIndex: 0 } } }],
-    ['a track join', { trackViewer: { joinWith: { featureIndex: 0 } } }],
-    ['an armed split', { trackViewer: { splitting: true } }],
+    [
+      'a track join',
+      { main: selected, trackViewer: { joinWith: { featureIndex: 0 } } },
+    ],
+    ['an armed split', { main: selected, trackViewer: { splitting: true } }],
   ])('is true while %s waits for its click', (_what, overrides) => {
     expect(armedModeSelector(makeState(overrides))).toBe(true);
   });
 
+  it('is false once the selection its toolbar rides has gone', () => {
+    const state = makeState({ trackViewer: { splitting: true } });
+
+    expect(armedModeSelector(state)).toBe(false);
+    expect(mapModeSelector(state)).toBe(false);
+  });
+
   it('counts towards the map being in a mode, as picking does', () => {
-    const armed = makeState({ trackViewer: { splitting: true } });
+    const armed = makeState({
+      main: selected,
+      trackViewer: { splitting: true },
+    });
 
     const picking = makeState({
       homeLocation: { selectingHomeLocation: true },
