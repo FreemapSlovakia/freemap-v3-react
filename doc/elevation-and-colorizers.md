@@ -642,6 +642,17 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   that DP is horizontal-only, so simplifying drops elevation extremes that sit on a
   straight plan line and lowers the computed climb/descent.
 
+- **One spelling of the times.** Some writers put them at the root as `coordTimes` rather
+  than in `coordinateProperties`; both are read across the app, but only the latter is ever
+  written back, so a root-spelled track exported without its `<time>`s. `withCanonicalTimes`
+  relocates them, and every way into the slice applies it: `parseDataFile` for imports, the
+  `dataViewerSetData` and `mapsLoaded` reducer cases for a saved map and the IndexedDB
+  restore — a load-then-export path never reaches the channel readers, so normalizing there
+  alone would have missed it. A `coordTimes` that is not a per-point array is somebody's own
+  data column and stays put. `readChannels` still accepts the root spelling for anything
+  older, and `writeChannels` drops it once the times are written where readers look. That is
+  why `Channel` has a name and nothing else: every channel lives in the same place.
+
 - **Joining two tracks** (`joinTracks.ts`, the toolbar's **Join**) is the split in reverse
   and shares its reading of a track: `lineSegments` + `readChannels`/`writeChannels` +
   `fm:pathDetails`. Two things bite. `writeChannels`' `flat` flag follows the *result's*
@@ -652,9 +663,7 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   reversed one would count backwards) and decide the order where both sides have them;
   otherwise the endpoint pairing with the smallest gap wins, ties going to the arrangement
   that turns and reorders the least — and only for a `line` join, since as segments the two
-  stay apart and there is no gap turning one round could close. Both spellings of the times
-  (`coordTimes`, `coordinateProperties.times`) are read as one channel, or a tracking copy
-  joined with a GPX import would make two, each half `null`.
+  stay apart and there is no gap turning one round could close.
 
   Path details take the bigger correction. Their metres are measured with the track's own
   segment gaps left out; joined into one line those gaps become edges that count, so *both*

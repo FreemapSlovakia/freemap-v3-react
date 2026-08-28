@@ -14,13 +14,7 @@ import {
   withoutPerPointData,
 } from '@shared/geoutils.js';
 import type { Feature, LineString, MultiLineString, Position } from 'geojson';
-import {
-  type Channel,
-  COORD_TIMES,
-  readChannels,
-  TIMES,
-  writeChannels,
-} from './trackChannels.js';
+import { type Channel, readChannels, writeChannels } from './trackChannels.js';
 import { isTrackLine, type TrackLine } from './trackSelection.js';
 
 /** How two tracks are put together: end to end, or a segment each. */
@@ -66,9 +60,6 @@ interface Run {
 const pathDetailsOf = (feature: TrackLine) =>
   feature.properties?.[PATH_DETAILS_PROP] as PathDetails | undefined;
 
-/** Channels are told apart by where they sit as well as by their name. */
-const channelKey = ({ root, key }: Channel) => `${root}:${key}`;
-
 /** The first recorded time, which is what orders two timed tracks. */
 function startTimeOf(feature: TrackLine): number | undefined {
   const first = firstTrackTime(feature);
@@ -78,32 +69,13 @@ function startTimeOf(feature: TrackLine): number | undefined {
   return Number.isNaN(time) ? undefined : time;
 }
 
-/**
- * Both spellings of the times as one channel: live tracking writes `coordTimes`,
- * GPX imports `coordinateProperties.times`. Left apart they would join as two
- * channels, each half `null`, and a reader only ever looks at one of them.
- */
-function withMergedTimes(channels: Channel[]): Channel[] {
-  const nested = channels.some(
-    (channel) => !channel.root && channel.key === TIMES,
-  );
-
-  return channels.flatMap((channel) =>
-    channel.root && channel.key === COORD_TIMES
-      ? nested
-        ? []
-        : [{ ...channel, root: false, key: TIMES }]
-      : [channel],
-  );
-}
-
 /** `measure` walks the whole track, so only the path-detail spans ask for it. */
 function readSide(feature: TrackLine, measure: boolean): Side {
   const segments = lineSegments(feature.geometry);
 
   return {
     segments,
-    channels: withMergedTimes(readChannels(feature)),
+    channels: readChannels(feature),
     details: pathDetailsOf(feature),
     properties: feature.properties ?? {},
     distances: measure ? segmentDistances(segments).flat() : [],
@@ -346,18 +318,16 @@ export function joinTrackFeatures(
       : { type: 'MultiLineString', coordinates };
 
   const byKey = sides.map(
-    (side) =>
-      new Map(side.channels.map((channel) => [channelKey(channel), channel])),
+    (side) => new Map(side.channels.map((channel) => [channel.key, channel])),
   );
 
   const channels: Channel[] = [
     ...new Map([...byKey[0]!, ...byKey[1]!]).values(),
-  ].map(({ root, key }) => ({
-    root,
+  ].map(({ key }) => ({
     key,
     segments: out.map((runs) =>
       runs.flatMap((run) => {
-        const source = byKey[run.side]!.get(`${root}:${key}`);
+        const source = byKey[run.side]!.get(key);
 
         // A channel only one side records is padded on the other — which is
         // what togeojson itself leaves for a point that carries no value.

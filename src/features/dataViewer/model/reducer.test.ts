@@ -43,6 +43,50 @@ describe('dataViewerReducer — setData', () => {
   });
 });
 
+describe('dataViewerReducer — times spelling', () => {
+  // Imports are normalized on the way in, but a saved map and the IndexedDB
+  // restore hand back whatever they stored.
+  it('moves root-spelled times into coordinateProperties on load', () => {
+    const times = ['2026-01-01T00:00:00Z', '2026-01-01T00:01:00Z'];
+
+    const next = dataViewerReducer(
+      dataViewerInitialState,
+      dataViewerSetData({
+        trackGeojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              properties: { coordTimes: times },
+              geometry: {
+                type: 'LineString',
+                coordinates: [
+                  [17, 48],
+                  [17.001, 48],
+                ],
+              },
+            },
+          ],
+        },
+      }),
+    );
+
+    const props = next.trackGeojson?.features[0]?.properties;
+
+    expect(props?.['coordTimes']).toBeUndefined();
+    expect(props?.['coordinateProperties']).toEqual({ times });
+  });
+
+  it('hands the collection straight back when there is nothing to move', () => {
+    const next = dataViewerReducer(
+      dataViewerInitialState,
+      dataViewerSetData({ trackGeojson: fc }),
+    );
+
+    expect(next.trackGeojson).toBe(fc);
+  });
+});
+
 describe('dataViewerReducer — simple setters', () => {
   it('setTrackUID stores the uid', () => {
     const next = dataViewerReducer(

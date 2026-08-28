@@ -121,6 +121,53 @@ describe('parseDataFile', () => {
     expect(r?.features[0]?.properties?.['name']).toBe('X');
   });
 
+  it('moves a root-spelled times channel into coordinateProperties', () => {
+    const times = ['2026-01-01T00:00:00Z', '2026-01-01T00:01:00Z'];
+
+    const r = parseDataFile(
+      JSON.stringify({
+        type: 'Feature',
+        properties: {
+          coordTimes: times,
+          coordinateProperties: { heart: [1, 2] },
+        },
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [17, 48],
+            [17.001, 48],
+          ],
+        },
+      }),
+      'x.geojson',
+    );
+
+    const props = r?.features[0]?.properties;
+
+    // Only `coordinateProperties` is written back, so the GPX export of a
+    // root-spelled track would otherwise carry no `<time>`.
+    expect(props?.['coordTimes']).toBeUndefined();
+
+    expect(props?.['coordinateProperties']).toEqual({
+      times,
+      heart: [1, 2],
+    });
+  });
+
+  it('leaves a coordTimes that is nobody’s per-point series alone', () => {
+    const r = parseDataFile(
+      JSON.stringify({
+        type: 'Feature',
+        properties: { coordTimes: '2020-01-01' },
+        geometry: { type: 'Point', coordinates: [17, 48] },
+      }),
+      'x.geojson',
+    );
+
+    // Somebody's own data column, which the properties editor still shows.
+    expect(r?.features[0]?.properties?.['coordTimes']).toBe('2020-01-01');
+  });
+
   it('converts KML to GeoJSON', () => {
     const r = parseDataFile(KML, 'path.kml');
 

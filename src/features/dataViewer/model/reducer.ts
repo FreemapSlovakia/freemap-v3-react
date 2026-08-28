@@ -22,6 +22,7 @@ import {
   splitTrackFeature,
   type TrackSplitPoint,
 } from '../splitTrack.js';
+import { withCanonicalTimesAll } from '../trackChannels.js';
 import { isTrackLine, type TrackLine } from '../trackSelection.js';
 import {
   dataViewerDelete,
@@ -162,7 +163,11 @@ export const dataViewerReducer = createReducer(
       .addCase(dataViewerSetData, (state, action) => {
         // A new track is a fresh elevation decision.
         if (action.payload.trackGeojson) {
-          state.trackGeojson = action.payload.trackGeojson;
+          // Not only imports land here: a saved map and the IndexedDB restore
+          // hand back whatever they stored, root-spelled times included.
+          state.trackGeojson = withCanonicalTimesAll(
+            action.payload.trackGeojson,
+          );
 
           // Invalidate the densified render cache for the new track.
           state.renderTrackGeojson = null;
@@ -399,7 +404,16 @@ export const dataViewerReducer = createReducer(
               data: { trackViewer },
             },
           },
-        ) => ({ ...dataViewerInitialState, ...trackViewer }),
+        ) => {
+          const restored = { ...dataViewerInitialState, ...trackViewer };
+
+          return restored.trackGeojson
+            ? {
+                ...restored,
+                trackGeojson: withCanonicalTimesAll(restored.trackGeojson),
+              }
+            : restored;
+        },
       )
       .addMatcher(isAnyOf(openTool, closeTool), clearModes),
 );

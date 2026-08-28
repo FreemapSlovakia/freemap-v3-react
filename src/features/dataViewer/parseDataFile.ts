@@ -4,6 +4,7 @@ import { extractKmlFromKmz } from './kmz.js';
 import { parseGeojsonFile } from './parseGeojsonFile.js';
 import { parseGpx } from './parseGpx.js';
 import { FM_KIND, type FmKind, isFmKind } from './provenance.js';
+import { withCanonicalTimes } from './trackChannels.js';
 
 type SourceFormat = 'gpx' | 'tcx' | 'kml' | 'geojson';
 
@@ -144,9 +145,9 @@ function normalizeName<G extends Geometry | null>(
 }
 
 // The single finalizer every format funnels through: drop null-geometry
-// features (togeojson can emit them), normalize labels, and stamp each
-// feature's source provenance (`fm:kind`). Returns null when nothing usable
-// remains (treated as a parse error).
+// features (togeojson can emit them), normalize labels and the times spelling,
+// and stamp each feature's source provenance (`fm:kind`). Returns null when
+// nothing usable remains (treated as a parse error).
 function toGeojson(
   fc: FeatureCollection<Geometry | null>,
   format: SourceFormat,
@@ -154,6 +155,7 @@ function toGeojson(
   const features = fc.features
     .filter((f): f is Feature<Geometry> => f.geometry != null)
     .map(normalizeName)
+    .map(withCanonicalTimes)
     .map((f) => stampKind(f, format));
 
   return features.length > 0 ? { type: 'FeatureCollection', features } : null;

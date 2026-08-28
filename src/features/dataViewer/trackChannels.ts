@@ -1,4 +1,5 @@
 import { lineSegments } from '@shared/geoutils.js';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import type { TrackLine } from './trackSelection.js';
 
 /** Per-point channels live under this property, one array per channel. */
@@ -12,7 +13,6 @@ export const TIMES = 'times';
 
 /** One per-point array, laid out per segment alongside the coordinates. */
 export interface Channel {
-  root: boolean;
   key: string;
   segments: unknown[][];
 }
@@ -22,7 +22,7 @@ export interface Channel {
  * around it: a time has to keep matching the place it was recorded at, and an
  * arithmetic mean of 350° and 10° is 180°.
  */
-const PER_VERTEX = new Set([COORD_TIMES, TIMES, 'courses', 'bearings']);
+const PER_VERTEX = new Set([TIMES, 'courses', 'bearings']);
 
 /**
  * The mean of a run of samples, or `undefined` where they are not all numbers —
@@ -97,6 +97,49 @@ function alignToSegments(raw: unknown, lengths: number[]): unknown[][] | null {
 }
 
 /**
+ * The feature with its times where every reader looks. Some writers put them at
+ * the root as `coordTimes`; both spellings are read across the app, but only
+ * `coordinateProperties` is ever written back, so a root-spelled track would
+ * export without its `<time>`s. A `coordTimes` that is not a per-point array is
+ * somebody's own data column and stays where it is.
+ */
+export function withCanonicalTimes<G extends Geometry | null>(
+  feature: Feature<G>,
+): Feature<G> {
+  const props = feature.properties;
+
+  const times = props?.[COORD_TIMES];
+
+  if (!props || !Array.isArray(times)) {
+    return feature;
+  }
+
+  const cp = asRecord(props[COORD_PROPERTIES]);
+
+  // Not a shape we can add to, so nothing here is safe to move.
+  if (cp === undefined && props[COORD_PROPERTIES] !== undefined) {
+    return feature;
+  }
+
+  const { [COORD_TIMES]: _root, ...rest } = props;
+
+  return {
+    ...feature,
+    // The nested spelling wins where a feature carries both, as readers take it.
+    properties: { ...rest, [COORD_PROPERTIES]: { [TIMES]: times, ...cp } },
+  };
+}
+
+/** The collection's features, all of them, with the canonical times spelling. */
+export function withCanonicalTimesAll<T extends FeatureCollection>(fc: T): T {
+  const features = fc.features.map(withCanonicalTimes);
+
+  return features.every((feature, i) => feature === fc.features[i])
+    ? fc
+    : { ...fc, features };
+}
+
+/**
  * The feature's per-point channels, laid out per segment alongside its own
  * coordinates. Anything that does not line up with them is left out — which is
  * why the lengths are taken from the geometry here rather than by each caller.
@@ -108,17 +151,17 @@ export function readChannels(feature: TrackLine): Channel[] {
 
   const props = feature.properties;
 
-  const candidates = [
-    ...Object.entries(asRecord(props?.[COORD_PROPERTIES]) ?? {}).map(
-      ([key, value]) => ({ root: false, key, value }),
-    ),
-    { root: true, key: COORD_TIMES, value: props?.[COORD_TIMES] },
-  ];
+  const cp = asRecord(props?.[COORD_PROPERTIES]) ?? {};
 
-  return candidates.flatMap(({ root, key, value }) => {
+  // A file can spell the times at the root instead. It is the same channel, and
+  // `coordinateProperties` is where every reader looks first.
+  const candidates =
+    TIMES in cp ? cp : { ...cp, [TIMES]: props?.[COORD_TIMES] };
+
+  return Object.entries(candidates).flatMap(([key, value]) => {
     const segments = alignToSegments(value, lengths);
 
-    return segments ? [{ root, key, segments }] : [];
+    return segments ? [{ key, segments }] : [];
   });
 }
 
@@ -139,16 +182,16 @@ export function writeChannels(
   for (const channel of channels) {
     const taken = take(channel);
 
-    const value = flat ? (taken[0] ?? []) : taken;
-
-    if (channel.root) {
-      properties[channel.key] = value;
-    } else {
-      cp[channel.key] = value;
-    }
+    cp[channel.key] = flat ? (taken[0] ?? []) : taken;
   }
 
   if (Object.keys(cp).length > 0) {
     properties[COORD_PROPERTIES] = cp;
+  }
+
+  // Times read out of the root spelling are written back under
+  // `coordinateProperties`, so the root one would be left standing and stale.
+  if (channels.some((channel) => channel.key === TIMES)) {
+    delete properties[COORD_TIMES];
   }
 }

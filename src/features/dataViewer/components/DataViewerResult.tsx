@@ -61,6 +61,23 @@ const TAIL_HALO = { ...HALO_OPTIONS, color: '#ff8c00' };
 // 0.2 default, which renders the fill fully opaque.
 const defaultFillOpacity = 0.2;
 
+const revisions = new WeakMap<object, number>();
+
+let lastRevision = 0;
+
+/** A number standing for this collection, the same one every time it is asked. */
+function revisionOf(fc: object): number {
+  let revision = revisions.get(fc);
+
+  if (revision === undefined) {
+    revision = ++lastRevision;
+
+    revisions.set(fc, revision);
+  }
+
+  return revision;
+}
+
 /** One drawn ring set of a polygon feature, in the style it is drawn with. */
 function polygonEntry(
   feature: Feature,
@@ -193,15 +210,11 @@ export default function DataViewerResult({
     dispatch(selectFeature({ type: 'data-viewer', id: featureIndex }));
   };
 
-  // TODO rather compute some hash or better - detect real change
-  const keyToAssureProperRefresh = useMemo(
-    // otherwise GeoJSON will still display the first data
-    () =>
-      `OOXlDWrtVn-${
-        (JSON.stringify(trackGeojson) + displayingElevationChart).length
-      }`,
-    [trackGeojson, displayingElevationChart],
-  );
+  // Remounts the layers below on new data, which some of them need to redraw.
+  // A revision per collection rather than a hash of one: the store replaces the
+  // object on every edit, and serializing a 100k-point track to measure it cost
+  // more than everything else here put together.
+  const keyToAssureProperRefresh = `${revisionOf(trackGeojson)}-${displayingElevationChart}`;
 
   // Flatten line-like features into per-segment render entries, keeping each
   // segment's source feature index so a click selects that whole track and the

@@ -64,10 +64,12 @@ describe('simplifyTrackFeature', () => {
 
     const simplified = simplifyTrackFeature(feature, 5)!;
 
-    expect(simplified.properties!['coordTimes']).toEqual(['t0', 't4']);
+    // The root spelling is the same channel, written back where readers look.
+    expect(simplified.properties!['coordTimes']).toBeUndefined();
 
     expect(simplified.properties!['coordinateProperties']).toEqual({
       courses: [350, 10],
+      times: ['t0', 't4'],
     });
   });
 

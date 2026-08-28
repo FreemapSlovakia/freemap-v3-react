@@ -105,15 +105,17 @@ describe('splitTrackFeature', () => {
     expect(cp(tail)['times']).toEqual(times(5).slice(2));
   });
 
-  it('cuts the live-tracking top-level times too', () => {
+  it('cuts a root-spelled times channel into coordinateProperties', () => {
     const [head, tail] = splitTrackFeature(
       lineString(4, { coordTimes: times(4) }),
       0,
       1,
     )!;
 
-    expect(head.properties?.['coordTimes']).toEqual(times(4).slice(0, 2));
-    expect(tail.properties?.['coordTimes']).toEqual(times(4).slice(1));
+    expect(cp(head)['times']).toEqual(times(4).slice(0, 2));
+    expect(cp(tail)['times']).toEqual(times(4).slice(1));
+
+    expect(head.properties?.['coordTimes']).toBeUndefined();
   });
 
   it('leaves a channel that does not line up untouched', () => {
