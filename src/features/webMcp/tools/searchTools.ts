@@ -1,29 +1,12 @@
 import {
-  type SearchResult,
   searchClear,
   searchSelectResult,
   searchSetQuery,
 } from '@features/search/model/actions.js';
-import { resultCoords } from '@features/search/model/resultUtils.js';
-import { stringifyFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
+import { makeResultDescriber } from '../describeResult.js';
 import { defineTool } from '../tool.js';
 import { waitForState } from '../waitForState.js';
-
-function describeResult(result: SearchResult, index: number) {
-  const coords = resultCoords(result);
-
-  return {
-    index,
-    name:
-      result.displayName ?? result.genericName ?? stringifyFeatureId(result.id),
-    kind: result.genericName,
-    address: result.address,
-    lat: coords?.lat,
-    lon: coords?.lon,
-    source: result.source,
-  };
-}
 
 export const searchTools = [
   defineTool({
@@ -48,9 +31,13 @@ export const searchTools = [
         { signal },
       );
 
+      const describe = await makeResultDescriber(
+        store.getState().l10n.language,
+      );
+
       return {
         query,
-        results: results.map(describeResult),
+        results: results.map(describe),
         more: store.getState().search.more,
       };
     },
@@ -67,7 +54,7 @@ export const searchTools = [
         .min(0)
         .describe("The result's index as search-places returned it."),
     }),
-    execute({ index }, { store }) {
+    async execute({ index }, { store }) {
       const result = store.getState().search.results[index];
 
       if (!result) {
@@ -76,7 +63,11 @@ export const searchTools = [
 
       store.dispatch(searchSelectResult({ result, focus: true, tier: 'keep' }));
 
-      return describeResult(result, index);
+      const describe = await makeResultDescriber(
+        store.getState().l10n.language,
+      );
+
+      return describe(result, index);
     },
   }),
 

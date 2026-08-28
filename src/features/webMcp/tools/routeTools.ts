@@ -71,11 +71,15 @@ export const routeTools = [
         distance: alternative.distance,
         duration: alternative.duration,
         alternatives: result.alternatives.length,
-        waypoints: result.waypoints.map((waypoint) => ({
-          name: waypoint.name,
-          lon: waypoint.location[0],
-          lat: waypoint.location[1],
-        })),
+        // Only OSRM names the points it snapped to; GraphHopper answers with
+        // none, and an empty list reads as though the route had no ends.
+        waypoints: result.waypoints.length
+          ? result.waypoints.map((waypoint) => ({
+              name: waypoint.name,
+              lon: waypoint.location[0],
+              lat: waypoint.location[1],
+            }))
+          : undefined,
         url: window.location.href,
       };
     },

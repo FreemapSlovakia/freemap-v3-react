@@ -16,10 +16,20 @@ gets the parsed arguments and an options object carrying an `AbortSignal`, and
 returns `{ content: [{ type: 'text', text }], isError? }`. Aborting the
 registration `signal` unregisters the tool.
 
-Two traps:
+Three traps:
 
-- **`navigator.modelContext` is the old spelling.** The interface moved to
-  `document`; earlier `provideContext()` / `clearContext()` are gone.
+- **`navigator.modelContext` is not dead yet.** The interface moved to
+  `document` in Chrome 150, and 151 still answers to both; the flag
+  (`enable-webmcp-testing`) and the origin trial run on versions that only have
+  it on `navigator`, so `attachWebMcp` reads either. Earlier `provideContext()`
+  / `clearContext()` are gone.
+- **The calling side is string-in, string-out.** `getTools()` hands back
+  `inputSchema` as a JSON *string*, `executeTool(tool, args)` rejects an object
+  with `Failed to parse input arguments` and wants `JSON.stringify(args)`, and
+  the result arrives as a JSON string of `{content:[{type:'text',text}]}`. None
+  of that touches registration — the `execute` callback is handed a parsed
+  object — but an in-page agent written against the objects it registered will
+  fail on all three.
 - **Secure context and permissions policy.** The API exists only on HTTPS, and
   `Permissions-Policy: tools=()` (or a cross-origin iframe without
   `allow="tools"`) makes `registerTool` reject with `NotAllowedError`.

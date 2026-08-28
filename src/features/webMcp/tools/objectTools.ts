@@ -6,6 +6,7 @@ import { searchSetQuery } from '@features/search/model/actions.js';
 import { getOsmMapping } from '@osm/osmNameResolver.js';
 import { removeAccents } from '@shared/stringUtils.js';
 import z from 'zod';
+import { makeResultDescriber } from '../describeResult.js';
 import { defineTool } from '../tool.js';
 import { waitForState } from '../waitForState.js';
 
@@ -132,11 +133,13 @@ export const objectTools = [
         { signal },
       );
 
+      const describe = await makeResultDescriber(
+        store.getState().l10n.language,
+      );
+
       return {
-        found: results.map((result) => ({
-          name: result.displayName ?? result.genericName,
-          kind: result.genericName,
-          source: result.source,
+        found: results.map((result, index) => ({
+          ...describe(result, index),
           tags:
             result.geojson.type === 'Feature'
               ? result.geojson.properties

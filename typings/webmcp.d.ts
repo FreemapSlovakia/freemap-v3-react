@@ -43,3 +43,11 @@ interface Document {
   /** Absent unless the browser implements WebMCP; the API is secure-context only. */
   readonly modelContext?: ModelContext;
 }
+
+interface Navigator {
+  /**
+   * Where the API lived before Chrome 150 — which is every version the flag and
+   * the origin trial run on, so it is not a legacy spelling yet.
+   */
+  readonly modelContext?: ModelContext;
+}

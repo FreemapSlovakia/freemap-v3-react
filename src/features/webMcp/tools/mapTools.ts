@@ -63,7 +63,11 @@ function assertLayerOfKind(
   // The map reducer decides base or overlay by the code itself, so a base code
   // named as an overlay would switch the base map instead.
   if (layer.kind !== kind) {
-    throw new Error(`Map layer "${code}" is a ${layer.kind}, not a ${kind}.`);
+    const name = (of: string) => (of === 'base' ? 'a base map' : 'an overlay');
+
+    throw new Error(
+      `Map layer "${code}" is ${name(layer.kind)}, not ${name(kind)}.`,
+    );
   }
 }
 

@@ -4,6 +4,15 @@ import { objectCategories } from '@features/objects/objectCategories.js';
 import { routeKey } from '@features/routePlanner/model/actions.js';
 import { elevationStats } from '@shared/geoutils.js';
 import { describe, expect, it, vi } from 'vitest';
+
+// The tag-to-name mappings are generated files loaded by dynamic import; the
+// naming they drive is their own concern, not these tools'.
+vi.mock('@osm/osmNameResolver.js', () => ({
+  getOsmMapping: async () => ({ osmTagToNameMapping: {}, colorNames: {} }),
+  getGenericNameFromOsmElementSync: () => '',
+  getNameFromOsmElement: (tags: Record<string, string>) => tags['name'] ?? '',
+}));
+
 import z from 'zod';
 import { defineTool } from './tool.js';
 import { drawingTools } from './tools/drawingTools.js';
@@ -22,8 +31,10 @@ function fakeStore(initial: unknown) {
 
   return {
     dispatched,
-    setState(next: unknown) {
-      state = next as RootState;
+    // Merges, so a test that advances one slice keeps the rest of the state it
+    // started from.
+    setState(next: object) {
+      state = { ...state, ...next } as RootState;
 
       for (const l of listeners) {
         l();
@@ -157,6 +168,7 @@ describe('search-places', () => {
     const { store, setState } = fakeStore({
       search: { query: '', results: [], more: false },
       toasts: { toasts: {} },
+      l10n: { language: 'en' },
     });
 
     const tool = searchTools.find((t) => t.name === 'search-places')!;
@@ -362,6 +374,7 @@ describe('waiting for a processor', () => {
     const { store, setState } = fakeStore({
       search: { query: '', results, more: false },
       toasts: { toasts: {} },
+      l10n: { language: 'en' },
     });
 
     const promise = searching.execute({ query: 'Bratislava' }, ctx(store));
@@ -386,6 +399,7 @@ describe('waiting for a processor', () => {
     const { store } = fakeStore({
       search: { query: '', results: [], more: false },
       toasts: { toasts: {} },
+      l10n: { language: 'en' },
     });
 
     const result = await searching.execute(
@@ -501,7 +515,7 @@ describe('set-map-layers', () => {
     const result = await tool.execute({ overlays: ['X'] }, ctx(store));
 
     expect(result.isError).toBe(true);
-    expect(text(result)).toContain('is a base, not a overlay');
+    expect(text(result)).toContain('is a base map, not an overlay');
   });
 });
 
@@ -512,6 +526,7 @@ describe('describe-place', () => {
     const { store, setState } = fakeStore({
       search: { query: '', results, more: false },
       toasts: { toasts: {} },
+      l10n: { language: 'en' },
     });
 
     const tool = objectTools.find((t) => t.name === 'describe-place')!;
@@ -539,6 +554,7 @@ describe('a repeated processor failure', () => {
     const { store, setState } = fakeStore({
       search: { query: '', results, more: false },
       toasts: { toasts: { search: failed } },
+      l10n: { language: 'en' },
     });
 
     const tool = searchTools.find((t) => t.name === 'search-places')!;
