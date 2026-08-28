@@ -8,6 +8,7 @@ import { fetchElevations } from '@shared/elevation.js';
 import { elevationStats } from '@shared/geoutils.js';
 import type { LineString, Position } from 'geojson';
 import z from 'zod';
+import { DeliverSchema, deliverResult } from '../deliver.js';
 import { defineTool } from '../tool.js';
 
 const MAX_ELEVATION_POINTS = 100;
@@ -135,8 +136,8 @@ export const dataTools = [
     name: 'get-map-features',
     description:
       'Returns everything the user has on the map — drawings, the planned route, searched places, shown objects, imported tracks — as one GeoJSON FeatureCollection.',
-    input: z.object({}),
-    async execute(_args, { store }) {
+    input: z.object({ deliver: DeliverSchema }),
+    async execute({ deliver }, { store }) {
       const { buildExportFeatureCollection } = await import(
         /* webpackChunkName: "build-export-feature-collection" */
         '@features/mapFeaturesExport/model/buildExportFeatureCollection.js'
@@ -148,11 +149,17 @@ export const dataTools = [
         pointMode: { props: true },
       });
 
+      if (deliver === 'download') {
+        return deliverResult(collection, deliver, 'freemap-map-features', {
+          features: collection.features.length,
+        });
+      }
+
       const json = JSON.stringify(collection);
 
       if (json.length > MAX_GEOJSON_CHARS) {
         throw new Error(
-          `The map holds ${collection.features.length} features, too much to return. Use download-map-features instead.`,
+          `The map holds ${collection.features.length} features, too much to return. Ask again with deliver: "download", or use download-map-features for GPX or KML.`,
         );
       }
 

@@ -7,12 +7,59 @@ import { describe, expect, it, vi } from 'vitest';
 
 // The tag-to-name mappings are generated files loaded by dynamic import; the
 // naming they drive is their own concern, not these tools'.
+// Synthetic terrain, so the derivatives have a known answer. Eastward by
+// default; a test wanting another shape swaps `terrain`.
+let terrain = ([, lon]: [number, number]) =>
+  Math.round(lon * 111320 * Math.cos(0.85)) % 100000;
+
+vi.mock('@shared/elevation.js', () => ({
+  fetchElevations: async (pts: [number, number][]) =>
+    pts.map((p) => terrain(p)),
+}));
+
+vi.mock('@app/httpRequest.js', () => ({
+  httpRequest: async ({ body }: { body: string }) => {
+    lastOverpassQuery = decodeURIComponent(body.replace(/^data=/, ''));
+
+    return {
+      json: async () => ({
+        elements: [
+          {
+            type: 'node',
+            id: 1,
+            lat: 48.5,
+            lon: 19.5,
+            tags: { name: 'Jaskyňa', natural: 'cave_entrance' },
+          },
+        ],
+      }),
+    };
+  },
+}));
+
+let lastOverpassQuery = '';
+
+vi.mock('@shared/saveBlob.js', () => ({
+  saveBlob: async (blob: Blob, name: string) => {
+    saved = { name, bytes: blob.size };
+  },
+}));
+
+let saved: { name: string; bytes: number } | undefined;
+
 vi.mock('@osm/osmNameResolver.js', () => ({
-  getOsmMapping: async () => ({ osmTagToNameMapping: {}, colorNames: {} }),
+  getOsmMapping: async () => ({
+    osmTagToNameMapping: {
+      amenity: { drinking_water: 'Drinking water' },
+      natural: { cave_entrance: 'Cave entrance' },
+    },
+    colorNames: {},
+  }),
   getGenericNameFromOsmElementSync: () => '',
   getNameFromOsmElement: (tags: Record<string, string>) => tags['name'] ?? '',
 }));
 
+import { buildObjectsQuery } from '@features/objects/objectsQuery.js';
 import z from 'zod';
 import { defineTool } from './tool.js';
 import { drawingTools } from './tools/drawingTools.js';
@@ -21,6 +68,7 @@ import { mapTools } from './tools/mapTools.js';
 import { objectTools } from './tools/objectTools.js';
 import { routeTools } from './tools/routeTools.js';
 import { searchTools } from './tools/searchTools.js';
+import { terrainTools } from './tools/terrainTools.js';
 
 function fakeStore(initial: unknown) {
   const listeners = new Set<() => void>();
@@ -468,6 +516,7 @@ describe('show-objects', () => {
       objects: { active: ['amenity=drinking_water'], objects: stale },
       map: { zoom: 15 },
       toasts: { toasts: {} },
+      l10n: { language: 'en' },
     };
 
     const { store, setState, dispatched } = fakeStore(state);
@@ -478,6 +527,9 @@ describe('show-objects', () => {
       { categories: ['amenity=drinking_water'] },
       ctx(store),
     );
+
+    // the categories are checked first, so the dispatches land a tick later
+    await vi.waitFor(() => expect(dispatched).toHaveLength(3));
 
     // the filter is dropped and set again, so the fetch is edge-triggered anew
     expect(dispatched.map((a) => (a as { type: string }).type)).toEqual([
@@ -568,5 +620,185 @@ describe('a repeated processor failure', () => {
     });
 
     expect((await promise).isError).toBe(true);
+  });
+});
+
+describe('sample-elevation-grid', () => {
+  const tool = terrainTools.find((t) => t.name === 'sample-elevation-grid')!;
+
+  const { store } = fakeStore({ l10n: { language: 'en' } });
+
+  it('lays the grid out row-major from the north-west corner', async () => {
+    const grid = JSON.parse(
+      text(
+        await tool.execute(
+          {
+            west: 19.5,
+            south: 48.5,
+            east: 19.503,
+            north: 48.502,
+            spacing: 100,
+          },
+          ctx(store),
+        ),
+      ),
+    );
+
+    expect(grid.cols).toBeGreaterThan(1);
+    expect(grid.rows).toBeGreaterThan(1);
+    expect(grid.elevations).toHaveLength(grid.rows * grid.cols);
+    // the grid it actually covers sits inside the box asked for
+    expect(grid.north).toBe(48.502);
+    expect(grid.south).toBeGreaterThanOrEqual(48.5);
+    expect(grid.east).toBeLessThanOrEqual(19.503);
+  });
+
+  it('reads slope and aspect off an eastward ramp', async () => {
+    const grid = JSON.parse(
+      text(
+        await tool.execute(
+          {
+            west: 19.5,
+            south: 48.5,
+            east: 19.503,
+            north: 48.502,
+            spacing: 100,
+            derivatives: true,
+          },
+          ctx(store),
+        ),
+      ),
+    );
+
+    // rising 1 m per metre east: 45 degrees, falling away to the west
+    expect(grid.slope[0]).toBeCloseTo(45, 0);
+    expect(grid.aspect[0]).toBeCloseTo(270, 0);
+  });
+
+  it('faces a slope rising to the north southward', async () => {
+    const eastward = terrain;
+
+    // 1 m up per metre north
+    terrain = ([lat]) => Math.round(lat * 111320) % 100000;
+
+    try {
+      const grid = JSON.parse(
+        text(
+          await tool.execute(
+            {
+              west: 19.5,
+              south: 48.5,
+              east: 19.503,
+              north: 48.502,
+              spacing: 100,
+              derivatives: true,
+            },
+            ctx(store),
+          ),
+        ),
+      );
+
+      expect(grid.slope[0]).toBeCloseTo(45, 0);
+      expect(grid.aspect[0]).toBeCloseTo(180, 0);
+    } finally {
+      terrain = eastward;
+    }
+  });
+
+  it('refuses a grid too big to sample', async () => {
+    const result = await tool.execute(
+      { west: 19, south: 48, east: 20, north: 49, spacing: 10 },
+      ctx(store),
+    );
+
+    expect(result.isError).toBe(true);
+    expect(text(result)).toContain('at most 50000');
+  });
+});
+
+describe('find-objects-in-area', () => {
+  const tool = terrainTools.find((t) => t.name === 'find-objects-in-area')!;
+
+  const { store } = fakeStore({ l10n: { language: 'en' } });
+
+  it('queries the box it was given and reports what came back', async () => {
+    const answer = JSON.parse(
+      text(
+        await tool.execute(
+          {
+            categories: ['natural=cave_entrance'],
+            west: 19.5,
+            south: 48.5,
+            east: 19.6,
+            north: 48.6,
+            limit: 50,
+          },
+          ctx(store),
+        ),
+      ),
+    );
+
+    expect(lastOverpassQuery).toContain('(48.5,19.5,48.6,19.6)');
+    expect(lastOverpassQuery).toContain('out center 50');
+    expect(answer.objects[0]).toMatchObject({ name: 'Jaskyňa', lat: 48.5 });
+    expect(answer.complete).toBe(true);
+  });
+
+  it('refuses more ground than one query may cover', async () => {
+    const result = await tool.execute(
+      {
+        categories: ['natural=cave_entrance'],
+        west: 10,
+        south: 45,
+        east: 20,
+        north: 50,
+      },
+      ctx(store),
+    );
+
+    expect(result.isError).toBe(true);
+    expect(text(result)).toContain('km²');
+  });
+});
+
+describe('buildObjectsQuery', () => {
+  it('writes the filters the objects tool has always sent', () => {
+    const q = buildObjectsQuery(
+      ['amenity=drinking_water', 'natural=spring,drinking_water=yes'],
+      { south: 1, west: 2, north: 3, east: 4 },
+      10,
+    );
+
+    expect(q).toContain('[out:json][timeout:15]');
+    expect(q).toContain('["amenity"~"(^|;\\s*)drinking_water(\\s*;|$)",i]');
+    expect(q).toContain('(1,2,3,4)');
+    expect(q.endsWith('); out center 10;')).toBe(true);
+  });
+});
+
+describe('deliver: download', () => {
+  it('writes the grid to a file and answers with where it went', async () => {
+    const tool = terrainTools.find((t) => t.name === 'sample-elevation-grid')!;
+
+    const answer = JSON.parse(
+      text(
+        await tool.execute(
+          {
+            west: 19.5,
+            south: 48.5,
+            east: 19.503,
+            north: 48.502,
+            spacing: 100,
+            deliver: 'download',
+          },
+          ctx(fakeStore({ l10n: { language: 'en' } }).store),
+        ),
+      ),
+    );
+
+    expect(answer.elevations).toBeUndefined();
+    expect(answer.savedAs).toMatch(/^freemap-elevation-grid-.*\.json$/);
+    expect(answer.rows * answer.cols).toBeGreaterThan(0);
+    expect(saved?.bytes).toBe(answer.bytes);
   });
 });

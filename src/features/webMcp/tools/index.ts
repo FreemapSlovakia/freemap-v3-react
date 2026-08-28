@@ -7,6 +7,7 @@ import { mapTools } from './mapTools.js';
 import { objectTools } from './objectTools.js';
 import { routeTools } from './routeTools.js';
 import { searchTools } from './searchTools.js';
+import { terrainTools } from './terrainTools.js';
 
 export const webMcpTools: WebMcpTool[] = [
   ...guideTools,
@@ -16,5 +17,6 @@ export const webMcpTools: WebMcpTool[] = [
   ...routeTools,
   ...drawingTools,
   ...dataTools,
+  ...terrainTools,
   ...appTools,
 ];

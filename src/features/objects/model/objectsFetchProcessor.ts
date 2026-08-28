@@ -5,20 +5,9 @@ import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import {
-  OverpassCenterExtraSchema,
-  overpassResultSchema,
-} from '@shared/types/overpass.js';
+import { buildObjectsQuery, parseObjectsResult } from '../objectsQuery.js';
 import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
-import {
-  type ObjectsResult,
-  objectsSetFilter,
-  objectsSetResult,
-} from './actions.js';
-
-const OverpassResultCenterSchema = overpassResultSchema(
-  OverpassCenterExtraSchema,
-);
+import { objectsSetFilter, objectsSetResult } from './actions.js';
 
 const limit =
   Math.round((window.screen.height * window.screen.width) / 5000 / 10) * 10;
@@ -48,11 +37,9 @@ export const objectsFetchProcessor: Processor = {
     ].join('\n'),
   handle: async ({ dispatch, getState, toastError }) => {
     try {
-      const ents = getState().objects.active.map((tags) =>
-        tags.split(',').map((item) => item.split('=')),
-      );
+      const active = getState().objects.active;
 
-      if (ents.length === 0) {
+      if (active.length === 0) {
         if (getState().objects.objects.length > 0) {
           dispatch(objectsSetResult([]));
         }
@@ -93,26 +80,16 @@ export const objectsFetchProcessor: Processor = {
 
       const b = (await mapPromise).getBounds();
 
-      const query =
-        '[out:json][timeout:15]; (' +
-        ents
-          .map(
-            (ent) =>
-              'nwr' +
-              ent
-                .map(([key, value]) =>
-                  key.startsWith('!')
-                    ? `[!"${key.slice(1)}"]`
-                    : value
-                      ? `["${key}"~"(^|;\\s*)${value}(\\s*;|$)",i]`
-                      : `["${key}"]`,
-                )
-                .join('') +
-              `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})` +
-              ';',
-          )
-          .join('') +
-        `); out center ${limit};`;
+      const query = buildObjectsQuery(
+        active,
+        {
+          south: b.getSouth(),
+          west: b.getWest(),
+          north: b.getNorth(),
+          east: b.getEast(),
+        },
+        limit,
+      );
 
       const res = await httpRequest({
         getState,
@@ -128,22 +105,7 @@ export const objectsFetchProcessor: Processor = {
         ],
       });
 
-      const result = OverpassResultCenterSchema.parse(await res.json())
-        .elements.filter((e) => e.tags)
-        .map(
-          (e) =>
-            ({
-              id: { type: 'osm', elementType: e.type, id: e.id },
-              coords:
-                e.type === 'node'
-                  ? { lat: e.lat, lon: e.lon }
-                  : {
-                      lat: e.center.lat,
-                      lon: e.center.lon,
-                    },
-              tags: e.tags ?? {},
-            }) satisfies ObjectsResult,
-        );
+      const result = parseObjectsResult(await res.json());
 
       if (result.length >= limit) {
         dispatch(

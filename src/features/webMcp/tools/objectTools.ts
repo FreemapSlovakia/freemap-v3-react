@@ -6,6 +6,7 @@ import { searchSetQuery } from '@features/search/model/actions.js';
 import { getOsmMapping } from '@osm/osmNameResolver.js';
 import { removeAccents } from '@shared/stringUtils.js';
 import z from 'zod';
+import { assertKnownCategories } from '../categories.js';
 import { makeResultDescriber } from '../describeResult.js';
 import { defineTool } from '../tool.js';
 import { waitForState } from '../waitForState.js';
@@ -62,6 +63,8 @@ export const objectTools = [
         .describe('Filters as list-object-categories gives them.'),
     }),
     async execute({ categories }, { store, signal }) {
+      await assertKnownCategories(categories, store.getState().l10n.language);
+
       store.dispatch(openTool('objects'));
 
       // The fetch is edge-triggered on the categories and the map position, so

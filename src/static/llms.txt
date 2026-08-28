@@ -851,6 +851,8 @@ When the page is open in a browser whose AI agent supports [WebMCP](https://gith
 | `list-drawings` / `remove-drawing` | Lists what is drawn, and removes one by index. |
 | `open-drawing-tool` | Opens a drawing toolbar so the user can carry on by hand. |
 | `get-elevation` | Heights above sea level of given points, from the terrain model. |
+| `sample-elevation-grid` | Reads the terrain model over a rectangle on a regular grid in one call (up to 50 000 points), optionally with slope and aspect per cell. |
+| `find-objects-in-area` | Finds POIs of given categories inside any bounding box and reports them back without touching what the map shows. |
 | `get-route-elevation` | Climb, drop and the highest and lowest point of the planned route. |
 | `get-map-features` | Everything on the map as one GeoJSON FeatureCollection. |
 | `download-map-features` | Saves what is on the map as GPX, GeoJSON or KML. |
@@ -858,6 +860,8 @@ When the page is open in a browser whose AI agent supports [WebMCP](https://gith
 | `open-dialog` | Opens one of the app's dialogs for the user to carry on in themselves. |
 | `clear-map` | Takes everything the user put on the map off it. |
 | `get-app-state` | The open tools and dialog, the selection, the UI language and who is signed in. |
+
+The bulk readers — `sample-elevation-grid`, `find-objects-in-area` and `get-map-features` — also take `deliver: "download"`, which writes the answer to a JSON file instead of returning it, for a result too large to carry back through the agent's own channel.
 
 The tools are not registered in an embedded map (`/embed`), and there is no HTTP API behind them: an agent that is not running in the user's browser should build a deep link instead (see "Deep links" above).
 

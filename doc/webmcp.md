@@ -121,9 +121,44 @@ Descriptions and enum values are **English only**, deliberately — they are rea
 by a model, not by the user, and translating them would put 15 more strings per
 tool through the locale files for nobody to read.
 
-## Two helpers this feature extracted
+## Reading more than the map shows
 
-Both were inline in a component, and a tool would have had to reimplement them:
+Two tools answer about ground the user is not looking at, because an agent
+doing terrain work otherwise pays a round trip per point:
+
+- **`sample-elevation-grid`** turns a bbox and a spacing in metres into a grid,
+  sampled through `fetchElevations` in chunks of 10 000 (the service answers
+  20 000 in about two seconds), capped at 50 000 cells per call. Slope and
+  aspect are computed here from each cell's neighbours rather than from four
+  extra samples per point — the reason to have a grid at all. The compass
+  conversion wants the elevation gradient measured **southward**, and the grid's
+  east-west step shrinks with latitude, so the derivatives take the ground
+  spacing of each row rather than the nominal one. Row 0 is the
+  northern edge, and the returned `south`/`east` are where the whole cells
+  actually end, inside the box asked for.
+- **`find-objects-in-area`** runs the objects tool's own Overpass query against
+  any bbox and only reports back — it draws nothing and leaves the map alone.
+  Capped at 10 000 km² and, by `limit`, at 1000 objects; `complete` says whether
+  the answer filled the limit.
+
+  **The filters are checked against `objectCategories`** — by both this tool and
+  `show-objects` — and that check is what holds the cap up, not tidiness:
+  `buildObjectsQuery` interpolates a filter into Overpass QL unescaped, so an
+  invented one can close the brackets and carry a statement of its own, with no
+  bbox in it. This is not a general Overpass proxy, and the vocabulary check is
+  the reason it cannot become one.
+
+Both, and `get-map-features` with them, take `deliver: "download"`: the answer
+is written as a JSON file (`saveBlob`) and the tool reports where it went
+instead of returning it. An agent's call carries no user gesture, so the save
+picker refuses and the plain download anchor does the work. It exists because
+the channel an agent reads tool results through can be far smaller than a
+50 000-cell grid.
+
+## Three helpers this feature extracted
+
+Each was inline where only one caller could reach it, and a tool would have had
+to reimplement it:
 
 - **`objectCategories(osmMapping)`** (`src/features/objects/`) — the POI
   categories, read off the localized tag-to-name mapping, with the comma-joined
@@ -133,6 +168,10 @@ Both were inline in a component, and a tool would have had to reimplement them:
 - **`elevationStats(geometry)`** (`src/shared/geoutils.ts`) — climb, drop and
   extremes of a line, segment by segment. `DataViewerDetails` shows it for a
   loaded track and `get-route-elevation` returns it for the planned route.
+- **`buildObjectsQuery` / `parseObjectsResult`** (`src/features/objects/`) — the
+  Overpass query behind the objects tool and the shape it answers in, shared by
+  `objectsFetchProcessor` and `find-objects-in-area`, so a tag filter that works
+  in the menu works in the tool.
 
 ## Deliberately not tools
 
