@@ -181,7 +181,10 @@ function setMarkerInteractive(
 function sameElement(a?: ReactElement, b?: ReactElement): boolean {
   return (
     a === b ||
-    (!!a && !!b && a.type === b.type && shallowEqual(a.props, b.props))
+    (a !== undefined &&
+      b !== undefined &&
+      a.type === b.type &&
+      shallowEqual(a.props, b.props))
   );
 }
 
