@@ -28,6 +28,7 @@ import { dataViewerDeleteFeatureProcessor } from '@features/dataViewer/model/pro
 import { dataViewerDensifyProcessor } from '@features/dataViewer/model/processors/dataViewerDensifyProcessor.js';
 import { dataViewerDownloadTrackProcessor } from '@features/dataViewer/model/processors/dataViewerDownloadTrackProcessor.js';
 import { dataViewerGpxLoadProcessor } from '@features/dataViewer/model/processors/dataViewerGpxLoadProcessor.js';
+import { dataViewerJoinTracksProcessor } from '@features/dataViewer/model/processors/dataViewerJoinTracksProcessor.js';
 import { dataViewerMatchTrackProcessor } from '@features/dataViewer/model/processors/dataViewerMatchTrackProcessor.js';
 import { dataViewerResolveElevationPromptProcessor } from '@features/dataViewer/model/processors/dataViewerResolveElevationPromptProcessor.js';
 import { dataViewerSelectProcessor } from '@features/dataViewer/model/processors/dataViewerSelectProcessor.js';
@@ -216,6 +217,7 @@ export const processors = [
   dataViewerResolveElevationPromptProcessor,
   dataViewerSelectProcessor,
   dataViewerDeleteFeatureProcessor,
+  dataViewerJoinTracksProcessor,
   dataViewerDensifyProcessor,
   routePlannerFindRouteProcessor,
   routePlannerOptimizeOrderProcessor,

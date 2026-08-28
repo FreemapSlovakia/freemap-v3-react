@@ -1,14 +1,14 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { PromptToolbar } from '@shared/components/PromptToolbar.js';
 import { Selection } from '@shared/components/Selection.js';
-import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
-import { CgArrowsMergeAltH } from 'react-icons/cg';
-import { FaDrawPolygon, FaRegPlayCircle, FaTimes } from 'react-icons/fa';
+import { FaDrawPolygon, FaRegPlayCircle } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { RiScissorsFill } from 'react-icons/ri';
+import { TbArrowsJoin } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import {
   drawingLineContinue,
@@ -47,26 +47,14 @@ export default function DrawingLinePointSelection(): ReactElement | null {
     (state) => state.drawingLines.joinWith !== undefined,
   );
 
-  if (joining /* TODO show joining toolbar */) {
+  if (joining) {
     return (
-      <Toolbar className="mt-2">
-        <span className="px-1">{dm?.selectPointToJoin}</span>
-
-        <LongPressTooltip breakpoint="sm" kbd="Esc" label={m?.general.cancel}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(drawingLineJoinStart(undefined));
-              }}
-              {...props}
-            >
-              <FaTimes />
-              <span className={labelClassName}>{label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      </Toolbar>
+      <PromptToolbar
+        prompt={dm?.selectPointToJoin}
+        onCancel={() => {
+          dispatch(drawingLineJoinStart(undefined));
+        }}
+      />
     );
   }
 
@@ -123,7 +111,7 @@ export default function DrawingLinePointSelection(): ReactElement | null {
               onClick={() => dispatch(drawingLineJoinStart(pt))}
               {...props}
             >
-              <CgArrowsMergeAltH />
+              <TbArrowsJoin />
               <span className={labelClassName}> {label}</span>
             </Button>
           )}

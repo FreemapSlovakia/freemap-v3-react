@@ -65,6 +65,13 @@ export type ActionProps = {
    * them bare or as an array — a fragment hides them from packed disabling.
    */
   menu?: ReactNode;
+  /**
+   * The action *is* its {@link menu}: inline it opens as a plain dropdown
+   * instead of a button with a caret, and packed it opens as a submenu like
+   * {@link ActionSubmenu}. For a choice with no default to press — `onClick` is
+   * never called.
+   */
+  menuOnly?: boolean;
 } & Pick<
   ButtonProps,
   // `variant="danger"` also turns the packed dropdown item red.
@@ -361,11 +368,29 @@ export function ResponsiveActions({
       requiresOnline,
       disabled,
       menu,
+      menuOnly,
       ...rest
     }: ActionProps,
     key: number,
   ) => {
     const off = isOff({ disabled, requiresOnline });
+
+    const dropdown = (content: ReactNode, tipProps?: TooltipTargetProps) => (
+      <Dropdown key={key} as={ButtonGroup} align={align} onSelect={onSelect}>
+        <Dropdown.Toggle
+          variant={ownVariant ?? variant}
+          size={size}
+          disabled={off}
+          active={rest.active}
+          className={rest.className}
+          {...tipProps}
+        >
+          {content}
+        </Dropdown.Toggle>
+
+        <FmDropdownMenu>{menu}</FmDropdownMenu>
+      </Dropdown>
+    );
 
     const split = (button: ReactNode) => (
       <Dropdown key={key} as={ButtonGroup} align={align} onSelect={onSelect}>
@@ -383,6 +408,10 @@ export function ResponsiveActions({
     );
 
     const renderPlain = () => {
+      if (menuOnly) {
+        return dropdown(label);
+      }
+
       const button = (
         <Button
           key={key}
@@ -403,6 +432,19 @@ export function ResponsiveActions({
     return icon ? (
       <LongPressTooltip key={key} label={label} breakpoint={showLabelFrom}>
         {({ label: tipLabel, labelClassName, props: tipProps }) => {
+          const content = (
+            <>
+              {icon}
+              {showLabelFrom && (
+                <span className={labelClassName}> {tipLabel}</span>
+              )}
+            </>
+          );
+
+          if (menuOnly) {
+            return dropdown(content, tipProps);
+          }
+
           const button = (
             <Button
               variant={ownVariant ?? variant}
@@ -415,10 +457,7 @@ export function ResponsiveActions({
                 (typeof label === 'string' ? label : undefined)
               }
             >
-              {icon}
-              {showLabelFrom && (
-                <span className={labelClassName}> {tipLabel}</span>
-              )}
+              {content}
             </Button>
           );
 
@@ -540,10 +579,25 @@ export function ResponsiveActions({
     return () => observer.disconnect();
   }, [fit]);
 
-  const openSubmenu = entries.find(
-    (entry): entry is Extract<Entry, { kind: 'submenu' }> =>
-      entry.kind === 'submenu' && entry.index === submenu,
+  // A packed `menuOnly` action opens as a submenu of its own, so its variants
+  // are read under the name of the action they belong to rather than loose.
+  const openEntry = entries.find(
+    (entry) =>
+      (entry.kind === 'submenu' ||
+        (entry.kind === 'action' && entry.props.menuOnly)) &&
+      entry.index === submenu,
   );
+
+  const openSubmenu =
+    openEntry?.kind === 'submenu'
+      ? openEntry
+      : openEntry?.kind === 'action'
+        ? {
+            label: openEntry.props.label,
+            icon: openEntry.props.icon,
+            items: openEntry.props.menu,
+          }
+        : undefined;
 
   const openMenu = (next: boolean) => {
     setShow(next);
@@ -646,6 +700,16 @@ export function ResponsiveActions({
                     eventKey={`${SUBMENU_PREFIX}${entry.index}`}
                   >
                     {entry.icon} {entry.label} <FaChevronRight />
+                  </Dropdown.Item>
+                ) : entry.props.menuOnly ? (
+                  <Dropdown.Item
+                    key={entry.index}
+                    as="button"
+                    disabled={isOff(entry.props)}
+                    eventKey={`${SUBMENU_PREFIX}${entry.index}`}
+                  >
+                    {entry.props.icon} {entry.props.label} <FaChevronRight />
+                    {entry.props.requiresOnline && <OfflineBadge />}
                   </Dropdown.Item>
                 ) : (
                   <Fragment key={entry.index}>

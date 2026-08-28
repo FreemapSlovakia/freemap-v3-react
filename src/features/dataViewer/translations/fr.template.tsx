@@ -21,8 +21,15 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   split: {
     action: 'Diviser',
+    pick: 'Cliquez sur la trace à l’endroit de la coupure',
     here: 'Diviser ici',
     segments: 'Diviser en segments',
+  },
+  join: {
+    action: 'Fusionner',
+    asLine: 'Fusionner en une seule ligne',
+    asSegments: 'Fusionner en gardant les segments',
+    pick: 'Cliquez sur la trace à fusionner',
   },
   match: {
     menuItem: 'Caler sur les chemins',

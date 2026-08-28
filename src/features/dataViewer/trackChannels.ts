@@ -1,3 +1,4 @@
+import { lineSegments } from '@shared/geoutils.js';
 import type { TrackLine } from './trackSelection.js';
 
 /** Per-point channels live under this property, one array per channel. */
@@ -92,8 +93,16 @@ function alignToSegments(raw: unknown, lengths: number[]): unknown[][] | null {
   return null;
 }
 
-/** The feature's per-point channels that line up with the given segments. */
-export function readChannels(feature: TrackLine, lengths: number[]): Channel[] {
+/**
+ * The feature's per-point channels, laid out per segment alongside its own
+ * coordinates. Anything that does not line up with them is left out — which is
+ * why the lengths are taken from the geometry here rather than by each caller.
+ */
+export function readChannels(feature: TrackLine): Channel[] {
+  const lengths = lineSegments(feature.geometry).map(
+    (segment) => segment.length,
+  );
+
   const props = feature.properties;
 
   const candidates = [

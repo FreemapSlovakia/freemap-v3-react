@@ -21,8 +21,15 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   split: {
     action: 'Razdeli',
+    pick: 'Kliknite sled na mestu razdelitve',
     here: 'Razdeli tukaj',
     segments: 'Razdeli na odseke',
+  },
+  join: {
+    action: 'Združi',
+    asLine: 'Združi v eno črto',
+    asSegments: 'Združi z ohranitvijo odsekov',
+    pick: 'Kliknite sled, s katero želite združiti',
   },
   match: {
     menuItem: 'Pripni na poti',

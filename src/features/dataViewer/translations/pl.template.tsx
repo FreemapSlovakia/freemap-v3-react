@@ -10,8 +10,15 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   split: {
     action: 'Podziel',
+    pick: 'Kliknij ślad w miejscu podziału',
     here: 'Podziel tutaj',
     segments: 'Podziel na odcinki',
+  },
+  join: {
+    action: 'Połącz',
+    asLine: 'Połącz w jedną linię',
+    asSegments: 'Połącz z zachowaniem odcinków',
+    pick: 'Kliknij ślad, z którym połączyć',
   },
   match: {
     menuItem: 'Dopasuj do dróg',

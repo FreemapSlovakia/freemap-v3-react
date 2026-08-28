@@ -78,6 +78,21 @@ export const pickingModeSelector = (state: RootState): boolean =>
   galleryShowPositionSelector(state) ||
   mapAreaSelectingSelector(state);
 
+/**
+ * True while the map is given over to a click on a *feature* — joining two
+ * lines, aiming a cut. The chrome goes away as it does for a picking mode, but
+ * the features stay live: the click these are waiting for is a click on one.
+ * The armed mode's own toolbar says what it wants and cancels it.
+ */
+export const armedModeSelector = (state: RootState): boolean =>
+  state.drawingLines.joinWith !== undefined ||
+  state.trackViewer.joinWith !== null ||
+  state.trackViewer.splitting;
+
+/** Whether the map is in a mode of its own, whichever kind. */
+export const mapModeSelector = (state: RootState): boolean =>
+  pickingModeSelector(state) || armedModeSelector(state);
+
 // The active tool as far as map interaction is concerned: the open map-click
 // tool, but masked to null while a picking mode owns the map so it goes inert.
 // Map-interaction code should read this; menus/processors that want to know

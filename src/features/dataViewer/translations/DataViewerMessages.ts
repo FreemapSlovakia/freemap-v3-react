@@ -21,8 +21,18 @@ export type DataViewerMessages = {
   /** Cutting a track in two, or into the segments a paused recording left. */
   split: {
     action: string;
+    /** Stands in for the track's name while the cut is being aimed. */
+    pick: string;
     here: string;
     segments: string;
+  };
+  /** Joining the selected track with another loaded one. */
+  join: {
+    action: string;
+    asLine: string;
+    asSegments: string;
+    /** Stands in for the track's name while the other one is being picked. */
+    pick: string;
   };
   /** Snapping a recorded track onto the routing graph. */
   match: {

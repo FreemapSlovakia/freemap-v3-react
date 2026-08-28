@@ -3,8 +3,12 @@ import { useDrawingMessages } from '@features/drawing/translations/useDrawingMes
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { toastsRemove } from '@features/toasts/model/actions.js';
-import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { PromptToolbar } from '@shared/components/PromptToolbar.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
 import { Selection } from '@shared/components/Selection.js';
 import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
@@ -26,13 +30,19 @@ import {
   FaTag,
 } from 'react-icons/fa';
 import { RiScissorsFill } from 'react-icons/ri';
-import { TbArrowsSplit, TbTimeline } from 'react-icons/tb';
+import {
+  TbArrowsJoin,
+  TbArrowsJoin2,
+  TbArrowsSplit,
+  TbTimeline,
+} from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
 import { useSimplifyData } from '../hooks/useSimplifyData.js';
 import {
   dataViewerExplodeTrack,
   dataViewerSetElevationPrompt,
+  dataViewerSetJoining,
   dataViewerSetSplitting,
   dataViewerSplitTrack,
   dataViewerToggleElevationChart,
@@ -89,6 +99,8 @@ export default function DataViewerSelection(): ReactElement | null {
 
   const splitPoint = useAppSelector((state) => state.trackViewer.splitPoint);
 
+  const joinWith = useAppSelector((state) => state.trackViewer.joinWith);
+
   const line =
     feature !== undefined && isTrackLine(feature) ? feature : undefined;
 
@@ -96,29 +108,52 @@ export default function DataViewerSelection(): ReactElement | null {
     return null;
   }
 
-  const handleMoreSelect = (eventKey: string | null) => {
-    switch (eventKey) {
-      case 'convert-to-drawing':
-        void convertToDrawing(index);
+  // Armed, the toolbar makes way for what the mode is waiting on.
+  if (joinWith) {
+    return (
+      <PromptToolbar
+        prompt={dvm?.join.pick}
+        onCancel={() => {
+          dispatch(dataViewerSetJoining(null));
+        }}
+      />
+    );
+  }
 
-        break;
+  if (splitting) {
+    return (
+      <PromptToolbar
+        prompt={dvm?.split.pick}
+        onCancel={() => {
+          dispatch(dataViewerSetSplitting(false));
+        }}
+      >
+        {/* Only a finger ever gets this far: a pointer that can hover cuts
+            where it points, and leaves nothing to confirm. */}
+        {splitPoint && (
+          <LongPressTooltip breakpoint="sm" label={dvm?.split.here}>
+            {({ label, labelClassName, props }) => (
+              <Button
+                variant="primary"
+                onClick={() => {
+                  dispatch(dataViewerSplitTrack(splitPoint));
+                }}
+                {...props}
+              >
+                <FaCheck />
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
+      </PromptToolbar>
+    );
+  }
 
-      case 'simplify':
-        void simplify(index);
+  const lines = trackLineFeatures(trackGeojson);
 
-        break;
-
-      case 'match-to-network':
-        dispatch(setActiveModal({ type: 'track-viewer-match' }));
-
-        break;
-
-      case 'explode':
-        dispatch(dataViewerExplodeTrack(index));
-
-        break;
-    }
-  };
+  // A join needs a second line to aim at.
+  const joinable = line !== undefined && lines.length > 1;
 
   const geometryType = feature.geometry.type;
 
@@ -132,10 +167,7 @@ export default function DataViewerSelection(): ReactElement | null {
     (typeof name === 'string' && name) ||
     (line
       ? dvm?.unnamedTrack({
-          n:
-            trackLineFeatures(trackGeojson).findIndex(
-              (candidate) => candidate.index === index,
-            ) + 1,
+          n: lines.findIndex((candidate) => candidate.index === index) + 1,
         })
       : isPoint
         ? m?.selections.drawPoints
@@ -150,6 +182,10 @@ export default function DataViewerSelection(): ReactElement | null {
         ? (feature.geometry.coordinates[0] ?? [])
         : [];
 
+  // A point's own menu carries what the packed menu would otherwise hold, so it
+  // takes the conversion with it.
+  const placeMenu = isPoint && lat !== undefined && lon !== undefined;
+
   return (
     <Selection
       icon={
@@ -158,107 +194,155 @@ export default function DataViewerSelection(): ReactElement | null {
       label={label}
       deletable
     >
-      <LongPressTooltip breakpoint="md" label={dm?.modify}>
-        {({ label, labelClassName, props }) => (
-          <Button
-            variant="secondary"
+      <ResponsiveActions gap={1} align="start" toggleLabel={m?.general.actions}>
+        <Action
+          icon={<FaTag />}
+          label={dm?.modify}
+          showLabelFrom="md"
+          onClick={() => {
+            dispatch(setActiveModal({ type: 'data-viewer-properties' }));
+          }}
+        />
+
+        {line && (
+          <Action
+            icon={<FaChartArea />}
+            label={m?.general.elevationProfile}
+            showLabelFrom="md"
+            active={elevationChartActive}
             onClick={() => {
-              dispatch(setActiveModal({ type: 'data-viewer-properties' }));
+              dispatch(dataViewerToggleElevationChart());
             }}
-            {...props}
-          >
-            <FaTag />
-            <span className={labelClassName}> {label}</span>
-          </Button>
+          />
         )}
-      </LongPressTooltip>
 
-      {line && (
-        <LongPressTooltip breakpoint="md" label={m?.general.elevationProfile}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              active={elevationChartActive}
-              onClick={() => {
-                dispatch(dataViewerToggleElevationChart());
-              }}
-              {...props}
-            >
-              <FaChartArea />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+        {line && (
+          <Action
+            icon={<FaInfoCircle />}
+            label={dvm?.moreInfo}
+            showFrom="sm"
+            showLabelFrom="md"
+            active={trackInfoActive}
+            onClick={() => {
+              // The stats depend on elevation, so settle it first when some is
+              // missing and the user hasn't decided yet. Measured here rather
+              // than per render: it walks every coordinate.
+              if (trackInfoActive) {
+                dispatch(toastsRemove(TRACK_INFO_TOAST_ID));
+              } else if (
+                elevationDecision === 'undecided' &&
+                elevationCoverage([line]) !== 'full'
+              ) {
+                dispatch(dataViewerSetElevationPrompt({ type: 'info' }));
+              } else {
+                dispatch(trackInfoToast);
+              }
+            }}
+          />
+        )}
 
-      {line && (
-        <LongPressTooltip breakpoint="md" label={dvm?.moreInfo}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              active={trackInfoActive}
-              onClick={() => {
-                // The stats depend on elevation, so settle it first when some
-                // is missing and the user hasn't decided yet. Measured here
-                // rather than per render: it walks every coordinate.
-                if (trackInfoActive) {
-                  dispatch(toastsRemove(TRACK_INFO_TOAST_ID));
-                } else if (
-                  elevationDecision === 'undecided' &&
-                  elevationCoverage([line]) !== 'full'
-                ) {
-                  dispatch(dataViewerSetElevationPrompt({ type: 'info' }));
-                } else {
-                  dispatch(trackInfoToast);
-                }
-              }}
-              {...props}
-            >
-              <FaInfoCircle />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+        {line && isSplittable(line) && (
+          <Action
+            icon={<RiScissorsFill />}
+            label={dvm?.split.action}
+            showFrom="sm"
+            // Later than the buttons beside them: both carry a caret as well.
+            showLabelFrom="lg"
+            onClick={() => {
+              dispatch(dataViewerSetSplitting(true));
+            }}
+            menu={
+              isExplodable(line) && [
+                <Dropdown.Item
+                  key="segments"
+                  as="button"
+                  onClick={() => {
+                    dispatch(dataViewerExplodeTrack(index));
+                  }}
+                >
+                  <TbArrowsSplit /> &nbsp;{dvm?.split.segments ?? '…'}
+                </Dropdown.Item>,
+              ]
+            }
+          />
+        )}
 
-      {line && isSplittable(line) && (
-        <LongPressTooltip breakpoint="md" label={dvm?.split.action}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              active={splitting}
-              onClick={() => {
-                dispatch(dataViewerSetSplitting(!splitting));
-              }}
-              {...props}
-            >
-              <RiScissorsFill />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+        {joinable && (
+          <Action
+            icon={<TbArrowsJoin />}
+            label={dvm?.join.action}
+            showFrom="md"
+            // Later than the buttons beside it: it carries a caret as well.
+            showLabelFrom="lg"
+            // The two ways of joining differ in the result, so neither is the
+            // one a press means: the button asks which before it arms anything.
+            menuOnly
+            menu={[
+              <Dropdown.Item
+                key="line"
+                as="button"
+                onClick={() => {
+                  dispatch(
+                    dataViewerSetJoining({ featureIndex: index, mode: 'line' }),
+                  );
+                }}
+              >
+                <TbArrowsJoin /> &nbsp;{dvm?.join.asLine ?? '…'}
+              </Dropdown.Item>,
 
-      {/* Only a finger ever gets this far: a pointer that can hover cuts where
-          it points, and leaves nothing to confirm. */}
-      {splitPoint && (
-        <LongPressTooltip breakpoint="md" label={dvm?.split.here}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="primary"
-              onClick={() => {
-                dispatch(dataViewerSplitTrack(splitPoint));
-              }}
-              {...props}
-            >
-              <FaCheck />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+              <Dropdown.Item
+                key="segments"
+                as="button"
+                onClick={() => {
+                  dispatch(
+                    dataViewerSetJoining({
+                      featureIndex: index,
+                      mode: 'segments',
+                    }),
+                  );
+                }}
+              >
+                <TbArrowsJoin2 /> &nbsp;{dvm?.join.asSegments ?? '…'}
+              </Dropdown.Item>,
+            ]}
+          />
+        )}
 
-      {isPoint && lat !== undefined && lon !== undefined ? (
+        {line && (
+          <Action
+            icon={<FaMagic />}
+            label={dvm?.match.menuItem}
+            showFrom="never"
+            onClick={() => {
+              dispatch(setActiveModal({ type: 'track-viewer-match' }));
+            }}
+          />
+        )}
+
+        {isSimplifiable(feature) && (
+          <Action
+            icon={<FaCompressAlt />}
+            label={m?.general.simplify.title}
+            showFrom="never"
+            onClick={() => {
+              void simplify(index);
+            }}
+          />
+        )}
+
+        {!placeMenu && (
+          <Action
+            icon={<FaPencilAlt />}
+            label={m?.general.convertToDrawing}
+            showFrom="never"
+            onClick={() => {
+              void convertToDrawing(index);
+            }}
+          />
+        )}
+      </ResponsiveActions>
+
+      {placeMenu && (
         // Not only "open in": the menu also routes to the point, takes a view
         // from it and hands it to an editor.
         <LongPressTooltip label={m?.general.actions}>
@@ -291,36 +375,6 @@ export default function DataViewerSelection(): ReactElement | null {
             </OpenInExternalAppMenuButton>
           )}
         </LongPressTooltip>
-      ) : (
-        <Dropdown id="more" onSelect={handleMoreSelect}>
-          <Dropdown.Toggle variant="secondary">
-            <FaEllipsisV />
-          </Dropdown.Toggle>
-
-          <FmDropdownMenu>
-            {line && (
-              <Dropdown.Item as="button" eventKey="match-to-network">
-                <FaMagic /> &nbsp;{dvm?.match.menuItem ?? '…'}
-              </Dropdown.Item>
-            )}
-
-            {line && isExplodable(line) && (
-              <Dropdown.Item as="button" eventKey="explode">
-                <TbArrowsSplit /> &nbsp;{dvm?.split.segments ?? '…'}
-              </Dropdown.Item>
-            )}
-
-            {isSimplifiable(feature) && (
-              <Dropdown.Item as="button" eventKey="simplify">
-                <FaCompressAlt /> &nbsp;{m?.general.simplify.title ?? '…'}
-              </Dropdown.Item>
-            )}
-
-            <Dropdown.Item as="button" eventKey="convert-to-drawing">
-              <FaPencilAlt /> &nbsp;{m?.general.convertToDrawing ?? '…'}
-            </Dropdown.Item>
-          </FmDropdownMenu>
-        </Dropdown>
       )}
     </Selection>
   );

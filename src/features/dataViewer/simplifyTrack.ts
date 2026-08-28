@@ -130,10 +130,7 @@ export function simplifyTrackFeature(
 
   writeChannels(
     properties,
-    readChannels(
-      feature,
-      segments.map((segment) => segment.length),
-    ),
+    readChannels(feature),
     geometry.type === 'LineString',
     (channel) =>
       kept.map((indices, i) => {

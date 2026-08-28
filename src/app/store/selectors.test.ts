@@ -2,8 +2,10 @@ import type { FeatureCollection } from 'geojson';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   activeMapToolSelector,
+  armedModeSelector,
   askingCookieConsentSelector,
   drawingLinePolys,
+  mapModeSelector,
   mouseCursorSelector,
   pickingModeSelector,
   selectingModeSelector,
@@ -41,13 +43,18 @@ function makeState(o: Overrides = {}): RootState {
       activeImageId: null,
       ...o.gallery,
     },
-    drawingLines: { drawing: false, ...o.drawingLines },
+    drawingLines: { drawing: false, joinWith: undefined, ...o.drawingLines },
     mapArea: { selecting: null, ...o.mapArea },
     toposcope: { pickingCenter: false, ...o.toposcope },
     panorama: { picking: null, ...o.panorama },
     viewshed: { pickingViewpoint: false, ...o.viewshed },
     tracking: { tracks: [], ...o.tracking },
-    trackViewer: { trackGeojson: null, ...o.trackViewer },
+    trackViewer: {
+      trackGeojson: null,
+      joinWith: null,
+      splitting: false,
+      ...o.trackViewer,
+    },
     toasts: { toasts: {}, ...o.toasts },
   } as unknown as RootState;
 }
@@ -99,6 +106,40 @@ describe('pickingModeSelector', () => {
     const state = makeState({ panorama: { picking: 'viewpoint' } });
 
     expect(pickingModeSelector(state)).toBe(true);
+  });
+
+  // An armed mode waits on a click on a feature, so the features stay live.
+  it('is false while a mode is armed on a feature', () => {
+    const state = makeState({ trackViewer: { splitting: true } });
+
+    expect(pickingModeSelector(state)).toBe(false);
+    expect(selectingModeSelector(state)).toBe(true);
+  });
+});
+
+describe('armedModeSelector', () => {
+  it('is false by default', () => {
+    expect(armedModeSelector(makeState())).toBe(false);
+    expect(mapModeSelector(makeState())).toBe(false);
+  });
+
+  it.each([
+    ['a drawing line join', { drawingLines: { joinWith: { lineIndex: 0 } } }],
+    ['a track join', { trackViewer: { joinWith: { featureIndex: 0 } } }],
+    ['an armed split', { trackViewer: { splitting: true } }],
+  ])('is true while %s waits for its click', (_what, overrides) => {
+    expect(armedModeSelector(makeState(overrides))).toBe(true);
+  });
+
+  it('counts towards the map being in a mode, as picking does', () => {
+    const armed = makeState({ trackViewer: { splitting: true } });
+
+    const picking = makeState({
+      homeLocation: { selectingHomeLocation: true },
+    });
+
+    expect(mapModeSelector(armed)).toBe(true);
+    expect(mapModeSelector(picking)).toBe(true);
   });
 });
 

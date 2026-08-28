@@ -1,5 +1,9 @@
 import { hasRole } from '@features/auth/model/types.js';
 import {
+  dataViewerSetJoining,
+  dataViewerSetSplitting,
+} from '@features/dataViewer/model/actions.js';
+import {
   drawingLineJoinStart,
   drawingLineStopDrawing,
 } from '@features/drawing/model/actions/drawingLineActions.js';
@@ -94,12 +98,22 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       return panoramaSetPicking(null);
     }
 
-    if (state.elevationChart.target) {
-      return elevationChartClose();
-    }
-
+    // Before the chart and the panels below it: a mode waiting on a click has
+    // put them away, so Escape has to be about the mode itself.
     if (state.drawingLines.joinWith) {
       return drawingLineJoinStart(undefined);
+    }
+
+    if (state.trackViewer.joinWith) {
+      return dataViewerSetJoining(null);
+    }
+
+    if (state.trackViewer.splitting) {
+      return dataViewerSetSplitting(false);
+    }
+
+    if (state.elevationChart.target) {
+      return elevationChartClose();
     }
 
     // Waiting for a hole to be drawn is a mode of its own — no line is being
@@ -229,6 +243,10 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
   if (
     event.code === 'Delete' &&
     state.drawingLines.joinWith === undefined &&
+    // An armed mode has no toolbar of its own to delete from, so the key would
+    // take away the very track it is aimed at.
+    state.trackViewer.joinWith === null &&
+    !state.trackViewer.splitting &&
     !keyTimer &&
     !showingModal &&
     !suspendedModal &&

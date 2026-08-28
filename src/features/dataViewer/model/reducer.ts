@@ -6,6 +6,11 @@ import { createReducer } from '@reduxjs/toolkit';
 import { ELEVATION_SOURCES_PROP } from '@shared/elevation.js';
 import { withoutPerPointData } from '@shared/geoutils.js';
 import type { FeatureCollection } from 'geojson';
+import {
+  canJoinTracks,
+  joinTrackFeatures,
+  type TrackJoinMode,
+} from '../joinTracks.js';
 import { simplifyDataFeature } from '../simplifyTrack.js';
 import {
   explodeTrackFeature,
@@ -19,6 +24,7 @@ import {
   dataViewerDownloadTrack,
   dataViewerExplodeTrack,
   dataViewerGpxLoad,
+  dataViewerJoinTracks,
   dataViewerResolveElevationPrompt,
   dataViewerSetActiveTrack,
   dataViewerSetData,
@@ -26,6 +32,7 @@ import {
   dataViewerSetElevationPrompt,
   dataViewerSetFeatureProperties,
   dataViewerSetGpxUrl,
+  dataViewerSetJoining,
   dataViewerSetRenderGeojson,
   dataViewerSetSplitPoint,
   dataViewerSetSplitting,
@@ -70,6 +77,9 @@ export interface DataViewerState extends DataViewerStateBase {
   // confirming the cut from the toolbar. A pointer that can hover cuts outright
   // and never sets this.
   splitPoint: TrackSplitPoint | null;
+  // The track a join is armed on, and how the two are put together; the next
+  // line clicked is joined onto it.
+  joinWith: { featureIndex: number; mode: TrackJoinMode } | null;
 }
 
 export type ElevationDecision = 'undecided' | ElevationFillMode;
@@ -88,13 +98,17 @@ export const dataViewerInitialState: DataViewerState = {
   activeTrackIndex: null,
   splitting: false,
   splitPoint: null,
+  joinWith: null,
   ...cleanState,
 };
 
-function clearSplit(state: DataViewerState) {
+/** Both editing modes are armed on one track, so anything else takes them off. */
+function clearModes(state: DataViewerState) {
   state.splitting = false;
 
   state.splitPoint = null;
+
+  state.joinWith = null;
 }
 
 /** An edit makes the data no longer the file it came from. */
@@ -110,7 +124,7 @@ function markGeometryEdited(state: DataViewerState) {
 
   state.renderTrackGeojson = null;
 
-  clearSplit(state);
+  clearModes(state);
 }
 
 /**
@@ -155,7 +169,7 @@ export const dataViewerReducer = createReducer(
           // The feature indices changed; fall back to the first line.
           state.activeTrackIndex = null;
 
-          clearSplit(state);
+          clearModes(state);
         }
       })
       .addCase(dataViewerDeleteFeature, (state, { payload }) => {
@@ -235,16 +249,21 @@ export const dataViewerReducer = createReducer(
         state.activeTrackIndex = action.payload;
       })
       .addCase(dataViewerSetSplitting, (state, { payload }) => {
-        state.splitting = payload;
+        clearModes(state);
 
-        state.splitPoint = null;
+        state.splitting = payload;
       })
       .addCase(dataViewerSetSplitPoint, (state, { payload }) => {
         state.splitPoint = payload;
       })
+      .addCase(dataViewerSetJoining, (state, { payload }) => {
+        clearModes(state);
+
+        state.joinWith = payload;
+      })
       // The cursor is armed for one track; anything else being selected (or the
       // selection going) leaves it aimed at nothing.
-      .addCase(selectFeature, clearSplit)
+      .addCase(selectFeature, clearModes)
       .addCase(dataViewerSplitTrack, (state, { payload }) => {
         const feature = state.trackGeojson?.features[payload.featureIndex];
 
@@ -260,6 +279,53 @@ export const dataViewerReducer = createReducer(
 
         if (halves) {
           replaceFeature(state, payload.featureIndex, halves);
+        }
+      })
+      .addCase(dataViewerJoinTracks, (state, { payload }) => {
+        const { joinWith } = state;
+
+        const features = state.trackGeojson?.features;
+
+        if (!joinWith || !features) {
+          return;
+        }
+
+        const target = joinWith.featureIndex;
+
+        if (!canJoinTracks(features, target, payload)) {
+          return;
+        }
+
+        features[target] = joinTrackFeatures(
+          features[target] as TrackLine,
+          features[payload] as TrackLine,
+          joinWith.mode,
+        );
+
+        features.splice(payload, 1);
+
+        markGeometryEdited(state);
+
+        // Unlike a cut, a join mixes two provenances: what was decided for one
+        // track says nothing about the other's points, and a model that
+        // answered for one must not be credited for both.
+        state.elevationDecision = 'undecided';
+
+        state.elevationSources = [];
+
+        // The join lands where the armed track was, minus the one taken out
+        // from under it; anything past the removed track moves up.
+        const joined = target - (payload < target ? 1 : 0);
+
+        const active = state.activeTrackIndex;
+
+        if (active !== null) {
+          state.activeTrackIndex =
+            active === target || active === payload
+              ? joined
+              : active > payload
+                ? active - 1
+                : active;
         }
       })
       .addCase(dataViewerExplodeTrack, (state, { payload }) => {

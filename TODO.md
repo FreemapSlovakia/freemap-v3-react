@@ -367,6 +367,21 @@ somewhere and renaming it would strand existing data:**
       `useStartFinishPoints`, `trackWaypoints`, `TrackPoint`,
       `renderTrackGeojson`, `activeTrackIndex` still read as track-only. A
       semantic rename, not the mechanical one that's done.
+- [ ] **One field for the armed map-click mode.** `splitting` / `splitPoint` /
+      `joinWith` model one thing — which mode the next map click is in — as
+      three fields, so the "at most one armed" invariant is re-asserted by hand
+      in `clearModes` and in each set-case, and every consumer ORs them
+      together (`keyboardHandler`'s Escape and Delete, `DataViewerResult`'s
+      `join.handleClick(…) || split.handleClick(…) || select(…)`). A
+      discriminated `mode: { type: 'split'; … } | { type: 'join'; … } | null`
+      makes it structural, and a `useTrackModes` hook then gives the map one
+      `{ armed, handleClick, handleMove, handleOut, halos }` instead of a
+      per-mode fan-out. Do it when a third mode lands, or sooner. Two details
+      to fold in: `joinWith.featureIndex` duplicates `main.selection.id` (pass
+      `selectedIndex` in, as `useTrackSplit` already does — but note the
+      selection is cleared by paths that don't dispatch `selectFeature`), and
+      the drawing/dataViewer slices spell "not armed" as `undefined` vs `null`,
+      which is why the Delete guard reads as two conditions.
 
 ## Drawing vs. data viewer: one model, two storage budgets
 

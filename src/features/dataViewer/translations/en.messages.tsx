@@ -22,8 +22,15 @@ const en: DataViewerMessages = {
   },
   split: {
     action: 'Split',
+    pick: 'Click the track where to cut it',
     here: 'Split here',
     segments: 'Split into segments',
+  },
+  join: {
+    action: 'Join',
+    asLine: 'Join into one line',
+    asSegments: 'Join keeping segments',
+    pick: 'Click the track to join with',
   },
   match: {
     menuItem: 'Match to paths',

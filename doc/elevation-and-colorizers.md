@@ -604,7 +604,7 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   `dataViewerSetData({ select: true })` (an import, a saved recording, a conversion, not a
   link or a reload) selects the loaded line where the data holds exactly one, so the usual
   single-track import arrives ready to chart. No "All tracks" aggregate — separate
-  activities aren't auto-concatenated.
+  activities aren't auto-concatenated; **Join** does it on request, one pair at a time.
 - **Waypoints on the profile.** Standalone Points are pinned where the profile passes
   within `WAYPOINT_SNAP_METERS` (100 m); among candidates, the one closest in **time**
   when both waypoint and track carry timestamps (disambiguates a self-crossing track),
@@ -633,6 +633,19 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   10° is 180°). Elevation is in `coord[2]`, not a channel, so it is never averaged; note
   that DP is horizontal-only, so simplifying drops elevation extremes that sit on a
   straight plan line and lowers the computed climb/descent.
+
+- **Joining two tracks** (`joinTracks.ts`, the toolbar's **Join**) is the split in reverse
+  and shares its reading of a track: `lineSegments` + `readChannels`/`writeChannels` +
+  `fm:pathDetails`. Two things bite. `writeChannels`' `flat` flag follows the *result's*
+  geometry type, which a join changes — one line takes flat arrays, a segment each takes
+  nested ones. And a channel only one side records is padded with `null` over the other's
+  points rather than dropped, which is what togeojson itself leaves for a point with no
+  value, so the readers already tolerate it. Recorded times fix a track's direction (a
+  reversed one would count backwards) and decide the order where both sides have them;
+  otherwise the endpoint pairing with the smallest gap wins, ties going to the arrangement
+  that turns and reorders the least. The second track's spans are re-based by the distance
+  the first covers **in the result** — joined into one line, the gap between the two
+  becomes an edge that counts, unless they meet at a shared vertex, which is dropped.
 
 ### Matching a track to the graph — `src/features/dataViewer/matchTrack.ts`
 

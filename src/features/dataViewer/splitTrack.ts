@@ -52,10 +52,7 @@ function readSource(feature: TrackLine): Source {
 
   return {
     segments,
-    channels: readChannels(
-      feature,
-      segments.map((segment) => segment.length),
-    ),
+    channels: readChannels(feature),
     details,
     distances: details ? vertexDistances(feature) : null,
   };

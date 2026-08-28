@@ -37,6 +37,7 @@ import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
+import { useTrackJoin } from '../hooks/useTrackJoin.js';
 import { useTrackSplit } from '../hooks/useTrackSplit.js';
 
 // The selection halo, and the colour the far half of a pending cut is told
@@ -180,6 +181,8 @@ export default function DataViewerResult({
 
   const split = useTrackSplit(selectedIndex);
 
+  const join = useTrackJoin();
+
   const setThisTool = () => {
     dispatch(openTool('import-file'));
   };
@@ -306,21 +309,35 @@ export default function DataViewerResult({
       .width ?? defaultStyle.width;
 
   // The halo of the selected feature — or, with a cut aimed, the two halves it
-  // would come out as, each in its own colour.
+  // would come out as, each in its own colour. With a join armed, the candidate
+  // under the pointer wears the second colour, so the pair is visible first.
+  // Keyed by the segment they are of rather than by their place in this list:
+  // a hover adds a halo partway up it, and index keys would hand the selected
+  // track's `Polyline` the hovered track's points instead of leaving it alone.
   const halos = split.preview
     ? [
-        ...split.preview.head.map((positions) => ({
+        ...split.preview.head.map((positions, i) => ({
+          key: `head-${i}`,
           positions,
           options: HEAD_HALO,
         })),
-        ...split.preview.tail.map((positions) => ({
+        ...split.preview.tail.map((positions, i) => ({
+          key: `tail-${i}`,
           positions,
           options: TAIL_HALO,
         })),
       ]
-    : features
-        .filter(({ featureIndex }) => featureIndex === selectedIndex)
-        .map(({ lineData }) => ({ positions: lineData, options: HEAD_HALO }));
+    : features.flatMap(({ lineData, featureIndex }, i) =>
+        featureIndex === selectedIndex || featureIndex === join.hovered
+          ? [
+              {
+                key: `line-${i}`,
+                positions: lineData,
+                options: featureIndex === join.hovered ? TAIL_HALO : HEAD_HALO,
+              },
+            ]
+          : [],
+      );
 
   const timeFormat = useDateTimeFormat({
     hour: 'numeric',
@@ -341,9 +358,9 @@ export default function DataViewerResult({
           colorized; below markerPane (600) so waypoints stay clickable. */}
       <Pane name="fm-trackviewer-hit" style={{ zIndex: 450 }} />
 
-      {halos.map(({ positions, options }, i) => (
+      {halos.map(({ key, positions, options }) => (
         <Polyline
-          key={`halo-${i}`}
+          key={`halo-${key}`}
           pane="fm-trackviewer-highlight"
           weight={haloWidth + 6}
           positions={positions}
@@ -380,23 +397,30 @@ export default function DataViewerResult({
           opacity={0}
           bubblingMouseEvents={false}
           eventHandlers={{
-            // With the split cursor armed the click is the cut, and only the
-            // selected track answers it — everything else still selects.
+            // With a mode armed the click is the edit, and only the tracks that
+            // mode acts on answer it — everything else still selects.
             click: (e) => {
-              if (!split.handleClick(featureIndex, e.latlng)) {
+              if (
+                !join.handleClick(featureIndex) &&
+                !split.handleClick(featureIndex, e.latlng)
+              ) {
                 select(featureIndex);
               }
             },
             // Only while armed: a `mouseout` listener here makes the outline
             // the sole target of the event, and the map stops getting its own —
             // which is what clears the elevation chart readout.
-            ...(split.armed
+            ...(split.armed || join.armed
               ? {
                   mousemove: (e: LeafletMouseEvent) => {
                     split.handleMove(featureIndex, e.latlng);
+
+                    join.handleMove(featureIndex);
                   },
                   mouseout: () => {
                     split.handleOut();
+
+                    join.handleOut();
                   },
                 }
               : {}),

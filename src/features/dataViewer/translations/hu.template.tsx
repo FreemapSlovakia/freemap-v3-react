@@ -10,8 +10,15 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   split: {
     action: 'Felosztás',
+    pick: 'Kattintson a nyomvonalra a felosztás helyén',
     here: 'Felosztás itt',
     segments: 'Felosztás szakaszokra',
+  },
+  join: {
+    action: 'Összefűzés',
+    asLine: 'Összefűzés egy vonallá',
+    asSegments: 'Összefűzés szakaszok megtartásával',
+    pick: 'Kattintson a nyomvonalra, amellyel összefűzi',
   },
   match: {
     menuItem: 'Utakhoz illesztés',

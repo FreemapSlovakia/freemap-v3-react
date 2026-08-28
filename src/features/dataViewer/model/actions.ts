@@ -7,6 +7,7 @@ import {
 import type { TransportType } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { FeatureCollection, GeoJsonProperties } from 'geojson';
+import type { TrackJoinMode } from '../joinTracks.js';
 import type { TrackSplitPoint } from '../splitTrack.js';
 
 export { type ColorizingMode, ColorizingModeSchema };
@@ -191,6 +192,25 @@ export const dataViewerSetSplitPoint = createAction<TrackSplitPoint | null>(
  */
 export const dataViewerSplitTrack = createAction<TrackSplitPoint>(
   'DATA_VIEWER_SPLIT_TRACK',
+);
+
+/**
+ * Arms a join on the given track: while it is on, the next line clicked is
+ * joined onto it, `mode` saying whether the two come out as one line or as a
+ * segment each. `null` disarms.
+ */
+export const dataViewerSetJoining = createAction<{
+  featureIndex: number;
+  mode: TrackJoinMode;
+} | null>('DATA_VIEWER_SET_JOINING');
+
+/**
+ * Joins the armed track with the one this index names, which the result takes
+ * the place of. Like {@link dataViewerSplitTrack} this edits the loaded data,
+ * so the result is no longer the file it came from.
+ */
+export const dataViewerJoinTracks = createAction<number>(
+  'DATA_VIEWER_JOIN_TRACKS',
 );
 
 /**

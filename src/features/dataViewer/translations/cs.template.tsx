@@ -10,8 +10,15 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   split: {
     action: 'Rozdělit',
+    pick: 'Klikněte na trasu v místě rozdělení',
     here: 'Rozdělit zde',
     segments: 'Rozdělit na úseky',
+  },
+  join: {
+    action: 'Spojit',
+    asLine: 'Spojit do jedné čáry',
+    asSegments: 'Spojit se zachováním úseků',
+    pick: 'Klikněte na trasu, se kterou spojit',
   },
   match: {
     menuItem: 'Přiřadit k cestám',

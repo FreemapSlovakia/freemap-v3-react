@@ -59,6 +59,7 @@ import { setActiveModal } from '../store/actions.js';
 import {
   askingCookieConsentSelector,
   isToolOpen,
+  mapModeSelector,
   openToolsSelector,
   pickingModeSelector,
   showGalleryPickerSelector,
@@ -564,6 +565,11 @@ export function Main(): ReactElement {
   // The toolbars and the floating panels go while a place is being picked.
   const picking = useAppSelector(pickingModeSelector);
 
+  // A mode waiting on a click clears the screen for it — but where a picking
+  // mode brings its own menu, an armed one keeps the selection toolbar, which
+  // is where it says what it wants and offers the way out.
+  const inMode = useAppSelector(mapModeSelector);
+
   const selectingMapArea = useAppSelector(
     (state) => state.mapArea.selecting !== null,
   );
@@ -763,11 +769,11 @@ export function Main(): ReactElement {
                       says the connection is gone at all. */}
                   <OfflineBadge hint={m?.general.offline} />
 
-                  {!window.fmEmbedded && !picking && <MainMenuButton />}
+                  {!window.fmEmbedded && !inMode && <MainMenuButton />}
 
                   {(!window.fmEmbedded || embedFeatures.includes('search')) && (
                     <SearchMenu
-                      hidden={picking}
+                      hidden={inMode}
                       preventShortcut={Boolean(activeModal)}
                     />
                   )}
@@ -828,17 +834,17 @@ export function Main(): ReactElement {
                 </Toolbar>
               )}
 
-              {!picking && showMapsMenu && !window.fmEmbedded && <MyMapsMenu />}
+              {!inMode && showMapsMenu && !window.fmEmbedded && <MyMapsMenu />}
 
-              {!picking && showPictures && (
+              {!inMode && showPictures && (
                 <AsyncComponent factory={galleryMenuFactory} />
               )}
 
-              {!picking && showWeatherRadar && (
+              {!inMode && showWeatherRadar && (
                 <AsyncComponent factory={weatherRadarMenuFactory} />
               )}
 
-              {!picking && showViewshed && (
+              {!inMode && showViewshed && (
                 <AsyncComponent factory={viewshedMenuFactory} />
               )}
 
@@ -850,7 +856,7 @@ export function Main(): ReactElement {
                   recorder can't run on. Not in an embedded map: `openTool` is a
                   no-op there, so the strip could never be expanded — and the
                   recording belongs to the full app that started it. */}
-              {!picking && gpsRecorderWanted && (
+              {!inMode && gpsRecorderWanted && (
                 <AsyncComponent factory={gpsRecorderMenuFactory} />
               )}
 
@@ -875,7 +881,7 @@ export function Main(): ReactElement {
                   until the import settles — a toolbar that blinks away for a
                   frame. */}
 
-              {!picking &&
+              {!inMode &&
                 openTools.map((openedTool) => (
                   <Fragment
                     key={isDrawTool(openedTool) ? 'drawing' : openedTool}
@@ -964,8 +970,8 @@ export function Main(): ReactElement {
             </div>
 
             {/* Hidden, not unmounted: rebuilding a panorama or a profile is
-                expensive, and picking is a detour. */}
-            <div className={picking ? 'd-none' : undefined}>
+                expensive, and a mode taking the map is a detour. */}
+            <div className={inMode ? 'd-none' : undefined}>
               {showElevationChart && (
                 <AsyncComponent factory={elevationChartFactory} />
               )}

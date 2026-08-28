@@ -10,8 +10,15 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   split: {
     action: 'Dividi',
+    pick: 'Clicca la traccia nel punto di divisione',
     here: 'Dividi qui',
     segments: 'Dividi in segmenti',
+  },
+  join: {
+    action: 'Unisci',
+    asLine: 'Unisci in una sola linea',
+    asSegments: 'Unisci mantenendo i segmenti',
+    pick: 'Clicca la traccia da unire',
   },
   match: {
     menuItem: 'Aggancia ai percorsi',

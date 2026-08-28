@@ -6,7 +6,9 @@ import {
   dataViewerDeleteFeature,
   dataViewerExplodeTrack,
   dataViewerGpxLoad,
+  dataViewerJoinTracks,
   dataViewerSetData,
+  dataViewerSetJoining,
   dataViewerSetSplitting,
   dataViewerSetTrackUID,
   dataViewerSplitTrack,
@@ -229,6 +231,17 @@ describe('dataViewerReducer — splitting', () => {
     ]);
   });
 
+  it('disarms a join when the split cursor is armed', () => {
+    const state = dataViewerReducer(
+      dataViewerInitialState,
+      dataViewerSetJoining({ featureIndex: 0, mode: 'line' }),
+    );
+
+    expect(
+      dataViewerReducer(state, dataViewerSetSplitting(true)).joinWith,
+    ).toBe(null);
+  });
+
   it('disarms when the selection moves on', () => {
     const state = dataViewerReducer(
       dataViewerInitialState,
@@ -237,5 +250,92 @@ describe('dataViewerReducer — splitting', () => {
 
     expect(state.splitting).toBe(true);
     expect(dataViewerReducer(state, selectFeature(null)).splitting).toBe(false);
+  });
+});
+
+describe('dataViewerReducer — joining', () => {
+  const armed = (features: Feature[], featureIndex = 0) => ({
+    ...loaded(features),
+    splitting: false,
+    joinWith: { featureIndex, mode: 'line' as const },
+  });
+
+  it('puts the join where the armed track was and takes the other away', () => {
+    const next = dataViewerReducer(
+      armed([track('a', [straight(3)]), track('b', [straight(3)])]),
+      dataViewerJoinTracks(1),
+    );
+
+    expect(next.trackGeojson?.features).toHaveLength(1);
+    expect(next.trackGeojson?.features[0]?.properties?.['name']).toBe('a, b');
+
+    // The edit makes it this browser's own copy, and disarms the mode.
+    expect(next.trackUID).toBeNull();
+    expect(next.renderTrackGeojson).toBeNull();
+    expect(next.joinWith).toBeNull();
+  });
+
+  it('reopens the elevation decision, which was one track’s', () => {
+    const next = dataViewerReducer(
+      {
+        ...armed([track('a', [straight(3)]), track('b', [straight(3)])]),
+        elevationDecision: 'all',
+        elevationSources: ['dmr5'],
+      },
+      dataViewerJoinTracks(1),
+    );
+
+    expect(next.elevationDecision).toBe('undecided');
+    expect(next.elevationSources).toEqual([]);
+  });
+
+  it('moves an active track that came after the one joined in', () => {
+    const next = dataViewerReducer(
+      {
+        ...armed(
+          [
+            track('a', [straight(3)]),
+            track('b', [straight(3)]),
+            track('c', [straight(3)]),
+          ],
+          0,
+        ),
+        activeTrackIndex: 2,
+      },
+      dataViewerJoinTracks(1),
+    );
+
+    expect(next.activeTrackIndex).toBe(1);
+    expect(next.trackGeojson?.features[1]?.properties?.['name']).toBe('c');
+  });
+
+  it('follows the join with an active track that was either half', () => {
+    const next = dataViewerReducer(
+      {
+        ...armed([track('a', [straight(3)]), track('b', [straight(3)])], 1),
+        activeTrackIndex: 1,
+      },
+      dataViewerJoinTracks(0),
+    );
+
+    expect(next.activeTrackIndex).toBe(0);
+  });
+
+  it('declines a track that is not a line, and its own track', () => {
+    const point: Feature = {
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'Point', coordinates: [0, 0] },
+    };
+
+    const state = armed([track('a', [straight(3)]), point]);
+
+    expect(
+      dataViewerReducer(state, dataViewerJoinTracks(1)).trackGeojson?.features,
+    ).toHaveLength(2);
+
+    expect(
+      dataViewerReducer(state, dataViewerJoinTracks(0)).trackGeojson?.features,
+    ).toHaveLength(2);
   });
 });
