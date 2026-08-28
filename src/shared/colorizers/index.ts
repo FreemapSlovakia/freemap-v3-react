@@ -38,28 +38,27 @@ export const colorizers = {
   gsmSignal: gsmSignalColorizer,
 } as const satisfies Record<string, Colorizer>;
 
-// Defines menu order and the source of truth for valid modes.
-export const colorizingModes = [
-  'time',
-  'elevation',
-  'steepness',
-  'surface',
-  'smoothness',
-  'roadType',
-  'trackType',
-  'hikeRating',
-  'mtbRating',
-  'speed',
-  'heading',
-  'heartRate',
-  'cadence',
-  'power',
-  'temperature',
-  'battery',
-  'gsmSignal',
-] as const satisfies ReadonlyArray<keyof typeof colorizers>;
+// Menu order, in groups the dropdown sets off with dividers: the terrain, how
+// the user moved, what the way is, what a sensor recorded, what the device did.
+export const colorizingModeGroups = [
+  ['elevation', 'steepness'],
+  ['time', 'speed', 'heading'],
+  ['surface', 'smoothness', 'roadType', 'trackType', 'hikeRating', 'mtbRating'],
+  ['heartRate', 'cadence', 'power', 'temperature'],
+  ['battery', 'gsmSignal'],
+] as const satisfies ReadonlyArray<ReadonlyArray<keyof typeof colorizers>>;
+
+/** Menu order, and the source of truth for valid modes. */
+export const colorizingModes = colorizingModeGroups.flat();
 
 export type ColorizingMode = (typeof colorizingModes)[number];
+
+/** Index of the menu group a mode is in, so the menu can divide between them. */
+export function colorizingModeGroup(mode: ColorizingMode): number {
+  return colorizingModeGroups.findIndex((group) =>
+    (group as readonly string[]).includes(mode),
+  );
+}
 
 export const ColorizingModeSchema = z.enum(colorizingModes);
 

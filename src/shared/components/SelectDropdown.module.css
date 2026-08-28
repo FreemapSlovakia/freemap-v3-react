@@ -1,0 +1,6 @@
+/* Sets a row apart more firmly than the thin dividers between option groups. */
+.strongDivider {
+  border-top-width: 2px;
+  border-color: var(--bs-border-color);
+  opacity: 1;
+}

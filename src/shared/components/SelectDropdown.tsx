@@ -4,6 +4,7 @@ import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import classes from './SelectDropdown.module.css';
 
 export type SelectDropdownOption = {
   value: string;
@@ -22,8 +23,16 @@ export type SelectDropdownOption = {
   group?: ReactNode;
   /** Extra content after the label inside the menu item (e.g. a premium badge). */
   extra?: ReactNode;
-  /** Render a divider after this option (e.g. to set off a leading action). */
-  divider?: boolean;
+  /**
+   * Menu content of its own after the option — a setting the option owns, not
+   * something to pick, so it must stop its own clicks from reaching `onSelect`.
+   */
+  after?: ReactNode;
+  /**
+   * Render a divider after this option; `'strong'` draws a heavier one, for a
+   * row set apart from the list rather than one group of it from the next.
+   */
+  divider?: boolean | 'strong';
 };
 
 type Props = {
@@ -49,11 +58,6 @@ type Props = {
   kbd?: string;
   /** Render the toggle as a native-like `<select>` with an always-visible label. */
   asSelect?: boolean;
-  /**
-   * Menu content after the options — a control of its own rather than something
-   * to pick, so it is not an option and its clicks must not reach `onSelect`.
-   */
-  footer?: ReactNode;
   /** Dims the whole control, for when none of the options can be acted on. */
   disabled?: boolean;
   className?: string;
@@ -75,7 +79,6 @@ export function SelectDropdown({
   breakpoint,
   kbd,
   asSelect,
-  footer,
   disabled,
   className,
   id,
@@ -124,8 +127,17 @@ export function SelectDropdown({
       </Dropdown.Item>,
     );
 
+    if (opt.after) {
+      items.push(<Fragment key={`a${i}`}>{opt.after}</Fragment>);
+    }
+
     if (opt.divider) {
-      items.push(<Dropdown.Divider key={`d${i}`} />);
+      items.push(
+        <Dropdown.Divider
+          key={`d${i}`}
+          className={opt.divider === 'strong' ? classes.strongDivider : ''}
+        />,
+      );
     }
   });
 
@@ -161,10 +173,7 @@ export function SelectDropdown({
         </LongPressTooltip>
       )}
 
-      <FmDropdownMenu>
-        {items}
-        {footer}
-      </FmDropdownMenu>
+      <FmDropdownMenu>{items}</FmDropdownMenu>
     </Dropdown>
   );
 }

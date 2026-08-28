@@ -12,12 +12,12 @@ import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { colorizeGeometrySource } from '@shared/colorizers/colorize.js';
+import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
 import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import {
   LEGEND_ITEM,
   legendToggleOption,
 } from '@shared/colorizers/components/legendToggleOption.js';
-import { SteepnessScaleSlider } from '@shared/colorizers/components/SteepnessScaleSlider.js';
 import { usePremiumColorizeLock } from '@shared/colorizers/components/usePremiumColorizeLock.js';
 import {
   ColorizingModeSchema,
@@ -1003,20 +1003,13 @@ export default function RoutePlannerMenu(): ReactElement {
             // modes are hidden rather than shown disabled.
             options={[
               ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
-              ...[undefined, ...colorizingModes.filter(isModeAvailable)].map(
-                (mode) => {
-                  const { locked, gem } = premiumColorize(mode);
-
-                  return {
-                    value: mode ?? 'none',
-                    label: cm?.mode[mode ?? 'none'],
-                    disabled: locked,
-                    extra: gem,
-                  };
-                },
-              ),
+              ...colorizeModeOptions({
+                modes: colorizingModes.filter(isModeAvailable),
+                labels: cm?.mode,
+                activeMode: colorizeBy,
+                premiumColorize,
+              }),
             ]}
-            footer={<SteepnessScaleSlider mode={colorizeBy} />}
           />
         )}
 

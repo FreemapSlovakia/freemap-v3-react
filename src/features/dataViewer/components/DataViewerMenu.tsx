@@ -2,12 +2,12 @@ import { setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
 import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import {
   LEGEND_ITEM,
   legendToggleOption,
 } from '@shared/colorizers/components/legendToggleOption.js';
-import { SteepnessScaleSlider } from '@shared/colorizers/components/SteepnessScaleSlider.js';
 import { usePremiumColorizeLock } from '@shared/colorizers/components/usePremiumColorizeLock.js';
 import {
   colorizerNeedsElevation,
@@ -313,19 +313,14 @@ export function DataViewerMenu(): ReactElement {
               // Span-based modes read what a router reported. A recording
               // carries none until it is matched to the network, and each
               // mode's own `isAvailable` is what decides once it has been.
-              ...[undefined, ...colorizingModes].map((mode) => {
-                const { locked, gem } = premiumColorize(mode);
-
-                return {
-                  value: mode ?? 'none',
-                  label: cm?.mode[mode ?? 'none'],
-                  disabled:
-                    locked || (mode !== undefined && !isModeAvailable(mode)),
-                  extra: gem,
-                };
+              ...colorizeModeOptions({
+                modes: colorizingModes,
+                labels: cm?.mode,
+                activeMode: colorizeTrackBy,
+                premiumColorize,
+                isAvailable: isModeAvailable,
               }),
             ]}
-            footer={<SteepnessScaleSlider mode={colorizeTrackBy} />}
           />
         )}
 

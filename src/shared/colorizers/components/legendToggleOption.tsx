@@ -23,7 +23,7 @@ export function legendToggleOption(
           value: LEGEND_ITEM,
           label,
           icon: legendShown ? <FaRegCheckSquare /> : <FaRegSquare />,
-          divider: true,
+          divider: 'strong',
         },
       ]
     : [];

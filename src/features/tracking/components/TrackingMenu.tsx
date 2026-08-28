@@ -4,12 +4,12 @@ import {
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
 import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import {
   LEGEND_ITEM,
   legendToggleOption,
 } from '@shared/colorizers/components/legendToggleOption.js';
-import { SteepnessScaleSlider } from '@shared/colorizers/components/SteepnessScaleSlider.js';
 import { usePremiumColorizeLock } from '@shared/colorizers/components/usePremiumColorizeLock.js';
 import {
   ColorizingModeSchema,
@@ -196,22 +196,16 @@ export function TrackingMenu(): ReactElement {
             // Span-based modes read what a router reported. A live track has no
             // way to acquire that — dataViewer's can, by matching — so they
             // would be rows nothing can ever enable.
-            ...[
-              undefined,
-              ...colorizingModes.filter((mode) => !colorizers[mode].spanBased),
-            ].map((mode) => {
-              const { locked, gem } = premiumColorize(mode);
-
-              return {
-                value: mode ?? 'none',
-                label: cm?.mode[mode ?? 'none'],
-                disabled:
-                  locked || (mode !== undefined && !isModeAvailable(mode)),
-                extra: gem,
-              };
+            ...colorizeModeOptions({
+              modes: colorizingModes.filter(
+                (mode) => !colorizers[mode].spanBased,
+              ),
+              labels: cm?.mode,
+              activeMode: colorizeBy,
+              premiumColorize,
+              isAvailable: isModeAvailable,
             }),
           ]}
-          footer={<SteepnessScaleSlider mode={colorizeBy} />}
         />
 
         {chartTrack && (
