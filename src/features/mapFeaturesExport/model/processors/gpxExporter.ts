@@ -28,6 +28,65 @@ export const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
 export const GPXTPX_NS =
   'http://www.garmin.com/xmlschemas/TrackPointExtension/v1';
 
+// Garmin's per-point power and per-waypoint extension namespaces, which files
+// in the wild carry alongside the two above.
+export const GPXPX_NS = 'http://www.garmin.com/xmlschemas/PowerExtension/v1';
+
+export const WPTX1_NS = 'http://www.garmin.com/xmlschemas/WaypointExtension/v1';
+
+/** The `fm:*` fields a file of ours carries, whatever element holds them. */
+export const FM_TAGS = [
+  'label',
+  'markerType',
+  'icon',
+  'color',
+  'type',
+  'fillColor',
+  'lineCap',
+  'lineJoin',
+  'dashArray',
+  'width',
+  // GPX has no interior rings, so a polygon and its holes travel as separate
+  // tracks sharing an id.
+  'polygonId',
+  'holeOf',
+] as const;
+
+/**
+ * The prefix we spell a namespace with, whatever the file chose — a prefix is
+ * only a local alias, so `<garmin:DisplayColor>` and `<gpxx:DisplayColor>` bound
+ * to the same namespace have to arrive under the same key, or the property is a
+ * different one per source and the writer cannot bind it back.
+ */
+export const KNOWN_NS_PREFIXES: Record<string, string> = {
+  [GARMIN_NS]: 'gpxx',
+  [GPXTPX_NS]: 'gpxtpx',
+  [GPXPX_NS]: 'gpxpx',
+  [WPTX1_NS]: 'wptx1',
+  [LOCUS_NS]: 'locus',
+};
+
+/**
+ * Per-point series ↔ the element carrying it, in one table because the reader's
+ * fallback (`${local}s`) names anything, so this list alone decides which
+ * channels survive a round trip. `tpx` says Garmin nests the element in its
+ * `<gpxtpx:TrackPointExtension>`; the rest sit loose in `<extensions>`.
+ */
+export const POINT_CHANNELS = [
+  { series: 'heart', local: 'hr', tpx: true },
+  { series: 'cads', local: 'cad', tpx: true },
+  { series: 'atemps', local: 'atemp', tpx: true },
+  { series: 'wtemps', local: 'wtemp', tpx: true },
+  { series: 'depths', local: 'depth', tpx: true },
+  { series: 'speeds', local: 'speed', tpx: true },
+  { series: 'courses', local: 'course', tpx: true },
+  { series: 'bearings', local: 'bearing', tpx: true },
+  { series: 'powers', local: 'power' },
+  // No GPX-native home — `<hdop>` is a dimensionless dilution of precision, not
+  // the metres a GNSS fix reports.
+  { series: 'accuracies', local: 'accuracy' },
+] as const;
+
 export function toLatLon(latLon: LatLon): { lat: string; lon: string } {
   return {
     lat: latLon.lat.toString(),
@@ -63,6 +122,19 @@ export function createElement(
   parent.appendChild(elem);
 
   return elem;
+}
+
+/**
+ * The feature's own table, one `<fm:prop key="…">` per pair — every key, since
+ * `<name>` says only what the label rendered to.
+ */
+export function appendProps(
+  parent: Element,
+  props: Record<string, string> | undefined,
+): void {
+  for (const key in props) {
+    createElement(parent, [FM_NS, 'fm:prop'], props[key]!, { key });
+  }
 }
 
 export function addAttribute(elem: Element, name: string, value: string): void {

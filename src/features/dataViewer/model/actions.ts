@@ -6,7 +6,7 @@ import {
 } from '@shared/colorizers/index.js';
 import type { TransportType } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
-import type { FeatureCollection } from 'geojson';
+import type { FeatureCollection, GeoJsonProperties } from 'geojson';
 import type { TrackSplitPoint } from '../splitTrack.js';
 
 export { type ColorizingMode, ColorizingModeSchema };
@@ -155,6 +155,17 @@ export const dataViewerDelete = createAction('DATA_VIEWER_DELETE');
 export const dataViewerDeleteFeature = createAction<number>(
   'DATA_VIEWER_DELETE_FEATURE',
 );
+
+/**
+ * Replaces one feature's properties (by index into `trackGeojson.features`) —
+ * its name, its own data table and the style it is drawn with. Like
+ * {@link dataViewerDeleteFeature} this edits the loaded data, so the result is
+ * no longer the file it came from.
+ */
+export const dataViewerSetFeatureProperties = createAction<{
+  index: number;
+  properties: GeoJsonProperties;
+}>('DATA_VIEWER_SET_FEATURE_PROPERTIES');
 
 /**
  * Arms the split cursor on the selected track: while it is on, the track offers

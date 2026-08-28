@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { toastsRemove } from '@features/toasts/model/actions.js';
@@ -22,6 +23,7 @@ import {
   FaMagic,
   FaMapMarkerAlt,
   FaPencilAlt,
+  FaTag,
 } from 'react-icons/fa';
 import { RiScissorsFill } from 'react-icons/ri';
 import { TbArrowsSplit, TbTimeline } from 'react-icons/tb';
@@ -48,6 +50,9 @@ export default function DataViewerSelection(): ReactElement | null {
   const m = useMessages();
 
   const dvm = useDataViewerMessages();
+
+  // The properties editor is the drawing tool's, labels and all.
+  const dm = useDrawingMessages();
 
   const dispatch = useDispatch();
 
@@ -153,6 +158,21 @@ export default function DataViewerSelection(): ReactElement | null {
       label={label}
       deletable
     >
+      <LongPressTooltip breakpoint="md" label={dm?.modify}>
+        {({ label, labelClassName, props }) => (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              dispatch(setActiveModal({ type: 'data-viewer-properties' }));
+            }}
+            {...props}
+          >
+            <FaTag />
+            <span className={labelClassName}> {label}</span>
+          </Button>
+        )}
+      </LongPressTooltip>
+
       {line && (
         <LongPressTooltip breakpoint="md" label={m?.general.elevationProfile}>
           {({ label, labelClassName, props }) => (

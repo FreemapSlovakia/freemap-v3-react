@@ -565,6 +565,30 @@ export function positionsEqual(pt1?: Position, pt2?: Position): boolean {
   return pt1[0] === pt2?.[0] && pt1[1] === pt2[1];
 }
 
+/** Whether the ring closes — three points at least, first meeting last. */
+export function isClosedRing(ring: Position[]): boolean {
+  return ring.length > 2 && positionsEqual(ring[0], ring.at(-1));
+}
+
+/**
+ * Whether the geometry is a closed shape, which is what decides between a line
+ * and a polygon wherever a format has only lines (GPX) or leaves it to a style
+ * key (`freemap:type`).
+ */
+export function isClosedGeometry(geometry: Geometry): boolean {
+  switch (geometry.type) {
+    case 'Polygon':
+    case 'MultiPolygon':
+      return true;
+    case 'LineString':
+      return isClosedRing(geometry.coordinates);
+    case 'MultiLineString':
+      return geometry.coordinates.every(isClosedRing);
+    default:
+      return false;
+  }
+}
+
 export function mergeLines<T extends Geometry>(
   features: Feature<T>[],
   properties: GeoJsonProperties = {},

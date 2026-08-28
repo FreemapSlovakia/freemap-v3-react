@@ -28,6 +28,25 @@ const GPX = `<?xml version="1.0"?>
  </trk>
 </gpx>`;
 
+// A track whose points carry `<time>` and Garmin sensor extensions, which
+// togeojson's recursive lookups would otherwise hoist onto the track itself.
+const GPX_HOISTED = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1">
+ <trk><name>T</name>
+  <extensions><gpxx:DisplayColor>Red</gpxx:DisplayColor></extensions>
+  <trkseg>
+   <trkpt lat="48" lon="17"><time>2024-06-01T08:00:00Z</time><extensions>
+     <gpxtpx:TrackPointExtension><gpxtpx:hr>120</gpxtpx:hr><gpxtpx:atemp>18</gpxtpx:atemp></gpxtpx:TrackPointExtension>
+     <gpxpx:PowerExtension><gpxpx:PowerInWatts>200</gpxpx:PowerInWatts></gpxpx:PowerExtension>
+   </extensions></trkpt>
+   <trkpt lat="48.1" lon="17.1"><time>2024-06-01T08:00:08Z</time><extensions>
+     <gpxtpx:TrackPointExtension><gpxtpx:hr>125</gpxtpx:hr><gpxtpx:atemp>18.2</gpxtpx:atemp></gpxtpx:TrackPointExtension>
+     <gpxpx:PowerExtension><gpxpx:PowerInWatts>209</gpxpx:PowerInWatts></gpxpx:PowerExtension>
+   </extensions></trkpt>
+  </trkseg>
+ </trk>
+</gpx>`;
+
 const GPX_ROUTE_AND_WAYPOINT = `<?xml version="1.0"?>
 <gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
  <wpt lat="48" lon="17"><name>WP</name></wpt>
@@ -56,6 +75,24 @@ describe('parseDataFile', () => {
       expect(cp['powers']).toEqual([200, 210]);
       expect(cp['gpxpx:PowerExtensions']).toBeUndefined();
     }
+  });
+
+  it('keeps a track to its own metadata, not its trackpoints’', () => {
+    const r = parseDataFile(GPX_HOISTED, 'track.gpx');
+
+    const props = r?.features[0]?.properties;
+
+    // The track's own, both a direct child and an extension of its own — the
+    // latter under the name the file wrote, not a prefix-dependent flattening.
+    expect(props?.['name']).toBe('T');
+    expect(props?.['gpxx:DisplayColor']).toBe('Red');
+
+    // Its trackpoints': `time` would be the first point's, the rest the last
+    // point's. The series themselves live in `coordinateProperties`.
+    expect(props?.['time']).toBeUndefined();
+    expect(props?.['gpxtpx_atemp']).toBeUndefined();
+    expect(props?.['gpxpx_PowerInWatts']).toBeUndefined();
+    expect(props?.['gpxpx_PowerExtension']).toBeUndefined();
   });
 
   it('detects GPX by content when the extension is generic', () => {
@@ -226,6 +263,10 @@ describe('parseDataFile drawing extensions', () => {
       blank: '',
       padded: ' spaced ',
     });
+
+    // Said once: togeojson's flattened copies of the same elements are gone.
+    expect(props?.['fm_label']).toBeUndefined();
+    expect(props?.['fm_prop']).toBeUndefined();
   });
 
   it('keeps `<name>` too, which the viewer titles the feature by', () => {

@@ -306,6 +306,8 @@ Clicking a line, polygon or waypoint on the map selects it and gives it a **sele
 - **Simplify** (⋮ menu) — thins that one line in place, leaving the rest of the loaded data alone; the same dialog as the tool menu's "Simplify all"
 - **Convert to drawing** (⋮ menu) — turns that one line into editable drawing features and leaves the rest of the loaded data alone, asking the same simplification question as the tool menu's "Convert all"
 
+Every selected feature, whatever its kind, also carries **Properties** — the same editor the drawing tool uses: the name shown on the map, a table of the feature's own data (a row per key and value, added and removed by hand), and the style it is drawn with (color, width, fill, dash, line cap/join for a line or polygon; color, shape and icon for a waypoint). A line whose ends meet can be switched between line and polygon. The style is written into the feature's own properties, in our `freemap:*` form and in simplestyle alike, so it survives an export and reads back the same — and the feature then stops following the tool's **Default style**. Labels here are plain text: the drawing tool's `{p:key}` placeholders are not drawn.
+
 A polygon gets that menu without the matching, and a waypoint an ⋮ **Actions** menu — convert to drawing, route from or to it, a panorama or a toposcope from it, share location, and an **Open in…** submenu. The 🗑 button (<kbd>Del</kbd>) deletes just that feature, leaving the rest of the loaded data; the last one deleted clears the view. An edited collection no longer matches the file it came from, so it stops being re-fetched from `track-uid=`/`import-url=` and becomes this browser's own copy (kept in IndexedDB, and saved with an active map).
 
 ### Map details

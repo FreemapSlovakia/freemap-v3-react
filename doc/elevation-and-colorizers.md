@@ -559,16 +559,19 @@ togeojson bundles the `gpx`/`kml`/`tcx` parsers, so only KMZ needs an extra step
 (unzip). The format layer lives under `src/features/dataViewer/`:
 
 - **`parseDataFile(text, filename)`** — the single import boundary. Resolves format by
-  extension (falling back to the XML root element) to togeojson `gpx`/`kml`/`tcx` or
-  `parseGeojsonFile`. Wired into both drop paths (`Main.tsx` `onDrop`,
+  extension (falling back to the XML root element) to our own `parseGpx`, togeojson
+  `kml`/`tcx`, or `parseGeojsonFile`. Wired into both drop paths (`Main.tsx` `onDrop`,
   `DataViewerUploadModal`). GPX stays raw text for the set-data processor; everything
   else becomes a `FeatureCollection`.
+- **`parseGpx(doc)`** reads GPX itself, in one pass: it names the per-point series
+  (`times`, `heart`, `cads`, `atemps`, `speeds`, `courses`, `powers`, `accuracies`, …)
+  as the colorizers and the GPX writer expect, padding a point that carries none with
+  `null`, and reads styling into the canonical `freemap:*` / `osmand:*` / simplestyle
+  keys. A single `<trkseg>` is a `LineString` and several are a `MultiLineString`, with
+  the series flat for the former and one array per segment for the latter.
 - **TCX normalization** relocates togeojson's top-level
   `cadences`/`speeds`/`watts`/`heartRates` onto
   `coordinateProperties.{cads,speeds,powers,heart}` so they colorize like an imported GPX.
-- **`normalizePowerExtension`** aliases Garmin's
-  `coordinateProperties['gpxpx:PowerExtensions']` to `powers` so the power colorizer and
-  re-export pick it up like a plain `<power>` extension.
 - **`kmz.ts` `extractKmlFromKmz`** (lazy `fflate`) unzips the root `.kml` (prefers
   `doc.kml`); bundled icons/overlays are ignored. The extracted KML flows through the
   normal KML path.
@@ -706,10 +709,31 @@ Facts that decide the implementation, all measured against the live server:
 dataViewer keeps **no retained raw source string** — a loaded track is GeoJSON in state,
 and round-trips are lossless through `gpxFromGeojson.ts` (`geojsonToGpxDoc`, in
 `src/features/mapFeaturesExport/`): it preserves per-point elevation/time and the
-`gpxtpx` sensor channels (hr, cad, atemp, speed, course, bearing) plus `<power>`, and
-re-emits routes as `<rte>` via togeojson's `_gpxType`. share-upload and My Maps save
-serialize the loaded GeoJSON back to GPX this way. (Exotic third-party GPX extensions are
-not preserved — accepted trade-off; freemap.sk is not a file host.)
+`gpxtpx` sensor channels (hr, cad, atemp, speed, course, bearing) plus `<power>` and
+`<accuracy>`, and re-emits routes as `<rte>` via `_gpxType`. `addLineMeta` /
+`WAYPOINT_META` write what GPX has an element for (`name`, `cmt`, `desc`, `src`, `type`,
+plus `time`/`sym`/`ele` on a waypoint), and `addExtensions` writes the rest back as the
+elements `parseGpx` reads: the label and style as `fm:*` (the fields `FM_TAGS` names,
+shared by writer and reader), `osmand:*` as it arrived, gpx_style for consumers that know
+neither, and every remaining data key as `<fm:prop>` — `featureExportTable`
+(`src/shared/featureProperties.ts`) is what decides which, since GPX can state no
+properties of its own. The vocabulary both sides read — `FM_TAGS`,
+`KNOWN_NS_PREFIXES`, the `POINT_CHANNELS` series↔element table — lives in
+`gpxExporter.ts`, so reader and writer cannot drift. A feature styled in another
+dialect is written as `fm:*` too, since GPX has no simplestyle and `fm:*` is what the
+reader trusts first. share-upload and My Maps save serialize the loaded GeoJSON back to
+GPX this way.
+
+Third-party extensions survive an import under their qualified name, with a namespace
+`KNOWN_NS_PREFIXES` knows spelled the conventional way whatever prefix the file bound it
+to (`<garmin:DisplayColor>` → `gpxx:DisplayColor`), so the property is the same one
+whichever tool wrote the file, and `CONTAINERS` nests it back inside the element Garmin's
+own tools look in. A namespace nobody conventionally prefixes keeps the file's own
+spelling and is left out of the GPX rather than bound to a guess. **A flat property key
+can hold neither a repeat nor a nesting**, so an extension appearing twice under one
+element keeps its first value alone, and one nested below a container we do not name
+(`<gpxx:Categories><gpxx:Category>`) is written back one level up — read as data, not
+re-serialized faithfully.
 
 ### Map-data export elevation fill — `src/features/mapFeaturesExport/`
 

@@ -1,34 +1,39 @@
+import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { featureExportTable } from '@shared/featureProperties.js';
+import { isClosedGeometry } from '@shared/geoutils.js';
+import {
+  lineStyleFromProperties,
+  pointStyleFromProperties,
+} from '@shared/styleFromProperties.js';
 import type { Feature, FeatureCollection } from 'geojson';
 import {
+  appendProps,
   createElement,
+  FM_NS,
+  FM_TAGS,
+  GARMIN_NS,
   GPX_NS,
+  GPX_STYLE_NS,
   GPXTPX_NS,
+  KNOWN_NS_PREFIXES,
+  OSMAND_NS,
+  POINT_CHANNELS,
   toLatLon,
+  WPTX1_NS,
   XMLNS_NS,
 } from './gpxExporter.js';
 
-// coordinateProperties key (as togeojson pluralizes it) -> Garmin
-// TrackPointExtension child local name. togeojson maps `<gpxtpx:hr>` &c. back to
-// these keys on import, so emitting them round-trips the per-point sensor data.
-const GPXTPX_POINT_PROPS: Record<string, string> = {
-  heart: 'hr',
-  cads: 'cad',
-  atemps: 'atemp',
-  wtemps: 'wtemp',
-  depths: 'depth',
-  speeds: 'speed',
-  courses: 'course',
-  bearings: 'bearing',
-};
-
-// Non-namespaced trackpoint extensions togeojson reads as `<name>` -> `${name}s`.
-// `accuracy` has no GPX-native home — `<hdop>` is a dimensionless dilution of
-// precision, not the metres a GNSS fix reports — so a recorded track keeps it
-// here, where our own reader gets it back.
-const CUSTOM_POINT_PROPS: Record<string, string> = {
-  powers: 'power',
-  accuracies: 'accuracy',
-};
+// The two groups `POINT_CHANNELS` names, as series -> element: nested in
+// Garmin's `<gpxtpx:TrackPointExtension>`, or loose in `<extensions>`. Split on
+// the key being *there*, so a row written `tpx: false` would land in the wrong
+// one — leave it off instead.
+const [GPXTPX_POINT_PROPS, CUSTOM_POINT_PROPS] = [true, false].map((tpx) =>
+  Object.fromEntries(
+    POINT_CHANNELS.filter((channel) => 'tpx' in channel === tpx).map(
+      ({ series, local }) => [series, local],
+    ),
+  ),
+) as [Record<string, string>, Record<string, string>];
 
 // Reads one per-point value out of a feature's `coordinateProperties`. `seg` is
 // the segment index for Multi* geometries (togeojson nests the arrays per
@@ -59,17 +64,26 @@ function coordPropAt(
     : undefined;
 }
 
-function addName(parent: Element, feature: Feature): void {
-  const name = feature.properties?.['name'];
+// `<trk>`/`<rte>` child elements carrying the feature's own metadata, in GPX
+// 1.1 schema order (they precede `<extensions>` and the points).
+const LINE_META = ['name', 'cmt', 'desc', 'src', 'type'] as const;
 
-  if (name) {
-    createElement(parent, 'name', String(name));
+function addLineMeta(parent: Element, feature: Feature): void {
+  for (const tag of LINE_META) {
+    const value = feature.properties?.[tag];
+
+    if (value != null && value !== '') {
+      createElement(parent, tag, String(value));
+    }
   }
 }
 
-// `<wpt>` child elements togeojson reads back into feature properties, in GPX
-// 1.1 schema order (these follow `<ele>`).
+// `<wpt>` child elements carrying the same, in GPX 1.1 schema order (these
+// follow `<ele>`).
 const WAYPOINT_META = ['time', 'name', 'cmt', 'desc', 'sym', 'type'] as const;
+
+/** What GPX has an element of its own for, so no table row repeats it. */
+const NATIVE_KEYS = new Set<string>([...LINE_META, ...WAYPOINT_META, 'ele']);
 
 // Emits a `<wpt>` for a Point coordinate with its elevation (from the
 // coordinate, or an `ele` property as our own GeoJSON export writes it) and the
@@ -94,6 +108,213 @@ function addWaypoint(doc: Document, coord: number[], feature: Feature): void {
 
     if (value != null && value !== '') {
       createElement(wptEle, tag, String(value));
+    }
+  }
+
+  addExtensions(wptEle, feature);
+}
+
+/**
+ * The `fm:*` fields to write: what the feature states outright, filled in from
+ * whichever dialect it is styled in — `fm:*` is what the reader trusts first.
+ */
+function fmFields(feature: Feature): Record<string, string> {
+  const properties = feature.properties;
+
+  const fields: Record<string, string> = {};
+
+  for (const tag of FM_TAGS) {
+    const value = properties?.[`freemap:${tag}`];
+
+    if (typeof value === 'string' && value) {
+      fields[tag] = value;
+    }
+  }
+
+  const fallback = (tag: string, value: string | number | undefined) => {
+    if (value !== undefined && !(tag in fields)) {
+      fields[tag] = String(value);
+    }
+  };
+
+  const { type } = feature.geometry;
+
+  if (type === 'Point' || type === 'MultiPoint') {
+    const style = pointStyleFromProperties(properties);
+
+    fallback('color', style.color);
+    fallback('icon', style.icon);
+    fallback('markerType', style.markerType);
+  } else {
+    const style = lineStyleFromProperties(
+      properties,
+      isClosedGeometry(feature.geometry),
+    );
+
+    // GPX has no polygon, so a GeoJSON one says what it is here or comes back
+    // as a closed line. Not one with holes: every ring is written as its own
+    // `<trkseg>` and nothing tells them apart afterwards, so calling that a
+    // polygon paints the holes in.
+    const solid =
+      (type === 'Polygon' && feature.geometry.coordinates.length === 1) ||
+      (type === 'MultiPolygon' &&
+        feature.geometry.coordinates.every((rings) => rings.length === 1));
+
+    fallback('type', style.type ?? (solid ? 'polygon' : undefined));
+    fallback('color', style.color);
+    fallback('fillColor', style.fillColor);
+    fallback('width', style.width);
+    fallback('lineCap', style.lineCap);
+    fallback('lineJoin', style.lineJoin);
+    fallback('dashArray', style.dashArray?.join(' '));
+  }
+
+  return fields;
+}
+
+/**
+ * A property keeps a qualified name but not the namespace it was bound to, so
+ * writing one back means binding its prefix again. A prefix that is not here is
+ * left out rather than bound to a guess.
+ */
+const KNOWN_PREFIXES = Object.fromEntries(
+  Object.entries(KNOWN_NS_PREFIXES).map(([ns, prefix]) => [prefix, ns]),
+);
+
+/** Ours, written from the canonical keys above rather than passed through. */
+const OWN_PREFIXES = new Set(['freemap', 'fm', 'osmand', 'gpx_style']);
+
+/**
+ * The element a namespace's fields sit inside, per kind of feature: Garmin's
+ * schema nests them, and one written loose is one its own tools won't find.
+ */
+const CONTAINERS: Record<string, Partial<Record<string, string>>> = {
+  [GARMIN_NS]: {
+    trk: 'gpxx:TrackExtension',
+    rte: 'gpxx:RouteExtension',
+    wpt: 'gpxx:WaypointExtension',
+  },
+  [WPTX1_NS]: { wpt: 'wptx1:WaypointExtension' },
+};
+
+/** The pass-through extensions, each with the namespace to bind it back to. */
+function foreignExtensions(feature: Feature): [string, string, string][] {
+  const out: [name: string, ns: string, value: string][] = [];
+
+  for (const [key, value] of Object.entries(feature.properties ?? {})) {
+    const at = key.indexOf(':');
+
+    if (at < 1 || typeof value !== 'string') {
+      continue;
+    }
+
+    const prefix = key.slice(0, at);
+
+    const ns = OWN_PREFIXES.has(prefix) ? undefined : KNOWN_PREFIXES[prefix];
+
+    if (ns) {
+      out.push([key, ns, value]);
+    }
+  }
+
+  return out;
+}
+
+/** `#rrggbbaa` as gpx_style writes it: bare rgb hex, alpha stated separately. */
+function addGpxStyle(
+  parent: Element,
+  local: 'line' | 'fill',
+  color: string,
+): Element {
+  const { color: rgb, opacity } = splitColorAlpha(color);
+
+  const el = createElement(parent, [GPX_STYLE_NS, local]);
+
+  if (rgb) {
+    createElement(el, [GPX_STYLE_NS, 'color'], rgb.slice(1));
+  }
+
+  createElement(el, [GPX_STYLE_NS, 'opacity'], opacity.toFixed(2));
+
+  return el;
+}
+
+/**
+ * The feature's label, property table and style, as the elements `parseGpx`
+ * reads them from: `fm:*` losslessly, `osmand:*` as it arrived, and gpx_style
+ * for consumers that know neither.
+ */
+function addExtensions(parent: Element, feature: Feature): void {
+  const properties = feature.properties;
+
+  const fields = fmFields(feature);
+
+  const osmand = Object.entries(properties ?? {}).filter(
+    (entry): entry is [string, string] =>
+      entry[0].startsWith('osmand:') && typeof entry[1] === 'string',
+  );
+
+  // GPX has no properties of its own, so data it has no element for travels as
+  // our table — otherwise a key the user typed into the editor reaches the file
+  // nowhere at all.
+  const rows = Object.entries(featureExportTable(properties, NATIVE_KEYS));
+
+  // Made only once something needs it, so nothing has to keep a list of what
+  // this function writes in step with a guard.
+  let extensions: Element | undefined;
+
+  const ext = () => (extensions ??= createElement(parent, 'extensions'));
+
+  for (const [tag, value] of Object.entries(fields)) {
+    createElement(ext(), [FM_NS, `fm:${tag}`], value);
+  }
+
+  if (rows.length > 0) {
+    appendProps(ext(), Object.fromEntries(rows));
+  }
+
+  for (const [key, value] of osmand) {
+    createElement(
+      ext(),
+      [OSMAND_NS, `osmand:${key.slice('osmand:'.length)}`],
+      value,
+    );
+  }
+
+  const containers = new Map<string, Element>();
+
+  for (const [name, ns, value] of foreignExtensions(feature)) {
+    const wrapper = CONTAINERS[ns]?.[parent.localName];
+
+    let target = ext();
+
+    if (wrapper) {
+      let container = containers.get(wrapper);
+
+      if (!container) {
+        container = createElement(target, [ns, wrapper]);
+
+        containers.set(wrapper, container);
+      }
+
+      target = container;
+    }
+
+    createElement(target, [ns, name], value);
+  }
+
+  const { type } = feature.geometry;
+
+  if (fields['color'] && type !== 'Point' && type !== 'MultiPoint') {
+    // The fill comes first, as the schema and the drawing writer have it.
+    if (fields['type'] === 'polygon') {
+      addGpxStyle(ext(), 'fill', fields['fillColor'] ?? fields['color']);
+    }
+
+    const line = addGpxStyle(ext(), 'line', fields['color']);
+
+    if (fields['width']) {
+      createElement(line, [GPX_STYLE_NS, 'width'], fields['width']);
     }
   }
 }
@@ -197,7 +418,10 @@ export function addGeojson(
               isRoute ? 'rte' : 'trk',
             );
 
-            addName(parentEle, feature);
+            addLineMeta(parentEle, feature);
+
+            // Before the points, as the schema orders a trk's/rte's children.
+            addExtensions(parentEle, feature);
 
             const ptParent = isRoute
               ? parentEle
@@ -224,7 +448,9 @@ export function addGeojson(
           if (pass === 'trk') {
             const trkEle = createElement(doc.documentElement, 'trk');
 
-            addName(trkEle, feature);
+            addLineMeta(trkEle, feature);
+
+            addExtensions(trkEle, feature);
 
             g.coordinates.forEach((seg, s) => {
               const trksegEle = createElement(trkEle, 'trkseg');
@@ -241,7 +467,9 @@ export function addGeojson(
           if (pass === 'trk') {
             const trkEle = createElement(doc.documentElement, 'trk');
 
-            addName(trkEle, feature);
+            addLineMeta(trkEle, feature);
+
+            addExtensions(trkEle, feature);
 
             for (const seg0 of g.coordinates) {
               for (const seg of seg0) {
@@ -276,6 +504,10 @@ export function geojsonToGpxDoc(
   const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
 
   doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:gpxtpx', GPXTPX_NS);
+
+  doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:fm', FM_NS);
+
+  doc.documentElement.setAttributeNS(XMLNS_NS, 'xmlns:osmand', OSMAND_NS);
 
   doc.documentElement.setAttribute('version', '1.1');
 

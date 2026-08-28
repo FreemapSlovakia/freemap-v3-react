@@ -32,8 +32,11 @@ export function rowsToProps(rows: PropRow[]): DrawingProps {
 type Props = {
   rows: PropRow[];
   onChange: (rows: PropRow[]) => void;
-  /** Puts `{key}` into the label being edited, at the cursor. */
-  onInsertKey: (key: string) => void;
+  /**
+   * Puts `{key}` into the label being edited, at the cursor. Absent where the
+   * label is plain text and has nothing to write into it.
+   */
+  onInsertKey?: (key: string) => void;
 };
 
 /**
@@ -62,18 +65,20 @@ export function DrawingPropsEditor({
         // Rows are identified by position: the key is what's being typed, so it
         // is neither stable nor unique while the user is in it.
         <InputGroup key={i} className="mb-1">
-          <LongPressTooltip label={m?.edit.insertIntoLabel}>
-            {({ props }) => (
-              <Button
-                variant="secondary"
-                disabled={!key.trim()}
-                onClick={() => onInsertKey(key.trim())}
-                {...props}
-              >
-                <FaTag />
-              </Button>
-            )}
-          </LongPressTooltip>
+          {onInsertKey && (
+            <LongPressTooltip label={m?.edit.insertIntoLabel}>
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  disabled={!key.trim()}
+                  onClick={() => onInsertKey(key.trim())}
+                  {...props}
+                >
+                  <FaTag />
+                </Button>
+              )}
+            </LongPressTooltip>
+          )}
 
           <Form.Control
             value={key}

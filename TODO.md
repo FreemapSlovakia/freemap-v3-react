@@ -368,6 +368,38 @@ somewhere and renaming it would strand existing data:**
       `renderTrackGeojson`, `activeTrackIndex` still read as track-only. A
       semantic rename, not the mechanical one that's done.
 
+## Drawing vs. data viewer: one model, two storage budgets
+
+The two features hold the same kind of thing — a named, styled point, line or
+polygon with a property table — and keep converging: the style modal, the
+simplify dialog and now the properties editor are literally the same component.
+The only real difference is where the features live: drawing rides in the URL,
+so it cannot carry per-point data (elevation, heart rate, cadence, times);
+loaded data lives in IndexedDB, so it cannot be shared by link. Both differences
+disappear once the user saves a map, which is why "why are there two of these?"
+is a fair question from anyone who hasn't hit either limit.
+
+Not a merge — the URL budget is real and doesn't go away. The aim is to stop
+presenting one model as two kinds of object.
+
+- [ ] **Say the storage per feature, not per tool.** The data viewer's toolbar
+      already warns that a loaded track is in this browser only; drawing has no
+      mirror of it. A badge on each selection toolbar — "in the link" vs "in
+      this browser" — answers the question where the user is looking, and is
+      the honest reason there are two.
+- [ ] **Keep exactly one exclusive capability on each side, and name it.**
+      Today drawing owns vertex editing and the data viewer owns per-point
+      data; "Convert to…" bridges them both ways, with the loss warning. That
+      line is what makes the split explicable. Adding vertex dragging to the
+      data viewer would erase it, and the merge would then be the cheaper
+      option than keeping both — decide it deliberately.
+- [ ] **Close the cosmetic gaps that make the two look like different data
+      models.** The visible leftover is labels: a drawing label interpolates
+      `{p:key}` (`interpolateLabel.ts`), a data-viewer one is the raw `name`
+      property. Rendering `freemap:label` templates in `DataViewerResult` (and
+      handing `keyToken`/`labelHint` to `FeaturePropertiesModal` there) removes
+      it, and makes a drawing→data conversion round-trip visually identical.
+
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 
 Works end to end on a real Android device, for everyone, marked experimental:

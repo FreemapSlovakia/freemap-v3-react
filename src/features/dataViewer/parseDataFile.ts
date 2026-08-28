@@ -1,9 +1,8 @@
 import * as toGeoJSON from '@tmcw/togeojson';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
-import { enrichGpxExtensions } from './enrichGpxExtensions.js';
 import { extractKmlFromKmz } from './kmz.js';
-import { normalizePowerExtension } from './normalizePowerExtension.js';
 import { parseGeojsonFile } from './parseGeojsonFile.js';
+import { parseGpx } from './parseGpx.js';
 import { FM_KIND, type FmKind, isFmKind } from './provenance.js';
 
 type SourceFormat = 'gpx' | 'tcx' | 'kml' | 'geojson';
@@ -213,15 +212,7 @@ export function parseDataFile(
     return toGeojson(normalizeTcx(toGeoJSON.tcx(doc)), 'tcx');
   }
 
-  // GPX: enrich togeojson's output with our canonical `freemap:*` / `osmand:*`
-  // keys and alias Garmin power so the drawing converter and colorizers read it.
-  const geojson = toGeoJSON.gpx(doc);
-
-  enrichGpxExtensions(doc, geojson);
-
-  normalizePowerExtension(geojson.features);
-
-  return toGeojson(geojson, 'gpx');
+  return toGeojson(parseGpx(doc), 'gpx');
 }
 
 // A ZIP archive (and therefore a KMZ) opens with the local-file-header magic

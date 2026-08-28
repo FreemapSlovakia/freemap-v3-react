@@ -78,9 +78,12 @@ const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
   'premium',
 ]);
 
+// The two that name no id of their own: they edit whatever is selected, which
+// a `show=` in a shared link knows nothing about.
 export const ModalIdSchema = z.enum([
   ...URL_MODAL_IDS,
   'current-drawing-properties',
+  'data-viewer-properties',
 ]);
 
 export type ModalId = z.infer<typeof ModalIdSchema>;

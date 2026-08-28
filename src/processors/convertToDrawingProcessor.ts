@@ -54,6 +54,7 @@ import {
 } from '@features/tracking/tracks.js';
 import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
+import { ownTable } from '@shared/featureProperties.js';
 import { mergeLines } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { askSimplification } from '@shared/simplifyDialog.js';
@@ -101,23 +102,9 @@ function ownLabel(
 function importedProps(
   properties: Record<string, unknown> | null | undefined,
 ): DrawingProps | undefined {
-  const own = properties?.['freemap:props'];
+  const own = ownTable(properties);
 
-  if (!own || typeof own !== 'object') {
-    return pickDrawingProps(properties ?? undefined);
-  }
-
-  const table: DrawingProps = {};
-
-  // Only strings: a hand-edited file could put anything here, and a value that
-  // isn't one fails the schema when a saved map is read back.
-  for (const [key, value] of Object.entries(own)) {
-    if (typeof value === 'string') {
-      table[key] = value;
-    }
-  }
-
-  return normalizeProps(table);
+  return own ? normalizeProps(own) : pickDrawingProps(properties ?? undefined);
 }
 
 function featuresToLines(

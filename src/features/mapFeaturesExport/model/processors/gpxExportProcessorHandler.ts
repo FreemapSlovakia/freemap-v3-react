@@ -12,7 +12,6 @@ import type {
   DrawnLine,
   Line,
 } from '@features/drawing/model/actions/drawingLineActions.js';
-import type { DrawingProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import type { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import type { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
@@ -71,6 +70,7 @@ import {
 import { exportElevationCancelActions } from './fillElevations.js';
 import {
   addAttribute,
+  appendProps,
   createElement,
   FM_NS,
   GARMIN_NS,
@@ -840,16 +840,6 @@ async function addDrawingPoints(
     if (locusIcon) {
       createElement(pending[i].extEle, [LOCUS_NS, 'locus:icon'], locusIcon);
     }
-  }
-}
-
-/**
- * The feature's own table, one `<fm:prop key="…">` per pair — every key, since
- * `<name>` says only what the label rendered to.
- */
-function appendProps(parent: Element, props: DrawingProps | undefined): void {
-  for (const key in props) {
-    createElement(parent, [FM_NS, 'fm:prop'], props[key]!, { key });
   }
 }
 

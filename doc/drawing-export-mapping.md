@@ -90,8 +90,8 @@ them when the feature is drawn.
   keys it can no longer be told back apart, so that copy is what our own
   importer reads.
 - **GPX** carries them as one `<fm:prop key="…">value</fm:prop>` per pair
-  inside `<extensions>`, beside the raw `<fm:label>`. `enrichGpxExtensions`
-  collects them under `freemap:props`.
+  inside `<extensions>`, beside the raw `<fm:label>`. `parseGpx` collects them
+  under `freemap:props`.
 - Both formats therefore round-trip **every** key, not only the OSM tags
   `pickDrawingProps` knows how to carry, so a property the user invented
   survives. `importedProps` is the single place that decides where a converted
@@ -237,8 +237,10 @@ they're audited by eye and exercised through round-trip exports.
 | `src/features/export/osmandIconMapping.ts`                                      | OsmAnd icon/background ↔ iconSpec/markerType                                                                           |
 | `src/features/export/model/processors/gpxExportProcessorHandler.ts`             | GPX writer (`addDrawingPoints`, `addDrawingLines`, marker SVG builder for Locus icon)                                  |
 | `src/features/export/model/processors/geojsonExportProcessorHandler.ts`         | GeoJSON writer                                                                                                         |
-| `src/features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.ts` | GPX → GeoJSON parser; injects canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk features     |
-| `src/processors/convertToDrawingProcessor.ts`                                   | Turns parsed features into drawing state; hosts `pointStyleFromProperties` / `lineStyleFromProperties` priority chains |
+| `src/features/dataViewer/parseGpx.ts`                                           | GPX → GeoJSON reader; writes the canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk/rte features |
+| `src/processors/convertToDrawingProcessor.ts`                                   | Turns parsed features into drawing state                                                                               |
+| `src/shared/styleFromProperties.ts`                                             | `*StyleFromProperties` priority chains, and the `*StyleToProperties` writers the data viewer's properties editor uses  |
+| `src/shared/featureProperties.ts`                                               | Which property keys are the feature's own data vs. style/bookkeeping; the `freemap:props` table reader                 |
 | `src/shared/drawingIcons.tsx`                                                   | iconSpec parser, FA loader, POI name↔URL maps, `tagsToPoiIconSpec`                                                     |
 | `src/shared/components/RichMarker.tsx`                                          | Renderer the Locus icon SVG mirrors                                                                                    |
 

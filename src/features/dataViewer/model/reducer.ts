@@ -3,6 +3,8 @@ import { elevationSetSettings } from '@features/elevationChart/model/actions.js'
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import { ELEVATION_SOURCES_PROP } from '@shared/elevation.js';
+import { withoutPerPointData } from '@shared/geoutils.js';
 import type { FeatureCollection } from 'geojson';
 import { simplifyDataFeature } from '../simplifyTrack.js';
 import {
@@ -22,6 +24,7 @@ import {
   dataViewerSetData,
   dataViewerSetElevation,
   dataViewerSetElevationPrompt,
+  dataViewerSetFeatureProperties,
   dataViewerSetGpxUrl,
   dataViewerSetRenderGeojson,
   dataViewerSetSplitPoint,
@@ -94,18 +97,20 @@ function clearSplit(state: DataViewerState) {
   state.splitPoint = null;
 }
 
-/**
- * Drops everything derived from the geometry as it was. Editing it makes the
- * data no longer the file it came from, so `trackUID` / `gpxUrl` go with it.
- */
+/** An edit makes the data no longer the file it came from. */
 function markEdited(state: DataViewerState) {
-  state.renderTrackGeojson = null;
-
-  clearSplit(state);
-
   state.trackUID = null;
 
   state.gpxUrl = null;
+}
+
+/** The same, plus everything derived from the geometry as it was. */
+function markGeometryEdited(state: DataViewerState) {
+  markEdited(state);
+
+  state.renderTrackGeojson = null;
+
+  clearSplit(state);
 }
 
 /**
@@ -119,7 +124,7 @@ function replaceFeature(
 ) {
   state.trackGeojson?.features.splice(index, 1, ...replacement);
 
-  markEdited(state);
+  markGeometryEdited(state);
 
   const active = state.activeTrackIndex;
 
@@ -173,6 +178,33 @@ export const dataViewerReducer = createReducer(
         if (wasActive) {
           state.activeTrackIndex = null;
         }
+      })
+      .addCase(dataViewerSetFeatureProperties, (state, { payload }) => {
+        const feature = state.trackGeojson?.features[payload.index];
+
+        if (!feature) {
+          return;
+        }
+
+        feature.properties = payload.properties;
+
+        // The densified copy is what gets drawn where it exists, so it needs
+        // the new style — but not the properties wholesale: its coordinates are
+        // not the recorded ones, and the models its sampling credited are
+        // stamped on it alone.
+        const rendered = state.renderTrackGeojson?.features[payload.index];
+
+        if (rendered) {
+          const sources = rendered.properties?.[ELEVATION_SOURCES_PROP];
+
+          rendered.properties = withoutPerPointData(payload.properties);
+
+          if (sources !== undefined && rendered.properties) {
+            rendered.properties[ELEVATION_SOURCES_PROP] = sources;
+          }
+        }
+
+        markEdited(state);
       })
       .addCase(dataViewerSetElevation, (state, action) => {
         state.trackGeojson = action.payload.trackGeojson;
@@ -268,7 +300,7 @@ export const dataViewerReducer = createReducer(
 
         // Indices are untouched, so the selection and the active line stand.
         if (changed) {
-          markEdited(state);
+          markGeometryEdited(state);
         }
       })
       .addCase(dataViewerSetElevationPrompt, (state, action) => {
