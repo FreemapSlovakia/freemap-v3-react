@@ -363,7 +363,27 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     dispatch(searchSetQuery({ query: value, limit: next }));
   }, [dispatch, limit, value]);
 
+  // What the list was last opened for. The command matches are rebuilt
+  // whenever the layers change, so without this a map switch would reopen a
+  // list the user has already picked from and closed.
+  const shownResultsRef = useRef(results);
+
+  const shownCommandsRef = useRef('');
+
   useEffect(() => {
+    const commandKey = commands.map(({ command }) => command.id).join();
+
+    if (
+      results === shownResultsRef.current &&
+      commandKey === shownCommandsRef.current
+    ) {
+      return;
+    }
+
+    shownResultsRef.current = results;
+
+    shownCommandsRef.current = commandKey;
+
     if (results.length) {
       const active = document.activeElement;
 
