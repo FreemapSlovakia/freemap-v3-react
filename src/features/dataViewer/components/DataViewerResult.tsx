@@ -680,7 +680,7 @@ function WaypointMarker({
 
   // No icon spec resolved → fall back to the legacy flag glyph.
   const hasIconContent =
-    contentProps.poi || contentProps.iconSvg || contentProps.label;
+    contentProps.poi ?? contentProps.iconSvg ?? contentProps.label;
 
   return (
     <RichMarker
@@ -695,12 +695,7 @@ function WaypointMarker({
         : { faIcon: <FaFlag color={color} /> })}
     >
       {name && (
-        <Tooltip
-          className="compact"
-          offset={new LPoint(10, 10)}
-          direction="right"
-          permanent
-        >
+        <Tooltip className="compact" direction="top" permanent>
           <span>{name}</span>
         </Tooltip>
       )}
