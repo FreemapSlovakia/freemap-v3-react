@@ -12,6 +12,7 @@ import {
   dataViewerSetData,
   dataViewerSetTrackUID,
 } from '@features/dataViewer/model/actions.js';
+import { normalizeName } from '@features/dataViewer/parseDataFile.js';
 import { drawingLineDelete } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointDelete } from '@features/drawing/model/actions/drawingPointActions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
@@ -22,6 +23,7 @@ import {
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
+import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import { searchUnselectResult } from '@features/search/model/actions.js';
 import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -68,6 +70,11 @@ async function collect(
           id: source.index,
         },
       );
+
+    case 'planned-route':
+      // Every alternative, as the data export writes them — the whole planner
+      // is handed over, not just the followed line.
+      return build({ plannedRoute: true });
 
     case 'search-result': {
       const result = activeSearchResultSelector(getState());
@@ -134,6 +141,13 @@ export const convertToDataViewerProcessor: Processor<
       return;
     }
 
+    // The export writes a label as simplestyle `title`, while the viewer reads
+    // `name` — the same normalization a loaded file gets.
+    copied = {
+      ...copied,
+      features: copied.features.map(normalizeName),
+    };
+
     trackMatomo(['trackEvent', 'DataViewer', 'copyIn', source.type]);
 
     const existing = getState().trackViewer.trackGeojson;
@@ -166,6 +180,14 @@ export const convertToDataViewerProcessor: Processor<
 
         // Takes the ring's holes with it, as deleting a polygon always does.
         dispatch(drawingLineDelete({ lineIndex: source.index }));
+
+        break;
+
+      case 'planned-route':
+        // Clears a route-point/leg selection of its own.
+        dispatch(routePlannerDelete());
+
+        dispatch(closeTool('route-planner'));
 
         break;
 

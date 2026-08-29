@@ -30,6 +30,7 @@ import {
   stepModeDashArray,
   stopNumber,
   WAYPOINT_COLORS,
+  WAYPOINT_ICONS,
   waypointKind,
 } from '@features/routePlanner/model/routeColors.js';
 import type { RoutePlannerSettingsState } from '@features/routePlanner/model/settingsReducer.js';
@@ -965,6 +966,8 @@ function addPlannedRoute(
 
     const kind = waypointKind(i, points.length, finishOnly, mode);
 
+    const number = stopNumber(i, mode, waypoints);
+
     createElement(
       midpointWptEle,
       'name',
@@ -972,10 +975,29 @@ function addPlannedRoute(
         ? rpm.start
         : kind === 'finish'
           ? rpm.finish
-          : `${rpm.stop} ${stopNumber(i, mode, waypoints) ?? i}`,
+          : `${rpm.stop} ${number ?? i}`,
     );
 
+    // The glyph the map draws: the play/stop icon, or the stop's number as
+    // text. No curated Garmin sym stands for either, so `<sym>` carries the
+    // spec's bare name and the extensions below do the lossless round trip.
+    const icon =
+      WAYPOINT_ICONS[kind] ??
+      (kind === 'stop' && number !== undefined ? String(number) : undefined);
+
+    const sym = iconToBareSym(icon);
+
+    if (sym) {
+      createElement(midpointWptEle, 'sym', sym);
+    }
+
     const extEle = createElement(midpointWptEle, 'extensions');
+
+    appendNs(extEle, FM_NS, 'fm:markerType', 'pin');
+
+    if (icon) {
+      appendNs(extEle, FM_NS, 'fm:icon', icon);
+    }
 
     const color = joinColorAlpha(WAYPOINT_COLORS[kind], markerOpacity);
 

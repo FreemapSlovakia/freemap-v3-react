@@ -190,6 +190,7 @@ export type DataViewerSource =
   // objects: `id` omitted → every visible object, as points
   | { type: 'objects'; id?: OsmFeatureId }
   | { type: 'objects-geometry'; id: OsmFeatureId }
+  | { type: 'planned-route' }
   | { type: 'search-result' }
   | { type: 'drawing-point'; index: number }
   | { type: 'drawing-line'; index: number };

@@ -407,6 +407,12 @@ async function addPlannedRoute(
       if (markerOpacity < 1) {
         props['marker-color-opacity'] = markerOpacity;
       }
+
+      // The glyph the map draws, spelled as a drawing point spells it, so a
+      // consumer that reads these back gets the same marker. No
+      // `marker-symbol`: no Garmin sym stands for a play/stop or a number.
+      props['markerType'] = 'pin';
+      props['icon'] = WAYPOINT_ICONS[kind] ?? label;
     }
 
     Object.assign(

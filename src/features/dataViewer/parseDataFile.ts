@@ -123,7 +123,9 @@ function parseXml(text: string): Document | null {
 // The track-viewer / convert-to-drawing pipeline keys a feature's label on
 // `name`. Foreign GeoJSON carries it under `title` (Mapbox simplestyle) or
 // `label`; normalize to `name` so labels survive for every format alike.
-function normalizeName<G extends Geometry | null>(
+// Features converted in from another tool arrive written the same way, so they
+// go through this too.
+export function normalizeName<G extends Geometry | null>(
   feature: Feature<G>,
 ): Feature<G> {
   const props = feature.properties;
