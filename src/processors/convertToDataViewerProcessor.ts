@@ -3,11 +3,11 @@ import {
   convertToDataViewer,
   type DataViewerSource,
   openTool,
-  type Selection,
   selectFeature,
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import { changesetsSet } from '@features/changesets/model/actions.js';
 import {
   dataViewerSetData,
   dataViewerSetTrackUID,
@@ -17,6 +17,7 @@ import { drawingLineDelete } from '@features/drawing/model/actions/drawingLineAc
 import { drawingPointDelete } from '@features/drawing/model/actions/drawingPointActions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import {
+  type BuildExportOptions,
   buildExportFeatureCollection,
   type ExportInclude,
 } from '@features/mapFeaturesExport/model/buildExportFeatureCollection.js';
@@ -29,7 +30,7 @@ import { activeSearchResultSelector } from '@features/search/model/selectors.js'
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { featureCollection } from '@turf/helpers';
+import { featureCollection, point } from '@turf/helpers';
 import type { FeatureCollection } from 'geojson';
 
 /**
@@ -43,13 +44,13 @@ async function collect(
 ): Promise<FeatureCollection> {
   const build = (
     include: ExportInclude,
-    only?: Selection,
+    options: BuildExportOptions = {},
   ): Promise<FeatureCollection> =>
     buildExportFeatureCollection({
       getState,
       include,
       pointMode: { props: true },
-      options: { only },
+      options,
     });
 
   switch (source.type) {
@@ -57,8 +58,10 @@ async function collect(
       return build(
         { drawingPoints: true },
         {
-          type: 'draw-points',
-          id: source.index,
+          only: {
+            type: 'draw-points',
+            id: source.index,
+          },
         },
       );
 
@@ -66,15 +69,32 @@ async function collect(
       return build(
         { drawingLines: true, drawingAreas: true },
         {
-          type: 'draw-line-poly',
-          id: source.index,
+          only: {
+            type: 'draw-line-poly',
+            id: source.index,
+          },
         },
       );
 
     case 'planned-route':
-      // Every alternative, as the data export writes them — the whole planner
-      // is handed over, not just the followed line.
-      return build({ plannedRoute: true });
+      // Only the alternative being followed, as the drawing conversion takes it
+      // — one line per same-mode stretch, in the color the map paints it.
+      return build({ plannedRoute: true }, { route: 'active' });
+
+    case 'changesets':
+      // The one source the export builder doesn't write: a point per changeset
+      // at its centre, named by its comment and carrying what the tool knows —
+      // the id, the author and when it was closed.
+      return featureCollection(
+        getState().changesets.changesets.map((changeset) =>
+          point([changeset.centerLon, changeset.centerLat], {
+            ...(changeset.description && { title: changeset.description }),
+            changeset: String(changeset.id),
+            user: changeset.userName,
+            closed_at: changeset.closedAt.toISOString(),
+          }),
+        ),
+      );
 
     case 'search-result': {
       const result = activeSearchResultSelector(getState());
@@ -82,14 +102,14 @@ async function collect(
       // Gone while the merge-mode prompt was up. An undefined `only` means "no
       // restriction", so building anyway would take every kept result.
       return result
-        ? build({ search: true }, { type: 'search', id: result.id })
+        ? build({ search: true }, { only: { type: 'search', id: result.id } })
         : featureCollection([]);
     }
 
     case 'objects':
       return build(
         { objects: true },
-        source.id ? { type: 'objects', id: source.id } : undefined,
+        source.id ? { only: { type: 'objects', id: source.id } } : {},
       );
 
     case 'objects-geometry': {
@@ -188,6 +208,13 @@ export const convertToDataViewerProcessor: Processor<
         dispatch(routePlannerDelete());
 
         dispatch(closeTool('route-planner'));
+
+        break;
+
+      case 'changesets':
+        dispatch(changesetsSet([]));
+
+        dispatch(closeTool('changesets'));
 
         break;
 

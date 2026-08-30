@@ -191,6 +191,7 @@ export type DataViewerSource =
   | { type: 'objects'; id?: OsmFeatureId }
   | { type: 'objects-geometry'; id: OsmFeatureId }
   | { type: 'planned-route' }
+  | { type: 'changesets' }
   | { type: 'search-result' }
   | { type: 'drawing-point'; index: number }
   | { type: 'drawing-line'; index: number };
