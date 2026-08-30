@@ -195,6 +195,7 @@ export const PersistedElevationSettingsSchema = z
         (STEEPNESS_SCALES as readonly number[]).includes(scale),
       )
       .catch(STEEPNESS_DEFAULT_SCALE),
+    preventRangeHint: z.boolean(),
   })
   .partial();
 
@@ -527,6 +528,7 @@ const PERSIST: PersistEntry[] = [
       ditchFillWindow: e.ditchFillWindow,
       gradeWindow: e.gradeWindow,
       steepnessScale: e.steepnessScale,
+      preventRangeHint: e.preventRangeHint,
     }),
   }),
   defineEntry({

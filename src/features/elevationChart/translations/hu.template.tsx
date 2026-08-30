@@ -8,6 +8,15 @@ const hu: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Útpontok megjelenítése',
   elevationSource: 'Magassági adatok',
   fetchError: 'A magasságot nem sikerült beolvasni',
+  rangeHint: () => (
+    <>
+      Az egérgörgővel nagyíthatja a diagramot, a nagyítottat húzással
+      mozgathatja. A vonal egy szakaszának méréséhez tartsa lenyomva a{' '}
+      <kbd>Shift</kbd> billentyűt, és húzza.
+    </>
+  ),
+  rangeHintTouch:
+    'Két ujjal nagyíthatja a diagramot, a nagyítottat húzással mozgathatja. A vonal egy szakaszának méréséhez tartsa nyomva az ujját, majd húzza.',
 };
 
 export default hu;

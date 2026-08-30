@@ -15,7 +15,10 @@ import type { ElevationChartTarget } from '@features/elevationChart/model/target
  * happened. It lives in its own module so that rule can be tested without a
  * store.
  */
-let held: string | null = null;
+/** The stretch of the profile the same URL marked out, if any. */
+type ChartRange = { from: number; to: number };
+
+let held: { raw: string; range: ChartRange | null } | null = null;
 
 /**
  * Holds `raw` for later, but only while `mapPending` — a map still to arrive is
@@ -23,12 +26,16 @@ let held: string | null = null;
  * everything the URL describes is already in the store, so a value that doesn't
  * resolve now never will. Always call this when handling a URL: it also clears
  * a stale hold when the new URL supersedes it.
+ *
+ * The range is held with it: the target is what a deferred request waits for,
+ * but the two were written by one link and mean nothing apart.
  */
 export function holdChartRequest(
   raw: string | null,
   mapPending: boolean,
+  range: ChartRange | null = null,
 ): void {
-  held = raw !== null && mapPending ? raw : null;
+  held = raw !== null && mapPending ? { raw, range } : null;
 }
 
 /**
@@ -41,17 +48,19 @@ export function holdChartRequest(
 export function takeChartRequest(
   resolve: (raw: string) => ElevationChartTarget | null,
   mapStillComing: boolean,
-): ElevationChartTarget | null {
+): { target: ElevationChartTarget; range: ChartRange | null } | null {
   if (held === null) {
     return null;
   }
 
-  const target = resolve(held);
+  const target = resolve(held.raw);
 
   if (target) {
+    const { range } = held;
+
     held = null;
 
-    return target;
+    return { target, range };
   }
 
   if (!mapStillComing) {

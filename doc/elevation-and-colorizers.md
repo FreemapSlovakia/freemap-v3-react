@@ -389,6 +389,23 @@ The wheel listener is attached by hand — React registers `wheel` passively, so
 would scroll too. Same shape as the panorama viewport (`PanoramaView.tsx`), which is worth
 comparing before changing either.
 
+A **marked stretch** (`elevationChart.range`, metres along the profile) lives in the store
+rather than in the panel, because the map draws it too (`RangeHighlight` in
+`ElevationChartActivePoint.tsx`) and `elevation-chart-range=` carries it. While an edge is
+being dragged the panel holds a *draft* instead and commits on release: the committed one
+rewrites the URL, which is not a thing to do once per pointer move. One anchor ref serves
+both gestures — creating anchors where the drag started, dragging an edge anchors the other
+one — so dragging past the far edge turns the stretch round instead of collapsing it. Its
+climb figures are the difference of the profile's cumulative `climbUp`/`climbDown` at the
+two (interpolated) ends, so they cost nothing and agree with the whole-line totals. The map
+side draws it in a pane of its own above the overlay: the planned route has a pane at the
+overlay pane's own z-index and, mounted later, paints over anything left in the default one.
+Nothing on screen says the chart's gestures exist, so a one-off toast names them
+(`rangeHint` / `rangeHintTouch`, chosen by `(pointer: coarse)`; `preventRangeHint` in the
+settings slice), the way the route finder's midpoint hint works. `rangeHint` is a *function*
+message, not a string: it writes a key as `<kbd>`, and the toast renderer resolves only
+strings and functions — a bare JSX value comes out as `…`.
+
 A click hands the place to `panToUncovered` (`src/features/map/panToUncovered.ts`): it
 hit-tests a 24 px grid over the map container (coarser on a large screen — the sweep is
 capped at `MAX_CELLS` hit tests, since it runs on the click path before the browser

@@ -8,6 +8,14 @@ const sl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Prikaži točke poti',
   elevationSource: 'Podatki o višini',
   fetchError: 'Nadmorske višine ni bilo mogoče prebrati',
+  rangeHint: () => (
+    <>
+      S kolescem miške približate graf, približanega premikate z vlečenjem. Za
+      merjenje dela linije držite tipko <kbd>Shift</kbd> in povlecite.
+    </>
+  ),
+  rangeHintTouch:
+    'S približevanjem prstov povečate graf, približanega premikate z vlečenjem. Za merjenje dela linije pridržite prst in nato povlecite.',
 };
 
 export default sl;

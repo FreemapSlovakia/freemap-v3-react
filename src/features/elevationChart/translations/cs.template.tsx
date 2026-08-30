@@ -8,6 +8,14 @@ const cs: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Zobrazit trasové body',
   elevationSource: 'Výšková data',
   fetchError: 'Výšku se nepodařilo načíst',
+  rangeHint: () => (
+    <>
+      Kolečkem myši graf přiblížíte, přiblížený graf posunete tažením. Chcete-li
+      změřit část linie, podržte <kbd>Shift</kbd> a táhněte.
+    </>
+  ),
+  rangeHintTouch:
+    'Stažením prstů graf přiblížíte, přiblížený graf posunete tažením. Chcete-li změřit část linie, podržte prst a poté táhněte.',
 };
 
 export default cs;

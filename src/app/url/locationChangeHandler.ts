@@ -26,6 +26,7 @@ import {
 import {
   elevationChartClose,
   elevationChartOpen,
+  elevationChartSetRange,
 } from '@features/elevationChart/model/actions.js';
 import type { ElevationChartTarget } from '@features/elevationChart/model/target.js';
 import { targetsEqual } from '@features/elevationChart/model/target.js';
@@ -975,13 +976,24 @@ export function applyElevationChartFromUrl(
 ) {
   const { loadMeta, restoring } = getState().myMaps;
 
-  const target = takeChartRequest(
+  const honoured = takeChartRequest(
     (raw) => parseChartTarget(getState, raw),
     Boolean(loadMeta || restoring),
   );
 
-  if (target && !targetsEqual(getState().elevationChart.target, target)) {
+  if (!honoured) {
+    return;
+  }
+
+  const { target, range } = honoured;
+
+  if (!targetsEqual(getState().elevationChart.target, target)) {
     dispatch(elevationChartOpen(target, { fromUrl: true }));
+  }
+
+  // After the open, which starts a new target's chart clean.
+  if (range) {
+    dispatch(elevationChartSetRange(range));
   }
 }
 
@@ -1036,9 +1048,12 @@ function handleElevationChart(
   const target =
     typeof raw === 'string' ? parseChartTarget(getState, raw) : null;
 
+  const asked = parseChartRange(query['elevation-chart-range']);
+
   holdChartRequest(
     target === null && typeof raw === 'string' ? raw : null,
     mapPending,
+    asked,
   );
 
   if (!targetsEqual(getState().elevationChart.target, target)) {
@@ -1048,6 +1063,32 @@ function handleElevationChart(
         : elevationChartClose(),
     );
   }
+
+  // After the open, which starts a new target's chart clean.
+  const range = target ? asked : null;
+
+  const current = getState().elevationChart.range;
+
+  if (range?.from !== current?.from || range?.to !== current?.to) {
+    dispatch(elevationChartSetRange(range));
+  }
+}
+
+/** `elevation-chart-range=<from>,<to>` — metres along the profile. */
+function parseChartRange(
+  raw: string | string[] | undefined,
+): { from: number; to: number } | null {
+  const [from, to] =
+    typeof raw === 'string' ? raw.split(',').map(Number) : [Number.NaN];
+
+  return from !== undefined &&
+    to !== undefined &&
+    Number.isFinite(from) &&
+    Number.isFinite(to) &&
+    to > from &&
+    from >= 0
+    ? { from, to }
+    : null;
 }
 
 // TODO use some generic deep compare fn

@@ -13,6 +13,7 @@ import {
   elevationChartOpen,
   elevationChartSetActivePoint,
   elevationChartSetElevationProfile,
+  elevationChartSetRange,
 } from './actions.js';
 import {
   type ElevationChartTarget,
@@ -44,6 +45,8 @@ export interface ElevationChartState {
    */
   target: ElevationChartTarget | null;
   activePoint: ElevationProfilePoint | null;
+  /** The marked-out stretch, in metres along the profile; `null` for none. */
+  range: { from: number; to: number } | null;
   elevationProfilePoints: Array<ElevationProfilePoint> | null;
   waypoints: ElevationProfileWaypoint[];
   /**
@@ -60,6 +63,7 @@ export interface ElevationChartState {
 const initialState: ElevationChartState = {
   target: null,
   activePoint: null,
+  range: null,
   elevationProfilePoints: null,
   waypoints: [],
   sources: [],
@@ -89,8 +93,30 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
     .addCase(elevationChartSetActivePoint, (state, action) => {
       state.activePoint = action.payload;
     })
+    .addCase(elevationChartSetRange, (state, action) => {
+      // Kept to the profile it marks, since it can be asked for by URL. A
+      // profile still on its way is not one to measure against; the one that
+      // arrives clamps it instead.
+      state.range = state.elevationProfilePoints
+        ? clampRange(action.payload, state.elevationProfilePoints)
+        : action.payload;
+    })
     .addCase(elevationChartSetElevationProfile, (state, action) => {
       state.elevationProfilePoints = action.payload.points;
+
+      // A profile redrawn shorter — a re-route, a track edited — can end before
+      // the marked stretch does. What is left of it stands; nothing does not.
+      const clamped = clampRange(state.range, action.payload.points);
+
+      // Only when it actually moved: a live track dispatches a profile per fix,
+      // and a new object each time would redraw the band and re-scan the
+      // profile for its figures on every one of them.
+      if (
+        clamped?.from !== state.range?.from ||
+        clamped?.to !== state.range?.to
+      ) {
+        state.range = clamped;
+      }
 
       state.waypoints = action.payload.waypoints;
 
@@ -123,4 +149,22 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
 
 function setInitialState() {
   return initialState;
+}
+
+/** A marked stretch kept within a profile; `null` where nothing of it is left. */
+function clampRange(
+  range: { from: number; to: number } | null,
+  points: ElevationProfilePoint[],
+): { from: number; to: number } | null {
+  if (!range) {
+    return null;
+  }
+
+  const end = points.at(-1)?.distance ?? 0;
+
+  const from = Math.min(range.from, end);
+
+  const to = Math.min(range.to, end);
+
+  return to > from ? { from, to } : null;
 }

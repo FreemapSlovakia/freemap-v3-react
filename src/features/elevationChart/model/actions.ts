@@ -71,6 +71,16 @@ export const elevationChartSetActivePoint =
     'ELEVATION_CHART_SET_ACTIVE_POINT',
   );
 
+/**
+ * The stretch of the profile the reader has marked out, in metres along it, or
+ * `null` for none. In the store rather than in the panel because the map draws
+ * it too, and the URL carries it.
+ */
+export const elevationChartSetRange = createAction<{
+  from: number;
+  to: number;
+} | null>('ELEVATION_CHART_SET_RANGE');
+
 export const elevationSetSettings = createAction<
   Partial<ElevationSettingsState>
 >('ELEVATION_SET_SETTINGS');

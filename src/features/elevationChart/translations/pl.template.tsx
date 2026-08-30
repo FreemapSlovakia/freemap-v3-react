@@ -8,6 +8,15 @@ const pl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Pokaż punkty trasy',
   elevationSource: 'Dane wysokościowe',
   fetchError: 'Nie udało się odczytać wysokości',
+  rangeHint: () => (
+    <>
+      Kółkiem myszy przybliżysz wykres, przybliżony wykres przesuniesz
+      przeciągnięciem. Aby zmierzyć fragment linii, przytrzymaj <kbd>Shift</kbd>{' '}
+      i przeciągnij.
+    </>
+  ),
+  rangeHintTouch:
+    'Zsunięciem palców przybliżysz wykres, przybliżony wykres przesuniesz przeciągnięciem. Aby zmierzyć fragment linii, przytrzymaj palec, a następnie przeciągnij.',
 };
 
 export default pl;

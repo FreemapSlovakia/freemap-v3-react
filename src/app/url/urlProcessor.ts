@@ -313,6 +313,15 @@ function updateUrl(state: RootState, forced: boolean): void {
 
     if (chartParam) {
       queryParts.push(['elevation-chart', chartParam]);
+
+      // Metres along the profile, whole ones: a marked stretch is read off a
+      // chart a few hundred pixels wide, so nothing finer means anything.
+      if (elevationChart.range) {
+        queryParts.push([
+          'elevation-chart-range',
+          `${Math.round(elevationChart.range.from)},${Math.round(elevationChart.range.to)}`,
+        ]);
+      }
     }
   }
 

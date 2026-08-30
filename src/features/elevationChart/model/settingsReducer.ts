@@ -35,6 +35,8 @@ export interface ElevationSettingsState {
    * to a map feature, so all three colorize consumers share this one.
    */
   steepnessScale: number;
+  /** The reader has seen how to mark out a stretch and doesn't want telling. */
+  preventRangeHint: boolean;
 }
 
 /**
@@ -72,6 +74,7 @@ export const elevationSettingsInitialState: ElevationSettingsState = {
   ditchFillWindow: 25,
   gradeWindow: 50,
   steepnessScale: STEEPNESS_DEFAULT_SCALE,
+  preventRangeHint: false,
 };
 
 export const elevationSettingsReducer = createReducer(

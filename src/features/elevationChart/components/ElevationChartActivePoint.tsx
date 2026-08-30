@@ -4,15 +4,16 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { type LeafletMouseEvent, Point } from 'leaflet';
-import type { ReactElement } from 'react';
+import { type LatLngTuple, type LeafletMouseEvent, Point } from 'leaflet';
+import { type ReactElement, useMemo } from 'react';
 import { FaInfo } from 'react-icons/fa';
-import { Tooltip, useMap, useMapEvent } from 'react-leaflet';
+import { Pane, Polyline, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gradeAt } from '../grade.js';
 import { elevationChartSetActivePoint } from '../model/actions.js';
+import type { ElevationProfilePoint } from '../model/reducer.js';
 import { gradeWindowMeters } from '../model/settingsReducer.js';
-import { projectOnProfile } from '../profilePoint.js';
+import { profilePointAtDistance, projectOnProfile } from '../profilePoint.js';
 
 // How near the drawn line the pointer must come for the readout to appear.
 // Generous enough to catch the line without demanding pixel accuracy, tight
@@ -23,6 +24,23 @@ const HOVER_TOLERANCE_PX = 14;
 // dispatched — the pointer moving across the line rather than along it (and a
 // re-entry at the same place) leaves the store alone.
 const MIN_STEP_M = 0.1;
+
+// A band over the line, in the chart's own accent — wide enough to read past
+// the line under it, and see-through so that line stays legible.
+const RANGE_STYLE = {
+  color: '#dc3545',
+  weight: 10,
+  opacity: 0.4,
+  lineCap: 'round',
+  lineJoin: 'round',
+  interactive: false,
+} as const;
+
+// Above every line the chart can be aimed at — the planned route has a pane of
+// its own at the overlay pane's own z-index and, being mounted later, paints
+// over it — and below the markers.
+const RANGE_PANE = 'fm-elevation-range';
+const RANGE_PANE_Z = 550;
 
 /**
  * Points the chart at the place under the pointer, the mirror of hovering the
@@ -87,6 +105,72 @@ function useProfileHover() {
   useMapEvent('mouseout', clear);
 }
 
+/**
+ * The stretch the chart has marked out, drawn under the line it belongs to so
+ * the figures in the panel have a place on the map. Same ink as the chart's own
+ * marks, which is what says the two belong together.
+ */
+function RangeHighlight(): ReactElement | null {
+  const range = useAppSelector((state) => state.elevationChart.range);
+
+  const points = useAppSelector(
+    (state) => state.elevationChart.elevationProfilePoints,
+  );
+
+  const positions = useMemo(() => {
+    if (!range || !points?.length) {
+      return null;
+    }
+
+    // The ends themselves, interpolated, so the highlight starts and stops
+    // exactly where the marked stretch does rather than at the nearest sample.
+    const ends = [range.from, range.to].map((distance) =>
+      profilePointAtDistance(points, distance),
+    );
+
+    const inside = points.filter(
+      (point) => point.distance > range.from && point.distance < range.to,
+    );
+
+    const all = [ends[0], ...inside, ends[1]].filter(
+      (point): point is ElevationProfilePoint => Boolean(point),
+    );
+
+    // Broken at the profile's own gaps — the pause between two recording
+    // segments — which the track never travelled; drawn through, the band would
+    // cross ground nobody was on.
+    const runs: LatLngTuple[][] = [];
+
+    let run: LatLngTuple[] = [];
+
+    for (const point of all) {
+      if (Number.isFinite(point.ele)) {
+        run.push([point.lat, point.lon]);
+      } else if (run.length) {
+        runs.push(run);
+
+        run = [];
+      }
+    }
+
+    if (run.length) {
+      runs.push(run);
+    }
+
+    const drawn = runs.filter((positions) => positions.length > 1);
+
+    return drawn.length ? drawn : null;
+  }, [range, points]);
+
+  return (
+    positions && (
+      <Pane name={RANGE_PANE} style={{ zIndex: RANGE_PANE_Z }}>
+        <Polyline positions={positions} {...RANGE_STYLE} />
+      </Pane>
+    )
+  );
+}
+
 export function ElevationChartActivePoint(): ReactElement | null {
   const m = useMessages();
 
@@ -123,46 +207,50 @@ export function ElevationChartActivePoint(): ReactElement | null {
   const language = useAppSelector((state) => state.l10n.language);
 
   return (
-    elevationChartActivePoint && (
-      <RichMarker
-        faIcon={<FaInfo color="grey" />}
-        color="grey"
-        interactive={false}
-        position={{
-          lat: elevationChartActivePoint.lat,
-          lng: elevationChartActivePoint.lon,
-        }}
-      >
-        <Tooltip
-          className="compact"
-          offset={new Point(10, 10)}
-          direction="right"
-          permanent
+    <>
+      <RangeHighlight />
+
+      {elevationChartActivePoint && (
+        <RichMarker
+          faIcon={<FaInfo color="grey" />}
+          color="grey"
+          interactive={false}
+          position={{
+            lat: elevationChartActivePoint.lat,
+            lng: elevationChartActivePoint.lon,
+          }}
         >
-          <span>
-            → {formatDistance(elevationChartActivePoint.distance, language)}
-            {' ▴ '}
-            {nf0.format(elevationChartActivePoint.ele)} {m?.general.masl}
-            {typeof elevationChartActivePoint.climbUp === 'number' &&
-              typeof elevationChartActivePoint.climbDown === 'number' && (
+          <Tooltip
+            className="compact"
+            offset={new Point(10, 10)}
+            direction="right"
+            permanent
+          >
+            <span>
+              → {formatDistance(elevationChartActivePoint.distance, language)}
+              {' ▴ '}
+              {nf0.format(elevationChartActivePoint.ele)} {m?.general.masl}
+              {typeof elevationChartActivePoint.climbUp === 'number' &&
+                typeof elevationChartActivePoint.climbDown === 'number' && (
+                  <>
+                    <br />
+                    {' ↑ '}
+                    {nf0.format(elevationChartActivePoint.climbUp)} m{' ↓ '}
+                    {nf0.format(elevationChartActivePoint.climbDown)} m
+                  </>
+                )}
+              {grade !== undefined && (
                 <>
                   <br />
-                  {' ↑ '}
-                  {nf0.format(elevationChartActivePoint.climbUp)} m{' ↓ '}
-                  {nf0.format(elevationChartActivePoint.climbDown)} m
+                  {' ∡ '}
+                  {nfSigned1.format(grade * 100)} % (
+                  {nfSigned1.format((Math.atan(grade) * 180) / Math.PI)}°)
                 </>
               )}
-            {grade !== undefined && (
-              <>
-                <br />
-                {' ∡ '}
-                {nfSigned1.format(grade * 100)} % (
-                {nfSigned1.format((Math.atan(grade) * 180) / Math.PI)}°)
-              </>
-            )}
-          </span>
-        </Tooltip>
-      </RichMarker>
-    )
+            </span>
+          </Tooltip>
+        </RichMarker>
+      )}
+    </>
   );
 }

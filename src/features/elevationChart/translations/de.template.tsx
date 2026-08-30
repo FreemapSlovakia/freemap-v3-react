@@ -8,6 +8,15 @@ const de: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   showWaypoints: 'Wegpunkte anzeigen',
   elevationSource: 'Höhendaten',
   fetchError: 'Die Höhe konnte nicht gelesen werden',
+  rangeHint: () => (
+    <>
+      Mit dem Mausrad zoomst du das Diagramm, das gezoomte verschiebst du durch
+      Ziehen. Um einen Teil der Linie zu vermessen, halte <kbd>Umschalt</kbd>{' '}
+      gedrückt und ziehe.
+    </>
+  ),
+  rangeHintTouch:
+    'Mit zwei Fingern zoomst du das Diagramm, das gezoomte verschiebst du durch Ziehen. Um einen Teil der Linie zu vermessen, halte den Finger gedrückt und ziehe dann.',
 };
 
 export default de;

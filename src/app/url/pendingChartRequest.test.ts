@@ -42,11 +42,23 @@ describe('pending elevation-chart request', () => {
   it('honours a request once, then forgets it', () => {
     holdChartRequest('drawing/0', true);
 
-    expect(takeChartRequest(always, true)).toEqual(line);
+    expect(takeChartRequest(always, true)).toEqual({
+      target: line,
+      range: null,
+    });
 
     expect(hasChartRequest()).toBe(false);
 
     expect(takeChartRequest(always, true)).toBeNull();
+  });
+
+  it('carries the marked stretch the same URL asked for', () => {
+    holdChartRequest('drawing/0', true, { from: 100, to: 500 });
+
+    expect(takeChartRequest(always, true)).toEqual({
+      target: line,
+      range: { from: 100, to: 500 },
+    });
   });
 
   it('keeps waiting while the map that would honour it is still coming', () => {

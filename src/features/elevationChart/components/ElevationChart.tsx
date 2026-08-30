@@ -7,6 +7,7 @@ import {
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   NO_DATA_COLOR,
   paletteColorAt,
@@ -18,6 +19,7 @@ import {
   FullscreenButton,
 } from '@shared/components/FloatingWindowControls.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { formatDistance } from '@shared/distanceFormatter.js';
 import { downloadSvg } from '@shared/downloadSvg.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useFloatingWindow } from '@shared/hooks/useFloatingWindow.js';
@@ -37,16 +39,19 @@ import {
   useState,
 } from 'react';
 import { Button, CloseButton } from 'react-bootstrap';
-import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaCog, FaDownload, FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useChartColorize } from '../hooks/useChartColorize.js';
 import { useElevationSources } from '../hooks/useElevationSources.js';
 import {
   elevationChartClose,
   elevationChartSetActivePoint,
+  elevationChartSetRange,
+  elevationSetSettings,
 } from '../model/actions.js';
 import type { ElevationProfilePoint } from '../model/reducer.js';
 import { profilePointAtDistance } from '../profilePoint.js';
+import { loadElevationChartMessages } from '../translations/loadElevationChartMessages.js';
 import { useElevationChartMessages } from '../translations/useElevationChartMessages.js';
 import classes from './ElevationChart.module.css';
 
@@ -128,6 +133,24 @@ const CLICK_SLOP_PX = 4;
 // What one wheel notch does to the zoom.
 const WHEEL_FACTOR = 1.25;
 
+// How near a marked stretch's edge a press has to land to take hold of it.
+const GRIP_GRAB_PX = 8;
+
+// Geometry of the handle drawn on each edge, at the top of the plot.
+const GRIP_WIDTH = 7;
+const GRIP_HEIGHT = 16;
+
+// A press held this long without moving marks out a stretch — the way a finger
+// asks for one, having no modifier to hold.
+const LONG_PRESS_MS = 500;
+
+// Shortest stretch worth marking. Also what keeps it in the URL, which carries
+// whole metres: a shorter one would round to nothing and come back as none.
+const MIN_RANGE_METERS = 1;
+
+/** Whether the gesture hint has been raised in this run of the app. */
+let hintShown = false;
+
 export default function ElevationChart(): ReactElement | null {
   const m = useElevationChartMessages();
 
@@ -174,6 +197,63 @@ export default function ElevationChart(): ReactElement | null {
     reportedSources,
   );
 
+  const preventRangeHint = useAppSelector(
+    (state) => state.elevationSettings.preventRangeHint,
+  );
+
+  // Only where the choice can be remembered; the offer to stop asking is what
+  // needs the consent, not the hint.
+  const consented = useAppSelector(
+    (state) => state.cookieConsent.cookieConsentResult !== null,
+  );
+
+  const charted = elevationProfilePoints.length > 1;
+
+  // Marking a stretch out is worth knowing about and nothing on screen says it,
+  // so the chart says it once — the same offer the route finder's own hint
+  // makes. Dropped the moment a stretch is marked, that being the answer.
+  useEffect(() => {
+    if (preventRangeHint || !charted || hintShown) {
+      return;
+    }
+
+    // Once a session, whatever the answer: the persisted "don't show next time"
+    // is only offered where it can be stored, and without it every profile
+    // opened would raise the same hint again.
+    hintShown = true;
+
+    dispatch(
+      toastsAdd({
+        id: 'elevationChart.rangeHint',
+        // A screen that is touched has no Shift to hold, and a mouse has no
+        // long press: each is told the one way in that it has.
+        messageKey: window.matchMedia?.('(pointer: coarse)').matches
+          ? 'rangeHintTouch'
+          : 'rangeHint',
+        messageLoader: loadElevationChartMessages,
+        style: 'info',
+        actions: [
+          { nameKey: 'general.ok' },
+          ...(consented
+            ? [
+                {
+                  nameKey: 'general.preventShowingAgain' as const,
+                  action: elevationSetSettings({ preventRangeHint: true }),
+                  variant: 'dark' as const,
+                },
+              ]
+            : []),
+        ],
+        cancelType: elevationChartSetRange.type,
+        // The chart goes several ways besides its own close — the tool that
+        // owns it closing, another map-click tool taking the slot, the map
+        // being cleared — and a hint for a panel that is no longer there is
+        // just litter.
+        statePredicate: (state) => state.elevationChart.target === null,
+      }),
+    );
+  }, [preventRangeHint, charted, consented, dispatch]);
+
   const [showWaypoints, setShowWaypoints] = usePersistentBoolean(
     'fm.elevationChart.showWaypoints',
     true,
@@ -183,6 +263,15 @@ export default function ElevationChart(): ReactElement | null {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
+
+  // Signed, so a marked stretch's steepness says which way it goes.
+  const nfSigned1 = useNumberFormat({
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+    signDisplay: 'exceptZero',
+  });
+
+  const language = useAppSelector((state) => state.l10n.language);
 
   // The label lines stacked above each waypoint, top to bottom: the name (when
   // named) sits above the elevation readout (when known). Empty when hidden, so
@@ -465,6 +554,34 @@ export default function ElevationChart(): ReactElement | null {
       ? mapX(activePoint.distance)
       : undefined;
 
+  // The marked stretch. While an edge is being dragged the draft stands in for
+  // it: the committed one rides in the URL, and rewriting that once per pointer
+  // move is not a thing to do.
+  const committedRange = useAppSelector((state) => state.elevationChart.range);
+
+  const [draftRange, setDraftRange] = useState<{
+    from: number;
+    to: number;
+  } | null>(null);
+
+  const range = draftRange ?? committedRange;
+
+  /**
+   * How far along the profile a pointer is, wherever on the screen it is. Kept
+   * to the profile's own ends: the pointer is captured, so a drag reaching past
+   * the plot would otherwise mark out a stretch longer than the line — and one
+   * starting before zero, which the URL cannot even carry.
+   */
+  const distanceAt = (clientX: number) => {
+    const rect = svgRef.current?.getBoundingClientRect();
+
+    return rect
+      ? Number.isFinite(d)
+        ? clamp(unmapX(clientX - rect.left), 0, d)
+        : unmapX(clientX - rect.left)
+      : undefined;
+  };
+
   /** What the profile holds under a pointer, wherever on the screen it is. */
   const pointAt = (clientX: number) => {
     const rect = svgRef.current?.getBoundingClientRect();
@@ -550,6 +667,50 @@ export default function ElevationChart(): ReactElement | null {
   /** Whether a second finger ever joined, which makes the gesture a pinch. */
   const pinchedRef = useRef(false);
 
+  /**
+   * The distance the far end of a marking gesture is anchored at — the edge
+   * opposite the one being dragged, or where a new stretch was started. Null
+   * when no stretch is being marked out.
+   */
+  const anchorRef = useRef<number | null>(null);
+
+  const longPressRef = useRef(0);
+
+  /** Whether a hovering pointer is over an edge, which is what the cursor says. */
+  const [onGrip, setOnGrip] = useState(false);
+
+  const cancelLongPress = () => {
+    window.clearTimeout(longPressRef.current);
+  };
+
+  // A panel that goes while a finger is held on it — the tool closing, the map
+  // being cleared — must not be written to when the timer comes round.
+  useEffect(() => () => window.clearTimeout(longPressRef.current), []);
+
+  /** Which edge of the marked stretch a press at `x` (in the SVG) takes hold of. */
+  const gripAt = (x: number) => {
+    if (!range) {
+      return null;
+    }
+
+    // An edge the view has left behind is not one to take hold of: its handle
+    // isn't drawn, and the plot's own edge is where the pointer would find it.
+    const edges = (['from', 'to'] as const)
+      .map((end) => ({ end, at: mapX(range[end]) }))
+      .filter(({ at }) => at >= ml && at <= width - mr);
+
+    const nearest = edges.reduce<{ end: 'from' | 'to'; off: number } | null>(
+      (best, { end, at }) => {
+        const off = Math.abs(at - x);
+
+        return !best || off < best.off ? { end, off } : best;
+      },
+      null,
+    );
+
+    return nearest && nearest.off <= GRIP_GRAB_PX ? nearest.end : null;
+  };
+
   const handlePointerDown = (e: ReactPointerEvent<SVGRectElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId);
 
@@ -560,6 +721,15 @@ export default function ElevationChart(): ReactElement | null {
     pinchRef.current = null;
 
     if (pointers.current.size > 1) {
+      cancelLongPress();
+
+      // A second finger turns whatever was happening into a pinch. The draft
+      // goes with the gesture it belonged to: left standing it would mask the
+      // marked stretch — the one in the store — for good.
+      anchorRef.current = null;
+
+      setDraftRange(null);
+
       pinchedRef.current = true;
 
       return;
@@ -569,6 +739,43 @@ export default function ElevationChart(): ReactElement | null {
 
     pinchedRef.current = false;
 
+    const distance = distanceAt(e.clientX);
+
+    if (distance === undefined) {
+      return;
+    }
+
+    const rect = svgRef.current?.getBoundingClientRect();
+
+    const grip = rect ? gripAt(e.clientX - rect.left) : null;
+
+    // Taking hold of an edge anchors the other one, so dragging past it turns
+    // the stretch round rather than collapsing it.
+    if (grip && range) {
+      anchorRef.current = grip === 'from' ? range.to : range.from;
+
+      setDraftRange(range);
+
+      return;
+    }
+
+    // Shift is the desktop way of asking for a stretch; a finger holds still.
+    if (e.shiftKey) {
+      anchorRef.current = distance;
+
+      setDraftRange({ from: distance, to: distance });
+
+      return;
+    }
+
+    if (e.pointerType === 'touch') {
+      longPressRef.current = window.setTimeout(() => {
+        anchorRef.current = distance;
+
+        setDraftRange({ from: distance, to: distance });
+      }, LONG_PRESS_MS);
+    }
+
     // A finger has no hover, so the press is what reads the profile.
     scrub(e.clientX);
   };
@@ -577,6 +784,10 @@ export default function ElevationChart(): ReactElement | null {
     const previous = pointers.current.get(e.pointerId);
 
     if (previous === undefined) {
+      const rect = svgRef.current?.getBoundingClientRect();
+
+      setOnGrip(rect ? gripAt(e.clientX - rect.left) !== null : false);
+
       scrub(e.clientX);
 
       return;
@@ -608,6 +819,25 @@ export default function ElevationChart(): ReactElement | null {
 
     travelRef.current += Math.abs(dx);
 
+    if (travelRef.current > CLICK_SLOP_PX) {
+      cancelLongPress();
+    }
+
+    const anchor = anchorRef.current;
+
+    if (anchor !== null) {
+      const distance = distanceAt(e.clientX);
+
+      if (distance !== undefined) {
+        setDraftRange({
+          from: Math.min(anchor, distance),
+          to: Math.max(anchor, distance),
+        });
+      }
+
+      return;
+    }
+
     // Zoomed in, a drag slides the window along the profile; at full width
     // there is nothing to slide, so it reads the profile as a hover does.
     if (view.to - view.from < 1) {
@@ -624,7 +854,33 @@ export default function ElevationChart(): ReactElement | null {
 
     pinchRef.current = null;
 
+    cancelLongPress();
+
     if (pointers.current.size > 0) {
+      return;
+    }
+
+    // The stretch reaches the store only now: it rides in the URL, which is not
+    // to be rewritten once a frame. One too narrow to have been meant — a press
+    // with the modifier held, a long press that went nowhere — marks nothing,
+    // and unmarks nothing either: whatever stands is left standing, the × being
+    // what takes it away.
+    if (anchorRef.current !== null) {
+      anchorRef.current = null;
+
+      const marked =
+        draftRange &&
+        mapX(draftRange.to) - mapX(draftRange.from) > CLICK_SLOP_PX &&
+        draftRange.to - draftRange.from >= MIN_RANGE_METERS
+          ? draftRange
+          : null;
+
+      setDraftRange(null);
+
+      if (marked) {
+        dispatch(elevationChartSetRange(marked));
+      }
+
       return;
     }
 
@@ -650,12 +906,20 @@ export default function ElevationChart(): ReactElement | null {
     pointers.current.delete(e.pointerId);
 
     pinchRef.current = null;
+
+    anchorRef.current = null;
+
+    cancelLongPress();
+
+    setDraftRange(null);
   };
 
   const handlePointerOut = (e: ReactPointerEvent<SVGRectElement>) => {
     // A finger lifting fires this straight after the press that set the mark,
     // so only a pointer that can hover clears it by leaving.
     if (e.pointerType !== 'touch') {
+      setOnGrip(false);
+
       dispatch(elevationChartSetActivePoint(null));
     }
   };
@@ -663,6 +927,45 @@ export default function ElevationChart(): ReactElement | null {
   const visibleWaypoints = labeledWaypoints.filter(
     (wp) => wp.distance >= vFrom && wp.distance <= vTo,
   );
+
+  // What the marked stretch adds up to. The climb totals are cumulative along
+  // the profile, so the stretch's own are the difference between its ends.
+  const rangeStats = useMemo(() => {
+    const ends =
+      range &&
+      [range.from, range.to].map((distance) =>
+        profilePointAtDistance(elevationProfilePoints, distance),
+      );
+
+    const [a, b] = ends ?? [];
+
+    if (!range || !a || !b) {
+      return null;
+    }
+
+    const eles = [a.ele, b.ele];
+
+    for (const point of elevationProfilePoints) {
+      if (point.distance > range.from && point.distance < range.to) {
+        eles.push(point.ele);
+      }
+    }
+
+    const finite = eles.filter((ele) => Number.isFinite(ele));
+
+    const length = range.to - range.from;
+
+    return {
+      length,
+      up: (b.climbUp ?? 0) - (a.climbUp ?? 0),
+      down: (b.climbDown ?? 0) - (a.climbDown ?? 0),
+      min: finite.length ? Math.min(...finite) : Number.NaN,
+      max: finite.length ? Math.max(...finite) : Number.NaN,
+      // Straight from end to end, which is what a stretch's steepness means —
+      // not the average of the wiggles inside it.
+      grade: length > 0 ? (b.ele - a.ele) / length : Number.NaN,
+    };
+  }, [range, elevationProfilePoints]);
 
   const handleDownload = () => {
     downloadSvg(svgRef.current, 'elevation-chart.svg');
@@ -1082,6 +1385,52 @@ export default function ElevationChart(): ReactElement | null {
               })}
             </g>
 
+            {/* The marked-out stretch: a band over the plot with a handle on
+                each edge, in the same ink as the crosshair and the map's own
+                highlight of it. */}
+            {range && (
+              <g className="range">
+                <rect
+                  x={clamp(mapX(range.from), ml, width - mr)}
+                  y={mt}
+                  width={
+                    clamp(mapX(range.to), ml, width - mr) -
+                    clamp(mapX(range.from), ml, width - mr)
+                  }
+                  height={height - mt - mb}
+                  fill="var(--bs-danger)"
+                  opacity={0.12}
+                />
+
+                {([range.from, range.to] as const).map((distance, i) => {
+                  const x = mapX(distance);
+
+                  return x < ml || x > width - mr ? null : (
+                    <g key={i}>
+                      <line
+                        x1={x}
+                        x2={x}
+                        y1={mt}
+                        y2={height - mb}
+                        stroke="var(--bs-danger)"
+                        strokeWidth={1}
+                        opacity={0.8}
+                      />
+
+                      <rect
+                        x={x - GRIP_WIDTH / 2}
+                        y={mt}
+                        width={GRIP_WIDTH}
+                        height={GRIP_HEIGHT}
+                        rx={2}
+                        fill="var(--bs-danger)"
+                      />
+                    </g>
+                  );
+                })}
+              </g>
+            )}
+
             {/* Which part of the profile the zoomed plot is showing. Informative
                 only, and it sits in the clearance the waypoint labels already
                 keep above the plot, so it costs no room. */}
@@ -1130,6 +1479,12 @@ export default function ElevationChart(): ReactElement | null {
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerCancel}
               onPointerOut={handlePointerOut}
+              // An edge under the pointer, or one being dragged, says so.
+              style={
+                onGrip || anchorRef.current !== null
+                  ? { cursor: 'ew-resize' }
+                  : undefined
+              }
               opacity={0}
             />
           </>
@@ -1147,11 +1502,52 @@ export default function ElevationChart(): ReactElement | null {
           'd-flex flex-wrap align-items-center gap-2 mb-1 mx-2',
         )}
       >
-        {typeof climbUp === 'number' && typeof climbDown === 'number' && (
-          <p className="m-0">
-            {m?.uphill}: {nf0.format(climbUp)}&nbsp;m, {m?.downhill}:{' '}
-            {nf0.format(climbDown)}&nbsp;m
+        {/* A marked stretch takes the line the whole profile's totals had: the
+            figures are the same ones, said of the part being read. Written in
+            the symbols the map's own readout uses rather than in words, which
+            would not fit beside the rest of the row. */}
+        {rangeStats ? (
+          <p className="m-0 d-flex align-items-center gap-2 text-danger-emphasis">
+            <span>⇄ {formatDistance(rangeStats.length, language)}</span>
+
+            <span>
+              ↑ {nf0.format(rangeStats.up)}&nbsp;m ↓{' '}
+              {nf0.format(rangeStats.down)}&nbsp;m
+            </span>
+
+            {Number.isFinite(rangeStats.min) && (
+              <span>
+                ▴ {nf0.format(rangeStats.min)}–{nf0.format(rangeStats.max)}
+                &nbsp;{gm?.general.masl}
+              </span>
+            )}
+
+            {Number.isFinite(rangeStats.grade) && (
+              <span>∡ {nfSigned1.format(rangeStats.grade * 100)}&nbsp;%</span>
+            )}
+
+            <LongPressTooltip label={gm?.general.clear}>
+              {({ props }) => (
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="p-0 lh-1 text-danger-emphasis"
+                  onClick={() => dispatch(elevationChartSetRange(null))}
+                  {...props}
+                >
+                  <FaTimes />
+                </Button>
+              )}
+            </LongPressTooltip>
           </p>
+        ) : (
+          typeof climbUp === 'number' &&
+          typeof climbDown === 'number' && (
+            <p className="m-0">
+              {m?.uphill}: {nf0.format(climbUp)}&nbsp;m, {m?.downhill}:{' '}
+              {nf0.format(climbDown)}&nbsp;m
+            </p>
+          )
         )}
 
         {sources.length > 0 && (
