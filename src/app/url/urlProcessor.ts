@@ -241,6 +241,9 @@ function updateUrl(state: RootState, forced: boolean): void {
     wiki.preview,
     wiki.loading,
     elevationChart.target,
+    // Kept identical by the reducer while it doesn't move, so a live track's
+    // profile arriving per fix doesn't rewrite the URL along with it.
+    elevationChart.range,
     panorama.viewpoint,
     // Listed here to be noticed at all — this array only asks whether anything
     // moved. Whether the write pushes a history entry or replaces one is a
