@@ -9,25 +9,34 @@ const SMOOTH_PX = 16;
 
 /**
  * Effective smoothing span (metres): the larger of a colorizer's intrinsic
- * `baseMeters` baseline and {@link SMOOTH_PX} pixels of ground distance at the
- * current zoom. `zoom` undefined leaves the baseline untouched.
+ * `baseMeters` baseline and {@link SMOOTH_PX} pixels' worth of line. The reader
+ * says how much line a pixel is worth, either directly or as a map zoom; saying
+ * neither leaves the baseline untouched.
  */
 function zoomSmoothingSpan(
   baseMeters: number,
-  zoom: number | undefined,
+  options: ColorizeOptions | undefined,
   lat: number,
 ): number {
-  return zoom === undefined
+  const perPixel =
+    options?.metersPerPixel ??
+    (options?.zoom === undefined
+      ? undefined
+      : metersPerPixel(options.zoom, lat));
+
+  return perPixel === undefined
     ? baseMeters
-    : Math.max(baseMeters, SMOOTH_PX * metersPerPixel(zoom, lat));
+    : Math.max(baseMeters, SMOOTH_PX * perPixel);
 }
 
 /**
  * Smoothing span for a feature whose vertices are `coords` ([lon, lat, …]).
- * The pixel↔metre scale is taken at the feature's own mid-latitude — the track
- * is drawn at that latitude's Web-Mercator scale, so that (not the map centre)
- * is what makes the window a fixed pixel size on screen. The single mid-latitude
- * also keeps the span stable under panning, so the per-zoom colorize cache holds.
+ * Where the scale comes from a map zoom, the pixel↔metre conversion is taken at
+ * the feature's own mid-latitude — the track is drawn at that latitude's
+ * Web-Mercator scale, so that (not the map centre) is what makes the window a
+ * fixed pixel size on screen. The single mid-latitude also keeps the span stable
+ * under panning, so the per-zoom colorize cache holds. A reader stating
+ * `metersPerPixel` needs none of this and is taken at its word.
  */
 export function featureSmoothingSpan(
   baseMeters: number,
@@ -36,5 +45,5 @@ export function featureSmoothingSpan(
 ): number {
   const lat = ((coords[0]?.[1] ?? 0) + (coords.at(-1)?.[1] ?? 0)) / 2;
 
-  return zoomSmoothingSpan(baseMeters, options?.zoom, lat);
+  return zoomSmoothingSpan(baseMeters, options, lat);
 }

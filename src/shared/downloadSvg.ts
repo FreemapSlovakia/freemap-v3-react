@@ -44,8 +44,8 @@ export async function downloadSvg(
     return literal || value;
   };
 
-  for (const el of clone.querySelectorAll('[fill], [stroke]')) {
-    for (const attr of ['fill', 'stroke']) {
+  for (const el of clone.querySelectorAll('[fill], [stroke], [stop-color]')) {
+    for (const attr of ['fill', 'stroke', 'stop-color']) {
       const value = el.getAttribute(attr);
 
       if (value) {

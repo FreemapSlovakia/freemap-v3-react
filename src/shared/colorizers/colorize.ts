@@ -45,6 +45,42 @@ export function rgbCss(color: [r: number, g: number, b: number]): string {
 }
 
 /**
+ * The palette read at `t` (a {@link ColorizedPoint}'s `color`), interpolated
+ * between the stops it falls between — what Hotline paints on the map, for a
+ * reader that has to spell the color itself. Stops are in ascending `t`.
+ */
+export function paletteColorAt(
+  palette: HotlinePalette,
+  t: number,
+): [r: number, g: number, b: number] {
+  const first = palette[0];
+
+  if (!first) {
+    return [0, 0, 0];
+  }
+
+  let prev = first;
+
+  for (const stop of palette) {
+    if (t <= stop.t) {
+      const span = stop.t - prev.t;
+
+      const k = span > 0 ? (t - prev.t) / span : 0;
+
+      return [
+        Math.round(prev.r + (stop.r - prev.r) * k),
+        Math.round(prev.g + (stop.g - prev.g) * k),
+        Math.round(prev.b + (stop.b - prev.b) * k),
+      ];
+    }
+
+    prev = stop;
+  }
+
+  return [prev.r, prev.g, prev.b];
+}
+
+/**
  * A stretch of a route the router reported one value for, in metres along the
  * line. Metres rather than point indices because the line colorize draws is
  * densified for premium users, which shifts every index.
@@ -55,6 +91,22 @@ export type PathDetails = Record<string, PathDetailSpan[]>;
 
 /** Where {@link PathDetailSpan}s ride on the feature being colorized. */
 export const PATH_DETAILS_PROP = 'fm:pathDetails';
+
+/**
+ * Where a feature cut out of a longer line starts along it, in metres — set by
+ * whoever did the cutting. A reader that has to place the colors on the whole
+ * line's own axis (the elevation chart) would otherwise run the pieces together
+ * and lose whatever was cut out between them.
+ */
+export const LINE_START_PROP = 'fm:lineStart';
+
+export function readLineStart(
+  feature: Feature<LineString>,
+): number | undefined {
+  const value = feature.properties?.[LINE_START_PROP];
+
+  return typeof value === 'number' ? value : undefined;
+}
 
 export function readPathDetails(
   feature: Feature<LineString>,
@@ -240,6 +292,10 @@ export interface ColorizeOptions {
   // sub-pixel wiggle in the source data doesn't read as color noise; omitted
   // (e.g. export, tests) the colorizer keeps its intrinsic baseline span.
   zoom?: number;
+  // The same thing said directly, for a reader that knows its own scale rather
+  // than a map zoom: the elevation chart's x axis is metres of line per pixel.
+  // Takes precedence over `zoom`.
+  metersPerPixel?: number;
   // The grade the steepness palette ends at, as a ratio; omitted, its default.
   steepnessScale?: number;
 }

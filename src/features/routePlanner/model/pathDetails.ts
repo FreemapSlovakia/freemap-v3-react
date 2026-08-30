@@ -1,5 +1,6 @@
 import {
   clipPathDetails,
+  LINE_START_PROP,
   PATH_DETAILS_PROP,
   type PathDetailSpan,
   type PathDetails,
@@ -167,6 +168,9 @@ export function routeColorizeFeatures(
           withoutPerPointData(line?.properties ?? null)),
       [PATH_DETAILS_PROP]:
         unrouted.length === 0 ? details : clipPathDetails(details, from, to),
+      // What was cut out before this run still counts on the whole route's
+      // distance axis, which the elevation chart colors against.
+      [LINE_START_PROP]: from,
     },
     geometry: { type: 'LineString', coordinates },
   }));

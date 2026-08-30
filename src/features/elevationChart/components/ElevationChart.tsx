@@ -7,6 +7,11 @@ import {
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import {
+  NO_DATA_COLOR,
+  paletteColorAt,
+  rgbCss,
+} from '@shared/colorizers/colorize.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import {
   FloatingWindowGrips,
@@ -34,6 +39,7 @@ import {
 import { Button, CloseButton } from 'react-bootstrap';
 import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useChartColorize } from '../hooks/useChartColorize.js';
 import { useElevationSources } from '../hooks/useElevationSources.js';
 import {
   elevationChartClose,
@@ -247,7 +253,11 @@ export default function ElevationChart(): ReactElement | null {
 
   // The id goes into a `url(#…)` reference, which takes none of the punctuation
   // React wraps its own ids in.
-  const clipId = `ec-plot-${useId().replace(/\W/g, '')}`;
+  const id = useId().replace(/\W/g, '');
+
+  const clipId = `ec-plot-${id}`;
+
+  const fillId = `ec-fill-${id}`;
 
   const plotWidth = width - ml - mr;
 
@@ -281,6 +291,94 @@ export default function ElevationChart(): ReactElement | null {
     minimumFractionDigits: xDigits,
     maximumFractionDigits: xDigits,
   });
+
+  // The colorize of the feature being charted, smoothed against the chart's own
+  // scale the way the map's is against its zoom.
+  const { colorizer, stops } = useChartColorize((vTo - vFrom) / plotWidth, d);
+
+  // The fill's gradient runs along the plot, so a stop is one distance turned
+  // into a fraction of what is on screen. Only the visible stretch is written
+  // out, plus the pair straddling each edge so the ends are colored too; a
+  // categorical mode gets both colors at a boundary rather than a blur across
+  // it, and a run of one color is written once.
+  const fillStops = useMemo(() => {
+    if (!colorizer || stops.length < 2 || !(vTo > vFrom)) {
+      return null;
+    }
+
+    // The visible run, and the stop straddling each edge so the ends are
+    // colored by what actually reaches them.
+    let first = 0;
+
+    while (first + 1 < stops.length && stops[first + 1]!.distance <= vFrom) {
+      first++;
+    }
+
+    let last = stops.length - 1;
+
+    while (last > first && stops[last - 1]!.distance >= vTo) {
+      last--;
+    }
+
+    const out: { offset: number; color: string }[] = [];
+
+    // The end of an unbroken run of one color, held back until the color
+    // changes: written straight out, the run would blur into whatever follows.
+    let pending: { offset: number; color: string } | null = null;
+
+    // A vertex per source point is thousands of `<stop>` elements re-rendered on
+    // every frame of a drag, for a gradient the screen can only show one color
+    // per pixel of. Only the last vertex in a pixel column is written — the last
+    // rather than the first because a categorical mode changes value between two
+    // coincident points, and the second of that pair is the new category.
+    const pixelOf = (i: number) =>
+      Math.round(
+        clamp((stops[i]!.distance - vFrom) / (vTo - vFrom), 0, 1) * plotWidth,
+      );
+
+    for (let i = first; i <= last; i++) {
+      if (i < last && pixelOf(i) === pixelOf(i + 1)) {
+        continue;
+      }
+
+      const stop = stops[i]!;
+
+      const offset = clamp((stop.distance - vFrom) / (vTo - vFrom), 0, 1);
+
+      // The same grey the map paints a stretch the mode can't value, so "no
+      // reading" looks the same in both.
+      const color = stop.gap
+        ? NO_DATA_COLOR
+        : rgbCss(paletteColorAt(colorizer.palette, stop.color));
+
+      const previous = out.at(-1);
+
+      if (previous?.color === color) {
+        pending = { offset, color };
+
+        continue;
+      }
+
+      if (pending) {
+        out.push(pending);
+
+        pending = null;
+      }
+
+      // A categorical mode changes value between two points, not across them.
+      if (previous && colorizer.spanBased) {
+        out.push({ offset, color: previous.color });
+      }
+
+      out.push({ offset, color });
+    }
+
+    if (pending) {
+      out.push(pending);
+    }
+
+    return out.length > 1 ? out : null;
+  }, [colorizer, stops, vFrom, vTo, plotWidth]);
 
   const { mapX, unmapX, mapY, endX, vLines, hLines } = useMemo(() => {
     // The whole profile sets the elevation range, zoomed in or not: a scale
@@ -595,6 +693,24 @@ export default function ElevationChart(): ReactElement | null {
                   height={height - mt - mb}
                 />
               </clipPath>
+
+              {/* User space, not the object's box: the profile is drawn as one
+                  polygon per elevated run, and each would otherwise stretch the
+                  whole gradient across its own width. */}
+              {fillStops && (
+                <linearGradient
+                  id={fillId}
+                  gradientUnits="userSpaceOnUse"
+                  x1={ml}
+                  y1={0}
+                  x2={width - mr}
+                  y2={0}
+                >
+                  {fillStops.map((stop, i) => (
+                    <stop key={i} offset={stop.offset} stopColor={stop.color} />
+                  ))}
+                </linearGradient>
+              )}
             </defs>
 
             {/* Plot background. */}
@@ -644,12 +760,22 @@ export default function ElevationChart(): ReactElement | null {
                           line +
                           ` ${mapX(seg.at(-1)!.distance)},${baseY}`
                         }
-                        fill="var(--bs-primary-bg-subtle)"
+                        fill={
+                          fillStops
+                            ? `url(#${fillId})`
+                            : 'var(--bs-primary-bg-subtle)'
+                        }
                       />
 
+                      {/* The colorized fill is what carries the reading, so the
+                          outline steps back to a neutral edge for it. */}
                       <polyline
                         points={line}
-                        stroke="var(--bs-primary)"
+                        stroke={
+                          fillStops
+                            ? 'var(--bs-body-color)'
+                            : 'var(--bs-primary)'
+                        }
                         strokeWidth={1}
                         fill="none"
                       />

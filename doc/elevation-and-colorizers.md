@@ -402,6 +402,52 @@ lot of presses, and the map sliding under each of them helps nobody. The chart a
 toposcope widen the inset to `GENEROUS_MARGIN_PX`, so a mark clinging to the edge of the
 free area is still centred; the panorama's probe keeps the default.
 
+### Colorizing the chart — `useChartColorize`
+
+The chart paints the **fill** with the colorize of the feature it is aimed at, and drops the
+outline to a neutral one: an area reads a palette far better than a hairline, and the mode
+is the host's own (`routePlannerSettings.colorizeBy`, `trackViewerSettings.colorizeTrackBy`,
+`trackingSettings.colorizeBy`, premium-gated through `useUnlockedColorizingMode`) so the map
+and the chart can never disagree about what they are showing. A target with no colorize
+setting — a drawn line, a recording — keeps the plain fill.
+
+Three things are worth knowing before touching it:
+
+- **The values ride on a distance axis, not on point indices.** The hook walks the colorized
+  vertices themselves. Index pairing would break twice over: the API-sampled profile
+  resamples the line, and a span-based mode reads the *plain* line where every other mode
+  reads the densified one (`colorizeGeometrySource`). Each source may also say where it
+  *starts* on that axis, because what a host cuts out is not always nothing: a route's runs
+  have the unrouted stretches removed while the profile still draws them (hence
+  `LINE_START_PROP`, set by `routeColorizeFeatures`), and a tracked device's segments have
+  the pause the split was made at while the profile is the whole track as one line. A
+  track-viewer's segments need no start — the profile adds no distance across that break
+  either. What a cut leaves behind is marked as no-data (`NO_DATA_COLOR`, the map's own
+  grey) rather than left to the gradient, which would blend the two sides across ground the
+  mode has nothing to say about; the tail past the last source is marked the same way, since
+  SVG would otherwise pad it with the last color. Each source is computed on its own,
+  because `compute` may return fewer arrays than it was handed and a source paired with
+  another's colors would place them at the wrong distance.
+- **The smoothing window follows the chart's scale.** `ColorizeOptions.metersPerPixel` is
+  the map's `zoom` said directly, and the chart knows it exactly — `(vTo - vFrom) /
+  plotWidth` — where `featureSmoothingSpan` has to derive it from Mercator scale at a
+  mid-latitude. It is quantized to powers of two so a pinch recomputes ~11 times over the
+  whole zoom range instead of once a frame. The consequence is deliberate: a chart zoomed
+  into 200 m shows steepness the map at z12 has averaged away, so the two views differ in
+  detail while agreeing on the mode.
+- **The fill is one `linearGradient`, in `userSpaceOnUse`.** The profile is drawn as one
+  polygon per elevated run, and under the default object-bounding-box units each run would
+  stretch the whole gradient across its own width. Stops carry the palette read through
+  `paletteColorAt`; a run of one color is written as its two ends (not once, which would
+  blur it into what follows), and a `spanBased` mode gets both colors at a boundary so
+  categories meet at an edge instead of fading. At most one stop per pixel column is
+  written — the list is rebuilt on every frame of a drag, and a vertex apiece would be
+  thousands of elements for a gradient the screen shows one color per pixel of.
+
+The legend stays the host's, and it is read at the *map's* zoom: a zoomed-in chart can
+therefore reach colors past what its end labels name. Say so rather than quietly widening
+the legend, which would then stop describing the map's own line.
+
 ### What the chart shows — `elevationChart.target`
 
 The chart is a **derived view**, not something features push into. State holds only
