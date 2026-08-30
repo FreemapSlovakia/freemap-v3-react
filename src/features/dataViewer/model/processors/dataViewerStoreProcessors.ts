@@ -14,6 +14,7 @@ import {
   dataViewerExplodeTrack,
   dataViewerGpxLoad,
   dataViewerRestoreStored,
+  dataViewerRestoreStoredDone,
   dataViewerSetData,
   dataViewerSetElevation,
   dataViewerSetFeatureProperties,
@@ -127,29 +128,36 @@ export const dataViewerForgetStoredProcessor: Processor = {
 export const dataViewerRestoreStoredProcessor: Processor = {
   actionCreator: dataViewerRestoreStored,
   handle: async ({ dispatch, getState }) => {
-    const record = await getStoredTrack();
+    // However it ends, it must say so: anything waiting for the track — the
+    // elevation chart a URL asked to reopen — cannot otherwise tell an empty
+    // viewer from one whose track is still on its way out of IndexedDB.
+    try {
+      const record = await getStoredTrack();
 
-    if (!record) {
-      // The entry outlived the copy — cleared storage, or a record too old to
-      // read. Take the flag off so the next reload doesn't ask again.
-      await deleteStoredTrack();
+      if (!record) {
+        // The entry outlived the copy — cleared storage, or a record too old to
+        // read. Take the flag off so the next reload doesn't ask again.
+        await deleteStoredTrack();
 
-      return;
+        return;
+      }
+
+      // Both halves matter. A track already in the viewer is the one the user asked
+      // for — but so is one still being fetched because the URL names it, and that
+      // fetch has nothing in the viewer yet to say so. Restoring over it would win
+      // the race (IndexedDB beats the network) and then declare a server-hosted
+      // track local, taking `track-uid=` out of the URL with it.
+      if (getState().trackViewer.trackGeojson || homedElsewhere(getState())) {
+        return;
+      }
+
+      // Nothing on the server to share it back by: whatever it was, it is a local
+      // track now.
+      dispatch(dataViewerSetTrackUID(null));
+
+      dispatch(dataViewerSetData({ trackGeojson: record.geojson }));
+    } finally {
+      dispatch(dataViewerRestoreStoredDone());
     }
-
-    // Both halves matter. A track already in the viewer is the one the user asked
-    // for — but so is one still being fetched because the URL names it, and that
-    // fetch has nothing in the viewer yet to say so. Restoring over it would win
-    // the race (IndexedDB beats the network) and then declare a server-hosted
-    // track local, taking `track-uid=` out of the URL with it.
-    if (getState().trackViewer.trackGeojson || homedElsewhere(getState())) {
-      return;
-    }
-
-    // Nothing on the server to share it back by: whatever it was, it is a local
-    // track now.
-    dispatch(dataViewerSetTrackUID(null));
-
-    dispatch(dataViewerSetData({ trackGeojson: record.geojson }));
   },
 };

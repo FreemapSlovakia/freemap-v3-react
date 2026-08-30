@@ -20,10 +20,15 @@ const resolve: ProfileResolver = async (getState, dispatch) => {
   const active = resolveActiveTrack(trackGeojson, activeTrackIndex);
 
   if (!active) {
-    // A track the URL also names is still on its way; anything else means the
-    // track the chart showed is gone (a local import isn't in the URL, so a
-    // reload can never bring it back).
-    return !trackGeojson && (trackViewer.trackUID || trackViewer.gpxUrl)
+    // Still on its way where the URL names the track, or where this browser's
+    // own stored copy is being read back. A reload asks for the restore *after*
+    // it asks for the chart, but in the same synchronous run, and every resolver
+    // loads behind a dynamic import — so the flag is always set by the time this
+    // reads it. Anything else means the track the chart showed is gone.
+    return !trackGeojson &&
+      (trackViewer.trackUID ||
+        trackViewer.gpxUrl ||
+        trackViewer.restoringStored)
       ? { status: 'pending' }
       : { status: 'gone' };
   }

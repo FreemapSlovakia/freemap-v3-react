@@ -50,6 +50,16 @@ export const dataViewerRestoreStored = createAction(
   'DATA_VIEWER_RESTORE_STORED',
 );
 
+/**
+ * The restore has finished, whether or not it put anything back. Reading the
+ * store is a round trip to IndexedDB, and until it ends nobody can tell an empty
+ * viewer from one whose track is still coming — the elevation chart being the
+ * one that has to (`resolveElevationChart`).
+ */
+export const dataViewerRestoreStoredDone = createAction(
+  'DATA_VIEWER_RESTORE_STORED_DONE',
+);
+
 export const dataViewerDownloadTrack = createAction<string>(
   'DATA_VIEWER_DOWNLOAD_TRACK',
 );

@@ -32,6 +32,8 @@ import {
   dataViewerGpxLoad,
   dataViewerJoinTracks,
   dataViewerResolveElevationPrompt,
+  dataViewerRestoreStored,
+  dataViewerRestoreStoredDone,
   dataViewerSetActiveTrack,
   dataViewerSetData,
   dataViewerSetElevation,
@@ -86,6 +88,9 @@ export interface DataViewerState extends DataViewerStateBase {
   // The track a join is armed on, and how the two are put together; the next
   // line clicked is joined onto it.
   joinWith: { featureIndex: number; mode: TrackJoinMode } | null;
+  // Whether this browser's stored track is still being read back. Transient, and
+  // the only way to tell "nothing loaded" from "not loaded yet" on a reload.
+  restoringStored: boolean;
 }
 
 export type ElevationDecision = 'undecided' | ElevationFillMode;
@@ -105,6 +110,7 @@ export const dataViewerInitialState: DataViewerState = {
   splitting: false,
   splitPoint: null,
   joinWith: null,
+  restoringStored: false,
   ...cleanState,
 };
 
@@ -388,6 +394,12 @@ export const dataViewerReducer = createReducer(
         state.elevationPrompt = null;
 
         state.elevationDecision = action.payload.mode;
+      })
+      .addCase(dataViewerRestoreStored, (state) => {
+        state.restoringStored = true;
+      })
+      .addCase(dataViewerRestoreStoredDone, (state) => {
+        state.restoringStored = false;
       })
       .addCase(dataViewerSetGpxUrl, (state, { payload }) => {
         state.gpxUrl = payload;
