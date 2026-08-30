@@ -45,6 +45,20 @@ export function rgbCss(color: [r: number, g: number, b: number]): string {
 }
 
 /**
+ * The colorizer to paint with: the picked one, unless it has nothing to say
+ * about these features, in which case nothing is painted and whatever the lines
+ * carry themselves stands.
+ */
+export function availableColorizer(
+  picked: Colorizer | null | undefined,
+  features: Feature<LineString>[],
+): Colorizer | null {
+  return picked && (!picked.isAvailable || picked.isAvailable(features))
+    ? picked
+    : null;
+}
+
+/**
  * The palette read at `t` (a {@link ColorizedPoint}'s `color`), interpolated
  * between the stops it falls between — what Hotline paints on the map, for a
  * reader that has to spell the color itself. Stops are in ascending `t`.
@@ -91,22 +105,6 @@ export type PathDetails = Record<string, PathDetailSpan[]>;
 
 /** Where {@link PathDetailSpan}s ride on the feature being colorized. */
 export const PATH_DETAILS_PROP = 'fm:pathDetails';
-
-/**
- * Where a feature cut out of a longer line starts along it, in metres — set by
- * whoever did the cutting. A reader that has to place the colors on the whole
- * line's own axis (the elevation chart) would otherwise run the pieces together
- * and lose whatever was cut out between them.
- */
-export const LINE_START_PROP = 'fm:lineStart';
-
-export function readLineStart(
-  feature: Feature<LineString>,
-): number | undefined {
-  const value = feature.properties?.[LINE_START_PROP];
-
-  return typeof value === 'number' ? value : undefined;
-}
 
 export function readPathDetails(
   feature: Feature<LineString>,

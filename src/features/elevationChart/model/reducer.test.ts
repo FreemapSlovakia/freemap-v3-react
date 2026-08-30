@@ -4,8 +4,13 @@ import {
   elevationChartClose,
   elevationChartOpen,
   elevationChartSetElevationProfile,
+  elevationChartSetRange,
 } from './actions.js';
-import { type ElevationChartState, elevationChartReducer } from './reducer.js';
+import {
+  type ElevationChartState,
+  type ElevationProfilePoint,
+  elevationChartReducer,
+} from './reducer.js';
 import type { ElevationChartTarget } from './target.js';
 
 const profile = elevationChartSetElevationProfile({
@@ -129,5 +134,90 @@ describe('elevationChartReducer', () => {
           .target,
       ).toBeNull();
     }
+  });
+});
+
+// A stretch is asked for by URL as much as by hand, so it has to be kept to the
+// profile it marks wherever it comes from — including before there is one.
+describe('elevationChartReducer — the marked stretch', () => {
+  const charted = (points: ElevationProfilePoint[]) =>
+    elevationChartSetElevationProfile({
+      points,
+      waypoints: [],
+      sources: [],
+      provenance: 'terrain-model',
+    });
+
+  const kilometre: ElevationProfilePoint[] = [
+    { lat: 48, lon: 17, distance: 0, ele: 100 },
+    { lat: 48, lon: 17.1, distance: 1000, ele: 200 },
+  ];
+
+  const drawn = [
+    elevationChartOpen({ type: 'route-planner' }),
+    charted(kilometre),
+  ].reduce<ElevationChartState | undefined>(
+    elevationChartReducer,
+    undefined,
+  ) as ElevationChartState;
+
+  it('keeps a stretch within the profile it marks', () => {
+    expect(
+      elevationChartReducer(
+        drawn,
+        elevationChartSetRange({ from: 500, to: 5000 }),
+      ).range,
+    ).toEqual({ from: 500, to: 1000 });
+  });
+
+  it('drops one that starts past the end, there being nothing left of it', () => {
+    expect(
+      elevationChartReducer(
+        drawn,
+        elevationChartSetRange({ from: 2000, to: 5000 }),
+      ).range,
+    ).toBeNull();
+  });
+
+  it('takes a stretch on trust while the profile is still coming', () => {
+    // A URL names both at once; the profile arrives later and clamps it then.
+    const aimed = elevationChartReducer(
+      undefined,
+      elevationChartOpen({ type: 'route-planner' }),
+    );
+
+    expect(
+      elevationChartReducer(
+        aimed,
+        elevationChartSetRange({ from: 0, to: 5000 }),
+      ).range,
+    ).toEqual({ from: 0, to: 5000 });
+  });
+
+  it('trims a stretch the redrawn profile now ends before', () => {
+    const marked = elevationChartReducer(
+      drawn,
+      elevationChartSetRange({ from: 100, to: 900 }),
+    );
+
+    const shortened = elevationChartReducer(
+      marked,
+      charted([kilometre[0]!, { ...kilometre[1]!, distance: 500 }]),
+    );
+
+    expect(shortened.range).toEqual({ from: 100, to: 500 });
+  });
+
+  it('leaves the stretch itself alone when a redraw does not move it', () => {
+    // A live track dispatches a profile per fix; a new object each time would
+    // redraw the map band and rescan the profile for its figures on every one.
+    const marked = elevationChartReducer(
+      drawn,
+      elevationChartSetRange({ from: 100, to: 900 }),
+    );
+
+    expect(elevationChartReducer(marked, charted(kilometre)).range).toBe(
+      marked.range,
+    );
   });
 });

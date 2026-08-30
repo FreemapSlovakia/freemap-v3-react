@@ -1,6 +1,7 @@
 import { gpx } from '@tmcw/togeojson';
 import type { Feature, LineString } from 'geojson';
 import { describe, expect, it } from 'vitest';
+import { type HotlinePalette, paletteColorAt } from './colorize.js';
 import { headingColorizer } from './modes/heading.js';
 import { speedColorizer } from './modes/speed.js';
 import {
@@ -194,5 +195,46 @@ describe('steepnessColorizer', () => {
     expect(down![30]!.color).toBe(0);
 
     expect(up![30]!.color).toBe(1);
+  });
+});
+
+// What the map's Hotline reads off a palette itself, for the readers that have
+// to spell a colour out — the elevation chart's gradient fill.
+describe('paletteColorAt', () => {
+  const palette: HotlinePalette = [
+    { r: 0, g: 0, b: 0, t: 0 },
+    { r: 255, g: 0, b: 0, t: 0.5 },
+    { r: 255, g: 255, b: 255, t: 1 },
+  ];
+
+  it('reads a stop exactly', () => {
+    expect(paletteColorAt(palette, 0.5)).toEqual([255, 0, 0]);
+  });
+
+  it('interpolates between the two stops a value falls between', () => {
+    expect(paletteColorAt(palette, 0.25)).toEqual([128, 0, 0]);
+
+    expect(paletteColorAt(palette, 0.75)).toEqual([255, 128, 128]);
+  });
+
+  it('holds the end colours past either end', () => {
+    expect(paletteColorAt(palette, -1)).toEqual([0, 0, 0]);
+
+    expect(paletteColorAt(palette, 2)).toEqual([255, 255, 255]);
+  });
+
+  it('answers black for a palette with no stops rather than throwing', () => {
+    expect(paletteColorAt([], 0.5)).toEqual([0, 0, 0]);
+  });
+
+  it('takes the later of two stops at one position, which is how a palette steps', () => {
+    const stepped: HotlinePalette = [
+      { r: 0, g: 0, b: 0, t: 0 },
+      { r: 0, g: 0, b: 0, t: 0.5 },
+      { r: 255, g: 255, b: 255, t: 0.5 },
+      { r: 255, g: 255, b: 255, t: 1 },
+    ];
+
+    expect(paletteColorAt(stepped, 0.6)).toEqual([255, 255, 255]);
   });
 });

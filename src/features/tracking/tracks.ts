@@ -20,6 +20,19 @@ export function resolveTracks(
   return tracks.map((track) => ({ ...track, ...byToken.get(track.token) }));
 }
 
+/** The same for the one track a token names; `undefined` where none does. */
+export function resolveTrack(
+  tracks: Track[],
+  trackedDevices: TrackedDevice[],
+  token: string,
+): Track | undefined {
+  const track = tracks.find((t) => t.token === token);
+
+  return (
+    track && { ...track, ...trackedDevices.find((td) => td.token === token) }
+  );
+}
+
 /**
  * A track as the continuous runs it is made of: the device's split
  * distance/duration break the points wherever the feed jumped, so each run is

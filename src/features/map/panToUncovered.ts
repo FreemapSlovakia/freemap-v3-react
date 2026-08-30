@@ -2,12 +2,14 @@ import type { LatLon } from '@shared/types/common.js';
 import { point } from 'leaflet';
 import { mapPromise } from './hooks/leafletElementHolder.js';
 
-// Grid the map is probed on: fine enough to find the gaps between the toolbars.
-const CELL_PX = 24;
+// Grid the map is probed on: fine enough to find the gaps between the toolbars,
+// and no finer than the margins the answer is measured against — the cell size
+// is the only resolution the found rectangle's edges have.
+const CELL_PX = 48;
 
 // Ceiling on the hit tests one sweep costs, which it pays for on the click path
-// before the browser paints. A 4K map at 24 px would be 14k of them, so past
-// this the cells grow instead of multiplying.
+// before the browser paints; past it the cells grow instead of multiplying. A 4K
+// map is 3600 of them, so this only binds on a screen larger still.
 const MAX_CELLS = 4000;
 
 // How far inside the free area a place must sit to count as already visible.

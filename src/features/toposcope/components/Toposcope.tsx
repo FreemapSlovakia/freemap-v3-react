@@ -20,7 +20,7 @@ import {
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { siteNames, siteOf } from '@shared/sites.js';
 import clsx from 'clsx';
-import { type ReactElement, useMemo } from 'react';
+import { type ReactElement, useCallback, useMemo } from 'react';
 import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { toposcopeCenterSelector } from '../centerPoint.js';
@@ -119,6 +119,22 @@ export default function Toposcope(): ReactElement {
     unitDisplay: 'narrow',
     maximumFractionDigits: 0,
   });
+
+  // Pressing a ray or the dial's middle says the same thing about the point it
+  // names: select it, and — the dial being a window over the map — bring it out
+  // from behind the panel where it is not already in view.
+  const selectPoint = useCallback(
+    (id: number) => {
+      dispatch(selectFeature({ type: 'draw-points', id }));
+
+      const at = points[id]?.coords;
+
+      if (at) {
+        panToUncovered(at, { ifHidden: true, margin: GENEROUS_MARGIN_PX });
+      }
+    },
+    [dispatch, points],
+  );
 
   // Every drawn point but the centre is a ray, written on the two templates the
   // dial carries rather than on the point's own label — that label is one of the
@@ -229,31 +245,9 @@ export default function Toposcope(): ReactElement {
             scale={scale}
             preventUpturnedText={preventUpturnedText}
             activeRayId={activeRayId}
-            onRayClick={(id) => {
-              dispatch(selectFeature({ type: 'draw-points', id }));
-
-              // The dial is a floating window over the map, so the point it
-              // just selected is often behind it or off screen entirely.
-              const at = points[id]?.coords;
-
-              if (at) {
-                panToUncovered(at, {
-                  ifHidden: true,
-                  margin: GENEROUS_MARGIN_PX,
-                });
-              }
-            }}
+            onRayClick={selectPoint}
             centerActive={activeRayId === center.index}
-            onCenterClick={() => {
-              dispatch(
-                selectFeature({ type: 'draw-points', id: center.index }),
-              );
-
-              panToUncovered(center.point.coords, {
-                ifHidden: true,
-                margin: GENEROUS_MARGIN_PX,
-              });
-            }}
+            onCenterClick={() => selectPoint(center.index)}
           />
         ) : (
           <p className="m-0 text-center text-body-secondary">

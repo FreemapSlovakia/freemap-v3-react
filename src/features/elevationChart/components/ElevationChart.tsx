@@ -8,11 +8,6 @@ import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import {
-  NO_DATA_COLOR,
-  paletteColorAt,
-  rgbCss,
-} from '@shared/colorizers/colorize.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import {
   FloatingWindowGrips,
@@ -41,6 +36,7 @@ import {
 import { Button, CloseButton } from 'react-bootstrap';
 import { FaCog, FaDownload, FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { buildFillStops } from '../chartFill.js';
 import { useChartColorize } from '../hooks/useChartColorize.js';
 import { useElevationSources } from '../hooks/useElevationSources.js';
 import {
@@ -50,7 +46,8 @@ import {
   elevationSetSettings,
 } from '../model/actions.js';
 import type { ElevationProfilePoint } from '../model/reducer.js';
-import { profilePointAtDistance } from '../profilePoint.js';
+import { elevatedRuns, profilePointAtDistance } from '../profilePoint.js';
+import { rangeStatsOf } from '../rangeStats.js';
 import { loadElevationChartMessages } from '../translations/loadElevationChartMessages.js';
 import { useElevationChartMessages } from '../translations/useElevationChartMessages.js';
 import classes from './ElevationChart.module.css';
@@ -390,97 +387,33 @@ export default function ElevationChart(): ReactElement | null {
   // out, plus the pair straddling each edge so the ends are colored too; a
   // categorical mode gets both colors at a boundary rather than a blur across
   // it, and a run of one color is written once.
-  const fillStops = useMemo(() => {
-    if (!colorizer || stops.length < 2 || !(vTo > vFrom)) {
-      return null;
-    }
+  const fillStops = useMemo(
+    () => buildFillStops(colorizer, stops, vFrom, vTo, plotWidth),
+    [colorizer, stops, vFrom, vTo, plotWidth],
+  );
 
-    // The visible run, and the stop straddling each edge so the ends are
-    // colored by what actually reaches them.
-    let first = 0;
+  // The whole profile sets the elevation range, zoomed in or not: a scale that
+  // followed the window would make two readings of the same chart incomparable,
+  // and the min/max lines would name a local pair. Its own memo, so panning and
+  // zooming — which run per pointer frame — don't rescan the profile; running
+  // comparisons rather than a spread, which a long recorded track overflows.
+  const [min, max] = useMemo(() => {
+    let lo = Number.POSITIVE_INFINITY;
 
-    while (first + 1 < stops.length && stops[first + 1]!.distance <= vFrom) {
-      first++;
-    }
+    let hi = Number.NEGATIVE_INFINITY;
 
-    let last = stops.length - 1;
+    for (const { ele } of elevationProfilePoints) {
+      if (Number.isFinite(ele)) {
+        lo = Math.min(lo, ele);
 
-    while (last > first && stops[last - 1]!.distance >= vTo) {
-      last--;
-    }
-
-    const out: { offset: number; color: string }[] = [];
-
-    // The end of an unbroken run of one color, held back until the color
-    // changes: written straight out, the run would blur into whatever follows.
-    let pending: { offset: number; color: string } | null = null;
-
-    // A vertex per source point is thousands of `<stop>` elements re-rendered on
-    // every frame of a drag, for a gradient the screen can only show one color
-    // per pixel of. Only the last vertex in a pixel column is written — the last
-    // rather than the first because a categorical mode changes value between two
-    // coincident points, and the second of that pair is the new category.
-    const pixelOf = (i: number) =>
-      Math.round(
-        clamp((stops[i]!.distance - vFrom) / (vTo - vFrom), 0, 1) * plotWidth,
-      );
-
-    for (let i = first; i <= last; i++) {
-      if (i < last && pixelOf(i) === pixelOf(i + 1)) {
-        continue;
+        hi = Math.max(hi, ele);
       }
-
-      const stop = stops[i]!;
-
-      const offset = clamp((stop.distance - vFrom) / (vTo - vFrom), 0, 1);
-
-      // The same grey the map paints a stretch the mode can't value, so "no
-      // reading" looks the same in both.
-      const color = stop.gap
-        ? NO_DATA_COLOR
-        : rgbCss(paletteColorAt(colorizer.palette, stop.color));
-
-      const previous = out.at(-1);
-
-      if (previous?.color === color) {
-        pending = { offset, color };
-
-        continue;
-      }
-
-      if (pending) {
-        out.push(pending);
-
-        pending = null;
-      }
-
-      // A categorical mode changes value between two points, not across them.
-      if (previous && colorizer.spanBased) {
-        out.push({ offset, color: previous.color });
-      }
-
-      out.push({ offset, color });
     }
 
-    if (pending) {
-      out.push(pending);
-    }
-
-    return out.length > 1 ? out : null;
-  }, [colorizer, stops, vFrom, vTo, plotWidth]);
+    return lo <= hi ? [lo, hi] : [0, 0];
+  }, [elevationProfilePoints]);
 
   const { mapX, unmapX, mapY, endX, vLines, hLines } = useMemo(() => {
-    // The whole profile sets the elevation range, zoomed in or not: a scale
-    // that followed the window would make two readings of the same chart
-    // incomparable, and the min/max lines would name a local pair.
-    const eles = elevationProfilePoints
-      .map((pt) => pt.ele)
-      .filter((ele) => Number.isFinite(ele));
-
-    const min = eles.length ? Math.min(...eles) : 0;
-
-    const max = eles.length ? Math.max(...eles) : 0;
-
     // Guard an empty or flat profile (no finite elevations, or all equal): a
     // zero span would make `mapY` divide by zero and emit NaN chart geometry.
     const diff = max - min || 1;
@@ -536,7 +469,7 @@ export default function ElevationChart(): ReactElement | null {
     }
 
     return { mapX, unmapX, mapY, endX, vLines, hLines };
-  }, [elevationProfilePoints, plotWidth, height, mt, d, vFrom, vTo, xStep]);
+  }, [min, max, plotWidth, height, mt, d, vFrom, vTo, xStep]);
 
   // The marked place, wherever it was pointed at: hovering the chart sets it,
   // and so does hovering the drawn line on the map, which is what puts the
@@ -566,6 +499,13 @@ export default function ElevationChart(): ReactElement | null {
 
   const range = draftRange ?? committedRange;
 
+  /** Where a pointer is in the SVG's own coordinates. */
+  const svgX = (clientX: number) => {
+    const rect = svgRef.current?.getBoundingClientRect();
+
+    return rect ? clientX - rect.left : undefined;
+  };
+
   /**
    * How far along the profile a pointer is, wherever on the screen it is. Kept
    * to the profile's own ends: the pointer is captured, so a drag reaching past
@@ -573,25 +513,22 @@ export default function ElevationChart(): ReactElement | null {
    * starting before zero, which the URL cannot even carry.
    */
   const distanceAt = (clientX: number) => {
-    const rect = svgRef.current?.getBoundingClientRect();
+    const x = svgX(clientX);
 
-    return rect
-      ? Number.isFinite(d)
-        ? clamp(unmapX(clientX - rect.left), 0, d)
-        : unmapX(clientX - rect.left)
-      : undefined;
+    return x === undefined
+      ? undefined
+      : Number.isFinite(d)
+        ? clamp(unmapX(x), 0, d)
+        : unmapX(x);
   };
 
   /** What the profile holds under a pointer, wherever on the screen it is. */
   const pointAt = (clientX: number) => {
-    const rect = svgRef.current?.getBoundingClientRect();
+    const distance = distanceAt(clientX);
 
-    return rect
-      ? profilePointAtDistance(
-          elevationProfilePoints,
-          unmapX(clientX - rect.left),
-        )
-      : undefined;
+    return distance === undefined
+      ? undefined
+      : profilePointAtDistance(elevationProfilePoints, distance);
   };
 
   const scrub = (clientX: number) => {
@@ -745,9 +682,9 @@ export default function ElevationChart(): ReactElement | null {
       return;
     }
 
-    const rect = svgRef.current?.getBoundingClientRect();
+    const x = svgX(e.clientX);
 
-    const grip = rect ? gripAt(e.clientX - rect.left) : null;
+    const grip = x === undefined ? null : gripAt(x);
 
     // Taking hold of an edge anchors the other one, so dragging past it turns
     // the stretch round rather than collapsing it.
@@ -784,9 +721,9 @@ export default function ElevationChart(): ReactElement | null {
     const previous = pointers.current.get(e.pointerId);
 
     if (previous === undefined) {
-      const rect = svgRef.current?.getBoundingClientRect();
+      const x = svgX(e.clientX);
 
-      setOnGrip(rect ? gripAt(e.clientX - rect.left) !== null : false);
+      setOnGrip(x !== undefined && gripAt(x) !== null);
 
       scrub(e.clientX);
 
@@ -803,10 +740,10 @@ export default function ElevationChart(): ReactElement | null {
       // Against the previous frame rather than the start of the gesture, so the
       // zoom follows the fingers as they move; their midpoint is what stays put.
       if (pinchRef.current) {
-        const rect = svgRef.current?.getBoundingClientRect();
+        const middle = svgX((xs[0]! + xs[1]!) / 2);
 
-        if (rect) {
-          zoomAt((xs[0]! + xs[1]!) / 2 - rect.left, spread / pinchRef.current);
+        if (middle !== undefined) {
+          zoomAt(middle, spread / pinchRef.current);
         }
       }
 
@@ -930,42 +867,29 @@ export default function ElevationChart(): ReactElement | null {
 
   // What the marked stretch adds up to. The climb totals are cumulative along
   // the profile, so the stretch's own are the difference between its ends.
-  const rangeStats = useMemo(() => {
-    const ends =
-      range &&
-      [range.from, range.to].map((distance) =>
-        profilePointAtDistance(elevationProfilePoints, distance),
-      );
+  const rangeStats = useMemo(
+    () => rangeStatsOf(elevationProfilePoints, range),
+    [range, elevationProfilePoints],
+  );
 
-    const [a, b] = ends ?? [];
+  // The drawn profile, one run of real elevation apiece. Memoized because a
+  // hover re-renders the panel — it marks the place on the map — and rebuilding
+  // a few thousand coordinates into two strings per frame is the most expensive
+  // thing on that path.
+  const paths = useMemo(() => {
+    const baseY = height - mb;
 
-    if (!range || !a || !b) {
-      return null;
-    }
+    return elevatedRuns(elevationProfilePoints).map((run) => {
+      const line = run
+        .map((pt) => `${mapX(pt.distance)},${mapY(pt.ele)}`)
+        .join(' ');
 
-    const eles = [a.ele, b.ele];
-
-    for (const point of elevationProfilePoints) {
-      if (point.distance > range.from && point.distance < range.to) {
-        eles.push(point.ele);
-      }
-    }
-
-    const finite = eles.filter((ele) => Number.isFinite(ele));
-
-    const length = range.to - range.from;
-
-    return {
-      length,
-      up: (b.climbUp ?? 0) - (a.climbUp ?? 0),
-      down: (b.climbDown ?? 0) - (a.climbDown ?? 0),
-      min: finite.length ? Math.min(...finite) : Number.NaN,
-      max: finite.length ? Math.max(...finite) : Number.NaN,
-      // Straight from end to end, which is what a stretch's steepness means —
-      // not the average of the wiggles inside it.
-      grade: length > 0 ? (b.ele - a.ele) / length : Number.NaN,
-    };
-  }, [range, elevationProfilePoints]);
+      return {
+        line,
+        area: `${mapX(run[0]!.distance)},${baseY} ${line} ${mapX(run.at(-1)!.distance)},${baseY}`,
+      };
+    });
+  }, [elevationProfilePoints, mapX, mapY, height]);
 
   const handleDownload = () => {
     downloadSvg(svgRef.current, 'elevation-chart.svg');
@@ -1029,63 +953,29 @@ export default function ElevationChart(): ReactElement | null {
             of points with elevation. A missing value breaks the line and its
             fill rather than dropping to the baseline. */}
             <g className="chart" clipPath={`url(#${clipId})`}>
-              {(() => {
-                const segments: ElevationProfilePoint[][] = [];
+              {paths.map(({ line, area }, i) => (
+                <g className="chart-segment" key={`seg${i}`}>
+                  <polygon
+                    points={area}
+                    fill={
+                      fillStops
+                        ? `url(#${fillId})`
+                        : 'var(--bs-primary-bg-subtle)'
+                    }
+                  />
 
-                let current: ElevationProfilePoint[] = [];
-
-                for (const pt of elevationProfilePoints) {
-                  if (Number.isFinite(pt.ele)) {
-                    current.push(pt);
-                  } else if (current.length) {
-                    segments.push(current);
-
-                    current = [];
-                  }
-                }
-
-                if (current.length) {
-                  segments.push(current);
-                }
-
-                return segments.map((seg, i) => {
-                  const line = seg
-                    .map((pt) => `${mapX(pt.distance)},${mapY(pt.ele)}`)
-                    .join(' ');
-
-                  const baseY = height - mb;
-
-                  return (
-                    <g className="chart-segment" key={`seg${i}`}>
-                      <polygon
-                        points={
-                          `${mapX(seg[0]!.distance)},${baseY} ` +
-                          line +
-                          ` ${mapX(seg.at(-1)!.distance)},${baseY}`
-                        }
-                        fill={
-                          fillStops
-                            ? `url(#${fillId})`
-                            : 'var(--bs-primary-bg-subtle)'
-                        }
-                      />
-
-                      {/* The colorized fill is what carries the reading, so the
-                          outline steps back to a neutral edge for it. */}
-                      <polyline
-                        points={line}
-                        stroke={
-                          fillStops
-                            ? 'var(--bs-body-color)'
-                            : 'var(--bs-primary)'
-                        }
-                        strokeWidth={1}
-                        fill="none"
-                      />
-                    </g>
-                  );
-                });
-              })()}
+                  {/* The colorized fill is what carries the reading, so the
+                      outline steps back to a neutral edge for it. */}
+                  <polyline
+                    points={line}
+                    stroke={
+                      fillStops ? 'var(--bs-body-color)' : 'var(--bs-primary)'
+                    }
+                    strokeWidth={1}
+                    fill="none"
+                  />
+                </g>
+              ))}
             </g>
 
             {pointerX !== undefined && (
@@ -1479,12 +1369,10 @@ export default function ElevationChart(): ReactElement | null {
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerCancel}
               onPointerOut={handlePointerOut}
-              // An edge under the pointer, or one being dragged, says so.
-              style={
-                onGrip || anchorRef.current !== null
-                  ? { cursor: 'ew-resize' }
-                  : undefined
-              }
+              // An edge under the pointer, or one being dragged, says so. The
+              // draft, not the anchor ref: a ref doesn't re-render, so the
+              // cursor would never change while the drag was on.
+              style={onGrip || draftRange ? { cursor: 'ew-resize' } : undefined}
               opacity={0}
             />
           </>

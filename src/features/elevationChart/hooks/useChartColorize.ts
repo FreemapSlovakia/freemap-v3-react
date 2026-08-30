@@ -1,22 +1,24 @@
-import { trackSegmentFeatures } from '@features/dataViewer/splitTrack.js';
+import { lineParts } from '@features/dataViewer/trackLineParts.js';
 import {
   isTrackLine,
   resolveActiveTrack,
 } from '@features/dataViewer/trackSelection.js';
-import { routeColorizeFeatures } from '@features/routePlanner/model/pathDetails.js';
-import { trackPointsToFeature } from '@features/tracking/trackGeojson.js';
-import { splitTrackSegments } from '@features/tracking/tracks.js';
 import {
+  readLineStart,
+  routeColorizeFeatures,
+} from '@features/routePlanner/model/pathDetails.js';
+import { trackPointsToFeature } from '@features/tracking/trackGeojson.js';
+import { resolveTrack, splitTrackSegments } from '@features/tracking/tracks.js';
+import {
+  availableColorizer,
   type ColorizedPoint,
   type Colorizer,
   colorizeGeometrySource,
-  readLineStart,
 } from '@shared/colorizers/colorize.js';
 import { colorizers } from '@shared/colorizers/index.js';
 import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
-import { cumulativeDistances } from '@shared/geoutils.js';
+import { cumulativeDistances, distanceTo } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { distance } from '@turf/distance';
 import type { Feature, LineString } from 'geojson';
 import { useMemo } from 'react';
 
@@ -45,14 +47,6 @@ const CUT_SLACK_METERS = 5;
 const EMPTY_SOURCES: ColorizeSource[] = [];
 
 const EMPTY_STOPS: ColorizedAtDistance[] = [];
-
-const isLine = (feature: Feature): feature is Feature<LineString> =>
-  feature.geometry.type === 'LineString';
-
-const metersBetween = (
-  a: { lat: number; lon: number },
-  b: { lat: number; lon: number },
-) => distance([a.lon, a.lat], [b.lon, b.lat], { units: 'meters' });
 
 /**
  * The colorize the chart paints its fill with: the mode belongs to the feature
@@ -99,34 +93,45 @@ export function useChartColorize(
 
   const picked = mode ? colorizers[mode] : null;
 
-  const alternatives = useAppSelector(
-    (state) => state.routePlanner.alternatives,
+  // Only what the charted target is drawn from: a live device reporting a fix
+  // would otherwise rebuild the sources — and re-colorize the whole line — for a
+  // chart aimed at a route.
+  const routing = target?.type === 'route-planner';
+
+  const viewing = target?.type === 'track-viewer';
+
+  const tracking = target?.type === 'tracking';
+
+  const alternatives = useAppSelector((state) =>
+    routing ? state.routePlanner.alternatives : null,
   );
 
-  const activeAlternativeIndex = useAppSelector(
-    (state) => state.routePlanner.activeAlternativeIndex,
+  const activeAlternativeIndex = useAppSelector((state) =>
+    routing ? state.routePlanner.activeAlternativeIndex : 0,
   );
 
-  const renderGeojson = useAppSelector(
-    (state) => state.routePlanner.renderGeojson,
+  const renderGeojson = useAppSelector((state) =>
+    routing ? state.routePlanner.renderGeojson : null,
   );
 
-  const trackGeojson = useAppSelector(
-    (state) => state.trackViewer.trackGeojson,
+  const trackGeojson = useAppSelector((state) =>
+    viewing ? state.trackViewer.trackGeojson : null,
   );
 
-  const renderTrackGeojson = useAppSelector(
-    (state) => state.trackViewer.renderTrackGeojson,
+  const renderTrackGeojson = useAppSelector((state) =>
+    viewing ? state.trackViewer.renderTrackGeojson : null,
   );
 
-  const activeTrackIndex = useAppSelector(
-    (state) => state.trackViewer.activeTrackIndex,
+  const activeTrackIndex = useAppSelector((state) =>
+    viewing ? state.trackViewer.activeTrackIndex : null,
   );
 
-  const tracks = useAppSelector((state) => state.tracking.tracks);
+  const tracks = useAppSelector((state) =>
+    tracking ? state.tracking.tracks : null,
+  );
 
-  const trackedDevices = useAppSelector(
-    (state) => state.tracking.trackedDevices,
+  const trackedDevices = useAppSelector((state) =>
+    tracking ? state.tracking.trackedDevices : null,
   );
 
   // What each host colorizes on the map, narrowed to the one line the chart
@@ -139,7 +144,7 @@ export function useChartColorize(
     switch (target.type) {
       case 'route-planner':
         return routeColorizeFeatures(
-          alternatives[activeAlternativeIndex],
+          alternatives?.[activeAlternativeIndex],
           colorizeGeometrySource(picked, renderGeojson),
         ).map((feature) => ({ feature, start: readLineStart(feature) }));
 
@@ -159,39 +164,37 @@ export function useChartColorize(
 
         // The profile adds no distance across the break between two segments,
         // so neither does the axis: each starts where the last ended.
-        return (
-          isLine(drawn) ? [drawn] : trackSegmentFeatures(drawn).filter(isLine)
-        ).map((feature) => ({ feature }));
+        return lineParts(drawn).map((feature) => ({ feature }));
       }
 
       case 'tracking': {
-        const track = tracks.find(({ token }) => token === target.token);
+        // Split the way the map splits it — the device's own settings included
+        // — so a mode normalized per feature is normalized over the same points.
+        // The profile is the whole track as one line, though, so its axis runs
+        // through the pauses and each segment has to say where it starts.
+        const track = resolveTrack(
+          tracks ?? [],
+          trackedDevices ?? [],
+          target.token,
+        );
 
         if (!track) {
           return EMPTY_SOURCES;
         }
 
-        // Split the way the map splits it, so a mode normalized per feature is
-        // normalized over the same points. The profile is the whole track as one
-        // line, though, so its axis runs through the pauses and each segment has
-        // to say where it starts.
-        const device = trackedDevices.find(
-          ({ token }) => token === target.token,
-        );
-
         let cumulative = 0;
 
         let previous: { lat: number; lon: number } | undefined;
 
-        return splitTrackSegments({ ...track, ...device }).map((segment) => {
+        return splitTrackSegments(track).map((segment) => {
           if (previous && segment[0]) {
-            cumulative += metersBetween(previous, segment[0]);
+            cumulative += distanceTo(previous, segment[0]);
           }
 
           const start = cumulative;
 
           for (let i = 1; i < segment.length; i++) {
-            cumulative += metersBetween(segment[i - 1]!, segment[i]!);
+            cumulative += distanceTo(segment[i - 1]!, segment[i]!);
           }
 
           previous = segment.at(-1);
@@ -221,10 +224,12 @@ export function useChartColorize(
     [sources],
   );
 
-  const colorizer =
-    picked && (!picked.isAvailable || picked.isAvailable(features))
-      ? picked
-      : null;
+  // Memoized because `isAvailable` reads every point of every feature, and this
+  // runs on every hover, pan and pinch frame.
+  const colorizer = useMemo(
+    () => availableColorizer(picked, features),
+    [picked, features],
+  );
 
   const steepnessScale = useAppSelector(
     (state) => state.elevationSettings.steepnessScale,
@@ -238,23 +243,9 @@ export function useChartColorize(
       ? 0
       : Math.round(Math.log2(Math.max(metersPerPixel, Number.MIN_VALUE)));
 
-  // Revisiting a scale is instant, the way the map's per-zoom cache makes
-  // panning: a pinch crosses several levels and comes back through them.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the inputs are cache-reset keys
-  const cache = useMemo(
-    () => new Map<number, ColorizedAtDistance[]>(),
-    [colorizer, sources, steepnessScale, profileMeters],
-  );
-
   return useMemo(() => {
     if (!colorizer || sources.length === 0) {
       return { colorizer: null, stops: EMPTY_STOPS };
-    }
-
-    const hit = cache.get(level);
-
-    if (hit) {
-      return { colorizer, stops: hit };
     }
 
     const stops: ColorizedAtDistance[] = [];
@@ -292,7 +283,7 @@ export function useChartColorize(
 
       for (const point of points ?? []) {
         if (previous) {
-          walked += metersBetween(previous, point);
+          walked += distanceTo(previous, point);
         }
 
         stops.push({
@@ -313,8 +304,6 @@ export function useChartColorize(
 
     skipTo(profileMeters);
 
-    cache.set(level, stops);
-
     return { colorizer, stops };
-  }, [cache, colorizer, sources, level, steepnessScale, profileMeters]);
+  }, [colorizer, sources, level, steepnessScale, profileMeters]);
 }

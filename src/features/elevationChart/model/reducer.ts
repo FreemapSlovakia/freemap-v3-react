@@ -36,6 +36,12 @@ export interface ElevationProfileWaypoint {
   label?: string;
 }
 
+/** A marked-out stretch of a profile, in metres along it. */
+export interface ChartRange {
+  from: number;
+  to: number;
+}
+
 export interface ElevationChartState {
   /**
    * What the chart is showing, or `null` when it is closed. The geometry itself
@@ -45,8 +51,8 @@ export interface ElevationChartState {
    */
   target: ElevationChartTarget | null;
   activePoint: ElevationProfilePoint | null;
-  /** The marked-out stretch, in metres along the profile; `null` for none. */
-  range: { from: number; to: number } | null;
+  /** The marked-out stretch; `null` for none. */
+  range: ChartRange | null;
   elevationProfilePoints: Array<ElevationProfilePoint> | null;
   waypoints: ElevationProfileWaypoint[];
   /**
@@ -153,9 +159,9 @@ function setInitialState() {
 
 /** A marked stretch kept within a profile; `null` where nothing of it is left. */
 function clampRange(
-  range: { from: number; to: number } | null,
+  range: ChartRange | null,
   points: ElevationProfilePoint[],
-): { from: number; to: number } | null {
+): ChartRange | null {
   if (!range) {
     return null;
   }

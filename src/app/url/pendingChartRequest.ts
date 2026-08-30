@@ -1,3 +1,4 @@
+import type { ChartRange } from '@features/elevationChart/model/reducer.js';
 import type { ElevationChartTarget } from '@features/elevationChart/model/target.js';
 
 /**
@@ -15,9 +16,6 @@ import type { ElevationChartTarget } from '@features/elevationChart/model/target
  * happened. It lives in its own module so that rule can be tested without a
  * store.
  */
-/** The stretch of the profile the same URL marked out, if any. */
-type ChartRange = { from: number; to: number };
-
 let held: { raw: string; range: ChartRange | null } | null = null;
 
 /**

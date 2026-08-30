@@ -1,6 +1,6 @@
 import type { Feature, FeatureCollection, LineString } from 'geojson';
 import { trackSegmentFeatures } from './splitTrack.js';
-import { trackLineFeatures } from './trackSelection.js';
+import { type TrackLine, trackLineFeatures } from './trackSelection.js';
 
 const isLine = (feature: Feature): feature is Feature<LineString> =>
   feature.geometry.type === 'LineString';
@@ -15,7 +15,12 @@ const isLine = (feature: Feature): feature is Feature<LineString> =>
 export function trackLineParts(
   fc: FeatureCollection | null | undefined,
 ): Feature<LineString>[] {
-  return trackLineFeatures(fc).flatMap(({ feature }) =>
-    isLine(feature) ? [feature] : trackSegmentFeatures(feature).filter(isLine),
-  );
+  return trackLineFeatures(fc).flatMap(({ feature }) => lineParts(feature));
+}
+
+/** The same for one track feature, for a reader that has already picked it. */
+export function lineParts(feature: TrackLine): Feature<LineString>[] {
+  return isLine(feature)
+    ? [feature]
+    : trackSegmentFeatures(feature).filter(isLine);
 }

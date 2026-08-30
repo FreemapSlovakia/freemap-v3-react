@@ -449,7 +449,9 @@ Three things are worth knowing before touching it:
   the map's `zoom` said directly, and the chart knows it exactly — `(vTo - vFrom) /
   plotWidth` — where `featureSmoothingSpan` has to derive it from Mercator scale at a
   mid-latitude. It is quantized to powers of two so a pinch recomputes ~11 times over the
-  whole zoom range instead of once a frame. The consequence is deliberate: a chart zoomed
+  whole zoom range instead of once a frame (the memo covers the current level; there is
+  deliberately no cache of the ones already visited — it would retain a stops array per
+  level for the life of the chart to save a recompute nobody waits for). The consequence is deliberate: a chart zoomed
   into 200 m shows steepness the map at z12 has averaged away, so the two views differ in
   detail while agreeing on the mode.
 - **The fill is one `linearGradient`, in `userSpaceOnUse`.** The profile is drawn as one

@@ -28,6 +28,7 @@ import {
   elevationChartOpen,
   elevationChartSetRange,
 } from '@features/elevationChart/model/actions.js';
+import type { ChartRange } from '@features/elevationChart/model/reducer.js';
 import type { ElevationChartTarget } from '@features/elevationChart/model/target.js';
 import { targetsEqual } from '@features/elevationChart/model/target.js';
 import {
@@ -991,8 +992,27 @@ export function applyElevationChartFromUrl(
     dispatch(elevationChartOpen(target, { fromUrl: true }));
   }
 
-  // After the open, which starts a new target's chart clean.
+  // Only a stretch it actually names: a deferred request has nothing to clear —
+  // the open above already did, where the target changed — and by now the chart
+  // may be marked by hand.
   if (range) {
+    syncChartRange(getState, dispatch, range);
+  }
+}
+
+/**
+ * Applies the stretch a URL marked out. Always after the open, which starts a
+ * new target's chart clean; only when it differs, so a URL that says nothing new
+ * dispatches nothing.
+ */
+function syncChartRange(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  range: ChartRange | null,
+) {
+  const current = getState().elevationChart.range;
+
+  if (range?.from !== current?.from || range?.to !== current?.to) {
     dispatch(elevationChartSetRange(range));
   }
 }
@@ -1064,22 +1084,18 @@ function handleElevationChart(
     );
   }
 
-  // After the open, which starts a new target's chart clean.
-  const range = target ? asked : null;
-
-  const current = getState().elevationChart.range;
-
-  if (range?.from !== current?.from || range?.to !== current?.to) {
-    dispatch(elevationChartSetRange(range));
-  }
+  syncChartRange(getState, dispatch, target ? asked : null);
 }
 
 /** `elevation-chart-range=<from>,<to>` — metres along the profile. */
 function parseChartRange(
   raw: string | string[] | undefined,
-): { from: number; to: number } | null {
-  const [from, to] =
-    typeof raw === 'string' ? raw.split(',').map(Number) : [Number.NaN];
+): ChartRange | null {
+  if (typeof raw !== 'string') {
+    return null;
+  }
+
+  const [from, to] = raw.split(',').map(Number);
 
   return from !== undefined &&
     to !== undefined &&

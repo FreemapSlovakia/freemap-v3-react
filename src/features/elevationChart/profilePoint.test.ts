@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { ElevationProfilePoint } from './model/reducer.js';
-import { profilePointAtDistance, projectOnProfile } from './profilePoint.js';
+import {
+  elevatedRuns,
+  profilePointAtDistance,
+  profileSlice,
+  projectOnProfile,
+} from './profilePoint.js';
 
 // A profile running due east along the equator, where a degree of longitude and
 // a degree of latitude are the same length, so a projection's result reads off
@@ -102,5 +107,62 @@ describe('projectOnProfile', () => {
       lon: 0.25,
       distance: 25,
     });
+  });
+});
+
+describe('profileSlice', () => {
+  it('interpolates both ends and keeps what lies between', () => {
+    expect(
+      profileSlice(profile, 50, 150).map(({ distance }) => distance),
+    ).toEqual([50, 100, 150]);
+  });
+
+  it('takes no sample twice when an end falls on one', () => {
+    // The bisection has to start past a sample the interpolated end already is,
+    // or the stretch would carry it twice and a stats scan would count it so.
+    expect(
+      profileSlice(profile, 100, 200).map(({ distance }) => distance),
+    ).toEqual([100, 200]);
+  });
+
+  it('is the two interpolated ends alone where no sample falls between', () => {
+    expect(profileSlice(profile, 40, 60).map(({ ele }) => ele)).toEqual([
+      140, 160,
+    ]);
+  });
+
+  it('clamps to the profile, so a stretch reaching past it is not extrapolated', () => {
+    // And still carries each sample once: the clamped ends stand on the first
+    // and last of them.
+    expect(
+      profileSlice(profile, -50, 500).map(({ distance }) => distance),
+    ).toEqual([0, 100, 200]);
+  });
+
+  it('is empty for an empty profile', () => {
+    expect(profileSlice([], 0, 100)).toEqual([]);
+  });
+});
+
+describe('elevatedRuns', () => {
+  it('breaks at a point with no elevation and drops it', () => {
+    const paused: ElevationProfilePoint[] = [
+      { lat: 0, lon: 0, distance: 0, ele: 100 },
+      { lat: 0, lon: 1, distance: 100, ele: 200 },
+      { lat: 0, lon: 1, distance: 100, ele: NaN },
+      { lat: 0, lon: 2, distance: 100, ele: 300 },
+    ];
+
+    expect(
+      elevatedRuns(paused).map((run) => run.map(({ ele }) => ele)),
+    ).toEqual([[100, 200], [300]]);
+  });
+
+  it('yields one run for a whole profile, and none for one with no elevation', () => {
+    expect(elevatedRuns(profile)).toHaveLength(1);
+
+    expect(elevatedRuns([{ lat: 0, lon: 0, distance: 0, ele: NaN }])).toEqual(
+      [],
+    );
   });
 });

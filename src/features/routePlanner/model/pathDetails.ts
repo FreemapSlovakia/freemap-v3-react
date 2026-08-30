@@ -1,6 +1,5 @@
 import {
   clipPathDetails,
-  LINE_START_PROP,
   PATH_DETAILS_PROP,
   type PathDetailSpan,
   type PathDetails,
@@ -126,6 +125,22 @@ function flattenPathDetailsUncached(alternative: Alternative): PathDetails {
       ),
     ]),
   );
+}
+
+/**
+ * Where a run starts along the whole route, in metres. Only the elevation chart
+ * reads it — it colors against the profile's own axis, and an unrouted leg cut
+ * out from between two runs still counts there. Kept here rather than in the
+ * colorize contract: no colorizer looks at it.
+ */
+export const LINE_START_PROP = 'fm:lineStart';
+
+export function readLineStart(
+  feature: Feature<LineString>,
+): number | undefined {
+  const value = feature.properties?.[LINE_START_PROP];
+
+  return typeof value === 'number' ? value : undefined;
 }
 
 /**

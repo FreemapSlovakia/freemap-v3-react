@@ -11,9 +11,12 @@ import { Pane, Polyline, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gradeAt } from '../grade.js';
 import { elevationChartSetActivePoint } from '../model/actions.js';
-import type { ElevationProfilePoint } from '../model/reducer.js';
 import { gradeWindowMeters } from '../model/settingsReducer.js';
-import { profilePointAtDistance, projectOnProfile } from '../profilePoint.js';
+import {
+  elevatedRuns,
+  profileSlice,
+  projectOnProfile,
+} from '../profilePoint.js';
 
 // How near the drawn line the pointer must come for the readout to appear.
 // Generous enough to catch the line without demanding pixel accuracy, tight
@@ -28,7 +31,10 @@ const MIN_STEP_M = 0.1;
 // A band over the line, in the chart's own accent — wide enough to read past
 // the line under it, and see-through so that line stays legible.
 const RANGE_STYLE = {
-  color: '#dc3545',
+  // Named rather than spelled out, so it stays the one ink the chart draws its
+  // own marks in. Leaflet writes it onto an SVG path in the document, where the
+  // custom property resolves.
+  color: 'var(--bs-danger)',
   weight: 10,
   opacity: 0.4,
   lineCap: 'round',
@@ -122,42 +128,11 @@ function RangeHighlight(): ReactElement | null {
       return null;
     }
 
-    // The ends themselves, interpolated, so the highlight starts and stops
-    // exactly where the marked stretch does rather than at the nearest sample.
-    const ends = [range.from, range.to].map((distance) =>
-      profilePointAtDistance(points, distance),
-    );
-
-    const inside = points.filter(
-      (point) => point.distance > range.from && point.distance < range.to,
-    );
-
-    const all = [ends[0], ...inside, ends[1]].filter(
-      (point): point is ElevationProfilePoint => Boolean(point),
-    );
-
-    // Broken at the profile's own gaps — the pause between two recording
-    // segments — which the track never travelled; drawn through, the band would
-    // cross ground nobody was on.
-    const runs: LatLngTuple[][] = [];
-
-    let run: LatLngTuple[] = [];
-
-    for (const point of all) {
-      if (Number.isFinite(point.ele)) {
-        run.push([point.lat, point.lon]);
-      } else if (run.length) {
-        runs.push(run);
-
-        run = [];
-      }
-    }
-
-    if (run.length) {
-      runs.push(run);
-    }
-
-    const drawn = runs.filter((positions) => positions.length > 1);
+    // Broken at the profile's own gaps, which the track never travelled: drawn
+    // through, the band would cross ground nobody was on.
+    const drawn = elevatedRuns(profileSlice(points, range.from, range.to))
+      .filter((run) => run.length > 1)
+      .map((run) => run.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
 
     return drawn.length ? drawn : null;
   }, [range, points]);

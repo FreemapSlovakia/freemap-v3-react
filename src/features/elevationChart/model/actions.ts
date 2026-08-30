@@ -1,4 +1,5 @@
 import type {
+  ChartRange,
   ElevationProfilePoint,
   ElevationProfileWaypoint,
 } from '@features/elevationChart/model/reducer.js';
@@ -76,10 +77,9 @@ export const elevationChartSetActivePoint =
  * `null` for none. In the store rather than in the panel because the map draws
  * it too, and the URL carries it.
  */
-export const elevationChartSetRange = createAction<{
-  from: number;
-  to: number;
-} | null>('ELEVATION_CHART_SET_RANGE');
+export const elevationChartSetRange = createAction<ChartRange | null>(
+  'ELEVATION_CHART_SET_RANGE',
+);
 
 export const elevationSetSettings = createAction<
   Partial<ElevationSettingsState>

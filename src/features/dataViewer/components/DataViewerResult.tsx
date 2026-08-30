@@ -3,6 +3,7 @@ import { selectingModeSelector } from '@app/store/selectors.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { paleColor, splitColorAlpha } from '@shared/colorAlpha.js';
 import {
+  availableColorizer,
   colorizerHotlineOptions,
   NO_DATA_COLOR,
   NO_DATA_OPACITY,
@@ -152,10 +153,7 @@ export default function DataViewerResult({
   // the whole track Unknown grey would hide its own style and say nothing.
   const picked = colorizeTrackBy ? colorizers[colorizeTrackBy] : null;
 
-  const activeColorizer =
-    picked && (!picked.isAvailable || picked.isAvailable(lineFeatures))
-      ? picked
-      : null;
+  const activeColorizer = availableColorizer(picked, lineFeatures);
 
   const colorizedPositions = useZoomColorize(
     activeColorizer,
