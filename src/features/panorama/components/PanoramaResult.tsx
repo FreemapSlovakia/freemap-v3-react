@@ -1,3 +1,4 @@
+import { panToUncovered } from '@features/map/panToUncovered.js';
 import { makeBeamIcon } from '@shared/beamIcon.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import {
@@ -51,9 +52,6 @@ import { PanoramaProbeReadout, readoutOf } from './PanoramaProbeReadout.js';
 const WEDGE_SIZE = 240;
 
 const WEDGE_RADIUS = 110;
-
-/** How near the edge a mark may sit and still count as on screen. */
-const PAN_MARGIN_PX = 40;
 
 /** Travel that tells a swing of the wedge from a press through it. */
 const CLICK_SLOP_PX = 3;
@@ -137,28 +135,13 @@ export default function PanoramaResult(): ReactElement | null {
   autoPanRef.current = autoPan;
 
   // A ridge picked out of the picture can be tens of kilometres off and land
-  // outside the map entirely, where a mark helps nobody. A mark already on
-  // screen is left where it is — moving the map under someone who can see what
-  // they asked for is the rudest thing this could do — and one that isn't is
-  // centred, which is where the eye goes looking for it.
+  // outside the map, or under the panorama's own window, where a mark helps
+  // nobody. One that isn't is left where it is.
   useEffect(() => {
-    if (!probe) {
-      return;
+    if (probe) {
+      panToUncovered(probe, { ifHidden: true });
     }
-
-    const at = map.latLngToContainerPoint([probe.lat, probe.lon]);
-
-    const size = map.getSize();
-
-    if (
-      at.x < PAN_MARGIN_PX ||
-      at.y < PAN_MARGIN_PX ||
-      at.x > size.x - PAN_MARGIN_PX ||
-      at.y > size.y - PAN_MARGIN_PX
-    ) {
-      map.panTo([probe.lat, probe.lon]);
-    }
-  }, [probe, map]);
+  }, [probe]);
 
   const { dragging, handlers } = useStagedViewpoint(
     useCallback((at) => dispatch(panoramaMoveViewpoint(at)), [dispatch]),

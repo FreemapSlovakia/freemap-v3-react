@@ -70,6 +70,10 @@ type Props = {
   /** Highlighted, e.g. because its point is selected on the map. */
   activeRayId?: number | null;
   onRayClick?: (id: number) => void;
+  /** Pressing the dial's middle — the inner circle and what is written in it. */
+  onCenterClick?: () => void;
+  /** Highlights that middle, the way `activeRayId` highlights a ray. */
+  centerActive?: boolean;
   svgRef?: Ref<SVGSVGElement>;
   width: number;
   height: number;
@@ -90,6 +94,8 @@ export function ToposcopeSvg({
   preventUpturnedText,
   activeRayId,
   onRayClick,
+  onCenterClick,
+  centerActive,
   svgRef,
   width,
   height,
@@ -120,6 +126,8 @@ export function ToposcopeSvg({
     fs * -(0.6 + (count - 1 - i) * 1.15);
 
   const rayDyBelow = (i: number) => fs * (1.45 + i * 1.15);
+
+  const centerInk = centerActive ? ACTIVE_INK : INK;
 
   const strokeProps = {
     strokeWidth: fs * STROKE_PER_FONT,
@@ -228,32 +236,39 @@ export function ToposcopeSvg({
 
       <circle cx="0" cy="0" r={outerCircle} stroke={INK} {...strokeProps} />
 
-      <circle
-        cx="0"
-        cy="0"
-        r={innerCircleRadius}
-        stroke={INK}
-        {...strokeProps}
-      />
+      {/* The middle of the dial: the inner circle and the lines inside it, one
+          target so pressing either says the same thing. */}
+      <g onClick={onCenterClick} style={onCenterClick && { cursor: 'pointer' }}>
+        <circle
+          cx="0"
+          cy="0"
+          r={innerCircleRadius}
+          stroke={centerInk}
+          // An unfilled circle is hit only on its stroke; this makes the disc
+          // it encloses answer too.
+          pointerEvents={onCenterClick ? 'all' : undefined}
+          {...strokeProps}
+        />
 
-      {/* Seated so the block's ink straddles the middle however many lines it
-          runs to: the first baseline drops half a cap and rises half of what the
-          lines below it take, and the `<text>` sits one line height above that
-          because the first `tspan` carries one. */}
-      <text
-        x="0"
-        y={
-          (fs * CAP_HEIGHT - (centerLines.length - 1) * lineHeight) / 2 -
-          lineHeight
-        }
-        fill={INK}
-      >
-        {centerLines.map((line, i) => (
-          <tspan key={i} textAnchor="middle" x="0" dy={lineHeight}>
-            {line}
-          </tspan>
-        ))}
-      </text>
+        {/* Seated so the block's ink straddles the middle however many lines it
+            runs to: the first baseline drops half a cap and rises half of what the
+            lines below it take, and the `<text>` sits one line height above that
+            because the first `tspan` carries one. */}
+        <text
+          x="0"
+          y={
+            (fs * CAP_HEIGHT - (centerLines.length - 1) * lineHeight) / 2 -
+            lineHeight
+          }
+          fill={centerInk}
+        >
+          {centerLines.map((line, i) => (
+            <tspan key={i} textAnchor="middle" x="0" dy={lineHeight}>
+              {line}
+            </tspan>
+          ))}
+        </text>
+      </g>
     </svg>
   );
 }

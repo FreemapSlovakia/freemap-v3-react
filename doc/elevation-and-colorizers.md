@@ -367,6 +367,41 @@ dispatchers; routePlanner's reads the stamp directly. The chart's processor then
 credit's tokens with whatever its own sampling collected (the drawn-line/measurement path)
 into `elevationChartSetElevationProfile`.
 
+### Reading the chart — gestures in `ElevationChart.tsx`
+
+The panel's own state is one `{ from, to }` pair: the visible stretch of the distance
+axis as **fractions** of the whole, so a re-route keeps the same part in view (a new
+`elevationChart.target` resets it). Everything else is derived — `mapX`/`unmapX` and the
+tick step read the fractions, and the profile is clipped to the plot because it runs past
+both edges once zoomed. Zoomed in, a thin two-rect bar says where that window sits; it is
+drawn 4 px above the plot, inside the clearance `LABEL_GAP` already keeps for the waypoint
+labels, so it needs no room of its own. Two things deliberately don't follow the window: the **elevation
+range** stays the whole profile's (a scale that followed the zoom would make two readings
+of one chart incomparable, and the min/max lines would name a local pair), and the x-axis
+**label precision** follows the tick step instead — `xStep` is computed outside the memo
+only because the formatter picking decimals off it is a hook; at a fixed one decimal a
+zoomed-in axis reads `2,9 2,9 2,9 3,0 3,0`.
+
+One transparent `<rect>` over the plot owns every pointer: a wheel or a two-finger pinch
+zooms about the place under it, a one-pointer drag pans **while zoomed** (unzoomed there is
+nothing to slide, so it scrubs as a hover does), and a press that goes nowhere is a click.
+The wheel listener is attached by hand — React registers `wheel` passively, so the page
+would scroll too. Same shape as the panorama viewport (`PanoramaView.tsx`), which is worth
+comparing before changing either.
+
+A click hands the place to `panToUncovered` (`src/features/map/panToUncovered.ts`): it
+hit-tests a 24 px grid over the map container (coarser on a large screen — the sweep is
+capped at `MAX_CELLS` hit tests, since it runs on the click path before the browser
+paints), finds the largest rectangle of cells nothing covers (histogram method), and pans
+so the place lands in its middle — the chart's own window is usually over what it points
+at. Hit-testing rather than a list of chrome elements, so a panel added later counts for
+free. However narrow the gap comes out, it is returned as it is: falling back to the whole
+map for a small one would tell `ifHidden` that a mark behind a panel is in view. Every caller passes `ifHidden`, which
+leaves a place already well inside that rectangle where it is: reading along a profile is a
+lot of presses, and the map sliding under each of them helps nobody. The chart and the
+toposcope widen the inset to `GENEROUS_MARGIN_PX`, so a mark clinging to the edge of the
+free area is still centred; the panorama's probe keeps the default.
+
 ### What the chart shows — `elevationChart.target`
 
 The chart is a **derived view**, not something features push into. State holds only

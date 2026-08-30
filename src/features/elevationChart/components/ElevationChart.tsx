@@ -1,5 +1,9 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  GENEROUS_MARGIN_PX,
+  panToUncovered,
+} from '@features/map/panToUncovered.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
@@ -14,13 +18,18 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useFloatingWindow } from '@shared/hooks/useFloatingWindow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
+import { clamp } from '@shared/mathUtils.js';
 import clsx from 'clsx';
 import {
   Fragment,
   type ReactElement,
   type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useId,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import { Button, CloseButton } from 'react-bootstrap';
 import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
@@ -96,6 +105,23 @@ const ticks = new Array(11)
 
 const EMPTY_ARRAY: ElevationProfilePoint[] = [];
 
+/**
+ * The stretch of the profile on screen, as fractions of its whole length —
+ * fractions rather than distances so a re-route keeps the same part in view.
+ */
+type ChartView = { from: number; to: number };
+
+const WHOLE_VIEW: ChartView = { from: 0, to: 1 };
+
+// Tightest the distance axis can be wound in, as a multiple of the whole.
+const MAX_ZOOM = 1000;
+
+// Farther than this in a press and it was a drag, not a click.
+const CLICK_SLOP_PX = 4;
+
+// What one wheel notch does to the zoom.
+const WHEEL_FACTOR = 1.25;
+
 export default function ElevationChart(): ReactElement | null {
   const m = useElevationChartMessages();
 
@@ -108,6 +134,20 @@ export default function ElevationChart(): ReactElement | null {
   );
 
   const waypoints = useAppSelector((state) => state.elevationChart.waypoints);
+
+  const [view, setView] = useState(WHOLE_VIEW);
+
+  // A profile of something else starts unzoomed; one redrawn for the same
+  // target (a re-route, an arriving position) keeps the stretch being read.
+  const target = useAppSelector((state) => state.elevationChart.target);
+
+  const chartedRef = useRef(target);
+
+  if (chartedRef.current !== target) {
+    chartedRef.current = target;
+
+    setView(WHOLE_VIEW);
+  }
 
   const prm = usePremiumMessages();
 
@@ -136,11 +176,6 @@ export default function ElevationChart(): ReactElement | null {
   const nf0 = useNumberFormat({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  });
-
-  const nf1 = useNumberFormat({
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
   });
 
   // The label lines stacked above each waypoint, top to bottom: the name (when
@@ -210,7 +245,47 @@ export default function ElevationChart(): ReactElement | null {
 
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const [mapX, mapY, d, vLines, hLines] = useMemo(() => {
+  // The id goes into a `url(#…)` reference, which takes none of the punctuation
+  // React wraps its own ids in.
+  const clipId = `ec-plot-${useId().replace(/\W/g, '')}`;
+
+  const plotWidth = width - ml - mr;
+
+  const d = elevationProfilePoints.at(-1)?.distance ?? NaN;
+
+  const vFrom = d * view.from;
+
+  const vTo = d * view.to;
+
+  // Distance between x-axis ticks, in metres. Out here because the label format
+  // is picked from it, and formatters are hooks.
+  const xStep =
+    ticks.find((step) => (plotWidth * step) / (vTo - vFrom) > 25) ??
+    Number.POSITIVE_INFINITY;
+
+  // As many decimals as it takes for one tick to read differently from the
+  // next: the labels are kilometres, and zoomed in a step can be a few metres.
+  const xDigits = useMemo(() => {
+    const step = xStep / 1000;
+
+    for (let digits = 1; digits < 6; digits++) {
+      if (Number(step.toFixed(digits)) === step) {
+        return digits;
+      }
+    }
+
+    return 6;
+  }, [xStep]);
+
+  const nfX = useNumberFormat({
+    minimumFractionDigits: xDigits,
+    maximumFractionDigits: xDigits,
+  });
+
+  const { mapX, unmapX, mapY, endX, vLines, hLines } = useMemo(() => {
+    // The whole profile sets the elevation range, zoomed in or not: a scale
+    // that followed the window would make two readings of the same chart
+    // incomparable, and the min/max lines would name a local pair.
     const eles = elevationProfilePoints
       .map((pt) => pt.ele)
       .filter((ele) => Number.isFinite(ele));
@@ -227,10 +302,12 @@ export default function ElevationChart(): ReactElement | null {
 
     const chartMax = max + diff / 20;
 
-    const d = elevationProfilePoints.at(-1)?.distance ?? NaN;
-
     function mapX(distance: number) {
-      return ml + ((width - ml - mr) * distance) / d;
+      return ml + (plotWidth * (distance - vFrom)) / (vTo - vFrom);
+    }
+
+    function unmapX(x: number) {
+      return vFrom + ((x - ml) / plotWidth) * (vTo - vFrom);
     }
 
     function mapY(ele: number) {
@@ -258,18 +335,21 @@ export default function ElevationChart(): ReactElement | null {
 
     const vLines: number[] = [];
 
-    const xStep =
-      ticks.find((step) => mapX(step) - mapX(0) > 25) ??
-      Number.POSITIVE_INFINITY;
-
-    for (let x = 0; x < d; x += xStep) {
-      vLines.push(x);
+    if (Number.isFinite(xStep)) {
+      for (let x = Math.ceil(vFrom / xStep) * xStep; x < vTo; x += xStep) {
+        vLines.push(x);
+      }
     }
 
-    vLines.push(d);
+    // The profile's end marks itself, whenever the view reaches it.
+    const endX = vTo >= d ? d : null;
 
-    return [mapX, mapY, d, vLines, hLines];
-  }, [elevationProfilePoints, width, height, mt]);
+    if (endX !== null) {
+      vLines.push(endX);
+    }
+
+    return { mapX, unmapX, mapY, endX, vLines, hLines };
+  }, [elevationProfilePoints, plotWidth, height, mt, d, vFrom, vTo, xStep]);
 
   // The marked place, wherever it was pointed at: hovering the chart sets it,
   // and so does hovering the drawn line on the map, which is what puts the
@@ -280,30 +360,211 @@ export default function ElevationChart(): ReactElement | null {
 
   // A profile redrawn while a place is marked can end before it — a re-route
   // shortening the way, say — and the crosshair belongs inside the plot, so it
-  // goes rather than reaching past its edge.
+  // goes rather than reaching past its edge. Zoomed in, the same holds for a
+  // place the view has left behind.
   const pointerX =
-    activePoint && activePoint.distance <= d
+    activePoint && activePoint.distance >= vFrom && activePoint.distance <= vTo
       ? mapX(activePoint.distance)
       : undefined;
 
-  const handlePointerMove = (e: ReactPointerEvent<SVGRectElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+  /** What the profile holds under a pointer, wherever on the screen it is. */
+  const pointAt = (clientX: number) => {
+    const rect = svgRef.current?.getBoundingClientRect();
 
-    const x = e.clientX - rect.left;
+    return rect
+      ? profilePointAtDistance(
+          elevationProfilePoints,
+          unmapX(clientX - rect.left),
+        )
+      : undefined;
+  };
 
-    const point = profilePointAtDistance(
-      elevationProfilePoints,
-      (d / (width - ml - mr)) * x,
-    );
+  const scrub = (clientX: number) => {
+    const point = pointAt(clientX);
 
     if (point) {
       dispatch(elevationChartSetActivePoint(point));
     }
   };
 
-  const handlePointerOut = () => {
-    dispatch(elevationChartSetActivePoint(null));
+  // Zoom about a place rather than about the middle: whatever is under the
+  // pointer, or between the fingers, stays where it is.
+  const zoomAt = useCallback(
+    (x: number, factor: number) => {
+      setView(({ from, to }) => {
+        const span = to - from;
+
+        const next = clamp(span / factor, 1 / MAX_ZOOM, 1);
+
+        const t = clamp((x - ml) / plotWidth, 0, 1);
+
+        const held = from + t * span;
+
+        const nextFrom = clamp(held - t * next, 0, 1 - next);
+
+        return { from: nextFrom, to: nextFrom + next };
+      });
+    },
+    [plotWidth],
+  );
+
+  const panBy = (dx: number) => {
+    setView(({ from, to }) => {
+      const span = to - from;
+
+      const nextFrom = clamp(from - (dx / plotWidth) * span, 0, 1 - span);
+
+      return { from: nextFrom, to: nextFrom + span };
+    });
   };
+
+  // Not through React's handler: it registers wheel passively, so the page
+  // would scroll as well as the chart zooming.
+  useEffect(() => {
+    const el = svgRef.current;
+
+    if (!el) {
+      return;
+    }
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+
+      zoomAt(
+        e.clientX - el.getBoundingClientRect().left,
+        e.deltaY < 0 ? WHEEL_FACTOR : 1 / WHEEL_FACTOR,
+      );
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [zoomAt]);
+
+  /** Pressed pointers by id, each at the x it was last seen at. */
+  const pointers = useRef(new Map<number, number>());
+
+  /** Distance between the two fingers on the previous move, while pinching. */
+  const pinchRef = useRef<number | null>(null);
+
+  const travelRef = useRef(0);
+
+  /** Whether a second finger ever joined, which makes the gesture a pinch. */
+  const pinchedRef = useRef(false);
+
+  const handlePointerDown = (e: ReactPointerEvent<SVGRectElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+
+    pointers.current.set(e.pointerId, e.clientX);
+
+    // Any change to who is pressing invalidates the pinch's baseline: measured
+    // between one pair and applied to another, it would jump the zoom.
+    pinchRef.current = null;
+
+    if (pointers.current.size > 1) {
+      pinchedRef.current = true;
+
+      return;
+    }
+
+    travelRef.current = 0;
+
+    pinchedRef.current = false;
+
+    // A finger has no hover, so the press is what reads the profile.
+    scrub(e.clientX);
+  };
+
+  const handlePointerMove = (e: ReactPointerEvent<SVGRectElement>) => {
+    const previous = pointers.current.get(e.pointerId);
+
+    if (previous === undefined) {
+      scrub(e.clientX);
+
+      return;
+    }
+
+    pointers.current.set(e.pointerId, e.clientX);
+
+    const xs = [...pointers.current.values()];
+
+    if (xs.length >= 2) {
+      const spread = Math.abs(xs[0]! - xs[1]!);
+
+      // Against the previous frame rather than the start of the gesture, so the
+      // zoom follows the fingers as they move; their midpoint is what stays put.
+      if (pinchRef.current) {
+        const rect = svgRef.current?.getBoundingClientRect();
+
+        if (rect) {
+          zoomAt((xs[0]! + xs[1]!) / 2 - rect.left, spread / pinchRef.current);
+        }
+      }
+
+      pinchRef.current = spread;
+
+      return;
+    }
+
+    const dx = e.clientX - previous;
+
+    travelRef.current += Math.abs(dx);
+
+    // Zoomed in, a drag slides the window along the profile; at full width
+    // there is nothing to slide, so it reads the profile as a hover does.
+    if (view.to - view.from < 1) {
+      panBy(dx);
+    } else {
+      scrub(e.clientX);
+    }
+  };
+
+  const handlePointerUp = (e: ReactPointerEvent<SVGRectElement>) => {
+    if (!pointers.current.delete(e.pointerId)) {
+      return;
+    }
+
+    pinchRef.current = null;
+
+    if (pointers.current.size > 0) {
+      return;
+    }
+
+    // A press that went nowhere asks to see the place it marks, and the panel
+    // is usually sitting over it — so the map brings it out into the open. One
+    // already well in view stays put: reading along a profile is a lot of
+    // presses, and the map sliding under each of them helps nobody.
+    if (travelRef.current <= CLICK_SLOP_PX && !pinchedRef.current) {
+      const point = pointAt(e.clientX);
+
+      if (point) {
+        panToUncovered(point, {
+          ifHidden: true,
+          margin: GENEROUS_MARGIN_PX,
+        });
+      }
+    }
+  };
+
+  // A gesture the system took away (an OS gesture, a call arriving) completed
+  // nothing, so it is dropped rather than read as the press it never became.
+  const handlePointerCancel = (e: ReactPointerEvent<SVGRectElement>) => {
+    pointers.current.delete(e.pointerId);
+
+    pinchRef.current = null;
+  };
+
+  const handlePointerOut = (e: ReactPointerEvent<SVGRectElement>) => {
+    // A finger lifting fires this straight after the press that set the mark,
+    // so only a pointer that can hover clears it by leaving.
+    if (e.pointerType !== 'touch') {
+      dispatch(elevationChartSetActivePoint(null));
+    }
+  };
+
+  const visibleWaypoints = labeledWaypoints.filter(
+    (wp) => wp.distance >= vFrom && wp.distance <= vTo,
+  );
 
   const handleDownload = () => {
     downloadSvg(svgRef.current, 'elevation-chart.svg');
@@ -312,7 +573,7 @@ export default function ElevationChart(): ReactElement | null {
   return (
     <div {...boxProps}>
       {/* The grips are the only way to move or resize it: the plot itself is
-          left to scrubbing the profile. */}
+          left to reading, zooming and panning the profile. */}
       <FloatingWindowGrips fullscreen={fullscreen} {...grips} />
 
       <CloseButton onClick={() => dispatch(elevationChartClose())} />
@@ -324,22 +585,31 @@ export default function ElevationChart(): ReactElement | null {
       <svg ref={svgRef} width={width} height={height}>
         {width > ml + mr && height > mt + mb && (
           <>
-            {/* Plot background — also the primary pointer target. */}
+            <defs>
+              {/* Zoomed in, the profile runs past both ends of the plot. */}
+              <clipPath id={clipId}>
+                <rect
+                  x={ml}
+                  y={mt}
+                  width={plotWidth}
+                  height={height - mt - mb}
+                />
+              </clipPath>
+            </defs>
+
+            {/* Plot background. */}
             <rect
               x={ml}
               y={mt}
-              width={width - ml - mr}
+              width={plotWidth}
               height={height - mt - mb}
-              onMouseMove={handlePointerMove} // for mobiles
-              onPointerMove={handlePointerMove}
-              onPointerOut={handlePointerOut}
               fill="var(--bs-body-bg)"
             />
 
             {/* Elevation profile: an area fill with its outline, one group per run
             of points with elevation. A missing value breaks the line and its
             fill rather than dropping to the baseline. */}
-            <g className="chart">
+            <g className="chart" clipPath={`url(#${clipId})`}>
               {(() => {
                 const segments: ElevationProfilePoint[][] = [];
 
@@ -428,7 +698,7 @@ export default function ElevationChart(): ReactElement | null {
 
               <g className="grid-vertical">
                 {vLines.map((x, i) => {
-                  const limit = i === vLines.length - 1;
+                  const limit = x === endX;
 
                   return (
                     <line
@@ -514,15 +784,18 @@ export default function ElevationChart(): ReactElement | null {
                   })}
                 </g>
 
-                {/* elevation unit, at the top of the axis */}
+                {/* Elevation unit, at the top of the axis — ending on the axis
+                    rather than straddling it, so it stays over its own tick
+                    labels and out of the way of a waypoint label at distance 0,
+                    which leans up and to the right from just inside the plot. */}
                 <text
                   className="axis-unit"
                   x={ml}
                   y={mt - 6}
-                  textAnchor="middle"
+                  textAnchor="end"
                   fill="var(--bs-body-color)"
                 >
-                  m
+                  {gm?.general.masl}
                 </text>
               </g>
 
@@ -544,7 +817,7 @@ export default function ElevationChart(): ReactElement | null {
                   strokeWidth={1}
                 >
                   {vLines.map((x, i) => {
-                    const limit = i === vLines.length - 1;
+                    const limit = x === endX;
 
                     return (
                       <line
@@ -565,14 +838,14 @@ export default function ElevationChart(): ReactElement | null {
                   textAnchor="start"
                 >
                   {vLines.map((x, i) => {
-                    const limit = i === vLines.length - 1;
+                    const limit = x === endX;
 
                     // Hide a regular label that would collide with the endpoint or
                     // a waypoint's own distance label (drawn in the waypoints layer).
                     const show =
                       limit ||
-                      (Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20 &&
-                        !labeledWaypoints.some(
+                      ((endX === null || Math.abs(mapX(x) - mapX(endX)) > 20) &&
+                        !visibleWaypoints.some(
                           (wp) => Math.abs(mapX(wp.distance) - mapX(x)) < 20,
                         ));
 
@@ -585,7 +858,7 @@ export default function ElevationChart(): ReactElement | null {
                         transform={`rotate(45, ${mapX(x) + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
                         fill={limit ? 'var(--bs-danger)' : undefined}
                       >
-                        {nf1.format(x / 1000)}
+                        {nfX.format(x / 1000)}
                       </text>
                     ) : null;
                   })}
@@ -610,7 +883,7 @@ export default function ElevationChart(): ReactElement | null {
             (sized to fit the tallest label above), and the distance value
             ticked on the x-axis. Same colour as the elevation line. */}
             <g className="waypoints">
-              {labeledWaypoints.map((wp, i) => {
+              {visibleWaypoints.map((wp, i) => {
                 const x = mapX(wp.distance);
 
                 // Seat the block so its lowest point (a wide line's leading end,
@@ -676,21 +949,60 @@ export default function ElevationChart(): ReactElement | null {
                       transform={`rotate(45, ${x + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
                       fill="var(--bs-primary)"
                     >
-                      {nf1.format(wp.distance / 1000)}
+                      {nfX.format(wp.distance / 1000)}
                     </text>
                   </g>
                 );
               })}
             </g>
 
-            {/* Transparent interaction overlay on top. */}
+            {/* Which part of the profile the zoomed plot is showing. Informative
+                only, and it sits in the clearance the waypoint labels already
+                keep above the plot, so it costs no room. */}
+            {view.to - view.from < 1 &&
+              (() => {
+                const w = Math.max(plotWidth * (view.to - view.from), 6);
+
+                return (
+                  <g className="view-indicator">
+                    <rect
+                      x={ml}
+                      y={mt - 4}
+                      width={plotWidth}
+                      height={3}
+                      rx={1.5}
+                      fill="var(--bs-secondary)"
+                      opacity={0.25}
+                    />
+
+                    <rect
+                      x={Math.min(
+                        ml + plotWidth * view.from,
+                        ml + plotWidth - w,
+                      )}
+                      y={mt - 4}
+                      width={w}
+                      height={3}
+                      rx={1.5}
+                      fill="var(--bs-primary)"
+                      opacity={0.8}
+                    />
+                  </g>
+                );
+              })()}
+
+            {/* Transparent interaction overlay on top: the whole plot is one
+                target, so a gesture is not interrupted by whatever it passes
+                over. */}
             <rect
               x={ml}
               y={mt}
-              width={width - ml - mr}
+              width={plotWidth}
               height={height - mt - mb}
-              onPointerDown={handlePointerMove} // for mobiles
+              onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerCancel}
               onPointerOut={handlePointerOut}
               opacity={0}
             />

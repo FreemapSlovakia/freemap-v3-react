@@ -688,11 +688,14 @@ sky marks nothing, the way it already marks nothing on the map.
 
 A mark already on screen leaves the map alone: moving it under someone who can
 see what they asked for is the rudest thing this could do. One that isn't —
-a ridge picked out of the picture can be tens of kilometres off — is **centred**,
-which is where the eye goes looking for it. On screen is measured in container
-pixels against a `PAN_MARGIN_PX` inset, so a mark hard against an edge counts as
-off. Note the check knows nothing of the panel itself, which floats over the
-map: a mark behind it reads as visible and is left there.
+a ridge picked out of the picture can be tens of kilometres off, or land behind
+the panel itself — is **centred**, which is where the eye goes looking for it.
+Both halves are `panToUncovered(probe, { ifHidden: true })`
+(`src/features/map/panToUncovered.ts`), which hit-tests a grid over the map for
+the largest rectangle nothing covers: on screen means well inside *that*, and
+centring means the middle of it, not of the map. The elevation chart's
+click-to-show and the toposcope's ray and centre presses use the same helper
+the same way, with a wider inset (`GENEROUS_MARGIN_PX`).
 
 ## Labels
 

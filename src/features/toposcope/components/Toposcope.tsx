@@ -1,6 +1,10 @@
 import { closeTool, selectFeature } from '@app/store/actions.js';
 import { drawingPointLabel } from '@features/drawing/labelValues.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  GENEROUS_MARGIN_PX,
+  panToUncovered,
+} from '@features/map/panToUncovered.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import { FloatingWindowGrips } from '@shared/components/FloatingWindowControls.js';
 import {
@@ -225,9 +229,31 @@ export default function Toposcope(): ReactElement {
             scale={scale}
             preventUpturnedText={preventUpturnedText}
             activeRayId={activeRayId}
-            onRayClick={(id) =>
-              dispatch(selectFeature({ type: 'draw-points', id }))
-            }
+            onRayClick={(id) => {
+              dispatch(selectFeature({ type: 'draw-points', id }));
+
+              // The dial is a floating window over the map, so the point it
+              // just selected is often behind it or off screen entirely.
+              const at = points[id]?.coords;
+
+              if (at) {
+                panToUncovered(at, {
+                  ifHidden: true,
+                  margin: GENEROUS_MARGIN_PX,
+                });
+              }
+            }}
+            centerActive={activeRayId === center.index}
+            onCenterClick={() => {
+              dispatch(
+                selectFeature({ type: 'draw-points', id: center.index }),
+              );
+
+              panToUncovered(center.point.coords, {
+                ifHidden: true,
+                margin: GENEROUS_MARGIN_PX,
+              });
+            }}
           />
         ) : (
           <p className="m-0 text-center text-body-secondary">
