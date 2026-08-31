@@ -680,6 +680,38 @@ and what landed. Nothing is outstanding there.
 
 ## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
 
+- [ ] **Colorize erases the step-mode channel.** The map says how a stretch is
+      travelled by its dash — `stepModeDashArray` marks `manual`, `pushing bike`,
+      `ferry` and `error` — but those dashes live on the per-step polylines,
+      which the Hotline canvas replaces the moment a colorize mode is active. So
+      a rider who colorizes by Surface stops being told where to get off and
+      push. `RoutePlannerResult` already exempts `error` from the replacement
+      one mode at a time, which is the tell that this wants generalizing rather
+      than a second special case.
+      - The framing: colour and pattern are independent channels, and colorize
+        has taken colour. Colour says what the way is made of; dash says how you
+        travel it. They don't conflict, so they shouldn't share a channel.
+      - **Proposed:** one thin dashed overlay per non-standard step run, drawn in
+        the route pane *above* the canvas, for every mode `stepModeDashArray`
+        answers for — `error` then joins it and stops being exempt.
+        `routeModeRuns` already yields the contiguous same-mode stretches, so the
+        geometry is in hand. Colour it neutrally (white or near-black, low
+        opacity) rather than from `STEP_MODE_COLORS`: the palette underneath owns
+        hue now. The one real design question is a pattern that reads on both a
+        cyan and a magenta line.
+      - Cheaper patch if it is ever urgent: widen the existing exemption to
+        `mode !== 'error' && mode !== 'pushing bike'`, so those steps keep their
+        plain line and the canvas leaves them uncovered. Costs the colorize value
+        of those metres and has to be repeated per mode.
+      - Ruled out: dashing the Hotline itself (canvas gradient polyline —
+        react-leaflet-hotline cannot, and it is patched once already), and a
+        travel-mode colorize mode (it would compete with surface/steepness
+        instead of composing with them, which is the problem being escaped).
+      - Expect little of it either way: planned pushing stretches measure tens of
+        metres, so whatever is built renders as occasional short marks. That
+        argues for the cheap overlay over anything elaborate, and for a pattern
+        visible at a glance.
+
 - [ ] **Consider exposing the two other alternative-route knobs.** The count is
       settable (`maxAlternatives`), but what the router *finds* is bounded by
       `alternative_route.max_weight_factor` (1.4 — how much worse an alternative
@@ -728,15 +760,33 @@ and what landed. Nothing is outstanding there.
       import breaks every route. Decouple it by reading `encoded_values` from
       `/info` once and intersecting the wish list with it; the same response
       carries `import_date`, which the UI wants anyway for a "map data from…"
-      line.
+      line. A narrower guard would cover most of it for far less: on a 400 whose
+      message names missing path details, strip those keys and retry once.
+      Not hypothetical — `get_off_bike` vanished from the graph at some point
+      (that is what issue #1017 is about) and returned with the 2026-08-30
+      import, so a value we ask for today can be gone tomorrow. The blast radius
+      is total: every bike route would fail with an opaque message, not merely
+      lose its dashing.
 - [ ] **Facts about a stretch, not a way to read the line.** `road_access`
       (`DESTINATION`, `FORESTRY`, `AGRICULTURAL` and friends stay routable, only
-      penalized), `toll`, and the `*_temporal_access` seasonal closures each
-      describe a few stretches of a route rather than all of it — a colorize mode
-      whose line is 95 % one color earns its dropdown slot poorly. They belong in
-      the result header instead, as chips reading like "300 m on forestry roads",
-      built from the same metre spans `flattenPathDetails` already produces. The
-      last two need the encoded values the config commit adds.
+      penalized) and `toll` each describe a few stretches of a route rather than
+      all of it — a colorize mode whose line is 95 % one color earns its dropdown
+      slot poorly. They belong in the route's summary tooltip instead (the
+      permanent one `getSummary` pins to the finish marker, which is the only
+      place a route-wide figure is shown — there is no result header), as a line
+      beside distance and duration, built from the metre spans
+      `flattenPathDetails` already produces.
+      - `toll` is in the graph as of the 2026-08-30 import and measures cleanly:
+        Bratislava → Košice by car is `all` 204 km, `hgv` 152 km, `no` 41 km. It
+        must read `ALL` alone — 152 km of that route is motorway a car pays
+        nothing for, so counting `HGV` would overstate the toll by 40 %. Same
+        discrimination `custom_models/carnotoll.json` already makes.
+      - The `*_temporal_access` values are **not** for this. They earn their
+        place in the graph by being applied at routing time — the daily re-import
+        keeps "closed now" accurate — so the router simply avoids what is shut
+        and the reader is told nothing. Probed across four routes here, every
+        span came back `missing`, so there is little to report even if we wanted
+        to.
 - [ ] **Modes still worth adding.** *Marked route* (`foot_network` /
       `bike_network`, keyed per transport like the ratings) — the one that says
       which parts follow a waymarked trail, and the most valuable to this

@@ -5,7 +5,11 @@ import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
-import { lowerBound, positionsEqual } from '@shared/geoutils.js';
+import {
+  cumulativeDistances,
+  lowerBound,
+  positionsEqual,
+} from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -60,6 +64,50 @@ const cancelTypes = [...updateRouteTypes, clearMapFeatures];
 
 /** `osrm-routed`'s own `--max-alternatives` default, which the OSRM we use runs. */
 const OSRM_MAX_ALTERNATIVES = 3;
+
+/** The profiles a rider can be told to get off and push. */
+const BIKE_TRANSPORTS = new Set<TransportType>(['bike', 'mtb', 'racingbike']);
+
+/**
+ * `[start, end]` cut wherever `get_off_bike` changes, so a stretch that has to
+ * be walked becomes a step of its own — and is drawn dotted — instead of
+ * colouring a whole instruction. A dismount runs a point or two where an
+ * instruction runs tens, so a test for one lying wholly inside the other never
+ * fires.
+ */
+export function splitByPushing(
+  start: number,
+  end: number,
+  pushing: [number, number][],
+): { from: number; to: number; pushing: boolean }[] {
+  const covered = (from: number, to: number) =>
+    pushing.some(([a, b]) => from >= a && to <= b);
+
+  // `FINISH` and `REACHED_VIA` arrive as `[n, n]`, and cutting an empty interval
+  // would yield no step at all — which the leg joining below reads as a missing
+  // connector rather than as an arrival.
+  if (start === end) {
+    return [{ from: start, to: end, pushing: covered(start, end) }];
+  }
+
+  const cuts = new Set([start, end]);
+
+  for (const span of pushing) {
+    for (const cut of span) {
+      if (cut > start && cut < end) {
+        cuts.add(cut);
+      }
+    }
+  }
+
+  const sorted = [...cuts].sort((a, b) => a - b);
+
+  return sorted.slice(0, -1).map((from, i) => {
+    const to = sorted[i + 1]!;
+
+    return { from, to, pushing: covered(from, to) };
+  });
+}
 
 const routePlannerClosed = (state: RootState) =>
   state.main.mapTool !== 'route-planner';
@@ -569,7 +617,13 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           // Bridges and tunnels, so the elevation profile can ignore the
           // terrain model where it describes the ground instead of the road;
           // the rest is what the categorical colorize modes paint.
-          details: ['road_environment', ...pathDetailKeys(segment.transport)],
+          details: [
+            'road_environment',
+            // Shapes step modes rather than colorize, so it is asked for here
+            // and not in `pathDetailKeys` — which track matching shares.
+            ...(BIKE_TRANSPORTS.has(segment.transport) ? ['get_off_bike'] : []),
+            ...pathDetailKeys(segment.transport),
+          ],
           profile: ttDef.profile,
           points_encoded: false,
           locale: getState().l10n.language,
@@ -709,7 +763,9 @@ function fromGraphhopper(
 
     let steps: Step[] = [];
 
-    const gob = (path.details['get_off_bike'] ?? []).filter((q) => q[2]);
+    const gob = (path.details['get_off_bike'] ?? [])
+      .filter((q) => q[2])
+      .map(([from, to]): [number, number] => [from, to]);
 
     // Whole-path coordinate ranges; clipped to each step's own interval below.
     const structures = (path.details['road_environment'] ?? []).flatMap(
@@ -723,7 +779,7 @@ function fromGraphhopper(
     // reports where it has none, and is dropped so the stretch reads as
     // unknown rather than as a category of its own.
     const details = Object.entries(path.details).filter(
-      ([key]) => key !== 'road_environment',
+      ([key]) => key !== 'road_environment' && key !== 'get_off_bike',
     );
 
     for (const instruction of path.instructions) {
@@ -733,21 +789,42 @@ function fromGraphhopper(
 
       time += instruction.time;
 
-      steps.push({
-        duration: instruction.time / 1000,
-        distance: instruction.distance,
-        // TODO
-        maneuver: {
-          // location: [0, 0],
-          type: 'continue',
-        },
-        name: instruction.text,
-        mode:
-          transportType === 'bike' ||
-          transportType === 'mtb' ||
-          transportType === 'racingbike'
-            ? gob.some((seg) => start >= seg[0] && end <= seg[1])
-              ? 'pushing bike' // TODO can it happen that not whole interval has the same GOB value?
+      // Cut where the rider has to dismount, so only that stretch is drawn as
+      // pushed; every other transport yields the instruction whole.
+      const runs = BIKE_TRANSPORTS.has(transportType)
+        ? splitByPushing(start, end, gob)
+        : [{ from: start, to: end, pushing: false }];
+
+      // Measured, not counted: GraphHopper's vertices are nowhere near evenly
+      // spaced, so a dismount holding 2 of 30 points can still be most of the
+      // instruction's length — and `dominantStepMode` weighs steps by distance.
+      const cum = cumulativeDistances(
+        path.points.coordinates.slice(start, end + 1),
+      );
+
+      const spanLength = cum.at(-1) ?? 0;
+
+      for (const run of runs) {
+        // The instruction reports one distance for all its points; only the
+        // run's own share of the length is the run's own.
+        const share =
+          spanLength > 0
+            ? ((cum[run.to - start] ?? 0) - (cum[run.from - start] ?? 0)) /
+              spanLength
+            : 1 / runs.length;
+
+        steps.push({
+          duration: (instruction.time / 1000) * share,
+          distance: instruction.distance * share,
+          // TODO
+          maneuver: {
+            // location: [0, 0],
+            type: 'continue',
+          },
+          name: instruction.text,
+          mode: BIKE_TRANSPORTS.has(transportType)
+            ? run.pushing
+              ? 'pushing bike'
               : 'cycling'
             : ((
                 {
@@ -758,28 +835,32 @@ function fromGraphhopper(
                   car4wd: 'driving',
                 } as Partial<Record<TransportType, StepMode>>
               )[transportType] ?? 'error'),
-        geometry: {
-          // GraphHopper yields 0 when elevation is unavailable; normalize such
-          // points to 2D so the bogus sea-level reading doesn't leak downstream.
-          // Arities can be mixed within a single response, so map per-point.
-          coordinates: path.points.coordinates
-            .slice(start, end + 1)
-            .map(
-              (c): StepCoordinate =>
-                c[2] ? [c[0]!, c[1]!, c[2]] : [c[0]!, c[1]!],
-            ),
-        },
-        structures: structures.flatMap(({ from, to, kind }) => {
-          const a = Math.max(from, start);
+          geometry: {
+            // GraphHopper yields 0 when elevation is unavailable; normalize such
+            // points to 2D so the bogus sea-level reading doesn't leak
+            // downstream. Arities can be mixed within a single response, so map
+            // per-point.
+            coordinates: path.points.coordinates
+              .slice(run.from, run.to + 1)
+              .map(
+                (c): StepCoordinate =>
+                  c[2] ? [c[0]!, c[1]!, c[2]] : [c[0]!, c[1]!],
+              ),
+          },
+          structures: structures.flatMap(({ from, to, kind }) => {
+            const a = Math.max(from, run.from);
 
-          const b = Math.min(to, end);
+            const b = Math.min(to, run.to);
 
-          // A structure crossing a step boundary is clipped into both steps;
-          // the flattening in `ensureRouteRenderGeojson` joins the parts again.
-          return b > a ? [{ from: a - start, to: b - start, kind }] : [];
-        }),
-        details: clipDetails(details, start, end),
-      });
+            // A structure crossing a step boundary is clipped into both steps;
+            // the flattening in `ensureRouteRenderGeojson` joins the parts again.
+            return b > a
+              ? [{ from: a - run.from, to: b - run.from, kind }]
+              : [];
+          }),
+          details: clipDetails(details, run.from, run.to),
+        });
+      }
 
       if (
         instruction.sign === GraphhopperSign.FINISH ||
