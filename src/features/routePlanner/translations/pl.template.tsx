@@ -80,6 +80,11 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       </b>
     </>
   ),
+  tolled: ({ value }) => (
+    <>
+      Odcinki płatne: <b>{value}</b>
+    </>
+  ),
   duration: ({ h, m, diff }) => (
     <>
       Czas:{' '}

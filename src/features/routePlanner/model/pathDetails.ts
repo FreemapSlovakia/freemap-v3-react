@@ -27,6 +27,16 @@ export function pathDetailKeys(transport: TransportType): string[] {
   // will want them — a mode with nothing mapped hides itself anyway.
   const keys = ['surface', 'road_class', 'track_type', 'smoothness'];
 
+  // Only a motor vehicle is charged, and only `ALL` charges a car — `HGV` is a
+  // road lorries pay for and cars do not.
+  if (
+    transport === 'car' ||
+    transport === 'car4wd' ||
+    transport === 'motorcycle'
+  ) {
+    keys.push('toll');
+  }
+
   // A difficulty scale, though, is the profile's own and means nothing off it.
   switch (transport) {
     case 'foot':
@@ -124,6 +134,22 @@ function flattenPathDetailsUncached(alternative: Alternative): PathDetails {
         }),
       ),
     ]),
+  );
+}
+
+/**
+ * How far the route runs on road anyone pays for. `HGV` is excluded — it marks
+ * road only lorries are charged on, and counting it overstates a car's toll
+ * badly: of a 397 km Bratislava–Košice route, 204 km is `ALL` and 152 km `HGV`.
+ */
+export function tolledMeters(alternative: Alternative | undefined): number {
+  if (!alternative) {
+    return 0;
+  }
+
+  return (flattenPathDetails(alternative)['toll'] ?? []).reduce(
+    (sum, span) => (span.value === 'all' ? sum + (span.end - span.start) : sum),
+    0,
   );
 }
 

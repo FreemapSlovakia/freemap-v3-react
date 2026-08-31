@@ -76,6 +76,11 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       </b>
     </>
   ),
+  tolled: ({ value }) => (
+    <>
+      Zpoplatněné úseky: <b>{value}</b>
+    </>
+  ),
   duration: ({ h, m, diff }) => (
     <>
       Trvání:{' '}

@@ -76,6 +76,11 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       </b>
     </>
   ),
+  tolled: ({ value }) => (
+    <>
+      Tratti a pedaggio: <b>{value}</b>
+    </>
+  ),
   duration: ({ h, m, diff }) => (
     <>
       Durata:{' '}

@@ -81,6 +81,11 @@ const en: RoutePlannerMessages = {
       </b>
     </>
   ),
+  tolled: ({ value }) => (
+    <>
+      Toll roads: <b>{value}</b>
+    </>
+  ),
   duration: ({ h, m, diff }) => (
     <>
       Duration:{' '}

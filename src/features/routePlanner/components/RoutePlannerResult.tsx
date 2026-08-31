@@ -58,7 +58,7 @@ import {
   type StepCoordinate,
 } from '../model/actions.js';
 import { ISOCHRONE_FILL_OPACITY, isochroneColor } from '../model/isochrones.js';
-import { routeColorizeFeatures } from '../model/pathDetails.js';
+import { routeColorizeFeatures, tolledMeters } from '../model/pathDetails.js';
 import {
   INACTIVE_ALTERNATIVE_COLOR,
   STEP_MODE_COLORS,
@@ -193,12 +193,21 @@ export function RoutePlannerResult(): ReactElement {
     ),
   );
 
+  // The whole route's tolled length. Only the summary shows it: a per-waypoint
+  // running total would have to clip the spans, and the figure a driver wants is
+  // what the journey costs, not what it has cost so far.
+  const tolled = useMemo(
+    () => tolledMeters(alternatives[activeAlternativeIndex]),
+    [alternatives, activeAlternativeIndex],
+  );
+
   const getPointDetails2 = useCallback(
     (
       distanceSum: number,
       durationSum: number,
       distanceDiff?: number,
       durationDiff?: number,
+      showToll = false,
     ) => {
       return (
         <div>
@@ -226,10 +235,15 @@ export function RoutePlannerResult(): ReactElement {
               })}
             </div>
           )}
+          {showToll && tolled > 0 && (
+            <div>
+              {rpm?.tolled({ value: formatDistance(tolled, language) })}
+            </div>
+          )}
         </div>
       );
     },
-    [language, rpm],
+    [language, rpm, tolled],
   );
 
   const milestones = useMemo(() => {
@@ -334,6 +348,7 @@ export function RoutePlannerResult(): ReactElement {
         durationSum,
         leg?.distance,
         leg?.duration,
+        summary,
       );
     },
     [alternatives, activeAlternativeIndex, getPointDetails2, mode, waypoints],

@@ -82,6 +82,11 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       </b>
     </>
   ),
+  tolled: ({ value }) => (
+    <>
+      Cestninski odseki: <b>{value}</b>
+    </>
+  ),
   duration: ({ h, m, diff }) => (
     <>
       Trajanje:{' '}

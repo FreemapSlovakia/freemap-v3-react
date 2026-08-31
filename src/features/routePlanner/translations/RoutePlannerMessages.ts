@@ -62,6 +62,8 @@ export type RoutePlannerMessages = {
   /** Singular label of one isochrone ring, numbered in exports. */
   isochroneRing: string;
   distance: ({ value, diff }: { value: string; diff?: string }) => JSX.Element;
+  /** How much of the route runs on road the driver pays for. */
+  tolled: ({ value }: { value: string }) => JSX.Element;
   duration: ({
     h,
     m,
