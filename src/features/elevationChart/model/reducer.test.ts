@@ -68,62 +68,32 @@ describe('elevationChartReducer', () => {
     expect(state.elevationProfilePoints).toBeNull();
   });
 
-  it('goes when the tool that owns it is closed, and stays for any other', () => {
-    const state = shown({ type: 'track-viewer' });
+  // What the chart draws outlives the panel that made it: a route stays on the
+  // map once its finder is closed, an imported track once the viewer is, and a
+  // link can ask for the profile with no tool open at all. Only the line itself
+  // going takes the chart, and that is the resolver's to report.
+  it('outlives every tool, whatever it charts', () => {
+    const targets: ElevationChartTarget[] = [
+      { type: 'route-planner' },
+      { type: 'track-viewer' },
+      { type: 'drawing', lineId: 1 },
+      { type: 'tracking', token: 'tok-1' },
+    ];
 
-    expect(
-      elevationChartReducer(state, closeTool('import-file')).target,
-    ).toBeNull();
+    for (const target of targets) {
+      const state = shown(target);
 
-    for (const action of [
-      closeTool('objects'),
-      closeTool('route-planner'),
-      openTool('import-file'),
-    ]) {
-      expect(elevationChartReducer(state, action).target).toEqual({
-        type: 'track-viewer',
-      });
-    }
-  });
-
-  it('goes when another map-click tool takes the slot from the tool that owns it', () => {
-    // Opening one closes the tool that had the slot, so its chart goes with it —
-    // as it would on that tool's own close button.
-    const state = shown({ type: 'route-planner' });
-
-    expect(
-      elevationChartReducer(state, openTool('draw-lines')).target,
-    ).toBeNull();
-
-    for (const action of [
-      // The same tool reopened owns the chart still.
-      openTool('route-planner'),
-      // A toolbar-only tool takes no slot from anything.
-      openTool('tracking'),
-    ]) {
-      expect(elevationChartReducer(state, action).target).toEqual({
-        type: 'route-planner',
-      });
-    }
-  });
-
-  it('keeps a chart whose tool never held the map-click slot when one is opened', () => {
-    expect(
-      elevationChartReducer(
-        shown({ type: 'tracking', token: 'tok-1' }),
+      for (const action of [
+        // Its own tool closing.
+        closeTool('import-file'),
+        closeTool('route-planner'),
+        closeTool('tracking'),
+        // Another map-click tool taking the slot from it.
         openTool('draw-lines'),
-      ).target,
-    ).toEqual({ type: 'tracking', token: 'tok-1' });
-  });
-
-  it('outlives every tool when it charts a drawn line, which has no owning tool', () => {
-    for (const tool of ['import-file', 'route-planner', 'tracking'] as const) {
-      expect(
-        elevationChartReducer(
-          shown({ type: 'drawing', lineId: 1 }),
-          closeTool(tool),
-        ).target,
-      ).toEqual({ type: 'drawing', lineId: 1 });
+        openTool('route-planner'),
+      ]) {
+        expect(elevationChartReducer(state, action).target).toEqual(target);
+      }
     }
   });
 

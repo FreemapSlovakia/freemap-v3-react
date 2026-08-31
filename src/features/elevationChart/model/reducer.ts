@@ -1,11 +1,5 @@
-import {
-  clearMapFeatures,
-  closeTool,
-  openTool,
-  type Tool,
-} from '@app/store/actions.js';
+import { clearMapFeatures } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { isMapClickTool } from '@shared/toolDefinitions.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
   type ElevationProvenance,
@@ -15,11 +9,7 @@ import {
   elevationChartSetElevationProfile,
   elevationChartSetRange,
 } from './actions.js';
-import {
-  type ElevationChartTarget,
-  type ElevationChartTargetType,
-  targetsEqual,
-} from './target.js';
+import { type ElevationChartTarget, targetsEqual } from './target.js';
 
 export interface ElevationProfilePoint extends LatLon {
   climbUp?: number;
@@ -76,16 +66,6 @@ const initialState: ElevationChartState = {
   provenance: null,
 };
 
-// The tool whose closing takes the chart with it. A drawn line is charted by id
-// and outlives any tool, so it has none.
-const targetTools: Record<ElevationChartTargetType, Tool | undefined> = {
-  'route-planner': 'route-planner',
-  'track-viewer': 'import-file',
-  'gps-recorder': 'gps-recorder',
-  tracking: 'tracking',
-  drawing: undefined,
-};
-
 export const elevationChartReducer = createReducer(initialState, (builder) =>
   builder
     // Re-aiming at what is already charted keeps the profile on screen; a new
@@ -130,25 +110,11 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
 
       state.provenance = action.payload.provenance;
     })
-    // Clear the chart once the tool that owns its target is closed.
-    .addCase(closeTool, (state, action) =>
-      state.target && targetTools[state.target.type] === action.payload
-        ? initialState
-        : state,
-    )
-    // Opening a map-click tool closes the one that had the slot, and does it
-    // without an action of its own — so the chart of a tool losing the slot goes
-    // here, as it would on that tool's own close button.
-    .addCase(openTool, (state, action) => {
-      const owner = state.target && targetTools[state.target.type];
-
-      return owner &&
-        owner !== action.payload &&
-        isMapClickTool(owner) &&
-        isMapClickTool(action.payload)
-        ? initialState
-        : state;
-    })
+    // No tool takes the chart with it. What it draws outlives the panel that
+    // made it — a route stays on the map once its finder is closed, and so does
+    // an imported track — and the chart can be asked for by URL without any tool
+    // at all. It goes when its own × is pressed, when the map is cleared, or
+    // when the resolver reports the line itself gone.
     .addCase(clearMapFeatures, setInitialState)
     .addCase(elevationChartClose, setInitialState),
 );

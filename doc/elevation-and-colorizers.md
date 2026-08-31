@@ -540,9 +540,11 @@ profile of a locally imported track sit aimed at something that could never come
 its way is a fact about the feature, not about where the request came from. `fromUrl`
 survives only to keep a page load from being counted as a user toggle.
 
-The chart also ends on an explicit `elevationChartClose`, on `clearMapFeatures`, and when
-its target's own tool is closed (`targetTools` in the reducer; a drawn line outlives any
-tool, so it has none).
+The chart also ends on an explicit `elevationChartClose` and on `clearMapFeatures` — and on
+nothing else. No tool takes it: what it draws outlives the panel that made it (a route stays
+on the map once its finder is closed, and so does an imported track), and `elevation-chart=`
+can ask for a profile with no tool open at all. The line actually going is the resolver's to
+report, which is what `gone` is for.
 
 ### Per-consumer elevation policy
 
