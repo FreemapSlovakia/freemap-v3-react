@@ -680,6 +680,18 @@ and what landed. Nothing is outstanding there.
 
 ## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
 
+- [ ] **A route's colorize mode cannot be linked to.** The track viewer writes
+      its mode to the URL as `track-colorize-by`, but the route planner keeps
+      `colorizeBy` in `routePlannerSettings` alone, so a shared `points=` link
+      arrives in whatever mode the recipient last used. It came up writing a
+      Facebook post: there is no way to hand someone a route already coloured by
+      Surface, which is exactly the thing worth showing. The legend toggle has
+      the same problem. Mirroring the track viewer's parameter is the obvious
+      shape; the question worth deciding first is whether the mode belongs to
+      the reader (a persisted preference, as now) or to the link — the two want
+      opposite things when a link omits it, and the steepness scale in
+      `elevationSettings` made the reader-owns-it call for a related setting.
+
 - [ ] **Colorize erases the step-mode channel.** The map says how a stretch is
       travelled by its dash — `stepModeDashArray` marks `manual`, `pushing bike`,
       `ferry` and `error` — but those dashes live on the per-step polylines,
