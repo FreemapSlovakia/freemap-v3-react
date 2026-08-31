@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { askingCookieConsentSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   GENEROUS_MARGIN_PX,
@@ -198,8 +199,11 @@ export default function ElevationChart(): ReactElement | null {
     (state) => state.elevationSettings.preventRangeHint,
   );
 
-  // Only where the choice can be remembered; the offer to stop asking is what
-  // needs the consent, not the hint.
+  // The hint would only pile onto the cookie bar, so it waits for it to go.
+  const askingCookieConsent = useAppSelector(askingCookieConsentSelector);
+
+  // Nothing is persisted until the cookie bar is answered, so the offer to stop
+  // asking is only made where the choice can be stored.
   const consented = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult !== null,
   );
@@ -210,13 +214,12 @@ export default function ElevationChart(): ReactElement | null {
   // so the chart says it once — the same offer the route finder's own hint
   // makes. Dropped the moment a stretch is marked, that being the answer.
   useEffect(() => {
-    if (preventRangeHint || !charted || hintShown) {
+    if (preventRangeHint || !charted || hintShown || askingCookieConsent) {
       return;
     }
 
-    // Once a session, whatever the answer: the persisted "don't show next time"
-    // is only offered where it can be stored, and without it every profile
-    // opened would raise the same hint again.
+    // Once a session, whatever the answer — otherwise every profile opened
+    // would raise the same hint again.
     hintShown = true;
 
     dispatch(
@@ -249,7 +252,7 @@ export default function ElevationChart(): ReactElement | null {
         statePredicate: (state) => state.elevationChart.target === null,
       }),
     );
-  }, [preventRangeHint, charted, consented, dispatch]);
+  }, [preventRangeHint, charted, consented, askingCookieConsent, dispatch]);
 
   const [showWaypoints, setShowWaypoints] = usePersistentBoolean(
     'fm.elevationChart.showWaypoints',

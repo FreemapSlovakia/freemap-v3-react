@@ -1,3 +1,4 @@
+import { COOKIE_CONSENT_TOAST_ID } from '@features/cookieConsent/model/toastAction.js';
 import { isTrackLine } from '@features/dataViewer/trackSelection.js';
 import type { PickMode } from '@features/routePlanner/model/actions.js';
 import type { Track } from '@features/tracking/model/types.js';
@@ -240,7 +241,7 @@ export const trackGeojsonIsSuitableForElevationChart = (
   (state.trackViewer.trackGeojson?.features ?? []).some(isTrackLine);
 
 export const askingCookieConsentSelector = (state: RootState): boolean =>
-  'cookieConsent' in state.toasts.toasts;
+  COOKIE_CONSENT_TOAST_ID in state.toasts.toasts;
 
 // Whether `clearMapFeatures` would actually remove anything from the map —
 // drives showing the "Clear map" command. Mirrors the slices that reset on

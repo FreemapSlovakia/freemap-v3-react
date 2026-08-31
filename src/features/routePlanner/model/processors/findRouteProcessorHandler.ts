@@ -1,8 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
-import type { RootState } from '@app/store/store.js';
-import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
 import {
   cumulativeDistances,
@@ -32,8 +31,6 @@ import {
   type Leg,
   type RoutePoint,
   routeKey,
-  routePlannerAddPoint,
-  routePlannerPreventHint,
   routePlannerRecompute,
   routePlannerRestoreSavedRoute,
   routePlannerSetFinish,
@@ -62,6 +59,7 @@ import {
   storedRouteIsShowing,
 } from '../reducer.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
+import { raiseMidpointHint } from './midpointHintProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures];
 
@@ -111,9 +109,6 @@ export function splitByPushing(
     return { from, to, pushing: covered(from, to) };
   });
 }
-
-const routePlannerClosed = (state: RootState) =>
-  state.main.mapTool !== 'route-planner';
 
 enum GraphhopperSign {
   UNKNOWN = -99,
@@ -557,33 +552,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     routePlannerSetFinish,
   );
 
-  if (
-    !(ttDef.api === 'gh' && mode !== 'route') &&
-    !getState().routePlannerSettings.preventHint &&
-    points.length < 3 &&
-    isStartOrFinishAction(action)
-  ) {
-    const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
-
-    if (getState().cookieConsent.cookieConsentResult !== null) {
-      actions.push({
-        nameKey: 'general.preventShowingAgain',
-        action: routePlannerPreventHint(),
-        variant: 'dark',
-      });
-    }
-
-    dispatch(
-      toastsAdd({
-        id: 'routePlanner.showMidpointHint',
-        messageKey: 'showMidpointHint',
-        messageLoader: loadRoutePlannerMessages,
-        style: 'info',
-        actions,
-        cancelType: routePlannerAddPoint.type,
-        statePredicate: routePlannerClosed,
-      }),
-    );
+  if (points.length < 3 && isStartOrFinishAction(action)) {
+    raiseMidpointHint(getState(), dispatch);
   }
 
   /// functions /////////////////////////////////////////

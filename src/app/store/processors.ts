@@ -116,6 +116,7 @@ import { panoramaToposcopeProcessor } from '@features/panorama/model/processors/
 import { purchaseProcessor } from '@features/purchases/model/processors/purchaseProcessor.js';
 import { routePlannerColorizeProcessor } from '@features/routePlanner/model/processors/colorizeProcessor.js';
 import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/processors/findRouteProcessor.js';
+import { routePlannerMidpointHintProcessor } from '@features/routePlanner/model/processors/midpointHintProcessor.js';
 import { routePlannerOptimizeOrderProcessor } from '@features/routePlanner/model/processors/optimizeOrderProcessor.js';
 import { routePlannerRefocusMapProcessor } from '@features/routePlanner/model/processors/refocusMapProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from '@features/routePlanner/model/processors/setFromCurrentPositionProcessor.js';
@@ -240,6 +241,7 @@ export const processors = [
   routePlannerRefocusMapProcessor,
   routePlannerColorizeProcessor,
   routePlannerSetFromCurrentPositionProcessor,
+  routePlannerMidpointHintProcessor,
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
   trackingFollowProcessor,
