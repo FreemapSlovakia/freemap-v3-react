@@ -1398,27 +1398,35 @@ export default function ElevationChart(): ReactElement | null {
             across two lines reads as two. */}
         {rangeStats ? (
           <p className="m-0 d-flex flex-wrap align-items-center gap-2 text-danger-emphasis">
-            <span className="text-nowrap">
-              ⇄ {formatDistance(rangeStats.length, language)}
-            </span>
+            {/* Divided rather than merely spaced: the figures are four readings
+                of one stretch, and each is itself a pair of numbers. */}
+            {[
+              <>⇄ {formatDistance(rangeStats.length, language)}</>,
 
-            <span className="text-nowrap">
-              ↑ {nf0.format(rangeStats.up)}&nbsp;m ↓{' '}
-              {nf0.format(rangeStats.down)}&nbsp;m
-            </span>
+              <>
+                ↑ {nf0.format(rangeStats.up)}&nbsp;m ↓{' '}
+                {nf0.format(rangeStats.down)}&nbsp;m
+              </>,
 
-            {Number.isFinite(rangeStats.min) && (
-              <span className="text-nowrap">
-                ▴ {nf0.format(rangeStats.min)}–{nf0.format(rangeStats.max)}
-                &nbsp;{gm?.general.masl}
-              </span>
-            )}
+              Number.isFinite(rangeStats.min) && (
+                <>
+                  ▴ {nf0.format(rangeStats.min)}–{nf0.format(rangeStats.max)}
+                  &nbsp;{gm?.general.masl}
+                </>
+              ),
 
-            {Number.isFinite(rangeStats.grade) && (
-              <span className="text-nowrap">
-                ∡ {nfSigned1.format(rangeStats.grade * 100)}&nbsp;%
-              </span>
-            )}
+              Number.isFinite(rangeStats.grade) && (
+                <>∡ {nfSigned1.format(rangeStats.grade * 100)}&nbsp;%</>
+              ),
+            ]
+              .filter((part) => part !== false)
+              .map((part, i) => (
+                <span className="text-nowrap" key={i}>
+                  {i > 0 && <span className="opacity-50 me-2">·</span>}
+
+                  {part}
+                </span>
+              ))}
 
             <LongPressTooltip label={gm?.general.clear}>
               {({ props }) => (
