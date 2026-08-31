@@ -14,6 +14,14 @@
   @each $key, $value in bootstrap.$spacers {
     --fm-space-#{$key}: #{$value};
   }
+
+  // What lifts a thing off the map, in two steps: the toolbars, and the
+  // floating panels that are dragged over them. Bootstrap's own shadows are
+  // dropped below their box, which suits a card on a page; a panel over a map
+  // has no ground under it and needs its top edge lifted too, so these spread
+  // evenly instead. The blur is the spacing scale, one step apart.
+  --fm-shadow-1: 0 0 var(--fm-space-1) rgba(0, 0, 0, 0.4);
+  --fm-shadow-2: 0 0 var(--fm-space-2) rgba(0, 0, 0, 0.4);
 }
 
 // Bootstrap ships no min-width:0 utility; needed so flex children can shrink

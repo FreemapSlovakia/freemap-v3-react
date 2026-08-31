@@ -623,7 +623,7 @@ export function useFloatingWindow({
         // the edge of the screen while the content above it still runs to it.
         fullscreen
           ? [windowClasses.fullscreen, 'fm-fullscreen', 'pb-2']
-          : ['p-2', 'rounded', 'shadow'],
+          : ['p-2', 'rounded'],
       ),
     },
     fullscreen,

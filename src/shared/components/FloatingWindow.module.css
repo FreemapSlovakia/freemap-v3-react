@@ -16,6 +16,11 @@
   overflow: hidden;
   touch-action: none;
 
+  /* A step above the toolbars, since this is what gets dragged over them. Not
+     Bootstrap's `.shadow`, which lifts a box off a page rather than off a map:
+     it drops the shadow below the box and leaves the top edge flat. */
+  box-shadow: var(--fm-shadow-2);
+
   /* Translucent over a blurred backdrop, so the map reads behind the panel
      without its labels and hairlines making the panel's own text unreadable.
 

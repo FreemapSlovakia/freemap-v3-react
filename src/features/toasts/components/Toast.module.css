@@ -1,6 +1,8 @@
 .toast {
   margin: 10px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+
+  /* A toast floats over the map the way a panel does, and lands on top of it. */
+  box-shadow: var(--fm-shadow-2);
   max-width: calc(max(380px, 25dvw));
 
   /* Nudged into the corner, past the alert's own padding. Relative, so the

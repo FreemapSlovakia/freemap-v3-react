@@ -102,7 +102,8 @@ button#freemap-logo {
     margin-inline: var(--fm-space-2);
 
     border: 0;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+
+    box-shadow: var(--fm-shadow-1);
   }
 
   @media print {

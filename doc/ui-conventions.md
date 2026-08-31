@@ -104,6 +104,12 @@ should carry a spacing or size number that Bootstrap already has a name for.
 | Token | Derived from | Is |
 | --- | --- | --- |
 | `--fm-space-0…5` | `$spacers`, key for key | `--fm-space-2` is what `.p-2` / `.gap-2` use |
+| `--fm-shadow-1` / `-2` | blur off `$spacers` 1 and 2 | what lifts a thing off the map: toolbars, then the floating panels dragged over them |
+
+The two shadows are the app's own rather than Bootstrap's `.shadow`, which drops
+its shadow *below* the box — right for a card on a page, wrong over a map, where
+a panel is a loose sheet and its top edge has to lift too. So they spread evenly
+and differ only in blur.
 
 Restyle a Bootstrap component through **its own** custom properties, not by
 overriding the property it computes — the coarse-pointer menu row sets

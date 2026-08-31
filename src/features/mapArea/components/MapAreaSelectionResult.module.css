@@ -3,7 +3,7 @@
   width: 14px;
   background-color: #fff;
   border: 2px solid #3388ff;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--fm-shadow-1);
 }
 
 :global(.leaflet-container) .side-handle-h,
@@ -13,7 +13,7 @@
   background-color: #fff;
   border: 2px solid #3388ff;
   border-radius: 2px;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--fm-shadow-1);
 }
 
 :global(.leaflet-container) .side-handle-h {
@@ -43,7 +43,7 @@
   background-color: #fff;
   border: 2px solid #3388ff;
   border-radius: 3px;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--fm-shadow-1);
   cursor: move;
 }
 
