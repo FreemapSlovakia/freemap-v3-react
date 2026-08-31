@@ -333,6 +333,10 @@ export interface Colorizer {
   // reads nothing from the elevation-densified line, and its result is the same
   // at every zoom.
   spanBased?: true;
+  // The path detail this mode reads, as GraphHopper names it. A menu compares
+  // it against what the active profile asks for, so a mode the router will
+  // never report for that profile is left out rather than shown dead.
+  detail?: string;
 }
 
 /**

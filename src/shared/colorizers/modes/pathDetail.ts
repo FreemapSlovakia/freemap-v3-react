@@ -103,6 +103,7 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
   return {
     palette,
     spanBased: true,
+    detail: spec.detail,
 
     // At least one stretch the route can be *named* by. The router values the
     // whole line, `missing` included, so a detail coming back says nothing

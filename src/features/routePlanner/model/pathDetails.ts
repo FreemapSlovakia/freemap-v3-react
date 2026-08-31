@@ -24,7 +24,7 @@ import { flattenLevelledSpans } from './structureElevation.js';
 export function pathDetailKeys(transport: TransportType): string[] {
   // The ones every profile can be described by. Two extra cost 2.9 % of an
   // uncompressed 200 km response, so asking always beats guessing which profile
-  // will want them — a mode with nothing mapped hides itself anyway.
+  // will want them — a mode with nothing mapped only greys out anyway.
   const keys = ['surface', 'road_class', 'track_type', 'smoothness'];
 
   // Only a motor vehicle is charged, and only `ALL` charges a car — `HGV` is a

@@ -1,6 +1,8 @@
 import { readPathDetails } from '@shared/colorizers/colorize.js';
+import { colorizers, colorizingModes } from '@shared/colorizers/index.js';
 import { categoricalColorizer } from '@shared/colorizers/modes/pathDetail.js';
 import type { ColorizerMessages } from '@shared/colorizers/translations/ColorizerMessages.js';
+import { TransportTypeSchema } from '@shared/transportTypeDefs.js';
 import { distance } from '@turf/distance';
 import type { Feature, LineString } from 'geojson';
 import { describe, expect, it } from 'vitest';
@@ -64,6 +66,25 @@ describe('pathDetailKeys', () => {
           'smoothness',
         ]),
       );
+    }
+  });
+
+  // The route planner's menu offers a span-based mode by matching the
+  // colorizer's `detail` against these keys, so a mode whose key is spelled
+  // differently here would silently vanish from the dropdown.
+  it('names every detail a colorizer reads', () => {
+    const asked = new Set(
+      TransportTypeSchema.options.flatMap((transport) =>
+        pathDetailKeys(transport),
+      ),
+    );
+
+    for (const mode of colorizingModes) {
+      const { detail } = colorizers[mode];
+
+      if (detail) {
+        expect(asked).toContain(detail);
+      }
     }
   });
 });

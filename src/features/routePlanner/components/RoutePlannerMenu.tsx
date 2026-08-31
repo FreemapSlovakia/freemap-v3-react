@@ -106,7 +106,7 @@ import {
   routePlannerSetTransportType,
   routePlannerSwapEnds,
 } from '../model/actions.js';
-import { routeColorizeFeatures } from '../model/pathDetails.js';
+import { pathDetailKeys, routeColorizeFeatures } from '../model/pathDetails.js';
 import {
   getFinish,
   getStart,
@@ -725,6 +725,12 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const activeTTDef = transportTypeDefs[activeTransportType];
 
+  // Only GraphHopper reports path details, and only the ones this profile asks
+  // for; a mode reading anything else can never be filled in here.
+  const offeredDetails = new Set(
+    activeTTDef.api === 'gh' ? pathDetailKeys(activeTransportType) : [],
+  );
+
   const [routePlannerDropdownOpen, setRoutePlannerDropdownOpen] =
     useState(false);
 
@@ -1002,15 +1008,25 @@ export default function RoutePlannerMenu(): ReactElement {
                 ),
               );
             }}
-            // A planned route can never carry recorded sensor data, so those
-            // modes are hidden rather than shown disabled.
+            // Hide what this profile can never carry — the recorded sensor and
+            // device channels, and any path detail it does not ask the router
+            // for (a difficulty scale off its own profile, everything off
+            // GraphHopper). Disable what it merely lacks: a detail it does ask
+            // for comes and goes with the roads routed over, so filtering that
+            // would reshape the menu on every drag of a waypoint and hide that
+            // nothing here is mapped with it.
             options={[
               ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
               ...colorizeModeOptions({
-                modes: colorizingModes.filter(isModeAvailable),
+                modes: colorizingModes.filter(
+                  (mode) =>
+                    offeredDetails.has(colorizers[mode].detail ?? '') ||
+                    isModeAvailable(mode),
+                ),
                 labels: cm?.mode,
                 activeMode: colorizeBy,
                 premiumColorize,
+                isAvailable: isModeAvailable,
               }),
             ]}
           />

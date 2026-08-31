@@ -19,7 +19,7 @@ functions (each has authoritative JSDoc — read it before changing behavior):
 - **`fetchElevations(latLons, getState, cancelActions?)`** — one POST for a batch of
   `[lat, lon]` pairs; returns one `number | null` per pair (`null` = API has no data),
   in input order. Empty input → no request.
-- **`enrichElevations(features, 'missing' | 'all', …)`** — returns *copies* of
+- **`enrichElevations(features, 'missing' | 'all', …)`** — returns _copies_ of
   `LineString` features with `z` filled. `'missing'` fills only coords lacking a `z`
   ordinate; `'all'` overwrites every `z`. Never mutates input; `'missing'` with nothing
   to fill returns the input array as-is (no request). This is the LineString-feature
@@ -27,7 +27,7 @@ functions (each has authoritative JSDoc — read it before changing behavior):
 - **`densifyAlong(feature, …)`** — inserts intermediate points (≈2 px, between 1 m and
   100 m spacing, via `@turf/along`) into segments long enough to draw as a coarse
   straight line, then
-  DEM-samples *only* the inserted points (existing vertices keep their elevation). A
+  DEM-samples _only_ the inserted points (existing vertices keep their elevation). A
   dense line is a reference-equal no-op. **Drops `coordTimes`/`coordinateProperties`**
   (can't be interpolated) — so its output is render-only, never exported. The 1 m floor
   (`FINEST_DEM_METERS`, the grid of the finest model the API serves) matters on short
@@ -41,7 +41,7 @@ normalized to 2D per-coordinate on the way in.
 ### Render-only densified geometry (never exported)
 
 Densification exists purely so charts/colorize don't draw straight DEM-ignorant
-segments. The densified line is cached as a *derived* slice field, distinct from the
+segments. The densified line is cached as a _derived_ slice field, distinct from the
 real geometry, and is never serialized:
 
 - **dataViewer**: `renderTrackGeojson` (vs. `trackGeojson`), built lazily by
@@ -89,7 +89,7 @@ step's own coordinates).
 
 The line covers the span's **own end samples**, not just what lies between them: a short
 bridge on a long route often has no sample strictly inside it (the densification step
-scales with route length, up to 100 m), so the whole notch *is* those two ends. Its
+scales with route length, up to 100 m), so the whole notch _is_ those two ends. Its
 anchors come from one sample further out again, each the **median** of the samples within
 10 m — but never fewer than three, since on a long route they can be 35 m apart
 (`anchorElevation`). A single sample sitting metres off the road at a portal or an
@@ -130,12 +130,12 @@ fill's depth test reads clean values:
 
 **`despike`** — a running median over `elevationSettings.despikeWindow` metres. Where a
 way is digitised a few metres off the road it describes, the terrain model answers with
-the bank or rock face beside it, and those excursions go *up* as often as down — the
+the bank or rock face beside it, and those excursions go _up_ as often as down — the
 fill-only pass below can't see them. A median drops an excursion narrower than half the
 window outright and leaves a slope exactly alone, where averaging (what the colorizers do
 to their own values) would only spread a 13 m spike into a 13 m bump; a road profile has
 no genuine one-sample summit to lose. The window shrinks symmetrically near the ends, or
-the first and last points slide off a plain slope. A `smoothValues` average over *half*
+the first and last points slide off a plain slope. A `smoothValues` average over _half_
 that window follows: a median outputs one of its own input samples, so it can only jump
 between them and leaves the profile in flat steps — the shorter average rounds those off
 without letting the spikes back in.
@@ -144,16 +144,16 @@ without letting the spikes back in.
 the road at every culvert, filled by **grayscale morphological closing** (a running maximum then a running minimum, `closeNarrowDips`), which is the
 identity on everything wider than its window — slopes, ridges and broad valleys come back
 bit-for-bit — so unlike an averaging filter it can't erode genuine terrain detail. It also
-only fills *downwards*, so a narrow summit is never clipped. Only a run whose deepest
+only fills _downwards_, so a narrow summit is never clipped. Only a run whose deepest
 point clears 1 m is taken, and a run's ends sit at zero residual, so the result stays
 continuous. The closing detects the dip; the fill itself is a straight line between the
 points either side of it, since that's the road surface. (Substituting the closing's own
-values instead fills only to the *lower* of the two rims, which reads as a flat shelf
+values instead fills only to the _lower_ of the two rims, which reads as a flat shelf
 ending in a step wherever the rims differ.) The closing still bounds the fill from below,
 so no point is ever pulled down.
 
 Both compose with the colorizers' own smoothing rather than fighting it: `smoothSeries`
-(`colorize.ts`) low-passes the *values* along the path, and it reads the same render
+(`colorize.ts`) low-passes the _values_ along the path, and it reads the same render
 geometry — so the order is impulse removal first, generalization second, which is the
 right way round. The **elevation** colorizer therefore has no fixed baseline span of its
 own (`featureSmoothingSpan(0, …)`); it smooths only by zoom, to stop detail finer than a
@@ -168,7 +168,7 @@ exactly by the router's data; that is what keeps the heuristic's false-positive 
 in difficult terrain.
 
 Neither pass rescues a way digitised into a riverbank next to a 1 m terrain model: those
-excursions are tens of metres wide *and* tens of metres tall, and a window that big
+excursions are tens of metres wide _and_ tens of metres tall, and a window that big
 flattens real terrain. The honest fix there is to move the way in OSM.
 
 `smoothElevationSeries` is the single entry point for both passes, so every consumer of
@@ -208,14 +208,14 @@ derived from it, rather than a pref per consumer:
   directions around the control.
 
 Which terrain model answers is not among them: every read presents the account, so premium
-decides it (see *Crediting the terrain model* below), for profiles and exports alike.
+decides it (see _Crediting the terrain model_ below), for profiles and exports alike.
 
 The first two invalidate the derived caches (`routePlanner.renderGeojson` —
 but not the `sampledGeojson` under it, so a route re-derives without a request —
 and `trackViewer.renderTrackGeojson` clear on `elevationSetSettings`). `routePlannerColorizeProcessor`
 and `dataViewerDensifyProcessor` rebuild them, which has to happen whether or not the
 chart is open — an active elevation/steepness colorize reads the same cache. An open chart
-additionally redraws through `elevationChartProcessor` (see *What the chart shows* below).
+additionally redraws through `elevationChartProcessor` (see _What the chart shows_ below).
 
 `gradeWindow` shares the same `elevationSetSettings` action but must do none of that, so
 every one of those five consumers gates on `affectsElevationSmoothing(payload)` rather than
@@ -227,7 +227,7 @@ the action it tests: `RootAction` is a union built from every export of the `mod
 modules, so a plain function exported from one widens that union with its return type and
 breaks type narrowing across the store.
 
-The UI is an *Elevation profile* group in `MapPreferencesModal`, reachable from a gear in
+The UI is an _Elevation profile_ group in `MapPreferencesModal`, reachable from a gear in
 the elevation chart's own toolbar.
 
 ### Crediting the terrain model — `src/shared/elevationSources.ts`
@@ -260,7 +260,7 @@ last, so the list doesn't reshuffle between requests.
 
 GraphHopper serves its own elevation from **Sonny's LiDAR DTM** — a different dataset from
 the API's non-premium SRTM, so the two are separate tokens. The `sonny` provenance is
-expressed by *appending `SONNY_TOKEN` to the reported tokens* rather than crediting it
+expressed by _appending `SONNY_TOKEN` to the reported tokens_ rather than crediting it
 separately, so one table resolves both.
 
 That model also weights the graph, so it shapes **every** GraphHopper route — including a
@@ -273,8 +273,8 @@ the route is among the exportables, since that credit belongs to the drawn route
 The same hook adds `OSM_DATA_ATTR` for any standing result (a route is OSM-derived whatever
 layer is drawn under it, and an aerial base credits nothing else) and `OSRM_ROUTING_ATTR`
 where OSRM answered. All three dedupe against the layers' own copies in `categorize`. Only
-the last is `type: 'routing'` — the credits above it are for *data the route is derived
-from*, whereas `routing` names the service that answered, and the GraphHopper behind it is
+the last is `type: 'routing'` — the credits above it are for _data the route is derived
+from_, whereas `routing` names the service that answered, and the GraphHopper behind it is
 ours to run rather than anyone's to credit.
 
 A multimodal route is asked of both routers leg by leg, so one GraphHopper leg earns the
@@ -323,8 +323,8 @@ the read fails or the feature carries no geometry at all.
 
 ```jsonc
 {
-  "elevations": [612.3, null],       // exactly the array the plain form returns
-  "sources": ["sk", "at", "gedtm30"] // union over the whole batch, any order
+  "elevations": [612.3, null], // exactly the array the plain form returns
+  "sources": ["sk", "at", "gedtm30"], // union over the whole batch, any order
 }
 ```
 
@@ -351,14 +351,14 @@ to a chart opened later takes two mechanisms, because the two caches expire diff
 - **Stamped on the geometry** — `ensureRouteRenderGeojson` and dataViewer's
   `ensureRenderGeojson` put the union on the render feature as `fm:elevationSources`
   (`ELEVATION_SOURCES_PROP` / `readElevationSources`). The render line is cached, so on the
-  second chart open the sampling doesn't happen again; carrying the credit *on* the cached
+  second chart open the sampling doesn't happen again; carrying the credit _on_ the cached
   object is what makes it survive, and makes drift impossible. Stamped **only** on
   render-only geometry — never by `enrichElevations` itself, which also writes into the
   exportable `trackGeojson`.
 - **`trackViewer.elevationSources`** — the override's `enrichElevations` writes into
   `trackGeojson`, which can't carry the stamp, and its tokens can't be recovered from the
   densify either: `densifyAlong` inserts nothing into a dense recording, so it makes no
-  request at all. Without this field the *normal* "Override all" case would credit nothing.
+  request at all. Without this field the _normal_ "Override all" case would credit nothing.
   The field tracks `elevationDecision` — set with it, emptied with it — so there are only two
   sites to keep aligned.
 
@@ -392,7 +392,7 @@ comparing before changing either.
 A **marked stretch** (`elevationChart.range`, metres along the profile) lives in the store
 rather than in the panel, because the map draws it too (`RangeHighlight` in
 `ElevationChartActivePoint.tsx`) and `elevation-chart-range=` carries it. While an edge is
-being dragged the panel holds a *draft* instead and commits on release: the committed one
+being dragged the panel holds a _draft_ instead and commits on release: the committed one
 rewrites the URL, which is not a thing to do once per pointer move. One anchor ref serves
 both gestures — creating anchors where the drag started, dragging an edge anchors the other
 one — so dragging past the far edge turns the stretch round instead of collapsing it. Its
@@ -402,7 +402,7 @@ side draws it in a pane of its own above the overlay: the planned route has a pa
 overlay pane's own z-index and, mounted later, paints over anything left in the default one.
 Nothing on screen says the chart's gestures exist, so a one-off toast names them
 (`rangeHint` / `rangeHintTouch`, chosen by `(pointer: coarse)`; `preventRangeHint` in the
-settings slice), the way the route finder's midpoint hint works. `rangeHint` is a *function*
+settings slice), the way the route finder's midpoint hint works. `rangeHint` is a _function_
 message, not a string: it writes a key as `<kbd>`, and the toast renderer resolves only
 strings and functions — a bare JSX value comes out as `…`.
 
@@ -432,9 +432,9 @@ Three things are worth knowing before touching it:
 
 - **The values ride on a distance axis, not on point indices.** The hook walks the colorized
   vertices themselves. Index pairing would break twice over: the API-sampled profile
-  resamples the line, and a span-based mode reads the *plain* line where every other mode
+  resamples the line, and a span-based mode reads the _plain_ line where every other mode
   reads the densified one (`colorizeGeometrySource`). Each source may also say where it
-  *starts* on that axis, because what a host cuts out is not always nothing: a route's runs
+  _starts_ on that axis, because what a host cuts out is not always nothing: a route's runs
   have the unrouted stretches removed while the profile still draws them (hence
   `LINE_START_PROP`, set by `routeColorizeFeatures`), and a tracked device's segments have
   the pause the split was made at while the profile is the whole track as one line. A
@@ -447,7 +447,7 @@ Three things are worth knowing before touching it:
   another's colors would place them at the wrong distance.
 - **The smoothing window follows the chart's scale.** `ColorizeOptions.metersPerPixel` is
   the map's `zoom` said directly, and the chart knows it exactly — `(vTo - vFrom) /
-  plotWidth` — where `featureSmoothingSpan` has to derive it from Mercator scale at a
+plotWidth` — where `featureSmoothingSpan` has to derive it from Mercator scale at a
   mid-latitude. It is quantized to powers of two so a pinch recomputes ~11 times over the
   whole zoom range instead of once a frame (the memo covers the current level; there is
   deliberately no cache of the ones already visited — it would retain a stops array per
@@ -463,7 +463,7 @@ Three things are worth knowing before touching it:
   written — the list is rebuilt on every frame of a drag, and a vertex apiece would be
   thousands of elements for a gradient the screen shows one color per pixel of.
 
-The legend stays the host's, and it is read at the *map's* zoom: a zoomed-in chart can
+The legend stays the host's, and it is read at the _map's_ zoom: a zoomed-in chart can
 therefore reach colors past what its end labels name. Say so rather than quietly widening
 the legend, which would then stop describing the map's own line.
 
@@ -474,16 +474,16 @@ what to show:
 
 ```ts
 type ElevationChartTarget =
-  | { type: 'route-planner' }                    // the active alternative
-  | { type: 'track-viewer' }                     // the active imported track
-  | { type: 'gps-recorder' }                     // the recording in progress
-  | { type: 'drawing'; lineId: number }
-  | { type: 'tracking'; token: string }
+  | { type: "route-planner" } // the active alternative
+  | { type: "track-viewer" } // the active imported track
+  | { type: "gps-recorder" } // the recording in progress
+  | { type: "drawing"; lineId: number }
+  | { type: "tracking"; token: string };
 ```
 
 `elevationChartProcessor` is the only thing that draws it, and `chartIdentity(state)`
-(`resolve.ts`) is its whole redraw rule: one cheap reference naming *what the profile is
-derived from* — the render line, the active track feature, the drawn line, the device's
+(`resolve.ts`) is its whole redraw rule: one cheap reference naming _what the profile is
+derived from_ — the render line, the active track feature, the drawn line, the device's
 track, the recorder's fixes. A re-route, a switched alternative, a densified line, a
 reshaped drawn line, a refilled elevation or an arriving position each replace that object;
 nothing else does. So
@@ -493,7 +493,7 @@ leaves it identical and draws nothing. Cheap rather than free: the identity is a
 new and the previous state on every dispatched action.
 
 That price is also what keeps a derived value out of the identity. A recording's profile is
-drawn from its *segments*, but splitting the whole track twice per action is not a lookup —
+drawn from its _segments_, but splitting the whole track twice per action is not a lookup —
 so the identity names the flat `gpsRecorder.points` the split reads, and `splitGapS`, the
 only other thing that can move the breaks, is listened for as `gpsRecorderSetSettings`
 alongside `dataViewerSetActiveTrack`. (Calling the memoized `selectRecorderSegments` here
@@ -527,7 +527,7 @@ chart closed or re-aimed mid-sample is never drawn over.
 **"Nothing to draw" is two different answers**, and a resolver says which — the feature is
 the only thing that can tell them apart:
 
-- **`pending`** — the line isn't there *yet*: a route being recomputed (which is what
+- **`pending`** — the line isn't there _yet_: a route being recomputed (which is what
   switching transport type does, since every route change clears the old one first), a
   track still downloading, a device that hasn't reported. The chart stays aimed and draws
   nothing; the arrival is itself a redraw trigger.
@@ -577,7 +577,7 @@ them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
 - **The ends are the reader's to set** (`STEEPNESS_SCALES`, ±5 % to ±100 %, default 100 %).
   No one value serves every route: measured against real ones, the widest scale that clamps
   almost nothing is 5 % for a road ride, 15 % for a car, 25 % on rolling hills and 60 % in
-  the Tatras. The slider steps through the list *by index* — the useful settings are
+  the Tatras. The slider steps through the list _by index_ — the useful settings are
   geometric, and a linear slider would spend half its travel above 50 % where nothing
   changes.
 - **It lives in `elevationSettings`**, beside `gradeWindow`: like that one it corrects
@@ -591,10 +591,19 @@ them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
   ±5 % they collapse onto zero — and the labels closing up toward the middle is itself what
   shows the compression.
 
-- Each `Colorizer` exposes **`isAvailable`**, which gates whether a mode is offered for a
-  given feature — routes expose Elevation/Steepness/Time/Heading; a track exposes a mode
-  only when it carries that channel's data. This is why the "Colorize by" dropdown
-  differs per consumer.
+- Each `Colorizer` exposes **`isAvailable`**, which says whether a mode has anything to
+  paint on the features in hand — a track exposes a channel mode only when it carries that
+  channel, a path-detail mode only once something on the line is mapped with it.
+  **Every menu applies the same rule to it: hide what this context can never produce,
+  disable what it could produce but does not have yet.** So tracking drops `spanBased`
+  modes outright (a live track cannot acquire path details) and greys the rest; the data
+  viewer greys them all, since Match to paths can fill them in; and the route planner
+  hides the recorded sensor and device channels, plus any path detail the active profile
+  does not ask the router for (`pathDetailKeys`, and nothing at all off GraphHopper),
+  greying what it does ask for. Filtering on `isAvailable` alone is what this replaced:
+  it reshaped the route planner's dropdown on every drag of a waypoint, and hid the fact
+  that nothing on the route is mapped with the mode — which is the same thing the
+  legend's grey Unknown row is there to say.
 - **A colorizer is handed single-`LineString` features**, so a multi-segment track has to
   be split first — and the split has to take the per-point channels and the path-detail
   spans with it: `@turf/flatten` copies the whole of `properties` onto every part, leaving
@@ -631,8 +640,11 @@ them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
   `smoothFactor: 0` (simplification would collapse the coincident boundary pair — see the
   `react-leaflet-hotline` patch), `useZoomColorize` that one cache entry answers every
   zoom, and the data-viewer/tracking menus that the mode can never apply to a track. A
-  future *scalar* span mode (`average_speed`, `curvature`) sets `spanBased` and a normal
-  `legend`.
+  future _scalar_ span mode (`average_speed`, `curvature`) sets `spanBased` and a normal
+  `legend`. Beside it, **`detail`** names the GraphHopper path detail the mode reads, which
+  is what the route planner's menu matches against `pathDetailKeys` — the two are separate
+  because `spanBased` is about how the line renders, `detail` about where its values come
+  from, and a future span mode need not come from a path detail at all.
 - `colorizeByValues` (`colorize.ts`) maps values to a Hotline palette and flags missing
   values as gaps on `ColorizedPoint`; `splitOnGaps`/`noDataRuns` split a feature's points
   into gap-free runs so the Hotline render loop can break the line at gaps.
@@ -734,7 +746,7 @@ provenance tagged at parse time — never re-derived from density/timestamps:
 
 - **Sensor channels are averaged, not decimated.** A surviving vertex carries the mean of
   the samples it now stands for (the run up to the midpoint of the gap either side). DP
-  keeps *corners*, and corners are junctions and switchbacks, so one-sample-per-survivor
+  keeps _corners_, and corners are junctions and switchbacks, so one-sample-per-survivor
   would bias a recording towards wherever it slowed down. `PER_VERTEX` in
   `trackChannels.ts` lists what keeps its own vertex's value instead — times (they have to
   keep matching the place recorded) and angles (`courses`/`bearings`: the mean of 350° and
@@ -755,7 +767,7 @@ provenance tagged at parse time — never re-derived from density/timestamps:
 
 - **Joining two tracks** (`joinTracks.ts`, the toolbar's **Join**) is the split in reverse
   and shares its reading of a track: `lineSegments` + `readChannels`/`writeChannels` +
-  `fm:pathDetails`. Two things bite. `writeChannels`' `flat` flag follows the *result's*
+  `fm:pathDetails`. Two things bite. `writeChannels`' `flat` flag follows the _result's_
   geometry type, which a join changes — one line takes flat arrays, a segment each takes
   nested ones. And a channel only one side records is padded with `null` over the other's
   points rather than dropped, which is what togeojson itself leaves for a point with no
@@ -766,7 +778,7 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   stay apart and there is no gap turning one round could close.
 
   Path details take the bigger correction. Their metres are measured with the track's own
-  segment gaps left out; joined into one line those gaps become edges that count, so *both*
+  segment gaps left out; joined into one line those gaps become edges that count, so _both_
   sides' spans are remapped vertex by vertex onto the result's distances
   (`remapPathDetails`, shared with the simplifier) —
   re-basing only the second's would slide a multi-segment first track's bands by the length
@@ -778,7 +790,7 @@ provenance tagged at parse time — never re-derived from density/timestamps:
 
 **Match to paths** (the dataViewer ⋮ menu) POSTs the selected track to GraphHopper's
 `/match` and replaces it with what comes back. The point is not the snapping — it is that
-a matched line carries `details`, so a *recording* can be colorized by Surface, Smoothness,
+a matched line carries `details`, so a _recording_ can be colorized by Surface, Smoothness,
 Road type, Track grade and the ratings, which no imported track can otherwise be. That is
 why `DataViewerMenu` no longer filters `spanBased` modes out of its dropdown: each mode's
 own `isAvailable` decides, and it is false until a track has been matched.
@@ -801,7 +813,7 @@ Facts that decide the implementation, all measured against the live server:
   `Sequence is broken for submitted track at time step N`, and there is no partial result
   for that segment. The processor matches that string, keeps the segment as recorded and
   carries on, since one leg of a mixed track routinely defeats the profile the other needs;
-  only a track where *nothing* matched is refused outright.
+  only a track where _nothing_ matched is refused outright.
 - **Observations are thinned to 50 m.** Two fixes closer together than their own error
   carry no direction, only noise, and the matcher rationalizes that by detouring — one
   track sent at 10 m spacing under 10 m of scatter came back four times its true length,
@@ -813,7 +825,7 @@ Facts that decide the implementation, all measured against the live server:
   is the one constant here not settled against a real recording: synthetic noise is
   independent per point, where a real receiver's drifts.)
 - **One request per segment.** GraphHopper reads a GPX as a single sequence of
-  observations, so a paused recording sent whole has it *route across the pause*: a real
+  observations, so a paused recording sent whole has it _route across the pause_: a real
   recording carrying a stray three-point fragment 28 km from the walk matched at four
   times its length. `trackSegments` keeps them apart, measuring each on its own, and the
   result is a feature per segment rather than one `MultiLineString` — the details are
@@ -822,13 +834,13 @@ Facts that decide the implementation, all measured against the live server:
   since one leg of a mixed track routinely defeats whatever profile the other leg needs.
 - **A match longer than the recording is refused** (`MATCH_MAX_LENGTH_RATIO`). Matching can
   only answer with paths the graph holds, so a stretch someone took across open ground —
-  or by a transport the profile cannot follow — comes back routed *around* it: one 0.94 km
+  or by a transport the profile cannot follow — comes back routed _around_ it: one 0.94 km
   meadow crossing in a 12.7 km walk added 5 km, at every accuracy alike. Measured across
   real recordings, a good match lands between **0.96 and 1.00** (under 1, since GPS wander
   inflates the raw track) while everything wrong sat at **1.17 and above** — a mixed
   walk-then-drive at 1.17 and 1.44, that meadow at 1.41, a ride matched as a bike at 3.14.
   Compared against the track's own length rather than GraphHopper's `original_distance`,
-  which is measured on what we *sent* — thinned, and so ~6 % short.
+  which is measured on what we _sent_ — thinned, and so ~6 % short.
 - **What it cannot do is a track that changes transport partway** — the walk, then the
   drive home, recorder never stopped. No profile matches both, and the refusal above is all
   that saves it from being mangled. Splitting is the real answer; see `TODO.md`.
@@ -920,7 +932,7 @@ be discarded on the way back is refused on the way in rather than counted as a
 copy. Otherwise it is best effort (`dataViewerStoreProcessor` logs and moves on),
 and the copy is dropped on `dataViewerDelete` and `clearMapFeatures` — one that
 outlived the track would come back as something the user had already thrown away.
-The restore also stands down for a track the URL merely *names*: `homedElsewhere`
+The restore also stands down for a track the URL merely _names_: `homedElsewhere`
 covers a fetch that is still in flight, which IndexedDB would otherwise beat, and
 declaring a server-hosted track local would take `track-uid=` out of the URL.
 `navigator.storage.persist()` is asked for by `storeTrackDurably` **only** — the GPS
