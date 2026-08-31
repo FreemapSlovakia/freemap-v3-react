@@ -34,7 +34,7 @@ import {
   useState,
 } from 'react';
 import { Button, CloseButton } from 'react-bootstrap';
-import { FaCog, FaDownload, FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
+import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { buildFillStops } from '../chartFill.js';
 import { useChartColorize } from '../hooks/useChartColorize.js';
@@ -1397,7 +1397,7 @@ export default function ElevationChart(): ReactElement | null {
         {/* The row wraps between figures, never inside one: a figure broken
             across two lines reads as two. */}
         {rangeStats ? (
-          <p className="m-0 d-flex flex-wrap align-items-center gap-2 text-danger-emphasis">
+          <p className="m-0 d-flex flex-wrap align-items-center gap-2">
             {/* Divided rather than merely spaced: the figures are four readings
                 of one stretch, and each is itself a pair of numbers. */}
             {[
@@ -1430,15 +1430,11 @@ export default function ElevationChart(): ReactElement | null {
 
             <LongPressTooltip label={gm?.general.clear}>
               {({ props }) => (
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="p-0 lh-1 text-danger-emphasis"
+                <CloseButton
+                  className="fs-6"
                   onClick={() => dispatch(elevationChartSetRange(null))}
                   {...props}
-                >
-                  <FaTimes />
-                </Button>
+                />
               )}
             </LongPressTooltip>
           </p>
