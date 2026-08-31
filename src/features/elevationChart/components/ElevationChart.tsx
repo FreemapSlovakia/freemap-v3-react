@@ -1394,24 +1394,30 @@ export default function ElevationChart(): ReactElement | null {
             figures are the same ones, said of the part being read. Written in
             the symbols the map's own readout uses rather than in words, which
             would not fit beside the rest of the row. */}
+        {/* The row wraps between figures, never inside one: a figure broken
+            across two lines reads as two. */}
         {rangeStats ? (
-          <p className="m-0 d-flex align-items-center gap-2 text-danger-emphasis">
-            <span>⇄ {formatDistance(rangeStats.length, language)}</span>
+          <p className="m-0 d-flex flex-wrap align-items-center gap-2 text-danger-emphasis">
+            <span className="text-nowrap">
+              ⇄ {formatDistance(rangeStats.length, language)}
+            </span>
 
-            <span>
+            <span className="text-nowrap">
               ↑ {nf0.format(rangeStats.up)}&nbsp;m ↓{' '}
               {nf0.format(rangeStats.down)}&nbsp;m
             </span>
 
             {Number.isFinite(rangeStats.min) && (
-              <span>
+              <span className="text-nowrap">
                 ▴ {nf0.format(rangeStats.min)}–{nf0.format(rangeStats.max)}
                 &nbsp;{gm?.general.masl}
               </span>
             )}
 
             {Number.isFinite(rangeStats.grade) && (
-              <span>∡ {nfSigned1.format(rangeStats.grade * 100)}&nbsp;%</span>
+              <span className="text-nowrap">
+                ∡ {nfSigned1.format(rangeStats.grade * 100)}&nbsp;%
+              </span>
             )}
 
             <LongPressTooltip label={gm?.general.clear}>
