@@ -1,11 +1,11 @@
 import { colorizeGeometrySource } from '@shared/colorizers/colorize.js';
 import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import { colorizers } from '@shared/colorizers/index.js';
-import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature, LineString } from 'geojson';
 import { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import { useRouteColorizeMode } from '../hooks/useRouteColorizeMode.js';
 import { routePlannerSetColorizeLegend } from '../model/actions.js';
 import { routeColorizeFeatures } from '../model/pathDetails.js';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
@@ -18,9 +18,7 @@ import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
 export default function RoutePlannerColorizeLegend() {
   const dispatch = useDispatch();
 
-  const colorizeBy = useUnlockedColorizingMode(
-    useAppSelector((state) => state.routePlannerSettings.colorizeBy),
-  );
+  const colorizeBy = useRouteColorizeMode();
 
   const colorizeLegend = useAppSelector(
     (state) => state.routePlannerSettings.colorizeLegend,

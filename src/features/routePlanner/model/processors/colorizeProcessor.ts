@@ -3,7 +3,6 @@ import { authSetUser } from '@features/auth/model/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { isPremium } from '@features/premium/premium.js';
 import { colorizerNeedsElevation } from '@shared/colorizers/index.js';
 import { unlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import {
@@ -13,6 +12,7 @@ import {
   routePlannerSetResult,
 } from '../actions.js';
 import { ensureRouteRenderGeojson } from '../ensureRouteRenderGeojson.js';
+import { routePremiumUnlockedSelector } from '../reducer.js';
 
 export const routePlannerColorizeProcessor: Processor<
   | typeof routePlannerColorizeBy
@@ -43,7 +43,7 @@ export const routePlannerColorizeProcessor: Processor<
   handle: async ({ dispatch, getState }) => {
     const colorizeBy = unlockedColorizingMode(
       getState().routePlannerSettings.colorizeBy,
-      isPremium(getState().auth.user),
+      routePremiumUnlockedSelector(getState()),
     );
 
     // Elevation-derived modes need the densified DEM render line; it's cached

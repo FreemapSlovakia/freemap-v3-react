@@ -11,6 +11,7 @@ import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
 import { grantedRadiusKm } from '@features/viewshed/request.js';
 import { serializeViewshed } from '@features/viewshed/viewshedUrl.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
+import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
 import { encodeActiveModal } from '../store/activeModal.js';
@@ -55,6 +56,11 @@ const COALESCED_KEYS = new Set([
   'track-colorize-legend',
   'tracking-colorize-by',
   'tracking-colorize-legend',
+  // Comes and goes with the colorize mode above, being written only while a
+  // premium feature is in use, and going back to a URL without it does not
+  // revoke the unlock. When the route itself changes, the params describing it
+  // change too and still push.
+  'route-params-hash',
 ]);
 
 const isContentPart = ([key]: QueryPart) => !COALESCED_KEYS.has(key);
@@ -282,6 +288,11 @@ function updateUrl(state: RootState, forced: boolean): void {
     panoramaSettings.altMax,
     viewshed.viewpoint,
     viewshedRadiusKm,
+    // Whether `route-params-hash` may be written at all, and that is the whole
+    // of its effect on the URL: signing in has to add it to a route already on
+    // screen, and signing out has to take it away — left behind, a reload would
+    // read it back as an unlock of the reader's own route.
+    isPremium(auth.user),
   ];
 
   const restChanged =
@@ -370,12 +381,34 @@ function updateUrl(state: RootState, forced: boolean): void {
     historyParts.push(['custom-layers', JSON.stringify(filteredCustomLayers)]);
   }
 
-  if (
-    routePlanner.points.length &&
-    routePlanner.points.some((p) => p?.transport)
-  ) {
-    // for sharing "premium" route
-    historyParts.push(['route-params-hash', routeKey(routePlanner)]);
+  // What lets a link share a premium route feature — multimodal segmentation,
+  // and the premium colorize modes — with someone who has no premium: the key
+  // of the route the link was made for, which stops matching the moment a
+  // waypoint moves.
+  //
+  // Written only while this route is *already* entitled to those features, so a
+  // recipient's own rewrites (a pan, a zoom) keep the link working, while a user
+  // with neither premium nor a matching hash writes nothing and so cannot mint
+  // an unlock by picking a premium mode.
+  if (routePlanner.points.length) {
+    const key = routeKey(routePlanner);
+
+    const usesPremiumFeature =
+      routePlanner.points.some((p) => p?.transport) ||
+      (routePlannerSettings.colorizeBy &&
+        isPremiumColorizingMode(routePlannerSettings.colorizeBy));
+
+    // An unlock the link arrived with is carried forward whatever the reader
+    // does with it — turning colorize off would otherwise strip the param, and
+    // `hash` is not persisted, so a reload would take the unlock away for good
+    // on a route whose waypoints never moved. Carrying it forward mints
+    // nothing: it is written back only where it already matched.
+    if (
+      routePlanner.hash === key ||
+      (usesPremiumFeature && isPremium(auth.user))
+    ) {
+      historyParts.push(['route-params-hash', key]);
+    }
   }
 
   // Everything describing what the map holds; shared with the my-maps

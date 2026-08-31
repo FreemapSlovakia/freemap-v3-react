@@ -3,10 +3,12 @@ import {
   isTrackLine,
   resolveActiveTrack,
 } from '@features/dataViewer/trackSelection.js';
+import { isPremium } from '@features/premium/premium.js';
 import {
   readLineStart,
   routeColorizeFeatures,
 } from '@features/routePlanner/model/pathDetails.js';
+import { routePremiumUnlockedSelector } from '@features/routePlanner/model/reducer.js';
 import { trackPointsToFeature } from '@features/tracking/trackGeojson.js';
 import { resolveTrack, splitTrackSegments } from '@features/tracking/tracks.js';
 import {
@@ -16,7 +18,7 @@ import {
   colorizeGeometrySource,
 } from '@shared/colorizers/colorize.js';
 import { colorizers } from '@shared/colorizers/index.js';
-import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
+import { unlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { cumulativeDistances, distanceTo } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature, LineString } from 'geojson';
@@ -81,15 +83,24 @@ export function useChartColorize(
     (state) => state.trackingSettings.colorizeBy,
   );
 
-  const mode = useUnlockedColorizingMode(
+  // The route planner grants its premium modes to a shared route, so the chart
+  // aimed at one has to ask it rather than premium status alone — otherwise the
+  // line would be coloured and the profile under it plain.
+  const routeUnlocked = useAppSelector(routePremiumUnlockedSelector);
+
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
+
+  const mode =
     target?.type === 'route-planner'
-      ? routeMode
-      : target?.type === 'track-viewer'
-        ? trackMode
-        : target?.type === 'tracking'
-          ? trackingMode
-          : null,
-  );
+      ? unlockedColorizingMode(routeMode, routeUnlocked)
+      : unlockedColorizingMode(
+          target?.type === 'track-viewer'
+            ? trackMode
+            : target?.type === 'tracking'
+              ? trackingMode
+              : null,
+          premium,
+        );
 
   const picked = mode ? colorizers[mode] : null;
 

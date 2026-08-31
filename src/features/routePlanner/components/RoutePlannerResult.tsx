@@ -13,7 +13,6 @@ import {
   splitOnGaps,
 } from '@shared/colorizers/colorize.js';
 import { colorizers } from '@shared/colorizers/index.js';
-import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -49,6 +48,7 @@ import {
 } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
+import { useRouteColorizeMode } from '../hooks/useRouteColorizeMode.js';
 import {
   routePlannerAddPoint,
   routePlannerSetActiveAlternativeIndex,
@@ -101,9 +101,7 @@ export function RoutePlannerResult(): ReactElement {
 
   const mode = useAppSelector((state) => state.routePlanner.mode);
 
-  const colorizeBy = useUnlockedColorizingMode(
-    useAppSelector((state) => state.routePlannerSettings.colorizeBy),
-  );
+  const colorizeBy = useRouteColorizeMode();
 
   const lineWidth = useAppSelector(
     (state) => state.routePlannerSettings.lineWidth,

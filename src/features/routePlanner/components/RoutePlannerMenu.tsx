@@ -23,7 +23,6 @@ import {
   colorizers,
   colorizingModes,
 } from '@shared/colorizers/index.js';
-import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -85,6 +84,7 @@ import { MdShapeLine, MdTimeline } from 'react-icons/md';
 import { PiGraph } from 'react-icons/pi';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
+import { useRouteColorizeMode } from '../hooks/useRouteColorizeMode.js';
 import {
   type RoutingMode,
   routePlannerColorizeBy,
@@ -111,6 +111,7 @@ import {
   routePlannerAlternativesApplicable,
   routePlannerHasTransportOverride,
   routePlannerOptimizeApplicable,
+  routePremiumUnlockedSelector,
   storedRouteIsShowingSelector,
 } from '../model/reducer.js';
 import { plannedRouteLines } from '../model/routeGeometry.js';
@@ -559,11 +560,11 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.routePlanner.points.length > 0,
   );
 
-  const colorizeBy = useUnlockedColorizingMode(
-    useAppSelector((state) => state.routePlannerSettings.colorizeBy),
-  );
+  const colorizeBy = useRouteColorizeMode();
 
-  const premiumColorize = usePremiumColorizeLock();
+  const premiumColorize = usePremiumColorizeLock(
+    useAppSelector(routePremiumUnlockedSelector),
+  );
 
   const colorizeLegend = useAppSelector(
     (state) => state.routePlannerSettings.colorizeLegend,

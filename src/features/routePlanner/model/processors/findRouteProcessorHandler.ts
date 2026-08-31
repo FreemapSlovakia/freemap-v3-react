@@ -2,7 +2,6 @@ import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import { isPremium } from '@features/premium/premium.js';
 import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
 import {
@@ -57,7 +56,11 @@ import {
 import { withIsochroneLimits } from '../isochrones.js';
 import { legTransports } from '../legTransports.js';
 import { pathDetailKeys } from '../pathDetails.js';
-import { standingSavedRoute, storedRouteIsShowing } from '../reducer.js';
+import {
+  routePremiumUnlockedSelector,
+  standingSavedRoute,
+  storedRouteIsShowing,
+} from '../reducer.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures];
@@ -300,8 +303,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   });
 
   const segments =
-    mode === 'route' &&
-    (isPremium(getState().auth.user) || key === getState().routePlanner.hash)
+    mode === 'route' && routePremiumUnlockedSelector(getState())
       ? segmentize(points, transportType)
       : [{ transport: transportType, points }];
 

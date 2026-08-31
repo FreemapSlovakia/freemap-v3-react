@@ -356,6 +356,12 @@ export function handleLocationChange(store: MyStore): void {
       }
 
       if (
+        // An unlock the URL carries has to land even when it is the only thing
+        // that moved: pasting a friend's link for the route already on screen
+        // changes nothing else, and without this the premium modes it was
+        // shared to show would stay locked.
+        String(query['route-params-hash'] ?? '') !==
+          (getState().routePlanner.hash ?? '') ||
         finishOnly !== nextFinishOnly ||
         query['transport'] !== transportType ||
         points.length !== latLons.length ||
@@ -401,7 +407,12 @@ export function handleLocationChange(store: MyStore): void {
               buckets: Number(query['iso-buckets']) || 1,
               reverseFlow: query['iso-reverse'] === '1',
             },
-            hash: String(query['route-params-hash']),
+            // Left undefined rather than the string "undefined" when absent, so
+            // it reads as "no unlock" everywhere it is compared.
+            hash:
+              typeof query['route-params-hash'] === 'string'
+                ? query['route-params-hash']
+                : undefined,
             deferRouting: restore !== null,
           }),
         );

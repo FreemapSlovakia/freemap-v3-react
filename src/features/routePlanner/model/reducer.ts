@@ -8,6 +8,7 @@ import { authSetUser } from '@features/auth/model/actions.js';
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsDisconnect, mapsLoaded } from '@features/myMaps/model/actions.js';
+import { isPremium } from '@features/premium/premium.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type TransportType,
@@ -231,6 +232,25 @@ export function storedRouteIsShowing(state: RoutePlannerState): boolean {
 export const storedRouteIsShowingSelector = createSelector(
   [(state: RootState) => state.routePlanner],
   storedRouteIsShowing,
+);
+
+/**
+ * Whether the premium route features apply: the user has premium, or this exact
+ * route arrived from someone who does. `route-params-hash` is the key of the
+ * route it was shared with, so moving a waypoint ends the unlock — the reader
+ * gets the feature on the shared route, never on one of their own. The same
+ * soft gate the multimodal segmentation already uses, and forgeable the same
+ * way: `routeKey` hashes public data, so this keeps a shared link working
+ * rather than keeping anyone out.
+ *
+ * Memoized for the reason {@link storedRouteIsShowingSelector} gives — it
+ * hashes the waypoints, and an inline selector re-runs on every dispatch.
+ */
+export const routePremiumUnlockedSelector = createSelector(
+  [(state: RootState) => state.routePlanner, (state: RootState) => state.auth],
+  // An absent hash needs no guard of its own: it never equals a real key.
+  (routePlanner, auth) =>
+    isPremium(auth.user) || routePlanner.hash === routeKey(routePlanner),
 );
 
 function showSavedRoute(
