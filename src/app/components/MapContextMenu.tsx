@@ -16,6 +16,7 @@ import {
 import { searchSetQuery } from '@features/search/model/actions.js';
 import type { Modifier, Obj } from '@popperjs/core';
 import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -405,7 +406,10 @@ export function MapContextMenu(): ReactElement {
               </Dropdown.Header>
 
               <Dropdown.Item as="button" eventKey="submenu-">
-                <FaChevronLeft /> {m?.mainMenu.back} <kbd>Esc</kbd>
+                <FaChevronLeft /> {m?.mainMenu.back}
+                <MenuGutter>
+                  <kbd>Esc</kbd>
+                </MenuGutter>
               </Dropdown.Item>
 
               <Dropdown.Divider />
@@ -444,8 +448,10 @@ export function MapContextMenu(): ReactElement {
               {!window.fmEmbedded && (
                 <>
                   <Dropdown.Item as="button" eventKey="submenu-openExternally">
-                    <FaExternalLinkAlt /> {oeam?.openInExternal}{' '}
-                    <FaChevronRight />
+                    <FaExternalLinkAlt /> {oeam?.openInExternal}
+                    <MenuGutter>
+                      <FaChevronRight />
+                    </MenuGutter>
                   </Dropdown.Item>
 
                   <Dropdown.Divider />

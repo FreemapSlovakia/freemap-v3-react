@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -87,7 +88,10 @@ export function CopyrightButton(): ReactElement {
                 dispatch(setActiveModal({ type: 'legend' }));
               }}
             >
-              <FaList /> {m?.mainMenu.mapLegend} <Chord modal="legend" />
+              <FaList /> {m?.mainMenu.mapLegend}
+              <MenuGutter>
+                <Chord modal="legend" />
+              </MenuGutter>
             </OnlineOnlyItem>
           )}
 

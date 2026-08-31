@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import type { JSX, ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaChevronLeft } from 'react-icons/fa';
@@ -27,7 +28,12 @@ export function SubmenuHeader({
       </Dropdown.Header>
 
       <Dropdown.Item as="button" eventKey={backEventKey}>
-        <FaChevronLeft /> {m?.mainMenu.back} {kbd && <kbd>Esc</kbd>}
+        <FaChevronLeft /> {m?.mainMenu.back}
+        {kbd && (
+          <MenuGutter>
+            <kbd>Esc</kbd>
+          </MenuGutter>
+        )}
       </Dropdown.Item>
 
       <Dropdown.Divider />

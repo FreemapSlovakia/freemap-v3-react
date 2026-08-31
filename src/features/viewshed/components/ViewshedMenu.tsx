@@ -151,9 +151,8 @@ export default function ViewshedMenu(): ReactElement {
             {grantedDetail(detail, premium) === detail ? null : (
               <PremiumGem nested />
             )}
-            {/* Floated, not flexed: a `dropdown-item` is a block. Not a
-                message — the same in every language. */}
-            <span className="float-end ms-3 text-body-secondary">
+            {/* Not a message — the same in every language. */}
+            <span className="text-body-secondary">
               {nfM.format(viewshedScale(grants.radiusKm, detail))}/px
             </span>
           </>

@@ -33,6 +33,7 @@ import {
   LongPressTooltip,
   type TooltipTargetProps,
 } from './LongPressTooltip.js';
+import { MenuGutter } from './MenuGutter.js';
 import { OfflineBadge } from './OfflineBadge.js';
 
 export type ActionProps = {
@@ -699,7 +700,10 @@ export function ResponsiveActions({
                     as="button"
                     eventKey={`${SUBMENU_PREFIX}${entry.index}`}
                   >
-                    {entry.icon} {entry.label} <FaChevronRight />
+                    {entry.icon} {entry.label}
+                    <MenuGutter>
+                      <FaChevronRight />
+                    </MenuGutter>
                   </Dropdown.Item>
                 ) : entry.props.menuOnly ? (
                   <Dropdown.Item
@@ -708,8 +712,11 @@ export function ResponsiveActions({
                     disabled={isOff(entry.props)}
                     eventKey={`${SUBMENU_PREFIX}${entry.index}`}
                   >
-                    {entry.props.icon} {entry.props.label} <FaChevronRight />
-                    {entry.props.requiresOnline && <OfflineBadge />}
+                    {entry.props.icon} {entry.props.label}
+                    <MenuGutter>
+                      <FaChevronRight />
+                      {entry.props.requiresOnline && <OfflineBadge />}
+                    </MenuGutter>
                   </Dropdown.Item>
                 ) : (
                   <Fragment key={entry.index}>
@@ -739,7 +746,11 @@ export function ResponsiveActions({
                         entry.props.label
                       )}
 
-                      {entry.props.requiresOnline && <OfflineBadge />}
+                      {entry.props.requiresOnline && (
+                        <MenuGutter>
+                          <OfflineBadge />
+                        </MenuGutter>
+                      )}
                     </Dropdown.Item>
 
                     {renderPackedMenu(entry.props.menu, isOff(entry.props))}

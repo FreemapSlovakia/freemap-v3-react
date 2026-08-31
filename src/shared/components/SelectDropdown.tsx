@@ -1,5 +1,6 @@
 import type { Breakpoint } from '@shared/breakpoints.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
@@ -117,15 +118,13 @@ export function SelectDropdown({
         {opt.icon}
         {opt.label}
 
-        {/* Shortcuts and marks share a right-hand column, so a menu of them
-            reads as one stripe rather than trailing each label's own width. */}
         {(opt.kbd || opt.extra) && (
-          <span className="d-flex align-items-center gap-1 ms-auto flex-shrink-0">
+          <MenuGutter>
             {opt.extra}
             {(opt.kbd?.split(' ') ?? []).map((k) => (
               <kbd key={k}>{k}</kbd>
             ))}
-          </span>
+          </MenuGutter>
         )}
       </Dropdown.Item>,
     );

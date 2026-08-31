@@ -16,6 +16,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
@@ -369,16 +370,10 @@ export function MapSwitchButton(): ReactElement {
 
     return (
       <>
+        {/* Quiet only where it repeats down the menu; on a tooltip it is the
+            only gem there, and dimmed it would be the hardest to read. */}
         {(place === 'menu' || (place === 'tooltip' && premium)) &&
-          premiumHere && <PremiumGem capture nested quiet />}
-
-        {/* Everything but a downloaded map draws nothing while offline. The
-            toolbar says it through the button's own tooltip, as premium does. */}
-        {place !== 'toolbar' &&
-          !def.cached &&
-          def.technology !== 'interactive' && (
-            <OfflineBadge hint={m?.mapLayers.offlineWarning} />
-          )}
+          premiumHere && <PremiumGem capture nested quiet={place === 'menu'} />}
 
         {place !== 'toolbar' && !def.custom && def.superseededBy && (
           <Badge label={m?.mapLayers.legacy}>
@@ -447,12 +442,22 @@ export function MapSwitchButton(): ReactElement {
             </Badge>
           )}
 
-        {/* Last, so the shortcut sits at the row's edge the way a menu writes it. */}
+        {/* The shortcut sits at the row's edge the way a menu writes it. */}
         {place !== 'toolbar' &&
           getKbdShortcut(
             layersSettings[def.type]?.shortcut === undefined
               ? def.shortcut
               : layersSettings[def.type].shortcut,
+          )}
+
+        {/* Everything but a downloaded map draws nothing while offline. The
+            toolbar says it through the button's own tooltip, as premium does.
+            Outermost: `OnlineOnlyItem` appends its own badge there, and a
+            transient state must not shift the shortcut's column. */}
+        {place !== 'toolbar' &&
+          !def.cached &&
+          def.technology !== 'interactive' && (
+            <OfflineBadge hint={m?.mapLayers.offlineWarning} />
           )}
       </>
     );
@@ -528,11 +533,7 @@ export function MapSwitchButton(): ReactElement {
 
             {countryFlags(def)}
 
-            {/* Shortcut and badges share a right-hand column, so the list gets
-                an edge to scan instead of marks at every label's own width. */}
-            <span className="d-flex align-items-center gap-1 ms-auto flex-shrink-0">
-              {commonBadges(def, 'menu')}
-            </span>
+            <MenuGutter>{commonBadges(def, 'menu')}</MenuGutter>
           </Dropdown.Item>
         );
       });

@@ -7,6 +7,7 @@ import { useOpenInExternalAppMessages } from '@features/openInExternalApp/transl
 import { Chord } from '@shared/components/Chord.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
@@ -69,12 +70,17 @@ export function MainMenu(): ReactElement {
             <Emoji>{flag}</Emoji>{' '}
           </span>
         ))}
-        <FaChevronRight />
+        <MenuGutter>
+          <FaChevronRight />
+        </MenuGutter>
       </Dropdown.Item>
 
       {user ? (
         <OnlineOnlyItem {...modalMenuItemProps('account')}>
-          <FaUser /> {m?.mainMenu.account} <Chord modal="account" />
+          <FaUser /> {m?.mainMenu.account}
+          <MenuGutter>
+            <Chord modal="account" />
+          </MenuGutter>
         </OnlineOnlyItem>
       ) : (
         <OnlineOnlyItem {...modalMenuItemProps('login')}>
@@ -89,7 +95,10 @@ export function MainMenu(): ReactElement {
         eventKey="clear-map-features"
         disabled={!hasClearableMapFeatures}
       >
-        <FaEraser /> {m?.main.clearMap} <Chord command="clear-map-features" />
+        <FaEraser /> {m?.main.clearMap}
+        <MenuGutter>
+          <Chord command="clear-map-features" />
+        </MenuGutter>
       </Dropdown.Item>
 
       {/* Only a layer toggle, so it works offline; the layer menu is where the
@@ -100,11 +109,17 @@ export function MainMenu(): ReactElement {
         eventKey="gallery"
         active={galleryActive}
       >
-        <FaCamera /> {m?.tools.photos} <kbd>⇧f</kbd>
+        <FaCamera /> {m?.tools.photos}
+        <MenuGutter>
+          <kbd>⇧f</kbd>
+        </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('my-maps')}>
-        <FaRegMap /> {m?.tools.myMaps} <Chord modal="my-maps" />
+        <FaRegMap /> {m?.tools.myMaps}
+        <MenuGutter>
+          <Chord modal="my-maps" />
+        </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Item
@@ -126,13 +141,11 @@ export function MainMenu(): ReactElement {
                 eventKey={`tool-${newTool}`}
                 active={openTools.includes(newTool)}
               >
-                {icon} {m?.tools[msgKey]}{' '}
-                {experimental && (
-                  <>
-                    <ExperimentalFunction />{' '}
-                  </>
-                )}
-                <Chord tool={newTool} />
+                {icon} {m?.tools[msgKey]}
+                <MenuGutter>
+                  {experimental && <ExperimentalFunction />}
+                  <Chord tool={newTool} />
+                </MenuGutter>
               </Dropdown.Item>
             )
           );
@@ -141,22 +154,31 @@ export function MainMenu(): ReactElement {
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" eventKey="submenu-openExternally">
-        <FaExternalLinkAlt /> {oeam?.openInExternal} <FaChevronRight />
+        <FaExternalLinkAlt /> {oeam?.openInExternal}
+        <MenuGutter>
+          <FaChevronRight />
+        </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('map-features-export')}>
-        <FaFileExport /> {m?.mainMenu.mapFeaturesExport}{' '}
-        <Chord modal="map-features-export" />
+        <FaFileExport /> {m?.mainMenu.mapFeaturesExport}
+        <MenuGutter>
+          <Chord modal="map-features-export" />
+        </MenuGutter>
       </Dropdown.Item>
 
       <OnlineOnlyItem {...modalMenuItemProps('map-to-document-export')}>
-        <FaPrint /> {m?.mainMenu.mapToDocumentExport}{' '}
-        <Chord modal="map-to-document-export" />
+        <FaPrint /> {m?.mainMenu.mapToDocumentExport}
+        <MenuGutter>
+          <Chord modal="map-to-document-export" />
+        </MenuGutter>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem {...modalMenuItemProps('offline-map-export')}>
-        <FaDatabase /> {m?.mainMenu.offlineMapExport}{' '}
-        <Chord modal="offline-map-export" />
+        <FaDatabase /> {m?.mainMenu.offlineMapExport}
+        <MenuGutter>
+          <Chord modal="offline-map-export" />
+        </MenuGutter>
       </OnlineOnlyItem>
 
       <Dropdown.Item {...documentMenuItemProps('exports')}>
@@ -164,13 +186,19 @@ export function MainMenu(): ReactElement {
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('embed')}>
-        <FaCode /> {m?.mainMenu.embedMap} <Chord modal="embed" />
+        <FaCode /> {m?.mainMenu.embedMap}
+        <MenuGutter>
+          <Chord modal="embed" />
+        </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" eventKey="submenu-help">
-        <FaBook /> {m?.mainMenu.help} <FaChevronRight />
+        <FaBook /> {m?.mainMenu.help}
+        <MenuGutter>
+          <FaChevronRight />
+        </MenuGutter>
       </Dropdown.Item>
 
       <OnlineOnlyItem {...modalMenuItemProps('support-us')}>

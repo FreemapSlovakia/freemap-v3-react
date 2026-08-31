@@ -2,6 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -71,8 +72,10 @@ export function MapManageButton(): ReactElement {
           offline={!canSaveSettings}
           {...modalMenuItemProps('map-layers-config')}
         >
-          <FaLayerGroup /> {m?.mapLayers.layersConfiguration}{' '}
-          <Chord modal="map-layers-config" />
+          <FaLayerGroup /> {m?.mapLayers.layersConfiguration}
+          <MenuGutter>
+            <Chord modal="map-layers-config" />
+          </MenuGutter>
         </OnlineOnlyItem>
 
         <Dropdown.Divider />
@@ -85,31 +88,41 @@ export function MapManageButton(): ReactElement {
           {...modalMenuItemProps('custom-maps')}
         >
           <MdDashboardCustomize /> {m?.mapLayers.customMaps}
-          {customLayerCount > 0 && ` · ${customLayerCount}`}{' '}
-          <Chord modal="custom-maps" />
+          {customLayerCount > 0 && ` · ${customLayerCount}`}
+          <MenuGutter>
+            <Chord modal="custom-maps" />
+          </MenuGutter>
         </OnlineOnlyItem>
 
         <Dropdown.Item {...modalMenuItemProps('offline-maps')}>
           <BiWifiOff /> {m?.mapLayers.offlineMaps}
-          {cachedMapsTotalSize > 0 && ` · ${formatSize(cachedMapsTotalSize)}`}{' '}
-          <Chord modal="offline-maps" />
+          {cachedMapsTotalSize > 0 && ` · ${formatSize(cachedMapsTotalSize)}`}
+          <MenuGutter>
+            <Chord modal="offline-maps" />
+          </MenuGutter>
         </Dropdown.Item>
 
         <Dropdown.Item {...modalMenuItemProps('browse-cache')}>
-          <FaDatabase /> {m?.mapLayers.browseCache}{' '}
-          <Chord modal="browse-cache" />
+          <FaDatabase /> {m?.mapLayers.browseCache}
+          <MenuGutter>
+            <Chord modal="browse-cache" />
+          </MenuGutter>
         </Dropdown.Item>
 
         <Dropdown.Divider />
 
         <Dropdown.Item {...modalMenuItemProps('map-preferences')}>
-          <FaSlidersH /> {m?.mapLayers.preferences}{' '}
-          <Chord modal="map-preferences" />
+          <FaSlidersH /> {m?.mapLayers.preferences}
+          <MenuGutter>
+            <Chord modal="map-preferences" />
+          </MenuGutter>
         </Dropdown.Item>
 
         <Dropdown.Item {...modalMenuItemProps('elevation-settings')}>
-          <FaChartArea /> {m?.elevationChart.settings}{' '}
-          <Chord modal="elevation-settings" />
+          <FaChartArea /> {m?.elevationChart.settings}
+          <MenuGutter>
+            <Chord modal="elevation-settings" />
+          </MenuGutter>
         </Dropdown.Item>
       </FmDropdownMenu>
     </Dropdown>

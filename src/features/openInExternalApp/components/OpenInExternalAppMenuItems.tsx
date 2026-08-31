@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Chord } from '@shared/components/Chord.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import type { LatLon } from '@shared/types/common.js';
 import { canShareFile } from '@shared/webShare.js';
@@ -136,10 +137,9 @@ export function SharePageItems({
         <Dropdown.Item as="button" {...openMenuItemProps('copy')}>
           <FaClipboard /> {m?.general.copyPageUrl}
           {showKbdShortcut && (
-            <>
-              {' '}
+            <MenuGutter>
               <Chord external="copy" />
-            </>
+            </MenuGutter>
           )}
         </Dropdown.Item>
       )}
@@ -236,10 +236,9 @@ export function OpenInExternalTargetItems({
       >
         <SiOpenstreetmap /> {oeam?.osm}
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="osm.org" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -249,10 +248,9 @@ export function OpenInExternalTargetItems({
           <Dropdown.Item as="button" {...openMenuItemProps('josm')}>
             {noIcon} {oeam?.josm}
             {showKbdShortcut && (
-              <>
-                {' '}
+              <MenuGutter>
                 <Chord external="josm" />
-              </>
+              </MenuGutter>
             )}
           </Dropdown.Item>
 
@@ -263,10 +261,9 @@ export function OpenInExternalTargetItems({
           >
             {noIcon} {oeam?.id}
             {showKbdShortcut && (
-              <>
-                {' '}
+              <MenuGutter>
                 <Chord external="osm.org/id" />
-              </>
+              </MenuGutter>
             )}
           </OnlineOnlyItem>
         </>
@@ -290,10 +287,9 @@ export function OpenInExternalTargetItems({
       >
         {noIcon} {oeam?.mapy_cz}
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="mapy.com" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -304,10 +300,9 @@ export function OpenInExternalTargetItems({
       >
         <SiGooglemaps /> {oeam?.googleMaps}
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="google" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -318,10 +313,9 @@ export function OpenInExternalTargetItems({
       >
         <SiApple /> {oeam?.appleMaps}
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="apple" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -343,10 +337,9 @@ export function OpenInExternalTargetItems({
       >
         <SiGooglestreetview /> Google Street View
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="streetview" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -357,10 +350,9 @@ export function OpenInExternalTargetItems({
       >
         <SiMapillary /> Mapillary
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="mapillary" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -371,10 +363,9 @@ export function OpenInExternalTargetItems({
       >
         {noIcon} Panoramax
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="panoramax" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -385,10 +376,9 @@ export function OpenInExternalTargetItems({
       >
         {noIcon} F4Map
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="f4map" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -399,10 +389,9 @@ export function OpenInExternalTargetItems({
       >
         {noIcon} Peakfinder
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="peakfinder" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -432,10 +421,9 @@ export function OpenInExternalTargetItems({
       >
         <TbBrandWindy /> Windy
         {showKbdShortcut && (
-          <>
-            {' '}
+          <MenuGutter>
             <Chord external="windy" />
-          </>
+          </MenuGutter>
         )}
       </OnlineOnlyItem>
 
@@ -474,10 +462,9 @@ export function OpenInExternalTargetItems({
           {noIcon} {oeam?.hiking_sk} <CountryFlag country="sk" />{' '}
           <CountryFlag country="cz" />
           {showKbdShortcut && (
-            <>
-              {' '}
+            <MenuGutter>
               <Chord external="hiking.sk" />
-            </>
+            </MenuGutter>
           )}
         </OnlineOnlyItem>
       )}
@@ -490,10 +477,9 @@ export function OpenInExternalTargetItems({
         >
           {noIcon} {oeam?.zbgis} <CountryFlag country="sk" />
           {showKbdShortcut && (
-            <>
-              {' '}
+            <MenuGutter>
               <Chord external="zbgis" />
-            </>
+            </MenuGutter>
           )}
         </OnlineOnlyItem>
       )}

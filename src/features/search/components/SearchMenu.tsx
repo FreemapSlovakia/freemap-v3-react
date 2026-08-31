@@ -13,6 +13,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -709,9 +710,13 @@ function CommandItem({ match }: { match: CommandMatch }) {
         </>
       )}
 
-      {command.experimental && <ExperimentalFunction />}
+      {(command.experimental || command.badges) && (
+        <MenuGutter>
+          {command.experimental && <ExperimentalFunction />}
 
-      {command.badges}
+          {command.badges}
+        </MenuGutter>
+      )}
     </>
   );
 

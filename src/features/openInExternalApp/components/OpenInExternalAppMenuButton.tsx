@@ -1,6 +1,7 @@
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import type { TooltipTargetProps } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
@@ -128,7 +129,10 @@ export function OpenInExternalAppMenuButton({
             {pageItems && <Dropdown.Divider />}
 
             <Dropdown.Item as="button" eventKey="submenu-openExternally">
-              <FaExternalLinkAlt /> {oeam?.openIn} <FaChevronRight />
+              <FaExternalLinkAlt /> {oeam?.openIn}
+              <MenuGutter>
+                <FaChevronRight />
+              </MenuGutter>
             </Dropdown.Item>
           </>
         )}

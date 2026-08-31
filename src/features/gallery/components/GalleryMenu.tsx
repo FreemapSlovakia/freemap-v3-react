@@ -6,6 +6,7 @@ import { Checkbox } from '@shared/components/Checkbox.js';
 import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
@@ -363,9 +364,11 @@ export default function GalleryMenu() {
 
                         return (
                           <Dropdown.Item key={key} as="button" eventKey={key}>
-                            <Icon /> {gm?.f[key]}{' '}
+                            <Icon /> {gm?.f[key]}
                             {key === '-createdAt' && (
-                              <Chord command="gallery-list" />
+                              <MenuGutter>
+                                <Chord command="gallery-list" />
+                              </MenuGutter>
                             )}
                           </Dropdown.Item>
                         );
@@ -457,8 +460,10 @@ export default function GalleryMenu() {
                               as="button"
                               eventKey="submenu-license"
                             >
-                              <FaCreativeCommons /> {gm?.license.chooseForAll}{' '}
-                              <FaChevronRight />
+                              <FaCreativeCommons /> {gm?.license.chooseForAll}
+                              <MenuGutter>
+                                <FaChevronRight />
+                              </MenuGutter>
                             </OnlineOnlyItem>
                           </>
                         )}
