@@ -3,7 +3,6 @@ import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
-import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import {
   LEGEND_ITEM,
   legendToggleOption,
@@ -41,7 +40,6 @@ import {
   FaSave,
   FaUpload,
 } from 'react-icons/fa';
-import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
 import { useSimplifyData } from '../hooks/useSimplifyData.js';
@@ -242,134 +240,120 @@ export function DataViewerMenu(): ReactElement {
   };
 
   return (
-    <>
-      <ToolMenu tool="import-file">
-        {unsaved && (
-          <UnsavedWarningIcon
-            label={tvm?.unsaved}
-            tooltip={tvm?.unsavedTooltip}
-          />
-        )}
-
-        {canUpload && (
-          <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
-            {({ label, labelClassName, props }) => (
-              <Button
-                variant={hasTrack ? 'secondary' : 'primary'}
-                onClick={() => {
-                  dispatch(setActiveModal({ type: 'file-import' }));
-                }}
-                {...props}
-              >
-                <FaUpload />
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
-
-        {/* Separate the import action from the loaded-track actions. */}
-        {canUpload && hasTrack && <div className="vr align-self-stretch" />}
-
-        {hasLines && (
-          <SelectDropdown
-            id="colorizing_mode"
-            breakpoint="lg"
-            toggleIcon={<FaPalette />}
-            name={cm?.colorizeBy}
-            value={colorizeTrackBy ?? 'none'}
-            onSelect={(approach) => {
-              if (approach === LEGEND_ITEM) {
-                dispatch(dataViewerSetColorizeLegend());
-
-                return;
-              }
-
-              const mode = ColorizingModeSchema.nullable().parse(
-                approach === 'none' ? null : approach,
-              );
-
-              // Elevation-derived modes route through the same fill prompt as
-              // the chart, but only while elevation is missing and undecided;
-              // otherwise apply directly.
-              if (
-                mode &&
-                colorizerNeedsElevation(mode) &&
-                needsElevationDecision
-              ) {
-                dispatch(
-                  dataViewerSetElevationPrompt({ type: 'colorize', mode }),
-                );
-              } else {
-                dispatch(dataViewerColorizeTrackBy(mode));
-              }
-            }}
-            options={[
-              ...legendToggleOption(
-                colorizeTrackBy,
-                colorizeLegend,
-                cm?.legend,
-              ),
-              // Span-based modes read what a router reported. A recording
-              // carries none until it is matched to the network, and each
-              // mode's own `isAvailable` is what decides once it has been.
-              ...colorizeModeOptions({
-                modes: colorizingModes,
-                labels: cm?.mode,
-                activeMode: colorizeTrackBy,
-                premiumColorize,
-                isAvailable: isModeAvailable,
-              }),
-            ]}
-          />
-        )}
-
-        {hasTrack && (
-          <Dropdown id="more" onSelect={handleMoreSelect}>
-            <Dropdown.Toggle variant="secondary">
-              <FaEllipsisV />
-            </Dropdown.Toggle>
-
-            <FmDropdownMenu>
-              <Dropdown.Item as="button" eventKey="edit-style">
-                <FaPaintBrush /> &nbsp;{tvm?.style.title ?? '…'}
-              </Dropdown.Item>
-
-              {hasLines && canUpdateElevation && (
-                <Dropdown.Item as="button" eventKey="update-elevation">
-                  <FaMountain /> &nbsp;{tvm?.elevationFill.update ?? '…'}
-                </Dropdown.Item>
-              )}
-
-              {canSimplify && (
-                <Dropdown.Item as="button" eventKey="simplify">
-                  <FaCompressAlt /> &nbsp;{tvm?.simplifyAll ?? '…'}
-                </Dropdown.Item>
-              )}
-
-              {!hasActiveMap && (
-                <Dropdown.Item as="button" eventKey="save-as-map">
-                  <FaSave /> &nbsp;{tvm?.saveAsMap ?? '…'}
-                </Dropdown.Item>
-              )}
-
-              <Dropdown.Item as="button" eventKey="convert-to-drawing">
-                <FaPencilAlt /> &nbsp;{tvm?.convertAllToDrawing ?? '…'}
-              </Dropdown.Item>
-            </FmDropdownMenu>
-          </Dropdown>
-        )}
-
-        {hasTrack && <DeleteButton action={dataViewerDelete()} />}
-      </ToolMenu>
-
-      {hasLines && colorizeLegend && colorizeTrackBy && (
-        <ColorizeLegend
-          mode={colorizeTrackBy}
-          icon={<MdShapeLine />}
-          features={lineFeatures}
+    <ToolMenu tool="import-file">
+      {unsaved && (
+        <UnsavedWarningIcon
+          label={tvm?.unsaved}
+          tooltip={tvm?.unsavedTooltip}
         />
       )}
-    </>
+
+      {canUpload && (
+        <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              variant={hasTrack ? 'secondary' : 'primary'}
+              onClick={() => {
+                dispatch(setActiveModal({ type: 'file-import' }));
+              }}
+              {...props}
+            >
+              <FaUpload />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
+
+      {/* Separate the import action from the loaded-track actions. */}
+      {canUpload && hasTrack && <div className="vr align-self-stretch" />}
+
+      {hasLines && (
+        <SelectDropdown
+          id="colorizing_mode"
+          breakpoint="lg"
+          toggleIcon={<FaPalette />}
+          name={cm?.colorizeBy}
+          value={colorizeTrackBy ?? 'none'}
+          onSelect={(approach) => {
+            if (approach === LEGEND_ITEM) {
+              dispatch(dataViewerSetColorizeLegend());
+
+              return;
+            }
+
+            const mode = ColorizingModeSchema.nullable().parse(
+              approach === 'none' ? null : approach,
+            );
+
+            // Elevation-derived modes route through the same fill prompt as
+            // the chart, but only while elevation is missing and undecided;
+            // otherwise apply directly.
+            if (
+              mode &&
+              colorizerNeedsElevation(mode) &&
+              needsElevationDecision
+            ) {
+              dispatch(
+                dataViewerSetElevationPrompt({ type: 'colorize', mode }),
+              );
+            } else {
+              dispatch(dataViewerColorizeTrackBy(mode));
+            }
+          }}
+          options={[
+            ...legendToggleOption(colorizeTrackBy, colorizeLegend, cm?.legend),
+            // Span-based modes read what a router reported. A recording
+            // carries none until it is matched to the network, and each
+            // mode's own `isAvailable` is what decides once it has been.
+            ...colorizeModeOptions({
+              modes: colorizingModes,
+              labels: cm?.mode,
+              activeMode: colorizeTrackBy,
+              premiumColorize,
+              isAvailable: isModeAvailable,
+            }),
+          ]}
+        />
+      )}
+
+      {hasTrack && (
+        <Dropdown id="more" onSelect={handleMoreSelect}>
+          <Dropdown.Toggle variant="secondary">
+            <FaEllipsisV />
+          </Dropdown.Toggle>
+
+          <FmDropdownMenu>
+            <Dropdown.Item as="button" eventKey="edit-style">
+              <FaPaintBrush /> &nbsp;{tvm?.style.title ?? '…'}
+            </Dropdown.Item>
+
+            {hasLines && canUpdateElevation && (
+              <Dropdown.Item as="button" eventKey="update-elevation">
+                <FaMountain /> &nbsp;{tvm?.elevationFill.update ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {canSimplify && (
+              <Dropdown.Item as="button" eventKey="simplify">
+                <FaCompressAlt /> &nbsp;{tvm?.simplifyAll ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            {!hasActiveMap && (
+              <Dropdown.Item as="button" eventKey="save-as-map">
+                <FaSave /> &nbsp;{tvm?.saveAsMap ?? '…'}
+              </Dropdown.Item>
+            )}
+
+            <Dropdown.Item as="button" eventKey="convert-to-drawing">
+              <FaPencilAlt /> &nbsp;{tvm?.convertAllToDrawing ?? '…'}
+            </Dropdown.Item>
+          </FmDropdownMenu>
+        </Dropdown>
+      )}
+
+      {hasTrack && <DeleteButton action={dataViewerDelete()} />}
+    </ToolMenu>
   );
 }

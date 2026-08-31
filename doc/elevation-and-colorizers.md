@@ -591,6 +591,11 @@ them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
   ±5 % they collapse onto zero — and the labels closing up toward the middle is itself what
   shows the compression.
 
+- **The legend is not part of its tool's toolbar.** `RoutePlannerColorizeLegend`,
+  `DataViewerColorizeLegend` and `TrackingColorizeLegend` mount from `Main.tsx` beside the
+  toolbars and read their own slice, so a colored line keeps its key when the tool is
+  closed — which is also what lets a link color a route without naming a tool. Each closes
+  itself through its feature's `colorizeLegend` setting, since no toolbar owns it.
 - Each `Colorizer` exposes **`isAvailable`**, which says whether a mode has anything to
   paint on the features in hand — a track exposes a channel mode only when it carries that
   channel, a path-detail mode only once something on the line is mapped with it.

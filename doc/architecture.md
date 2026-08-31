@@ -167,6 +167,24 @@ final state. `hashchange` is handled by `locationChangeHandler`. When you add
 state that should be shareable/bookmarkable, wire it through here **and** update
 the hash-param docs in `src/static/llms.txt`.
 
+**Whether a param costs a history entry is already solved — don't build a second
+mechanism for it.** `urlProcessor`'s `COALESCED_KEYS` names the params a change may be
+confined to without pushing one: such a write replaces the current entry (and is
+rate-limited) instead, so a run of them costs one Back press rather than many. Panning is
+the original case; the colorize params joined it for the opposite reason — a URL that omits
+them does not turn colorizing off, so an entry standing for one would be an entry Back
+cannot honour. Adding a key to that set is the whole change; a parallel signature or a
+per-action flag is reinventing it. Note it coalesces rather than suppresses: the first
+change after other content still pushes, later ones replace it within
+`VIEW_COALESCE_GAP_MS`.
+
+Two neighbouring mechanisms are **not** this one, and each answers a different question:
+`urlUpdating.ts`'s `setUrlUpdatingEnabled(false)` suspends URL writing altogether while the
+store is mutated programmatically (a drag, a popstate restore); and a param's reader in
+`locationChangeHandler` decides what its _absence_ means — clear the state, or leave it
+alone. The colorize params leave it alone, because they are persisted preferences that a
+plain visit would otherwise wipe.
+
 `sessionStash.ts` is the counterweight to the platform losing that URL. An
 installed PWA relaunched after Android reclaims its process is restarted from
 its launch intent, which carries only the manifest's `start_url` — a browser tab

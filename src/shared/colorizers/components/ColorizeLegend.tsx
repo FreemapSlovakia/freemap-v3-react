@@ -5,7 +5,8 @@ import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactNode, useMemo } from 'react';
-import { FaPalette } from 'react-icons/fa';
+import { Button } from 'react-bootstrap';
+import { FaPalette, FaTimes } from 'react-icons/fa';
 import type { Messages } from '@/translations/messagesInterface.js';
 import { readCoordTimes, rgbCss } from '../colorize.js';
 import type { ColorizingMode, HotlinePalette } from '../index.js';
@@ -174,17 +175,24 @@ function legendSpec(
 
 type Props = {
   mode: ColorizingMode;
-  /** The host tool's icon, shown before the palette icon (like the gallery). */
-  icon: ReactNode;
+  /**
+   * The button reopening the tool this legend belongs to. A control rather than
+   * a glyph because the legend outlives that tool's toolbar, so it is often the
+   * only way back to it. Kept out of the label, which carries its own
+   * long-press tooltip.
+   */
+  control: ReactNode;
   /** Features being colorized, used to derive real numeric labels (elevation, sensors). */
   features?: Feature<LineString>[];
+  /** Hides the legend. It outlives its tool's toolbar, so it closes itself. */
+  onClose: () => void;
 };
 
 /**
  * Toggleable legend for the route/track colorization, reusing the active mode's
  * Hotline palette as the gradient bar. Mirrors the picture-gallery legend.
  */
-export function ColorizeLegend({ mode, icon, features }: Props) {
+export function ColorizeLegend({ mode, control, features, onClose }: Props) {
   const cm = useColorizerMessages();
 
   const m = useMessages();
@@ -245,13 +253,14 @@ export function ColorizeLegend({ mode, icon, features }: Props) {
       }
     >
       <Toolbar className="mt-2 d-flex">
+        {control}
+
         <LongPressTooltip label={cm.legend} breakpoint="sm">
           {({ props, label, labelClassName }) => (
             <span
               className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
               {...props}
             >
-              {icon}
               <FaPalette />
               <span className={labelClassName}>
                 {label}
@@ -335,6 +344,14 @@ export function ColorizeLegend({ mode, icon, features }: Props) {
             </div>
           </div>
         )}
+
+        <LongPressTooltip label={m?.general.close}>
+          {({ props }) => (
+            <Button variant="dark" onClick={onClose} {...props}>
+              <FaTimes />
+            </Button>
+          )}
+        </LongPressTooltip>
       </Toolbar>
     </div>
   );

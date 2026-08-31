@@ -97,6 +97,24 @@ const objectsMenuFactory = () =>
     '@features/objects/components/ObjectsMenu.js'
   );
 
+const routePlannerColorizeLegendFactory = () =>
+  import(
+    /* webpackChunkName: "route-planner-colorize-legend" */
+    '@features/routePlanner/components/RoutePlannerColorizeLegend.js'
+  );
+
+const dataViewerColorizeLegendFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-colorize-legend" */
+    '@features/dataViewer/components/DataViewerColorizeLegend.js'
+  );
+
+const trackingColorizeLegendFactory = () =>
+  import(
+    /* webpackChunkName: "tracking-colorize-legend" */
+    '@features/tracking/components/TrackingColorizeLegend.js'
+  );
+
 const routePlannerMenuFactory = () =>
   import(
     /* webpackChunkName: "route-planner-menu" */
@@ -580,6 +598,20 @@ export function Main(): ReactElement {
   // is where it says what it wants and offers the way out.
   const inMode = useAppSelector(mapModeSelector);
 
+  // Only whether a colorize legend is possible at all, so its chunk stays off a
+  // page that will never show one. Each legend decides for itself from there.
+  const colorizingRoute = useAppSelector((state) =>
+    Boolean(state.routePlannerSettings.colorizeBy),
+  );
+
+  const colorizingTrack = useAppSelector((state) =>
+    Boolean(state.trackViewerSettings.colorizeTrackBy),
+  );
+
+  const colorizingTracking = useAppSelector((state) =>
+    Boolean(state.trackingSettings.colorizeBy),
+  );
+
   const selectingMapArea = useAppSelector(
     (state) => state.mapArea.selecting !== null,
   );
@@ -962,6 +994,30 @@ export function Main(): ReactElement {
 
               {selectingMapArea && (
                 <AsyncComponent factory={mapAreaSelectionMenuFactory} />
+              )}
+
+              {/* Each legend outlives its tool's toolbar: the colored line
+                  stays on the map when the tool is closed, and a shared link
+                  need not name the tool at all. Each hides itself; the flags
+                  here only keep its chunk off a page that has no colorize mode
+                  set at all. Not in an embed — the legend's own control opens a
+                  tool, which an embed refuses. */}
+              {!window.fmEmbedded && !inMode && (
+                <>
+                  {colorizingRoute && (
+                    <AsyncComponent
+                      factory={routePlannerColorizeLegendFactory}
+                    />
+                  )}
+
+                  {colorizingTrack && (
+                    <AsyncComponent factory={dataViewerColorizeLegendFactory} />
+                  )}
+
+                  {colorizingTracking && (
+                    <AsyncComponent factory={trackingColorizeLegendFactory} />
+                  )}
+                </>
               )}
 
               {showAds && !askingCookieConsent && !showElevationChart && (

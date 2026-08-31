@@ -5,7 +5,6 @@ import {
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
-import { ColorizeLegend } from '@shared/colorizers/components/ColorizeLegend.js';
 import {
   LEGEND_ITEM,
   legendToggleOption,
@@ -26,13 +25,7 @@ import { useOnline } from '@shared/hooks/useOnline.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
-import {
-  FaBullseye,
-  FaChartArea,
-  FaMobileAlt,
-  FaPalette,
-  FaRegEye,
-} from 'react-icons/fa';
+import { FaChartArea, FaMobileAlt, FaPalette, FaRegEye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { resolveChartTrack } from '../chartTrack.js';
 import { trackingActions } from '../model/actions.js';
@@ -111,138 +104,128 @@ export function TrackingMenu(): ReactElement {
   );
 
   return (
-    <>
-      <ToolMenu tool="tracking">
-        <LongPressTooltip
-          breakpoint="md"
-          label={tm?.trackedDevices.button}
-          kbd="g w"
-        >
+    <ToolMenu tool="tracking">
+      <LongPressTooltip
+        breakpoint="md"
+        label={tm?.trackedDevices.button}
+        kbd="g w"
+      >
+        {({ label, labelClassName, props }) => (
+          <Button
+            variant="secondary"
+            onClick={() =>
+              dispatch(setActiveModal({ type: 'tracking-watched' }))
+            }
+            {...props}
+          >
+            <FaRegEye />
+            <span className={labelClassName}> {label}</span>
+          </Button>
+        )}
+      </LongPressTooltip>
+
+      {/* Watched devices are kept in the browser, so that list is edited
+            offline too; a device of one's own lives on the server. */}
+      <LongPressTooltip breakpoint="md" label={tm?.devices.button} kbd="g d">
+        {({ label, labelClassName, props }) => (
+          <Button
+            variant="secondary"
+            disabled={!online}
+            onClick={() => dispatch(setActiveModal({ type: 'tracking-my' }))}
+            {...props}
+          >
+            <FaMobileAlt />
+            <span className={labelClassName}> {label}</span>
+          </Button>
+        )}
+      </LongPressTooltip>
+
+      <SelectDropdown
+        id="tracking_visual"
+        breakpoint="lg"
+        toggleIcon={<FaRegEye />}
+        name={m?.general.visual}
+        value={display}
+        onSelect={(key) => {
+          const [points, line] = (key ?? '11')
+            .split('')
+            .map((n) => n === '1') as [boolean, boolean];
+
+          dispatch(trackingActions.setShowPoints(points));
+
+          dispatch(trackingActions.setShowLine(line));
+        }}
+        options={[
+          { value: '10', label: tm?.visual.points },
+          { value: '01', label: tm?.visual.line },
+          { value: '11', label: tm?.visual['line+points'] },
+        ]}
+      />
+
+      <SelectDropdown
+        id="tracking_colorize"
+        breakpoint="lg"
+        toggleIcon={<FaPalette />}
+        name={cm?.colorizeBy}
+        value={colorizeBy ?? 'none'}
+        onSelect={(mode) => {
+          if (mode === LEGEND_ITEM) {
+            dispatch(trackingActions.setColorizeLegend());
+
+            return;
+          }
+
+          dispatch(
+            trackingActions.setColorizeBy(
+              ColorizingModeSchema.nullable().parse(
+                mode === 'none' ? null : mode,
+              ),
+            ),
+          );
+        }}
+        options={[
+          ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
+          // Span-based modes read what a router reported. A live track has no
+          // way to acquire that — dataViewer's can, by matching — so they
+          // would be rows nothing can ever enable.
+          ...colorizeModeOptions({
+            modes: colorizingModes.filter(
+              (mode) => !colorizers[mode].spanBased,
+            ),
+            labels: cm?.mode,
+            activeMode: colorizeBy,
+            premiumColorize,
+            isAvailable: isModeAvailable,
+          }),
+        ]}
+      />
+
+      {chartTrack && (
+        <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
           {({ label, labelClassName, props }) => (
             <Button
               variant="secondary"
+              active={elevationChartActive}
               onClick={() =>
-                dispatch(setActiveModal({ type: 'tracking-watched' }))
+                dispatch(
+                  elevationChartActive
+                    ? elevationChartClose()
+                    : elevationChartOpen({
+                        type: 'tracking',
+                        token: chartTrack.token,
+                      }),
+                )
               }
               {...props}
             >
-              <FaRegEye />
+              <FaChartArea />
               <span className={labelClassName}> {label}</span>
             </Button>
           )}
         </LongPressTooltip>
-
-        {/* Watched devices are kept in the browser, so that list is edited
-            offline too; a device of one's own lives on the server. */}
-        <LongPressTooltip breakpoint="md" label={tm?.devices.button} kbd="g d">
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              disabled={!online}
-              onClick={() => dispatch(setActiveModal({ type: 'tracking-my' }))}
-              {...props}
-            >
-              <FaMobileAlt />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-
-        <SelectDropdown
-          id="tracking_visual"
-          breakpoint="lg"
-          toggleIcon={<FaRegEye />}
-          name={m?.general.visual}
-          value={display}
-          onSelect={(key) => {
-            const [points, line] = (key ?? '11')
-              .split('')
-              .map((n) => n === '1') as [boolean, boolean];
-
-            dispatch(trackingActions.setShowPoints(points));
-
-            dispatch(trackingActions.setShowLine(line));
-          }}
-          options={[
-            { value: '10', label: tm?.visual.points },
-            { value: '01', label: tm?.visual.line },
-            { value: '11', label: tm?.visual['line+points'] },
-          ]}
-        />
-
-        <SelectDropdown
-          id="tracking_colorize"
-          breakpoint="lg"
-          toggleIcon={<FaPalette />}
-          name={cm?.colorizeBy}
-          value={colorizeBy ?? 'none'}
-          onSelect={(mode) => {
-            if (mode === LEGEND_ITEM) {
-              dispatch(trackingActions.setColorizeLegend());
-
-              return;
-            }
-
-            dispatch(
-              trackingActions.setColorizeBy(
-                ColorizingModeSchema.nullable().parse(
-                  mode === 'none' ? null : mode,
-                ),
-              ),
-            );
-          }}
-          options={[
-            ...legendToggleOption(colorizeBy, colorizeLegend, cm?.legend),
-            // Span-based modes read what a router reported. A live track has no
-            // way to acquire that — dataViewer's can, by matching — so they
-            // would be rows nothing can ever enable.
-            ...colorizeModeOptions({
-              modes: colorizingModes.filter(
-                (mode) => !colorizers[mode].spanBased,
-              ),
-              labels: cm?.mode,
-              activeMode: colorizeBy,
-              premiumColorize,
-              isAvailable: isModeAvailable,
-            }),
-          ]}
-        />
-
-        {chartTrack && (
-          <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
-            {({ label, labelClassName, props }) => (
-              <Button
-                variant="secondary"
-                active={elevationChartActive}
-                onClick={() =>
-                  dispatch(
-                    elevationChartActive
-                      ? elevationChartClose()
-                      : elevationChartOpen({
-                          type: 'tracking',
-                          token: chartTrack.token,
-                        }),
-                  )
-                }
-                {...props}
-              >
-                <FaChartArea />
-                <span className={labelClassName}> {label}</span>
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
-
-        {convertible && <TrackingConvertMenu />}
-      </ToolMenu>
-
-      {colorizeLegend && colorizeBy && (
-        <ColorizeLegend
-          mode={colorizeBy}
-          icon={<FaBullseye />}
-          features={lineFeatures}
-        />
       )}
-    </>
+
+      {convertible && <TrackingConvertMenu />}
+    </ToolMenu>
   );
 }

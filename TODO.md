@@ -676,12 +676,13 @@ and what landed. Nothing is outstanding there.
 
 ## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
 
-- [ ] **The colorize legend toggle is still not in the URL.** `colorizeBy` now
-      travels as `route-colorize-by` / `track-colorize-by`, but `colorizeLegend`
-      does not, so a shared link colors the line and leaves the reader to open
-      the legend that says what the colors mean. Same shape as the mode; the
-      only question is whether it deserves a parameter of its own or should ride
-      along with the mode (`route-colorize-by=surface,legend`).
+- [ ] **An embedded map colorizes without saying what the colors mean.** The
+      colorize legends are hidden in an embed, because the legend's leading
+      control opens the tool it belongs to and an embed refuses those — yet
+      `track-colorize-by=` is exactly the kind of param an embed is given, so an
+      embedded track can be painted by surface with no key anywhere. Showing the
+      legend there needs `control` to be optional, and a decision about what
+      replaces the button: the plain glyph it used to be, or nothing.
 
 - [ ] **Colorize erases the step-mode channel.** The map says how a stretch is
       travelled by its dash — `stepModeDashArray` marks `manual`, `pushing bike`,

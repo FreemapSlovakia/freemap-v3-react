@@ -8,6 +8,7 @@ import {
   dataViewerDownloadTrack,
   dataViewerGpxLoad,
   dataViewerRestoreStored,
+  dataViewerSetColorizeLegend,
   dataViewerSetStyle,
 } from '@features/dataViewer/model/actions.js';
 import {
@@ -83,6 +84,7 @@ import { isPremium } from '@features/premium/premium.js';
 import {
   type RoutePoint,
   routePlannerColorizeBy,
+  routePlannerSetColorizeLegend,
   routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
 import {
@@ -114,7 +116,10 @@ import {
   wikiSetPreview,
 } from '@features/wiki/model/actions.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
-import { ColorizingModeSchema } from '@shared/colorizers/index.js';
+import {
+  type ColorizingMode,
+  ColorizingModeSchema,
+} from '@shared/colorizers/index.js';
 import { isLanguage } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
@@ -432,31 +437,41 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
-  // A mode named by the URL is parsed rather than trusted: an unknown one would
-  // reach `colorizers[mode]` as undefined and take the colorize render with it.
-  const colorizeTrackBy = ColorizingModeSchema.safeParse(
-    query['track-colorize-by'],
-  ).data;
+  handleColorize(
+    dispatch,
+    query,
+    'track',
+    () => ({
+      mode: getState().trackViewerSettings.colorizeTrackBy,
+      legend: getState().trackViewerSettings.colorizeLegend,
+    }),
+    dataViewerColorizeTrackBy,
+    dataViewerSetColorizeLegend,
+  );
 
-  if (colorizeTrackBy) {
-    if (getState().trackViewerSettings.colorizeTrackBy !== colorizeTrackBy) {
-      dispatch(dataViewerColorizeTrackBy(colorizeTrackBy));
-    }
-  } else if (getState().trackViewerSettings.colorizeTrackBy) {
-    dispatch(dataViewerColorizeTrackBy(null));
-  }
+  handleColorize(
+    dispatch,
+    query,
+    'route',
+    () => ({
+      mode: getState().routePlannerSettings.colorizeBy,
+      legend: getState().routePlannerSettings.colorizeLegend,
+    }),
+    routePlannerColorizeBy,
+    routePlannerSetColorizeLegend,
+  );
 
-  const colorizeRouteBy = ColorizingModeSchema.safeParse(
-    query['route-colorize-by'],
-  ).data;
-
-  if (colorizeRouteBy) {
-    if (getState().routePlannerSettings.colorizeBy !== colorizeRouteBy) {
-      dispatch(routePlannerColorizeBy(colorizeRouteBy));
-    }
-  } else if (getState().routePlannerSettings.colorizeBy) {
-    dispatch(routePlannerColorizeBy(null));
-  }
+  handleColorize(
+    dispatch,
+    query,
+    'tracking',
+    () => ({
+      mode: getState().trackingSettings.colorizeBy,
+      legend: getState().trackingSettings.colorizeLegend,
+    }),
+    trackingActions.setColorizeBy,
+    trackingActions.setColorizeLegend,
+  );
 
   handleInfoPoint(getState, dispatch, query);
 
@@ -1447,6 +1462,51 @@ export function parseStyleFields(s: string): {
   }
 
   return out;
+}
+
+/**
+ * Applies `<prefix>-colorize-by` and `<prefix>-colorize-legend` to one feature's
+ * colorize settings.
+ *
+ * The mode is parsed rather than trusted: an unknown one would reach
+ * `colorizers[mode]` as undefined and take the colorize render with it.
+ *
+ * **Neither is applied unless the URL names it.** Both are persisted
+ * preferences, and both are written only while the feature has a line to color,
+ * so treating absence as a value would wipe a stored choice on every plain
+ * `freemap.sk/` visit, and again whenever a route or track is deleted. What the
+ * URL cannot say is "colorize nothing" — a link omitting the mode leaves the
+ * reader's own, which is the right answer for the reader's own map.
+ */
+function handleColorize(
+  dispatch: Dispatch,
+  query: Record<string, string | string[]>,
+  prefix: string,
+  current: () => { mode: ColorizingMode | null; legend: boolean },
+  setMode: (mode: ColorizingMode | null) => RootAction,
+  setLegend: (shown: boolean) => RootAction,
+) {
+  const mode = ColorizingModeSchema.safeParse(
+    query[`${prefix}-colorize-by`],
+  ).data;
+
+  if (mode && current().mode !== mode) {
+    dispatch(setMode(mode));
+  }
+
+  // Only alongside a mode, and only spelled as written: the pair is always
+  // written together, so a legend flag arriving alone is a hand-edited URL, and
+  // honoring it would overwrite a stored preference over nothing. Anything but
+  // `0`/`1` is ignored rather than read as "hide".
+  const legend = query[`${prefix}-colorize-legend`];
+
+  if (mode && (legend === '0' || legend === '1')) {
+    const shown = legend === '1';
+
+    if (current().legend !== shown) {
+      dispatch(setLegend(shown));
+    }
+  }
 }
 
 /**

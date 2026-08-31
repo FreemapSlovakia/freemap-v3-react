@@ -1,6 +1,5 @@
-import { openTool, setActiveModal } from '@app/store/actions.js';
+import { setActiveModal } from '@app/store/actions.js';
 import {
-  isToolOpen,
   trackingActiveTrackIdSelector,
   trackingTrackSelector,
 } from '@app/store/selectors.js';
@@ -10,16 +9,15 @@ import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
-import { FaBullseye, FaEye } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
 import { FaPencil } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
 import { hasDrawableSegment } from '../tracks.js';
 import { TrackingConvertMenu } from './TrackingConvertMenu.js';
+import { TrackingToggleButton } from './TrackingToggleButton.js';
 
 export function TrackingSelection(): ReactElement {
   const m = useMessages();
-
-  const trackingOpen = useAppSelector((state) => isToolOpen(state, 'tracking'));
 
   const selectedToken = useAppSelector(trackingActiveTrackIdSelector);
 
@@ -42,20 +40,7 @@ export function TrackingSelection(): ReactElement {
 
   return (
     <Selection
-      control={
-        <LongPressTooltip label={m?.tools.tracking}>
-          {({ props }) => (
-            <Button
-              {...props}
-              variant="dark"
-              disabled={trackingOpen}
-              onClick={() => dispatch(openTool('tracking'))}
-            >
-              <FaBullseye />
-            </Button>
-          )}
-        </LongPressTooltip>
-      }
+      control={<TrackingToggleButton />}
       icon={<FaEye />}
       label={m?.selections.tracking}
       deletable

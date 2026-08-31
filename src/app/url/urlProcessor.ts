@@ -15,7 +15,10 @@ import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
 import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
-import { openToolsSelector } from '../store/selectors.js';
+import {
+  openToolsSelector,
+  trackGeojsonIsSuitableForElevationChart,
+} from '../store/selectors.js';
 import type { RootState } from '../store/store.js';
 import {
   getMapContentParts,
@@ -35,13 +38,26 @@ import { isUrlUpdatingEnabled } from './urlUpdating.js';
 // panning sessions stay separately navigable.
 const VIEW_COALESCE_GAP_MS = 60_000;
 
-// Params that move as fast as a gesture and so must not cost a history entry
-// each: the map's own viewport, and the bearing the panorama is turned to. A
-// change confined to these replaces the current entry instead of pushing one,
-// and is rate-limited below.
-const VIEWPORT_KEYS = new Set(['map', 'panorama-az']);
+// Params that must not cost a history entry each. A change confined to these
+// replaces the current entry instead of pushing one, and is rate-limited below.
+// Two kinds qualify, for opposite reasons: the map's own viewport and the
+// panorama's bearing move as fast as a gesture, and the colorize params are
+// reader preferences a URL without them does not undo.
+const COALESCED_KEYS = new Set([
+  'map',
+  'panorama-az',
+  // Not gesture-speed, but the same reason applies from the other end: a URL
+  // without these does not turn colorizing off (see `handleColorize`), so an
+  // entry standing for one would be an entry Back cannot honour.
+  'route-colorize-by',
+  'route-colorize-legend',
+  'track-colorize-by',
+  'track-colorize-legend',
+  'tracking-colorize-by',
+  'tracking-colorize-legend',
+]);
 
-const isContentPart = ([key]: QueryPart) => !VIEWPORT_KEYS.has(key);
+const isContentPart = ([key]: QueryPart) => !COALESCED_KEYS.has(key);
 
 // WebKit rejects history writes past a cap — the SecurityError names 100 per 10
 // seconds — and a viewport-only change can arrive as fast as the store updates:
@@ -148,6 +164,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     routePlannerSettings,
     trackViewer,
     trackViewerSettings,
+    trackingSettings,
     gallery,
     drawingPoints,
     changesets,
@@ -228,7 +245,16 @@ function updateUrl(state: RootState, forced: boolean): void {
     routePlanner.roundtripParams,
     tracking.trackedDevices,
     routePlannerSettings.colorizeBy,
+    routePlannerSettings.colorizeLegend,
     trackViewerSettings.colorizeTrackBy,
+    trackViewerSettings.colorizeLegend,
+    trackingSettings.colorizeBy,
+    trackingSettings.colorizeLegend,
+    // Only whether there is anything to color, which is all the colorize gates
+    // below read: `tracking.tracks` is a fresh array on every incoming fix, and
+    // naming it here would re-derive the whole URL per fix.
+    trackGeojsonIsSuitableForElevationChart(state),
+    tracking.tracks.length > 0,
     trackViewer.gpxUrl,
     search.selectedResults,
     search.previewId,
@@ -249,7 +275,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     panorama.viewpoint,
     // Listed here to be noticed at all — this array only asks whether anything
     // moved. Whether the write pushes a history entry or replaces one is a
-    // separate question, answered by `VIEWPORT_KEYS`.
+    // separate question, answered by `COALESCED_KEYS`.
     panorama.azimuth,
     panoramaSettings.tilt,
     panoramaSettings.altMin,
@@ -370,7 +396,7 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   // Where the panorama is taken from, so a link reopens it; the picture itself
   // is re-rendered on arrival. The bearing rides in a param of its own because
-  // it is a viewport, not content — see `VIEWPORT_KEYS`.
+  // it is a viewport, not content — see `COALESCED_KEYS`.
   //
   // Only while the panel is open: closing it keeps the viewpoint so reopening
   // finds the picture, but a link shared then would promise a panorama the
@@ -399,15 +425,37 @@ function updateUrl(state: RootState, forced: boolean): void {
     ]);
   }
 
-  if (routePlannerSettings.colorizeBy) {
-    historyParts.push(['route-colorize-by', routePlannerSettings.colorizeBy]);
+  // Both only while the feature has a line to color: they describe what is on
+  // the map, not a preference, so with nothing there they would be clutter that
+  // also outlives what it referred to. The legend rides along with the mode —
+  // it is the box naming that mode's colors — and is written whichever way it
+  // is set, so a shared link says so rather than leaving it to whatever the
+  // recipient last chose.
+  if (routePlannerSettings.colorizeBy && routePlanner.alternatives.length) {
+    historyParts.push(
+      ['route-colorize-by', routePlannerSettings.colorizeBy],
+      [
+        'route-colorize-legend',
+        routePlannerSettings.colorizeLegend ? '1' : '0',
+      ],
+    );
   }
 
-  if (trackViewerSettings.colorizeTrackBy) {
-    historyParts.push([
-      'track-colorize-by',
-      trackViewerSettings.colorizeTrackBy,
-    ]);
+  if (
+    trackViewerSettings.colorizeTrackBy &&
+    trackGeojsonIsSuitableForElevationChart(state)
+  ) {
+    historyParts.push(
+      ['track-colorize-by', trackViewerSettings.colorizeTrackBy],
+      ['track-colorize-legend', trackViewerSettings.colorizeLegend ? '1' : '0'],
+    );
+  }
+
+  if (trackingSettings.colorizeBy && tracking.tracks.length) {
+    historyParts.push(
+      ['tracking-colorize-by', trackingSettings.colorizeBy],
+      ['tracking-colorize-legend', trackingSettings.colorizeLegend ? '1' : '0'],
+    );
   }
 
   if (changesets.days) {
@@ -480,18 +528,24 @@ function updateUrl(state: RootState, forced: boolean): void {
     return;
   }
 
-  // A viewport-only change replaces the current entry when it continues a
-  // recent panning session (last write was also viewport-only and within the
-  // gap); otherwise it starts a fresh entry. Any non-viewport change (map
-  // type, drawing, modals, …) always pushes.
+  // A change confined to the coalesced params replaces the current entry when
+  // it continues a recent run of them (last write was also one, and within the
+  // gap); otherwise it starts a fresh entry. Any other change (map type,
+  // drawing, modals, …) always pushes.
+  //
+  // Unless the viewport did not move either: what changed is then one of the
+  // coalesced params that is *not* the viewport, which no entry can stand for —
+  // going back to a URL that omits a colorize param does not turn colorizing
+  // off (see `handleColorize`), so the entry would be a Back press that does
+  // nothing. Those replace however the previous write went.
   const viewOnly = restSignature === lastWrittenRest;
 
   const now = Date.now();
 
   const method =
     viewOnly &&
-    lastWriteWasViewOnly &&
-    now - lastViewWriteTs < VIEW_COALESCE_GAP_MS
+    (!viewChanged ||
+      (lastWriteWasViewOnly && now - lastViewWriteTs < VIEW_COALESCE_GAP_MS))
       ? 'replaceState'
       : 'pushState';
 
