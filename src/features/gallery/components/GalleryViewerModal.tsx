@@ -903,8 +903,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   alert that says it. */}
               {premium && !disabledPremium && (
                 <>
-                  <PremiumGem hint={gm?.viewer.premiumPhoto} />
-                  {' ｜ '}
+                  <PremiumGem noOffer hint={gm?.viewer.premiumPhoto} />
+                  {'｜ '}
                 </>
               )}
 

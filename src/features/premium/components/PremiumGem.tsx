@@ -43,6 +43,12 @@ type PremiumGemProps = {
    * something about the thing it marks, and a premium user needs to read it.
    */
   quiet?: boolean;
+  /**
+   * The gem only reports — no purchase link, and no line about the viewer's own
+   * standing. For a mark on a thing the viewer already has in front of them,
+   * where premium would buy nothing they don't have: an offer there is empty.
+   */
+  noOffer?: boolean;
 };
 
 /**
@@ -58,6 +64,7 @@ export function PremiumGem({
   hint,
   onBeforeNavigate,
   quiet,
+  noOffer,
 }: PremiumGemProps): ReactElement {
   const becomePremium = useBecomePremium();
 
@@ -65,29 +72,38 @@ export function PremiumGem({
 
   const expand = label != null;
 
-  // Tooltip: an optional lead sentence (what premium unlocks) then the user's
+  const offering = Boolean(becomePremium) && !noOffer;
+
+  // Tooltip: an optional lead sentence (what premium unlocks) then the viewer's
   // status — "Click to activate." for non-premium, "…already have…" for premium.
-  const lead = becomePremium
+  // A gem that only reports says neither.
+  const lead = offering
     ? (hint ?? (expand ? prm?.noPremium : prm?.premiumOnly))
     : hint;
 
-  const status = becomePremium ? prm?.clickToActivate : prm?.alreadyPremium;
+  const status = noOffer
+    ? undefined
+    : becomePremium
+      ? prm?.clickToActivate
+      : prm?.alreadyPremium;
 
-  const tooltip = lead ? (
-    <>
-      {lead} {status}
-    </>
-  ) : (
-    status
-  );
+  const tooltip =
+    lead && status ? (
+      <>
+        {lead} {status}
+      </>
+    ) : (
+      (lead ?? status)
+    );
 
-  const onActivate = becomePremium
-    ? (e: MouseEvent) => {
-        onBeforeNavigate?.();
+  const onActivate =
+    becomePremium && offering
+      ? (e: MouseEvent) => {
+          onBeforeNavigate?.();
 
-        becomePremium(e);
-      }
-    : undefined;
+          becomePremium(e);
+        }
+      : undefined;
 
   // A real link where it's safe; an inert span inside interactive containers
   // (nested) or for premium users (no navigation).
@@ -95,12 +111,14 @@ export function PremiumGem({
 
   // Only the owned gem is ever quieted; an offer stays at full weight, and so
   // does a gem set in running text.
-  const subdued = quiet && !becomePremium && !expand;
+  const subdued = quiet && !offering && !expand;
 
   return (
     <GlyphMarker
       hint={tooltip}
-      color={becomePremium ? 'warning' : 'success'}
+      // Gold is an offer to act on; green is a thing the viewer has, which a gem
+      // that only reports is too — it marks what is already in front of them.
+      color={offering ? 'warning' : 'success'}
       size={subdued ? 'sm' : 'md'}
       // The label keeps normal link styling; only the gem carries the premium
       // color, which `GlyphMarker` applies to the glyph alone.
