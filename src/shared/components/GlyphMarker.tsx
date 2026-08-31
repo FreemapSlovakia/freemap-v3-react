@@ -28,12 +28,6 @@ type Props = Omit<HTMLAttributes<HTMLElement>, 'children' | 'color'> & {
   /** Renders an `<a>` instead of a `<span>`. */
   href?: string;
   /**
-   * Leaves out the air and the hit area, for a mark that already sits in a box
-   * of its own (a badge with button clothes) — that box is its target, and the
-   * padding would only make it a different shape.
-   */
-  bare?: boolean;
-  /**
    * Overrides what the cursor says — `help` unless the mark has a handler of its
    * own. Set `pointer` for a mark acted on by its container's handler instead.
    */
@@ -42,7 +36,7 @@ type Props = Omit<HTMLAttributes<HTMLElement>, 'children' | 'color'> & {
   toggleOnClick?: boolean;
 };
 
-const sizeClass = { sm: 'fm-icon-sm', md: 'fm-icon', lg: 'fm-icon-lg' };
+const sizeClass = { sm: 'small', md: 'fs-6', lg: 'fs-5' };
 
 /**
  * A glyph that stands for a state or an offer — offline, premium, experimental,
@@ -62,7 +56,6 @@ export function GlyphMarker({
   size = 'md',
   label,
   href,
-  bare,
   cursor,
   toggleOnClick,
   className,
@@ -111,8 +104,7 @@ export function GlyphMarker({
           ...rest,
           ...props,
           className: clsx(
-            'fm-marker',
-            !bare && 'fm-marker-target',
+            'fm-marker fm-marker-target',
             // A label makes the mark a phrase, which has to be able to wrap;
             // without one the mark is the glyph, and `fm-glyph` makes its box
             // exactly that.

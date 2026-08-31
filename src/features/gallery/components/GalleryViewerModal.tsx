@@ -3,6 +3,7 @@ import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointAct
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
@@ -147,8 +148,8 @@ const WINDOWED_MAX_WIDTH = 1920;
 const SHARED_IMAGE_WIDTH = 3840;
 
 // `Rating` and `Azimuth` size themselves in pixels rather than off the icon
-// scale, so the two steps they use are named here: the read-only marks take
-// `--fm-icon-lg`, and a star the user is meant to hit takes the 24px WCAG 2.2
+// scale, so the two steps they use are named here: the read-only marks take the
+// `.fs-5` step, and a star the user is meant to hit takes the 24px WCAG 2.2
 // SC 2.5.8 asks of a target.
 const READOUT_STAR_SIZE = 20;
 const RATING_STAR_SIZE = 24;
@@ -744,13 +745,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
             </Form.Select>
           )}
           {imageIds ? ` / ${imageIds.length} ` : ''}
-          {displayTitle && `- ${displayTitle}`}
-          {premium && (
-            <>
-              {' '}
-              <FaGem className="text-info" />
-            </>
-          )}
+          {displayTitle && `· ${displayTitle}`}
         </Modal.Title>
       </Modal.Header>
 
@@ -903,6 +898,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               )}
 
               {isFullscreen && displayTitle && <>{displayTitle} ｜ </>}
+
+              {/* Whoever gets the photo itself; the rest are already reading an
+                  alert that says it. */}
+              {premium && !disabledPremium && (
+                <>
+                  <PremiumGem hint={gm?.viewer.premiumPhoto} />
+                  {' ｜ '}
+                </>
+              )}
 
               {isWikimedia ? (
                 <>

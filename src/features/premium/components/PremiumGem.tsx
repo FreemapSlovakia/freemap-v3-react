@@ -36,6 +36,13 @@ type PremiumGemProps = {
    * to close a host modal that would otherwise sit above the purchase modal.
    */
   onBeforeNavigate?: () => void;
+  /**
+   * For a gem repeated down a menu, where owning the feature is reassurance
+   * rather than news: that form steps down and dims so the column reads as one
+   * mark. Leave it off where the gem is the only one on screen — there it says
+   * something about the thing it marks, and a premium user needs to read it.
+   */
+  quiet?: boolean;
 };
 
 /**
@@ -50,6 +57,7 @@ export function PremiumGem({
   label,
   hint,
   onBeforeNavigate,
+  quiet,
 }: PremiumGemProps): ReactElement {
   const becomePremium = useBecomePremium();
 
@@ -85,10 +93,15 @@ export function PremiumGem({
   // (nested) or for premium users (no navigation).
   const asLink = Boolean(onActivate) && !nested;
 
+  // Only the owned gem is ever quieted; an offer stays at full weight, and so
+  // does a gem set in running text.
+  const subdued = quiet && !becomePremium && !expand;
+
   return (
     <GlyphMarker
       hint={tooltip}
       color={becomePremium ? 'warning' : 'success'}
+      size={subdued ? 'sm' : 'md'}
       // The label keeps normal link styling; only the gem carries the premium
       // color, which `GlyphMarker` applies to the glyph alone.
       label={
@@ -99,7 +112,11 @@ export function PremiumGem({
         )
       }
       href={asLink ? '#show=premium' : undefined}
-      className={clsx(asLink && 'text-decoration-none', className)}
+      className={clsx(
+        asLink && 'text-decoration-none',
+        subdued && 'opacity-50',
+        className,
+      )}
       onClick={capture ? undefined : onActivate}
       onClickCapture={
         capture && onActivate

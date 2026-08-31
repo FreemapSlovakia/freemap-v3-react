@@ -41,12 +41,12 @@ import {
   useState,
 } from 'react';
 import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap';
-import { BiWorld } from 'react-icons/bi';
 import {
   FaEllipsisV,
   FaEyeSlash,
   FaFilter,
   FaGem,
+  FaGlobeEurope,
   FaHistory,
   FaRegMap,
   FaSearchLocation,
@@ -60,19 +60,16 @@ import { setActiveModal } from '../store/actions.js';
 /**
  * A badge on a menu item, explained by the same tooltip the toolbar uses.
  *
- * `action` gives it Bootstrap's button clothes: the item is an anchor, so a
- * real `<button>` inside it would not be valid markup, and the span carries
- * `data-*` naming what to do instead — which the item's own click handler reads
- * (see `handlePossibleBadgeClick`).
+ * One that acts carries `data-*` naming what to do rather than a handler: the
+ * item is an anchor, so a real `<button>` inside it would not be valid markup,
+ * and the item's own click handler reads them (see `handlePossibleBadgeClick`).
  */
 function Badge({
   label,
-  action,
   data,
   children,
 }: {
   label: ReactNode;
-  action?: boolean;
   data?: Record<string, string | number | undefined>;
   children: ReactNode;
 }) {
@@ -80,19 +77,9 @@ function Badge({
     <GlyphMarker
       hint={label}
       {...data}
-      // The button clothes are the acting badge's own box, and `.fm-badge-action`
-      // sizes it to the 24px a target needs.
-      bare={action}
-      color={action ? null : 'warning'}
       // Every `data-*` a badge carries is one `handlePossibleBadgeClick` acts on,
-      // so carrying any of them makes it a control — including the photo filter,
-      // which does so without the button clothes.
+      // so carrying any of them makes it a control.
       cursor={data ? 'pointer' : undefined}
-      className={
-        action
-          ? 'btn btn-sm btn-outline-warning lh-1 fm-badge-action'
-          : undefined
-      }
     >
       {children}
     </GlyphMarker>
@@ -357,6 +344,20 @@ export function MapSwitchButton(): ReactElement {
     m &&
     `${m.mapLayers.minZoomWarning(minZoom)} · ${m.mapLayers.outsideViewWarning}`;
 
+  /**
+   * A layer's countries. They stay beside the name rather than joining the
+   * badges: they are what tells two layers of the same name apart.
+   */
+  function countryFlags(def: (typeof layerDefs)[number]) {
+    return (
+      def.type !== 'X' &&
+      !def.custom &&
+      def.countries?.map((country) => (
+        <CountryFlag key={country} country={country} />
+      ))
+    );
+  }
+
   function commonBadges(
     def: (typeof layerDefs)[number],
     place: 'menu' | 'toolbar' | 'tooltip',
@@ -368,22 +369,8 @@ export function MapSwitchButton(): ReactElement {
 
     return (
       <>
-        {place !== 'toolbar' &&
-          def.type !== 'X' &&
-          !def.custom &&
-          def.countries?.map((country) => (
-            <CountryFlag key={country} country={country} />
-          ))}
-
-        {place !== 'toolbar' &&
-          getKbdShortcut(
-            layersSettings[def.type]?.shortcut === undefined
-              ? def.shortcut
-              : layersSettings[def.type].shortcut,
-          )}
-
         {(place === 'menu' || (place === 'tooltip' && premium)) &&
-          premiumHere && <PremiumGem capture nested />}
+          premiumHere && <PremiumGem capture nested quiet />}
 
         {/* Everything but a downloaded map draws nothing while offline. The
             toolbar says it through the button's own tooltip, as premium does. */}
@@ -412,7 +399,6 @@ export function MapSwitchButton(): ReactElement {
             if (box) {
               return (
                 <Badge
-                  action
                   label={
                     def.zoomOk
                       ? m?.mapLayers.outsideViewWarning
@@ -426,14 +412,13 @@ export function MapSwitchButton(): ReactElement {
                     'data-focus-min-zoom': def.minZoom,
                   }}
                 >
-                  {def.zoomOk ? <BiWorld /> : <FaSearchLocation />}
+                  {def.zoomOk ? <FaGlobeEurope /> : <FaSearchLocation />}
                 </Badge>
               );
             }
 
             return def.zoomOk ? null : (
               <Badge
-                action
                 label={m?.mapLayers.minZoomWarning(def.minZoom!)}
                 data={{
                   'data-activate-type': def.type,
@@ -460,6 +445,14 @@ export function MapSwitchButton(): ReactElement {
             <Badge label={m?.mapLayers.interactiveLayerWarning}>
               <FaEyeSlash />
             </Badge>
+          )}
+
+        {/* Last, so the shortcut sits at the row's edge the way a menu writes it. */}
+        {place !== 'toolbar' &&
+          getKbdShortcut(
+            layersSettings[def.type]?.shortcut === undefined
+              ? def.shortcut
+              : layersSettings[def.type].shortcut,
           )}
       </>
     );
@@ -533,7 +526,13 @@ export function MapSwitchButton(): ReactElement {
                 : (m?.mapLayers.letters[type] ?? '…')}
             </span>
 
-            {commonBadges(def, 'menu')}
+            {countryFlags(def)}
+
+            {/* Shortcut and badges share a right-hand column, so the list gets
+                an edge to scan instead of marks at every label's own width. */}
+            <span className="d-flex align-items-center gap-1 ms-auto flex-shrink-0">
+              {commonBadges(def, 'menu')}
+            </span>
           </Dropdown.Item>
         );
       });
@@ -601,7 +600,7 @@ export function MapSwitchButton(): ReactElement {
             accessories.push({
               key: 'coverage',
               icon: def.zoomOk ? (
-                <BiWorld className="text-warning" />
+                <FaGlobeEurope className="text-warning" />
               ) : (
                 <FaSearchLocation className="text-warning" />
               ),
@@ -662,6 +661,8 @@ export function MapSwitchButton(): ReactElement {
                     {def.custom
                       ? def.name || `${m?.mapLayers.customBase} ${type}`
                       : (m?.mapLayers.letters[type] ?? '…')}
+
+                    {countryFlags(def)}
 
                     {commonBadges(def, 'tooltip')}
                   </span>

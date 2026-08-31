@@ -104,18 +104,12 @@ should carry a spacing or size number that Bootstrap already has a name for.
 | Token | Derived from | Is |
 | --- | --- | --- |
 | `--fm-space-0…5` | `$spacers`, key for key | `--fm-space-2` is what `.p-2` / `.gap-2` use |
-| `--fm-icon-sm` | `$font-size-sm` | `0.875rem` |
-| `--fm-icon` | `$font-size-base` | `1rem` |
-| `--fm-icon-lg` | `$h5-font-size` | `1.25rem`, Bootstrap's `.fs-5` step |
 
 Restyle a Bootstrap component through **its own** custom properties, not by
-overriding the property it computes. `.fm-badge-action` sets `--bs-btn-font-size`
-and `--bs-btn-padding-*`; the coarse-pointer menu row sets
-`--bs-dropdown-item-padding-*`. Derive rather than measure where the value is
-implied by another: that badge's padding is
-`calc((var(--bs-body-line-height) * var(--fm-icon) - var(--fm-icon) - 2 * var(--bs-border-width)) / 2)`
-— "whatever is left of the row's line once the glyph and the border have had
-theirs" — and a toolbar's hit area is its own height less its own padding.
+overriding the property it computes — the coarse-pointer menu row sets
+`--bs-dropdown-item-padding-*` rather than a `padding`. Derive rather than
+measure where the value is implied by another: a toolbar's hit area is its own
+height less its own padding.
 
 An outright constant is fair only where nothing implies it: `.fm-icon-wordmark`'s
 `400%`, which is what a logotype in a square 24×24 viewBox needs to read as a
@@ -128,19 +122,23 @@ font size**. A `.btn`'s icon therefore comes out at 1rem, while a bare glyph
 beside the button takes whatever the surrounding text is — which is how a toolbar
 ends up reading as two sizes.
 
-Three steps, one utility class each, are the only sizes an icon takes. They are
-Bootstrap's own `small` / body / `.fs-5` steps (see Tokens above) as classes
-without `!important`, so that a container can size the marks inside it:
+Three steps are the only sizes an icon takes, and all three are Bootstrap's own
+classes — the app has none of its own here:
 
-| Class | Use for |
-| --- | --- |
-| `fm-icon-sm` | A mark subordinate to the text it annotates, or one inside a `btn-sm`. |
-| `fm-icon` | **The default.** What a `.btn`'s own icon comes out at, and so what a mark in a menu row — where everything is text-sized — has to be. |
-| `fm-icon-lg` | A glyph that is the whole control and has nothing to match — the social links in the main menu. Rare. |
+| Class | Is | Use for |
+| --- | --- | --- |
+| `small` | `0.875em` | A mark subordinate to the text it annotates, or one inside a `btn-sm`. Relative, so it stays proportional wherever it lands. |
+| `fs-6` | `1rem` | **The default.** What a `.btn`'s own icon comes out at, and so what a mark in a menu row — where everything is text-sized — has to be. |
+| `fs-5` | `1.25rem` | A glyph that is the whole control and has nothing to match — the social links in the main menu. Rare. |
+
+`fs-*` carries `!important`, so a container cannot resize the marks inside it
+from CSS. Resize them where they are made instead — a different `size` on the
+`GlyphMarker`, or none at all where the mark should take its container's font
+size, which is what a bare glyph in a heading already does.
 
 ### One size in a toolbar, and room instead of size
 
-A bare glyph in a toolbar takes `fm-icon` — **the same size as the icon in the
+A bare glyph in a toolbar takes `fs-6` — **the same size as the icon in the
 button beside it**. It's tempting to size it up, since a button's box and padding
 give its icon a presence a lone glyph has none of; don't. Two glyphs at two sizes
 a few pixels apart read as a mistake, not as a hierarchy.
@@ -148,8 +146,8 @@ a few pixels apart read as a mistake, not as a hierarchy.
 What the mark gets instead of size is **room**: the hit area below, of which it
 keeps a step as visible air. That is what makes it hold its own next to a button.
 
-Don't write a one-off `fontSize`, `fs-*` or `size={…}` for an icon. Two
-documented exceptions:
+Don't write a one-off `fontSize` or `size={…}` for an icon, or reach for a step
+outside the three above. Two documented exceptions:
 
 - **`fm-icon-wordmark`** — a logotype drawn as an icon (the Garmin mark) is a
   word, not a glyph, and needs the width of one; a negative block margin in the
@@ -304,6 +302,25 @@ A component that renders a row appearing in several kinds of container lays that
 row out itself rather than trusting whichever it lands in — see `MapLayerItem`,
 which shows up in a menu item, in a `<select>`-like toggle, and in plain form
 text.
+
+### Separating inline facts
+
+Two separators are in use, and they are not interchangeable:
+
+- **` · ` (middot) is the default** — short peers on one line: `label: value`
+  runs, a count appended to a button, two clauses of one hint.
+- **`｜` (U+FF5C, fullwidth) is for a dense strip** of independent facts or
+  control groups that wraps across lines, where a middot is too light to find the
+  boundary — the gallery viewer's footer, the offline-export summary. It is a CJK
+  form, picked for its height and its own side-bearings; ASCII `|` is too short.
+
+Spacing follows the rule above: the container decides. In running text the
+separator carries its own spaces (`{' ｜ '}`, `{' · '}`); as an element of a flex
+row that owns a `gap` it is bare (`<div>｜</div>`), where spaces would double the
+gap. Don't mix the two separators in one line.
+
+This is about UI text. What an export writes into a file (`geojsonToKml`,
+`gpxExportProcessorHandler`) answers to that format, not to this.
 
 ## Toolbar outlines
 

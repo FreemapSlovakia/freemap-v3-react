@@ -80,6 +80,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     modify: 'Uredi',
     premiumOnly:
       'To fotografijo je avtor dal na voljo samo uporabnikom s premium dostopom.',
+    premiumPhoto: 'Ta fotografija je vsebina premium.',
     noComments: 'Ni komentarjev',
     wikimediaCommentNotNotified:
       'Ta fotografija je z Wikimedia Commons. Njen avtor ne bo obveščen o vašem komentarju – obveščamo samo avtorje fotografij, naloženih na Freemap.',

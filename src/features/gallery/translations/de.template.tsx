@@ -74,6 +74,7 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     modify: 'Bearbeiten',
     premiumOnly:
       'Dieses Foto wurde vom Autor nur für Nutzer mit Premium-Zugang freigegeben.',
+    premiumPhoto: 'Dieses Foto ist Premium-Inhalt.',
     noComments: 'Keine Kommentare',
     wikimediaCommentNotNotified:
       'Dieses Foto stammt von Wikimedia Commons. Sein Autor wird über Ihren Kommentar nicht benachrichtigt – wir benachrichtigen nur Autoren von Fotos, die zu Freemap hochgeladen wurden.',

@@ -142,7 +142,7 @@ export function tooltipText(
         {items.map(([key, Icon, text], i) => (
           <Fragment key={key}>
             <Icon /> {text}
-            {i < items.length - 1 ? '｜' : null}
+            {i < items.length - 1 ? ' · ' : null}
           </Fragment>
         ))}
       </div>

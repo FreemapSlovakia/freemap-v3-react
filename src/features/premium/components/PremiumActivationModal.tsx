@@ -113,8 +113,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaGem className="text-info" />{' '}
-          {confirmingOnce ? prm?.payOnceConfirmTitle : prm?.title}
+          <FaGem /> {confirmingOnce ? prm?.payOnceConfirmTitle : prm?.title}
         </Modal.Title>
       </Modal.Header>
 

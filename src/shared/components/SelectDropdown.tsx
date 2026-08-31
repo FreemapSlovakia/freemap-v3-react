@@ -115,15 +115,18 @@ export function SelectDropdown({
         title={opt.title}
       >
         {opt.icon}
-        {opt.icon ? ' ' : null}
         {opt.label}
-        {(opt.kbd?.split(' ') ?? []).map((k) => (
-          <Fragment key={k}>
-            {' '}
-            <kbd>{k}</kbd>
-          </Fragment>
-        ))}
-        {opt.extra}
+
+        {/* Shortcuts and marks share a right-hand column, so a menu of them
+            reads as one stripe rather than trailing each label's own width. */}
+        {(opt.kbd || opt.extra) && (
+          <span className="d-flex align-items-center gap-1 ms-auto flex-shrink-0">
+            {opt.extra}
+            {(opt.kbd?.split(' ') ?? []).map((k) => (
+              <kbd key={k}>{k}</kbd>
+            ))}
+          </span>
+        )}
       </Dropdown.Item>,
     );
 

@@ -110,27 +110,6 @@ kbd {
   gap: var(--fm-space-1);
 }
 
-/* An acting badge on a menu row: square, at the height of the row's own line, so
-   it doesn't open up every row it appears in. The glyph keeps the size every
-   other icon has rather than shrinking to `btn-sm`'s, and the padding is
-   whatever is left of the line once the glyph and the border have had theirs —
-   which comes to the 24px WCAG 2.2 SC 2.5.8 asks of a target, so unlike a bare
-   mark it needs nothing added. */
-.fm-badge-action {
-  --bs-btn-font-size: var(--fm-icon);
-  --bs-btn-padding-y: calc(
-    (
-      var(--bs-body-line-height) *
-      var(--fm-icon) -
-      var(--fm-icon) -
-      2 *
-      var(--bs-border-width)
-    ) /
-    2
-  );
-  --bs-btn-padding-x: var(--bs-btn-padding-y);
-}
-
 /* A menu row decides the rhythm between the icon, the label and the badges that
    follow it, so nothing in the row carries a margin of its own. It still wraps
    on a narrow screen: `white-space: normal` lets a long label wrap inside its own

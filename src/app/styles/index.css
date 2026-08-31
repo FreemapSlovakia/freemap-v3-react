@@ -313,18 +313,6 @@ button#freemap-logo {
   cursor: pointer;
 }
 
-.fm-icon-sm {
-  font-size: var(--fm-icon-sm);
-}
-
-.fm-icon {
-  font-size: var(--fm-icon);
-}
-
-.fm-icon-lg {
-  font-size: var(--fm-icon-lg);
-}
-
 /* A logotype drawn as an icon (the Garmin wordmark) needs the width of a word,
    so it sits off the scale on purpose: a square 24×24 viewBox needs the scale-up
    to read at all. The negative block margin — in the scaled em, so it tracks the

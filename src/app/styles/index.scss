@@ -14,12 +14,6 @@
   @each $key, $value in bootstrap.$spacers {
     --fm-space-#{$key}: #{$value};
   }
-
-  // Icon size scale. A glyph is `1em` of its element, so an icon's size is a
-  // font size; these are Bootstrap's `small`, body and `.fs-5` steps.
-  --fm-icon-sm: #{bootstrap.$font-size-sm};
-  --fm-icon: #{bootstrap.$font-size-base};
-  --fm-icon-lg: #{bootstrap.$h5-font-size};
 }
 
 // Bootstrap ships no min-width:0 utility; needed so flex children can shrink

@@ -85,7 +85,7 @@ export default function PremiumSwitchModal({
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaGem className="text-info" /> {prm?.switchTitle}
+          <FaGem /> {prm?.switchTitle}
         </Modal.Title>
       </Modal.Header>
 

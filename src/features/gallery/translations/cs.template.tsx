@@ -81,6 +81,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     modify: 'Úprava',
     premiumOnly:
       'Tuto fotografii zpřístupnil její autor pouze uživatelům s prémiovým přístupem.',
+    premiumPhoto: 'Tato fotografie je prémiový obsah.',
     noComments: 'Bez komentáře',
     wikimediaCommentNotNotified:
       'Tato fotografie pochází z Wikimedia Commons. Její autor nebude o vašem komentáři upozorněn – upozorňujeme jen autory fotografií nahraných na Freemap.',

@@ -63,6 +63,7 @@ export type GalleryMessages = {
     deleteTitle: string;
     modify: string;
     premiumOnly: string;
+    premiumPhoto: string;
     noComments: string;
     // Shown when commenting a Wikimedia photo: only own-gallery authors get
     // notified.
