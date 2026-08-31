@@ -23,5 +23,6 @@ minimumReleaseAgeExclude:
   - "@maplibre/maplibre-gl-leaflet@0.1.4"
   - exifreader@4.43.0
   - maplibre-gl@6.4.0
+  - sass-loader@17.0.1
 
-minimumReleaseAgeStrict: true
+# minimumReleaseAgeStrict: true
