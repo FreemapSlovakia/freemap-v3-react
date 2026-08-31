@@ -145,6 +145,7 @@ function updateUrl(state: RootState, forced: boolean): void {
   const {
     map,
     routePlanner,
+    routePlannerSettings,
     trackViewer,
     trackViewerSettings,
     gallery,
@@ -226,6 +227,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     routePlanner.transportType,
     routePlanner.roundtripParams,
     tracking.trackedDevices,
+    routePlannerSettings.colorizeBy,
     trackViewerSettings.colorizeTrackBy,
     trackViewer.gpxUrl,
     search.selectedResults,
@@ -395,6 +397,10 @@ function updateUrl(state: RootState, forced: boolean): void {
       'viewshed',
       serializeViewshed(viewshed.viewpoint, viewshedRadiusKm ?? 0),
     ]);
+  }
+
+  if (routePlannerSettings.colorizeBy) {
+    historyParts.push(['route-colorize-by', routePlannerSettings.colorizeBy]);
   }
 
   if (trackViewerSettings.colorizeTrackBy) {

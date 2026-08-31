@@ -56,7 +56,7 @@ Still emitting at info level (non-blocking, optional cleanup):
       `confirmDisabled`/`cancelKbd` retires ~90 lines. While there:
       `HomeLocationPickingMenu` has a hardcoded Slovak prompt
       (`'Zvoľte domovskú pozíciu'`).
-- [ ] **Make `pickingModeSelector` answer *which* mode, not just whether.**
+- [ ] **Make `pickingModeSelector` answer _which_ mode, not just whether.**
       It returns a boolean, so `mouseCursorSelector` re-enumerates four of the
       six modes, `keyboardHandler` handles them at three different priorities
       (with nothing saying that ordering was intended), and `Main` mounts each
@@ -74,7 +74,7 @@ Still emitting at info level (non-blocking, optional cleanup):
       Folds into the item above.
 - [ ] **`MyMapsMenu` hand-builds the split button** `SplitButton` now
       abstracts (`Dropdown as={ButtonGroup}` + `Button` + `Dropdown.Toggle
-      split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
+    split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
       button first, which `SplitButton` doesn't expose yet.
 - [ ] **`SplitButton`'s menu can't do what `SelectDropdown`'s can** — no `kbd`,
       `extra` (premium badge), `active` or `divider`, because it writes its own
@@ -82,17 +82,17 @@ Still emitting at info level (non-blocking, optional cleanup):
       out of `SelectDropdown` when a split button first needs one of those.
 - [ ] **`location.fixRequest` holds one consumer**, so asking for a fix from the
       second panel supersedes the first — its spinner stops and nothing is
-      placed, silently. Both panels open *and* both awaiting is a corner; make
+      placed, silently. Both panels open _and_ both awaiting is a corner; make
       it a set if it ever bites.
 - [ ] **A panorama label with no dominance ranks below every summit.** The
-      dominance *filter* passes it (`?? Infinity` — a cut it cannot judge should
+      dominance _filter_ passes it (`?? Infinity` — a cut it cannot judge should
       not remove it), while `labelRank` scores it as a 1 m bump (`?? 1`), so the
       thinning drops it first. Harmless today, since `labelsFromPeaks` is the
       only source and every peak carries a figure. Whoever adds the second one
       (map selection, drawn points, POIs — see `labels/types.ts`) has to decide
       what its labels are worth against summits; no constant here can guess it.
       Now two-sided: a source supplying `prominence` without a `dominance`
-      lands on that same `?? 1` and the prominence term then lifts it *above*
+      lands on that same `?? 1` and the prominence term then lifts it _above_
       real summits — 1 + 0.3 × 800 for a big one — so the fallback is wrong in
       both directions and the next source has to set both or neither.
 - [ ] **Mount a mark's tooltip `Overlay` only once it has been shown.** With no
@@ -186,7 +186,7 @@ Still emitting at info level (non-blocking, optional cleanup):
   move this into `toastsAdd`'s `prepare` (`src/features/toasts/model/actions.ts`)
   as a style-keyed default (danger → no timeout, else 5000), but an audit of
   all ~100 `toastsAdd` calls shows `style` does **not** map to timeout policy:
-  `info` is used for *persistent panels* (measurement results in
+  `info` is used for _persistent panels_ (measurement results in
   `measurementProcessor`, feature/POI detail in `searchHighlightProcessor` /
   `ChangesetsResult` / `ObjectsResult`, `trackInfoToast`), and some
   `warning`/`info` intentionally stick (`awaitingBankPayment`, `moreResults`,
@@ -242,20 +242,20 @@ can't be made exclusive + optics). Keep the free/open core intact.
       of their own, measured as part of the parent, deleted with it. Rings stay
       flat — an island in a lake is a further hole of the same parent — so there
       is no chain to walk and no cycle to guard. Out on the wire a hole names
-      its parent by *position* (`holeOf`), since neither the URL (`\x1eH<i>`)
+      its parent by _position_ (`holeOf`), since neither the URL (`\x1eH<i>`)
       nor a saved document carries line ids; both must keep agreeing, or a map
       restored from its URL reads as having unsaved changes.
 - [ ] **A hole isn't required to lie inside its parent.** Nothing stops a ring
       being drawn outside the polygon, or dragged across its boundary
       afterwards — deliberately, since editing has to pass through invalid
       states, and the tool already permits self-intersecting rings. But the
-      consequences are silent: turf's `area` subtracts a stray ring's *whole*
+      consequences are silent: turf's `area` subtracts a stray ring's _whole_
       area from the parent (a large enough one drives the readout negative), and
       RFC 7946 / KML both require interior rings to be inside the exterior one,
       so the export is invalid. Cheapest honest fix: keep the geometry
       permissive but stop trusting it — `booleanContains` each hole when
       measuring, subtract only the contained ones, and say so in the readout.
-      The *Make a hole of the enclosing polygon* command is already guarded;
+      The _Make a hole of the enclosing polygon_ command is already guarded;
       only the draw-a-hole path and later vertex drags can produce one.
 - [ ] **No coverage for the hole wire formats.** The reducer's linking, cascade
       delete and stale-index tolerance are tested, but nothing exercises the
@@ -265,7 +265,7 @@ can't be made exclusive + optics). Keep the free/open core intact.
       and KML `innerBoundaryIs`. These are pure functions over small fixtures —
       cheap to pin, and the place a regression would go unnoticed longest.
 - [ ] **A GPX-imported polygon shows no hole in the track viewer.** The linkage
-      survives the round-trip — *Convert to drawing* rebuilds the hole — but
+      survives the round-trip — _Convert to drawing_ rebuilds the hole — but
       `fm:polygonId` / `fm:holeOf` are read in exactly one place,
       `featuresToLines`, on the convert path. `DataViewerResult` renders each
       `<trk>` as its own single-ring polygon, so the parent's fill shows through
@@ -281,18 +281,18 @@ can't be made exclusive + optics). Keep the free/open core intact.
       elevation-chart suitability, start/finish markers, distance labels,
       `mergeLines` — which an area would drop out of (arguably correct; the GPX
       exporter already skips elevation on polygon tracks).
-- [ ] **Isochrone bands as donuts.** *Convert to drawing* keeps whatever inner
-      rings a band has, but GraphHopper's `buckets` response is nested *filled*
+- [ ] **Isochrone bands as donuts.** _Convert to drawing_ keeps whatever inner
+      rings a band has, but GraphHopper's `buckets` response is nested _filled_
       polygons — each bucket is the complete area up to its limit, one exterior
       ring each — so in practice no holes appear, and only the outermost band
-      can be filled without the fills stacking. Subtracting bucket *k-1* from
-      bucket *k* would make each band a real donut, letting every one carry its
+      can be filled without the fills stacking. Subtracting bucket _k-1_ from
+      bucket _k_ would make each band a real donut, letting every one carry its
       own fill. Wanted in the map rendering too, though, or the drawing would
       stop mirroring what it was converted from.
 
 - [ ] **A stored route is invisible to the unsaved-changes comparison.** A saved
       map carries its computed route (`savedRoute.ts`), but `fingerprintState`
-      deliberately ignores it: the digest has to match what a *restore* produces,
+      deliberately ignores it: the digest has to match what a _restore_ produces,
       and a restore rebuilds the route from the URL, where a stored one has
       nowhere to come from — so digesting it would report every restored map as
       changed forever. Consequences: **Recompute route** has to say so outright
@@ -304,7 +304,7 @@ can't be made exclusive + optics). Keep the free/open core intact.
 
 - [ ] **A map with unsaved changes has no route offline.** The browser's working
       copy (`mapStore.ts`) holds the track and the digest but not the route, so
-      reloading a *dirty* saved map takes `mapsRestoreProcessor`'s
+      reloading a _dirty_ saved map takes `mapsRestoreProcessor`'s
       record-exists-and-differs path: no document is read, nothing supplies
       `savedRoute`, and the route is asked for from the URL — which offline
       fails to a straight dotted line. A clean map reloads through `mapsLoad`
@@ -316,8 +316,8 @@ can't be made exclusive + optics). Keep the free/open core intact.
       geometry it was loaded with, so pinning a large relation — a national
       boundary, a long route relation — embeds its whole assembled collection in
       every save body and every offline copy, with nothing on the path capping
-      it. `objectsLookupProcessor` caps how *many* pins arrive at once
-      (`MAX_LOOKUPS`) but nothing caps how *large* one is. Same exposure as the
+      it. `objectsLookupProcessor` caps how _many_ pins arrive at once
+      (`MAX_LOOKUPS`) but nothing caps how _large_ one is. Same exposure as the
       stored track and route, so a size guard would belong to all three rather
       than to pins alone.
 
@@ -351,7 +351,7 @@ somewhere and renaming it would strand existing data:**
   as the localStorage keys (`PersistEntry.key` is `keyof RootState`), and
   `fallbackKey: 'trackViewer'` reads the pre-settings-split blob;
 - the my-maps map-document fields `trackViewer: { trackGeojson, trackUID,
-  gpxUrl }`, which are in every saved map on the server;
+gpxUrl }`, which are in every saved map on the server;
 - the idb database name `fm-trackViewer` in `trackStore.ts`;
 - the Matomo event label `TrackViewer` (`elevationChart/model/processor.ts`),
   splitting it would split the historical stats;
@@ -466,7 +466,7 @@ handlers include wikimedia unless a filter it can't satisfy is set.
 - `by=radius` returns `[{ id, source }]`, merged and sorted by distance;
   `sources` honored the same way.
 - Detail `GET /gallery/pictures/w<pageId>` returns `{ id:<pageId>, source:
-  'wikimedia', title:null, lat, lon, tags:[], comments, rating, myStars }`;
+'wikimedia', title:null, lat, lon, tags:[], comments, rating, myStars }`;
   gallery detail also carries `source:'gallery'`. Client fetches title, image
   URL, author, license and description from the Commons API by pageId.
 - Rating/comment `POST /gallery/pictures/w<pageId>/{rating,comments}` supported
@@ -534,35 +534,31 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
 - [ ] **Report the duplicate hits upstream.** Photon answers with one OSM element
       more than once, and with a settlement twice over. Both come from Nominatim's
       model rather than from our index — komoot's own instance shows the same — so
-      the fix belongs upstream, not in a filter of ours over the dump:
-      - **A relation with two classifying tags is indexed twice.** Every Slovak
-        cadastral community is `boundary=cadastral` **+**
-        `place=cadastral_community`, and Nominatim keeps a row for each
-        (`R2386490` → `place/cadastral_community` and `boundary/cadastral`,
-        confirmed via `details.php?…&class=`). A `place` tag on
-        `boundary=administrative` is absorbed instead, which is why towns come
-        back once.
-      - **A place node and its boundary relation both answer.** `N530544488` is
-        the `label` member of `R1690324` (Košice); Nominatim links the two and
-        returns only the relation, but the JSONL dump carries no
-        `linked_place_id`, so Photon indexes both. Not the same as the closed
-        [#95](https://github.com/komoot/photon/issues/95) (three Kraków
-        relations differing only in `admin_level`, closed as a mapping issue):
-        here the link exists upstream and is merely lost in export.
-      - **A city's address names one of the districts it contains.** Photon
-        addresses `R1690324` as *District of Košice IV*; Nominatim's own
-        `lookup` answers *Košice, Košický kraj, Slovensko* for the same object.
-        So the address is taken from the feature's point somewhere in Photon's
-        pipeline, and Košice contains four okresy — any single one is wrong.
-      - **Every piece of a station answers separately.** `q=kosice&limit=30`
-        returns 8 × `railway=stop`, 6 × `railway=platform` and 6 ×
-        `railway=platform_edge`, all named Košice at postcode 040 22 —
-        indistinguishable rows for one station. **`dedupe` does not cover this
-        and is not meant to**: it works (`q=hlavna` collapses 25 rows to 14) but
-        only for `osm_key=highway`, deliberately narrowed after
-        [#367](https://github.com/komoot/photon/issues/367), where a greedier
-        rule swallowed bus stops. Widening it is the open
-        [#588](https://github.com/komoot/photon/issues/588), not a bug.
+      the fix belongs upstream, not in a filter of ours over the dump: - **A relation with two classifying tags is indexed twice.** Every Slovak
+      cadastral community is `boundary=cadastral` **+**
+      `place=cadastral_community`, and Nominatim keeps a row for each
+      (`R2386490` → `place/cadastral_community` and `boundary/cadastral`,
+      confirmed via `details.php?…&class=`). A `place` tag on
+      `boundary=administrative` is absorbed instead, which is why towns come
+      back once. - **A place node and its boundary relation both answer.** `N530544488` is
+      the `label` member of `R1690324` (Košice); Nominatim links the two and
+      returns only the relation, but the JSONL dump carries no
+      `linked_place_id`, so Photon indexes both. Not the same as the closed
+      [#95](https://github.com/komoot/photon/issues/95) (three Kraków
+      relations differing only in `admin_level`, closed as a mapping issue):
+      here the link exists upstream and is merely lost in export. - **A city's address names one of the districts it contains.** Photon
+      addresses `R1690324` as _District of Košice IV_; Nominatim's own
+      `lookup` answers _Košice, Košický kraj, Slovensko_ for the same object.
+      So the address is taken from the feature's point somewhere in Photon's
+      pipeline, and Košice contains four okresy — any single one is wrong. - **Every piece of a station answers separately.** `q=kosice&limit=30`
+      returns 8 × `railway=stop`, 6 × `railway=platform` and 6 ×
+      `railway=platform_edge`, all named Košice at postcode 040 22 —
+      indistinguishable rows for one station. **`dedupe` does not cover this
+      and is not meant to**: it works (`q=hlavna` collapses 25 rows to 14) but
+      only for `osm_key=highway`, deliberately narrowed after
+      [#367](https://github.com/komoot/photon/issues/367), where a greedier
+      rule swallowed bus stops. Widening it is the open
+      [#588](https://github.com/komoot/photon/issues/588), not a bug.
       `searchProcessorHandler` dedupes exact repeats by element id, which is the
       client's share of this; the rest wants reporting at
       `github.com/komoot/photon`. Every case above reproduces on
@@ -652,13 +648,13 @@ distance probe, a premium quality tier. What was deliberately left for later:
       `Popover` / body-portal, the swatch button, and the `setUrlUpdatingEnabled`
       drag suspension that keeps Safari's 100-writes-per-10s pushState cap out
       of a colour drag. That workaround exists in three places counting
-      `ShadingColorPicker`, and will be fixed in one of them. Do *not* bolt a
+      `ShadingColorPicker`, and will be fixed in one of them. Do _not_ bolt a
       gradient mode onto `RgbaColorPicker` — its value is a string and this
       one's is `{color, gradient}`; the shell is the shared part.
 - [ ] **Share the `linear-gradient` codec with `ShadingColorPicker`.** Both
       hand-roll `@zdila/react-gradient-color-picker`'s wire format, including
       the upper-cased `RGBA(` that marks the selected stop, and their regexes
-      have already drifted (`\s+` vs a literal space). The stop *models* differ
+      have already drifted (`\s+` vs a literal space). The stop _models_ differ
       legitimately; only the CSS format is shared. `gradient.test.ts` covers
       this side, the shading side has no tests at all.
 - [ ] **`fadeToSky` could live on the stop.** The wire takes `'sky'` as any
@@ -680,17 +676,12 @@ and what landed. Nothing is outstanding there.
 
 ## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
 
-- [ ] **A route's colorize mode cannot be linked to.** The track viewer writes
-      its mode to the URL as `track-colorize-by`, but the route planner keeps
-      `colorizeBy` in `routePlannerSettings` alone, so a shared `points=` link
-      arrives in whatever mode the recipient last used. It came up writing a
-      Facebook post: there is no way to hand someone a route already coloured by
-      Surface, which is exactly the thing worth showing. The legend toggle has
-      the same problem. Mirroring the track viewer's parameter is the obvious
-      shape; the question worth deciding first is whether the mode belongs to
-      the reader (a persisted preference, as now) or to the link — the two want
-      opposite things when a link omits it, and the steepness scale in
-      `elevationSettings` made the reader-owns-it call for a related setting.
+- [ ] **The colorize legend toggle is still not in the URL.** `colorizeBy` now
+      travels as `route-colorize-by` / `track-colorize-by`, but `colorizeLegend`
+      does not, so a shared link colors the line and leaves the reader to open
+      the legend that says what the colors mean. Same shape as the mode; the
+      only question is whether it deserves a parameter of its own or should ride
+      along with the mode (`route-colorize-by=surface,legend`).
 
 - [ ] **Colorize erases the step-mode channel.** The map says how a stretch is
       travelled by its dash — `stepModeDashArray` marks `manual`, `pushing bike`,
@@ -699,33 +690,28 @@ and what landed. Nothing is outstanding there.
       a rider who colorizes by Surface stops being told where to get off and
       push. `RoutePlannerResult` already exempts `error` from the replacement
       one mode at a time, which is the tell that this wants generalizing rather
-      than a second special case.
-      - The framing: colour and pattern are independent channels, and colorize
-        has taken colour. Colour says what the way is made of; dash says how you
-        travel it. They don't conflict, so they shouldn't share a channel.
-      - **Proposed:** one thin dashed overlay per non-standard step run, drawn in
-        the route pane *above* the canvas, for every mode `stepModeDashArray`
-        answers for — `error` then joins it and stops being exempt.
-        `routeModeRuns` already yields the contiguous same-mode stretches, so the
-        geometry is in hand. Colour it neutrally (white or near-black, low
-        opacity) rather than from `STEP_MODE_COLORS`: the palette underneath owns
-        hue now. The one real design question is a pattern that reads on both a
-        cyan and a magenta line.
-      - Cheaper patch if it is ever urgent: widen the existing exemption to
-        `mode !== 'error' && mode !== 'pushing bike'`, so those steps keep their
-        plain line and the canvas leaves them uncovered. Costs the colorize value
-        of those metres and has to be repeated per mode.
-      - Ruled out: dashing the Hotline itself (canvas gradient polyline —
-        react-leaflet-hotline cannot, and it is patched once already), and a
-        travel-mode colorize mode (it would compete with surface/steepness
-        instead of composing with them, which is the problem being escaped).
-      - Expect little of it either way: planned pushing stretches measure tens of
-        metres, so whatever is built renders as occasional short marks. That
-        argues for the cheap overlay over anything elaborate, and for a pattern
-        visible at a glance.
+      than a second special case. - The framing: colour and pattern are independent channels, and colorize
+      has taken colour. Colour says what the way is made of; dash says how you
+      travel it. They don't conflict, so they shouldn't share a channel. - **Proposed:** one thin dashed overlay per non-standard step run, drawn in
+      the route pane _above_ the canvas, for every mode `stepModeDashArray`
+      answers for — `error` then joins it and stops being exempt.
+      `routeModeRuns` already yields the contiguous same-mode stretches, so the
+      geometry is in hand. Colour it neutrally (white or near-black, low
+      opacity) rather than from `STEP_MODE_COLORS`: the palette underneath owns
+      hue now. The one real design question is a pattern that reads on both a
+      cyan and a magenta line. - Cheaper patch if it is ever urgent: widen the existing exemption to
+      `mode !== 'error' && mode !== 'pushing bike'`, so those steps keep their
+      plain line and the canvas leaves them uncovered. Costs the colorize value
+      of those metres and has to be repeated per mode. - Ruled out: dashing the Hotline itself (canvas gradient polyline —
+      react-leaflet-hotline cannot, and it is patched once already), and a
+      travel-mode colorize mode (it would compete with surface/steepness
+      instead of composing with them, which is the problem being escaped). - Expect little of it either way: planned pushing stretches measure tens of
+      metres, so whatever is built renders as occasional short marks. That
+      argues for the cheap overlay over anything elaborate, and for a pattern
+      visible at a glance.
 
 - [ ] **Consider exposing the two other alternative-route knobs.** The count is
-      settable (`maxAlternatives`), but what the router *finds* is bounded by
+      settable (`maxAlternatives`), but what the router _finds_ is bounded by
       `alternative_route.max_weight_factor` (1.4 — how much worse an alternative
       may be) and `max_share_factor` (0.6 — how much of the main route it may
       reuse), both left at GraphHopper's defaults. Measured: Banská Bystrica →
@@ -744,7 +730,7 @@ and what landed. Nothing is outstanding there.
       feature. Each mode would have to pre-scan all the features for a shared
       min/max and pass it as `range`; what makes that wrong as a blanket rule is
       that the shared layer cannot tell one route cut into runs from several
-      separate tracks, which *should* keep their own scales.
+      separate tracks, which _should_ keep their own scales.
 - [ ] **The elevation chart says nothing about how the line is colored.** The map
       can paint a route by surface, road type, difficulty, steepness or elevation;
       the chart beside it draws one uniform profile, so the two views of the same
@@ -753,7 +739,7 @@ and what landed. Nothing is outstanding there.
       `ColorizedPoint` runs, which are already keyed to distance along the line
       exactly as the chart's x-axis is. Two things fall out of it: a categorical
       mode's legend is then the chart's legend too, and an `unrouted` stretch
-      (`structureElevation.ts`) can finally *read* as unrouted — today it is
+      (`structureElevation.ts`) can finally _read_ as unrouted — today it is
       levelled to a straight line, which is unmistakable in a mountain profile
       but only implies what a dash or the map's own red would say outright.
 
@@ -787,22 +773,20 @@ and what landed. Nothing is outstanding there.
       permanent one `getSummary` pins to the finish marker, which is the only
       place a route-wide figure is shown — there is no result header), as a line
       beside distance and duration, built from the metre spans
-      `flattenPathDetails` already produces.
-      - `toll` is in the graph as of the 2026-08-30 import and measures cleanly:
-        Bratislava → Košice by car is `all` 204 km, `hgv` 152 km, `no` 41 km. It
-        must read `ALL` alone — 152 km of that route is motorway a car pays
-        nothing for, so counting `HGV` would overstate the toll by 40 %. Same
-        discrimination `custom_models/carnotoll.json` already makes.
-      - The `*_temporal_access` values are **not** for this. They earn their
-        place in the graph by being applied at routing time — the daily re-import
-        keeps "closed now" accurate — so the router simply avoids what is shut
-        and the reader is told nothing. Probed across four routes here, every
-        span came back `missing`, so there is little to report even if we wanted
-        to.
-- [ ] **Modes still worth adding.** *Marked route* (`foot_network` /
+      `flattenPathDetails` already produces. - `toll` is in the graph as of the 2026-08-30 import and measures cleanly:
+      Bratislava → Košice by car is `all` 204 km, `hgv` 152 km, `no` 41 km. It
+      must read `ALL` alone — 152 km of that route is motorway a car pays
+      nothing for, so counting `HGV` would overstate the toll by 40 %. Same
+      discrimination `custom_models/carnotoll.json` already makes. - The `*_temporal_access` values are **not** for this. They earn their
+      place in the graph by being applied at routing time — the daily re-import
+      keeps "closed now" accurate — so the router simply avoids what is shut
+      and the reader is told nothing. Probed across four routes here, every
+      span came back `missing`, so there is little to report even if we wanted
+      to.
+- [ ] **Modes still worth adding.** _Marked route_ (`foot_network` /
       `bike_network`, keyed per transport like the ratings) — the one that says
       which parts follow a waymarked trail, and the most valuable to this
-      audience; it is in the live graph already (`/info` lists it). A *scalar*
+      audience; it is in the live graph already (`/info` lists it). A _scalar_
       span colorizer would additionally unlock `average_speed` (our Speed mode
       needs GPS timestamps, so a planned route can never offer it), `max_speed`
       and `curvature`.
@@ -815,10 +799,10 @@ and what landed. Nothing is outstanding there.
       can only profile one at a time, and "More info" reports a part rather than
       the track. The fix belongs where the flatten happens — let
       `PATH_DETAILS_PROP` hold `PathDetails[]`, give `readPathDetails` a part
-      index, and have one shared `flattenTracks()` hand part *i* its own spans.
+      index, and have one shared `flattenTracks()` hand part _i_ its own spans.
       dataViewer funnels through two flatten call sites, so it is contained.
 - [ ] **An unmatched segment loses its sensors for no reason.** `asRecorded`
-      strips `coordinateProperties`/`coordTimes` from segments kept *exactly* as
+      strips `coordinateProperties`/`coordTimes` from segments kept _exactly_ as
       recorded, because those arrays index the whole track. Their points are the
       recorded ones, so the right answer is to slice the arrays per segment —
       `trackSegments` already slices times and would need to carry the rest.
@@ -856,12 +840,11 @@ and what landed. Nothing is outstanding there.
       whereas a live track has no way to acquire path details at all. It is also a loop My Maps already closes better:
       `SavedRouteSchema` stores the whole alternative, details and structures
       intact, so saving (or sharing the map link) keeps everything a re-import
-      would lose. What has no other answer is *the route's composition in a
-      file* — "how much of this is gravel". `categories()` already computes
+      would lose. What has no other answer is _the route's composition in a
+      file_ — "how much of this is gravel". `categories()` already computes
       exactly that (key, label, metres) for the legend, so a handful of flat
       properties on the route feature (`fm:surface:asphalt: 12460`, …) is a few
       lines, survives GPX/KML extensions as plain values, needs no importer
       work, and is the form a spreadsheet or QGIS actually wants. Do that if a
-      user asks; leave the spans alone.
-      - Worth knowing either way: a route exported and re-imported loses its
-        bridge/tunnel levelling, so its profile picks the stream bed back up.
+      user asks; leave the spans alone. - Worth knowing either way: a route exported and re-imported loses its
+      bridge/tunnel levelling, so its profile picks the stream bed back up.

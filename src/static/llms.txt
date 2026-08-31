@@ -31,6 +31,7 @@ The highest-value parameters for building links:
 - `show=type[/arg]` — open a modal/viewer, e.g. `show=gallery-viewer/123`.
 - `elevation-chart=feature` — open the elevation profile on the feature named: `route-planner` (the planned route), `track-viewer` (the active imported track), `tracking/<deviceToken>` (a tracked device), or `drawing/<lineIndex>` (a drawn line, by its zero-based `line=`/`polygon=` index). Only one profile shows at a time, and it opens once the geometry it charts has loaded — so it can be combined with `points=`, `track-uid=`, `import-url=` or a saved map's `id=`.
 - `elevation-chart-range=<from>,<to>` — the stretch of that profile marked out for its own figures, in whole metres along it. Ignored without an `elevation-chart=`, and dropped where the profile turns out shorter than it.
+- `route-colorize-by=mode` and `track-colorize-by=mode` — what the planned route, or the loaded track, is colored by: `elevation`, `steepness`, `surface`, `smoothness`, `roadType`, `trackType`, `hikeRating`, `mtbRating`, `speed`, `heartRate`, `cadence`, `power`, `temperature`, `time`, `heading`, `battery`, `gsmSignal`. A mode the feature has no data for simply paints nothing, and an unknown name is ignored. Since the elevation profile takes its colors from the same setting, this colors the chart too.
 - `lang=code` — force the UI language (`en`, `sk`, …).
 
 **Example — a map with two markers** (Bratislava and Košice) on the Outdoor layer:

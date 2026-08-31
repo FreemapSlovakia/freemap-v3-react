@@ -4,7 +4,6 @@ import {
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
-  type ColorizingMode,
   dataViewerColorizeTrackBy,
   dataViewerDownloadTrack,
   dataViewerGpxLoad,
@@ -83,6 +82,7 @@ import {
 import { isPremium } from '@features/premium/premium.js';
 import {
   type RoutePoint,
+  routePlannerColorizeBy,
   routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
 import {
@@ -114,6 +114,7 @@ import {
   wikiSetPreview,
 } from '@features/wiki/model/actions.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
+import { ColorizingModeSchema } from '@shared/colorizers/index.js';
 import { isLanguage } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
@@ -431,14 +432,30 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
-  const colorizeTrackBy = query['track-colorize-by'];
+  // A mode named by the URL is parsed rather than trusted: an unknown one would
+  // reach `colorizers[mode]` as undefined and take the colorize render with it.
+  const colorizeTrackBy = ColorizingModeSchema.safeParse(
+    query['track-colorize-by'],
+  ).data;
 
-  if (typeof colorizeTrackBy === 'string') {
+  if (colorizeTrackBy) {
     if (getState().trackViewerSettings.colorizeTrackBy !== colorizeTrackBy) {
-      dispatch(dataViewerColorizeTrackBy(colorizeTrackBy as ColorizingMode));
+      dispatch(dataViewerColorizeTrackBy(colorizeTrackBy));
     }
   } else if (getState().trackViewerSettings.colorizeTrackBy) {
     dispatch(dataViewerColorizeTrackBy(null));
+  }
+
+  const colorizeRouteBy = ColorizingModeSchema.safeParse(
+    query['route-colorize-by'],
+  ).data;
+
+  if (colorizeRouteBy) {
+    if (getState().routePlannerSettings.colorizeBy !== colorizeRouteBy) {
+      dispatch(routePlannerColorizeBy(colorizeRouteBy));
+    }
+  } else if (getState().routePlannerSettings.colorizeBy) {
+    dispatch(routePlannerColorizeBy(null));
   }
 
   handleInfoPoint(getState, dispatch, query);

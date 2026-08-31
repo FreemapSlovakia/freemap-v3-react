@@ -234,9 +234,10 @@ Post-worthy and unposted, newest first.
 modes, the bent steepness scale, the elevation profile as a tool of its own, the
 pushing-bike dashes, and a mention of Priradiť k cestám from the Tracks-and-data row. They
 stay here for 🌍 Masto and 📧 list, which have had none of it. Two things learned writing
-it, worth keeping: a route's colorize mode cannot be put in a URL (see `TODO.md`), so no
-link can show a coloured route; and the pushing-bike dashes are hidden whenever a colorize
-mode is on, so a post about colouring cannot also show them in the same picture.
+it, worth keeping: a route's colorize mode could not be put in a URL, so no link could show
+a coloured route — which is why `route-colorize-by=` now exists, added the same day for the
+Mastodon post's sake; and the pushing-bike dashes are hidden whenever a colorize mode is on,
+so a post about colouring cannot also show them in the same picture.
 
 **Eight tail rows above went out in the 2026-08-27 Facebook round-up** — the share sheet,
 several toolbars at once, the ⓘ details panel, fractional zoom, a map offered rather than
