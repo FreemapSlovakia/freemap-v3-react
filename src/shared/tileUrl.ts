@@ -33,6 +33,58 @@ export function buildTileUrl(
     .replace('{s}', subdomain);
 }
 
+export function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * The coordinates {@link buildTileUrl} put into a URL, read back out of it —
+ * `null` when the URL is not one the template can produce, or the template names
+ * no tile at all. Any `@Nx` suffix is ignored; `s` is the subdomain the URL was
+ * built with, so the same one can be used again.
+ */
+export function parseTileUrl(
+  urlTemplate: string,
+  url: string,
+): { x: number; y: number; z: number; s: string } | null {
+  const names: string[] = [];
+
+  const body = urlTemplate
+    .split(/(\{[sxyz]\})/)
+    .map((part) => {
+      if (!/^\{[sxyz]\}$/.test(part)) {
+        return escapeRegExp(part);
+      }
+
+      names.push(part[1]);
+
+      return part === '{s}'
+        ? '([^./]*)'
+        : part === '{z}'
+          ? '(\\d+)'
+          : '(-?\\d+)';
+    })
+    .join('');
+
+  const match = new RegExp(`^${body}$`).exec(stripTileScale(url));
+
+  if (!match) {
+    return null;
+  }
+
+  const values: Record<string, string> = {};
+
+  names.forEach((name, i) => {
+    values[name] = match[i + 1];
+  });
+
+  const { x, y, z, s } = values;
+
+  return x === undefined || y === undefined || z === undefined
+    ? null
+    : { x: Number(x), y: Number(y), z: Number(z), s: s ?? 'a' };
+}
+
 /**
  * The `@Nx` variant that a screen of the given DPI gets, or `1` when the layer
  * has no hi-DPI variant that fits and plain tiles are fetched.
