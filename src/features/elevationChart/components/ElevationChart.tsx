@@ -36,7 +36,7 @@ import {
 import { Button, CloseButton } from 'react-bootstrap';
 import { FaCog, FaDownload, FaMapMarkerAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { buildFillStops } from '../chartFill.js';
+import { buildFillBands, buildFillStops } from '../chartFill.js';
 import { useChartColorize } from '../hooks/useChartColorize.js';
 import { useElevationSources } from '../hooks/useElevationSources.js';
 import {
@@ -345,6 +345,8 @@ export default function ElevationChart(): ReactElement | null {
 
   const fillId = `ec-fill-${id}`;
 
+  const areaId = `ec-area-${id}`;
+
   const plotWidth = width - ml - mr;
 
   const d = elevationProfilePoints.at(-1)?.distance ?? NaN;
@@ -387,10 +389,22 @@ export default function ElevationChart(): ReactElement | null {
   // out, plus the pair straddling each edge so the ends are colored too; a
   // categorical mode gets both colors at a boundary rather than a blur across
   // it, and a run of one color is written once.
+  // A mode that names categories is banded; one that measures a scale gets the
+  // gradient. Never both.
+  const banded = colorizer?.spanBased ?? false;
+
   const fillStops = useMemo(
-    () => buildFillStops(colorizer, stops, vFrom, vTo, plotWidth),
-    [colorizer, stops, vFrom, vTo, plotWidth],
+    () =>
+      banded ? null : buildFillStops(colorizer, stops, vFrom, vTo, plotWidth),
+    [banded, colorizer, stops, vFrom, vTo, plotWidth],
   );
+
+  const fillBands = useMemo(
+    () => (banded ? buildFillBands(colorizer, stops, vFrom, vTo) : null),
+    [banded, colorizer, stops, vFrom, vTo],
+  );
+
+  const colorized = Boolean(fillStops || fillBands);
 
   // The whole profile sets the elevation range, zoomed in or not: a scale that
   // followed the window would make two readings of the same chart incomparable,
@@ -924,6 +938,15 @@ export default function ElevationChart(): ReactElement | null {
               {/* User space, not the object's box: the profile is drawn as one
                   polygon per elevated run, and each would otherwise stretch the
                   whole gradient across its own width. */}
+              {/* The drawn area itself, so the bands can be kept inside it. */}
+              {fillBands && (
+                <clipPath id={areaId}>
+                  {paths.map(({ area }, i) => (
+                    <polygon key={i} points={area} />
+                  ))}
+                </clipPath>
+              )}
+
               {fillStops && (
                 <linearGradient
                   id={fillId}
@@ -953,28 +976,55 @@ export default function ElevationChart(): ReactElement | null {
             of points with elevation. A missing value breaks the line and its
             fill rather than dropping to the baseline. */}
             <g className="chart" clipPath={`url(#${clipId})`}>
-              {paths.map(({ line, area }, i) => (
-                <g className="chart-segment" key={`seg${i}`}>
-                  <polygon
-                    points={area}
-                    fill={
-                      fillStops
-                        ? `url(#${fillId})`
-                        : 'var(--bs-primary-bg-subtle)'
-                    }
-                  />
+              {paths.map(({ area }, i) => (
+                <polygon
+                  key={`area${i}`}
+                  className="chart-area"
+                  points={area}
+                  fill={
+                    fillStops
+                      ? `url(#${fillId})`
+                      : 'var(--bs-primary-bg-subtle)'
+                  }
+                />
+              ))}
 
-                  {/* The colorized fill is what carries the reading, so the
-                      outline steps back to a neutral edge for it. */}
-                  <polyline
-                    points={line}
-                    stroke={
-                      fillStops ? 'var(--bs-body-color)' : 'var(--bs-primary)'
-                    }
-                    strokeWidth={1}
-                    fill="none"
-                  />
+              {/* Categories painted as solid bands, kept inside the area by the
+                  same polygons. */}
+              {fillBands && (
+                <g className="chart-bands" clipPath={`url(#${areaId})`}>
+                  {fillBands.map(({ from, to, color }, i) => (
+                    <rect
+                      key={`band${i}`}
+                      x={mapX(from)}
+                      y={mt}
+                      // A pixel wider than the band, so the next one paints over
+                      // the overhang: two anti-aliased edges meeting on a
+                      // fractional coordinate each cover half of it, and the
+                      // ground shows through the seam. The boundary stays where
+                      // it was — it is the next band's own left edge. The last
+                      // band's overhang is taken off by the area clip.
+                      width={mapX(to) - mapX(from) + 1}
+                      height={height - mt - mb}
+                      fill={color}
+                    />
+                  ))}
                 </g>
+              )}
+
+              {/* The colorized fill is what carries the reading, so the outline
+                  steps back to a neutral edge for it. */}
+              {paths.map(({ line }, i) => (
+                <polyline
+                  key={`line${i}`}
+                  className="chart-line"
+                  points={line}
+                  stroke={
+                    colorized ? 'var(--bs-body-color)' : 'var(--bs-primary)'
+                  }
+                  strokeWidth={1}
+                  fill="none"
+                />
               ))}
             </g>
 
