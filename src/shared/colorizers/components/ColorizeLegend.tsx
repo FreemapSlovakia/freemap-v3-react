@@ -265,8 +265,9 @@ export function ColorizeLegend({ mode, icon, features }: Props) {
           <div
             // `overflow-y` is pinned: `auto` on one axis makes the browser
             // compute `auto` on the other, which puts a scrollbar beside two
-            // lines that already fit.
-            className="ms-4 me-3 d-flex align-items-center gap-3"
+            // lines that already fit. The padding keeps the clip edge off the
+            // `lh-1` text, whose diacritics rise above the line box.
+            className="ms-4 me-3 py-1 my-n1 d-flex align-items-center gap-3"
             style={{ overflowX: 'auto', overflowY: 'hidden' }}
           >
             {categories.map(({ key, label, meters, color }) => (
