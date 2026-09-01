@@ -28,7 +28,7 @@ const STATIC_CACHE_NAME = 'offline-static';
 
 const FALLBACK_HTML_URL = '/offline.html';
 
-const FALLBACK_LOGO_URL = '/freemap-logo.jpg';
+const FALLBACK_LOGO_URL = '/freemap-flower.svg';
 
 const TILE_CACHE_PREFIX = 'tiles-';
 

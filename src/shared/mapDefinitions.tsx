@@ -261,6 +261,22 @@ export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
     name: 'LIDAR Composite DTM 1\xa0m (England, OGL\xa0v3): ©\xa0Environment Agency copyright and/or database right 2022. All rights reserved.',
     url: 'https://www.data.gov.uk/dataset/01b3ee39-da3f-47b6-83da-dc98e73a461f/lidar-composite-digital-terrain-model-dtm-1m',
   },
+  // Belgium is two models under one country: SPW's in the south, and DHMV II,
+  // which reaches over Brussels too — no gap there, and no third credit. CC BY
+  // obliges the SPW half to be marked as changed (§3(a)(1)(B)) — hence
+  // "modified"; the Flemish licence asks only for its "Bron:" line verbatim.
+  {
+    type: 'data',
+    country: 'be',
+    name: 'MNT 1\xa0m 2021–2022: ©\xa0Service public de Wallonie (SPW), CC\xa0BY\xa04.0 — modified',
+    url: 'https://geoportail.wallonie.be/catalogue/fe13bc84-e371-46ca-9632-8ad4139f1ee5.html',
+  },
+  {
+    type: 'data',
+    country: 'be',
+    name: 'DHMV\xa0II 1\xa0m — Bron: Digitaal Vlaanderen (Modellicentie gratis hergebruik)',
+    url: 'https://metadata.vlaanderen.be/srv/dut/catalog.search#/metadata/f52b1a13-86bc-4b64-8256-88cc0d1a8735',
+  },
 ];
 
 /**
@@ -269,9 +285,14 @@ export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
  * its country out. The elevation API keeps its own list,
  * `ELEVATION_API_DTM_COUNTRIES`, which need not hold the same countries.
  */
-const OUTDOOR_NATIONAL_DTM_COUNTRIES = OUTDOOR_NATIONAL_DTM_ATTRIBUTION.filter(
-  (a) => !a.partial,
-).map((a) => a.country);
+const OUTDOOR_NATIONAL_DTM_COUNTRIES = [
+  // A country can be covered by more than one model, so the codes are deduped.
+  ...new Set(
+    OUTDOOR_NATIONAL_DTM_ATTRIBUTION.filter((a) => !a.partial).map(
+      (a) => a.country,
+    ),
+  ),
+];
 
 // Attribution shared by the outdoor map and its KST-routes variant: Freemap,
 // OSM data, the national elevation sources, and the global GEDTM30 model that

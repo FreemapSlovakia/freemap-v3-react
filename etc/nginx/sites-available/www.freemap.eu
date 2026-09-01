@@ -57,13 +57,15 @@ if ($blocked_country) {
 		try_files "/sitemap/$args" "/sitemap/layers=X&lang=en";
 	}
 
-	# Entry documents and the build manifest change on every deploy and point at
-	# the current hashed assets, so they must never be cached — not even
-	# heuristically, which nginx does for responses that lack Cache-Control.
+	# Entry documents, the offline page and the build manifest change on every
+	# deploy and point at the current assets, so they must never be cached — not
+	# even heuristically, which nginx does for responses that lack Cache-Control.
+	# The offline page belongs here because the service worker refetches it on
+	# install; a stale copy would reference a logo the worker no longer serves.
 	# This block also serves `/`: the try_files above re-matches locations, so
 	# these headers — not the ones in `location = /` — are what a visitor gets.
 	# Keep it indexable; the raw filenames are kept out of search via robots.txt.
-	location ~ ^/(index(-(sk|eu)-\w\w)?\.html|assets-manifest\.json)$ {
+	location ~ ^/(index(-(sk|eu)-\w\w)?\.html|offline\.html|assets-manifest\.json)$ {
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
@@ -78,7 +80,7 @@ if ($blocked_country) {
 	}
 
 	# Possibly-unhashed images: cache long, but allow revalidation on change.
-	location ~ "\.png$|\.jpg$" {
+	location ~ "\.png$|\.jpg$|\.svg$" {
 		add_header Cache-Control 'max-age=31536000';
 	}
 

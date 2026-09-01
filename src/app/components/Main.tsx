@@ -43,7 +43,8 @@ import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
-import fmLogo from '@/images/freemap-logo-print.png';
+import fmLogoEu from '@/images/freemap-logo-eu.svg';
+import fmLogoSk from '@/images/freemap-logo-sk.svg';
 import 'leaflet/dist/leaflet.css';
 import {
   Fragment,
@@ -92,6 +93,13 @@ import { MapControls } from './MapControls.js';
 import { Results } from './Results.js';
 import { Tools } from './Tools.js';
 import { useHtmlMeta } from './useHtmlMeta.js';
+
+// The header logo is picked from the entry document's `data-site` by CSS, so the
+// printed one reads the same attribute rather than the hostname — a host serving
+// the EU document without an `*.freemap.eu` name would otherwise disagree.
+const isEuSite = document.documentElement.dataset['site'] === 'eu';
+
+const fmLogo = isEuSite ? fmLogoEu : fmLogoSk;
 
 const objectsMenuFactory = () =>
   import(
@@ -944,7 +952,7 @@ export function Main(): ReactElement {
             id="freemap-logo-print"
             src={fmLogo}
             width="150"
-            height="54"
+            height={isEuSite ? 37 : 38}
             alt="freemap logo"
             className="d-none"
           />

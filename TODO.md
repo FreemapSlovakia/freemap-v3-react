@@ -5,6 +5,23 @@ product decisions — is tracked as a GitHub issue instead; the sections below s
 which label to look under. See [`doc/architecture.md`](./doc/architecture.md) for
 the surrounding context.
 
+## Waiting on upstream
+
+- [ ] **Unpin zod once 4.5.x carries the cycle fix.** `package.json` pins
+      `"zod": "4.4.3"` exactly, because 4.5.0 broke every schema `zod-geojson`
+      composes: `GeoJSONFeature*Schema` spends ~8 s on the main thread and then
+      throws `RangeError: Maximum call stack size exceeded`, which took the
+      stored-track restore, saved and offline maps, and search results with it
+      (fixed in `44f7f3bb`). The cause is upstream —
+      [colinhacks/zod#6526](https://github.com/colinhacks/zod/issues/6526), fixed
+      by [#6530](https://github.com/colinhacks/zod/pull/6530), merged 2026-09-01
+      but unreleased as of that date; latest published is 4.5.4. When a release
+      lands, verify before widening the range: `GeoJSONFeatureCollectionSchema`
+      must parse `{type:'FeatureCollection',features:[]}` in milliseconds. The
+      caret is what let 4.5 in, so re-pin rather than trust the range.
+      [reilem/zod-geojson#37](https://github.com/reilem/zod-geojson/issues/37)
+      tracks memoising their factories, which would make us immune regardless.
+
 ## Committed work
 
 - [~] **Add automated tests.** Vitest + jsdom now configured (`vitest.config.ts`,
@@ -560,6 +577,48 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       `github.com/komoot/photon`. Every case above reproduces on
       `photon.komoot.io`, which runs the same 1.3.0 and the same 2026-08-08
       import, so none of it is our index.
+
+## Branding assets (`src/images/freemap-*.svg`)
+
+The logo became vector in `f0cf4885` (2026-09-01): `freemap-logo-sk.svg`,
+`freemap-logo-eu.svg` and the site-neutral `freemap-flower.svg`, with gloss from
+gradients rather than SVG filters, and text converted to paths. The entry
+document stamps `data-site` on `<html>`, so CSS, the pre-JS bootstrap and the
+print logo all pick the same wordmark. What the rework did not reach:
+
+- [ ] **Decide the `.eu` tagline, then regenerate the raster lockups.**
+      `logo.jpg` (the `og:image`), `apple-touch-icon-{152,180,1024}`,
+      `mstile-{150,310x150,310x310}`, `firefox_app_*` and every
+      `apple-touch-startup-image-*` bake in "digitálna mapa Slovenska" and are
+      shared by both domains. Needs three answers first: whether `.eu` carries a
+      tagline at all, one fixed English line vs. per-language, and whether it
+      describes the map or follows the `siteNames` in `src/shared/sites.ts`
+      (*Freemap Slovakia* / *Freemap Europe*). `og:image` also has to split per
+      site once it stops being one file. The flower-only icons in that set are
+      already site-neutral and need nothing.
+- [ ] **Commit the editable masters.** The shipped SVGs are outlined, so the
+      wordmark can no longer be retyped in them. The versions that still carry
+      live Sriracha text sit outside the repo in `~/freemap-new-logo-shaded.svg`,
+      `~/freemap-new-logo-shaded-eu.svg` and `~/freemap-new-flower.svg` — one
+      lost home directory and the next logo edit starts from tracing.
+- [ ] **A small-size wordmark variant.** Below roughly 110 px wide the black
+      outline swallows the white letters — the same reason `freemap-logo-small.png`
+      existed. The narrow header dodges it by switching to the flower, but any
+      future small wordmark use needs a thinner-stroke cut.
+- [ ] **Drop the baked drop shadow.** All three SVGs still carry an
+      `feGaussianBlur` drop-shadow filter, the one part that renders unevenly
+      across engines and rasterizes on PDF export. Browsers handle it fine, so
+      this only matters for print/export paths; the fix is a CSS
+      `filter: drop-shadow()` at the usage sites, or an offset vector copy.
+- [ ] **Retire the orphaned rasters once the access log says it is safe.**
+      `src/images/freemap-logo{,-small,-print}.png` and
+      `src/static/freemap-logo.{png,jpg}` plus `freemap-logo-for-garmin.jpg` are
+      unreferenced but deliberately kept: they may be registered as the app icon
+      with an external OAuth provider. Settle it by counting hits in the fm6
+      access log (the `src/static/` ones are stable public URLs; the
+      `src/images/` ones were always content-hashed and are far less likely).
+      Note the deploy rsync has no `--delete`, so removing them from the repo
+      does not remove them from the server.
 
 ## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
 
