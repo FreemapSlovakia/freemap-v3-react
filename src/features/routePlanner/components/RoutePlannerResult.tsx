@@ -3,6 +3,7 @@ import {
   activeMapToolSelector,
   selectingModeSelector,
 } from '@app/store/selectors.js';
+import { ElevationRangeLine } from '@features/elevationChart/components/ElevationRangeLine.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import {
   colorizeGeometrySource,
@@ -16,6 +17,7 @@ import { colorizers } from '@shared/colorizers/index.js';
 import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
+import { HALO_COLOR, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
@@ -74,6 +76,12 @@ const pointDraggingClassName = classes.dragging;
 // group at once.
 const routePaneName = 'fmRoutePlannerRoute';
 
+// Three panes nested in it, so the elevation chart's range band can sit between
+// the casing and the line whatever order the layers happen to be added in.
+const casingPaneName = 'fmRoutePlannerCasing';
+const rangePaneName = 'fmRoutePlannerRange';
+const linePaneName = 'fmRoutePlannerLine';
+
 export function RoutePlannerResult(): ReactElement {
   const rpm = useRoutePlannerMessages();
 
@@ -109,6 +117,10 @@ export function RoutePlannerResult(): ReactElement {
 
   const lineOpacity = useAppSelector(
     (state) => state.routePlannerSettings.lineOpacity,
+  );
+
+  const chartingRoute = useAppSelector(
+    (state) => state.elevationChart.target?.type === 'route-planner',
   );
 
   const markerOpacity = useAppSelector(
@@ -574,19 +586,10 @@ export function RoutePlannerResult(): ReactElement {
               !window.fmEmbedded
             }
             {...content}
-            color={
-              isStart
-                ? selectedPoint === i
-                  ? '#a2daa2'
-                  : '#409a40'
-                : isEnd
-                  ? selectedPoint === i
-                    ? '#feaca9'
-                    : '#d9534f'
-                  : selectedPoint === i
-                    ? '#9fb7ff'
-                    : '#3e64d5'
-            }
+            color={isStart ? '#409a40' : isEnd ? '#d9534f' : '#3e64d5'}
+            // Selection is the ring, so the waypoint keeps the color that says
+            // which of the three it is.
+            halo={selectedPoint === i ? SELECTION_COLOR : undefined}
             zIndexOffset={isStart || points.length - 1 ? 10 : 1}
             eventHandlers={
               window.fmEmbedded
@@ -697,10 +700,10 @@ export function RoutePlannerResult(): ReactElement {
       // showing through beneath the canvas, so the hotline carries none.
       outlineWidth: 0,
       ...colorizerHotlineOptions(activeColorizer),
-      // Render the colorize canvas into the route pane too (a patched
+      // Render the colorize canvas into the line pane (a patched
       // react-leaflet-hotline forwards this to its L.Canvas), so it composites
-      // above the outline and picks up the pane's `lineOpacity`.
-      pane: routePaneName,
+      // above the casing and picks up the route pane's `lineOpacity`.
+      pane: linePaneName,
     }),
     [activeColorizer, lineWidth],
   );
@@ -730,6 +733,7 @@ export function RoutePlannerResult(): ReactElement {
                   // line on top, so the halo shows through as its edges.
                   <Polyline
                     key={`slice-${i}-${interactive}`}
+                    pane={casingPaneName}
                     interactive={interactive && !routeSlice.connector}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
@@ -737,13 +741,13 @@ export function RoutePlannerResult(): ReactElement {
                     // react-leaflet restyles the layer when it changes; opacity
                     // is applied to the whole route pane instead.
                     pathOptions={{
-                      weight: lineWidth + 4,
+                      weight: lineWidth + HALO_WIDTH,
                       color:
                         selectedSegment === routeSlice.legIndex &&
                         alt === activeAlternativeIndex &&
                         !routeSlice.connector
-                          ? '#156efd'
-                          : '#fff',
+                          ? SELECTION_COLOR
+                          : HALO_COLOR,
                     }}
                     bubblingMouseEvents={false}
                     eventHandlers={{
@@ -786,14 +790,8 @@ export function RoutePlannerResult(): ReactElement {
                   routeSlice.mode !== 'error') ? null : (
                   // foreground
                   <Polyline
-                    // `interactive` is in the key even though the layer is never
-                    // interactive: the halo above still remounts when it changes,
-                    // and `bringToFront` is plain DOM order, so a re-added halo
-                    // lands on top of this line. Remounting in lockstep puts the
-                    // foreground back above its outline. Both keys lose the
-                    // `interactive` entry once path interactivity is applied
-                    // in place (see TODO.md).
-                    key={`slice-${timestamp}-${alt}-${i}-${interactive}`}
+                    key={`slice-${timestamp}-${alt}-${i}`}
+                    pane={linePaneName}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     // Width lives in pathOptions (not a top-level prop) so
@@ -834,7 +832,7 @@ export function RoutePlannerResult(): ReactElement {
       {!window.fmEmbedded && routePlannerToolActive && dragLatLng && (
         <RichMarker
           interactive={false}
-          color="#156efd"
+          color={SELECTION_COLOR}
           opacity={0.5}
           position={dragLatLng}
         />
@@ -847,17 +845,30 @@ export function RoutePlannerResult(): ReactElement {
        * (seeded here, kept live by the effect above) composites them as one
        * group. `<Pane>` portals its children in only once the pane exists, so the
        * nested layers never attach to a missing pane. Overlay z-level, below the
-       * markers; front-to-back order is settled within the pane.
+       * markers; front-to-back order comes from the three panes nested in it.
        */}
       <Pane name={routePaneName} style={{ zIndex: 400, opacity: lineOpacity }}>
+        {/* Declared before the layers that name them, so the panes exist by the
+            time those are added to the map. */}
+        <Pane name={casingPaneName} style={{ zIndex: 1 }} />
+
+        <Pane name={rangePaneName} style={{ zIndex: 2 }}>
+          {chartingRoute && (
+            <ElevationRangeLine weight={lineWidth + HALO_WIDTH} />
+          )}
+        </Pane>
+
+        <Pane name={linePaneName} style={{ zIndex: 3 }} />
+
         {paths}
 
         {noDataRunsList.map((run, i) => (
           <Polyline
             // `selectedSegment` is in the key, and the layer brought to front,
-            // for the same reason as the foreground slices above: selecting a
-            // leg re-adds the halo, which would otherwise cover this line.
+            // because selecting a leg re-adds the foreground slices, which
+            // share this pane and would otherwise cover this line.
             key={`nodata-${colorizeBy}-${timestamp}-${activeAlternativeIndex}-${selectedSegment}-${i}`}
+            pane={linePaneName}
             ref={bringToFront}
             positions={run.map((p): [number, number] => [p.lat, p.lon])}
             pathOptions={{
@@ -890,6 +901,7 @@ export function RoutePlannerResult(): ReactElement {
           // react-leaflet's GeoJSON doesn't restyle live.
           <GeoJSON
             key={`iso-${timestamp}-${isochrone.properties?.['bucket']}-${lineWidth}`}
+            pane={linePaneName}
             interactive={false}
             style={(f) => {
               const bucket = f?.properties['bucket'];

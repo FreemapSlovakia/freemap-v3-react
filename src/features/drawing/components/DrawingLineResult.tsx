@@ -5,6 +5,7 @@ import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { formatAzimuth } from '@shared/geoutils.js';
+import { HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -59,11 +60,13 @@ const circularIcon = divIcon({
   html: `<div class="${classes.circularMarkerIcon}" style="background-color: var(--color-normal, ${COLORS.normal})"></div>`,
 });
 
+// The selected vertex keeps the line's color and wears the ring instead, as
+// every other selected feature does.
 const selectedCircularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="${classes.circularMarkerIcon}" style="background-color: var(--color-selected, ${COLORS.selected})"></div>`,
+  html: `<div class="${classes.circularMarkerIcon}" style="background-color: var(--color-normal, ${COLORS.normal}); box-shadow: 0 0 0 3px ${SELECTION_COLOR}"></div>`,
 });
 
 // Each vertex/midpoint handle is a DOM marker, so a many-vertex line would
@@ -90,6 +93,18 @@ const HANDLE_HYSTERESIS = 1.3;
 const NO_HOLES: DrawnLine[] = [];
 
 const toLatLng = ({ lat, lon }: LatLon) => ({ lat, lng: lon });
+
+/** Declared by `DrawingLinesResult`, below the shapes it holds the halos of. */
+export const HIGHLIGHT_PANE = 'fm-drawing-highlight';
+
+// Whole object, so a re-render hands Leaflet the same options back instead of
+// restyling every path.
+const SELECTION_HALO = {
+  color: SELECTION_COLOR,
+  opacity: 1,
+  lineCap: 'round',
+  lineJoin: 'round',
+} as const;
 
 type HandleTier = 'all' | 'vertices' | 'none';
 
@@ -154,15 +169,12 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   const stroke = splitColorAlpha(color);
 
-  const renderColor = selected
-    ? Color(stroke.color).lighten(0.75).hex()
-    : stroke.color;
+  // Selection is the halo below, so the shape keeps its own colors.
+  const renderColor = stroke.color;
 
   const fillRaw = splitColorAlpha(style.fillColor ?? color);
 
-  const renderFillColor = selected
-    ? Color(fillRaw.color).lighten(0.75).hex()
-    : fillRaw.color;
+  const renderFillColor = fillRaw.color;
 
   const renderFillOpacity = style.fillColor ? fillRaw.opacity : undefined;
 
@@ -681,6 +693,18 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     >
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
+          {selected && (
+            <Polyline
+              pane={HIGHLIGHT_PANE}
+              weight={width + HALO_WIDTH}
+              pathOptions={SELECTION_HALO}
+              interactive={false}
+              positions={ps
+                .filter((_, i) => i % 2 === 0)
+                .map(({ lat, lon }) => ({ lat, lng: lon }))}
+            />
+          )}
+
           <Polyline
             key={`line-${interactiveLine ? 'a' : 'b'}`}
             weight={width + 8}
@@ -717,6 +741,19 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             )}
           </Polyline>
         </Fragment>
+      )}
+
+      {ps.length > 1 && line.type === 'polygon' && !isHole && selected && (
+        <Polygon
+          pane={HIGHLIGHT_PANE}
+          weight={width + HALO_WIDTH}
+          pathOptions={{ ...SELECTION_HALO, fill: false }}
+          interactive={false}
+          positions={[
+            ps.filter((_, i) => i % 2 === 0).map(toLatLng),
+            ...holeRings,
+          ]}
+        />
       )}
 
       {ps.length > 1 && line.type === 'polygon' && !isHole && (
@@ -776,17 +813,13 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             positions={[...points, points[0]!].map(toLatLng)}
           />
 
+          {/* The halo is the hole's own, not the parent polygon's: it says
+              which ring the toolbar acts on. */}
           {selected && (
             <Polyline
-              pane="fm-drawing-polygons"
-              weight={width}
-              pathOptions={{
-                color: renderColor,
-                opacity: stroke.opacity,
-                dashArray: style.dashArray,
-                lineCap: style.lineCap ?? 'round',
-                lineJoin: style.lineJoin ?? 'round',
-              }}
+              pane={HIGHLIGHT_PANE}
+              weight={width + HALO_WIDTH}
+              pathOptions={SELECTION_HALO}
               interactive={false}
               positions={[...points, points[0]!].map(toLatLng)}
             />

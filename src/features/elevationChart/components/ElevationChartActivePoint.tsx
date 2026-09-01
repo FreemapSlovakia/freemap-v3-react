@@ -2,21 +2,20 @@ import { pickingModeSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
+import { HALO_WIDTH } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { type LatLngTuple, type LeafletMouseEvent, Point } from 'leaflet';
-import { type ReactElement, useMemo } from 'react';
+import { type LeafletMouseEvent, Point } from 'leaflet';
+import type { ReactElement } from 'react';
 import { FaInfo } from 'react-icons/fa';
-import { Pane, Polyline, Tooltip, useMap, useMapEvent } from 'react-leaflet';
+import { Pane, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gradeAt } from '../grade.js';
 import { elevationChartSetActivePoint } from '../model/actions.js';
 import { gradeWindowMeters } from '../model/settingsReducer.js';
-import {
-  elevatedRuns,
-  profileSlice,
-  projectOnProfile,
-} from '../profilePoint.js';
+import { projectOnProfile } from '../profilePoint.js';
+import { targetLineWidth } from '../targetLineWidth.js';
+import { ElevationRangeLine } from './ElevationRangeLine.js';
 
 // How near the drawn line the pointer must come for the readout to appear.
 // Generous enough to catch the line without demanding pixel accuracy, tight
@@ -28,25 +27,12 @@ const HOVER_TOLERANCE_PX = 14;
 // re-entry at the same place) leaves the store alone.
 const MIN_STEP_M = 0.1;
 
-// A band over the line, in the chart's own accent — wide enough to read past
-// the line under it, and see-through so that line stays legible.
-const RANGE_STYLE = {
-  // Named rather than spelled out, so it stays the one ink the chart draws its
-  // own marks in. Leaflet writes it onto an SVG path in the document, where the
-  // custom property resolves.
-  color: 'var(--bs-danger)',
-  weight: 10,
-  opacity: 0.4,
-  lineCap: 'round',
-  lineJoin: 'round',
-  interactive: false,
-} as const;
-
-// Above every line the chart can be aimed at — the planned route has a pane of
-// its own at the overlay pane's own z-index and, being mounted later, paints
-// over it — and below the markers.
+// Below every line the chart can be aimed at (the overlay pane at 400, and the
+// panes the route and the recorder line get at or above it), so a colorized
+// line keeps its own colours — but above the track viewer's selection halo
+// (398), which the band stands in for along the marked stretch.
 const RANGE_PANE = 'fm-elevation-range';
-const RANGE_PANE_Z = 550;
+const RANGE_PANE_Z = 399;
 
 /**
  * Points the chart at the place under the pointer, the mirror of hovering the
@@ -112,37 +98,22 @@ function useProfileHover() {
 }
 
 /**
- * The stretch the chart has marked out, drawn under the line it belongs to so
- * the figures in the panel have a place on the map. Same ink as the chart's own
- * marks, which is what says the two belong together.
+ * The marked stretch on the map, in its own pane over the halo the line wears
+ * and under the line itself.
  */
 function RangeHighlight(): ReactElement | null {
-  const range = useAppSelector((state) => state.elevationChart.range);
-
-  const points = useAppSelector(
-    (state) => state.elevationChart.elevationProfilePoints,
+  // The route wears its casing inside its own pane group, which no outside pane
+  // can slot into, so `RoutePlannerResult` draws the band there itself.
+  const hostedByRoute = useAppSelector(
+    (state) => state.elevationChart.target?.type === 'route-planner',
   );
 
-  const positions = useMemo(() => {
-    if (!range || !points?.length) {
-      return null;
-    }
+  const weight = useAppSelector(targetLineWidth) + HALO_WIDTH;
 
-    // Broken at the profile's own gaps, which the track never travelled: drawn
-    // through, the band would cross ground nobody was on.
-    const drawn = elevatedRuns(profileSlice(points, range.from, range.to))
-      .filter((run) => run.length > 1)
-      .map((run) => run.map(({ lat, lon }) => [lat, lon] as LatLngTuple));
-
-    return drawn.length ? drawn : null;
-  }, [range, points]);
-
-  return (
-    positions && (
-      <Pane name={RANGE_PANE} style={{ zIndex: RANGE_PANE_Z }}>
-        <Polyline positions={positions} {...RANGE_STYLE} />
-      </Pane>
-    )
+  return hostedByRoute ? null : (
+    <Pane name={RANGE_PANE} style={{ zIndex: RANGE_PANE_Z }}>
+      <ElevationRangeLine weight={weight} />
+    </Pane>
   );
 }
 

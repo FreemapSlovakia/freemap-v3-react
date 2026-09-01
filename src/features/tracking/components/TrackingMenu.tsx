@@ -12,6 +12,7 @@ import {
 import { usePremiumColorizeLock } from '@shared/colorizers/components/usePremiumColorizeLock.js';
 import {
   ColorizingModeSchema,
+  colorizerNeedsElevation,
   colorizers,
   colorizingModes,
 } from '@shared/colorizers/index.js';
@@ -27,7 +28,7 @@ import { type ReactElement, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaChartArea, FaMobileAlt, FaPalette, FaRegEye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { resolveChartTrack } from '../chartTrack.js';
+import { hasElevation, resolveChartTrack } from '../chartTrack.js';
 import { trackingActions } from '../model/actions.js';
 import { trackPointsToFeature } from '../trackGeojson.js';
 import { hasDrawableSegment } from '../tracks.js';
@@ -86,7 +87,19 @@ export function TrackingMenu(): ReactElement {
     [tracks],
   );
 
+  const anyElevation = useMemo(
+    () => tracks.some((track) => hasElevation(track.trackPoints)),
+    [tracks],
+  );
+
   const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {
+    // Nothing can add elevation to a live track — the same gate the chart
+    // button uses — so elevation-derived modes stay off until a device reports
+    // some, rather than painting the line no-data grey.
+    if (colorizerNeedsElevation(mode) && !anyElevation) {
+      return false;
+    }
+
     const { isAvailable } = colorizers[mode];
 
     return !isAvailable || isAvailable(lineFeatures);

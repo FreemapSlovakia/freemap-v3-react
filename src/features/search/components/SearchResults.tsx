@@ -6,12 +6,12 @@ import {
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import { COLORS } from '@shared/colors.js';
 import {
   MarkerIcon,
   MarkerLeafletIcon,
   markerIconOptions,
 } from '@shared/components/RichMarker.js';
+import { HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { escapeHtml } from '@shared/stringUtils.js';
 import {
@@ -20,6 +20,7 @@ import {
 } from '@shared/types/featureId.js';
 import type { Feature } from 'geojson';
 import {
+  circleMarker,
   DomEvent,
   type LatLng,
   type Layer,
@@ -29,7 +30,7 @@ import {
   type PathOptions,
 } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
-import { GeoJSON } from 'react-leaflet';
+import { GeoJSON, Pane } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
   type SearchResult,
@@ -37,6 +38,8 @@ import {
   searchSelectResult,
 } from '../model/actions.js';
 import { hasGeometry } from '../model/resultUtils.js';
+
+const HALO_PANE = 'fm-search-highlight';
 
 export function SearchResults(): ReactElement | null {
   const selectedResults = useAppSelector(
@@ -63,6 +66,10 @@ export function SearchResults(): ReactElement | null {
     state.main.selection?.type === 'search' ? state.main.selection.id : null,
   );
 
+  // The previewed result is on the map only because it is being looked at, so a
+  // halo saying so tells nobody anything; only a kept one wears it.
+  const previewId = useAppSelector((state) => state.search.previewId);
+
   const shown = selectedResults.filter(hasGeometry);
 
   // A result already on the map is not drawn twice for being pointed at.
@@ -83,9 +90,16 @@ export function SearchResults(): ReactElement | null {
 
   return (
     <>
+      {/* Below the results (overlayPane, zIndex 400), so the selected one's
+          halo shows as an outline around the style it is drawn in. */}
+      <Pane name={HALO_PANE} style={{ zIndex: 398 }} />
+
       {shown.map((result) => {
         const active = Boolean(
-          marksActive && activeId && featureIdsEqual(result.id, activeId),
+          marksActive &&
+            activeId &&
+            featureIdsEqual(result.id, activeId) &&
+            !(previewId && featureIdsEqual(result.id, previewId)),
         );
 
         return (
@@ -99,20 +113,11 @@ export function SearchResults(): ReactElement | null {
               active
             }
             result={result}
-            markerColor={active ? COLORS.selected : markerColor}
-            // Stroke and fill both take the selection color; their opacities
-            // are the ones the style was given (`drawingStyleToPathOptions`
-            // splits the RGBA into color + opacity), so an area stays as solid
-            // or as faint as it was set to be.
-            pathStyle={
-              active
-                ? {
-                    ...pathStyle,
-                    color: COLORS.selected,
-                    fillColor: COLORS.selected,
-                  }
-                : pathStyle
-            }
+            markerColor={markerColor}
+            pathStyle={pathStyle}
+            // Selection is the halo around the result, so the result itself
+            // stays in the style it was given.
+            active={active}
           />
         );
       })}
@@ -156,6 +161,8 @@ type Props = {
   result: SearchResult;
   markerColor: string;
   pathStyle: PathOptions;
+  /** Whether this is the result being looked at, which wears the halo. */
+  active?: boolean;
   /**
    * The result is only being pointed at in the list, so it takes neither clicks
    * nor tooltips: the pointer is over the list, and the row under it already
@@ -168,6 +175,7 @@ function ResultGeometry({
   result,
   markerColor,
   pathStyle,
+  active,
   preview,
 }: Props): ReactElement {
   const isOsm = result.id.type === 'osm';
@@ -196,6 +204,7 @@ function ResultGeometry({
           icon: (
             <MarkerIcon
               color={markerColor}
+              halo={active ? SELECTION_COLOR : undefined}
               markerType={markerType}
               poiOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
               poi={img[0]}
@@ -204,7 +213,7 @@ function ResultGeometry({
         }),
       });
     },
-    [isOsm, markerColor, markerType, preview],
+    [isOsm, markerColor, markerType, active, preview],
   );
 
   const annotateFeature = useCallback(
@@ -291,6 +300,34 @@ function ResultGeometry({
 
   return (
     <>
+      {/* Points wear their ring on the marker itself, so the halo layer is for
+          the shapes: an unfilled outline wider than the line or the area's
+          own stroke. */}
+      {active && (
+        <GeoJSON
+          pane={HALO_PANE}
+          interactive={false}
+          data={geojson}
+          style={{
+            color: SELECTION_COLOR,
+            opacity: 1,
+            weight: (pathStyle.weight ?? 3) + HALO_WIDTH,
+            fill: false,
+          }}
+          filter={(feature) => !feature.geometry?.type.includes('Point')}
+          // A GeometryCollection gets past the filter and takes its points with
+          // it; without this Leaflet would build a default pin for each.
+          pointToLayer={(_, latLng) =>
+            circleMarker(latLng, {
+              radius: 0,
+              stroke: false,
+              fill: false,
+              interactive: false,
+            })
+          }
+        />
+      )}
+
       <GeoJSON
         interactive={false}
         data={geojson}

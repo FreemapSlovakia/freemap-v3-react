@@ -1,10 +1,11 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
-import { paleColor, splitColorAlpha } from '@shared/colorAlpha.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
+import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type {
   DragEndEvent,
@@ -102,23 +103,14 @@ export function DrawingPointsResult(): ReactElement {
       {points.map((point, i) => {
         const interactive = interactive0 || activeIndex === i;
 
-        const { color } = point;
-
-        const { color: rgb } = splitColorAlpha(color || COLORS.normal);
-
-        // The glyph keeps the point's own color so it stays readable on the
-        // paled shape, matching how a selected route waypoint is drawn.
-        const renderColor =
-          activeIndex === i
-            ? paleColor(color || COLORS.normal)
-            : color || COLORS.normal;
-
         return (
           <DrawingPointMarker
             key={`${change}-${i}`}
             point={point}
-            renderColor={renderColor}
-            glyphColor={activeIndex === i ? rgb : undefined}
+            renderColor={point.color || COLORS.normal}
+            // Selection is the ring around the marker, so the marker itself
+            // keeps its own color — the same signal a selected line wears.
+            halo={activeIndex === i ? SELECTION_COLOR : undefined}
             interactive={interactive}
             draggable={!window.fmEmbedded && activeIndex === i}
             eventHandlers={{
@@ -145,14 +137,14 @@ function DrawingPointMarker({
   point,
   point: { coords, label, markerType, icon },
   renderColor,
-  glyphColor,
+  halo,
   interactive,
   draggable,
   eventHandlers,
 }: {
   point: DrawingPoint;
   renderColor: string;
-  glyphColor?: string;
+  halo?: string;
   interactive: boolean;
   draggable: boolean;
   eventHandlers: LeafletEventHandlerFnMap;
@@ -171,7 +163,7 @@ function DrawingPointMarker({
     <RichMarker
       position={{ lat: coords.lat, lng: coords.lon }}
       color={renderColor}
-      glyphColor={glyphColor}
+      halo={halo}
       markerType={markerType}
       {...contentProps}
       draggable={draggable}

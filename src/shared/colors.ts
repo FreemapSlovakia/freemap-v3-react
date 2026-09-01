@@ -2,7 +2,6 @@ import Color from 'color';
 
 export const COLORS = {
   normal: '#d00000',
-  selected: '#f07b5d',
 };
 
 // A marker's glyph sits on an inset inside the colored shape. White normally;

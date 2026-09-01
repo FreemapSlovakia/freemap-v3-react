@@ -27,6 +27,16 @@ import {
 // shapes so icon/text size is independent of the shape.
 const GLYPH_SIZE = 160;
 
+// The selection ring, in viewBox units: every shape is drawn 310 units wide
+// into a 24 px icon, so this is a 6 px stroke on screen. It is stroked under
+// the shape, whose fill covers the inner half — leaving a crisp 3 px ring
+// outside, the same as a line's halo shows on each side.
+const HALO_STROKE = (2 * 3 * 310) / 24;
+
+// The pin, shared by its fill and the ring stroked over it.
+const PIN_PATH =
+  'M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z';
+
 // The glyph takes the marker's own color on the inset, so shape and glyph read
 // as one marker. Applies to every monochrome glyph kind — label text, Font
 // Awesome paths, and the poi icons that carry no color of their own, whose
@@ -42,6 +52,11 @@ const textStyle: CSSProperties = {
 interface BaseIconProps {
   color?: string;
   markerType?: MarkerType;
+  /**
+   * Draws a ring of this color around the marker's shape — the halo a line
+   * wears, for something that has no outline to widen.
+   */
+  halo?: string;
   /**
    * Color of the glyph on the white inset; defaults to the marker's own color.
    * Set it when the shape is drawn in a derived color (a paled selection) and
@@ -193,6 +208,7 @@ export function RichMarker({
   markerType = 'pin',
   color,
   glyphColor,
+  halo,
   faIcon,
   iconSvg,
   poi: poiName,
@@ -252,6 +268,7 @@ export function RichMarker({
           <MarkerIcon
             color={color}
             glyphColor={glyphColor}
+            halo={halo}
             faIcon={stableFaIcon}
             iconSvg={iconSvg}
             poi={poiName}
@@ -264,6 +281,7 @@ export function RichMarker({
     [
       color,
       glyphColor,
+      halo,
       stableFaIcon,
       iconSvg,
       poiName,
@@ -321,9 +339,29 @@ export function MarkerIcon({
   iconSvg,
   color = COLORS.normal,
   glyphColor,
+  halo,
   label,
   markerType,
 }: MarkerIconProps): ReactElement {
+  // The shape's own outline, stroked under the marker so only the half outside
+  // it shows — a ring that leaks neither inward nor into a blur. That half
+  // falls past the viewBox, which an SVG root clips by default — hence
+  // `overflow`.
+  const haloProps = halo
+    ? ({
+        fill: 'none',
+        stroke: halo,
+        strokeWidth: HALO_STROKE,
+        // Round, or the default miter shoots a spike out of the pin's tip —
+        // which is the marker's own anchor.
+        strokeLinejoin: 'round',
+      } as const)
+    : undefined;
+
+  const haloStyle: CSSProperties | undefined = halo
+    ? { overflow: 'visible' }
+    : undefined;
+
   // Split any alpha off the color: the solid RGB paints the shape, while the
   // alpha is applied as a group `opacity` on the whole marker (shape + white
   // inset + glyph) so the entire marker fades uniformly rather than only its
@@ -439,7 +477,12 @@ export function MarkerIcon({
           viewBox="0 0 310 310"
           xmlns="http://www.w3.org/2000/svg"
           opacity={opacity}
+          style={haloStyle}
         >
+          {haloProps && (
+            <ellipse cx={155} cy={155} rx={135} ry={135} {...haloProps} />
+          )}
+
           <ellipse cx={155} cy={155} rx={135} ry={135} fill={fillColor} />
 
           {hasContent && (
@@ -455,7 +498,20 @@ export function MarkerIcon({
           viewBox="0 0 310 310"
           xmlns="http://www.w3.org/2000/svg"
           opacity={opacity}
+          style={haloStyle}
         >
+          {haloProps && (
+            <rect
+              x={30}
+              y={30}
+              width={240}
+              height={240}
+              rx={20}
+              ry={20}
+              {...haloProps}
+            />
+          )}
+
           <rect
             x={30}
             y={30}
@@ -487,11 +543,11 @@ export function MarkerIcon({
           viewBox="0 0 310 512"
           xmlns="http://www.w3.org/2000/svg"
           opacity={opacity}
+          style={haloStyle}
         >
-          <path
-            d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z"
-            fill={fillColor}
-          />
+          {haloProps && <path d={PIN_PATH} {...haloProps} />}
+
+          <path d={PIN_PATH} fill={fillColor} />
 
           {hasContent && (
             <ellipse

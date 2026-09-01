@@ -142,12 +142,9 @@ Still emitting at info level (non-blocking, optional cleanup):
       upstream diffs (e.g. `setLatLngs` for a polyline) — copy them from
       `@react-leaflet/core`'s `Polyline`/`Polygon` and re-check them on bumps.
       The same wrapper would let `RichMarker` drop `setMarkerInteractive`.
-      Watch the route planner while doing this: its halo and foreground lines
-      stack by DOM order via `ref={bringToFront}`, so the foreground carries
-      `interactive` in its key purely to remount in lockstep with the halo.
-      Removing that entry alone leaves the halo covering the line (only the
-      white outline renders until a click reshuffles the pane); both keys have to
-      lose it together, or the stacking has to stop depending on mount order.
+      In the route planner only the halo carries `interactive` in its key; it
+      and the foreground lines sit in separate nested panes, so a remounted halo
+      can no longer cover the line.
 - [ ] **Decimate the drawn GPS-recorder track by zoom.** The polyline re-maps
       every point into a fresh array per fix and Leaflet re-projects the whole
       line, which is the remaining per-fix cost over the whole track now that the

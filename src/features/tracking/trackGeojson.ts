@@ -16,7 +16,10 @@ function coordinateOf(point: TrackPoint): Position {
  * and the elevation chart consume. Coordinates are `[lon, lat, altitude?]`
  * (altitude omitted when the device didn't report one, so elevation-derived
  * colorizers treat it as a gap), with the per-point series the colorizers read:
- * `coordTimes` (speed/time) and `coordinateProperties` (battery, gsmSignal).
+ * `coordTimes` (time and speed) and `coordinateProperties` (battery,
+ * gsmSignal). No `speeds`: a device that reports speed only now and then would
+ * lose the derived one for the whole track, which `speedSpec` gives up as soon
+ * as a single recorded sample is finite.
  */
 export function trackPointsToFeature(
   points: TrackPoint[],

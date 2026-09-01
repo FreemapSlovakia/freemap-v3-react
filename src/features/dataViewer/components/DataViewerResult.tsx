@@ -1,7 +1,7 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
-import { paleColor, splitColorAlpha } from '@shared/colorAlpha.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import {
   availableColorizer,
   colorizerHotlineOptions,
@@ -16,6 +16,12 @@ import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
+import {
+  HALO_COLOR,
+  HALO_WIDTH,
+  SECOND_SELECTION_COLOR,
+  SELECTION_COLOR,
+} from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
@@ -44,8 +50,6 @@ import { trackLineParts } from '../trackLineParts.js';
 // The selection halo, and the colour the far half of a pending cut is told
 // apart by. Whole objects, so a re-render hands Leaflet the same options back
 // instead of restyling every path.
-const SELECTION_COLOR = '#156efd';
-
 const HALO_OPTIONS = {
   opacity: 1,
   lineCap: 'round',
@@ -54,7 +58,11 @@ const HALO_OPTIONS = {
 
 const HEAD_HALO = { ...HALO_OPTIONS, color: SELECTION_COLOR };
 
-const TAIL_HALO = { ...HALO_OPTIONS, color: '#ff8c00' };
+const TAIL_HALO = { ...HALO_OPTIONS, color: SECOND_SELECTION_COLOR };
+
+// What an unselected colorized line wears instead: its colors are the mode's,
+// so it needs an outline of its own to stay legible over the map.
+const CASING = { ...HALO_OPTIONS, color: HALO_COLOR };
 
 // Fallback fill opacity, used only when no fill color is resolvable at all
 // (e.g. the user cleared drawingFillColor). Passing an explicit number is
@@ -322,24 +330,36 @@ export default function DataViewerResult({
           key: `head-${i}`,
           positions,
           options: HEAD_HALO,
+          width: haloWidth,
         })),
         ...split.preview.tail.map((positions, i) => ({
           key: `tail-${i}`,
           positions,
           options: TAIL_HALO,
+          width: haloWidth,
         })),
       ]
-    : features.flatMap(({ lineData, featureIndex }, i) =>
-        featureIndex === selectedIndex || featureIndex === join.hovered
+    : features.flatMap(({ lineData, featureIndex, style }, i) => {
+        const options =
+          featureIndex === join.hovered
+            ? TAIL_HALO
+            : featureIndex === selectedIndex
+              ? HEAD_HALO
+              : activeColorizer
+                ? CASING
+                : null;
+
+        return options
           ? [
               {
                 key: `line-${i}`,
                 positions: lineData,
-                options: featureIndex === join.hovered ? TAIL_HALO : HEAD_HALO,
+                options,
+                width: style.width,
               },
             ]
-          : [],
-      );
+          : [];
+      });
 
   const timeFormat = useDateTimeFormat({
     hour: 'numeric',
@@ -348,9 +368,9 @@ export default function DataViewerResult({
 
   return (
     <Fragment key={keyToAssureProperRefresh}>
-      {/* Below the line foreground (overlayPane, zIndex 400) so the active
-          track's wider blue halo shows as an outline around it without changing
-          the line's own style. */}
+      {/* Below the line foreground (overlayPane, zIndex 400) so a track's wider
+          halo — white while it is merely colorized, blue while it is selected —
+          shows as an outline around it without changing its own style. */}
       <Pane name="fm-trackviewer-highlight" style={{ zIndex: 398 }} />
 
       <Pane name="fm-trackviewer-polygons" style={{ zIndex: 399 }} />
@@ -360,11 +380,11 @@ export default function DataViewerResult({
           colorized; below markerPane (600) so waypoints stay clickable. */}
       <Pane name="fm-trackviewer-hit" style={{ zIndex: 450 }} />
 
-      {halos.map(({ key, positions, options }) => (
+      {halos.map(({ key, positions, options, width }) => (
         <Polyline
           key={`halo-${key}`}
           pane="fm-trackviewer-highlight"
-          weight={haloWidth + 6}
+          weight={width + HALO_WIDTH}
           positions={positions}
           pathOptions={options}
           interactive={false}
@@ -377,7 +397,7 @@ export default function DataViewerResult({
           <Polygon
             key={`poly-highlight-${i}`}
             pane="fm-trackviewer-highlight"
-            weight={style.width + 6}
+            weight={style.width + HALO_WIDTH}
             positions={positions}
             pathOptions={{
               color: SELECTION_COLOR,
@@ -670,12 +690,6 @@ function WaypointMarker({
 
   const color = style.color ?? defaultStyle.color;
 
-  // Selection pales the shape and keeps the glyph in the point's own color, as
-  // a selected drawing point is drawn.
-  const renderColor = selected ? paleColor(color) : color;
-
-  const glyphColor = selected ? splitColorAlpha(color).color : undefined;
-
   // No icon spec resolved → fall back to the legacy flag glyph.
   const hasIconContent =
     contentProps.poi ?? contentProps.iconSvg ?? contentProps.label;
@@ -683,8 +697,10 @@ function WaypointMarker({
   return (
     <RichMarker
       position={{ lat, lng: lon }}
-      color={renderColor}
-      glyphColor={glyphColor}
+      color={color}
+      // Selection is the ring, so the waypoint keeps its own color, as a
+      // selected drawing point does.
+      halo={selected ? SELECTION_COLOR : undefined}
       markerType={style.markerType ?? defaultStyle.markerType}
       interactive={interactive}
       eventHandlers={{ click: onClick }}

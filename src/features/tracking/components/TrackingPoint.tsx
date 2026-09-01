@@ -24,7 +24,7 @@ interface TrackingPointProps {
   onActivePointSet: (tp: TrackPoint | null) => void;
   onClick: () => void;
   interactive?: boolean;
-  opacity: number;
+  pane?: string;
 }
 
 // TODO to separate file
@@ -37,7 +37,7 @@ export const TrackingPoint = memo<TrackingPointProps>(
     onActivePointSet,
     onClick,
     interactive,
-    opacity,
+    pane,
   }) => {
     const df = new Intl.DateTimeFormat(language, {
       month: 'short',
@@ -66,13 +66,14 @@ export const TrackingPoint = memo<TrackingPointProps>(
 
     return (
       <CircleMarker
+        pane={pane}
         interactive={interactive}
         stroke={false}
         center={toLatLng(tp)}
         radius={width}
         color={color}
-        fillOpacity={opacity ?? 1}
-        opacity={opacity ?? 1}
+        fillOpacity={1}
+        opacity={1}
         bubblingMouseEvents={false}
         eventHandlers={{
           mouseover: handleMouseOver,
