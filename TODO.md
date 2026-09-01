@@ -5,6 +5,23 @@ product decisions — is tracked as a GitHub issue instead; the sections below s
 which label to look under. See [`doc/architecture.md`](./doc/architecture.md) for
 the surrounding context.
 
+## Waiting on upstream
+
+- [ ] **Unpin zod once 4.5.x carries the cycle fix.** `package.json` pins
+      `"zod": "4.4.3"` exactly, because 4.5.0 broke every schema `zod-geojson`
+      composes: `GeoJSONFeature*Schema` spends ~8 s on the main thread and then
+      throws `RangeError: Maximum call stack size exceeded`, which took the
+      stored-track restore, saved and offline maps, and search results with it
+      (fixed in `44f7f3bb`). The cause is upstream —
+      [colinhacks/zod#6526](https://github.com/colinhacks/zod/issues/6526), fixed
+      by [#6530](https://github.com/colinhacks/zod/pull/6530), merged 2026-09-01
+      but unreleased as of that date; latest published is 4.5.4. When a release
+      lands, verify before widening the range: `GeoJSONFeatureCollectionSchema`
+      must parse `{type:'FeatureCollection',features:[]}` in milliseconds. The
+      caret is what let 4.5 in, so re-pin rather than trust the range.
+      [reilem/zod-geojson#37](https://github.com/reilem/zod-geojson/issues/37)
+      tracks memoising their factories, which would make us immune regardless.
+
 ## Committed work
 
 - [~] **Add automated tests.** Vitest + jsdom now configured (`vitest.config.ts`,
