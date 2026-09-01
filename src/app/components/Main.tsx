@@ -38,6 +38,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOpenOrder } from '@shared/hooks/useOpenOrder.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
@@ -48,6 +49,7 @@ import {
   Fragment,
   type MouseEvent,
   type ReactElement,
+  type ReactNode,
   useCallback,
 } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
@@ -55,7 +57,7 @@ import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useMouseCursor } from '../hooks/useMouseCursor.js';
-import { setActiveModal } from '../store/actions.js';
+import { type Selection, setActiveModal, type Tool } from '../store/actions.js';
 import {
   askingCookieConsentSelector,
   isToolOpen,
@@ -511,6 +513,76 @@ const routePlannerStyleModalFactory = () =>
     '@features/routePlanner/components/RoutePlannerStyleModal.js'
   );
 
+/** The toolbar of the selected feature, whatever kind it is. */
+function selectionMenu(type: Selection['type']): ReactNode {
+  switch (type) {
+    case 'search':
+      return <SearchSelection />;
+
+    case 'draw-line-poly':
+      return <AsyncComponent factory={drawingLineSelectionFactory} />;
+
+    case 'line-point':
+      return <AsyncComponent factory={drawingLinePointSelectionFactory} />;
+
+    case 'draw-points':
+      return <AsyncComponent factory={drawingPointSelectionFactory} />;
+
+    case 'data-viewer':
+      return <AsyncComponent factory={dataViewerSelectionFactory} />;
+
+    case 'objects':
+      return <AsyncComponent factory={objectSelectionFactory} />;
+
+    case 'tracking':
+      return <TrackingSelection />;
+
+    case 'route-point':
+      return <RoutePointSelection />;
+
+    case 'route-leg':
+      return <RouteLegSelection />;
+
+    default:
+      return null;
+  }
+}
+
+/**
+ * An open tool's own toolbar. Null where the tool's UI is a panel instead, and
+ * for the GPS recorder, whose toolbar is listed on its own — it stays up while
+ * a recording runs, tool or no tool.
+ */
+function toolMenu(tool: Tool): ReactNode {
+  switch (tool) {
+    case 'objects':
+      return <AsyncComponent factory={objectsMenuFactory} />;
+
+    case 'route-planner':
+      return <AsyncComponent factory={routePlannerMenuFactory} />;
+
+    case 'import-file':
+      return <AsyncComponent factory={dataViewerMenuFactory} />;
+
+    case 'changesets':
+      return <AsyncComponent factory={changesetsMenuFactory} />;
+
+    case 'draw-lines':
+    case 'draw-points':
+    case 'draw-polygons':
+      return <AsyncComponent factory={drawingMenuFactory} />;
+
+    case 'map-details':
+      return <MapDetailsMenu />;
+
+    case 'tracking':
+      return <AsyncComponent factory={trackingMenuFactory} />;
+
+    default:
+      return null;
+  }
+}
+
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -604,6 +676,10 @@ export function Main(): ReactElement {
 
   const colorizingTracking = useAppSelector((state) =>
     Boolean(state.trackingSettings.colorizeBy),
+  );
+
+  const tracksFound = useAppSelector((state) =>
+    Boolean(state.tracking.tracks.length),
   );
 
   const selectingMapArea = useAppSelector(
@@ -713,11 +789,6 @@ export function Main(): ReactElement {
     disabled: activeModal !== null,
   });
 
-  // The selection toolbar for whatever is currently selected. A tool keeps the
-  // feature that belongs to it selected, so the selection toolbar sits
-  // alongside the tool's own toolbar.
-  const selectionMenu = picking ? null : selectionType;
-
   const scLogo = useScrollClasses('horizontal');
 
   const scMapControls = useScrollClasses('horizontal');
@@ -769,6 +840,100 @@ export function Main(): ReactElement {
   );
 
   const askingCookieConsent = useAppSelector(askingCookieConsentSelector);
+
+  // Every toolbar that joins the strip below the logo, in the order it was
+  // opened, so opening another doesn't reorder the ones already on the screen.
+  // `open` is the toolbar's own reason to be up and knows nothing of a mode
+  // clearing the chrome — that is `hidden`, which keeps the toolbar's place
+  // instead of dropping it to the end when the mode ends.
+  const toolbars = useOpenOrder(
+    [
+      {
+        id: 'my-maps',
+        open: !window.fmEmbedded && showMapsMenu,
+        hidden: inMode,
+        node: <MyMapsMenu />,
+      },
+      {
+        id: 'gallery',
+        open: showPictures,
+        hidden: inMode,
+        node: <AsyncComponent factory={galleryMenuFactory} />,
+      },
+      {
+        id: 'weather-radar',
+        open: showWeatherRadar,
+        hidden: inMode,
+        node: <AsyncComponent factory={weatherRadarMenuFactory} />,
+      },
+      {
+        id: 'viewshed',
+        open: showViewshed,
+        hidden: inMode,
+        node: <AsyncComponent factory={viewshedMenuFactory} />,
+      },
+      // A running recording keeps its toolbar — collapsed to a strip, and told
+      // apart by its own gate — for as long as it runs, because nothing else on
+      // the screen says the phone is recording. Also gated here for the same
+      // reason the tool is: the tool can be named in the URL hash on a device
+      // the recorder can't run on. Not in an embedded map: `openTool` is a no-op
+      // there, so the strip could never be expanded — and the recording belongs
+      // to the full app that started it.
+      {
+        id: 'gps-recorder',
+        open: gpsRecorderWanted,
+        hidden: inMode,
+        node: <AsyncComponent factory={gpsRecorderMenuFactory} />,
+      },
+      // The three draw-* tools share one menu, so they share one id too: keying
+      // them apart would unmount and re-mount it on every switch between them,
+      // and its lazy chunk re-renders as nothing until the import settles — a
+      // toolbar that blinks away for a frame.
+      ...openTools.map((tool) => {
+        const node = toolMenu(tool);
+
+        return {
+          id: isDrawTool(tool) ? 'drawing' : tool,
+          open: node !== null,
+          hidden: inMode,
+          node,
+        };
+      }),
+      // A tool keeps the feature that belongs to it selected, so the selection
+      // toolbar sits alongside that tool's own. An armed mode keeps it — it is
+      // where the mode says what it waits for and offers the way out.
+      {
+        id: 'selection',
+        open: selectionType !== undefined,
+        hidden: picking,
+        node: selectionType && selectionMenu(selectionType),
+      },
+      // Each legend outlives its tool's toolbar: the colored line stays on the
+      // map when the tool is closed, and a shared link need not name the tool at
+      // all. Each hides itself; the flags here keep its chunk off a page that
+      // shows no legend, and its slot out of the order until there is a line to
+      // explain. Not in an embed — the legend's own control opens a tool, which
+      // an embed refuses.
+      {
+        id: 'route-legend',
+        open: !window.fmEmbedded && colorizingRoute && routeFound,
+        hidden: inMode,
+        node: <AsyncComponent factory={routePlannerColorizeLegendFactory} />,
+      },
+      {
+        id: 'track-legend',
+        open: !window.fmEmbedded && colorizingTrack && trackFound,
+        hidden: inMode,
+        node: <AsyncComponent factory={dataViewerColorizeLegendFactory} />,
+      },
+      {
+        id: 'tracking-legend',
+        open: !window.fmEmbedded && colorizingTracking && tracksFound,
+        hidden: inMode,
+        node: <AsyncComponent factory={trackingColorizeLegendFactory} />,
+      },
+    ].filter((toolbar) => toolbar.open),
+  );
 
   return (
     <>
@@ -870,32 +1035,6 @@ export function Main(): ReactElement {
                 </Toolbar>
               )}
 
-              {!inMode && showMapsMenu && !window.fmEmbedded && <MyMapsMenu />}
-
-              {!inMode && showPictures && (
-                <AsyncComponent factory={galleryMenuFactory} />
-              )}
-
-              {!inMode && showWeatherRadar && (
-                <AsyncComponent factory={weatherRadarMenuFactory} />
-              )}
-
-              {!inMode && showViewshed && (
-                <AsyncComponent factory={viewshedMenuFactory} />
-              )}
-
-              {/* Outside the chain below: a running recording keeps its toolbar
-                  — collapsed to a strip, and told apart by its own gate — for as
-                  long as it runs, because nothing else on the screen says the
-                  phone is recording. Also gated here for the same reason the tool
-                  is: the tool can be named in the URL hash on a device the
-                  recorder can't run on. Not in an embedded map: `openTool` is a
-                  no-op there, so the strip could never be expanded — and the
-                  recording belongs to the full app that started it. */}
-              {!inMode && gpsRecorderWanted && (
-                <AsyncComponent factory={gpsRecorderMenuFactory} />
-              )}
-
               {/* The recorder's toasts, apart from its menu: a failure can null
                   the status and unmount the menu in the same commit that should
                   announce it, so the announcer outlives it — mounted on there
@@ -907,60 +1046,11 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={gpsRecorderNoticesFactory} />
               )}
 
-              {/* every open tool's menu, the map-click one first and the rest in
-                  the order they were opened, so opening another toolbar-only
-                  tool doesn't reorder the ones already on the screen.
-
-                  The three draw-* tools share one menu, so they share one key
-                  too: keying them apart would unmount and re-mount it on every
-                  switch between them, and its lazy chunk re-renders as nothing
-                  until the import settles — a toolbar that blinks away for a
-                  frame. */}
-
-              {!inMode &&
-                openTools.map((openedTool) => (
-                  <Fragment
-                    key={isDrawTool(openedTool) ? 'drawing' : openedTool}
-                  >
-                    {openedTool === 'objects' ? (
-                      <AsyncComponent factory={objectsMenuFactory} />
-                    ) : openedTool === 'route-planner' ? (
-                      <AsyncComponent factory={routePlannerMenuFactory} />
-                    ) : openedTool === 'import-file' ? (
-                      <AsyncComponent factory={dataViewerMenuFactory} />
-                    ) : openedTool === 'changesets' ? (
-                      <AsyncComponent factory={changesetsMenuFactory} />
-                    ) : openedTool === 'draw-lines' ||
-                      openedTool === 'draw-points' ||
-                      openedTool === 'draw-polygons' ? (
-                      <AsyncComponent factory={drawingMenuFactory} />
-                    ) : openedTool === 'map-details' ? (
-                      <MapDetailsMenu />
-                    ) : openedTool === 'tracking' ? (
-                      <AsyncComponent factory={trackingMenuFactory} />
-                    ) : null}
-                  </Fragment>
+              {toolbars
+                .filter((toolbar) => !toolbar.hidden)
+                .map(({ id, node }) => (
+                  <Fragment key={id}>{node}</Fragment>
                 ))}
-
-              {selectionMenu === 'search' ? (
-                <SearchSelection />
-              ) : selectionMenu === 'draw-line-poly' ? (
-                <AsyncComponent factory={drawingLineSelectionFactory} />
-              ) : selectionMenu === 'line-point' ? (
-                <AsyncComponent factory={drawingLinePointSelectionFactory} />
-              ) : selectionMenu === 'draw-points' ? (
-                <AsyncComponent factory={drawingPointSelectionFactory} />
-              ) : selectionMenu === 'data-viewer' ? (
-                <AsyncComponent factory={dataViewerSelectionFactory} />
-              ) : selectionMenu === 'objects' ? (
-                <AsyncComponent factory={objectSelectionFactory} />
-              ) : selectionMenu === 'tracking' ? (
-                <TrackingSelection />
-              ) : selectionMenu === 'route-point' ? (
-                <RoutePointSelection />
-              ) : selectionMenu === 'route-leg' ? (
-                <RouteLegSelection />
-              ) : null}
 
               {pickingPosition && (
                 <AsyncComponent factory={galleryPositionPickingMenuFactory} />
@@ -988,30 +1078,6 @@ export function Main(): ReactElement {
 
               {selectingMapArea && (
                 <AsyncComponent factory={mapAreaSelectionMenuFactory} />
-              )}
-
-              {/* Each legend outlives its tool's toolbar: the colored line
-                  stays on the map when the tool is closed, and a shared link
-                  need not name the tool at all. Each hides itself; the flags
-                  here only keep its chunk off a page that has no colorize mode
-                  set at all. Not in an embed — the legend's own control opens a
-                  tool, which an embed refuses. */}
-              {!window.fmEmbedded && !inMode && (
-                <>
-                  {colorizingRoute && (
-                    <AsyncComponent
-                      factory={routePlannerColorizeLegendFactory}
-                    />
-                  )}
-
-                  {colorizingTrack && (
-                    <AsyncComponent factory={dataViewerColorizeLegendFactory} />
-                  )}
-
-                  {colorizingTracking && (
-                    <AsyncComponent factory={trackingColorizeLegendFactory} />
-                  )}
-                </>
               )}
 
               {showAds && !askingCookieConsent && !showElevationChart && (

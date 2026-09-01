@@ -265,6 +265,25 @@ Gotcha: toast`messageKey`s referenced from processors must resolve against the
   because its strip keeps saying that the phone is recording. A toolbar with
   nothing to leave behind is closed instead.
 
+### Toolbar strip order
+
+Every toolbar under the logo — the layer menus (connected map, photos, weather
+radar, viewshed), the GPS recorder, each open tool's menu, the selection toolbar
+and the colorize legends — is one entry in the `toolbars` list in `Main.tsx`,
+ordered by `useOpenOrder` (`src/shared/hooks/useOpenOrder.ts`): an entry keeps
+the place it took when it first appeared, and a new one joins the end, so
+opening one doesn't reshuffle the rest. Two rules for adding an entry:
+
+- `open` is the toolbar's own reason to be up and must say nothing about a mode
+  that clears the chrome — that is `hidden`, which keeps the entry's place
+  instead of dropping it to the end when the mode ends.
+- A toolbar that hides itself needs `open` to ask the same question, at least
+  coarsely, or it books its slot from the first render. The colorize legends do:
+  each is gated on there being a colored line, not just on a colorize mode being
+  set. Deliberately no further: the rest of what each legend asks (its dismissal
+  flag, the premium gate) stays its own, so a legend dismissed and brought back
+  reappears where it was rather than at the end.
+
 A reducer that clears its slice when its tool goes must key on `closeTool` with
 its own tool as the payload — another tool opening beside it means nothing (see
 `changesets/model/reducer.ts`, `elevationChart/model/reducer.ts`).
