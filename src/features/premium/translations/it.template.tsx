@@ -69,8 +69,6 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
   alreadySubscribed: 'Hai già un abbonamento attivo.',
   premiumUser: 'Utente con accesso premium',
   payOnce: 'Paga una volta per un anno',
-  payOnceWithPrices: ({ oldPrice, newPrice }) =>
-    `Paga una volta per un anno — ${oldPrice}\xa0€; prezzo l’anno prossimo ${newPrice}\xa0€`,
   paySubscription: 'Abbonamento annuale (rinnovo automatico)',
   payWithChrons: 'Paga con i Chron',
   chronsHint: (
@@ -79,33 +77,8 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
       segnalato in <RovasLink>Rovas</RovasLink>, scegli di pagare con i Chron.
     </>
   ),
-  priceIncreaseHeading: ({ date, newPrice }) =>
-    `Dal ${date} l’accesso premium costerà ${newPrice}\xa0€ all’anno.`,
-  compareNow: 'Ora',
-  compareNextYear: 'Prezzo l’anno prossimo',
-  compareSubscription: 'Abbonamento annuale',
-  compareOnce: 'Acquisto una tantum',
-  compareNoSwitch: 'Senza passaggio',
-  subscriptionReassurance: ({ oldPrice }) =>
-    `Il prezzo di ${oldPrice}\xa0€ all’anno resta tuo finché l’abbonamento è attivo. Puoi annullarlo in qualsiasi momento — l’accesso premium prosegue poi fino alla fine dell’anno pagato.`,
-  payOnceConfirmTitle: 'Così non mantieni il prezzo attuale',
-  payOnceConfirmBody: ({ date, oldPrice, newPrice }) =>
-    `L’acquisto una tantum copre un anno a ${oldPrice}\xa0€. Il successivo sarà al prezzo in vigore in quel momento — ${newPrice}\xa0€ all’anno dal ${date}. Un abbonamento attivato ora mantiene ${oldPrice}\xa0€ all’anno finché resta attivo, e puoi annullarlo in qualsiasi momento.`,
-  payOnceConfirmSubscribe: 'Abbonati invece',
-  payOnceConfirmContinue: 'Paga comunque una tantum',
-  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
-    `Dal ${date} l’accesso premium costerà ${newPrice}\xa0€ all’anno. Se ti abboni prima, il prezzo di ${oldPrice}\xa0€ all’anno resta tuo finché l’abbonamento è attivo.`,
-  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `Dal ${date} l’accesso premium costa ${newPrice}\xa0€ all’anno. Se passi a un abbonamento prima di allora, il tuo prezzo resta a ${oldPrice}\xa0€ — non viene addebitato nulla finché non scade l’anno che hai già pagato.`,
-  switchTitle: 'Mantieni il prezzo attuale',
-  switchStatus: ({ expiration }) =>
-    `Hai accesso premium fino al ${expiration} — non è un abbonamento.`,
-  switchNoDoubleCharge: ({ expiration }) =>
-    `Passando ora non perdi nulla: l’abbonamento inizia con un periodo gratuito fino al ${expiration} e il primo pagamento viene addebitato solo allora.`,
-  switchAction: 'Passa all’abbonamento annuale',
-  priceIncreaseMini: ({ date, newPrice }) =>
-    `Premium a ${newPrice}\xa0€ all’anno dal ${date}.`,
-  priceIncreaseMore: 'altro…',
+  subscriptionReassurance: ({ price }) =>
+    `Il prezzo di ${price}\xa0€ all’anno resta tuo finché l’abbonamento è attivo. Puoi annullarlo in qualsiasi momento — l’accesso premium prosegue poi fino alla fine dell’anno pagato.`,
   youArePremiumRenews: (
     <>Hai accesso premium. L’abbonamento si rinnova automaticamente.</>
   ),

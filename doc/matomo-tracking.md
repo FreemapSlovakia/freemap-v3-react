@@ -122,7 +122,7 @@ from both the old and new identities.
 | `MyMaps` | `delete` | — | *(added 2026-06)* | [`mapsDeleteProcessor.ts`](../src/features/myMaps/model/processors/mapsDeleteProcessor.ts) |
 | `MapSettings` | `create` / `update` / `delete` | `customMap` | `CustomMap`/`create`,`edit`,`delete` *(added 2026-06)* | [`CustomMapsModal.tsx`](../src/features/mapSettings/components/CustomMapsModal.tsx) |
 | `Purchase` | `start` / `success` | name = `premium-subscription` / `premium-once` / `premium-chrons` / `credits`; **value** = credit amount | `Purchase`/`purchaseStart`, `purchaseSuccess` — *was JSON payload*; name was a bare `premium` until 2026-08, so premium totals spanning that date must sum all three variants plus `premium` | [`purchaseProcessor.ts`](../src/features/purchases/model/processors/purchaseProcessor.ts) |
-| `Purchase` | `confirmPayOnce` | `shown` / `subscribed` / `continued` — the dialog shown when a one-time year is picked while a subscription would lock the lower price | *(added 2026-08)* | [`PremiumActivationModal.tsx`](../src/features/premium/components/PremiumActivationModal.tsx) |
+| `Purchase` | `confirmPayOnce` | `shown` / `subscribed` / `continued` | no longer emitted — the pay-once confirmation existed only for the price-lock window (2026-08 to 2026-09-01); the data is still in Matomo | — |
 
 ## Data quality / known issues
 

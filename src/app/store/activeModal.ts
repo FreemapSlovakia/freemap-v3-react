@@ -30,9 +30,6 @@ const URL_MODAL_IDS = [
   'offline-maps',
   'panorama-settings',
   'premium',
-  // Temporary, for the 2026 price increase: invites a user holding a one-time
-  // year to switch to a subscription while the current price lasts.
-  'premium-switch',
   'route-planner-style',
   'search-result-style',
   'support-us',
@@ -59,6 +56,7 @@ const MODAL_RENAMES: Record<string, string> = {
   'upload-track': 'file-import',
   'buy-credits': 'credits-purchase',
   maps: 'my-maps',
+  'premium-switch': 'premium',
 };
 
 /**

@@ -69,8 +69,6 @@ const en: PremiumMessages = {
   alreadySubscribed: 'You already have an active subscription.',
   premiumUser: 'User with premium access',
   payOnce: 'Pay once for one year',
-  payOnceWithPrices: ({ oldPrice, newPrice }) =>
-    `Pay once for one year — ${oldPrice}\xa0€; next year's price ${newPrice}\xa0€`,
   paySubscription: 'Subscribe yearly (auto-renews)',
   payWithChrons: 'Pay with Chrons',
   chronsHint: (
@@ -79,33 +77,8 @@ const en: PremiumMessages = {
       <RovasLink>Rovas</RovasLink>, choose to pay with Chrons.
     </>
   ),
-  priceIncreaseHeading: ({ date, newPrice }) =>
-    `From ${date} premium access will cost ${newPrice}\xa0€ a year.`,
-  compareNow: 'Now',
-  compareNextYear: 'Price next year',
-  compareSubscription: 'Yearly subscription',
-  compareOnce: 'One-time purchase',
-  compareNoSwitch: 'Without switching',
-  subscriptionReassurance: ({ oldPrice }) =>
-    `The price stays ${oldPrice}\xa0€ a year for as long as the subscription is active. You can cancel it at any time — premium access then runs to the end of the paid year.`,
-  payOnceConfirmTitle: "This doesn't keep the current price",
-  payOnceConfirmBody: ({ date, oldPrice, newPrice }) =>
-    `A one-time purchase covers one year for ${oldPrice}\xa0€. The next one is at the price valid at the time — ${newPrice}\xa0€ a year from ${date}. A subscription started now keeps ${oldPrice}\xa0€ a year for as long as it is active, and you can cancel it at any time.`,
-  payOnceConfirmSubscribe: 'Subscribe instead',
-  payOnceConfirmContinue: 'Pay once anyway',
-  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
-    `From ${date} premium access will cost ${newPrice}\xa0€ a year. Subscribe before then and the ${oldPrice}\xa0€ a year price stays yours for as long as the subscription is active.`,
-  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `From ${date} premium costs ${newPrice}\xa0€ a year. Switch to a subscription before then and your price stays ${oldPrice}\xa0€ — nothing is charged until the year you already paid for runs out.`,
-  switchTitle: 'Keep your current price',
-  switchStatus: ({ expiration }) =>
-    `You have premium access until ${expiration} — it isn't a subscription.`,
-  switchNoDoubleCharge: ({ expiration }) =>
-    `You lose nothing by switching now: the subscription starts as a free period until ${expiration}, and the first payment is taken only then.`,
-  switchAction: 'Switch to a yearly subscription',
-  priceIncreaseMini: ({ date, newPrice }) =>
-    `Premium ${newPrice}\xa0€ a year from ${date}.`,
-  priceIncreaseMore: 'more…',
+  subscriptionReassurance: ({ price }) =>
+    `The price stays ${price}\xa0€ a year for as long as the subscription is active. You can cancel it at any time — premium access then runs to the end of the paid year.`,
 };
 
 export default en;

@@ -72,8 +72,6 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   alreadySubscribed: 'Du hast bereits ein aktives Abo.',
   premiumUser: 'Nutzer mit Premium-Zugang',
   payOnce: 'Einmalig für ein Jahr zahlen',
-  payOnceWithPrices: ({ oldPrice, newPrice }) =>
-    `Einmalig für ein Jahr zahlen — ${oldPrice}\xa0€; Preis nächstes Jahr ${newPrice}\xa0€`,
   paySubscription: 'Jährliches Abo (verlängert sich automatisch)',
   payWithChrons: 'Mit Chrons bezahlen',
   chronsHint: (
@@ -82,33 +80,8 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
       ehrenamtliche Arbeit erhalten möchten, wählen Sie die Zahlung mit Chrons.
     </>
   ),
-  priceIncreaseHeading: ({ date, newPrice }) =>
-    `Ab ${date} wird der Premium-Zugang ${newPrice}\xa0€ pro Jahr kosten.`,
-  compareNow: 'Jetzt',
-  compareNextYear: 'Preis nächstes Jahr',
-  compareSubscription: 'Jahresabo',
-  compareOnce: 'Einmalkauf',
-  compareNoSwitch: 'Ohne Wechsel',
-  subscriptionReassurance: ({ oldPrice }) =>
-    `Der Preis von ${oldPrice}\xa0€ pro Jahr bleibt Ihnen, solange das Abo aktiv ist. Sie können es jederzeit kündigen — der Premium-Zugang läuft dann bis zum Ende des bezahlten Jahres.`,
-  payOnceConfirmTitle: 'So behalten Sie den aktuellen Preis nicht',
-  payOnceConfirmBody: ({ date, oldPrice, newPrice }) =>
-    `Ein Einmalkauf deckt ein Jahr für ${oldPrice}\xa0€ ab. Das nächste kostet den dann gültigen Preis — ab ${date} sind das ${newPrice}\xa0€ pro Jahr. Ein jetzt abgeschlossenes Abo hält den Preis von ${oldPrice}\xa0€ pro Jahr, solange es aktiv ist, und Sie können es jederzeit kündigen.`,
-  payOnceConfirmSubscribe: 'Lieber abonnieren',
-  payOnceConfirmContinue: 'Trotzdem einmalig zahlen',
-  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
-    `Ab ${date} wird der Premium-Zugang ${newPrice}\xa0€ pro Jahr kosten. Wenn Sie vorher ein Abo abschließen, bleibt Ihnen der Preis von ${oldPrice}\xa0€ pro Jahr, solange das Abo aktiv ist.`,
-  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `Ab ${date} kostet der Premium-Zugang ${newPrice}\xa0€ pro Jahr. Wenn Sie vorher zu einem Abo wechseln, bleibt es für Sie bei ${oldPrice}\xa0€ — abgerechnet wird erst, wenn Ihr bereits bezahltes Jahr abgelaufen ist.`,
-  switchTitle: 'Behalten Sie Ihren aktuellen Preis',
-  switchStatus: ({ expiration }) =>
-    `Sie haben Premium-Zugang bis ${expiration} — es ist kein Abo.`,
-  switchNoDoubleCharge: ({ expiration }) =>
-    `Durch den Wechsel verlieren Sie nichts: Das Abo beginnt mit einem kostenlosen Zeitraum bis ${expiration}, und erst dann wird die erste Zahlung fällig.`,
-  switchAction: 'Zum Jahresabo wechseln',
-  priceIncreaseMini: ({ date, newPrice }) =>
-    `Premium ab ${date} für ${newPrice}\xa0€ pro Jahr.`,
-  priceIncreaseMore: 'mehr…',
+  subscriptionReassurance: ({ price }) =>
+    `Der Preis von ${price}\xa0€ pro Jahr bleibt Ihnen, solange das Abo aktiv ist. Sie können es jederzeit kündigen — der Premium-Zugang läuft dann bis zum Ende des bezahlten Jahres.`,
   youArePremiumRenews: (
     <>Du hast Premium-Zugang. Dein Abonnement verlängert sich automatisch.</>
   ),

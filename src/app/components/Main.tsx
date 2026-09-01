@@ -445,12 +445,6 @@ const premiumActivationModalFactory = () =>
     '@features/premium/components/PremiumActivationModal.js'
   );
 
-const premiumSwitchModalFactory = () =>
-  import(
-    /* webpackChunkName: "premium-switch-modal" */
-    '@features/premium/components/PremiumSwitchModal.js'
-  );
-
 const galleryFilterModalFactory = () =>
   import(
     /* webpackChunkName: "gallery-filter-modal" */
@@ -1239,11 +1233,6 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'premium'}
         factory={premiumActivationModalFactory}
-      />
-
-      <AsyncModal
-        show={activeModal?.type === 'premium-switch'}
-        factory={premiumSwitchModalFactory}
       />
 
       <AsyncModal

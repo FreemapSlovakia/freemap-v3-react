@@ -220,8 +220,7 @@ Optional deeper cleanup (not required; `show=` is already the single param):
 
 ## Premium / monetization
 
-Tracked as GitHub issues (label `area: premium`), including the dated 2026-09-01
-price-rise checklist. The framing constraints still hold and gate what's
+Tracked as GitHub issues (label `area: premium`). The framing constraints still hold and gate what's
 acceptable there: payment provider (Polar) acceptable-use rules and content
 licensing mean safe premium = our own compute/infra or power-user limits; avoid
 third-party data (license risk — see Strava) and community content (CC-BY-SA

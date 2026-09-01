@@ -70,8 +70,6 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   alreadySubscribed: 'Aktivno naročnino že imate.',
   premiumUser: 'Uporabnik s premium dostopom',
   payOnce: 'Plačaj enkratno za eno leto',
-  payOnceWithPrices: ({ oldPrice, newPrice }) =>
-    `Plačaj enkratno za eno leto — ${oldPrice}\xa0€; cena prihodnje leto ${newPrice}\xa0€`,
   paySubscription: 'Letna naročnina (samodejno se obnavlja)',
   payWithChrons: 'Plačaj s chroni',
   chronsHint: (
@@ -80,33 +78,8 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <RovasLink>Rovasu</RovasLink>, izberite plačilo s chroni.
     </>
   ),
-  priceIncreaseHeading: ({ date, newPrice }) =>
-    `Od ${date} bo premium dostop stal ${newPrice}\xa0€ na leto.`,
-  compareNow: 'Zdaj',
-  compareNextYear: 'Cena prihodnje leto',
-  compareSubscription: 'Letna naročnina',
-  compareOnce: 'Enkratni nakup',
-  compareNoSwitch: 'Brez prehoda',
-  subscriptionReassurance: ({ oldPrice }) =>
-    `Cena ${oldPrice}\xa0€ na leto vam ostane, dokler je naročnina aktivna. Kadar koli jo lahko prekličete — premium dostop nato velja do konca plačanega leta.`,
-  payOnceConfirmTitle: 'Tako trenutne cene ne ohranite',
-  payOnceConfirmBody: ({ date, oldPrice, newPrice }) =>
-    `Enkratni nakup pokriva eno leto za ${oldPrice}\xa0€. Naslednje kupite po ceni, ki bo takrat veljala — od ${date} je to ${newPrice}\xa0€ na leto. Naročnina, sklenjena zdaj, ohrani ceno ${oldPrice}\xa0€ na leto, dokler je aktivna, in jo lahko kadar koli prekličete.`,
-  payOnceConfirmSubscribe: 'Raje se naroči',
-  payOnceConfirmContinue: 'Vseeno plačaj enkratno',
-  priceIncreaseShort: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} bo premium dostop stal ${newPrice}\xa0€ na leto. Če se naročite prej, vam letna cena ${oldPrice}\xa0€ ostane, dokler je naročnina aktivna.`,
-  priceIncreaseSwitch: ({ date, oldPrice, newPrice }) =>
-    `Od ${date} premium dostop stane ${newPrice}\xa0€ na leto. Če do takrat preidete na naročnino, vam ostane cena ${oldPrice}\xa0€ — nič se ne zaračuna, dokler ne poteče že plačano leto.`,
-  switchTitle: 'Ohranite trenutno ceno',
-  switchStatus: ({ expiration }) =>
-    `Premium dostop imate do ${expiration} — to ni naročnina.`,
-  switchNoDoubleCharge: ({ expiration }) =>
-    `S prehodom zdaj ne izgubite ničesar: naročnina se začne z brezplačnim obdobjem do ${expiration}, prvo plačilo pa bo šele takrat.`,
-  switchAction: 'Preidi na letno naročnino',
-  priceIncreaseMini: ({ date, newPrice }) =>
-    `Premium od ${date} za ${newPrice}\xa0€ na leto.`,
-  priceIncreaseMore: 'več…',
+  subscriptionReassurance: ({ price }) =>
+    `Cena ${price}\xa0€ na leto vam ostane, dokler je naročnina aktivna. Kadar koli jo lahko prekličete — premium dostop nato velja do konca plačanega leta.`,
   youArePremiumRenews: (
     <>Imate premium dostop. Naročnina se samodejno podaljšuje.</>
   ),

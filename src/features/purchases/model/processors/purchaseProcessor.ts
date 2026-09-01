@@ -68,9 +68,9 @@ export const purchaseProcessor: Processor<typeof purchase> = {
       return;
     }
 
-    // Which premium option was picked is the whole point of the breakdown —
-    // during the price lock a one-time year costs the buyer more than a
-    // subscription, and without this there is no way to see how often it wins.
+    // Which premium option was picked is the whole point of the breakdown:
+    // subscription, one-time year and chrons are otherwise indistinguishable in
+    // Matomo.
     const variant =
       action.payload.type === 'credits'
         ? 'credits'
