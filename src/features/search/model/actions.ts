@@ -35,11 +35,12 @@ export const SearchSourceSchema = z.union([
     'geojson',
     'tile',
     'coords',
+    // Map details reads OSM data from freemap-osm-api and geocodes against
+    // Photon; these four ids name the kind of lookup, not the backend. They are
+    // part of the saved-map format (and of the persisted map-details source
+    // filter), so renaming them needs a migration.
     'overpass-nearby',
     'overpass-surrounding',
-    // Geocoding runs against Photon; these two ids name the kind of lookup, not
-    // the backend. They are part of the saved-map format (and of the persisted
-    // map-details source filter), so renaming them needs a migration.
     'nominatim-forward',
     'nominatim-reverse',
     'osm',

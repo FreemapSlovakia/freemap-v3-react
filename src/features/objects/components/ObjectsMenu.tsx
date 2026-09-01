@@ -161,7 +161,7 @@ export default function ObjectsMenu(): ReactElement {
             key={key}
             eventKey={key}
             active={active.includes(key)}
-            // Every change to the set re-runs the Overpass query — dropping
+            // Every change to the set re-runs the search — dropping
             // one category included — so offline the list only shows what is
             // active; the trash button clears the lot without asking anyone.
             disabled={!online}

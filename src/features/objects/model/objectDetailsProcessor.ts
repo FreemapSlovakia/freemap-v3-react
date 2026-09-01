@@ -20,7 +20,7 @@ const TOAST_ID = 'mapDetails.tags';
 type DetailsTarget = {
   /**
    * Identifies the subject across re-runs. A key rather than the result's
-   * identity: an objects refresh (every pan and zoom re-queries Overpass)
+   * identity: an objects refresh (every pan and zoom re-runs the search)
    * rebuilds the whole list, so identity would report a new subject —  and a
    * re-added toast — for an object the user is still looking at.
    */

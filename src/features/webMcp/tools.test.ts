@@ -18,18 +18,19 @@ vi.mock('@shared/elevation.js', () => ({
 }));
 
 vi.mock('@app/httpRequest.js', () => ({
-  httpRequest: async ({ body }: { body: string }) => {
-    lastOverpassQuery = decodeURIComponent(body.replace(/^data=/, ''));
+  httpRequest: async ({ url }: { url: string }) => {
+    lastOsmApiQuery = new URLSearchParams(url.slice(url.indexOf('?') + 1));
 
     return {
       json: async () => ({
-        elements: [
+        truncated: false,
+        features: [
           {
-            type: 'node',
-            id: 1,
-            lat: 48.5,
-            lon: 19.5,
-            tags: { name: 'Jaskyňa', natural: 'cave_entrance' },
+            type: 'Feature',
+            id: 'node/1',
+            bbox: [19.5, 48.5, 19.5, 48.5],
+            geometry: { type: 'Point', coordinates: [19.5, 48.5] },
+            properties: { name: 'Jaskyňa', natural: 'cave_entrance' },
           },
         ],
       }),
@@ -37,7 +38,7 @@ vi.mock('@app/httpRequest.js', () => ({
   },
 }));
 
-let lastOverpassQuery = '';
+let lastOsmApiQuery = new URLSearchParams();
 
 vi.mock('@shared/saveBlob.js', () => ({
   saveBlob: async (blob: Blob, name: string) => {
@@ -59,7 +60,7 @@ vi.mock('@osm/osmNameResolver.js', () => ({
   getNameFromOsmElement: (tags: Record<string, string>) => tags['name'] ?? '',
 }));
 
-import { buildObjectsQuery } from '@features/objects/objectsQuery.js';
+import { fetchObjects } from '@features/objects/objectsQuery.js';
 import z from 'zod';
 import { defineTool } from './tool.js';
 import { drawingTools } from './tools/drawingTools.js';
@@ -738,8 +739,8 @@ describe('find-objects-in-area', () => {
       ),
     );
 
-    expect(lastOverpassQuery).toContain('(48.5,19.5,48.6,19.6)');
-    expect(lastOverpassQuery).toContain('out center 50');
+    expect(lastOsmApiQuery.get('bbox')).toBe('19.5,48.5,19.6,48.6');
+    expect(lastOsmApiQuery.get('limit')).toBe('50');
     expect(answer.objects[0]).toMatchObject({ name: 'Jaskyňa', lat: 48.5 });
     expect(answer.complete).toBe(true);
   });
@@ -761,18 +762,30 @@ describe('find-objects-in-area', () => {
   });
 });
 
-describe('buildObjectsQuery', () => {
-  it('writes the filters the objects tool has always sent', () => {
-    const q = buildObjectsQuery(
-      ['amenity=drinking_water', 'natural=spring,drinking_water=yes'],
-      { south: 1, west: 2, north: 3, east: 4 },
-      10,
+describe('fetchObjects', () => {
+  it('sends one filter per category, and the box in GeoJSON order', async () => {
+    const { objects } = await fetchObjects(
+      {
+        active: ['amenity=drinking_water', 'natural=spring,drinking_water=yes'],
+        bounds: { south: 1, west: 2, north: 3, east: 4 },
+        limit: 10,
+      },
+      { getState: fakeStore({}).store.getState },
     );
 
-    expect(q).toContain('[out:json][timeout:15]');
-    expect(q).toContain('["amenity"~"(^|;\\s*)drinking_water(\\s*;|$)",i]');
-    expect(q).toContain('(1,2,3,4)');
-    expect(q.endsWith('); out center 10;')).toBe(true);
+    expect(lastOsmApiQuery.getAll('f')).toEqual([
+      'amenity=drinking_water',
+      'natural=spring,drinking_water=yes',
+    ]);
+
+    expect(lastOsmApiQuery.get('bbox')).toBe('2,1,4,3');
+
+    expect(lastOsmApiQuery.get('limit')).toBe('10');
+
+    expect(objects[0]).toMatchObject({
+      id: { type: 'osm', elementType: 'node', id: 1 },
+      coords: { lat: 48.5, lon: 19.5 },
+    });
   });
 });
 

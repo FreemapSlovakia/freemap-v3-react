@@ -55,7 +55,7 @@ export const objectTools = [
   defineTool({
     name: 'show-objects',
     description:
-      'Shows POIs of the given categories (filters from list-object-categories) within the current map view, and returns what was found. The map has to be at zoom 10 or closer, and a wide view finds a lot — zoom in on what is being asked about first.',
+      'Shows POIs of the given categories (filters from list-object-categories) within the current map view, and returns what was found. The map has to be at zoom 8 or closer, and a wide view finds a lot — zoom in on what is being asked about first.',
     input: z.object({
       categories: z
         .array(z.string())
@@ -85,9 +85,9 @@ export const objectTools = [
         { signal },
       );
 
-      if (store.getState().map.zoom < 10) {
+      if (store.getState().map.zoom < 8) {
         throw new Error(
-          'The map is zoomed too far out to look for objects; zoom in to at least 10.',
+          'The map is zoomed too far out to look for objects; zoom in to at least 8.',
         );
       }
 

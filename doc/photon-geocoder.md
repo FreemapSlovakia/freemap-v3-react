@@ -225,8 +225,8 @@ display name. `photonToSearchResult` in `search/model/resultUtils.ts` builds the
 Three things about the response that the mapping exists for:
 
 - **`osm_type` is `N`/`W`/`R`**, not `node`/`way`/`relation`. Anything comparing
-  a hit against an Overpass element has to convert — map-details dedupes the
-  reverse hit against the nearby/surrounding elements exactly there.
+  a hit against an OSM element has to convert — map-details dedupes the reverse
+  hit against the nearby/surrounding elements exactly there.
 - **`extent` is `[west, north, east, south]`**, which is *not* the GeoJSON bbox
   order. `photonExtentToBBox` reorders it; getting this wrong yields a box that
   is inside-out in latitude rather than an obvious error.
@@ -269,7 +269,7 @@ migration on both.
 
 Suggestions are the same call: `searchSetQuery` carries an `autocomplete` flag
 that the search box sets while typing (debounced, from the third character). It
-skips the `@lat,lon` map-details branch — two Overpass queries per keystroke is
+skips the `@lat,lon` map-details branch — a map-details lookup per keystroke is
 not a suggestion — and swallows request failures, since a toast per character
 would be unusable. It asks for no fewer results than a submitted search does:
 both take `searchLimitStep` (5), and **Show more** raises the limit by another

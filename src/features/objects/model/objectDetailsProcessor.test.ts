@@ -57,7 +57,7 @@ const state = ({
 
 describe('wantedTarget', () => {
   it('keys an object by its feature id, not by the instance in the store', () => {
-    // Every pan and zoom re-queries Overpass and rebuilds the object list, so
+    // Every pan and zoom re-runs the search and rebuilds the object list, so
     // an identity-based key would report a new subject for an object the user
     // is still looking at — and bounce the toast to the top of the column.
     const selection = { type: 'objects', id: anObject(1).id };

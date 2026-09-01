@@ -77,7 +77,7 @@ What each waits for:
   the categories and the map position, so `show-objects` clears the filter
   before setting it: re-asking for the categories already active would fetch
   nothing, and after the map moved the store still holds the previous view's
-  objects. Below zoom 10 the fetch processor answers with an empty array and a
+  objects. Below zoom 8 the fetch processor answers with an empty array and a
   toast, which the tool reports as the zoom being too far out.
 - **map details** — `describe-place` also resolves on any non-danger toast
   raised meanwhile: a point with nothing on it is answered with a `warning`
@@ -136,17 +136,14 @@ doing terrain work otherwise pays a round trip per point:
   spacing of each row rather than the nominal one. Row 0 is the
   northern edge, and the returned `south`/`east` are where the whole cells
   actually end, inside the box asked for.
-- **`find-objects-in-area`** runs the objects tool's own Overpass query against
-  any bbox and only reports back — it draws nothing and leaves the map alone.
-  Capped at 10 000 km² and, by `limit`, at 1000 objects; `complete` says whether
-  the answer filled the limit.
+- **`find-objects-in-area`** runs the objects tool's own search against any bbox
+  and only reports back — it draws nothing and leaves the map alone. Capped at
+  200 000 km² — a country-wide sweep for something rare, not a continent — and,
+  by `limit`, at 1000 objects; `complete` is the answer's `truncated` inverted.
 
   **The filters are checked against `objectCategories`** — by both this tool and
-  `show-objects` — and that check is what holds the cap up, not tidiness:
-  `buildObjectsQuery` interpolates a filter into Overpass QL unescaped, so an
-  invented one can close the brackets and carry a statement of its own, with no
-  bbox in it. This is not a general Overpass proxy, and the vocabulary check is
-  the reason it cannot become one.
+  `show-objects` — so an invented one is answered with the list to take filters
+  from rather than the API's 400 for a key it does not index.
 
 Both, and `get-map-features` with them, take `deliver: "download"`: the answer
 is written as a JSON file (`saveBlob`) and the tool reports where it went
@@ -168,8 +165,8 @@ to reimplement it:
 - **`elevationStats(geometry)`** (`src/shared/geoutils.ts`) — climb, drop and
   extremes of a line, segment by segment. `DataViewerDetails` shows it for a
   loaded track and `get-route-elevation` returns it for the planned route.
-- **`buildObjectsQuery` / `parseObjectsResult`** (`src/features/objects/`) — the
-  Overpass query behind the objects tool and the shape it answers in, shared by
+- **`fetchObjects`** (`src/features/objects/objectsQuery.ts`) — the search
+  behind the objects tool, over `freemap-osm-api`, shared by
   `objectsFetchProcessor` and `find-objects-in-area`, so a tag filter that works
   in the menu works in the tool.
 

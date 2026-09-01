@@ -1,8 +1,4 @@
-import { httpRequest } from '@app/httpRequest.js';
-import {
-  buildObjectsQuery,
-  parseObjectsResult,
-} from '@features/objects/objectsQuery.js';
+import { fetchObjects } from '@features/objects/objectsQuery.js';
 import { fetchElevations } from '@shared/elevation.js';
 import z from 'zod';
 import { assertKnownCategories } from '../categories.js';
@@ -18,7 +14,8 @@ const MAX_CELLS = 50_000;
 /** Metres per degree of latitude; longitude is this times cos(lat). */
 const M_PER_DEG = 111_320;
 
-const MAX_AREA_KM2 = 10_000;
+/** Room for a country-wide sweep for something rare, but not a continent. */
+const MAX_AREA_KM2 = 200_000;
 
 const BboxSchema = z.object({
   west: z.number().min(-180).max(180),
@@ -241,25 +238,16 @@ export const terrainTools = [
         );
       }
 
-      const query = buildObjectsQuery(
-        categories,
-        { south, west, north, east },
-        limit,
+      const { objects, truncated } = await fetchObjects(
+        {
+          active: categories,
+          bounds: { south, west, north, east },
+          limit,
+        },
+        { getState: store.getState },
       );
 
-      const res = await httpRequest({
-        getState: store.getState,
-        method: 'POST',
-        url: process.env['OVERPASS_URL'] ?? '',
-        body: `data=${encodeURIComponent(query)}`,
-        expectedStatus: 200,
-      });
-
-      const objects = parseObjectsResult(await res.json());
-
-      // Overpass was asked for exactly this many, so a full answer says there
-      // may be more of them in the box.
-      const complete = objects.length < limit;
+      const complete = !truncated;
 
       return deliverResult(
         {

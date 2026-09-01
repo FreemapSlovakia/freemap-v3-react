@@ -2,9 +2,9 @@ import { objectCategories } from '@features/objects/objectCategories.js';
 import { getOsmMapping } from '@osm/osmNameResolver.js';
 
 /**
- * Only the filters the app itself offers may reach Overpass. The query
- * interpolates them unescaped, so an invented one is not merely a miss: it can
- * carry its own statement, and with it a query no bbox bounds.
+ * Only the filters the app itself offers may be searched for. The API rejects
+ * a key it does not index, so this turns a bare 400 into an answer the agent
+ * can act on.
  */
 export async function assertKnownCategories(
   categories: string[],

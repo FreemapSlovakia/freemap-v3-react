@@ -244,7 +244,7 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     // feature: nothing would render its toolbar, so the selection would sit
     // there with no way to reach it and no way to let it go. Reached by the
     // filter being cleared, by the objects being handed to another feature, and
-    // by panning until the object drops out of what Overpass answers.
+    // by panning until the object drops out of what the search answers.
     .addCase(objectsSetResult, (state, action) => {
       const { selection } = state;
 

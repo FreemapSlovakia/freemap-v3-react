@@ -3,8 +3,8 @@ import type { Node, OsmMapping } from '@osm/types.js';
 export type ObjectCategory = {
   name: string;
   /**
-   * The `key=value` pairs, comma-joined — what `objectsSetFilter` holds and the
-   * Overpass query is built from.
+   * The `key=value` pairs, comma-joined — what `objectsSetFilter` holds and one
+   * search filter is built from.
    */
   key: string;
   tags: { key: string; value?: string }[];

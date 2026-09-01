@@ -17,9 +17,11 @@ import {
 import { objectToSearchResult } from './objectToSearchResult.js';
 
 /**
- * How many objects can be handed over at once. Each becomes a kept result the
- * URL names separately, so what limits this is the length of the link — the
- * reload behind it is one batched Overpass query however many there are.
+ * How many objects can be handed over at once. Each becomes a kept result that
+ * the URL names in its own param, so what limits this is the length of the
+ * link (~10 KB here) — the reload behind it is one batched query however many
+ * there are. Deliberately below what a large viewport displays: a screenful of
+ * markers can exceed a shareable link, and the refusal says so.
  */
 const MAX_LOOKUPS = 500;
 

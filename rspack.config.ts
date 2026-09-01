@@ -575,6 +575,11 @@ const config: Configuration = {
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
+      // Own osm2pgsql-backed API (freemap-osm-api): the objects layer and map
+      // details. Europe only.
+      FM_OSM_API_URL: process.env['FM_OSM_API_URL'] || 'https://osm.freemap.sk',
+      // Only element-by-id geometry still comes from Overpass, and only while
+      // OSM_ELEMENT_SOURCE says so.
       OVERPASS_URL:
         process.env['OVERPASS_URL'] ||
         'https://overpass.freemap.sk/api/interpreter',

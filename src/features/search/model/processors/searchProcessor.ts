@@ -14,7 +14,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     }
 
     if (query.startsWith('@')) {
-      // Two Overpass queries per keystroke is not a suggestion, and the
+      // A map-details lookup per keystroke is not a suggestion, and the
       // geocoder has nothing to say about the syntax either — `@lat,lon` waits
       // for the search to be asked for.
       if (autocomplete) {
