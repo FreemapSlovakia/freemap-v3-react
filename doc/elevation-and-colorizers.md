@@ -245,6 +245,11 @@ over-credits rather than a missing one. England's LIDAR composite is the case. T
 offer's country list names such an area through `dtmAreaNames` instead of the country —
 `Intl.DisplayNames` names countries alone.
 
+A country can also be covered by **more than one model** — Belgium is SPW's in the south and
+DHMV II in the north (which reaches over Brussels as well, so there is no gap and no third
+credit), each with its own licence — so the attribution list holds an entry per model while
+`ELEVATION_API_DTM_COUNTRIES` and GEDTM30's `exceptCountries` hold each country once.
+
 Which model answers depends on the read, not only on the place: a **premium** read gets the
 national models and GEDTM30 past their borders, while a **non-premium** one is answered from
 **SRTM everywhere**. So a non-premium profile has exactly one source to

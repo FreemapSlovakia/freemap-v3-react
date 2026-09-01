@@ -15,8 +15,10 @@ const tokenNames = (tokens: string[]) =>
 
 describe('ELEVATION_API_DTM_ATTRIBUTION', () => {
   it('credits a national model for every country the API serves one for', () => {
-    expect(ELEVATION_API_DTM_ATTRIBUTION.map((attr) => attr.country).sort()) //
-      .toEqual([...ELEVATION_API_DTM_COUNTRIES].sort());
+    expect(
+      [...new Set(ELEVATION_API_DTM_ATTRIBUTION.map((attr) => attr.country))] //
+        .sort(),
+    ).toEqual([...ELEVATION_API_DTM_COUNTRIES].sort());
   });
 
   it('names and links every source it credits', () => {
@@ -31,6 +33,13 @@ describe('ELEVATION_API_DTM_ATTRIBUTION', () => {
 describe('elevationSourcesFromTokens', () => {
   it('credits a country code with that country’s national model', () => {
     expect(tokenNames(['sk'])).toEqual(['DMR 5.0: ÚGKK SR']);
+  });
+
+  it('credits every model of a country covered by more than one', () => {
+    expect(tokenNames(['be'])).toEqual([
+      'MNT 1\xa0m 2021–2022: ©\xa0Service public de Wallonie (SPW), CC\xa0BY\xa04.0 — modified',
+      'DHMV\xa0II 1\xa0m — Bron: Digitaal Vlaanderen (Modellicentie gratis hergebruik)',
+    ]);
   });
 
   it('credits the global model last, whatever order it was reported in', () => {

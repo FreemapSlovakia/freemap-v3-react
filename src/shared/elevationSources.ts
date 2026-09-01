@@ -19,10 +19,13 @@ import {
  * because either side can gain a model the other doesn't hold.
  *
  * Coverage is per country, so `gb` overstates a model that covers England
- * alone; a read elsewhere in the UK still falls back to GEDTM30.
+ * alone; a read elsewhere in the UK still falls back to GEDTM30. A country can
+ * also have more than one model — `be` is two — so this list is the countries,
+ * not the models.
  */
 export const ELEVATION_API_DTM_COUNTRIES = [
   'at',
+  'be',
   'ch',
   'cz',
   'es',
