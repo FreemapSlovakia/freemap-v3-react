@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg id="svg8" version="1.1" viewBox="33.6 0.2 17.6 13.4" height="13.4mm" width="17.6mm" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs id="defs2">
+    <filter id="filter2298" style="color-interpolation-filters:sRGB" x="-0.070872687" y="-0.097423868" width="1.1616401" height="1.2222736">
+      <feFlood id="feFlood2288" result="flood" flood-color="rgb(0,0,0)" flood-opacity="0.498039" />
+      <feComposite id="feComposite2290" result="composite1" operator="in" in2="SourceGraphic" in="flood" />
+      <feGaussianBlur id="feGaussianBlur2292" result="blur" stdDeviation="0.4" in="composite1" />
+      <feOffset id="feOffset2294" result="offset" dy="0.3" dx="0.3" />
+      <feComposite id="feComposite2296" result="composite2" operator="over" in2="offset" in="SourceGraphic" />
+    </filter>
+    <!-- Petal shading, in the flower group's own coordinates: bright near the shared
+         centre, deeper at the tips, mirroring the raster original. -->
+    <radialGradient id="petalGreen" gradientUnits="userSpaceOnUse" cx="146" cy="72" r="78" fx="120" fy="42">
+      <stop offset="0" stop-color="#ddf5c0" id="stop1" />
+      <stop offset="0.42" stop-color="#bbdd8e" id="stop2" />
+      <stop offset="1" stop-color="#7a9156" id="stop3" />
+    </radialGradient>
+    <radialGradient id="petalRed" gradientUnits="userSpaceOnUse" cx="146" cy="72" r="78" fx="120" fy="42">
+      <stop offset="0" stop-color="#ff9a80" id="stop4" />
+      <stop offset="0.42" stop-color="#d01414" id="stop5" />
+      <stop offset="1" stop-color="#8a0505" id="stop6" />
+    </radialGradient>
+    <radialGradient id="petalAmber" gradientUnits="userSpaceOnUse" cx="146" cy="72" r="78" fx="120" fy="42">
+      <stop offset="0" stop-color="#ffdf9b" id="stop7" />
+      <stop offset="0.42" stop-color="#e8a01e" id="stop8" />
+      <stop offset="1" stop-color="#b06a00" id="stop9" />
+    </radialGradient>
+    <!-- Specular sheen laid over each flower, light from the upper left. -->
+    <linearGradient id="sheen" gradientUnits="userSpaceOnUse" x1="100" y1="25" x2="175" y2="115">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.7" id="stop10" />
+      <stop offset="0.35" stop-color="#ffffff" stop-opacity="0.16" id="stop11" />
+      <stop offset="0.62" stop-color="#ffffff" stop-opacity="0" id="stop12" />
+    </linearGradient>
+  </defs>
+  <metadata id="metadata5">
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g id="layer1" transform="translate(-35.235939,-82.046507)">
+    <g style="filter:url(#filter2298)" id="g1856">
+      <g style="stroke-width:1.71199;stroke-miterlimit:4;stroke-dasharray:none" transform="matrix(0.12989254,0,0,0.12713262,58.182824,79.115986)" id="g21768">
+        <path style="fill:url(#petalGreen);fill-opacity:1;fill-rule:evenodd;stroke:none" id="path21753" d="M 169.31352,57.477878 C 146.59504,27.24193 122.04691,67.011599 134.21185,71.887158 C 146.74607,76.910715 103.25751,33.41396 95.173682,51.827463 C 87.447707,69.425843 128.99427,84.602392 123.53056,77.736521 C 114.63526,66.558423 86.364825,72.56813 94.428589,92.428753 C 106.67096,122.58105 169.20584,99.800283 139.74716,88.537603 C 118.48712,80.409439 181.44406,132.04696 193.48067,113.75037 C 209.64421,89.180574 136.61618,64.459774 148.37298,77.490703 C 160.24638,90.65086 181.0879,73.148385 169.31352,57.477878 Z" />
+        <path style="fill:url(#sheen);fill-rule:evenodd;stroke:none" id="path21753-gloss" d="M 169.31352,57.477878 C 146.59504,27.24193 122.04691,67.011599 134.21185,71.887158 C 146.74607,76.910715 103.25751,33.41396 95.173682,51.827463 C 87.447707,69.425843 128.99427,84.602392 123.53056,77.736521 C 114.63526,66.558423 86.364825,72.56813 94.428589,92.428753 C 106.67096,122.58105 169.20584,99.800283 139.74716,88.537603 C 118.48712,80.409439 181.44406,132.04696 193.48067,113.75037 C 209.64421,89.180574 136.61618,64.459774 148.37298,77.490703 C 160.24638,90.65086 181.0879,73.148385 169.31352,57.477878 Z" />
+        <path style="fill:none;stroke:#000000;stroke-width:1.71199;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path21753-outline" d="M 169.31352,57.477878 C 146.59504,27.24193 122.04691,67.011599 134.21185,71.887158 C 146.74607,76.910715 103.25751,33.41396 95.173682,51.827463 C 87.447707,69.425843 128.99427,84.602392 123.53056,77.736521 C 114.63526,66.558423 86.364825,72.56813 94.428589,92.428753 C 106.67096,122.58105 169.20584,99.800283 139.74716,88.537603 C 118.48712,80.409439 181.44406,132.04696 193.48067,113.75037 C 209.64421,89.180574 136.61618,64.459774 148.37298,77.490703 C 160.24638,90.65086 181.0879,73.148385 169.31352,57.477878 Z" />
+        <path id="path21755" style="fill:url(#petalRed);fill-opacity:1;fill-rule:evenodd;stroke:none" d="M 154.3087,33.776694 C 118.83199,20.671559 119.7457,67.398455 132.61203,64.905599 C 145.86894,62.337067 85.750101,49.339039 88.93176,69.195585 C 91.972574,88.173127 135.11556,78.419766 126.80337,75.609081 C 113.27057,71.033103 92.764851,91.400959 110.30283,103.72524 C 136.92891,122.43591 177.14801,69.407628 146.28557,75.901568 C 124.01245,80.588184 204.90532,89.880892 205.10937,67.981032 C 205.38341,38.572546 130.60883,57.360136 147.5506,61.943119 C 164.6604,66.571543 172.69535,40.56875 154.3087,33.776694 Z" />
+        <path style="fill:url(#sheen);fill-rule:evenodd;stroke:none" id="path21755-gloss" d="M 154.3087,33.776694 C 118.83199,20.671559 119.7457,67.398455 132.61203,64.905599 C 145.86894,62.337067 85.750101,49.339039 88.93176,69.195585 C 91.972574,88.173127 135.11556,78.419766 126.80337,75.609081 C 113.27057,71.033103 92.764851,91.400959 110.30283,103.72524 C 136.92891,122.43591 177.14801,69.407628 146.28557,75.901568 C 124.01245,80.588184 204.90532,89.880892 205.10937,67.981032 C 205.38341,38.572546 130.60883,57.360136 147.5506,61.943119 C 164.6604,66.571543 172.69535,40.56875 154.3087,33.776694 Z" />
+        <path style="fill:none;stroke:#000000;stroke-width:1.71199;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path21755-outline" d="M 154.3087,33.776694 C 118.83199,20.671559 119.7457,67.398455 132.61203,64.905599 C 145.86894,62.337067 85.750101,49.339039 88.93176,69.195585 C 91.972574,88.173127 135.11556,78.419766 126.80337,75.609081 C 113.27057,71.033103 92.764851,91.400959 110.30283,103.72524 C 136.92891,122.43591 177.14801,69.407628 146.28557,75.901568 C 124.01245,80.588184 204.90532,89.880892 205.10937,67.981032 C 205.38341,38.572546 130.60883,57.360136 147.5506,61.943119 C 164.6604,66.571543 172.69535,40.56875 154.3087,33.776694 Z" />
+        <path id="path21697" style="fill:url(#petalAmber);fill-opacity:1;fill-rule:evenodd;stroke:none" d="M 162.82277,43.912573 C 132.27902,21.609643 120.38609,66.806943 133.44386,67.925763 C 146.898,69.078543 92.621206,40.143223 90.254329,60.113283 C 87.992229,79.199313 132.15823,81.609603 124.93081,76.633983 C 113.16408,68.533343 87.872075,82.520783 101.37363,99.169411 C 121.87162,124.44527 175.05339,84.429353 143.59119,82.240393 C 120.88523,80.660643 196.15776,111.70989 202.33993,90.699743 C 210.64173,62.486023 133.57934,60.120093 148.62331,69.159243 C 163.81648,78.288033 178.6528,55.471603 162.82277,43.912573 Z" />
+        <path style="fill:url(#sheen);fill-rule:evenodd;stroke:none" id="path21697-gloss" d="M 162.82277,43.912573 C 132.27902,21.609643 120.38609,66.806943 133.44386,67.925763 C 146.898,69.078543 92.621206,40.143223 90.254329,60.113283 C 87.992229,79.199313 132.15823,81.609603 124.93081,76.633983 C 113.16408,68.533343 87.872075,82.520783 101.37363,99.169411 C 121.87162,124.44527 175.05339,84.429353 143.59119,82.240393 C 120.88523,80.660643 196.15776,111.70989 202.33993,90.699743 C 210.64173,62.486023 133.57934,60.120093 148.62331,69.159243 C 163.81648,78.288033 178.6528,55.471603 162.82277,43.912573 Z" />
+        <path style="fill:none;stroke:#000000;stroke-width:1.71199;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path21697-outline" d="M 162.82277,43.912573 C 132.27902,21.609643 120.38609,66.806943 133.44386,67.925763 C 146.898,69.078543 92.621206,40.143223 90.254329,60.113283 C 87.992229,79.199313 132.15823,81.609603 124.93081,76.633983 C 113.16408,68.533343 87.872075,82.520783 101.37363,99.169411 C 121.87162,124.44527 175.05339,84.429353 143.59119,82.240393 C 120.88523,80.660643 196.15776,111.70989 202.33993,90.699743 C 210.64173,62.486023 133.57934,60.120093 148.62331,69.159243 C 163.81648,78.288033 178.6528,55.471603 162.82277,43.912573 Z" />
+      </g>
+    </g>
+  </g>
+</svg>

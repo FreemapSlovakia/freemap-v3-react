@@ -37,11 +37,11 @@ button#freemap-logo {
   border: none;
   outline: none;
   background-color: rgba(255, 255, 255, 0);
-  background-image: url("@/images/freemap-logo.png");
-  background-size: 122px 34px;
+  background-image: url("@/images/freemap-logo-sk.svg");
+  background-size: 134px 34px;
   background-repeat: no-repeat;
   height: 34px;
-  width: 122px;
+  width: 134px;
   -webkit-transform: scale(1);
   transform: scale(1);
   -webkit-transition: 0.1s ease-in-out;
@@ -58,12 +58,21 @@ button#freemap-logo {
   }
 }
 
+/* `data-site` comes from the entry document, so the domain picks the wordmark. */
+[data-site="eu"] button#freemap-logo {
+  background-image: url("@/images/freemap-logo-eu.svg");
+  background-size: 136px 34px;
+  width: 136px;
+}
+
+/* The flower alone is site-neutral. Equal specificity to the `eu` rule above,
+   so it must stay after it to win on narrow screens. */
 @media (max-width: 767px) {
   .full {
     button#freemap-logo {
-      background-image: url("@/images/freemap-logo-small.png");
-      background-size: 42px 34px;
-      width: 42px;
+      background-image: url("@/images/freemap-flower.svg");
+      background-size: 45px 34px;
+      width: 45px;
     }
   }
 }

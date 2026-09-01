@@ -639,6 +639,12 @@ const config: Configuration = {
           to: '[name][ext]',
           globOptions: { dot: true },
         },
+        {
+          // The pre-JS bootstrap and the service worker fetch the logos by fixed
+          // root URL, so they need an unhashed copy beside the bundled one.
+          from: 'images/freemap-*.svg',
+          to: '[name][ext]',
+        },
       ],
     }),
     prod &&
