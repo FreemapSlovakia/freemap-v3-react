@@ -18,6 +18,7 @@ export default function PanoramaPickingMenu(): ReactElement {
         picking === 'target' ? m?.pickTargetPrompt : m?.pickViewpointPrompt
       }
       onCancel={() => dispatch(panoramaSetPicking(null))}
+      cancelKbd="Esc"
     />
   );
 }

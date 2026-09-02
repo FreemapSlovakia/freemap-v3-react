@@ -85,14 +85,11 @@ Still emitting at info level (non-blocking, optional cleanup):
       byte-identically). Prefer doing it opportunistically while editing a file
       rather than as a sweep; the 26 handlers used more than once stay named.
 
-- [ ] **Finish `PickingMenu` — three picking toolbars still hand-roll it.**
-      `src/shared/components/PickingMenu.tsx` was extracted for the toposcope's
-      centre and the panorama's viewpoint; `MapAreaSelectionMenu`,
-      `GalleryPositionPickingMenu` and `HomeLocationPickingMenu` still write the
-      same `Toolbar` + prompt + dark cancel button by hand. They differ only by
-      a confirm button (`FaCheck`, `m?.general.ok`/`save`, sometimes disabled)
-      and `kbd="Esc"` on cancel, so an optional `onConfirm`/`confirmLabel`/
-      `confirmDisabled`/`cancelKbd` retires ~90 lines.
+- [ ] **Viewshed viewpoint picking has no Escape.** Every other picking mode is
+      cancelled by Escape in `keyboardHandler`; `viewshedSetPickingViewpoint`
+      was never added to that chain, so its toolbar is the one that cannot
+      advertise `cancelKbd="Esc"`. Add it beside the toposcope and panorama
+      cases, then pass the prop.
 - [ ] **Make `pickingModeSelector` answer _which_ mode, not just whether.**
       It returns a boolean, so `mouseCursorSelector` re-enumerates four of the
       six modes, `keyboardHandler` handles them at three different priorities

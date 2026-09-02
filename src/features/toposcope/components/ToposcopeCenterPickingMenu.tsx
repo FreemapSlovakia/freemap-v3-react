@@ -13,6 +13,7 @@ export default function ToposcopeCenterPickingMenu(): ReactElement {
     <PickingMenu
       prompt={m?.pickCenterPrompt}
       onCancel={() => dispatch(toposcopeSetPickingCenter(false))}
+      cancelKbd="Esc"
     />
   );
 }

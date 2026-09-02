@@ -5,16 +5,13 @@ import {
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { loadMapSettingsMessages } from '@features/mapSettings/translations/loadMapSettingsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { Toolbar } from '@shared/components/Toolbar.js';
+import { PickingMenu } from '@shared/components/PickingMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useCallback, useState } from 'react';
-import { Button } from 'react-bootstrap';
-import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
-export default function HomeLocationPickingMenu(): ReactElement | null {
+export default function HomeLocationPickingMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const selectingHomeLocation = useAppSelector(
@@ -67,37 +64,13 @@ export default function HomeLocationPickingMenu(): ReactElement | null {
   }, [authToken, dispatch, selectingHomeLocation]);
 
   return (
-    <div>
-      <Toolbar className="mt-2">
-        <div className="px-1">{m?.main.pickHomeLocationPrompt}</div>
-
-        <LongPressTooltip breakpoint="sm" label={m?.general.save}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              disabled={!selectingHomeLocation || saving}
-              {...props}
-            >
-              <FaCheck />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-
-        <LongPressTooltip breakpoint="sm" label={m?.general.cancel}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="dark"
-              onClick={() => dispatch(setSelectingHomeLocation(false))}
-              {...props}
-            >
-              <FaTimes />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      </Toolbar>
-    </div>
+    <PickingMenu
+      prompt={m?.main.pickHomeLocationPrompt}
+      onConfirm={handleSave}
+      confirmLabel={m?.general.save}
+      confirmDisabled={!selectingHomeLocation || saving}
+      onCancel={() => dispatch(setSelectingHomeLocation(false))}
+      cancelKbd="Esc"
+    />
   );
 }

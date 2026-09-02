@@ -1,9 +1,5 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { Toolbar } from '@shared/components/Toolbar.js';
+import { PickingMenu } from '@shared/components/PickingMenu.js';
 import type { ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
-import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   galleryConfirmPickedPosition,
@@ -11,43 +7,17 @@ import {
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
-export default function GalleryPositionPickingMenu(): ReactElement | null {
-  const m = useMessages();
-
+export default function GalleryPositionPickingMenu(): ReactElement {
   const gm = useGalleryMessages();
 
   const dispatch = useDispatch();
 
   return (
-    <div>
-      <Toolbar className="mt-2">
-        <div className="px-1">{gm?.locationPicking.title}</div>
-
-        <LongPressTooltip breakpoint="sm" label={m?.general.ok}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              onClick={() => dispatch(galleryConfirmPickedPosition())}
-              {...props}
-            >
-              <FaCheck />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-
-        <LongPressTooltip breakpoint="sm" label={m?.general.cancel} kbd="Esc">
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="dark"
-              onClick={() => dispatch(gallerySetItemForPositionPicking(null))}
-              {...props}
-            >
-              <FaTimes />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      </Toolbar>
-    </div>
+    <PickingMenu
+      prompt={gm?.locationPicking.title}
+      onConfirm={() => dispatch(galleryConfirmPickedPosition())}
+      onCancel={() => dispatch(gallerySetItemForPositionPicking(null))}
+      cancelKbd="Esc"
+    />
   );
 }
