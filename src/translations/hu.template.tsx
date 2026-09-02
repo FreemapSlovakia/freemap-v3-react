@@ -237,6 +237,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Bezárás',
     closeTool: 'Eszköz bezárása',
     locateMe: 'Saját pozícióm',
+    pickHomeLocationPrompt: 'Kattintson a térképre oda, ahol lakik',
     locationError: 'Nem sikerült megtalálni a helyzetét.',
     locationNoSignal: 'Még nincs GPS-jel.',
     headingSource: 'Irányjelző',

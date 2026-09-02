@@ -238,6 +238,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Schließen',
     closeTool: 'Werkzeug schließen',
     locateMe: 'Standort ermitteln',
+    pickHomeLocationPrompt: 'Klicken Sie auf die Karte, wo Sie wohnen',
     locationError: 'Fehler beim Abrufen des Standorts.',
     locationNoSignal: 'Noch kein GPS-Signal.',
     headingSource: 'Richtungsanzeige',

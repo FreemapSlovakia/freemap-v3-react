@@ -91,9 +91,7 @@ Still emitting at info level (non-blocking, optional cleanup):
       same `Toolbar` + prompt + dark cancel button by hand. They differ only by
       a confirm button (`FaCheck`, `m?.general.ok`/`save`, sometimes disabled)
       and `kbd="Esc"` on cancel, so an optional `onConfirm`/`confirmLabel`/
-      `confirmDisabled`/`cancelKbd` retires ~90 lines. While there:
-      `HomeLocationPickingMenu` has a hardcoded Slovak prompt
-      (`'Zvoľte domovskú pozíciu'`).
+      `confirmDisabled`/`cancelKbd` retires ~90 lines.
 - [ ] **Make `pickingModeSelector` answer _which_ mode, not just whether.**
       It returns a boolean, so `mouseCursorSelector` re-enumerates four of the
       six modes, `keyboardHandler` handles them at three different priorities

@@ -235,6 +235,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Zapri',
     closeTool: 'Zapri orodje',
     locateMe: 'Kje sem?',
+    pickHomeLocationPrompt: 'Kliknite na zemljevid tja, kjer stanujete',
     locationError: 'Napaka pri pridobivanju lokacije.',
     locationNoSignal: 'Signala GPS še ni.',
     headingSource: 'Kazalnik smeri',

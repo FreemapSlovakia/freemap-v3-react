@@ -230,6 +230,7 @@ const messages: Messages = {
     close: 'Close',
     closeTool: 'Close tool',
     locateMe: 'Locate me',
+    pickHomeLocationPrompt: 'Click the map where your home is',
     locationError: 'Error getting location.',
     locationNoSignal: 'No GPS signal yet.',
     headingSource: 'Direction indicator',

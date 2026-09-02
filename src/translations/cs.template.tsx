@@ -236,6 +236,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Zavřít',
     closeTool: 'Zavřít nástroj',
     locateMe: 'Kde jsem?',
+    pickHomeLocationPrompt: 'Klikněte do mapy tam, kde bydlíte',
     locationError: 'Nepodařilo se získat pozici.',
     locationNoSignal: 'Zatím bez signálu GPS.',
     headingSource: 'Ukazatel směru',

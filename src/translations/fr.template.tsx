@@ -247,6 +247,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Fermer',
     closeTool: 'Fermer l’outil',
     locateMe: 'Me localiser',
+    pickHomeLocationPrompt: 'Cliquez sur la carte à l’endroit où vous habitez',
     locationError: 'Erreur lors de l’obtention de la position.',
     locationNoSignal: 'Pas encore de signal GPS.',
     headingSource: 'Indicateur de direction',

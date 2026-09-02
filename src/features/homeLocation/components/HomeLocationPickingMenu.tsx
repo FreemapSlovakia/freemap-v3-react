@@ -69,7 +69,7 @@ export default function HomeLocationPickingMenu(): ReactElement | null {
   return (
     <div>
       <Toolbar className="mt-2">
-        <div className="px-1">Zvoľte domovskú pozíciu</div>
+        <div className="px-1">{m?.main.pickHomeLocationPrompt}</div>
 
         <LongPressTooltip breakpoint="sm" label={m?.general.save}>
           {({ label, labelClassName, props }) => (

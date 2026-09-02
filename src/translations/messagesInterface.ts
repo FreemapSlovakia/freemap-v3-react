@@ -202,6 +202,8 @@ export type Messages = {
     close: string;
     closeTool: string;
     locateMe: string;
+    /** Asks for the map click that sets the user's home location. */
+    pickHomeLocationPrompt: string;
     locationError: string;
     locationNoSignal: string;
     headingSource: string;
