@@ -111,6 +111,30 @@ Still emitting at info level (non-blocking, optional cleanup):
       `showGalleryPicker || picking` is a behaviour change for those two —
       decide it deliberately rather than letting the two lists keep diverging.
       Folds into the item above.
+- [ ] **A modified click on an SPA link never opens a new tab.** Every in-page
+      link — `useModalLink`, the `handleSelect` menu rows, `CreditsText`,
+      `Attribution` — calls `preventDefault` unconditionally, so Ctrl/Cmd-click
+      routes in-page instead of opening a tab. Middle-click escapes it (that is
+      `auxclick`), so the two gestures disagree. Guarding on the modifier keys
+      is the easy half; the hard half is that these hrefs are not deep links.
+      A bare `#show=…`/`#layers=…` replaces the *whole* hash, and a fresh load
+      restores only what persists — not the route, the drawing or the open
+      tools (`persistence.ts` keeps `transportType`/`milestones` and nothing
+      else of them) — so the new tab would open the modal over a map that is
+      not the one clicked on. Worse for the rows whose href *sets* what the
+      handler *toggles* (`#layers=`, `#tools=`): a bare `#layers=I` drops the
+      base layer and `urlMapUtils` substitutes `X`. A faithful href is the
+      current hash with `show=` merged in, which means reading mutable URL
+      state during render — a React Compiler hazard, see
+      [`doc/react-compiler.md`](./doc/react-compiler.md). Documents are the one
+      safe subset: self-contained, and the links people most want in a tab.
+      Attempted and reverted once; don't re-do the guard without the href.
+- [ ] **`Attribution`'s document-link branch is unreachable.** `PREFIX =
+      '?document='` (`src/shared/components/Attribution.tsx`) matches no
+      `AttributionDef.url` anywhere, so the `documentShow` interception has
+      never fired. Either something should produce such a URL — and then it
+      wants the hash form the rest of the app uses, not a query — or the branch
+      and the prefix should go.
 - [ ] **`MyMapsMenu` hand-builds the split button** `SplitButton` now
       abstracts (`Dropdown as={ButtonGroup}` + `Button` + `Dropdown.Toggle
     split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
