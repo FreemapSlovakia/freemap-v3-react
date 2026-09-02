@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "lint-staged": {
-    "*.{js,ts}": ["biome check --error-on-warnings", "git add"]
+    "*.{js,ts}": [
+      "biome check --error-on-warnings",
+      "git add"
+    ]
   },
   "scripts": {
     "start": "pnpm build:proto && pnpm sync-language-files && rspack serve --config rspack.config.ts",
@@ -41,7 +44,7 @@
   },
   "dependencies": {
     "@bokuweb/zstd-wasm": "^0.0.27",
-    "@bufbuild/protobuf": "^2.14.0",
+    "@bufbuild/protobuf": "^2.14.1",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
     "@mapbox/tilebelt": "^2.0.3",
     "@maplibre/maplibre-gl-leaflet": "^0.1.4",
@@ -51,7 +54,7 @@
     "@reduxjs/toolkit": "^2.12.0",
     "@restart/ui": "^1.9.4",
     "@samchon/openapi": "^6.0.1",
-    "@sentry/browser": "^10.72.0",
+    "@sentry/browser": "^10.73.0",
     "@tmcw/togeojson": "^7.1.2",
     "@turf/along": "^7.4.0",
     "@turf/area": "^7.4.0",
@@ -114,8 +117,8 @@
     "@mapbox/maki": "^8.2.0",
     "@rapideditor/temaki": "^5.13.0",
     "@resvg/resvg-js": "^2.6.2",
-    "@rspack/cli": "2.2.1",
-    "@rspack/core": "2.2.1",
+    "@rspack/cli": "2.2.2",
+    "@rspack/core": "2.2.2",
     "@rspack/dev-server": "2.2.1",
     "@rspack/plugin-react-refresh": "^2.0.2",
     "@sentry/cli": "^3.7.0",
