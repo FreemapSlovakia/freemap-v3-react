@@ -6,12 +6,7 @@ import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import {
-  type ReactElement,
-  type SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -40,9 +35,9 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
@@ -54,11 +49,11 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
     close();
   };
 
-  const handleReset = useCallback(() => {
+  const handleReset = () => {
     setEditedMarkerType(objectsSettingsInitialState.selectedIcon);
 
     setEditedColor(objectsSettingsInitialState.color);
-  }, []);
+  };
 
   const dirty = editedMarkerType !== markerType || editedColor !== color;
 

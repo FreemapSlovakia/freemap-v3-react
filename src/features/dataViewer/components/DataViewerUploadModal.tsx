@@ -2,7 +2,7 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import clsx from 'clsx';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes, FaUpload } from 'react-icons/fa';
@@ -26,9 +26,9 @@ export default function DataViewerUploadModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const loadTrackFiles = useLoadDataFiles();
 

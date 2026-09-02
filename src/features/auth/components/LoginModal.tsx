@@ -6,7 +6,7 @@ import { usePremiumMessages } from '@features/premium/translations/usePremiumMes
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { PREMIUM_PRICE_EUR } from '@shared/premiumPricing.js';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { Alert, Button, Modal } from 'react-bootstrap';
 import { FaExclamationTriangle, FaSignInAlt, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -26,9 +26,9 @@ export default function LoginModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const cookieConsentResult = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult,

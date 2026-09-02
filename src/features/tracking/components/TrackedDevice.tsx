@@ -7,12 +7,7 @@ import {
 } from '@shared/components/ResponsiveActions.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import {
-  Fragment,
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-} from 'react';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -41,13 +36,13 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   const nf = useNumberFormat();
 
-  const handleModify = useCallback(() => {
+  const handleModify = () => {
     dispatch(setActiveModal({ type: 'tracking-watched', token: device.token }));
-  }, [device.token, dispatch]);
+  };
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = () => {
     dispatch(trackingActions.deleteTrackedDevice(device.token));
-  }, [device.token, dispatch]);
+  };
 
   const meta: { key: string; label: string; value: ReactNode }[] = [];
 

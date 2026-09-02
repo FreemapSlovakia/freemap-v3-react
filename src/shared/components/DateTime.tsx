@@ -40,26 +40,17 @@ export function DateTime({
     [onChange],
   );
 
-  const handleDateChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      propagateChange(e.target.value, timePart);
-    },
-    [timePart, propagateChange],
-  );
+  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    propagateChange(e.target.value, timePart);
+  };
 
-  const handleTimeChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      propagateChange(datePart, e.target.value);
-    },
-    [datePart, propagateChange],
-  );
+  const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    propagateChange(datePart, e.target.value);
+  };
 
-  const handleDatetimeChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      onChange(e.target.value);
-    },
-    [onChange],
-  );
+  const handleDatetimeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value);
+  };
 
   return supportsDatetimeLocal ? (
     <Form.Control

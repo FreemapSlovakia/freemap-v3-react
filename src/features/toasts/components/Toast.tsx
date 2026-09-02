@@ -5,7 +5,6 @@ import {
   type MouseEvent,
   type ReactElement,
   type ReactNode,
-  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -48,7 +47,7 @@ export function Toast({
 
   const [stopped, setStopped] = useState(false);
 
-  const handlePointerEnter = useCallback(() => {
+  const handlePointerEnter = () => {
     if (timeout === undefined || pinned) {
       return;
     }
@@ -56,36 +55,30 @@ export function Toast({
     setStopped(true);
     setElapsed(0);
     onTimeoutStop(id);
-  }, [onTimeoutStop, id, timeout, pinned]);
+  };
 
-  const handlePointerLeave = useCallback(() => {
+  const handlePointerLeave = () => {
     if (timeout === undefined || pinned) {
       return;
     }
 
     setStopped(false);
     onTimeoutRestart(id);
-  }, [onTimeoutRestart, id, timeout, pinned]);
+  };
 
   // A finger has no hover to pause the countdown with. This drops the countdown
   // for good — one way, so the button goes with the progress bar it sits on.
-  const handleKeepOpen = useCallback(
-    (e: MouseEvent) => {
-      e.stopPropagation();
+  const handleKeepOpen = (e: MouseEvent) => {
+    e.stopPropagation();
 
-      onKeepOpen(id);
-    },
-    [id, onKeepOpen],
-  );
+    onKeepOpen(id);
+  };
 
-  const handleAlertDismiss = useCallback(
-    (e: MouseEvent) => {
-      e.stopPropagation();
+  const handleAlertDismiss = (e: MouseEvent) => {
+    e.stopPropagation();
 
-      onClose(id);
-    },
-    [onClose, id],
-  );
+    onClose(id);
+  };
 
   const defaultAction = actions.find(({ name }) => !name);
 

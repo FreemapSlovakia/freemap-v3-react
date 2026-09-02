@@ -1,8 +1,7 @@
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
-import type { ReactElement } from 'react';
-import { type CSSProperties, type ReactNode, useCallback } from 'react';
+import type { CSSProperties, ReactElement, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
 import {
   FaApple,
@@ -132,20 +131,17 @@ export function AuthProviders({ mode }: Props): ReactElement {
     (state) => state.cookieConsent.cookieConsentResult,
   );
 
-  const handleClick = useCallback(
-    async (provider: AuthProvider) => {
-      if (mode === 'disconnect') {
-        if (!(await confirm())) {
-          return;
-        }
-
-        dispatch(authDisconnect({ provider }));
-      } else {
-        dispatch(loginAction(provider, mode === 'connect'));
+  const handleClick = async (provider: AuthProvider) => {
+    if (mode === 'disconnect') {
+      if (!(await confirm())) {
+        return;
       }
-    },
-    [dispatch, mode, confirm],
-  );
+
+      dispatch(authDisconnect({ provider }));
+    } else {
+      dispatch(loginAction(provider, mode === 'connect'));
+    }
+  };
 
   function show(provider: AuthProvider) {
     return (

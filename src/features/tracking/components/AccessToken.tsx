@@ -9,12 +9,7 @@ import {
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import {
-  Fragment,
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-} from 'react';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Button, ListGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaClipboard, FaEdit, FaRegEye, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -43,11 +38,11 @@ export function AccessToken({ accessToken }: Props): ReactElement {
     minute: '2-digit',
   });
 
-  const handleModify = useCallback(() => {
+  const handleModify = () => {
     dispatch(trackingActions.modifyAccessToken(accessToken.id));
-  }, [accessToken.id, dispatch]);
+  };
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = async () => {
     if (
       await confirm({
         title: tm?.accessToken.deleteTitle,
@@ -58,22 +53,22 @@ export function AccessToken({ accessToken }: Props): ReactElement {
     ) {
       dispatch(trackingActions.deleteAccessToken(accessToken.id));
     }
-  }, [accessToken.id, accessToken.token, dispatch, confirm, m, tm]);
+  };
 
-  const handleCopyClick = useCallback(() => {
+  const handleCopyClick = () => {
     copyToClipboard(
       dispatch,
       `${location.origin}/?track=${encodeURIComponent(
         accessToken.token,
       )}&follow=${encodeURIComponent(accessToken.token)}`,
     );
-  }, [accessToken.token, dispatch]);
+  };
 
-  const handleView = useCallback(() => {
+  const handleView = () => {
     dispatch(
       setActiveModal({ type: 'tracking-watched', token: accessToken.token }),
     );
-  }, [accessToken.token, dispatch]);
+  };
 
   const meta: { key: string; label: string; value: ReactNode }[] = [];
 

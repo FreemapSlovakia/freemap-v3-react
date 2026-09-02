@@ -7,7 +7,7 @@ import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { ShowModalLink } from '@shared/components/ShowModalLink.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -31,9 +31,9 @@ export default function SupportUsModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   useDocumentTitle(show ? m?.mainMenu.supportUs : undefined);
 

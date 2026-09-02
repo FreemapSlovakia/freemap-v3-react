@@ -561,7 +561,7 @@ export function PanoramaView({
   /** Whether a second finger ever joined, which makes the gesture a pinch. */
   const pinchedRef = useRef(false);
 
-  const handlePointerDown = useCallback((e: ReactPointerEvent) => {
+  const handlePointerDown = (e: ReactPointerEvent) => {
     e.currentTarget.setPointerCapture(e.pointerId);
 
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -580,7 +580,7 @@ export function PanoramaView({
     }
 
     setDragging(true);
-  }, []);
+  };
 
   /**
    * What a pointer is aimed at: where in the panel it is, and where its line of
@@ -628,153 +628,139 @@ export function PanoramaView({
     [azLeft, clampedOffsetY, data.depth, degPerPx, render, scale],
   );
 
-  const handlePointerMove = useCallback(
-    (e: ReactPointerEvent) => {
-      const previous = pointers.current.get(e.pointerId);
+  const handlePointerMove = (e: ReactPointerEvent) => {
+    const previous = pointers.current.get(e.pointerId);
 
-      if (previous) {
-        pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (previous) {
+      pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-        const points = [...pointers.current.values()];
+      const points = [...pointers.current.values()];
 
-        if (points.length >= 2) {
-          const [a, b] = points as [
-            { x: number; y: number },
-            { x: number; y: number },
-          ];
+      if (points.length >= 2) {
+        const [a, b] = points as [
+          { x: number; y: number },
+          { x: number; y: number },
+        ];
 
-          const distance = Math.hypot(a.x - b.x, a.y - b.y);
+        const distance = Math.hypot(a.x - b.x, a.y - b.y);
 
-          // Against the previous frame rather than the start of the gesture, so
-          // the zoom follows the fingers about as they move — the midpoint is
-          // what stays put, which is what a pinch means.
-          if (pinchRef.current) {
-            const rect = e.currentTarget.getBoundingClientRect();
+        // Against the previous frame rather than the start of the gesture, so
+        // the zoom follows the fingers about as they move — the midpoint is
+        // what stays put, which is what a pinch means.
+        if (pinchRef.current) {
+          const rect = e.currentTarget.getBoundingClientRect();
 
-            zoomAt(
-              (a.x + b.x) / 2 - rect.left,
-              (a.y + b.y) / 2 - rect.top,
-              distance / pinchRef.current,
-            );
-          }
-
-          pinchRef.current = distance;
-        } else {
-          const dx = e.clientX - previous.x;
-
-          const dy = e.clientY - previous.y;
-
-          travelRef.current += Math.abs(dx) + Math.abs(dy);
-
-          // Turning it by hand is taking it over, and it stays taken over —
-          // the same thing the stop button does, said with the gesture that
-          // already means "I want to look at this". Only once it is a drag: a
-          // press that goes nowhere is asking a distance, not steering.
-          //
-          // Latched in a ref rather than tested against the setting, which is a
-          // render behind: pointer moves keep arriving before the store's
-          // `false` comes back, and every one of them would dispatch again —
-          // and every dispatch writes the whole persisted state to localStorage.
-          if (
-            travelRef.current > CLICK_SLOP_PX &&
-            !stoppedRef.current &&
-            settings.autoPan
-          ) {
-            stoppedRef.current = true;
-
-            dispatch(panoramaSetSettings({ autoPan: false }));
-          }
-
-          setAzimuth((a) => mod(a - dx * degPerPx, 360));
-
-          setOffsetY((o) => clamp(o - dy / scale, 0, maxOffsetY));
+          zoomAt(
+            (a.x + b.x) / 2 - rect.left,
+            (a.y + b.y) / 2 - rect.top,
+            distance / pinchRef.current,
+          );
         }
 
-        return;
+        pinchRef.current = distance;
+      } else {
+        const dx = e.clientX - previous.x;
+
+        const dy = e.clientY - previous.y;
+
+        travelRef.current += Math.abs(dx) + Math.abs(dy);
+
+        // Turning it by hand is taking it over, and it stays taken over —
+        // the same thing the stop button does, said with the gesture that
+        // already means "I want to look at this". Only once it is a drag: a
+        // press that goes nowhere is asking a distance, not steering.
+        //
+        // Latched in a ref rather than tested against the setting, which is a
+        // render behind: pointer moves keep arriving before the store's
+        // `false` comes back, and every one of them would dispatch again —
+        // and every dispatch writes the whole persisted state to localStorage.
+        if (
+          travelRef.current > CLICK_SLOP_PX &&
+          !stoppedRef.current &&
+          settings.autoPan
+        ) {
+          stoppedRef.current = true;
+
+          dispatch(panoramaSetSettings({ autoPan: false }));
+        }
+
+        setAzimuth((a) => mod(a - dx * degPerPx, 360));
+
+        setOffsetY((o) => clamp(o - dy / scale, 0, maxOffsetY));
       }
 
-      // Hovering is a mouse's and a pen's; a finger says what it wants by
-      // pressing, and `endPointer` answers that. A touch does reach here — one
-      // that started on a label is never registered, and its moves still bubble
-      // — and left to set a readout it could never clear one: its `pointerup`
-      // finds nothing to end, and `pointerleave` is exactly what a finger
-      // lifting fires.
-      if (e.pointerType === 'touch') {
-        return;
-      }
+      return;
+    }
 
-      // A pointer hovering: say how far away whatever is under it stands.
+    // Hovering is a mouse's and a pen's; a finger says what it wants by
+    // pressing, and `endPointer` answers that. A touch does reach here — one
+    // that started on a label is never registered, and its moves still bubble
+    // — and left to set a readout it could never clear one: its `pointerup`
+    // finds nothing to end, and `pointerleave` is exactly what a finger
+    // lifting fires.
+    if (e.pointerType === 'touch') {
+      return;
+    }
+
+    // A pointer hovering: say how far away whatever is under it stands.
+    const sample = sampleGround(e);
+
+    if (!sample) {
+      return;
+    }
+
+    setHover(hoverReading(sample));
+
+    // The map follows the pointer, so what is under it can be found without
+    // committing to it — the press is what leaves a mark behind.
+    setPanoramaHover(sample.ground);
+  };
+
+  const endPointer = (e: ReactPointerEvent) => {
+    // A press that started on a label never became a pan, and must not be
+    // read as a press on the terrain behind it either.
+    if (!pointers.current.delete(e.pointerId)) {
+      return;
+    }
+
+    if (pointers.current.size < 2) {
+      pinchRef.current = null;
+    }
+
+    if (pointers.current.size > 0) {
+      return;
+    }
+
+    setDragging(false);
+
+    // A press that went nowhere asks what is there, rather than turning the
+    // view: the distance buffer says how far, which with the bearing is a
+    // place on the map. A pinch is not that, however still the fingers were:
+    // its own branch never counts travel, so without this the lift ending a
+    // zoom would mark and measure wherever the last finger sat.
+    if (travelRef.current <= CLICK_SLOP_PX && !pinchedRef.current) {
       const sample = sampleGround(e);
 
-      if (!sample) {
-        return;
+      if (sample) {
+        dispatch(
+          panoramaSetProbe(
+            sample.ground && {
+              ...sample.ground,
+              iy: sample.iy,
+              ele: groundElevation(render, sample.iy, sample.ground.distance),
+            },
+          ),
+        );
+
+        // A finger has no hover, so the press has to say the distance as well
+        // as mark it — otherwise the readout is a thing only a mouse ever
+        // sees. It stays until the next press, the way the mark does.
+        setHover(hoverReading(sample));
+
+        setPicked(sample.ground ? { az: sample.az, iy: sample.iy } : null);
       }
-
-      setHover(hoverReading(sample));
-
-      // The map follows the pointer, so what is under it can be found without
-      // committing to it — the press is what leaves a mark behind.
-      setPanoramaHover(sample.ground);
-    },
-    [
-      degPerPx,
-      dispatch,
-      maxOffsetY,
-      sampleGround,
-      scale,
-      settings.autoPan,
-      zoomAt,
-    ],
-  );
-
-  const endPointer = useCallback(
-    (e: ReactPointerEvent) => {
-      // A press that started on a label never became a pan, and must not be
-      // read as a press on the terrain behind it either.
-      if (!pointers.current.delete(e.pointerId)) {
-        return;
-      }
-
-      if (pointers.current.size < 2) {
-        pinchRef.current = null;
-      }
-
-      if (pointers.current.size > 0) {
-        return;
-      }
-
-      setDragging(false);
-
-      // A press that went nowhere asks what is there, rather than turning the
-      // view: the distance buffer says how far, which with the bearing is a
-      // place on the map. A pinch is not that, however still the fingers were:
-      // its own branch never counts travel, so without this the lift ending a
-      // zoom would mark and measure wherever the last finger sat.
-      if (travelRef.current <= CLICK_SLOP_PX && !pinchedRef.current) {
-        const sample = sampleGround(e);
-
-        if (sample) {
-          dispatch(
-            panoramaSetProbe(
-              sample.ground && {
-                ...sample.ground,
-                iy: sample.iy,
-                ele: groundElevation(render, sample.iy, sample.ground.distance),
-              },
-            ),
-          );
-
-          // A finger has no hover, so the press has to say the distance as well
-          // as mark it — otherwise the readout is a thing only a mouse ever
-          // sees. It stays until the next press, the way the mark does.
-          setHover(hoverReading(sample));
-
-          setPicked(sample.ground ? { az: sample.az, iy: sample.iy } : null);
-        }
-      }
-    },
-    [dispatch, render, sampleGround],
-  );
+    }
+  };
 
   /**
    * Pressing a name marks its summit on the map and carries the summit itself
@@ -786,33 +772,30 @@ export function PanoramaView({
    * sight, the map centred on it where it would be off screen — so a named
    * summit and a ridge pointed at read alike.
    */
-  const pickLabel = useCallback(
-    (label: PanoramaLabel) => {
-      // A named summit wears its own anchor dot in the picked ink, so the mark
-      // a terrain press left would be a second red dot for one marked place.
-      setPicked(null);
+  const pickLabel = (label: PanoramaLabel) => {
+    // A named summit wears its own anchor dot in the picked ink, so the mark
+    // a terrain press left would be a second red dot for one marked place.
+    setPicked(null);
 
-      // Pressing the picked one again lets it go. A highlighted name invites
-      // being pressed again, and the only other way out is pressing the sky,
-      // which nothing suggests.
-      if (label.id === pickedId) {
-        dispatch(panoramaSetProbe(null));
+    // Pressing the picked one again lets it go. A highlighted name invites
+    // being pressed again, and the only other way out is pressing the sky,
+    // which nothing suggests.
+    if (label.id === pickedId) {
+      dispatch(panoramaSetProbe(null));
 
-        return;
-      }
+      return;
+    }
 
-      dispatch(
-        panoramaSetProbe({
-          lat: label.lat,
-          lon: label.lon,
-          distance: label.distance,
-          azimuth: label.azimuth,
-          peak: { id: label.id, name: label.name, ele: label.ele },
-        }),
-      );
-    },
-    [dispatch, pickedId],
-  );
+    dispatch(
+      panoramaSetProbe({
+        lat: label.lat,
+        lon: label.lon,
+        distance: label.distance,
+        azimuth: label.azimuth,
+        peak: { id: label.id, name: label.name, ele: label.ele },
+      }),
+    );
+  };
 
   const anchor = useCallback(
     (label: PanoramaLabel): LabelAnchor | null => {

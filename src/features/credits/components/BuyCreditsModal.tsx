@@ -5,12 +5,7 @@ import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import {
-  type ReactElement,
-  type SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import {
   Button,
   ButtonGroup,
@@ -33,9 +28,9 @@ export default function CurrentDrawingPropertiesModal({
 
   const [credits, setCredits] = useState('500');
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const buyPolar = () => {
     dispatch(purchase({ type: 'credits', amount: Number(credits) }));

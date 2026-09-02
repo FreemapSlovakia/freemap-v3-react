@@ -28,7 +28,6 @@ import type { BBox } from 'geojson';
 import {
   type ReactElement,
   type SubmitEvent,
-  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -65,9 +64,9 @@ export default function OfflineMapExportModal({
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const user = useAppSelector((state) => state.auth.user);
 
@@ -216,41 +215,27 @@ export default function OfflineMapExportModal({
     enabled: show && !invalidMinZoom && !invalidMaxZoom,
   });
 
-  const handleSubmit = useCallback(
-    (event: SubmitEvent<HTMLFormElement>) => {
-      event.preventDefault();
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-      // Enter in a field submits the form whatever the button says.
-      if (!online) {
-        return;
-      }
+    // Enter in a field submits the form whatever the button says.
+    if (!online) {
+      return;
+    }
 
-      dispatch(
-        downloadMap({
-          email,
-          name,
-          map: mapType,
-          format,
-          maxZoom: parseInt(maxZoom, 10),
-          minZoom: parseInt(minZoom, 10),
-          scale: parseInt(scale, 10),
-          boundary: bboxPolygon(bbox as BBox),
-        }),
-      );
-    },
-    [
-      dispatch,
-      online,
-      email,
-      name,
-      mapType,
-      format,
-      maxZoom,
-      minZoom,
-      scale,
-      bbox,
-    ],
-  );
+    dispatch(
+      downloadMap({
+        email,
+        name,
+        map: mapType,
+        format,
+        maxZoom: parseInt(maxZoom, 10),
+        minZoom: parseInt(minZoom, 10),
+        scale: parseInt(scale, 10),
+        boundary: bboxPolygon(bbox as BBox),
+      }),
+    );
+  };
 
   // refresh user (credits)
   useEffect(() => {

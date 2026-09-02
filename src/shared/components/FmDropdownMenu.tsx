@@ -1,7 +1,7 @@
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import clsx from 'clsx';
-import { type ReactElement, useCallback, useLayoutEffect, useRef } from 'react';
+import { type ReactElement, useLayoutEffect, useRef } from 'react';
 import { Dropdown, type DropdownMenuProps } from 'react-bootstrap';
 
 export type FmDropdownMenuProps = DropdownMenuProps & {
@@ -41,18 +41,15 @@ export function FmDropdownMenu({
 
   const prevLevel = useRef(level);
 
-  const refSetter = useCallback(
-    (el: HTMLDivElement | null) => {
-      scrollerRef.current = el;
+  const refSetter = (el: HTMLDivElement | null) => {
+    scrollerRef.current = el;
 
-      if (!el) {
-        scrollStack.current = [];
-      }
+    if (!el) {
+      scrollStack.current = [];
+    }
 
-      sc(el);
-    },
-    [sc],
-  );
+    sc(el);
+  };
 
   useLayoutEffect(() => {
     const el = scrollerRef.current;

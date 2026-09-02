@@ -12,7 +12,7 @@ import {
 } from '@shared/mapDefinitions.js';
 import { pickSubdomain } from '@shared/tileUrl.js';
 import type { LatLon } from '@shared/types/common.js';
-import { Fragment, useCallback, useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
@@ -110,9 +110,9 @@ export function ElevationInfo({
     [format, lang, point],
   );
 
-  const handleNextFormatClick = useCallback(() => {
+  const handleNextFormatClick = () => {
     setFormat((f) => (f + 1) % FORMATS.length);
-  }, [setFormat]);
+  };
 
   const copyButton = useCopyButton(coordinates);
 

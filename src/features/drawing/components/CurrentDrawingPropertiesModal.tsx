@@ -200,49 +200,46 @@ export default function CurrentDrawingPropertiesModal({
     [dispatch, polyPoints],
   );
 
-  const handleSave = useCallback(
-    (values: FeatureProperties): boolean | undefined => {
-      if (runDeveloperCommand(values.label)) {
-        return true;
-      }
+  const handleSave = (values: FeatureProperties): boolean | undefined => {
+    if (runDeveloperCommand(values.label)) {
+      return true;
+    }
 
-      if (
-        selection?.type !== 'draw-line-poly' &&
-        selection?.type !== 'draw-points'
-      ) {
-        return;
-      }
+    if (
+      selection?.type !== 'draw-line-poly' &&
+      selection?.type !== 'draw-points'
+    ) {
+      return;
+    }
 
-      dispatch(
-        selection.type === 'draw-line-poly'
-          ? drawingLineChangeProperties({
-              index: selection.id,
-              properties: {
-                label: values.label || undefined,
-                color: values.color,
-                fillColor: values.fillColor,
-                width: values.width,
-                type: values.type,
-                dashArray: values.dashArray,
-                lineCap: values.lineCap,
-                lineJoin: values.lineJoin,
-                props: values.props,
-              },
-            })
-          : drawingPointChangeProperties({
-              index: selection.id,
-              properties: {
-                label: values.label || undefined,
-                color: values.color,
-                markerType: values.markerType,
-                icon: values.icon || undefined,
-                props: values.props,
-              },
-            }),
-      );
-    },
-    [dispatch, runDeveloperCommand, selection],
-  );
+    dispatch(
+      selection.type === 'draw-line-poly'
+        ? drawingLineChangeProperties({
+            index: selection.id,
+            properties: {
+              label: values.label || undefined,
+              color: values.color,
+              fillColor: values.fillColor,
+              width: values.width,
+              type: values.type,
+              dashArray: values.dashArray,
+              lineCap: values.lineCap,
+              lineJoin: values.lineJoin,
+              props: values.props,
+            },
+          })
+        : drawingPointChangeProperties({
+            index: selection.id,
+            properties: {
+              label: values.label || undefined,
+              color: values.color,
+              markerType: values.markerType,
+              icon: values.icon || undefined,
+              props: values.props,
+            },
+          }),
+    );
+  };
 
   const isLine = selection?.type === 'draw-line-poly';
 

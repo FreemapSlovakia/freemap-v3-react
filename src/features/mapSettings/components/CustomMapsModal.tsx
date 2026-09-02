@@ -81,9 +81,9 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? m?.mapLayers.customMaps : undefined);
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const goToList = useCallback(() => {
     setDraft(undefined);
@@ -91,45 +91,42 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     setView({ mode: 'list' });
   }, []);
 
-  const handleAddClick = useCallback(() => {
+  const handleAddClick = () => {
     setDraft(undefined);
 
     setView({ mode: 'add', draftType: makeType() });
-  }, []);
+  };
 
-  const handleEditClick = useCallback((type: string) => {
+  const handleEditClick = (type: string) => {
     setDraft(undefined);
 
     setView({ mode: 'edit', type });
-  }, []);
+  };
 
-  const handleDeleteClick = useCallback(
-    async (def: CustomLayerDef) => {
-      const name = def.name || `{${def.type}}`;
+  const handleDeleteClick = async (def: CustomLayerDef) => {
+    const name = def.name || `{${def.type}}`;
 
-      if (
-        !(await confirm({
-          title: mm?.deleteTitle,
-          message: mm?.deleteConfirm(name),
-          confirmLabel: m?.general.delete,
-          confirmStyle: 'danger',
-        }))
-      ) {
-        return;
-      }
+    if (
+      !(await confirm({
+        title: mm?.deleteTitle,
+        message: mm?.deleteConfirm(name),
+        confirmLabel: m?.general.delete,
+        confirmStyle: 'danger',
+      }))
+    ) {
+      return;
+    }
 
-      const next = customLayers.filter((d) => d.type !== def.type);
+    const next = customLayers.filter((d) => d.type !== def.type);
 
-      trackMatomo(['trackEvent', 'MapSettings', 'delete', 'customMap']);
+    trackMatomo(['trackEvent', 'MapSettings', 'delete', 'customMap']);
 
-      dispatch(
-        saveSettings({ settings: { customLayers: next }, keepOpen: true }),
-      );
-    },
-    [customLayers, dispatch, m, mm, confirm],
-  );
+    dispatch(
+      saveSettings({ settings: { customLayers: next }, keepOpen: true }),
+    );
+  };
 
-  const handleSave = useCallback(() => {
+  const handleSave = () => {
     if (!draft) {
       return;
     }
@@ -164,15 +161,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     );
 
     goToList();
-  }, [
-    customLayers,
-    draft,
-    dispatch,
-    goToList,
-    layersSettings,
-    showInMenu,
-    showInToolbar,
-  ]);
+  };
 
   const editingValue =
     view.mode === 'edit'

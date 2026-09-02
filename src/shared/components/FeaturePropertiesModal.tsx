@@ -117,40 +117,37 @@ export function FeaturePropertiesModal({
   // The label field, so a property can be written in at the cursor.
   const labelRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleInsertKey = useCallback(
-    (key: string) => {
-      const el = labelRef.current;
+  const handleInsertKey = (key: string) => {
+    const el = labelRef.current;
 
-      const token = placeholders?.token(key) ?? '';
+    const token = placeholders?.token(key) ?? '';
 
-      // A textarea reports a selection of 0..0 whether the caret is genuinely at
-      // the start or has never been in the field at all, so being focused is what
-      // tells a caret to write at from no caret to append after.
-      const caret =
-        el && document.activeElement === el
-          ? { at: el.selectionStart, end: el.selectionEnd }
-          : undefined;
+    // A textarea reports a selection of 0..0 whether the caret is genuinely at
+    // the start or has never been in the field at all, so being focused is what
+    // tells a caret to write at from no caret to append after.
+    const caret =
+      el && document.activeElement === el
+        ? { at: el.selectionStart, end: el.selectionEnd }
+        : undefined;
 
-      setEditedLabel((text) => {
-        const { at, end } = caret ?? { at: text.length, end: text.length };
+    setEditedLabel((text) => {
+      const { at, end } = caret ?? { at: text.length, end: text.length };
 
-        return text.slice(0, at) + token + text.slice(end);
+      return text.slice(0, at) + token + text.slice(end);
+    });
+
+    // The caret follows what was written, so pressing several in a row reads in
+    // the order they were pressed.
+    if (el) {
+      const at = (caret?.at ?? el.value.length) + token.length;
+
+      requestAnimationFrame(() => {
+        el.focus();
+
+        el.setSelectionRange(at, at);
       });
-
-      // The caret follows what was written, so pressing several in a row reads in
-      // the order they were pressed.
-      if (el) {
-        const at = (caret?.at ?? el.value.length) + token.length;
-
-        requestAnimationFrame(() => {
-          el.focus();
-
-          el.setSelectionRange(at, at);
-        });
-      }
-    },
-    [placeholders],
-  );
+    }
+  };
 
   const dispatch = useDispatch();
 
@@ -158,51 +155,33 @@ export function FeaturePropertiesModal({
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const handleSubmit = useCallback(
-    (e: SubmitEvent<HTMLFormElement>) => {
-      e.preventDefault();
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-      const handled = onSave({
-        label: editedLabel,
-        props: rowsToProps(editedRows),
-        color: editedColor,
-        markerType: editedMarkerType,
-        icon: editedIcon,
-        type: editedType,
-        fillColor: editedFillColor,
-        width: parseFloat(editedWidth) || undefined,
-        dashArray: editedDash,
-        lineCap: editedLineCap,
-        lineJoin: editedLineJoin,
-      });
+    const handled = onSave({
+      label: editedLabel,
+      props: rowsToProps(editedRows),
+      color: editedColor,
+      markerType: editedMarkerType,
+      icon: editedIcon,
+      type: editedType,
+      fillColor: editedFillColor,
+      width: parseFloat(editedWidth) || undefined,
+      dashArray: editedDash,
+      lineCap: editedLineCap,
+      lineJoin: editedLineJoin,
+    });
 
-      if (!handled) {
-        close();
-      }
-    },
-    [
-      onSave,
-      editedLabel,
-      editedRows,
-      editedColor,
-      editedMarkerType,
-      editedIcon,
-      editedType,
-      editedFillColor,
-      editedWidth,
-      editedDash,
-      editedLineCap,
-      editedLineJoin,
-      close,
-    ],
-  );
+    if (!handled) {
+      close();
+    }
+  };
 
-  const handleLocalLabelChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setEditedLabel(e.currentTarget.value);
-    },
-    [],
-  );
+  const handleLocalLabelChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setEditedLabel(e.currentTarget.value);
+  };
 
   // A point has no width field, so a width it happens to carry cannot be the
   // thing standing between the user and Save.

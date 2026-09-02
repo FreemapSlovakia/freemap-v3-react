@@ -13,7 +13,6 @@ import type { Position } from 'geojson';
 import {
   type ReactElement,
   type SubmitEvent,
-  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -236,69 +235,50 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     .split('|')
     .filter((a) => a && (online || a !== 'pictures')) as Exportable[];
 
-  const runExport = useCallback(
-    async (e: SubmitEvent) => {
-      e.preventDefault();
+  const runExport = async (e: SubmitEvent) => {
+    e.preventDefault();
 
-      // Enter in a field submits the form whatever the button says.
-      if (!pickedExportables.length || !chosenTargetOk) {
-        return;
-      }
+    // Enter in a field submits the form whatever the button says.
+    if (!pickedExportables.length || !chosenTargetOk) {
+      return;
+    }
 
-      setExportStarted(true);
+    setExportStarted(true);
 
-      const exportAction = exportMapFeatures({
-        type,
-        exportables: pickedExportables,
-        target,
-        name: name || undefined,
-        description: description || undefined,
-        activity: activity || undefined,
-        // Garmin course export has its own elevation handling.
-        elevation: target === 'garmin' ? undefined : effectiveElevation,
-        // Mirrors `effectiveOnlySelected` (declared after this callback);
-        // Garmin is gated by target here since it has its own selection.
-        only:
-          onlySelected && target !== 'garmin' && selectedExportable && selection
-            ? selection
-            : undefined,
-      });
-
-      if (target === 'garmin' && !userHasGarmin) {
-        if (
-          await confirm({
-            message:
-              userHasGarmin === false
-                ? em?.garmin.connectPrompt
-                : em?.garmin.authPrompt,
-          })
-        ) {
-          dispatch(
-            authWithGarmin({ connect: true, successAction: exportAction }),
-          );
-        }
-      } else {
-        dispatch(exportAction);
-      }
-    },
-    [
-      dispatch,
+    const exportAction = exportMapFeatures({
       type,
-      pickedExportables,
-      chosenTargetOk,
+      exportables: pickedExportables,
       target,
-      name,
-      description,
-      activity,
-      effectiveElevation,
-      onlySelected,
-      selectedExportable,
-      selection,
-      userHasGarmin,
-      em,
-      confirm,
-    ],
-  );
+      name: name || undefined,
+      description: description || undefined,
+      activity: activity || undefined,
+      // Garmin course export has its own elevation handling.
+      elevation: target === 'garmin' ? undefined : effectiveElevation,
+      // Mirrors `effectiveOnlySelected` (declared after this callback);
+      // Garmin is gated by target here since it has its own selection.
+      only:
+        onlySelected && target !== 'garmin' && selectedExportable && selection
+          ? selection
+          : undefined,
+    });
+
+    if (target === 'garmin' && !userHasGarmin) {
+      if (
+        await confirm({
+          message:
+            userHasGarmin === false
+              ? em?.garmin.connectPrompt
+              : em?.garmin.authPrompt,
+        })
+      ) {
+        dispatch(
+          authWithGarmin({ connect: true, successAction: exportAction }),
+        );
+      }
+    } else {
+      dispatch(exportAction);
+    }
+  };
 
   // A share the browser will only take as plain text says so; one it takes as the file it is says
   // nothing.
@@ -311,18 +291,15 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
-  const handleCheckboxChange = useCallback(
-    (type: Exportable) => {
-      const base = isGarmin ? '|' : exportables;
+  const handleCheckboxChange = (type: Exportable) => {
+    const base = isGarmin ? '|' : exportables;
 
-      setExportables(
-        exportables.includes(`|${type}|`)
-          ? base.replace(`${type}|`, '')
-          : `${base}${type}|`,
-      );
-    },
-    [exportables, isGarmin],
-  );
+    setExportables(
+      exportables.includes(`|${type}|`)
+        ? base.replace(`${type}|`, '')
+        : `${base}${type}|`,
+    );
+  };
 
   const [garminExportables, setGarminExportables] = useState<
     Partial<Record<Exportable, Position[] | string | null>> | undefined

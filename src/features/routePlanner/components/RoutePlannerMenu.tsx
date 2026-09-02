@@ -362,16 +362,13 @@ function IsochroneSettings() {
     (state) => state.routePlanner.isochroneParams.reverseFlow,
   );
 
-  const handleReverseFlowChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      dispatch(
-        routePlannerSetIsochroneParams({
-          reverseFlow: e.currentTarget.checked,
-        }),
-      );
-    },
-    [dispatch],
-  );
+  const handleReverseFlowChange = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch(
+      routePlannerSetIsochroneParams({
+        reverseFlow: e.currentTarget.checked,
+      }),
+    );
+  };
 
   const m = useMessages();
 

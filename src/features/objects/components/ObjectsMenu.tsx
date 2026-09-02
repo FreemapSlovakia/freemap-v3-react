@@ -16,7 +16,6 @@ import {
   type ChangeEvent,
   type KeyboardEvent,
   type ReactElement,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -43,9 +42,9 @@ export default function ObjectsMenu(): ReactElement {
 
   const [dropdownOpened, setDropdownOpened] = useState(false);
 
-  const handleFilterSet = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+  const handleFilterSet = (e: ChangeEvent<HTMLInputElement>) => {
     setFilter(e.currentTarget.value);
-  }, []);
+  };
 
   const lang = useEffectiveChosenLanguage();
 
@@ -62,20 +61,17 @@ export default function ObjectsMenu(): ReactElement {
     getOsmMapping(lang).then(setOsmMapping);
   }, [lang]);
 
-  const handleSelect = useCallback(
-    (tags: string | null) => {
-      if (tags) {
-        dispatch(
-          objectsSetFilter(
-            active.includes(tags)
-              ? active.filter((item) => item !== tags)
-              : [...active, tags],
-          ),
-        );
-      }
-    },
-    [dispatch, active],
-  );
+  const handleSelect = (tags: string | null) => {
+    if (tags) {
+      dispatch(
+        objectsSetFilter(
+          active.includes(tags)
+            ? active.filter((item) => item !== tags)
+            : [...active, tags],
+        ),
+      );
+    }
+  };
 
   // ugly hack not to close dropdown on open
   const justOpenedRef = useRef(false);

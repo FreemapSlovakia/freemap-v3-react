@@ -2,7 +2,7 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { FaRegMap } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -15,9 +15,9 @@ type Props = { show: boolean };
 export default function MyMapsModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const m = useMessages();
 

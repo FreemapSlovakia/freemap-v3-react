@@ -15,7 +15,7 @@ import {
   pointStyleToProperties,
 } from '@shared/styleFromProperties.js';
 import type { Geometry } from 'geojson';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import { dataViewerSetFeatureProperties } from '../model/actions.js';
 
@@ -59,44 +59,41 @@ export default function DataViewerPropertiesModal({
 
   const isPoint = geometryType === 'Point' || geometryType === 'MultiPoint';
 
-  const handleSave = useCallback(
-    (values: FeatureProperties): undefined => {
-      if (index === undefined) {
-        return;
-      }
+  const handleSave = (values: FeatureProperties): undefined => {
+    if (index === undefined) {
+      return;
+    }
 
-      const merged = mergeFeatureDataProps(properties, values.props ?? {});
+    const merged = mergeFeatureDataProps(properties, values.props ?? {});
 
-      const label = values.label.trim();
+    const label = values.label.trim();
 
-      if (label) {
-        merged['name'] = label;
-      } else {
-        delete merged['name'];
-      }
+    if (label) {
+      merged['name'] = label;
+    } else {
+      delete merged['name'];
+    }
 
-      // Both would outrank or contradict the name just written: `title` is read
-      // as the label by importers, `freemap:label` is the drawing template it
-      // was rendered from.
-      delete merged['title'];
+    // Both would outrank or contradict the name just written: `title` is read
+    // as the label by importers, `freemap:label` is the drawing template it
+    // was rendered from.
+    delete merged['title'];
 
-      delete merged['freemap:label'];
+    delete merged['freemap:label'];
 
-      dispatch(
-        dataViewerSetFeatureProperties({
-          index,
-          properties: isPoint
-            ? pointStyleToProperties(merged, {
-                color: values.color,
-                markerType: values.markerType,
-                icon: values.icon,
-              })
-            : lineStyleToProperties(merged, values),
-        }),
-      );
-    },
-    [dispatch, index, isPoint, properties],
-  );
+    dispatch(
+      dataViewerSetFeatureProperties({
+        index,
+        properties: isPoint
+          ? pointStyleToProperties(merged, {
+              color: values.color,
+              markerType: values.markerType,
+              icon: values.icon,
+            })
+          : lineStyleToProperties(merged, values),
+      }),
+    );
+  };
 
   if (!feature) {
     return null;

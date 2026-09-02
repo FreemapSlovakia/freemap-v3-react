@@ -16,7 +16,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import type { IconType } from 'react-icons';
 import {
@@ -141,74 +141,71 @@ export default function GalleryMenu() {
     return () => window.removeEventListener('keydown', handle);
   }, [moreView]);
 
-  const handleMoreSelect = useCallback(
-    async (eventKey: string | null) => {
-      if (!eventKey) {
-        return;
-      }
+  const handleMoreSelect = async (eventKey: string | null) => {
+    if (!eventKey) {
+      return;
+    }
 
-      if (eventKey === 'submenu-license') {
-        setMoreView('license');
+    if (eventKey === 'submenu-license') {
+      setMoreView('license');
 
-        return;
-      }
+      return;
+    }
 
-      if (eventKey === 'submenu-') {
-        setMoreView('root');
+    if (eventKey === 'submenu-') {
+      setMoreView('root');
 
-        return;
-      }
+      return;
+    }
 
-      // Every remaining branch is a terminal action that closes the menu.
-      setMoreView('closed');
+    // Every remaining branch is a terminal action that closes the menu.
+    setMoreView('closed');
 
-      if (eventKey.startsWith('all-')) {
-        if (
-          await confirm({
-            title: gm?.allMyPhotos.title,
-            message:
-              eventKey === 'all-premium'
-                ? gm?.allMyPhotos.confirmPremium
-                : gm?.allMyPhotos.confirmFree,
-            icon: eventKey === 'all-premium' ? <FaGem /> : <FaDove />,
-            confirmLabel: m?.general.yes,
-            cancelLabel: m?.general.no,
-          })
-        ) {
-          dispatch(
-            galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
-          );
-        }
-      } else if (eventKey.startsWith('lic:')) {
-        const license = eventKey.slice('lic:'.length) as GalleryLicense;
-
-        if (
-          await confirm({
-            title: gm?.license.chooseForAll,
-            message: gm?.allMyPhotos.confirmLicense(
-              gm?.license.names[license] ?? license,
-            ),
-            icon: <FaCreativeCommons />,
-            confirmLabel: m?.general.yes,
-            cancelLabel: m?.general.no,
-          })
-        ) {
-          dispatch(galleryAllOfLicense(license));
-        }
-      } else if (eventKey === 'emails') {
+    if (eventKey.startsWith('all-')) {
+      if (
+        await confirm({
+          title: gm?.allMyPhotos.title,
+          message:
+            eventKey === 'all-premium'
+              ? gm?.allMyPhotos.confirmPremium
+              : gm?.allMyPhotos.confirmFree,
+          icon: eventKey === 'all-premium' ? <FaGem /> : <FaDove />,
+          confirmLabel: m?.general.yes,
+          cancelLabel: m?.general.no,
+        })
+      ) {
         dispatch(
-          saveSettings({
-            user: {
-              sendGalleryEmails: !sendGalleryEmails,
-            },
-          }),
+          galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
         );
-      } else if (eventKey === 'direction') {
-        dispatch(galleryToggleDirection());
       }
-    },
-    [dispatch, sendGalleryEmails, confirm, m, gm],
-  );
+    } else if (eventKey.startsWith('lic:')) {
+      const license = eventKey.slice('lic:'.length) as GalleryLicense;
+
+      if (
+        await confirm({
+          title: gm?.license.chooseForAll,
+          message: gm?.allMyPhotos.confirmLicense(
+            gm?.license.names[license] ?? license,
+          ),
+          icon: <FaCreativeCommons />,
+          confirmLabel: m?.general.yes,
+          cancelLabel: m?.general.no,
+        })
+      ) {
+        dispatch(galleryAllOfLicense(license));
+      }
+    } else if (eventKey === 'emails') {
+      dispatch(
+        saveSettings({
+          user: {
+            sendGalleryEmails: !sendGalleryEmails,
+          },
+        }),
+      );
+    } else if (eventKey === 'direction') {
+      dispatch(galleryToggleDirection());
+    }
+  };
 
   const [hidden, setHidden] = usePersistentBoolean('fm.galleryMenu.collapsed');
 

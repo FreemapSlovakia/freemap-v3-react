@@ -38,10 +38,7 @@ export function useDrawingStyleEditor(
     width: String(initial.width),
   }));
 
-  const set = useCallback(
-    (patch: Partial<Draft>) => setDraft((d) => ({ ...d, ...patch })),
-    [],
-  );
+  const set = (patch: Partial<Draft>) => setDraft((d) => ({ ...d, ...patch }));
 
   const reset = useCallback(
     (to: DrawingStyle) => setDraft({ ...to, width: String(to.width) }),

@@ -4,7 +4,7 @@ import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { clsx } from 'clsx';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
 import { FaCamera, FaInfoCircle, FaTimes, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -122,9 +122,9 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
     };
   }, [authToken, period]);
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   return (
     <Modal show={show} onHide={close} scrollable>

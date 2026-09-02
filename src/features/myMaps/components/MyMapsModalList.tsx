@@ -16,7 +16,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
-import { type ReactElement, useCallback, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import {
   Badge,
   Button,
@@ -69,9 +69,9 @@ type Props = {
 export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const { maps, activeMap, offlineIds, outbox } = useAppSelector(
     (state) => state.myMaps,
@@ -111,37 +111,34 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
   // Asked rather than set beforehand: a load either merges into what's on the
   // map or replaces it, and on an empty map both do the same thing.
-  const handleLoad = useCallback(
-    async (id: string, inclPosition: boolean) => {
-      let merge = false;
+  const handleLoad = async (id: string, inclPosition: boolean) => {
+    let merge = false;
 
-      if (hasContent) {
-        const choice = await confirmChoice({
-          title: mm?.loadMergeModal.title,
-          message: mm?.loadMergeModal.message,
-          confirmLabel: mm?.loadMergeModal.append,
-          extraLabel: mm?.loadMergeModal.replace,
-          extraStyle: 'danger',
-        });
+    if (hasContent) {
+      const choice = await confirmChoice({
+        title: mm?.loadMergeModal.title,
+        message: mm?.loadMergeModal.message,
+        confirmLabel: mm?.loadMergeModal.append,
+        extraLabel: mm?.loadMergeModal.replace,
+        extraStyle: 'danger',
+      });
 
-        if (choice === 'cancel') {
-          return;
-        }
-
-        merge = choice === 'confirm';
+      if (choice === 'cancel') {
+        return;
       }
 
-      dispatch(
-        mapsLoad({
-          id,
-          merge,
-          ignoreLayers: !inclPosition,
-          ignoreMap: !inclPosition,
-        }),
-      );
-    },
-    [hasContent, confirmChoice, mm, dispatch],
-  );
+      merge = choice === 'confirm';
+    }
+
+    dispatch(
+      mapsLoad({
+        id,
+        merge,
+        ignoreLayers: !inclPosition,
+        ignoreMap: !inclPosition,
+      }),
+    );
+  };
 
   const filteredMaps = sortedMaps.filter(
     (map) =>

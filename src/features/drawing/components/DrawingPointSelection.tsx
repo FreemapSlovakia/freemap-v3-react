@@ -8,7 +8,7 @@ import { Selection } from '@shared/components/Selection.js';
 import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
-import { type ReactElement, useCallback, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import { FaEllipsisV, FaMapMarkerAlt, FaTag } from 'react-icons/fa';
 import { MdShapeLine } from 'react-icons/md';
@@ -48,35 +48,32 @@ export default function DrawingPointSelection(): ReactElement | null {
   const [projectPointDialogVisible, setProjectPointDialogVisible] =
     useState(false);
 
-  const projectPoint = useCallback(
-    (distance: number, azimuth: number) => {
-      if (!point) {
-        return;
-      }
+  const projectPoint = (distance: number, azimuth: number) => {
+    if (!point) {
+      return;
+    }
 
-      const { coords } = point;
+    const { coords } = point;
 
-      setProjectPointDialogVisible(false);
+    setProjectPointDialogVisible(false);
 
-      const p = destination([coords.lon, coords.lat], distance, azimuth, {
-        units: 'meters',
-      });
+    const p = destination([coords.lon, coords.lat], distance, azimuth, {
+      units: 'meters',
+    });
 
-      dispatch(
-        drawingPointAdd({
-          id: nextId,
-          coords: {
-            lon: p.geometry.coordinates[0],
-            lat: p.geometry.coordinates[1],
-          },
-          color,
-          markerType: point.markerType,
-          icon: point.icon,
-        }),
-      );
-    },
-    [color, dispatch, nextId, point],
-  );
+    dispatch(
+      drawingPointAdd({
+        id: nextId,
+        coords: {
+          lon: p.geometry.coordinates[0],
+          lat: p.geometry.coordinates[1],
+        },
+        color,
+        markerType: point.markerType,
+        icon: point.icon,
+      }),
+    );
+  };
 
   if (!point || index === undefined) {
     return null;
