@@ -318,8 +318,6 @@ export class MarkerLeafletIcon extends Icon<
       (this as any)._setIconStyles(div, 'icon');
 
       div._fm_root = createRoot(div);
-
-      div._fm_root.render(this.options.icon);
     }
 
     div._fm_root.render(this.options.icon);

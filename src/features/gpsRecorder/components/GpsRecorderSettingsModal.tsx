@@ -4,12 +4,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import {
-  type ReactElement,
-  type SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -47,21 +42,18 @@ export default function GpsRecorderSettingsModal({
   // what stop it being submitted in that state.
   const [interval, setInterval] = useState(String(saved.intervalMs / 1000));
 
-  const set = useCallback(
-    (patch: Partial<GpsRecorderSettingsState>) =>
-      setDraft((current) => ({ ...current, ...patch })),
-    [],
-  );
+  const set = (patch: Partial<GpsRecorderSettingsState>) =>
+    setDraft((current) => ({ ...current, ...patch }));
 
-  const resetDefaults = useCallback(() => {
+  const resetDefaults = () => {
     setDraft(gpsRecorderSettingsInitialState);
 
     setInterval(String(gpsRecorderSettingsInitialState.intervalMs / 1000));
-  }, []);
+  };
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();

@@ -1,6 +1,4 @@
 :root {
-  --scroller-mix-blend-mode: normal;
-
   --scroller-pct: 5%;
 }
 
@@ -32,19 +30,21 @@ body {
   }
 }
 
+@-moz-document url-prefix() {
+  button#freemap-logo {
+      background-size: 134px 35px; /* HACK fix blurred logo for FF on mdpi */
+  }
+}
+
 button#freemap-logo {
   position: relative;
   border: none;
   outline: none;
   background-color: rgba(255, 255, 255, 0);
   background-image: url("@/images/freemap-logo-sk.svg");
-  background-size: 134px 34px;
   background-repeat: no-repeat;
   height: 34px;
   width: 134px;
-  -webkit-transform: scale(1);
-  transform: scale(1);
-  -webkit-transition: 0.1s ease-in-out;
   transition: 0.1s ease-in-out;
 
   &.in-progress {
@@ -205,7 +205,6 @@ button#freemap-logo {
 .fm-ib-scroller::before {
   width: 2rem;
   height: 3rem;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
     var(--scroller-to) var(--scroller-pct),
@@ -217,7 +216,6 @@ button#freemap-logo {
   width: 2rem;
   height: 3rem;
   right: 0;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
     var(--scroller-from) var(--scroller-pct),
@@ -228,7 +226,6 @@ button#freemap-logo {
 .fm-ib-scroller-top::before {
   width: 2rem;
   height: 3rem;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
     var(--scroller-to) var(--scroller-pct),
@@ -244,7 +241,6 @@ button#freemap-logo {
 .fm-menu-scroller::before {
   width: 100%;
   height: 2rem;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to bottom,
     var(--scroller-to) var(--scroller-pct),
@@ -258,7 +254,6 @@ button#freemap-logo {
   width: 100%;
   height: 2rem;
   bottom: 0;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to bottom,
     var(--scroller-from) var(--scroller-pct),

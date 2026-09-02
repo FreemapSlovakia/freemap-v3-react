@@ -177,175 +177,158 @@ export default function DrawingLineSelection(): ReactElement | null {
   const [projectPointDialogVisible, setProjectPointDialogVisible] =
     useState(false);
 
-  const projectPoint = useCallback(
-    (distance: number, azimuth: number) => {
-      if (lineIndex === undefined) {
-        return;
-      }
+  const projectPoint = (distance: number, azimuth: number) => {
+    if (lineIndex === undefined) {
+      return;
+    }
 
-      const basePoint = line?.points.at(-1);
+    const basePoint = line?.points.at(-1);
 
-      if (!basePoint) {
-        return;
-      }
+    if (!basePoint) {
+      return;
+    }
 
-      setProjectPointDialogVisible(false);
+    setProjectPointDialogVisible(false);
 
-      const p = destination([basePoint.lon, basePoint.lat], distance, azimuth, {
-        units: 'meters',
-      });
+    const p = destination([basePoint.lon, basePoint.lat], distance, azimuth, {
+      units: 'meters',
+    });
 
-      dispatch(
-        drawingLineAddPoint({
-          lineIndex,
-          indexOfLineToSelect: lineIndex,
-          point: {
-            id: basePoint.id + 1,
-            lon: p.geometry.coordinates[0],
-            lat: p.geometry.coordinates[1],
-          },
-        }),
-      );
-    },
-    [dispatch, line?.points, lineIndex],
-  );
+    dispatch(
+      drawingLineAddPoint({
+        lineIndex,
+        indexOfLineToSelect: lineIndex,
+        point: {
+          id: basePoint.id + 1,
+          lon: p.geometry.coordinates[0],
+          lat: p.geometry.coordinates[1],
+        },
+      }),
+    );
+  };
 
-  const handleMoreSelect = useCallback(
-    (eventKey: string | null) => {
-      if (lineIndex === undefined) {
-        return;
-      }
+  const handleMoreSelect = (eventKey: string | null) => {
+    if (lineIndex === undefined) {
+      return;
+    }
 
-      switch (eventKey) {
-        case 'cut-hole': {
-          // Opening a map-click tool disarms hole mode the same way it drops a
-          // line being drawn, so arm it only once the tool is open.
-          dispatch(openTool('draw-polygons'));
+    switch (eventKey) {
+      case 'cut-hole': {
+        // Opening a map-click tool disarms hole mode the same way it drops a
+        // line being drawn, so arm it only once the tool is open.
+        dispatch(openTool('draw-polygons'));
 
-          dispatch(drawingLineCutHole({ parentLineIndex: lineIndex }));
+        dispatch(drawingLineCutHole({ parentLineIndex: lineIndex }));
 
-          if (!preventCutHoleHint) {
-            const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
+        if (!preventCutHoleHint) {
+          const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
 
-            if (canRememberHintPref) {
-              actions.push({
-                nameKey: 'general.preventShowingAgain',
-                action: drawingPreventCutHoleHint(),
-                variant: 'dark',
-              });
-            }
-
-            dispatch(
-              toastsAdd({
-                id: 'drawing.cutHoleHint',
-                messageKey: 'cutHoleHint',
-                messageLoader: loadDrawingMessages,
-                style: 'info',
-                actions,
-                // Hole mode is spent once the hole's first point lands, and
-                // dropped when it is cancelled — either way the hint is done.
-                statePredicate: (state) =>
-                  state.drawingLines.holeFor === undefined,
-              }),
-            );
-          }
-
-          break;
-        }
-
-        case 'make-hole':
-          dispatch(
-            drawingLineSetHoleOf({
-              lineIndex,
-              parentLineIndex: enclosingIndex,
-            }),
-          );
-
-          break;
-
-        case 'detach-hole':
-          dispatch(
-            drawingLineSetHoleOf({ lineIndex, parentLineIndex: undefined }),
-          );
-
-          break;
-
-        case 'project-point':
-          setProjectPointDialogVisible(true);
-
-          break;
-
-        case 'toggle-elevation-chart':
-          toggleElevationChart();
-
-          break;
-
-        case 'reverse':
-          dispatch(drawingLineReverse({ lineIndex }));
-
-          break;
-
-        case 'data-viewer':
-          convertToDataViewer({ type: 'drawing-line', index: lineIndex });
-
-          break;
-
-        case 'josm':
-          if (line) {
-            // The geometry itself, as a new layer of unsaved data — the editor
-            // has nothing to download it from.
-            josmRemote(dispatch, 'load_data', {
-              new_layer: 'true',
-              layer_name: line.label || 'Freemap',
-              data: drawnLinesToOsmXml(
-                line,
-                lines.filter((hole) => hole.holeOfId === line.id),
-              ),
+          if (canRememberHintPref) {
+            actions.push({
+              nameKey: 'general.preventShowingAgain',
+              action: drawingPreventCutHoleHint(),
+              variant: 'dark',
             });
           }
 
-          break;
+          dispatch(
+            toastsAdd({
+              id: 'drawing.cutHoleHint',
+              messageKey: 'cutHoleHint',
+              messageLoader: loadDrawingMessages,
+              style: 'info',
+              actions,
+              // Hole mode is spent once the hole's first point lands, and
+              // dropped when it is cancelled — either way the hint is done.
+              statePredicate: (state) =>
+                state.drawingLines.holeFor === undefined,
+            }),
+          );
+        }
 
-        case 'simplify': {
-          if (!line) {
-            break;
-          }
+        break;
+      }
 
-          const points = line.points.map((p): Position => [p.lon, p.lat]);
+      case 'make-hole':
+        dispatch(
+          drawingLineSetHoleOf({
+            lineIndex,
+            parentLineIndex: enclosingIndex,
+          }),
+        );
 
-          // `always`: the line is being simplified because the user says so,
-          // and one already thin would otherwise be asked nothing. A polygon is
-          // closed first, as the reducer closes it — counted open, the readout
-          // would promise a reduction the ring minimum then refuses.
-          const ring = line.type === 'polygon';
+        break;
 
-          void askSimplification({
-            lines: [ring ? [...points, points[0]!] : points],
-            rings: ring,
-            always: true,
-          }).then((tolerance) => {
-            if (tolerance) {
-              dispatch(drawingLineSimplify({ lineIndex, tolerance }));
-            }
+      case 'detach-hole':
+        dispatch(
+          drawingLineSetHoleOf({ lineIndex, parentLineIndex: undefined }),
+        );
+
+        break;
+
+      case 'project-point':
+        setProjectPointDialogVisible(true);
+
+        break;
+
+      case 'toggle-elevation-chart':
+        toggleElevationChart();
+
+        break;
+
+      case 'reverse':
+        dispatch(drawingLineReverse({ lineIndex }));
+
+        break;
+
+      case 'data-viewer':
+        convertToDataViewer({ type: 'drawing-line', index: lineIndex });
+
+        break;
+
+      case 'josm':
+        if (line) {
+          // The geometry itself, as a new layer of unsaved data — the editor
+          // has nothing to download it from.
+          josmRemote(dispatch, 'load_data', {
+            new_layer: 'true',
+            layer_name: line.label || 'Freemap',
+            data: drawnLinesToOsmXml(
+              line,
+              lines.filter((hole) => hole.holeOfId === line.id),
+            ),
           });
+        }
 
+        break;
+
+      case 'simplify': {
+        if (!line) {
           break;
         }
+
+        const points = line.points.map((p): Position => [p.lon, p.lat]);
+
+        // `always`: the line is being simplified because the user says so,
+        // and one already thin would otherwise be asked nothing. A polygon is
+        // closed first, as the reducer closes it — counted open, the readout
+        // would promise a reduction the ring minimum then refuses.
+        const ring = line.type === 'polygon';
+
+        void askSimplification({
+          lines: [ring ? [...points, points[0]!] : points],
+          rings: ring,
+          always: true,
+        }).then((tolerance) => {
+          if (tolerance) {
+            dispatch(drawingLineSimplify({ lineIndex, tolerance }));
+          }
+        });
+
+        break;
       }
-    },
-    [
-      askSimplification,
-      canRememberHintPref,
-      convertToDataViewer,
-      dispatch,
-      enclosingIndex,
-      line,
-      lineIndex,
-      lines,
-      preventCutHoleHint,
-      toggleElevationChart,
-    ],
-  );
+    }
+  };
 
   if (!line) {
     return null;

@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { HintMark } from '@shared/components/HintMark.js';
@@ -173,12 +172,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   const handlers = useModelChangeHandlers(setModelWithVersion);
 
-  const handleIconSelect = useCallback(
-    (iconSpec: string | undefined) => {
-      setModelWithVersion((model) => ({ ...model, iconSpec }));
-    },
-    [setModelWithVersion],
-  );
+  const handleIconSelect = (iconSpec: string | undefined) => {
+    setModelWithVersion((model) => ({ ...model, iconSpec }));
+  };
 
   useEffect(() => {
     if (!value || externalVersion.current < localVersion.current) {
@@ -309,10 +305,6 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   const [wmsLayersFetchError, setWmsLayersFetchError] = useState<string>();
 
-  useEffect(() => {
-    setWmsLayersFetchError(undefined);
-  }, []);
-
   const [layersTree, setLayersTree] = useState<Layer[]>();
 
   const lat = useAppSelector((state) => state.map.lat);
@@ -320,18 +312,15 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   /** Whether Min Zoom is the user's to keep rather than the form's to fill. */
   const minZoomTouched = useRef(model.minZoom !== '');
 
-  const handleMinZoomChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      minZoomTouched.current = true;
+  const handleMinZoomChange = (e: ChangeEvent<HTMLInputElement>) => {
+    minZoomTouched.current = true;
 
-      handlers.minZoom(e);
-    },
-    [handlers],
-  );
+    handlers.minZoom(e);
+  };
 
   const [loadingLayers, setLoadingLayers] = useState(false);
 
-  const handleLoadLayersClick = useCallback(() => {
+  const handleLoadLayersClick = () => {
     setLoadingLayers(true);
 
     wms(model.url)
@@ -361,53 +350,48 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       .finally(() => {
         setLoadingLayers(false);
       });
-  }, [model, lat]);
+  };
 
-  useEffect(() => {
-    setLayersTree(undefined);
-  }, []);
+  const handleLayerSelect = (name: string | null) => {
+    if (name === null) {
+      return;
+    }
 
-  const handleLayerSelect = useCallback(
-    (name: string | null) => {
-      if (name === null) {
-        return;
-      }
+    setModel((model) => {
+      let found = false;
 
-      setModel((model) => {
-        let found = false;
-
-        const next = model.layers.filter((n) => {
-          found ||= n === name;
-
-          return n !== name;
-        });
-
-        if (!found) {
-          next.push(name);
+      const next = model.layers.filter((n) => {
+        if (n === name) {
+          found = true;
         }
 
-        const zoom = minZoomForSelection(layersTree ?? [], next, lat);
-
-        const bbox = bboxForSelection(layersTree ?? [], next);
-
-        // Offered rather than imposed: the suggestion follows the selection —
-        // dropping the layer that produced it must not leave the next one
-        // hidden below a limit it never had — but a field the user has been at,
-        // including one they cleared on purpose, is theirs from then on.
-        return {
-          ...model,
-          layers: next,
-          bbox,
-          minZoom: minZoomTouched.current
-            ? model.minZoom
-            : zoom
-              ? String(zoom)
-              : '',
-        };
+        return n !== name;
       });
-    },
-    [layersTree, lat],
-  );
+
+      if (!found) {
+        next.push(name);
+      }
+
+      const zoom = minZoomForSelection(layersTree ?? [], next, lat);
+
+      const bbox = bboxForSelection(layersTree ?? [], next);
+
+      // Offered rather than imposed: the suggestion follows the selection —
+      // dropping the layer that produced it must not leave the next one
+      // hidden below a limit it never had — but a field the user has been at,
+      // including one they cleared on purpose, is theirs from then on.
+      return {
+        ...model,
+        layers: next,
+        bbox,
+        minZoom: minZoomTouched.current
+          ? model.minZoom
+          : zoom
+            ? String(zoom)
+            : '',
+      };
+    });
+  };
 
   const [expanded, setExpanded] = useState<string[]>([]);
 
@@ -445,7 +429,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
                     let found = false;
 
                     const next = prev.filter((a) => {
-                      found ||= a === id;
+                      if (a === id) {
+                        found = true;
+                      }
 
                       return a !== id;
                     });

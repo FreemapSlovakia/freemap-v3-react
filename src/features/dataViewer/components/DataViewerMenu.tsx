@@ -28,7 +28,7 @@ import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature, LineString } from 'geojson';
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaCompressAlt,
@@ -96,7 +96,7 @@ export function DataViewerMenu(): ReactElement {
   // link and need no warning.
   const unsaved = hasTrack && !hasActiveMap && canUpload && !gpxUrl;
 
-  const handleSaveAsMap = useCallback(() => {
+  const handleSaveAsMap = () => {
     if (loggedIn) {
       dispatch(setActiveModal({ type: 'my-maps', add: true }));
     } else {
@@ -116,7 +116,7 @@ export function DataViewerMenu(): ReactElement {
         }),
       );
     }
-  }, [dispatch, loggedIn]);
+  };
 
   const colorizeTrackBy = useUnlockedColorizingMode(
     useAppSelector((state) => state.trackViewerSettings.colorizeTrackBy),
@@ -172,7 +172,7 @@ export function DataViewerMenu(): ReactElement {
   const needsElevationDecision =
     coverage !== 'full' && elevationDecision === 'undecided';
 
-  const handleUpdateElevation = useCallback(async () => {
+  const handleUpdateElevation = async () => {
     // With only some points missing, defer to the adaptive modal so the user
     // can fill just the gaps instead of overwriting the recorded values.
     if (coverage === 'partial') {
@@ -208,7 +208,7 @@ export function DataViewerMenu(): ReactElement {
         }),
       );
     }
-  }, [coverage, dispatch, confirm, cancelConfirm, tvm]);
+  };
 
   const handleMoreSelect = (eventKey: string | null) => {
     switch (eventKey) {

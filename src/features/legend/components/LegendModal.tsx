@@ -3,7 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import { FaList, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -17,9 +17,9 @@ type Props = { show: boolean };
 export default function LegendModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const layers = useAppSelector((state) => state.map.layers);
 

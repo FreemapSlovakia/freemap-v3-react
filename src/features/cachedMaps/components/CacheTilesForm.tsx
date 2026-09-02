@@ -33,7 +33,6 @@ import { pickSubdomain, pickTileScale } from '@shared/tileUrl.js';
 import {
   type ReactElement,
   type SubmitEvent,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -393,124 +392,103 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       estimatedSize / BYTES_PER_SECOND >
       LARGE_DOWNLOAD_SECONDS;
 
-  const handleSubmit = useCallback(
-    (event: SubmitEvent<HTMLFormElement>) => {
-      event.preventDefault();
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-      if (!bbox || premiumWiden || offlineWiden) {
+    if (!bbox || premiumWiden || offlineWiden) {
+      return;
+    }
+
+    let type: string;
+
+    if (editing) {
+      type = editing.type;
+
+      dispatch(
+        cachedMapEdited({
+          prev: editing,
+          next: {
+            ...editing,
+            name,
+            iconSpec,
+            minZoom: parseInt(minZoom, 10),
+            maxNativeZoom: parseInt(maxZoom, 10),
+            bounds: bbox,
+            tileCount: tileCount ?? 0,
+            networkFallback,
+          },
+        }),
+      );
+    } else {
+      if (!mapDef) {
         return;
       }
 
-      let type: string;
+      type = Math.random().toString(36).slice(2);
 
-      if (editing) {
-        type = editing.type;
+      // strip integrated-only / non-serializable fields (icon, shortcut, etc.);
+      // `bbox` is the source layer's declared coverage — a cached map's real
+      // extent is its `bounds`, set below
+      const {
+        icon: _icon,
+        shortcut: _shortcut,
+        defaultInToolbar: _dt,
+        defaultInMenu: _dm,
+        countries: _countries,
+        superseededBy: _s,
+        experimental: _e,
+        layerPreview: _lp,
+        premiumFromZoom: _p,
+        bbox: _bbox,
+        ...rest
+      } = mapDef as Record<string, unknown> & typeof mapDef;
 
-        dispatch(
-          cachedMapEdited({
-            prev: editing,
-            next: {
-              ...editing,
-              name,
-              iconSpec,
-              minZoom: parseInt(minZoom, 10),
-              maxNativeZoom: parseInt(maxZoom, 10),
-              bounds: bbox,
-              tileCount: tileCount ?? 0,
-              networkFallback,
-            },
-          }),
-        );
-      } else {
-        if (!mapDef) {
-          return;
-        }
+      const meta = {
+        ...rest,
+        type,
+        name,
+        iconSpec,
+        sourceType: mapDef.type,
+        minZoom: parseInt(minZoom, 10),
+        maxNativeZoom: parseInt(maxZoom, 10),
+        bounds: bbox,
+        tileCount: tileCount ?? 0,
+        downloadedCount: 0,
+        cacheName: `tiles-${type}`,
+        createdAt: new Date().toISOString(),
+        sizeBytes: 0,
+        tileScale: Number(scale),
+        networkFallback,
+      } as CachedTileMapDef;
 
-        type = Math.random().toString(36).slice(2);
+      dispatch(cacheTilesStart(meta));
+    }
 
-        // strip integrated-only / non-serializable fields (icon, shortcut, etc.);
-        // `bbox` is the source layer's declared coverage — a cached map's real
-        // extent is its `bounds`, set below
-        const {
-          icon: _icon,
-          shortcut: _shortcut,
-          defaultInToolbar: _dt,
-          defaultInMenu: _dm,
-          countries: _countries,
-          superseededBy: _s,
-          experimental: _e,
-          layerPreview: _lp,
-          premiumFromZoom: _p,
-          bbox: _bbox,
-          ...rest
-        } = mapDef as Record<string, unknown> & typeof mapDef;
-
-        const meta = {
-          ...rest,
-          type,
-          name,
-          iconSpec,
-          sourceType: mapDef.type,
-          minZoom: parseInt(minZoom, 10),
-          maxNativeZoom: parseInt(maxZoom, 10),
-          bounds: bbox,
-          tileCount: tileCount ?? 0,
-          downloadedCount: 0,
-          cacheName: `tiles-${type}`,
-          createdAt: new Date().toISOString(),
-          sizeBytes: 0,
-          tileScale: Number(scale),
-          networkFallback,
-        } as CachedTileMapDef;
-
-        dispatch(cacheTilesStart(meta));
-      }
-
-      // A new map has no entry yet, so it always writes one; an edit writes only
-      // when the toggles moved. Without this an offline rename would fail on a
-      // settings request it never needed.
-      if (
-        !editing ||
-        showInMenu !== initialVisibility.showInMenu ||
-        showInToolbar !== initialVisibility.showInToolbar
-      ) {
-        dispatch(
-          saveSettings({
-            settings: {
-              layersSettings: {
-                ...layersSettings,
-                [type]: {
-                  ...(layersSettings[type] ?? {}),
-                  showInMenu,
-                  showInToolbar,
-                },
+    // A new map has no entry yet, so it always writes one; an edit writes only
+    // when the toggles moved. Without this an offline rename would fail on a
+    // settings request it never needed.
+    if (
+      !editing ||
+      showInMenu !== initialVisibility.showInMenu ||
+      showInToolbar !== initialVisibility.showInToolbar
+    ) {
+      dispatch(
+        saveSettings({
+          settings: {
+            layersSettings: {
+              ...layersSettings,
+              [type]: {
+                ...(layersSettings[type] ?? {}),
+                showInMenu,
+                showInToolbar,
               },
             },
-            keepOpen: true,
-          }),
-        );
-      }
-    },
-    [
-      dispatch,
-      editing,
-      premiumWiden,
-      offlineWiden,
-      name,
-      iconSpec,
-      mapDef,
-      minZoom,
-      maxZoom,
-      scale,
-      bbox,
-      tileCount,
-      layersSettings,
-      showInMenu,
-      showInToolbar,
-      initialVisibility,
-      networkFallback,
-    ],
-  );
+          },
+          keepOpen: true,
+        }),
+      );
+    }
+  };
 
   function getItem(def: (typeof mapDefs)[number]) {
     return <MapLayerItem def={def} />;

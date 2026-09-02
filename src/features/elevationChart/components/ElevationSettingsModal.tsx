@@ -8,7 +8,6 @@ import {
   type ChangeEvent,
   type ReactElement,
   type SubmitEvent,
-  useCallback,
   useState,
 } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
@@ -103,19 +102,19 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? m?.elevationChart.settings : undefined);
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   // Fills the form fields with defaults; the user then applies them with Save
   // (or closes without saving).
-  const handleResetDefaults = useCallback(() => {
+  const handleResetDefaults = () => {
     setDespikeWindow(String(elevationSettingsInitialState.despikeWindow));
 
     setDitchFillWindow(String(elevationSettingsInitialState.ditchFillWindow));
 
     setGradeWindow(String(elevationSettingsInitialState.gradeWindow));
-  }, []);
+  };
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
@@ -143,7 +142,7 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
     close();
   };
 
-  const handleGradeWindowChange = useCallback((value: string) => {
+  const handleGradeWindowChange = (value: string) => {
     const pos = Number(value);
 
     setGradeWindow(
@@ -151,7 +150,7 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
         pos === GRADE_WINDOW_WHOLE_LINE_POS ? GRADE_WINDOW_WHOLE_LINE : pos,
       ),
     );
-  }, []);
+  };
 
   const metres = (value: string) =>
     value === '0' ? `(${m?.elevationChart.windowOff})` : `(${value}\u00a0m)`;

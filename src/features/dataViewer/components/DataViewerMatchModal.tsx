@@ -8,12 +8,7 @@ import {
   type TransportType,
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
-import {
-  type ReactElement,
-  type SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaMagic, FaTimes } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
@@ -62,9 +57,9 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? dvm?.match.title : undefined);
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();

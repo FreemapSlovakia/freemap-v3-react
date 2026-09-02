@@ -31,7 +31,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePlaceActions } from '@shared/hooks/usePlaceActions.js';
 import { nearestStep } from '@shared/mathUtils.js';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import {
   FaCog,
@@ -166,7 +166,7 @@ export function PanoramaControls({
   // Asked rather than decided here: the summits are drawn points like any
   // others, so a map that already carries some can as well gain a dial as be
   // cleared for one.
-  const createToposcope = useCallback(async () => {
+  const createToposcope = async () => {
     let replace = false;
 
     if (hasDrawnPoints) {
@@ -186,7 +186,7 @@ export function PanoramaControls({
     }
 
     dispatch(panoramaToToposcope({ replace }));
-  }, [confirmChoice, dispatch, hasDrawnPoints, m]);
+  };
 
   const grants = grantedPanorama(settings, premium);
 

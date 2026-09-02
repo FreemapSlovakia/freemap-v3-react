@@ -952,7 +952,6 @@ export function Main(): ReactElement {
             id="freemap-logo-print"
             src={fmLogo}
             width="150"
-            height={isEuSite ? 37 : 38}
             alt="freemap logo"
             className="d-none"
           />

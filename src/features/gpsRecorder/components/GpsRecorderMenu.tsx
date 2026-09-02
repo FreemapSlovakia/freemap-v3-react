@@ -10,7 +10,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback, useEffect } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { Button, Spinner } from 'react-bootstrap';
 import {
   FaChartArea,
@@ -116,7 +116,7 @@ export default function GpsRecorderMenu(): ReactElement {
   // Always asked: the tap empties the recorder either way — its track is taken
   // and deleted, so a start afterwards begins a new one. Running, it also ends a
   // ride that cannot be resumed, which is what the message leads with.
-  const handleStop = useCallback(async () => {
+  const handleStop = async () => {
     if (
       !(await confirm({
         title: grm?.stopModal.title,
@@ -134,9 +134,9 @@ export default function GpsRecorderMenu(): ReactElement {
     if (mode !== 'cancel') {
       dispatch(gpsRecorderStop(mode));
     }
-  }, [recording, confirm, m, grm, askMergeMode, dispatch]);
+  };
 
-  const handleClear = useCallback(async () => {
+  const handleClear = async () => {
     if (
       await confirm({
         title: grm?.deleteModal.title,
@@ -147,7 +147,7 @@ export default function GpsRecorderMenu(): ReactElement {
     ) {
       dispatch(gpsRecorderClear());
     }
-  }, [confirm, dispatch, grm]);
+  };
 
   return (
     // Collapsing leaves the icon and nothing else: the figures are as much of the

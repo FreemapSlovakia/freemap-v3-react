@@ -5,7 +5,6 @@ import type { Leaves } from '@shared/types/common.js';
 import {
   type ReactElement,
   type ReactNode,
-  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -144,41 +143,35 @@ export function Toasts(): ReactElement {
     [m, toasts],
   );
 
-  const handleAction = useCallback(
-    (id: string, action?: RootAction | RootAction[]) => {
-      // TODO use some action flag to indicate that we want the action to close the toast
-      dispatch(toastsRemove(id));
+  const handleAction = (id: string, action?: RootAction | RootAction[]) => {
+    // TODO use some action flag to indicate that we want the action to close the toast
+    dispatch(toastsRemove(id));
 
-      if (action) {
-        if (Array.isArray(action)) {
-          for (const a of action) {
-            dispatch(a);
-          }
-        } else {
-          dispatch(action);
-        }
-      }
-    },
-    [dispatch],
-  );
-
-  const handleClose = useCallback(
-    (id: string) => {
-      const { onClose } = toasts[id] ?? {};
-
-      // Before the removal: an `onClose` that invalidates whatever the toast
-      // was derived from gets to take it down itself, rather than racing a
-      // producer that would see the removal and put it straight back.
-      if (onClose) {
-        for (const a of Array.isArray(onClose) ? onClose : [onClose]) {
+    if (action) {
+      if (Array.isArray(action)) {
+        for (const a of action) {
           dispatch(a);
         }
+      } else {
+        dispatch(action);
       }
+    }
+  };
 
-      dispatch(toastsRemove(id));
-    },
-    [dispatch, toasts],
-  );
+  const handleClose = (id: string) => {
+    const { onClose } = toasts[id] ?? {};
+
+    // Before the removal: an `onClose` that invalidates whatever the toast
+    // was derived from gets to take it down itself, rather than racing a
+    // producer that would see the removal and put it straight back.
+    if (onClose) {
+      for (const a of Array.isArray(onClose) ? onClose : [onClose]) {
+        dispatch(a);
+      }
+    }
+
+    dispatch(toastsRemove(id));
+  };
 
   return (
     <div className={classes.toasts}>

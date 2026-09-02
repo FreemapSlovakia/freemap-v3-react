@@ -6,12 +6,7 @@ import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
-import {
-  type ReactElement,
-  type SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaLayerGroup, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -32,13 +27,13 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
-  const handleReset = useCallback(() => {
+  const handleReset = () => {
     setLayersSettings(mapInitialState.layersSettings);
-  }, []);
+  };
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
@@ -46,14 +41,11 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? m?.mapLayers.layersConfiguration : undefined);
 
-  const handleSubmit = useCallback(
-    (e: SubmitEvent) => {
-      e.preventDefault();
+  const handleSubmit = (e: SubmitEvent) => {
+    e.preventDefault();
 
-      dispatch(saveSettings({ settings: { layersSettings } }));
-    },
-    [dispatch, layersSettings],
-  );
+    dispatch(saveSettings({ settings: { layersSettings } }));
+  };
 
   return (
     <Modal show={show} onHide={close} scrollable>

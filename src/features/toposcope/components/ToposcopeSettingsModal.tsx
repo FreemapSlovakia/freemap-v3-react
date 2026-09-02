@@ -5,7 +5,7 @@ import { HintMark } from '@shared/components/HintMark.js';
 import { PlaceholderHint } from '@shared/components/PlaceholderHint.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCompass, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -26,9 +26,9 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
 
   const settings = useAppSelector((state) => state.toposcope);
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   useDocumentTitle(show ? tm?.settings.title : undefined);
 

@@ -3,7 +3,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { type ReactElement, type SubmitEvent, useCallback } from 'react';
+import type { ReactElement, SubmitEvent } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -41,26 +41,23 @@ export function MyDeviceForm(): ReactElement {
     typeof device?.maxAge === 'number' ? (device?.maxAge / 60).toString() : '',
   );
 
-  const handleSubmit = useCallback(
-    (e: SubmitEvent) => {
-      e.preventDefault();
+  const handleSubmit = (e: SubmitEvent) => {
+    e.preventDefault();
 
-      // Enter in a field submits the form whatever the Save button says.
-      if (!online) {
-        return;
-      }
+    // Enter in a field submits the form whatever the Save button says.
+    if (!online) {
+      return;
+    }
 
-      dispatch(
-        trackingActions.saveDevice({
-          name: name.trim(),
-          maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
-          maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
-          token,
-        }),
-      );
-    },
-    [online, dispatch, name, maxCount, maxAge, token],
-  );
+    dispatch(
+      trackingActions.saveDevice({
+        name: name.trim(),
+        maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
+        maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
+        token,
+      }),
+    );
+  };
 
   const invalidMaxCount = isInvalidInt(maxCount, false, 0);
 

@@ -10,7 +10,7 @@ import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import {
   FaAngleLeft,
@@ -54,7 +54,7 @@ export function MyMapsMenu(): ReactElement {
 
   const confirm = useConfirm();
 
-  const handleReload = useCallback(async () => {
+  const handleReload = async () => {
     if (
       activeMap &&
       (await confirm({
@@ -82,9 +82,9 @@ export function MyMapsMenu(): ReactElement {
         mapsLoad({ id: activeMap.id, ignoreMap: true, ignoreLayers: true }),
       );
     }
-  }, [activeMap, blocked, confirm, mm, dispatch]);
+  };
 
-  const handleSave = useCallback(() => {
+  const handleSave = () => {
     if (activeMap?.canWrite) {
       // Owner/editor: overwrite the map in place.
       dispatch(mapsSave(undefined));
@@ -109,7 +109,7 @@ export function MyMapsMenu(): ReactElement {
         }),
       );
     }
-  }, [activeMap?.canWrite, loggedIn, dispatch]);
+  };
 
   const sc = useScrollClasses('horizontal');
 

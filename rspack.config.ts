@@ -1,6 +1,7 @@
 import path from 'node:path';
 import process from 'node:process';
 import type {
+  Compiler,
   Configuration,
   CssExtractRspackLoaderOptions,
 } from '@rspack/core';
@@ -228,7 +229,7 @@ const entryDocs: EntryDoc[] = [
  * never reorder anything. Wasted bytes there, not a hazard.
  */
 class SingleCopyCssPlugin {
-  apply(compiler: rspack.Compiler) {
+  apply(compiler: Compiler) {
     compiler.hooks.thisCompilation.tap('SingleCopyCss', (compilation) => {
       compilation.hooks.afterSeal.tap('SingleCopyCss', () => {
         const shared = path.resolve(__dirname, 'src/shared');
@@ -420,6 +421,12 @@ const config: Configuration = {
                 runtime: 'automatic',
                 refresh: !prod,
               },
+              // Memoizes components and their intermediate values, which this
+              // app needs because `Main` subscribes to some forty selectors and
+              // renders the whole tree beneath it: without it, any store change
+              // re-renders every marker on the map. SWC runs it natively, so it
+              // costs no Babel pass. Needs React 19 for `react/compiler-runtime`.
+              reactCompiler: true,
             },
           },
         },

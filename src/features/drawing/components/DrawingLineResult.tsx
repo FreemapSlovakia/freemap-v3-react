@@ -574,6 +574,10 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     [holes],
   );
 
+  // A template whose keys all resolve to nothing expands to nothing, so the
+  // tooltip is decided by the expanded text — an empty one is a blank box.
+  const renderedLabel = line.label ? drawingLineLabel(line, holes).trim() : '';
+
   const joinPoint =
     joinWith?.lineIndex === lineIndex
       ? points.find((pt) => pt.id === joinWith.pointId)
@@ -734,9 +738,9 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
               .filter((_, i) => i % 2 === 0)
               .map(({ lat, lon }) => ({ lat, lng: lon }))}
           >
-            {line.label && (
+            {renderedLabel && (
               <Tooltip className="compact multiline" permanent>
-                <span>{drawingLineLabel(line, holes)}</span>
+                <span>{renderedLabel}</span>
               </Tooltip>
             )}
           </Polyline>
@@ -784,14 +788,14 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             ...holeRings,
           ]}
         >
-          {line.label && ps.length > 4 && (
+          {renderedLabel && ps.length > 4 && (
             <Tooltip
               className="compact multiline"
               offset={[-4, 0]}
               direction="center"
               permanent
             >
-              <span>{drawingLineLabel(line, holes)}</span>
+              <span>{renderedLabel}</span>
             </Tooltip>
           )}
         </Polygon>

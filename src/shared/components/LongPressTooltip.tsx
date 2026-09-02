@@ -140,10 +140,13 @@ export function LongPressTooltip({
     e.stopPropagation();
   }, []);
 
-  const kbdEl = (kbd?.split(' ') ?? []).map((kbd) => (
-    <Fragment key={kbd}>
+  // The parameter must not be named `kbd`: a binding that shadows an intrinsic
+  // tag name makes the React Compiler rename the `<kbd>` tag itself, and the
+  // element renders as the unknown `<kbd_0>`.
+  const kbdEl = (kbd?.split(' ') ?? []).map((keyName) => (
+    <Fragment key={keyName}>
       {' '}
-      <kbd>{kbd}</kbd>
+      <kbd>{keyName}</kbd>
     </Fragment>
   ));
 

@@ -66,7 +66,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
   // Logging out drops the queued saves along with everything else this account
   // left in the browser, so work that never reached the server is said out loud
   // rather than disappearing.
-  const handleLogoutClick = useCallback(async () => {
+  const handleLogoutClick = async () => {
     if (unsentCount > 0) {
       // The My Maps bundle is loaded on its own schedule, and a warning has to
       // say what it is warning about — so it is awaited rather than shown empty.
@@ -87,9 +87,9 @@ export default function AccountModal({ show }: Props): ReactElement | null {
     dispatch(authStartLogout());
 
     close();
-  }, [unsentCount, confirm, mm, language, m, dispatch, close]);
+  };
 
-  const handleDeleteClick = useCallback(() => {
+  const handleDeleteClick = () => {
     dispatch(setActiveModal(null));
 
     dispatch(
@@ -111,7 +111,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
         ],
       }),
     );
-  }, [dispatch]);
+  };
 
   useDocumentTitle(show ? m?.mainMenu.account : undefined);
 
