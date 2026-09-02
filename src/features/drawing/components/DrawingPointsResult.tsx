@@ -159,6 +159,10 @@ function DrawingPointMarker({
   // uniformly transparent.
   const { opacity } = splitColorAlpha(renderColor);
 
+  // A template whose keys all resolve to nothing expands to nothing, so the
+  // tooltip is decided by the expanded text — an empty one is a blank box.
+  const renderedLabel = label ? drawingPointLabel(point).trim() : '';
+
   return (
     <RichMarker
       position={{ lat: coords.lat, lng: coords.lon }}
@@ -170,14 +174,14 @@ function DrawingPointMarker({
       interactive={interactive}
       eventHandlers={eventHandlers}
     >
-      {label && (
+      {renderedLabel && (
         <Tooltip
           className="compact multiline"
           direction="top"
           permanent
           opacity={0.9 * opacity}
         >
-          <span>{drawingPointLabel(point)}</span>
+          <span>{renderedLabel}</span>
         </Tooltip>
       )}
     </RichMarker>
