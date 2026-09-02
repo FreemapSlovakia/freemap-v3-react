@@ -71,6 +71,14 @@ const garminActivityTypes = [
 
 type Props = { show: boolean };
 
+// Module scope: an `import()` in the component body stops the React Compiler
+// lowering it.
+const loadGarminExport = () =>
+  import(
+    /* webpackChunkName: "garmin-export" */
+    '../garminExport.js'
+  );
+
 const toExportType = (value: string | null) =>
   ExportTypeSchema.safeParse(value).data ?? 'gpx';
 
@@ -327,10 +335,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
       return;
     }
 
-    import(
-      /* webpackChunkName: "garmin-export" */
-      '../garminExport.js'
-    ).then((x) =>
+    loadGarminExport().then((x) =>
       setGarminExportables(
         Object.fromEntries(
           Object.entries(x.getExportables()).map(([exportable, tryExport]) => [

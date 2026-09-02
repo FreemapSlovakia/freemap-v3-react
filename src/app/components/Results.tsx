@@ -13,6 +13,27 @@ import { type ReactElement, useEffect } from 'react';
 import { AsyncComponent } from './AsyncComponent.js';
 import { LocationResult } from './LocationResult.js';
 
+// Module scope so each keeps one identity: `useLazy` re-runs its effect when
+// the factory changes, and an inline `import()` also stops the React Compiler
+// lowering this component at all.
+const dataViewerResultFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-result" */
+    '@features/dataViewer/components/DataViewerResult.js'
+  );
+
+const panoramaResultFactory = () =>
+  import(
+    /* webpackChunkName: "panorama-result" */
+    '@features/panorama/components/PanoramaResult.js'
+  );
+
+const gpsRecorderResultFactory = () =>
+  import(
+    /* webpackChunkName: "gps-recorder-result" */
+    '@features/gpsRecorder/components/GpsRecorderResult.js'
+  );
+
 export function Results(): ReactElement {
   // Prefer the densified render copy (extra DEM-sampled points on long
   // segments) when present; otherwise the recorded track.
@@ -90,41 +111,18 @@ export function Results(): ReactElement {
 
       {trackGeojson && (
         <AsyncComponent
-          factory={() =>
-            import(
-              /* webpackChunkName: "data-viewer-result" */
-              '@features/dataViewer/components/DataViewerResult.js'
-            )
-          }
+          factory={dataViewerResultFactory}
           trackGeojson={trackGeojson}
         />
       )}
 
       <ChangesetsResult />
 
-      {hasPanorama && (
-        <AsyncComponent
-          factory={() =>
-            import(
-              /* webpackChunkName: "panorama-result" */
-              '@features/panorama/components/PanoramaResult.js'
-            )
-          }
-        />
-      )}
+      {hasPanorama && <AsyncComponent factory={panoramaResultFactory} />}
 
       <TrackingResult />
 
-      {hasRecording && (
-        <AsyncComponent
-          factory={() =>
-            import(
-              /* webpackChunkName: "gps-recorder-result" */
-              '@features/gpsRecorder/components/GpsRecorderResult.js'
-            )
-          }
-        />
-      )}
+      {hasRecording && <AsyncComponent factory={gpsRecorderResultFactory} />}
     </>
   );
 }
