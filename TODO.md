@@ -63,6 +63,27 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
+- [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
+      `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
+      `useMemo` is left. Same method — see
+      [`doc/react-compiler.md`](./doc/react-compiler.md): take only files whose
+      emitted output contains `react/compiler-runtime`, skip anything named in a
+      dependency array, returned as a value from a hook, or reaching
+      react-leaflet, then prove the result with
+      `node scripts/react-compiler-check.mjs unchanged`. `useMemo` needs more
+      judgement than `useCallback` did: some instances exist to hold an identity
+      for a consumer rather than to save work, and a few key deliberately on a
+      content hash instead of the value (`useNumberFormat`, `useZoomColorize`) —
+      those must stay.
+- [ ] **Optional: inline single-use one-line handlers.** After the `useCallback`
+      removal, ~85 handlers across those files are a single expression used
+      exactly once, so the named const buys nothing. Purely cosmetic: named and
+      inline forms are memoized identically. Unlike the `useCallback` removal
+      this is *not* provably a no-op — inlining shifts where the arrow is
+      created, so the cache layout changes (equivalently, but not
+      byte-identically). Prefer doing it opportunistically while editing a file
+      rather than as a sweep; the 26 handlers used more than once stay named.
+
 - [ ] **Finish `PickingMenu` — three picking toolbars still hand-roll it.**
       `src/shared/components/PickingMenu.tsx` was extracted for the toposcope's
       centre and the panorama's viewpoint; `MapAreaSelectionMenu`,
@@ -193,6 +214,26 @@ Still emitting at info level (non-blocking, optional cleanup):
       changes are needed together — the token has to match on both sides.
 
 ## Decisions worth not relitigating
+
+- **`RichMarker` stays uncompiled — do NOT "fix" its ref access.** It reads and
+  writes `faIconRef.current` during render, which bails it out of the React
+  Compiler, and that is fine. The cache is load-bearing: `faIcon` is written
+  inline at the call site, so it is a fresh object every render, and rebuilding
+  the icon reaches Leaflet's `setIcon`, which replaces the marker's drag handler
+  — a marker that re-renders often becomes undraggable mid-gesture. The
+  slow-marker problem it was suspected of causing was really `Results` failing to
+  compile (inline `import()`, fixed in `6b5a90a2`); marker selection was
+  acceptable afterwards without touching this. See
+  [`doc/react-compiler.md`](./doc/react-compiler.md).
+
+- **Compiler warnings from `lint:react` are mostly not defects.** An audit of the
+  `memo-dependencies` and `no-deriving-state-in-effects` findings found six of
+  eight to be false positives — the "missing dependency" is a ref
+  (`useModelChangeHandlers`, `GalleryViewerModal`), a loop-carried local
+  (`useChartColorize`), or a `const` declared later and used in a
+  callback that runs after it (`usePictureDropHandler`) — and the remaining two
+  deliberately seed user-overridable state from a derived value. Read a finding
+  before acting on it; the bail-out it causes is usually the correct outcome.
 
 - **Toast auto-dismiss policy — do NOT centralize on `style`.** The
   convention is "errors (`danger`) persist + dedupe by `id`; transient
