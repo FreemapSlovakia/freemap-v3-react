@@ -49,8 +49,8 @@ export type EventKey =
   | `modal-${ModalId}`;
 
 export function modalMenuItemProps(modalId: ModalId) {
-  // Through the codec, so the two modals that name no id get no href rather
-  // than one that decodes to nothing.
+  // Through the codec, so the two modals that name no id yield no href
+  // instead of one that decodes to nothing (Bootstrap renders those as `#`).
   const show = encodeActiveModal(modalOf(modalId));
 
   return {

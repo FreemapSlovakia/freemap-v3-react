@@ -9,9 +9,9 @@ import {
   Action,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
+import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
@@ -48,6 +48,8 @@ export function CachedMapsList(): ReactElement {
   const ome = useOfflineMapExportMessages();
 
   const dispatch = useDispatch();
+
+  const modalLink = useModalLink();
 
   const confirm = useConfirm();
 
@@ -291,15 +293,7 @@ export function CachedMapsList(): ReactElement {
       <Modal.Footer>
         {/* a real link, so it can be opened or copied like the menu entries
             that address a modal; the click itself is handled here */}
-        <Button
-          variant="link"
-          href={modalMenuItemProps('browse-cache').href}
-          onClick={(e) => {
-            e.preventDefault();
-
-            dispatch(setActiveModal({ type: 'browse-cache' }));
-          }}
-        >
+        <Button variant="link" {...modalLink({ type: 'browse-cache' })}>
           <FaDatabase /> {m?.mapLayers.browseCache}
         </Button>
 

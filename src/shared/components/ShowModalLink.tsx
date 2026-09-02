@@ -13,7 +13,8 @@ export function useModalLink() {
   const dispatch = useDispatch();
 
   return (modal: ActiveModal) => {
-    // Null for the two modals that name no id, which then render href-less.
+    // Null for the two modals that name no id; react-bootstrap then renders
+    // them as `href="#"` with role=button.
     const show = encodeActiveModal(modal);
 
     return {
