@@ -122,6 +122,8 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unsaved: 'Non enregistrée',
   unsavedTooltip:
     'Cette trace ne figure dans aucune carte enregistrée et ne fait pas partie du lien : elle reste uniquement dans ce navigateur, partager le lien ne la partagera donc pas. Enregistrez-la dans vos cartes pour la conserver.',
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Erreur lors du calage de la trace', err),
 };
 
 export default fr;

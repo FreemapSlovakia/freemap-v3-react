@@ -120,6 +120,8 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unsaved: 'Niezapisane',
   unsavedTooltip:
     'Ten ślad nie znajduje się w żadnej zapisanej mapie ani nie jest częścią odnośnika – pozostaje tylko w tej przeglądarce, więc udostępnienie odnośnika go nie udostępni. Zapisz go w swoich mapach, aby go zachować.',
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Wystąpił błąd podczas dopasowywania śladu', err),
 };
 
 export default pl;

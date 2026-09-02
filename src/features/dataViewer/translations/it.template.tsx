@@ -120,6 +120,8 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unsaved: 'Non salvata',
   unsavedTooltip:
     'Questa traccia non si trova in nessuna mappa salvata e non fa parte del collegamento: resta solo in questo browser, quindi condividere il collegamento non la condivide. Salvala nelle tue mappe per conservarla.',
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Errore durante l’aggancio della traccia', err),
 };
 
 export default it;

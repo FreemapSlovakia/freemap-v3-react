@@ -120,6 +120,8 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unsaved: 'Nem mentett',
   unsavedTooltip:
     'Ez a nyomvonal nem szerepel egyetlen mentett térképen sem, és nem része a hivatkozásnak – csak ebben a böngészőben marad meg, ezért a hivatkozás megosztásával nem osztja meg. Mentse a térképei közé, hogy megmaradjon.',
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Hiba történt a nyomvonal illesztésekor', err),
 };
 
 export default hu;
