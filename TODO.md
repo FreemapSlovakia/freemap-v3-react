@@ -303,6 +303,8 @@ can't be made exclusive + optics). Keep the free/open core intact.
 
 ## Drawing (`src/features/drawing/`, see [`doc/drawing-export-mapping.md`](./doc/drawing-export-mapping.md))
 
+Bugs and feature requests are issues under `area: drawing`.
+
 - [x] **Holes in polygons.** A hole is its own `DrawnLine` pointing at its parent
       by `holeOfId`, not a nested ring inside `points` — so every existing edit
       (vertex drag, midpoint insert, simplify, reverse) works on it unchanged,
@@ -316,18 +318,6 @@ can't be made exclusive + optics). Keep the free/open core intact.
       its parent by _position_ (`holeOf`), since neither the URL (`\x1eH<i>`)
       nor a saved document carries line ids; both must keep agreeing, or a map
       restored from its URL reads as having unsaved changes.
-- [ ] **A hole isn't required to lie inside its parent.** Nothing stops a ring
-      being drawn outside the polygon, or dragged across its boundary
-      afterwards — deliberately, since editing has to pass through invalid
-      states, and the tool already permits self-intersecting rings. But the
-      consequences are silent: turf's `area` subtracts a stray ring's _whole_
-      area from the parent (a large enough one drives the readout negative), and
-      RFC 7946 / KML both require interior rings to be inside the exterior one,
-      so the export is invalid. Cheapest honest fix: keep the geometry
-      permissive but stop trusting it — `booleanContains` each hole when
-      measuring, subtract only the contained ones, and say so in the readout.
-      The _Make a hole of the enclosing polygon_ command is already guarded;
-      only the draw-a-hole path and later vertex drags can produce one.
 - [ ] **No coverage for the hole wire formats.** The reducer's linking, cascade
       delete and stale-index tolerance are tested, but nothing exercises the
       round-trips the design leans on: URL `H` field ↔ store, document
@@ -335,31 +325,6 @@ can't be made exclusive + optics). Keep the free/open core intact.
       the GeoJSON interior rings, the GPX `fm:polygonId` / `fm:holeOf` pairing,
       and KML `innerBoundaryIs`. These are pure functions over small fixtures —
       cheap to pin, and the place a regression would go unnoticed longest.
-- [ ] **A GPX-imported polygon shows no hole in the track viewer.** The linkage
-      survives the round-trip — _Convert to drawing_ rebuilds the hole — but
-      `fm:polygonId` / `fm:holeOf` are read in exactly one place,
-      `featuresToLines`, on the convert path. `DataViewerResult` renders each
-      `<trk>` as its own single-ring polygon, so the parent's fill shows through
-      where the hole should be (the hole itself outlines correctly, thanks to
-      the transparent fill written for foreign consumers). The same shape
-      imported as `.geojson` does render its hole, through the native `Polygon`
-      branch that already takes `[outer, ...holes]`. Fix by merging at parse
-      time — fold `fm:holeOf` tracks into their parent as a real `Polygon`
-      beside `enrichGpxExtensions`, so the viewer uses the branch that works and
-      the GPX grouping in `featuresToLines` becomes redundant. Matches this
-      file's track-viewer principle: tag at parse time, don't re-derive
-      downstream. Watch what else keys off `LineString`/`MultiLineString` —
-      elevation-chart suitability, start/finish markers, distance labels,
-      `mergeLines` — which an area would drop out of (arguably correct; the GPX
-      exporter already skips elevation on polygon tracks).
-- [ ] **Isochrone bands as donuts.** _Convert to drawing_ keeps whatever inner
-      rings a band has, but GraphHopper's `buckets` response is nested _filled_
-      polygons — each bucket is the complete area up to its limit, one exterior
-      ring each — so in practice no holes appear, and only the outermost band
-      can be filled without the fills stacking. Subtracting bucket _k-1_ from
-      bucket _k_ would make each band a real donut, letting every one carry its
-      own fill. Wanted in the map rendering too, though, or the drawing would
-      stop mirroring what it was converted from.
 
 - [ ] **A stored route is invisible to the unsaved-changes comparison.** A saved
       map carries its computed route (`savedRoute.ts`), but `fingerprintState`
