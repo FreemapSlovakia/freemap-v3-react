@@ -1,4 +1,5 @@
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
+import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
@@ -284,6 +285,32 @@ describe('handleEvent — Escape', () => {
         }),
       ),
     ).toBeUndefined();
+  });
+
+  // The chart is hidden (not unmounted) during a picking mode, so closing it
+  // on Escape would destroy it where nothing shows that anything happened.
+  it('cancels map-area selection before closing the chart', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          mapArea: { selecting: 'export' },
+          elevationChart: { target: {} },
+        }),
+      ),
+    ).toEqual(mapAreaSelectCancel());
+  });
+
+  it('cancels home-location picking before closing the chart', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          homeLocation: { selectingHomeLocation: true },
+          elevationChart: { target: {} },
+        }),
+      ),
+    ).toEqual(setSelectingHomeLocation(false));
   });
 
   it('cancels a picking overlay even though its modal is open', () => {

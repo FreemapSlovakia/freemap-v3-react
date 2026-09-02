@@ -112,6 +112,14 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       return dataViewerSetSplitting(false);
     }
 
+    if (state.mapArea.selecting) {
+      return mapAreaSelectCancel();
+    }
+
+    if (state.homeLocation.selectingHomeLocation !== false) {
+      return setSelectingHomeLocation(false);
+    }
+
     if (state.elevationChart.target) {
       return elevationChartClose();
     }
@@ -124,14 +132,6 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       state.drawingLines.holeFor !== undefined
     ) {
       return drawingLineStopDrawing();
-    }
-
-    if (state.mapArea.selecting) {
-      return mapAreaSelectCancel();
-    }
-
-    if (state.homeLocation.selectingHomeLocation !== false) {
-      return setSelectingHomeLocation(false);
     }
 
     if (state.gallery.showPosition) {
