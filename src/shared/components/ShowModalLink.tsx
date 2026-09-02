@@ -4,29 +4,36 @@ import type { MouseEvent, ReactNode } from 'react';
 import { Anchor } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 
+/**
+ * Builds the `href`/`onClick` pair that opens a modal in-page. A factory
+ * rather than a hook taking the modal, so conditionally rendered items can
+ * each get their own props without a conditional hook call.
+ */
+export function useModalLink() {
+  const dispatch = useDispatch();
+
+  return (modal: ActiveModal) => {
+    // Null for the two modals that name no id, which then render href-less.
+    const show = encodeActiveModal(modal);
+
+    return {
+      href: show === null ? undefined : `#show=${show}`,
+      onClick: (e: MouseEvent) => {
+        e.preventDefault();
+
+        dispatch(setActiveModal(modal));
+      },
+    };
+  };
+}
+
 type Props = {
   modal: ActiveModal;
   children: ReactNode;
 };
 
 export function ShowModalLink({ modal, children }: Props) {
-  const dispatch = useDispatch();
+  const modalLink = useModalLink();
 
-  // Null for the two modals that name no id, which then render href-less.
-  const show = encodeActiveModal(modal);
-
-  const handleClick = (e: MouseEvent) => {
-    e.preventDefault();
-
-    dispatch(setActiveModal(modal));
-  };
-
-  return (
-    <Anchor
-      href={show === null ? undefined : `#show=${show}`}
-      onClick={handleClick}
-    >
-      {children}
-    </Anchor>
-  );
+  return <Anchor {...modalLink(modal)}>{children}</Anchor>;
 }

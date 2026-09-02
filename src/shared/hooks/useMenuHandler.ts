@@ -10,7 +10,11 @@ import {
   type Tool,
   ToolSchema,
 } from '@app/store/actions.js';
-import { type ModalId, modalOf } from '@app/store/activeModal.js';
+import {
+  encodeActiveModal,
+  type ModalId,
+  modalOf,
+} from '@app/store/activeModal.js';
 import { openToolsSelector } from '@app/store/selectors.js';
 import {
   type Document,
@@ -45,9 +49,13 @@ export type EventKey =
   | `modal-${ModalId}`;
 
 export function modalMenuItemProps(modalId: ModalId) {
+  // Through the codec, so the two modals that name no id get no href rather
+  // than one that decodes to nothing.
+  const show = encodeActiveModal(modalOf(modalId));
+
   return {
     eventKey: `modal-${modalId}`,
-    href: `#show=${modalId}`,
+    href: show === null ? undefined : `#show=${show}`,
   };
 }
 
