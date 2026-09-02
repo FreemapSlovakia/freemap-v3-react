@@ -26,7 +26,7 @@ import { FaCrosshairs, FaStreetView, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { type PanoramaProbe, panoramaCancel } from '../model/actions.js';
 import { grantedQuality, PANORAMA_QUALITIES } from '../quality.js';
-import { getPanoramaRenderData } from '../renderHolder.js';
+import { usePanoramaRenderData } from '../renderHolder.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import { usePanoramaAim } from '../viewStore.js';
 import classes from './Panorama.module.css';
@@ -61,7 +61,7 @@ export default function Panorama(): ReactElement {
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
-  const data = getPanoramaRenderData();
+  const data = usePanoramaRenderData();
 
   const [showCaveats, setShowCaveats] = useState(false);
 

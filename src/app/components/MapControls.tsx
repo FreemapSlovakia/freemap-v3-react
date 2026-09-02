@@ -17,6 +17,11 @@ import { MapManageButton } from './MapManageButton.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
 
 export function MapControls(): ReactElement | null {
+  // The zoom buttons read Leaflet's live min/max zoom, which follows the
+  // attached layers — a change the compiler cannot see, so a memoized toolbar
+  // keeps a button greyed out after a layer swap.
+  'use no memo';
+
   const m = useMessages();
 
   const dispatch = useDispatch();

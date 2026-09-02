@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from 'react';
 import type { PanoramaDepth } from './depth.js';
 
 /**
@@ -15,6 +16,14 @@ export interface PanoramaRenderData {
 let current: PanoramaRenderData | null = null;
 
 let generation = 0;
+
+const listeners = new Set<() => void>();
+
+function notify(): void {
+  for (const listener of listeners) {
+    listener();
+  }
+}
 
 /**
  * Claims the panel for a pass about to start, and names its picture.
@@ -38,6 +47,25 @@ export function getPanoramaRenderData(): PanoramaRenderData | null {
   return current;
 }
 
+/**
+ * Subscribed rather than read: a bare call has no reactive input, so the React
+ * Compiler caches it for the life of the component and the picture never
+ * arrives.
+ */
+export function usePanoramaRenderData(): PanoramaRenderData | null {
+  return useSyncExternalStore(
+    (listener) => {
+      listeners.add(listener);
+
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    getPanoramaRenderData,
+    getPanoramaRenderData,
+  );
+}
+
 /** Keeps one render's data, releasing whatever it replaces. */
 export function setPanoramaRenderData(data: PanoramaRenderData): void {
   if (current && current.imageUrl !== data.imageUrl) {
@@ -45,6 +73,8 @@ export function setPanoramaRenderData(data: PanoramaRenderData): void {
   }
 
   current = data;
+
+  notify();
 }
 
 /** Also gives up the panel, so a pass still in flight drops what it brings. */
@@ -55,5 +85,7 @@ export function clearPanoramaRenderData(): void {
     URL.revokeObjectURL(current.imageUrl);
 
     current = null;
+
+    notify();
   }
 }
