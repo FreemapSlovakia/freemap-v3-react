@@ -269,7 +269,6 @@ function adjustTags(tags: Record<string, string>) {
     tags['building'] &&
     tags['building'] !== 'yes'
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { amenity, ...rest } = tags;
 
     res = { ...rest };

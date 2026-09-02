@@ -62,6 +62,11 @@ type Props = {
  * a frame behind each pan.
  */
 export function BearingLine({ position, opacity }: Props): ReactElement {
+  // Measures in screen pixels off the live Leaflet view, which the React
+  // Compiler cannot see change: memoizing these reads freezes the line at its
+  // pre-pan position until the next fix arrives.
+  'use no memo';
+
   const map = useMap();
 
   const center = useMapCenter();

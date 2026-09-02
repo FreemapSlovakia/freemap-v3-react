@@ -131,7 +131,6 @@ export default function ObjectsMenu(): ReactElement {
 
   const byName = makeLabelComparator(lang);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const activeSnapshot = useMemo(() => active, [active]);
 
   function makeItems(snapshot?: boolean) {

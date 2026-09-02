@@ -45,7 +45,6 @@ export function usePersistentState<
         setValue(value);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [key, cookiesEnabled, serialize],
   );
 
@@ -59,7 +58,6 @@ export function usePersistentState<
 
       setValue(value);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [cookiesEnabled, key, deserialize, serialize],
   );
 

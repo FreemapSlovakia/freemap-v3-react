@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { HintMark } from '@shared/components/HintMark.js';
@@ -309,10 +308,6 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   const [wmsLayersFetchError, setWmsLayersFetchError] = useState<string>();
 
-  useEffect(() => {
-    setWmsLayersFetchError(undefined);
-  }, []);
-
   const [layersTree, setLayersTree] = useState<Layer[]>();
 
   const lat = useAppSelector((state) => state.map.lat);
@@ -363,10 +358,6 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       });
   }, [model, lat]);
 
-  useEffect(() => {
-    setLayersTree(undefined);
-  }, []);
-
   const handleLayerSelect = useCallback(
     (name: string | null) => {
       if (name === null) {
@@ -377,7 +368,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         let found = false;
 
         const next = model.layers.filter((n) => {
-          found ||= n === name;
+          if (n === name) {
+            found = true;
+          }
 
           return n !== name;
         });
@@ -445,7 +438,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
                     let found = false;
 
                     const next = prev.filter((a) => {
-                      found ||= a === id;
+                      if (a === id) {
+                        found = true;
+                      }
 
                       return a !== id;
                     });

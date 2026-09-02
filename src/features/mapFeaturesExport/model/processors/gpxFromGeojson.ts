@@ -443,7 +443,6 @@ export function addGeojson(
 
         case 'Polygon':
 
-        // eslint-disable-next-line no-fallthrough
         case 'MultiLineString':
           if (pass === 'trk') {
             const trkEle = createElement(doc.documentElement, 'trk');

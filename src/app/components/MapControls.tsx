@@ -101,11 +101,13 @@ export function MapControls(): ReactElement | null {
     }
   }, []);
 
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [fullscreen, setFullscreen] = useState(() =>
+    Boolean(document.fullscreenElement),
+  );
 
   useEffect(() => {
     function handler() {
-      setForceUpdate(forceUpdate + 1);
+      setFullscreen(Boolean(document.fullscreenElement));
     }
 
     document.addEventListener('fullscreenchange', handler);
@@ -113,7 +115,7 @@ export function MapControls(): ReactElement | null {
     return () => {
       document.removeEventListener('fullscreenchange', handler);
     };
-  }, [forceUpdate]);
+  }, []);
 
   return !map ? null : (
     <Toolbar className="m-2">
@@ -174,11 +176,7 @@ export function MapControls(): ReactElement | null {
 
       {document.fullscreenEnabled && !installed && (
         <LongPressTooltip
-          label={
-            document.fullscreenElement
-              ? m?.general.exitFullscreen
-              : m?.general.fullscreen
-          }
+          label={fullscreen ? m?.general.exitFullscreen : m?.general.fullscreen}
         >
           {({ props }) => (
             <Button
@@ -186,11 +184,7 @@ export function MapControls(): ReactElement | null {
               onClick={handleFullscreenClick}
               {...props}
             >
-              {document.fullscreenElement ? (
-                <RiFullscreenExitLine />
-              ) : (
-                <RiFullscreenLine />
-              )}
+              {fullscreen ? <RiFullscreenExitLine /> : <RiFullscreenLine />}
             </Button>
           )}
         </LongPressTooltip>
