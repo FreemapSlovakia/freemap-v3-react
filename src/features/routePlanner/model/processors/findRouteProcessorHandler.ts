@@ -67,7 +67,13 @@ const cancelTypes = [...updateRouteTypes, clearMapFeatures];
 const OSRM_MAX_ALTERNATIVES = 3;
 
 /** The profiles a rider can be told to get off and push. */
-const BIKE_TRANSPORTS = new Set<TransportType>(['bike', 'mtb', 'racingbike']);
+const BIKE_TRANSPORTS = new Set<TransportType>([
+  'bike',
+  'ebike',
+  'gravelbike',
+  'mtb',
+  'racingbike',
+]);
 
 /**
  * `[start, end]` cut wherever `get_off_bike` changes, so a stretch that has to

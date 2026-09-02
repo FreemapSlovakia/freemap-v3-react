@@ -28,10 +28,12 @@ export function pathDetailKeys(transport: TransportType): string[] {
   const keys = ['surface', 'road_class', 'track_type', 'smoothness'];
 
   // Only a motor vehicle is charged, and only `ALL` charges a car — `HGV` is a
-  // road lorries pay for and cars do not.
+  // road lorries pay for and cars do not. `carnotoll` is included precisely
+  // because it should have none: the detail is what shows it avoided them.
   if (
     transport === 'car' ||
     transport === 'car4wd' ||
+    transport === 'carnotoll' ||
     transport === 'motorcycle'
   ) {
     keys.push('toll');
@@ -40,12 +42,16 @@ export function pathDetailKeys(transport: TransportType): string[] {
   // A difficulty scale, though, is the profile's own and means nothing off it.
   switch (transport) {
     case 'foot':
+    case 'stroller':
     case 'hiking':
+    case 'easyhike':
       keys.push('hike_rating');
 
       break;
 
     case 'bike':
+    case 'ebike':
+    case 'gravelbike':
     case 'mtb':
     case 'racingbike':
       keys.push('mtb_rating');

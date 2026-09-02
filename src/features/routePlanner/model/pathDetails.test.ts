@@ -51,12 +51,33 @@ describe('pathDetailKeys', () => {
     expect(pathDetailKeys('mtb')).toContain('mtb_rating');
   });
 
+  // The profiles layered on foot, hike and bike are graded on the same scale as
+  // the profile they are built from, so they have to ask for the same rating —
+  // easy to miss, because forgetting only greys the colouring out.
+  it('carries the rating over to the profiles derived from those', () => {
+    expect(pathDetailKeys('stroller')).toContain('hike_rating');
+    expect(pathDetailKeys('easyhike')).toContain('hike_rating');
+    expect(pathDetailKeys('ebike')).toContain('mtb_rating');
+    expect(pathDetailKeys('gravelbike')).toContain('mtb_rating');
+  });
+
+  // The point of the profile is that there should be none, so the detail is
+  // what shows it avoided them rather than that none were on the way.
+  it('asks the toll-avoiding car about tolls', () => {
+    expect(pathDetailKeys('carnotoll')).toContain('toll');
+  });
+
   it('asks every profile for what any of them can be described by', () => {
     for (const transport of [
       'car',
       'car4wd',
+      'carnotoll',
       'hiking',
+      'easyhike',
       'racingbike',
+      'ebike',
+      'gravelbike',
+      'stroller',
     ] as const) {
       expect(pathDetailKeys(transport)).toEqual(
         expect.arrayContaining([

@@ -1,6 +1,9 @@
 import type { ReactElement } from 'react';
 import {
+  FaBabyCarriage,
   FaBicycle,
+  FaBiking,
+  FaBolt,
   FaCar,
   FaHiking,
   FaMotorcycle,
@@ -16,11 +19,16 @@ export const TransportTypeSchema = z.enum([
   'bike',
   'car',
   'car4wd',
+  'carnotoll',
+  'easyhike',
+  'ebike',
   'foot',
+  'gravelbike',
   'hiking',
   'motorcycle',
   'mtb',
   'racingbike',
+  'stroller',
   'manual',
 ]);
 
@@ -31,9 +39,12 @@ export const TransportTypeCompatSchema = z
     (v) =>
       (typeof v === 'string' &&
         {
+          // Both of these were folded into the nearest profile that existed at
+          // the time. The router has the real ones now, so the old links
+          // resolve to what they always meant.
           'car-toll': 'car',
-          'car-free': 'car',
-          'foot-stroller': 'foot',
+          'car-free': 'carnotoll',
+          'foot-stroller': 'stroller',
           bikesharing: 'bike-osrm',
           imhd: 'car',
           bicycle_touring: 'racingbike',
@@ -52,11 +63,16 @@ export type TransportTypeMsgKey =
   | 'bike'
   | 'car'
   | 'car4wd'
+  | 'carnotoll'
+  | 'easyhike'
+  | 'ebike'
   | 'foot'
+  | 'gravelbike'
   | 'hiking'
   | 'motorcycle'
   | 'mtb'
   | 'racingbike'
+  | 'stroller'
   | 'manual';
 
 type TransportTypeDef = {
@@ -75,12 +91,17 @@ type TransportTypeDef = {
       profile:
         | 'car'
         | 'car4wd'
+        | 'carnotoll'
         | 'foot'
         | 'hike'
         | 'bike'
         | 'motorcycle'
         | 'mtb'
-        | 'racingbike';
+        | 'racingbike'
+        | 'ebike'
+        | 'gravelbike'
+        | 'stroller'
+        | 'easyhike';
     }
   | {
       api: 'manual';
@@ -123,6 +144,12 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     icon: <FaCar />,
     profile: 'car4wd',
   },
+  carnotoll: {
+    msgKey: 'carnotoll',
+    api: 'gh',
+    icon: <FaCar />,
+    profile: 'carnotoll',
+  },
   motorcycle: {
     msgKey: 'motorcycle',
     api: 'gh',
@@ -134,6 +161,18 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaBicycle />,
     profile: 'bike',
+  },
+  ebike: {
+    msgKey: 'ebike',
+    api: 'gh',
+    icon: <FaBolt />,
+    profile: 'ebike',
+  },
+  gravelbike: {
+    msgKey: 'gravelbike',
+    api: 'gh',
+    icon: <FaBiking />,
+    profile: 'gravelbike',
   },
   racingbike: {
     msgKey: 'racingbike',
@@ -153,10 +192,22 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     icon: <FaWalking />,
     profile: 'foot',
   },
+  stroller: {
+    msgKey: 'stroller',
+    api: 'gh',
+    icon: <FaBabyCarriage />,
+    profile: 'stroller',
+  },
   hiking: {
     msgKey: 'hiking',
     api: 'gh',
     icon: <FaHiking />,
     profile: 'hike',
+  },
+  easyhike: {
+    msgKey: 'easyhike',
+    api: 'gh',
+    icon: <FaHiking />,
+    profile: 'easyhike',
   },
 };
