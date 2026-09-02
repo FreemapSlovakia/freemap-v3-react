@@ -155,7 +155,7 @@ export const PersistedObjectsSettingsSchema = z
 // they are persisted only as last-used defaults that survive a map clear.
 export const PersistedRoutePlannerSchema = z
   .object({
-    transportType: TransportTypeCompatSchema,
+    transportType: TransportTypeCompatSchema.catch('hiking'),
     milestones: z.union([z.literal('abs'), z.literal('rel'), z.literal(false)]),
   })
   .partial();

@@ -95,6 +95,9 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
               {matchTransports.map((value) => (
                 <option key={value} value={value}>
                   {rpm?.transportType[transportTypeDefs[value].msgKey]}
+                  {/* A native option holds no icon, so the emoji stands in for
+                      the flask the route planner marks these with. */}
+                  {transportTypeDefs[value].experimental && ' 🧪'}
                 </option>
               ))}
             </Form.Select>

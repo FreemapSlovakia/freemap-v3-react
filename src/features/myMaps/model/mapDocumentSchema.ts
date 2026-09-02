@@ -41,7 +41,7 @@ const RoutePlannerMapDataCompatSchema = z.preprocess(
     };
   },
   z.object({
-    transportType: TransportTypeCompatSchema.optional(),
+    transportType: TransportTypeCompatSchema.catch('hiking').optional(),
     points: z.array(RoutePointSchema).optional(),
     finishOnly: z.boolean().optional(),
     pickMode: PickModeSchema.nullable().optional(),

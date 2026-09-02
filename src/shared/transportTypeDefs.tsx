@@ -34,30 +34,30 @@ export const TransportTypeSchema = z.enum([
 
 export type TransportType = z.infer<typeof TransportTypeSchema>;
 
-export const TransportTypeCompatSchema = z
-  .preprocess(
-    (v) =>
-      (typeof v === 'string' &&
-        {
-          // Both of these were folded into the nearest profile that existed at
-          // the time. The router has the real ones now, so the old links
-          // resolve to what they always meant.
-          'car-toll': 'car',
-          'car-free': 'carnotoll',
-          'foot-stroller': 'stroller',
-          bikesharing: 'bike-osrm',
-          imhd: 'car',
-          bicycle_touring: 'racingbike',
-          nordic: 'hiking',
-          ski: 'hiking',
-          'car-osm': 'car-osrm',
-          'bike-osm': 'bike-osrm',
-          'foot-osm': 'foot-osrm',
-        }[v]) ||
-      v,
-    TransportTypeSchema,
-  )
-  .catch('hiking');
+/** Migrates a legacy id to today's; an unknown one still fails, so a caller
+ * that wants a fallback adds its own `.catch()`. */
+export const TransportTypeCompatSchema = z.preprocess(
+  (v) =>
+    (typeof v === 'string' &&
+      {
+        // Both of these were folded into the nearest profile that existed at
+        // the time. The router has the real ones now, so the old links
+        // resolve to what they always meant.
+        'car-toll': 'car',
+        'car-free': 'carnotoll',
+        'foot-stroller': 'stroller',
+        bikesharing: 'bike-osrm',
+        imhd: 'car',
+        bicycle_touring: 'racingbike',
+        nordic: 'hiking',
+        ski: 'hiking',
+        'car-osm': 'car-osrm',
+        'bike-osm': 'bike-osrm',
+        'foot-osm': 'foot-osrm',
+      }[v]) ||
+    v,
+  TransportTypeSchema,
+);
 
 export type TransportTypeMsgKey =
   | 'bike'

@@ -133,7 +133,6 @@ import {
 import {
   type TransportType,
   TransportTypeCompatSchema,
-  TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
@@ -315,7 +314,8 @@ export function handleLocationChange(store: MyStore): void {
           (point !== null || i === 0 || i === qPoints.length - 1) &&
           (point === null ||
             (point.length === 3 &&
-              TransportTypeSchema.optional().safeParse(point[0]).success &&
+              TransportTypeCompatSchema.optional().safeParse(point[0])
+                .success &&
               !Number.isNaN(point[1]) &&
               !Number.isNaN(point[2]))),
       );
@@ -329,7 +329,10 @@ export function handleLocationChange(store: MyStore): void {
           ? 'rel'
           : false;
 
-    if (TransportTypeSchema.safeParse(query['transport']).success && pointsOk) {
+    if (
+      TransportTypeCompatSchema.safeParse(query['transport']).success &&
+      pointsOk
+    ) {
       const {
         points,
         finishOnly,
@@ -343,7 +346,7 @@ export function handleLocationChange(store: MyStore): void {
       const latLons = qPoints.map(
         (point) =>
           point && {
-            transport: point[0],
+            transport: TransportTypeCompatSchema.optional().parse(point[0]),
             lat: point[1],
             lon: point[2],
           },
