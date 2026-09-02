@@ -75,6 +75,28 @@ const BIKE_TRANSPORTS = new Set<TransportType>([
   'racingbike',
 ]);
 
+/** How each profile's steps are drawn. Exhaustive so a new profile can't fall
+ * through to the red dotted `error` line. */
+const TRANSPORT_STEP_MODES: Record<TransportType, StepMode> = {
+  manual: 'manual',
+  'car-osrm': 'driving',
+  'bike-osrm': 'cycling',
+  'foot-osrm': 'foot',
+  car: 'driving',
+  car4wd: 'driving',
+  carnotoll: 'driving',
+  motorcycle: 'driving',
+  bike: 'cycling',
+  ebike: 'cycling',
+  gravelbike: 'cycling',
+  mtb: 'cycling',
+  racingbike: 'cycling',
+  foot: 'foot',
+  stroller: 'foot',
+  hiking: 'foot',
+  easyhike: 'foot',
+};
+
 /**
  * `[start, end]` cut wherever `get_off_bike` changes, so a stretch that has to
  * be walked becomes a step of its own — and is drawn dotted — instead of
@@ -800,19 +822,10 @@ function fromGraphhopper(
             type: 'continue',
           },
           name: instruction.text,
-          mode: BIKE_TRANSPORTS.has(transportType)
-            ? run.pushing
+          mode:
+            BIKE_TRANSPORTS.has(transportType) && run.pushing
               ? 'pushing bike'
-              : 'cycling'
-            : ((
-                {
-                  foot: 'foot',
-                  hiking: 'foot',
-                  car: 'driving',
-                  motorcycle: 'driving',
-                  car4wd: 'driving',
-                } as Partial<Record<TransportType, StepMode>>
-              )[transportType] ?? 'error'),
+              : TRANSPORT_STEP_MODES[transportType],
           geometry: {
             // GraphHopper yields 0 when elevation is unavailable; normalize such
             // points to 2D so the bogus sea-level reading doesn't leak

@@ -81,6 +81,8 @@ type TransportTypeDef = {
   special?: boolean;
   exclude?: string;
   hidden?: boolean;
+  /** Marks the profile as not settled yet; the picker shows a flask beside it. */
+  experimental?: boolean;
 } & (
   | {
       url: string;
@@ -149,6 +151,7 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaCar />,
     profile: 'carnotoll',
+    experimental: true,
   },
   motorcycle: {
     msgKey: 'motorcycle',
@@ -167,12 +170,14 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaBolt />,
     profile: 'ebike',
+    experimental: true,
   },
   gravelbike: {
     msgKey: 'gravelbike',
     api: 'gh',
     icon: <FaBiking />,
     profile: 'gravelbike',
+    experimental: true,
   },
   racingbike: {
     msgKey: 'racingbike',
@@ -197,6 +202,7 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaBabyCarriage />,
     profile: 'stroller',
+    experimental: true,
   },
   hiking: {
     msgKey: 'hiking',
@@ -209,5 +215,6 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaHiking />,
     profile: 'easyhike',
+    experimental: true,
   },
 };

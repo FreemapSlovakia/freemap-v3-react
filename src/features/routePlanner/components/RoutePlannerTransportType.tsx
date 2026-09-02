@@ -1,7 +1,9 @@
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import {
   type TransportType,
   transportTypeDefs,
@@ -89,7 +91,7 @@ export function RoutePlannerTransportType({
 
             {Object.entries(transportTypeDefs)
               .filter(([, def]) => !def.hidden && def.api === api)
-              .map(([type, { icon, msgKey: key }]) => (
+              .map(([type, { icon, msgKey: key, experimental }]) => (
                 <Dropdown.Item
                   as="button"
                   eventKey={type}
@@ -103,11 +105,11 @@ export function RoutePlannerTransportType({
                     <FaMoneyBill />
                   )}{' '}
                   {rpm?.transportType[key] ?? '…'}
-                  {withDefault && (
-                    <>
-                      {' '}
-                      <PremiumGem nested />
-                    </>
+                  {(experimental || withDefault) && (
+                    <MenuGutter>
+                      {experimental && <ExperimentalFunction />}
+                      {withDefault && <PremiumGem nested />}
+                    </MenuGutter>
                   )}
                 </Dropdown.Item>
               ))}

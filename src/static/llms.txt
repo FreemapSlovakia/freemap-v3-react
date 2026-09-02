@@ -235,18 +235,23 @@ Supported vehicles (the transport dropdown also offers "Straight line" for fully
 - GraphHopper
   - Car
   - Car (4WD)
+  - Car (avoid tolls) — experimental
   - Motorcycle
   - Bicycle
+  - E-bike — experimental
+  - Gravel bike — experimental
   - Racing bike
   - Mountain bike
   - Walking
+  - Stroller / wheelchair — experimental
   - Hiking
+  - Easy hiking — experimental
 - OSRM
   - Car
   - Bicycle
   - Walking
 
-Bicycle, Walking and Car appear under both engines. The GraphHopper ones are the self-hosted router — weighted by the terrain model, so they avoid climbs, and the only ones that offer isochrones, round trips and the colorize modes that read the router's own data.
+The profiles marked experimental are new and still being tuned; the dropdown marks them with a flask. Bicycle, Walking and Car appear under both engines. The GraphHopper ones are the self-hosted router — weighted by the terrain model, so they avoid climbs, and the only ones that offer isochrones, round trips and the colorize modes that read the router's own data.
 
 Routing modes:
 
