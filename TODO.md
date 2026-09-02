@@ -157,9 +157,6 @@ Still emitting at info level (non-blocking, optional cleanup):
 - [ ] **Minor processor-middleware cleanups.** Internal `any` casts;
       `Math.random()` for fallback toast IDs; duplicated transform/handle predicate
       logic. Low priority.
-- [ ] **Delete dead `src/features/documents/model/reducer.ts`.** Its `documentKey`
-      slice is not wired into `rootReducer`; the document overlay now lives in
-      `activeModal`.
 - [ ] **Stop remounting path layers to change `interactive`.** react-leaflet
       doesn't diff the `interactive` option, so every `<Polyline>`/`<Polygon>`/
       `<CircleMarker>` whose interactivity is derived from `selectingModeSelector`
