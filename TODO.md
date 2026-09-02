@@ -50,13 +50,16 @@ these one at a time (counts are from first adoption):
 - [ ] `suspicious/noImplicitAnyLet` (~23) — annotate bare `let x;` with a real type.
 - [ ] `a11y/noSvgWithoutTitle` (8) — `<title>`/`aria-label` for meaningful, `aria-hidden` for decorative.
 - [ ] `a11y/useHtmlLang` (3) — `lang` on `<html>` in `src/static/*.html`.
-- [ ] `a11y/useButtonType`, `a11y/useValidAnchor`, `a11y/noStaticElementInteractions`,
+- [ ] `a11y/useButtonType`, `a11y/noStaticElementInteractions`,
       `suspicious/noConfusingLabels` (1 each).
 
 Permanently off by decision (convention / tsconfig clash, **not** backlog):
 `style/noNonNullAssertion`, `suspicious/noArrayIndexKey`,
 `complexity/noImportantStyles`, `security/noDangerouslySetInnerHtml`,
-`complexity/useLiteralKeys` (fights `noPropertyAccessFromIndexSignature`).
+`complexity/useLiteralKeys` (fights `noPropertyAccessFromIndexSignature`),
+`a11y/useValidAnchor` (flags any `<a>` with an `onClick`, which is the SPA-link
+pattern: a real `href` plus `preventDefault` to route in-page — a `<button>`
+would lose new-tab, copy-link and the status-bar preview).
 
 Still emitting at info level (non-blocking, optional cleanup):
 `style/useTemplate` (145), `complexity/useIndexOf` (4), `correctness/useParseIntRadix` (1).
