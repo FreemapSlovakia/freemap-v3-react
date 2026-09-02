@@ -22,8 +22,8 @@
       "a11y": {
         "noStaticElementInteractions": "off",
         "noSvgWithoutTitle": "off",
-        "useButtonType": "off",
-        "useHtmlLang": "off",
+        "useButtonType": "error",
+        "useHtmlLang": "error",
         "useValidAnchor": "off"
       },
       "complexity": {

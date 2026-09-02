@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <title>Freemap Slovakia - digitálna mapa Slovenska</title>
     <meta charset="UTF-8" />
@@ -68,11 +68,15 @@
       var t2 = document.getElementById('t2');
 
       if (language === 'sk') {
+        document.documentElement.lang = 'sk';
+
         t1.textContent = 'Ste offline.';
 
         t2.textContent =
           'Prosím pripojte sa na internet, aby ste mohli používať aplikáciu Freemap.';
       } else if (language === 'cs') {
+        document.documentElement.lang = 'cs';
+
         t1.textContent = 'Jste offline.';
 
         t2.textContent =

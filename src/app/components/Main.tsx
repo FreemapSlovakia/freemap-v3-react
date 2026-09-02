@@ -967,6 +967,7 @@ export function Main(): ReactElement {
 
                 <Toolbar className="mt-2">
                   <button
+                    type="button"
                     id="freemap-logo"
                     className={progress ? 'in-progress' : 'idle'}
                     onClick={handleLogoClick}

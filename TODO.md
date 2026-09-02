@@ -45,13 +45,11 @@ the surrounding context.
 (`lint`, `lint:fix`, lint-staged). Adopting the full recommended set lit up
 rules the curated config never ran; the safely-autofixable ones were applied,
 and the rest were switched `"off"` to keep the tree green. Re-enable and fix
-these one at a time (counts are from first adoption):
+these one at a time (counts measured 2026-09-02):
 
-- [ ] `suspicious/noImplicitAnyLet` (~23) — annotate bare `let x;` with a real type.
-- [ ] `a11y/noSvgWithoutTitle` (8) — `<title>`/`aria-label` for meaningful, `aria-hidden` for decorative.
-- [ ] `a11y/useHtmlLang` (3) — `lang` on `<html>` in `src/static/*.html`.
-- [ ] `a11y/useButtonType`, `a11y/noStaticElementInteractions`,
-      `suspicious/noConfusingLabels` (1 each).
+- [ ] `suspicious/noImplicitAnyLet` (25) — annotate bare `let x;` with a real type.
+- [ ] `a11y/noSvgWithoutTitle` (12) — `<title>`/`aria-label` for meaningful, `aria-hidden` for decorative.
+- [ ] `a11y/noStaticElementInteractions` (4), `suspicious/noConfusingLabels` (1).
 
 Permanently off by decision (convention / tsconfig clash, **not** backlog):
 `style/noNonNullAssertion`, `suspicious/noArrayIndexKey`,
