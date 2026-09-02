@@ -698,64 +698,14 @@ Open items are issues under `area: infra`.
 ## Toposcope (`src/features/toposcope/`)
 
 The dial is drawn from the centre point plus the drawn points, and saves as an
-SVG. What it does not do yet:
-
-- **Fill the rays from the Objects tool.** `ObjectsConvertMenu` already turns
-  objects into drawing points; a "peaks around here" button that pulls the
-  visible peaks/places in, sorted by bearing, is what makes the tool usable
-  without placing every point by hand. This replaces the old app's raw Overpass
-  query.
-- **Elevation for hand-placed rays.** `{ele}` and the Show-elevations switch read
-  the `ele` property, which a converted object arrives with — but a point dropped
-  by hand has none. `fetchElevations` would fill it in (an action on the drawing
-  selection, writing the property like any other), and the same number gives the
-  vertical angle a real toposcope is engraved with. Prefer the OSM tag where
-  there is one: a 30 m DEM smooths summits and under-reads a sharp peak.
-- **Line of sight.** `densifyAlong` + `fetchElevations` along each ray can say
-  whether a peak is actually visible from the observer, and hide (or mark) the
-  ones behind terrain. Nothing else on the web does this; a plausible premium
-  gate.
-- **Put the dial in a saved map.** The whole toposcope is in the URL now — the
-  centre and rays as drawn points, the settings as `toposcope=` — but nothing of
-  it reaches `mapDocumentSchema.ts`, so saving a map keeps its points and loses
-  its inscriptions and geometry. The param is therefore deliberately outside
-  `getMapContentParts`, since the my-maps unsaved-changes digest reads that and
-  would report a freshly loaded map as changed. Adding it to the document means
-  adding it to both at once.
-- **Import an old `toposcope.json`** from the standalone Toposcope Maker
-  (`{pois, inscriptions, innerCircleRadius, fontSize, preventUpturnedText}`) via
-  a `ToposcopeProjectCompatSchema`, so that app can be retired with a redirect.
-- **Per-ray text flip**, which the old app had as a per-POI `flipText`. Now that
-  drawn features carry properties it has a home — a `toposcope:flip` property on
-  the point, beside the `toposcope=center` that marks the middle — without
-  another schema field or a side table that reordering breaks.
-- **Print-ready output** — millimetre units and a configurable physical
-  diameter, plus PDF. A toposcope is engraved or printed, and SVG-only is where
-  the old app stopped.
-- **An SEO hub page** in `sitemap-generator/` — the term is searched in every
-  target market and there is almost no web tooling for it.
+SVG. Open items are issues under `area: toposcope`.
 
 ## Panorama (`src/features/panorama/`, see [`doc/panorama.md`](./doc/panorama.md))
 
 Shipped as an MVP: pick a viewpoint, 360° render, pan/zoom, peak labels, the
-distance probe, a premium quality tier. What was deliberately left for later:
+distance probe, a premium quality tier. What it does not do yet is issues under
+`area: panorama`; the cleanups it left behind stay here:
 
-- [ ] **Narrow-`fov` re-render** once the view is zoomed past the image's own
-      pixels — real optical zoom rather than magnified ones. The service says a
-      60–120° slice is proportionally cheap, so this can stay free.
-- [ ] **Label sources beyond the renderer's summits.** The shape is already
-      generic (`labels/types.ts`); what's missing is the projection helper —
-      azimuth/distance/altitude for an arbitrary coordinate, tested against the
-      distance buffer for visibility, exactly as the service does for a summit.
-      Candidates: the map selection, drawn points, route waypoints, gallery
-      photos, OSM POIs. Elevation comes from the elevation API.
-- [ ] **Cross-fade** between the fast pass and the detailed one; today it swaps.
-- [ ] **Entry points**: a "Panorama from here" action on a selected
-      `natural=peak` (passing the summit node so the viewpoint snaps to it), and
-      a cross-link to and from the toposcope centre.
-- [ ] **Download the picture** as PNG, and a share link that names the heading.
-- [ ] **Sun path** — the service hasn't implemented it either; the distance
-      buffer already holds what it needs.
 - [ ] **Extract a `ColorPickerPopover` shell.** `PanoramaGroundPicker` and
       `RgbaColorPicker` now carry the same ~60 lines: the `OverlayTrigger` /
       `Popover` / body-portal, the swatch button, and the `setUrlUpdatingEnabled`
