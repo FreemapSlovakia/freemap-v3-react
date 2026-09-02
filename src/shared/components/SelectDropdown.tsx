@@ -137,7 +137,7 @@ export function SelectDropdown({
       items.push(
         <Dropdown.Divider
           key={`d${i}`}
-          className={opt.divider === 'strong' ? classes.strongDivider : ''}
+          className={opt.divider === 'strong' ? classes['strongDivider'] : ''}
         />,
       );
     }
