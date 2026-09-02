@@ -72,20 +72,6 @@ if (/\/{2,}/.test(window.location.pathname)) {
 // `start_url` continues from where the last session ended.
 restoreStashedUrl();
 
-// workaround to fix blurring menus on hidpi desktop chrome
-if (
-  window.devicePixelRatio > 1 &&
-  window.navigator.userAgent.includes('Chrome/') &&
-  !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(
-    window.navigator.userAgent,
-  )
-) {
-  document.documentElement.style.setProperty(
-    '--scroller-mix-blend-mode',
-    'none',
-  );
-}
-
 document.body.classList.add(window.fmEmbedded ? 'embedded' : 'full');
 
 const store = createReduxStore();
