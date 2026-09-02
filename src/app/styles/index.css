@@ -30,15 +30,18 @@ body {
   }
 }
 
+@-moz-document url-prefix() {
+  button#freemap-logo {
+      background-size: 134px 35px; /* HACK fix blurred logo for FF on mdpi */
+  }
+}
+
 button#freemap-logo {
   position: relative;
   border: none;
   outline: none;
   background-color: rgba(255, 255, 255, 0);
   background-image: url("@/images/freemap-logo-sk.svg");
-  /* Each logo's viewBox ratio matches its box below exactly, so the SVG fills it
-     with no letterboxing. Changing a size here means retuning that viewBox. */
-  background-size: 134px 34px;
   background-repeat: no-repeat;
   height: 34px;
   width: 134px;
