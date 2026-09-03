@@ -374,7 +374,7 @@ single recorded GPS log misfire on arbitrary imported geometry. The through-line
 of the fixes is **provenance, not heuristics**: tag each feature at parse time
 with what it actually was in the source and key behavior off that — never
 re-derive "is this a track?" from density/timestamps. Remaining user-facing
-gaps are issues under `area: track-viewer`.
+gaps are issues under `area: data-viewer`.
 
 The rename to `dataViewer` is done — the directory, filenames, components,
 processors, actions and their type strings, reducers/state/schema types, toast
@@ -705,7 +705,7 @@ and what landed. Nothing is outstanding there.
 ## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
 
 Colorize, path details and track matching are issues under `area: routing` and
-`area: track-viewer`. What stays here is internal:
+`area: data-viewer`. What stays here is internal:
 
 - [ ] **Two legends, built twice.** `PictureLegend` (gallery) and `ColorizeLegend`
       (colorizers) each carry their own copy of the same shell — the toolbar, the
