@@ -90,6 +90,10 @@ type TransportTypeDef = {
     }
   | {
       api: 'gh';
+      /** The server prepared no CH for this profile, so `ch.disable` must be sent. */
+      noCh?: boolean;
+      /** The server prepared landmarks for this profile, so `lm.disable` must not be. */
+      hasLm?: boolean;
       profile:
         | 'car'
         | 'car4wd'
@@ -139,6 +143,7 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaCar />,
     profile: 'car',
+    hasLm: true,
   },
   car4wd: {
     msgKey: 'car4wd',
@@ -151,6 +156,8 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaCar />,
     profile: 'carnotoll',
+    noCh: true,
+    hasLm: true,
     experimental: true,
   },
   motorcycle: {

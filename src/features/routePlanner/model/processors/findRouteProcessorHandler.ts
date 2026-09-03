@@ -590,6 +590,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     const ttDef = transportTypeDefs[segment.transport];
 
     if (ttDef.api === 'gh') {
+      const chDisable = mode === 'roundtrip' || Boolean(ttDef.noCh);
+
       const response = await httpRequest({
         getState,
         method: 'POST',
@@ -609,7 +611,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
                 : 'alternative_route',
           'round_trip.distance': roundtripParams.distance,
           'round_trip.seed': roundtripParams.seed,
-          'ch.disable': mode === 'roundtrip',
+          'ch.disable': chDisable,
+          // Without CH the router falls back to landmarks; asking for ones the
+          // profile has none of is a 400.
+          'lm.disable': chDisable && !ttDef.hasLm,
           // A ceiling, not a count: `max_weight_factor` (1.4) and
           // `max_share_factor` (0.6) decide how many the router actually finds.
           'alternative_route.max_paths': maxAlternatives,

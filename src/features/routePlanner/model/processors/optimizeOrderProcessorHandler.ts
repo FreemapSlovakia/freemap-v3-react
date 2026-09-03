@@ -62,6 +62,8 @@ const handle: ProcessorHandler<typeof routePlannerOptimizeOrder> = async ({
   const matrix = await buildCostMatrix({
     points: base,
     profile: ttDef.profile,
+    chDisable: ttDef.noCh,
+    noLm: !ttDef.hasLm,
     locale: getState().l10n.language,
     getState,
     cancelActions: [...updateRouteTypes, clearMapFeatures],
