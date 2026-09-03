@@ -2,7 +2,10 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
 import type { SearchResult } from '@features/search/model/actions.js';
-import { resultCoords } from '@features/search/model/resultUtils.js';
+import {
+  resultCoords,
+  resultExtentM,
+} from '@features/search/model/resultUtils.js';
 import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import {
@@ -20,6 +23,13 @@ import { objectsSetShowDetails } from './actions.js';
 import { objectToSearchResult } from './objectToSearchResult.js';
 
 const TOAST_ID = 'mapDetails.tags';
+
+/**
+ * How far an object may reach — its bbox diagonal — and still have one
+ * elevation. A street, a railway route or a whole forest has none, so past this
+ * the readout would name an arbitrary point rather than the object.
+ */
+const MAX_ELEVATION_EXTENT_M = 200;
 
 type DetailsTarget = {
   /**
@@ -115,16 +125,20 @@ export const objectDetailsProcessor: Processor = {
     // nothing.
     const coords = resultCoords(target.result);
 
+    const readElevation =
+      coords !== null &&
+      (resultExtentM(target.result) ?? Infinity) <= MAX_ELEVATION_EXTENT_M;
+
     // The details show at once; the elevation reads separately and lands in the
     // same toast, so a slow API doesn't hold the tags back.
     show({
       elevation: undefined,
-      loading: coords !== null,
+      loading: readElevation,
       sources: [],
       attributions: [],
     });
 
-    if (!coords) {
+    if (!readElevation) {
       return;
     }
 

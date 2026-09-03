@@ -339,7 +339,10 @@ it: `ElevationInfo` (the measurement readout, which adds coordinates and tile li
 the search/objects details toast, whose `objectDetailsProcessor` reads one point of the
 selected feature once the details are already on screen — a line at its midpoint, anything
 else at the centre of its geometry — and drops the line rather than raising an error when
-the read fails or the feature carries no geometry at all.
+the read fails or the feature carries no geometry at all. It reads nothing for a feature
+reaching further than `MAX_ELEVATION_EXTENT_M` (200 m, taken as the bbox diagonal by
+`resultExtentM`): a street, a railway route or a whole forest has no single elevation, so
+the line is left out rather than naming one arbitrary point of it.
 
 #### The `?sources=1` contract
 

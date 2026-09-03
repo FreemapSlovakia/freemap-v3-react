@@ -378,8 +378,8 @@ describe('objectDetailsProcessor', () => {
       id: { type: 'other' },
       geojson: lineString([
         [17, 48],
-        [17, 48.1],
-        [17.1, 48.1],
+        [17, 48.001],
+        [17.001, 48.001],
       ]),
     } as unknown as SearchResult;
 
@@ -397,8 +397,42 @@ describe('objectDetailsProcessor', () => {
     const [[lat, lon]] = fetchElevationsMock.mock.calls[0][0];
 
     // Halfway along, so still on the longer (vertical) leg — where the bbox
-    // centre would be off at 17.05, 48.05.
+    // centre would be off at 17.0005, 48.0005.
     expect(lon).toBeCloseTo(17, 6);
-    expect(lat).toBeCloseTo(48.083, 3);
+    expect(lat).toBeCloseTo(48.000835, 5);
+  });
+
+  it('leaves the elevation out of an object too large to have one', async () => {
+    // A railway relation: one reading would name a point of it rather than the
+    // object.
+    const selectedResult = {
+      id: { type: 'other' },
+      geojson: lineString([
+        [19.6, 48.8],
+        [20, 48.7],
+      ]),
+    } as unknown as SearchResult;
+
+    const { dispatch, done } = run(
+      state({}),
+      state({
+        selection: { type: 'search', id: { type: 'other' } },
+        selectedResults: [selectedResult],
+        toasted: true,
+      }),
+    );
+
+    await done;
+
+    expect(fetchElevationsMock).not.toHaveBeenCalled();
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+
+    expect(dispatch.mock.calls[0][0].payload.messageParams.elevation).toEqual({
+      elevation: undefined,
+      loading: false,
+      sources: [],
+      attributions: [],
+    });
   });
 });

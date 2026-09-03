@@ -13,7 +13,9 @@ import {
   photonOsmTags,
 } from '@shared/types/photonResult.js';
 import { along } from '@turf/along';
+import { bbox } from '@turf/bbox';
 import { center } from '@turf/center';
+import { distance } from '@turf/distance';
 import { feature, lineString } from '@turf/helpers';
 import { length } from '@turf/length';
 import type { Feature, Point } from 'geojson';
@@ -126,5 +128,18 @@ export function resultCoords(result: SearchResult): LatLon | null {
 
   return Number.isFinite(lon) && Number.isFinite(lat)
     ? { lat: lat!, lon: lon! }
+    : null;
+}
+
+/**
+ * How far a result's geometry reaches, as its bbox diagonal in metres; `null`
+ * where there is nothing to measure. A geocoding hit's stored `bbox` is the
+ * extent of the object it stands for, so it counts before the outline does.
+ */
+export function resultExtentM(result: SearchResult): number | null {
+  const [minLon, minLat, maxLon, maxLat] = bbox(result.geojson);
+
+  return [minLon, minLat, maxLon, maxLat].every(Number.isFinite)
+    ? distance([minLon, minLat], [maxLon, maxLat], { units: 'meters' })
     : null;
 }
