@@ -30,20 +30,50 @@ The generator imports name resolvers (`getGenericNameFromOsmElementSync`, `getNa
 
 ### Per-feature POI pages (`objects.ts`) — multi-country
 
-`COUNTRIES` drives generation: for each country, features are fetched from Overpass by area id (`3600000000 + relation id`) and rendered as one page per feature in that country's **most-prominent language**, with `schema.org/Place` JSON-LD (type derived from tags), canonical (via `appUrl`, so the right domain), Open Graph, a homepage back-link, and the full tag table.
+`COUNTRIES` drives generation: for each country, features are read from the OSM database by boundary relation and rendered as one page per feature in that country's **most-prominent language**, with `schema.org/Place` JSON-LD (type derived from tags), canonical (via `appUrl`, so the right domain), Open Graph, a homepage back-link, and the full tag table.
 
-| Country | Lang | Area id | Category set |
+**It queries Postgres directly, not the HTTP API** (`osmDb.ts`) — `/v1/features` caps a response at 2000 features, and a country runs to hundreds of thousands. The table is `osm_object`, the same one osm.freemap.sk serves from; see the freemap-osm-api repo on fm5 for its schema. Connection comes from the standard libpq environment variables, defaulting to the socket, database and role an fm5 run wants — see [Running the generator](#running-the-generator).
+
+Each category is two queries: one for the matching ids (a GIN scan on `kv` ANDed with the boundary's bbox off the geometry index, then the exact boundary test), then tags and label points in batches of 1000 — which is what keeps a country's worth of features from having to fit in memory at once. Categories are `OsmFilter`s (`all`/`any`/`has`/`type`) rather than Overpass QL; `has: ['name']` is rechecked against `tags` instead of going through `kv`, since `name` is on most of Europe and narrows nothing.
+
+The boundary test is `ST_Intersects` **and `NOT ST_Touches`**: neighbouring polygons share the border line, so intersection alone gives Slovakia ~400 foreign municipalities with Slovak-language pages. `NOT ST_Touches` still keeps a route that crosses the border, which testing the label point instead would drop (2916 hiking routes vs 2777). It costs nothing measurable — it only runs on the rows the indexes already left.
+
+Sitemap shards list the pages the run actually wrote, not the ids it fetched: the tag batches trail the id query by minutes, and anything deleted from OSM in between would otherwise be advertised without a page behind it.
+
+| Country | Lang | Boundary relation | Category set |
 | --- | --- | --- | --- |
-| Slovakia | `sk` | 3600014296 | **full** (outdoor + admin/amenities/buildings/landuse/leisure/man_made/shops) |
-| Czechia | `cs` | 3600051684 | outdoor-only |
-| Hungary | `hu` | 3600021335 | outdoor-only |
-| Poland | `pl` | 3600049715 | outdoor-only |
-| Italy | `it` | 3600365331 | outdoor-only |
+| Slovakia | `sk` | 14296 | **full** (outdoor + admin/amenities/buildings/landuse/leisure/man_made/shops) |
+| Czechia | `cs` | 51684 | outdoor-only |
+| Hungary | `hu` | 21335 | outdoor-only |
+| Poland | `pl` | 49715 | outdoor-only |
+| Italy | `it` | 365331 | outdoor-only |
 
 - **One language per country** — never all 9 (that would be a thin-content / crawl-budget explosion, and locals search in the local language anyway). Domain follows the language via `langBase`, so e.g. Polish POI pages are `freemap.eu/?…&lang=pl` and land in `sitemap-index-eu.xml`; Czech ones stay on freemap.sk.
-- **Outdoor-only for non-SK countries** — `outdoorQueries()` = hiking/bicycle/ski routes, high-value **natural landmarks** (`peak|volcano|saddle|ridge|arete|spring|hot_spring|geyser|cave_entrance|cliff|arch|glacier`), protected areas, alpine/wilderness huts. Deliberately **excludes** `buildings`/`amenities`/`shops`/`landuse` and the unrestricted `natural=*` set abroad: those run to hundreds of thousands / millions of thin pages in big countries (Overpass load, generator OOM, disk, crawl budget). Slovakia keeps the `fullQueries()` set (unchanged, already indexed, including broad `naturals`).
+- **Outdoor-only for non-SK countries** — `OUTDOOR_CATEGORIES` = hiking/bicycle/ski routes, high-value **natural landmarks** (`peak|volcano|saddle|ridge|arete|spring|hot_spring|geyser|cave_entrance|cliff|arch|glacier`), protected areas, alpine/wilderness huts. Deliberately **excludes** `buildings`/`amenities`/`shops`/`landuse` and the unrestricted `natural=*` set abroad: those run to hundreds of thousands / millions of thin pages in big countries (query cost, disk, crawl budget). Slovakia keeps the `FULL_CATEGORIES` set (unchanged, already indexed, including broad `naturals`).
 - **Per-language page copy** — the `COPY` dictionary (`onMap`, `contact`, `openingHours`, `intro`, nav labels, …). Only the generated languages need an entry. These are hand-translated; **the Slavic and Italian wordings warrant a native review** before leaning on them for ranking.
-- **Adding a country** = one `COUNTRIES` row (area id + language) + a `COPY` entry (if the language is new) + confirm `getOsmMapping(lang)` resolves (the `osmTagToNameMapping-<lang>.messages` module and the `getOsmMapping` allowlist in `osmNameResolver.ts`). Roll out one country at a time and watch GSC indexing before adding the next.
+- **Adding a country** = one `COUNTRIES` row (boundary relation + language) + a `COPY` entry (if the language is new) + confirm `getOsmMapping(lang)` resolves (the `osmTagToNameMapping-<lang>.messages` module and the `getOsmMapping` allowlist in `osmNameResolver.ts`). Roll out one country at a time and watch GSC indexing before adding the next.
+
+### Running the generator
+
+**It runs on fm5, as the `freemap` user.** That is where the OSM database is, and Postgres there takes local connections only; as `freemap` the read-only role peer-authenticates over the socket, which is what `osmDb.ts` defaults to, so nothing needs to be in the environment.
+
+```sh
+pnpm deploy-sitemap     # sync-language-files → generate → rsync --delete to fm6
+```
+
+`gen-sitemap` alone stops after writing `sitemap/`. Both run `sync-language-files` first: `src/osm/osmTagToNameMapping-*.messages.ts` are generated and gitignored (only `-en` is tracked), so a fresh checkout has no name mappings without it.
+
+The rsync target is `SITEMAP_RSYNC_TARGET`, default `freemap-fm6:www/sitemap/` — the same ssh alias `pnpm deploy` uses, so fm5's `~freemap/.ssh/config` needs a `Host freemap-fm6` entry (`fm6.freemap.sk`, port 21122, user `freemap`) and its key in fm6's `authorized_keys`. `--delete` is the point: the live directory must end up _replaced_, not merged, or pages for POIs deleted from OSM survive. A failed crawl exits non-zero, and the `&&` in the script is what keeps that from rsyncing a partial run over good pages.
+
+Scale, as of the Europe import: **317 747 pages** (SK 143 090, IT 104 004, CZ 30 309, PL 26 873, HU 13 471), about 1.3 GB. Roughly 3 minutes of that is database time; the rest is rendering and writing the files.
+
+**Two guards stand between a bad crawl and `rsync --delete`**, because the dangerous failure is not a crash but a *successful* run that produced nothing — a database mid-import, or a boundary relation with no usable geometry. A country that yields zero features throws, and so does a total under `MIN_TOTAL_PAGES` (200 000, against today's 317 747). Neither catches a database that is loaded but only slightly short, so raise the floor if the corpus grows a lot.
+
+**Scheduled runs** — `.github/workflows/sitemap.yml`, monthly plus `workflow_dispatch`, on a **self-hosted runner on fm5 installed under the `freemap` account** (labels `self-hosted`, `fm5`). Running as any other user loses both the peer auth and the fm6 ssh alias. It is separate from `deploy.yml` because it regenerates from OSM data rather than from a push, and writes `www/sitemap/` rather than `www/`.
+
+GitHub holds the schedule and dispatches to the runner, so: it fires only from the workflow file on the **default branch**, only while the runner service is up, and it never writes to the repository — each run is a fresh `main` checkout, rsync out, nothing back. `actions/checkout` cleans the workspace (`git clean -ffdx`) every run, so `node_modules` is reinstalled each time; that is cheap because pnpm's store lives outside the workspace and survives. A systemd timer on fm5 would do the same job without depending on GitHub, at the cost of the run log and the manual trigger.
+
+**Running it from a dev box** is still possible but is not the normal path: tunnel Postgres (`ssh -L 5433:127.0.0.1:5432 fm5` — 5432 is usually taken by a local Postgres), then `PGHOST=127.0.0.1 PGPORT=5433 pnpm deploy-sitemap` with the `freemap` role's password in `~/.pgpass`. Both the tags and the 320 000 files then cross your uplink.
 
 ## 2. nginx — routes bots to the prerenders
 
@@ -92,8 +122,7 @@ Each entry document links its own manifest, which is what makes the install prom
 - **GSC:** submit `sitemap-index.xml` under the `freemap.sk` property and `sitemap-index-eu.xml` under a `freemap.eu` property (add it if missing).
 - **The entry-document `no-store` rule matches by name** — `location ~ ^/(index(-(sk|eu)-\w\w)?\.html|assets-manifest\.json)$` in both vhosts. Renaming the variants without widening that regex drops them to heuristic caching, which strands clients on a previous build's asset hashes.
 - **That same block serves `/`.** `try_files` performs an internal redirect, so the entry document is re-matched against the locations and takes its headers from there — `location = /`'s own `add_header`s never reach a served entry document. Anything meant for the homepage (`Vary`, and emphatically anything like `X-Robots-Tag: noindex`) has to account for that; the raw filenames are kept out of search via `robots.txt` instead.
-- **Regenerate with `pnpm gen-sitemap`.** It first wipes the local `sitemap/` dir, so the output is always exactly the current set — POIs deleted from OSM since the last run do not linger. It exits non-zero on a failed Overpass crawl, so chain any deploy step with `&&` to avoid shipping a partial crawl.
-- **Deployment is manual and serves both domains at once** (both vhosts share `root /home/freemap/www`): rsync the local `sitemap/` into `freemap-fm6:www/sitemap/` with `--delete` (the live dir must end up _replaced_, not merged, or stale pages survive).
+- **Regenerate and deploy with `pnpm deploy-sitemap`** on fm5 — see [Running the generator](#running-the-generator). It first wipes the local `sitemap/` dir, so the output is always exactly the current set: POIs deleted from OSM since the last run do not linger. One deploy serves both domains (both vhosts share `root /home/freemap/www`).
 - `nginx -t` before reloading after editing a vhost.
 
 ## Keeping it in sync

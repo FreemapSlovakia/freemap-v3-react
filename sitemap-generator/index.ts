@@ -180,7 +180,7 @@ async function gen() {
 gen().catch((err) => {
   console.error(err);
 
-  // Exit non-zero so `dep-sitemap`'s `&& rsync --delete` does not run on a
+  // Exit non-zero so `deploy-sitemap`'s `&& rsync --delete` does not run on a
   // partial crawl and wipe good pages.
   process.exitCode = 1;
 });

@@ -8,6 +8,13 @@ import {
   getOsmMapping,
 } from '../src/osm/osmNameResolver.js';
 import {
+  closeOsmDb,
+  fetchArea,
+  fetchRefs,
+  type OsmFilter,
+  streamFeatures,
+} from './osmDb.js';
+import {
   appUrl,
   BASE_EU,
   expandNames,
@@ -25,64 +32,87 @@ type Tags = Record<string, string>;
  * A country whose OSM features get per-feature prerender pages, in that
  * country's most-prominent language. Slovakia keeps the full category set;
  * other countries get the outdoor-only subset (the map's core value) to keep
- * page volume, Overpass load and crawl budget sane. The page's home domain
+ * page volume, query cost and crawl budget sane. The page's home domain
  * follows the language via {@link langBase} (sk/cs → freemap.sk, else eu).
  */
 interface Country {
   name: string;
   lang: Lang;
-  /** Overpass area id: 3600000000 + the country's OSM relation id. */
-  areaId: number;
+  /** The country's OSM boundary relation, which features are clipped to. */
+  boundary: number;
   full: boolean;
 }
 
 const COUNTRIES: Country[] = [
-  { name: 'Slovakia', lang: 'sk', areaId: 3600014296, full: true },
-  { name: 'Czechia', lang: 'cs', areaId: 3600051684, full: false },
-  { name: 'Hungary', lang: 'hu', areaId: 3600021335, full: false },
-  { name: 'Poland', lang: 'pl', areaId: 3600049715, full: false },
-  { name: 'Italy', lang: 'it', areaId: 3600365331, full: false },
+  { name: 'Slovakia', lang: 'sk', boundary: 14296, full: true },
+  { name: 'Czechia', lang: 'cs', boundary: 51684, full: false },
+  { name: 'Hungary', lang: 'hu', boundary: 21335, full: false },
+  { name: 'Poland', lang: 'pl', boundary: 49715, full: false },
+  { name: 'Italy', lang: 'it', boundary: 365331, full: false },
 ];
 
-function routeQueries(area: number): Record<string, string> {
-  return {
-    'hiking-routes': `relation["type"="route"]["route"="hiking"](area:${area}); relation["type"="route"]["route"="foot"](area:${area});`,
-    'bicycle-routes': `relation["type"="route"]["route"="bicycle"](area:${area});`,
-    'ski-routes': `relation["type"="route"]["route"="ski"](area:${area}); relation["type"="route"]["route"="piste"](area:${area});`,
-  };
-}
+const ROUTE_CATEGORIES: Record<string, OsmFilter> = {
+  'hiking-routes': {
+    type: 'relation',
+    all: ['type=route'],
+    any: ['route=hiking', 'route=foot'],
+  },
+  'bicycle-routes': { type: 'relation', all: ['type=route', 'route=bicycle'] },
+  'ski-routes': {
+    type: 'relation',
+    all: ['type=route'],
+    any: ['route=ski', 'route=piste'],
+  },
+};
 
 /**
- * Outdoor-only categories. `natural` is restricted to high-value point
- * landmarks (peaks, saddles, springs, caves, glaciers, …): the unrestricted
- * `natural=*` set runs to hundreds of thousands of named woods/water polygons
- * per large country — thin content that also OOMs the generator.
+ * High-value point landmarks. The unrestricted `natural=*` set runs to hundreds
+ * of thousands of named woods and water polygons per large country — thin
+ * content, and more pages than the crawl budget is worth.
  */
-function outdoorQueries(area: number): Record<string, string> {
-  return {
-    ...routeQueries(area),
-    'natural-features': `nwr["natural"~"^(peak|volcano|saddle|ridge|arete|spring|hot_spring|geyser|cave_entrance|cliff|arch|glacier)$"]["name"](area:${area});`,
-    'protected-areas': `nwr["boundary"="protected_area"]["name"](area:${area});`,
-    huts: `nwr["tourism"~"^(alpine_hut|wilderness_hut)$"]["name"](area:${area});`,
-  };
-}
+const NATURAL_LANDMARKS = [
+  'peak',
+  'volcano',
+  'saddle',
+  'ridge',
+  'arete',
+  'spring',
+  'hot_spring',
+  'geyser',
+  'cave_entrance',
+  'cliff',
+  'arch',
+  'glacier',
+].map((value) => `natural=${value}`);
+
+/** Outdoor-only categories, for every country but Slovakia. */
+const OUTDOOR_CATEGORIES: Record<string, OsmFilter> = {
+  ...ROUTE_CATEGORIES,
+  'natural-features': { any: NATURAL_LANDMARKS, has: ['name'] },
+  'protected-areas': { all: ['boundary=protected_area'], has: ['name'] },
+  huts: {
+    any: ['tourism=alpine_hut', 'tourism=wilderness_hut'],
+    has: ['name'],
+  },
+};
 
 /** The full Slovak set: routes plus all named settlement/amenity/natural data. */
-function fullQueries(area: number): Record<string, string> {
-  return {
-    ...routeQueries(area),
-    'admin-boundaies': `relation["boundary"="administrative"](area:${area});`,
-    amenities: `nwr["amenity"]["name"](area:${area});`,
-    buildings: `nwr["building"]["name"](area:${area});`,
-    'geomorfological-units': `relation["boundary"="geomorphological-unit"](area:${area});`,
-    landuses: `nwr["landuse"]["name"](area:${area});`,
-    leisures: `nwr["leisure"]["name"](area:${area});`,
-    naturals: `nwr["natural"]["name"](area:${area});`,
-    man_made: `nwr["man_made"]["name"](area:${area});`,
-    'protected-areas': `nwr["boundary"="protected_area"]["name"](area:${area});`,
-    shops: `nwr["shop"]["name"](area:${area});`,
-  };
-}
+const FULL_CATEGORIES: Record<string, OsmFilter> = {
+  ...ROUTE_CATEGORIES,
+  'admin-boundaies': { type: 'relation', all: ['boundary=administrative'] },
+  amenities: { all: ['amenity'], has: ['name'] },
+  buildings: { all: ['building'], has: ['name'] },
+  'geomorfological-units': {
+    type: 'relation',
+    all: ['boundary=geomorphological-unit'],
+  },
+  landuses: { all: ['landuse'], has: ['name'] },
+  leisures: { all: ['leisure'], has: ['name'] },
+  naturals: { all: ['natural'], has: ['name'] },
+  man_made: { all: ['man_made'], has: ['name'] },
+  'protected-areas': { all: ['boundary=protected_area'], has: ['name'] },
+  shops: { all: ['shop'], has: ['name'] },
+};
 
 /**
  * Per-language page copy. Only the languages of the generated {@link COUNTRIES}
@@ -338,7 +368,7 @@ async function generateCountry(
   skNames: string[],
   euNames: string[],
 ): Promise<number> {
-  const { lang, areaId, full } = country;
+  const { lang, full } = country;
 
   const copy = COPY[lang];
 
@@ -350,62 +380,28 @@ async function generateCountry(
 
   const shardNames = langBase(lang) === BASE_EU ? euNames : skNames;
 
-  const queries = full ? fullQueries(areaId) : outdoorQueries(areaId);
+  const area = await fetchArea(country.boundary);
 
-  const entries = Object.entries(queries);
+  const entries = Object.entries(full ? FULL_CATEGORIES : OUTDOOR_CATEGORIES);
 
   let countryPages = 0;
 
   for (let c = 0; c < entries.length; c++) {
-    const [category, query] = entries[c];
+    const [category, filter] = entries[c];
 
     console.log(
-      `[${country.name} ${c + 1}/${entries.length}] ${category}: querying Overpass…`,
+      `[${country.name} ${c + 1}/${entries.length}] ${category}: querying the OSM database…`,
     );
 
-    const res = await fetch(
-      process.env['OVERPASS_URL'] ??
-        'https://overpass.freemap.sk/api/interpreter',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: `[out:json][timeout:300]; (${query}); out center tags;`,
-      },
-    );
+    const refs = await fetchRefs(area, filter);
 
-    const data = await res.json();
+    console.log(`  ${country.name}/${category}: ${refs.length} elements`);
 
-    const urls: string[] = data.elements.map((el) =>
-      appUrl(`layers=X&osm-${el.type}=${el.id}`, lang),
-    );
+    // Filled as pages are written, so a feature deleted from OSM between the id
+    // query and its tag batch is never advertised in a sitemap without a page.
+    const urls: string[] = [];
 
-    // A single sitemap file may contain at most 50 000 URLs (sitemaps.org).
-    // Split large categories into numbered shards so the index stays valid.
-    const MAX_URLS_PER_FILE = 45000;
-
-    const shardCount = Math.max(1, Math.ceil(urls.length / MAX_URLS_PER_FILE));
-
-    console.log(
-      `  ${country.name}/${category}: ${data.elements.length} elements → ${shardCount} sitemap shard(s)`,
-    );
-
-    for (let i = 0; i < shardCount; i++) {
-      const name =
-        shardCount === 1
-          ? `sitemap-feat-${lang}-${category}.txt`
-          : `sitemap-feat-${lang}-${category}-${i + 1}.txt`;
-
-      shardNames.push(name);
-
-      await writeFile(
-        `../sitemap/${name}`,
-        urls
-          .slice(i * MAX_URLS_PER_FILE, (i + 1) * MAX_URLS_PER_FILE)
-          .join('\n'),
-      );
-    }
-
-    for (const element of data.elements) {
+    for await (const element of streamFeatures(refs)) {
       const genName = getGenericNameFromOsmElementSync(
         element.tags,
         element.type,
@@ -415,7 +411,7 @@ async function generateCountry(
 
       const name = getNameFromOsmElement(element.tags, lang);
 
-      const center = element.center ?? element;
+      const { center } = element;
 
       const description = [
         genName,
@@ -439,6 +435,8 @@ async function generateCountry(
       const param = `layers=X&osm-${element.type}=${element.id}`;
 
       const url = appUrl(param, lang);
+
+      urls.push(url);
 
       const osmUrl = `https://www.openstreetmap.org/${element.type}/${element.id}`;
 
@@ -518,7 +516,7 @@ async function generateCountry(
             }
 
             <dl>
-              ${Object.entries(element.tags as Record<string, string>).map(
+              ${Object.entries(element.tags).map(
                 ([key, value]) => html`
                   <dt>
                     <a
@@ -595,17 +593,52 @@ async function generateCountry(
       await writeFile(`../sitemap/${fileName(param, lang)}`, h);
     }
 
-    countryPages += data.elements.length;
+    // A single sitemap file may contain at most 50 000 URLs (sitemaps.org).
+    // Split large categories into numbered shards so the index stays valid.
+    const MAX_URLS_PER_FILE = 45000;
+
+    const shardCount = Math.max(1, Math.ceil(urls.length / MAX_URLS_PER_FILE));
+
+    for (let i = 0; i < shardCount; i++) {
+      const name =
+        shardCount === 1
+          ? `sitemap-feat-${lang}-${category}.txt`
+          : `sitemap-feat-${lang}-${category}-${i + 1}.txt`;
+
+      shardNames.push(name);
+
+      await writeFile(
+        `../sitemap/${name}`,
+        urls
+          .slice(i * MAX_URLS_PER_FILE, (i + 1) * MAX_URLS_PER_FILE)
+          .join('\n'),
+      );
+    }
+
+    countryPages += urls.length;
 
     console.log(
-      `  ${country.name}/${category}: wrote ${data.elements.length} feature pages`,
+      `  ${country.name}/${category}: wrote ${urls.length} feature pages → ${shardCount} sitemap shard(s)`,
     );
+  }
+
+  // Every configured country has tens of thousands of features, so none is a
+  // legitimate zero — and the deploy rsyncs --delete over the live pages.
+  if (countryPages === 0) {
+    throw new Error(`${country.name}: no features found; refusing to deploy`);
   }
 
   console.log(`${country.name}: ${countryPages} feature pages (${lang}).`);
 
   return countryPages;
 }
+
+/**
+ * Well under the ~318 000 pages the five countries hold means a partly loaded
+ * database, not that OSM shrank — and deploying it would rsync --delete most of
+ * the indexed corpus away.
+ */
+const MIN_TOTAL_PAGES = 200_000;
 
 /**
  * Generate per-feature POI prerender pages for every configured country,
@@ -615,8 +648,18 @@ async function generateCountry(
 export async function objects(skNames: string[], euNames: string[]) {
   let total = 0;
 
-  for (const country of COUNTRIES) {
-    total += await generateCountry(country, skNames, euNames);
+  try {
+    for (const country of COUNTRIES) {
+      total += await generateCountry(country, skNames, euNames);
+    }
+  } finally {
+    await closeOsmDb();
+  }
+
+  if (total < MIN_TOTAL_PAGES) {
+    throw new Error(
+      `only ${total} feature pages (expected at least ${MIN_TOTAL_PAGES}); refusing to deploy`,
+    );
   }
 
   console.log(`Feature pages: ${total} across ${COUNTRIES.length} countries.`);
