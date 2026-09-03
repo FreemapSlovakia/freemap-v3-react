@@ -1,4 +1,5 @@
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { ElevationSourcesList } from '../components/ElevationSources.js';
 import type { ElevationChartMessages } from './ElevationChartMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
@@ -7,6 +8,8 @@ const sl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downloadAsSvg: 'Prenesi kot SVG',
   showWaypoints: 'Prikaži točke poti',
   elevationSource: 'Podatki o višini',
+  showAllSources: 'Prikaži vse',
+  elevationSourceList: (props) => <ElevationSourcesList {...props} />,
   fetchError: 'Nadmorske višine ni bilo mogoče prebrati',
   rangeHint: () => (
     <>

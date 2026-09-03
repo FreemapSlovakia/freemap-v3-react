@@ -1,4 +1,5 @@
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { ElevationSourcesList } from '../components/ElevationSources.js';
 import type { ElevationChartMessages } from './ElevationChartMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
@@ -7,6 +8,8 @@ const pl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downloadAsSvg: 'Pobierz jako SVG',
   showWaypoints: 'Pokaż punkty trasy',
   elevationSource: 'Dane wysokościowe',
+  showAllSources: 'Pokaż wszystkie',
+  elevationSourceList: (props) => <ElevationSourcesList {...props} />,
   fetchError: 'Nie udało się odczytać wysokości',
   rangeHint: () => (
     <>

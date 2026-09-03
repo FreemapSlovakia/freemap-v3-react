@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { askingCookieConsentSelector } from '@app/store/selectors.js';
+import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   GENEROUS_MARGIN_PX,
@@ -24,7 +25,6 @@ import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { clamp } from '@shared/mathUtils.js';
 import clsx from 'clsx';
 import {
-  Fragment,
   type ReactElement,
   type PointerEvent as ReactPointerEvent,
   useCallback,
@@ -39,7 +39,11 @@ import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { buildFillStops } from '../chartFill.js';
 import { useChartColorize } from '../hooks/useChartColorize.js';
-import { useElevationSources } from '../hooks/useElevationSources.js';
+import {
+  tooManyElevationSources,
+  useElevationSources,
+  useShowElevationSources,
+} from '../hooks/useElevationSources.js';
 import {
   elevationChartClose,
   elevationChartSetActivePoint,
@@ -52,6 +56,7 @@ import { rangeStatsOf } from '../rangeStats.js';
 import { loadElevationChartMessages } from '../translations/loadElevationChartMessages.js';
 import { useElevationChartMessages } from '../translations/useElevationChartMessages.js';
 import classes from './ElevationChart.module.css';
+import { ElevationSourcesInline } from './ElevationSources.js';
 
 const ml = 50,
   mr = 30,
@@ -147,6 +152,13 @@ const LONG_PRESS_MS = 500;
 const MIN_RANGE_METERS = 1;
 
 /** Whether the gesture hint has been raised in this run of the app. */
+// The credit toast holds a snapshot of what it was opened with, so it goes when
+// the profile's own credits change — which covers a re-route, a new target and
+// the chart closing (that resets the slice).
+const SOURCES_TOAST_CANCEL = {
+  stateChangePredicate: (state: RootState) => state.elevationChart.attributions,
+};
+
 let hintShown = false;
 
 export default function ElevationChart(): ReactElement | null {
@@ -194,6 +206,14 @@ export default function ElevationChart(): ReactElement | null {
     provenance ?? 'recorded',
     reportedAttributions,
   );
+
+  // A read answered from a Sonny-derived dataset credits every agency behind it,
+  // which the footer has no room for; then the count stands in for the list and
+  // opens it. The open list goes when what it credits does — a re-route, another
+  // target, the chart closing — since it snapshots the credits it was given.
+  const tooMany = tooManyElevationSources(sources);
+
+  const showSources = useShowElevationSources(sources, SOURCES_TOAST_CANCEL);
 
   const preventRangeHint = useAppSelector(
     (state) => state.elevationSettings.preventRangeHint,
@@ -1456,27 +1476,20 @@ export default function ElevationChart(): ReactElement | null {
           // auto margin belongs here rather than to them.
           <p className="m-0 ms-auto small text-body-secondary">
             {m?.elevationSource}:{' '}
-            {sources.map((attr, i) => (
-              // One dataset can be credited under one name with several links.
-              <Fragment key={`${attr.name} ${attr.url ?? ''}`}>
-                {i > 0 ? ', ' : null}
-
-                {/* A model we have no link for — a country the API gained since
-                    — is still named, just not as a link. */}
-                {attr.url ? (
-                  <a
-                    href={attr.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="link-body-emphasis"
-                  >
-                    {attr.name}
-                  </a>
-                ) : (
-                  attr.name
-                )}
-              </Fragment>
-            ))}
+            {tooMany ? (
+              <Button
+                variant="link"
+                // `.btn` sets an absolute font size, which beats a `small` class
+                // on the same element — inherit the paragraph's instead.
+                style={{ fontSize: 'inherit' }}
+                className="p-0 align-baseline link-body-emphasis"
+                onClick={showSources}
+              >
+                {m?.showAllSources} ({sources.length})
+              </Button>
+            ) : (
+              <ElevationSourcesInline sources={sources} />
+            )}
             {/* The finer national models are premium's; say so where they'd
                 otherwise just be missing from the list. */}
             {!premium && <PremiumGem hint={prm?.higherPrecisionElevation} />}

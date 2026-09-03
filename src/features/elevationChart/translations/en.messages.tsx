@@ -1,3 +1,4 @@
+import { ElevationSourcesList } from '../components/ElevationSources.js';
 import type { ElevationChartMessages } from './ElevationChartMessages.js';
 
 const en: ElevationChartMessages = {
@@ -6,6 +7,8 @@ const en: ElevationChartMessages = {
   downloadAsSvg: 'Download as SVG',
   showWaypoints: 'Show waypoints',
   elevationSource: 'Elevation data',
+  showAllSources: 'Show all',
+  elevationSourceList: (props) => <ElevationSourcesList {...props} />,
   fetchError: 'Elevation could not be read',
   rangeHint: () => (
     <>

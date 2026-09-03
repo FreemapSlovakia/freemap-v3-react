@@ -1,4 +1,9 @@
 import { isNetworkError } from '@app/httpRequest.js';
+import {
+  clearMapFeatures,
+  deleteFeature,
+  selectFeature,
+} from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -15,9 +20,18 @@ import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 import { addError } from '@/translations/messagesInterface.js';
 import {
   elevationSourceNames,
+  tooManyElevationSources,
   useElevationSources,
+  useShowElevationSources,
 } from '../hooks/useElevationSources.js';
 import { useElevationChartMessages } from '../translations/useElevationChartMessages.js';
+
+// The readout's credits belong to the selected feature, so the toast they open
+// goes with the same things that take the readout's own toast away — otherwise
+// it stands beside whatever is selected next.
+const SOURCES_TOAST_CANCEL = {
+  cancelType: [clearMapFeatures.type, selectFeature.type, deleteFeature.type],
+};
 
 /** One point's elevation as it travels from the API read to the readout. */
 export type ElevationReading = {
@@ -79,13 +93,25 @@ export function ElevationValue({
   // it from instead.
   const sources = useElevationSources('terrain-model', attributions);
 
-  const sourceNames = elevationSourceNames(sources);
+  // The tooltip is plain text, so the credits' links live only in the toast the
+  // ⓘ opens — which is why it opens at any count, not just a long one.
+  const tooMany = tooManyElevationSources(sources);
+
+  const showSources = useShowElevationSources(sources, SOURCES_TOAST_CANCEL);
+
+  // Only the short form writes the names out; past the threshold the count does.
+  const sourceNames = tooMany ? '' : elevationSourceNames(sources);
 
   const errorText =
     m && ecm ? addError(m, ecm.fetchError, error) : String(error ?? '');
 
-  const sourceHint =
-    ecm && sourceNames ? `${ecm.elevationSource}: ${sourceNames}` : undefined;
+  const sourceHint = !ecm
+    ? undefined
+    : tooMany
+      ? `${ecm.elevationSource}: ${ecm.showAllSources} (${sources.length})`
+      : sourceNames
+        ? `${ecm.elevationSource}: ${sourceNames}`
+        : undefined;
 
   if (!loading && elevation === undefined && error === undefined) {
     return null;
@@ -116,6 +142,7 @@ export function ElevationValue({
               hint={sourceHint}
               color="body-secondary"
               className="ms-1"
+              onClick={showSources}
             >
               <FaInfoCircle />
             </GlyphMarker>

@@ -217,20 +217,44 @@ Still emitting at info level (non-blocking, optional cleanup):
       for manual pending state, and **React Compiler** eligibility (decide first —
       it would let many hand-written `useMemo`/`useCallback` be dropped, changing
       how much manual hook churn is worthwhile).
-- [ ] **Scope England's terrain model to England.** The Environment Agency's
-      LIDAR composite covers England alone, but coverage is reported per country
-      (`/geotools/covered-countries` matches an `alpha2` column), so GEDTM30 is
-      credited beside it across the whole UK and the premium tooltip names
-      England through `dtmAreaNames` rather than the country. The elevation
-      API resolves a read's own credits now, so the profile's credit line is
-      already exact; what is left is the premium offer's country list and the
-      readout's precision. To make those exact, carry a subdivision token end to
-      end: an England polygon row in the API's `country` table under `gb-eng`,
-      the same name for the England entry in `ELEVATION_SOURCES`, then here
-      `ELEVATION_API_DTM_COUNTRIES` and `COUNTRY_TOKEN` in `elevationSources.ts`,
-      which today accepts two letters only — so a `gb-eng` token would silently
-      withhold the sub-metre decimal. Both server changes are needed together —
-      the token has to match on both sides.
+- [ ] **The premium offer names England's model for the whole UK.** The elevation
+      API reports England under its own `en` token and resolves the verbatim OGL v3
+      Environment Agency line for it, while the rest of the UK answers from Sonny —
+      so the profile's credit and the readout's decimal are both already exact
+      (`en` is two letters, so `hasSubMeterPrecision` grants the decimal the 1 m
+      composite deserves). What is left is the offer: `ELEVATION_API_DTM_COUNTRIES`
+      is a per-country list, so `gb` carries the England-only model's name through
+      `dtmAreaNames` for Scotland and Wales too, where the data is Sonny's 10 m.
+      Fixing it means the offer's list stops being keyed by country alone.
+- [ ] **A GraphHopper route credits Sonny alone, not the agencies behind it.**
+      `SONNY_ATTR` is one hardcoded line, added by `useRoutingAttributions` for any
+      standing GraphHopper result and by `useElevationSources` for a free-tier
+      route's profile. But the elevation API, asked for the same dataset, answers
+      with the whole chain — 8 credits for a point in Scotland, 18 for one in
+      Germany — because the upstream licences (DL-DE/BY-2.0, OGL v3 and the rest)
+      each want their own source line. So the router's own elevation, which every
+      free route draws and which weights every route including premium ones, is
+      credited by one line where a read of the same data is credited by eighteen.
+      The credit is owed for the weighting alone, so it is not only the free tier's
+      profile that needs it: a premium route re-sampled from the national models was
+      still *shaped* by Sonny, and an isochrone that draws no elevation at all was
+      too.
+      GraphHopper itself is no help: `/route` returns 3D coordinates but its
+      `info.copyrights` is only `["GraphHopper", "OpenStreetMap contributors"]`,
+      and no elevation provider can add to it — that list is static in
+      `GraphHopperConfig`, for Skadi and Mapterhorn as much as for Sonny. Reported
+      upstream as
+      [graphhopper#3397](https://github.com/graphhopper/graphhopper/issues/3397).
+      Two ways forward, neither waiting on it:
+      **interim** — `copyrights:` is a `config.yml` key (`setCopyrights` is a public
+      setter) on our own instance, so the chain can be listed there and read from
+      `info.copyrights` instead of `SONNY_ATTR`. It *replaces* the list, so the YAML
+      must re-include GraphHopper and OpenStreetMap contributors, and it is
+      graph-wide, so a Slovak route would carry every Sonny country in the graph.
+      **Proper** — our own backend resolves the credits, which it already does per
+      country, so an endpoint keyed by the countries a route crosses fits. Either
+      way, a client-side copy of Sonny's agency list is the coupling
+      `elevationSourcesFromTokens` was removed to end.
 - [ ] **A saved map's imported track loses its elevation credit.** Overriding a
       loaded track's elevation puts the credits in `trackViewer.elevationAttributions`
       and on the render-only copy; neither reaches the map document, which stores

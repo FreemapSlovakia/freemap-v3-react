@@ -1,7 +1,11 @@
+import type { Toast } from '@features/toasts/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { SONNY_ATTR } from '@shared/elevationSources.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
 import type { ElevationProvenance } from '../model/actions.js';
+import { loadElevationChartMessages } from '../translations/loadElevationChartMessages.js';
 
 /**
  * The terrain models to credit for the elevation shown: the credits the
@@ -32,4 +36,45 @@ export function elevationSourceNames(sources: AttributionDef[]): string {
     .map((attr) => attr.name)
     .filter(Boolean)
     .join(', ');
+}
+
+/**
+ * Above this many credits none are written out — only their count, which opens
+ * the list. A read the API answers from a Sonny-derived dataset carries every
+ * national agency behind it (18 for a point in Germany, whichever one it falls
+ * in), and no footer or tooltip has room for that. Naming a few of them would be
+ * the wrong shortening: each is listed because a licence asks for it, and the
+ * API states no order of importance, so any subset both under-credits the rest
+ * and implies a ranking the wire format doesn't carry.
+ */
+const MAX_INLINE_SOURCES = 2;
+
+/** Whether the credits have to move into the toast rather than be written out. */
+export function tooManyElevationSources(sources: AttributionDef[]): boolean {
+  return sources.length > MAX_INLINE_SOURCES;
+}
+
+/**
+ * Opens the whole credit list in a toast, for when it doesn't fit inline. The
+ * list is a snapshot, so `cancel` has to say what invalidates it — otherwise it
+ * outlives the reading it credits and stands beside a different one.
+ */
+export function useShowElevationSources(
+  sources: AttributionDef[],
+  cancel: Pick<Toast, 'cancelType' | 'stateChangePredicate'>,
+): () => void {
+  const dispatch = useDispatch();
+
+  return useCallback(() => {
+    dispatch(
+      toastsAdd({
+        id: 'elevationChart.sources',
+        messageKey: 'elevationSourceList',
+        messageLoader: loadElevationChartMessages,
+        messageParams: { sources },
+        style: 'info',
+        ...cancel,
+      }),
+    );
+  }, [dispatch, sources, cancel]);
 }

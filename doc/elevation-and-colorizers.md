@@ -315,6 +315,18 @@ feature being charted knows what sampled it:
 - **`recorded`** — a GPS recording, an imported file, or a track merely gap-filled: a
   measurement no terrain model answered for, credited to nobody.
 
+Past two credits none are written out: the footer shows the label and their count, which
+opens the whole list in a toast (`tooManyElevationSources`, `useShowElevationSources`, and
+the `elevationSourceList` message, which renders `ElevationSourcesList`). The readout's ⓘ
+does the same on click, a tooltip being unopenable. **Naming a few of them would be the wrong
+shortening** — each entry is listed because a licence asks for it, and `attributions` is
+order-stable but not ranked, so any subset both under-credits the rest and reads as a
+ranking the wire format doesn't carry. The list is dataset-scoped rather than point-scoped,
+so a single point in Germany draws all 18 of Sonny's German credits. Note this is
+the `terrain-model` path: `provenance === 'sonny'` is GraphHopper's own elevation,
+which our API never reported, so it yields the one `SONNY_ATTR` line and never
+reaches the threshold — the very gap `TODO.md` records.
+
 `useElevationSources(provenance, reported)` turns the provenance and the reported credits
 into the defs the chart links under its toolbar (with a `PremiumGem` for non-premium users) and `ElevationValue`
 names in its ⓘ tooltip. A point readout is always `terrain-model` — which is why

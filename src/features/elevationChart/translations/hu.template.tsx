@@ -1,4 +1,5 @@
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { ElevationSourcesList } from '../components/ElevationSources.js';
 import type { ElevationChartMessages } from './ElevationChartMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
@@ -7,6 +8,8 @@ const hu: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   downloadAsSvg: 'Letöltés SVG-ként',
   showWaypoints: 'Útpontok megjelenítése',
   elevationSource: 'Magassági adatok',
+  showAllSources: 'Összes megjelenítése',
+  elevationSourceList: (props) => <ElevationSourcesList {...props} />,
   fetchError: 'A magasságot nem sikerült beolvasni',
   rangeHint: () => (
     <>
