@@ -608,6 +608,25 @@ export type OsmTagToNameMapping = {
     private: string;
     designated: string;
   };
+  fitness_station: {
+    air_walker: string;
+    balance_beam: string;
+    box: string;
+    elliptical_trainer: string;
+    exercise_bike: string;
+    horizontal_bar: string;
+    horizontal_ladder: string;
+    hyperextension: string;
+    parallel_bars: string;
+    'push-up': string;
+    rings: string;
+    rower: string;
+    sign: string;
+    'sit-up': string;
+    stairs: string;
+    wall_bars: string;
+    yes: string;
+  };
   highway: {
     '*': string;
     bridleway: string;
