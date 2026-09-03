@@ -3,6 +3,7 @@ import matter from 'gray-matter';
 import htm from 'htm';
 import { marked } from 'marked';
 import vhtml from 'vhtml';
+import { hubs } from './hubs.js';
 import { objects } from './objects.js';
 import {
   appUrl,
@@ -10,7 +11,6 @@ import {
   BASE_SK,
   fileName,
   HUB_LANGS,
-  hubs,
   LANGS,
   type Lang,
   renderDocument,
@@ -79,7 +79,7 @@ async function gen() {
   outSk.push(`${BASE_SK}/llms.txt`);
   outEu.push(`${BASE_EU}/llms.txt`);
 
-  // Layer/tool landing pages (curated copy from llms.txt), sk + en.
+  // Layer/tool/dialog landing pages, curated copy from llms.txt, every language.
   for (const hub of hubs) {
     for (const lang of HUB_LANGS) {
       await writeFile(
