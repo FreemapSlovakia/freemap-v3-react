@@ -1617,29 +1617,91 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   type: {
     route: {
+      '*': 'Szlak',
       route: {
         '*': 'Szlak {}',
-        bicycle: 'Szlak rowerowy',
+        aerialway: 'Trasa kolei linowej',
+        bicycle: {
+          '*': 'Szlak rowerowy',
+          network: {
+            icn: 'Międzynarodowy szlak rowerowy',
+            lcn: 'Lokalny szlak rowerowy',
+            ncn: 'Krajowy szlak rowerowy',
+            rcn: 'Regionalny szlak rowerowy',
+          },
+        },
         bus: 'Trasa autobusu',
-        foot: 'Szlak pieszy',
+        canoe: 'Szlak kajakowy',
+        canyoning: 'Trasa kanioningowa',
+        detour: 'Trasa objazdu',
+        emergency_access: 'Trasa dojazdu ratunkowego',
+        ferry: 'Trasa promu',
+        fitness_trail: 'Ścieżka zdrowia',
+        foot: {
+          '*': 'Szlak pieszy',
+          network: {
+            iwn: 'Międzynarodowa trasa piesza',
+            lwn: 'Lokalna trasa piesza',
+            nwn: 'Krajowa trasa piesza',
+            rwn: 'Regionalna trasa piesza',
+          },
+          pilgrimage: {
+            '*': 'Szlak pielgrzymkowy',
+            no: '',
+          },
+        },
+        funicular: 'Trasa kolei linowo-terenowej',
         hiking: {
           '*': 'Szlak turystyczny',
-
           network: {
             iwn: 'Międzynarodowy szlak pieszy',
             lwn: 'Lokalny szlak pieszy',
             nwn: 'Krajowy szlak pieszy',
             rwn: 'Regionalny szlak pieszy',
           },
+          pilgrimage: {
+            '*': 'Szlak pielgrzymkowy',
+            no: '',
+          },
         },
-        horse: 'Szlak jeździecki',
+        historic: 'Trasa historyczna',
+        historic_railway: 'Historyczna linia kolejowa',
+        horse: {
+          '*': 'Szlak jeździecki',
+          network: {
+            lhn: 'Lokalny szlak jeździecki',
+            rhn: 'Regionalny szlak jeździecki',
+          },
+        },
+        inline_skates: 'Trasa rolkowa',
+        junction: 'Węzeł drogowy',
+        light_rail: 'Trasa kolei miejskiej',
+        motorboat: 'Trasa motorówki',
         mtb: 'Szlak rowerów górskich',
+        nordic_walking: 'Trasa nordic walking',
+        pipeline: 'Trasa rurociągu',
         piste: 'Stok narciarski lub ścieżka',
+        portage: 'Trasa przenoski',
+        power: 'Trasa linii energetycznej',
         railway: 'Linia kolejowa',
+        road: 'Trasa drogowa',
+        running: 'Trasa biegowa',
+        share_taxi: 'Trasa taksówki zbiorowej',
         ski: 'Trasa narciarska',
+        subway: 'Trasa metra',
+        tracks: 'Przebieg torów',
+        train: 'Trasa pociągu',
         tram: 'Trasa tramwajowa',
+        trolleybus: 'Trasa trolejbusu',
+        via_ferrata: 'Via ferrata',
+        waterway: 'Szlak wodny',
+        worship: {
+          '*': 'Szlak pielgrzymkowy',
+          worship: {
+            stations_of_the_cross: 'Droga krzyżowa',
+          },
+        },
       },
-      '*': 'Szlak',
     },
   },
 

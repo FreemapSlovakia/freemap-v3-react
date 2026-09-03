@@ -1768,9 +1768,37 @@ export type OsmTagToNameMapping = {
       '*': string;
       route: {
         '*': string;
-        bicycle: string;
+        aerialway: string;
+        bicycle: {
+          '*': string;
+          network: {
+            lcn: string;
+            rcn: string;
+            ncn: string;
+            icn: string;
+          };
+        };
         bus: string;
-        foot: string;
+        canoe: string;
+        canyoning: string;
+        detour: string;
+        emergency_access: string;
+        ferry: string;
+        fitness_trail: string;
+        foot: {
+          '*': string;
+          network: {
+            lwn: string;
+            rwn: string;
+            nwn: string;
+            iwn: string;
+          };
+          pilgrimage: {
+            '*': string;
+            no: string;
+          };
+        };
+        funicular: string;
         hiking: {
           '*': string;
           network: {
@@ -1779,13 +1807,48 @@ export type OsmTagToNameMapping = {
             nwn: string;
             iwn: string;
           };
+          pilgrimage: {
+            '*': string;
+            no: string;
+          };
         };
-        horse: string;
+        historic: string;
+        historic_railway: string;
+        horse: {
+          '*': string;
+          network: {
+            lhn: string;
+            rhn: string;
+          };
+        };
+        inline_skates: string;
+        junction: string;
+        light_rail: string;
+        motorboat: string;
         mtb: string;
+        nordic_walking: string;
+        pipeline: string;
         piste: string;
+        portage: string;
+        power: string;
         railway: string;
+        road: string;
+        running: string;
+        share_taxi: string;
         ski: string;
+        subway: string;
+        tracks: string;
+        train: string;
         tram: string;
+        trolleybus: string;
+        via_ferrata: string;
+        waterway: string;
+        worship: {
+          '*': string;
+          worship: {
+            stations_of_the_cross: string;
+          };
+        };
       };
     };
   };

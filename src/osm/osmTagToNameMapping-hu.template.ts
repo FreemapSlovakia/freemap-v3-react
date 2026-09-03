@@ -1637,29 +1637,91 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   type: {
     route: {
+      '*': 'Útvonal',
       route: {
         '*': 'Útvonal {}',
-        bicycle: 'Kerékpáros útvonal',
+        aerialway: 'Felvonó útvonala',
+        bicycle: {
+          '*': 'Kerékpáros útvonal',
+          network: {
+            icn: 'Nemzetközi kerékpáros útvonal',
+            lcn: 'Helyi kerékpáros útvonal',
+            ncn: 'Országos kerékpáros útvonal',
+            rcn: 'Regionális kerékpáros útvonal',
+          },
+        },
         bus: 'Buszútvonal',
-        foot: 'Gyalogos útvonal',
+        canoe: 'Kenuútvonal',
+        canyoning: 'Canyoning útvonal',
+        detour: 'Terelőútvonal',
+        emergency_access: 'Mentési útvonal',
+        ferry: 'Kompútvonal',
+        fitness_trail: 'Fitneszösvény',
+        foot: {
+          '*': 'Gyalogos útvonal',
+          network: {
+            iwn: 'Nemzetközi gyalogos útvonal',
+            lwn: 'Helyi gyalogos útvonal',
+            nwn: 'Országos gyalogos útvonal',
+            rwn: 'Regionális gyalogos útvonal',
+          },
+          pilgrimage: {
+            '*': 'Zarándokútvonal',
+            no: '',
+          },
+        },
+        funicular: 'Siklóvonal',
         hiking: {
           '*': 'Turistaút',
-
           network: {
             iwn: 'Nemzetközi turistaút',
             lwn: 'Helyi turistaút',
             nwn: 'Országos turistaút',
             rwn: 'Regionális turistaút',
           },
+          pilgrimage: {
+            '*': 'Zarándokútvonal',
+            no: '',
+          },
         },
-        horse: 'Lovas útvonal',
+        historic: 'Történelmi útvonal',
+        historic_railway: 'Történelmi vasútvonal',
+        horse: {
+          '*': 'Lovas útvonal',
+          network: {
+            lhn: 'Helyi lovas útvonal',
+            rhn: 'Regionális lovas útvonal',
+          },
+        },
+        inline_skates: 'Görkorcsolya-útvonal',
+        junction: 'Csomópont',
+        light_rail: 'Gyorsvasúti vonal',
+        motorboat: 'Motorcsónak-útvonal',
         mtb: 'Mountain bike útvonal',
+        nordic_walking: 'Nordic walking útvonal',
+        pipeline: 'Vezeték nyomvonala',
         piste: 'Sípálya',
+        portage: 'Átemelési útvonal',
+        power: 'Elektromos vezeték nyomvonala',
         railway: 'Vasútvonal',
+        road: 'Közúti útvonal',
+        running: 'Futóútvonal',
+        share_taxi: 'Társastaxi-útvonal',
         ski: 'Sífutó útvonal',
+        subway: 'Metróvonal',
+        tracks: 'Vágányok nyomvonala',
+        train: 'Vonatútvonal',
         tram: 'Villamosútvonal',
+        trolleybus: 'Trolibusz-útvonal',
+        via_ferrata: 'Via ferrata',
+        waterway: 'Vízi útvonal',
+        worship: {
+          '*': 'Zarándokútvonal',
+          worship: {
+            stations_of_the_cross: 'Keresztút',
+          },
+        },
       },
-      '*': 'Útvonal',
     },
   },
 

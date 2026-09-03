@@ -1614,30 +1614,91 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   type: {
     route: {
+      '*': 'Weg',
       route: {
         '*': 'Weg {}',
-        bicycle: 'Fahrradweg',
+        aerialway: 'Seilbahnlinie',
+        bicycle: {
+          '*': 'Fahrradweg',
+          network: {
+            lcn: 'Lokale Radroute',
+            rcn: 'Regionale Radroute',
+            ncn: 'Nationale Radroute',
+            icn: 'Internationale Radroute',
+          },
+        },
         bus: 'Buslinie',
-        foot: 'Fußweg',
+        canoe: 'Kanuroute',
+        canyoning: 'Canyoning-Route',
+        detour: 'Umleitungsroute',
+        emergency_access: 'Rettungszufahrt',
+        ferry: 'Fährverbindung',
+        fitness_trail: 'Trimm-dich-Pfad',
+        foot: {
+          '*': 'Fußweg',
+          network: {
+            lwn: 'Lokaler Fußweg',
+            rwn: 'Regionaler Fußweg',
+            nwn: 'Nationaler Fußweg',
+            iwn: 'Internationaler Fußweg',
+          },
+          pilgrimage: {
+            '*': 'Pilgerweg',
+            no: '',
+          },
+        },
+        funicular: 'Standseilbahnlinie',
         hiking: {
           '*': 'Wanderweg',
-
           network: {
             lwn: 'Lokaler Wanderweg',
             rwn: 'Regionaler Wanderweg',
             nwn: 'Nationaler Wanderweg',
             iwn: 'Internationaler Wanderweg',
           },
+          pilgrimage: {
+            '*': 'Pilgerweg',
+            no: '',
+          },
         },
-        horse: 'Reitweg',
+        historic: 'Historische Route',
+        historic_railway: 'Historische Bahnstrecke',
+        horse: {
+          '*': 'Reitweg',
+          network: {
+            lhn: 'Lokaler Reitweg',
+            rhn: 'Regionaler Reitweg',
+          },
+        },
+        inline_skates: 'Inline-Skating-Route',
+        junction: 'Knotenpunkt',
+        light_rail: 'Stadtbahnlinie',
+        motorboat: 'Motorbootroute',
         mtb: 'Mountainbike-Strecke',
+        nordic_walking: 'Nordic-Walking-Strecke',
+        pipeline: 'Pipelineroute',
         piste: 'Skipiste',
+        portage: 'Umtrageroute',
+        power: 'Stromleitungsroute',
         railway: 'Bahnstrecke',
+        road: 'Straßenroute',
+        running: 'Laufstrecke',
+        share_taxi: 'Sammeltaxilinie',
         ski: 'Langlaufloipe',
+        subway: 'U-Bahn-Linie',
+        tracks: 'Gleisverlauf',
+        train: 'Zuglinie',
         tram: 'Straßenbahnlinie',
+        trolleybus: 'Obuslinie',
+        via_ferrata: 'Klettersteig',
+        waterway: 'Wasserstraßenroute',
+        worship: {
+          '*': 'Pilgerweg',
+          worship: {
+            stations_of_the_cross: 'Kreuzweg',
+          },
+        },
       },
-
-      '*': 'Weg',
     },
   },
 
