@@ -61,12 +61,28 @@ async function gen() {
   const pushUrl = (url: string) =>
     (url.startsWith(BASE_EU) ? outEu : outSk).push(url);
 
+  // A prerender's file name is its query string, so two pages naming the same
+  // app state overwrite each other silently while both stay in the sitemap —
+  // and `layers=X` is nginx's fallback for every crawler request it cannot
+  // match. POI pages are excluded: a feature in two categories legitimately
+  // writes the same page twice.
+  const written = new Set<string>();
+
+  const writePage = async (param: string, lang: Lang, html: string) => {
+    const name = fileName(param, lang);
+
+    if (written.has(name)) {
+      throw new Error(`two pages claim the prerender ${name}`);
+    }
+
+    written.add(name);
+
+    await writeFile(`../sitemap/${name}`, html);
+  };
+
   // Homepage, one prerender per UI language (cross-linked via hreflang).
   for (const lang of LANGS) {
-    await writeFile(
-      `../sitemap/${fileName('layers=X', lang)}`,
-      renderHome(lang),
-    );
+    await writePage('layers=X', lang, renderHome(lang));
 
     pushUrl(appUrl('layers=X', lang));
   }
@@ -82,10 +98,7 @@ async function gen() {
   // Layer/tool/dialog landing pages, curated copy from llms.txt, every language.
   for (const hub of hubs) {
     for (const lang of HUB_LANGS) {
-      await writeFile(
-        `../sitemap/${fileName(hub.param, lang)}`,
-        renderHub(hub, lang),
-      );
+      await writePage(hub.param, lang, renderHub(hub, lang));
 
       pushUrl(appUrl(hub.param, lang));
     }
@@ -137,8 +150,9 @@ async function gen() {
       // Documents carry a YAML frontmatter `title:`; strip it from the body.
       const { data, content } = matter(md);
 
-      await writeFile(
-        `../sitemap/${fileName(docParam, lang)}`,
+      await writePage(
+        docParam,
+        lang,
         renderDocument({
           key,
           lang,
