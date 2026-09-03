@@ -466,10 +466,6 @@ const config: Configuration = {
         ],
       },
       {
-        test: /\.overpass$/,
-        loader: '../overpass-loader',
-      },
-      {
         test: /\.css$/,
         oneOf: [
           {
@@ -585,11 +581,7 @@ const config: Configuration = {
       // Own osm2pgsql-backed API (freemap-osm-api): the objects layer and map
       // details. Europe only.
       FM_OSM_API_URL: process.env['FM_OSM_API_URL'] || 'https://osm.freemap.sk',
-      // Only element-by-id geometry still comes from Overpass, and only while
-      // OSM_ELEMENT_SOURCE says so.
-      OVERPASS_URL:
-        process.env['OVERPASS_URL'] ||
-        'https://overpass.freemap.sk/api/interpreter',
+      // Changeset listings only — element geometry comes from the own API.
       OSM_API_URL:
         process.env['OSM_API_URL'] || 'https://api.openstreetmap.org',
       // Self-hosted Photon: forward search and reverse geocoding. Its index
@@ -607,9 +599,6 @@ const config: Configuration = {
       // takes the account's bearer token itself, clamps the quality it grants,
       // and queues by whatever priority it decides — see doc/panorama.md.
       TERRAIN_URL: process.env['TERRAIN_URL'] || 'https://terrain.freemap.sk',
-      // Where single OSM element (node/way/relation) lookups are resolved:
-      // 'overpass' (default, internal instance) or 'osm-api' (public OSM API).
-      OSM_ELEMENT_SOURCE: process.env['OSM_ELEMENT_SOURCE'] || 'overpass',
       BASE_URL:
         {
           www: 'https://www.freemap.sk',

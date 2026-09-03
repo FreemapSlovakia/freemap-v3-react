@@ -23,8 +23,8 @@ import {
 } from '@features/drawing/model/actions/drawingPointActions.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
-import type { OsmGeojson } from '@features/osm/model/assembleOsmGeojson.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
+import type { OsmGeojson } from '@features/osm/model/osmGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import {
   ISOCHRONE_FILL_OPACITY,

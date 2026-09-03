@@ -268,6 +268,42 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Decisions worth not relitigating
 
+- **Element lookup answers for tagged features in Europe, and that is the whole
+  intent.** `/v1/features/by-id` on our own API replaced Overpass. So an
+  untagged way, a plain geometry node, or anything outside the extract is
+  reported as not found, and a relation is drawn as its line geometry rather
+  than as a collection including its member nodes. Deliberate: this is an
+  outdoor map, not an OSM element inspector, and every producer of an element id
+  in the app — the objects layer, map details, Photon search — has exactly the
+  same coverage, so nothing internal can ask for what is missing.
+
+  **Do NOT add the public OSM API back as a fallback.** Its usage policy is
+  explicit — "the editing API is provided in order to edit the map data, not for
+  read-only purposes or projects" — and points read-only use at Overpass or
+  planet files, with blocking "without notice" for clients affecting service.
+  Reading elements from it for display was a mistake this change corrected.
+  If coverage ever does need widening, widen the import instead: storing
+  untagged nodes and ways in `freemap-osm-api` is an afternoon's work in the Lua
+  and costs only disk.
+
+- [ ] **The changesets tool still reads the OSM editing API.**
+      `src/features/changesets/model/processor.ts:110` lists changesets from
+      `/api/0.6/changesets`, which the policy above covers too. Much milder than
+      element lookup was — it fires only on opening the tool or changing its
+      parameters, never per pan — but it is the last read-only use left. Moving
+      it means either a third-party service (OSMCha) or importing the changeset
+      replication stream ourselves; neither is worth it until the feature grows.
+
+- **Don't rename the `overpass-*` / `nominatim-*` source ids.** They name the
+  kind of lookup, not the backend — the data comes from freemap-osm-api and
+  Photon, and Overpass is gone from the code entirely (`baa08abe`). Renaming is
+  tempting and wrong: the ids are part of the saved-map document format, and
+  `mapDocumentSchema.ts` silently drops a search result whose `source` it does
+  not recognise. A compat mapping covers old documents, but not the other
+  direction — a map saved by a new client loses those results when an older
+  cached bundle opens it. They are also persisted in `excludeSources`, where one
+  unknown entry resets the whole slice. Treat them as wire-format identifiers.
+
 - **`RichMarker` stays uncompiled — do NOT "fix" its ref access.** It reads and
   writes `faIconRef.current` during render, which bails it out of the React
   Compiler, and that is fine. The cache is load-bearing: `faIcon` is written

@@ -696,7 +696,13 @@ export function isClosedGeometry(geometry: Geometry): boolean {
   }
 }
 
-export function mergeLines<T extends Geometry>(
+/**
+ * Joins `LineString`s end to end, in either direction, until none of them share
+ * an endpoint. Nothing else is touched, and a line that closes on itself stays
+ * a line — which is what a caller wanting one continuous run of coordinates,
+ * such as a Garmin course, is asking for. `mergeLines` goes on from here.
+ */
+export function stitchLines<T extends Geometry>(
   features: Feature<T>[],
   properties: GeoJsonProperties = {},
 ): void {
@@ -757,6 +763,13 @@ export function mergeLines<T extends Geometry>(
 
     break;
   }
+}
+
+export function mergeLines<T extends Geometry>(
+  features: Feature<T>[],
+  properties: GeoJsonProperties = {},
+): void {
+  stitchLines(features, properties);
 
   for (const f of features) {
     const g = f.geometry;
@@ -805,15 +818,4 @@ export function mergeLines<T extends Geometry>(
 
     break;
   }
-}
-
-export function shouldBeArea(tags?: GeoJsonProperties): boolean {
-  return (
-    // taken from https://wiki.openstreetmap.org/wiki/Key:area
-    tags !== null &&
-    tags !== undefined &&
-    tags['area'] !== 'no' &&
-    !tags['barrier'] &&
-    !tags['highway']
-  );
 }

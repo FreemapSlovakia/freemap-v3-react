@@ -1,7 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import z from 'zod';
-import { GeoJSON2DPointSchema } from 'zod-geojson';
+import { GeoJSON2DGeometrySchema, GeoJSON2DPointSchema } from 'zod-geojson';
 import type { CancelTriggers } from './cancelRegister.js';
 import type { OsmFeatureId } from './types/featureId.js';
 
@@ -48,6 +48,18 @@ const ContainingFeatureSchema = z.object({
 });
 
 export type OsmApiContainingFeature = z.infer<typeof ContainingFeatureSchema>;
+
+const OsmApiFullFeatureSchema = z.object({
+  ...OsmApiFeatureSchema.omit({ geometry: true }).shape,
+  /** The object itself, not its label point: a point, line, area or collection. */
+  geometry: GeoJSON2DGeometrySchema,
+});
+
+export type OsmApiFullFeature = z.infer<typeof OsmApiFullFeatureSchema>;
+
+const FeaturesByIdResponseSchema = z.object({
+  features: z.array(OsmApiFullFeatureSchema),
+});
 
 const FeaturesAtResponseSchema = z.object({
   nearby: z.object({ features: z.array(NearbyFeatureSchema) }),
@@ -123,6 +135,49 @@ export async function fetchFeaturesAt(
   return FeaturesAtResponseSchema.parse(
     await get('/v1/features/at', params, request),
   );
+}
+
+/**
+ * The elements named by id, each with its own geometry rather than a label
+ * point — the caller draws them.
+ *
+ * One request answers any number of them, and an id the database doesn't hold
+ * is simply absent from the result: the import keeps only tagged objects, and
+ * only within its region. Telling which of a batch came back is the caller's
+ * job, since only it knows what a missing one means.
+ */
+export async function fetchOsmFeaturesById(
+  ids: readonly OsmFeatureId[],
+  request: Request,
+): Promise<Map<string, OsmApiFullFeature>> {
+  if (ids.length === 0) {
+    return new Map();
+  }
+
+  const byId = new Map<string, OsmApiFullFeature>();
+
+  // Well under both the route's own limit and what a URL can carry: `/` and
+  // `,` are percent-encoded, so an id costs ~23 characters and a chunk this
+  // size is ~6 kB of query string. Too long a URL fails as a transport error,
+  // which nothing here could explain.
+  for (let i = 0; i < ids.length; i += 250) {
+    const params = new URLSearchParams({
+      ids: ids
+        .slice(i, i + 250)
+        .map(({ elementType, id }) => `${elementType}/${id}`)
+        .join(','),
+    });
+
+    const { features } = FeaturesByIdResponseSchema.parse(
+      await get('/v1/features/by-id', params, request),
+    );
+
+    for (const feature of features) {
+      byId.set(feature.id, feature);
+    }
+  }
+
+  return byId;
 }
 
 /** `way/123` as the app identifies OSM elements. */

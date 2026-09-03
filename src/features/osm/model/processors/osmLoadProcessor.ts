@@ -6,6 +6,7 @@ import {
   searchUnselectResult,
 } from '@features/search/model/actions.js';
 import { isResultLoadingSelector } from '@features/search/model/selectors.js';
+import { fetchOsmFeaturesById } from '@shared/osmApi.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   featureIdsEqual,
@@ -14,9 +15,8 @@ import {
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import { loadOsmMessages } from '../../translations/loadOsmMessages.js';
-import { assembleOsmGeojson, indexOsmElements } from '../assembleOsmGeojson.js';
-import { fetchOsmElements } from '../fetchOsmElements.js';
 import { osmLoad } from '../osmActions.js';
+import { toOsmGeojson } from '../osmGeojson.js';
 import { copyDisplayName } from './copyDisplayName.js';
 
 export const osmLoadProcessor: Processor<typeof osmLoad> = {
@@ -93,23 +93,21 @@ export const osmLoadProcessor: Processor<typeof osmLoad> = {
       }
     }
 
-    let index;
+    let byId;
 
     try {
-      index = indexOsmElements(
-        await fetchOsmElements(ids, {
-          getState,
-          cancelActions: [clearMapFeatures],
-          // Only all of them going off the map invalidates the fetch — other
-          // results coming and going alongside them don't.
-          stateChangePredicate: (state) =>
-            ids.some((id) =>
-              state.search.selectedResults.some((result) =>
-                featureIdsEqual(result.id, id),
-              ),
+      byId = await fetchOsmFeaturesById(ids, {
+        getState,
+        cancelActions: [clearMapFeatures],
+        // Only all of them going off the map invalidates the fetch — other
+        // results coming and going alongside them don't.
+        stateChangePredicate: (state) =>
+          ids.some((id) =>
+            state.search.selectedResults.some((result) =>
+              featureIdsEqual(result.id, id),
             ),
-        }),
-      );
+          ),
+      });
     } catch (err) {
       await fail(ids, err);
 
@@ -127,30 +125,16 @@ export const osmLoadProcessor: Processor<typeof osmLoad> = {
 
     const failed: OsmFeatureId[] = [];
 
-    /**
-     * What went wrong for the first element whose geometry didn't add up, which
-     * is more telling than the plain "not found" the rest are reported with — a
-     * truncated Overpass answer leaves a way without the nodes it is made of,
-     * and a way closed on three positions is no polygon.
-     */
-    let cause: unknown;
-
     for (const id of stillWanted) {
-      let geojson;
+      const feature = byId.get(`${id.elementType}/${id.id}`);
 
-      try {
-        geojson = assembleOsmGeojson(id, index);
-      } catch (err) {
-        // One element not adding up is no reason to drop the rest of the batch,
-        // which a throw out of this loop would do — placeholders and all.
-        cause ??= err;
-      }
-
-      if (!geojson) {
+      if (!feature) {
         failed.push(id);
 
         continue;
       }
+
+      const geojson = toOsmGeojson(feature);
 
       copyDisplayName(
         getState().search.selectedResults,
@@ -171,12 +155,11 @@ export const osmLoadProcessor: Processor<typeof osmLoad> = {
     if (failed.length > 0) {
       await fail(
         failed,
-        cause ??
-          new Error(
-            `OSM elements not found: ${failed
-              .map(({ elementType, id }) => `${elementType} ${id}`)
-              .join(', ')}`,
-          ),
+        new Error(
+          `OSM elements not found: ${failed
+            .map(({ elementType, id }) => `${elementType} ${id}`)
+            .join(', ')}`,
+        ),
       );
     }
   },

@@ -112,15 +112,12 @@ async function collect(
         source.id ? { only: { type: 'objects', id: source.id } } : {},
       );
 
-    case 'objects-geometry': {
-      // The one source that isn't on the map yet: the element's full geometry
-      // comes from OSM, as a feature of its own or a collection of them.
-      const geojson = await fetchOsmFullGeojson(source.id, getState);
-
-      return geojson.type === 'FeatureCollection'
-        ? geojson
-        : featureCollection([geojson]);
-    }
+    case 'objects-geometry':
+      // The one source that isn't on the map yet: the element's own geometry
+      // comes from the OSM API.
+      return featureCollection([
+        await fetchOsmFullGeojson(source.id, getState),
+      ]);
   }
 }
 

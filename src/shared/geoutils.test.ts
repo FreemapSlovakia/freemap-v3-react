@@ -6,6 +6,8 @@ import {
   formatAzimuth,
   formatLocationLines,
   lineSegments,
+  mergeLines,
+  stitchLines,
   trackTimeSegments,
 } from './geoutils.js';
 
@@ -19,6 +21,54 @@ const multiLine = (segments: number[][][]): Feature<MultiLineString> => ({
   type: 'Feature',
   properties: {},
   geometry: { type: 'MultiLineString', coordinates: segments },
+});
+
+describe('stitchLines vs mergeLines', () => {
+  // Three pieces of a loop, out of order and one reversed, as the parts of an
+  // OSM route relation arrive.
+  const loopParts = () => [
+    line([
+      [0, 0],
+      [1, 0],
+    ]),
+    line([
+      [0, 1],
+      [0, 0],
+    ]),
+    line([
+      [1, 0],
+      [1, 1],
+      [0, 1],
+    ]),
+  ];
+
+  it('joins the parts of a loop into one closed line', () => {
+    const features = loopParts();
+
+    stitchLines(features);
+
+    expect(features).toHaveLength(1);
+
+    const { geometry } = features[0]!;
+
+    expect(geometry.type).toBe('LineString');
+
+    const coords = (geometry as LineString).coordinates;
+
+    expect(coords[0]).toEqual(coords.at(-1));
+    expect(coords).toHaveLength(5);
+  });
+
+  it('is what a Garmin course needs, where mergeLines would give a polygon', () => {
+    // `mergeLines` goes on to read a closed line as an area, which is right for
+    // drawing and wrong for a course — a ride ending where it started is still
+    // a ride. The Garmin export therefore stitches instead of merging.
+    const merged = loopParts();
+
+    mergeLines(merged);
+
+    expect(merged[0]!.geometry.type).toBe('Polygon');
+  });
 });
 
 describe('lineSegments', () => {

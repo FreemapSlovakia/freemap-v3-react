@@ -77,8 +77,8 @@ export type PhotonProperties = z.infer<typeof PhotonPropertiesSchema>;
  * hangs off in OSM: a guidepost arrives as `information=guidepost`, never as
  * `tourism=information` + `information=guidepost`. The name and icon mappings
  * are keyed the way OSM tags an element, so the parent is put back here rather
- * than teaching those mappings a second shape — they are shared with Overpass,
- * where the tags always arrive whole.
+ * than teaching those mappings a second shape — they are shared with the OSM
+ * sources, where the tags always arrive whole.
  */
 const parentTags: Record<string, [key: string, value: string]> = {
   information: ['tourism', 'information'],

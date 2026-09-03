@@ -35,10 +35,13 @@ elsewhere:
 
 - **`FM_OSM_API_URL`** (default `https://osm.freemap.sk`) — Freemap's own
   osm2pgsql-backed OSM query API (`freemap-osm-api` repo), reached through
-  `src/shared/osmApi.ts`: the objects layer (`/v1/features`) and map details
-  (`/v1/features/at`). Holds Europe only.
-- **`OSM_ELEMENT_SOURCE`**, `OVERPASS_URL` / `OSM_API_URL` — where an element's
-  full geometry comes from (`src/features/osm/model/fetchOsmElements.ts`).
+  `src/shared/osmApi.ts`: the objects layer (`/v1/features`), map details
+  (`/v1/features/at`) and the geometry of an element a link or a pin names by id
+  (`/v1/features/by-id`). Holds Europe only, and only tagged objects — as do
+  Photon and GraphHopper, so the app is Europe-wide throughout.
+- **`OSM_API_URL`** — the public OSM API, used only for changeset listings
+  (`src/features/changesets/model/processor.ts`). Element geometry comes from
+  the own API above.
 - **`PHOTON_URL`** — geocoding; see [photon-geocoder.md](./photon-geocoder.md).
 - **`FM_MAPSERVER_URL`** — the outdoor map renderer: tiles and the legend.
 - **`API_URL`** — the app's own backend (`freemap-v3-api`): accounts, gallery,

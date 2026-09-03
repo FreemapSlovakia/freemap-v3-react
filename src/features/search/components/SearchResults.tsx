@@ -41,6 +41,14 @@ import { hasGeometry } from '../model/resultUtils.js';
 
 const HALO_PANE = 'fm-search-highlight';
 
+/** `Multi` too: an OSM relation is one feature of many lines, not many features. */
+function isLine(feature: Feature): boolean {
+  return (
+    feature.geometry?.type === 'LineString' ||
+    feature.geometry?.type === 'MultiLineString'
+  );
+}
+
 export function SearchResults(): ReactElement | null {
   const selectedResults = useAppSelector(
     (state) => state.search.selectedResults,
@@ -332,7 +340,7 @@ function ResultGeometry({
         interactive={false}
         data={geojson}
         style={pathStyle}
-        filter={(feature) => feature.geometry?.type === 'LineString'}
+        filter={isLine}
       />
 
       {/* The fat transparent line is what makes a thin one clickable, so a
@@ -343,7 +351,7 @@ function ResultGeometry({
           data={geojson}
           style={{ weight: 15, opacity: 0, color: '#fff' }}
           onEachFeature={annotateFeature}
-          filter={(feature) => feature.geometry?.type === 'LineString'}
+          filter={isLine}
           eventHandlers={eventHandlers}
         />
       )}
@@ -354,7 +362,7 @@ function ResultGeometry({
         style={pathStyle}
         pointToLayer={pointToLayer}
         onEachFeature={preview ? undefined : annotateFeature}
-        filter={(feature) => feature.geometry?.type !== 'LineString'}
+        filter={(feature) => !isLine(feature)}
         eventHandlers={preview ? undefined : eventHandlers}
       />
     </>

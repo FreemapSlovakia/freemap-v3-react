@@ -8,14 +8,18 @@ import { loadingResult } from '@features/search/model/resultUtils.js';
 import { featureIdsEqual, type OsmFeatureId } from '@shared/types/featureId.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { osmLoad } from '../osmActions.js';
-import type { OsmResult } from '../types.js';
 import { osmLoadProcessor } from './osmLoadProcessor.js';
 
-vi.mock('../fetchOsmElements.js', () => ({ fetchOsmElements: vi.fn() }));
+// Only the fetch is replaced; the rest of the module is left alone, since other
+// things in the graph use `osmApiFeatureId`.
+vi.mock('@shared/osmApi.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@shared/osmApi.js')>()),
+  fetchOsmFeaturesById: vi.fn(),
+}));
 
-const { fetchOsmElements } = await import('../fetchOsmElements.js');
+const { fetchOsmFeaturesById } = await import('@shared/osmApi.js');
 
-const fetchMock = vi.mocked(fetchOsmElements);
+const fetchMock = vi.mocked(fetchOsmFeaturesById);
 
 /**
  * The processor loads any number of elements in one fetch, so what it has to
@@ -29,15 +33,22 @@ const nodeId = (id: number): OsmFeatureId => ({
   id,
 });
 
-const nodeElements = (...ids: number[]): OsmResult => ({
-  elements: ids.map((id) => ({
-    type: 'node' as const,
-    id,
-    lat: 48,
-    lon: 17,
-    tags: { amenity: 'pub' },
-  })),
-});
+const nodeFeatures = (...ids: number[]) =>
+  new Map(
+    ids.map((id) => [
+      `node/${id}`,
+      {
+        type: 'Feature' as const,
+        id: `node/${id}`,
+        bbox: [17, 48, 17, 48] as [number, number, number, number],
+        geometry: {
+          type: 'Point' as const,
+          coordinates: [17, 48] as [number, number],
+        },
+        properties: { amenity: 'pub' },
+      },
+    ]),
+  );
 
 /** The shown results, mutable so a dispatch can be played back into them. */
 function harness(initial: SearchResult[], myMaps: object = {}) {
@@ -91,7 +102,7 @@ describe('osmLoadProcessor', () => {
   it('fetches the whole batch at once and shows every element', async () => {
     const ids = [nodeId(1), nodeId(2), nodeId(3)];
 
-    fetchMock.mockResolvedValue(nodeElements(1, 2, 3));
+    fetchMock.mockResolvedValue(nodeFeatures(1, 2, 3));
 
     const h = harness(ids.map(loadingResult));
 
@@ -113,7 +124,7 @@ describe('osmLoadProcessor', () => {
     fetchMock.mockImplementation(async () => {
       h.remove(nodeId(1));
 
-      return nodeElements(1, 2);
+      return nodeFeatures(1, 2);
     });
 
     await run(h, ids);
@@ -124,7 +135,7 @@ describe('osmLoadProcessor', () => {
   it('drops the elements the answer does not hold, and reports them once', async () => {
     const ids = [nodeId(1), nodeId(2), nodeId(3)];
 
-    fetchMock.mockResolvedValue(nodeElements(2));
+    fetchMock.mockResolvedValue(nodeFeatures(2));
 
     const h = harness(ids.map(loadingResult));
 
@@ -142,21 +153,16 @@ describe('osmLoadProcessor', () => {
     expect(h.toastError).toHaveBeenCalledTimes(1);
   });
 
-  it('drops only the element whose geometry does not add up', async () => {
-    // A truncated answer leaves a way without the nodes it is made of, which
-    // throws where it is assembled — the rest of the batch is fine and must
-    // still land on the map.
+  it('answers per element across a batch of mixed types', async () => {
+    // The database holds only tagged objects, and only within its region, so a
+    // way of the batch can be absent while the node beside it is fine — and
+    // that one must still land on the map.
     const ids = [
       nodeId(1),
       { type: 'osm', elementType: 'way', id: 9 } as const,
     ];
 
-    fetchMock.mockResolvedValue({
-      elements: [
-        ...nodeElements(1).elements,
-        { type: 'way', id: 9, nodes: [101, 102], tags: {} },
-      ],
-    });
+    fetchMock.mockResolvedValue(nodeFeatures(1));
 
     const h = harness(ids.map(loadingResult));
 

@@ -1205,8 +1205,8 @@ function handleOsmElements(
     }
   }
 
-  // In one go, so a link naming many elements is one Overpass query rather
-  // than a query per element.
+  // In one go, so a link naming many elements is one batch rather than a
+  // separate load each.
   const toLoad = wanted.filter(
     (id) => !shown.some((s) => featureIdsEqual(s, id)),
   );

@@ -292,6 +292,9 @@ export const PersistedGpsRecorderSettingsSchema = z
   })
   .partial();
 
+// Historical provider names, kept deliberately — see `MapDetailsSource`. One
+// unrecognised entry fails the whole slice here, silently resetting the user's
+// source filter.
 const MapDetailsSourceSchema = z.union([
   z.literal('nominatim-reverse'),
   z.literal('overpass-nearby'),
