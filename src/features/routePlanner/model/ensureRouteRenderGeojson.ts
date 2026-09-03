@@ -3,9 +3,11 @@ import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import {
+  creditedAttributions,
   densifyAlong,
   enrichElevations,
-  withElevationSources,
+  newElevationCredits,
+  withElevationAttributions,
 } from '@shared/elevation.js';
 import { smoothElevation } from '@shared/elevationSmoothing.js';
 import { lineString } from '@turf/helpers';
@@ -126,7 +128,7 @@ async function sample(
 
   // What answered across both reads below, stamped onto the sampled line so the
   // chart credits the models this very profile was sampled from.
-  const sources = new Set<string>();
+  const credits = newElevationCredits();
 
   // Premium overrides every vertex from the terrain model; everyone else keeps
   // the router's own elevation and only fills coordinates that lack it.
@@ -135,13 +137,13 @@ async function sample(
     premium ? 'all' : 'missing',
     getState,
     cancelActions,
-    sources,
+    credits,
   );
 
   // Densify only for premium, so a GraphHopper route on the free tier doesn't
   // hit the elevation service at all.
   const densified = premium
-    ? await densifyAlong(enriched!, getState, cancelActions, sources)
+    ? await densifyAlong(enriched!, getState, cancelActions, credits)
     : enriched!;
 
   // The route may have changed (or a concurrent call won) while sampling.
@@ -155,7 +157,10 @@ async function sample(
     return after.sampledGeojson.line;
   }
 
-  const sampled = withElevationSources(densified, sources);
+  const sampled = withElevationAttributions(
+    densified,
+    creditedAttributions(credits),
+  );
 
   dispatch(routePlannerSetSampledGeojson(sampled));
 

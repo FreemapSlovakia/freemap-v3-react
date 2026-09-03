@@ -10,7 +10,13 @@ import {
   wantedTarget,
 } from './objectDetailsProcessor.js';
 
-vi.mock('@shared/elevation.js', () => ({ fetchElevations: vi.fn() }));
+vi.mock('@shared/elevation.js', () => ({
+  fetchElevations: vi.fn(),
+  newElevationCredits: () => ({ sources: new Set(), attributions: new Map() }),
+  creditedAttributions: (credits: { attributions: Map<string, unknown> }) => [
+    ...credits.attributions.values(),
+  ],
+}));
 
 const fetchElevationsMock = vi.mocked(fetchElevations);
 
@@ -217,8 +223,13 @@ describe('objectDetailsProcessor', () => {
 
   it('shows the tags at once and the elevation when it arrives', async () => {
     fetchElevationsMock.mockImplementation(
-      async (_latLons, _getState, _c, s) => {
-        s?.add('sk');
+      async (_latLons, _getState, _c, credits) => {
+        credits?.sources.add('sk');
+
+        credits?.attributions.set('DMR 5.0', {
+          type: 'data',
+          name: 'DMR 5.0: ÚGKK SR',
+        });
 
         return [512];
       },
@@ -235,6 +246,7 @@ describe('objectDetailsProcessor', () => {
       elevation: undefined,
       loading: true,
       sources: [],
+      attributions: [],
     });
 
     await done;
@@ -245,6 +257,7 @@ describe('objectDetailsProcessor', () => {
       elevation: 512,
       loading: false,
       sources: ['sk'],
+      attributions: [{ type: 'data', name: 'DMR 5.0: ÚGKK SR' }],
     });
   });
 
@@ -267,6 +280,7 @@ describe('objectDetailsProcessor', () => {
       loading: false,
       error: err,
       sources: [],
+      attributions: [],
     });
   });
 
@@ -354,6 +368,7 @@ describe('objectDetailsProcessor', () => {
       elevation: undefined,
       loading: false,
       sources: [],
+      attributions: [],
     });
   });
 

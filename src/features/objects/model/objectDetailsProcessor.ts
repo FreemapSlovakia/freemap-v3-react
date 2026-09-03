@@ -5,7 +5,11 @@ import type { SearchResult } from '@features/search/model/actions.js';
 import { resultCoords } from '@features/search/model/resultUtils.js';
 import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
-import { fetchElevations } from '@shared/elevation.js';
+import {
+  creditedAttributions,
+  fetchElevations,
+  newElevationCredits,
+} from '@shared/elevation.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import {
   featureIdsEqual,
@@ -113,13 +117,18 @@ export const objectDetailsProcessor: Processor = {
 
     // The details show at once; the elevation reads separately and lands in the
     // same toast, so a slow API doesn't hold the tags back.
-    show({ elevation: undefined, loading: coords !== null, sources: [] });
+    show({
+      elevation: undefined,
+      loading: coords !== null,
+      sources: [],
+      attributions: [],
+    });
 
     if (!coords) {
       return;
     }
 
-    const sources = new Set<string>();
+    const credits = newElevationCredits();
 
     let elevation: number | null | undefined;
 
@@ -136,7 +145,7 @@ export const objectDetailsProcessor: Processor = {
         // while this handler, edge-triggered on that same subject, starts
         // nothing in its place — leaving the spinner up for good.
         { stateChangePredicate: (state) => wantedTarget(state)?.key },
-        sources,
+        credits,
       );
     } catch (err) {
       // An abort means something newer is already on its way (or the features
@@ -160,6 +169,12 @@ export const objectDetailsProcessor: Processor = {
       return;
     }
 
-    show({ elevation, loading: false, error, sources: [...sources] });
+    show({
+      elevation,
+      loading: false,
+      error,
+      sources: [...credits.sources],
+      attributions: creditedAttributions(credits),
+    });
   },
 };

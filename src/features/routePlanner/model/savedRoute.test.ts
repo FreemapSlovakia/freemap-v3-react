@@ -157,23 +157,29 @@ describe('savedRouteFromState — what a map stores', () => {
     expect(SavedRouteSchema.parse(saved)).toEqual(saved);
   });
 
-  // The terrain models that answered ride on the line, so the chart can credit
-  // them offline — the schema has to let them through.
-  it('keeps the elevation-source stamp on the line', () => {
+  // The credits ride on the line, so the chart can show them offline — the
+  // schema has to let the stamp through.
+  it('keeps the elevation-credit stamp on the line', () => {
     const stamped = line([
       [17.1, 48.1, 100],
       [17.15, 48.15, 150],
       [17.2, 48.2, 200],
     ]);
 
-    stamped.properties = { 'fm:elevationSources': ['dmr5', 'gedtm30'] };
+    stamped.properties = {
+      'fm:elevationAttributions': [
+        { type: 'data', name: 'DMR 5.0: ÚGKK SR', url: 'https://example.test' },
+      ],
+    };
 
     const saved = savedRouteFromState(
       state({ sampledGeojson: { line: stamped, saved: false } }),
     );
 
     expect(SavedRouteSchema.parse(saved).geometry?.properties).toEqual({
-      'fm:elevationSources': ['dmr5', 'gedtm30'],
+      'fm:elevationAttributions': [
+        { type: 'data', name: 'DMR 5.0: ÚGKK SR', url: 'https://example.test' },
+      ],
     });
   });
 });

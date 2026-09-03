@@ -219,16 +219,28 @@ Still emitting at info level (non-blocking, optional cleanup):
       how much manual hook churn is worthwhile).
 - [ ] **Scope England's terrain model to England.** The Environment Agency's
       LIDAR composite covers England alone, but coverage is reported per country
-      (`/geotools/covered-countries` matches an `alpha2` column), so the credit
-      shows anywhere in the UK and GEDTM30 is credited beside it everywhere —
-      each an over-credit, which is the safe direction, and the premium tooltip
-      names England through `dtmAreaNames` rather than the country. To make it
-      exact, carry a subdivision token end to end: an England polygon row in the
-      API's `country` table under `gb-eng`, the same name for the England entry
-      in `ELEVATION_SOURCES` (so `?sources=1` reports it), then here the entry's
-      `country`, `ELEVATION_API_DTM_COUNTRIES` and `COUNTRY_TOKEN` in
-      `elevationSources.ts`, which today accepts two letters only. Both server
-      changes are needed together — the token has to match on both sides.
+      (`/geotools/covered-countries` matches an `alpha2` column), so GEDTM30 is
+      credited beside it across the whole UK and the premium tooltip names
+      England through `dtmAreaNames` rather than the country. The elevation
+      API resolves a read's own credits now, so the profile's credit line is
+      already exact; what is left is the premium offer's country list and the
+      readout's precision. To make those exact, carry a subdivision token end to
+      end: an England polygon row in the API's `country` table under `gb-eng`,
+      the same name for the England entry in `ELEVATION_SOURCES`, then here
+      `ELEVATION_API_DTM_COUNTRIES` and `COUNTRY_TOKEN` in `elevationSources.ts`,
+      which today accepts two letters only — so a `gb-eng` token would silently
+      withhold the sub-metre decimal. Both server changes are needed together —
+      the token has to match on both sides.
+- [ ] **A saved map's imported track loses its elevation credit.** Overriding a
+      loaded track's elevation puts the credits in `trackViewer.elevationAttributions`
+      and on the render-only copy; neither reaches the map document, which stores
+      `trackViewer: { trackGeojson, trackUID, gpxUrl }` and not `elevationDecision`.
+      So reopening the map — offline included — draws terrain-model elevation
+      crediting nobody until the fill is re-run, which is an under-credit rather
+      than the safe direction. A planned route has no such gap: its credits ride on
+      `SavedRoute.geometry` as `fm:elevationAttributions`. The fix is to carry
+      `elevationDecision` and the credits in the document, so it is a map-document
+      schema change (and the same shape the route already stores).
 
 ## Decisions worth not relitigating
 

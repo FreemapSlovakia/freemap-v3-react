@@ -1,13 +1,19 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
-import { fetchElevations } from '@shared/elevation.js';
+import {
+  creditedAttributions,
+  fetchElevations,
+  mergeAttributions,
+  newElevationCredits,
+} from '@shared/elevation.js';
 import { smoothElevationSeries } from '@shared/elevationSmoothing.js';
 import {
   containsElevations,
   lineSegments,
   trackTimeSegments,
 } from '@shared/geoutils.js';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import { along } from '@turf/along';
 import { distance } from '@turf/distance';
 import { getCoord } from '@turf/invariant';
@@ -34,11 +40,11 @@ const WAYPOINT_SNAP_METERS = 100;
 // The profile points plus, index-aligned, each point's recorded time (epoch ms)
 // when available — empty/undefined when the source has no per-point time (the
 // API-sampled path), in which case waypoints fall back to spatial pairing.
-// `sources` are the terrain models the API named for the points it answered.
+// `attributions` are the credits the API resolved for the points it answered.
 interface ResolvedProfile {
   points: ElevationProfilePoint[];
   times: (number | undefined)[];
-  sources: string[];
+  attributions: AttributionDef[];
 }
 
 function toEpoch(value: unknown): number | undefined {
@@ -63,7 +69,7 @@ const computeProfile = async (
   // fully-elevated track is read locally regardless. Everything else samples a
   // complete profile from the server. The local path also carries each point's
   // recorded time (for time-based waypoint pairing); the API path has none.
-  const { points, times, sources } =
+  const { points, times, attributions } =
     keepRecorded || containsElevations(trackGeojson)
       ? resolveElevationProfilePointsLocally(trackGeojson)
       : await resolveElevationProfilePointsViaApi(getState, trackGeojson);
@@ -78,7 +84,7 @@ const computeProfile = async (
       waypoints: pairWaypoints(points, times, waypoints),
       // What the feature's owner sampled, plus whatever this profile sampled
       // itself — one model may have answered for either.
-      sources: [...new Set([...(credit.sources ?? []), ...sources])],
+      attributions: mergeAttributions(credit.attributions ?? [], attributions),
       provenance: credit.provenance,
     }),
   );
@@ -254,7 +260,7 @@ function resolveElevationProfilePointsLocally(
 
   // The elevation is the feature's own, so only its owner can name a source for
   // it — nothing is read here.
-  return { points: elevationProfilePoints, times, sources: [] };
+  return { points: elevationProfilePoints, times, attributions: [] };
 }
 
 async function resolveElevationProfilePointsViaApi(
@@ -321,7 +327,7 @@ async function resolveElevationProfilePointsViaApi(
 
   const sampled = entries.filter((e) => !e.gap);
 
-  const sources = new Set<string>();
+  const credits = newElevationCredits();
 
   const eles = await fetchElevations(
     sampled.map(({ lat, lon }) => [lat, lon]),
@@ -334,7 +340,7 @@ async function resolveElevationProfilePointsViaApi(
       elevationChartClose,
       clearMapFeatures,
     ],
-    sources,
+    credits,
   );
 
   // The samples come straight from the terrain model, so they carry the same
@@ -417,6 +423,6 @@ async function resolveElevationProfilePointsViaApi(
   return {
     points: entries.map(({ gap: _gap, ...point }) => point),
     times: [],
-    sources: [...sources],
+    attributions: creditedAttributions(credits),
   };
 }

@@ -8,8 +8,9 @@ import { elevationSetSettings } from '@features/elevationChart/model/actions.js'
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
-import { ELEVATION_SOURCES_PROP } from '@shared/elevation.js';
+import { ELEVATION_ATTRIBUTIONS_PROP } from '@shared/elevation.js';
 import { withoutPerPointData } from '@shared/geoutils.js';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { FeatureCollection } from 'geojson';
 import {
   canJoinTracks,
@@ -68,12 +69,12 @@ export interface DataViewerState extends DataViewerStateBase {
   // source), then the chosen fill mode. 'all' means every point now comes from
   // the terrain model, so another server overwrite would be pointless.
   elevationDecision: ElevationDecision;
-  // Source tokens the elevation API named for the values it wrote into
-  // `trackGeojson` (see `elevationSourcesFromTokens`). Kept because the write
-  // happens once, at the prompt, while the chart crediting it can open much
-  // later — and a dense recording densifies to nothing, so the render copy alone
-  // would name no source. Tracks `elevationDecision`: emptied whenever that is.
-  elevationSources: string[];
+  // The credits the elevation API resolved for the values it wrote into
+  // `trackGeojson`. Kept because the write happens once, at the prompt, while the
+  // chart crediting it can open much later — and a dense recording densifies to
+  // nothing, so the render copy alone would credit nobody. Tracks
+  // `elevationDecision`: emptied whenever that is.
+  elevationAttributions: AttributionDef[];
   // Which line the chart / "more info" / matching act on, by index into
   // `trackGeojson.features`; `null` falls back to the first line. Reset on load.
   // Selecting a line aims it here; deselecting leaves it, so an open chart
@@ -105,7 +106,7 @@ export const cleanState: DataViewerStateBase = {
 export const dataViewerInitialState: DataViewerState = {
   elevationPrompt: null,
   elevationDecision: 'undecided',
-  elevationSources: [],
+  elevationAttributions: [],
   activeTrackIndex: null,
   splitting: false,
   splitPoint: null,
@@ -180,7 +181,7 @@ export const dataViewerReducer = createReducer(
 
           state.elevationDecision = 'undecided';
 
-          state.elevationSources = [];
+          state.elevationAttributions = [];
 
           // The feature indices changed; fall back to the first line.
           state.activeTrackIndex = null;
@@ -225,12 +226,12 @@ export const dataViewerReducer = createReducer(
         const rendered = state.renderTrackGeojson?.features[payload.index];
 
         if (rendered) {
-          const sources = rendered.properties?.[ELEVATION_SOURCES_PROP];
+          const credits = rendered.properties?.[ELEVATION_ATTRIBUTIONS_PROP];
 
           rendered.properties = withoutPerPointData(payload.properties);
 
-          if (sources !== undefined && rendered.properties) {
-            rendered.properties[ELEVATION_SOURCES_PROP] = sources;
+          if (credits !== undefined && rendered.properties) {
+            rendered.properties[ELEVATION_ATTRIBUTIONS_PROP] = credits;
           }
         }
 
@@ -239,7 +240,7 @@ export const dataViewerReducer = createReducer(
       .addCase(dataViewerSetElevation, (state, action) => {
         state.trackGeojson = action.payload.trackGeojson;
 
-        state.elevationSources = action.payload.sources;
+        state.elevationAttributions = action.payload.attributions;
 
         // Re-enriched elevation invalidates the densified render cache.
         state.renderTrackGeojson = null;
@@ -329,7 +330,7 @@ export const dataViewerReducer = createReducer(
         // answered for one must not be credited for both.
         state.elevationDecision = 'undecided';
 
-        state.elevationSources = [];
+        state.elevationAttributions = [];
 
         // The join lands where the armed track was, minus the one taken out
         // from under it; anything past the removed track moves up.

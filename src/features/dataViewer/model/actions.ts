@@ -4,6 +4,7 @@ import {
   type ColorizingMode,
   ColorizingModeSchema,
 } from '@shared/colorizers/index.js';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { TransportType } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { FeatureCollection, GeoJsonProperties } from 'geojson';
@@ -119,14 +120,14 @@ export const dataViewerResolveElevationPrompt = createAction<{
 }>('DATA_VIEWER_RESOLVE_ELEVATION_PROMPT');
 
 /**
- * Caches server-resolved elevation back into the loaded track, with the source
- * tokens the API named for it so the chart can credit them later. Unlike
+ * Caches server-resolved elevation back into the loaded track, with what the API
+ * reported for it so the chart can credit it later. Unlike
  * {@link dataViewerSetData} this is not a fresh load, so it preserves the
  * user's elevation decision for the track.
  */
 export const dataViewerSetElevation = createAction<{
   trackGeojson: FeatureCollection;
-  sources: string[];
+  attributions: AttributionDef[];
 }>('DATA_VIEWER_SET_ELEVATION');
 
 /**

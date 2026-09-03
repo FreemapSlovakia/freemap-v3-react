@@ -1,5 +1,8 @@
 import type { ElevationCredit } from '@features/elevationChart/model/actions.js';
-import { readElevationSources } from '@shared/elevation.js';
+import {
+  mergeAttributions,
+  readElevationAttributions,
+} from '@shared/elevation.js';
 import type { Feature } from 'geojson';
 import type { DataViewerState } from './reducer.js';
 
@@ -9,20 +12,22 @@ import type { DataViewerState } from './reducer.js';
  * one where the server merely filled the gaps — draws measurements no terrain
  * model answered for, so it names no source at all.
  *
- * The models come from the write that put them there (`elevationSources`) plus
- * whatever densifying the drawn line sampled on top: a dense recording needs no
- * densifying, so the render copy alone would name nothing.
+ * The credits come from the write that put them there
+ * (`elevationAttributions`) plus whatever densifying the drawn line sampled on
+ * top: a dense recording needs no densifying, so the render copy alone would
+ * credit nobody.
  */
 export function elevationCredit(
-  { elevationDecision, elevationSources }: DataViewerState,
+  { elevationDecision, elevationAttributions }: DataViewerState,
   drawn: Feature,
 ): ElevationCredit {
   return elevationDecision === 'all'
     ? {
         provenance: 'terrain-model',
-        sources: [
-          ...new Set([...elevationSources, ...readElevationSources(drawn)]),
-        ],
+        attributions: mergeAttributions(
+          elevationAttributions,
+          readElevationAttributions(drawn),
+        ),
       }
     : { provenance: 'recorded' };
 }

@@ -16,7 +16,7 @@ import type { ElevationChartTarget } from './target.js';
 const profile = elevationChartSetElevationProfile({
   points: [{ lat: 48, lon: 17, distance: 0, ele: 100 }],
   waypoints: [],
-  sources: [],
+  attributions: [],
   provenance: 'terrain-model',
 });
 
@@ -114,7 +114,7 @@ describe('elevationChartReducer — the marked stretch', () => {
     elevationChartSetElevationProfile({
       points,
       waypoints: [],
-      sources: [],
+      attributions: [],
       provenance: 'terrain-model',
     });
 

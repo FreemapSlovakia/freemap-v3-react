@@ -5,6 +5,7 @@ import type {
   CancelTriggers,
 } from '@shared/cancelRegister.js';
 import { lineSegments, withoutPerPointData } from '@shared/geoutils.js';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import { along } from '@turf/along';
 import { distance } from '@turf/distance';
 import { getCoord } from '@turf/invariant';
@@ -33,14 +34,51 @@ function cancelTriggers(cancel?: ElevationCancel): CancelTriggers {
 const ElevationsSchema = z.array(z.number().nullable());
 
 /**
- * What `?sources=1` adds: the terrain models that answered, as the union over
- * the whole batch. Tokens are a lowercase ISO 3166-1 alpha-2 country code for
- * that country's national model, or the model's own id (`gedtm30`) for one that
- * isn't country-scoped — see `elevationSourcesFromTokens`.
+ * One credit the API asks to display, as the app's own attribution entry. The
+ * name is rendered as a link, and a credit can also come back off a shared map's
+ * geometry, so only an `http(s)` URL is kept — anything else is named without
+ * one rather than dropped, under-crediting being the worse failure.
+ */
+const AttributionSchema = z
+  .object({ name: z.string(), url: z.unknown().optional() })
+  .transform(
+    ({ name, url }): AttributionDef =>
+      typeof url === 'string' && /^https?:\/\//i.test(url)
+        ? { type: 'data', name, url }
+        : { type: 'data', name },
+  );
+
+/**
+ * A whole credit list, from the API or off a stamp. Both arrive from outside, so
+ * a malformed entry is dropped on its own and a malformed list credits nobody —
+ * neither may take an elevation read down with it.
+ */
+const AttributionListSchema = z
+  .array(z.unknown())
+  .catch([])
+  .transform((entries) =>
+    entries.flatMap((entry) => {
+      const parsed = AttributionSchema.safeParse(entry);
+
+      return parsed.success ? [parsed.data] : [];
+    }),
+  );
+
+/**
+ * What `?sources=1` adds. `sources` are the models that answered, as the union
+ * over the whole batch: a lowercase ISO 3166-1 alpha-2 country code for that
+ * country's national model, or the model's own id (`gedtm30`) for one that
+ * isn't country-scoped. `attributions` are the credits for them, resolved by
+ * the server so a new dataset needs no release here.
+ *
+ * The two are not index-aligned — one model can carry several credits or none —
+ * so never zip them. `attributions` is absent from an API that predates it, and
+ * reads as no credit at all.
  */
 const ElevationsWithSourcesSchema = z.object({
   elevations: ElevationsSchema,
   sources: z.array(z.string()),
+  attributions: AttributionListSchema,
 });
 
 /**
@@ -54,33 +92,72 @@ const ElevationsResponseCompatSchema = z.preprocess(
 );
 
 /**
- * The property the render-only geometry carries its source tokens in, so a
- * cached render line and the credit for its elevation can't drift apart. Only
- * ever stamped on geometry that is never exported.
+ * What a read was answered by, accumulated across however many requests the
+ * caller pours in: the model tokens, which decide the readout's precision, and
+ * the credits to display. The attributions are keyed by their content, so one
+ * repeated across batched reads is listed once.
  */
-export const ELEVATION_SOURCES_PROP = 'fm:elevationSources';
+export type ElevationCredits = {
+  sources: Set<string>;
+  attributions: Map<string, AttributionDef>;
+};
 
-/** The tokens a render feature was stamped with, empty when it carries none. */
-export function readElevationSources(feature: Feature): string[] {
-  const sources = feature.properties?.[ELEVATION_SOURCES_PROP];
-
-  return Array.isArray(sources)
-    ? sources.filter((token): token is string => typeof token === 'string')
-    : [];
+export function newElevationCredits(): ElevationCredits {
+  return { sources: new Set(), attributions: new Map() };
 }
 
-/** Stamps `sources` onto a copy of `feature`; a no-op for an empty set. */
-export function withElevationSources<G extends Geometry>(
+/** The collected credits, in the order they were first reported. */
+export function creditedAttributions(
+  credits: ElevationCredits,
+): AttributionDef[] {
+  return [...credits.attributions.values()];
+}
+
+function attributionKey(attr: AttributionDef): string {
+  return `${attr.name}\u0000${attr.url ?? ''}`;
+}
+
+/** Concatenates credit lists, keeping first-seen order and dropping repeats. */
+export function mergeAttributions(
+  ...lists: AttributionDef[][]
+): AttributionDef[] {
+  const byKey = new Map<string, AttributionDef>();
+
+  for (const list of lists) {
+    for (const attr of list) {
+      byKey.set(attributionKey(attr), attr);
+    }
+  }
+
+  return [...byKey.values()];
+}
+
+/**
+ * The property the render-only geometry carries its credits in, so a cached
+ * render line and the credit for its elevation can't drift apart. Only ever
+ * stamped on geometry that is never exported.
+ */
+export const ELEVATION_ATTRIBUTIONS_PROP = 'fm:elevationAttributions';
+
+/** The credits a render feature was stamped with, empty when it carries none. */
+export function readElevationAttributions(feature: Feature): AttributionDef[] {
+  return AttributionListSchema.parse(
+    feature.properties?.[ELEVATION_ATTRIBUTIONS_PROP],
+  );
+}
+
+/** Stamps `attributions` onto a copy of `feature`; a no-op for an empty list. */
+export function withElevationAttributions<G extends Geometry>(
   feature: Feature<G>,
-  sources: Set<string>,
+  attributions: AttributionDef[],
 ): Feature<G> {
-  return sources.size === 0
+  return attributions.length === 0
     ? feature
     : {
         ...feature,
         properties: {
           ...feature.properties,
-          [ELEVATION_SOURCES_PROP]: [...sources],
+          [ELEVATION_ATTRIBUTIONS_PROP]: attributions,
         },
       };
 }
@@ -102,15 +179,15 @@ const FINEST_DEM_METERS = 1;
  * premium, SRTM everywhere otherwise. Nothing here chooses — every read asks for
  * the finest the account can get.
  *
- * Pass `sources` to have the models that answered added to that set (the API
- * reports them only when asked, so it stays out of the response — and out of the
- * cache key — for the callers that don't credit anything).
+ * Pass `credits` to have what answered collected into it (the API reports that
+ * only when asked, so it stays out of the response — and out of the cache key —
+ * for the callers that don't credit anything).
  */
 export async function fetchElevations(
   latLons: [number, number][],
   getState: () => RootState,
   cancel?: ElevationCancel,
-  sources?: Set<string>,
+  credits?: ElevationCredits,
 ): Promise<(number | null)[]> {
   if (latLons.length === 0) {
     return [];
@@ -119,7 +196,7 @@ export async function fetchElevations(
   const res = await httpRequest({
     getState,
     method: 'POST',
-    url: `/geotools/elevation${sources ? '?sources=1' : ''}`,
+    url: `/geotools/elevation${credits ? '?sources=1' : ''}`,
     data: latLons,
     expectedStatus: 200,
     ...cancelTriggers(cancel),
@@ -128,7 +205,11 @@ export async function fetchElevations(
   const parsed = ElevationsResponseCompatSchema.parse(await res.json());
 
   for (const token of parsed.sources) {
-    sources?.add(token);
+    credits?.sources.add(token);
+  }
+
+  for (const attr of parsed.attributions) {
+    credits?.attributions.set(attributionKey(attr), attr);
   }
 
   return parsed.elevations;
@@ -160,14 +241,14 @@ function cloneLineGeometry<G extends LineString | MultiLineString>(
  * Inputs are never mutated. With `'missing'` and nothing to fill the input
  * array is returned as-is (no request).
  *
- * `sources` collects the models that answered — see {@link fetchElevations}.
+ * `credits` collects what answered — see {@link fetchElevations}.
  */
 export async function enrichElevations<G extends LineString | MultiLineString>(
   features: Feature<G>[],
   mode: 'missing' | 'all',
   getState: () => RootState,
   cancel?: ElevationCancel,
-  sources?: Set<string>,
+  credits?: ElevationCredits,
 ): Promise<Feature<G>[]> {
   const enriched = features.map((feature) => ({
     ...feature,
@@ -192,7 +273,7 @@ export async function enrichElevations<G extends LineString | MultiLineString>(
     targets.map((coord) => [coord[1]!, coord[0]!]),
     getState,
     cancel,
-    sources,
+    credits,
   );
 
   targets.forEach((coord, i) => {
@@ -221,13 +302,13 @@ export async function enrichElevations<G extends LineString | MultiLineString>(
  * for elevation-derived rendering (chart, elevation/steepness colorize,
  * climb/descent stats), not for export.
  *
- * `sources` collects the models that answered — see {@link fetchElevations}.
+ * `credits` collects what answered — see {@link fetchElevations}.
  */
 export async function densifyAlong<G extends LineString | MultiLineString>(
   feature: Feature<G>,
   getState: () => RootState,
   cancel?: ElevationCancel,
-  sources?: Set<string>,
+  credits?: ElevationCredits,
 ): Promise<Feature<G>> {
   const segments = lineSegments(feature.geometry);
 
@@ -301,7 +382,7 @@ export async function densifyAlong<G extends LineString | MultiLineString>(
     inserts.map(({ lat, lon }) => [lat, lon]),
     getState,
     cancel,
-    sources,
+    credits,
   );
 
   // `inserts` is ordered by segment then vertex, so one cursor walks it as we

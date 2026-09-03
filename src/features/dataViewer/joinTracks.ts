@@ -3,7 +3,6 @@ import {
   type PathDetails,
   remapPathDetails,
 } from '@shared/colorizers/colorize.js';
-import { ELEVATION_SOURCES_PROP } from '@shared/elevation.js';
 import {
   cumulativeDistances,
   distanceTo,
@@ -350,16 +349,6 @@ export function joinTrackFeatures(
 
   if (names.length > 0) {
     properties['name'] = [...new Set(names)].join(', ');
-  }
-
-  const sources = sides.flatMap((side) => {
-    const value = side.properties[ELEVATION_SOURCES_PROP];
-
-    return Array.isArray(value) ? (value as unknown[]) : [];
-  });
-
-  if (sources.length > 0) {
-    properties[ELEVATION_SOURCES_PROP] = [...new Set(sources)];
   }
 
   // Which vertex of the joined line the second track starts at — the one they

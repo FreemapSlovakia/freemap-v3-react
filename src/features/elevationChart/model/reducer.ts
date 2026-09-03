@@ -1,5 +1,6 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
   type ElevationProvenance,
@@ -46,12 +47,12 @@ export interface ElevationChartState {
   elevationProfilePoints: Array<ElevationProfilePoint> | null;
   waypoints: ElevationProfileWaypoint[];
   /**
-   * The terrain models the elevation API named for the shown profile, as source
-   * tokens; empty when it named none, in which case the profile credits nobody.
+   * The credits for the terrain models the elevation API named for the shown
+   * profile; empty when it named none, in which case the profile credits nobody.
    * Unrelated to `target`: these are what the numbers were read from, that is
    * what they describe.
    */
-  sources: string[];
+  attributions: AttributionDef[];
   /** What the shown profile's elevation is credited to; `null` when none is. */
   provenance: ElevationProvenance | null;
 }
@@ -62,7 +63,7 @@ const initialState: ElevationChartState = {
   range: null,
   elevationProfilePoints: null,
   waypoints: [],
-  sources: [],
+  attributions: [],
   provenance: null,
 };
 
@@ -106,7 +107,7 @@ export const elevationChartReducer = createReducer(initialState, (builder) =>
 
       state.waypoints = action.payload.waypoints;
 
-      state.sources = action.payload.sources;
+      state.attributions = action.payload.attributions;
 
       state.provenance = action.payload.provenance;
     })

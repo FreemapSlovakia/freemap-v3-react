@@ -15,7 +15,11 @@ import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActi
 import type { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
 import { loadMeasurementMessages } from '@features/measurement/translations/loadMeasurementMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { fetchElevations } from '@shared/elevation.js';
+import {
+  creditedAttributions,
+  fetchElevations,
+  newElevationCredits,
+} from '@shared/elevation.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -79,13 +83,14 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       async function measurePoint(point: LatLon) {
         let elevation;
 
-        const sources = new Set<string>();
+        const credits = newElevationCredits();
 
         const toastParams: ElevationInfoBaseProps = {
           point,
           elevation: null,
           loading: false,
           sources: [],
+          attributions: [],
         };
 
         let error: unknown;
@@ -110,7 +115,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               [[point.lat, point.lon]],
               getState,
               [drawingMeasure, clearMapFeatures],
-              sources,
+              credits,
             );
           } catch (err) {
             // The coordinates and the tile links stand without an elevation, so
@@ -142,7 +147,8 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               ...toastParams,
               elevation,
               error,
-              sources: [...sources],
+              sources: [...credits.sources],
+              attributions: creditedAttributions(credits),
             },
             cancelType,
           }),

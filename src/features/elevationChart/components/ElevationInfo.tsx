@@ -39,6 +39,7 @@ export function ElevationInfo({
   loading,
   point,
   sources: reportedSources,
+  attributions,
   error,
   tileMessage,
   maslMessage,
@@ -124,6 +125,7 @@ export function ElevationInfo({
         elevation={elevation}
         loading={loading}
         sources={reportedSources}
+        attributions={attributions}
         error={error}
         label={maslMessage}
       />

@@ -8,6 +8,7 @@ import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { hasSubMeterPrecision } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { ReactElement } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
@@ -23,11 +24,12 @@ export type ElevationReading = {
   elevation: number | null | undefined;
   loading: boolean;
   /**
-   * Terrain-model tokens the elevation API reported for this point — see
-   * `elevationSourcesFromTokens`. Empty until the readout arrives, or when the
-   * API names none.
+   * What the elevation API reported for this point: the source tokens, which
+   * decide the precision, and the credits to display. Empty until the readout
+   * arrives, or when the API names none.
    */
   sources: string[];
+  attributions: AttributionDef[];
   /**
    * Why the read failed. Shown in place of the value, so a failure that the
    * rest of the toast survives (being offline, most of all) is answered here
@@ -51,6 +53,7 @@ export function ElevationValue({
   elevation,
   loading,
   sources: reportedSources,
+  attributions,
   error,
   label,
   className,
@@ -74,7 +77,7 @@ export function ElevationValue({
   // model behind the number. Its own icon, not the gem's tooltip: the two say
   // different things — what this reading came from, and what premium would read
   // it from instead.
-  const sources = useElevationSources('terrain-model', reportedSources);
+  const sources = useElevationSources('terrain-model', attributions);
 
   const sourceNames = elevationSourceNames(sources);
 

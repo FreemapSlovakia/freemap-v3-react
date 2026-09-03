@@ -343,13 +343,13 @@ describe('dataViewerReducer — joining', () => {
       {
         ...armed([track('a', [straight(3)]), track('b', [straight(3)])]),
         elevationDecision: 'all',
-        elevationSources: ['dmr5'],
+        elevationAttributions: [{ type: 'data', name: 'DMR 5.0' }],
       },
       dataViewerJoinTracks(1),
     );
 
     expect(next.elevationDecision).toBe('undecided');
-    expect(next.elevationSources).toEqual([]);
+    expect(next.elevationAttributions).toEqual([]);
   });
 
   it('moves an active track that came after the one joined in', () => {

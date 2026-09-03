@@ -10,7 +10,11 @@ import { trackInfoToast } from '@features/dataViewer/model/trackInfoToast.js';
 import { loadDataViewerMessages } from '@features/dataViewer/translations/loadDataViewerMessages.js';
 import { elevationChartOpen } from '@features/elevationChart/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { enrichElevations } from '@shared/elevation.js';
+import {
+  creditedAttributions,
+  enrichElevations,
+  newElevationCredits,
+} from '@shared/elevation.js';
 import { isTrackLine, resolveActiveTrack } from '../../trackSelection.js';
 
 export const dataViewerResolveElevationPromptProcessor: Processor<
@@ -36,7 +40,7 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
     // What answered, kept in the slice: this write is the only place the models
     // behind an overridden track are named, and the chart crediting them opens
     // separately.
-    const sources = new Set<string>();
+    const credits = newElevationCredits();
 
     if (mode !== 'keep') {
       lines = await enrichElevations(
@@ -44,7 +48,7 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
         mode,
         getState,
         undefined,
-        sources,
+        credits,
       );
 
       let i = 0;
@@ -56,7 +60,7 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
       dispatch(
         dataViewerSetElevation({
           trackGeojson: { ...trackGeojson, features },
-          sources: [...sources],
+          attributions: creditedAttributions(credits),
         }),
       );
     }

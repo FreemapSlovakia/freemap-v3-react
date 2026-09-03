@@ -1,6 +1,6 @@
 import type { ProfileResolver } from '@features/elevationChart/model/resolve.js';
 import { isPremium } from '@features/premium/premium.js';
-import { readElevationSources } from '@shared/elevation.js';
+import { readElevationAttributions } from '@shared/elevation.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { lineString } from '@turf/helpers';
 import { ensureRouteRenderGeojson } from './ensureRouteRenderGeojson.js';
@@ -43,7 +43,7 @@ const resolve: ProfileResolver = async (getState, dispatch) => {
   // Which model the profile's elevation belongs to: premium overrides every
   // vertex from our terrain model, and a router that returns none at all
   // (manual, OSRM) has its coordinates filled from it too — only GraphHopper's
-  // own values, kept on the free tier, are Sonny's. The sources ride on the
+  // own values, kept on the free tier, are Sonny's. The credits ride on the
   // render line, so they survive its cache being reused.
   const provenance =
     isPremium(getState().auth.user) ||
@@ -61,7 +61,10 @@ const resolve: ProfileResolver = async (getState, dispatch) => {
       // Mark the intermediate route points along the profile; the start and
       // finish are the chart's own endpoints, so they're omitted.
       waypoints: points.slice(1, -1).map(({ lat, lon }) => ({ lat, lon })),
-      credit: { provenance, sources: readElevationSources(trackGeojson) },
+      credit: {
+        provenance,
+        attributions: readElevationAttributions(trackGeojson),
+      },
     },
   };
 };

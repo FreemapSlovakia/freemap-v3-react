@@ -184,15 +184,15 @@ export default function ElevationChart(): ReactElement | null {
     (state) => state.elevationChart.provenance ?? undefined,
   );
 
-  const reportedSources = useAppSelector(
-    (state) => state.elevationChart.sources,
+  const reportedAttributions = useAppSelector(
+    (state) => state.elevationChart.attributions,
   );
 
   // The terrain models behind the drawn elevation, credited under the chart.
   // Recorded elevation names none, so the line disappears there.
   const sources = useElevationSources(
     provenance ?? 'recorded',
-    reportedSources,
+    reportedAttributions,
   );
 
   const preventRangeHint = useAppSelector(
@@ -1457,7 +1457,8 @@ export default function ElevationChart(): ReactElement | null {
           <p className="m-0 ms-auto small text-body-secondary">
             {m?.elevationSource}:{' '}
             {sources.map((attr, i) => (
-              <Fragment key={attr.name}>
+              // One dataset can be credited under one name with several links.
+              <Fragment key={`${attr.name} ${attr.url ?? ''}`}>
                 {i > 0 ? ', ' : null}
 
                 {/* A model we have no link for — a country the API gained since

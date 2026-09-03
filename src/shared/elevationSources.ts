@@ -1,6 +1,5 @@
 import {
   type AttributionDef,
-  GEDTM30_ATTR,
   OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
 } from './mapDefinitions.js';
 
@@ -43,22 +42,14 @@ export const ELEVATION_API_DTM_COUNTRIES = [
 ];
 
 /**
- * The national models above as attribution entries, so a profile read from the
- * elevation API can credit the same sources the outdoor map credits.
+ * The national models above as attribution entries — what the panorama's footer
+ * credits, the terrain service naming no model itself. An elevation read credits
+ * what the API resolved for it instead (`readElevationAttributions`).
  */
 export const ELEVATION_API_DTM_ATTRIBUTION =
   OUTDOOR_NATIONAL_DTM_ATTRIBUTION.filter((attr) =>
     ELEVATION_API_DTM_COUNTRIES.includes(attr.country),
   );
-
-/** The near-global model the elevation API answers a non-premium read with. */
-export const SRTM_ATTR: AttributionDef = {
-  type: 'data',
-  name: 'SRTM',
-  url: 'https://www.earthdata.nasa.gov/data/instruments/srtm',
-};
-
-export const SRTM_TOKEN = 'srtm';
 
 /**
  * The LiDAR-derived terrain model GraphHopper is built on: it serves its own
@@ -73,26 +64,7 @@ export const SONNY_ATTR: AttributionDef = {
   url: 'https://sonny.4lima.de/',
 };
 
-export const SONNY_TOKEN = 'sonny';
-
-/**
- * The models that aren't scoped to a country, by the token they're reported
- * under, so they can't be named by a country code: GEDTM30 answers a premium
- * read past the national borders, SRTM a non-premium one everywhere, and Sonny
- * is what GraphHopper returned itself.
- */
-const GLOBAL_MODELS: Record<string, AttributionDef> = {
-  gedtm30: GEDTM30_ATTR,
-  [SONNY_TOKEN]: SONNY_ATTR,
-  [SRTM_TOKEN]: SRTM_ATTR,
-};
-
-/**
- * A token naming a country's model rather than a model of its own. Anything else
- * is credited under the token itself — `Intl.DisplayNames` throws on a region
- * code that is neither two letters nor three digits, and we accept only the
- * former.
- */
+/** A token naming a country's national model rather than a model of its own. */
 const COUNTRY_TOKEN = /^[a-z]{2}$/;
 
 /**
@@ -107,55 +79,6 @@ export function hasSubMeterPrecision(tokens: string[]): boolean {
     tokens.length > 0 &&
     tokens.every((token) => COUNTRY_TOKEN.test(token.toLowerCase()))
   );
-}
-
-/**
- * Resolves the source tokens the elevation API reports (`?sources=1`) to the
- * attribution entries to credit, ordered as the map's own attribution orders
- * them: the national models first, the global ones last. Duplicates collapse, so
- * a source reported twice is credited once.
- *
- * A token is an ISO 3166-1 alpha-2 country code (that country's national model)
- * or a model id for one that isn't country-scoped (see {@link GLOBAL_MODELS}).
- * An unrecognised country still gets credited — under its localized name, via
- * `regionName`, since a model the API gained is one we have no link for yet, and
- * dropping it silently would under-credit it. Only a token that really is two
- * letters is offered to `regionName`, which rejects anything else.
- *
- * Case is normalized, so the contract's lowercase is what it reads best as
- * rather than something a stray `SK` breaks on.
- */
-export function elevationSourcesFromTokens(
-  tokens: string[],
-  regionName: (country: string) => string | undefined,
-): AttributionDef[] {
-  const unique = [...new Set(tokens.map((token) => token.toLowerCase()))];
-
-  const national = unique.filter((token) => !GLOBAL_MODELS[token]);
-
-  const credited = ELEVATION_API_DTM_ATTRIBUTION.filter((attr) =>
-    national.includes(attr.country),
-  );
-
-  return [
-    // Known models in the table's own order, so the list doesn't reshuffle as
-    // the reported set changes; anything new to us after them.
-    ...credited,
-    ...national
-      .filter((token) => !credited.some((attr) => attr.country === token))
-      .map(
-        (token): AttributionDef => ({
-          type: 'data',
-          ...(COUNTRY_TOKEN.test(token)
-            ? { country: token, name: regionName(token) ?? token }
-            : { name: token }),
-        }),
-      ),
-    // In the registry's order, not the report's, for the same reason.
-    ...Object.entries(GLOBAL_MODELS)
-      .filter(([token]) => unique.includes(token))
-      .map(([, attr]) => attr),
-  ];
 }
 
 // Nothing derives the sources from where the map is looking: the API reports

@@ -232,11 +232,24 @@ the elevation chart's own toolbar.
 
 ### Crediting the terrain model — `src/shared/elevationSources.ts`
 
-The elevation API answers from the same national models the outdoor renderer shades with,
-so both credit one set of attribution defs: `OUTDOOR_NATIONAL_DTM_ATTRIBUTION`
-(`mapDefinitions.tsx`), of which `ELEVATION_API_DTM_ATTRIBUTION` is the part the API
-holds — `ELEVATION_API_DTM_COUNTRIES` stays the authority on which those are, since either
-side can gain a model the other doesn't hold.
+**The API resolves its own credits.** A read asks for them (`?sources=1`) and gets back both
+the models that answered, as tokens, and the attribution entries to display — so a dataset
+added server-side is credited without a release here, and nothing in the app has to hold a
+copy of what the API serves. What stays here is what the API can't answer for: whether the
+reading is worth a decimal (`hasSubMeterPrecision`, off the tokens), and GraphHopper's own
+elevation, which never went through the API at all.
+
+**The tokens go no further than the point readout.** `objectDetailsProcessor` and
+`measurementProcessor` take them off the collector and put them in the toast's payload
+(`ElevationReading.sources`), where `ElevationValue` calls `hasSubMeterPrecision` on them.
+Nothing carries them to the chart, onto geometry, or into the store — the credit travels
+alone.
+
+`ELEVATION_API_DTM_COUNTRIES` / `ELEVATION_API_DTM_ATTRIBUTION` remain for the two places
+that credit before any read has happened: the premium offer's country list, and the
+panorama's footer. They are drawn from the outdoor renderer's shading sources
+(`OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in `mapDefinitions.tsx`), and stay a separate list
+because either side can gain a model the other doesn't hold.
 
 Coverage is reported per country (`/geotools/covered-countries` answers `alpha2` codes), so a
 model that covers only part of one is marked `partial` and its country left out of GEDTM30's
@@ -255,18 +268,13 @@ national models and GEDTM30 past their borders, while a **non-premium** one is a
 **SRTM everywhere**. So a non-premium profile has exactly one source to
 credit, known without waiting on coverage, and the upsell gem always applies to it.
 
-**The API reports what answered** (see the request contract below), and
-`elevationSourcesFromTokens` resolves its tokens against that table: a 2-letter token is
-that country's national model, anything else is looked up in `GLOBAL_MODELS` (`gedtm30`,
-`sonny`, `srtm`). A country the table has no entry for is still credited, under its
-`Intl.DisplayNames` name and without a link — dropping a model the API gained would
-under-credit it, which is the worse direction. The order is the table's own, global models
-last, so the list doesn't reshuffle between requests.
+`hasSubMeterPrecision` gives the point readout a decimal when every token is a 2-letter
+country code, since those are the LiDAR-derived national models. A global model is reported
+under its own id (`gedtm30`, `srtm`), which fails that test — so a model the API gains and
+we've never heard of withholds the decimal rather than claiming it off a 30 m grid.
 
-GraphHopper serves its own elevation from **Sonny's LiDAR DTM** — a different dataset from
-the API's non-premium SRTM, so the two are separate tokens. The `sonny` provenance is
-expressed by _appending `SONNY_TOKEN` to the reported tokens_ rather than crediting it
-separately, so one table resolves both.
+GraphHopper serves its own elevation from **Sonny's LiDAR DTM**, which no read of ours
+reported, so the `sonny` provenance appends `SONNY_ATTR` to the credits the API gave.
 
 That model also weights the graph, so it shapes **every** GraphHopper route — including a
 premium one, whose profile is re-read from the national models and so never names it. Its
@@ -295,7 +303,7 @@ is an honest state; a plausible guess isn't. The one cost is deploy skew: a fron
 against an API without `?sources=1` shows no credit at all, so ship the API first.
 
 Not every profile is ours to credit, so a target's resolver returns an
-`ElevationCredit` — a provenance plus, for `terrain-model`, the tokens — since only the
+`ElevationCredit` — a provenance plus, for `terrain-model`, the credits — since only the
 feature being charted knows what sampled it:
 
 - **`terrain-model`** — a drawn line or measurement resampled from the API, a premium route
@@ -307,8 +315,8 @@ feature being charted knows what sampled it:
 - **`recorded`** — a GPS recording, an imported file, or a track merely gap-filled: a
   measurement no terrain model answered for, credited to nobody.
 
-`useElevationSources(provenance, reported)` turns the two together into the defs the chart
-links under its toolbar (with a `PremiumGem` for non-premium users) and `ElevationValue`
+`useElevationSources(provenance, reported)` turns the provenance and the reported credits
+into the defs the chart links under its toolbar (with a `PremiumGem` for non-premium users) and `ElevationValue`
 names in its ⓘ tooltip. A point readout is always `terrain-model` — which is why
 `measurementProcessor` reads it through `fetchElevations` rather than its own request, so
 the model the tooltip credits is the one that answered.
@@ -330,6 +338,7 @@ the read fails or the feature carries no geometry at all.
 {
   "elevations": [612.3, null], // exactly the array the plain form returns
   "sources": ["sk", "at", "gedtm30"], // union over the whole batch, any order
+  "attributions": [{ "name": "DMR 5.0: ÚGKK SR", "url": "https://…" }],
 }
 ```
 
@@ -341,36 +350,59 @@ needs no new vocabulary. Duplicates are tolerated; points the API has no
 data for contribute nothing; an empty array is valid. The parameter belongs in the cache
 key, which a query parameter is by default.
 
-`ElevationsResponseCompatSchema` accepts both shapes, so an API that ignores the parameter
-credits nothing rather than failing to parse. The frontend asks for the
-sources **only where it credits them** — `fetchElevations` appends the parameter exactly
-when a `sources` collector `Set` is passed — so export fills and the like neither pay for it
-nor fragment the cache.
+`attributions` is a flat, order-stable, de-duplicated list of every credit to display. It is
+**not index-aligned with `sources`** — one token can carry several credits (`be` is
+Wallonia's model and Flanders') and another none — so never zip the two.
 
-#### Getting the tokens to the chart
+The API populates it for **every** model it answers from, the global `srtm` and `gedtm30`
+included, so the app holds no fallback credit of its own and none should be added back: a
+second copy of the licence text here is exactly what this arrangement removes. A Sonny
+source credits Sonny *and* each national agency his readme lists, so the list runs long —
+18 entries for a point in Germany, 20 for a route across it — with duplicates collapsed
+server-side, so Sonny is named once however many countries a line crosses.
 
-`fetchElevations` / `enrichElevations` / `densifyAlong` take an optional `sources: Set<string>`
-that they add to, so a line built from several reads accumulates the union. Getting that union
-to a chart opened later takes two mechanisms, because the two caches expire differently:
+`ElevationsResponseCompatSchema` accepts the bare array, the object without `attributions`,
+and the full object, so an API that ignores the parameter or predates the field credits
+nothing rather than failing to parse. The frontend asks for the credits **only where it
+shows them** — `fetchElevations` appends the parameter exactly when an `ElevationCredits`
+collector is passed — so export fills and the like neither pay for it nor fragment the
+cache.
+
+#### Getting the credits to the chart
+
+`fetchElevations` / `enrichElevations` / `densifyAlong` take an optional `ElevationCredits`
+collector (`newElevationCredits()`) — a token `Set` and an attribution `Map` keyed by
+content — that they add to, so a line built from several reads accumulates the union without
+listing a credit twice. `creditedAttributions()` reads the credits back out in the order
+they were first reported. Getting that union to a chart opened later takes two mechanisms,
+because the two caches expire differently:
 
 - **Stamped on the geometry** — `ensureRouteRenderGeojson` and dataViewer's
-  `ensureRenderGeojson` put the union on the render feature as `fm:elevationSources`
-  (`ELEVATION_SOURCES_PROP` / `readElevationSources`). The render line is cached, so on the
-  second chart open the sampling doesn't happen again; carrying the credit _on_ the cached
-  object is what makes it survive, and makes drift impossible. Stamped **only** on
+  `ensureRenderGeojson` put the credits on the render feature as `fm:elevationAttributions`
+  (`withElevationAttributions` / `readElevationAttributions`). The render line is cached, so
+  on the second chart open the sampling doesn't happen again; carrying the credit _on_ the
+  cached object is what makes it survive, and makes drift impossible. Stamped **only** on
   render-only geometry — never by `enrichElevations` itself, which also writes into the
   exportable `trackGeojson`.
-- **`trackViewer.elevationSources`** — the override's `enrichElevations` writes into
-  `trackGeojson`, which can't carry the stamp, and its tokens can't be recovered from the
+- **`trackViewer.elevationAttributions`** — the override's `enrichElevations` writes into
+  `trackGeojson`, which can't carry the stamp, and what answered can't be recovered from the
   densify either: `densifyAlong` inserts nothing into a dense recording, so it makes no
   request at all. Without this field the _normal_ "Override all" case would credit nothing.
-  The field tracks `elevationDecision` — set with it, emptied with it — so there are only two
-  sites to keep aligned.
+  It tracks `elevationDecision` — set with it, emptied with it.
+
+A stamp is read back off a saved map, so `readElevationAttributions` validates it: a
+malformed entry is dropped on its own, a malformed list credits nobody, and a `url` that
+isn't `http(s)` is named without a link rather than rendered as one — the chart's footer
+turns each credit into an `<a href>`, and a shared map is writable by others.
 
 `elevationCredit(trackViewer, drawn)` unions the two for dataViewer's three chart
 dispatchers; routePlanner's reads the stamp directly. The chart's processor then unions the
-credit's tokens with whatever its own sampling collected (the drawn-line/measurement path)
-into `elevationChartSetElevationProfile`.
+credit with whatever its own sampling collected (the drawn-line/measurement path) into
+`elevationChartSetElevationProfile`.
+
+A map saved **before** the API resolved its own credits carries only the old
+`fm:elevationSources` tokens, which nothing resolves any more, so its chart credits nobody —
+the same state as a read against an API that reports nothing.
 
 ### Reading the chart — gestures in `ElevationChart.tsx`
 

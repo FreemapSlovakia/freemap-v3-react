@@ -4,6 +4,7 @@ import type {
   ElevationProfileWaypoint,
 } from '@features/elevationChart/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { ElevationSettingsState } from './settingsReducer.js';
 import type { ElevationChartTarget } from './target.js';
 
@@ -31,13 +32,13 @@ export type ElevationProvenance = 'terrain-model' | 'sonny' | 'recorded';
 
 /**
  * What the chart may credit a profile's elevation to: where it came from, plus —
- * for `terrain-model` — the source tokens the elevation API named when it was
- * sampled. Only the feature being charted knows both, so its resolver states
+ * for `terrain-model` — the credits the elevation API resolved when it was
+ * sampled. Only the feature being charted knows them, so its resolver states
  * them; the chart's own sampling adds whatever it reads itself.
  */
 export type ElevationCredit = {
   provenance: ElevationProvenance;
-  sources?: string[];
+  attributions?: AttributionDef[];
 };
 
 /**
@@ -91,10 +92,9 @@ export const elevationChartSetElevationProfile = createAction<{
   /** What the drawn elevation is credited to; see {@link ElevationCredit}. */
   provenance: ElevationProvenance;
   /**
-   * Terrain-model tokens the elevation API reported for the points behind this
-   * profile — see `elevationSourcesFromTokens`. Empty when it named none (the
-   * elevation came from the feature itself, or the API doesn't report them), in
-   * which case the profile credits nobody.
+   * The credits for the terrain models behind this profile. Empty when the API
+   * named none — the elevation came from the feature itself, or the API doesn't
+   * report them — in which case the profile credits nobody.
    */
-  sources: string[];
+  attributions: AttributionDef[];
 }>('ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS');
