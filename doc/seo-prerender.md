@@ -57,13 +57,17 @@ Sitemap shards list the pages the run actually wrote, not the ids it fetched: th
 
 **It runs on fm5, as the `freemap` user.** That is where the OSM database is, and Postgres there takes local connections only; as `freemap` the read-only role peer-authenticates over the socket, which is what `osmDb.ts` defaults to, so nothing needs to be in the environment.
 
+The normal way to run it by hand is **`gh workflow run sitemap.yml`** — that goes through the runner, which checks out fresh, so there is no stale-code risk. The clone at `~freemap/freemap-v3-react` is the fallback for when GitHub or the runner is unavailable, and for inspecting output without deploying:
+
 ```sh
-pnpm deploy-sitemap     # sync-language-files → generate → rsync --delete to fm6
+pnpm deploy-sitemap:pull   # git pull → install → generate → rsync --delete to fm6
+pnpm deploy-sitemap        # the same without the pull; what CI runs
+pnpm gen-sitemap           # stops after writing sitemap/, deploys nothing
 ```
 
-`gen-sitemap` alone stops after writing `sitemap/`. Both run `sync-language-files` first: `src/osm/osmTagToNameMapping-*.messages.ts` are generated and gitignored (only `-en` is tracked), so a fresh checkout has no name mappings without it.
+Use the `:pull` form in that clone: unlike the runner's checkout it does not refresh itself, and generating from months-old code and then rsyncing `--delete` is the failure it exists to prevent. The web build (`pnpm build`) is not involved — the generator runs through `tsx`. What it does need is `sync-language-files`, which all three scripts run first: `src/osm/osmTagToNameMapping-*.messages.ts` are generated and gitignored (only `-en` is tracked), so a fresh checkout has no name mappings without it.
 
-The rsync target is `SITEMAP_RSYNC_TARGET`, default `freemap-fm6:www/sitemap/` — the same ssh alias `pnpm deploy` uses, so fm5's `~freemap/.ssh/config` needs a `Host freemap-fm6` entry (`fm6.freemap.sk`, port 21122, user `freemap`) and its key in fm6's `authorized_keys`. `--delete` is the point: the live directory must end up _replaced_, not merged, or pages for POIs deleted from OSM survive. A failed crawl exits non-zero, and the `&&` in the script is what keeps that from rsyncing a partial run over good pages.
+`www/sitemap/` on fm6 must be **owned by `freemap`**, not merely group-writable: `rsync -a` sets the directory's mtime, and only its owner may, so a `martin`-owned directory fails the run with exit 23 after having transferred everything. The rsync target is `SITEMAP_RSYNC_TARGET`, default `freemap-fm6:www/sitemap/` — the same ssh alias `pnpm deploy` uses, so fm5's `~freemap/.ssh/config` needs a `Host freemap-fm6` entry (`fm6.freemap.sk`, port 21122, user `freemap`) and its key in fm6's `authorized_keys`. `--delete` is the point: the live directory must end up _replaced_, not merged, or pages for POIs deleted from OSM survive. A failed crawl exits non-zero, and the `&&` in the script is what keeps that from rsyncing a partial run over good pages.
 
 Scale, as of the Europe import: **317 747 pages** (SK 143 090, IT 104 004, CZ 30 309, PL 26 873, HU 13 471), about 1.3 GB. Roughly 3 minutes of that is database time; the rest is rendering and writing the files.
 
