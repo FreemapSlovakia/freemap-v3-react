@@ -11,11 +11,12 @@ export type FmDropdownMenuProps = DropdownMenuProps & {
    */
   level?: string | number | null;
   /**
-   * Scrolls the menu back to the top whenever this changes — for a menu whose
-   * items are replaced in place, which leaves it scrolled to where the previous
-   * list was left.
+   * Starts the menu at the top again whenever this changes — for a menu whose
+   * items are replaced in place, which otherwise reopens showing where the
+   * previous list was left. It remounts the scroller, so the fresh one is at
+   * the top even while the menu is hidden, where `scrollTop` can't be written.
    */
-  scrollResetKey?: unknown;
+  scrollResetKey?: string | number | null;
 };
 
 /**
@@ -47,8 +48,6 @@ export function FmDropdownMenu({
   );
 
   const prevLevel = useRef(level);
-
-  const prevResetKey = useRef(scrollResetKey);
 
   const refSetter = (el: HTMLDivElement | null) => {
     scrollerRef.current = el;
@@ -84,20 +83,6 @@ export function FmDropdownMenu({
     prevLevel.current = level;
   }, [level]);
 
-  // The menu stays in the DOM once it has been shown, so a list replaced while
-  // it was closed comes back scrolled to where the previous one was left.
-  useLayoutEffect(() => {
-    if (scrollResetKey === prevResetKey.current) {
-      return;
-    }
-
-    prevResetKey.current = scrollResetKey;
-
-    if (scrollerRef.current) {
-      scrollerRef.current.scrollTop = 0;
-    }
-  }, [scrollResetKey]);
-
   return (
     <Dropdown.Menu
       {...props}
@@ -108,7 +93,11 @@ export function FmDropdownMenu({
         className,
       )}
     >
-      <div className="fm-menu-scroller" ref={refSetter}>
+      <div
+        className="fm-menu-scroller"
+        ref={refSetter}
+        key={`reset-${scrollResetKey}`}
+      >
         <div />
 
         {children}
