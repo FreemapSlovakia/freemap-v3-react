@@ -562,7 +562,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </InputGroup>
         </Dropdown.Toggle>
 
-        <FmDropdownMenu className={classes.searchDropdown}>
+        {/* A new query answers with a list of its own, so it starts at the
+            top; Show more asks the same one for a longer list and keeps the
+            place the row it was clicked from is in. */}
+        <FmDropdownMenu
+          className={classes.searchDropdown}
+          scrollResetKey={query}
+        >
           {functionMatches.length > 0 && (
             <div className="dropdown-caption-divider">
               {m?.search.commands.caption}
