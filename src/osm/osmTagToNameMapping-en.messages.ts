@@ -1190,6 +1190,15 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   power: {
     '*': '{}',
+    cable: 'Power cable',
+    cable_distribution: 'Cable distribution',
+    cable_distribution_cabinet: 'Cable distribution cabinet',
+    catenary_mast: 'Catenary mast',
+    catenary_portal: 'Catenary portal',
+    circuit: 'Power circuit',
+    compensator: 'Power compensator',
+    connection: 'Power line connection',
+    converter: 'Power converter',
     generator: {
       '*': 'Electric power generator',
       'generator:source': {
@@ -1271,8 +1280,14 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
         },
       },
     },
+    heliostat: 'Heliostat',
+    insulator: 'Insulator',
+    inverter: 'Inverter',
     line: 'Power line',
+    line_section: 'Power line section',
+    minor_cable: 'Minor power cable',
     minor_line: 'Minor power line',
+    minor_underground_cable: 'Minor underground power cable',
     plant: {
       '*': 'Plant',
       'plant:source': {
@@ -1353,9 +1368,15 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
       },
     },
     pole: 'Power pole',
+    portal: 'Power portal',
+    roof_pole: 'Roof power pole',
     substation: 'Substation',
+    switch: 'Power switch',
+    switchgear: 'Switchgear',
+    terminal: 'Power line terminal',
     tower: 'Power tower',
     transformer: 'Transformer',
+    transition: 'Power line transition',
   },
   public_transport: {
     platform: 'Platform of public transportation',

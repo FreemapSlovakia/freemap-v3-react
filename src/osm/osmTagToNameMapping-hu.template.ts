@@ -1058,21 +1058,26 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   power: {
     '*': '{}',
+    cable: 'Elektromos kábel',
+    cable_distribution: 'Kábelelosztó',
+    cable_distribution_cabinet: 'Kábelelosztó szekrény',
+    catenary_mast: 'Felsővezeték-oszlop',
+    catenary_portal: 'Felsővezeték-kapu',
+    circuit: 'Áramkör',
+    compensator: 'Meddőteljesítmény-kompenzátor',
+    connection: 'Vezetékösszekötés',
+    converter: 'Áramátalakító',
     generator: {
       '*': 'Generátor',
-
       'generator:source': {
         biofuel: {
           '*': 'Biotüzelőanyaggal működő áramfejlesztő',
         },
-
         biogas: {
           '*': 'Biogázzal működő áramfejlesztő',
         },
-
         biomass: {
           '*': 'Biomasszával működő áramfejlesztő',
-
           'generator:method': {
             anaerobic_digestion:
               'Anaerob biomassza-bontással működő áramfejlesztő',
@@ -1080,30 +1085,23 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             gasification: 'Biomassza-elgázosításos áramfejlesztő',
           },
         },
-
         coal: {
           '*': 'Széntüzelésű áramfejlesztő',
         },
-
         diesel: {
           '*': 'Dízel áramfejlesztő',
         },
-
         gas: {
           '*': 'Gáztüzelésű áramfejlesztő',
         },
-
         gasoline: {
           '*': 'Benzines áramfejlesztő',
         },
-
         geothermal: {
           '*': 'Geotermikus áramfejlesztő',
         },
-
         hydro: {
           '*': 'Vízenergiás áramfejlesztő',
-
           'generator:method': {
             'run-of-the-river': 'Folyóvizes vízenergiás áramfejlesztő',
             'water-pumped-storage':
@@ -1111,163 +1109,142 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             'water-storage': 'Tározós vízenergiás áramfejlesztő',
           },
         },
-
         nuclear: {
           '*': 'Nukleáris áramfejlesztő',
-
           'generator:method': {
             fission: 'Maghasadásos nukleáris áramfejlesztő',
             fusion: 'Magfúziós nukleáris áramfejlesztő',
           },
         },
-
         oil: {
           '*': 'Olajtüzelésű áramfejlesztő',
         },
-
         solar: {
           '*': 'Napelemes áramfejlesztő',
-
           'generator:method': {
             photovoltaic: 'Fotovoltaikus napelemes áramfejlesztő',
             thermal: 'Nap-hőenergiás áramfejlesztő',
           },
         },
-
         tidal: {
           '*': 'Árapály-energiás áramfejlesztő',
-
           'generator:method': {
             barrage: 'Árapálygátas áramfejlesztő',
             stream: 'Árapályáramlatos áramfejlesztő',
           },
         },
-
         waste: {
           '*': 'Hulladékból energiát termelő áramfejlesztő',
-
           'generator:method': {
             combustion: 'Hulladékégetéses áramfejlesztő',
             gasification: 'Hulladék-elgázosításos áramfejlesztő',
           },
         },
-
         wave: {
           '*': 'Hullámenergiás áramfejlesztő',
         },
-
         wind: {
           '*': 'Szélerőművi áramfejlesztő',
         },
       },
     },
+    heliostat: 'Heliosztát',
+    insulator: 'Szigetelő',
+    inverter: 'Inverter',
     line: 'Távvezeték',
+    line_section: 'Vezetékszakasz',
+    minor_cable: 'Kisebb elektromos kábel',
     minor_line: 'Kisebb villanyvezeték',
+    minor_underground_cable: 'Kisebb földalatti kábel',
     plant: {
       '*': 'Erőmű',
-
       'plant:source': {
         biofuel: {
           '*': 'Biotüzelőanyag-erőmű',
         },
-
         biogas: {
           '*': 'Biogáz-erőmű',
         },
-
         biomass: {
           '*': 'Biomassza-erőmű',
-
           'plant:method': {
             anaerobic_digestion: 'Anaerob biomassza-bontású erőmű',
             combustion: 'Biomassza-égetéses erőmű',
             gasification: 'Biomassza-elgázosításos erőmű',
           },
         },
-
         coal: {
           '*': 'Széntüzelésű erőmű',
         },
-
         diesel: {
           '*': 'Dízel-erőmű',
         },
-
         gas: {
           '*': 'Gáztüzelésű erőmű',
         },
-
         gasoline: {
           '*': 'Benzines erőmű',
         },
-
         geothermal: {
           '*': 'Geotermikus erőmű',
         },
-
         hydro: {
           '*': 'Vízerőmű',
-
           'plant:method': {
             'run-of-the-river': 'Folyóvizes vízerőmű',
             'water-pumped-storage': 'Szivattyús-tározós vízerőmű',
             'water-storage': 'Tározós vízerőmű',
           },
         },
-
         nuclear: {
           '*': 'Atomerőmű',
-
           'plant:method': {
             fission: 'Maghasadásos atomerőmű',
             fusion: 'Magfúziós erőmű',
           },
         },
-
         oil: {
           '*': 'Olajtüzelésű erőmű',
         },
-
         solar: {
           '*': 'Naperőmű',
-
           'plant:method': {
             photovoltaic: 'Fotovoltaikus naperőmű',
             thermal: 'Nap-hőerőmű',
           },
         },
-
         tidal: {
           '*': 'Árapály-erőmű',
-
           'plant:method': {
             barrage: 'Árapálygátas erőmű',
             stream: 'Árapályáramlatos erőmű',
           },
         },
-
         waste: {
           '*': 'Hulladékhasznosító erőmű',
-
           'plant:method': {
             combustion: 'Hulladékégető erőmű',
             gasification: 'Hulladék-elgázosító erőmű',
           },
         },
-
         wave: {
           '*': 'Hullámenergia-erőmű',
         },
-
         wind: {
           '*': 'Szélerőmű',
         },
       },
     },
     pole: 'Villanyoszlop',
+    portal: 'Vezetékkapu',
+    roof_pole: 'Tetőtartó oszlop',
     substation: 'Alállomás',
+    switch: 'Szakaszoló',
+    switchgear: 'Kapcsolóberendezés',
+    terminal: 'Vezetékvégpont',
     tower: 'Távvezetékoszlop',
     transformer: 'Transzformátor',
+    transition: 'Vezeték-kábel átmenet',
   },
 
   public_transport: {

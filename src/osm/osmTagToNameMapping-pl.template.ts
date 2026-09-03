@@ -1039,20 +1039,26 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   power: {
     '*': '{}',
+    cable: 'Kabel elektroenergetyczny',
+    cable_distribution: 'Rozdzielnia kablowa',
+    cable_distribution_cabinet: 'Szafka rozdzielcza',
+    catenary_mast: 'Słup trakcyjny',
+    catenary_portal: 'Brama trakcyjna',
+    circuit: 'Obwód elektryczny',
+    compensator: 'Kompensator mocy biernej',
+    connection: 'Połączenie linii elektroenergetycznej',
+    converter: 'Przekształtnik',
     generator: {
       '*': 'Generator',
       'generator:source': {
         biofuel: {
           '*': 'Generator energii elektrycznej na biopaliwo',
         },
-
         biogas: {
           '*': 'Generator energii elektrycznej na biogaz',
         },
-
         biomass: {
           '*': 'Generator energii elektrycznej na biomasę',
-
           'generator:method': {
             anaerobic_digestion:
               'Generator energii z beztlenowej fermentacji biomasy',
@@ -1060,30 +1066,23 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             gasification: 'Generator energii ze zgazowania biomasy',
           },
         },
-
         coal: {
           '*': 'Generator energii elektrycznej na węgiel',
         },
-
         diesel: {
           '*': 'Generator energii elektrycznej na olej napędowy',
         },
-
         gas: {
           '*': 'Generator energii elektrycznej na gaz',
         },
-
         gasoline: {
           '*': 'Generator energii elektrycznej na benzynę',
         },
-
         geothermal: {
           '*': 'Generator energii geotermalnej',
         },
-
         hydro: {
           '*': 'Generator hydroelektryczny',
-
           'generator:method': {
             'run-of-the-river': 'Przepływowy generator hydroelektryczny',
             'water-pumped-storage':
@@ -1091,72 +1090,64 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             'water-storage': 'Zbiornikowy generator hydroelektryczny',
           },
         },
-
         nuclear: {
           '*': 'Generator energii jądrowej',
-
           'generator:method': {
             fission: 'Generator energii jądrowej z rozszczepienia',
             fusion: 'Generator energii jądrowej z syntezy',
           },
         },
-
         oil: {
           '*': 'Generator energii elektrycznej na olej',
         },
-
         solar: {
           '*': 'Generator energii słonecznej',
-
           'generator:method': {
             photovoltaic: 'Generator energii słonecznej fotowoltaiczny',
             thermal: 'Generator energii słonecznej termiczny',
           },
         },
-
         tidal: {
           '*': 'Generator energii pływowej',
-
           'generator:method': {
             barrage: 'Generator energii pływowej zaporowy',
             stream: 'Generator energii pływowej prądowy',
           },
         },
-
         waste: {
           '*': 'Generator energii z odpadów',
-
           'generator:method': {
             combustion: 'Generator energii ze spalania odpadów',
             gasification: 'Generator energii ze zgazowania odpadów',
           },
         },
-
         wave: {
           '*': 'Generator energii falowej',
         },
-
         wind: {
           '*': 'Generator energii wiatrowej',
         },
       },
     },
+    heliostat: 'Heliostat',
+    insulator: 'Izolator',
+    inverter: 'Falownik',
     line: 'Linia energetyczna',
+    line_section: 'Odcinek linii elektroenergetycznej',
+    minor_cable: 'Mniejszy kabel elektroenergetyczny',
     minor_line: 'Mała linia energetyczna',
+    minor_underground_cable: 'Mniejszy kabel podziemny',
     plant: {
       '*': 'Elektrownia',
       'plant:source': {
         biofuel: {
           '*': 'Elektrownia na biopaliwo',
         },
-
         biogas: {
           '*': 'Elektrownia biogazowa',
         },
-
         biomass: {
           '*': 'Elektrownia na biomasę',
-
           'plant:method': {
             anaerobic_digestion:
               'Elektrownia na biomasę z fermentacją beztlenową',
@@ -1164,90 +1155,78 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             gasification: 'Elektrownia na biomasę ze zgazowaniem',
           },
         },
-
         coal: {
           '*': 'Elektrownia węglowa',
         },
-
         diesel: {
           '*': 'Elektrownia dieslowska',
         },
-
         gas: {
           '*': 'Elektrownia gazowa',
         },
-
         gasoline: {
           '*': 'Elektrownia benzynowa',
         },
-
         geothermal: {
           '*': 'Elektrownia geotermalna',
         },
-
         hydro: {
           '*': 'Elektrownia wodna',
-
           'plant:method': {
             'run-of-the-river': 'Przepływowa elektrownia wodna',
             'water-pumped-storage': 'Szczytowo-pompowa elektrownia wodna',
             'water-storage': 'Zbiornikowa elektrownia wodna',
           },
         },
-
         nuclear: {
           '*': 'Elektrownia jądrowa',
-
           'plant:method': {
             fission: 'Elektrownia jądrowa rozszczepieniowa',
             fusion: 'Elektrownia jądrowa fuzyjna',
           },
         },
-
         oil: {
           '*': 'Elektrownia olejowa',
         },
-
         solar: {
           '*': 'Elektrownia słoneczna',
-
           'plant:method': {
             photovoltaic: 'Elektrownia fotowoltaiczna',
             thermal: 'Elektrownia słoneczna termiczna',
           },
         },
-
         tidal: {
           '*': 'Elektrownia pływowa',
-
           'plant:method': {
             barrage: 'Elektrownia pływowa zaporowa',
             stream: 'Elektrownia pływowa prądowa',
           },
         },
-
         waste: {
           '*': 'Elektrownia z odpadów',
-
           'plant:method': {
             combustion: 'Elektrownia ze spalania odpadów',
             gasification: 'Elektrownia ze zgazowania odpadów',
           },
         },
-
         wave: {
           '*': 'Elektrownia falowa',
         },
-
         wind: {
           '*': 'Elektrownia wiatrowa',
         },
       },
     },
     pole: 'Słup energetyczny',
+    portal: 'Portal linii elektroenergetycznej',
+    roof_pole: 'Słup dachowy',
     substation: 'Stacja transformatorowa',
+    switch: 'Odłącznik',
+    switchgear: 'Rozdzielnica',
+    terminal: 'Zakończenie linii elektroenergetycznej',
     tower: 'Wieża energetyczna',
     transformer: 'Transformator',
+    transition: 'Przejście linii w kabel',
   },
 
   public_transport: {

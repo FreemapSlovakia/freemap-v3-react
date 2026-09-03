@@ -1198,6 +1198,15 @@ export type OsmTagToNameMapping = {
   };
   power: {
     '*': string;
+    cable: string;
+    cable_distribution: string;
+    cable_distribution_cabinet: string;
+    catenary_mast: string;
+    catenary_portal: string;
+    circuit: string;
+    compensator: string;
+    connection: string;
+    converter: string;
     generator: {
       '*': string;
       'generator:source': {
@@ -1277,8 +1286,14 @@ export type OsmTagToNameMapping = {
         };
       };
     };
+    heliostat: string;
+    insulator: string;
+    inverter: string;
     line: string;
+    line_section: string;
+    minor_cable: string;
     minor_line: string;
+    minor_underground_cable: string;
     plant: {
       '*': string;
       'plant:source': {
@@ -1359,9 +1374,15 @@ export type OsmTagToNameMapping = {
       };
     };
     pole: string;
+    portal: string;
+    roof_pole: string;
     substation: string;
+    switch: string;
+    switchgear: string;
+    terminal: string;
     tower: string;
     transformer: string;
+    transition: string;
   };
   public_transport: {
     platform: string;

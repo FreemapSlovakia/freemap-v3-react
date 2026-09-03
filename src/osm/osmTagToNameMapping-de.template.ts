@@ -1036,70 +1036,64 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   power: {
     '*': '{}',
+    cable: 'Stromkabel',
+    cable_distribution: 'Kabelverteilung',
+    cable_distribution_cabinet: 'Kabelverteilerschrank',
+    catenary_mast: 'Oberleitungsmast',
+    catenary_portal: 'Oberleitungsportal',
+    circuit: 'Stromkreis',
+    compensator: 'Blindleistungskompensator',
+    connection: 'Leitungsverbindung',
+    converter: 'Stromrichter',
     generator: {
       '*': 'Generator',
-
       'generator:source': {
         nuclear: {
           '*': 'Kernenergie-Stromgenerator',
-
           'generator:method': {
             fission: 'Kernspaltungs-Stromgenerator',
             fusion: 'Kernfusions-Stromgenerator',
           },
         },
-
         wind: {
           '*': 'Windkraft-Stromgenerator',
         },
-
         hydro: {
           '*': 'Wasserkraft-Stromgenerator',
-
           'generator:method': {
             'water-storage': 'Speicherwasser-Stromgenerator',
             'water-pumped-storage': 'Pumpspeicher-Stromgenerator',
             'run-of-the-river': 'Laufwasser-Stromgenerator',
           },
         },
-
         tidal: {
           '*': 'Gezeiten-Stromgenerator',
-
           'generator:method': {
             barrage: 'Gezeitenkraftwerks-Stromgenerator (Staudamm)',
             stream: 'Gezeitenströmungs-Stromgenerator',
           },
         },
-
         wave: {
           '*': 'Wellenenergie-Stromgenerator',
         },
-
         geothermal: {
           '*': 'Geothermie-Stromgenerator',
         },
-
         solar: {
           '*': 'Solarstrom-Generator',
-
           'generator:method': {
             thermal: 'Solarthermie-Stromgenerator',
             photovoltaic: 'Photovoltaik-Stromgenerator',
           },
         },
-
         coal: {
           '*': 'Kohle-Stromgenerator',
         },
-
         gas: {
           '*': 'Gas-Stromgenerator',
         },
-
         biomass: {
           '*': 'Biomasse-Stromgenerator',
-
           'generator:method': {
             combustion: 'Biomasse-Stromgenerator mit Verbrennung',
             gasification: 'Biomasse-Stromgenerator mit Vergasung',
@@ -1107,30 +1101,23 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
               'Biomasse-Stromgenerator mit anaerober Vergärung',
           },
         },
-
         biofuel: {
           '*': 'Biokraftstoff-Stromgenerator',
         },
-
         biogas: {
           '*': 'Biogas-Stromgenerator',
         },
-
         oil: {
           '*': 'Öl-Stromgenerator',
         },
-
         diesel: {
           '*': 'Diesel-Stromgenerator',
         },
-
         gasoline: {
           '*': 'Benzin-Stromgenerator',
         },
-
         waste: {
           '*': 'Abfall-zu-Energie-Stromgenerator',
-
           'generator:method': {
             combustion: 'Abfallverbrennungs-Stromgenerator',
             gasification: 'Abfallvergasungs-Stromgenerator',
@@ -1138,102 +1125,86 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         },
       },
     },
+    heliostat: 'Heliostat',
+    insulator: 'Isolator',
+    inverter: 'Wechselrichter',
     line: 'Stromleitung',
+    line_section: 'Leitungsabschnitt',
+    minor_cable: 'Kleines Stromkabel',
     minor_line: 'Nebenstromleitung',
+    minor_underground_cable: 'Kleines Erdkabel',
     plant: {
       '*': 'Kraftwerk',
-
       'plant:source': {
         nuclear: {
           '*': 'Kernkraftwerk',
-
           'plant:method': {
             fission: 'Kernspaltungskraftwerk',
             fusion: 'Kernfusionskraftwerk',
           },
         },
-
         wind: {
           '*': 'Windkraftwerk',
         },
-
         hydro: {
           '*': 'Wasserkraftwerk',
-
           'plant:method': {
             'water-storage': 'Speicherkraftwerk',
             'water-pumped-storage': 'Pumpspeicherkraftwerk',
             'run-of-the-river': 'Laufwasserkraftwerk',
           },
         },
-
         tidal: {
           '*': 'Gezeitenkraftwerk',
-
           'plant:method': {
             barrage: 'Gezeitenkraftwerk mit Staudamm',
             stream: 'Gezeitenströmungskraftwerk',
           },
         },
-
         wave: {
           '*': 'Wellenkraftwerk',
         },
-
         geothermal: {
           '*': 'Geothermiekraftwerk',
         },
-
         solar: {
           '*': 'Solarkraftwerk',
-
           'plant:method': {
             thermal: 'Solarthermie-Kraftwerk',
             photovoltaic: 'Photovoltaik-Kraftwerk',
           },
         },
-
         coal: {
           '*': 'Kohlekraftwerk',
         },
-
         gas: {
           '*': 'Gaskraftwerk',
         },
-
         biomass: {
           '*': 'Biomassekraftwerk',
-
           'plant:method': {
             combustion: 'Biomassekraftwerk mit Verbrennung',
             gasification: 'Biomassekraftwerk mit Vergasung',
             anaerobic_digestion: 'Biomassekraftwerk mit anaerober Vergärung',
           },
         },
-
         biofuel: {
           '*': 'Biokraftstoff-Kraftwerk',
         },
-
         biogas: {
           '*': 'Biogaskraftwerk',
         },
-
         oil: {
           '*': 'Ölkraftwerk',
         },
-
         diesel: {
           '*': 'Dieselkraftwerk',
         },
-
         gasoline: {
           '*': 'Benzinkraftwerk',
         },
-
         waste: {
           '*': 'Müllheizkraftwerk',
-
           'plant:method': {
             combustion: 'Abfallverbrennungskraftwerk',
             gasification: 'Abfallvergasungskraftwerk',
@@ -1242,9 +1213,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     pole: 'Strommast',
+    portal: 'Leitungsportal',
+    roof_pole: 'Dachständer',
     substation: 'Umspannwerk',
+    switch: 'Trennschalter',
+    switchgear: 'Schaltanlage',
+    terminal: 'Leitungsendpunkt',
     tower: 'Stromturm',
     transformer: 'Transformator',
+    transition: 'Leitungsübergang',
   },
 
   public_transport: {

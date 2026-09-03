@@ -1186,6 +1186,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   power: {
     '*': '{}',
+    cable: 'Električni kabel',
+    cable_distribution: 'Kabelska razdelilna točka',
+    cable_distribution_cabinet: 'Kabelska razdelilna omarica',
+    catenary_mast: 'Drog vozne mreže',
+    catenary_portal: 'Portal vozne mreže',
+    circuit: 'Električni tokokrog',
+    compensator: 'Kompenzator jalove moči',
+    connection: 'Spoj daljnovoda',
+    converter: 'Pretvornik električnega toka',
     generator: {
       '*': 'Generator električne energije',
       'generator:source': {
@@ -1272,8 +1281,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         },
       },
     },
+    heliostat: 'Heliostat',
+    insulator: 'Izolator',
+    inverter: 'Razsmernik',
     line: 'Električni daljnovod',
+    line_section: 'Odsek daljnovoda',
+    minor_cable: 'Manjši električni kabel',
     minor_line: 'Manjši električni vod',
+    minor_underground_cable: 'Manjši podzemni električni kabel',
     plant: {
       '*': 'Elektrarna',
       'plant:source': {
@@ -1354,9 +1369,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     pole: 'Električni drog',
+    portal: 'Portal daljnovoda',
+    roof_pole: 'Strešni električni drog',
     substation: 'Elektrorazdelilna postaja',
+    switch: 'Ločilnik',
+    switchgear: 'Stikališče',
+    terminal: 'Konec daljnovoda',
     tower: 'Daljnovodni steber',
     transformer: 'Transformator',
+    transition: 'Prehod daljnovoda v kabel',
   },
   public_transport: {
     platform: 'Peron javnega prevoza',

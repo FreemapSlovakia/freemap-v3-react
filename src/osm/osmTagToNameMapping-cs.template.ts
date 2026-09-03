@@ -1055,21 +1055,26 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   power: {
     '*': '{}',
+    cable: 'Elektrický kabel',
+    cable_distribution: 'Kabelový rozvod',
+    cable_distribution_cabinet: 'Kabelová rozvodná skříň',
+    catenary_mast: 'Stožár trolejového vedení',
+    catenary_portal: 'Brána trolejového vedení',
+    circuit: 'Elektrický obvod',
+    compensator: 'Kompenzátor jalového výkonu',
+    connection: 'Spojení elektrického vedení',
+    converter: 'Měnič elektrického proudu',
     generator: {
       '*': 'Generátor',
-
       'generator:source': {
         biofuel: {
           '*': 'Generátor elektrické energie z biopaliva',
         },
-
         biogas: {
           '*': 'Generátor elektrické energie z bioplynu',
         },
-
         biomass: {
           '*': 'Generátor elektrické energie z biomasy',
-
           'generator:method': {
             anaerobic_digestion:
               'Generátor elektrické energie z anaerobního rozkladu biomasy',
@@ -1077,30 +1082,23 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             gasification: 'Generátor elektrické energie ze zplyňování biomasy',
           },
         },
-
         coal: {
           '*': 'Generátor elektrické energie ze spalování uhlí',
         },
-
         diesel: {
           '*': 'Generátor elektrické energie ze spalování nafty',
         },
-
         gas: {
           '*': 'Generátor elektrické energie ze spalování plynu',
         },
-
         gasoline: {
           '*': 'Generátor elektrické energie ze spalování benzínu',
         },
-
         geothermal: {
           '*': 'Generátor elektrické energie z geotermální energie',
         },
-
         hydro: {
           '*': 'Generátor elektrické energie z vodní energie',
-
           'generator:method': {
             'run-of-the-river':
               'Generátor elektrické energie z průtokové vodní energie',
@@ -1110,23 +1108,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
               'Generátor elektrické energie z akumulované vodní energie',
           },
         },
-
         nuclear: {
           '*': 'Generátor elektrické energie z jaderné energie',
-
           'generator:method': {
             fission: 'Generátor elektrické energie ze štěpení jádra',
             fusion: 'Generátor elektrické energie z jaderné fúze',
           },
         },
-
         oil: {
           '*': 'Generátor elektrické energie ze spalování ropy',
         },
-
         solar: {
           '*': 'Generátor elektrické energie ze slunečního záření',
-
           'generator:method': {
             photovoltaic:
               'Generátor elektrické energie ze slunečního záření - fotovoltaický',
@@ -1134,141 +1127,125 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
               'Generátor elektrické energie ze slunečního záření - termální',
           },
         },
-
         tidal: {
           '*': 'Generátor elektrické energie z přílivové energie',
-
           'generator:method': {
             barrage: 'Generátor elektrické energie z přílivové hráze',
             stream: 'Generátor elektrické energie z přílivového proudu',
           },
         },
-
         waste: {
           '*': 'Generátor elektrické energie ze spalování odpadu',
-
           'generator:method': {
             combustion: 'Generátor elektrické energie ze spalování odpadu',
             gasification: 'Generátor elektrické energie ze zplyňování odpadu',
           },
         },
-
         wave: {
           '*': 'Generátor elektrické energie z energie mořských vln',
         },
-
         wind: {
           '*': 'Generátor elektrické energie z větrné energie',
         },
       },
     },
+    heliostat: 'Heliostat',
+    insulator: 'Izolátor',
+    inverter: 'Střídač',
     line: 'Elektrické vedení',
+    line_section: 'Úsek elektrického vedení',
+    minor_cable: 'Menší elektrický kabel',
     minor_line: 'Vedlejší elektrické vedení',
+    minor_underground_cable: 'Menší podzemní elektrický kabel',
     plant: {
       '*': 'Elektrárna',
-
       'plant:source': {
         biofuel: {
           '*': 'Elektrárna na biopalivo',
         },
-
         biogas: {
           '*': 'Bioplynová elektrárna',
         },
-
         biomass: {
           '*': 'Elektrárna na biomasu',
-
           'plant:method': {
             anaerobic_digestion: 'Elektrárna s anaerobním rozkladem biomasy',
             combustion: 'Elektrárna se spalováním biomasy',
             gasification: 'Elektrárna se zplyňováním biomasy',
           },
         },
-
         coal: {
           '*': 'Uhelná elektrárna',
         },
-
         diesel: {
           '*': 'Naftová elektrárna',
         },
-
         gas: {
           '*': 'Plynová elektrárna',
         },
-
         gasoline: {
           '*': 'Benzínová elektrárna',
         },
-
         geothermal: {
           '*': 'Geotermální elektrárna',
         },
-
         hydro: {
           '*': 'Vodní elektrárna',
-
           'plant:method': {
             'run-of-the-river': 'Průtoková vodní elektrárna',
             'water-pumped-storage': 'Přečerpávací vodní elektrárna',
             'water-storage': 'Přehradní vodní elektrárna',
           },
         },
-
         nuclear: {
           '*': 'Jaderná elektrárna',
-
           'plant:method': {
             fission: 'Elektrárna se štěpením jádra',
             fusion: 'Elektrárna s jadernou fúzí',
           },
         },
-
         oil: {
           '*': 'Elektrárna na ropu',
         },
-
         solar: {
           '*': 'Solární elektrárna',
-
           'plant:method': {
             photovoltaic: 'Fotovoltaická elektrárna',
             thermal: 'Solární termální elektrárna',
           },
         },
-
         tidal: {
           '*': 'Přílivová elektrárna',
-
           'plant:method': {
             barrage: 'Přílivová elektrárna s hrází',
             stream: 'Přílivová elektrárna z proudu',
           },
         },
-
         waste: {
           '*': 'Spalovna odpadu s výrobou elektřiny',
-
           'plant:method': {
             combustion: 'Elektrárna se spalováním odpadu',
             gasification: 'Elektrárna se zplyňováním odpadu',
           },
         },
-
         wave: {
           '*': 'Vlnová elektrárna',
         },
-
         wind: {
           '*': 'Větrná elektrárna',
         },
       },
     },
     pole: 'Elektrický sloup',
+    portal: 'Portál elektrického vedení',
+    roof_pole: 'Střešní elektrický sloup',
     substation: 'Elektrická distribuční stanice',
+    switch: 'Odpínač elektrického vedení',
+    switchgear: 'Rozváděč',
+    terminal: 'Koncovka elektrického vedení',
     tower: 'Stožár vysokého napětí',
     transformer: 'Transformátor',
+    transition: 'Přechod vedení do kabelu',
   },
 
   public_transport: {

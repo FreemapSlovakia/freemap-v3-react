@@ -1184,6 +1184,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   power: {
     '*': '{}',
+    cable: 'Câble électrique',
+    cable_distribution: 'Distribution par câble',
+    cable_distribution_cabinet: 'Armoire de distribution',
+    catenary_mast: 'Poteau caténaire',
+    catenary_portal: 'Portique caténaire',
+    circuit: 'Circuit électrique',
+    compensator: 'Compensateur de puissance réactive',
+    connection: 'Connexion de ligne électrique',
+    converter: 'Convertisseur électrique',
     generator: {
       '*': 'Générateur électrique',
       'generator:source': {
@@ -1265,8 +1274,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         },
       },
     },
+    heliostat: 'Héliostat',
+    insulator: 'Isolateur',
+    inverter: 'Onduleur',
     line: 'Ligne électrique',
+    line_section: 'Tronçon de ligne électrique',
+    minor_cable: 'Câble électrique secondaire',
     minor_line: 'Ligne électrique secondaire',
+    minor_underground_cable: 'Câble souterrain secondaire',
     plant: {
       '*': 'Centrale électrique',
       'plant:source': {
@@ -1348,9 +1363,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     pole: 'Poteau électrique',
+    portal: 'Portique de ligne électrique',
+    roof_pole: 'Poteau de toit',
     substation: 'Poste électrique',
+    switch: 'Sectionneur',
+    switchgear: 'Appareillage de commutation',
+    terminal: 'Terminaison de ligne électrique',
     tower: 'Pylône électrique',
     transformer: 'Transformateur',
+    transition: 'Transition ligne-câble',
   },
   public_transport: {
     platform: 'Quai de transport en commun',

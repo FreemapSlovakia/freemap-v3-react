@@ -1185,6 +1185,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   power: {
     '*': '{}',
+    cable: 'Elektrický kábel',
+    cable_distribution: 'Káblový rozvod',
+    cable_distribution_cabinet: 'Káblová rozvodná skriňa',
+    catenary_mast: 'Stožiar trolejového vedenia',
+    catenary_portal: 'Brána trolejového vedenia',
+    circuit: 'Elektrický obvod',
+    compensator: 'Kompenzátor jalového výkonu',
+    connection: 'Spojenie elektrického vedenia',
+    converter: 'Menič elektrického prúdu',
     generator: {
       '*': 'Generátor elektrickej energie',
       'generator:source': {
@@ -1271,8 +1280,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         },
       },
     },
+    heliostat: 'Heliostat',
+    insulator: 'Izolátor',
+    inverter: 'Striedač',
     line: 'Elektrické vedenie',
+    line_section: 'Úsek elektrického vedenia',
+    minor_cable: 'Menší elektrický kábel',
     minor_line: 'Malé elektrické vedenie',
+    minor_underground_cable: 'Menší podzemný elektrický kábel',
     plant: {
       '*': 'Elektráreň',
       'plant:source': {
@@ -1353,9 +1368,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
     },
     pole: 'Elektrický stĺp',
+    portal: 'Portál elektrického vedenia',
+    roof_pole: 'Strešný elektrický stĺp',
     substation: 'Elektrická distribučná stanica',
+    switch: 'Odpínač elektrického vedenia',
+    switchgear: 'Rozvádzač',
+    terminal: 'Koncovka elektrického vedenia',
     tower: 'Veža vysokého napätia',
     transformer: 'Transformátor',
+    transition: 'Prechod vedenia do kábla',
   },
   public_transport: {
     platform: 'Nástupište verejnej dopravy',

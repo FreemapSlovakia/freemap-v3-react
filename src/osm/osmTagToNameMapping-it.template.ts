@@ -1058,21 +1058,26 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   power: {
     '*': '{}',
+    cable: 'Cavo elettrico',
+    cable_distribution: 'Distribuzione via cavo',
+    cable_distribution_cabinet: 'Armadio di distribuzione',
+    catenary_mast: 'Palo della catenaria',
+    catenary_portal: 'Portale della catenaria',
+    circuit: 'Circuito elettrico',
+    compensator: 'Compensatore di potenza reattiva',
+    connection: 'Connessione di linea elettrica',
+    converter: 'Convertitore elettrico',
     generator: {
       '*': 'Generatore',
-
       'generator:source': {
         biofuel: {
           '*': 'Generatore elettrico a biocarburante',
         },
-
         biogas: {
           '*': 'Generatore elettrico a biogas',
         },
-
         biomass: {
           '*': 'Generatore elettrico a biomassa',
-
           'generator:method': {
             anaerobic_digestion:
               'Generatore elettrico da digestione anaerobica della biomassa',
@@ -1080,103 +1085,87 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             gasification: 'Generatore elettrico a gassificazione di biomassa',
           },
         },
-
         coal: {
           '*': 'Generatore elettrico a carbone',
         },
-
         diesel: {
           '*': 'Generatore elettrico diesel',
         },
-
         gas: {
           '*': 'Generatore elettrico a gas',
         },
-
         gasoline: {
           '*': 'Generatore elettrico a benzina',
         },
-
         geothermal: {
           '*': 'Generatore elettrico geotermico',
         },
-
         hydro: {
           '*': 'Generatore idroelettrico',
-
           'generator:method': {
             'run-of-the-river': 'Generatore idroelettrico ad acqua fluente',
             'water-pumped-storage': 'Generatore idroelettrico a pompaggio',
             'water-storage': 'Generatore idroelettrico a bacino',
           },
         },
-
         nuclear: {
           '*': 'Generatore elettrico nucleare',
-
           'generator:method': {
             fission: 'Generatore elettrico nucleare a fissione',
             fusion: 'Generatore elettrico nucleare a fusione',
           },
         },
-
         oil: {
           '*': 'Generatore elettrico a olio combustibile',
         },
-
         solar: {
           '*': 'Generatore elettrico solare',
-
           'generator:method': {
             photovoltaic: 'Generatore elettrico solare fotovoltaico',
             thermal: 'Generatore elettrico solare termico',
           },
         },
-
         tidal: {
           '*': 'Generatore elettrico da marea',
-
           'generator:method': {
             barrage: 'Generatore elettrico da sbarramento di marea',
             stream: 'Generatore elettrico da correnti di marea',
           },
         },
-
         waste: {
           '*': 'Generatore elettrico da rifiuti',
-
           'generator:method': {
             combustion: 'Generatore elettrico da combustione rifiuti',
             gasification: 'Generatore elettrico da gassificazione rifiuti',
           },
         },
-
         wave: {
           '*': 'Generatore elettrico da onde',
         },
-
         wind: {
           '*': 'Generatore elettrico eolico',
         },
       },
     },
+    heliostat: 'Eliostato',
+    insulator: 'Isolatore',
+    inverter: 'Inverter',
     line: 'Linea elettrica',
+    line_section: 'Tratto di linea elettrica',
+    minor_cable: 'Cavo elettrico minore',
     minor_line: 'Linea elettrica minore',
+    minor_underground_cable: 'Cavo elettrico interrato minore',
     plant: {
       '*': 'Centrale',
-
       'plant:source': {
         biofuel: {
           '*': 'Centrale a biocarburante',
         },
-
         biogas: {
           '*': 'Centrale a biogas',
         },
-
         biomass: {
           '*': 'Centrale a biomassa',
-
           'plant:method': {
             anaerobic_digestion:
               'Centrale a biomassa con digestione anaerobica',
@@ -1184,90 +1173,78 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             gasification: 'Centrale a biomassa con gassificazione',
           },
         },
-
         coal: {
           '*': 'Centrale a carbone',
         },
-
         diesel: {
           '*': 'Centrale diesel',
         },
-
         gas: {
           '*': 'Centrale a gas',
         },
-
         gasoline: {
           '*': 'Centrale a benzina',
         },
-
         geothermal: {
           '*': 'Centrale geotermica',
         },
-
         hydro: {
           '*': 'Centrale idroelettrica',
-
           'plant:method': {
             'run-of-the-river': 'Centrale idroelettrica ad acqua fluente',
             'water-pumped-storage': 'Centrale idroelettrica a pompaggio',
             'water-storage': 'Centrale idroelettrica a bacino',
           },
         },
-
         nuclear: {
           '*': 'Centrale nucleare',
-
           'plant:method': {
             fission: 'Centrale nucleare a fissione',
             fusion: 'Centrale nucleare a fusione',
           },
         },
-
         oil: {
           '*': 'Centrale a olio combustibile',
         },
-
         solar: {
           '*': 'Centrale solare',
-
           'plant:method': {
             photovoltaic: 'Centrale solare fotovoltaica',
             thermal: 'Centrale solare termica',
           },
         },
-
         tidal: {
           '*': 'Centrale mareomotrice',
-
           'plant:method': {
             barrage: 'Centrale mareomotrice a sbarramento',
             stream: 'Centrale mareomotrice a correnti',
           },
         },
-
         waste: {
           '*': 'Centrale da rifiuti',
-
           'plant:method': {
             combustion: 'Centrale da combustione rifiuti',
             gasification: 'Centrale da gassificazione rifiuti',
           },
         },
-
         wave: {
           '*': 'Centrale da energia ondosa',
         },
-
         wind: {
           '*': 'Centrale eolica',
         },
       },
     },
     pole: 'Polo di alimentazione',
+    portal: 'Portale di linea elettrica',
+    roof_pole: 'Palo elettrico da tetto',
     substation: 'Sottostazione',
+    switch: 'Sezionatore',
+    switchgear: 'Quadro di manovra',
+    terminal: 'Terminale di linea elettrica',
     tower: 'Torre di potenza',
     transformer: 'Transformatore',
+    transition: 'Transizione linea-cavo',
   },
 
   public_transport: {
