@@ -1,4 +1,4 @@
-import { TILE_SCALE_SUFFIX } from '@shared/tileUrl.js';
+import { escapeRegExp, TILE_SCALE_SUFFIX } from '@shared/tileUrl.js';
 import {
   clear,
   createStore,
@@ -60,6 +60,13 @@ export type BrowseTileEntry = {
   fetchedAt: number;
 };
 
+/** A tile layer the cache answers for. */
+export type BrowseTileTemplate = {
+  url: string;
+  /** Rows numbered from the south, as Leaflet's `tms` option means it. */
+  tms?: boolean;
+};
+
 /**
  * Whether the settings give the service worker anything to do. When they don't
  * it leaves tile requests alone entirely rather than passing them through.
@@ -84,7 +91,7 @@ function getIndexStore(): UseStore {
  */
 export async function readBrowseCacheState(): Promise<{
   config: BrowseCacheConfig;
-  templates: string[];
+  templates: BrowseTileTemplate[];
   cleared: number;
 }> {
   // `getMany` types every key the same, so the tuple is named here instead
@@ -94,13 +101,16 @@ export async function readBrowseCacheState(): Promise<{
     CLEARED_KEY,
   ])) as [
     Partial<BrowseCacheConfig> | undefined,
-    string[] | undefined,
+    (string | BrowseTileTemplate)[] | undefined,
     number | undefined,
   ];
 
   return {
     config: { ...browseCacheDefaults, ...config },
-    templates: templates ?? [],
+    // an entry stored as a bare url is a layer with nothing else to say
+    templates: (templates ?? []).map((template) =>
+      typeof template === 'string' ? { url: template } : template,
+    ),
     cleared: cleared ?? 0,
   };
 }
@@ -112,7 +122,7 @@ export async function writeBrowseCacheConfig(
 }
 
 export async function writeBrowseTileTemplates(
-  templates: string[],
+  templates: BrowseTileTemplate[],
 ): Promise<void> {
   await set(TEMPLATES_KEY, templates);
 }
@@ -180,10 +190,6 @@ export async function putTileResponse(
       headers: { 'Content-Type': contentType ?? 'application/octet-stream' },
     }),
   );
-}
-
-function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
