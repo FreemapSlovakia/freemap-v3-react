@@ -59,28 +59,57 @@ Italy is already sending genuine engaged traffic with zero outreach — Italian 
 sites link organically (camminodelledolomiti.it, avventurosamente.it 9.4 actions/295s,
 amicodelpopolo.it), plus a LiDAR/archaeology niche (lidarandaerialarchaeology.com).
 
+**Working file with the venue research, the finished Italian drafts and the current
+account/blocker state: [`promotion-italy.md`](./promotion-italy.md).** Read it before
+touching Italy — it carries which venues already know Freemap (and so must never be
+"introduced" again) and which are cold.
+
 - [ ] Partnership/embed pitch (EN + IT) to the Italian trail sites already linking in;
-      offer the embed-map widget + attribution.
+      offer the embed-map widget + attribution. (Draft 5 written.)
 - [ ] Post in Italian hiking/MTB communities (CAI-adjacent forums, FB groups, subreddits).
+      - avventurosamente.it — account registered, **awaiting admin approval**; Drafts 1–3.
+      - mtb-forum.it — reachable, **not registered**; Drafts 6 (track-merge answer) and 4/7.
+      - fuorivia.com, hikr.org (IT) — not started.
 - [ ] Lead with hi-res terrain (Dolomites) + offline maps + free/OSS.
+      Correction from the research: on avventurosamente the strongest hook is **CAI trail
+      numbering** (`osmc:symbol` colours + `ref` labels), which their forum has asked for
+      repeatedly and never had answered. Terrain is the second punch there.
+- Italy's national model is **HR-DTM 5 m (IRPI-CNR)** — 5 m, not the 1 m LiDAR wording
+  used for PL/SK. Say 5 m.
 
 ## Phase 3 — Broaden community seeding (DE, AT, CZ, HU)
 
-- [ ] Germany — biggest untapped ceiling; German outdoor forums, Wander/MTB subreddits,
-      Fediverse. (talk-de intro already done once.)
-- [ ] Austria — Alpine, hi-res DEM, 13 actions/visit; Austrian outdoor/ski-touring groups.
+**Austria is the entry point for the German-language push, not Germany** — see
+[`promotion-austria.md`](./promotion-austria.md) for the venue research and drafts.
+
+- [ ] Germany — biggest untapped ceiling BUT **no national high-res DTM** (`de` is absent
+      from `OUTDOOR_NATIONAL_DTM_ATTRIBUTION`; it falls back to 30 m GEDTM30), so the
+      terrain hook cannot be used there. Lead with tools/offline/OSS instead.
+      German outdoor forums, Wander/MTB subreddits, Fediverse. (talk-de intro done once.)
+- [ ] Austria — Alpine, ALS DTM (Geoland.at), 13 actions/visit; **warm channel found**:
+      gipfeltreffen.at (ÖAV-affiliated) already carries a 2023 organic mention from two
+      heavyweight posters, including an unanswered "I can't find aerial imagery"
+      objection. Registration there is healthy (no reCAPTCHA, no approval queue).
+      German copy written for Austria is reusable for DE and CH.
 - [ ] Czechia + Hungary — reinforce (UI localized, very high engagement already).
 - [ ] Emphasize non-OSM channels: hiking/MTB forums, regional FB groups, subreddits,
       Fediverse hashtags — the paying outdoor users, not just mappers.
 
 ## Phase 4 — Complete the OSM-community intro-post matrix
 
-The Outreach log below tracks the OSM-community posts (FR/FI/NO/DE/SK done). Add the
-markets that actually convert:
+**Reconsidered 2026-09-04 — do not complete this matrix.**
+`community.openstreetmap.org` is one Discourse instance: the per-country categories
+share a global feed, so the FR/FI/NO/SI/PL intro posts were largely read by the same
+people. Further per-country intro posts reach few new readers and start to look like
+repetition to the regulars, which costs more goodwill than the posts gain. Martin has
+already posted under several local communities and observed exactly this.
 
-- [ ] Italy, Poland, Hungary, Austria, Czechia OSM community intro posts.
 - [x] Slovenia — posted 2026-07-09 (see Outreach log).
-- Note: OSM forums reach mappers, not end-users — treat as supplementary to Phase 2/3.
+- [ ] ~~Italy, Poland, Hungary, Austria, Czechia OSM community intro posts.~~ Dropped.
+      Post there only when there is genuinely country-specific *news* (e.g. a national
+      terrain model going live), not to introduce the project again.
+- Note: OSM forums reach mappers, not end-users anyway — the paying outdoor users are
+  on the hiking/MTB forums and in regional FB groups (Phase 2/3).
 
 ## Phase 5 — Measure & iterate
 
@@ -119,3 +148,5 @@ Add a row per post; keep `—` where the date is unknown rather than guessing.
 | 2026-07-09 | 🇵🇱 Poland | community.openstreetmap.org (Polska) | PL | posted | https://community.openstreetmap.org/t/freemap-eu-otwartozrodlowa-mapa-i-narzedzia-outdoor-oparte-na-osm-tworzone-przez-slowacka-spolecznosc-osm/145278 |
 | 2026-07-09 | 🇵🇱 Poland | Facebook (Polish hiking group) | PL | posted | https://www.facebook.com/groups/478222752225355/posts/27531908469763417 |
 | — | 🇸🇮🇫🇷 SL + FR | Mastodon new-languages announcement (@FreemapSlovakia) | EN | posted | https://en.osm.town/@FreemapSlovakia |
+| 2026-09-04 | 🇦🇹🇨🇭🇩🇪 AT+CH+DE | hikr.org — Small Talk forum ("sagt mir, wo sie danebenliegt") | DE | posted | https://www.hikr.org/post203834.html |
+| 2026-09-04 | 🇮🇹 Italy | avventurosamente.it — Orientamento/cartografia ("Mappe offline senza MOBAC") | IT | posted | https://www.avventurosamente.it/xf/threads/mappe-offline-senza-mobac-%E2%80%94-scaricare-larea-direttamente-dal-browser.65728/ |
