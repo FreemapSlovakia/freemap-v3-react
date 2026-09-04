@@ -17,7 +17,21 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>usunięcie banera reklamowego</li>
         <li>
-          <HintTooltip hint="szczegółowe cieniowanie Słowacji i Czech w wysokiej rozdzielczości, najwyższe poziomy powiększenia mapy Outdoor, najwyższe poziomy powiększenia map ortofoto Słowacji i Czech, różne mapy oparte na WMS">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>najwyższe poziomy powiększenia mapy Outdoor</li>
+                <li>mapy oparte na WMS</li>
+                <li>
+                  najwyższe poziomy powiększenia map ortofoto Słowacji i Czech
+                </li>
+                <li>
+                  szczegółowe cieniowanie Słowacji i Czech w wysokiej
+                  rozdzielczości
+                </li>
+              </ul>
+            }
+          >
             warstwy map premium
           </HintTooltip>
         </li>

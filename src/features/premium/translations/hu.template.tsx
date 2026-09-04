@@ -17,7 +17,22 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>reklámszalag eltávolítása</li>
         <li>
-          <HintTooltip hint="Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, az Outdoor Map túratérkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotóinak legnagyobb nagyítási szintjei, különféle WMS-alapú térképek">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>az Outdoor Map túratérkép legnagyobb nagyítási szintjei</li>
+                <li>WMS-alapú térképek</li>
+                <li>
+                  Szlovákia és Csehország ortofotóinak legnagyobb nagyítási
+                  szintjei
+                </li>
+                <li>
+                  Szlovákia és Csehország nagy felbontású részletes
+                  domborzatárnyékolása
+                </li>
+              </ul>
+            }
+          >
             prémium térképrétegek
           </HintTooltip>
         </li>

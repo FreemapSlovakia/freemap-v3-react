@@ -18,7 +18,22 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>entferntes Werbebanner</li>
         <li>
-          <HintTooltip hint="Hochauflösende detaillierte Schummerung der Slowakei und Tschechiens, höchste Zoomstufen der Outdoor-Karte, höchste Zoomstufen der Orthofotokarten der Slowakei und Tschechiens, verschiedene WMS-basierte Karten">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>höchste Zoomstufen der Outdoor-Karte</li>
+                <li>WMS-basierte Karten</li>
+                <li>
+                  höchste Zoomstufen der Orthofotokarten der Slowakei und
+                  Tschechiens
+                </li>
+                <li>
+                  hochauflösende detaillierte Schummerung der Slowakei und
+                  Tschechiens
+                </li>
+              </ul>
+            }
+          >
             Premium-Kartenebenen
           </HintTooltip>
         </li>

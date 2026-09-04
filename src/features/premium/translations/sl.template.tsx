@@ -17,7 +17,22 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>odstranjeno oglasno pasico</li>
         <li>
-          <HintTooltip hint="podrobno senčenje reliefa Slovaške in Češke v visoki ločljivosti, najvišje ravni približevanja Outdoor zemljevida, najvišje ravni približevanja ortofoto zemljevidov Slovaške in Češke, različni zemljevidi na osnovi WMS">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>najvišje ravni približevanja Outdoor zemljevida</li>
+                <li>zemljevidi na osnovi WMS</li>
+                <li>
+                  najvišje ravni približevanja ortofoto zemljevidov Slovaške in
+                  Češke
+                </li>
+                <li>
+                  podrobno senčenje reliefa Slovaške in Češke v visoki
+                  ločljivosti
+                </li>
+              </ul>
+            }
+          >
             premium sloje zemljevida
           </HintTooltip>
         </li>

@@ -16,7 +16,18 @@ const en: PremiumMessages = {
       <ul>
         <li>removed ad banner</li>
         <li>
-          <HintTooltip hint="hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>highest zoom levels of Outdoor Map</li>
+                <li>WMS-based maps</li>
+                <li>
+                  highest zoom levels of ortophoto maps of Slovakia and Czechia
+                </li>
+                <li>hi-res detailed shading of Slovakia and Czechia</li>
+              </ul>
+            }
+          >
             premium map layers
           </HintTooltip>
         </li>

@@ -17,7 +17,22 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>la suppression de la bannière publicitaire</li>
         <li>
-          <HintTooltip hint="ombrage détaillé en haute résolution de la Slovaquie et de la Tchéquie, niveaux de zoom les plus élevés de la carte Outdoor, niveaux de zoom les plus élevés des orthophotos de la Slovaquie et de la Tchéquie, diverses cartes basées sur WMS">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>niveaux de zoom les plus élevés de la carte Outdoor</li>
+                <li>cartes basées sur WMS</li>
+                <li>
+                  niveaux de zoom les plus élevés des orthophotos de la
+                  Slovaquie et de la Tchéquie
+                </li>
+                <li>
+                  ombrage détaillé en haute résolution de la Slovaquie et de la
+                  Tchéquie
+                </li>
+              </ul>
+            }
+          >
             des couches cartographiques premium
           </HintTooltip>
         </li>

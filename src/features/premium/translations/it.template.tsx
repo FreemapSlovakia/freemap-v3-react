@@ -17,7 +17,22 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>rimozione del banner pubblicitario</li>
         <li>
-          <HintTooltip hint="ombreggiatura dettagliata ad alta risoluzione di Slovacchia e Cechia, livelli di zoom più alti della mappa Outdoor, livelli di zoom più alti delle mappe ortofoto di Slovacchia e Cechia, varie mappe basate su WMS">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>livelli di zoom più alti della mappa Outdoor</li>
+                <li>mappe basate su WMS</li>
+                <li>
+                  livelli di zoom più alti delle mappe ortofoto di Slovacchia e
+                  Cechia
+                </li>
+                <li>
+                  ombreggiatura dettagliata ad alta risoluzione di Slovacchia e
+                  Cechia
+                </li>
+              </ul>
+            }
+          >
             livelli mappa premium
           </HintTooltip>
         </li>

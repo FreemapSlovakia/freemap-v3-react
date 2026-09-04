@@ -17,7 +17,20 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>odstranění reklamního baneru</li>
         <li>
-          <HintTooltip hint="podrobné stínování Slovenska a Česka ve vysokém rozlišení, nejvyšší úrovně přiblížení Outdoor mapy, nejvyšší úrovně přiblížení ortofotomap Slovenska a Česka, různé mapy založené na WMS">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>nejvyšší úrovně přiblížení Outdoor mapy</li>
+                <li>
+                  nejvyšší úrovně přiblížení ortofotomap Slovenska a Česka
+                </li>
+                <li>
+                  podrobné stínování Slovenska a Česka ve vysokém rozlišení
+                </li>
+                <li>mapy založené na WMS</li>
+              </ul>
+            }
+          >
             prémiové mapové vrstvy
           </HintTooltip>
         </li>
