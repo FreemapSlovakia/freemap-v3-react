@@ -287,6 +287,11 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     water_protection_area: 'Water protection area',
   },
   'abandoned:building': { '*': 'Abandoned building' },
+  changing_table: {
+    yes: 'Baby changing table',
+    limited: 'Improvised baby changing facility',
+    no: 'No baby changing table',
+  },
   club: {
     '*': 'Club',
     automobile: 'Automobile club',

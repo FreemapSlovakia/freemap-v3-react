@@ -361,6 +361,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     stadium: 'Budynek stadionu',
   },
 
+  changing_table: {
+    yes: 'Przewijak dla niemowląt',
+    limited: 'Prowizoryczne miejsce do przewijania',
+    no: 'Brak przewijaka dla niemowląt',
+  },
   club: {
     '*': 'Klub',
     automobile: 'Automobilklub',

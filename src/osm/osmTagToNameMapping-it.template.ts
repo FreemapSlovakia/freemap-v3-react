@@ -376,6 +376,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     stadium: 'Edificio stadio',
   },
 
+  changing_table: {
+    yes: 'Fasciatoio',
+    limited: 'Punto fasciatoio improvvisato',
+    no: 'Nessun fasciatoio',
+  },
   club: {
     '*': 'Club',
     automobile: 'Automobile club',

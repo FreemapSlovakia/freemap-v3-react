@@ -288,6 +288,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_protection_area: 'Vodovarstveno območje',
   },
   'abandoned:building': { '*': 'Opuščena stavba' },
+  changing_table: {
+    yes: 'Previjalna miza',
+    limited: 'Improvizirano mesto za previjanje',
+    no: 'Ni previjalne mize',
+  },
   club: {
     '*': 'Klub',
     automobile: 'Avtomobilski klub',

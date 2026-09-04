@@ -289,6 +289,11 @@ export type OsmTagToNameMapping = {
   'abandoned:building': {
     '*': string;
   };
+  changing_table: {
+    yes: string;
+    limited: string;
+    no: string;
+  };
   club: {
     '*': string;
     automobile: string;

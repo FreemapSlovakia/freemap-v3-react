@@ -357,6 +357,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     stadium: 'Stadiongebäude',
   },
 
+  changing_table: {
+    yes: 'Wickeltisch',
+    limited: 'Behelfsmäßige Wickelmöglichkeit',
+    no: 'Kein Wickeltisch',
+  },
   club: {
     '*': 'Verein',
     automobile: 'Automobilclub',

@@ -286,6 +286,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_protection_area: 'Périmètre de protection des eaux',
   },
   'abandoned:building': { '*': 'Bâtiment abandonné' },
+  changing_table: {
+    yes: 'Table à langer',
+    limited: 'Coin à langer improvisé',
+    no: 'Pas de table à langer',
+  },
   club: {
     '*': 'Club',
     automobile: 'Club automobile',

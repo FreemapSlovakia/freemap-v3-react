@@ -379,6 +379,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     stadium: 'Stadionépület',
   },
 
+  changing_table: {
+    yes: 'Pelenkázóasztal',
+    limited: 'Rögtönzött pelenkázóhely',
+    no: 'Nincs pelenkázóasztal',
+  },
   club: {
     '*': 'Klub',
     automobile: 'Autóklub',
