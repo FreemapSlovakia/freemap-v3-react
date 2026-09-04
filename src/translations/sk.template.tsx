@@ -127,6 +127,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Nie ste pripojený k internetu, takže tu nemožno nič načítať ani odoslať.',
     connectionError: 'Chyba spojenia so serverom.',
     experimentalFunction: 'Experimentálna funkcia',
+    externalService: 'Cudzia služba s obmedzeniami použitia',
     attribution: () => (
       <Attribution unknown="Licencia mapy nie je špecifikovaná" />
     ),

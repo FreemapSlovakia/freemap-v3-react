@@ -99,6 +99,7 @@ export type Messages = {
     offlineNotice: string;
     connectionError: string;
     experimentalFunction: string;
+    externalService: string;
     attribution: () => JSX.Element;
     unauthenticatedError: string;
     confirmation: string;
