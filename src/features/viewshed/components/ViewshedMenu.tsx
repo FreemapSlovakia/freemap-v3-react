@@ -3,6 +3,7 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
@@ -88,6 +89,8 @@ export default function ViewshedMenu(): ReactElement {
   const settings = useAppSelector((state) => state.viewshedSettings);
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
+
+  const prm = usePremiumMessages();
 
   const becomePremium = useBecomePremium();
 
@@ -243,6 +246,11 @@ export default function ViewshedMenu(): ReactElement {
                 toggleIcon={<TbGridDots />}
                 name={m?.detail}
                 breakpoint="md"
+                // Says on the toolbar why the overlay is the coarse one; the
+                // tier names are only in the menu, which nobody opens to find
+                // out what they lack. The offer to buy is on the tiers.
+                toggleClassName={premium ? undefined : 'text-warning'}
+                toggleHint={premium ? undefined : prm?.higherDetail}
               />
 
               {/* The rest, which all cost a render but are set once and left:

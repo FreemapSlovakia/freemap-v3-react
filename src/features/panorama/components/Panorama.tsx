@@ -1,6 +1,5 @@
 import { closeTool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { BreakpointsProvider } from '@shared/components/BreakpointsProvider.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
@@ -182,9 +181,6 @@ export default function Panorama(): ReactElement {
                   <div className="p-2 rounded bg-dark bg-opacity-50 small text-white">
                     {gm?.general.viewpoint}: {nfEle.format(render.eyeElevation)}{' '}
                     {gm?.general.masl}
-                    {/* The finer picture is premium's; say so where the one on
-                      screen is the fast pass. */}
-                    {!premium && <PremiumGem hint={m?.quality.premiumHint} />}
                   </div>
                 )}
 

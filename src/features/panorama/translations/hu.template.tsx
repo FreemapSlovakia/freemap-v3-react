@@ -74,8 +74,6 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     standard: 'Normál',
     detailed: 'Részletes / lassú',
     finest: 'Legfinomabb / leglassabb',
-    premiumHint:
-      'A finomabb panoráma akár hatszoros felbontással és kilencszeres mintavételezéssel készül, így a gerincek olyanok, amilyenek valójában, nem pedig lépcsősek. Az egyszerre egy panorámát renderező kiszolgálón minden fokozat arányosan többe kerül, ezért a finomabbak a prémiumhoz tartoznak.',
   },
   tilt: {
     label: 'Függőleges tartomány',

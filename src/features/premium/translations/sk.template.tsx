@@ -29,6 +29,8 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
             výškové dáta vo vysokom rozlíšení (viaceré európske krajiny)
           </HintTooltip>
         </li>
+        <li>panoráma vo vyššom rozlíšení</li>
+        <li>analýza viditeľnosti vo vyššom rozlíšení</li>
         <li>dlhšia história meteoradaru a jeho predpoveď</li>
         <li>vyfarbenie trás a záznamov (niektoré režimy sú len prémiové)</li>
       </ul>
@@ -66,6 +68,7 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Kliknutím aktivujete.',
   higherPrecisionElevation:
     'Presnejšie výškové dáta dostupné s prémiovým prístupom.',
+  higherDetail: 'Jemnejšie detaily dostupné s prémiovým prístupom.',
   alreadyPremium: 'Už máte prémiový prístup.',
   alreadySubscribed: 'Už máte aktívne predplatné.',
   premiumUser: 'Používateľ s prémiovým prístupom',

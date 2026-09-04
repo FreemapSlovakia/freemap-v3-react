@@ -29,6 +29,8 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
             dati di elevazione ad alta risoluzione (molti paesi europei)
           </HintTooltip>
         </li>
+        <li>panorama a risoluzione più alta</li>
+        <li>analisi di visibilità a risoluzione più alta</li>
         <li>cronologia più lunga del radar meteo e la sua previsione</li>
         <li>
           colorazione di percorsi e tracce (alcune modalità sono solo premium)
@@ -65,6 +67,7 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Clicca per attivare.',
   higherPrecisionElevation:
     'Dati di quota a maggiore precisione disponibili con accesso premium.',
+  higherDetail: 'Dettaglio più fine disponibile con accesso premium.',
   alreadyPremium: 'Hai già accesso premium.',
   alreadySubscribed: 'Hai già un abbonamento attivo.',
   premiumUser: 'Utente con accesso premium',

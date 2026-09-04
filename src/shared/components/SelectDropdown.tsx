@@ -57,6 +57,18 @@ type Props = {
   breakpoint?: Breakpoint;
   /** Toggle keyboard hint shown in the tooltip. */
   kbd?: string;
+  /**
+   * Extra classes on the toggle itself — e.g. `text-warning`, saying the value
+   * on show is the one the account is held to. A mark of its own would need a
+   * tooltip that opens over the toggle's; this needs none, and `toggleHint`
+   * says what it means.
+   */
+  toggleClassName?: string;
+  /**
+   * A line under the toggle's own tooltip, saying what `toggleClassName`
+   * means. Ignored by `asSelect`, whose toggle has no tooltip.
+   */
+  toggleHint?: ReactNode;
   /** Render the toggle as a native-like `<select>` with an always-visible label. */
   asSelect?: boolean;
   /** Dims the whole control, for when none of the options can be acted on. */
@@ -79,6 +91,8 @@ export function SelectDropdown({
   name,
   breakpoint,
   kbd,
+  toggleClassName,
+  toggleHint,
   asSelect,
   disabled,
   className,
@@ -146,7 +160,12 @@ export function SelectDropdown({
   return (
     <Dropdown className={className} onSelect={(key) => onSelect(key)}>
       {asSelect ? (
-        <Dropdown.Toggle as={SelectToggle} id={id} disabled={disabled}>
+        <Dropdown.Toggle
+          as={SelectToggle}
+          id={id}
+          disabled={disabled}
+          className={toggleClassName}
+        >
           {icon}
           {icon && label != null ? ' ' : null}
           {label}
@@ -157,12 +176,14 @@ export function SelectDropdown({
           label={label ?? '…'}
           name={name}
           kbd={kbd}
+          hint={toggleHint}
         >
           {({ label: tipLabel, labelClassName, props }) => (
             <Dropdown.Toggle
               variant="secondary"
               id={id}
               disabled={disabled}
+              className={toggleClassName}
               {...props}
             >
               {icon}

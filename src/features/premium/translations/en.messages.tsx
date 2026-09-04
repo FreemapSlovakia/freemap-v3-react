@@ -28,6 +28,8 @@ const en: PremiumMessages = {
             high-resolution elevation data (many European countries)
           </HintTooltip>
         </li>
+        <li>higher panorama resolution</li>
+        <li>higher viewshed resolution</li>
         <li>longer weather radar history and its forecast</li>
         <li>colorizing routes and tracks (some modes are premium only)</li>
       </ul>
@@ -65,6 +67,7 @@ const en: PremiumMessages = {
   clickToActivate: 'Click to activate.',
   higherPrecisionElevation:
     'Higher-precision elevation data available with premium access.',
+  higherDetail: 'Finer detail available with premium access.',
   alreadyPremium: 'You already have premium access.',
   alreadySubscribed: 'You already have an active subscription.',
   premiumUser: 'User with premium access',

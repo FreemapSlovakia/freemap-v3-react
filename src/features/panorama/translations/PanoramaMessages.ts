@@ -83,8 +83,6 @@ export type PanoramaMessages = {
     standard: string;
     detailed: string;
     finest: string;
-    /** Why the finer tiers are premium's. */
-    premiumHint: string;
   };
   tilt: {
     label: string;

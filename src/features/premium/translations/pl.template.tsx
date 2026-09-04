@@ -30,6 +30,8 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
             europejskich)
           </HintTooltip>
         </li>
+        <li>panorama w wyższej rozdzielczości</li>
+        <li>analiza widoczności w wyższej rozdzielczości</li>
         <li>dłuższa historia radaru opadów i jego prognoza</li>
         <li>
           kolorowanie tras i śladów (niektóre tryby są tylko w wersji premium)
@@ -66,6 +68,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Kliknij, aby aktywować.',
   higherPrecisionElevation:
     'Dokładniejsze dane wysokości dostępne z dostępem premium.',
+  higherDetail: 'Dokładniejsze szczegóły dostępne z dostępem premium.',
   alreadyPremium: 'Masz już dostęp premium.',
   alreadySubscribed: 'Masz już aktywną subskrypcję.',
   premiumUser: 'Użytkownik z dostępem premium',

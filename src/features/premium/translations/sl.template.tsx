@@ -30,6 +30,8 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
             države)
           </HintTooltip>
         </li>
+        <li>panorama v višji ločljivosti</li>
+        <li>analiza vidnosti v višji ločljivosti</li>
         <li>daljša zgodovina vremenskega radarja in njegova napoved</li>
         <li>
           obarvanje poti in sledi (nekateri načini so na voljo le s premiumom)
@@ -66,6 +68,7 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Kliknite za aktivacijo.',
   higherPrecisionElevation:
     'Natančnejši podatki o nadmorski višini so na voljo s premium dostopom.',
+  higherDetail: 'Podrobnejši prikaz je na voljo s premium dostopom.',
   alreadyPremium: 'Premium dostop že imate.',
   alreadySubscribed: 'Aktivno naročnino že imate.',
   premiumUser: 'Uporabnik s premium dostopom',

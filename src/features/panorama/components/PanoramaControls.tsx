@@ -7,6 +7,7 @@ import {
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import {
   FloatingWindowControls,
@@ -133,6 +134,8 @@ export function PanoramaControls({
   const becomePremium = useBecomePremium();
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
+
+  const prm = usePremiumMessages();
 
   const settings = useAppSelector((state) => state.panoramaSettings);
 
@@ -312,6 +315,11 @@ export function PanoramaControls({
         toggleIcon={<TbGridDots />}
         name={m?.quality.label}
         breakpoint="md"
+        // Says on the toolbar why the picture is the coarse one; the tier names
+        // are only in the menu, which nobody opens to find out what they lack.
+        // The offer to buy is on the tiers themselves, one press away.
+        toggleClassName={premium ? undefined : 'text-warning'}
+        toggleHint={premium ? undefined : prm?.higherDetail}
       />
 
       <SelectDropdown

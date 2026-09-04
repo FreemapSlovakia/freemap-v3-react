@@ -29,6 +29,8 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
             nagy felbontású magassági adatok (számos európai ország)
           </HintTooltip>
         </li>
+        <li>nagyobb felbontású panoráma</li>
+        <li>nagyobb felbontású láthatósági elemzés</li>
         <li>hosszabb csapadékradar-előzmény és annak előrejelzése</li>
         <li>
           útvonalak és nyomvonalak színezése (egyes módok csak prémiummal
@@ -66,6 +68,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Kattintson az aktiváláshoz.',
   higherPrecisionElevation:
     'Nagyobb pontosságú magassági adatok prémium hozzáféréssel érhetők el.',
+  higherDetail: 'Finomabb részletesség prémium hozzáféréssel érhető el.',
   alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
   alreadySubscribed: 'Már van aktív előfizetésed.',
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',

@@ -74,8 +74,6 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     standard: 'Standardní',
     detailed: 'Detailní / pomalá',
     finest: 'Nejjemnější / nejpomalejší',
-    premiumHint:
-      'Jemnější panorama se vykresluje až v šestinásobném rozlišení a s devítinásobným převzorkováním, takže hřebeny jsou vidět takové, jaké jsou, a ne jako schody. Na serveru, který vykresluje jedno panorama naráz, stojí každý stupeň úměrně více, proto jemnější stupně patří k prémiu.',
   },
   tilt: {
     label: 'Svislý rozsah',

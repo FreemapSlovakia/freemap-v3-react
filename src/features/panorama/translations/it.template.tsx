@@ -74,8 +74,6 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     standard: 'Standard',
     detailed: 'Dettagliata / lenta',
     finest: 'Massima / lentissima',
-    premiumHint:
-      'Un panorama più fine viene reso fino a sei volte la risoluzione e nove volte il campionamento, così le creste appaiono come sono davvero e non come gradini. Su un server che rende un panorama alla volta ogni livello costa proporzionalmente di più, perciò quelli più fini sono riservati al premium.',
   },
   tilt: {
     label: 'Ampiezza verticale',

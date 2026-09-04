@@ -29,6 +29,8 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
             des données d’altitude en haute résolution (nombreux pays européens)
           </HintTooltip>
         </li>
+        <li>un panorama en plus haute résolution</li>
+        <li>une analyse de visibilité en plus haute résolution</li>
         <li>un historique plus long du radar météo et sa prévision</li>
         <li>
           la coloration des itinéraires et des traces (certains modes sont
@@ -66,6 +68,7 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Cliquez pour activer.',
   higherPrecisionElevation:
     'Des données d’altitude plus précises sont disponibles avec l’accès premium.',
+  higherDetail: 'Un rendu plus fin est disponible avec l’accès premium.',
   alreadyPremium: 'Vous avez déjà l’accès premium.',
   alreadySubscribed: 'Vous avez déjà un abonnement actif.',
   premiumUser: 'Utilisateur avec accès premium',
