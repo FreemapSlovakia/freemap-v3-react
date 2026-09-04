@@ -198,8 +198,8 @@ Still emitting at info level (non-blocking, optional cleanup):
       `@react-leaflet/core`'s `Polyline`/`Polygon` and re-check them on bumps.
       The same wrapper would let `RichMarker` drop `setMarkerInteractive`.
       In the route planner only the halo carries `interactive` in its key; it
-      and the foreground lines sit in separate nested panes, so a remounted halo
-      can no longer cover the line.
+      and the foreground lines sit in separate panes, so a remounted halo can no
+      longer cover the line.
 - [ ] **Decimate the drawn GPS-recorder track by zoom.** The polyline re-maps
       every point into a fresh array per fix and Leaflet re-projects the whole
       line, which is the remaining per-fix cost over the whole track now that the

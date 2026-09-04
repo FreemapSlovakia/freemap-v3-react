@@ -3,7 +3,7 @@ import { COLORS } from '@shared/colors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
 import { Pane } from 'react-leaflet';
-import { DrawingLineResult, HIGHLIGHT_PANE } from './DrawingLineResult.js';
+import { DrawingLineResult } from './DrawingLineResult.js';
 
 function useLinePointColor() {
   const rawColor =
@@ -29,10 +29,6 @@ export function DrawingLinesResult(): ReactElement {
 
   return (
     <>
-      {/* Below the lines (overlayPane, zIndex 400) and the polygons, so a
-          selected shape's halo shows as an outline around its own colors. */}
-      <Pane name={HIGHLIGHT_PANE} style={{ zIndex: 398 }} />
-
       <Pane name="fm-drawing-polygons" style={{ zIndex: 399 }} />
 
       {lines.map((_, i) => (

@@ -3,7 +3,6 @@ import {
   activeMapToolSelector,
   selectingModeSelector,
 } from '@app/store/selectors.js';
-import { ElevationRangeLine } from '@features/elevationChart/components/ElevationRangeLine.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import {
   colorizeGeometrySource,
@@ -17,7 +16,13 @@ import { colorizers } from '@shared/colorizers/index.js';
 import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
-import { HALO_COLOR, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
+import {
+  HALO_COLOR,
+  HALO_PANE,
+  HALO_UNDER_Z,
+  HALO_WIDTH,
+  SELECTION_COLOR,
+} from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
@@ -71,16 +76,16 @@ import classes from './RoutePlannerResult.module.css';
 
 const pointDraggingClassName = classes.dragging;
 
-// Dedicated pane the route line/outline/colorize render into (declared with the
-// `<Pane>` in the render output), so `lineOpacity` can be applied to the whole
-// group at once.
+// Dedicated pane the route line and colorize canvas render into (declared with
+// the `<Pane>` in the render output), so `lineOpacity` can be applied to the
+// whole group at once.
 const routePaneName = 'fmRoutePlannerRoute';
 
-// Three panes nested in it, so the elevation chart's range band can sit between
-// the casing and the line whatever order the layers happen to be added in.
+// The plain casing lives in the shared halo pane instead, in a sub-pane of its
+// own carrying the same `lineOpacity` — so the casings of adjacent slices
+// composite as one group rather than doubling up at every join. A selected
+// leg's casing goes to the shared pane directly, undimmed.
 const casingPaneName = 'fmRoutePlannerCasing';
-const rangePaneName = 'fmRoutePlannerRange';
-const linePaneName = 'fmRoutePlannerLine';
 
 export function RoutePlannerResult(): ReactElement {
   const rpm = useRoutePlannerMessages();
@@ -117,10 +122,6 @@ export function RoutePlannerResult(): ReactElement {
 
   const lineOpacity = useAppSelector(
     (state) => state.routePlannerSettings.lineOpacity,
-  );
-
-  const chartingRoute = useAppSelector(
-    (state) => state.elevationChart.target?.type === 'route-planner',
   );
 
   const markerOpacity = useAppSelector(
@@ -404,17 +405,18 @@ export function RoutePlannerResult(): ReactElement {
 
   const map = useMap();
 
-  // Keep the route pane's opacity in sync with `lineOpacity` as it changes.
-  // Applying it to the pane (not per-layer) composites the halo and line as one
-  // group: an opaque line fully covers the outline beneath it, then the whole
-  // group fades together — the white/blue outline no longer bleeds through a
-  // semi-transparent line. The pane itself is created by the `<Pane>` below (its
-  // `style` seeds the initial value); this only handles later changes.
+  // Keep both route panes' opacity in sync with `lineOpacity` as it changes.
+  // Applying it per pane (not per-layer) composites each as one group, so the
+  // slices making up the line — and those making up its casing — never double
+  // up where they meet. The panes themselves are created by the `<Pane>`s below
+  // (whose `style` seeds the initial value); this only handles later changes.
   useEffect(() => {
-    const pane = map?.getPane(routePaneName);
+    for (const name of [routePaneName, casingPaneName]) {
+      const pane = map?.getPane(name);
 
-    if (pane) {
-      pane.style.opacity = String(lineOpacity);
+      if (pane) {
+        pane.style.opacity = String(lineOpacity);
+      }
     }
   }, [map, lineOpacity]);
 
@@ -700,10 +702,10 @@ export function RoutePlannerResult(): ReactElement {
       // showing through beneath the canvas, so the hotline carries none.
       outlineWidth: 0,
       ...colorizerHotlineOptions(activeColorizer),
-      // Render the colorize canvas into the line pane (a patched
-      // react-leaflet-hotline forwards this to its L.Canvas), so it composites
-      // above the casing and picks up the route pane's `lineOpacity`.
-      pane: linePaneName,
+      // Render the colorize canvas into the route pane (a patched
+      // react-leaflet-hotline forwards this to its L.Canvas), so it picks up
+      // that pane's `lineOpacity`.
+      pane: routePaneName,
     }),
     [activeColorizer, lineWidth],
   );
@@ -725,29 +727,34 @@ export function RoutePlannerResult(): ReactElement {
               .flatMap((leg, legIndex) =>
                 leg.steps.map((step) => ({ legIndex, ...step })),
               )
-              .map((routeSlice, i: number) =>
-                routeSlice.geometry.coordinates.length < 2 ? null : (
+              .map((routeSlice, i: number) => {
+                const selected =
+                  selectedSegment === routeSlice.legIndex &&
+                  alt === activeAlternativeIndex &&
+                  !routeSlice.connector;
+
+                return routeSlice.geometry.coordinates.length < 2 ? null : (
                   // Background halo: the white/blue outline plus the click/drag
                   // hit area for every alternative. When colorizing, the
                   // Hotline canvas (its own outline disabled) paints the colored
                   // line on top, so the halo shows through as its edges.
                   <Polyline
                     key={`slice-${i}-${interactive}`}
-                    pane={casingPaneName}
+                    // A selected leg says so at the halos' own strength: only
+                    // the plain casing is the line's own decoration, and only it
+                    // fades with the line. Remounted on a selection change by
+                    // the `selectedSegment` in the fragment key above, which is
+                    // what lets the pane switch take.
+                    pane={selected ? HALO_PANE : casingPaneName}
                     interactive={interactive && !routeSlice.connector}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     // Width lives in pathOptions (not a top-level prop) so
                     // react-leaflet restyles the layer when it changes; opacity
-                    // is applied to the whole route pane instead.
+                    // is applied to the whole casing pane instead.
                     pathOptions={{
                       weight: lineWidth + HALO_WIDTH,
-                      color:
-                        selectedSegment === routeSlice.legIndex &&
-                        alt === activeAlternativeIndex &&
-                        !routeSlice.connector
-                          ? SELECTION_COLOR
-                          : HALO_COLOR,
+                      color: selected ? SELECTION_COLOR : HALO_COLOR,
                     }}
                     bubblingMouseEvents={false}
                     eventHandlers={{
@@ -772,8 +779,8 @@ export function RoutePlannerResult(): ReactElement {
                       },
                     }}
                   />
-                ),
-              )}
+                );
+              })}
 
             {legs
               .flatMap((leg, legIndex) =>
@@ -791,7 +798,7 @@ export function RoutePlannerResult(): ReactElement {
                   // foreground
                   <Polyline
                     key={`slice-${timestamp}-${alt}-${i}`}
-                    pane={linePaneName}
+                    pane={routePaneName}
                     ref={bringToFront}
                     positions={routeSlice.geometry.coordinates.map(reverse)}
                     // Width lives in pathOptions (not a top-level prop) so
@@ -840,26 +847,22 @@ export function RoutePlannerResult(): ReactElement {
 
       {pointElements}
 
+      {/* The route's own casings, grouped apart from the other halos so they
+          take `lineOpacity` with the line they belong to. */}
+      <Pane
+        name={casingPaneName}
+        pane={HALO_PANE}
+        style={{ zIndex: HALO_UNDER_Z, opacity: lineOpacity }}
+      />
+
       {/*
-       * Route line, outline, and colorize canvas share this pane so `lineOpacity`
-       * (seeded here, kept live by the effect above) composites them as one
-       * group. `<Pane>` portals its children in only once the pane exists, so the
-       * nested layers never attach to a missing pane. Overlay z-level, below the
-       * markers; front-to-back order comes from the three panes nested in it.
+       * Route line and colorize canvas share this pane so `lineOpacity` (seeded
+       * here, kept live by the effect above) composites them as one group.
+       * `<Pane>` portals its children in only once the pane exists, so the
+       * layers never attach to a missing pane. Overlay z-level, below the
+       * markers.
        */}
       <Pane name={routePaneName} style={{ zIndex: 400, opacity: lineOpacity }}>
-        {/* Declared before the layers that name them, so the panes exist by the
-            time those are added to the map. */}
-        <Pane name={casingPaneName} style={{ zIndex: 1 }} />
-
-        <Pane name={rangePaneName} style={{ zIndex: 2 }}>
-          {chartingRoute && (
-            <ElevationRangeLine weight={lineWidth + HALO_WIDTH} />
-          )}
-        </Pane>
-
-        <Pane name={linePaneName} style={{ zIndex: 3 }} />
-
         {paths}
 
         {noDataRunsList.map((run, i) => (
@@ -868,7 +871,7 @@ export function RoutePlannerResult(): ReactElement {
             // because selecting a leg re-adds the foreground slices, which
             // share this pane and would otherwise cover this line.
             key={`nodata-${colorizeBy}-${timestamp}-${activeAlternativeIndex}-${selectedSegment}-${i}`}
-            pane={linePaneName}
+            pane={routePaneName}
             ref={bringToFront}
             positions={run.map((p): [number, number] => [p.lat, p.lon])}
             pathOptions={{
@@ -901,7 +904,7 @@ export function RoutePlannerResult(): ReactElement {
           // react-leaflet's GeoJSON doesn't restyle live.
           <GeoJSON
             key={`iso-${timestamp}-${isochrone.properties?.['bucket']}-${lineWidth}`}
-            pane={linePaneName}
+            pane={routePaneName}
             interactive={false}
             style={(f) => {
               const bucket = f?.properties['bucket'];

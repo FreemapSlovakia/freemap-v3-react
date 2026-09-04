@@ -2,7 +2,7 @@ import { pickingModeSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
-import { HALO_WIDTH } from '@shared/halo.js';
+import { HALO_OVER_Z, HALO_PANE, HALO_WIDTH } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type LeafletMouseEvent, Point } from 'leaflet';
@@ -27,12 +27,10 @@ const HOVER_TOLERANCE_PX = 14;
 // re-entry at the same place) leaves the store alone.
 const MIN_STEP_M = 0.1;
 
-// Below every line the chart can be aimed at (the overlay pane at 400, and the
-// panes the route and the recorder line get at or above it), so a colorized
-// line keeps its own colours — but above the track viewer's selection halo
-// (398), which the band stands in for along the marked stretch.
+// Nested in the halo pane so the band fades with the halos instead of blending
+// over them, and over their content, which it stands in for along the marked
+// stretch.
 const RANGE_PANE = 'fm-elevation-range';
-const RANGE_PANE_Z = 399;
 
 /**
  * Points the chart at the place under the pointer, the mirror of hovering the
@@ -98,20 +96,14 @@ function useProfileHover() {
 }
 
 /**
- * The marked stretch on the map, in its own pane over the halo the line wears
- * and under the line itself.
+ * The marked stretch on the map, over the halo the line wears and under the
+ * line itself.
  */
-function RangeHighlight(): ReactElement | null {
-  // The route wears its casing inside its own pane group, which no outside pane
-  // can slot into, so `RoutePlannerResult` draws the band there itself.
-  const hostedByRoute = useAppSelector(
-    (state) => state.elevationChart.target?.type === 'route-planner',
-  );
-
+function RangeHighlight(): ReactElement {
   const weight = useAppSelector(targetLineWidth) + HALO_WIDTH;
 
-  return hostedByRoute ? null : (
-    <Pane name={RANGE_PANE} style={{ zIndex: RANGE_PANE_Z }}>
+  return (
+    <Pane name={RANGE_PANE} pane={HALO_PANE} style={{ zIndex: HALO_OVER_Z }}>
       <ElevationRangeLine weight={weight} />
     </Pane>
   );
