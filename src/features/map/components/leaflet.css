@@ -114,9 +114,6 @@ a.leaflet-control-layers-toggle {
 
 .fm-nonpremium-tile {
   background-color: #aaa8;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 2px #fff;
-  color: #000a;
   font-size: 1.2em;
   display: flex;
   align-items: center;
@@ -124,8 +121,7 @@ a.leaflet-control-layers-toggle {
 
   & > a {
     pointer-events: all;
-    text-decoration: none;
-    color: #000080;
+    color: #0d6efd;
   }
 
   & > * {
