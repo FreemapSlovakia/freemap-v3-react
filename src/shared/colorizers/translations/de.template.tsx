@@ -24,6 +24,7 @@ const de: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     trackType: 'Wegqualität',
     hikeRating: 'Wanderschwierigkeit',
     mtbRating: 'MTB-Schwierigkeit',
+    trailColor: 'Markierungsfarbe',
   },
   categories: {
     unknown: 'Unbekannt',
@@ -64,6 +65,18 @@ const de: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       t4: 'T4 – Alpinwandern',
       t5: 'T5 – anspruchsvolles Alpinwandern',
       t6: 'T6 – schwieriges Alpinwandern',
+    },
+    trailColor: {
+      red: 'Rot',
+      blue: 'Blau',
+      green: 'Grün',
+      yellow: 'Gelb',
+      black: 'Schwarz',
+      orange: 'Orange',
+      purple: 'Violett',
+      white: 'Weiß',
+      other: 'Andere',
+      unknown: 'Unmarkiert',
     },
   },
 };

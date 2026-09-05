@@ -24,6 +24,7 @@ const it: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     trackType: 'Qualità della sterrata',
     hikeRating: 'Difficoltà a piedi',
     mtbRating: 'Difficoltà MTB',
+    trailColor: 'Colore del segnavia',
   },
   categories: {
     unknown: 'Sconosciuto',
@@ -64,6 +65,18 @@ const it: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       t4: 'T4 – alpinistico',
       t5: 'T5 – alpinistico impegnativo',
       t6: 'T6 – alpinistico difficile',
+    },
+    trailColor: {
+      red: 'Rosso',
+      blue: 'Blu',
+      green: 'Verde',
+      yellow: 'Giallo',
+      black: 'Nero',
+      orange: 'Arancione',
+      purple: 'Viola',
+      white: 'Bianco',
+      other: 'Altro',
+      unknown: 'Non segnalato',
     },
   },
 };

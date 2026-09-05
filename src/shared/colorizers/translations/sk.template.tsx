@@ -24,6 +24,7 @@ const sk: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     trackType: 'Kvalita lesnej cesty',
     hikeRating: 'Náročnosť pešo',
     mtbRating: 'Náročnosť MTB',
+    trailColor: 'Farba značky',
   },
   categories: {
     unknown: 'Neznáme',
@@ -64,6 +65,18 @@ const sk: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       t4: 'T4 – alpská',
       t5: 'T5 – náročná alpská',
       t6: 'T6 – ťažká alpská',
+    },
+    trailColor: {
+      red: 'Červená',
+      blue: 'Modrá',
+      green: 'Zelená',
+      yellow: 'Žltá',
+      black: 'Čierna',
+      orange: 'Oranžová',
+      purple: 'Fialová',
+      white: 'Biela',
+      other: 'Iná',
+      unknown: 'Neznačené',
     },
   },
 };

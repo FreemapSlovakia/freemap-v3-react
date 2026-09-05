@@ -22,6 +22,7 @@ export type ColorizerMessages = {
     trackType: string;
     hikeRating: string;
     mtbRating: string;
+    trailColor: string;
   };
   /**
    * What a categorical mode's colors stand for. The router's own values are
@@ -71,6 +72,24 @@ export type ColorizerMessages = {
       t4: string;
       t5: string;
       t6: string;
+    };
+    /**
+     * Waymark colours. `other` collects the colours the outdoor map draws no
+     * line of its own for — grey, brown, teal, a hex value. `unknown` renames
+     * the shared last category: the router reports every metre, so grey there
+     * means the route carries no waymark, not that nothing is known about it.
+     */
+    trailColor: {
+      red: string;
+      blue: string;
+      green: string;
+      yellow: string;
+      black: string;
+      orange: string;
+      purple: string;
+      white: string;
+      other: string;
+      unknown: string;
     };
   };
 };

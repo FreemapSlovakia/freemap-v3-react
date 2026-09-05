@@ -17,6 +17,7 @@ import { surfaceColorizer } from './modes/surface.js';
 import { temperatureColorizer } from './modes/temperature.js';
 import { timeColorizer } from './modes/time.js';
 import { trackTypeColorizer } from './modes/trackType.js';
+import { trailColorColorizer } from './modes/trailColors.js';
 
 export const colorizers = {
   elevation: elevationColorizer,
@@ -27,6 +28,7 @@ export const colorizers = {
   trackType: trackTypeColorizer,
   hikeRating: hikeRatingColorizer,
   mtbRating: mtbRatingColorizer,
+  trailColor: trailColorColorizer,
   speed: speedColorizer,
   heartRate: heartRateColorizer,
   cadence: cadenceColorizer,
@@ -43,7 +45,15 @@ export const colorizers = {
 export const colorizingModeGroups = [
   ['elevation', 'steepness'],
   ['time', 'speed', 'heading'],
-  ['surface', 'smoothness', 'roadType', 'trackType', 'hikeRating', 'mtbRating'],
+  [
+    'surface',
+    'smoothness',
+    'roadType',
+    'trackType',
+    'hikeRating',
+    'mtbRating',
+    'trailColor',
+  ],
   ['heartRate', 'cadence', 'power', 'temperature'],
   ['battery', 'gsmSignal'],
 ] as const satisfies ReadonlyArray<ReadonlyArray<keyof typeof colorizers>>;
@@ -61,6 +71,21 @@ export function colorizingModeGroup(mode: ColorizingMode): number {
 }
 
 export const ColorizingModeSchema = z.enum(colorizingModes);
+
+/**
+ * The path details a mode can be answered with, as GraphHopper names them. A
+ * menu matches these against what the active profile asks for, so a mode the
+ * router will never report for it is left out rather than shown dead.
+ */
+export function colorizerDetails(mode: ColorizingMode): string[] {
+  const { detail } = colorizers[mode];
+
+  return detail === undefined
+    ? []
+    : typeof detail === 'string'
+      ? [detail]
+      : detail;
+}
 
 /** Whether a colorize mode is derived from the elevation coordinate. */
 export function colorizerNeedsElevation(mode: ColorizingMode): boolean {

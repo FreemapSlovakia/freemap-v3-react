@@ -23,6 +23,7 @@ const en: ColorizerMessages = {
     trackType: 'Track grade',
     hikeRating: 'Hiking difficulty',
     mtbRating: 'MTB difficulty',
+    trailColor: 'Waymark color',
   },
   categories: {
     unknown: 'Unknown',
@@ -63,6 +64,18 @@ const en: ColorizerMessages = {
       t4: 'T4 – alpine',
       t5: 'T5 – demanding alpine',
       t6: 'T6 – difficult alpine',
+    },
+    trailColor: {
+      red: 'Red',
+      blue: 'Blue',
+      green: 'Green',
+      yellow: 'Yellow',
+      black: 'Black',
+      orange: 'Orange',
+      purple: 'Purple',
+      white: 'White',
+      other: 'Other',
+      unknown: 'Unmarked',
     },
   },
 };

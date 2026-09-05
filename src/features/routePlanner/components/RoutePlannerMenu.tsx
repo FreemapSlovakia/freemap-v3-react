@@ -20,6 +20,7 @@ import {
 import { usePremiumColorizeLock } from '@shared/colorizers/components/usePremiumColorizeLock.js';
 import {
   ColorizingModeSchema,
+  colorizerDetails,
   colorizers,
   colorizingModes,
 } from '@shared/colorizers/index.js';
@@ -996,8 +997,9 @@ export default function RoutePlannerMenu(): ReactElement {
             ...colorizeModeOptions({
               modes: colorizingModes.filter(
                 (mode) =>
-                  offeredDetails.has(colorizers[mode].detail ?? '') ||
-                  isModeAvailable(mode),
+                  colorizerDetails(mode).some((detail) =>
+                    offeredDetails.has(detail),
+                  ) || isModeAvailable(mode),
               ),
               labels: cm?.mode,
               activeMode: colorizeBy,

@@ -24,6 +24,7 @@ const pl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     trackType: 'Jakość drogi leśnej',
     hikeRating: 'Trudność pieszo',
     mtbRating: 'Trudność MTB',
+    trailColor: 'Kolor szlaku',
   },
   categories: {
     unknown: 'Nieznane',
@@ -64,6 +65,18 @@ const pl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       t4: 'T4 – alpejska',
       t5: 'T5 – wymagająca alpejska',
       t6: 'T6 – trudna alpejska',
+    },
+    trailColor: {
+      red: 'Czerwony',
+      blue: 'Niebieski',
+      green: 'Zielony',
+      yellow: 'Żółty',
+      black: 'Czarny',
+      orange: 'Pomarańczowy',
+      purple: 'Fioletowy',
+      white: 'Biały',
+      other: 'Inny',
+      unknown: 'Bez oznakowania',
     },
   },
 };

@@ -1,5 +1,6 @@
 import { cumulativeDistances, lowerBound } from '@shared/geoutils.js';
 import { length } from '@turf/length';
+import type { Feature, LineString } from 'geojson';
 import {
   type CategoryShare,
   type ColorizedPoint,
@@ -13,16 +14,40 @@ import type { ColorizerMessages } from '../translations/ColorizerMessages.js';
 
 type Category = {
   key: string;
-  /** The router values that fall into it. */
-  values: string[];
+  /** The router values that fall into it; omitted where `resolve` answers instead. */
+  values?: string[];
   color: [r: number, g: number, b: number];
 };
 
 /** What a categorical mode paints and how its legend labels itself. */
 type CategoricalSpec = {
-  /** The path detail it reads, as GraphHopper names it. */
-  detail: string;
+  /**
+   * The path detail it reads, as GraphHopper names it. Several, where the
+   * profile decides which one the route is answered with; the first the line
+   * carries is the one read.
+   */
+  detail: string | string[];
   categories: Category[];
+  /**
+   * The category of each stretch, resolved as one ordered list so a choice can
+   * depend on its neighbours'; `undefined` where none names it. `detail` is the
+   * key it came from — two keys are two series on one line, not one.
+   */
+  resolve?: (
+    stretches: { value: string; meters: number; detail: string }[],
+  ) => (string | undefined)[];
+  /**
+   * Draw a stretch no span covers as no data rather than as the last category.
+   * Off by default: a route changes surface hundreds of times, and every gap is
+   * a render layer of its own.
+   */
+  uncoveredIsNoData?: true;
+  /**
+   * Colour of the last category, where the mode means something more definite by
+   * it than the router having no value and so must not wear the no-data grey the
+   * default is. Opaque: the Hotline palette carries no alpha.
+   */
+  unknownColor?: [r: number, g: number, b: number];
   labels: (cm: ColorizerMessages) => Record<string, string>;
 };
 
@@ -33,9 +58,11 @@ type CategoricalSpec = {
  */
 const unknown: Category = {
   key: 'unknown',
-  values: [],
   color: [128, 128, 128],
 };
+
+/** A stretch, tagged with the path detail it was reported under. */
+type SourcedSpan = PathDetailSpan & { detail: string };
 
 /** Slack, in metres, before a hole between two stretches counts as one. */
 const coverageSlack = 0.5;
@@ -46,15 +73,57 @@ const coverageSlack = 0.5;
  * blending across the segment that spans the boundary.
  */
 export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
-  const categories = [...spec.categories, unknown];
+  const categories = [
+    ...spec.categories,
+    spec.unknownColor ? { ...unknown, color: spec.unknownColor } : unknown,
+  ];
 
-  const indexOf = new Map<string, number>();
+  const indexOfValue = new Map<string, number>();
+
+  const indexOfKey = new Map<string, number>();
 
   categories.forEach((category, i) => {
-    for (const value of category.values) {
-      indexOf.set(value, i);
+    indexOfKey.set(category.key, i);
+
+    for (const value of category.values ?? []) {
+      indexOfValue.set(value, i);
     }
   });
+
+  const detailKeys =
+    typeof spec.detail === 'string' ? [spec.detail] : spec.detail;
+
+  /**
+   * The stretches this line carries, off every key it may have been answered
+   * with — a multimodal route asks per segment, so one line holds each key over
+   * stretches that never overlap.
+   */
+  const spansOf = (feature: Feature<LineString>) => {
+    const spans = detailKeys
+      .flatMap((detail) =>
+        (readPathDetails(feature, detail) ?? []).map((span) => ({
+          ...span,
+          detail,
+        })),
+      )
+      .sort((a, b) => a.start - b.start);
+
+    return spans.length > 0 ? spans : undefined;
+  };
+
+  const { resolve } = spec;
+
+  /** The category of each stretch in order, undefined where none names it. */
+  const categoriesOf = (spans: SourcedSpan[]): (number | undefined)[] =>
+    resolve
+      ? resolve(
+          spans.map(({ value, start, end, detail }) => ({
+            value,
+            meters: end - start,
+            detail,
+          })),
+        ).map((key) => (key === undefined ? undefined : indexOfKey.get(key)))
+      : spans.map((span) => indexOfValue.get(span.value));
 
   const last = categories.length - 1;
 
@@ -76,29 +145,42 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
    * covers is Unknown, or the line would go undrawn there.
    */
   function* covering(
-    spans: PathDetailSpan[],
+    spans: SourcedSpan[],
     total: number,
-  ): Generator<{ start: number; end: number; index: number }> {
+  ): Generator<{
+    start: number;
+    end: number;
+    index: number;
+    /** Whether the router valued this stretch, as against nothing covering it. */
+    reported: boolean;
+  }> {
+    const indices = categoriesOf(spans);
+
     let covered = 0;
 
-    for (const span of spans) {
+    for (const [i, span] of spans.entries()) {
       if (span.start > covered + coverageSlack) {
-        yield { start: covered, end: span.start, index: last };
+        yield { start: covered, end: span.start, index: last, reported: false };
       }
 
       yield {
         start: span.start,
         end: span.end,
-        index: indexOf.get(span.value) ?? last,
+        index: indices[i] ?? last,
+        reported: true,
       };
 
       covered = Math.max(covered, span.end);
     }
 
     if (total > covered + coverageSlack) {
-      yield { start: covered, end: total, index: last };
+      yield { start: covered, end: total, index: last, reported: false };
     }
   }
+
+  /** Stretches nothing covered, where this mode draws those as no data. */
+  const isNoData = (reported: boolean) =>
+    !reported && Boolean(spec.uncoveredIsNoData);
 
   return {
     palette,
@@ -110,16 +192,20 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
     // about whether anything is mapped — and a mode that paints the route grey
     // end to end earns its dropdown slot no better than one with no data.
     isAvailable: (features) =>
-      features.some((feature) =>
-        readPathDetails(feature, spec.detail)?.some((span) =>
-          indexOf.has(span.value),
-        ),
-      ),
+      features.some((feature) => {
+        const spans = spansOf(feature);
+
+        return spans
+          ? categoriesOf(spans).some((index) => index !== undefined)
+          : false;
+      }),
 
     categories: (features, cm) => {
+      // A mode may name the last category itself, where it means something
+      // more definite than the router having no value.
       const labels: Record<string, string> = {
-        ...spec.labels(cm),
         unknown: cm.categories.unknown,
+        ...spec.labels(cm),
       };
 
       const meters = new Map<string, number>();
@@ -127,12 +213,18 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
       for (const feature of features) {
         // A line the router valued nothing of is Unknown from end to end, which
         // is what `covering` makes of no stretches at all.
-        const spans = readPathDetails(feature, spec.detail) ?? [];
+        const spans = spansOf(feature) ?? [];
 
-        for (const { start, end, index } of covering(
+        for (const { start, end, index, reported } of covering(
           spans,
           length(feature, { units: 'meters' }),
         )) {
+          // No data is not a category, so it is left out of the legend rather
+          // than counted as one — the metres then describe what was valued.
+          if (isNoData(reported)) {
+            continue;
+          }
+
           const { key } = categories[index]!;
 
           meters.set(key, (meters.get(key) ?? 0) + (end - start));
@@ -159,7 +251,14 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
       features.flatMap((feature) => {
         // No stretches means Unknown end to end, not an undrawn line: the plain
         // route has stepped aside for this one, so a gap would be a hole.
-        const spans = readPathDetails(feature, spec.detail) ?? [];
+        const spans = spansOf(feature) ?? [];
+
+        // Nothing on this line was valued at all — a car or OSRM route, where
+        // the mode was never asked. Leave the route drawn as it is rather than
+        // fade the whole of it as no data.
+        if (spans.length === 0 && spec.uncoveredIsNoData) {
+          return [];
+        }
 
         const coordinates = feature.geometry.coordinates;
 
@@ -173,14 +272,16 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
         // becomes its own canvas layer, and a route has hundreds of stretches.
         const points: ColorizedPoint[] = [];
 
-        for (const { start, end, index } of covering(
+        for (const { start, end, index, reported } of covering(
           spans,
           cum[cum.length - 1] ?? 0,
         )) {
           const color = colorOf(index);
 
+          const gap = isNoData(reported);
+
           for (const point of spanPoints(coordinates, cum, start, end)) {
-            points.push({ ...point, color });
+            points.push({ ...point, color, ...(gap && { gap }) });
           }
         }
 

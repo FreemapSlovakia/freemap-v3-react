@@ -24,6 +24,7 @@ const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     trackType: 'Erdei út minősége',
     hikeRating: 'Gyalogos nehézség',
     mtbRating: 'MTB-nehézség',
+    trailColor: 'Jelzés színe',
   },
   categories: {
     unknown: 'Ismeretlen',
@@ -64,6 +65,18 @@ const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       t4: 'T4 – alpesi',
       t5: 'T5 – igényes alpesi',
       t6: 'T6 – nehéz alpesi',
+    },
+    trailColor: {
+      red: 'Piros',
+      blue: 'Kék',
+      green: 'Zöld',
+      yellow: 'Sárga',
+      black: 'Fekete',
+      orange: 'Narancssárga',
+      purple: 'Lila',
+      white: 'Fehér',
+      other: 'Egyéb',
+      unknown: 'Jelzés nélküli',
     },
   },
 };

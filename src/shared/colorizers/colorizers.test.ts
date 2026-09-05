@@ -1,7 +1,13 @@
 import { gpx } from '@tmcw/togeojson';
 import type { Feature, LineString } from 'geojson';
 import { describe, expect, it } from 'vitest';
-import { type HotlinePalette, paletteColorAt } from './colorize.js';
+import {
+  type HotlinePalette,
+  NO_DATA_COLOR,
+  PATH_DETAILS_PROP,
+  paletteColorAt,
+} from './colorize.js';
+import { colorizers } from './index.js';
 import { headingColorizer } from './modes/heading.js';
 import { speedColorizer } from './modes/speed.js';
 import {
@@ -10,6 +16,8 @@ import {
   steepnessGradeAt,
 } from './modes/steepness.js';
 import { timeColorizer } from './modes/time.js';
+import { trailColorColorizer } from './modes/trailColors.js';
+import colorizerMessages from './translations/en.messages.js';
 
 // Builds a single-segment LineString feature with the given coordinates and
 // per-point `coordinateProperties` arrays, mirroring what `@tmcw/togeojson`
@@ -195,6 +203,276 @@ describe('steepnessColorizer', () => {
     expect(down![30]!.color).toBe(0);
 
     expect(up![30]!.color).toBe(1);
+  });
+});
+
+describe('trailColorColorizer', () => {
+  const RED = 1 << 0;
+  const BLUE = 1 << 1;
+  const GREEN = 1 << 2;
+  const YELLOW = 1 << 3;
+
+  const PURPLE = 1 << 6;
+
+  const OTHER = 1 << 8;
+
+  /** Metres per stretch. Their total overruns the line, so no gap trails them. */
+  const SPAN = 300;
+
+  // Consecutive `[mask, metres]` stretches, as `flattenPathDetails` hands them
+  // over.
+  const marked = (...runs: [mask: number, meters: number][]) => {
+    let start = 0;
+
+    return line(COORDS, {
+      [PATH_DETAILS_PROP]: {
+        hiking_colours: runs.map(([mask, meters]) => {
+          const span = { start, end: start + meters, value: String(mask) };
+
+          start += meters;
+
+          return span;
+        }),
+      },
+    });
+  };
+
+  /** Masks over equal stretches, where only their order is under test. */
+  const even = (...masks: number[]): [number, number][] =>
+    masks.map((mask) => [mask, SPAN]);
+
+  /** How far each colour is painted, which is what the legend reports. */
+  const shares = (...runs: [mask: number, meters: number][]) =>
+    Object.fromEntries(
+      trailColorColorizer.categories!([marked(...runs)], colorizerMessages).map(
+        ({ key, meters }) => [key, meters],
+      ),
+    );
+
+  it('names a stretch by the single colour its mask holds', () => {
+    expect(shares(...even(GREEN))).toEqual({ green: SPAN });
+  });
+
+  it('paints a lone shared stretch in the first colour of the mask', () => {
+    expect(shares(...even(RED | GREEN))).toEqual({ red: SPAN });
+  });
+
+  // A shared stretch takes the colour of what it runs between, so the line does
+  // not flicker through a second colour and back.
+  it('keeps the colour across a stretch a second route joins and leaves', () => {
+    expect(shares(...even(YELLOW, YELLOW | BLUE, YELLOW))).toEqual({
+      yellow: 3 * SPAN,
+    });
+
+    expect(shares(...even(YELLOW | BLUE, YELLOW))).toEqual({
+      yellow: 2 * SPAN,
+    });
+
+    expect(shares(...even(YELLOW, YELLOW | BLUE))).toEqual({
+      yellow: 2 * SPAN,
+    });
+  });
+
+  // The change has to happen somewhere across the shared stretch; it goes to
+  // whichever trail the route follows further, so the longer one runs unbroken.
+  it('gives a shared stretch to the colour that runs furthest', () => {
+    expect(
+      shares([PURPLE, 100], [PURPLE | YELLOW, 200], [YELLOW, 200]),
+    ).toEqual({ purple: 100, yellow: 400 });
+
+    expect(
+      shares([PURPLE, 200], [PURPLE | YELLOW, 200], [YELLOW, 100]),
+    ).toEqual({ purple: 400, yellow: 100 });
+  });
+
+  // Only where the two run exactly as far as each other is there nothing to
+  // weigh, and then the change falls as late as it can.
+  it('changes colour as late as the marking allows', () => {
+    expect(shares(...even(YELLOW, YELLOW | BLUE, BLUE))).toEqual({
+      yellow: 2 * SPAN,
+      blue: SPAN,
+    });
+  });
+
+  it('leaves an unmarked stretch to Unknown rather than to a colour', () => {
+    expect(shares(...even(0))).toEqual({ unknown: SPAN });
+
+    expect(shares(...even(YELLOW, 0, YELLOW))).toEqual({
+      yellow: 2 * SPAN,
+      unknown: SPAN,
+    });
+
+    expect(trailColorColorizer.isAvailable?.([marked(...even(0))])).toBe(false);
+
+    expect(trailColorColorizer.isAvailable?.([marked(...even(RED))])).toBe(
+      true,
+    );
+  });
+
+  // The colour in force carries across the gap, so the shared stretch after it
+  // resumes in yellow; were the gap a break, blue would win it for costing no
+  // change against the blue that follows.
+  it('does not let an unmarked stretch break the colour flow', () => {
+    expect(shares(...even(YELLOW, 0, YELLOW | BLUE, BLUE))).toEqual({
+      yellow: 2 * SPAN,
+      unknown: SPAN,
+      blue: SPAN,
+    });
+  });
+
+  // The profile decides which mask the route is answered with, so the mode has
+  // to read a ride's colours off `bike_colours` just as it reads a walk's off
+  // `hiking_colours`.
+  it('reads whichever of the two masks the route carries', () => {
+    const bike = line(COORDS, {
+      [PATH_DETAILS_PROP]: {
+        bike_colours: [{ start: 0, end: SPAN, value: String(RED) }],
+      },
+    });
+
+    expect(trailColorColorizer.isAvailable?.([bike])).toBe(true);
+
+    expect(
+      trailColorColorizer.categories!([bike], colorizerMessages).map(
+        ({ key }) => key,
+      ),
+    ).toEqual(['red']);
+  });
+
+  // A multimodal route asks per segment, so one line can carry both names over
+  // stretches that never overlap. Reading only the first would paint the other
+  // segment Unmarked and hide it from the run the colours are chosen along.
+  const sharesOf = (details: Record<string, unknown>) =>
+    Object.fromEntries(
+      trailColorColorizer.categories!(
+        [line(COORDS, { [PATH_DETAILS_PROP]: details })],
+        colorizerMessages,
+      ).map(({ key, meters }) => [key, meters]),
+    );
+
+  it('reads both masks where a multimodal route carries each in turn', () => {
+    expect(
+      sharesOf({
+        hiking_colours: [{ start: 0, end: 300, value: String(RED) }],
+        bike_colours: [{ start: 300, end: 600, value: String(BLUE) }],
+      }),
+    ).toEqual({ red: 300, blue: 300 });
+  });
+
+  // Grouped by key rather than by adjacency: the walk resumed after the ride is
+  // the same network, so its yellow carries over the ride at no cost.
+  it('rejoins a network the other one interrupted', () => {
+    expect(
+      sharesOf({
+        hiking_colours: [
+          { start: 0, end: 100, value: String(YELLOW) },
+          { start: 200, end: 300, value: String(YELLOW | BLUE) },
+        ],
+        bike_colours: [{ start: 100, end: 200, value: String(BLUE) }],
+      }),
+    ).toEqual({ yellow: 200, blue: 100 });
+  });
+
+  // The two masks are unrelated networks that merely share a palette, so a red
+  // hiking trail must not make a cycle route red where its own marking is blue.
+  it('keeps the two networks apart when choosing colours', () => {
+    expect(
+      sharesOf({
+        hiking_colours: [{ start: 0, end: 300, value: String(RED) }],
+        bike_colours: [
+          { start: 300, end: 600, value: String(RED | BLUE) },
+          { start: 600, end: 900, value: String(BLUE) },
+        ],
+      }),
+      // Pooled, the walked leg's red would win the shared stretch and this
+      // would read red 600 / blue 300.
+    ).toEqual({ red: 300, blue: 600 });
+  });
+
+  // A leg nobody asked about — a car's, an OSRM one, a manual one — is no data,
+  // not a claim that there is no trail there. It leaves the legend rather than
+  // swelling Unmarked, and the line draws it in the neutral no-data style.
+  it('draws a stretch nothing reported as no data, not as Unmarked', () => {
+    // The line runs ~223 m; only its first 100 m is valued, as a car leg
+    // following a walked one would leave it.
+    const partly = line(COORDS, {
+      [PATH_DETAILS_PROP]: {
+        hiking_colours: [{ start: 0, end: 100, value: String(RED) }],
+      },
+    });
+
+    expect(
+      Object.fromEntries(
+        trailColorColorizer.categories!([partly], colorizerMessages).map(
+          ({ key, meters }) => [key, Math.round(meters)],
+        ),
+      ),
+    ).toEqual({ red: 100 });
+
+    expect(trailColorColorizer.compute([partly])[0]!.some((p) => p.gap)).toBe(
+      true,
+    );
+
+    // But a line nothing was reported for at all — a car or OSRM route the mode
+    // was never asked about — is left to the plain route line, not faded whole.
+    expect(trailColorColorizer.compute([line(COORDS)])).toEqual([]);
+
+    expect(
+      trailColorColorizer.categories!([line(COORDS)], colorizerMessages),
+    ).toEqual([]);
+
+    // A mode that answers for the whole line keeps counting holes as Unknown.
+    expect(
+      Object.fromEntries(
+        colorizers.surface.categories!([partly], colorizerMessages).map(
+          ({ key }) => [key, true],
+        ),
+      ),
+    ).toEqual({ unknown: true });
+  });
+
+  // Unmarked is an answer, so it must not wear the no-data grey (#808080). It
+  // is `other`'s grey at 50 %, which the palette can only carry blended.
+  it('paints Unmarked a grey of its own', () => {
+    const swatches = Object.fromEntries(
+      trailColorColorizer.categories!(
+        [marked(...even(0, OTHER))],
+        colorizerMessages,
+      ).map(({ key, color }) => [key, color]),
+    );
+
+    expect(swatches).toEqual({
+      unknown: 'rgb(208 208 208)',
+      other: 'rgb(160 160 160)',
+    });
+
+    expect(swatches['unknown']).not.toBe(NO_DATA_COLOR);
+  });
+
+  // The bit table mirrors a server-side enum. A value added there must degrade
+  // to "a colour we cannot name", not to "no marking here".
+  it('counts a bit it does not know as `other`', () => {
+    expect(shares([1 << 12, SPAN])).toEqual({ other: SPAN });
+
+    expect(shares([RED | (1 << 12), SPAN])).toEqual({ red: SPAN });
+  });
+
+  // `other` is a colour that could not be named, so it never stands in for one
+  // that could — not even when staying `other` would keep the line unbroken.
+  it('never paints `other` over a named colour sharing the stretch', () => {
+    expect(shares([OTHER, 500], [OTHER | RED, 200], [RED, 100])).toEqual({
+      other: 500,
+      red: 300,
+    });
+
+    // The Košice case: a red trail sharing 447 m with an unnameable one, run up
+    // to and away from by `other` and unmarked stretches, which changing colour
+    // twice to draw red would otherwise lose to.
+    expect(shares([0, 39], [OTHER, 19], [OTHER | RED, 447], [0, 48])).toEqual({
+      unknown: 87,
+      other: 19,
+      red: 447,
+    });
   });
 });
 

@@ -617,8 +617,9 @@ report, which is what `gone` is for.
 Imported via `@shared/colorizers/…`. One colorizer per visual variable lives in
 `modes/` (`elevation`, `steepness`, `speed`, `heading`, `time`, `heartRate`, `cadence`,
 `power`, `temperature`, `battery`, `gsmSignal`, plus the categorical `surface`,
-`smoothness`, `roadType`, `trackType`, `hikeRating`, `mtbRating`); `index.ts` aggregates
-them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
+`smoothness`, `roadType`, `trackType`, `hikeRating`, `mtbRating`, `trailColor`);
+`index.ts` aggregates them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`,
+`colorizerDetails`).
 
 - **Steepness is not a straight ramp.** A grade reaches its colour through
   `asinh(grade / STEEPNESS_KNEE)` — odd-symmetric, defined at zero and straight either side
@@ -698,9 +699,29 @@ them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`).
   zoom, and the data-viewer/tracking menus that the mode can never apply to a track. A
   future _scalar_ span mode (`average_speed`, `curvature`) sets `spanBased` and a normal
   `legend`. Beside it, **`detail`** names the GraphHopper path detail the mode reads, which
-  is what the route planner's menu matches against `pathDetailKeys` — the two are separate
-  because `spanBased` is about how the line renders, `detail` about where its values come
-  from, and a future span mode need not come from a path detail at all.
+  is what the route planner's menu matches against `pathDetailKeys` (through
+  `colorizerDetails`) — the two are separate because `spanBased` is about how the line
+  renders, `detail` about where its values come from, and a future span mode need not come
+  from a path detail at all. It may name **several** keys, for a mode the profile decides
+  the answer for: `trailColor` reads `hiking_colours` on a walking profile and
+  `bike_colours` on a riding one. The mode then reads every key the line carries, not the
+  first — a multimodal route asks per segment, so one line holds each name over stretches
+  that never overlap.
+- **`resolve`** (`categoricalColorizer`) hands a mode the whole ordered list of stretches
+  with their lengths and takes back a category per stretch, for a detail whose values
+  cannot be listed — a bit mask — and so a stretch's category can depend on its
+  neighbours'. `trailColor` uses it to change colour as seldom as the marking allows, and
+  where it must change, to give the shared stretch to the trail the route follows further.
+  A mode may also name the shared last category itself (`labels` is spread over the default
+  `unknown`), which is how `trailColor` calls it **Unmarked**. Each stretch carries the
+  `detail` it came from, which a multi-key mode has to keep apart: `trailColor` resolves the
+  walked and ridden parts of a multimodal route as separate networks, so neither the colour
+  in force nor the metres carry across the change of key.
+- **`uncoveredIsNoData`** makes a stretch no span covers a gap rather than the last category
+  — for a mode the router answers for every metre it was *asked* about, so "no waymark" and
+  "never asked" (a car leg, an OSRM leg, a manual one) stay different. Off by default,
+  because a surface changes hundreds of times per route and every gap is its own render
+  layer; `trailColor` sets it, and its uncovered stretches are few and long.
 - `colorizeByValues` (`colorize.ts`) maps values to a Hotline palette and flags missing
   values as gaps on `ColorizedPoint`; `splitOnGaps`/`noDataRuns` split a feature's points
   into gap-free runs so the Hotline render loop can break the line at gaps.

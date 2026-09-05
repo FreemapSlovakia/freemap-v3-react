@@ -24,6 +24,7 @@ const sl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
     trackType: 'Kakovost gozdne ceste',
     hikeRating: 'Peš zahtevnost',
     mtbRating: 'Zahtevnost MTB',
+    trailColor: 'Barva markacije',
   },
   categories: {
     unknown: 'Neznano',
@@ -64,6 +65,18 @@ const sl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
       t4: 'T4 – alpsko',
       t5: 'T5 – zahtevno alpsko',
       t6: 'T6 – težko alpsko',
+    },
+    trailColor: {
+      red: 'Rdeča',
+      blue: 'Modra',
+      green: 'Zelena',
+      yellow: 'Rumena',
+      black: 'Črna',
+      orange: 'Oranžna',
+      purple: 'Vijolična',
+      white: 'Bela',
+      other: 'Druga',
+      unknown: 'Neoznačeno',
     },
   },
 };

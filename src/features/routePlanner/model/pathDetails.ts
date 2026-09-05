@@ -39,13 +39,15 @@ export function pathDetailKeys(transport: TransportType): string[] {
     keys.push('toll');
   }
 
-  // A difficulty scale, though, is the profile's own and means nothing off it.
+  // A difficulty scale is the profile's own and means nothing off it. The
+  // waymark colours split too — this is what decides which marking the colorize
+  // mode shows — and a car, following neither, is offered no colours at all.
   switch (transport) {
     case 'foot':
     case 'stroller':
     case 'hiking':
     case 'easyhike':
-      keys.push('hike_rating');
+      keys.push('hike_rating', 'hiking_colours');
 
       break;
 
@@ -54,7 +56,7 @@ export function pathDetailKeys(transport: TransportType): string[] {
     case 'gravelbike':
     case 'mtb':
     case 'racingbike':
-      keys.push('mtb_rating');
+      keys.push('mtb_rating', 'bike_colours');
 
       break;
   }

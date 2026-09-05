@@ -1,5 +1,5 @@
 import { readPathDetails } from '@shared/colorizers/colorize.js';
-import { colorizers, colorizingModes } from '@shared/colorizers/index.js';
+import { colorizerDetails, colorizingModes } from '@shared/colorizers/index.js';
 import { categoricalColorizer } from '@shared/colorizers/modes/pathDetail.js';
 import type { ColorizerMessages } from '@shared/colorizers/translations/ColorizerMessages.js';
 import { TransportTypeSchema } from '@shared/transportTypeDefs.js';
@@ -61,6 +61,26 @@ describe('pathDetailKeys', () => {
     expect(pathDetailKeys('gravelbike')).toContain('mtb_rating');
   });
 
+  // One colorize mode reads either mask, and this is what decides which: a
+  // walker is shown the signs a walker follows, a rider the ones a rider does.
+  it('answers the waymark colours with the ones the profile follows', () => {
+    expect(pathDetailKeys('hiking')).toContain('hiking_colours');
+    expect(pathDetailKeys('hiking')).not.toContain('bike_colours');
+    expect(pathDetailKeys('stroller')).toContain('hiking_colours');
+    expect(pathDetailKeys('mtb')).toContain('bike_colours');
+    expect(pathDetailKeys('mtb')).not.toContain('hiking_colours');
+    expect(pathDetailKeys('gravelbike')).toContain('bike_colours');
+
+    // A car follows neither, so the mode is not offered for one at all.
+    expect(colorizerDetails('trailColor')).toEqual([
+      'hiking_colours',
+      'bike_colours',
+    ]);
+
+    expect(pathDetailKeys('car')).not.toContain('hiking_colours');
+    expect(pathDetailKeys('car')).not.toContain('bike_colours');
+  });
+
   // The point of the profile is that there should be none, so the detail is
   // what shows it avoided them rather than that none were on the way.
   it('asks the toll-avoiding car about tolls', () => {
@@ -101,9 +121,9 @@ describe('pathDetailKeys', () => {
     );
 
     for (const mode of colorizingModes) {
-      const { detail } = colorizers[mode];
-
-      if (detail) {
+      // A mode answered with one of several keys needs each of them asked for
+      // by the profile it belongs to, or that profile shows the mode dead.
+      for (const detail of colorizerDetails(mode)) {
         expect(asked).toContain(detail);
       }
     }
