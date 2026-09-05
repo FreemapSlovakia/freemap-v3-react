@@ -74,8 +74,6 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     standard: 'Standard',
     detailed: 'Detailliert / langsam',
     finest: 'Feinste / langsamste',
-    premiumHint:
-      'Ein feineres Panorama wird mit bis zu sechsfacher Auflösung und neunfacher Abtastung berechnet, sodass die Grate so erscheinen, wie sie wirklich sind, und nicht als Treppen. Auf einem Server, der ein Panorama nach dem anderen berechnet, kostet jede Stufe entsprechend mehr — die feineren gehören deshalb zu Premium.',
   },
   tilt: {
     label: 'Senkrechter Ausschnitt',

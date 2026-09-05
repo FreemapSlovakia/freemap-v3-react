@@ -3,6 +3,7 @@ import { pickingModeSelector } from '@app/store/selectors.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { initialWheelPxPerZoomLevel } from '@features/map/wheelZoomCalibration.js';
+import { HALO_OPACITY, HALO_PANE, HALO_PANE_Z } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 // Imported for its side effect, before any layer can bind a tooltip.
 import '../leafletTooltipFocusFix.js';
@@ -75,6 +76,13 @@ export function TheMap({ children }: Props): ReactElement {
           rectangle, photo-location marker); exempt from fm-features-noninteractive
           so it stays grabbable while everything else is click-through. */}
       <Pane name="fm-active-overlay" style={{ zIndex: 800 }} />
+
+      {/* Every halo on the map, in one pane so they composite as a single
+          group. Declared before the features, which name it. */}
+      <Pane
+        name={HALO_PANE}
+        style={{ zIndex: HALO_PANE_Z, opacity: HALO_OPACITY }}
+      />
 
       {children}
     </MapContainer>

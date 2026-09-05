@@ -18,6 +18,7 @@ import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
 import {
   HALO_COLOR,
+  HALO_PANE,
   HALO_WIDTH,
   SECOND_SELECTION_COLOR,
   SELECTION_COLOR,
@@ -368,11 +369,6 @@ export default function DataViewerResult({
 
   return (
     <Fragment key={keyToAssureProperRefresh}>
-      {/* Below the line foreground (overlayPane, zIndex 400) so a track's wider
-          halo — white while it is merely colorized, blue while it is selected —
-          shows as an outline around it without changing its own style. */}
-      <Pane name="fm-trackviewer-highlight" style={{ zIndex: 398 }} />
-
       <Pane name="fm-trackviewer-polygons" style={{ zIndex: 399 }} />
 
       {/* Above the hotline canvas (default overlayPane, zIndex 400) so the
@@ -383,7 +379,7 @@ export default function DataViewerResult({
       {halos.map(({ key, positions, options, width }) => (
         <Polyline
           key={`halo-${key}`}
-          pane="fm-trackviewer-highlight"
+          pane={HALO_PANE}
           weight={width + HALO_WIDTH}
           positions={positions}
           pathOptions={options}
@@ -396,7 +392,7 @@ export default function DataViewerResult({
         .map(({ positions, style }, i) => (
           <Polygon
             key={`poly-highlight-${i}`}
-            pane="fm-trackviewer-highlight"
+            pane={HALO_PANE}
             weight={style.width + HALO_WIDTH}
             positions={positions}
             pathOptions={{

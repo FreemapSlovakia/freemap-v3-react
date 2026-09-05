@@ -16,7 +16,18 @@ const en: PremiumMessages = {
       <ul>
         <li>removed ad banner</li>
         <li>
-          <HintTooltip hint="hi-res detailed shading of Slovakia and Czechia, highest zoom levels of Outdoor Map, highest zoom levels of ortophoto maps of Slovakia and Czechia, various WMS-based maps">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>highest zoom levels of Outdoor Map</li>
+                <li>WMS-based maps</li>
+                <li>
+                  highest zoom levels of ortophoto maps of Slovakia and Czechia
+                </li>
+                <li>hi-res detailed shading of Slovakia and Czechia</li>
+              </ul>
+            }
+          >
             premium map layers
           </HintTooltip>
         </li>
@@ -28,6 +39,8 @@ const en: PremiumMessages = {
             high-resolution elevation data (many European countries)
           </HintTooltip>
         </li>
+        <li>higher panorama resolution</li>
+        <li>higher viewshed resolution</li>
         <li>longer weather radar history and its forecast</li>
         <li>colorizing routes and tracks (some modes are premium only)</li>
       </ul>
@@ -65,6 +78,7 @@ const en: PremiumMessages = {
   clickToActivate: 'Click to activate.',
   higherPrecisionElevation:
     'Higher-precision elevation data available with premium access.',
+  higherDetail: 'Finer detail available with premium access.',
   alreadyPremium: 'You already have premium access.',
   alreadySubscribed: 'You already have an active subscription.',
   premiumUser: 'User with premium access',

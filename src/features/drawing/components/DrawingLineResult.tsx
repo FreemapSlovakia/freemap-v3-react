@@ -1,11 +1,16 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
-import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { formatAzimuth } from '@shared/geoutils.js';
-import { HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
+import {
+  HALO_OPACITY,
+  HALO_PANE,
+  HALO_WIDTH,
+  SELECTION_COLOR,
+} from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -66,7 +71,7 @@ const selectedCircularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="${classes.circularMarkerIcon}" style="background-color: var(--color-normal, ${COLORS.normal}); box-shadow: 0 0 0 3px ${SELECTION_COLOR}"></div>`,
+  html: `<div class="${classes.circularMarkerIcon}" style="background-color: var(--color-normal, ${COLORS.normal}); box-shadow: 0 0 0 3px ${joinColorAlpha(SELECTION_COLOR, HALO_OPACITY)}"></div>`,
 });
 
 // Each vertex/midpoint handle is a DOM marker, so a many-vertex line would
@@ -93,9 +98,6 @@ const HANDLE_HYSTERESIS = 1.3;
 const NO_HOLES: DrawnLine[] = [];
 
 const toLatLng = ({ lat, lon }: LatLon) => ({ lat, lng: lon });
-
-/** Declared by `DrawingLinesResult`, below the shapes it holds the halos of. */
-export const HIGHLIGHT_PANE = 'fm-drawing-highlight';
 
 // Whole object, so a re-render hands Leaflet the same options back instead of
 // restyling every path.
@@ -699,7 +701,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           {selected && (
             <Polyline
-              pane={HIGHLIGHT_PANE}
+              pane={HALO_PANE}
               weight={width + HALO_WIDTH}
               pathOptions={SELECTION_HALO}
               interactive={false}
@@ -749,7 +751,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
       {ps.length > 1 && line.type === 'polygon' && !isHole && selected && (
         <Polygon
-          pane={HIGHLIGHT_PANE}
+          pane={HALO_PANE}
           weight={width + HALO_WIDTH}
           pathOptions={{ ...SELECTION_HALO, fill: false }}
           interactive={false}
@@ -821,7 +823,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
               which ring the toolbar acts on. */}
           {selected && (
             <Polyline
-              pane={HIGHLIGHT_PANE}
+              pane={HALO_PANE}
               weight={width + HALO_WIDTH}
               pathOptions={SELECTION_HALO}
               interactive={false}

@@ -379,6 +379,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     stadium: 'Stadionépület',
   },
 
+  changing_table: {
+    yes: 'Pelenkázóasztal',
+    limited: 'Rögtönzött pelenkázóhely',
+    no: 'Nincs pelenkázóasztal',
+  },
   club: {
     '*': 'Klub',
     automobile: 'Autóklub',
@@ -416,15 +421,72 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     rehabilitation: 'Rehabilitációs központ',
     speech_therapist: 'Logopédus',
   },
+  fitness_station: {
+    air_walker: 'Air walker',
+    balance_beam: 'Egyensúlyozó gerenda (fitnesz)',
+    box: 'Ugródoboz',
+    elliptical_trainer: 'Elliptikus tréner',
+    exercise_bike: 'Szobakerékpár',
+    horizontal_bar: 'Nyújtó (fitnesz)',
+    horizontal_ladder: 'Vízszintes létra',
+    hyperextension: 'Hátizom-erősítő pad',
+    parallel_bars: 'Korlát',
+    'push-up': 'Fekvőtámasz-korlát',
+    rings: 'Tornagyűrű',
+    rower: 'Evezőgép',
+    sign: 'Fitneszpark-tábla',
+    'sit-up': 'Haspad',
+    stairs: 'Edzőlépcső',
+    wall_bars: 'Bordásfal',
+    yes: 'Szabadtéri fitneszeszköz',
+  },
   highway: {
+    '*': 'Út {}',
+    bridleway: 'Lovas út',
+    bus_stop: 'Buszmegálló',
     busway: 'Buszsáv',
+    construction: 'Épülő út',
     corridor: 'Épületfolyosó',
+    crossing: 'Gyalogosátkelő (zebra)',
+    cycleway: 'Kerékpárút',
     elevator: 'Lift',
     emergency_access_point: 'Mentési pont',
     emergency_bay: 'Vészleállóhely',
+    escape: 'Menekülőút',
+    footway: 'Gyalogút',
+    give_way: 'Elsőbbségadás kötelező',
+    hitchhiking: 'Stoppolóhely',
+    ladder: 'Létra',
+    living_street: 'Lakó-pihenő övezet',
     milestone: 'Kilométerkő',
+    mini_roundabout: 'Mini körforgalom',
+    motorway: 'Autópálya',
     motorway_junction: 'Autópálya-csomópont',
+    motorway_link: 'Autópálya fel- vagy lehajtó',
+    passing_place: 'Kitérőhely',
+    path: {
+      '*': 'Ösvény',
+      foot: {
+        designated: {
+          bicycle: {
+            designated: 'Közös gyalog- és kerékpárút',
+          },
+        },
+      },
+    },
+    pedestrian: 'Sétálóutca',
+    piste: 'Sípálya',
+    platform: 'Peron',
+    primary: 'Főút',
+    primary_link: 'Főút fel- vagy lehajtó',
+    priority: 'Elsőbbséget jelző tábla',
     proposed: 'Tervezett út',
+    raceway: 'Versenypálya',
+    residential: 'Lakóút',
+    rest_area: 'Pihenőhely',
+    road: 'Ismeretlen típusú út',
+    secondary: 'Összekötő út',
+    secondary_link: 'Összekötő út fel- vagy lehajtó',
     service: {
       service: {
         '*': 'Szervizút {}',
@@ -437,9 +499,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
       '*': 'Szolgálati, bejáróút',
     },
-
     services: 'Autópálya-pihenőhely szolgáltatásokkal',
     speed_camera: 'Sebességmérő kamera',
+    speed_display: 'Sebességkijelző',
+    steps: 'Lépcső',
+    stop: 'Stoptábla',
+    street_lamp: 'Utcai lámpa',
+    tertiary: 'Bekötőút',
+    tertiary_link: 'Bekötőút fel- vagy lehajtó',
     toll_gantry: 'Útdíjkapu',
     track: {
       tracktype: {
@@ -451,51 +518,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
       '*': 'Mezőgazdasági vagy erdészeti út',
     },
-
-    '*': 'Út {}',
-    bus_stop: 'Buszmegálló',
-    construction: 'Épülő út',
-    crossing: 'Gyalogosátkelő (zebra)',
-    cycleway: 'Kerékpárút',
-    footway: 'Gyalogút',
-    living_street: 'Lakó-pihenő övezet',
-    motorway: 'Autópálya',
-    motorway_link: 'Autópálya fel- vagy lehajtó',
-
-    path: {
-      '*': 'Ösvény',
-
-      foot: {
-        designated: {
-          bicycle: {
-            designated: 'Közös gyalog- és kerékpárút',
-          },
-        },
-      },
-    },
-
-    pedestrian: 'Sétálóutca',
-    primary: 'Főút',
-    primary_link: 'Főút fel- vagy lehajtó',
-    residential: 'Lakóút',
-    secondary: 'Összekötő út',
-    secondary_link: 'Összekötő út fel- vagy lehajtó',
-    steps: 'Lépcső',
-    street_lamp: 'Utcai lámpa',
-    tertiary: 'Bekötőút',
-    tertiary_link: 'Bekötőút fel- vagy lehajtó',
+    traffic_calming: 'Forgalomcsillapító elem',
+    traffic_island: 'Forgalomterelő sziget',
+    traffic_mirror: 'Közlekedési tükör',
+    traffic_sign: 'Közúti jelzőtábla',
     traffic_signals: 'Közlekedési lámpa',
     trailhead: 'Túraútvonal kiindulópontja',
     trunk: 'Autóút',
     trunk_link: 'Autóút fel- vagy lehajtó',
+    turning_circle: 'Fordulóhely',
+    turning_loop: 'Fordulóhurok',
     unclassified: 'Egyéb közút',
-    bridleway: 'Lovas út',
-    piste: 'Sípálya',
-    platform: 'Peron',
-    raceway: 'Versenypálya',
-    road: 'Ismeretlen típusú út',
     via_ferrata: 'Via ferrata',
-    rest_area: 'Pihenőhely',
   },
 
   historic: {
@@ -558,44 +592,71 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     '*': '{}',
     allotments: 'Kiskertek',
     animal_keeping: 'Állattartás',
+    apiary: 'Méhes területe',
     aquaculture: 'Akvakultúra',
     basin: 'Vízgyűjtő medence',
     brownfield: 'Barnamezős terület',
     cemetery: 'Temető',
+    churchyard: 'Templomkert',
+    civic: 'Közösségi terület',
+    civic_admin: 'Hivatali terület',
     commercial: 'Kereskedelmi terület',
     conservation: 'Védett terület',
     construction: 'Építési terület',
+    culture: 'Kulturális terület',
+    depot: 'Telephely',
     education: 'Oktatási terület',
+    emergency: 'Mentőszolgálati terület',
+    fairground: 'Vásártér',
     farm: 'Mezőgazdasági terület',
     farmland: 'Mezőgazdasági terület',
     farmyard: 'Tanyaudvar',
     flowerbed: 'Virágágyás',
     forest: 'Telepített erdő',
+    forestry: 'Erdőgazdálkodási terület',
     garages: 'Garázsok',
+    garden: 'Kertterület',
     grass: 'Gyep',
+    greenery: 'Zöldterület',
     greenfield: 'Zöldmezős terület',
     greenhouse_horticulture: 'Üvegházi kertészet',
+    harbour: 'Kikötőterület',
+    healthcare: 'Egészségügyi terület',
+    highway: 'Útterület',
+    houseboat: 'Lakóhajó-kikötő',
     industrial: 'Ipari terület',
+    institutional: 'Intézményi terület',
     landfill: 'Hulladéklerakó',
+    logging: 'Fakitermelés',
     meadow: 'Rét',
     military: 'Katonai terület',
+    mine_spoils: 'Meddőterület',
     orchard: 'Gyümölcsös',
+    paddock: 'Karám',
+    peat_cutting: 'Tőzegkitermelés',
+    pedestrian: 'Gyalogos terület',
+    piste: 'Sípálya területe',
     plant_nursery: 'Faiskola',
     plantation: 'Ültetvény',
     quarry: 'Külszíni fejtés, kőfejtő',
+    railway: 'Vasúti terület',
     recreation_ground: 'Szabadidőpark',
     religious: 'Egyházi terület',
     reservoir: 'Víztározó, mesterséges tó',
     residential: 'Lakóterület',
     retail: 'Kiskereskedelmi terület',
     salt_pond: 'Sópárló',
+    school: 'Iskolaterület',
+    shrubs: 'Cserjés',
     static_caravan: 'Lakókocsi-telep',
-    vineyard: 'Szőlőültetvény',
-    winter_sports: 'Sípálya, télisport-terület',
-    pedestrian: 'Gyalogos terület',
-    railway: 'Vasúti terület',
+    storage: 'Raktárterület',
+    tourism: 'Turisztikai terület',
+    traffic_island: 'Forgalomterelő sziget területe',
+    tree_pit: 'Faverem',
     village_green: 'Falu zöldterülete',
-    logging: 'Fakitermelés',
+    vineyard: 'Szőlőültetvény',
+    wasteland: 'Pusztaság',
+    winter_sports: 'Sípálya, télisport-terület',
   },
 
   leisure: {
@@ -1019,23 +1080,75 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     yes: 'Hely',
   },
 
+  playground: {
+    '*': 'Játszótéri eszköz {}',
+    activitypanel: 'Játékpanel',
+    aerialrotator: 'Függő körhinta',
+    agility_trail: 'Ügyességi pálya',
+    baby_swing: 'Bébihinta',
+    balancebeam: 'Egyensúlyozó gerenda',
+    basketrotator: 'Forgókosár',
+    basketswing: 'Fészekhinta',
+    bridge: 'Játékhíd',
+    climbing: 'Mászóeszköz',
+    climbing_pole: 'Mászórúd',
+    climbing_slope: 'Mászólejtő',
+    climbingframe: 'Mászóka',
+    climbingwall: 'Mászófal',
+    cushion: 'Ugrópárna',
+    exercise: 'Fitneszeszköz',
+    hammock: 'Függőágy',
+    hopscotch: 'Játszótéri ugróiskola',
+    horizontal_bar: 'Nyújtó',
+    ladder: 'Játéklétra',
+    platform: 'Játékplatform',
+    playhouse: 'Játékház',
+    pump: 'Játékszivattyú',
+    rope_traverse: 'Kötélátkelő',
+    roundabout: 'Játszótéri körhinta',
+    sandpit: 'Homokozó',
+    seesaw: 'Libikóka',
+    sledding: 'Szánkódomb',
+    slide: 'Csúszda',
+    spinner: 'Forgó',
+    splash_pad: 'Vizes játszótér',
+    spring_board: 'Rugós deszka',
+    springy: 'Rugós játék',
+    stepping_stone: 'Lépőkövek',
+    steps: 'Játéklépcső',
+    structure: 'Játszóvár',
+    swing: 'Hinta',
+    teenshelter: 'Ifjúsági fedett hely',
+    trampoline: 'Játszótéri trambulin',
+    tunnel_tube: 'Játékalagút',
+    water: 'Vizes játékelem',
+    water_channel: 'Játszótéri vízcsatorna',
+    wobble_bridge: 'Billegő híd',
+    youth_bench: 'Ifjúsági pad',
+    zipwire: 'Játszótéri kötélpálya',
+  },
   power: {
     '*': '{}',
+    cable: 'Elektromos kábel',
+    cable_distribution: 'Kábelelosztó',
+    cable_distribution_cabinet: 'Kábelelosztó szekrény',
+    catenary_mast: 'Felsővezeték-oszlop',
+    catenary_portal: 'Felsővezeték-kapu',
+    circuit: 'Áramkör',
+    compensator: 'Meddőteljesítmény-kompenzátor',
+    connection: 'Vezetékösszekötés',
+    converter: 'Áramátalakító',
     generator: {
       '*': 'Generátor',
-
       'generator:source': {
         biofuel: {
           '*': 'Biotüzelőanyaggal működő áramfejlesztő',
         },
-
         biogas: {
           '*': 'Biogázzal működő áramfejlesztő',
         },
-
         biomass: {
           '*': 'Biomasszával működő áramfejlesztő',
-
           'generator:method': {
             anaerobic_digestion:
               'Anaerob biomassza-bontással működő áramfejlesztő',
@@ -1043,30 +1156,23 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             gasification: 'Biomassza-elgázosításos áramfejlesztő',
           },
         },
-
         coal: {
           '*': 'Széntüzelésű áramfejlesztő',
         },
-
         diesel: {
           '*': 'Dízel áramfejlesztő',
         },
-
         gas: {
           '*': 'Gáztüzelésű áramfejlesztő',
         },
-
         gasoline: {
           '*': 'Benzines áramfejlesztő',
         },
-
         geothermal: {
           '*': 'Geotermikus áramfejlesztő',
         },
-
         hydro: {
           '*': 'Vízenergiás áramfejlesztő',
-
           'generator:method': {
             'run-of-the-river': 'Folyóvizes vízenergiás áramfejlesztő',
             'water-pumped-storage':
@@ -1074,163 +1180,142 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             'water-storage': 'Tározós vízenergiás áramfejlesztő',
           },
         },
-
         nuclear: {
           '*': 'Nukleáris áramfejlesztő',
-
           'generator:method': {
             fission: 'Maghasadásos nukleáris áramfejlesztő',
             fusion: 'Magfúziós nukleáris áramfejlesztő',
           },
         },
-
         oil: {
           '*': 'Olajtüzelésű áramfejlesztő',
         },
-
         solar: {
           '*': 'Napelemes áramfejlesztő',
-
           'generator:method': {
             photovoltaic: 'Fotovoltaikus napelemes áramfejlesztő',
             thermal: 'Nap-hőenergiás áramfejlesztő',
           },
         },
-
         tidal: {
           '*': 'Árapály-energiás áramfejlesztő',
-
           'generator:method': {
             barrage: 'Árapálygátas áramfejlesztő',
             stream: 'Árapályáramlatos áramfejlesztő',
           },
         },
-
         waste: {
           '*': 'Hulladékból energiát termelő áramfejlesztő',
-
           'generator:method': {
             combustion: 'Hulladékégetéses áramfejlesztő',
             gasification: 'Hulladék-elgázosításos áramfejlesztő',
           },
         },
-
         wave: {
           '*': 'Hullámenergiás áramfejlesztő',
         },
-
         wind: {
           '*': 'Szélerőművi áramfejlesztő',
         },
       },
     },
+    heliostat: 'Heliosztát',
+    insulator: 'Szigetelő',
+    inverter: 'Inverter',
     line: 'Távvezeték',
+    line_section: 'Vezetékszakasz',
+    minor_cable: 'Kisebb elektromos kábel',
     minor_line: 'Kisebb villanyvezeték',
+    minor_underground_cable: 'Kisebb földalatti kábel',
     plant: {
       '*': 'Erőmű',
-
       'plant:source': {
         biofuel: {
           '*': 'Biotüzelőanyag-erőmű',
         },
-
         biogas: {
           '*': 'Biogáz-erőmű',
         },
-
         biomass: {
           '*': 'Biomassza-erőmű',
-
           'plant:method': {
             anaerobic_digestion: 'Anaerob biomassza-bontású erőmű',
             combustion: 'Biomassza-égetéses erőmű',
             gasification: 'Biomassza-elgázosításos erőmű',
           },
         },
-
         coal: {
           '*': 'Széntüzelésű erőmű',
         },
-
         diesel: {
           '*': 'Dízel-erőmű',
         },
-
         gas: {
           '*': 'Gáztüzelésű erőmű',
         },
-
         gasoline: {
           '*': 'Benzines erőmű',
         },
-
         geothermal: {
           '*': 'Geotermikus erőmű',
         },
-
         hydro: {
           '*': 'Vízerőmű',
-
           'plant:method': {
             'run-of-the-river': 'Folyóvizes vízerőmű',
             'water-pumped-storage': 'Szivattyús-tározós vízerőmű',
             'water-storage': 'Tározós vízerőmű',
           },
         },
-
         nuclear: {
           '*': 'Atomerőmű',
-
           'plant:method': {
             fission: 'Maghasadásos atomerőmű',
             fusion: 'Magfúziós erőmű',
           },
         },
-
         oil: {
           '*': 'Olajtüzelésű erőmű',
         },
-
         solar: {
           '*': 'Naperőmű',
-
           'plant:method': {
             photovoltaic: 'Fotovoltaikus naperőmű',
             thermal: 'Nap-hőerőmű',
           },
         },
-
         tidal: {
           '*': 'Árapály-erőmű',
-
           'plant:method': {
             barrage: 'Árapálygátas erőmű',
             stream: 'Árapályáramlatos erőmű',
           },
         },
-
         waste: {
           '*': 'Hulladékhasznosító erőmű',
-
           'plant:method': {
             combustion: 'Hulladékégető erőmű',
             gasification: 'Hulladék-elgázosító erőmű',
           },
         },
-
         wave: {
           '*': 'Hullámenergia-erőmű',
         },
-
         wind: {
           '*': 'Szélerőmű',
         },
       },
     },
     pole: 'Villanyoszlop',
+    portal: 'Vezetékkapu',
+    roof_pole: 'Tetőtartó oszlop',
     substation: 'Alállomás',
+    switch: 'Szakaszoló',
+    switchgear: 'Kapcsolóberendezés',
+    terminal: 'Vezetékvégpont',
     tower: 'Távvezetékoszlop',
     transformer: 'Transzformátor',
+    transition: 'Vezeték-kábel átmenet',
   },
 
   public_transport: {
@@ -1637,29 +1722,91 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   type: {
     route: {
+      '*': 'Útvonal',
       route: {
         '*': 'Útvonal {}',
-        bicycle: 'Kerékpáros útvonal',
+        aerialway: 'Felvonó útvonala',
+        bicycle: {
+          '*': 'Kerékpáros útvonal',
+          network: {
+            icn: 'Nemzetközi kerékpáros útvonal',
+            lcn: 'Helyi kerékpáros útvonal',
+            ncn: 'Országos kerékpáros útvonal',
+            rcn: 'Regionális kerékpáros útvonal',
+          },
+        },
         bus: 'Buszútvonal',
-        foot: 'Gyalogos útvonal',
+        canoe: 'Kenuútvonal',
+        canyoning: 'Canyoning útvonal',
+        detour: 'Terelőútvonal',
+        emergency_access: 'Mentési útvonal',
+        ferry: 'Kompútvonal',
+        fitness_trail: 'Fitneszösvény',
+        foot: {
+          '*': 'Gyalogos útvonal',
+          network: {
+            iwn: 'Nemzetközi gyalogos útvonal',
+            lwn: 'Helyi gyalogos útvonal',
+            nwn: 'Országos gyalogos útvonal',
+            rwn: 'Regionális gyalogos útvonal',
+          },
+          pilgrimage: {
+            '*': 'Zarándokútvonal',
+            no: '',
+          },
+        },
+        funicular: 'Siklóvonal',
         hiking: {
           '*': 'Turistaút',
-
           network: {
             iwn: 'Nemzetközi turistaút',
             lwn: 'Helyi turistaút',
             nwn: 'Országos turistaút',
             rwn: 'Regionális turistaút',
           },
+          pilgrimage: {
+            '*': 'Zarándokútvonal',
+            no: '',
+          },
         },
-        horse: 'Lovas útvonal',
+        historic: 'Történelmi útvonal',
+        historic_railway: 'Történelmi vasútvonal',
+        horse: {
+          '*': 'Lovas útvonal',
+          network: {
+            lhn: 'Helyi lovas útvonal',
+            rhn: 'Regionális lovas útvonal',
+          },
+        },
+        inline_skates: 'Görkorcsolya-útvonal',
+        junction: 'Csomópont',
+        light_rail: 'Gyorsvasúti vonal',
+        motorboat: 'Motorcsónak-útvonal',
         mtb: 'Mountain bike útvonal',
+        nordic_walking: 'Nordic walking útvonal',
+        pipeline: 'Vezeték nyomvonala',
         piste: 'Sípálya',
+        portage: 'Átemelési útvonal',
+        power: 'Elektromos vezeték nyomvonala',
         railway: 'Vasútvonal',
+        road: 'Közúti útvonal',
+        running: 'Futóútvonal',
+        share_taxi: 'Társastaxi-útvonal',
         ski: 'Sífutó útvonal',
+        subway: 'Metróvonal',
+        tracks: 'Vágányok nyomvonala',
+        train: 'Vonatútvonal',
         tram: 'Villamosútvonal',
+        trolleybus: 'Trolibusz-útvonal',
+        via_ferrata: 'Via ferrata',
+        waterway: 'Vízi útvonal',
+        worship: {
+          '*': 'Zarándokútvonal',
+          worship: {
+            stations_of_the_cross: 'Keresztút',
+          },
+        },
       },
-      '*': 'Útvonal',
     },
   },
 

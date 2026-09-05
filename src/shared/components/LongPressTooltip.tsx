@@ -50,6 +50,11 @@ type Props = {
   breakpoint?: Breakpoint;
   kbd?: string;
   /**
+   * A line under the label — what the control's own words don't say (e.g. that
+   * the value on show is the one a free account is held to).
+   */
+  hint?: ReactNode;
+  /**
    * Opens on a plain click or tap as well. Only for a mark that does nothing
    * else — on a control the same tap would activate it.
    */
@@ -65,6 +70,7 @@ export function LongPressTooltip({
   label = '…',
   name,
   kbd,
+  hint,
   delay = 500,
   breakpoint,
   toggleOnClick,
@@ -104,7 +110,10 @@ export function LongPressTooltip({
 
       setCoarse(isCoarse);
 
-      if ((!labelHidden && name == null) || timeoutRef.current) {
+      if (
+        (!labelHidden && name == null && hint == null) ||
+        timeoutRef.current
+      ) {
         return;
       }
 
@@ -112,7 +121,7 @@ export function LongPressTooltip({
         setShow(true);
       }, delay);
     },
-    [delay, labelHidden, name],
+    [delay, hint, labelHidden, name],
   );
 
   const handleClear = useCallback(() => {
@@ -152,7 +161,10 @@ export function LongPressTooltip({
 
   const tooltipBody =
     name == null ? (
-      label
+      // Nameless and already legible: only a hint has anything left to say.
+      labelHidden ? (
+        label
+      ) : null
     ) : labelHidden ? (
       <>
         {name}: {label}
@@ -204,7 +216,7 @@ export function LongPressTooltip({
         labelClassName: labelHidden ? 'd-none' : 'd-inline',
       })}
 
-      {target && (labelHidden || name != null) && (
+      {target && (labelHidden || name != null || hint != null) && (
         <Overlay
           target={target}
           show={show}
@@ -226,6 +238,7 @@ export function LongPressTooltip({
               <InTooltip value>
                 {tooltipBody}
                 {kbdEl}
+                {hint != null && <div className="mt-1">{hint}</div>}
               </InTooltip>
             </Tooltip>
           )}

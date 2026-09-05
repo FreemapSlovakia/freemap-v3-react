@@ -17,7 +17,22 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>odstranjeno oglasno pasico</li>
         <li>
-          <HintTooltip hint="podrobno senčenje reliefa Slovaške in Češke v visoki ločljivosti, najvišje ravni približevanja Outdoor zemljevida, najvišje ravni približevanja ortofoto zemljevidov Slovaške in Češke, različni zemljevidi na osnovi WMS">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>najvišje ravni približevanja Outdoor zemljevida</li>
+                <li>zemljevidi na osnovi WMS</li>
+                <li>
+                  najvišje ravni približevanja ortofoto zemljevidov Slovaške in
+                  Češke
+                </li>
+                <li>
+                  podrobno senčenje reliefa Slovaške in Češke v visoki
+                  ločljivosti
+                </li>
+              </ul>
+            }
+          >
             premium sloje zemljevida
           </HintTooltip>
         </li>
@@ -30,6 +45,8 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
             države)
           </HintTooltip>
         </li>
+        <li>panorama v višji ločljivosti</li>
+        <li>analiza vidnosti v višji ločljivosti</li>
         <li>daljša zgodovina vremenskega radarja in njegova napoved</li>
         <li>
           obarvanje poti in sledi (nekateri načini so na voljo le s premiumom)
@@ -66,6 +83,7 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Kliknite za aktivacijo.',
   higherPrecisionElevation:
     'Natančnejši podatki o nadmorski višini so na voljo s premium dostopom.',
+  higherDetail: 'Podrobnejši prikaz je na voljo s premium dostopom.',
   alreadyPremium: 'Premium dostop že imate.',
   alreadySubscribed: 'Aktivno naročnino že imate.',
   premiumUser: 'Uporabnik s premium dostopom',

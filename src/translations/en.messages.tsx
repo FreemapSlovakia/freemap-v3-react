@@ -124,6 +124,7 @@ const messages: Messages = {
       'You are not connected to the internet, so nothing here can be loaded or sent.',
     connectionError: 'Error connecting the server.',
     experimentalFunction: 'Experimental function',
+    externalService: 'Someone else’s service, with usage restrictions',
     attribution: () => <Attribution unknown="Map licence is not specified" />,
     unauthenticatedError: 'Please log-in to access this feature.',
     confirmation: 'Confirmation',

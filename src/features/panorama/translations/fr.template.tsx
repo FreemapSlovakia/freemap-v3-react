@@ -74,8 +74,6 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     standard: 'Standard',
     detailed: 'Détaillée / lente',
     finest: 'Maximale / la plus lente',
-    premiumHint:
-      'Un panorama plus fin est rendu jusqu’à six fois la résolution et neuf fois l’échantillonnage, ce qui montre les crêtes telles qu’elles sont et non en marches d’escalier. Sur un serveur qui rend un panorama à la fois, chaque niveau coûte proportionnellement plus, c’est pourquoi les plus fins relèvent du premium.',
   },
   tilt: {
     label: 'Étendue verticale',

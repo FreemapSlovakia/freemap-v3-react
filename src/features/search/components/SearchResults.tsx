@@ -11,7 +11,7 @@ import {
   MarkerLeafletIcon,
   markerIconOptions,
 } from '@shared/components/RichMarker.js';
-import { HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
+import { HALO_PANE, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { escapeHtml } from '@shared/stringUtils.js';
 import {
@@ -30,7 +30,7 @@ import {
   type PathOptions,
 } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
-import { GeoJSON, Pane } from 'react-leaflet';
+import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
   type SearchResult,
@@ -38,8 +38,6 @@ import {
   searchSelectResult,
 } from '../model/actions.js';
 import { hasGeometry } from '../model/resultUtils.js';
-
-const HALO_PANE = 'fm-search-highlight';
 
 /** `Multi` too: an OSM relation is one feature of many lines, not many features. */
 function isLine(feature: Feature): boolean {
@@ -98,10 +96,6 @@ export function SearchResults(): ReactElement | null {
 
   return (
     <>
-      {/* Below the results (overlayPane, zIndex 400), so the selected one's
-          halo shows as an outline around the style it is drawn in. */}
-      <Pane name={HALO_PANE} style={{ zIndex: 398 }} />
-
       {shown.map((result) => {
         const active = Boolean(
           marksActive &&

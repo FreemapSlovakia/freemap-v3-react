@@ -1,6 +1,7 @@
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { ExternalService } from '@shared/components/ExternalService.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
@@ -105,9 +106,10 @@ export function RoutePlannerTransportType({
                     <FaMoneyBill />
                   )}{' '}
                   {rpm?.transportType[key] ?? '…'}
-                  {(experimental || withDefault) && (
+                  {(experimental || withDefault || api === 'osrm') && (
                     <MenuGutter>
                       {experimental && <ExperimentalFunction />}
+                      {api === 'osrm' && <ExternalService />}
                       {withDefault && <PremiumGem nested />}
                     </MenuGutter>
                   )}

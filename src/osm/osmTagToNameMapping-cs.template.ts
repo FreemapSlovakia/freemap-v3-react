@@ -371,6 +371,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     stadium: 'Budova stadionu',
   },
 
+  changing_table: {
+    yes: 'Přebalovací pult',
+    limited: 'Provizorní místo na přebalování',
+    no: 'Bez přebalovacího pultu',
+  },
   club: {
     '*': 'Klub',
     automobile: 'Automotoklub',
@@ -408,8 +413,28 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     rehabilitation: 'Rehabilitační centrum',
     speech_therapist: 'Logoped',
   },
+  fitness_station: {
+    air_walker: 'Air walker',
+    balance_beam: 'Kladina (cvičiště)',
+    box: 'Bedna na výskoky',
+    elliptical_trainer: 'Eliptický trenažér',
+    exercise_bike: 'Rotoped',
+    horizontal_bar: 'Hrazda (cvičiště)',
+    horizontal_ladder: 'Vodorovný žebřík',
+    hyperextension: 'Lavice na záklony trupu',
+    parallel_bars: 'Bradla',
+    'push-up': 'Hrazdy na kliky',
+    rings: 'Gymnastické kruhy',
+    rower: 'Veslovací trenažér',
+    sign: 'Tabule cvičiště',
+    'sit-up': 'Lavice na břišní svaly',
+    stairs: 'Cvičební schody',
+    wall_bars: 'Žebřiny',
+    yes: 'Prvek cvičiště',
+  },
   highway: {
     '*': 'Cesta {}',
+    bridleway: 'Jezdecká stezka',
     bus_stop: 'Autobusová zastávka',
     busway: 'Autobusový pruh',
     construction: 'Cesta ve výstavbě',
@@ -419,16 +444,20 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     elevator: 'Výtah',
     emergency_access_point: 'Záchranný bod',
     emergency_bay: 'Nouzové odstavné místo',
+    escape: 'Únikový pruh',
     footway: 'Chodník',
+    give_way: 'Dej přednost v jízdě',
+    hitchhiking: 'Místo pro stopování',
+    ladder: 'Žebřík',
     living_street: 'Rezidenční zóna',
     milestone: 'Kilometrovník',
+    mini_roundabout: 'Malá okružní křižovatka',
     motorway: 'Dálnice',
     motorway_junction: 'Dálniční sjezd',
     motorway_link: 'Napojení na dálnici',
-
+    passing_place: 'Výhybna',
     path: {
       '*': 'Pěšina',
-
       foot: {
         designated: {
           bicycle: {
@@ -437,14 +466,19 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         },
       },
     },
-
+    pedestrian: 'Pěší zóna',
+    piste: 'Lyžařská trať',
+    platform: 'Nástupiště',
     primary: 'Cesta první třídy',
     primary_link: 'Napojení na cestu první třídy',
+    priority: 'Značka přednosti v jízdě',
     proposed: 'Navrhovaná silnice',
+    raceway: 'Závodní dráha',
     residential: 'Ulice',
+    rest_area: 'Odpočívadlo',
+    road: 'Cesta neznámého typu',
     secondary: 'Cesta druhé třídy',
     secondary_link: 'Napojení na cestu druhé třídy',
-
     service: {
       '*': 'Servisní, příjezdová cesta',
       service: {
@@ -457,13 +491,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         parking_aisle: 'Cesta parkoviště',
       },
     },
-
     services: 'Dálniční odpočívadlo se službami',
     speed_camera: 'Rychlostní radar',
+    speed_display: 'Měřič rychlosti',
     steps: 'Schody',
+    stop: 'Stopka',
+    street_lamp: 'Pouliční lampa',
     tertiary: 'Cesta třetí třídy',
     tertiary_link: 'Napojení na cestu třetí třídy',
-
     toll_gantry: 'Mýtná brána',
     track: {
       '*': 'Lesní / polní cesta',
@@ -475,21 +510,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         grade5: 'Měkká lesní / polní cesta',
       },
     },
-
+    traffic_calming: 'Zpomalovací prvek',
+    traffic_island: 'Dopravní ostrůvek',
+    traffic_mirror: 'Dopravní zrcadlo',
+    traffic_sign: 'Dopravní značka',
     traffic_signals: 'Semafor',
     trailhead: 'Východisko turistické stezky',
     trunk: 'Silnice pro motorová vozidla',
     trunk_link: 'Napojení na cestu pro motorová vozidla',
+    turning_circle: 'Obratiště',
+    turning_loop: 'Obratištní smyčka',
     unclassified: 'Neklasifikovaná cesta',
-    pedestrian: 'Pěší zóna',
-    street_lamp: 'Pouliční lampa',
-    bridleway: 'Jezdecká stezka',
-    piste: 'Lyžařská trať',
-    platform: 'Nástupiště',
-    raceway: 'Závodní dráha',
-    road: 'Cesta neznámého typu',
     via_ferrata: 'Via ferrata',
-    rest_area: 'Odpočívadlo',
   },
 
   historic: {
@@ -553,44 +585,71 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     '*': '{}',
     allotments: 'Zahrádkářská oblast',
     animal_keeping: 'Chov zvířat',
+    apiary: 'Plocha včelnice',
     aquaculture: 'Akvakultura',
     basin: 'Záchytná nádrž',
     brownfield: 'Brownfield (zanedbané území)',
     cemetery: 'Hřbitov',
+    churchyard: 'Pozemek u kostela',
+    civic: 'Veřejný pozemek',
+    civic_admin: 'Administrativní pozemek',
     commercial: 'Komerční zóna',
     conservation: 'Chráněné území',
     construction: 'Staveniště',
+    culture: 'Kulturní pozemek',
+    depot: 'Depo',
     education: 'Školní zóna',
+    emergency: 'Pozemek záchranných složek',
+    fairground: 'Výstaviště',
     farm: 'Zemědělská půda',
     farmland: 'Pole',
     farmyard: 'Družstvo',
     flowerbed: 'Květinový záhon',
     forest: 'Les',
+    forestry: 'Lesnický pozemek',
     garages: 'Garáže',
+    garden: 'Zahradní plocha',
     grass: 'Tráva',
+    greenery: 'Zeleň',
     greenfield: 'Greenfield (nezastavěné území)',
     greenhouse_horticulture: 'Skleníkové hospodářství',
+    harbour: 'Přístavní plocha',
+    healthcare: 'Zdravotnická zóna',
+    highway: 'Plocha silnice',
+    houseboat: 'Kotviště hausbótů',
     industrial: 'Industriální zóna',
+    institutional: 'Institucionální pozemek',
     landfill: 'Skládka',
+    logging: 'Těžba dřeva',
     meadow: 'Louka',
     military: 'Vojenský újezd',
+    mine_spoils: 'Důlní halda',
     orchard: 'Sad',
+    paddock: 'Výběh pro zvířata',
+    peat_cutting: 'Těžba rašeliny',
+    pedestrian: 'Plocha pro pěší',
+    piste: 'Plocha sjezdovky',
     plant_nursery: 'Lesní školka',
     plantation: 'Plantáž',
     quarry: 'Lom',
+    railway: 'Plocha železnice',
     recreation_ground: 'Rekreační zóna',
     religious: 'Církevní pozemek',
     reservoir: 'Přehrada / vodní nádrž',
     residential: 'Rezidenční zóna',
     retail: 'Nákupní zóna',
     salt_pond: 'Solná pánev',
+    school: 'Areál školy',
+    shrubs: 'Křoviny',
     static_caravan: 'Mobilní domy',
-    vineyard: 'Vinice',
-    winter_sports: 'Zimní sporty',
-    pedestrian: 'Plocha pro pěší',
-    railway: 'Plocha železnice',
+    storage: 'Skladová plocha',
+    tourism: 'Turistický pozemek',
+    traffic_island: 'Plocha dopravního ostrůvku',
+    tree_pit: 'Jamka pro strom',
     village_green: 'Náves',
-    logging: 'Těžba dřeva',
+    vineyard: 'Vinice',
+    wasteland: 'Pustina',
+    winter_sports: 'Zimní sporty',
   },
 
   leisure: {
@@ -1018,23 +1077,75 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     yes: 'Místo',
   },
 
+  playground: {
+    '*': 'Herní prvek {}',
+    activitypanel: 'Herní panel',
+    aerialrotator: 'Závěsné točidlo',
+    agility_trail: 'Opičí dráha',
+    baby_swing: 'Dětská houpačka',
+    balancebeam: 'Kladina',
+    basketrotator: 'Otočný koš',
+    basketswing: 'Hnízdová houpačka',
+    bridge: 'Herní můstek',
+    climbing: 'Lezecký prvek',
+    climbing_pole: 'Šplhací tyč',
+    climbing_slope: 'Lezecký svah',
+    climbingframe: 'Prolézačka',
+    climbingwall: 'Lezecká stěna',
+    cushion: 'Skákací polštář',
+    exercise: 'Cvičební prvek',
+    hammock: 'Houpací síť',
+    hopscotch: 'Skákací panák',
+    horizontal_bar: 'Hrazda',
+    ladder: 'Herní žebřík',
+    platform: 'Herní plošina',
+    playhouse: 'Dětský domeček',
+    pump: 'Herní pumpa',
+    rope_traverse: 'Lanový přechod',
+    roundabout: 'Dětský kolotoč',
+    sandpit: 'Pískoviště',
+    seesaw: 'Houpačka váha',
+    sledding: 'Sáňkovací svah',
+    slide: 'Skluzavka',
+    spinner: 'Točidlo',
+    splash_pad: 'Vodní hrací plocha',
+    spring_board: 'Pružinová deska',
+    springy: 'Pružinová houpačka',
+    stepping_stone: 'Skákací kameny',
+    steps: 'Herní schůdky',
+    structure: 'Herní sestava',
+    swing: 'Houpačka',
+    teenshelter: 'Přístřešek pro mládež',
+    trampoline: 'Trampolína',
+    tunnel_tube: 'Herní tunel',
+    water: 'Vodní herní prvek',
+    water_channel: 'Herní vodní kanál',
+    wobble_bridge: 'Houpací můstek',
+    youth_bench: 'Lavička pro mládež',
+    zipwire: 'Dětská lanovka',
+  },
   power: {
     '*': '{}',
+    cable: 'Elektrický kabel',
+    cable_distribution: 'Kabelový rozvod',
+    cable_distribution_cabinet: 'Kabelová rozvodná skříň',
+    catenary_mast: 'Stožár trolejového vedení',
+    catenary_portal: 'Brána trolejového vedení',
+    circuit: 'Elektrický obvod',
+    compensator: 'Kompenzátor jalového výkonu',
+    connection: 'Spojení elektrického vedení',
+    converter: 'Měnič elektrického proudu',
     generator: {
       '*': 'Generátor',
-
       'generator:source': {
         biofuel: {
           '*': 'Generátor elektrické energie z biopaliva',
         },
-
         biogas: {
           '*': 'Generátor elektrické energie z bioplynu',
         },
-
         biomass: {
           '*': 'Generátor elektrické energie z biomasy',
-
           'generator:method': {
             anaerobic_digestion:
               'Generátor elektrické energie z anaerobního rozkladu biomasy',
@@ -1042,30 +1153,23 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
             gasification: 'Generátor elektrické energie ze zplyňování biomasy',
           },
         },
-
         coal: {
           '*': 'Generátor elektrické energie ze spalování uhlí',
         },
-
         diesel: {
           '*': 'Generátor elektrické energie ze spalování nafty',
         },
-
         gas: {
           '*': 'Generátor elektrické energie ze spalování plynu',
         },
-
         gasoline: {
           '*': 'Generátor elektrické energie ze spalování benzínu',
         },
-
         geothermal: {
           '*': 'Generátor elektrické energie z geotermální energie',
         },
-
         hydro: {
           '*': 'Generátor elektrické energie z vodní energie',
-
           'generator:method': {
             'run-of-the-river':
               'Generátor elektrické energie z průtokové vodní energie',
@@ -1075,23 +1179,18 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
               'Generátor elektrické energie z akumulované vodní energie',
           },
         },
-
         nuclear: {
           '*': 'Generátor elektrické energie z jaderné energie',
-
           'generator:method': {
             fission: 'Generátor elektrické energie ze štěpení jádra',
             fusion: 'Generátor elektrické energie z jaderné fúze',
           },
         },
-
         oil: {
           '*': 'Generátor elektrické energie ze spalování ropy',
         },
-
         solar: {
           '*': 'Generátor elektrické energie ze slunečního záření',
-
           'generator:method': {
             photovoltaic:
               'Generátor elektrické energie ze slunečního záření - fotovoltaický',
@@ -1099,141 +1198,125 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
               'Generátor elektrické energie ze slunečního záření - termální',
           },
         },
-
         tidal: {
           '*': 'Generátor elektrické energie z přílivové energie',
-
           'generator:method': {
             barrage: 'Generátor elektrické energie z přílivové hráze',
             stream: 'Generátor elektrické energie z přílivového proudu',
           },
         },
-
         waste: {
           '*': 'Generátor elektrické energie ze spalování odpadu',
-
           'generator:method': {
             combustion: 'Generátor elektrické energie ze spalování odpadu',
             gasification: 'Generátor elektrické energie ze zplyňování odpadu',
           },
         },
-
         wave: {
           '*': 'Generátor elektrické energie z energie mořských vln',
         },
-
         wind: {
           '*': 'Generátor elektrické energie z větrné energie',
         },
       },
     },
+    heliostat: 'Heliostat',
+    insulator: 'Izolátor',
+    inverter: 'Střídač',
     line: 'Elektrické vedení',
+    line_section: 'Úsek elektrického vedení',
+    minor_cable: 'Menší elektrický kabel',
     minor_line: 'Vedlejší elektrické vedení',
+    minor_underground_cable: 'Menší podzemní elektrický kabel',
     plant: {
       '*': 'Elektrárna',
-
       'plant:source': {
         biofuel: {
           '*': 'Elektrárna na biopalivo',
         },
-
         biogas: {
           '*': 'Bioplynová elektrárna',
         },
-
         biomass: {
           '*': 'Elektrárna na biomasu',
-
           'plant:method': {
             anaerobic_digestion: 'Elektrárna s anaerobním rozkladem biomasy',
             combustion: 'Elektrárna se spalováním biomasy',
             gasification: 'Elektrárna se zplyňováním biomasy',
           },
         },
-
         coal: {
           '*': 'Uhelná elektrárna',
         },
-
         diesel: {
           '*': 'Naftová elektrárna',
         },
-
         gas: {
           '*': 'Plynová elektrárna',
         },
-
         gasoline: {
           '*': 'Benzínová elektrárna',
         },
-
         geothermal: {
           '*': 'Geotermální elektrárna',
         },
-
         hydro: {
           '*': 'Vodní elektrárna',
-
           'plant:method': {
             'run-of-the-river': 'Průtoková vodní elektrárna',
             'water-pumped-storage': 'Přečerpávací vodní elektrárna',
             'water-storage': 'Přehradní vodní elektrárna',
           },
         },
-
         nuclear: {
           '*': 'Jaderná elektrárna',
-
           'plant:method': {
             fission: 'Elektrárna se štěpením jádra',
             fusion: 'Elektrárna s jadernou fúzí',
           },
         },
-
         oil: {
           '*': 'Elektrárna na ropu',
         },
-
         solar: {
           '*': 'Solární elektrárna',
-
           'plant:method': {
             photovoltaic: 'Fotovoltaická elektrárna',
             thermal: 'Solární termální elektrárna',
           },
         },
-
         tidal: {
           '*': 'Přílivová elektrárna',
-
           'plant:method': {
             barrage: 'Přílivová elektrárna s hrází',
             stream: 'Přílivová elektrárna z proudu',
           },
         },
-
         waste: {
           '*': 'Spalovna odpadu s výrobou elektřiny',
-
           'plant:method': {
             combustion: 'Elektrárna se spalováním odpadu',
             gasification: 'Elektrárna se zplyňováním odpadu',
           },
         },
-
         wave: {
           '*': 'Vlnová elektrárna',
         },
-
         wind: {
           '*': 'Větrná elektrárna',
         },
       },
     },
     pole: 'Elektrický sloup',
+    portal: 'Portál elektrického vedení',
+    roof_pole: 'Střešní elektrický sloup',
     substation: 'Elektrická distribuční stanice',
+    switch: 'Odpínač elektrického vedení',
+    switchgear: 'Rozváděč',
+    terminal: 'Koncovka elektrického vedení',
     tower: 'Stožár vysokého napětí',
     transformer: 'Transformátor',
+    transition: 'Přechod vedení do kabelu',
   },
 
   public_transport: {
@@ -1692,25 +1775,87 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       '*': 'Trasa',
       route: {
         '*': 'Trasa {}',
-        bicycle: 'Cyklostezka',
+        aerialway: 'Trasa lanovky',
+        bicycle: {
+          '*': 'Cyklostezka',
+          network: {
+            icn: 'Mezinárodní cyklotrasa',
+            lcn: 'Místní cyklotrasa',
+            ncn: 'Národní cyklotrasa',
+            rcn: 'Regionální cyklotrasa',
+          },
+        },
         bus: 'Trasa autobusu',
-        foot: 'Stezka pro pěší',
+        canoe: 'Vodácká trasa',
+        canyoning: 'Kaňoningová trasa',
+        detour: 'Objízdná trasa',
+        emergency_access: 'Záchranná přístupová trasa',
+        ferry: 'Trajektová trasa',
+        fitness_trail: 'Fitness stezka',
+        foot: {
+          '*': 'Stezka pro pěší',
+          network: {
+            iwn: 'Mezinárodní pěší trasa',
+            lwn: 'Místní pěší trasa',
+            nwn: 'Národní pěší trasa',
+            rwn: 'Regionální pěší trasa',
+          },
+          pilgrimage: {
+            '*': 'Poutní trasa',
+            no: '',
+          },
+        },
+        funicular: 'Trasa pozemní lanovky',
         hiking: {
           '*': 'Turistická stezka',
-
           network: {
             iwn: 'Mezinárodní turistická trasa',
             lwn: 'Místní turistická trasa',
             nwn: 'Národní turistická trasa',
             rwn: 'Regionální turistická trasa',
           },
+          pilgrimage: {
+            '*': 'Poutní trasa',
+            no: '',
+          },
         },
-        horse: 'Jezdecká trasa',
+        historic: 'Historická trasa',
+        historic_railway: 'Historická železniční trasa',
+        horse: {
+          '*': 'Jezdecká trasa',
+          network: {
+            lhn: 'Místní jezdecká trasa',
+            rhn: 'Regionální jezdecká trasa',
+          },
+        },
+        inline_skates: 'Trasa pro in-line brusle',
+        junction: 'Křižovatka',
+        light_rail: 'Trasa rychlodráhy',
+        motorboat: 'Trasa motorového člunu',
         mtb: 'Stezka pro horská kola',
+        nordic_walking: 'Trasa nordic walking',
+        pipeline: 'Trasa potrubí',
         piste: 'Sjezdovka',
+        portage: 'Trasa přenášení lodí',
+        power: 'Trasa elektrického vedení',
         railway: 'Železnice',
+        road: 'Silniční trasa',
+        running: 'Běžecká trasa',
+        share_taxi: 'Trasa sdíleného taxi',
         ski: 'Lyžařská stezka',
+        subway: 'Trasa metra',
+        tracks: 'Trasa kolejí',
+        train: 'Trasa vlaku',
         tram: 'Tramvajová dráha',
+        trolleybus: 'Trasa trolejbusu',
+        via_ferrata: 'Ferrata',
+        waterway: 'Vodní trasa',
+        worship: {
+          '*': 'Poutní trasa',
+          worship: {
+            stations_of_the_cross: 'Křížová cesta',
+          },
+        },
       },
     },
   },

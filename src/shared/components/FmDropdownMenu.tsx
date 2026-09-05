@@ -10,6 +10,13 @@ export type FmDropdownMenuProps = DropdownMenuProps & {
    * stepping back to the level below restores where it was left.
    */
   level?: string | number | null;
+  /**
+   * Starts the menu at the top again whenever this changes — for a menu whose
+   * items are replaced in place, which otherwise reopens showing where the
+   * previous list was left. It remounts the scroller, so the fresh one is at
+   * the top even while the menu is hidden, where `scrollTop` can't be written.
+   */
+  scrollResetKey?: string | number | null;
 };
 
 /**
@@ -28,6 +35,7 @@ export function FmDropdownMenu({
   className,
   popperConfig = fixedPopperConfig,
   level = null,
+  scrollResetKey,
   ...props
 }: FmDropdownMenuProps): ReactElement {
   const sc = useScrollClasses('vertical');
@@ -85,7 +93,11 @@ export function FmDropdownMenu({
         className,
       )}
     >
-      <div className="fm-menu-scroller" ref={refSetter}>
+      <div
+        className="fm-menu-scroller"
+        ref={refSetter}
+        key={`reset-${scrollResetKey}`}
+      >
         <div />
 
         {children}

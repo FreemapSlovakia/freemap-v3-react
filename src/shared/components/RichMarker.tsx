@@ -22,6 +22,7 @@ import {
   glyphInsetColor,
   POI_ARTWORK_INK,
 } from '../colors.js';
+import { HALO_OPACITY } from '../halo.js';
 
 // Fixed glyph box (in viewBox units) and font size, shared by all marker
 // shapes so icon/text size is independent of the shape.
@@ -341,6 +342,12 @@ export function MarkerIcon({
   label,
   markerType,
 }: MarkerIconProps): ReactElement {
+  // Split any alpha off the color: the solid RGB paints the shape, while the
+  // alpha is applied as a group `opacity` on the whole marker (shape + white
+  // inset + glyph) so the entire marker fades uniformly rather than only its
+  // background.
+  const { color: fillColor, opacity } = splitColorAlpha(color);
+
   // The shape's own outline, stroked under the marker so only the half outside
   // it shows — a ring that leaks neither inward nor into a blur. That half
   // falls past the viewBox, which an SVG root clips by default — hence
@@ -350,6 +357,10 @@ export function MarkerIcon({
         fill: 'none',
         stroke: halo,
         strokeWidth: HALO_STROKE,
+        // Divided out of the group `opacity` the ring is stroked inside, so it
+        // lands at HALO_OPACITY whatever the marker's own alpha — the line
+        // halos it matches take theirs from a pane, not from the feature.
+        strokeOpacity: Math.min(1, HALO_OPACITY / opacity),
         // Round, or the default miter shoots a spike out of the pin's tip —
         // which is the marker's own anchor.
         strokeLinejoin: 'round',
@@ -359,12 +370,6 @@ export function MarkerIcon({
   const haloStyle: CSSProperties | undefined = halo
     ? { overflow: 'visible' }
     : undefined;
-
-  // Split any alpha off the color: the solid RGB paints the shape, while the
-  // alpha is applied as a group `opacity` on the whole marker (shape + white
-  // inset + glyph) so the entire marker fades uniformly rather than only its
-  // background.
-  const { color: fillColor, opacity } = splitColorAlpha(color);
 
   const glyphFill = glyphColor ?? fillColor;
 

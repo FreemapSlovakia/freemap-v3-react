@@ -18,7 +18,22 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>entferntes Werbebanner</li>
         <li>
-          <HintTooltip hint="Hochauflösende detaillierte Schummerung der Slowakei und Tschechiens, höchste Zoomstufen der Outdoor-Karte, höchste Zoomstufen der Orthofotokarten der Slowakei und Tschechiens, verschiedene WMS-basierte Karten">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>höchste Zoomstufen der Outdoor-Karte</li>
+                <li>WMS-basierte Karten</li>
+                <li>
+                  höchste Zoomstufen der Orthofotokarten der Slowakei und
+                  Tschechiens
+                </li>
+                <li>
+                  hochauflösende detaillierte Schummerung der Slowakei und
+                  Tschechiens
+                </li>
+              </ul>
+            }
+          >
             Premium-Kartenebenen
           </HintTooltip>
         </li>
@@ -30,6 +45,8 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
             hochauflösende Höhendaten (viele europäische Länder)
           </HintTooltip>
         </li>
+        <li>Panorama in höherer Auflösung</li>
+        <li>Sichtbarkeitsanalyse in höherer Auflösung</li>
         <li>längerer Wetterradar-Verlauf und dessen Vorhersage</li>
         <li>
           Einfärben von Routen und Tracks (einige Modi sind nur mit Premium
@@ -68,6 +85,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Zum Aktivieren klicken.',
   higherPrecisionElevation:
     'Höhendaten mit höherer Genauigkeit mit Premium-Zugang verfügbar.',
+  higherDetail: 'Feinere Details mit Premium-Zugang verfügbar.',
   alreadyPremium: 'Du hast bereits Premium-Zugang.',
   alreadySubscribed: 'Du hast bereits ein aktives Abo.',
   premiumUser: 'Nutzer mit Premium-Zugang',

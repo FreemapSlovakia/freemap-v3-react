@@ -17,7 +17,22 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>rimozione del banner pubblicitario</li>
         <li>
-          <HintTooltip hint="ombreggiatura dettagliata ad alta risoluzione di Slovacchia e Cechia, livelli di zoom più alti della mappa Outdoor, livelli di zoom più alti delle mappe ortofoto di Slovacchia e Cechia, varie mappe basate su WMS">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>livelli di zoom più alti della mappa Outdoor</li>
+                <li>mappe basate su WMS</li>
+                <li>
+                  livelli di zoom più alti delle mappe ortofoto di Slovacchia e
+                  Cechia
+                </li>
+                <li>
+                  ombreggiatura dettagliata ad alta risoluzione di Slovacchia e
+                  Cechia
+                </li>
+              </ul>
+            }
+          >
             livelli mappa premium
           </HintTooltip>
         </li>
@@ -29,6 +44,8 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
             dati di elevazione ad alta risoluzione (molti paesi europei)
           </HintTooltip>
         </li>
+        <li>panorama a risoluzione più alta</li>
+        <li>analisi di visibilità a risoluzione più alta</li>
         <li>cronologia più lunga del radar meteo e la sua previsione</li>
         <li>
           colorazione di percorsi e tracce (alcune modalità sono solo premium)
@@ -65,6 +82,7 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Clicca per attivare.',
   higherPrecisionElevation:
     'Dati di quota a maggiore precisione disponibili con accesso premium.',
+  higherDetail: 'Dettaglio più fine disponibile con accesso premium.',
   alreadyPremium: 'Hai già accesso premium.',
   alreadySubscribed: 'Hai già un abbonamento attivo.',
   premiumUser: 'Utente con accesso premium',

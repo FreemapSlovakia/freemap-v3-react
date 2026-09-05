@@ -17,7 +17,21 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>odstránenie reklamného baneru</li>
         <li>
-          <HintTooltip hint="detailné tieňovanie reliéfu Slovenska a Česka vo vysokom rozlíšení, najvyššie úrovne priblíženia Outdoor mapy, najvyššie úrovne priblíženia ortofotomáp Slovenska a Česka, rôzne mapy založené na WMS">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>najvyššie úrovne priblíženia Outdoor mapy</li>
+                <li>
+                  najvyššie úrovne priblíženia ortofotomáp Slovenska a Česka
+                </li>
+                <li>
+                  detailné tieňovanie reliéfu Slovenska a Česka vo vysokom
+                  rozlíšení
+                </li>
+                <li>mapy založené na WMS</li>
+              </ul>
+            }
+          >
             prémiové mapové vrstvy
           </HintTooltip>
         </li>
@@ -29,6 +43,8 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
             výškové dáta vo vysokom rozlíšení (viaceré európske krajiny)
           </HintTooltip>
         </li>
+        <li>panoráma vo vyššom rozlíšení</li>
+        <li>analýza viditeľnosti vo vyššom rozlíšení</li>
         <li>dlhšia história meteoradaru a jeho predpoveď</li>
         <li>vyfarbenie trás a záznamov (niektoré režimy sú len prémiové)</li>
       </ul>
@@ -66,6 +82,7 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Kliknutím aktivujete.',
   higherPrecisionElevation:
     'Presnejšie výškové dáta dostupné s prémiovým prístupom.',
+  higherDetail: 'Jemnejšie detaily dostupné s prémiovým prístupom.',
   alreadyPremium: 'Už máte prémiový prístup.',
   alreadySubscribed: 'Už máte aktívne predplatné.',
   premiumUser: 'Používateľ s prémiovým prístupom',

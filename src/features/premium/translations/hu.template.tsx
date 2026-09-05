@@ -17,7 +17,22 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>reklámszalag eltávolítása</li>
         <li>
-          <HintTooltip hint="Szlovákia és Csehország nagy felbontású részletes domborzatárnyékolása, az Outdoor Map túratérkép legnagyobb nagyítási szintjei, Szlovákia és Csehország ortofotóinak legnagyobb nagyítási szintjei, különféle WMS-alapú térképek">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>az Outdoor Map túratérkép legnagyobb nagyítási szintjei</li>
+                <li>WMS-alapú térképek</li>
+                <li>
+                  Szlovákia és Csehország ortofotóinak legnagyobb nagyítási
+                  szintjei
+                </li>
+                <li>
+                  Szlovákia és Csehország nagy felbontású részletes
+                  domborzatárnyékolása
+                </li>
+              </ul>
+            }
+          >
             prémium térképrétegek
           </HintTooltip>
         </li>
@@ -29,6 +44,8 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
             nagy felbontású magassági adatok (számos európai ország)
           </HintTooltip>
         </li>
+        <li>nagyobb felbontású panoráma</li>
+        <li>nagyobb felbontású láthatósági elemzés</li>
         <li>hosszabb csapadékradar-előzmény és annak előrejelzése</li>
         <li>
           útvonalak és nyomvonalak színezése (egyes módok csak prémiummal
@@ -66,6 +83,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Kattintson az aktiváláshoz.',
   higherPrecisionElevation:
     'Nagyobb pontosságú magassági adatok prémium hozzáféréssel érhetők el.',
+  higherDetail: 'Finomabb részletesség prémium hozzáféréssel érhető el.',
   alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
   alreadySubscribed: 'Már van aktív előfizetésed.',
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',

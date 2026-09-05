@@ -76,8 +76,6 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     standard: 'Standardna',
     detailed: 'Podrobna / počasna',
     finest: 'Najfinejša / najpočasnejša',
-    premiumHint:
-      'Finejša panorama se izriše v do šestkrat večji ločljivosti in z devetkratnim vzorčenjem, tako da so grebeni videti takšni, kakršni v resnici so, in ne kot stopnice. Na strežniku, ki izrisuje eno panoramo naenkrat, vsaka stopnja stane sorazmerno več, zato finejše sodijo k premiju.',
   },
   tilt: {
     label: 'Navpični obseg',

@@ -13,7 +13,12 @@ import { colorizers, type HotlinePalette } from '@shared/colorizers/index.js';
 import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
-import { HALO_COLOR, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
+import {
+  HALO_COLOR,
+  HALO_PANE,
+  HALO_WIDTH,
+  SELECTION_COLOR,
+} from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -34,8 +39,6 @@ import {
 import { TrackingPoint, tooltipText } from './TrackingPoint.js';
 
 const POINTS_PANE = 'fm-tracking-points';
-
-const HIGHLIGHT_PANE = 'fm-tracking-highlight';
 
 // Whole objects, so a re-render hands Leaflet the same options back instead of
 // restyling every path.
@@ -183,11 +186,6 @@ export function TrackingResult(): ReactElement {
 
   return (
     <>
-      {/* Below the lines (overlayPane, zIndex 400), so a device's halo — white
-          while its track is merely colorized, blue while it is selected —
-          shows as an outline around the line whatever that is colored. */}
-      <Pane name={HIGHLIGHT_PANE} style={{ zIndex: 398 }} />
-
       {/* The points and the line's hit area, above the colorize canvas (default
           overlayPane, zIndex 400) — which would otherwise cover the points and
           take every pointer event meant for them. */}
@@ -250,7 +248,7 @@ export function TrackingResult(): ReactElement {
               segments.map((segment, i) => (
                 <Polyline
                   key={`halo-${i}`}
-                  pane={HIGHLIGHT_PANE}
+                  pane={HALO_PANE}
                   positions={toLatLngArr(segment)}
                   weight={width + HALO_WIDTH}
                   pathOptions={

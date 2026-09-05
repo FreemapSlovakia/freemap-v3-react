@@ -75,8 +75,6 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     standard: 'Standardowa',
     detailed: 'Szczegółowa / wolna',
     finest: 'Najdokładniejsza / najwolniejsza',
-    premiumHint:
-      'Dokładniejsza panorama renderowana jest w rozdzielczości do sześciu razy większej i z dziewięciokrotnym próbkowaniem, dzięki czemu granie wyglądają tak, jak wyglądają naprawdę, a nie jak schodki. Na serwerze renderującym jedną panoramę naraz każdy stopień kosztuje proporcjonalnie więcej, dlatego te dokładniejsze należą do premium.',
   },
   tilt: {
     label: 'Zakres pionowy',

@@ -17,7 +17,21 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <ul>
         <li>usunięcie banera reklamowego</li>
         <li>
-          <HintTooltip hint="szczegółowe cieniowanie Słowacji i Czech w wysokiej rozdzielczości, najwyższe poziomy powiększenia mapy Outdoor, najwyższe poziomy powiększenia map ortofoto Słowacji i Czech, różne mapy oparte na WMS">
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>najwyższe poziomy powiększenia mapy Outdoor</li>
+                <li>mapy oparte na WMS</li>
+                <li>
+                  najwyższe poziomy powiększenia map ortofoto Słowacji i Czech
+                </li>
+                <li>
+                  szczegółowe cieniowanie Słowacji i Czech w wysokiej
+                  rozdzielczości
+                </li>
+              </ul>
+            }
+          >
             warstwy map premium
           </HintTooltip>
         </li>
@@ -30,6 +44,8 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
             europejskich)
           </HintTooltip>
         </li>
+        <li>panorama w wyższej rozdzielczości</li>
+        <li>analiza widoczności w wyższej rozdzielczości</li>
         <li>dłuższa historia radaru opadów i jego prognoza</li>
         <li>
           kolorowanie tras i śladów (niektóre tryby są tylko w wersji premium)
@@ -66,6 +82,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Kliknij, aby aktywować.',
   higherPrecisionElevation:
     'Dokładniejsze dane wysokości dostępne z dostępem premium.',
+  higherDetail: 'Dokładniejsze szczegóły dostępne z dostępem premium.',
   alreadyPremium: 'Masz już dostęp premium.',
   alreadySubscribed: 'Masz już aktywną subskrypcję.',
   premiumUser: 'Użytkownik z dostępem premium',

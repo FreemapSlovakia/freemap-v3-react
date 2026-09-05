@@ -78,8 +78,6 @@ const en: PanoramaMessages = {
     standard: 'Standard',
     detailed: 'Detailed / slow',
     finest: 'Finest / slowest',
-    premiumHint:
-      'A finer panorama is rendered at up to six times the resolution and nine times the sampling, which shows the ridges as they really are instead of as steps. Each tier costs proportionally more on a server that renders one panorama at a time, so the finer ones belong to premium.',
   },
   tilt: {
     label: 'Vertical view',

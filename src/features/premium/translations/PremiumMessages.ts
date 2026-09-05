@@ -20,6 +20,8 @@ export type PremiumMessages = {
   noPremium: string;
   clickToActivate: string;
   higherPrecisionElevation: string;
+  /** Why the finer quality tiers of a render are premium's. */
+  higherDetail: string;
   alreadyPremium: string;
   alreadySubscribed: string;
   premiumUser: string;

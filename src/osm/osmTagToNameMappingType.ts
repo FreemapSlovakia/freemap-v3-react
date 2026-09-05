@@ -289,6 +289,11 @@ export type OsmTagToNameMapping = {
   'abandoned:building': {
     '*': string;
   };
+  changing_table: {
+    yes: string;
+    limited: string;
+    no: string;
+  };
   club: {
     '*': string;
     automobile: string;
@@ -608,6 +613,25 @@ export type OsmTagToNameMapping = {
     private: string;
     designated: string;
   };
+  fitness_station: {
+    air_walker: string;
+    balance_beam: string;
+    box: string;
+    elliptical_trainer: string;
+    exercise_bike: string;
+    horizontal_bar: string;
+    horizontal_ladder: string;
+    hyperextension: string;
+    parallel_bars: string;
+    'push-up': string;
+    rings: string;
+    rower: string;
+    sign: string;
+    'sit-up': string;
+    stairs: string;
+    wall_bars: string;
+    yes: string;
+  };
   highway: {
     '*': string;
     bridleway: string;
@@ -620,12 +644,18 @@ export type OsmTagToNameMapping = {
     elevator: string;
     emergency_access_point: string;
     emergency_bay: string;
+    escape: string;
     footway: string;
+    give_way: string;
+    hitchhiking: string;
+    ladder: string;
     living_street: string;
     milestone: string;
+    mini_roundabout: string;
     motorway: string;
     motorway_junction: string;
     motorway_link: string;
+    passing_place: string;
     path: {
       '*': string;
       foot: {
@@ -641,6 +671,7 @@ export type OsmTagToNameMapping = {
     platform: string;
     primary: string;
     primary_link: string;
+    priority: string;
     proposed: string;
     raceway: string;
     residential: string;
@@ -662,7 +693,9 @@ export type OsmTagToNameMapping = {
     };
     services: string;
     speed_camera: string;
+    speed_display: string;
     steps: string;
+    stop: string;
     street_lamp: string;
     tertiary: string;
     tertiary_link: string;
@@ -677,10 +710,16 @@ export type OsmTagToNameMapping = {
         grade5: string;
       };
     };
+    traffic_calming: string;
+    traffic_island: string;
+    traffic_mirror: string;
+    traffic_sign: string;
     traffic_signals: string;
     trailhead: string;
     trunk: string;
     trunk_link: string;
+    turning_circle: string;
+    turning_loop: string;
     unclassified: string;
     via_ferrata: string;
   };
@@ -735,30 +774,50 @@ export type OsmTagToNameMapping = {
     '*': string;
     allotments: string;
     animal_keeping: string;
+    apiary: string;
     aquaculture: string;
     basin: string;
     brownfield: string;
     cemetery: string;
+    churchyard: string;
+    civic: string;
+    civic_admin: string;
     commercial: string;
     conservation: string;
     construction: string;
+    culture: string;
+    depot: string;
     education: string;
+    emergency: string;
+    fairground: string;
     farm: string;
     farmland: string;
     farmyard: string;
     flowerbed: string;
     forest: string;
+    forestry: string;
     garages: string;
+    garden: string;
     grass: string;
+    greenery: string;
     greenfield: string;
     greenhouse_horticulture: string;
+    harbour: string;
+    healthcare: string;
+    highway: string;
+    houseboat: string;
     industrial: string;
+    institutional: string;
     landfill: string;
     logging: string;
     meadow: string;
     military: string;
+    mine_spoils: string;
     orchard: string;
+    paddock: string;
+    peat_cutting: string;
     pedestrian: string;
+    piste: string;
     plant_nursery: string;
     plantation: string;
     quarry: string;
@@ -769,9 +828,16 @@ export type OsmTagToNameMapping = {
     residential: string;
     retail: string;
     salt_pond: string;
+    school: string;
+    shrubs: string;
     static_caravan: string;
-    vineyard: string;
+    storage: string;
+    tourism: string;
+    traffic_island: string;
+    tree_pit: string;
     village_green: string;
+    vineyard: string;
+    wasteland: string;
     winter_sports: string;
   };
   leisure: {
@@ -1154,8 +1220,64 @@ export type OsmTagToNameMapping = {
     postcode: string;
     yes: string;
   };
+  playground: {
+    '*': string;
+    activitypanel: string;
+    aerialrotator: string;
+    agility_trail: string;
+    baby_swing: string;
+    balancebeam: string;
+    basketrotator: string;
+    basketswing: string;
+    bridge: string;
+    climbing: string;
+    climbing_pole: string;
+    climbing_slope: string;
+    climbingframe: string;
+    climbingwall: string;
+    cushion: string;
+    exercise: string;
+    hammock: string;
+    hopscotch: string;
+    horizontal_bar: string;
+    ladder: string;
+    platform: string;
+    playhouse: string;
+    pump: string;
+    rope_traverse: string;
+    roundabout: string;
+    sandpit: string;
+    seesaw: string;
+    sledding: string;
+    slide: string;
+    spinner: string;
+    splash_pad: string;
+    spring_board: string;
+    springy: string;
+    stepping_stone: string;
+    steps: string;
+    structure: string;
+    swing: string;
+    teenshelter: string;
+    trampoline: string;
+    tunnel_tube: string;
+    water: string;
+    water_channel: string;
+    wobble_bridge: string;
+    youth_bench: string;
+    zipwire: string;
+  };
   power: {
     '*': string;
+    cable: string;
+    cable_distribution: string;
+    cable_distribution_cabinet: string;
+    catenary_mast: string;
+    catenary_portal: string;
+    circuit: string;
+    compensator: string;
+    connection: string;
+    converter: string;
     generator: {
       '*': string;
       'generator:source': {
@@ -1235,8 +1357,14 @@ export type OsmTagToNameMapping = {
         };
       };
     };
+    heliostat: string;
+    insulator: string;
+    inverter: string;
     line: string;
+    line_section: string;
+    minor_cable: string;
     minor_line: string;
+    minor_underground_cable: string;
     plant: {
       '*': string;
       'plant:source': {
@@ -1317,9 +1445,15 @@ export type OsmTagToNameMapping = {
       };
     };
     pole: string;
+    portal: string;
+    roof_pole: string;
     substation: string;
+    switch: string;
+    switchgear: string;
+    terminal: string;
     tower: string;
     transformer: string;
+    transition: string;
   };
   public_transport: {
     platform: string;
@@ -1768,9 +1902,37 @@ export type OsmTagToNameMapping = {
       '*': string;
       route: {
         '*': string;
-        bicycle: string;
+        aerialway: string;
+        bicycle: {
+          '*': string;
+          network: {
+            lcn: string;
+            rcn: string;
+            ncn: string;
+            icn: string;
+          };
+        };
         bus: string;
-        foot: string;
+        canoe: string;
+        canyoning: string;
+        detour: string;
+        emergency_access: string;
+        ferry: string;
+        fitness_trail: string;
+        foot: {
+          '*': string;
+          network: {
+            lwn: string;
+            rwn: string;
+            nwn: string;
+            iwn: string;
+          };
+          pilgrimage: {
+            '*': string;
+            no: string;
+          };
+        };
+        funicular: string;
         hiking: {
           '*': string;
           network: {
@@ -1779,13 +1941,48 @@ export type OsmTagToNameMapping = {
             nwn: string;
             iwn: string;
           };
+          pilgrimage: {
+            '*': string;
+            no: string;
+          };
         };
-        horse: string;
+        historic: string;
+        historic_railway: string;
+        horse: {
+          '*': string;
+          network: {
+            lhn: string;
+            rhn: string;
+          };
+        };
+        inline_skates: string;
+        junction: string;
+        light_rail: string;
+        motorboat: string;
         mtb: string;
+        nordic_walking: string;
+        pipeline: string;
         piste: string;
+        portage: string;
+        power: string;
         railway: string;
+        road: string;
+        running: string;
+        share_taxi: string;
         ski: string;
+        subway: string;
+        tracks: string;
+        train: string;
         tram: string;
+        trolleybus: string;
+        via_ferrata: string;
+        waterway: string;
+        worship: {
+          '*': string;
+          worship: {
+            stations_of_the_cross: string;
+          };
+        };
       };
     };
   };
