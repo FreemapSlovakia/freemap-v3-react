@@ -65,12 +65,12 @@ export const STEPS: number[] = Array.from(
 );
 
 /** Position zero is off the ladder, and means no simplification. */
-function positionToMeters(position: number): number {
+export function positionToMeters(position: number): number {
   return position <= 0 ? 0 : (STEPS[position - 1] ?? MAX_TOLERANCE);
 }
 
 /** The first rung at least this coarse — never one that thins less than asked. */
-function metersToPosition(meters: number): number {
+export function metersToPosition(meters: number): number {
   if (meters <= 0) {
     return 0;
   }
@@ -80,17 +80,21 @@ function metersToPosition(meters: number): number {
   return at === -1 ? STEPS.length : at + 1;
 }
 
-// The dialog's value is the slider position, not the factor it stands for:
-// several positions round to the same factor at the fine end, and driving the
-// slider off the factor would snap the thumb back out of them.
-function SimplifyBody({
+/**
+ * The slider and its readout, for a dialog that asks more than this one — the
+ * value is the slider position, not the factor it stands for: several positions
+ * round to the same factor at the fine end, and driving the slider off the
+ * factor would snap the thumb back out of them.
+ */
+export function SimplifyFields({
   lines,
   rings,
-  preamble,
   value,
   setValue,
-}: ModalBodyProps<number> &
-  Pick<SimplifyRequest, 'lines' | 'rings' | 'preamble'>) {
+}: Pick<SimplifyRequest, 'lines' | 'rings'> & {
+  value: number;
+  setValue: (value: number) => void;
+}) {
   const m = useMessages();
 
   const nf = useNumberFormat({ maximumFractionDigits: 0 });
@@ -117,8 +121,6 @@ function SimplifyBody({
 
   return (
     <>
-      {preamble !== undefined && <p>{preamble}</p>}
-
       <Form.Label htmlFor="simplify-deviation">
         {m?.general.simplify.deviation}
       </Form.Label>
@@ -143,6 +145,28 @@ function SimplifyBody({
           })}
         </span>
       </div>
+    </>
+  );
+}
+
+function SimplifyBody({
+  lines,
+  rings,
+  preamble,
+  value,
+  setValue,
+}: ModalBodyProps<number> &
+  Pick<SimplifyRequest, 'lines' | 'rings' | 'preamble'>) {
+  return (
+    <>
+      {preamble !== undefined && <p>{preamble}</p>}
+
+      <SimplifyFields
+        lines={lines}
+        rings={rings}
+        value={value}
+        setValue={setValue}
+      />
     </>
   );
 }

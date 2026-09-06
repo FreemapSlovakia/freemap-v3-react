@@ -10,7 +10,6 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Trace ${n}`,
   convertLossWarning:
     'La conversion en dessin remplace la trace et supprime ses données enregistrées (altitude, fréquence cardiaque, vitesse, temps).',
-  convertAllToDrawing: 'Tout convertir en dessin',
   simplifyAll: 'Tout simplifier',
   moreInfo: 'Plus d’infos',
   saveAsMap: 'Enregistrer dans mes cartes',
@@ -71,6 +70,7 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     mergeTitle: 'Données déjà chargées',
     mergeMessage:
       'Certaines géodonnées sont déjà affichées. Ajouter les données importées ou les remplacer ?',
+    existingData: 'Données existantes',
     append: 'Ajouter',
     replace: 'Remplacer',
   },

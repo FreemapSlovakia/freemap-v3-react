@@ -10,7 +10,6 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Sled ${n}`,
   convertLossWarning:
     'Pretvorba v risbo nadomesti sled in zavrže njene zabeležene podatke (nadmorska višina, srčni utrip, hitrost, čas).',
-  convertAllToDrawing: 'Pretvori vse v risbo',
   simplifyAll: 'Poenostavi vse',
   moreInfo: 'Več informacij',
   saveAsMap: 'Shrani med moje zemljevide',
@@ -71,6 +70,7 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     mergeTitle: 'Podatki so že naloženi',
     mergeMessage:
       'Nekateri geopodatki so že prikazani. Ali jim uvožene podatke pripnete ali jih nadomestite?',
+    existingData: 'Obstoječi podatki',
     append: 'Pripni',
     replace: 'Nadomesti',
   },

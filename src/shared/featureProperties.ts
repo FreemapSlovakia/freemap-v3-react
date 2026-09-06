@@ -1,4 +1,8 @@
+import { PROPERTY_PREFIX } from '@features/drawing/interpolateLabel.js';
 import type { DrawingProps } from '@features/drawing/model/actions/drawingPointActions.js';
+import { isClosedGeometry } from '@shared/geoutils.js';
+import { lineStyleFromProperties } from '@shared/styleFromProperties.js';
+import type { Feature } from 'geojson';
 
 /**
  * Property keys the editor owns rather than shows: the label it edits, the
@@ -101,6 +105,75 @@ export function featureDataProps(
   properties: Record<string, unknown> | null | undefined,
 ): DrawingProps {
   return { ...plainData(properties), ...ownTable(properties) };
+}
+
+/** The label as the author wrote it, template and all, where the file carries one. */
+export function ownLabel(
+  properties: Record<string, unknown> | null | undefined,
+): string | undefined {
+  const label = properties?.['freemap:label'];
+
+  return typeof label === 'string' ? label : undefined;
+}
+
+/**
+ * The label a converted feature gets when nothing was asked for: the one the
+ * file carries, else a reference to its name — but not for a plain line, whose
+ * name is a street name. `labelLines` is the loaded-data conversion, which
+ * labels those too. The dialog seeds its field from this and the conversion
+ * falls back to it, so what was previewed is what is drawn.
+ */
+export function defaultLabel(
+  feature: Feature,
+  labelLines: boolean,
+): string | undefined {
+  const own = ownLabel(feature.properties);
+
+  if (own) {
+    return own;
+  }
+
+  const name = feature.properties?.['name'];
+
+  if (typeof name !== 'string' || !name) {
+    return undefined;
+  }
+
+  const { geometry } = feature;
+
+  const line =
+    geometry?.type === 'LineString' || geometry?.type === 'MultiLineString';
+
+  const polygon = line
+    ? lineStyleFromProperties(feature.properties, isClosedGeometry(geometry))
+        .type === 'polygon'
+    : geometry?.type === 'Polygon' || geometry?.type === 'MultiPolygon';
+
+  return !geometry || (line && !polygon && !labelLines)
+    ? undefined
+    : `{${PROPERTY_PREFIX}name}`;
+}
+
+/**
+ * The properties a conversion offers to carry: our own table where the file
+ * wrote one, else the feature's data together with its name — a datum to carry
+ * here, rather than the label field it is in the editor.
+ */
+export function convertibleProps(
+  properties: Record<string, unknown> | null | undefined,
+): DrawingProps {
+  const own = ownTable(properties);
+
+  if (own) {
+    return own;
+  }
+
+  const name = properties?.['name'];
+
+  return {
+    ...(typeof name === 'string' && name ? { name } : {}),
+    ...plainData(properties),
+  };
 }
 
 /**

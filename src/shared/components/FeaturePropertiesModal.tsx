@@ -20,6 +20,7 @@ import { IconPicker } from '@shared/components/IconPicker.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
+import { useInsertAtCaret } from '@shared/hooks/useInsertAtCaret.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import {
   type ChangeEvent,
@@ -59,7 +60,11 @@ export type FeatureProperties = {
  * Absent where a label is plain text, which also hides the rows' tag button.
  */
 type Placeholders = {
-  hint: (type: DrawingLineType) => ReactNode;
+  /** `insert` writes an expression into the label, as the rows' buttons do. */
+  hint: (
+    type: DrawingLineType,
+    insert: (expression: string) => void,
+  ) => ReactNode;
   token: (key: string) => string;
 };
 
@@ -117,36 +122,10 @@ export function FeaturePropertiesModal({
   // The label field, so a property can be written in at the cursor.
   const labelRef = useRef<HTMLTextAreaElement>(null);
 
+  const insertExpression = useInsertAtCaret(labelRef, setEditedLabel);
+
   const handleInsertKey = (key: string) => {
-    const el = labelRef.current;
-
-    const token = placeholders?.token(key) ?? '';
-
-    // A textarea reports a selection of 0..0 whether the caret is genuinely at
-    // the start or has never been in the field at all, so being focused is what
-    // tells a caret to write at from no caret to append after.
-    const caret =
-      el && document.activeElement === el
-        ? { at: el.selectionStart, end: el.selectionEnd }
-        : undefined;
-
-    setEditedLabel((text) => {
-      const { at, end } = caret ?? { at: text.length, end: text.length };
-
-      return text.slice(0, at) + token + text.slice(end);
-    });
-
-    // The caret follows what was written, so pressing several in a row reads in
-    // the order they were pressed.
-    if (el) {
-      const at = (caret?.at ?? el.value.length) + token.length;
-
-      requestAnimationFrame(() => {
-        el.focus();
-
-        el.setSelectionRange(at, at);
-      });
-    }
+    insertExpression(placeholders?.token(key) ?? '');
   };
 
   const dispatch = useDispatch();
@@ -226,7 +205,9 @@ export function FeaturePropertiesModal({
             />
 
             {placeholders && (
-              <Form.Text muted>{placeholders.hint(editedType)}</Form.Text>
+              <Form.Text muted>
+                {placeholders.hint(editedType, insertExpression)}
+              </Form.Text>
             )}
           </Form.Group>
 

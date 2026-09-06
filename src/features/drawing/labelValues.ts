@@ -55,7 +55,10 @@ function lazy(values: LabelValues, key: string, get: () => string): void {
   Object.defineProperty(values, key, { get, enumerable: true });
 }
 
-function withProps(props: Record<string, string> | undefined): LabelValues {
+/** A feature's own properties, under the `p:` namespace a label reaches them by. */
+export function withProps(
+  props: Record<string, string> | undefined,
+): LabelValues {
   return Object.fromEntries(
     Object.entries(props ?? {}).map(([key, value]) => [
       PROPERTY_PREFIX + key,

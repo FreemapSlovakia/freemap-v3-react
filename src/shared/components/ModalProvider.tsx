@@ -17,7 +17,8 @@ export type ModalResult = 'confirm' | 'extra' | 'cancel';
 
 export interface ModalBodyProps<T> {
   value: T;
-  setValue: (value: T) => void;
+  /** Takes an updater too, for a body settling something asynchronously. */
+  setValue: (value: T | ((previous: T) => T)) => void;
   /** Answers as the confirm button does — what a field submitting on Enter calls. */
   submit: () => void;
 }
@@ -40,6 +41,8 @@ export type ModalOptions<T = void> = {
   cancelLabel?: ReactNode;
   /** Bootstrap variant for the confirm button; defaults to `primary`. */
   confirmStyle?: string;
+  /** Whether the value as it stands cannot be answered with yet. */
+  confirmDisabled?: (value: T) => boolean;
   /**
    * Optional third button shown between confirm and cancel. When set, the
    * dialog can resolve to `'extra'` (see {@link useConfirmChoice}); plain
@@ -95,6 +98,10 @@ export function openModal<T>(
 }
 
 /**
+ * Note for a body that sets its value from a promise: this is the provider's one
+ * setter, and it goes on working after the body is gone. Such a body has to drop
+ * a continuation that outlives it, or it writes into the next dialog's value.
+ *
  * Returns an imperative dialog opener. Because the dialog blocks interaction
  * while open, no global (redux) state is needed.
  *
@@ -186,13 +193,31 @@ export function ModalProvider({
   // one it set, not the one this render closed over.
   const valueRef = useRef<unknown>(undefined);
 
-  const updateValue = useCallback((next: unknown) => {
-    valueRef.current = next;
+  // Read by `close`, which runs from handlers that closed over an older render.
+  const optionsRef = useRef<ModalOptions<unknown> | null>(null);
 
-    setValue(next);
+  const updateValue = useCallback((next: unknown) => {
+    // Resolved against the ref, not inside the updater: the ref is what `close`
+    // answers with, and a body may set a value and submit in one handler.
+    const resolved =
+      typeof next === 'function'
+        ? (next as (previous: unknown) => unknown)(valueRef.current)
+        : next;
+
+    valueRef.current = resolved;
+
+    setValue(resolved);
   }, []);
 
   const close = useCallback((result: ModalResult) => {
+    // Not on the button alone: a body wiring Enter to `submit` bypasses that.
+    if (
+      result === 'confirm' &&
+      optionsRef.current?.confirmDisabled?.(valueRef.current)
+    ) {
+      return;
+    }
+
     resolveRef.current?.({ result, value: valueRef.current });
 
     resolveRef.current = null;
@@ -210,6 +235,8 @@ export function ModalProvider({
         resolveRef.current = resolve;
 
         valueRef.current = options.initialValue;
+
+        optionsRef.current = options;
 
         setOptions(options);
 
@@ -322,6 +349,7 @@ export function ModalProvider({
         <Modal.Footer>
           <Button
             variant={options.confirmStyle ?? 'primary'}
+            disabled={options.confirmDisabled?.(value)}
             onClick={() => close('confirm')}
           >
             <FaCheck /> {options.confirmLabel ?? m?.general.ok}

@@ -42,7 +42,6 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Traccia ${n}`,
   convertLossWarning:
     'La conversione in disegno sostituisce la traccia e ne scarta i dati registrati (quota, frequenza cardiaca, velocità, tempo).',
-  convertAllToDrawing: 'Converti tutto in disegno',
   simplifyAll: 'Semplifica tutto',
   moreInfo: 'Maggiori info',
   saveAsMap: 'Salva nelle mie mappe',
@@ -70,6 +69,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     mergeTitle: 'Dati già caricati',
     mergeMessage:
       'Alcuni geodati sono già visualizzati. Aggiungere i dati importati o sostituirli?',
+    existingData: 'Dati esistenti',
     append: 'Aggiungi',
     replace: 'Sostituisci',
   },

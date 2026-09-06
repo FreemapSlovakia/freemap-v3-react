@@ -1,89 +1,104 @@
+import type { Feature, Geometry } from 'geojson';
 import { describe, expect, it } from 'vitest';
-import {
-  featureDataProps,
-  mergeFeatureDataProps,
-} from './featureProperties.js';
+import { defaultLabel } from './featureProperties.js';
 
-const PROPERTIES = {
-  name: 'Dubník',
-  ele: 504,
-  description: 'a hill',
-  'freemap:color': '#ff0000',
-  stroke: '#ff0000',
-  'fm:kind': 'waypoint',
-  coordinateProperties: { times: ['2026-01-01T00:00:00Z'] },
-};
+const feature = (
+  geometry: Geometry | null,
+  properties: Record<string, unknown> = {},
+): Feature => ({ type: 'Feature', geometry, properties }) as unknown as Feature;
 
-describe('featureDataProps', () => {
-  it('offers the feature data as text, leaving the label and the style out', () => {
-    expect(featureDataProps(PROPERTIES)).toEqual({
-      ele: '504',
-      description: 'a hill',
-    });
-  });
-});
+const point = feature({ type: 'Point', coordinates: [0, 0] });
 
-describe('mergeFeatureDataProps', () => {
-  it('keeps the value a row reads the same as, and everything it never showed', () => {
-    const merged = mergeFeatureDataProps(PROPERTIES, {
-      ele: '504',
-      description: 'a big hill',
-    });
+const line = (closed: boolean, properties: Record<string, unknown> = {}) =>
+  feature(
+    {
+      type: 'LineString',
+      coordinates: closed
+        ? [
+            [0, 0],
+            [1, 0],
+            [1, 1],
+            [0, 0],
+          ]
+        : [
+            [0, 0],
+            [1, 1],
+          ],
+    },
+    properties,
+  );
 
-    expect(merged['ele']).toBe(504);
-
-    expect(merged['description']).toBe('a big hill');
-
-    expect(merged['name']).toBe('Dubník');
-
-    expect(merged['freemap:color']).toBe('#ff0000');
-
-    expect(merged['coordinateProperties']).toBe(
-      PROPERTIES.coordinateProperties,
-    );
+describe('the label a converted feature gets unasked', () => {
+  it('references a point’s name rather than copying it', () => {
+    expect(defaultLabel({ ...point, properties: { name: 'Spring' } }, false)) //
+      .toBe('{p:name}');
   });
 
-  it('drops a row that is gone', () => {
-    expect('description' in mergeFeatureDataProps(PROPERTIES, {})).toBe(false);
-  });
-});
-
-// What a file of ours brings: the table stated twice, and `freemap:props` is
-// the copy the drawing conversion and both exports read.
-const OWN = {
-  name: 'Dubník 504',
-  'freemap:label': '{p:name} {p:ele}',
-  'freemap:props': { name: 'Dubník', ele: '504' },
-  ele: '504',
-};
-
-describe('a table the feature states twice', () => {
-  it('is shown, rather than the rows being empty', () => {
-    expect(featureDataProps(OWN)).toEqual({ name: 'Dubník', ele: '504' });
-  });
-
-  it('is kept in step by an edit, so no reader answers with the old one', () => {
-    const merged = mergeFeatureDataProps(OWN, { name: 'Dubník', ele: '505' });
-
-    expect(merged['freemap:props']).toEqual({ name: 'Dubník', ele: '505' });
-
-    expect(merged['ele']).toBe('505');
-  });
-
-  it('refuses a row named like something the editor owns', () => {
-    const merged = mergeFeatureDataProps(PROPERTIES, {
-      coordinateProperties: 'nonsense',
-      description: 'a hill',
-    });
-
-    expect(merged['coordinateProperties']).toBe(
-      PROPERTIES.coordinateProperties,
-    );
-  });
-
-  it('is not invented for a feature that never had one', () => {
+  it('takes the label the file carries over the name', () => {
     expect(
-      'freemap:props' in mergeFeatureDataProps(PROPERTIES, { a: 'b' }),
-    ).toBe(false);
+      defaultLabel(
+        {
+          ...point,
+          properties: { name: 'Spring', 'freemap:label': '{p:ele}' },
+        },
+        false,
+      ),
+    ).toBe('{p:ele}');
+  });
+
+  it('gives an unnamed feature none', () => {
+    expect(defaultLabel(point, false)).toBeUndefined();
+
+    // A GeoJSON number is not a name the label could reference.
+    expect(
+      defaultLabel({ ...point, properties: { name: 12 } }, false),
+    ).toBeUndefined();
+  });
+
+  // A plain line's name is a street name; the loaded-data conversion labels
+  // those too, which is what `labelLines` says.
+  it('withholds a plain line’s name unless lines are labelled', () => {
+    expect(defaultLabel(line(false, { name: 'High Street' }), false)) //
+      .toBeUndefined();
+
+    expect(defaultLabel(line(false, { name: 'High Street' }), true)) //
+      .toBe('{p:name}');
+  });
+
+  it('labels an area, and a closed line only where the file calls it one', () => {
+    expect(
+      defaultLabel(
+        feature(
+          {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [0, 0],
+                [1, 0],
+                [1, 1],
+                [0, 0],
+              ],
+            ],
+          },
+          { name: 'Lake' },
+        ),
+        false,
+      ),
+    ).toBe('{p:name}');
+
+    expect(
+      defaultLabel(
+        line(true, { name: 'Ring', 'freemap:type': 'polygon' }),
+        false,
+      ),
+    ).toBe('{p:name}');
+
+    // Closed but not stated to be an area — the conversion draws it as a line.
+    expect(defaultLabel(line(true, { name: 'Ring' }), false)).toBeUndefined();
+  });
+
+  it('gives a feature with no geometry none', () => {
+    expect(defaultLabel(feature(null, { name: 'Nowhere' }), false)) //
+      .toBeUndefined();
   });
 });

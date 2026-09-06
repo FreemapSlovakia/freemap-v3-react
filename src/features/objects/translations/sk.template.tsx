@@ -26,8 +26,6 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Okrúhla',
     square: 'Štvorcová',
   },
-  convertWithGeometry: 'S celou geometriou',
-  convertWithGeometryTo: ({ tool }) => <>S celou geometriou do {tool}</>,
   tooManyForLookup: ({ count, limit }) =>
     `Priveľa objektov na zobrazenie ako nálezy (${count}, najviac ${limit}). Priblížte mapu alebo zúžte filter.`,
   showAsLookup: 'Zobraziť ako Nález',

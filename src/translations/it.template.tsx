@@ -75,6 +75,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     copyToDrawing: 'Copia nel disegno',
     copyTo: ({ tool }) => <>Copia in {tool}</>,
     convertTo: ({ tool }) => <>Converti in {tool}</>,
+    convertAllToDrawing: 'Converti tutto in disegno',
+    convertAllTo: ({ tool }) => <>Converti tutto in {tool}</>,
     openIn: ({ what }) => <>Apri in {what}</>,
 
     panoramaFromHere: 'Panorama da qui',
@@ -82,6 +84,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Tavola d’orientamento da qui',
     lookAtInPanorama: 'Guarda questo nel panorama',
     placeActions: 'Cosa fare con questo luogo',
+    convert: {
+      geometry: 'Geometria',
+      pointOnly: 'Solo punto',
+      fullGeometry: 'Geometria propria',
+      label: 'Etichetta',
+      labelHint: 'Scrivi {p:name} per disegnare una proprietà chiamata name.',
+      labelMode: 'Salva etichetta come',
+      preview: 'Anteprima',
+      labelTemplate: 'Modello',
+      labelResolved: 'Testo semplice',
+      properties: 'Proprietà da trasferire',
+      noProperties: 'Niente da trasferire.',
+      labelKeysKept:
+        "Una proprietà usata dall'etichetta viene sempre trasferita.",
+    },
     simplify: {
       title: 'Semplifica',
       deviation: 'Scostamento massimo',

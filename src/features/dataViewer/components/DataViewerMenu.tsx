@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
@@ -59,6 +60,8 @@ import { useDataViewerMessages } from '../translations/useDataViewerMessages.js'
 export default DataViewerMenu;
 
 export function DataViewerMenu(): ReactElement {
+  const m = useMessages();
+
   const tvm = useDataViewerMessages();
 
   const cm = useColorizerMessages();
@@ -347,7 +350,7 @@ export function DataViewerMenu(): ReactElement {
             )}
 
             <Dropdown.Item as="button" eventKey="convert-to-drawing">
-              <FaPencilAlt /> &nbsp;{tvm?.convertAllToDrawing ?? '…'}
+              <FaPencilAlt /> &nbsp;{m?.general.convertAllToDrawing ?? '…'}
             </Dropdown.Item>
           </FmDropdownMenu>
         </Dropdown>

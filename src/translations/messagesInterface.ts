@@ -53,6 +53,8 @@ export type Messages = {
     copyToDrawing: string;
     copyTo: (props: { tool: ReactNode }) => JSX.Element;
     convertTo: (props: { tool: ReactNode }) => JSX.Element;
+    convertAllToDrawing: string;
+    convertAllTo: (props: { tool: ReactNode }) => JSX.Element;
     /** Names an app the feature is handed to, where nothing else says so. */
     openIn: (props: { what: ReactNode }) => JSX.Element;
     panoramaFromHere: string;
@@ -62,6 +64,20 @@ export type Messages = {
     lookAtInPanorama: string;
     /** Names the ⋮ menu a panel carries for the place it is about. */
     placeActions: string;
+    convert: {
+      geometry: string;
+      pointOnly: string;
+      fullGeometry: string;
+      label: string;
+      labelHint: string;
+      labelMode: string;
+      preview: string;
+      labelTemplate: string;
+      labelResolved: string;
+      properties: string;
+      noProperties: string;
+      labelKeysKept: string;
+    };
     simplify: {
       /** Names the action, the dialog and its confirm button. */
       title: string;

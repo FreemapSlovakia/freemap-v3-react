@@ -9,9 +9,14 @@ import {
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
+import {
+  conversionSeed,
+  featuresOf,
+  useConvertPrompt,
+} from '@shared/convertDialog.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useSimplifyPrompt } from '@shared/simplifyDialog.js';
 import { convertibleLines } from '@shared/simplifyTolerance.js';
+import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import {
@@ -37,7 +42,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const askSimplification = useSimplifyPrompt();
+  const askConversion = useConvertPrompt();
 
   const convertToDataViewer = useConvertToDataViewer();
 
@@ -72,16 +77,24 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
           icon={<FaPencilAlt />}
           label={m?.general.convertToDrawing}
           onClick={() => {
-            void askSimplification({
-              lines: selectedResult.geojson
-                ? convertibleLines(selectedResult.geojson)
-                : [],
-            }).then((tolerance) => {
-              if (tolerance !== null) {
-                dispatch(
-                  convertToDrawing({ type: 'search-result', tolerance }),
-                );
+            const { geojson } = selectedResult;
+
+            void askConversion({
+              lines: geojson ? convertibleLines(geojson) : [],
+              osm: OsmFeatureIdSchema.safeParse(selectedResult.id).success,
+              ...conversionSeed(featuresOf(geojson)),
+            }).then((choices) => {
+              if (!choices) {
+                return;
               }
+
+              dispatch(
+                convertToDrawing({
+                  type: 'search-result',
+                  tolerance: choices.tolerance,
+                  carry: choices.carry,
+                }),
+              );
             });
           }}
           showFrom="never"

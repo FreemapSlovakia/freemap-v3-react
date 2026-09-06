@@ -1,4 +1,5 @@
 import {
+  type ConvertCarry,
   closeTool,
   convertToDrawing,
   selectFeature,
@@ -10,6 +11,8 @@ import {
   dataViewerDelete,
   dataViewerDeleteFeature,
 } from '@features/dataViewer/model/actions.js';
+import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
+import { withProps } from '@features/drawing/labelValues.js';
 import {
   drawingLineAdd,
   type Line,
@@ -54,7 +57,11 @@ import {
 } from '@features/tracking/tracks.js';
 import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
-import { ownTable } from '@shared/featureProperties.js';
+import {
+  convertibleProps,
+  defaultLabel,
+  ownTable,
+} from '@shared/featureProperties.js';
 import { mergeLines } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { askSimplification } from '@shared/simplifyDialog.js';
@@ -84,15 +91,6 @@ function ringToPoints(ring: Position[], dropClosing: boolean): Point[] {
   }));
 }
 
-/** The label as the author wrote it, template and all, where the file carries one. */
-function ownLabel(
-  properties: Record<string, unknown> | null | undefined,
-): string | undefined {
-  const label = properties?.['freemap:label'];
-
-  return typeof label === 'string' ? label : undefined;
-}
-
 /**
  * The property table an imported feature brings. Our own exports write it whole
  * — GPX as `<fm:prop>`, GeoJSON as a `freemap:props` object — so every key
@@ -107,10 +105,53 @@ function importedProps(
   return own ? normalizeProps(own) : pickDrawingProps(properties ?? undefined);
 }
 
+/**
+ * The label a converted feature takes: the dialog's, else the one this feature
+ * would have got — baked from its own properties where that was asked. A
+ * computed key (`{location}`, `{length}`) is left for the drawing to answer.
+ */
+function carriedLabel(
+  carry: ConvertCarry | undefined,
+  all: DrawingProps,
+  fallback: string | undefined,
+): string | undefined {
+  const template = carry ? (carry.label ?? fallback) : fallback;
+
+  return (
+    (carry?.resolveLabel && template
+      ? interpolateLabel(template, withProps(all))
+      : template) || undefined
+  );
+}
+
+/** The ticked properties alone; unasked, what the conversion always carried. */
+function carriedProps(
+  carry: ConvertCarry | undefined,
+  all: DrawingProps,
+  fallback: DrawingProps | undefined,
+): DrawingProps | undefined {
+  if (!carry) {
+    return fallback;
+  }
+
+  const props: DrawingProps = {};
+
+  for (const key of carry.keys) {
+    const value = all[key];
+
+    if (value !== undefined) {
+      props[key] = value;
+    }
+  }
+
+  return normalizeProps(props);
+}
+
 function featuresToLines(
   features: Feature[],
   base: Partial<Line>,
   labelLinesToo: boolean,
+  carry?: ConvertCarry,
 ): Line[] {
   const lines: Line[] = [];
 
@@ -134,7 +175,9 @@ function featuresToLines(
     const start = lines.length;
 
     // Once per feature: every ring of a polygon shares its table.
-    const props = importedProps(feature.properties);
+    const all = convertibleProps(feature.properties);
+
+    const props = carriedProps(carry, all, importedProps(feature.properties));
 
     for (const [i, ring] of rings.entries()) {
       const closed =
@@ -151,13 +194,7 @@ function featuresToLines(
         ...base,
         ...style,
         type: isPolygon ? 'polygon' : 'line',
-        // Referenced rather than copied, so editing the property moves the
-        // label with it.
-        label:
-          ownLabel(feature.properties) ??
-          ((isPolygon || labelLinesToo) && feature.properties?.['name']
-            ? '{p:name}'
-            : undefined) /* ignore street names */,
+        label: carriedLabel(carry, all, defaultLabel(feature, labelLinesToo)),
         props,
         points: ringToPoints(ring, isGeoJsonPolygon || (isPolygon && closed)),
         holeOf: isGeoJsonPolygon && i > 0 ? start : undefined,
@@ -196,6 +233,7 @@ function geojsonToDrawing(
   getState: () => RootState,
   dispatch: Dispatch,
   tolerance = 0,
+  carry?: ConvertCarry,
 ): { lineCount: number; pointCount: number } {
   const { features } = turfFlatten(geojson);
 
@@ -215,27 +253,25 @@ function geojsonToDrawing(
     const { geometry } = feature;
 
     if (geometry?.type === 'Point') {
-      const tags = (feature.properties ?? {}) as Record<string, string>;
-
       // Explicit styling (freemap extensions / Garmin sym / simplestyle) wins
       // over OSM tag inference, then falls back to drawing settings.
       const style = pointStyleFromProperties(feature.properties);
 
       const state = getState();
 
+      const all = convertibleProps(feature.properties);
+
       dispatch(
         drawingPointAdd({
           ...state.drawingSettings.style,
           ...style,
-          label:
-            ownLabel(feature.properties) ??
-            (feature.properties?.['name'] ? '{p:name}' : undefined),
-          props: importedProps(feature.properties),
+          label: carriedLabel(carry, all, defaultLabel(feature, false)),
+          props: carriedProps(carry, all, importedProps(feature.properties)),
           coords: {
             lat: geometry.coordinates[1],
             lon: geometry.coordinates[0],
           },
-          icon: style.icon ?? tagsToPoiIconSpec(tags),
+          icon: style.icon ?? tagsToPoiIconSpec(feature.properties),
           id: state.drawingPoints.points.length,
         }),
       );
@@ -248,6 +284,7 @@ function geojsonToDrawing(
     features,
     getState().drawingSettings.style,
     false,
+    carry,
   );
 
   if (lines.length) {
@@ -455,14 +492,24 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       }
 
       for (const object of targets) {
+        const tags = object.tags ?? {};
+
         dispatch(
           drawingPointAdd({
             ...state.drawingSettings.style,
             coords: object.coords,
             // The name is referenced rather than copied, so editing the
             // property below moves the drawn label with it.
-            label: object.tags?.['name'] ? '{p:name}' : undefined,
-            props: pickDrawingProps(object.tags),
+            label: carriedLabel(
+              payload.carry,
+              tags,
+              tags['name'] ? '{p:name}' : undefined,
+            ),
+            props: carriedProps(
+              payload.carry,
+              tags,
+              pickDrawingProps(object.tags),
+            ),
             color: state.drawingSettings.style.color,
             markerType: state.objectsSettings.selectedIcon,
             icon: tagsToPoiIconSpec(object.tags),
@@ -519,14 +566,22 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         if (geometry?.type === 'Point') {
           const style = pointStyleFromProperties(feature.properties);
 
+          const all = convertibleProps(feature.properties);
+
           dispatch(
             drawingPointAdd({
               ...state.drawingSettings.style,
               ...style,
-              label:
-                ownLabel(feature.properties) ??
-                (feature.properties?.['name'] as string | undefined),
-              props: importedProps(feature.properties),
+              label: carriedLabel(
+                payload.carry,
+                all,
+                defaultLabel(feature, true),
+              ),
+              props: carriedProps(
+                payload.carry,
+                all,
+                importedProps(feature.properties),
+              ),
               markerType:
                 style.markerType ?? state.objectsSettings.selectedIcon,
               coords: {
@@ -547,6 +602,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         features,
         state.drawingSettings.style,
         true,
+        payload.carry,
       );
 
       if (lines.length) {
@@ -664,6 +720,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         getState,
         dispatch,
         payload.tolerance,
+        payload.carry,
       );
 
       dispatch(searchUnselectResult(result.id));
@@ -688,7 +745,24 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       return;
     }
 
-    const { id } = action.payload;
+    const { id, carry } = action.payload;
+
+    // The dialog that asked already fetched it and settled the tolerance on it.
+    if (action.payload.geojson) {
+      const first = firstIndexes(getState());
+
+      const { lineCount, pointCount } = geojsonToDrawing(
+        action.payload.geojson,
+        getState,
+        dispatch,
+        action.payload.tolerance,
+        carry,
+      );
+
+      selectAfterConvert(dispatch, first, lineCount, pointCount);
+
+      return;
+    }
 
     const report = (err: unknown) => {
       if (!isAbortError(err)) {
@@ -731,6 +805,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           getState,
           dispatch,
           tolerance,
+          carry,
         );
 
         selectAfterConvert(dispatch, first, lineCount, pointCount);

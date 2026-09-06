@@ -26,8 +26,6 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Obroč',
     square: 'Kvadrat',
   },
-  convertWithGeometry: 'S celotno geometrijo',
-  convertWithGeometryTo: ({ tool }) => <>S celotno geometrijo v {tool}</>,
   tooManyForLookup: ({ count, limit }) =>
     `Preveč objektov za prikaz kot najdbe (${count}, največ ${limit}). Približajte ali zožite filter.`,
   showAsLookup: 'Prikaži kot Najdba',

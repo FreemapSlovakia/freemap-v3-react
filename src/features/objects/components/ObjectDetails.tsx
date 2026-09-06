@@ -5,13 +5,13 @@ import {
 import { getOsmElementUrl } from '@features/openInExternalApp/externalUrlUtils.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import {
-  categoryKeys,
   getNameFromOsmElement,
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
+import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import { Fragment, type ReactElement } from 'react';
@@ -41,75 +41,6 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
     getNameFromOsmElement(geojson.properties ?? {}, language);
 
   const parsedId = OsmFeatureIdSchema.safeParse(id);
-
-  function renderKey(k: string) {
-    return !parsedId.success ? (
-      k
-    ) : (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://wiki.openstreetmap.org/wiki/Key:${encodeURIComponent(k)}`}
-      >
-        {k}
-      </a>
-    );
-  }
-  function renderValue(k: string, v: string) {
-    return !parsedId.success ? (
-      v
-    ) : /^https?:\/\//.test(v) ? (
-      <a target="_blank" rel="noreferrer" href={v}>
-        {v}
-      </a>
-    ) : k === 'wikidata' || k.endsWith(':wikidata') ? (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://www.wikidata.org/entity/${encodeURIComponent(v)}`}
-      >
-        {v}
-      </a>
-    ) : k === 'wikipedia' || k.endsWith(':wikipedia') ? (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
-          v.replace(/ /g, '_'),
-        )}`}
-      >
-        {v}
-      </a>
-    ) : k === 'wikimedia_commons' ? (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
-          v.replace(/ /g, '_'),
-        )}`}
-      >
-        {v}
-      </a>
-    ) : ['contact:email', 'email'].includes(k) ? (
-      <a href={`mailto:${v}`}>{v}</a>
-    ) : ['phone', 'contact:phone', 'contact:mobile'].includes(k) ? (
-      <a target="_blank" rel="noreferrer" href={`tel:${v.replace(/ /g, '')}`}>
-        {v}
-      </a>
-    ) : categoryKeys.has(k) ? (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
-          k,
-        )}=${encodeURIComponent(v)}`}
-      >
-        {v}
-      </a>
-    ) : (
-      v
-    );
-  }
 
   const om = useObjectsMessages();
 
@@ -163,8 +94,13 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
               .filter(([k]) => k !== 'display_name')
               .map(([k, v]) => (
                 <tr key={k}>
-                  <th>{renderKey(k)}</th>
-                  <td>{renderValue(k, v)}</td>
+                  <th>
+                    <OsmTagKey tag={k} osm={parsedId.success} />
+                  </th>
+
+                  <td>
+                    <OsmTagValue tag={k} value={v} osm={parsedId.success} />
+                  </td>
                 </tr>
               ))}
           </tbody>

@@ -9,7 +9,6 @@ const en: DataViewerMessages = {
   unnamedTrack: ({ n }) => `Track ${n}`,
   convertLossWarning:
     'Converting to a drawing replaces the track and discards its recorded data (elevation, heart rate, speed, time).',
-  convertAllToDrawing: 'Convert all to drawing',
   simplifyAll: 'Simplify all',
   moreInfo: 'More info',
   saveAsMap: 'Save to my maps',
@@ -72,6 +71,7 @@ const en: DataViewerMessages = {
     mergeTitle: 'Data already loaded',
     mergeMessage:
       'Some geodata is already shown. Append the imported data to it, or replace it?',
+    existingData: 'Existing data',
     append: 'Append',
     replace: 'Replace',
   },

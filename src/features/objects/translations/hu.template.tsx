@@ -32,8 +32,6 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Gyűrű',
     square: 'Négyzet',
   },
-  convertWithGeometry: 'Teljes geometriával',
-  convertWithGeometryTo: ({ tool }) => <>Teljes geometriával ide: {tool}</>,
   tooManyForLookup: ({ count, limit }) =>
     `Túl sok objektum a találatként való megjelenítéshez (${count}, legfeljebb ${limit}). Nagyítson rá, vagy szűkítse a szűrőt.`,
   showAsLookup: 'Megjelenítés találatként',

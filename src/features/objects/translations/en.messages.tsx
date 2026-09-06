@@ -25,8 +25,6 @@ const en: ObjectsMessages = {
     ring: 'Ring',
     square: 'Square',
   },
-  convertWithGeometry: 'With full geometry',
-  convertWithGeometryTo: ({ tool }) => <>With full geometry to {tool}</>,
   tooManyForLookup: ({ count, limit }) =>
     `Too many objects to show as lookups (${count}, at most ${limit}). Zoom in or narrow the filter.`,
   showAsLookup: 'Show as Lookup',

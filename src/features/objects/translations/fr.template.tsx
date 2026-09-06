@@ -34,10 +34,6 @@ const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   osmHistory: 'OpenStreetMap.org (historique)',
   type: 'Type',
   markerShape: 'Forme du marqueur',
-  convertWithGeometry: 'Avec la géométrie complète',
-  convertWithGeometryTo: ({ tool }) => (
-    <>Avec la géométrie complète vers {tool}</>
-  ),
   tooManyForLookup: ({ count, limit }) =>
     `Trop d'objets à afficher comme résultats (${count}, au maximum ${limit}). Zoomez ou restreignez le filtre.`,
   showAsLookup: 'Afficher comme Résultat',

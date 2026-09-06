@@ -61,6 +61,7 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     mergeTitle: 'Dane są już wczytane',
     mergeMessage:
       'Niektóre geodane są już wyświetlane. Dołączyć do nich zaimportowane dane, czy je zastąpić?',
+    existingData: 'Istniejące dane',
     append: 'Dołącz',
     replace: 'Zastąp',
   },
@@ -100,7 +101,6 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Ślad ${n}`,
   convertLossWarning:
     'Konwersja na rysunek zastępuje ślad i odrzuca jego zarejestrowane dane (wysokość, tętno, prędkość, czas).',
-  convertAllToDrawing: 'Przekształć wszystko na rysunek',
   simplifyAll: 'Uprość wszystko',
   moreInfo: 'Więcej informacji',
   saveAsMap: 'Zapisz w moich mapach',

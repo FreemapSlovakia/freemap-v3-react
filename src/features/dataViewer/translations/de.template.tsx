@@ -61,6 +61,7 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     mergeTitle: 'Daten bereits geladen',
     mergeMessage:
       'Es werden bereits Geodaten angezeigt. Die importierten Daten anhängen oder ersetzen?',
+    existingData: 'Vorhandene Daten',
     append: 'Anhängen',
     replace: 'Ersetzen',
   },
@@ -101,7 +102,6 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Track ${n}`,
   convertLossWarning:
     'Beim Umwandeln in eine Zeichnung wird der Track ersetzt und seine aufgezeichneten Daten (Höhe, Herzfrequenz, Geschwindigkeit, Zeit) verworfen.',
-  convertAllToDrawing: 'Alles in Zeichnung umwandeln',
   simplifyAll: 'Alles vereinfachen',
   moreInfo: 'Mehr Infos',
   saveAsMap: 'In meinen Karten speichern',

@@ -6,8 +6,6 @@ export type DataViewerMessages = {
   /** Label for a selected line, by its position among the loaded lines. */
   unnamedTrack: (props: { n: number }) => string;
   convertLossWarning: string;
-  /** The tool menu's conversion, which takes every loaded feature. */
-  convertAllToDrawing: string;
   /** The tool menu's simplification, which takes every loaded feature. */
   simplifyAll: string;
   moreInfo: string;
@@ -69,6 +67,7 @@ export type DataViewerMessages = {
     title: string;
     drop: string;
     mergeTitle: string;
+    existingData: string;
     mergeMessage: string;
     append: string;
     replace: string;

@@ -10,7 +10,6 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Trasa ${n}`,
   convertLossWarning:
     'Prevod na kresbu nahradí trasu a zahodí jej zaznamenané údaje (nadmorská výška, tep, rýchlosť, čas).',
-  convertAllToDrawing: 'Skonvertovať všetko na kreslenie',
   simplifyAll: 'Zjednodušiť všetko',
   moreInfo: 'Viac info',
   saveAsMap: 'Uložiť do mojich máp',
@@ -73,6 +72,7 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     mergeTitle: 'Údaje sú už načítané',
     mergeMessage:
       'Niektoré geoúdaje sú už zobrazené. Pripojiť k nim importované údaje, alebo ich nahradiť?',
+    existingData: 'Existujúce dáta',
     append: 'Pripojiť',
     replace: 'Nahradiť',
   },

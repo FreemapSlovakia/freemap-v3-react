@@ -18,6 +18,7 @@ import type { LayerSettings } from '@features/map/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import type { FeatureId, OsmFeatureId } from '@shared/types/featureId.js';
+import type { Feature } from 'geojson';
 import z from 'zod';
 import type { ActiveModal } from './activeModal.js';
 
@@ -172,16 +173,41 @@ export type Selection =
 
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 
+/**
+ * What the conversion dialog answered about the features' own data; see
+ * `useConvertPrompt`. Absent, a conversion carries what it always has.
+ */
+export type ConvertCarry = {
+  /** Property keys to carry onto the drawn feature; the rest are dropped. */
+  keys: string[];
+  /**
+   * The label to give every converted feature, `{p:key}` reaching the
+   * properties above. Absent, each keeps the label it would have got.
+   */
+  label?: string;
+  /** Bake the label from the source's own properties instead of carrying it. */
+  resolveLabel: boolean;
+};
+
 export const convertToDrawing = createAction<
   // objects: `id` omitted → bulk-convert every visible object as a point
-  | { type: 'objects'; id?: OsmFeatureId }
-  | { type: 'objects-geometry'; id: OsmFeatureId }
+  | { type: 'objects'; id?: OsmFeatureId; carry?: ConvertCarry }
+  // objects-geometry: `geojson` is the element already fetched by the dialog
+  // that asked, which then also settled `tolerance`; without it both are done
+  // by the processor.
+  | {
+      type: 'objects-geometry';
+      id: OsmFeatureId;
+      carry?: ConvertCarry;
+      geojson?: Feature;
+      tolerance?: number;
+    }
   | { type: 'planned-route'; tolerance: number }
   // track: `id` indexes the loaded collection; omitted converts every feature
-  | { type: 'track'; tolerance: number; id?: number }
+  | { type: 'track'; tolerance: number; id?: number; carry?: ConvertCarry }
   // tracking: `id` is a watched device's token; omitted converts every one of them
   | { type: 'tracking'; id?: string; tolerance: number }
-  | { type: 'search-result'; tolerance: number }
+  | { type: 'search-result'; tolerance: number; carry?: ConvertCarry }
   | { type: 'changesets' }
 >('CONVERT_TO_DRAWING');
 

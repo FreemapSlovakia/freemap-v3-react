@@ -22,8 +22,6 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Ring',
     square: 'Quadrat',
   },
-  convertWithGeometry: 'Mit voller Geometrie',
-  convertWithGeometryTo: ({ tool }) => <>Mit voller Geometrie nach {tool}</>,
   tooManyForLookup: ({ count, limit }) =>
     `Zu viele Objekte, um sie als Funde anzuzeigen (${count}, höchstens ${limit}). Zoomen Sie hinein oder schränken Sie den Filter ein.`,
   showAsLookup: 'Als Fund anzeigen',

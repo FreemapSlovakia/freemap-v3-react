@@ -1,15 +1,20 @@
 import { convertToDrawing } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
 import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import type { SelectCallback } from '@restart/ui/types';
 import {
   Action,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
+import { geometryKind, useConvertPrompt } from '@shared/convertDialog.js';
+import { convertibleLines } from '@shared/simplifyTolerance.js';
+import type { Feature } from 'geojson';
 import type { ReactElement, ReactNode } from 'react';
 import { FaPencilAlt, FaSearch } from 'react-icons/fa';
 import { MdShapeLine } from 'react-icons/md';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import type { ObjectsResult } from '../model/actions.js';
 import { objectsShowAsLookup } from '../model/actions.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
@@ -30,9 +35,9 @@ type Props = {
  * become is added once.
  *
  * Acting on all of them hands them over for good, so it "converts"; one object
- * stays where it is, so it is copied. Converting with full geometry is offered
- * for a single object only: doing it for a whole screenful would be an OSM
- * request per object.
+ * stays where it is, so it is copied. Both ask what to take along, and the
+ * element's own geometry is offered there for a single object only: fetching it
+ * for a whole screenful would be an OSM request per object.
  */
 export function ObjectsConvertMenu({
   object,
@@ -45,53 +50,87 @@ export function ObjectsConvertMenu({
 
   const dispatch = useDispatch();
 
+  const store = useStore<RootState>();
+
   const convertToDataViewer = useConvertToDataViewer();
 
+  const askConversion = useConvertPrompt();
+
   const id = object?.id;
+
+  // A node is the geometry it is drawn at, so there is nothing to choose.
+  const geometry = id !== undefined && id.elementType !== 'node';
+
+  const drawingLabel = object
+    ? m?.general.copyToDrawing
+    : m?.general.convertAllToDrawing;
+
+  const dataViewerLabel = (
+    object ? m?.general.copyTo : m?.general.convertAllTo
+  )?.({ tool: m?.tools.dataViewer });
+
+  const convertToDrawingWithChoices = () => {
+    const targets = object ? [object] : store.getState().objects.objects;
+
+    // Kept from the probe so the conversion doesn't fetch the element a second
+    // time — and so the tolerance answers for the geometry it will thin.
+    let fetched: Feature | undefined;
+
+    void askConversion({
+      title: drawingLabel,
+      props: targets.map((target) => target.tags ?? {}),
+      geometry,
+      osm: true,
+      probeGeometry:
+        geometry && id
+          ? async () => {
+              fetched = await fetchOsmFullGeojson(id, store.getState);
+
+              return {
+                lines: convertibleLines(fetched),
+                kind: geometryKind(fetched),
+              };
+            }
+          : undefined,
+    }).then((choices) => {
+      if (!choices) {
+        return;
+      }
+
+      dispatch(
+        choices.geometry === 'full' && id
+          ? convertToDrawing({
+              type: 'objects-geometry',
+              id,
+              carry: choices.carry,
+              geojson: fetched,
+              tolerance: choices.tolerance,
+            })
+          : convertToDrawing({ type: 'objects', id, carry: choices.carry }),
+      );
+    });
+  };
 
   return (
     <ResponsiveActions onSelect={onSelect} toggleLabel={m?.general.actions}>
       <Action
         icon={<FaPencilAlt />}
-        label={object ? m?.general.copyToDrawing : m?.general.convertToDrawing}
-        onClick={() => {
-          dispatch(convertToDrawing({ type: 'objects', id }));
-        }}
+        label={drawingLabel}
+        onClick={convertToDrawingWithChoices}
         showFrom="never"
       />
-
-      {id && id.elementType !== 'node' && (
-        <Action
-          icon={<FaPencilAlt />}
-          label={om?.convertWithGeometry}
-          onClick={() => {
-            dispatch(convertToDrawing({ type: 'objects-geometry', id }));
-          }}
-          showFrom="never"
-        />
-      )}
 
       <Action
         icon={<MdShapeLine />}
-        label={(object ? m?.general.copyTo : m?.general.convertTo)?.({
-          tool: m?.tools.dataViewer,
-        })}
+        label={dataViewerLabel}
         onClick={() => {
-          convertToDataViewer({ type: 'objects', id });
+          convertToDataViewer(
+            { type: 'objects', id },
+            { geometry, title: dataViewerLabel },
+          );
         }}
         showFrom="never"
       />
-
-      {id && id.elementType !== 'node' && (
-        <Action
-          icon={<MdShapeLine />}
-          label={om?.convertWithGeometryTo({ tool: m?.tools.dataViewer })}
-          onClick={() => {
-            convertToDataViewer({ type: 'objects-geometry', id });
-          }}
-          showFrom="never"
-        />
-      )}
 
       <Action
         icon={<FaSearch />}

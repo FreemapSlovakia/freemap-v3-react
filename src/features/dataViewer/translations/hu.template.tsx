@@ -42,7 +42,6 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `${n}. nyomvonal`,
   convertLossWarning:
     'A rajzzá alakítás lecseréli a nyomvonalat, és eldobja a rögzített adatait (magasság, pulzusszám, sebesség, idő).',
-  convertAllToDrawing: 'Összes átalakítása rajzzá',
   simplifyAll: 'Összes egyszerűsítése',
   moreInfo: 'További információ',
   saveAsMap: 'Mentés a térképeim közé',
@@ -71,6 +70,7 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     mergeTitle: 'Az adatok már be vannak töltve',
     mergeMessage:
       'Már láthatók geoadatok. Hozzáfűzi az importált adatokat, vagy lecseréli őket?',
+    existingData: 'Meglévő adatok',
     append: 'Hozzáfűzés',
     replace: 'Csere',
   },

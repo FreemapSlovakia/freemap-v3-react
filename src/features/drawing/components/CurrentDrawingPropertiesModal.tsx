@@ -266,7 +266,7 @@ export default function CurrentDrawingPropertiesModal({
       }}
       closable={(polyPoints?.length ?? 0) >= 3}
       placeholders={{
-        hint: (type) => (
+        hint: (type, insert) => (
           <>
             {dm?.edit.hint}{' '}
             <PlaceholderHint
@@ -277,8 +277,9 @@ export default function CurrentDrawingPropertiesModal({
                     : dm?.edit.lineKeys
                   : dm?.edit.pointKeys
               }
+              onInsert={insert}
             />{' '}
-            <PlaceholderHint text={dm?.edit.optionalKeys} />
+            <PlaceholderHint text={dm?.edit.optionalKeys} onInsert={insert} />
           </>
         ),
         token: (key) => `{${PROPERTY_PREFIX}${key}}`,

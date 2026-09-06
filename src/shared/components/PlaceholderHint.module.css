@@ -1,0 +1,11 @@
+.token {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  vertical-align: baseline;
+}
+
+.token:hover code {
+  text-decoration: underline;
+}
