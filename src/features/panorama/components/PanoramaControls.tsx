@@ -22,15 +22,12 @@ import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import {
   Action,
-  ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
-import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { usePlaceActions } from '@shared/hooks/usePlaceActions.js';
 import { nearestStep } from '@shared/mathUtils.js';
 import type { ReactElement } from 'react';
 import { Button, Form } from 'react-bootstrap';
@@ -99,13 +96,6 @@ const LABEL_DEFAULTS = {
   showRevealedLabels: panoramaSettingsInitialState.showRevealedLabels,
 };
 
-/**
- * What the viewpoint's menu leaves out: the picture on screen is the panorama
- * from here, and aiming it at the place it is taken from would turn it due
- * north and mark the ground at the viewer's feet.
- */
-const VIEWPOINT_OMIT: ViewFromHere[] = ['panorama', 'lookAt'];
-
 const LABEL_SETTING_KEYS = Object.keys(
   LABEL_DEFAULTS,
 ) as (keyof typeof LABEL_DEFAULTS)[];
@@ -150,21 +140,6 @@ export function PanoramaControls({
   const confirmChoice = useConfirmChoice();
 
   const fullscreenAction = useFullscreenAction(fullscreen);
-
-  // Only while the pin still stands where the picture was taken from: dragged
-  // somewhere else it is an ordinary place, and the two the picture answers
-  // for — a panorama from here, aiming this one at it — are worth offering
-  // again. See `VIEWPOINT_OMIT`.
-  const { actions: placeActions, onSelect } = usePlaceActions({
-    at: viewpoint,
-    omit:
-      viewpoint &&
-      render &&
-      render.viewpoint.lat === viewpoint.lat &&
-      render.viewpoint.lon === viewpoint.lon
-        ? VIEWPOINT_OMIT
-        : undefined,
-  });
 
   // Asked rather than decided here: the summits are drawn points like any
   // others, so a map that already carries some can as well gain a dial as be
@@ -562,7 +537,6 @@ export function PanoramaControls({
         gap={1}
         fit
         toggleLabel={gm?.general.actions}
-        onSelect={onSelect}
       >
         {/* The reverse of a press in the picture, which answers with a place on
             the map: nothing to aim until there is a picture. */}
@@ -623,25 +597,17 @@ export function PanoramaControls({
 
         <Action {...fullscreenAction} onClick={onToggleFullscreen} />
 
-        {/* Never inline: what can be done with the place the picture is taken
-            from, which is a menu's worth on its own. */}
-        <ActionDivider />
-
-        {/* Not the "Toposcope from here" below it, which stands the dial here
-            and leaves the rays to whatever is drawn: this one carries the
-            picture's own names round to it. */}
+        {/* First to fold, being the rarest and the costliest. Not the
+            "Toposcope from here" among the viewpoint's own actions, which
+            stands the dial here and leaves the rays to whatever is drawn:
+            this one carries the picture's own names round to it. */}
         <Action
           label={m?.createToposcope}
           icon={<PiCompassRoseBold />}
-          showFrom="never"
+          showFrom="xxl"
           disabled={!render}
           onClick={() => void createToposcope()}
         />
-
-        {/* What follows is about the place rather than about the picture. */}
-        <ActionDivider />
-
-        {placeActions}
       </ResponsiveActions>
     </FloatingWindowControls>
   );

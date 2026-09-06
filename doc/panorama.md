@@ -270,9 +270,9 @@ screen — are `Action`s of a single `ResponsiveActions` with `fit`, which
 measures the row's own scroller and folds one only while it overflows: a
 breakpoint would pack while the row still had room to spare, since it knows
 nothing of the dropdowns sharing the width. `showFrom` is then read as the
-order to fold in — the ⓘ panel of prose first, the crosshair last — and no
-`showFrom` at all means never folding, which is what full screen asks for,
-being worth most where there is least room. One menu rather than two, since a second
+order to fold in — the toposcope first, the crosshair last — and no `showFrom`
+at all means never folding, which is what full screen asks for, being worth most
+where there is least room. One menu rather than two, since a second
 toggle in a row short of space defeats the packing. The dropdowns are not in it:
 quality, tilt and the peak-name sliders are not buttons, and sliders do not live
 in a dropdown item — they collapse their labels instead. The picker, Update and
@@ -283,13 +283,18 @@ The row also keeps its end clear of the resize grip (`gripReserve`): the footer
 below it does the same, but that footer is empty for most of a panel's life, and
 then the grip lands on the menu toggle.
 
-Below the divider the menu carries what can be done with the *place* rather than
-with the picture: `usePlaceActions`, the map context menu's own items, so the
-answer is the same wherever a place is named. The same menu hangs under the
-probe readout for whatever was last picked out of the picture. Above the
-divider, one of the panel's own: rounding the picture to a toposcope, which is
-not the "Toposcope from here" below it — that one only stands the dial here and
-leaves the rays to whatever is already drawn.
+Rounding the picture to a toposcope is an `Action` like the rest, first in the
+fold order: it is the rarest and the costliest, so it gives up its inline slot
+before anything else, and the ⋮ then exists only once the row is short of room.
+It is not the "Toposcope from here" among the viewpoint's place actions — that
+one only stands the dial here and leaves the rays to whatever is already drawn.
+
+What can be done with the *place* is not in this menu at all. Both places the
+picture answers for carry their own `PlaceActionsButton` — the map context
+menu's own items, so the answer is the same wherever a place is named — each in
+the box that names it: the viewpoint's under the eye-elevation readout, the
+probe's under `MarkBox`. A menu at the end of the toolbar would have to say
+which of the two it meant, and the toolbar is about the picture.
 
 One line decides: **the toolbar carries what rearranges the picture already in
 hand; the modal carries what has to be asked for again.** Cost, not frequency —

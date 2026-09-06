@@ -6,6 +6,7 @@ import windowClasses from '@shared/components/FloatingWindow.module.css';
 import { FloatingWindowGrips } from '@shared/components/FloatingWindowControls.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
+import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
 import { ELEVATION_API_DTM_ATTRIBUTION } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useFloatingWindow } from '@shared/hooks/useFloatingWindow.js';
@@ -48,9 +49,8 @@ export default function Panorama(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const { render, rendering, progress, error, probe } = useAppSelector(
-    (state) => state.panorama,
-  );
+  const { render, rendering, progress, error, probe, viewpoint } =
+    useAppSelector((state) => state.panorama);
 
   // Plain, not the `meter` unit style: `general.masl` follows it and says both
   // the unit and what it is measured from.
@@ -164,11 +164,10 @@ export default function Panorama(): ReactElement {
           )}
 
           {/* What the picture answers, in two boxes rather than one: where the
-              eye stands is of the picture, what was last picked out of it is of
-              a place, and the menu belongs to that place alone — under one box
-              it read as the viewpoint's. Clear of the close button the same way
-              the grips are. The row itself passes presses through, or it would
-              take a whole band of sky away from turning the view. */}
+              eye stands and what was last picked out of the picture are two
+              places, each carrying its own menu. Clear of the close button the
+              same way the grips are. The row itself passes presses through, or
+              it would take a whole band of sky away from turning the view. */}
           {(render || probe) && (
             <div
               className={clsx(
@@ -179,8 +178,28 @@ export default function Panorama(): ReactElement {
               <div className="d-flex flex-column align-items-start gap-1 pe-auto">
                 {render && (
                   <div className="p-2 rounded bg-dark bg-opacity-50 small text-white">
-                    {gm?.general.viewpoint}: {nfEle.format(render.eyeElevation)}{' '}
-                    {gm?.general.masl}
+                    <div>
+                      {gm?.general.viewpoint}:{' '}
+                      {nfEle.format(render.eyeElevation)} {gm?.general.masl}
+                    </div>
+
+                    {/* Where the eye stands is a place like any other. The pin
+                        rather than the render: dragged off, it is an ordinary
+                        place and the two the picture answers for come back. */}
+                    {viewpoint && (
+                      <PlaceActionsButton
+                        className="mt-1"
+                        size="sm"
+                        lat={viewpoint.lat}
+                        lon={viewpoint.lon}
+                        omit={
+                          render.viewpoint.lat === viewpoint.lat &&
+                          render.viewpoint.lon === viewpoint.lon
+                            ? VIEWPOINT_OMIT
+                            : undefined
+                        }
+                      />
+                    )}
                   </div>
                 )}
 
@@ -308,6 +327,13 @@ export default function Panorama(): ReactElement {
     </BreakpointsProvider>
   );
 }
+
+/**
+ * What the viewpoint's menu leaves out: the picture on screen is the panorama
+ * from here, and aiming it at the place it is taken from would turn it due
+ * north and mark the ground at the viewer's feet.
+ */
+const VIEWPOINT_OMIT: ViewFromHere[] = ['panorama', 'lookAt'];
 
 /**
  * What was last picked out of the picture, or where a gesture on the map is
