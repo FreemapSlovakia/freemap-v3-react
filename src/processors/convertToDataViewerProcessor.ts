@@ -28,10 +28,47 @@ import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import { searchUnselectResult } from '@features/search/model/actions.js';
 import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import { isAbortError } from '@shared/isAbortError.js';
+import { pointStyleFromProperties } from '@shared/styleFromProperties.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { featureCollection, point } from '@turf/helpers';
-import type { FeatureCollection } from 'geojson';
+import type { FeatureCollection, Geometry } from 'geojson';
+
+// The viewer flattens before drawing, so a Multi*/GeometryCollection member
+// takes its feature's icon too.
+function hasPoint(geometry: Geometry | null | undefined): boolean {
+  return geometry?.type === 'GeometryCollection'
+    ? geometry.geometries.some(hasPoint)
+    : geometry?.type === 'Point' || geometry?.type === 'MultiPoint';
+}
+
+/**
+ * Bakes each unstyled point's OSM-tag icon into an explicit `freemap:icon`, as
+ * converting to a drawing does — the viewer draws only what a feature carries.
+ */
+function withTagIcons(collection: FeatureCollection): FeatureCollection {
+  return {
+    ...collection,
+    features: collection.features.map((feature) => {
+      if (
+        !hasPoint(feature.geometry) ||
+        pointStyleFromProperties(feature.properties).icon
+      ) {
+        return feature;
+      }
+
+      const icon = tagsToPoiIconSpec(feature.properties);
+
+      return icon
+        ? {
+            ...feature,
+            properties: { ...feature.properties, 'freemap:icon': icon },
+          }
+        : feature;
+    }),
+  };
+}
 
 /**
  * The features to copy, as the data export writes them — so what lands in the
@@ -102,22 +139,29 @@ async function collect(
       // Gone while the merge-mode prompt was up. An undefined `only` means "no
       // restriction", so building anyway would take every kept result.
       return result
-        ? build({ search: true }, { only: { type: 'search', id: result.id } })
+        ? withTagIcons(
+            await build(
+              { search: true },
+              { only: { type: 'search', id: result.id } },
+            ),
+          )
         : featureCollection([]);
     }
 
     case 'objects':
-      return build(
-        { objects: true },
-        source.id ? { only: { type: 'objects', id: source.id } } : {},
+      return withTagIcons(
+        await build(
+          { objects: true },
+          source.id ? { only: { type: 'objects', id: source.id } } : {},
+        ),
       );
 
     case 'objects-geometry':
       // The one source that isn't on the map yet: the element's own geometry
       // comes from the OSM API.
-      return featureCollection([
-        await fetchOsmFullGeojson(source.id, getState),
-      ]);
+      return withTagIcons(
+        featureCollection([await fetchOsmFullGeojson(source.id, getState)]),
+      );
   }
 }
 

@@ -29,11 +29,10 @@ import type { RoutePlannerMessages } from '@features/routePlanner/translations/R
 import { hasGeometry } from '@features/search/model/resultUtils.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { resolveGenericName } from '@osm/osmNameResolver.js';
-import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { poiIcons } from '@osm/poiIcons.js';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
+import { tagsToPoiIconName } from '@shared/drawingIcons.js';
 import {
   buildMarkerSvg,
   resolveMarkerGlyph,
@@ -132,27 +131,6 @@ interface MarkerSpec {
   iconName?: string;
   /** Icon spec to use when neither `icon`/`label` nor `iconName` yields content. */
   fallbackIcon?: string;
-}
-
-// Resolves the bundled poi icon name from a feature's OSM tags — the same
-// mapping the in-app POI and search markers use. Returns undefined when no tag
-// matches. Non-string property values are ignored.
-function osmTagIconName(
-  props: Record<string, unknown> | null | undefined,
-): string | undefined {
-  if (!props) {
-    return undefined;
-  }
-
-  const tags: Record<string, string> = {};
-
-  for (const [k, v] of Object.entries(props)) {
-    if (typeof v === 'string') {
-      tags[k] = v;
-    }
-  }
-
-  return resolveGenericName(osmTagToIconMapping, tags)[0];
 }
 
 // Bakes the `marker-svg` / `marker-png` properties for a point, mirroring the
@@ -259,7 +237,7 @@ async function convertForeignFeatures(
           // No explicit icon → resolve one from OSM tags (search results /
           // POIs), then fall back to a flag glyph (matching the in-app
           // waypoint).
-          iconName: style.icon ? undefined : osmTagIconName(props),
+          iconName: style.icon ? undefined : tagsToPoiIconName(props),
           fallbackIcon: 'fa:flag',
         },
         mode,
@@ -797,7 +775,7 @@ export async function buildExportFeatureCollection({
           {
             markerType: objectsSettings.selectedIcon,
             color: objectsSettings.color,
-            iconName: osmTagIconName(tags),
+            iconName: tagsToPoiIconName(tags),
           },
           pointMode,
           caches,

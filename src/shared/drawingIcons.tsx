@@ -619,15 +619,37 @@ export function useFaIcon(
 }
 
 /**
- * Resolves the bundled poi icon for a feature's OSM tags as a `poi:<name>`
- * spec, or undefined if the tags map to no icon. `osmTagToIconMapping` already
- * names icons the way a spec does, so converting an object to a drawing point
+ * The bundled poi icon name for a feature's OSM tags, or undefined if none
+ * matches. Non-string property values are ignored, so a GeoJSON feature's
+ * properties can be passed straight in.
+ */
+export function tagsToPoiIconName(
+  tags: Record<string, unknown> | null | undefined,
+): string | undefined {
+  if (!tags) {
+    return undefined;
+  }
+
+  const strings: Record<string, string> = {};
+
+  for (const [key, value] of Object.entries(tags)) {
+    if (typeof value === 'string') {
+      strings[key] = value;
+    }
+  }
+
+  return resolveGenericName(osmTagToIconMapping, strings)[0];
+}
+
+/**
+ * The same icon as a `poi:<name>` spec. `osmTagToIconMapping` already names
+ * icons the way a spec does, so converting an object to a drawing point
  * round-trips its icon with no second naming mechanism to drift.
  */
 export function tagsToPoiIconSpec(
-  tags: Record<string, string>,
+  tags: Record<string, unknown> | null | undefined,
 ): string | undefined {
-  const name = resolveGenericName(osmTagToIconMapping, tags)[0];
+  const name = tagsToPoiIconName(tags);
 
   return name ? poiSpec(name) : undefined;
 }
