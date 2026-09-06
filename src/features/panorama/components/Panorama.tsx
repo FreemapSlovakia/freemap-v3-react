@@ -179,7 +179,10 @@ export default function Panorama(): ReactElement {
                 {render && (
                   <div className="p-2 rounded bg-dark bg-opacity-50 small text-white">
                     <div>
-                      {gm?.general.viewpoint}:{' '}
+                      <FaStreetView /> {gm?.general.viewpoint}
+                    </div>
+
+                    <div>
                       {nfEle.format(render.eyeElevation)} {gm?.general.masl}
                     </div>
 

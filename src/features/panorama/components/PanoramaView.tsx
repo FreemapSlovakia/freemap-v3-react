@@ -17,6 +17,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { FaCrosshairs } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { distanceAt } from '../depth.js';
 import { candidateLabels } from '../labels/fromPeaks.js';
@@ -97,12 +98,21 @@ const WRAP_MARGIN_PX = 200;
 const SETTLE_MS = 500;
 
 /**
- * The picked name, its leader and its dot. The marker's red lightened: the pin
+ * The picked name, its leader and its mark. The marker's red lightened: the pin
  * sits on a map, this sits on forest and rock under a black shadow, where
  * `COLORS.normal` is too dark to read. Near enough to say "the same summit",
  * far enough to be legible.
  */
 export const PICKED_INK = '#ff6a6a';
+
+/** Side of the picked-place crosshair, in CSS pixels. */
+const PICK_MARK_PX = 17;
+
+/**
+ * Halo width for that crosshair, in the icon's own 512-unit box — a hair over
+ * one pixel at {@link PICK_MARK_PX}.
+ */
+const PICK_MARK_HALO = 36;
 
 /**
  * How far a summit the lift revealed is faded: it is drawn and named, but a
@@ -190,7 +200,7 @@ export function PanoramaView({
 
   const storedAzimuth = useAppSelector((state) => state.panorama.azimuth);
 
-  // What the dot in the picture answers to: a new viewpoint clears the mark on
+  // What the mark in the picture answers to: a new viewpoint clears the mark on
   // the map while this picture is still up, and the two must go together.
   const probe = useAppSelector((state) => state.panorama.probe);
 
@@ -307,8 +317,8 @@ export function PanoramaView({
 
   // Where a gesture on the map is holding the mark, while it holds it: the row
   // the gesture already read, rather than the same column walked twice a frame.
-  // The picture is turned to that bearing, so the dot rides the middle of it
-  // and climbs towards the horizon as the mark is dragged away.
+  // The picture is turned to that bearing, so the crosshair rides the middle
+  // of it and climbs towards the horizon as the mark is dragged away.
   const aimedAt = aim?.mark?.seen && {
     az: aim.azimuth,
     iy: aim.mark.seen.iy,
@@ -342,7 +352,7 @@ export function PanoramaView({
   }, [render.id]);
 
   // A mark named on the map — a place to look at — carries no row of its own,
-  // so the dot is found rather than remembered: down the column at its bearing
+  // so the mark is found rather than remembered: down the column at its bearing
   // to where the terrain stands at its distance. The place is already one this
   // picture can see, `panoramaLookAtProcessor` having moved it there, so the
   // search only has to say which row. One read out of the picture brings its
@@ -773,8 +783,8 @@ export function PanoramaView({
    * summit and a ridge pointed at read alike.
    */
   const pickLabel = (label: PanoramaLabel) => {
-    // A named summit wears its own anchor dot in the picked ink, so the mark
-    // a terrain press left would be a second red dot for one marked place.
+    // A named summit wears its own anchor dot in the picked ink, so the
+    // crosshair a terrain press left would be a second mark for one place.
     setPicked(null);
 
     // Pressing the picked one again lets it go. A highlighted name invites
@@ -818,10 +828,10 @@ export function PanoramaView({
     [clampedOffsetY, hover, scale, screenX],
   );
 
-  // The dot put back over its own terrain as the view turns, the same way the
-  // readout is. Gone with the mark on the map, whoever cleared it.
+  // The crosshair put back over its own terrain as the view turns, the same way
+  // the readout is. Gone with the mark on the map, whoever cleared it.
   const pickedAt = useMemo(() => {
-    // While the mark is being dragged it is the only thing the dot answers to,
+    // While the mark is being dragged it is the only thing the crosshair reads,
     // and over ground the picture cannot see it answers to nothing: the place
     // it was dragged from is not where the hand is, and drawing it there would
     // say the mark had gone back.
@@ -1061,18 +1071,20 @@ export function PanoramaView({
           </g>
         ))}
 
-        {/* Where a press on the terrain landed: the counterpart in the picture
-            of the crosshair it put on the map. Larger than a label's anchor
-            dot and haloed like one, since it stands on rock and forest with no
-            name beside it to say what it is. */}
+        {/* Where a press on the terrain landed: the same crosshair the map and
+            the readout wear, so the three read as one mark. Haloed like a
+            label's anchor, since it stands on rock and forest with no name
+            beside it to say what it is — `paintOrder` puts that halo behind
+            the glyph rather than over it. */}
         {pickedAt && (
-          <circle
-            cx={pickedAt.x}
-            cy={pickedAt.y}
-            r={4}
-            fill={PICKED_INK}
+          <FaCrosshairs
+            x={pickedAt.x - PICK_MARK_PX / 2}
+            y={pickedAt.y - PICK_MARK_PX / 2}
+            size={PICK_MARK_PX}
+            color={PICKED_INK}
             stroke="rgba(0, 0, 0, 0.6)"
-            strokeWidth={1.5}
+            strokeWidth={PICK_MARK_HALO}
+            paintOrder="stroke"
           />
         )}
       </svg>

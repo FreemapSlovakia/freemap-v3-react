@@ -206,8 +206,8 @@ export default function PanoramaResult(): ReactElement | null {
         const { azimuth, distance, seen } = readTowards(render, at);
 
         // Only where the picture can see the place: the two figures are true of
-        // the map wherever the mark is, but a dot on the terrain would claim a
-        // view of ground a ridge hides.
+        // the map wherever the mark is, but a crosshair on the terrain would
+        // claim a view of ground a ridge hides.
         setPanoramaAim({
           azimuth,
           mark: {

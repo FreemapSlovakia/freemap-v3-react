@@ -107,9 +107,9 @@ the drag at the end.
 
 **The aim carries the reading, not just the bearing**, where the gesture names a
 place — a dragged mark does, a swung wedge does not. `mark.seen` is what the
-picture makes of it: the row for the red dot and the elevation for the readouts,
+picture makes of it: the row for the red crosshair and the elevation for the readouts,
 taken once by the gesture rather than looked up again by the picture. The view
-is turned to that bearing, so the dot rides the middle of it and climbs towards
+is turned to that bearing, so the crosshair rides the middle of it and climbs towards
 the horizon as the mark is dragged away, and the readings follow it — the
 marker's tooltip and the panel's own box (`readoutOf`, so the two cannot
 disagree) say where the mark is now, not where it came from.
