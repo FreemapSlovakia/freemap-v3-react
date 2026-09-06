@@ -160,6 +160,5 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaCircle />,
     msgKey: 'gpsRecorder',
     available: gpsRecorderAvailableSelector,
-    experimental: true,
   },
 ];

@@ -389,7 +389,7 @@ Each watched device is added with a **Watch Device** form: Watch Token (required
 
 ### GPS recorder
 
-- Access: Main menu > GPS recorder (marked **experimental**)
+- Access: Main menu > GPS recorder
 - URL path: `/#tools=gps-recorder`
 - **Android only**, and it needs a separate app: the *Freemap GPS Recorder*, a self-hosted APK the tool links to when it isn't installed. The tool is hidden entirely on other platforms.
 

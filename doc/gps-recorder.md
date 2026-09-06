@@ -24,11 +24,8 @@ Two gates, both in [`support.ts`](../src/features/gpsRecorder/support.ts):
   Chromium-only and secure-context-only, so over plain http on a dev host it is
   `undefined` and would hide the tool exactly where it is being developed. A
   module constant: it cannot change within a page lifetime.
-- **Nothing else.** It was behind the `layerPreview` role while it was being
-  proven; it is now marked `experimental: true` in `toolDefinitions` instead, which
-  puts `ExperimentalFunction`'s flask on the menu item and on the tool's own title.
-  The people who would find the rough edges are the people who would use it, and a
-  role gate kept them out.
+- **Nothing else.** No role gate and no experimental mark: the people who would
+  find the rough edges are the people who would use it.
 
 `ToolDefinition.available` takes a `(state) => boolean` predicate rather than a
 flag, because other tools' gates do depend on state. `unavailableToolsSelector` folds the whole registry into the

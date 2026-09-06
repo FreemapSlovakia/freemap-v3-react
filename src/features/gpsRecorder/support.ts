@@ -16,12 +16,7 @@ export const gpsRecorderPlatformSupported = /Android/i.test(
   navigator.userAgent,
 );
 
-/**
- * Whether the GPS recorder tool is offered. The platform is the only gate — it is
- * marked experimental in the menus instead of being hidden from all but a role,
- * because the people who would find the rough edges are the people who would use
- * it.
- */
+/** Whether the GPS recorder tool is offered. The platform is the only gate. */
 export function gpsRecorderAvailableSelector(): boolean {
   return gpsRecorderPlatformSupported;
 }
