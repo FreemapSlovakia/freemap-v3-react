@@ -168,6 +168,14 @@ export function MapContextMenu(): ReactElement {
     function handlecontextMenu(e: LeafletMouseEvent) {
       e.originalEvent.preventDefault();
 
+      // A right-click/long-press fires no click, so other open dropdowns never
+      // see an outside click. Synthesize one on <html>: it reaches the root-close
+      // listeners on `document` while staying out of reach of React and Leaflet,
+      // whose handlers sit on descendants.
+      document.documentElement.dispatchEvent(
+        new MouseEvent('click', { bubbles: true }),
+      );
+
       closeMenu();
 
       handleMenuToggle(true);
