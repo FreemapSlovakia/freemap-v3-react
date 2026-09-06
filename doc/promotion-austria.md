@@ -101,7 +101,24 @@ das alles gratis wäre, wovon sollen dann die Programmierer leben?"* This audien
 argues openly for paying for good cartography, so the "funded by its users" sentence
 is an asset here rather than a risk.
 
-## Draft A0 — entry in the pinned overview thread
+## Draft A0 — entry in the pinned overview thread — **POSTED 2026-09-06**
+
+Account approved by the gipfeltreffen admin 2026-09-06 13:59 (two days after
+registering). Posted the same evening, no moderation queue.
+
+**Adapted on the spot**: `Exilfranke` (Felix, 13 807 posts) had posted 11 hours
+earlier in the same thread wishing for a Swiss-Topo-style map with trail closures
+and transit stops overlaid. The post now opens by answering him — custom WMS/TMS
+overlays and the ÖPNV layer exist, so published closure data *could* be overlaid,
+but we do not hold that data and his real point (nobody maintains Austrian closures
+consistently) stands. Conceding that before making any claim is what earns the rest
+of the post a reading. Watch for his reply; he is active daily.
+
+**vBulletin mechanics:** the thread-level reply opens via the `post-reply-btn`
+button and is a CKEditor instance named `vb-cke-instance-1` —
+`CKEDITOR.instances['vb-cke-instance-1'].setData(html)`. Submit is the button
+labelled "Antworten" carrying `js-content-entry-submit`. The per-post "Kommentar"
+boxes are something else; do not use them for a thread reply.
 
 > Hallo,
 >
@@ -354,3 +371,15 @@ Example: https://www.freemap.eu/#map=18/53.698134/7.163437&layers=X&osm-node=430
 The map legend (https://www.freemap.eu/#show=legend) answers this class of question
 and is generated for the zoom currently in view — worth quoting to anyone asking what
 a symbol means.
+
+## hikr reply mechanics (learned 2026-09-06)
+
+- **hikr enforces a ~10-minute cooldown between comments.** A second comment inside
+  that window is silently refused with a red "Please wait 10 min." banner; the text
+  is simply lost. Space batched replies out.
+- **Overriding the hidden `comment_parent_id` does not work** — hikr rebuilds it. You
+  must click the actual "Reply to this" link belonging to the target comment, then
+  verify `comment_parent_id` before filling. Link indices shift as comments are added,
+  so re-map them after every post.
+- Comment boxes are plain textareas (no CKEditor) — plain text, bare URLs are linked
+  automatically. This differs from the post editor, which needs HTML.
