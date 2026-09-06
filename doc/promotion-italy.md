@@ -501,11 +501,11 @@ far better than a post — but only later, once the name is known.
 > Cordiali saluti,
 > Martin Ždila
 
-## Draft 9 — hikr.org, "Hikr in italiano" forum — **NOT POSTED YET**
+## Draft 9 — hikr.org, "Hikr in italiano" forum — **POSTED 2026-09-06**
 
-Composed in the editor on 2026-09-04 but never sent; the community
-(`/comm/italiano/`, 419 members — the largest on hikr) has been joined already, so it
-only needs writing into `add_msg.php?comm_id=7` again and sending. Post it as HTML.
+Live at https://www.hikr.org/post203897.html (community `/comm/italiano/`, 419
+members — the largest on hikr). Posted with the corrected claims: no "no-profit",
+no "senza pubblicità", and the funding sentence naming the self-served ads.
 
 **Post it as HTML** — see the hikr posting mechanics in
 [`promotion-austria.md`](./promotion-austria.md). Real `<a href>` links with short

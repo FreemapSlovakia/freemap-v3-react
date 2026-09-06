@@ -175,3 +175,4 @@ Add a row per post; keep `—` where the date is unknown rather than guessing.
 | 2026-09-04 | 🇦🇹🇨🇭🇩🇪 AT+CH+DE | hikr.org — Small Talk forum ("sagt mir, wo sie danebenliegt") | DE | posted | https://www.hikr.org/post203834.html |
 | 2026-09-04 | 🇮🇹 Italy | avventurosamente.it — Orientamento/cartografia ("Mappe offline senza MOBAC") | IT | posted | https://www.avventurosamente.it/xf/threads/mappe-offline-senza-mobac-%E2%80%94-scaricare-larea-direttamente-dal-browser.65728/ |
 | 2026-09-06 | 🇦🇹 Austria | gipfeltreffen.at — pinned "Digitale Karten im Netz – Übersicht" | DE | posted | https://www.gipfeltreffen.at/forum/gipfeltreffen/literatur-navigation-und-technik/hard-software-mit-bergbezug/67800-digitale-karten-im-netz-%C3%BCbersicht/page6 |
+| 2026-09-06 | 🇮🇹🇨🇭 IT + CH | hikr.org — "Hikr in italiano" community (419 members) | IT | posted | https://www.hikr.org/post203897.html |
