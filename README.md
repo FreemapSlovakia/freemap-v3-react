@@ -7,7 +7,7 @@ Freemap is a free, non-commercial web map application built on OpenStreetMap dat
 This repository is the **frontend** — a React single-page application. It talks to:
 
 - the [Freemap API server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend) (`freemap-v3-api`) for accounts, photos, tracking, saved maps and purchases, and
-- external tile, routing (GraphHopper) and geocoding (Nominatim / Overpass) services.
+- external tile and routing (GraphHopper) services, our own geocoder (Photon) and our own OSM data API (`freemap-osm-api`) for POIs, map details and element lookup.
 
 ## Tech stack
 

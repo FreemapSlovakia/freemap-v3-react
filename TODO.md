@@ -296,7 +296,7 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 - **Don't rename the `overpass-*` / `nominatim-*` source ids.** They name the
   kind of lookup, not the backend — the data comes from freemap-osm-api and
-  Photon, and Overpass is gone from the code entirely (`baa08abe`). Renaming is
+  Photon, and Overpass is gone from the code entirely (`4f7deff3`). Renaming is
   tempting and wrong: the ids are part of the saved-map document format, and
   `mapDocumentSchema.ts` silently drops a search result whose `source` it does
   not recognise. A compat mapping covers old documents, but not the other
