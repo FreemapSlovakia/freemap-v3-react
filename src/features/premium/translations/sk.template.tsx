@@ -52,19 +52,11 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
   dtmAreaNames: { gb: 'Anglicko' },
-  stepsForAnonymous: (
+  purchaseAfterLogin: (
     <>
-      <div className="fw-bold">Ako to funguje</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Krok 1</span> - prihláste sa alebo si
-          vytvorte bezplatný účet vo Freemape (nižšie).
-        </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Krok 2</span> - budete presmerovaní na
-          dokončenie platby.
-        </p>
-      </div>
+      Zvolením poskytovateľa prihlásenia sa prihlásite alebo si vytvoríte
+      bezplatný účet vo Freemape. Následne budete pokračovať na platbu za{' '}
+      <strong>Freemap Premium</strong>.
     </>
   ),
   success: 'Gratulujeme, získali ste prémiový prístup!',

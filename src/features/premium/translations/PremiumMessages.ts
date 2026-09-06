@@ -10,7 +10,8 @@ export type PremiumMessages = {
    * `Intl.DisplayNames` names countries alone, so these are translated by hand.
    */
   dtmAreaNames: { gb: string };
-  stepsForAnonymous: ReactNode;
+  /** Brief reminder in the login modal of what the login is for. */
+  purchaseAfterLogin: ReactNode;
   success: string;
   becomePremium: string;
   youArePremium: (date: string) => JSX.Element;

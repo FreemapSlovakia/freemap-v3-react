@@ -48,19 +48,11 @@ const en: PremiumMessages = {
     </>
   ),
   dtmAreaNames: { gb: 'England' },
-  stepsForAnonymous: (
+  purchaseAfterLogin: (
     <>
-      <div className="fw-bold">How it works</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Step 1</span> - sign in or create a free
-          Freemap account (below).
-        </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Step 2</span> - you'll be redirected to
-          complete the payment.
-        </p>
-      </div>
+      Choosing a login provider signs you in or creates a free Freemap account.
+      You will then continue to the payment for <strong>Freemap Premium</strong>
+      .
     </>
   ),
   success: 'Congratulations, you have gained premium access!',

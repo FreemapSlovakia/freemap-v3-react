@@ -1,14 +1,17 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useDtmCountryNames } from '@features/premium/hooks/useDtmCountryNames.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { PREMIUM_PRICE_EUR } from '@shared/premiumPricing.js';
 import type { ReactElement } from 'react';
 import { Alert, Button, Modal } from 'react-bootstrap';
-import { FaExclamationTriangle, FaSignInAlt, FaTimes } from 'react-icons/fa';
+import {
+  FaExclamationTriangle,
+  FaGem,
+  FaSignInAlt,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useAuthMessages } from '../translations/useAuthMessages.js';
 import { AuthProviders } from './AuthProviders.js';
@@ -21,8 +24,6 @@ export default function LoginModal({ show }: Props): ReactElement {
   const prm = usePremiumMessages();
 
   const am = useAuthMessages();
-
-  const dtmCountries = useDtmCountryNames();
 
   const dispatch = useDispatch();
 
@@ -38,11 +39,12 @@ export default function LoginModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? m?.mainMenu.logIn : undefined);
 
+  // Only what the login is for — the offer itself was just shown in the
+  // premium modal this login came from.
   const renderPremiumInfo = () =>
     purchaseOnLogin?.type === 'premium' ? (
       <Alert variant="primary">
-        {prm?.commonHeader(PREMIUM_PRICE_EUR, dtmCountries)}
-        {prm?.stepsForAnonymous}
+        <FaGem /> {prm?.purchaseAfterLogin}
       </Alert>
     ) : null;
 

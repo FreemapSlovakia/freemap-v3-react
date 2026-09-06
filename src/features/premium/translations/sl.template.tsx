@@ -56,19 +56,11 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
   dtmAreaNames: { gb: 'Anglija' },
-  stepsForAnonymous: (
+  purchaseAfterLogin: (
     <>
-      <div className="fw-bold">Kako deluje</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">1. korak</span> - prijavite se ali si
-          ustvarite brezplačen račun Freemap (spodaj).
-        </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">2. korak</span> - preusmerjeni boste na
-          dokončanje plačila.
-        </p>
-      </div>
+      Z izbiro ponudnika prijave se prijavite ali si ustvarite brezplačen račun
+      Freemap. Nato boste nadaljevali s plačilom za{' '}
+      <strong>Freemap Premium</strong>.
     </>
   ),
   success: 'Čestitamo, pridobili ste premium dostop!',

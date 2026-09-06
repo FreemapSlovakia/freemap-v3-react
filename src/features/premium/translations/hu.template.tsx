@@ -56,19 +56,11 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
   dtmAreaNames: { gb: 'Anglia' },
-  stepsForAnonymous: (
+  purchaseAfterLogin: (
     <>
-      <div className="fw-bold">Hogyan működik</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">1. lépés</span> - jelentkezzen be vagy
-          hozzon létre ingyenes Freemap-fiókot (lent).
-        </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">2. lépés</span> - átirányítjuk a fizetés
-          befejezéséhez.
-        </p>
-      </div>
+      A bejelentkezési szolgáltató kiválasztásával bejelentkezik, vagy ingyenes
+      Freemap-fiókot hoz létre. Ezután a <strong>Freemap Premium</strong>{' '}
+      fizetésével folytatja.
     </>
   ),
   success: 'Gratulálunk, megszerezted a prémium hozzáférést!',

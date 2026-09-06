@@ -58,19 +58,11 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   ),
 
   dtmAreaNames: { gb: 'England' },
-  stepsForAnonymous: (
+  purchaseAfterLogin: (
     <>
-      <div className="fw-bold">So funktioniert es</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Schritt 1</span> – Melde dich an oder
-          erstelle ein kostenloses Freemap-Konto (unten).
-        </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Schritt 2</span> – Du wirst zur Zahlung
-          weitergeleitet.
-        </p>
-      </div>
+      Mit der Wahl eines Anmeldeanbieters meldest du dich an oder erstellst ein
+      kostenloses Freemap-Konto. Anschließend geht es weiter zur Zahlung für{' '}
+      <strong>Freemap Premium</strong>.
     </>
   ),
   success: 'Glückwunsch, du hast Premium-Zugang erhalten!',

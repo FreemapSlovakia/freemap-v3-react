@@ -51,19 +51,11 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
   dtmAreaNames: { gb: 'Anglie' },
-  stepsForAnonymous: (
+  purchaseAfterLogin: (
     <>
-      <div className="fw-bold">Jak to funguje</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Krok 1</span> - přihlaste se nebo si
-          vytvořte bezplatný účet ve Freemapu (níže).
-        </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Krok 2</span> - budete přesměrováni k
-          dokončení platby.
-        </p>
-      </div>
+      Zvolením poskytovatele přihlášení se přihlásíte nebo si vytvoříte
+      bezplatný účet ve Freemapu. Následně budete pokračovat k platbě za{' '}
+      <strong>Freemap Premium</strong>.
     </>
   ),
   success: 'Gratulujeme, získali jste prémiový přístup!',
