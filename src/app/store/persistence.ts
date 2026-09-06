@@ -289,6 +289,7 @@ export const PersistedGpsRecorderSettingsSchema = z
     splitGapS: z.number().nonnegative(),
     feedLocation: z.boolean(),
     keepScreenAwake: z.boolean(),
+    style: DrawingStyleSchema.partial(),
   })
   .partial();
 
@@ -559,6 +560,11 @@ const PERSIST: PersistEntry[] = [
     key: 'gpsRecorderSettings',
     schema: PersistedGpsRecorderSettingsSchema,
     initial: gpsRecorderSettingsInitialState,
+    rehydrate: (initial, data) => ({
+      ...initial,
+      ...data,
+      style: { ...initial.style, ...data.style },
+    }),
     persist: (g) => ({
       intervalMs: g.intervalMs,
       minDistanceM: g.minDistanceM,
@@ -568,6 +574,7 @@ const PERSIST: PersistEntry[] = [
       splitGapS: g.splitGapS,
       feedLocation: g.feedLocation,
       keepScreenAwake: g.keepScreenAwake,
+      style: g.style,
     }),
   }),
   defineEntry({

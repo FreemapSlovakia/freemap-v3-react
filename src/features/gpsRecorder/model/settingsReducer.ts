@@ -1,3 +1,7 @@
+import {
+  type DrawingStyle,
+  makeDrawingStyle,
+} from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { RecorderConfig } from '../protocol.js';
 import { gpsRecorderSetSettings } from './actions.js';
@@ -26,6 +30,12 @@ export interface GpsRecorderSettingsState extends RecorderConfig {
   feedLocation: boolean;
   /** Holds a screen wake lock while recording, so a long ride stays visible. */
   keepScreenAwake: boolean;
+  /**
+   * How the live track is drawn. A full `DrawingStyle` for the shared editor and
+   * `drawingStyleToPathOptions`, but only the stroke colour and width are
+   * offered — a recording is one plain line.
+   */
+  style: DrawingStyle;
 }
 
 export const gpsRecorderSettingsInitialState: GpsRecorderSettingsState = {
@@ -40,6 +50,7 @@ export const gpsRecorderSettingsInitialState: GpsRecorderSettingsState = {
   splitGapS: 300,
   feedLocation: true,
   keepScreenAwake: false,
+  style: makeDrawingStyle('#ff0000', 4),
 };
 
 export const gpsRecorderSettingsReducer = createReducer(

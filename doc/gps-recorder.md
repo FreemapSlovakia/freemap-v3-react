@@ -836,8 +836,10 @@ value — which is also how the modal presents it:
 - **`RecorderConfig`** (`intervalMs`, `minDistanceM`, `maxAccuracyM`,
   `priority`, `source`) travels with `POST /start` and decides what is recorded
   at all. Changing it cannot affect a recording already running.
-- **The rest** (`splitGapS`, `feedLocation`, `keepScreenAwake`) never leaves the
-  browser.
+- **The rest** (`splitGapS`, `feedLocation`, `keepScreenAwake`, `style`) never
+  leaves the browser. `style` is a full `DrawingStyle` so the shared editor and
+  `drawingStyleToPathOptions` apply, but the modal offers only its stroke colour
+  and width — a recording is one plain line.
 
 `source` picks the provider, and this app defaults it to `gps` where the recorder
 itself defaults to `fused`. The fused position is the better one — GNSS blended

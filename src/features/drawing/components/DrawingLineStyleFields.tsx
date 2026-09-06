@@ -13,14 +13,16 @@ type Props = {
   onWidthChange: (width: string) => void;
   widthStep?: number;
   invalidWidth?: boolean;
-  lineCap: LineCap;
-  onLineCapChange: (lineCap: LineCap) => void;
-  lineJoin: LineJoin;
-  onLineJoinChange: (lineJoin: LineJoin) => void;
-  dashArray: number[];
-  onDashArrayChange: (dashArray: number[]) => void;
+  lineCap?: LineCap;
+  onLineCapChange?: (lineCap: LineCap) => void;
+  lineJoin?: LineJoin;
+  onLineJoinChange?: (lineJoin: LineJoin) => void;
+  dashArray?: number[];
+  onDashArrayChange?: (dashArray: number[]) => void;
 };
 
+// Each field is shown only when its change handler is given, so a consumer that
+// styles a plain stroke (the GPS recorder) can ask for colour and width alone.
 export function DrawingLineStyleFields({
   color,
   onColorChange,
@@ -30,9 +32,9 @@ export function DrawingLineStyleFields({
   onWidthChange,
   widthStep,
   invalidWidth,
-  lineCap,
+  lineCap = 'round',
   onLineCapChange,
-  lineJoin,
+  lineJoin = 'round',
   onLineJoinChange,
   dashArray,
   onDashArrayChange,
@@ -40,7 +42,7 @@ export function DrawingLineStyleFields({
   const dm = useDrawingMessages();
 
   const [inputs, setInputs] = useState<string[]>(() => [
-    ...dashArray.map(String),
+    ...(dashArray ?? []).map(String),
     '',
   ]);
 
@@ -51,7 +53,7 @@ export function DrawingLineStyleFields({
       internalChange.current = false;
       return;
     }
-    setInputs([...dashArray.map(String), '']);
+    setInputs([...(dashArray ?? []).map(String), '']);
   }, [dashArray]);
 
   function handleInputChange(index: number, value: string) {
@@ -62,7 +64,7 @@ export function DrawingLineStyleFields({
     }
     setInputs(newInputs);
     internalChange.current = true;
-    onDashArrayChange(newInputs.filter(Boolean).map(Number));
+    onDashArrayChange?.(newInputs.filter(Boolean).map(Number));
   }
 
   function handleInputBlur(index: number) {
@@ -72,7 +74,7 @@ export function DrawingLineStyleFields({
   }
 
   const widthNum = parseFloat(width) || 2;
-  const dashArrayValue = dashArray.length ? dashArray.join(' ') : undefined;
+  const dashArrayValue = dashArray?.length ? dashArray.join(' ') : undefined;
   const previewHeight = onFillColorChange
     ? Math.max(40, widthNum * 2 + 24)
     : Math.max(20, widthNum + 12);
@@ -131,48 +133,58 @@ export function DrawingLineStyleFields({
         />
       </Form.Group>
 
-      <Form.Group controlId="lineCap" className="mt-3">
-        <Form.Label>{dm?.edit.lineCap}</Form.Label>
+      {onLineCapChange && (
+        <Form.Group controlId="lineCap" className="mt-3">
+          <Form.Label>{dm?.edit.lineCap}</Form.Label>
 
-        <Form.Select
-          value={lineCap}
-          onChange={(e) => onLineCapChange(e.currentTarget.value as LineCap)}
-        >
-          <option value="round">{dm?.edit.lineCapRound}</option>
-          <option value="butt">{dm?.edit.lineCapButt}</option>
-          <option value="square">{dm?.edit.lineCapSquare}</option>
-        </Form.Select>
-      </Form.Group>
+          <Form.Select
+            value={lineCap}
+            onChange={(e) => onLineCapChange(e.currentTarget.value as LineCap)}
+          >
+            <option value="round">{dm?.edit.lineCapRound}</option>
+            <option value="butt">{dm?.edit.lineCapButt}</option>
+            <option value="square">{dm?.edit.lineCapSquare}</option>
+          </Form.Select>
+        </Form.Group>
+      )}
 
-      <Form.Group controlId="lineJoin" className="mt-3">
-        <Form.Label>{dm?.edit.lineJoin}</Form.Label>
+      {onLineJoinChange && (
+        <Form.Group controlId="lineJoin" className="mt-3">
+          <Form.Label>{dm?.edit.lineJoin}</Form.Label>
 
-        <Form.Select
-          value={lineJoin}
-          onChange={(e) => onLineJoinChange(e.currentTarget.value as LineJoin)}
-        >
-          <option value="round">{dm?.edit.lineJoinRound}</option>
-          <option value="miter">{dm?.edit.lineJoinMiter}</option>
-          <option value="bevel">{dm?.edit.lineJoinBevel}</option>
-        </Form.Select>
-      </Form.Group>
+          <Form.Select
+            value={lineJoin}
+            onChange={(e) =>
+              onLineJoinChange(e.currentTarget.value as LineJoin)
+            }
+          >
+            <option value="round">{dm?.edit.lineJoinRound}</option>
+            <option value="miter">{dm?.edit.lineJoinMiter}</option>
+            <option value="bevel">{dm?.edit.lineJoinBevel}</option>
+          </Form.Select>
+        </Form.Group>
+      )}
 
       <Form.Group controlId="dashArray" className="mt-3">
-        <Form.Label>{dm?.edit.dashArray}</Form.Label>
+        {onDashArrayChange && (
+          <>
+            <Form.Label>{dm?.edit.dashArray}</Form.Label>
 
-        <div className="d-flex flex-wrap gap-1 mb-2">
-          {inputs.map((val, i) => (
-            <Form.Control
-              key={i}
-              type="number"
-              min={0}
-              value={val}
-              style={{ width: '4rem' }}
-              onChange={(e) => handleInputChange(i, e.currentTarget.value)}
-              onBlur={() => handleInputBlur(i)}
-            />
-          ))}
-        </div>
+            <div className="d-flex flex-wrap gap-1 mb-2">
+              {inputs.map((val, i) => (
+                <Form.Control
+                  key={i}
+                  type="number"
+                  min={0}
+                  value={val}
+                  style={{ width: '4rem' }}
+                  onChange={(e) => handleInputChange(i, e.currentTarget.value)}
+                  onBlur={() => handleInputBlur(i)}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         <svg
           ref={svgRef}

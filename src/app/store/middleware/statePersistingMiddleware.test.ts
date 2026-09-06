@@ -137,6 +137,15 @@ function makeState(): RootState {
       splitGapS: 120,
       feedLocation: false,
       keepScreenAwake: true,
+      style: {
+        color: '#ff0000',
+        fillColor: '#ff000033',
+        width: 4,
+        markerType: 'pin',
+        dashArray: [],
+        lineCap: 'round',
+        lineJoin: 'round',
+      },
     },
   } as unknown as RootState;
 }
@@ -281,6 +290,15 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         splitGapS: 120,
         feedLocation: false,
         keepScreenAwake: true,
+        style: {
+          color: '#ff0000',
+          fillColor: '#ff000033',
+          width: 4,
+          markerType: 'pin',
+          dashArray: [],
+          lineCap: 'round',
+          lineJoin: 'round',
+        },
       },
       weatherRadarSettings: { showNowcast: false },
     });

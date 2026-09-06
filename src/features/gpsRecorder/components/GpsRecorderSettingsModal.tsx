@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
@@ -42,13 +43,26 @@ export default function GpsRecorderSettingsModal({
   // what stop it being submitted in that state.
   const [interval, setInterval] = useState(String(saved.intervalMs / 1000));
 
+  // Held as typed for the same reason as the interval.
+  const [width, setWidth] = useState(String(saved.style.width));
+
+  const invalidWidth = !(Number(width) > 0);
+
   const set = (patch: Partial<GpsRecorderSettingsState>) =>
     setDraft((current) => ({ ...current, ...patch }));
+
+  const setStyle = (patch: Partial<GpsRecorderSettingsState['style']>) =>
+    setDraft((current) => ({
+      ...current,
+      style: { ...current.style, ...patch },
+    }));
 
   const resetDefaults = () => {
     setDraft(gpsRecorderSettingsInitialState);
 
     setInterval(String(gpsRecorderSettingsInitialState.intervalMs / 1000));
+
+    setWidth(String(gpsRecorderSettingsInitialState.style.width));
   };
 
   const close = () => {
@@ -71,6 +85,9 @@ export default function GpsRecorderSettingsModal({
       onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
+      // The colour picker's popover is portalled to <body>, so the modal's focus
+      // trap would steal focus from its inputs.
+      enforceFocus={false}
     >
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
@@ -263,10 +280,26 @@ export default function GpsRecorderSettingsModal({
             checked={draft.keepScreenAwake}
             onChange={(e) => set({ keepScreenAwake: e.currentTarget.checked })}
           />
+
+          {/* A recording is one plain line, so only its colour and width are
+              offered — a dash or a cap would say nothing about it. */}
+          <DrawingLineStyleFields
+            color={draft.style.color}
+            onColorChange={(color) => setStyle({ color })}
+            width={width}
+            onWidthChange={(value) => {
+              setWidth(value);
+
+              if (Number(value) > 0) {
+                setStyle({ width: Number(value) });
+              }
+            }}
+            invalidWidth={invalidWidth}
+          />
         </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit">
+          <Button type="submit" disabled={invalidWidth}>
             <FaCheck /> {m?.general.save}
           </Button>
 

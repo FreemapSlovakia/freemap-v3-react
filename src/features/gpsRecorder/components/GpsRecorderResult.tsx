@@ -1,5 +1,7 @@
 import { openTool } from '@app/store/actions.js';
+import { drawingStyleToPathOptions } from '@features/drawing/drawingStyleToPathOptions.js';
 import { useMap } from '@features/map/hooks/useMap.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { CircleMarker, Pane, Polyline } from 'react-leaflet';
@@ -58,6 +60,24 @@ export default function GpsRecorderResult(): ReactElement | null {
 
   const handlers = useMemo(() => ({ click: handleClick }), [handleClick]);
 
+  const style = useAppSelector((state) => state.gpsRecorderSettings.style);
+
+  const pathOptions = useMemo(() => drawingStyleToPathOptions(style), [style]);
+
+  // As `pathOptions`, not as props: react-leaflet re-applies only `center` and
+  // `radius` on a circle, so style given any other way would never restyle.
+  const headOptions = useMemo(() => {
+    const { color, opacity } = splitColorAlpha(style.color);
+
+    return {
+      color,
+      opacity,
+      weight: 2,
+      fillColor: '#fff',
+      fillOpacity: 1,
+    };
+  }, [style.color]);
+
   const map = useMap();
 
   // The interactive-overlay opacity dims the default panes; ours needs it too.
@@ -83,8 +103,7 @@ export default function GpsRecorderResult(): ReactElement | null {
         <Polyline
           key={i}
           positions={segment}
-          color="#f00"
-          weight={4}
+          pathOptions={pathOptions}
           eventHandlers={handlers}
         />
       ))}
@@ -93,10 +112,7 @@ export default function GpsRecorderResult(): ReactElement | null {
         <CircleMarker
           center={[latest.lat, latest.lon]}
           radius={5}
-          weight={2}
-          color="#f00"
-          fillColor="#fff"
-          fillOpacity={1}
+          pathOptions={headOptions}
           eventHandlers={handlers}
         />
       )}
