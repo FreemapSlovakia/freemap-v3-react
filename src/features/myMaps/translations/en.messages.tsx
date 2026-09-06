@@ -51,9 +51,9 @@ const en: MyMapsMessages = {
   writers: 'Editors',
   addWriter: 'Add an editor',
   conflictError: 'The map has been modified in the meantime.',
-  availableOffline: 'Available offline',
+  availableOffline: 'Available offline in this browser',
   availableOfflineHint:
-    'Keep a copy of this map in the browser so it can be opened without a connection. Background map tiles are cached separately via Offline maps.',
+    'Keep a copy of this map in this browser so it can be opened without a connection. Background map tiles are cached separately via Offline maps.',
   offline: 'Offline',
   makeAllOffline: 'Make all available offline',
   removeAllOffline: 'Remove all from offline',

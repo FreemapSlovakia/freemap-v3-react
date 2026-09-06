@@ -4,6 +4,10 @@ import type { CachedMapsMessages } from './CachedMapsMessages.js';
 const de: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Karte für Offline-Nutzung speichern',
   modifyOfflineMap: 'Offline-Karte bearbeiten',
+  deviceOnly:
+    'Die Offline-Karte wird nur in diesem Browser auf diesem Gerät gespeichert.',
+  deviceOnlyHint:
+    'Damit sie in einem anderen Browser oder auf einem anderen Gerät verfügbar ist, muss die Offline-Karte dort angelegt werden.',
   toDownload: 'Herunterzuladen',
   addOfflineMap: 'Offline-Karte hinzufügen',
   emptyMessage:

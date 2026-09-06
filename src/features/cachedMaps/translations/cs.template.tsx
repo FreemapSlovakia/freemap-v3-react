@@ -4,6 +4,9 @@ import type { CachedMapsMessages } from './CachedMapsMessages.js';
 const cs: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Uložit mapu pro offline použití',
   modifyOfflineMap: 'Upravit offline mapu',
+  deviceOnly: 'Offline mapa se uloží jen v tomto prohlížeči na tomto zařízení.',
+  deviceOnlyHint:
+    'Aby byla mapa dostupná v jiném prohlížeči nebo na jiném zařízení, je potřeba offline mapu vytvořit tam.',
   toDownload: 'Ke stažení',
   addOfflineMap: 'Přidat offline mapu',
   emptyMessage:

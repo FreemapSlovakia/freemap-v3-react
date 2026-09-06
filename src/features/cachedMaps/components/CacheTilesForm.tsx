@@ -503,6 +503,10 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <Alert variant="info">
+          <BiWifiOff /> {cm?.deviceOnly} <HintMark hint={cm?.deviceOnlyHint} />
+        </Alert>
+
         <Form.Group controlId="mapType">
           <Form.Label>{ome?.map}</Form.Label>
 

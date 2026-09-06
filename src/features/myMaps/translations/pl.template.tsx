@@ -56,9 +56,9 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Edytorzy',
   addWriter: 'Dodaj edytora',
   conflictError: 'Mapa została w międzyczasie zmodyfikowana.',
-  availableOffline: 'Dostępne offline',
+  availableOffline: 'Dostępne offline w tej przeglądarce',
   availableOfflineHint:
-    'Przechowuje kopię tej mapy w przeglądarce, aby można ją było otworzyć bez połączenia. Kafelki mapy podkładowej są zapisywane osobno przez Mapy offline.',
+    'Przechowuje kopię tej mapy w tej przeglądarce, aby można ją było otworzyć bez połączenia. Kafelki mapy podkładowej są zapisywane osobno przez Mapy offline.',
   offline: 'Offline',
   makeAllOffline: 'Udostępnij wszystkie offline',
   removeAllOffline: 'Usuń wszystkie z offline',

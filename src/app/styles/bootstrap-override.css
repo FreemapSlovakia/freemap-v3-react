@@ -233,3 +233,9 @@ legend {
     border-color: var(--fm-btn-on-hover-border);
   }
 }
+
+/* Bootstrap's 200px folds a hint into a narrow column, and the `?` marks explain
+   in whole sentences. Bounded by the viewport so a phone keeps it on screen. */
+.tooltip {
+  --bs-tooltip-max-width: min(24rem, calc(100vw - 2rem));
+}

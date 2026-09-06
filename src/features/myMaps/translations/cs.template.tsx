@@ -55,9 +55,9 @@ const cs: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Editori',
   addWriter: 'Přidat editora',
   conflictError: 'Mapa byla mezitím modifikována.',
-  availableOffline: 'Dostupné offline',
+  availableOffline: 'Dostupné offline v tomto prohlížeči',
   availableOfflineHint:
-    'Uchová kopii této mapy v prohlížeči, aby se dala otevřít i bez připojení. Dlaždice podkladové mapy se ukládají samostatně přes Offline mapy.',
+    'Uchová kopii této mapy v tomto prohlížeči, aby se dala otevřít i bez připojení. Dlaždice podkladové mapy se ukládají samostatně přes Offline mapy.',
   offline: 'Offline',
   makeAllOffline: 'Zpřístupnit všechny offline',
   removeAllOffline: 'Odebrat všechny z offline',

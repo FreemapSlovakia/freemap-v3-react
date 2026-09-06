@@ -57,9 +57,9 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Bearbeiter',
   addWriter: 'Editor hinzufügen',
   conflictError: 'Die Karte wurde inzwischen geändert.',
-  availableOffline: 'Offline verfügbar',
+  availableOffline: 'In diesem Browser offline verfügbar',
   availableOfflineHint:
-    'Behält eine Kopie dieser Karte im Browser, damit sie auch ohne Verbindung geöffnet werden kann. Kacheln der Hintergrundkarte werden separat über Offline-Karten gespeichert.',
+    'Behält eine Kopie dieser Karte in diesem Browser, damit sie auch ohne Verbindung geöffnet werden kann. Kacheln der Hintergrundkarte werden separat über Offline-Karten gespeichert.',
   offline: 'Offline',
   makeAllOffline: 'Alle offline verfügbar machen',
   removeAllOffline: 'Alle aus Offline entfernen',

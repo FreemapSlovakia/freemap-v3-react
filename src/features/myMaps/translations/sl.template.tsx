@@ -56,9 +56,9 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Uredniki',
   addWriter: 'Dodaj urednika',
   conflictError: 'Zemljevid je bil vmes spremenjen.',
-  availableOffline: 'Na voljo brez povezave',
+  availableOffline: 'Na voljo brez povezave v tem brskalniku',
   availableOfflineHint:
-    'Ohrani kopijo tega zemljevida v brskalniku, da ga je mogoče odpreti tudi brez povezave. Ploščice podložnega zemljevida se shranjujejo ločeno prek Zemljevidov brez povezave.',
+    'Ohrani kopijo tega zemljevida v tem brskalniku, da ga je mogoče odpreti tudi brez povezave. Ploščice podložnega zemljevida se shranjujejo ločeno prek Zemljevidov brez povezave.',
   offline: 'Brez povezave',
   makeAllOffline: 'Vse omogoči brez povezave',
   removeAllOffline: 'Vse odstrani iz načina brez povezave',

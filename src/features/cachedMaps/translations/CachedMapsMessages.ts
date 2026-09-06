@@ -3,6 +3,8 @@ import type { JSX, ReactNode } from 'react';
 export type CachedMapsMessages = {
   cacheOfflineMap: string;
   modifyOfflineMap: string;
+  deviceOnly: string;
+  deviceOnlyHint: string;
   toDownload: string;
   addOfflineMap: string;
   emptyMessage: string;

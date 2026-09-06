@@ -4,6 +4,10 @@ import type { CachedMapsMessages } from './CachedMapsMessages.js';
 const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Térkép mentése offline használatra',
   modifyOfflineMap: 'Offline térkép módosítása',
+  deviceOnly:
+    'Az offline térkép csak ebben a böngészőben, ezen az eszközön tárolódik.',
+  deviceOnlyHint:
+    'Ahhoz, hogy másik böngészőben vagy másik eszközön is elérhető legyen, ott kell létrehozni az offline térképet.',
   toDownload: 'Letöltendő',
   addOfflineMap: 'Offline térkép hozzáadása',
   emptyMessage:

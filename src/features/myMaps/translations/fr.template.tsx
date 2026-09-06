@@ -71,9 +71,9 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Éditeurs',
   addWriter: 'Ajouter un éditeur',
   conflictError: 'La carte a été modifiée entre-temps.',
-  availableOffline: 'Disponible hors ligne',
+  availableOffline: 'Disponible hors ligne dans ce navigateur',
   availableOfflineHint:
-    'Conserve une copie de cette carte dans le navigateur afin de pouvoir l’ouvrir sans connexion. Les tuiles de la carte de fond sont mises en cache séparément via les Cartes hors ligne.',
+    'Conserve une copie de cette carte dans ce navigateur afin de pouvoir l’ouvrir sans connexion. Les tuiles de la carte de fond sont mises en cache séparément via les Cartes hors ligne.',
   offline: 'Hors ligne',
   makeAllOffline: 'Rendre tout disponible hors ligne',
   removeAllOffline: 'Tout retirer du mode hors ligne',

@@ -56,9 +56,9 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Editori',
   addWriter: 'Aggiungi editor',
   conflictError: 'La mappa è stata modificata nel frattempo.',
-  availableOffline: 'Disponibile offline',
+  availableOffline: 'Disponibile offline in questo browser',
   availableOfflineHint:
-    'Conserva una copia di questa mappa nel browser, così può essere aperta anche senza connessione. I tasselli della mappa di sfondo si salvano separatamente tramite le Mappe offline.',
+    'Conserva una copia di questa mappa in questo browser, così può essere aperta anche senza connessione. I tasselli della mappa di sfondo si salvano separatamente tramite le Mappe offline.',
   offline: 'Offline',
   makeAllOffline: 'Rendi tutte disponibili offline',
   removeAllOffline: 'Rimuovi tutte dall’offline',

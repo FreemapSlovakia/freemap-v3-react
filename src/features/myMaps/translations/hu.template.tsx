@@ -57,9 +57,9 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   writers: 'Szerkesztők',
   addWriter: 'Szerkesztő hozzáadása',
   conflictError: 'A térképet időközben módosították.',
-  availableOffline: 'Elérhető offline',
+  availableOffline: 'Elérhető offline ebben a böngészőben',
   availableOfflineHint:
-    'Megőrzi a térkép másolatát a böngészőben, hogy kapcsolat nélkül is megnyitható legyen. A háttértérkép csempéi külön, az Offline térképeken keresztül tárolódnak.',
+    'Megőrzi a térkép másolatát ebben a böngészőben, hogy kapcsolat nélkül is megnyitható legyen. A háttértérkép csempéi külön, az Offline térképeken keresztül tárolódnak.',
   offline: 'Offline',
   makeAllOffline: 'Összes elérhetővé tétele offline',
   removeAllOffline: 'Összes eltávolítása az offline tárolóból',

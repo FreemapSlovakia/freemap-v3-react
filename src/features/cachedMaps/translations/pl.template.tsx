@@ -4,6 +4,10 @@ import type { CachedMapsMessages } from './CachedMapsMessages.js';
 const pl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   cacheOfflineMap: 'Zapisz mapę do użycia offline',
   modifyOfflineMap: 'Edytuj mapę offline',
+  deviceOnly:
+    'Mapa offline zapisuje się tylko w tej przeglądarce na tym urządzeniu.',
+  deviceOnlyHint:
+    'Aby była dostępna w innej przeglądarce lub na innym urządzeniu, mapę offline trzeba utworzyć tam.',
   toDownload: 'Do pobrania',
   addOfflineMap: 'Dodaj mapę offline',
   emptyMessage:
