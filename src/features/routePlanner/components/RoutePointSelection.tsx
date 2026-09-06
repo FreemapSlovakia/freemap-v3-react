@@ -1,3 +1,4 @@
+import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
@@ -24,7 +25,9 @@ export default function RoutePointSelection():
         icon={<FaMapMarkerAlt />}
         label={rpm?.point.point}
         deletable
-      />
+      >
+        <PlaceActionsButton lat={point.lat} lon={point.lon} />
+      </Selection>
     )
   );
 }

@@ -96,6 +96,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Table d’orientation d’ici',
     lookAtInPanorama: 'Regarder cela dans le panorama',
     placeActions: 'Que faire de ce lieu',
+    locationActions: 'Actions pour ce lieu',
     convert: {
       geometry: 'Géométrie',
       pointOnly: 'Point seul',
@@ -566,8 +567,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Ajouter un point ici',
     startLine: 'Commencer ici à dessiner une ligne ou une mesure',
     queryFeatures: 'Interroger les objets à proximité',
-    startRoute: 'Planifier un itinéraire depuis ici',
-    finishRoute: 'Planifier un itinéraire jusqu’ici',
     showPhotos: 'Afficher les photos à proximité',
   },
   errorStatus: {},

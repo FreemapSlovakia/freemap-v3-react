@@ -1,8 +1,6 @@
 import { openInExternalApp } from '@app/store/actions.js';
-import {
-  OpenInExternalTargetItems,
-  SharePageItems,
-} from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import { OpenInExternalTargetItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import {
   getIdElementUrl,
   getOsmElementUrl,
@@ -16,14 +14,12 @@ import {
   getNameFromOsmElement,
 } from '@osm/osmNameResolver.js';
 import type { SelectCallback } from '@restart/ui/types';
+import { LocationActionItems } from '@shared/components/LocationActionItems.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import {
   ActionDivider,
-  ActionItems,
   ActionSubmenu,
 } from '@shared/components/ResponsiveActions.js';
-import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
-import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import type { EventKey } from '@shared/hooks/useMenuHandler.js';
@@ -34,7 +30,7 @@ import {
 import { afterPrefix } from '@shared/types/typeUtils.js';
 import { type ReactNode, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaExternalLinkAlt } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaMapPin } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
@@ -44,8 +40,9 @@ type Props = {
 };
 
 /**
- * What can be done with a selected OSM feature: routed to, looked at from, and
- * opened elsewhere — its page on osm.org, JOSM, the other maps.
+ * What can be done with a selected OSM feature: everything the map's context
+ * menu does with the place it stands at, and opening it elsewhere — its page on
+ * osm.org, JOSM, the other maps.
  *
  * The actions come back as a list to spread into the toolbar's own
  * `ResponsiveActions`, so both toolbars that can carry them share one ⋮ menu
@@ -56,6 +53,8 @@ export function useObjectActions({ result }: Props): {
   actions: ReactNode[];
   onSelect: SelectCallback;
 } {
+  const m = useMessages();
+
   const om = useObjectsMessages();
 
   const oeam = useOpenInExternalAppMessages();
@@ -162,23 +161,15 @@ export function useObjectActions({ result }: Props): {
 
   if (coords && !window.fmEmbedded) {
     actions.push(
-      <ActionDivider key="route-divider" />,
+      <ActionDivider key="place-divider" />,
 
-      <ActionItems key="route">
-        <RouteEndpointItems {...coords} />
-      </ActionItems>,
-
-      <ActionDivider key="view-divider" />,
-
-      <ActionItems key="views">
-        <ViewFromHereItems {...coords} />
-      </ActionItems>,
-
-      <ActionDivider key="share-divider" />,
-
-      <ActionItems key="share">
-        <SharePageItems />
-      </ActionItems>,
+      <ActionSubmenu
+        key="location"
+        label={m?.general.locationActions}
+        icon={<FaMapPin />}
+      >
+        <LocationActionItems {...coords} pointTitle={displayName} />
+      </ActionSubmenu>,
 
       openIn(
         <OpenInExternalTargetItems

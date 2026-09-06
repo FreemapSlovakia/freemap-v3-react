@@ -79,6 +79,7 @@ const messages: Messages = {
     toposcopeFromHere: 'Toposcope from here',
     lookAtInPanorama: 'Look at this in the panorama',
     placeActions: 'What to do with this place',
+    locationActions: 'Location actions',
     convert: {
       geometry: 'Geometry',
       pointOnly: 'Point only',
@@ -555,8 +556,6 @@ const messages: Messages = {
     addPoint: 'Add here a point',
     startLine: 'Start here drawing a line or measurement',
     queryFeatures: 'Query nearby features',
-    startRoute: 'Plan a route from here',
-    finishRoute: 'Plan a route to here',
     showPhotos: 'Show nearby photos',
   },
 

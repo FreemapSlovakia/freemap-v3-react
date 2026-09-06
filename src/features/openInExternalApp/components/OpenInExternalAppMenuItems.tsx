@@ -69,6 +69,8 @@ interface PageProps {
   imageUrl?: string;
   showKbdShortcut?: boolean;
   copy?: boolean;
+  /** Off where the menu carries "Share location" among its place actions instead. */
+  share?: boolean;
 }
 
 interface TargetProps
@@ -104,10 +106,15 @@ export function openMenuItemProps(externalTarget: ExternalTarget) {
  * that shares files — a different question from knowing the API: Firefox has `canShare` and shares
  * no file at all, and Chromium has a share sheet only on some platforms.
  */
-function pageItemFlags({ url, imageUrl, copy = true }: PageProps) {
+function pageItemFlags({
+  url,
+  imageUrl,
+  copy = true,
+  share = true,
+}: PageProps) {
   return {
     canCopy: !url && Boolean(window.navigator.clipboard?.writeText) && copy,
-    hasShare: 'share' in window.navigator,
+    hasShare: 'share' in window.navigator && share,
     canShareImage: Boolean(imageUrl) && canShareFile('photo.jpg', 'image/jpeg'),
   };
 }

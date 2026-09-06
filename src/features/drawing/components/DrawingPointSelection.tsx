@@ -3,9 +3,7 @@ import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToD
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
 import { Selection } from '@shared/components/Selection.js';
-import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
 import { type ReactElement, useMemo, useState } from 'react';
@@ -110,8 +108,8 @@ export default function DrawingPointSelection(): ReactElement | null {
           )}
         </LongPressTooltip>
 
-        {/* Not only "open in": the menu also routes to the point, takes a view
-            from it and hands it to an editor. */}
+        {/* Not only "open in": the menu also carries what the map's context
+            menu does with the place. */}
         <LongPressTooltip label={m?.general.actions}>
           {({ props }) => (
             <OpenInExternalAppMenuButton
@@ -140,10 +138,6 @@ export default function DrawingPointSelection(): ReactElement | null {
                     <MdShapeLine />{' '}
                     {m?.general.convertTo({ tool: m?.tools.dataViewer })}
                   </Dropdown.Item>
-
-                  <RouteEndpointItems divider {...coords} />
-
-                  <ViewFromHereItems divider {...coords} />
                 </>
               }
             >

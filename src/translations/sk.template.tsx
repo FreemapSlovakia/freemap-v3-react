@@ -81,6 +81,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Orientačná ružica odtiaľto',
     lookAtInPanorama: 'Pozrieť sa na to v panoráme',
     placeActions: 'Čo sa dá robiť s týmto miestom',
+    locationActions: 'Akcie pre toto miesto',
     convert: {
       geometry: 'Geometria',
       pointOnly: 'Iba bod',
@@ -593,8 +594,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Pridať sem bod',
     startLine: 'Začať tu kresliť čiaru, merať dĺžku',
     queryFeatures: 'Zistiť detaily v okolí',
-    startRoute: 'Plánovať odtiaľ trasu',
-    finishRoute: 'Plánovať sem trasu',
     showPhotos: 'Ukázať fotky v okolí',
   },
 

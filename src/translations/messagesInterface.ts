@@ -64,6 +64,7 @@ export type Messages = {
     lookAtInPanorama: string;
     /** Names the ⋮ menu a panel carries for the place it is about. */
     placeActions: string;
+    locationActions: string;
     convert: {
       geometry: string;
       pointOnly: string;
@@ -356,8 +357,6 @@ export type Messages = {
     addPoint: string;
     startLine: string;
     queryFeatures: string;
-    startRoute: string;
-    finishRoute: string;
     showPhotos: string;
   };
   errorStatus: Record<number, string>;

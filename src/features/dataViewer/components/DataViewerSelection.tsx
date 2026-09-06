@@ -9,9 +9,7 @@ import {
   Action,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
-import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
 import { Selection } from '@shared/components/Selection.js';
-import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature } from 'geojson';
@@ -343,8 +341,8 @@ export default function DataViewerSelection(): ReactElement | null {
       </ResponsiveActions>
 
       {placeMenu && (
-        // Not only "open in": the menu also routes to the point, takes a view
-        // from it and hands it to an editor.
+        // Not only "open in": the menu also carries what the map's context
+        // menu does with the place.
         <LongPressTooltip label={m?.general.actions}>
           {({ props }) => (
             <OpenInExternalAppMenuButton
@@ -355,20 +353,14 @@ export default function DataViewerSelection(): ReactElement | null {
               url={`/?point=${lat}/${lon}`}
               toggleProps={props}
               menuItems={
-                <>
-                  <Dropdown.Item
-                    as="button"
-                    onClick={() => {
-                      void convertToDrawing(index);
-                    }}
-                  >
-                    <FaPencilAlt /> {m?.general.convertToDrawing}
-                  </Dropdown.Item>
-
-                  <RouteEndpointItems divider lat={lat} lon={lon} />
-
-                  <ViewFromHereItems divider lat={lat} lon={lon} />
-                </>
+                <Dropdown.Item
+                  as="button"
+                  onClick={() => {
+                    void convertToDrawing(index);
+                  }}
+                >
+                  <FaPencilAlt /> {m?.general.convertToDrawing}
+                </Dropdown.Item>
               }
             >
               <FaEllipsisV />

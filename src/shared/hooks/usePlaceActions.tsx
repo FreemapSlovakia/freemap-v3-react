@@ -1,23 +1,17 @@
 import { openInExternalApp } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalTargetItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import type { SelectCallback } from '@restart/ui/types';
-import {
-  ActionDivider,
-  ActionItems,
-  ActionSubmenu,
-} from '@shared/components/ResponsiveActions.js';
-import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
-import {
-  type ViewFromHere,
-  ViewFromHereItems,
-} from '@shared/components/ViewFromHereItems.js';
+import { LocationActionItems } from '@shared/components/LocationActionItems.js';
+import { ActionSubmenu } from '@shared/components/ResponsiveActions.js';
+import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { EventKey } from '@shared/hooks/useMenuHandler.js';
 import type { LatLon } from '@shared/types/common.js';
 import { afterPrefix } from '@shared/types/typeUtils.js';
 import type { ReactNode } from 'react';
-import { FaExternalLinkAlt } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaMapPin } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = {
@@ -33,15 +27,17 @@ type Props = {
 };
 
 /**
- * What can be done with a place on the map: routed from or to, looked at from,
- * opened elsewhere. Spread into a toolbar's `ResponsiveActions`, whose
- * `onSelect` this also answers — the external-app items act through their
- * `eventKey`.
+ * What can be done with a place on the map, behind two submenus: everything the
+ * map's own context menu offers, and the other maps. Spread into a toolbar's
+ * `ResponsiveActions`, whose `onSelect` this also answers — the external-app
+ * items act through their `eventKey`.
  */
 export function usePlaceActions({ at, omit, onAct }: Props): {
   actions: ReactNode[];
   onSelect: SelectCallback;
 } {
+  const m = useMessages();
+
   const oeam = useOpenInExternalAppMessages();
 
   const dispatch = useDispatch();
@@ -54,17 +50,13 @@ export function usePlaceActions({ at, omit, onAct }: Props): {
   // with nothing and leave the menu holding dividers.
   if (at && !window.fmEmbedded) {
     actions.push(
-      <ActionItems key="route">
-        <RouteEndpointItems {...at} onAct={onAct} />
-      </ActionItems>,
-
-      <ActionDivider key="view-divider" />,
-
-      <ActionItems key="views">
-        <ViewFromHereItems {...at} omit={omit} onAct={onAct} />
-      </ActionItems>,
-
-      <ActionDivider key="open-divider" />,
+      <ActionSubmenu
+        key="location"
+        label={m?.general.locationActions}
+        icon={<FaMapPin />}
+      >
+        <LocationActionItems {...at} omit={omit} onAct={onAct} />
+      </ActionSubmenu>,
 
       <ActionSubmenu
         key="open-in"

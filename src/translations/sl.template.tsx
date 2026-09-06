@@ -81,6 +81,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Panoramska tabla od tu',
     lookAtInPanorama: 'Poglej to v panorami',
     placeActions: 'Kaj se da narediti s tem krajem',
+    locationActions: 'Dejanja za ta kraj',
     convert: {
       geometry: 'Geometrija',
       pointOnly: 'Samo točka',
@@ -566,8 +567,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Dodaj sem točko',
     startLine: 'Začni tukaj risati črto ali meriti',
     queryFeatures: 'Poizvedi po bližnjih objektih',
-    startRoute: 'Načrtuj pot od tukaj',
-    finishRoute: 'Načrtuj pot do sem',
     showPhotos: 'Pokaži bližnje fotografije',
   },
 

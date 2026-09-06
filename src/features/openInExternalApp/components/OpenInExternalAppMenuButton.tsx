@@ -1,5 +1,7 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { LocationActionItems } from '@shared/components/LocationActionItems.js';
 import type { TooltipTargetProps } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
@@ -9,7 +11,7 @@ import type { LatLon } from '@shared/types/common.js';
 import type { JSX, ReactElement, ReactNode } from 'react';
 import type { OverlayProps } from 'react-bootstrap';
 import { Dropdown } from 'react-bootstrap';
-import { FaChevronRight, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaChevronRight, FaExternalLinkAlt, FaMapPin } from 'react-icons/fa';
 import {
   hasPageItems,
   OpenInExternalTargetItems,
@@ -36,6 +38,8 @@ interface Props extends LatLon {
   toggleProps?: TooltipTargetProps;
   /** Items the menu carries above the external ones — what else this place can do. */
   menuItems?: ReactNode;
+  /** Run when one of the shared place actions fires — a modal over the map closes itself here. */
+  onAct?: () => void;
   children: JSX.Element | JSX.Element[];
 }
 
@@ -51,9 +55,12 @@ export function OpenInExternalAppMenuButton({
   imageUrl,
   toggleProps,
   menuItems,
+  onAct,
   children,
   className,
 }: Props): ReactElement {
+  const m = useMessages();
+
   const oeam = useOpenInExternalAppMessages();
 
   // `url` deliberately stays out of this: it is what the "New window" item opens, which for a
@@ -72,7 +79,8 @@ export function OpenInExternalAppMenuButton({
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const pageItems = hasPageItems({ url, imageUrl });
+  // Same `share: false` the items get below, or the divider outlives them.
+  const pageItems = hasPageItems({ url, imageUrl, share: false });
 
   return (
     <Dropdown
@@ -114,6 +122,26 @@ export function OpenInExternalAppMenuButton({
               url={url}
             />
           </>
+        ) : submenu === 'locationActions' ? (
+          <>
+            <SubmenuHeader
+              icon={<FaMapPin />}
+              title={m?.general.locationActions}
+            />
+
+            <LocationActionItems
+              lat={lat}
+              lon={lon}
+              pointTitle={pointTitle}
+              pointDescription={pointDescription}
+              url={url}
+              onAct={() => {
+                handleMenuToggle(false);
+
+                onAct?.();
+              }}
+            />
+          </>
         ) : (
           <>
             {menuItems && (
@@ -124,9 +152,17 @@ export function OpenInExternalAppMenuButton({
               </>
             )}
 
-            <SharePageItems url={url} imageUrl={imageUrl} />
+            {/* "Share location" is among the place actions instead. */}
+            <SharePageItems url={url} imageUrl={imageUrl} share={false} />
 
             {pageItems && <Dropdown.Divider />}
+
+            <Dropdown.Item as="button" eventKey="submenu-locationActions">
+              <FaMapPin /> {m?.general.locationActions}
+              <MenuGutter>
+                <FaChevronRight />
+              </MenuGutter>
+            </Dropdown.Item>
 
             <Dropdown.Item as="button" eventKey="submenu-openExternally">
               <FaExternalLinkAlt /> {oeam?.openIn}

@@ -80,6 +80,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Panorámatábla innen',
     lookAtInPanorama: 'Megnézés a panorámában',
     placeActions: 'Mit lehet kezdeni ezzel a hellyel',
+    locationActions: 'Műveletek ezzel a hellyel',
     convert: {
       geometry: 'Geometria',
       pointOnly: 'Csak pont',
@@ -579,8 +580,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Pont hozzáadása ide',
     startLine: 'Vonal vagy mérés indítása innen',
     queryFeatures: 'Részletek lekérdezése a közelben',
-    startRoute: 'Útvonal tervezése innen',
-    finishRoute: 'Útvonal tervezése idáig',
     showPhotos: 'Közeli fotók megjelenítése',
   },
 

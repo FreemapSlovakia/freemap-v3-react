@@ -1,24 +1,11 @@
-import { drawingLineAddPoint } from '@features/drawing/model/actions/drawingLineActions.js';
-import {
-  drawingMeasure,
-  drawingPointAdd,
-} from '@features/drawing/model/actions/drawingPointActions.js';
-import { galleryRequestImages } from '@features/gallery/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
-import { mapRefocus } from '@features/map/model/actions.js';
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
-import {
-  routePlannerSetFinish,
-  routePlannerSetStart,
-} from '@features/routePlanner/model/actions.js';
-import { searchSetQuery } from '@features/search/model/actions.js';
 import type { Modifier, Obj } from '@popperjs/core';
 import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
+import { LocationActionItems } from '@shared/components/LocationActionItems.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
-import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
-import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -27,27 +14,16 @@ import type { LeafletMouseEvent } from 'leaflet';
 import {
   type ReactElement,
   type RefObject,
-  useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
-  FaCamera,
   FaChevronLeft,
   FaChevronRight,
   FaExternalLinkAlt,
-  FaInfo,
-  FaMapMarkerAlt,
-  FaPlay,
-  FaRegDotCircle,
-  FaRuler,
-  FaStop,
 } from 'react-icons/fa';
-import { MdTimeline } from 'react-icons/md';
-import { useDispatch } from 'react-redux';
-import { openTool } from '../store/actions.js';
 import classes from './MapContextMenu.module.css';
 
 const initialState = {
@@ -123,8 +99,6 @@ export function MapContextMenu(): ReactElement {
 
   const oeam = useOpenInExternalAppMessages();
 
-  const dispatch = useDispatch();
-
   const [contextMenu, setContextMenu] = useState(initialState);
 
   const arrowRef = useRef<HTMLSpanElement>(null);
@@ -142,23 +116,15 @@ export function MapContextMenu(): ReactElement {
     ],
   };
 
-  const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
-
   const toggleRef = useRef<HTMLButtonElement>(null);
 
   const map = useMap();
 
-  const {
-    handleSelect,
-    menuShown,
-    handleMenuToggle,
-    closeMenu,
-    submenu,
-    extraHandler,
-  } = useMenuHandler({
-    at: { lat: contextMenu.lat, lon: contextMenu.lon },
-    includePoint: true,
-  });
+  const { handleSelect, menuShown, handleMenuToggle, closeMenu, submenu } =
+    useMenuHandler({
+      at: { lat: contextMenu.lat, lon: contextMenu.lon },
+      includePoint: true,
+    });
 
   useEffect(() => {
     if (!map) {
@@ -208,168 +174,6 @@ export function MapContextMenu(): ReactElement {
   const zoom = useAppSelector((state) => state.map.zoom);
 
   const sc = useScrollClasses('vertical');
-
-  const color = useAppSelector((state) => state.drawingSettings.style.color);
-
-  const markerType = useAppSelector(
-    (state) => state.drawingSettings.style.markerType,
-  );
-
-  const width = useAppSelector((state) => state.drawingSettings.style.width);
-
-  const linesLength = useAppSelector(
-    (state) => state.drawingLines.lines.length,
-  );
-
-  const pointsLength = useAppSelector(
-    (state) => state.drawingPoints.points.length,
-  );
-
-  extraHandler.current = useCallback(
-    (eventKey: string | null) => {
-      switch (eventKey) {
-        case 'center':
-          dispatch(
-            mapRefocus({
-              lat: contextMenu.lat,
-              lon: contextMenu.lon,
-            }),
-          );
-
-          closeMenu();
-
-          break;
-
-        case 'measure':
-          dispatch(
-            drawingMeasure({
-              position: {
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
-            }),
-          );
-
-          closeMenu();
-
-          break;
-
-        case 'details':
-          dispatch(
-            searchSetQuery({
-              query:
-                '@' +
-                contextMenu.lat.toFixed(6) +
-                ',' +
-                contextMenu.lon.toFixed(6),
-            }),
-          );
-
-          closeMenu();
-
-          break;
-
-        case 'photos':
-          dispatch(
-            galleryRequestImages({
-              lat: contextMenu.lat,
-              lon: contextMenu.lon,
-            }),
-          );
-
-          closeMenu();
-
-          break;
-
-        case 'addPoint':
-          dispatch(
-            drawingPointAdd({
-              coords: {
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
-              color,
-              markerType,
-              id: pointsLength,
-            }),
-          );
-
-          dispatch(drawingMeasure({}));
-
-          closeMenu();
-
-          break;
-
-        case 'startLine':
-          dispatch(openTool('draw-lines'));
-
-          dispatch(
-            drawingLineAddPoint({
-              lineProps: {
-                type: 'line',
-                color,
-                width,
-              },
-              point: {
-                id: 0,
-                lat: contextMenu.lat,
-                lon: contextMenu.lon,
-              },
-              indexOfLineToSelect: linesLength,
-              drawing: true,
-            }),
-          );
-
-          closeMenu();
-
-          break;
-
-        case 'startRoute':
-          dispatch(openTool('route-planner'));
-
-          dispatch(
-            routePlannerSetStart({
-              lat: contextMenu.lat,
-              lon: contextMenu.lon,
-            }),
-          );
-
-          closeMenu();
-
-          break;
-
-        case 'finishRoute':
-          dispatch(openTool('route-planner'));
-
-          dispatch(
-            routePlannerSetFinish({
-              lat: contextMenu.lat,
-              lon: contextMenu.lon,
-            }),
-          );
-
-          closeMenu();
-
-          break;
-
-        default:
-          return false;
-      }
-
-      return true;
-    },
-    [
-      closeMenu,
-      color,
-      markerType,
-      contextMenu.lat,
-      contextMenu.lon,
-      dispatch,
-      width,
-      linesLength,
-      pointsLength,
-    ],
-  );
 
   return (
     <Dropdown
@@ -428,69 +232,26 @@ export function MapContextMenu(): ReactElement {
                 zoom={zoom}
                 includePoint
                 copy={false}
+                share={false}
               />
             </>
           ) : (
-            <>
-              <Dropdown.Item as="button" eventKey="center">
-                <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
-              </Dropdown.Item>
-
-              <Dropdown.Item as="button" eventKey="measure">
-                <FaRuler /> {m?.mapCtxMenu.measurePosition}
-              </Dropdown.Item>
-
-              {(!window.fmEmbedded || embedFeatures.includes('search')) && (
-                <OnlineOnlyItem as="button" eventKey="details">
-                  <FaInfo /> {m?.mapCtxMenu.queryFeatures}
-                </OnlineOnlyItem>
-              )}
-
-              {(!window.fmEmbedded ||
-                !embedFeatures.includes('noMapSwitch')) && (
-                <OnlineOnlyItem as="button" eventKey="photos">
-                  <FaCamera /> {m?.mapCtxMenu.showPhotos}
-                </OnlineOnlyItem>
-              )}
-
+            // The place's own menu, flat: this one *is* the location menu, so
+            // there is nothing to hide it behind.
+            <LocationActionItems
+              lat={contextMenu.lat}
+              lon={contextMenu.lon}
+              onAct={closeMenu}
+            >
               {!window.fmEmbedded && (
-                <>
-                  <Dropdown.Item as="button" eventKey="submenu-openExternally">
-                    <FaExternalLinkAlt /> {oeam?.openInExternal}
-                    <MenuGutter>
-                      <FaChevronRight />
-                    </MenuGutter>
-                  </Dropdown.Item>
-
-                  <Dropdown.Divider />
-
-                  <Dropdown.Item as="button" eventKey="addPoint">
-                    <FaMapMarkerAlt /> {m?.mapCtxMenu.addPoint}
-                  </Dropdown.Item>
-
-                  <Dropdown.Item as="button" eventKey="startLine">
-                    <MdTimeline /> {m?.mapCtxMenu.startLine}
-                  </Dropdown.Item>
-
-                  <Dropdown.Divider />
-
-                  <OnlineOnlyItem as="button" eventKey="startRoute">
-                    <FaPlay color="#409a40" /> {m?.mapCtxMenu.startRoute}
-                  </OnlineOnlyItem>
-
-                  <OnlineOnlyItem as="button" eventKey="finishRoute">
-                    <FaStop color="#d9534f" /> {m?.mapCtxMenu.finishRoute}
-                  </OnlineOnlyItem>
-
-                  <ViewFromHereItems
-                    divider
-                    lat={contextMenu.lat}
-                    lon={contextMenu.lon}
-                    onAct={closeMenu}
-                  />
-                </>
+                <Dropdown.Item as="button" eventKey="submenu-openExternally">
+                  <FaExternalLinkAlt /> {oeam?.openInExternal}
+                  <MenuGutter>
+                    <FaChevronRight />
+                  </MenuGutter>
+                </Dropdown.Item>
               )}
-            </>
+            </LocationActionItems>
           )}
         </div>
       </Dropdown.Menu>

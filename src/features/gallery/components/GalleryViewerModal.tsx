@@ -10,9 +10,7 @@ import { usePremiumMessages } from '@features/premium/translations/usePremiumMes
 import { getMinWidthForBreakpoint } from '@shared/breakpoints.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
-import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
 import { UserChip } from '@shared/components/UserChip.js';
-import { ViewFromHereItems } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -1285,54 +1283,37 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     url={url}
                     imageUrl={shareImageUrl}
                     toggleProps={props}
+                    // The viewer gets out of the way of the map that answers.
+                    onAct={close}
                     menuItems={
-                      <>
-                        {/* The photo stands somewhere, so the place can be
-                            routed to and looked at — and the viewer gets out of
-                            the way of the map that answers. */}
-                        <Dropdown.Item
-                          as="button"
-                          onClick={() => {
-                            const { drawingSettings, drawingPoints } =
-                              store.getState();
+                      <Dropdown.Item
+                        as="button"
+                        onClick={() => {
+                          const { drawingSettings, drawingPoints } =
+                            store.getState();
 
-                            dispatch(
-                              drawingPointAdd({
-                                id: drawingPoints.points.length,
-                                coords: { lat, lon },
-                                color: drawingSettings.style.color,
-                                markerType: drawingSettings.style.markerType,
-                                icon: 'fa:camera',
-                                // The title, where there is one; a photo without
-                                // one leaves the point unlabelled rather than
-                                // showing the placeholder.
-                                label: '{p:name}',
-                                props: photoProps,
-                              }),
-                            );
+                          dispatch(
+                            drawingPointAdd({
+                              id: drawingPoints.points.length,
+                              coords: { lat, lon },
+                              color: drawingSettings.style.color,
+                              markerType: drawingSettings.style.markerType,
+                              icon: 'fa:camera',
+                              // The title, where there is one; a photo without
+                              // one leaves the point unlabelled rather than
+                              // showing the placeholder.
+                              label: '{p:name}',
+                              props: photoProps,
+                            }),
+                          );
 
-                            dispatch(mapRefocus({ lat, lon }));
+                          dispatch(mapRefocus({ lat, lon }));
 
-                            close();
-                          }}
-                        >
-                          <FaPencilAlt /> {m?.general.copyToDrawing}
-                        </Dropdown.Item>
-
-                        <RouteEndpointItems
-                          divider
-                          lat={lat}
-                          lon={lon}
-                          onAct={close}
-                        />
-
-                        <ViewFromHereItems
-                          divider
-                          lat={lat}
-                          lon={lon}
-                          onAct={close}
-                        />
-                      </>
+                          close();
+                        }}
+                      >
+                        <FaPencilAlt /> {m?.general.copyToDrawing}
+                      </Dropdown.Item>
                     }
                   >
                     <FaEllipsisV />

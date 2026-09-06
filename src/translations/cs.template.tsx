@@ -82,6 +82,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toposcopeFromHere: 'Orientační růžice odsud',
     lookAtInPanorama: 'Podívat se na to v panoramatu',
     placeActions: 'Co se dá dělat s tímto místem',
+    locationActions: 'Akce pro toto místo',
     convert: {
       geometry: 'Geometrie',
       pointOnly: 'Jen bod',
@@ -567,8 +568,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Zde přidat bod',
     startLine: 'Zde začít křeslit/měřit vzdálenost',
     queryFeatures: 'Zjistit detaily v okolí',
-    startRoute: 'Zde začít trasu',
-    finishRoute: 'Zde ukončit trasu',
     showPhotos: 'Zobrazit fotky v okolí',
   },
 
