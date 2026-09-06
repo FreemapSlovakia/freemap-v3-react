@@ -4,7 +4,8 @@ export type ObjectCategory = {
   name: string;
   /**
    * The `key=value` pairs, comma-joined — what `objectsSetFilter` holds and one
-   * search filter is built from.
+   * search filter is built from. A valueless tag is written bare (`building`),
+   * meaning the key with any value.
    */
   key: string;
   tags: { key: string; value?: string }[];
@@ -17,15 +18,19 @@ export type ObjectCategory = {
 export function objectCategories(osmMapping: OsmMapping): ObjectCategory[] {
   const res: ObjectCategory[] = [];
 
-  function push(name: string, tags: { key: string; value?: string }[]) {
+  function push(name: string, tags: ObjectCategory['tags']) {
     res.push({
       name,
       tags,
-      key: tags.map((tag) => `${tag.key}=${tag.value}`).join(','),
+      key: tags
+        .map((tag) =>
+          tag.value === undefined ? tag.key : `${tag.key}=${tag.value}`,
+        )
+        .join(','),
     });
   }
 
-  function rec(n: Node, tags: { key: string; value: string }[], key?: string) {
+  function rec(n: Node, tags: ObjectCategory['tags'], key?: string) {
     for (const [tagKeyOrValue, nodeOrName] of Object.entries(n)) {
       if (nodeOrName === '{}') {
         continue;
@@ -46,7 +51,11 @@ export function objectCategories(osmMapping: OsmMapping): ObjectCategory[] {
               ],
         );
       } else if (key) {
-        rec(nodeOrName, [...tags, { key, value: tagKeyOrValue }]);
+        // a `*` branch matches the key with any value
+        rec(nodeOrName, [
+          ...tags,
+          tagKeyOrValue === '*' ? { key } : { key, value: tagKeyOrValue },
+        ]);
       } else {
         rec(nodeOrName, tags, tagKeyOrValue);
       }

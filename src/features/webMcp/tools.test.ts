@@ -378,6 +378,22 @@ describe('objectCategories', () => {
       },
     ]);
   });
+
+  it('writes a `*` branch as a bare, valueless key', () => {
+    expect(
+      objectCategories({
+        osmTagToNameMapping: {
+          building: { '*': { '*': 'Building' } },
+        },
+      } as never),
+    ).toEqual([
+      {
+        name: 'Building',
+        key: 'building',
+        tags: [{ key: 'building' }],
+      },
+    ]);
+  });
 });
 
 describe('elevationStats', () => {
