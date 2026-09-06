@@ -12,6 +12,13 @@
     cursor: grab;
   }
 
+  /* On for the map's whole life, not just the gesture: the one-finger zoom
+     suspends dragging, which takes Leaflet's own `touch-action` with it, and the
+     browser latches this when the finger goes down — too late to set per gesture. */
+  &.fm-double-tap-drag-zoom {
+    touch-action: none;
+  }
+
   & .leaflet-tooltip {
     background-color: var(--bs-body-bg);
     border-color: var(--bs-body-bg);

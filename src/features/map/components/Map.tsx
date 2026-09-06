@@ -7,6 +7,8 @@ import { HALO_OPACITY, HALO_PANE, HALO_PANE_Z } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 // Imported for its side effect, before any layer can bind a tooltip.
 import '../leafletTooltipFocusFix.js';
+// Imported for its side effect: registers the `doubleTapDragZoom` map handler.
+import '../doubleTapDragZoom.js';
 import 'leaflet/dist/leaflet.css';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { MapContainer, Pane, ScaleControl } from 'react-leaflet';
@@ -69,6 +71,8 @@ export function TheMap({ children }: Props): ReactElement {
       // Only where the wheel starts out: `attachWheelZoomCalibration` measures
       // the device and corrects this from the first gesture on.
       wheelPxPerZoomLevel={initialWheelPxPerZoomLevel(zoomSnap)}
+      // One-finger zoom: double-tap, hold the second tap and drag.
+      doubleTapDragZoom
     >
       <ScaleControl imperial={false} position="bottomleft" />
 
