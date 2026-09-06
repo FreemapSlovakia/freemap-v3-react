@@ -15,11 +15,35 @@ Real engaged foreign markets, best first:
 Italy · Poland · Hungary · Austria · Czechia · Germany · Slovenia.
 
 Distinctive positioning hooks (lead with these, not "another OSM map"):
-1. Free, open-source, non-commercial, privacy-friendly (no tracking).
+1. Free, open source, no user tracking. **Not** "ad-free": the map carries our own
+   self-served ads (no ad network) that disappear for supporters — never claim otherwise.
 2. Hi-res LiDAR terrain + shaded relief + contours ("see every gully and old road").
 3. Real offline maps + GPS-device export (Garmin/Locus/OsmAnd) + live tracking.
-4. Multi-profile route planning (hike/MTB/ski/horse) with elevation profiles.
+4. Multi-profile route planning with elevation profiles. The real profiles, from
+   `src/shared/transportTypeDefs.tsx`: foot, hiking, easyhike, bike, mtb, gravelbike,
+   racingbike, ebike, stroller, car, carnotoll, car4wd, motorcycle, manual.
+   **There is no ski-touring and no horse profile** — "Hiking, Bicycle, Ski, Riding"
+   is the name of the *map layer*, not a list of routing profiles. Do not confuse them.
 Hooks 2–4 are also the premium hooks — users drawn by them convert best.
+
+## Claims that must stay accurate
+
+Three false claims went out in live posts on 2026-09-04/06 and had to be edited
+afterwards. Check copy against this list before posting.
+
+| Do not write | Reality |
+|---|---|
+| "ad-free", "werbefrei", "senza pubblicità" | The map **carries ads** for non-premium users. They are **self-served — no ad network** — and they disappear for supporters. Say that instead; self-served ads are a better story than silence. |
+| "non-profit", "gemeinnützig", "no-profit" | The association does not profit, but Martin is paid as the developer. Normal and unobjectionable — just don't make the claim. "A project of the Slovak OpenStreetMap community, open source" is true and needs no qualifier. |
+| ski-touring or horse routing profile | Neither exists. The profiles are foot, hiking, easyhike, bike, mtb, gravelbike, racingbike, ebike, stroller, car, carnotoll, car4wd, motorcycle, manual (`src/shared/transportTypeDefs.tsx`). "Hiking, Bicycle, Ski, Riding" is the **map layer's** name — not a profile list. |
+
+**Safe to claim:** open source; no user tracking (self-hosted analytics only, no ad
+network, no third-party trackers); national high-resolution terrain in the countries
+listed in `OUTDOOR_NATIONAL_DTM_ATTRIBUTION` (**not** Germany); trails drawn from
+`osmc:symbol` with `ref`/`name` labels; offline download; Garmin/Locus/OsmAnd exports.
+
+**Verify feature claims against the code, not against this roadmap.** Hook 4 below
+carried the ski/horse error for months and it propagated into two published posts.
 
 ---
 

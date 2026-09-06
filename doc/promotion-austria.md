@@ -127,8 +127,7 @@ boxes are something else; do not use them for a thread reply.
 >
 > **Europaweit, inklusive Österreich: https://www.freemap.eu**
 >
-> Outdoor-Karte auf OpenStreetMap-Basis, gemeinnütziges Projekt der slowakischen
-> OSM-Community, quelloffen, werbe- und trackingfrei.
+> Outdoor-Karte auf OpenStreetMap-Basis, Projekt der slowakischen OSM-Community, quelloffen und ohne Tracking.
 >
 > Für Österreich werden Schummerung und Höhenlinien aus dem ALS-Geländemodell
 > (Digitales Geländemodell Österreich, Geoland.at) gerechnet und nicht aus einem
@@ -138,8 +137,7 @@ boxes are something else; do not use them for a thread reply.
 > · Dachstein — https://www.freemap.eu/?lang=de#map=15/47.475000/13.605000&layers=X
 > · Großglockner — https://www.freemap.eu/?lang=de#map=15/47.074000/12.694000&layers=X
 >
-> Dazu, alles im Browser: Tourenplaner mit Höhenprofil (Wandern, Rad, MTB, Skitour,
-> Gravel, E-Bike), GPX/KML/TCX öffnen, bearbeiten und exportieren — für Garmin, Locus
+> Dazu, alles im Browser: Tourenplaner mit Höhenprofil (Wandern, einfaches Wandern, Rad, MTB, Gravel, Rennrad, E-Bike, Kinderwagen/Rollstuhl, Auto und Motorrad), GPX/KML/TCX öffnen, bearbeiten und exportieren — für Garmin, Locus
 > und OsmAnd passend aufbereitet —, Offline-Nutzung eines gewählten Ausschnitts,
 > Kartendruck als PDF/SVG/PNG, eigene WMS-/TMS-Ebenen, Niederschlagsradar und ein
 > 360°-Panorama aus dem Geländemodell.
@@ -165,8 +163,8 @@ Only after A0, and only if it draws interest.
 > Hallo miteinander,
 >
 > vorweg, damit es klar ist: ich arbeite an dem Projekt mit. Ich bin nicht hier, um
-> euch etwas zu verkaufen — Freemap ist ein gemeinnütziges Projekt der slowakischen
-> OpenStreetMap-Community, quelloffen, werbefrei und ohne Tracking.
+> euch etwas zu verkaufen — Freemap ist ein Projekt der slowakischen
+> OpenStreetMap-Community, quelloffen und ohne Tracking.
 >
 > Die Karte ist hier schon einmal aufgetaucht: manfred1110 hat sie 2023 in einem
 > Tourenbericht verlinkt, und Rudolf_48 hat damals geschrieben, die Geländedarstellung
@@ -191,7 +189,7 @@ Only after A0, and only if it draws interest.
 > ein paar Minuten nach einer Korrektur in OSM auf der Karte sichtbar.
 >
 > **Was sonst noch drin steckt**, alles im Browser, ohne Installation:
-> · Tourenplaner mit eigenen Profilen (Wandern, Rad, MTB, Skitour, Gravel, E-Bike)
+> · Tourenplaner mit eigenen Profilen (Wandern, einfaches Wandern, Rad, MTB, Gravel, Rennrad, E-Bike, Kinderwagen/Rollstuhl, Auto und Motorrad)
 >   samt Höhenprofil; die Route lässt sich nach Steigung, Untergrund, Wegart und
 >   Schwierigkeit (SAC bzw. MTB) einfärben — man sieht also vorher, wo es heikel wird
 > · GPX/KML/TCX öffnen, bearbeiten und exportieren; Export passend für Garmin,
@@ -311,8 +309,8 @@ Live at https://www.hikr.org/post203834.html . Joined the Small Talk community f
 > Hallo zusammen,
 >
 > Offenlegung vorweg: ich arbeite an der Karte mit, die ich hier zeige. Freemap ist
-> ein gemeinnütziges Projekt der slowakischen OpenStreetMap-Community — quelloffen,
-> werbefrei, ohne Tracking. Ich stelle sie hier nicht vor, damit ihr sie benutzt,
+> ein Projekt der slowakischen OpenStreetMap-Community — quelloffen und ohne
+> Tracking. Ich stelle sie hier nicht vor, damit ihr sie benutzt,
 > sondern weil ihr genau die Leute seid, die mir sagen können, wo sie falsch liegt.
 >
 > **Das Gelände** kommt aus den nationalen Höhenmodellen statt aus einem globalen
@@ -335,10 +333,11 @@ Live at https://www.hikr.org/post203834.html . Joined the Small Talk community f
 > Offline-Nutzung eines gewählten Ausschnitts, und ein 360°-Panorama aus dem
 > Geländemodell, das die Gipfel benennt.
 >
-> Das Projekt finanziert sich über seine Nutzerinnen und Nutzer statt über Werbung
-> oder Datenauswertung; ein Teil der aufwendigeren Funktionen ist deshalb
-> Unterstützern vorbehalten. Fürs Kartenlesen, Planen und Exportieren braucht es das
-> nicht.
+> Finanziert wird das Projekt über Unterstützer und über eigene Anzeigen in der
+> Karte — kein Werbenetzwerk, und Nutzerinnen und Nutzer werden nicht getrackt; für
+> Unterstützer entfallen die Anzeigen. Ein Teil der aufwendigeren Funktionen ist
+> ebenfalls Unterstützern vorbehalten; fürs Kartenlesen, Planen und Exportieren
+> braucht es das nicht.
 >
 > Was mich wirklich interessiert: schaut euch eure Hausberge an und sagt mir, was
 > falsch, hässlich oder schlicht nicht da ist. Das Rendering ist unseres, solche

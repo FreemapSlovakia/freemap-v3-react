@@ -93,7 +93,8 @@ Short, factual, in the directory's own register.
 > terrazzamenti, mulattiere e solchi dei torrenti anche dove le altre mappe si
 > appiattiscono. Aggiornata pochi minuti dopo le modifiche su OSM.
 >
-> Comprende pianificatore di percorsi (a piedi, bici, MTB, scialpinismo, cavallo)
+> Comprende pianificatore di percorsi (a piedi, escursionismo, escursionismo facile, bici, MTB,
+> gravel, bici da corsa, e-bike, passeggino/carrozzina, auto e moto)
 > con profilo altimetrico, visualizzazione e esportazione di tracce GPX/GeoJSON/KML,
 > misurazione e disegno sulla mappa, mappe salvate, livelli personalizzati (TMS/WMS),
 > tracciamento live, esportazione della mappa (PDF, SVG, PNG) e uso offline.
@@ -101,8 +102,7 @@ Short, factual, in the directory's own register.
 > funzioni più onerose sono riservate a chi sostiene il progetto, che si finanzia
 > con gli utenti invece che con la pubblicità.
 >
-> Progetto no-profit della comunità OpenStreetMap slovacca, interamente open
-> source: https://github.com/FreemapSlovakia
+> Progetto della comunità OpenStreetMap slovacca, interamente open source: https://github.com/FreemapSlovakia
 > Novità e nuove funzioni, con immagini: https://en.osm.town/@FreemapSlovakia
 >
 > Nota: il vecchio indirizzo freemap.sk resta attivo ma il progetto ora sta su
@@ -134,8 +134,8 @@ noticed on the way past.
 > apro il thread perché la domanda "come mi scarico le mappe offline adesso" gira
 > ancora parecchio, e da un po' c'è una strada che non passa più da MOBAC.
 > Premessa: collaboro al progetto Freemap, quindi valutate di conseguenza — non
-> sono qui per vendervi niente: è un progetto no-profit della comunità OSM slovacca,
-> open source, senza pubblicità né tracciamento.
+> sono qui per vendervi niente: è un progetto della comunità OSM slovacca,
+> open source e senza tracciamento degli utenti.
 >
 > Due cose, per chi conosceva già Freemap.
 >
@@ -164,9 +164,11 @@ noticed on the way past.
 > OruxMaps. Per Garmin, Locus e OsmAnd ci sono anche gli export delle tracce con
 > icone e stili già convertiti nei rispettivi formati.
 >
-> Il progetto si finanzia con chi lo usa invece che con la pubblicità o con i dati:
-> alcune delle funzioni più onerose da far girare sono riservate a chi lo sostiene.
-> Per consultare la mappa, pianificare, registrare ed esportare non serve.
+> Il progetto si finanzia con chi lo sostiene e con inserzioni proprie all’interno
+> della mappa — nessun circuito pubblicitario esterno, e gli utenti non vengono
+> tracciati; per chi sostiene il progetto le inserzioni non compaiono. Alcune delle
+> funzioni più onerose sono anch’esse riservate a chi lo sostiene: per consultare la
+> mappa, pianificare, registrare ed esportare non serve.
 >
 > Se provate e qualcosa sull'Italia vi sembra sbagliato o mancante, ditelo pure
 > qui: il rendering è nostro e si può correggere.
@@ -183,9 +185,7 @@ content on a forum rather than a plug.
 > **Titolo:** Freemap: cosa è cambiato dal 2023 — rilievo italiano a 5 m, difficoltà MTB/SAC sul percorso, offline
 >
 > Ciao a tutti,
-> premessa: faccio parte del progetto e non sono qui per vendervi niente. Freemap è
-> un progetto no-profit della comunità
-> OpenStreetMap slovacca, open source, senza pubblicità e senza tracciamento.
+> premessa: faccio parte del progetto e non sono qui per vendervi niente. Freemap è un progetto della comunità OpenStreetMap slovacca, open source e senza tracciamento degli utenti.
 >
 > Non vengo a presentarvela — sta nelle Risorse del forum dal 2023 e vedo che
 > qualcuno di voi la usa già. Vi scrivo perché da allora è cambiato parecchio, e
@@ -224,9 +224,11 @@ content on a forum rather than a plug.
 > non è ancora mappato in OSM non compare nemmeno qui — ma se lo aggiungete, lo
 > vedete sulla mappa dopo pochi minuti.
 >
-> Il progetto si finanzia con chi lo usa invece che con la pubblicità o con i dati:
-> alcune delle funzioni più onerose da far girare sono riservate a chi lo sostiene.
-> Per consultare la mappa, pianificare, registrare ed esportare non serve.
+> Il progetto si finanzia con chi lo sostiene e con inserzioni proprie all’interno
+> della mappa — nessun circuito pubblicitario esterno, e gli utenti non vengono
+> tracciati; per chi sostiene il progetto le inserzioni non compaiono. Alcune delle
+> funzioni più onerose sono anch’esse riservate a chi lo sostiene: per consultare la
+> mappa, pianificare, registrare ed esportare non serve.
 >
 > Mi interessa soprattutto il vostro giudizio sulla resa dell'Italia: cosa manca,
 > cosa è rappresentato male, cosa vi aspettereste e non c'è. Il rendering è nostro,
@@ -241,8 +243,8 @@ Same disclosure, different lead: terrain + surface, not scenery.
 
 > **Titolo:** Freemap.eu — mappa OSM open source con rilievo italiano a 5 m e pianificatore MTB
 >
-> Premessa: collaboro al progetto — no-profit e open source (comunità OSM slovacca),
-> senza pubblicità né tracciamento — e non sono qui per vendervi niente.
+> Premessa: collaboro al progetto — open source (comunità OSM slovacca), senza
+> tracciamento degli utenti — e non sono qui per vendervi niente.
 >
 > Segnalo perché la parte utile per la MTB è poco nota: il pianificatore ha un
 > profilo MTB dedicato, e il percorso calcolato si può colorare per pendenza,
@@ -257,9 +259,11 @@ Same disclosure, different lead: terrain + surface, not scenery.
 >
 > Traccia esportabile per Garmin, Locus e OsmAnd, mappa scaricabile per l'offline.
 >
-> Il progetto si finanzia con chi lo usa invece che con la pubblicità o con i dati:
-> alcune delle funzioni più onerose da far girare sono riservate a chi lo sostiene.
-> Per consultare la mappa, pianificare, registrare ed esportare non serve.
+> Il progetto si finanzia con chi lo sostiene e con inserzioni proprie all’interno
+> della mappa — nessun circuito pubblicitario esterno, e gli utenti non vengono
+> tracciati; per chi sostiene il progetto le inserzioni non compaiono. Alcune delle
+> funzioni più onerose sono anch’esse riservate a chi lo sostiene: per consultare la
+> mappa, pianificare, registrare ed esportare non serve.
 >
 > https://www.freemap.eu — commenti e critiche benvenuti, il rendering è nostro.
 > Le nuove funzioni, con esempi in immagini: https://en.osm.town/@FreemapSlovakia
@@ -271,7 +275,7 @@ Subject: *Freemap.eu — mappa interattiva da incorporare nelle vostre pagine de
 
 > Buongiorno,
 >
-> vi scrivo da Freemap, progetto no-profit della comunità OpenStreetMap slovacca
+> vi scrivo da Freemap, progetto della comunità OpenStreetMap slovacca
 > che sviluppa una mappa outdoor libera e open source. Ho visto che alcune vostre
 > pagine rimandano già alla nostra mappa: grazie, e ne approfitto per proporvi una
 > cosa che potrebbe rendervi il collegamento più utile.
@@ -387,7 +391,7 @@ times automatically, and carries the per-point channels across — which is exac
 what Strava needs. A real answer to a real question, from a cold-start account.
 
 > Ciao andreux,
-> premessa: collaboro a Freemap (mappa outdoor basata su OSM, progetto no-profit e
+> premessa: collaboro a Freemap (mappa outdoor basata su OSM, progetto e
 > open source), quindi tienine conto — la soluzione che propongo è la nostra. La
 > segnalo perché si fa dal browser senza installare niente, e sul tuo caso risolve
 > proprio la parte che altrove è manuale.
@@ -518,8 +522,8 @@ and asking the community to find its faults. Mirror that register exactly.
 > Ciao a tutti,
 >
 > premessa doverosa: collaboro al progetto della carta che vi mostro. Freemap è un
-> progetto no-profit della comunità OpenStreetMap slovacca — open source, senza
-> pubblicità e senza tracciamento. Non la porto qui perché la usiate, ma perché siete
+> progetto della comunità OpenStreetMap slovacca — open source e senza tracciamento
+> degli utenti. Non la porto qui perché la usiate, ma perché siete
 > esattamente le persone in grado di dirmi dove sbaglia.
 >
 > **Il rilievo** viene dai modelli nazionali invece che da un modello globale a 30 m:
@@ -542,8 +546,9 @@ and asking the community to find its faults. Mirror that register exactly.
 > panorama a 360° generato dal modello del terreno con i nomi delle cime.
 >
 > Il progetto si finanzia con chi lo usa invece che con la pubblicità o con i dati:
-> alcune funzioni più onerose sono riservate a chi lo sostiene. Per consultare la
-> carta, pianificare ed esportare non serve.
+> alcune funzioni più onerose sono riservate a chi lo sostiene, e per chi sostiene il
+> progetto le inserzioni proprie della mappa non compaiono. Per consultare la carta,
+> pianificare ed esportare non serve.
 >
 > Quello che mi interessa davvero: guardate le vostre montagne di casa e ditemi cosa
 > è sbagliato, cosa è brutto e cosa manca. Il rendering è nostro, le segnalazioni si
