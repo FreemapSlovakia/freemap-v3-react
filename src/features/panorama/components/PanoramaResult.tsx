@@ -139,9 +139,9 @@ export default function PanoramaResult(): ReactElement | null {
   // nobody. One that isn't is left where it is.
   useEffect(() => {
     if (probe) {
-      panToUncovered(probe, { ifHidden: true });
+      panToUncovered(dispatch, probe, { ifHidden: true });
     }
-  }, [probe]);
+  }, [dispatch, probe]);
 
   const { dragging, handlers } = useStagedViewpoint(
     useCallback((at) => dispatch(panoramaMoveViewpoint(at)), [dispatch]),

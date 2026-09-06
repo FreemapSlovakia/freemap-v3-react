@@ -1,6 +1,8 @@
+import type { Dispatch } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
 import { point } from 'leaflet';
 import { mapPromise } from './hooks/leafletElementHolder.js';
+import { mapRefocus } from './model/actions.js';
 
 // Grid the map is probed on: fine enough to find the gaps between the toolbars,
 // and no finer than the margins the answer is measured against — the cell size
@@ -118,6 +120,7 @@ export function largestUncoveredRect(container: HTMLElement): Rect {
  * inside" means.
  */
 export async function panToUncovered(
+  dispatch: Dispatch,
   at: LatLon,
   {
     ifHidden = false,
@@ -155,13 +158,16 @@ export async function panToUncovered(
   // Where the center must go for the target to land in the middle of the free
   // area: the center sits at half the size now, and moves by what the target
   // has to travel.
-  map.panTo(
-    map.containerPointToLatLng(
-      map
-        .getSize()
-        .divideBy(2)
-        .add(target)
-        .subtract(point(free.x + free.width / 2, free.y + free.height / 2)),
-    ),
+  const { lat, lng } = map.containerPointToLatLng(
+    map
+      .getSize()
+      .divideBy(2)
+      .add(target)
+      .subtract(point(free.x + free.width / 2, free.y + free.height / 2)),
   );
+
+  // Through the store, so the view the store holds stays the view on screen —
+  // and because looking somewhere the user pointed at ends GPS following, which
+  // would otherwise pull the map straight back on the next fix.
+  dispatch(mapRefocus({ lat, lon: lng, gpsTracked: false }));
 }

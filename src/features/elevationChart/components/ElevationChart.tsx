@@ -852,7 +852,7 @@ export default function ElevationChart(): ReactElement | null {
       const point = pointAt(e.clientX);
 
       if (point) {
-        panToUncovered(point, {
+        panToUncovered(dispatch, point, {
           ifHidden: true,
           margin: GENEROUS_MARGIN_PX,
         });

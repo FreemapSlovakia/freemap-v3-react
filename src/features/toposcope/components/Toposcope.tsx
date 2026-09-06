@@ -129,7 +129,10 @@ export default function Toposcope(): ReactElement {
     const at = points[id]?.coords;
 
     if (at) {
-      panToUncovered(at, { ifHidden: true, margin: GENEROUS_MARGIN_PX });
+      panToUncovered(dispatch, at, {
+        ifHidden: true,
+        margin: GENEROUS_MARGIN_PX,
+      });
     }
   };
 
