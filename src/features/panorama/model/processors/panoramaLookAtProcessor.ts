@@ -4,6 +4,7 @@ import {
   panoramaLookAt,
   panoramaSetAzimuth,
   panoramaSetProbe,
+  panoramaSetSettings,
 } from '../actions.js';
 
 /**
@@ -22,6 +23,13 @@ export const panoramaLookAtProcessor: Processor<typeof panoramaLookAt> = {
 
     if (!render) {
       return;
+    }
+
+    // Naming a place is aiming, and a view turning by itself — or following the
+    // compass — would take that bearing away the moment it is set, the same as
+    // it would during a drag in the picture.
+    if (getState().panoramaSettings.autoPan) {
+      dispatch(panoramaSetSettings({ autoPan: false }));
     }
 
     const { azimuth, seen } = readTowards(render, action.payload);
