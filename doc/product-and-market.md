@@ -190,18 +190,37 @@ geotagged Wikimedia Commons; deep-linkable URL state for everything.
 
 | Product | Price | Where it beats Freemap | Where Freemap beats it |
 |---|---|---|---|
-| **komoot** (Bending Spoons since Mar 2025, layoffs) | ~€60/yr premium; one free region | Mobile app, community routes, voice nav, brand | Price, terrain detail, open source, no tracking, tooling, export breadth. **Owner change has made its user base restive** — German forums carry long "alternatives" threads |
+| **komoot** (Bending Spoons since Mar 2025) | ~€60/yr premium; one free region; one-time region packs | Mobile app, community routes, voice nav, brand, 45 M users | Price, terrain detail, open source, no tracking, tooling, export breadth. **Owner change has made its user base restive** — German forums carry long "alternatives" threads |
 | **Outdooractive** | Pro subscription | Alpine club partnerships, curated tours, app | Price, open data, tooling, no lock-in |
 | **Bergfex** | Pro subscription; reduced free map | Brand in AT, snow/weather, app | Full-strength free map, tooling, terrain |
 | **AllTrails** | Pro subscription | Community reviews, global, app | Europe terrain detail, price, tooling |
-| **Mapy.com** (Seznam) | Free, cheap premium | Excellent free CZ/SK map, strong app, huge CZ loyalty | Terrain models beyond CZ, planner tooling, exports, open source |
+| **Mapy.com** (Seznam.cz) | Free; paid ad-free tier since Dec 2024 | Excellent free CZ/SK map, strong app, huge CZ loyalty | Terrain models beyond CZ, planner tooling, exports, open source |
 | **Locus Map / OsmAnd** | Freemium apps | Offline-first mobile, deep customisation | Browser workbench, terrain rendering, exports feed *into* them — allies, not rivals |
 | **swisstopo / national portals** | Free | Authoritative national data | Cross-border consistency, tooling. Praised over OpenTopoMap by swisstopo's own TLM-Regio quality manager (hikr, Sep 2026) |
 | **OpenTopoMap / Waymarked Trails** | Free | Ubiquitous, simple | Far better terrain, and an application rather than a tile layer |
 
-**Structural read:** Freemap cannot win "inspiration" or "in-the-field app". It can win
-**planning, precision and tooling** — and it wins decisively on price and on terrain
-in the 16 countries that have a national model.
+### How the big two are actually funded
+
+Worth knowing before comparing team sizes or growth rates:
+
+- **komoot** reached **~45 million users with about 250 staff**, then sold to Bending
+  Spoons in March 2025 for roughly **€300 million**; about **80 % of staff were laid off
+  immediately**. Bending Spoons' model is to buy sound apps, cut costs hard, move users
+  to subscriptions and raise prices 2–4×.
+- **Mapy.com** is a product of **Seznam.cz**, a large Czech internet company (search,
+  email, news, the Sklik ad system). It does not have to pay for itself — the parent's
+  advertising business funds it. A paid ad-free tier only arrived in December 2024.
+
+So neither is a like-for-like comparison with a community project. The instructive
+ratio is komoot's **~180,000 users per employee** — Freemap sustaining one person is
+the same order of efficiency, just far earlier on the curve and without capital to buy
+the middle of it.
+
+**Structural read:** Freemap cannot win "inspiration" or a curated tour library. It can
+win **planning, precision and tooling** — and it wins decisively on price and on terrain
+in the 16 countries that have a national model. Note the mobile app means the
+in-the-field moment is *not* conceded: on-device offline routing is something most paid
+competitors cannot do.
 
 ## 8. Positioning that follows from this
 
