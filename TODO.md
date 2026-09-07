@@ -685,7 +685,9 @@ print logo all pick the same wordmark.
 no generated bitmap is committed: the favicons, apple-touch and mstile icons and
 the manifest icons are the flower alone (site-neutral, all sizes), the iOS splash
 screens carry the wordmark per domain, and the `og:image` is 1200×630 with the
-tagline under it, per domain and language. The tagline lives in `entryDocs` in
+tagline under it, per domain and language. The header logo is a raster too, at
+1×–4× behind `image-set()` — Firefox draws these SVGs blurred at that fixed
+small size, and a vector buys nothing where the box never changes. The tagline lives in `entryDocs` in
 `rspack.config.ts` beside the other build-time copy, and is set in the bundled
 `src/fonts/LiberationSans-Bold.ttf` so CI and local renders match. Still open:
 
@@ -693,11 +695,9 @@ tagline under it, per domain and language. The tagline lives in `entryDocs` in
       was written here and translated by an agent; only `en` and `sk` have had a
       human eye. `hu`, `it` and `fr` deliberately aren't literal — Hungarian
       drops "just", Italian and French say "more than a *simple* map".
-- [ ] **Commit the editable masters.** The shipped SVGs are outlined, so the
-      wordmark can no longer be retyped in them. The versions that still carry
-      live Sriracha text sit outside the repo in `~/freemap-new-logo-shaded.svg`,
-      `~/freemap-new-logo-shaded-eu.svg` and `~/freemap-new-flower.svg` — one
-      lost home directory and the next logo edit starts from tracing.
+- [x] **Commit the editable masters.** They live in
+      [`design/`](./design/README.md) with the export procedure, which is where
+      the viewBox-ratio and SVGO-precision traps are written down.
 - [ ] **A small-size wordmark variant.** Below roughly 110 px wide the black
       outline swallows the white letters. The narrow header dodges it by
       switching to the flower, but any future small wordmark use needs a
@@ -707,13 +707,14 @@ tagline under it, per domain and language. The tagline lives in `entryDocs` in
       across engines and rasterizes on PDF export. Browsers handle it fine, so
       this only matters for print/export paths; the fix is a CSS
       `filter: drop-shadow()` at the usage sites, or an offset vector copy.
-- [ ] **Retire the orphaned rasters once the access log says it is safe.**
-      `src/static/freemap-logo.{png,jpg}` and `freemap-logo-for-garmin.jpg` are
-      unreferenced but deliberately kept: they may be registered as the app icon
-      with an external OAuth provider, and `static/**/*` ships them at stable
-      public URLs regardless. Settle it by counting hits in the fm6 access log.
-      Note the deploy rsync has no `--delete`, so removing them from the repo
-      does not remove them from the server.
+- [x] **Keep the unreferenced rasters — they are still being fetched.** Nothing
+      in the app links `src/static/logo.jpg`, `freemap-logo.{png,jpg}` or
+      `freemap-logo-for-garmin.jpg`, but the fm6 access log for 2026-09-06 shows
+      114, 39, 32 and 35 requests that day. `logo.jpg` is the `og:image` of every
+      link shared before it changed, so WhatsApp and iMessage keep unfurling
+      against it; the others come from real browsers, so something outside this
+      repo embeds them. Deleting them would only appear safe because the deploy
+      rsync has no `--delete`.
 
 ## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
 
