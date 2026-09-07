@@ -679,43 +679,36 @@ The logo became vector in `f0cf4885` (2026-09-01): `freemap-logo-sk.svg`,
 `freemap-logo-eu.svg` and the site-neutral `freemap-flower.svg`, with gloss from
 gradients rather than SVG filters, and text converted to paths. The entry
 document stamps `data-site` on `<html>`, so CSS, the pre-JS bootstrap and the
-print logo all pick the same wordmark.
+print logo all pick the same wordmark. The editable sources, which still carry
+live Sriracha text, are in [`design/`](./design/README.md) alongside the export
+procedure and the two traps it has to avoid.
 
-`RspackIconsPlugin` then renders every raster from those SVGs at build time, so
-no generated bitmap is committed: the favicons, apple-touch and mstile icons and
-the manifest icons are the flower alone (site-neutral, all sizes), the iOS splash
+`RspackIconsPlugin` renders every raster from those SVGs at build time, so no
+generated bitmap is committed: the favicons, apple-touch and mstile icons and the
+manifest icons are the flower alone (site-neutral, all sizes), the iOS splash
 screens carry the wordmark per domain, and the `og:image` is 1200×630 with the
 tagline under it, per domain and language. The header logo is a raster too, at
-1×–4× behind `image-set()` — Firefox draws these SVGs blurred at that fixed
-small size, and a vector buys nothing where the box never changes. The tagline lives in `entryDocs` in
-`rspack.config.ts` beside the other build-time copy, and is set in the bundled
-`src/fonts/LiberationSans-Bold.ttf` so CI and local renders match. Still open:
+1×–4× behind `image-set()` — Firefox draws these SVGs blurred at that fixed small
+size, and a vector buys nothing where the box never changes. The tagline lives in
+`entryDocs` in `rspack.config.ts` beside the other build-time copy, set in the
+bundled `src/fonts/LiberationSans-Bold.ttf` so CI and local renders match.
+
+Four rasters under `src/static` are referenced by nothing and stay anyway:
+`logo.jpg`, `freemap-logo.{png,jpg}` and `freemap-logo-for-garmin.jpg` drew 114,
+39, 32 and 35 requests on 2026-09-06. `logo.jpg` was the `og:image` until
+`d7fbc64c`, so WhatsApp and iMessage keep unfurling links shared before then
+against it; the rest are fetched by real browsers, so something outside this repo
+embeds them. Deleting any of them only looks safe because the deploy rsync has no
+`--delete`. Still open:
 
 - [ ] **Have the taglines reviewed by native speakers.** "more than just a map"
       was written here and translated by an agent; only `en` and `sk` have had a
       human eye. `hu`, `it` and `fr` deliberately aren't literal — Hungarian
       drops "just", Italian and French say "more than a *simple* map".
-- [x] **Commit the editable masters.** They live in
-      [`design/`](./design/README.md) with the export procedure, which is where
-      the viewBox-ratio and SVGO-precision traps are written down.
 - [ ] **A small-size wordmark variant.** Below roughly 110 px wide the black
       outline swallows the white letters. The narrow header dodges it by
       switching to the flower, but any future small wordmark use needs a
       thinner-stroke cut.
-- [ ] **Drop the baked drop shadow.** All three SVGs still carry an
-      `feGaussianBlur` drop-shadow filter, the one part that renders unevenly
-      across engines and rasterizes on PDF export. Browsers handle it fine, so
-      this only matters for print/export paths; the fix is a CSS
-      `filter: drop-shadow()` at the usage sites, or an offset vector copy.
-- [x] **Keep the unreferenced rasters — they are still being fetched.** Nothing
-      in the app links `src/static/logo.jpg`, `freemap-logo.{png,jpg}` or
-      `freemap-logo-for-garmin.jpg`, but the fm6 access log for 2026-09-06 shows
-      114, 39, 32 and 35 requests that day. `logo.jpg` was the `og:image` until
-      `d7fbc64c`, so WhatsApp and iMessage keep unfurling every link shared
-      before then against it; the others come from real browsers, so something
-      outside this repo embeds them. Deleting any of them would only appear safe
-      because the deploy rsync has no `--delete` — one clean deploy and they
-      404. `logo.jpg` is kept for that reason alone, referenced by nothing.
 
 ## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
 
