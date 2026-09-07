@@ -125,16 +125,60 @@ Czech venues found: **bike-forum.cz** (largest CZ MTB/road forum), **nakole.cz**
 Cesty SNP" piece — live tracking is a Freemap feature, worth checking for an existing
 connection.
 
-### Start here, next session
+### Start here, next session (state as of 2026-09-07 evening)
 
-1. Research `geoclub.de` and `geocaching.cz` — activity, registration flow, existing
-   Freemap mentions. **Check the account path before writing any copy.**
-2. Draft a whole-app post for each, led by what geocachers actually do (coordinates,
-   offline, export, overlays) — **not** by the outdoor map's cartography.
-3. Watch for replies on the four live posts and answer them; that is where the value
-   has come from so far.
-4. Still unposted/unstarted: Draft 3 (avventurosamente "what changed since 2023"),
-   Draft 5 (embed pitch to Italian trail sites), Draft 8 (MTB-MAG bug report).
+**Read first:** [`product-and-market.md`](./product-and-market.md) — what the product
+actually is. Copy written from this roadmap instead of from the code produced three
+false claims in live posts. Also note a **private business/revenue document lives
+outside this repo** (Martin's Drive): it holds the subscriber numbers, the €2,500/month
+sustainability target, the ARPU analysis and the "Freemap for organisations" plan.
+Nothing commercial or financial belongs in this public repo.
+
+**Live and needing nothing:** four posts are up — hikr.org Small Talk (DE),
+hikr.org Hikr in italiano (IT), gipfeltreffen.at pinned map index (DE),
+avventurosamente.it (IT). All claims in them are corrected and accurate.
+
+**Do next, in order:**
+
+1. **Answer replies.** This is where all the value has come from — a tracked rendering
+   bug, a public endorsement from swisstopo's swissTLM-Regio quality manager, a 14-point
+   expert review, a likely new OSM contributor. Martin forwards the hikr notification
+   mails. Draft the reply in **English first** (he does not read German/Italian well),
+   then post the target-language version once he approves.
+2. **Czechia is the next market.** Hi-res terrain (DMR 5G), Czech UI shipped, high
+   Matomo engagement, and Martin can verify Czech copy himself. Venues found:
+   **bike-forum.cz** (largest CZ MTB/road forum), **nakole.cz** (cycle touring).
+   Editorial rather than forum, so embed/partnership targets instead: **treking.cz**,
+   **horydoly.cz**, **mtbs.cz** (note horydoly ran a "Live sledovanie Cesty SNP" piece —
+   live tracking is a Freemap feature, check for an existing connection).
+   **Check the registration path before writing copy** — the mtb-forum.it lesson.
+3. **Lead with the whole application, not the cartography.** Everything posted so far
+   sold the map, which is why every reply came back about rendering. The app is a map
+   *workbench* — planner, offline, exports to Garmin/Locus/OsmAnd, drawing, embedding,
+   panorama, viewshed — and there is a **native Flutter app for iOS and Android with
+   on-device offline routing** that almost nobody outside Slovakia knows about.
+4. **Facebook groups:** agent drafts, **Martin posts**. Facebook fights automation and
+   the Polish group post that worked went out from his own account.
+5. **Do not re-post to venues already used.** The platform framing reaches those
+   audiences through replies and, much later, a "what's new" post — not a second
+   introduction days apart.
+
+**Parked deliberately:**
+
+- **Germany** — until hi-res shading and contours cover it (Martin's call). Venues
+  researched and waiting in Phase 3.
+- **Ski touring** — seasonal, revisit in November. There is no ski-touring routing
+  profile, so do not promise one.
+- Draft 3 (avventurosamente "what changed since 2023" — wait a few days, ≤2 links),
+  Draft 5 (embed pitch to Italian trail sites — needs contact addresses and a decision
+  on sending), Draft 8 (MTB-MAG broken-registration report).
+- The **Skelter PM** on avventurosamente is abandoned: dormant since March 2025 and the
+  spam filter refused it.
+
+**Outside the outreach work but higher value per hour:** a **Slovak-language page for
+organisations** on zdila.sk. The site exists and is good, but it is English-only, sells
+capability rather than outcomes, carries no price anchor, and omits the ZMOS reference.
+Details in the private document.
 
 ## Claims that must stay accurate
 
