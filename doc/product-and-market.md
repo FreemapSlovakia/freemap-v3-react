@@ -13,10 +13,18 @@ Sources of truth: `src/shared/mapDefinitions.tsx` (layers, coverage, premium gat
 
 ## 1. What it actually is
 
-A **single-page web application** on OpenStreetMap data, by the NGO Freemap Slovakia
-(Slovak local chapter of the OSMF). Not an outdoor map with tools bolted on — a map
-*workbench* that happens to ship an excellent outdoor map. That distinction is the
-whole positioning problem: everything posted before September 2026 sold the map.
+A **web application plus a native mobile app** on OpenStreetMap data, by the NGO
+Freemap Slovakia (Slovak local chapter of the OSMF). Not an outdoor map with tools
+bolted on — a map *workbench* that happens to ship an excellent outdoor map. That
+distinction is the whole positioning problem: everything posted before September 2026
+sold the map.
+
+**Native mobile app (Flutter, iOS + Android)** — launched 2026-05-15, updated through
+2026 (route marker time/distance, isochrones, gallery clustering, 360° viewer, TCX/FIT
+import). **Offline routing shipped 2026-09-03: BRouter rewritten in C and embedded
+natively, iOS included, running on the phone with no data and no server.** A Capacitor
+wrapper of the web app is planned as a further option. Do not describe Freemap as
+"web only" — an earlier version of this document did, and it was wrong.
 
 Two portals, same app: `freemap.sk` renders as "Freemap Slovakia", `freemap.eu` as
 "Freemap Europe". The serving domain expands the `{site}` placeholder.
@@ -114,6 +122,12 @@ geotagged Wikimedia Commons; deep-linkable URL state for everything.
 
 - **Yearly premium €15** (subscription keeps its start price; pre-1 Sep 2026
   subscriptions keep €8). Credits are separate and currently only buy offline-map export.
+- **Why the price rose from €8 to €15 in September 2026:** Polar charges a percentage
+  *plus a fixed amount per purchase*, so at €8 the fixed fee ate an unreasonable share.
+  A campaign before 1 Sep offered €8 locked for as long as the subscription runs, which
+  pulled a bump of subscribers forward. **Any September-vs-August comparison is therefore
+  measuring a trough against a pulled-forward peak — compare against a pre-campaign
+  baseline (e.g. July) instead.**
 - **Ads are shown to non-premium users**, **self-served, no ad network**. Premium
   removes them. Never claim "ad-free".
 - **No user tracking**, self-hosted analytics, no third-party trackers. This claim is safe.
@@ -139,17 +153,24 @@ geotagged Wikimedia Commons; deep-linkable URL state for everything.
    competitor exposes this.
 8. **Export breadth** — GPX/GeoJSON/KML/KMZ/TCX, MBTiles/SQLiteDB, PDF/SVG/PNG,
    Garmin Connect. Serves Garmin/Locus/OsmAnd users rather than fighting them.
+9. **On-device offline routing in the mobile app** (BRouter in C, iOS included, no data,
+   no server). Rare even among paid competitors, and a genuine field-use advantage.
+10. **Photos across Europe** — own community uploads (Slovakia strongest) plus geotagged
+   Wikimedia Commons imported with author, licence, dates and ratings, so the layer has
+   content outside Slovakia too.
 
 ## 6. Honest weaknesses
 
-1. **No mobile app.** A PWA with offline caching, and an Android-only companion APK for
-   GPS recording. Competitors are app-first, are in the app stores, and own the
-   in-the-field moment. This is the biggest structural weakness and it shapes who to
-   target: planners at a desk, not navigators on a summit.
-2. **No tour/community content.** komoot, Outdooractive, AllTrails and Bergfex sell
-   *inspiration* — hundreds of thousands of user routes with photos, descriptions and
-   reviews. Freemap has none of that. Casual users mostly want that, not a workbench.
-   Do not compete on it; it cannot be won.
+1. **Awareness of the mobile app, not its absence.** The app exists and does things the
+   competition does not (on-device offline routing with no server). The weakness is that
+   almost nobody outside Slovakia knows it exists — it has been announced on the Slovak
+   Facebook page and Mastodon, and essentially nowhere else. This is a distribution gap,
+   which is fixable, rather than a product gap, which would not be.
+2. **No curated tour library.** komoot, Outdooractive, AllTrails and Bergfex sell
+   *inspiration* — user routes with descriptions and reviews. Freemap has **photos**
+   (own community uploads plus geotagged Wikimedia Commons, so Europe is not empty,
+   though Slovakia is by far the best covered) but not route descriptions or reviews.
+   Casual "where shall I walk on Sunday" users mostly want that. Don't compete there.
 3. **No turn-by-turn voice navigation.**
 4. **Germany, Netherlands, Hungary, Ireland and the Balkans get 30 m terrain** — the
    headline differentiator is unavailable in the largest European market.
@@ -184,7 +205,9 @@ in the 16 countries that have a national model.
 
 ## 8. Positioning that follows from this
 
-Target **people who do things with maps**, not people looking for a walk:
+Target **people who do things with maps**, not people looking for a walk. Note this is
+about which need to lead with — it is not a claim that Freemap is desk-only; the mobile
+app covers the field, including offline routing:
 
 - planners and trip preparers (route, profile, print, export to device)
 - mappers and OSM contributors (fix it, see it in minutes, JOSM handoff)
