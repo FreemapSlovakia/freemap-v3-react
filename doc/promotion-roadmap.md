@@ -26,6 +26,98 @@ Distinctive positioning hooks (lead with these, not "another OSM map"):
    is the name of the *map layer*, not a list of routing profiles. Do not confuse them.
 Hooks 2–4 are also the premium hooks — users drawn by them convert best.
 
+---
+
+## Current state — 2026-09-07
+
+**Goal restated:** attract users to the *whole application* (planner, offline maps,
+exports, panorama, viewshed, tracking, drawing, custom layers), not only to the
+outdoor map. Everything posted so far sold "a map", which is why all the feedback
+came back about rendering. Correcting that is the point of the next phase.
+
+**Scope: Europe only.** The map covers ~46 European countries. Do not spend the good
+one-shot channels on a mostly-US audience — Hacker News was considered and dropped
+for this reason.
+
+### Accounts
+
+| Venue | Account | State |
+|---|---|---|
+| hikr.org | `MartinFreemap` (shown as `MartinFree`) | active, 2 posts, joined comms `talk` + `italiano` |
+| avventurosamente.it | `MartinFreemap` | active, staff-approved 2026-09-04 |
+| gipfeltreffen.at | `MartinFreemap` | active, admin-approved 2026-09-06 |
+| alpinforum.com | `MartinFreemap` | registered but **unused — wrong audience** (ski resorts/cable cars) |
+| mtb-forum.it | none | **registration broken on their side** (invalid reCAPTCHA key, dead Meta app) |
+| tourentipp.com, fuorivia.com | none | candidates, never registered |
+
+### Posted (details in the Outreach log below)
+
+1. **hikr.org / Small Talk** (DE) — drew 3 named people: Bergmax (bug reports),
+   ABoehlen/Adrian (**quality manager of swisstopo's swissTLM-Regio**, public
+   endorsement over OpenTopoMap), kopfsalat (critique of coloured trails). All answered.
+2. **avventurosamente.it** (IT) — offline maps after 4UMaps. No replies yet.
+3. **gipfeltreffen.at** (DE) — entry in the pinned map index; opens by answering
+   Exilfranke, who is active daily.
+4. **hikr.org / Hikr in italiano** (IT) — drew Garabombo (CM), an OSM mapper who gave
+   a 14-point expert cartographic review. All answered.
+
+### What the outreach produced for the product
+
+Eight issues on `FreemapSlovakia/freemap-outdoor-map`: **#83** tidal channels in the
+Watt, **#84** contours drawn over open sea, **#86** `bicycle=no` cross too prominent
+(**reported independently by two people in two countries**), **#87** `historic=ruins`
+icon, **#88** `historic=chalet`+`ruins=yes` renders nothing, **#89** unnamed spot
+elevations, **#90** penstocks too prominent, **#91** `information=board` labels.
+
+Also surfaced: the premium notice reads as a caption rather than a control (a first-time
+visitor could not tell it was clickable), and the authoritative nameservers
+(`ns1-3.webhouse.sk`) have no AAAA records — a robustness nit only, IPv6 to the web
+server itself verified working.
+
+## Next phase — whole-app verticals
+
+Hiking forums pit you against komoot, Mapy.cz, OutdoorActive and swisstopo. Communities
+organised around **a need only Freemap serves for free** have no incumbent. Ranked:
+
+| Vertical | Hook with no free equivalent | Europe fit |
+|---|---|---|
+| **Geocaching (DE, CZ, AT, SK)** ← **do this first** | coordinate entry in many formats, offline area download, GPX + Garmin/Locus export, drawing/measurement, custom WMS/TMS overlays | DE and CZ are the two densest geocaching countries in the world — exactly where the national high-res terrain is |
+| Paragliding / free flight (Alps) | 360° panorama with named peaks, viewshed, hi-res relief, custom airspace WMS | Alps = AT/CH/IT/SI/FR, all with national DTM |
+| Ham radio, drone (VLOS), hunting | **viewshed** — line of sight from a point | EU-wide; drone VLOS is an EASA legal requirement |
+| Gravel / bikepacking | multi-profile routing + surface / steepness / track-grade colorize | DE/AT strong, but komoot is entrenched |
+| GIS / developers / hobby cartographers | custom WMS/TMS, embedding, WebMCP agent tools | EU-wide, small but influential |
+| Ski touring | terrain + steepness colorize | **seasonal — revisit in November**, pointless in September |
+
+### Geocaching: warm channel already found
+
+`geocaching.cz` runs a long-lived thread **"Mapové zdroje pro Geocaching Map
+Enhancements"** (28+ pages) in which **freemap.sk tiles are already listed as a map
+source** (Outdoor LowDPI / HiDPI / UltraDPI) for the GME userscript, described there as
+*"a great map application above OSM data and the map key is very well readable"*. There
+is also `geocaching.cz/wiki/Free_mapy_(garmin)`.
+
+So Czech geocachers already consume the **tiles** and most likely do not know the
+**application** exists. That is the gap to close — and it is the same warm-channel
+pattern that worked in Italy and Austria.
+
+`geoclub.de` is the largest German-language geocaching forum and has a dedicated
+**Geocaching Software** section (`/forum/categories/geocaching-software.83/`).
+
+**Not yet done:** confirm current activity on both, check registration flow before
+writing copy (the mtb-forum lesson), and check whether Freemap is mentioned on
+geoclub.de at all.
+
+### Start here, next session
+
+1. Research `geoclub.de` and `geocaching.cz` — activity, registration flow, existing
+   Freemap mentions. **Check the account path before writing any copy.**
+2. Draft a whole-app post for each, led by what geocachers actually do (coordinates,
+   offline, export, overlays) — **not** by the outdoor map's cartography.
+3. Watch for replies on the four live posts and answer them; that is where the value
+   has come from so far.
+4. Still unposted/unstarted: Draft 3 (avventurosamente "what changed since 2023"),
+   Draft 5 (embed pitch to Italian trail sites), Draft 8 (MTB-MAG bug report).
+
 ## Claims that must stay accurate
 
 Three false claims went out in live posts on 2026-09-04/06 and had to be edited
