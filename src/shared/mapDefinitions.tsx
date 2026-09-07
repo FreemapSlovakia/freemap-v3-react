@@ -1186,7 +1186,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     // No `defaultOpacity`: the image's own alpha is already faint over most of
     // a wide view, so there is nothing left to give away.
     attribution: TERRAIN_ATTRIBUTION,
-    experimental: true,
   },
   {
     layer: 'overlay',

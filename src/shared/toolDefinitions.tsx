@@ -153,7 +153,6 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <PiMountains />,
     msgKey: 'panorama',
     requiresOnline: true,
-    experimental: true,
   },
   {
     tool: 'gps-recorder',

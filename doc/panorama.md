@@ -257,7 +257,7 @@ so a narrow window scrolls them sideways rather than wrapping them into the
 picture's height. They belong to the picture and the picture floats — and full
 screen made the point plainly, since the panel covered the tool's own toolbar
 and left the controls unreachable. What `ToolMenu` also carried had to be
-carried here: the experimental and offline badges, and the close button.
+carried here: the offline badge and the close button.
 
 **The window is its own box.** The panel wraps itself in a
 `BreakpointsProvider` fed by the width it already measures for the picture, so

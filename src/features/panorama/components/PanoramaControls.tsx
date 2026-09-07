@@ -8,7 +8,6 @@ import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
-import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import {
   FloatingWindowControls,
   useFullscreenAction,
@@ -248,8 +247,6 @@ export function PanoramaControls({
 
   return (
     <FloatingWindowControls fullscreen={fullscreen}>
-      <ExperimentalFunction />
-
       <OfflineBadge hint={gm?.general.offlineToolUnavailable} />
 
       {/* First, because nothing else in the row means anything until there is a
