@@ -65,7 +65,10 @@ export async function decodeDepthOffThread(
     }
 
     // Whatever stopped the worker stopped the pool with it; the next render
-    // makes a fresh one.
+    // makes a fresh one. Destroyed rather than merely dropped: the failure may
+    // have left a worker alive and idle, and nothing else is coming to end it.
+    pool?.destroy();
+
     pool = null;
 
     console.warn('panorama depth worker unavailable; decoding in page', err);

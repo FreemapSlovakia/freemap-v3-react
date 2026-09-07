@@ -38,6 +38,19 @@ class FakeWorker {
 const work = (payload: unknown) => () =>
   [payload, []] as [unknown, Transferable[]];
 
+/** Pins the core count, which otherwise decides the cap and varies by machine. */
+function fakeCores(count: number | undefined) {
+  const spy = vi
+    .spyOn(window.navigator, 'hardwareConcurrency', 'get')
+    .mockReturnValue(count as number);
+
+  return {
+    [Symbol.dispose]() {
+      spy.mockRestore();
+    },
+  };
+}
+
 describe('createWorkerPool', () => {
   it('resolves a job with what the worker answers', async () => {
     const worker = new FakeWorker();
@@ -90,6 +103,10 @@ describe('createWorkerPool', () => {
   });
 
   it('fails only the jobs the broken worker held, not its siblings', async () => {
+    // Pinned, or a single-core CI runner caps the pool at one worker and the
+    // second job queues instead of getting one of its own.
+    using _cores = fakeCores(4);
+
     const workers: FakeWorker[] = [];
 
     const pool = createWorkerPool(() => {
@@ -170,27 +187,31 @@ describe('createWorkerPool', () => {
     await expect(job).rejects.toBeInstanceOf(WorkerUnavailableError);
   });
 
-  it('makes a worker even where the platform reports no concurrency', async () => {
-    const spy = vi
-      .spyOn(window.navigator, 'hardwareConcurrency', 'get')
-      .mockReturnValue(undefined as unknown as number);
+  it('still caps itself where the platform reports no concurrency', async () => {
+    using _cores = fakeCores(undefined);
 
-    try {
-      const worker = new FakeWorker();
+    const workers: FakeWorker[] = [];
 
-      const pool = createWorkerPool(() => worker as unknown as Worker);
+    const pool = createWorkerPool(() => {
+      const w = new FakeWorker();
 
-      const job = pool.addJob<string>(work('in'));
+      workers.push(w);
 
-      // `Math.min(16, undefined)` is NaN, and nothing is ever below NaN — so
-      // without a floor no worker is made and the job waits for ever.
-      expect(worker.posted).toHaveLength(1);
+      return w as unknown as Worker;
+    });
 
-      worker.answer('out');
+    const jobs = Array.from({ length: 6 }, (_, i) => pool.addJob(work(i)));
 
-      await expect(job).resolves.toBe('out');
-    } finally {
-      spy.mockRestore();
+    // `Math.min(16, undefined)` is NaN and nothing compares true against it, so
+    // without the floor the cap never binds and every job gets a worker.
+    expect(workers.length).toBeLessThanOrEqual(4);
+
+    expect(workers.length).toBeGreaterThan(0);
+
+    for (const w of workers) {
+      w.answer('out');
     }
+
+    await expect(Promise.race(jobs)).resolves.toBe('out');
   });
 });

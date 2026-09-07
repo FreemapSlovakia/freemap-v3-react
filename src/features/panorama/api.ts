@@ -226,6 +226,13 @@ export async function renderPanorama(
   getState: () => RootState,
   cancel: CancelTriggers,
   onProgress?: (progress: TerrainProgress) => void,
+  /**
+   * Whether this render still owns the panel. Asked before the decoding, which
+   * is the expensive half and cannot be cancelled once the body has arrived —
+   * a click landing in that window would otherwise wait behind a picture that
+   * is about to be thrown away.
+   */
+  isCurrent?: () => boolean,
 ): Promise<PanoramaResponse> {
   const form = await requestTerrainRender(
     '/panorama',
@@ -236,6 +243,10 @@ export async function renderPanorama(
   );
 
   const { meta, imageUrl } = terrainParts(form, MetaSchema);
+
+  if (isCurrent && !isCurrent()) {
+    return { meta, imageUrl, depth: null };
+  }
 
   const depthPart = form.get('depth');
 

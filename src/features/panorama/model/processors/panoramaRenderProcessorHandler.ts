@@ -80,6 +80,7 @@ async function renderPass(
     getState,
     CANCEL,
     (progress) => dispatch(panoramaSetProgress(progress)),
+    () => isCurrentPanoramaRender(id),
   );
 
   if (!isCurrentPanoramaRender(id)) {

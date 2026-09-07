@@ -51,9 +51,26 @@ class LGalleryLayer extends LGridLayer {
 
     this.supportsOffscreen = typeof window.OffscreenCanvas !== 'undefined';
 
-    this._workerPool = createWorkerPool(
+    this._workerPool = this.makePool();
+  }
+
+  private makePool(): WorkerPool {
+    return createWorkerPool(
       () => new Worker(new URL('./galleryLayerWorker.js', import.meta.url)),
     );
+  }
+
+  /**
+   * A destroyed pool stays destroyed, so the same instance being taken off the
+   * map and put back — which `useLayerLifecycle` does whenever its context
+   * changes — needs a fresh one, or the layer would sit there drawing nothing.
+   */
+  onAdd(map: LeafletMap): this {
+    this._removed = false;
+
+    this._workerPool = this.makePool();
+
+    return super.onAdd(map);
   }
 
   createTile(coords: Coords, done: DoneCallback) {

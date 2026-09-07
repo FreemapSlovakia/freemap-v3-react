@@ -233,8 +233,26 @@ class LShadingLayer extends LGridLayer {
     this.gpuObjectsPromise.catch(() => {});
   }
 
+  /**
+   * A destroyed pool stays destroyed, so the same instance put back on the map
+   * — which `useLayerLifecycle` does whenever its context changes — needs a
+   * fresh one, or every tile would reject for the life of the layer. Not where
+   * the GPU was never there to begin with: no pool was made then either.
+   */
+  onAdd(map: LeafletMap): this {
+    if (!this.workerPool && navigator.gpu) {
+      this.workerPool = createWorkerPool(
+        () => new Worker(new URL('./shadingLayerWorker.js', import.meta.url)),
+      );
+    }
+
+    return super.onAdd(map);
+  }
+
   onRemove(map: LeafletMap): this {
     this.workerPool?.destroy();
+
+    this.workerPool = undefined;
 
     if (this.errorDiv) {
       this._map.getContainer().removeChild(this.errorDiv);

@@ -33,9 +33,10 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
 
   let workerCount = 0;
 
-  // `hardwareConcurrency` is absent on some platforms, and `Math.min` with
-  // `undefined` is `NaN` — which nothing is below, so no worker would ever be
-  // created and every job would wait for one for ever.
+  // The `||` is load-bearing: `hardwareConcurrency` is absent on some
+  // platforms, and `Math.min(16, undefined)` is `NaN`. Nothing compares true
+  // against `NaN`, so the cap below would never bind and the pool would make a
+  // worker per job without limit.
   const maxWorkers = Math.min(
     16,
     window.navigator.hardwareConcurrency || DEFAULT_CONCURRENCY,
@@ -89,9 +90,14 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
   }
 
   function retire(w: Worker): void {
-    w.terminate();
+    // Only a worker still on the books: a second `error` from the same one, or
+    // one arriving after `destroy`, would otherwise drive the count negative
+    // and let a live pool exceed its cap.
+    if (!allWorkers.delete(w)) {
+      return;
+    }
 
-    allWorkers.delete(w);
+    w.terminate();
 
     workerCount--;
 
@@ -154,19 +160,16 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
       try {
         job.run(w);
       } catch (err) {
-        // `work()` threw while making the payload. The worker never heard of
-        // it, so it goes back to the pool and only this job is answered.
+        // The caller's own `work()` threw, or `postMessage` refused the payload
+        // — the worker never heard of it, so it goes back to the pool and only
+        // this job is answered. A plain error, deliberately: the worker was
+        // perfectly available, and a caller told otherwise would retry this
+        // same broken payload some more expensive way.
         job.worker = undefined;
 
         idle.push(w);
 
-        settle(
-          job,
-          new WorkerUnavailableError('worker job could not be started', {
-            cause: err,
-          }),
-          true,
-        );
+        settle(job, err, true);
 
         continue;
       }
@@ -193,7 +196,12 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
         console.error('no such job', evt.data.id);
       }
 
-      idle.push(w);
+      // Not one that has been retired or terminated: a message can still arrive
+      // from a worker already given up on, and listing it as idle would hand it
+      // a job nothing is left to run.
+      if (allWorkers.has(w)) {
+        idle.push(w);
+      }
 
       try {
         runNextJob();
