@@ -191,6 +191,8 @@ export interface PanoramaResponse {
   /** Object URL of the rendered image; revoke it when it goes off screen. */
   imageUrl: string;
   depth: PanoramaDepth | null;
+  /** Kept only to hold the decode; see `PanoramaRenderData.image`. */
+  image?: HTMLImageElement;
 }
 
 /**
@@ -201,15 +203,20 @@ export interface PanoramaResponse {
  * Never fatal: a decode this refuses will simply be attempted again when the
  * background is painted, which is what used to happen every time.
  */
-async function decodeImage(url: string): Promise<void> {
+async function decodeImage(url: string): Promise<HTMLImageElement | undefined> {
   try {
     const img = new Image();
 
     img.src = url;
 
     await img.decode();
+
+    // Handed back to be kept alive with the render; see `PanoramaRenderData`.
+    return img;
   } catch (err) {
     console.warn('panorama image could not be decoded ahead of paint', err);
+
+    return undefined;
   }
 }
 
@@ -240,7 +247,7 @@ export async function renderPanorama(
   // worker while the browser decodes the picture, and neither is on the main
   // thread. They are the whole of the wait between the response landing and
   // something appearing.
-  const [depth] = await Promise.all([
+  const [depth, image] = await Promise.all([
     meta.depth && depthPart instanceof Blob
       ? decodeDepthOffThread(
           depthPart,
@@ -256,5 +263,5 @@ export async function renderPanorama(
     decodeImage(imageUrl),
   ]);
 
-  return { meta, imageUrl, depth };
+  return { meta, imageUrl, depth, image };
 }

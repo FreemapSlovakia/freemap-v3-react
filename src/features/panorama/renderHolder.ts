@@ -11,6 +11,14 @@ export interface PanoramaRenderData {
   id: number;
   imageUrl: string;
   depth: PanoramaDepth | null;
+  /**
+   * The element the picture was decoded through, kept alive only so the decode
+   * is. A decoded frame belongs to the browser's cache rather than to the URL,
+   * and that cache is evicted under pressure — dropping the last reference
+   * invites the decode to be thrown away before the background is painted, and
+   * paid for again on the paint path, which is what decoding early avoids.
+   */
+  image?: HTMLImageElement;
 }
 
 let current: PanoramaRenderData | null = null;

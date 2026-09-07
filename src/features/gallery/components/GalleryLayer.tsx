@@ -29,6 +29,9 @@ class LGalleryLayer extends LGridLayer {
 
   private _workerPool: WorkerPool;
 
+  /** Set once the layer is going, so a tile in flight stops trying to finish. */
+  private _removed = false;
+
   constructor(options?: GalleryLayerOptions) {
     super(options);
 
@@ -235,7 +238,14 @@ class LGalleryLayer extends LGridLayer {
           workerRendered = true;
         } catch (err) {
           // Fall back to the main thread only when the worker actually failed,
-          // so a successful tile is never drawn twice.
+          // so a successful tile is never drawn twice — and not at all once the
+          // layer is going, when the pool rejects everything it still owed and
+          // every tile in flight would redraw itself, on the main thread, into
+          // a canvas about to be thrown away.
+          if (this._removed) {
+            throw err;
+          }
+
           console.warn(
             'gallery worker render failed; main-thread fallback',
             err,
@@ -263,6 +273,8 @@ class LGalleryLayer extends LGridLayer {
   }
 
   onRemove(map: LeafletMap): this {
+    this._removed = true;
+
     this._workerPool.destroy();
 
     return super.onRemove(map);

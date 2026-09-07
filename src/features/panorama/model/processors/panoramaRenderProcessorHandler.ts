@@ -75,7 +75,7 @@ async function renderPass(
 ): Promise<PanoramaMeta | null> {
   const id = claimPanoramaRender();
 
-  const { meta, imageUrl, depth } = await renderPanorama(
+  const { meta, imageUrl, depth, image } = await renderPanorama(
     buildPanoramaRequest(viewpoint, settings, grants, renderAz, farM),
     getState,
     CANCEL,
@@ -88,7 +88,7 @@ async function renderPass(
     return null;
   }
 
-  setPanoramaRenderData({ id, imageUrl, depth });
+  setPanoramaRenderData({ id, imageUrl, depth, image });
 
   dispatch(
     panoramaSetRender({

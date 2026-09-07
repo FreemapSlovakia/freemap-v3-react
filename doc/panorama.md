@@ -694,7 +694,12 @@ like. Two things now run **at once, and neither in the page**:
   `Blob`, which structured-clones by reference, and the decoded rows come back
   as a transfer, so nothing of that size is ever copied. A worker that cannot be
   had at all falls back to decoding in the page — a picture that answers
-  distances late beats one that never answers them.
+  distances late beats one that never answers them, and `WorkerUnavailableError`
+  is what tells that apart from a job that ran and threw on the data, which
+  would only throw again here after paying the whole gunzip on the main thread.
+  The worker is **never torn down**: it is one worker, idle between serialised
+  renders, and giving it back when the map is cleared cost more than it saved —
+  see the note in `depthDecoder.ts`.
 - **The picture** is put through `img.decode()` before it is published. Left to
   the stylesheet, a 4–10 Mpx AVIF is first decoded on the paint path, which is a
   freeze rather than a wait. A refused decode is not fatal: the background paint
