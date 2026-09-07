@@ -6,7 +6,8 @@ import {
   terrainParts,
 } from '@shared/terrainService.js';
 import z from 'zod';
-import { decodeDepth, type PanoramaDepth } from './depth.js';
+import type { PanoramaDepth } from './depth.js';
+import { decodeDepthOffThread } from './depthDecoder.js';
 import type { GroundGradientRequest } from './gradient.js';
 
 /** One node of the service's ranking language: an operator and its arguments. */
@@ -192,6 +193,26 @@ export interface PanoramaResponse {
   depth: PanoramaDepth | null;
 }
 
+/**
+ * Waits for the picture to be decoded, so the paint that puts it up has nothing
+ * left to do. Left to the stylesheet, a 4–10 Mpx AVIF is first decoded on the
+ * paint path, which is a freeze rather than a wait.
+ *
+ * Never fatal: a decode this refuses will simply be attempted again when the
+ * background is painted, which is what used to happen every time.
+ */
+async function decodeImage(url: string): Promise<void> {
+  try {
+    const img = new Image();
+
+    img.src = url;
+
+    await img.decode();
+  } catch (err) {
+    console.warn('panorama image could not be decoded ahead of paint', err);
+  }
+}
+
 /** Renders one panorama; see {@link requestTerrainRender}. */
 export async function renderPanorama(
   request: PanoramaRequest,
@@ -214,15 +235,26 @@ export async function renderPanorama(
   // A picture without distances is worth far more than no picture: the reading
   // and the press-to-mark go quiet, everything else works, and the panel is
   // already built for a render that carries no depth at all.
-  let depth: PanoramaDepth | null = null;
+  //
+  // Both halves at once: the distance buffer is inflated and delta-decoded in a
+  // worker while the browser decodes the picture, and neither is on the main
+  // thread. They are the whole of the wait between the response landing and
+  // something appearing.
+  const [depth] = await Promise.all([
+    meta.depth && depthPart instanceof Blob
+      ? decodeDepthOffThread(
+          depthPart,
+          meta.width,
+          meta.height,
+          meta.depth,
+        ).catch((err: unknown) => {
+          console.warn('panorama depth buffer could not be decoded', err);
 
-  if (meta.depth && depthPart instanceof Blob) {
-    try {
-      depth = await decodeDepth(depthPart, meta.width, meta.height, meta.depth);
-    } catch (err) {
-      console.warn('panorama depth buffer could not be decoded', err);
-    }
-  }
+          return null;
+        })
+      : null,
+    decodeImage(imageUrl),
+  ]);
 
   return { meta, imageUrl, depth };
 }

@@ -1,5 +1,6 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { destroyDepthDecoder } from '../../depthDecoder.js';
 import { clearPanoramaRenderData } from '../../renderHolder.js';
 import { panoramaClear, panoramaPick, panoramaRender } from '../actions.js';
 
@@ -29,5 +30,9 @@ export const panoramaReleaseProcessor: Processor = {
   actionCreator: [clearMapFeatures, panoramaClear],
   handle: () => {
     clearPanoramaRenderData();
+
+    // The decode worker goes with it. Only one is ever made — renders are
+    // serialised — and the next render makes another.
+    destroyDepthDecoder();
   },
 };

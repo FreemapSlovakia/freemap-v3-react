@@ -22,16 +22,31 @@ export type PanoramaDepthMeta = {
   sky: number;
 };
 
-export async function decodeDepth(
-  blob: Blob,
-  width: number,
-  height: number,
-  meta: PanoramaDepthMeta,
-): Promise<PanoramaDepth> {
-  const buffer = await new Response(
+/**
+ * The gzipped part as bytes, through the browser's own inflate. Native beats
+ * anything shipped in JS here, and it is available in a worker, which is where
+ * this actually runs — see `depthDecoder.ts`.
+ */
+export async function gunzip(blob: Blob): Promise<ArrayBuffer> {
+  return new Response(
     blob.stream().pipeThrough(new DecompressionStream('gzip')),
   ).arrayBuffer();
+}
 
+/**
+ * The delta pass: each row is a prefix sum of signed steps. Several million
+ * iterations on a detailed render, so it belongs off the main thread.
+ *
+ * Rows are independent, so this parallelises in principle — but the page is not
+ * cross-origin isolated, so there is no `SharedArrayBuffer` to split one buffer
+ * across workers, and copying row ranges out and back costs more than the loop
+ * does. One worker, and the gunzip ahead of it is serial anyway.
+ */
+export function decodeDepthValues(
+  buffer: ArrayBuffer,
+  width: number,
+  height: number,
+): Uint16Array {
   // Checked rather than trusted: a short buffer would otherwise decode its
   // whole missing tail as sky, and the readouts would simply stop answering
   // over most of the picture with nothing said. `Int16Array` also throws on an
@@ -61,6 +76,32 @@ export async function decodeDepth(
     }
   }
 
+  return values;
+}
+
+/** Both halves, for a caller that has no worker to run them in. */
+export async function decodeDepth(
+  blob: Blob,
+  width: number,
+  height: number,
+  meta: PanoramaDepthMeta,
+): Promise<PanoramaDepth> {
+  return depthOf(decodeDepthValues(await gunzip(blob), width, height), {
+    width,
+    height,
+    meta,
+  });
+}
+
+/** The decoded rows as the buffer the viewer reads; see {@link PanoramaDepth}. */
+export function depthOf(
+  values: Uint16Array,
+  {
+    width,
+    height,
+    meta,
+  }: { width: number; height: number; meta: PanoramaDepthMeta },
+): PanoramaDepth {
   return {
     width,
     height,

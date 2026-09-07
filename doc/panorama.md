@@ -680,6 +680,34 @@ serializable nor small, so they live in `renderHolder.ts`, matched by `id`.
 The holder revokes what it replaces; `panoramaReleaseProcessor` clears it when
 the tool closes or the map is cleared.
 
+## Getting the answer onto the screen
+
+Between the response landing and the picture appearing there is real work, and
+all of it used to be on the main thread — long enough that the progress bar
+stopped animating and the page stopped answering the mouse while the
+compositor-driven logo kept turning, which is what a blocked main thread looks
+like. Two things now run **at once, and neither in the page**:
+
+- **The distance buffer** goes to `depthWorker` through `depthDecoder`'s pool: a
+  gunzip to 8.6 MB (standard) or 19.8 MB (finest), an allocation the same size
+  again, and several million loop iterations. The gzipped part travels as a
+  `Blob`, which structured-clones by reference, and the decoded rows come back
+  as a transfer, so nothing of that size is ever copied. A worker that cannot be
+  had at all falls back to decoding in the page — a picture that answers
+  distances late beats one that never answers them.
+- **The picture** is put through `img.decode()` before it is published. Left to
+  the stylesheet, a 4–10 Mpx AVIF is first decoded on the paint path, which is a
+  freeze rather than a wait. A refused decode is not fatal: the background paint
+  will simply try again, which is what always used to happen.
+
+**Native for both**, deliberately: `DecompressionStream` and the browser's own
+image decoder beat anything shipped as JS, and both are available where they are
+used. The delta pass is per-row and so parallel in principle, but the page is
+not cross-origin isolated, so there is no `SharedArrayBuffer` to split one
+buffer across workers — copying row ranges out and back would cost more than the
+loop — and the gunzip ahead of it is serial regardless. One worker, and the
+parallelism that pays is the picture decoding beside it.
+
 ## Panning
 
 The image is a repeating background, not a canvas: a 360° render's last column
