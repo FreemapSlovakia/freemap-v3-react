@@ -208,8 +208,7 @@ export const convertToDrawing = createAction<
   // tracking: `id` is a watched device's token; omitted converts every one of them
   | { type: 'tracking'; id?: string; tolerance: number }
   | { type: 'search-result'; tolerance: number; carry?: ConvertCarry }
-  | { type: 'changesets' }
->('CONVERT_TO_DRAWING');
+  | { type: 'changesets' }>('CONVERT_TO_DRAWING');
 
 /** What a conversion to the track viewer takes its features from. */
 export type DataViewerSource =
