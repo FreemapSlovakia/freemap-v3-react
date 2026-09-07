@@ -738,24 +738,17 @@ Shipped as an MVP: pick a viewpoint, 360° render, pan/zoom, peak labels, the
 distance probe, a premium quality tier. What it does not do yet is issues under
 `area: panorama`; the cleanups it left behind stay here:
 
-- [ ] **The main thread freezes for seconds when a render lands.** Reported from
-      use: the progress bar stops animating and the page stops answering the
-      mouse while the compositor-driven logo keeps turning, which is the
-      signature of a blocked main thread rather than a slow paint. Three
-      suspects, all on the way in and all paid twice because of the two passes:
-      `decodeDepth` gunzips 8.6 MB (standard) to 19.8 MB (finest), allocates a
-      `Uint16Array` the same size again and walks 4.3–9.9 M columns in a
-      synchronous loop; the AVIF is 4.3–9.9 Mpx and is first decoded on the
-      paint path, since nothing decodes it before it becomes a
-      `background-image`; and `labelsFromPeaks` runs over up to `MAX_PEAKS`.
-      The fix is a worker for the depth decode — `createWorkerPool` and the
-      `new Worker(new URL('./x.js', import.meta.url))` pattern are already used
-      by `ShadingLayer` and `GalleryLayer` — transferring the buffer back rather
-      than copying it, plus an `img.decode()` (or `createImageBitmap`) before
-      `panoramaSetRender` so the picture is ready when it is published. That
-      also closes the hole `doc/panorama.md` names under "The service": the body
-      read and the depth decode are past the point `httpRequest` still watches
-      for cancellation, so today they cannot be abandoned at all.
+- [ ] **The dev server's own freeze makes the panorama hard to work on.** A
+      render landing blocks the main thread for ~5 s under `pnpm start` — the
+      JS heap goes 367 MB → 1534 MB across one React commit — while the same
+      render in a production build costs 10 ms of React work at a 36 MB heap.
+      Unminified React and Redux DevTools retaining a state snapshot per action
+      are between them the whole of it. Worth knowing before chasing a panorama
+      performance report: **measure a built bundle**, or the numbers are the
+      tooling's, not the app's. `devTools: true` in `store.ts` is unconditional,
+      so a user with the extension installed pays the same on the live site;
+      gating it on the dev build would take that away, at the cost of not being
+      able to inspect a production session.
 - [ ] **Extract a `ColorPickerPopover` shell.** `PanoramaGroundPicker` and
       `RgbaColorPicker` now carry the same ~60 lines: the `OverlayTrigger` /
       `Popover` / body-portal, the swatch button, and the `setUrlUpdatingEnabled`
