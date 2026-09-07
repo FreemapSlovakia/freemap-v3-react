@@ -1,9 +1,12 @@
+import { mod } from '@shared/mathUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaRequest, PeakRankExpression } from './api.js';
 import { gradientRequest } from './gradient.js';
 import { PROM_DOUBTED_TRUST, PROM_TRUSTED_M } from './labels/fromPeaks.js';
 import {
   ALT_LIMIT,
+  FOV_FULL,
+  isFullTurn,
   type PanoramaSettingsState,
   panoramaSettingsInitialState,
   panoramaStyleKey,
@@ -124,24 +127,41 @@ export function grantedPanorama(
 const MAX_PANORAMA_PIXELS = 24_000_000;
 
 /**
- * Degrees per pixel to ask for: the tier's own, unless a full turn over this
+ * Degrees per pixel to ask for: the tier's own, unless this slice over this
  * vertical band would exceed the pixel cap, in which case the finest step that
  * fits.
  *
- * The cap binds a wide band before a narrow one — `360 × band / step²` pixels —
- * so the tilt setting, not the quality alone, decides how fine a render may be.
- * Rounded up to a thousandth, which keeps a rounding-up of `width` and `height`
- * at the far end from putting the request back over.
+ * The cap binds a wide frame before a narrow one — `fov × band / step²` pixels
+ * — so the tilt and the fov, not the quality alone, decide how fine a render
+ * may be. Rounded up to a thousandth, which keeps a rounding-up of `width` and
+ * `height` at the far end from putting the request back over.
  */
 export function panoramaStep(
   quality: PanoramaQuality,
   [altMin, altMax]: [number, number],
+  fovDeg: number,
 ): number {
-  const finest = Math.sqrt((360 * (altMax - altMin)) / MAX_PANORAMA_PIXELS);
+  const finest = Math.sqrt((fovDeg * (altMax - altMin)) / MAX_PANORAMA_PIXELS);
 
   return Math.max(
     PANORAMA_QUALITIES[quality].request.step,
     Math.ceil(finest * 1000) / 1000,
+  );
+}
+
+/**
+ * Roughly how long a render will take. The tier's figure is for a full turn and
+ * the cost is about linear in the fov, so a narrow slice is that much of it —
+ * which is the whole point of asking for one.
+ */
+export function panoramaExpectedMs(
+  quality: PanoramaQuality,
+  fovDeg: number,
+): number {
+  return (
+    (PANORAMA_QUALITIES[quality].expectedMs *
+      Math.min(Math.max(fovDeg, 0), FOV_FULL)) /
+    FOV_FULL
   );
 }
 
@@ -223,24 +243,31 @@ function renderTiltRange(settings: PanoramaSettingsState): [number, number] {
 }
 
 /**
- * `farM` pins the ramp where a previous pass measured it; without it a
- * gradient asking for `auto` measures each pass's own frame, and the two can
- * land on different rungs of the service's ladder.
+ * `renderAz` is the bearing the middle of the slice faces; a full turn ignores
+ * it, having no direction to face. `farM` pins the ramp where a previous pass
+ * measured it; without it a gradient asking for `auto` measures each pass's own
+ * frame, and the two can land on different rungs of the service's ladder.
  */
 export function buildPanoramaRequest(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
   { quality, rangeKm }: PanoramaGrants,
+  renderAz: number,
   farM?: number | null,
 ): PanoramaRequest {
   const band = renderTiltRange(settings);
 
   const gradient = settings.groundGradient;
 
+  const fov = settings.fovDeg;
+
   return {
     lon: viewpoint.lon,
     lat: viewpoint.lat,
-    fov: 360,
+    fov,
+    // The wire wants the left edge; a full turn starts wherever the service
+    // likes, and saying so would only pin it for nothing.
+    ...(isFullTurn(fov) ? {} : { az: mod(renderAz - fov / 2, 360) }),
     alt_min: band[0],
     alt_max: band[1],
     eye: settings.eye,
@@ -265,7 +292,7 @@ export function buildPanoramaRequest(
       : { ground_color: settings.groundColor }),
     depth_lift: settings.depthLift,
     ...PANORAMA_QUALITIES[quality].request,
-    step: panoramaStep(quality, band),
+    step: panoramaStep(quality, band, fov),
     format: 'avif',
   };
 }
@@ -279,6 +306,7 @@ export function panoramaRenderKey(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
   { quality, rangeKm }: PanoramaGrants,
+  renderAz: number,
 ): string {
   const [altMin, altMax] = tiltRange(settings);
 
@@ -287,6 +315,11 @@ export function panoramaRenderKey(
     viewpoint.lon.toFixed(6),
     altMin,
     altMax,
+    settings.fovDeg,
+    // Only a slice faces anywhere. In the key because it is staged like the
+    // viewpoint — the wedge says where and Update pays — unlike the bearing the
+    // viewer is turned to, which rearranges the picture in hand and is free.
+    isFullTurn(settings.fovDeg) ? '' : Math.round(renderAz),
     settings.eye,
     // Its own entry rather than the raised band: a lift of 1 over a 12° top
     // asks for a different picture than none over 13°.

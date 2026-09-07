@@ -90,6 +90,11 @@ export type PanoramaMessages = {
     wide: string;
     flat: string;
   };
+  fov: {
+    label: string;
+    /** The whole horizon — the only fov with no direction to aim. */
+    full: string;
+  };
   labels: {
     /** Names the menu the four sliders share. */
     title: string;

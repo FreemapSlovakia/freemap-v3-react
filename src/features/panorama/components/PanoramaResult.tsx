@@ -38,8 +38,10 @@ import {
   panoramaLookAt,
   panoramaMoveViewpoint,
   panoramaSetAzimuth,
+  panoramaSetRenderAz,
   panoramaSetSettings,
 } from '../model/actions.js';
+import { isFullTurn } from '../model/settingsReducer.js';
 import { readTowards } from '../ray.js';
 import {
   setPanoramaAim,
@@ -52,6 +54,16 @@ import { PanoramaProbeReadout, readoutOf } from './PanoramaProbeReadout.js';
 const WEDGE_SIZE = 240;
 
 const WEDGE_RADIUS = 110;
+
+/** How solid a wedge saying "the eye is here" is at its apex. */
+const WEDGE_OPACITY = 0.55;
+
+/**
+ * How much narrower than the strip the view must be before it earns a wedge of
+ * its own: unzoomed, the panel usually holds the whole strip, and two wedges
+ * the same width say one thing twice.
+ */
+const VIEW_WEDGE_GAP_DEG = 2;
 
 /** Travel that tells a swing of the wedge from a press through it. */
 const CLICK_SLOP_PX = 3;
@@ -69,21 +81,26 @@ const sightLine = (color: string): PathOptions => ({
 });
 
 /**
- * The slice of horizon the viewer currently holds, drawn from the viewpoint —
- * screen-sized rather than ground-sized, since it says which way one is
- * looking, not how far one can see. Its colour is what keeps it from being
- * mistaken for the located heading beam.
+ * A slice of horizon drawn from the viewpoint — screen-sized rather than
+ * ground-sized, since it says which way one is looking, not how far one can
+ * see. Its colour is what keeps it from being mistaken for the located heading
+ * beam.
+ *
+ * Two of them can stand at once: the strip a slice will render, which is
+ * grabbed and swung, and the part of it on screen, which is not. Same fan, same
+ * apex, same ink, so the sector being looked at is simply the doubly-inked part
+ * of the strip — but two beams on one map may not share a gradient id.
  */
-const makeWedgeIcon = (fov: number, color: string) =>
+const makeWedgeIcon = (fov: number, color: string, grabbable?: boolean) =>
   makeBeamIcon({
     halfAngle: fov / 2,
     size: WEDGE_SIZE,
     radius: WEDGE_RADIUS,
     color,
     innerStop: 0.1,
-    innerOpacity: 0.55,
-    gradientId: 'fm-panorama-wedge',
-    grabbable: true,
+    innerOpacity: WEDGE_OPACITY,
+    gradientId: grabbable ? 'fm-panorama-wedge' : 'fm-panorama-view-wedge',
+    grabbable,
   });
 
 /**
@@ -122,6 +139,8 @@ export default function PanoramaResult(): ReactElement | null {
 
   const wedgeRef = useRef<LeafletMarker | null>(null);
 
+  const viewWedgeRef = useRef<LeafletMarker | null>(null);
+
   /** Whether the swing that just ended owes the map a click it must not get. */
   const swungRef = useRef(false);
 
@@ -129,6 +148,12 @@ export default function PanoramaResult(): ReactElement | null {
   // per icon, and re-attaching it on a setting nobody pressed would drop a
   // swing in flight.
   const autoPan = useAppSelector((state) => state.panoramaSettings.autoPan);
+
+  const fovDeg = useAppSelector((state) => state.panoramaSettings.fovDeg);
+
+  // The staged direction, not the rendered one: the wedge shows where the next
+  // render will face, which is what a swing has just changed.
+  const renderAz = useAppSelector((state) => state.panorama.renderAz);
 
   const autoPanRef = useRef(autoPan);
 
@@ -155,14 +180,39 @@ export default function PanoramaResult(): ReactElement | null {
   // by a hand that is no longer there.
   useEffect(() => () => setPanoramaAim(null), []);
 
+  // The wedge says two different things, because under a slice there are two
+  // different things to say. A full turn holds every bearing, so it shows the
+  // part on screen and swinging it turns the viewer for free. A slice is what
+  // the next render will cover, so it shows that and swinging it stages the
+  // direction — Update pays, the way dragging the viewpoint works.
+  const staged = !isFullTurn(fovDeg);
+
   // Only the width is geometry; the bearing is a rotation. Rounded, because two
   // fields of view a fraction of a degree apart draw the same wedge and
   // rebuilding the icon rewrites the element's markup.
-  const fov = view === null ? null : Math.round(view.fov);
+  const fov = staged
+    ? Math.round(fovDeg)
+    : view === null
+      ? null
+      : Math.round(view.fov);
+
+  // Zoomed into a slice, the panel holds only part of the strip, so the strip
+  // alone no longer says where one is looking, and the view gets its own wedge
+  // inside it. A full turn needs none of this: its wedge already *is* the part
+  // on screen.
+  const viewFov =
+    staged && view !== null && view.fov < fovDeg - VIEW_WEDGE_GAP_DEG
+      ? Math.round(view.fov)
+      : null;
 
   const wedgeIcon = useMemo(
-    () => (fov === null ? null : makeWedgeIcon(fov, markColor)),
+    () => (fov === null ? null : makeWedgeIcon(fov, markColor, true)),
     [fov, markColor],
+  );
+
+  const viewWedgeIcon = useMemo(
+    () => (viewFov === null ? null : makeWedgeIcon(viewFov, markColor)),
+    [viewFov, markColor],
   );
 
   const sight = useMemo(() => sightLine(markColor), [markColor]);
@@ -252,12 +302,28 @@ export default function PanoramaResult(): ReactElement | null {
   useEffect(() => {
     const wrapper = wedgeRef.current?.getElement()?.firstElementChild;
 
-    const azimuth = aim?.azimuth ?? view?.azimuth;
+    // Only an aim that says it is aiming the *strip* moves this one when there
+    // is a strip to aim. Dragging the mark aims the viewer, and letting that
+    // swing the strip would say the next render was being re-aimed — then snap
+    // back on the drop.
+    const azimuth = staged
+      ? aim?.staged
+        ? aim.azimuth
+        : renderAz
+      : (aim?.azimuth ?? view?.azimuth);
 
     if (wrapper instanceof HTMLElement && azimuth !== undefined) {
       wrapper.style.transform = `rotate(${azimuth.toFixed(1)}deg)`;
     }
-  }, [view, aim, wedgeIcon]);
+
+    // Never the aim: a staged swing moves the strip, not the picture, so the
+    // view wedge stays over the terrain still on screen.
+    const viewWrapper = viewWedgeRef.current?.getElement()?.firstElementChild;
+
+    if (viewWrapper instanceof HTMLElement && view) {
+      viewWrapper.style.transform = `rotate(${view.azimuth.toFixed(1)}deg)`;
+    }
+  }, [view, aim, renderAz, staged, wedgeIcon, viewWedgeIcon]);
 
   // Swinging the wedge turns the viewer, which is the map's way of asking what
   // is over there — the panel stays open and answers as the wedge moves, so
@@ -326,7 +392,7 @@ export default function PanoramaResult(): ReactElement | null {
       // A bearing and nothing else: the swing says which way to look, not what
       // to look at, so there is no place in it to mark.
       const handleMove = (move: PointerEvent) =>
-        setPanoramaAim({ azimuth: bearing(move), mark: null });
+        setPanoramaAim({ azimuth: bearing(move), mark: null, staged });
 
       const handleUp = (up: PointerEvent) => {
         el.removeEventListener('pointermove', handleMove);
@@ -345,7 +411,9 @@ export default function PanoramaResult(): ReactElement | null {
         ) {
           swungRef.current = true;
 
-          dispatch(panoramaSetAzimuth(bearing(up)));
+          const at = bearing(up);
+
+          dispatch(staged ? panoramaSetRenderAz(at) : panoramaSetAzimuth(at));
         }
       };
 
@@ -373,7 +441,7 @@ export default function PanoramaResult(): ReactElement | null {
 
       el.removeEventListener('click', swallowSwungClick, true);
     };
-  }, [dispatch, map, sightFrom, wedgeIcon]);
+  }, [dispatch, map, sightFrom, staged, wedgeIcon]);
 
   return !position ? null : (
     <>
@@ -393,6 +461,20 @@ export default function PanoramaResult(): ReactElement | null {
           // Under the eye it stands on: the eye is dragged to move house, the
           // wedge is swung to look elsewhere, and the apex is where they meet.
           zIndexOffset={-1000}
+        />
+      )}
+
+      {/* Over the strip, so the sector on screen lights up inside it. Inert
+          like the strip's marker, and without a grab shape of its own — the
+          strip under it is what a press swings. */}
+      {viewWedgeIcon && sightFrom && (
+        <Marker
+          ref={viewWedgeRef}
+          position={sightFrom}
+          icon={viewWedgeIcon}
+          interactive={false}
+          keyboard={false}
+          zIndexOffset={-999}
         />
       )}
 

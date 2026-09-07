@@ -81,6 +81,10 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     wide: 'Magas',
     flat: 'Alacsony',
   },
+  fov: {
+    label: 'Vízszintes tartomány',
+    full: 'Körben',
+  },
   labels: {
     title: 'Csúcsnevek',
     density: 'Nevek száma',

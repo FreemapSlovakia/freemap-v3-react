@@ -16,6 +16,7 @@ import {
   grantedPanorama,
   PANORAMA_PREVIEW_QUALITY,
   type PanoramaGrants,
+  panoramaExpectedMs,
   panoramaRenderKey,
 } from '../../quality.js';
 import {
@@ -66,6 +67,7 @@ async function renderPass(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
   grants: PanoramaGrants,
+  renderAz: number,
   preview: boolean,
   getState: () => RootState,
   dispatch: Dispatch,
@@ -74,7 +76,7 @@ async function renderPass(
   const id = claimPanoramaRender();
 
   const { meta, imageUrl, depth } = await renderPanorama(
-    buildPanoramaRequest(viewpoint, settings, grants, farM),
+    buildPanoramaRequest(viewpoint, settings, grants, renderAz, farM),
     getState,
     CANCEL,
     (progress) => dispatch(panoramaSetProgress(progress)),
@@ -92,12 +94,13 @@ async function renderPass(
     panoramaSetRender({
       id,
       viewpoint,
-      key: panoramaRenderKey(viewpoint, settings, grants),
+      key: panoramaRenderKey(viewpoint, settings, grants, renderAz),
       preview,
       eyeElevation: meta.eye_elevation,
       width: meta.width,
       height: meta.height,
       azStart: meta.az_start,
+      fov: meta.fov,
       altMin: meta.alt_min,
       altMax: meta.alt_max,
       stepDeg: meta.step_deg,
@@ -110,8 +113,15 @@ async function renderPass(
   return meta;
 }
 
+/**
+ * Under this the preview pass is not worth its own round trip: it exists to put
+ * a picture up during a long wait, and a narrow slice at a middling tier is
+ * already there before one would have landed.
+ */
+const PREVIEW_WORTH_MS = 4000;
+
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {
-  const { viewpoint, render } = getState().panorama;
+  const { viewpoint, render, renderAz } = getState().panorama;
 
   if (!viewpoint) {
     return;
@@ -149,11 +159,16 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
     // so only the detailed pass knows which marginal summits it actually drew.
     let farM: number | null = null;
 
-    if (!standing && grants.quality !== PANORAMA_PREVIEW_QUALITY) {
+    if (
+      !standing &&
+      grants.quality !== PANORAMA_PREVIEW_QUALITY &&
+      panoramaExpectedMs(grants.quality, settings.fovDeg) > PREVIEW_WORTH_MS
+    ) {
       const meta = await renderPass(
         viewpoint,
         settings,
         { ...grants, quality: PANORAMA_PREVIEW_QUALITY },
+        renderAz,
         true,
         getState,
         dispatch,
@@ -175,6 +190,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
         viewpoint,
         settings,
         grants,
+        renderAz,
         false,
         getState,
         dispatch,

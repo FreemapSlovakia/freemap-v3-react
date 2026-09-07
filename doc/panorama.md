@@ -77,7 +77,9 @@ press raises `picking: 'viewpoint'`, a picking mode like the toposcope's centre
 toposcope's centre is placed by the same pair in the same order — the two panels
 ask the same question, so they must not answer it in opposite orders.
 
-**The wedge is swung to turn the view.** The slice of horizon drawn from the
+**The wedge is swung to turn the view** — under a full turn; under a narrower
+one it stages the direction the next render faces instead, see "How much
+horizon". The slice of horizon drawn from the
 viewpoint takes a press and follows the pointer: the bearing from the render's
 viewpoint reaches the viewer through `viewStore`'s aim slot frame by frame, and
 only the release dispatches `panoramaSetAzimuth` — every dispatch writes the
@@ -446,6 +448,112 @@ The map's own marks ink in the ramp's **first** stop (`panoramaGroundInk`) where
 there is one — the ramp holds before its first stop, so that is what the near
 ground is actually painted in.
 
+## How much horizon
+
+`fovDeg` — the toolbar's **Horizontal view** — is how much of the turn to
+render: `PANORAMA_FOVS` offers 360, 180, 120, 90, 60, 30. Cost is about linear
+in it, so it is the one setting here that buys time back rather than spending
+it, and `panoramaExpectedMs` scales the tier's figure by it. A list rather than
+the tilt's preset/modal split: a fov is one number with a handful of useful
+values, so the presets are the whole control, and an off-preset figure from a
+link is displayed on the toggle the way a custom band is.
+
+**Short of a full turn the picture has ends**, and almost everything below
+follows from that one fact. `isFullTurn` is the test, everywhere; `render.fov`
+answers for the picture in hand and `settings.fovDeg` for the next one, and the
+usual rule decides which to read.
+
+**Which way it faces becomes something to ask for.** `panorama.renderAz` is
+staged like the viewpoint is — it is in `panoramaRenderKey`, so Update lights up
+on its own — while `panorama.azimuth` stays what it was, the free bearing inside
+the picture. Whole degrees, because the key is compared on it and a link writes
+it rounded; a fraction of a degree apart would light Update on a URL round trip.
+
+**So the wedge means two things.** Under a full turn it is the part on screen
+and swinging it turns the viewer for free. Under a slice it is drawn at the
+width that will be rendered and swinging it dispatches `panoramaSetRenderAz`
+instead — the map's control for a thing that costs a render, like dragging the
+viewpoint.
+
+**Zoomed in, that leaves the strip saying the wrong thing**, since the panel
+then holds only part of it. So a slice grows a second wedge: the same fan from
+the same apex at `view.fov`, in the same ink at the same opacity, so the sector
+on screen is simply the doubly-inked part of the strip. It appears only once
+the view is `VIEW_WEDGE_GAP_DEG` narrower than the strip — unzoomed the two are
+the same wedge drawn twice — and it is inert: the strip under it is the
+control, and a second grab shape would only fight it. It follows `view`, never
+the aim: a staged swing moves the strip and leaves the picture where it is, so
+the lit sector must stay over the terrain still on screen. A full turn needs
+none of it, its one wedge already being the part on screen.
+
+Narrowing the fov centres the strip on what is being looked at
+(`panoramaSetSettings` is handled in the panorama slice too), so the picture
+does not swing off to whatever was aimed at last.
+
+**A bearing outside it reads at no column at all.** `columnAt` answers `null`
+rather than wrapping — wrapping would read the country behind you off the far
+edge — which lands in the `seen: null` path every caller already has. Panning
+is clamped by `clampPanoramaAzimuth`, measured from the strip's middle so a
+bearing off either side comes back to the near end; `fitScale` guarantees the
+panel never asks for more degrees than the strip holds, so there is always
+somewhere to put it.
+
+**A gesture that aims rather than turns must not drag the picture with it.**
+A swing of the wedge under a slice travels through the aim slot like any other
+— the wedge follows it — but carries `staged`, and `PanoramaView` does not turn
+to a staged aim. Without that the picture slams against the near end of the
+strip as the wedge goes past it, and the settle timer writes that end bearing
+down as the view.
+
+The flag reads both ways round, which is the part to keep straight: where there
+is a strip, the strip wedge follows **only** a staged aim. Dragging the mark
+aims the viewer, not the strip — it publishes an unstaged aim, the picture does
+turn to it (clamped), and a strip that followed it too would claim the next
+render was being re-aimed and then snap back on the drop.
+
+And the picture does not turn by itself: a slice would peg the pan against its
+end and sit there whenever the compass faced elsewhere, so the rAF loop and the
+compass subscription are both off for one. The toolbar's toggle is **not**
+disabled, though — a phone starts out following, so disabling it would leave
+someone unable to turn it off, and the view spinning again the moment they went
+back to a full turn.
+
+**Naming a place the slice cannot reach is the one thing that renders on its
+own.** The ask is the explicit act, so `panoramaLookAtProcessor` swings the
+strip round to it and pays. Its mark carries no `iy` — there is no picture it
+belongs to yet — which is also what carries it across the render that follows:
+`panoramaSetRender` keeps a probe that is only a place on the map, and clears
+one that answers for a picture — a row (rows are of one picture, and no two
+passes are the same height) or a named summit (which answers for the labels
+that came with it). And only where the eye stayed put: the bearing and distance
+it carries were measured from the viewpoint, `panoramaMoveViewpoint` drags that
+viewpoint without clearing anything, so a render from somewhere else leaves them
+of nowhere. The test is against the render being replaced, so it has to be taken
+before the new one is written in.
+
+**And the bearing that render lands on is the strip's middle**, wherever the
+stored one is outside it. Clamping to the near end instead was wrong twice
+over: the re-aimed render would open looking at its own edge with the place
+that was asked for off screen, and the view's settle timer — still running
+against the *old* picture while the new one renders — writes a clamped bearing
+back in between. A bearing the new picture never held says nothing about where
+in it to look; one it does hold is left alone, so an Update keeps the view.
+
+**`panorama-fov=` is written only for a slice**, a full turn being what the tool
+means; under one, `panorama-az=` carries the strip's direction rather than the
+free bearing, since the viewer can only look inside it and the strip is what a
+link has to reopen. Which also takes that param out of `COALESCED_KEYS` for as
+long as the fov is narrow: it is then not a viewport but a thing that costs a
+render, and Back has to be able to reach the strip before it. `parsePanoramaFov`
+snaps anything inside `isFullTurn`'s slack up to 360, or the request would drop
+its `az` while still asking for a fraction less than a turn — and the viewer
+would wrap a picture that does not meet itself.
+
+**The speed does not buy a finer tier.** `grantedQuality` and the service both
+clamp per tier, not by cost, so a 60° render at `detailed` is refused exactly as
+a full turn would be. A slice gives the tier already granted, sooner; making it
+buy more is a `dem-pyramid`-side change.
+
 ## Quality, and the pixel cap
 
 Five tiers in `PANORAMA_QUALITIES`, coarsest to finest — `step`/sampling
@@ -476,13 +584,15 @@ over a figure it cannot have. The modal's slider stops at what the account may
 have and wears a gem, rather than running to 400 and being clamped behind the
 user's back — the same shape as the cached-map zoom range.
 
-`panoramaStep` then raises the asked-for step wherever a full turn over the
+`panoramaStep` then raises the asked-for step wherever the frame over the
 current vertical band would exceed the service's 24 Mpx cap. Neither tier
 reaches it today, but the headroom is thinner than it looks: pixels and cost
 both run with `1/step²`, so one notch finer is several times the render — 0.02
 at the standard tilt is 27 Mpx, over the cap and about a minute of somebody
-else's server. The cap binds through the **tilt** setting as much as through
-the quality, which is why both are in the render key.
+else's server. The cap binds through the **tilt** and the **fov** as much as
+through the quality — `fov × band / step²` pixels — which is why all three are
+in the render key. A slice therefore stops the cap binding at all, and gets its
+tier's nominal step.
 
 ## Unfolding distance
 
@@ -541,6 +651,10 @@ preview would draw — one already turned to where the user was looking, with th
 mark and its readings still on it, all of which a published render clears.
 Waiting behind it costs nothing and takes a coarse flash away.
 
+**And except where the asked-for pass is already quick.** Under
+`PREVIEW_WORTH_MS` the preview is a round trip spent to fill a wait that is
+already over — which is what a narrow fov at a middling tier amounts to.
+
 **Both passes ask for peaks**, and the names are redrawn when the second lands.
 They do not fully agree: `visible` is decided by the two rays bracketing a
 summit, 0.2° apart at preview quality and 0.017° at the finest, and a summit
@@ -571,7 +685,8 @@ the tool closes or the map is cleared.
 The image is a repeating background, not a canvas: a 360° render's last column
 abuts its first, so `background-repeat: repeat-x` makes panning an offset with
 no end to run off — and it keeps a 7200 px image out of a canvas, which older
-mobile GPUs cannot hold.
+mobile GPUs cannot hold. A slice turns the repeat off and stops at its ends
+instead; see "How much horizon".
 
 The view fits the whole altitude band by default (`fitScale = viewportHeight /
 render.height`) and magnifies from there up to `MAX_ZOOM`, or further where the

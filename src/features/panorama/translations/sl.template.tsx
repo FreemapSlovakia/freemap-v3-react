@@ -83,6 +83,10 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     wide: 'Visok',
     flat: 'Nizek',
   },
+  fov: {
+    label: 'Vodoravni obseg',
+    full: 'Naokoli',
+  },
   labels: {
     title: 'Imena vrhov',
     density: 'Število imen',

@@ -1,4 +1,5 @@
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
+import { isFullTurn } from '@features/panorama/model/settingsReducer.js';
 import {
   serializePanoramaTilt,
   serializePanoramaViewpoint,
@@ -63,7 +64,13 @@ const COALESCED_KEYS = new Set([
   'route-params-hash',
 ]);
 
-const isContentPart = ([key]: QueryPart) => !COALESCED_KEYS.has(key);
+// `panorama-az` is the exception that changes meaning with the state: under a
+// slice it is not a viewport but the direction the next render faces, which
+// costs a render and is worth a history entry like any other content.
+const isContentPart =
+  (panoramaAimed: boolean) =>
+  ([key]: QueryPart) =>
+    !COALESCED_KEYS.has(key) || (panoramaAimed && key === 'panorama-az');
 
 // WebKit rejects history writes past a cap — the SecurityError names 100 per 10
 // seconds — and a viewport-only change can arrive as fast as the store updates:
@@ -286,6 +293,11 @@ function updateUrl(state: RootState, forced: boolean): void {
     panoramaSettings.tilt,
     panoramaSettings.altMin,
     panoramaSettings.altMax,
+    panoramaSettings.fovDeg,
+    // The direction a slice faces, which is the whole of what changes when the
+    // wedge is swung — without it the swing writes no URL at all and waits to
+    // be noticed by an unrelated change.
+    panorama.renderAz,
     viewshed.viewpoint,
     viewshedRadiusKm,
     // Whether `route-params-hash` may be written at all, and that is the whole
@@ -429,7 +441,9 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   // Where the panorama is taken from, so a link reopens it; the picture itself
   // is re-rendered on arrival. The bearing rides in a param of its own because
-  // it is a viewport, not content — see `COALESCED_KEYS`.
+  // it is a viewport, not content — see `COALESCED_KEYS`. Under a slice that
+  // same param carries the direction the slice faces instead: the viewer can
+  // only look inside it, so the strip is what a link has to reopen.
   //
   // Only while the panel is open: closing it keeps the viewpoint so reopening
   // finds the picture, but a link shared then would promise a panorama the
@@ -440,12 +454,21 @@ function updateUrl(state: RootState, forced: boolean): void {
       serializePanoramaViewpoint(panorama.viewpoint),
     ]);
 
-    historyParts.push(['panorama-az', String(Math.round(panorama.azimuth))]);
+    const full = isFullTurn(panoramaSettings.fovDeg);
+
+    historyParts.push([
+      'panorama-az',
+      String(Math.round(full ? panorama.azimuth : panorama.renderAz)),
+    ]);
 
     historyParts.push([
       'panorama-tilt',
       serializePanoramaTilt(panoramaSettings),
     ]);
+
+    if (!full) {
+      historyParts.push(['panorama-fov', String(panoramaSettings.fovDeg)]);
+    }
   }
 
   // Where the viewshed is taken from and how far it looks; the overlay itself is
@@ -540,9 +563,13 @@ function updateUrl(state: RootState, forced: boolean): void {
   // that must not read as content and cost a history entry. `queryParts` also
   // holds the content parts when no map id claims them, so filtering the
   // viewport out of it covers both arrangements.
+  // No test for the param being written at all: where it is not, the flag has
+  // nothing to act on.
+  const contentPart = isContentPart(!isFullTurn(panoramaSettings.fovDeg));
+
   const restSignature = `${serializeQuery(
-    queryParts.filter(isContentPart),
-  )}\n${mapId ? serializeQuery(historyParts.filter(isContentPart)) : ''}`;
+    queryParts.filter(contentPart),
+  )}\n${mapId ? serializeQuery(historyParts.filter(contentPart)) : ''}`;
 
   const prevHistoryState = history.state as {
     sq?: string;

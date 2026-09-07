@@ -66,9 +66,15 @@ import {
   panoramaClear,
   panoramaPick,
   panoramaSetAzimuth,
+  panoramaSetRenderAz,
   panoramaSetSettings,
 } from '@features/panorama/model/actions.js';
 import {
+  FOV_FULL,
+  isFullTurn,
+} from '@features/panorama/model/settingsReducer.js';
+import {
+  parsePanoramaFov,
   parsePanoramaTilt,
   parsePanoramaViewpoint,
   serializePanoramaTilt,
@@ -1622,12 +1628,13 @@ function handleToposcope(
 
 /**
  * `panorama=` the viewpoint, `panorama-az=` the bearing, `panorama-tilt=` the
- * vertical band; see `panoramaUrl.ts` for the formats. The picture is not in
- * the link: arriving with a viewpoint renders it again, which is the same
- * explicit action a click on the map is.
+ * vertical band, `panorama-fov=` how much horizon; see `panoramaUrl.ts` for the
+ * formats. The picture is not in the link: arriving with a viewpoint renders it
+ * again, which is the same explicit action a click on the map is.
  *
- * A link's tilt is applied whatever the standing preference — what the sender
- * framed is part of what they are showing.
+ * A link's framing is applied whatever the standing preference — what the
+ * sender framed is part of what they are showing. Under a slice the bearing is
+ * which way it faces, so it has to be read before the viewpoint renders.
  */
 function handlePanorama(
   getState: () => RootState,
@@ -1657,10 +1664,30 @@ function handlePanorama(
     return;
   }
 
+  // A full turn's `fovDeg` is not written, so a link without the param says
+  // "the whole horizon" rather than "leave whatever was set" — the sender's
+  // framing is what a link carries.
+  const fov =
+    parsePanoramaFov(
+      typeof query['panorama-fov'] === 'string' ? query['panorama-fov'] : '',
+    ) ?? FOV_FULL;
+
+  if (fov !== getState().panoramaSettings.fovDeg) {
+    dispatch(panoramaSetSettings({ fovDeg: fov }));
+  }
+
   const az = Number(query['panorama-az']);
 
-  if (Number.isFinite(az) && az !== azimuth) {
-    dispatch(panoramaSetAzimuth(az));
+  if (Number.isFinite(az)) {
+    if (az !== azimuth) {
+      dispatch(panoramaSetAzimuth(az));
+    }
+
+    // Under a slice the bearing is the strip's own, and it decides the render:
+    // set after the fov, which centres the strip on the view it replaces.
+    if (!isFullTurn(fov) && Math.round(az) !== getState().panorama.renderAz) {
+      dispatch(panoramaSetRenderAz(az));
+    }
   }
 
   const tilt = parsePanoramaTilt(

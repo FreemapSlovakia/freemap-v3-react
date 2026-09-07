@@ -85,6 +85,12 @@ export const usePanoramaHover = hoverSlot.useValue;
 export interface PanoramaAim {
   azimuth: number;
   /**
+   * The gesture is aiming the *next* render rather than turning this one, which
+   * is what swinging the wedge means under a slice. The wedge still follows it;
+   * the picture must not, having no bearings outside its own ends to turn to.
+   */
+  staged?: boolean;
+  /**
    * The place the gesture holds, where it holds one — dragging the mark does,
    * swinging the wedge names only a bearing. `seen` is what the picture makes
    * of it, `null` where it cannot see it at all: the figures are true of the
@@ -102,6 +108,7 @@ export interface PanoramaAim {
 const aimSlot = makeSlot<PanoramaAim>(
   (a, b) =>
     a.azimuth === b.azimuth &&
+    a.staged === b.staged &&
     a.mark?.distance === b.mark?.distance &&
     a.mark?.seen?.iy === b.mark?.seen?.iy &&
     a.mark?.seen?.ele === b.mark?.seen?.ele &&

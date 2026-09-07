@@ -1,5 +1,8 @@
 import type { LatLon } from '@shared/types/common.js';
 import {
+  FOV_FULL,
+  FOV_MIN,
+  isFullTurn,
   PANORAMA_TILTS,
   type PanoramaSettingsState,
   type PanoramaTilt,
@@ -38,6 +41,24 @@ export function parsePanoramaViewpoint(param: string): LatLon | null {
     Math.abs(lon) <= 180
     ? { lat, lon }
     : null;
+}
+
+/**
+ * `panorama-fov=` — how much horizon the picture holds. Written only for a
+ * slice: a full turn is what the tool means, and a param saying so on every
+ * link would be noise. Which way that slice faces rides in `panorama-az=`.
+ */
+export function parsePanoramaFov(param: string): number | null {
+  const fov = Number(param);
+
+  if (!Number.isFinite(fov) || fov < FOV_MIN || fov > FOV_FULL) {
+    return null;
+  }
+
+  // Snapped through the same slack `isFullTurn` allows for the service's own
+  // `width × step`: read as a full turn the request would drop its `az` and the
+  // viewer would wrap a picture a fraction of a degree short of meeting itself.
+  return isFullTurn(fov) ? FOV_FULL : fov;
 }
 
 /**

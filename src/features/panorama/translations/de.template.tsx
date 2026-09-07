@@ -81,6 +81,10 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     wide: 'Hoch',
     flat: 'Flach',
   },
+  fov: {
+    label: 'Waagerechter Ausschnitt',
+    full: 'Rundum',
+  },
   labels: {
     title: 'Gipfelnamen',
     density: 'Anzahl der Namen',

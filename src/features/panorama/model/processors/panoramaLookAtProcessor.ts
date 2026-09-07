@@ -1,9 +1,11 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { groundPoint, readTowards } from '../../ray.js';
+import { groundPoint, readTowards, withinRender } from '../../ray.js';
 import {
   panoramaLookAt,
+  panoramaRender,
   panoramaSetAzimuth,
   panoramaSetProbe,
+  panoramaSetRenderAz,
   panoramaSetSettings,
 } from '../actions.js';
 
@@ -32,9 +34,23 @@ export const panoramaLookAtProcessor: Processor<typeof panoramaLookAt> = {
       dispatch(panoramaSetSettings({ autoPan: false }));
     }
 
-    const { azimuth, seen } = readTowards(render, action.payload);
+    const { azimuth, distance, seen } = readTowards(render, action.payload);
 
     dispatch(panoramaSetAzimuth(azimuth));
+
+    // A place the slice does not reach: naming one is the explicit act a render
+    // needs, so the strip is swung round to it and paid for. The mark carries
+    // no row — there is no picture it belongs to yet — which is also what keeps
+    // it across the render that follows; the viewer finds its row on arrival.
+    if (!withinRender(render, azimuth)) {
+      dispatch(panoramaSetProbe({ ...action.payload, distance, azimuth }));
+
+      dispatch(panoramaSetRenderAz(azimuth));
+
+      dispatch(panoramaRender());
+
+      return;
+    }
 
     // No mark where the picture has nothing to answer with — sky the whole way
     // down that column, or a render whose distance buffer never arrived. A

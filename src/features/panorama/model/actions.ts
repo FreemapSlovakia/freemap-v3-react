@@ -86,6 +86,15 @@ export const panoramaCancel = createAction('PANORAMA_CANCEL');
  */
 export const panoramaSetAzimuth = createAction<number>('PANORAMA_SET_AZIMUTH');
 
+/**
+ * Which way the next render faces, under a fov short of a full turn. Staged
+ * like the viewpoint is — swinging the wedge says where, and Update pays — so
+ * it is in `panoramaRenderKey` where the bearing above is not.
+ */
+export const panoramaSetRenderAz = createAction<number>(
+  'PANORAMA_SET_RENDER_AZ',
+);
+
 /** Takes the viewpoint and its picture away, leaving the tool open. */
 export const panoramaClear = createAction('PANORAMA_CLEAR');
 

@@ -34,8 +34,15 @@ import {
   panoramaSetSettings,
 } from '../model/actions.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
-import { labelLayoutLimits } from '../model/settingsReducer.js';
-import { columnAt, groundElevation, groundPoint, readAlong } from '../ray.js';
+import { isFullTurn, labelLayoutLimits } from '../model/settingsReducer.js';
+import {
+  clampPanoramaAzimuth,
+  columnAt,
+  groundElevation,
+  groundPoint,
+  panoramaSpanDeg,
+  readAlong,
+} from '../ray.js';
 import type { PanoramaRenderData } from '../renderHolder.js';
 import {
   setPanoramaHover,
@@ -253,11 +260,11 @@ export function PanoramaView({
   // and it is how one aims at a particular ridge. So the floor is a fixed
   // magnification, raised where the image has pixels the panel isn't showing.
   //
-  // Never smaller than what makes one full turn fill the width, either: below
-  // that the background repeats and the same ridge is on screen twice, while
+  // Never smaller than what makes the whole picture fill the width, either: a
+  // full turn below that repeats and the same ridge is on screen twice, while
   // the names and the compass — which have one place per bearing — cover only
-  // the first copy. A wide, low panel therefore shows the whole turn and
-  // scrolls vertically instead.
+  // the first copy; a slice would run out into bare panel. A wide, low panel
+  // therefore shows the whole width and scrolls vertically instead.
   const fitScale =
     height > 0 ? Math.max(height / render.height, width / render.width) : 1;
 
@@ -269,7 +276,29 @@ export function PanoramaView({
 
   const spanPx = 360 / degPerPx;
 
-  const azLeft = azimuth - (width * degPerPx) / 2;
+  /** Whether the picture wraps; a slice has ends and stops at them. */
+  const full = isFullTurn(render.fov);
+
+  /** Degrees of horizon on screen, which is what the picture has to hold. */
+  const viewDeg = width * degPerPx;
+
+  // What can actually be looked at. `fitScale` keeps the panel from asking for
+  // more degrees than the picture holds, so a slice always has somewhere to put
+  // this; a full turn takes any bearing and it is the identity.
+  const aimedAz = clampPanoramaAzimuth(render, azimuth, viewDeg);
+
+  const azLeft = aimedAz - viewDeg / 2;
+
+  // Degrees from the picture's left edge to the panel's, which is what the
+  // background is offset by. A full turn repeats, so it needs no fold — the
+  // offset may run off either side and land on the next copy.
+  const relLeftDeg = full
+    ? azLeft - render.azStart
+    : clamp(
+        angleDiff(azLeft, render.azStart),
+        0,
+        Math.max(0, panoramaSpanDeg(render) - viewDeg),
+      );
 
   const maxOffsetY = Math.max(0, render.height - height / scale);
 
@@ -278,16 +307,20 @@ export function PanoramaView({
   /** Where a bearing lands in the viewport, taking the 360° wrap either way. */
   const screenX = useCallback(
     (az: number): number => {
-      const x = mod(az - azLeft, 360) / degPerPx;
+      // The short way round for a slice, so a bearing off its left edge comes
+      // out a little negative — and clipped away — rather than a whole turn out
+      // to the right.
+      const x =
+        (full ? mod(az - azLeft, 360) : angleDiff(az, azLeft)) / degPerPx;
 
       // Only what falls off the right edge is worth looking for on the left,
       // and only when the wrap brings it back within reach of the view. Testing
       // the turn's width instead would move everything at once wherever one
       // turn barely fills the panel — which is precisely the case a wide, low
       // panel is in.
-      return x > width && x - spanPx > -WRAP_MARGIN_PX ? x - spanPx : x;
+      return full && x > width && x - spanPx > -WRAP_MARGIN_PX ? x - spanPx : x;
     },
-    [azLeft, degPerPx, spanPx, width],
+    [azLeft, degPerPx, full, spanPx, width],
   );
 
   // What was last written down, so a bearing arriving from outside can be told
@@ -296,21 +329,24 @@ export function PanoramaView({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      writtenRef.current = azimuth;
+      writtenRef.current = aimedAz;
 
-      dispatch(panoramaSetAzimuth(azimuth));
+      dispatch(panoramaSetAzimuth(aimedAz));
     }, SETTLE_MS);
 
     return () => clearTimeout(timer);
-  }, [azimuth, dispatch]);
+  }, [aimedAz, dispatch]);
 
   // The map's wedge being swung: it turns the picture frame by frame without
   // touching the store — the gesture ending is what writes the bearing down,
   // and this component's own settle timer would have done it anyway.
   const aim = usePanoramaAim();
 
+  // Not a staged one: that gesture is aiming the next render, and this picture
+  // has no bearing outside its own ends to follow it to — it would only slam
+  // against the near one and leave that behind as the view.
   useEffect(() => {
-    if (aim) {
+    if (aim && !aim.staged) {
       setAzimuth(aim.azimuth);
     }
   }, [aim]);
@@ -378,9 +414,9 @@ export function PanoramaView({
   // on the very map being picked on. Keep the last real one.
   useEffect(() => {
     if (width > 0) {
-      setPanoramaView({ azimuth, fov: width * degPerPx });
+      setPanoramaView({ azimuth: aimedAz, fov: viewDeg });
     }
-  }, [azimuth, degPerPx, width]);
+  }, [aimedAz, viewDeg, width]);
 
   // Cleared on the way out only. Clearing it before every re-run instead would
   // leave the store's half-degree threshold nothing to compare against, so
@@ -390,12 +426,13 @@ export function PanoramaView({
   /** Where the device points, as a bearing and when it was last heard. */
   const compassRef = useRef<{ heading: number; at: number } | null>(null);
 
-  // Only while the view is meant to be moving, and only where there is a
-  // magnetometer to ask — desktop Chrome exposes the events with nothing behind
-  // them. On iOS the readings arrive only after the permission the play button
-  // asks for, so until then this stays silent and the view turns by itself.
+  // Only while the view is meant to be moving and has somewhere to move to, and
+  // only where there is a magnetometer to ask — desktop Chrome exposes the
+  // events with nothing behind them. On iOS the readings arrive only after the
+  // permission the play button asks for, so until then this stays silent and
+  // the view turns by itself.
   useEffect(() => {
-    if (!settings.autoPan || !isCompassSupported()) {
+    if (!settings.autoPan || !full || !isCompassSupported()) {
       compassRef.current = null;
 
       return;
@@ -404,7 +441,7 @@ export function PanoramaView({
     return subscribeCompass(({ heading, at }) => {
       compassRef.current = { heading, at };
     });
-  }, [settings.autoPan]);
+  }, [settings.autoPan, full]);
 
   // Moves on its own until it is taken over by hand. Where the device can say
   // which way it is pointed the view follows that — a panorama held up at a
@@ -415,7 +452,10 @@ export function PanoramaView({
     // place is being picked. Left running it turns the view at 60 fps into a
     // `display: none` box, re-laying out every peak label each frame, on the
     // phone the user is picking on.
-    if (!settings.autoPan || dragging || width === 0) {
+    //
+    // A slice has nothing to turn through: the pan would peg against its end
+    // and the compass would sit there whenever the device faced elsewhere.
+    if (!settings.autoPan || dragging || width === 0 || !full) {
       return;
     }
 
@@ -447,12 +487,12 @@ export function PanoramaView({
     raf = requestAnimationFrame(step);
 
     return () => cancelAnimationFrame(raf);
-  }, [settings.autoPan, dragging, width]);
+  }, [settings.autoPan, dragging, full, width]);
 
   // The geometry a zoom has to work back from, kept where an event handler can
   // read it without being torn down and rebuilt on every frame of a pan.
   const geomRef = useRef({
-    azimuth,
+    azimuth: aimedAz,
     zoom,
     offsetY: clampedOffsetY,
     scale,
@@ -461,13 +501,14 @@ export function PanoramaView({
     maxZoom,
     width,
     height,
+    render,
     stepDeg: render.stepDeg,
     renderHeight: render.height,
   });
 
   useEffect(() => {
     geomRef.current = {
-      azimuth,
+      azimuth: aimedAz,
       zoom,
       offsetY: clampedOffsetY,
       scale,
@@ -476,6 +517,7 @@ export function PanoramaView({
       maxZoom,
       width,
       height,
+      render,
       stepDeg: render.stepDeg,
       renderHeight: render.height,
     };
@@ -503,7 +545,13 @@ export function PanoramaView({
 
     const rowAt = g.offsetY + py / g.scale;
 
-    const nextAzimuth = mod(azAt - (px - g.width / 2) * nextDegPerPx, 360);
+    // Zooming out of a slice widens what the panel asks for, so the bearing has
+    // to come back inside what is left to look at.
+    const nextAzimuth = clampPanoramaAzimuth(
+      g.render,
+      azAt - (px - g.width / 2) * nextDegPerPx,
+      g.width * nextDegPerPx,
+    );
 
     const nextOffsetY = clamp(
       rowAt - py / nextScale,
@@ -613,6 +661,12 @@ export function PanoramaView({
 
       const ix = columnAt(render, az);
 
+      // The pointer is past the end of a slice — its very edge column, or the
+      // sliver of panel a rounded width leaves over.
+      if (ix === null) {
+        return null;
+      }
+
       // Clamped off the last row: at the very bottom of the frame `py / scale`
       // lands exactly on the row past the end, which reads as no data at all.
       const iy = Math.min(clampedOffsetY + py / scale, render.height - 0.001);
@@ -694,7 +748,9 @@ export function PanoramaView({
           dispatch(panoramaSetSettings({ autoPan: false }));
         }
 
-        setAzimuth((a) => mod(a - dx * degPerPx, 360));
+        setAzimuth((a) =>
+          clampPanoramaAzimuth(render, a - dx * degPerPx, viewDeg),
+        );
 
         setOffsetY((o) => clamp(o - dy / scale, 0, maxOffsetY));
       }
@@ -1027,8 +1083,11 @@ export function PanoramaView({
         style={{
           backgroundImage: `url(${data.imageUrl})`,
           backgroundSize: `${render.width * scale}px ${render.height * scale}px`,
-          backgroundPositionX: `${-((azLeft - render.azStart) / render.stepDeg) * scale}px`,
+          backgroundPositionX: `${(-relLeftDeg / render.stepDeg) * scale}px`,
           backgroundPositionY: `${-clampedOffsetY * scale}px`,
+          // The sheet repeats, which is what a full turn wants; a slice tiled
+          // would draw the same ridge again past its own end.
+          backgroundRepeat: full ? undefined : 'no-repeat',
         }}
       />
 

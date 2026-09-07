@@ -85,6 +85,10 @@ const en: PanoramaMessages = {
     wide: 'Tall',
     flat: 'Short',
   },
+  fov: {
+    label: 'Horizontal view',
+    full: 'All around',
+  },
   labels: {
     title: 'Peak names',
     density: 'Number of names',

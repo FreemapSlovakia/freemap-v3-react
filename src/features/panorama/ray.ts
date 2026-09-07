@@ -1,5 +1,5 @@
 import { bearingTo, distanceTo } from '@shared/geoutils.js';
-import { mod } from '@shared/mathUtils.js';
+import { angleDiff, clamp, mod } from '@shared/mathUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import destination from '@turf/destination';
 import {
@@ -8,6 +8,7 @@ import {
   visibleAtDistance,
 } from './depth.js';
 import type { PanoramaRenderInfo } from './model/reducer.js';
+import { isFullTurn } from './model/settingsReducer.js';
 import { getPanoramaRenderData } from './renderHolder.js';
 
 /** Where a bearing and a distance from the viewpoint land on the ground. */
@@ -26,12 +27,54 @@ export function groundPoint(
   return { lat, lon };
 }
 
-/** Which image column a bearing reads at, taking the turn's wrap. */
-export function columnAt(
-  render: Pick<PanoramaRenderInfo, 'azStart' | 'stepDeg' | 'width'>,
-  azimuth: number,
+/** How wide a strip actually is, in degrees of its own columns. */
+export function panoramaSpanDeg(
+  render: Pick<PanoramaRenderInfo, 'stepDeg' | 'width'>,
 ): number {
-  return mod((azimuth - render.azStart) / render.stepDeg, render.width);
+  return render.width * render.stepDeg;
+}
+
+/**
+ * Which image column a bearing reads at, or `null` where the picture does not
+ * reach it. A full turn wraps; a strip has ends, and wrapping there would read
+ * the country behind you off its far edge.
+ */
+export function columnAt(
+  render: Pick<PanoramaRenderInfo, 'azStart' | 'stepDeg' | 'width' | 'fov'>,
+  azimuth: number,
+): number | null {
+  if (isFullTurn(render.fov)) {
+    return mod((azimuth - render.azStart) / render.stepDeg, render.width);
+  }
+
+  // The short way round, so a bearing just left of the strip comes out slightly
+  // negative rather than a whole turn to the right of it.
+  const column = angleDiff(azimuth, render.azStart) / render.stepDeg;
+
+  return column < 0 || column >= render.width ? null : column;
+}
+
+/**
+ * A bearing the viewer may actually look at: a full turn takes any, a strip
+ * only what it can fill `viewportDeg` of picture at. Both ends are measured
+ * from the middle, so a bearing off either side comes back to the near one.
+ */
+export function clampPanoramaAzimuth(
+  render: Pick<PanoramaRenderInfo, 'azStart' | 'stepDeg' | 'width' | 'fov'>,
+  azimuth: number,
+  viewportDeg: number,
+): number {
+  if (isFullTurn(render.fov)) {
+    return mod(azimuth, 360);
+  }
+
+  const span = panoramaSpanDeg(render);
+
+  const middle = render.azStart + span / 2;
+
+  const reach = Math.max(0, (span - viewportDeg) / 2);
+
+  return mod(middle + clamp(angleDiff(azimuth, middle), -reach, reach), 360);
 }
 
 /**
@@ -48,6 +91,17 @@ export interface PanoramaReading {
   seen: (PanoramaSample & { ele: number }) | null;
 }
 
+/**
+ * Whether a bearing falls in what a render holds. A full turn holds every one;
+ * a strip has ends, and a place past them is what an aim has to re-render for.
+ */
+export function withinRender(
+  render: Pick<PanoramaRenderInfo, 'azStart' | 'stepDeg' | 'width' | 'fov'>,
+  azimuth: number,
+): boolean {
+  return columnAt(render, azimuth) !== null;
+}
+
 /** {@link readTowards} from a bearing and a distance already in hand. */
 export function readAlong(
   render: PanoramaRenderInfo,
@@ -55,9 +109,12 @@ export function readAlong(
   azimuth: number,
   distance: number,
 ): PanoramaReading {
-  const sample = depth
-    ? visibleAtDistance(depth, columnAt(render, azimuth), distance)
-    : null;
+  const column = columnAt(render, azimuth);
+
+  const sample =
+    depth && column !== null
+      ? visibleAtDistance(depth, column, distance)
+      : null;
 
   return {
     azimuth,

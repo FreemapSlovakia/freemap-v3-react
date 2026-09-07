@@ -82,6 +82,10 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     wide: 'Wysoki',
     flat: 'Niski',
   },
+  fov: {
+    label: 'Zakres poziomy',
+    full: 'Dookoła',
+  },
   labels: {
     title: 'Nazwy szczytów',
     density: 'Liczba nazw',

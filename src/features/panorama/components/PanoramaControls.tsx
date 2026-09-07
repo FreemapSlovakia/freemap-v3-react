@@ -42,9 +42,10 @@ import {
   FaSync,
 } from 'react-icons/fa';
 import { LuFoldVertical, LuUnfoldVertical } from 'react-icons/lu';
-import { MdOutlineHeight } from 'react-icons/md';
+import { Md360, MdOutlineHeight } from 'react-icons/md';
 import { PiCompassRoseBold } from 'react-icons/pi';
 import {
+  TbAngle,
   TbBaselineDensityLarge,
   TbBaselineDensityMedium,
   TbBaselineDensitySmall,
@@ -60,12 +61,15 @@ import {
 } from '../model/actions.js';
 import {
   DOMINANCE_STEPS_M,
+  FOV_FULL,
   hazeStepIndex,
+  isFullTurn,
   LABEL_DENSITY_MAX,
   LABEL_DISTANCE_WEIGHTS,
   LABEL_HAZE_STEPS_KM,
   labelWeightBand,
   NO_DOMINANCE_FILTER,
+  PANORAMA_FOVS,
   type PanoramaTilt,
   PROMINENCE_WEIGHT_MAX,
   PROMINENCE_WEIGHT_STEP,
@@ -129,7 +133,7 @@ export function PanoramaControls({
 
   const settings = useAppSelector((state) => state.panoramaSettings);
 
-  const { viewpoint, render, rendering } = useAppSelector(
+  const { viewpoint, render, rendering, renderAz } = useAppSelector(
     (state) => state.panorama,
   );
 
@@ -240,7 +244,7 @@ export function PanoramaControls({
   const outdated =
     viewpoint !== null &&
     (render === null ||
-      render.key !== panoramaRenderKey(viewpoint, settings, grants));
+      render.key !== panoramaRenderKey(viewpoint, settings, grants, renderAz));
 
   return (
     <FloatingWindowControls fullscreen={fullscreen}>
@@ -295,6 +299,45 @@ export function PanoramaControls({
         // The offer to buy is on the tiers themselves, one press away.
         toggleClassName={premium ? undefined : 'text-warning'}
         toggleHint={premium ? undefined : prm?.higherDetail}
+      />
+
+      {/* How much horizon to render, which is the one setting that buys time
+          back rather than spending it: the cost is about linear in it. Below a
+          full turn the picture has ends, so the wedge on the map turns from
+          something that looks around into something that says which way — see
+          `PanoramaResult`. */}
+      <SelectDropdown
+        value={String(settings.fovDeg)}
+        // The item already in effect is offered like the rest and fires like
+        // the rest, and setting a slice re-aims it at what is on screen — so
+        // picking the current one would light Update over nothing.
+        onSelect={(value) => {
+          const fovDeg = Number(value) || FOV_FULL;
+
+          if (fovDeg !== settings.fovDeg) {
+            dispatch(panoramaSetSettings({ fovDeg }));
+          }
+        }}
+        // Widest first, so the list runs from what the tool means by default
+        // down to the narrowest slice — the way the tilt list runs.
+        options={PANORAMA_FOVS.map((fov) => ({
+          value: String(fov),
+          label: isFullTurn(fov) ? m?.fov.full : nfDeg.format(fov),
+          icon: isFullTurn(fov) ? <Md360 /> : <TbAngle />,
+          // Sets off the full turn from the slices, which are a different kind
+          // of picture: one to look around in against one aimed somewhere.
+          divider: isFullTurn(fov),
+        }))}
+        // A fov from a link matching no preset would leave the toggle blank; it
+        // says the angle instead, and a preset is the way back out of it.
+        {...(PANORAMA_FOVS.some((fov) => fov === settings.fovDeg)
+          ? {}
+          : {
+              toggleIcon: <TbAngle />,
+              toggleLabel: nfDeg.format(settings.fovDeg),
+            })}
+        name={m?.fov.label}
+        breakpoint="md"
       />
 
       <SelectDropdown
@@ -563,7 +606,12 @@ export function PanoramaControls({
         {/* The icon is what says which state it is in, so this is an ordinary
             action rather than a toggle wearing an outline. Where there is a
             magnetometer the view follows it rather than turning by itself, so a
-            play mark would promise the wrong thing — see `PanoramaView`. */}
+            play mark would promise the wrong thing — see `PanoramaView`.
+
+            Never disabled, though a slice has nothing to turn through: a phone
+            starts out following, so disabling it there would leave someone
+            unable to turn it off and the view spinning again the moment they
+            went back to a full turn. It sets the preference either way. */}
         <Action
           label={m?.autoPan}
           icon={

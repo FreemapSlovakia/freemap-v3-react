@@ -1,6 +1,7 @@
 import { clearMapFeatures, closeTool } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { mod } from '@shared/mathUtils.js';
+import { sameLatLon } from '@shared/geoutils.js';
+import { angleDiff, mod } from '@shared/mathUtils.js';
 import type {
   TerrainErrorCode,
   TerrainProgress,
@@ -21,8 +22,11 @@ import {
   panoramaSetProbe,
   panoramaSetProgress,
   panoramaSetRender,
+  panoramaSetRenderAz,
   panoramaSetRendering,
+  panoramaSetSettings,
 } from './actions.js';
+import { isFullTurn } from './settingsReducer.js';
 
 /**
  * Everything about a finished render but the picture itself and its distance
@@ -42,6 +46,12 @@ export interface PanoramaRenderInfo {
   height: number;
   /** Azimuth of the image's left edge. */
   azStart: number;
+  /**
+   * Degrees of horizon it holds. Short of a full turn the picture has ends: it
+   * does not wrap, so panning stops at them and a bearing outside it reads at
+   * no column at all.
+   */
+  fov: number;
   altMin: number;
   altMax: number;
   stepDeg: number;
@@ -67,6 +77,11 @@ export interface PanoramaState {
   render: PanoramaRenderInfo | null;
   /** Bearing the middle of the viewer looks at; see `panoramaSetAzimuth`. */
   azimuth: number;
+  /**
+   * Bearing the middle of the next render faces, whole degrees. Only a fov
+   * short of a full turn has one; a full turn holds every bearing already.
+   */
+  renderAz: number;
   probe: PanoramaProbe | null;
   /** What the map is waiting for a click to say, or `null` for nothing. */
   picking: PanoramaPicking | null;
@@ -79,6 +94,7 @@ export const panoramaInitialState: PanoramaState = {
   error: null,
   render: null,
   azimuth: 0,
+  renderAz: 0,
   probe: null,
   picking: null,
 };
@@ -121,14 +137,41 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
       state.progress = payload;
     })
     .addCase(panoramaSetRender, (state, { payload }) => {
+      // Read before the render is replaced: whether the mark below survives is
+      // a question about the eye moving between the two.
+      const movedEye =
+        !state.render || !sameLatLon(state.render.viewpoint, payload.viewpoint);
+
       state.render = payload;
 
       state.error = null;
 
-      state.probe = null;
+      // A reading belongs to the picture it came from: `iy` is an image row and
+      // no two passes are the same height, and a named summit answers for the
+      // set of labels this picture came with. A bare place on the map is
+      // neither, and survives — that is what carries a mark across the render
+      // an out-of-strip "look at" has to pay for.
+      //
+      // But only from the same spot: its bearing and distance were measured
+      // from the eye, and `panoramaMoveViewpoint` drags that eye without
+      // clearing anything, so a render of somewhere else leaves them of nowhere.
+      if (state.probe?.iy !== undefined || state.probe?.peak || movedEye) {
+        state.probe = null;
+      }
 
       // A pass has ended; whatever the next one reports starts from nothing.
       state.progress = null;
+
+      // A strip has ends, so the bearing being looked at may be outside the one
+      // just rendered — a re-aimed render, or a fov narrowed round something
+      // else. A bearing this picture never held says nothing about where in it
+      // to look, so it goes to the middle, which is what the render was aimed
+      // at; one it does hold is left alone, so an Update keeps the view.
+      const middle = payload.azStart + payload.fov / 2;
+
+      if (Math.abs(angleDiff(state.azimuth, middle)) > payload.fov / 2) {
+        state.azimuth = mod(middle, 360);
+      }
     })
     .addCase(panoramaSetError, (state, { payload }) => {
       state.error = payload;
@@ -144,6 +187,22 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
     })
     .addCase(panoramaSetAzimuth, (state, { payload }) => {
       state.azimuth = mod(payload, 360);
+    })
+    // Whole degrees, so a swing of the wedge and the bearing a link carries
+    // back land on the same value — the render key is compared on it, and a
+    // fraction of a degree apart would light Update on a URL round trip.
+    .addCase(panoramaSetRenderAz, (state, { payload }) => {
+      state.renderAz = mod(Math.round(payload), 360);
+    })
+    // Narrowing the fov frames what is already being looked at rather than
+    // swinging off to whatever was aimed at last.
+    .addCase(panoramaSetSettings, (state, { payload }) => {
+      if (payload.fovDeg !== undefined && !isFullTurn(payload.fovDeg)) {
+        // Folded like the action above: a view at 359.7° rounds to 360, and the
+        // render key would then read a different direction from the 0° a swing
+        // or a link lands on.
+        state.renderAz = mod(Math.round(state.azimuth), 360);
+      }
     })
     .addCase(panoramaSetProbe, (state, { payload }) => {
       state.probe = payload;

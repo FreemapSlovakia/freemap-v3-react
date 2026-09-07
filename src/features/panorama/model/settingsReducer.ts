@@ -198,6 +198,32 @@ export const DOMINANCE_STEPS_M = [
 
 export type PanoramaTilt = 'standard' | 'wide' | 'flat' | 'custom';
 
+/** A full turn — the fov that has no direction to aim and never runs out. */
+export const FOV_FULL = 360;
+
+/**
+ * Slices of horizon to render, widest first. Render time is about linear in the
+ * fov, so a narrow one buys back most of what a finer tier costs; the direction
+ * it is aimed in is `panorama.renderAz`.
+ *
+ * A single number with a handful of useful values, so the list is the whole
+ * control — unlike the tilt's pair, which needs the modal to type.
+ */
+export const PANORAMA_FOVS = [FOV_FULL, 180, 120, 90, 60, 30] as const;
+
+/** Narrowest and widest a stored or linked fov may be. */
+export const FOV_MIN = 5;
+
+/**
+ * A degree of slack, because this is asked of `meta.fov` as well as of the
+ * setting: a step that does not divide the turn leaves the service's own
+ * `width × step` a hair under 360, and reading that as a slice would stop the
+ * picture wrapping. No preset comes near the gap.
+ */
+export function isFullTurn(fovDeg: number): boolean {
+  return fovDeg >= FOV_FULL - 1;
+}
+
 /** Angles above and below the horizon a band may reach; short of straight up. */
 export const ALT_LIMIT = 89;
 
@@ -351,6 +377,11 @@ export interface PanoramaSettingsState {
   tilt: PanoramaTilt;
   altMin: number;
   altMax: number;
+  /**
+   * Degrees of horizon to render. Below a full turn the picture has ends, so
+   * which way it faces becomes something to ask for — see `panorama.renderAz`.
+   */
+  fovDeg: number;
   /** Eye height above the ground, metres. */
   eye: number;
   /**
@@ -432,6 +463,9 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   tilt: 'standard',
   altMin: -18,
   altMax: 12,
+  // A full turn, which is what a panorama means and the only fov with nothing
+  // to aim. The narrow ones are for a known view, and are asked for.
+  fovDeg: FOV_FULL,
   eye: 1.7,
   depthLift: 0,
   // The service's own default, and what every render asked for before there was

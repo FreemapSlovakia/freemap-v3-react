@@ -34,6 +34,8 @@ import {
 } from '@features/panorama/gradient.js';
 import {
   DEPTH_LIFT_MAX,
+  FOV_FULL,
+  FOV_MIN,
   LABEL_DENSITY_MAX,
   LABEL_DISTANCE_WEIGHT_MAX,
   LABEL_HAZE_MAX_KM,
@@ -205,6 +207,10 @@ const PersistedPanoramaSettingsSchema = z
     tilt: z.enum(['standard', 'wide', 'flat', 'custom']),
     altMin: z.number(),
     altMax: z.number(),
+    // Bounded because it divides the request's own left edge and the viewer's
+    // pan limits; a zero or a negative from a hand-edited store leaves both
+    // with nothing to work from.
+    fovDeg: z.number().min(FOV_MIN).max(FOV_FULL),
     eye: z.number(),
     // Bounded to what the slider offers: the request adds it to the top of the
     // band, and the service refuses anything past 45 outright.

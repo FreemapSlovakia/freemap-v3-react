@@ -25,7 +25,7 @@ import { Alert, Button, ProgressBar } from 'react-bootstrap';
 import { FaCrosshairs, FaStreetView, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { type PanoramaProbe, panoramaCancel } from '../model/actions.js';
-import { grantedQuality, PANORAMA_QUALITIES } from '../quality.js';
+import { grantedQuality, panoramaExpectedMs } from '../quality.js';
 import { usePanoramaRenderData } from '../renderHolder.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import { usePanoramaAim } from '../viewStore.js';
@@ -96,10 +96,13 @@ export default function Panorama(): ReactElement {
     return () => observer.disconnect();
   }, []);
 
-  // What the picture is being drawn at, which is also how long to expect to
-  // wait — the two-pass preview aside, that is the whole of it.
-  const { expectedMs } =
-    PANORAMA_QUALITIES[grantedQuality(settings.quality, premium)];
+  // What the picture is being drawn at and how much horizon of it, which is
+  // also how long to expect to wait — the two-pass preview aside, that is the
+  // whole of it.
+  const expectedMs = panoramaExpectedMs(
+    grantedQuality(settings.quality, premium),
+    settings.fovDeg,
+  );
 
   const bar = useTerrainProgress(rendering, progress, expectedMs);
 

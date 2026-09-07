@@ -81,6 +81,10 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     wide: 'Vysoký',
     flat: 'Nízký',
   },
+  fov: {
+    label: 'Vodorovný rozsah',
+    full: 'Dokola',
+  },
   labels: {
     title: 'Názvy vrcholů',
     density: 'Počet názvů',
