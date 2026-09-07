@@ -7,6 +7,13 @@ import type { Messages } from '@/translations/messagesInterface.js';
 
 export type ToastAction = {
   action?: RootAction | RootAction[];
+  /**
+   * Makes the button a link. For a destination the app cannot express as an
+   * action — an external page, or an `intent://` URL that hands off to another
+   * app — where routing it through a dispatch would only lose the user's click
+   * as the gesture that allowed the navigation.
+   */
+  href?: string;
   variant?: ButtonVariant;
 } & ({ name: string } | { nameKey: MessagePaths });
 
@@ -30,6 +37,18 @@ export type Toast<T = Messages> = {
     | 'light'
     | 'dark';
   actions?: ToastAction[];
+  /**
+   * Dispatched when the user dismisses the toast with its × — not when it goes
+   * away on `cancelType`, a predicate, or a timeout. A toast that some other
+   * state owns (a preference, a selection) needs the × to reach that owner;
+   * `toastsRemove` can't, being what every automatic dismissal dispatches too.
+   *
+   * Typed as `UnknownAction` rather than `RootAction`: `RootAction` is derived
+   * from every action creator, `toastsAdd` among them, so naming it here from a
+   * plain (non-deferred) property of `Toast` closes the loop and collapses the
+   * whole union to `any`.
+   */
+  onClose?: UnknownAction | UnknownAction[];
   id?: string;
   // Dismissal conditions, combined per `predicatesOperation` (default OR). The
   // `cancelType` action-type match mirrors `cancelActions` on httpRequest.
@@ -51,6 +70,12 @@ export type ResolvedToast = StoredToast & {
   actions: ToastAction[];
   id: string;
   timeoutSince: number | undefined;
+  /**
+   * The user killed the countdown: it does not come back, `cancelType` and the
+   * predicates leave the toast alone, and the attribution toast ignores the
+   * click that otherwise dismisses it. Only the × takes it down.
+   */
+  pinned: boolean;
 };
 
 const toastsAddAction = createAction('TOASTS_ADD', (toast: StoredToast) => {
@@ -60,6 +85,7 @@ const toastsAddAction = createAction('TOASTS_ADD', (toast: StoredToast) => {
       ...toast,
       actions: toast.actions ?? [],
       timeoutSince: toast.timeout === undefined ? undefined : Date.now(),
+      pinned: false,
     } satisfies ResolvedToast,
   };
 });
@@ -81,3 +107,7 @@ export const toastsRestartTimeout = createAction<{
   id: string;
   timeoutSince: number;
 }>('TOASTS_RESTART_TIMEOUT');
+
+export const toastsSetPinned = createAction<{ id: string; pinned: boolean }>(
+  'TOASTS_SET_PINNED',
+);

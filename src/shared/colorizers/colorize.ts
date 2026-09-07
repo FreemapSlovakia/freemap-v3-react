@@ -1,5 +1,10 @@
-import { smoothSeries, trackTimeSegments } from '@shared/geoutils.js';
+import {
+  lowerBound,
+  smoothSeries,
+  trackTimeSegments,
+} from '@shared/geoutils.js';
 import type { Feature, LineString } from 'geojson';
+import type { ColorizerMessages } from './translations/ColorizerMessages.js';
 
 export type HotlinePalette = Array<{
   r: number;
@@ -7,6 +12,201 @@ export type HotlinePalette = Array<{
   b: number;
   t: number;
 }>;
+
+/**
+ * The Hotline options a colorizer imposes, taken from the same place as the
+ * palette so a new caller cannot forget them: a span-based mode changes color
+ * across coincident points, which Leaflet's simplification would drop.
+ */
+export function colorizerHotlineOptions(
+  colorizer: Colorizer | null | undefined,
+): { palette: HotlinePalette | undefined; smoothFactor?: number } {
+  return {
+    palette: colorizer?.palette,
+    ...(colorizer?.spanBased && { smoothFactor: 0 }),
+  };
+}
+
+/**
+ * The geometry a colorizer should read: a span-based mode takes the router's own
+ * values off the plain line, where every other mode wants the densified one the
+ * elevation pipeline built.
+ */
+export function colorizeGeometrySource<T>(
+  colorizer: Colorizer | null | undefined,
+  densified: T | null | undefined,
+): T | null {
+  return !colorizer || colorizer.spanBased ? null : (densified ?? null);
+}
+
+/** A palette color as CSS, the one spelling both the line and the legend use. */
+export function rgbCss(color: [r: number, g: number, b: number]): string {
+  return `rgb(${color.join(' ')})`;
+}
+
+/**
+ * The colorizer to paint with: the picked one, unless it has nothing to say
+ * about these features, in which case nothing is painted and whatever the lines
+ * carry themselves stands.
+ */
+export function availableColorizer(
+  picked: Colorizer | null | undefined,
+  features: Feature<LineString>[],
+): Colorizer | null {
+  return picked && (!picked.isAvailable || picked.isAvailable(features))
+    ? picked
+    : null;
+}
+
+/**
+ * The palette read at `t` (a {@link ColorizedPoint}'s `color`), interpolated
+ * between the stops it falls between — what Hotline paints on the map, for a
+ * reader that has to spell the color itself. Stops are in ascending `t`.
+ */
+export function paletteColorAt(
+  palette: HotlinePalette,
+  t: number,
+): [r: number, g: number, b: number] {
+  const first = palette[0];
+
+  if (!first) {
+    return [0, 0, 0];
+  }
+
+  let prev = first;
+
+  for (const stop of palette) {
+    if (t <= stop.t) {
+      const span = stop.t - prev.t;
+
+      const k = span > 0 ? (t - prev.t) / span : 0;
+
+      return [
+        Math.round(prev.r + (stop.r - prev.r) * k),
+        Math.round(prev.g + (stop.g - prev.g) * k),
+        Math.round(prev.b + (stop.b - prev.b) * k),
+      ];
+    }
+
+    prev = stop;
+  }
+
+  return [prev.r, prev.g, prev.b];
+}
+
+/**
+ * A stretch of a route the router reported one value for, in metres along the
+ * line. Metres rather than point indices because the line colorize draws is
+ * densified for premium users, which shifts every index.
+ */
+export type PathDetailSpan = { start: number; end: number; value: string };
+
+export type PathDetails = Record<string, PathDetailSpan[]>;
+
+/** Where {@link PathDetailSpan}s ride on the feature being colorized. */
+export const PATH_DETAILS_PROP = 'fm:pathDetails';
+
+export function readPathDetails(
+  feature: Feature<LineString>,
+  key: string,
+): PathDetailSpan[] | undefined {
+  const details = feature.properties?.[PATH_DETAILS_PROP] as
+    | PathDetails
+    | undefined;
+
+  return details?.[key];
+}
+
+/** The spans covering `[from, to]`, measured from `from`. */
+export function clipPathDetails(
+  details: PathDetails,
+  from: number,
+  to: number,
+): PathDetails {
+  return Object.fromEntries(
+    Object.entries(details).flatMap(([key, spans]) => {
+      const clipped: PathDetailSpan[] = [];
+
+      for (const span of spans) {
+        const start = Math.max(span.start, from);
+
+        const end = Math.min(span.end, to);
+
+        if (end > start) {
+          clipped.push({
+            start: start - from,
+            end: end - from,
+            value: span.value,
+          });
+        }
+      }
+
+      return clipped.length > 0 ? [[key, clipped] as const] : [];
+    }),
+  );
+}
+
+/**
+ * The same spans read off another measure of the same vertices: `from` and `to`
+ * hold one distance per vertex, each along its own axis, and a span between two
+ * vertices is interpolated. Simplifying a line and joining two both move every
+ * vertex along the axis the spans are metres of.
+ *
+ * A gap an axis leaves out is two vertices at the same distance, so a span
+ * starting there takes the later of them and one ending there the earlier —
+ * both taking the same one would stretch the span across the gap.
+ */
+export function remapPathDetails(
+  details: PathDetails,
+  from: number[],
+  to: number[],
+): PathDetails {
+  const last = from.length - 1;
+
+  const at = (meters: number, starting: boolean) => {
+    if (last < 0) {
+      return meters;
+    }
+
+    const i = lowerBound(from.length, (index) =>
+      starting ? from[index]! > meters : from[index]! >= meters,
+    );
+
+    if (i <= 0) {
+      return to[0]!;
+    }
+
+    if (i > last) {
+      return to[last]!;
+    }
+
+    const width = from[i]! - from[i - 1]!;
+
+    const f = width > 0 ? (meters - from[i - 1]!) / width : 0;
+
+    return to[i - 1]! + f * (to[i]! - to[i - 1]!);
+  };
+
+  return Object.fromEntries(
+    Object.entries(details).map(([key, spans]) => [
+      key,
+      spans.map((span) => ({
+        ...span,
+        start: at(span.start, true),
+        end: at(span.end, false),
+      })),
+    ]),
+  );
+}
+
+/** One row of a legend that names categories instead of drawing a scale. */
+export type CategoryShare = {
+  key: string;
+  label: string;
+  color: string;
+  /** How far it runs, so the legend doubles as what the route is made of. */
+  meters: number;
+};
 
 export interface ColorizedPoint {
   lat: number;
@@ -90,6 +290,12 @@ export interface ColorizeOptions {
   // sub-pixel wiggle in the source data doesn't read as color noise; omitted
   // (e.g. export, tests) the colorizer keeps its intrinsic baseline span.
   zoom?: number;
+  // The same thing said directly, for a reader that knows its own scale rather
+  // than a map zoom: the elevation chart's x axis is metres of line per pixel.
+  // Takes precedence over `zoom`.
+  metersPerPixel?: number;
+  // The grade the steepness palette ends at, as a ratio; omitted, its default.
+  steepnessScale?: number;
 }
 
 export interface Colorizer {
@@ -114,6 +320,25 @@ export interface Colorizer {
       options?: ColorizeOptions,
     ) => number[];
   };
+  // The legend for a mode that names categories instead of drawing a scale: the
+  // ones the lines actually hold, with how far each runs. The colorizer answers
+  // it, so the legend never has to know how a mode stores its values.
+  categories?: (
+    features: Feature<LineString>[],
+    messages: ColorizerMessages,
+  ) => CategoryShare[];
+  // Set by a mode that paints stretches the router reported rather than a value
+  // per point. Such a line changes color across two coincident points, so
+  // Leaflet's vertex simplification has to be off for it (`smoothFactor`); it
+  // reads nothing from the elevation-densified line, and its result is the same
+  // at every zoom.
+  spanBased?: true;
+  // The path detail this mode reads, as GraphHopper names it. A menu compares
+  // it against what the active profile asks for, so a mode the router will
+  // never report for that profile is left out rather than shown dead. Several,
+  // where the profile decides which one the mode is answered with — the mode
+  // then reads whichever the route carries.
+  detail?: string | string[];
 }
 
 /**

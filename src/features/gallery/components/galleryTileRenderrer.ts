@@ -7,7 +7,14 @@ import type { GalleryColorizeBy } from '../model/actions.js';
 
 type Marble = LatLon & {
   rating: number;
-  userId: number;
+  /**
+   * Who took it, as a number to bucket colours by — but from two different id
+   * spaces depending on `source`: our own `user.id` for gallery photos, and the
+   * Commons `actor_id` for Wikimedia ones. Unique within each space, and freely
+   * overlapping between them, so it may only be compared against a Freemap user
+   * id when `source` says the photo is ours.
+   */
+  authorId: number;
   createdAt: number;
   takenAt?: number | null;
   pano?: boolean;
@@ -141,7 +148,7 @@ export function renderGalleryTile({
           colorizeBy === 'rating'
         ? sort(data, (a) => Number(a[colorizeBy]))
         : colorizeBy === 'mine'
-          ? sort(data, (a) => (a.userId === myUserId ? 1 : 0))
+          ? sort(data, (a) => (!a.source && a.authorId === myUserId ? 1 : 0))
           : colorizeBy === 'premium'
             ? sort(data, (a) => (a.premium ? 1 : 0))
             : // No colorize (or a mode without its own order): own photos on top
@@ -211,7 +218,7 @@ export function renderGalleryTile({
     rating,
     createdAt,
     takenAt,
-    userId,
+    authorId,
     pano,
     premium,
     license,
@@ -226,11 +233,14 @@ export function renderGalleryTile({
 
     switch (colorizeBy) {
       case 'userId':
-        // userId 0 is the `?? 0` sentinel for a photo with no author (a
+        // authorId 0 is the `?? 0` sentinel for a photo with no author (a
         // Wikimedia row whose authorId is null) — render it neutral, not as a
-        // real bucket color. Own photo ids always start at 1.
-        ctx.fillStyle = userId
-          ? color.lch(90, 70, -userId * 11313).hex()
+        // real bucket color. Own photo ids always start at 1. Colours may
+        // repeat across sources, since the two id spaces overlap; that is no
+        // worse than the collisions the hue function already produces within
+        // one of them.
+        ctx.fillStyle = authorId
+          ? color.lch(90, 70, -authorId * 11313).hex()
           : NO_DATA_COLOR;
 
         break;
@@ -305,7 +315,12 @@ export function renderGalleryTile({
         break;
 
       case 'mine':
-        ctx.fillStyle = userId === myUserId ? GALLERY_COLOR : MUTED_COLOR;
+        // `source` guards the comparison: a Wikimedia photo carries a Commons
+        // actor id here, which is a different id space that happens to share
+        // the low numbers our own user ids use — without this, every photo by
+        // Commons actor N shows as belonging to Freemap user N.
+        ctx.fillStyle =
+          !source && authorId === myUserId ? GALLERY_COLOR : MUTED_COLOR;
 
         break;
 

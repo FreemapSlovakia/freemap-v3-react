@@ -2,9 +2,7 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { AlertLink } from 'react-bootstrap';
 import shared from './cs-shared.js';
 import { addError, type Messages } from './messagesInterface.js';
 
@@ -31,6 +29,7 @@ const outdoorMap = 'Turistika, Cyklo, Běžky, Jízda';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Zrušit automatické zavření',
     iso: 'cs_CZ',
     elevationProfile: 'Výškový profil',
     save: 'Uložit',
@@ -47,6 +46,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     yes: 'Ano',
     no: 'Ne',
     masl,
+    viewpoint: 'Stanoviště',
+    eyeHeight: 'Výška očí',
+    eyeHeightHint:
+      'Jak vysoko nad zemí stojíte — rozhledna či dron, ne nadmořská výška.',
+    maxVisibleDistance: 'Maximální viditelná vzdálenost',
     copyCode: 'Zkopírovat kód',
     loading: 'Načítám…',
     ok: 'OK',
@@ -67,8 +71,42 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Přidat nové',
     clear: 'Vyčistit',
     convertToDrawing: 'Zkonvertovat na kreslení',
-    simplifyPrompt:
-      'Prosím zadejte faktor zjednodušení. Zadejte nulu pro vynechání zjednodušení.',
+    copyToDrawing: 'Kopírovat do kresby',
+    copyTo: ({ tool }) => <>Kopírovat do {tool}</>,
+    convertTo: ({ tool }) => <>Zkonvertovat do {tool}</>,
+    convertAllToDrawing: 'Zkonvertovat vše na kreslení',
+    convertAllTo: ({ tool }) => <>Zkonvertovat vše do {tool}</>,
+    openIn: ({ what }) => <>Otevřít v {what}</>,
+    panoramaFromHere: 'Panorama odsud',
+    viewshedFromHere: 'Viditelnost odsud',
+    toposcopeFromHere: 'Orientační růžice odsud',
+    lookAtInPanorama: 'Podívat se na to v panoramatu',
+    placeActions: 'Co se dá dělat s tímto místem',
+    locationActions: 'Akce pro toto místo',
+    convert: {
+      geometry: 'Geometrie',
+      pointOnly: 'Jen bod',
+      fullGeometry: 'Vlastní geometrie',
+      label: 'Popis',
+      labelHint: 'Napište {p:name} pro vykreslení vlastnosti s názvem name.',
+      labelMode: 'Popis uložit jako',
+      preview: 'Náhled',
+      labelTemplate: 'Šablona',
+      labelResolved: 'Prostý text',
+      properties: 'Vlastnosti k přenesení',
+      noProperties: 'Není co přenést.',
+      labelKeysKept: 'Vlastnost použitá v popisu se přenese vždy.',
+    },
+    simplify: {
+      title: 'Zjednodušit',
+      deviation: 'Maximální odchylka',
+      none: 'žádné',
+      vertices: ({ from, to }) => (
+        <>
+          Bodů: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'Kopírovat URL',
     copyPageUrl: 'Kopírovat URL stránky',
     savingError: ({ err }) => addError(messages, 'Chyba ukládání', err),
@@ -87,14 +125,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     name: 'Název',
+    icon: 'Ikona',
+    iconChoose: 'Vybrat ikonu…',
+    iconNone: 'Bez ikony',
+    iconSearch: 'Hledat ikony',
     load: 'Načíst',
-    unnamed: 'Bez názvu',
+    unknown: 'Neznámé',
     enablePopup: 'Prosím, povolte v prohlížeči pop-up okna pro tuto stránku.',
     broadcastChannelUnsupported:
       'Tato akce není ve vašem prohlížeči podporována (BroadcastChannel není k dispozici, např. v anonymním režimu nebo v prohlížeči vestavěném v aplikaci). Použijte standardní okno v moderním prohlížeči.',
     componentLoadingError:
       'Komponent se nepodařilo načíst. Zkontrolujte své připonění na internet.',
     offline: 'Nejste připojen k internetu.',
+    offlineUnavailable: 'Nedostupné bez připojení k internetu.',
+    offlineToolUnavailable:
+      'Tento nástroj nedokáže bez připojení k internetu nic načíst.',
+    offlineNotice:
+      'Nejste připojen k internetu, takže zde nelze nic načíst ani odeslat.',
     connectionError: 'Chyba spojení se serverem.',
     experimentalFunction: 'Experimentální funkce',
     attribution: () => (
@@ -128,11 +175,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     auto: 'Automatický režim',
   },
 
+  cardinals: {
+    n: 'S',
+    ne: 'SV',
+    e: 'V',
+    se: 'JV',
+    s: 'J',
+    sw: 'JZ',
+    w: 'Z',
+    nw: 'SZ',
+  },
+
   selections: {
     objects: 'Objekt (POI)',
     drawPoints: 'Bod',
     drawLines: 'Čára',
     drawPolygons: 'Polygón',
+    drawPolygonHole: 'Díra v polygonu',
     tracking: 'Sledování',
     linePoint: 'Bod čáry',
     polygonPoint: 'Bod polygonu',
@@ -147,12 +206,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Kreslení bodů',
     drawLines: 'Kreslení čar',
     drawPolygons: 'Kreslení polygonů',
-    trackViewer: 'Import souboru',
+    dataViewer: 'Trasy a data',
     changesets: 'Změny v mapě',
     mapDetails: 'Detaily v mapě',
     tracking: 'Sledování',
     myMaps: 'Moje mapy',
     myMap: 'Moje mapa',
+    gpsRecorder: 'GPS záznamník',
+    toposcope: 'Orientační růžice',
+    panorama: 'Panorama',
   },
 
   mainMenu: {
@@ -191,7 +253,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Zavřít',
     closeTool: 'Zavřít nástroj',
     locateMe: 'Kde jsem?',
+    pickHomeLocationPrompt: 'Klikněte do mapy tam, kde bydlíte',
     locationError: 'Nepodařilo se získat pozici.',
+    locationNoSignal: 'Zatím bez signálu GPS.',
+    headingSource: 'Ukazatel směru',
+    headingSources: {
+      none: 'Skrytý',
+      gps: 'Směr pohybu',
+      compass: 'Kompas zařízení',
+    },
+    headingSourceHelp:
+      'Směr pohybu pochází z GPS a zobrazuje se pouze při pohybu. Kompas zařízení funguje i vestoje, vyžaduje však oprávnění a může být nepřesný.',
+    bearingLine: 'Vzdálenost a azimut',
+    bearingLineHelp:
+      'Během lokalizace vykreslí čáru mezi vaší polohou a zaměřovacím křížem uprostřed mapy, s popisem vzdálenosti a azimutu z vaší polohy ke kříži. Zobrazí se, jakmile mapu posunete mimo vaši polohu.',
+    compassPermissionDenied: 'Přístup ke kompasu byl zamítnut.',
+    compassUnavailable:
+      'Žádná data z kompasu. Vaše zařízení ho nemusí mít, nebo je přístup k němu zablokován.',
     zoomIn: 'Přiblížit mapu',
     zoomOut: 'Oddálit mapu',
     devInfo: () => (
@@ -208,25 +286,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Analytické cookies"
       />
     ),
-    infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji>&ensp;Stojíme za Ukrajinou.{' '}
-          <AlertLink
-            href="https://donio.cz/pomocukrajine"
-            target="_blank"
-            rel="noopener"
-          >
-            Pomozte Ukrajině ›
-          </AlertLink>
-          &ensp;
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
-    },
+    infoBars: {},
   },
 
   search: {
+    showMore: 'Zobrazit více…',
     inProgress: 'Hledám…',
     noResults: 'Nebyly nalezeny žádné výsledky',
     prompt: 'Zadejte lokalitu',
@@ -239,8 +303,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         err,
       ),
     buttonTitle: 'Hledat',
-    placeholder: 'Hledat v mapě',
+    placeholder: 'Hledat místa a funkce',
     result: 'Nález',
+    keepOnMap: 'Ponechat v mapě',
+    offlineHint:
+      'Bez připojení k internetu lze najít pouze souřadnice, ohraničující box, čísla dlaždic (z/x/y) nebo vložený GeoJSON.',
     sources: {
       'nominatim-reverse': 'Reverzní geokódování',
       'overpass-nearby': 'Blízké objekty',
@@ -253,23 +320,99 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
+    osmElementTypes: {
+      node: 'Uzel',
+      way: 'Cesta',
+      relation: 'Relace',
+    },
+    commands: {
+      caption: 'Funkce',
+      keywords: {
+        'tool-route-planner':
+          'plánovač tras, trasa, navigace, itinerář, cyklo, výlet',
+        'tool-objects': 'body zájmu, poi, místa, vybavenost',
+        'tool-draw-points': 'kreslení, značka, špendlík, poznámka',
+        'tool-draw-lines': 'kreslení, měření vzdálenosti, délka, pravítko',
+        'tool-draw-polygons': 'kreslení, měření plochy, oblast',
+        'tool-import-file':
+          'gpx, kml, kmz, tcx, geojson, import, nahrát, otevřít soubor',
+        'tool-map-details': 'identifikovat, co je zde, wms',
+        'tool-changesets': 'změny osm, sady změn, mapeři, přispěvatelé',
+        'tool-tracking': 'sdílení polohy, sledování zařízení, živě, tracking',
+        'tool-toposcope': 'vrcholy, kopce, obzor, růžice, toposkop, toposcope',
+        'tool-panorama': '360, pohled, vrcholy, obzor, terén',
+        'tool-gps-recorder': 'záznam trasy, nahrávání, logger',
+        'modal-account': 'profil, můj účet, nastavení, odhlášení',
+        'modal-login': 'přihlášení, účet',
+        'modal-my-maps': 'uložené mapy, uložit mapu, sdílet mapu',
+        'modal-map-features-export':
+          'export, gpx, geojson, stáhnout data, uložit objekty',
+        'modal-map-to-document-export':
+          'export, tisk, pdf, png, jpeg, svg, obrázek, plakát',
+        'modal-offline-map-export':
+          'export, offline, stáhnout dlaždice, mbtiles, sd karta',
+        'modal-embed': 'iframe, embed, web, html kód, vložení',
+        'modal-support-us': 'darovat, přispět, podpora, peníze',
+        'modal-legend': 'značky, symboly, vysvětlivky',
+        'modal-about': 'kontakt, e-mail, zpětná vazba',
+        'modal-map-layers-config': 'vrstvy, správa map, pořadí, průhlednost',
+        'modal-custom-maps': 'vlastní mapa, wms, tms, přidat mapu',
+        'modal-offline-maps': 'stažené mapy, úložiště',
+        'modal-browse-cache': 'mezipaměť, dlaždice, úložiště',
+        'modal-map-preferences': 'nastavení, volby, průhlednost překrytí',
+        'modal-elevation-settings': 'výškový profil, nadmořská výška, graf',
+        'clear-map-features': 'vyčistit, smazat vše, vymazat mapu',
+        'layer-X': 'outdoor, turistika, cyklo, freemap',
+        'layer-XK': 'turistické trasy, značky, kst',
+        'layer-O': 'osm, mapnik, standardní',
+        'layer-S': 'satelitní, ortofoto, snímky',
+        'layer-Z': 'satelitní, ortofoto, snímky',
+        'layer-J1': 'satelitní, ortofoto, snímky',
+        'layer-J2': 'satelitní, ortofoto, snímky',
+        'layer-d': 'mhd, autobusy, vlaky, jízdní řády',
+        'layer-I': 'obrázky, galerie, fotky',
+        'layer-w': 'wiki, články',
+        'layer-R': 'počasí, déšť, srážky, bouřka, předpověď',
+        'layer-v': 'rozhled, výhled, přímá viditelnost, terén',
+        'layer-5': 'stínování, reliéf, terén, výškopis',
+        'layer-6': 'stínování, reliéf, povrch, výškopis',
+        'layer-7': 'stínování, reliéf, terén, výškopis, lidar',
+        'layer-8': 'stínování, reliéf, terén, výškopis, lidar',
+        'layer-h': 'stínování, reliéf, sklon, orientace, inverze',
+        'layer-z': 'stínování, reliéf, sklon, orientace, inverze',
+        'layer-y': 'stínování, reliéf, sklon, orientace, inverze',
+        'layer-l1': 'lesní cesty, nlc',
+        'layer-l2': 'lesní cesty, nlc',
+        'layer-VO': 'vektorová',
+        'layer-VS': 'vektorová',
+        'layer-VD': 'vektorová',
+        'layer-VT': 'vektorová',
+        'layer-WDZ': 'stromy, les, dřeviny',
+        'layer-WLT': 'les, lesy',
+        'layer-WGE': 'geologie, horniny',
+        'layer-WKA': 'parcely, katastrální mapa',
+        'layer-wka': 'parcely, katastrální mapa',
+        'layer-WHC': 'chemie vody, hydrologie',
+      },
+    },
   },
 
   mapLayers: {
-    searchResultStyle: 'Styl výsledku hledání',
+    lookupStyle: 'Styl nálezu',
     resetApp: 'Obnovit aplikaci',
     resetAppConfirm:
       'Obnovit všechna nastavení aplikace na výchozí a znovu načíst stránku? Budete odhlášeni.',
     showAll: 'Zobrazit všechny mapy',
     filterMaps: 'Filtrovat mapy',
     noMapsFound: 'Žádné mapy nenalezeny',
-    settings: 'Nastavení map',
+    settings: 'Správa map',
     layers: 'Mapy',
     switch: 'Mapy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
     interactiveLayerWarning: 'Datová vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     outsideViewWarning: 'Aktuální výřez je mimo tuto mapu',
+    offlineWarning: 'Tato mapa není uložena pro offline použití',
     letters: {
       S: 'Letecká',
       Z: 'Letecká',
@@ -278,11 +421,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Veřejná doprava (ÖPNV)',
       X: outdoorMap,
+      XK: 'Turistické trasy KST',
       i: 'Datová vrstva',
       I: 'Fotografie',
       l1: 'Lesní cesty NLC (2017)',
       l2: 'Lesní cesty NLC',
       w: 'Wikipedia',
+      R: 'Meteoradar',
+      v: 'Viditelnost',
       '5': 'Stínování terénu',
       '6': 'Stínování povrchu',
       '7': 'Detailní stínování terénu',
@@ -307,17 +453,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       map: 'mapa',
       data: 'data',
       photos: 'fotografie',
+      routing: 'vyhledávání tras',
     },
     attr: {
       osmData: '©\xa0přispěvatelé OpenStreetMap',
+      fixTheMap: 'nahlásit chybu v mapě',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorové dlaždice z"
           hostedBy="hostované na"
         />
       ),
+      photosCc: 'různé licence Creative Commons',
     },
-    configureLayers: 'Nastavení mapových vrstev',
+    layersConfiguration: 'Nastavení vrstev',
     customMaps: 'Vlastní mapy',
     addCustomMap: 'Přidat vlastní mapu',
     activate: 'Aktivovat',
@@ -330,9 +479,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Maximální přirozené přiblížení',
     extraScales: 'Další rozlišení',
     scaleWithDpi: 'Škálovat podle DPI',
+    tiled: 'Načítat po dlaždicích',
+    tiledHelp:
+      'WMS se ve výchozím nastavení vyžádá jako jeden obrázek celého výřezu: jeden požadavek místo desítek a popisky nepřeříznuté na hranicích dlaždic. Dlaždice zapněte pro server, který omezuje velikost obrázku nebo který dlaždice ukládá do mezipaměti — za cenu dávky požadavků na každý výřez.',
     zIndex: 'Z-Index',
-    preferences: 'Předvolby',
+    preferences: 'Předvolby mapy',
     maxZoom: 'Maximální přiblížení',
+    zoomSnap: 'Krok přiblížení',
+    zoomSnapFree: 'Volně',
+    zoomSnapHelp:
+      'Nejmenší změna přiblížení, na které může skončit přiblížení kolečkem, gestem a výběrem obdélníku. 1 drží mapu na celých úrovních, zlomek jí dovolí zastavit i mezi nimi a Volně kdekoli. Tlačítka a klávesy + a – jdou vždy na nejbližší celou úroveň.',
     forcedScale: 'Vynucené rozlišení',
     resolutionScale: 'Škála rozlišení',
     resolutionScaleAuto: 'Automaticky (podle zařízení)',
@@ -355,7 +511,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       parametricShading: 'Parametrické stínování',
     },
     loadWmsLayers: 'Načíst vrstvy',
+    serverNotResponding: ({ name }) => (
+      <>
+        Server mapy <b>{name}</b> neodpovídá.
+      </>
+    ),
     offlineMaps: 'Offline mapy',
+    browseCache: 'Ukládání při prohlížení',
     legacy: 'zastaralá',
     legacyMapWarning: ({ from, to }) => (
       <>
@@ -367,9 +529,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   elevationChart: {
     distance: 'Vzdálenost [km]',
-    ele: 'Nadm. výška [m.n.m.] ',
+    ele: `Nadm. výška [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Nastala chyba při získávání výškového profilu', err),
+    settings: 'Předvolby nadmořské výšky',
+    settingsHelp:
+      'První dvě nastavení opravují model terénu, takže platí všude, kde se výška čte z něj: u plánovaných tras, nakreslených linií a měření a u importovaných tras, kterým jste výšku nahradili ze serveru. Zaznamenaná nadmořská výška — živé sledování nebo trasa, kterou jste ponechali tak, jak byla zaznamenána — zůstává nedotčená. Exportované soubory si vždy zachovají vlastní výšku.',
+    windowOff: 'vypnuto',
+    windowWholeLine: 'celá trasa',
+    despike: 'Odstranit špice',
+    despikeHelp:
+      'Když je cesta nakreslená pár metrů vedle vozovky, kterou popisuje, model terénu vrátí výšku svahu nebo skalní stěny vedle ní. Špice užší než polovina této hodnoty se odstraní a profil se mírně zaoblí; širší se zachovají, protože jde o skutečný terén. Nula funkci vypne.',
+    ditchFill: 'Zaplnit příkopy modelu terénu',
+    ditchFillHelp:
+      'Detailní národní modely terénu, dostupné v některých zemích, bývají upraveny pro hydrologii: u každého propustku vyřežou přes cestu příkop. Prohlubně užší než tato hodnota se zaplní; širší se zachovají, protože jde o skutečný terén. Nula funkci vypne a tam, kde se používá globální model, nemění nic.',
+    gradeWindow: 'Okno pro sklon',
+    gradeWindowHelp:
+      'Když ukážete na výškový profil, místo se vyznačí na mapě spolu s tím, jaký je tam sklon. Sklon se průměruje na úseku této délky kolem daného bodu, aby pár metrů nepřesnosti GPS nevypadalo jako stěna. Nula jej měří jen na tom úseku, na kterém dané místo stojí; druhý konec stupnice jej měří najednou přes celou trasu, tedy udává její převýšení na celé její délce — u rovné měřicí linie je to úhel, pod kterým je jeden konec vidět z druhého.',
   },
 
   errorCatcher: {
@@ -392,8 +568,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Zde přidat bod',
     startLine: 'Zde začít křeslit/měřit vzdálenost',
     queryFeatures: 'Zjistit detaily v okolí',
-    startRoute: 'Zde začít trasu',
-    finishRoute: 'Zde ukončit trasu',
     showPhotos: 'Zobrazit fotky v okolí',
   },
 

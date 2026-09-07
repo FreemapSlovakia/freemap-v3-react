@@ -5,6 +5,11 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Stiahnuť',
+  share: 'Zdieľať',
+  shareAsText:
+    'Váš prehliadač zdieľa iba textové súbory, preto súbor dostane príponu „.txt“. Cieľová aplikácia ju možno bude potrebovať odstrániť.',
+  sharedAsDownload:
+    'Dialóg zdieľania sa nepodarilo otvoriť, súbor sa preto stiahol.',
   format: 'Formát',
   target: 'Cieľ',
   elevation: {
@@ -16,14 +21,13 @@ const sk: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Chyba exportovania', err),
   what: {
     plannedRoute: 'vyhľadanú trasu',
-    plannedRouteWithStops: 'so zastávkami',
     objects: 'objekty (POI)',
     pictures: 'fotografie (vo viditeľnej časti mapy)',
     drawingLines: 'kreslenie - čiary',
     drawingAreas: 'kreslenie - polygóny',
     drawingPoints: 'kreslenie - body',
     tracking: 'sledovanie',
-    import: 'importovaný súbor',
+    import: 'trasy a dáta',
     search: 'nález',
   },
   onlySelected: 'Iba vybraný prvok',

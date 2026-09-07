@@ -2,9 +2,7 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { AlertLink } from 'react-bootstrap';
 import shared from './it-shared.js';
 import { addError, type Messages } from './messagesInterface.js';
 
@@ -29,6 +27,7 @@ const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Annulla la chiusura automatica',
     iso: 'it_IT',
     elevationProfile: 'Profilo altimetrico',
     save: 'Salva',
@@ -45,6 +44,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     yes: 'Sì',
     no: 'No',
     masl,
+    viewpoint: 'Punto di osservazione',
+    eyeHeight: 'Altezza dell’occhio',
+    eyeHeightHint:
+      'Quanto sei in alto rispetto al terreno — una torre o un drone, non la quota sul livello del mare.',
+    maxVisibleDistance: 'Distanza massima visibile',
     copyCode: 'Copia codice',
     loading: 'Caricamento…',
     ok: 'OK',
@@ -68,9 +72,44 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Aggiungi nuovo',
     clear: 'Pulisci',
     convertToDrawing: 'Converti in disegno',
+    copyToDrawing: 'Copia nel disegno',
+    copyTo: ({ tool }) => <>Copia in {tool}</>,
+    convertTo: ({ tool }) => <>Converti in {tool}</>,
+    convertAllToDrawing: 'Converti tutto in disegno',
+    convertAllTo: ({ tool }) => <>Converti tutto in {tool}</>,
+    openIn: ({ what }) => <>Apri in {what}</>,
 
-    simplifyPrompt:
-      'Per favore inserisci il fattore di semplificazione. Imposta lo zero per nessuna semplificazione.',
+    panoramaFromHere: 'Panorama da qui',
+    viewshedFromHere: 'Visibilità da qui',
+    toposcopeFromHere: 'Tavola d’orientamento da qui',
+    lookAtInPanorama: 'Guarda questo nel panorama',
+    placeActions: 'Cosa fare con questo luogo',
+    locationActions: 'Azioni per questo luogo',
+    convert: {
+      geometry: 'Geometria',
+      pointOnly: 'Solo punto',
+      fullGeometry: 'Geometria propria',
+      label: 'Etichetta',
+      labelHint: 'Scrivi {p:name} per disegnare una proprietà chiamata name.',
+      labelMode: 'Salva etichetta come',
+      preview: 'Anteprima',
+      labelTemplate: 'Modello',
+      labelResolved: 'Testo semplice',
+      properties: 'Proprietà da trasferire',
+      noProperties: 'Niente da trasferire.',
+      labelKeysKept:
+        "Una proprietà usata dall'etichetta viene sempre trasferita.",
+    },
+    simplify: {
+      title: 'Semplifica',
+      deviation: 'Scostamento massimo',
+      none: 'nessuna',
+      vertices: ({ from, to }) => (
+        <>
+          Punti: {from} → {to}
+        </>
+      ),
+    },
 
     copyUrl: 'Copia URL',
     copyPageUrl: 'Copia URL della pagina',
@@ -94,14 +133,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     name: 'Nome',
+    icon: 'Icona',
+    iconChoose: 'Scegli icona…',
+    iconNone: 'Nessuna icona',
+    iconSearch: 'Cerca icone',
     load: 'Carica',
-    unnamed: 'Nessun nome',
+    unknown: 'Sconosciuto',
     enablePopup: 'Per favore abilita i popup nel tuo browser per questo sito.',
     broadcastChannelUnsupported:
       'Questa azione non è supportata dal tuo browser (BroadcastChannel non è disponibile, ad es. in modalità privata o in un browser integrato in un’app). Usa una finestra normale in un browser moderno.',
     componentLoadingError:
       'Errore di caricamento. Per favore verifica la tua connessione internet.',
     offline: 'Non sei connesso a internet.',
+    offlineUnavailable: 'Non disponibile senza una connessione a internet.',
+    offlineToolUnavailable:
+      'Senza una connessione a internet questo strumento non può caricare nulla.',
+    offlineNotice:
+      'Non sei connesso a internet, quindi qui non è possibile caricare né inviare nulla.',
     connectionError: 'Errore di collegamento al server.',
     experimentalFunction: 'Funzione sperimentale',
     attribution: () => (
@@ -134,11 +182,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     auto: 'Modalità automatica',
   },
 
+  cardinals: {
+    n: 'N',
+    ne: 'NE',
+    e: 'E',
+    se: 'SE',
+    s: 'S',
+    sw: 'SO',
+    w: 'O',
+    nw: 'NO',
+  },
+
   selections: {
     objects: 'Oggetto (POI)',
     drawPoints: 'Punto',
     drawLines: 'Linea',
     drawPolygons: 'Poligono',
+    drawPolygonHole: 'Buco nel poligono',
     tracking: 'Tracciamento',
     linePoint: 'Punto della linea',
     polygonPoint: 'Punto del poligono',
@@ -153,12 +213,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Disegno a punti',
     drawLines: 'Disegno a linee',
     drawPolygons: 'Disegno a poligoni',
-    trackViewer: 'Importazione file',
+    dataViewer: 'Tracce e dati',
     changesets: 'Modifiche mappa',
     mapDetails: 'Dettagli mappa',
     tracking: 'Tracciamento in tempo reale',
     myMaps: 'Le mie mappe',
     myMap: 'La mia mappa',
+    gpsRecorder: 'Registratore GPS',
+    toposcope: "Tavola d'orientamento",
+    panorama: 'Panorama',
   },
 
   mainMenu: {
@@ -197,7 +260,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Chiudi',
     closeTool: 'Chiudi lo strumento',
     locateMe: 'Localizzami',
+    pickHomeLocationPrompt: 'Clicca sulla mappa il punto in cui abiti',
     locationError: 'Errore nel determinare la locazione.',
+    locationNoSignal: 'Ancora nessun segnale GPS.',
+    headingSource: 'Indicatore di direzione',
+    headingSources: {
+      none: 'Nascosto',
+      gps: 'Direzione di marcia',
+      compass: 'Bussola del dispositivo',
+    },
+    headingSourceHelp:
+      'La direzione di marcia proviene dal GPS e appare solo mentre ti muovi. La bussola del dispositivo funziona anche da fermo, ma richiede un permesso e può essere imprecisa.',
+    bearingLine: 'Distanza e rilevamento',
+    bearingLineHelp:
+      'Durante la localizzazione traccia una linea tra la tua posizione e un mirino al centro della mappa, con l’indicazione della distanza e del rilevamento dalla tua posizione al mirino. Appare quando sposti la mappa lontano dalla tua posizione.',
+    compassPermissionDenied: 'Accesso alla bussola negato.',
+    compassUnavailable:
+      'Nessun dato dalla bussola. Il dispositivo potrebbe non averla, oppure l’accesso è bloccato.',
     zoomIn: 'Zoom avanti',
     zoomOut: 'Zoom indietro',
     devInfo: () => (
@@ -214,21 +293,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Cookies analitici"
       />
     ),
-    infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji>&ensp;Siamo con l'Ucraina.{' '}
-          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
-            Sostieni l’Ucraina ›
-          </AlertLink>
-          &ensp;
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
-    },
+    infoBars: {},
   },
 
   search: {
+    showMore: 'Mostra altro…',
+    offlineHint:
+      'Senza una connessione a internet è possibile trovare solo coordinate, un riquadro di delimitazione, numeri di tassello (z/x/y) o GeoJSON incollato.',
     inProgress: 'Ricerca in corso…',
     noResults: 'Nessun risultato trovato',
     prompt: 'Inserisci il luogo',
@@ -236,8 +307,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routeTo: 'Percorso fino a qui',
     fetchingError: ({ err }) => addError(messages, 'Searching error:', err),
     buttonTitle: 'Cerca',
-    placeholder: 'Cerca sulla mappa',
+    placeholder: 'Cerca luoghi e funzioni',
     result: 'Risultato',
+    keepOnMap: 'Mantieni sulla mappa',
     sources: {
       'nominatim-reverse': 'Geocodifica inversa',
       'overpass-nearby': 'Oggetti vicini',
@@ -250,23 +322,102 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
+    osmElementTypes: {
+      node: 'Nodo',
+      way: 'Percorso',
+      relation: 'Relazione',
+    },
+    commands: {
+      caption: 'Funzioni',
+      keywords: {
+        'tool-route-planner':
+          'navigazione, itinerario, pianificatore di percorso, gita, bici',
+        'tool-objects': 'punti di interesse, poi, luoghi, servizi',
+        'tool-draw-points': 'disegno, segnaposto, spillo, nota',
+        'tool-draw-lines': 'disegno, misura distanza, lunghezza, righello',
+        'tool-draw-polygons': 'disegno, misura area, regione',
+        'tool-import-file':
+          'gpx, kml, kmz, tcx, geojson, importa, carica, apri file',
+        'tool-map-details': "identifica, cosa c'è qui, wms",
+        'tool-changesets': 'modifiche osm, changeset, mappatori, contributi',
+        'tool-tracking':
+          'condividi posizione, segui dispositivo, tempo reale, tracking',
+        'tool-toposcope': 'cime, vette, monti, orizzonte, toposcopio',
+        'tool-panorama': '360, vista, cime, orizzonte, terreno',
+        'tool-gps-recorder': 'registra traccia, logger, registrazione',
+        'modal-account': 'profilo, il mio account, impostazioni, esci',
+        'modal-login': 'accedi, account',
+        'modal-my-maps': 'mappe salvate, salva mappa, condividi mappa',
+        'modal-map-features-export': 'esporta, gpx, geojson, scarica dati',
+        'modal-map-to-document-export':
+          'esporta, stampa, pdf, png, jpeg, svg, immagine, poster',
+        'modal-offline-map-export':
+          'esporta, offline, scarica tasselli, mbtiles, scheda sd',
+        'modal-embed': 'iframe, incorpora, sito web, codice html',
+        'modal-support-us': 'dona, sostieni, contribuisci, denaro',
+        'modal-legend': 'simboli, legenda della mappa',
+        'modal-about': 'contatti, e-mail, feedback',
+        'modal-map-layers-config': 'livelli, gestisci mappe, ordine, opacità',
+        'modal-custom-maps':
+          'mappa personalizzata, wms, tms, aggiungi sorgente',
+        'modal-offline-maps': 'mappe scaricate, archiviazione',
+        'modal-browse-cache': 'cache, tasselli in cache, archiviazione',
+        'modal-map-preferences':
+          'impostazioni, opzioni, opacità delle sovrapposizioni',
+        'modal-elevation-settings': 'profilo altimetrico, quota, grafico',
+        'clear-map-features': 'rimuovi tutto, cancella, azzera mappa',
+        'layer-X': 'outdoor, escursionismo, ciclismo, freemap',
+        'layer-XK': 'sentieri segnalati, segnavia, kst',
+        'layer-O': 'osm, mapnik, standard',
+        'layer-S': 'satellite, ortofoto, immagini aeree',
+        'layer-Z': 'satellite, ortofoto, immagini aeree',
+        'layer-J1': 'satellite, ortofoto, immagini aeree',
+        'layer-J2': 'satellite, ortofoto, immagini aeree',
+        'layer-d': 'trasporto pubblico, autobus, treni, orari',
+        'layer-I': 'immagini, galleria, foto',
+        'layer-w': 'wiki, articoli',
+        'layer-R': 'meteo, pioggia, precipitazioni, temporale, previsioni',
+        'layer-v':
+          'analisi di visibilità, bacino visivo, linea di vista, terreno',
+        'layer-5': 'ombreggiatura, rilievo, terreno, quota',
+        'layer-6': 'ombreggiatura, rilievo, superficie, quota',
+        'layer-7': 'ombreggiatura, rilievo, terreno, quota, lidar',
+        'layer-8': 'ombreggiatura, rilievo, terreno, quota, lidar',
+        'layer-h': 'ombreggiatura, rilievo, pendenza, esposizione, inversione',
+        'layer-z': 'ombreggiatura, rilievo, pendenza, esposizione, inversione',
+        'layer-y': 'ombreggiatura, rilievo, pendenza, esposizione, inversione',
+        'layer-l1': 'strade forestali, nlc',
+        'layer-l2': 'strade forestali, nlc',
+        'layer-VO': 'vettoriale',
+        'layer-VS': 'vettoriale',
+        'layer-VD': 'vettoriale',
+        'layer-VT': 'vettoriale',
+        'layer-WDZ': 'alberi, bosco, specie',
+        'layer-WLT': 'bosco, tipi di bosco',
+        'layer-WGE': 'geologia, rocce',
+        'layer-WKA': 'particelle, catasto',
+        'layer-wka': 'particelle, catasto',
+        'layer-WHC': 'chimica delle acque, idrologia',
+      },
+    },
   },
 
   mapLayers: {
-    searchResultStyle: 'Stile del risultato di ricerca',
+    lookupStyle: 'Stile del risultato',
     resetApp: 'Reimposta applicazione',
     resetAppConfirm:
       'Ripristinare tutte le impostazioni dell’applicazione ai valori predefiniti e ricaricare la pagina? Verrai disconnesso.',
     showAll: 'Mostra tutti i livelli',
     filterMaps: 'Filtra mappe',
     noMapsFound: 'Nessuna mappa trovata',
-    settings: 'Impostazioni livelli mappa',
+    settings: 'Gestisci mappe',
     layers: 'Livelli mappa',
     switch: 'Livelli mappa',
     photoFilterWarning: 'Il filtro foto è attivo',
     interactiveLayerWarning: 'Il livello dati è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     outsideViewWarning: 'La vista corrente è al di fuori di questa mappa',
+    offlineWarning: 'Questa mappa non è salvata per l’uso offline',
     letters: {
       S: 'Aereo',
       Z: 'Aereo',
@@ -275,11 +426,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Trasporti pubblici (ÖPNV)',
       X: outdoorMap,
+      XK: 'Sentieri escursionistici KST',
       i: 'Livello dati',
       I: 'Foto',
       l1: 'Tracce forestali NLC (2017)',
       l2: 'Tracce forestali NLC',
       w: 'Wikipedia',
+      R: 'Radar meteo',
+      v: 'Visibilità',
       '5': 'Ombreggiatura del terreno',
       '6': 'Ombreggiatura della superficie',
       '7': 'Ombreggiatura dettagliata della terreno',
@@ -306,15 +460,18 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       map: 'mappa',
       data: 'data',
       photos: 'foto',
+      routing: 'ricerca percorsi',
     },
     attr: {
       osmData: '© contributori di OpenStreetMap',
+      fixTheMap: 'segnala un errore sulla mappa',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Tasselli vettoriali da"
           hostedBy="ospitato da"
         />
       ),
+      photosCc: 'varie licenze Creative Commons',
     },
     customMaps: 'Mappe personalizzate',
     addCustomMap: 'Aggiungi mappa personalizzata',
@@ -328,9 +485,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Zoom nativo massimo',
     extraScales: 'Risoluzioni extra',
     scaleWithDpi: 'Scala con DPI',
+    tiled: 'Carica a riquadri',
+    tiledHelp:
+      'Per impostazione predefinita un WMS viene richiesto come un’unica immagine dell’intera vista: una sola richiesta invece di decine, ed etichette non tagliate ai bordi dei riquadri. Attiva i riquadri per un server che limita la dimensione dell’immagine o che li memorizza nella cache, al prezzo di una raffica di richieste per ogni vista.',
     zIndex: 'Z-Index',
-    preferences: 'Preferenze',
+    preferences: 'Preferenze della mappa',
     maxZoom: 'Zoom massimo',
+    zoomSnap: 'Passo dello zoom',
+    zoomSnapFree: 'Libero',
+    zoomSnapHelp:
+      'La variazione di zoom più piccola su cui possono fermarsi lo zoom con rotellina, pizzico e rettangolo. 1 tiene la mappa sui livelli interi, una frazione le permette di fermarsi anche tra due di essi e Libero in qualsiasi punto. I pulsanti e i tasti + e – vanno sempre al livello intero successivo.',
     forcedScale: 'Risoluzione forzata',
     resolutionScale: 'Scala di risoluzione',
     resolutionScaleAuto: 'Automatica (predefinita del dispositivo)',
@@ -345,7 +509,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Sovrapposto',
     },
     showMore: 'Mostra più mappe',
-    configureLayers: 'Configura livelli mappa',
+    layersConfiguration: 'Configurazione dei livelli',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',
       maplibre: 'Vettore (MapLibre)',
@@ -354,7 +518,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     technology: 'Tipo',
     loadWmsLayers: 'Carica livelli',
+    serverNotResponding: ({ name }) => (
+      <>
+        Il server della mappa <b>{name}</b> non risponde.
+      </>
+    ),
     offlineMaps: 'Mappe offline',
+    browseCache: 'Memorizza durante la navigazione',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (
       <>
@@ -366,9 +536,27 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   elevationChart: {
     distance: 'Distanza [km]',
-    ele: `Elevation [${masl}]`,
+    ele: `Altitudine [${masl}]`,
     fetchError: ({ err }) =>
-      addError(messages, 'Error fetching elevation profile data:', err),
+      addError(
+        messages,
+        'Errore durante il recupero dei dati del profilo altimetrico',
+        err,
+      ),
+    settings: 'Preferenze dell’altitudine',
+    settingsHelp:
+      'Le prime due impostazioni correggono un modello del terreno, quindi valgono ovunque l’altitudine venga letta da esso: percorsi pianificati, linee disegnate e misurazioni, e tracce importate la cui altitudine è stata sostituita dal server. L’altitudine registrata — tracciamento in tempo reale o una traccia mantenuta così com’è stata registrata — resta intatta. I file esportati conservano sempre la propria altitudine.',
+    windowOff: 'disattivato',
+    windowWholeLine: 'intera linea',
+    despike: 'Rimuovi i picchi',
+    despikeHelp:
+      'Quando un percorso è disegnato a qualche metro dalla strada che descrive, il modello del terreno restituisce la scarpata o la parete rocciosa accanto. I picchi più stretti della metà di questo valore vengono eliminati e il profilo viene leggermente arrotondato; quelli più larghi si mantengono, perché sono terreno reale. Zero disattiva la funzione.',
+    ditchFill: 'Riempi i fossi del modello del terreno',
+    ditchFillHelp:
+      'I modelli del terreno nazionali di dettaglio, disponibili in alcuni paesi, sono di solito adattati all’idrologia: a ogni tombino scavano un fosso attraverso la strada. Gli avvallamenti più stretti di questo valore vengono riempiti; quelli più larghi si mantengono, perché sono terreno reale. Zero disattiva la funzione e non cambia nulla dove si usa il modello globale.',
+    gradeWindow: 'Finestra della pendenza',
+    gradeWindowHelp:
+      'Puntando il profilo altimetrico, il punto viene segnato sulla mappa insieme alla pendenza che vi si trova. La pendenza è mediata su un tratto di questa lunghezza attorno al punto, così che qualche metro di rumore GPS non sembri un muro. Zero la misura tra punti vicini del profilo.',
   },
 
   errorCatcher: {
@@ -390,8 +578,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Aggiungi un punto qui',
     startLine: 'Inizia qui a disegnare una linea o misurazione',
     queryFeatures: 'Interroga le caratteristiche nelle vicinanze',
-    startRoute: 'Pianifica una rotta da qui',
-    finishRoute: 'Pianifica una rotta fino qui',
     showPhotos: 'Mostra le foto vicine',
   },
 

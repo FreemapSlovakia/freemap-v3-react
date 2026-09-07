@@ -7,6 +7,7 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   overlayOpacity: 'Viditelnost',
   showInMenu: 'Zobrazit v menu',
   showInToolbar: 'Zobrazit v liště',
+  keyboardShortcut: 'Klávesová zkratka',
   saveSuccess: 'Změny byly uloženy.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při ukládání nastavení', err),

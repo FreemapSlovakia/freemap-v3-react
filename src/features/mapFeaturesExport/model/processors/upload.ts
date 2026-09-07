@@ -2,25 +2,22 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadGapi, startGoogleAuth } from '@shared/gapiLoader.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { saveBlob } from '@shared/saveBlob.js';
 import { hasProperty } from '@shared/types/typeUtils.js';
+import { shareViaSheet } from '@shared/webShare.js';
 import type { Dispatch } from 'redux';
 import { loadMapFeaturesExportMessages } from '../../translations/loadMapFeaturesExportMessages.js';
 import type { ExportTarget } from '../actions.js';
+import {
+  type ExportFileType,
+  exportFileName,
+  FILE_META,
+  shareFileMeta,
+} from '../fileTypes.js';
 
 export const licenseNotice =
   'Various licenses may apply - like OpenStreetMap (https://www.openstreetmap.org/copyright). Please add missing attributions upon sharing this file.';
-
-type ExportFileType = 'gpx' | 'geojson' | 'kml' | 'kmz';
-
-// MIME type + save-dialog extensions per export file type. The type string
-// doubles as the filename extension (`freemap-export-….<type>`).
-const FILE_META: Record<ExportFileType, { mime: string; exts: string[] }> = {
-  gpx: { mime: 'application/gpx+xml', exts: ['.gpx'] },
-  geojson: { mime: 'application/geo+json', exts: ['.geojson', '.json'] },
-  kml: { mime: 'application/vnd.google-earth.kml+xml', exts: ['.kml'] },
-  kmz: { mime: 'application/vnd.google-earth.kmz', exts: ['.kmz'] },
-};
 
 // Builds the export Blob with the right MIME, with one wrinkle centralized:
 // Dropbox rejects some typed MIMEs (e.g. `application/gpx+xml`), so that target
@@ -118,7 +115,7 @@ export async function upload(
           Authorization: `Bearer ${authToken}`,
           'Content-Type': 'application/octet-stream',
           'Dropbox-API-Arg': JSON.stringify({
-            path: `/freemap-export-${new Date().toISOString()}.${type}`,
+            path: `/${exportFileName(type)}`,
           }),
         },
         data,
@@ -211,7 +208,7 @@ export async function upload(
           new Blob(
             [
               JSON.stringify({
-                name: `freemap-export-${new Date().toISOString()}.${type}`,
+                name: exportFileName(type),
                 mimeType: FILE_META[type].mime,
                 parents: [folder.id],
               }),
@@ -248,7 +245,7 @@ export async function upload(
       try {
         await saveFile(data, type);
       } catch (e) {
-        if (e instanceof DOMException && e.name === 'AbortError') {
+        if (isAbortError(e)) {
           return false;
         }
 
@@ -256,13 +253,75 @@ export async function upload(
       }
 
       break;
+
+    case 'share': {
+      const meta = shareFileMeta(type);
+
+      // The modal offers this target only where a file can be shared; re-asking
+      // here keeps a browser that shares none from throwing an opaque platform
+      // error.
+      if (!meta) {
+        throw new Error('sharing files is not supported');
+      }
+
+      const file = new File([data], meta.name, { type: meta.mime });
+
+      // Whether the file ends up saved rather than shared. Two ways to get
+      // there: the sheet is already up for an earlier export and the browser
+      // opens one at a time, or opening it spends the user activation of the
+      // Export click and an export slow enough to outlive it (elevation
+      // filling, a photo-heavy KMZ) finds it gone. Either way the file exists
+      // and the user asked for it, so it is saved — an outcome, rather than an
+      // error over a file that was built, or a silent drop of the export the
+      // last click asked for while the sheet holds an earlier one.
+      let saveInstead: boolean;
+
+      try {
+        saveInstead = !(await shareViaSheet({ files: [file] }));
+      } catch (e) {
+        // Dismissing the share sheet rejects with AbortError.
+        if (isAbortError(e)) {
+          return false;
+        }
+
+        if (!(e instanceof DOMException && e.name === 'NotAllowedError')) {
+          throw e;
+        }
+
+        saveInstead = true;
+      }
+
+      if (saveInstead) {
+        try {
+          await saveFile(data, type);
+        } catch (saveError) {
+          if (isAbortError(saveError)) {
+            return false;
+          }
+
+          throw saveError;
+        }
+
+        dispatch(
+          toastsAdd({
+            id: 'mapFeaturesExport',
+            style: 'warning',
+            timeout: 5000,
+            messageKey: 'sharedAsDownload',
+            messageLoader: loadMapFeaturesExportMessages,
+          }),
+        );
+      }
+
+      break;
+    }
   }
 
   return true;
 }
 
 function saveFile(blob: Blob, type: ExportFileType) {
-  return saveBlob(blob, `freemap-export-${new Date().toISOString()}.${type}`, {
+  return saveBlob(blob, exportFileName(type), {
     [blob.type]: FILE_META[type].exts,
   });
 }

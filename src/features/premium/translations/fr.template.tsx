@@ -1,48 +1,66 @@
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { RovasLink } from '@shared/components/RovasLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import type { PremiumMessages } from './PremiumMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Obtenir l’accès premium',
-  commonHeader: (
+  commonHeader: (price, dtmCountries) => (
     <>
       <p>
         <strong>Freemap Premium</strong> est un abonnement annuel facultatif qui
         enrichit l’application.
       </p>
       <p className="mb-1">
-        Pour <b>8 €</b> par an, vous obtenez :
+        Pour <b>{price} €</b> par an, vous obtenez :
       </p>
       <ul>
         <li>la suppression de la bannière publicitaire</li>
-        <li
-          className="text-decoration-underline"
-          title="ombrage détaillé en haute résolution de la Slovaquie et de la Tchéquie, niveaux de zoom les plus élevés de la carte Outdoor, niveaux de zoom les plus élevés des orthophotos de la Slovaquie et de la Tchéquie, diverses cartes basées sur WMS"
-        >
-          des couches cartographiques premium
+        <li>
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>niveaux de zoom les plus élevés de la carte Outdoor</li>
+                <li>cartes basées sur WMS</li>
+                <li>
+                  niveaux de zoom les plus élevés des orthophotos de la
+                  Slovaquie et de la Tchéquie
+                </li>
+                <li>
+                  ombrage détaillé en haute résolution de la Slovaquie et de la
+                  Tchéquie
+                </li>
+              </ul>
+            }
+          >
+            des couches cartographiques premium
+          </HintTooltip>
         </li>
         <li>des photos premium</li>
         <li>un calcul d’itinéraire multimodal</li>
+        <li>l’optimisation de l’ordre des points de l’itinéraire</li>
         <li>
-          des données d’altitude en haute résolution (nombreux pays européens)
+          <HintTooltip hint={dtmCountries}>
+            des données d’altitude en haute résolution (nombreux pays européens)
+          </HintTooltip>
+        </li>
+        <li>un panorama en plus haute résolution</li>
+        <li>une analyse de visibilité en plus haute résolution</li>
+        <li>un historique plus long du radar météo et sa prévision</li>
+        <li>
+          la coloration des itinéraires et des traces (certains modes sont
+          réservés au premium)
         </li>
       </ul>
       <p className="mb-0">Freemap reste gratuit et ouvert.</p>
     </>
   ),
-  stepsForAnonymous: (
+  dtmAreaNames: { gb: 'Angleterre' },
+  purchaseAfterLogin: (
     <>
-      <div className="fw-bold">Comment ça marche</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Étape 1</span> - connectez-vous ou créez
-          un compte Freemap gratuit (ci-dessous).
-        </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Étape 2</span> - vous serez redirigé
-          pour finaliser le paiement.
-        </p>
-      </div>
+      En choisissant un fournisseur de connexion, vous vous connectez ou créez
+      un compte Freemap gratuit. Vous continuerez ensuite vers le paiement de{' '}
+      <strong>Freemap Premium</strong>.
     </>
   ),
   success: 'Félicitations, vous avez obtenu l’accès premium !',
@@ -57,7 +75,9 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
   clickToActivate: 'Cliquez pour activer.',
   higherPrecisionElevation:
     'Des données d’altitude plus précises sont disponibles avec l’accès premium.',
+  higherDetail: 'Un rendu plus fin est disponible avec l’accès premium.',
   alreadyPremium: 'Vous avez déjà l’accès premium.',
+  alreadySubscribed: 'Vous avez déjà un abonnement actif.',
   premiumUser: 'Utilisateur avec accès premium',
   payOnce: 'Payer une fois pour un an',
   paySubscription: 'Abonnement annuel (renouvellement automatique)',
@@ -66,6 +86,13 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
     <>
       Si vous souhaitez obtenir l’accès premium pour du travail bénévole déclaré
       dans <RovasLink>Rovas</RovasLink>, choisissez de payer avec des Chrons.
+    </>
+  ),
+  subscriptionReassurance: ({ price }) =>
+    `Le prix de ${price}\xa0€ par an vous reste acquis tant que l’abonnement est actif. Vous pouvez le résilier à tout moment — l’accès premium court alors jusqu’à la fin de l’année payée.`,
+  youArePremiumRenews: (
+    <>
+      Vous avez l’accès premium. Votre abonnement se renouvelle automatiquement.
     </>
   ),
 };

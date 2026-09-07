@@ -29,7 +29,12 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'vom letzten Kommentar',
   },
 
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Meine',
+    notMine: 'Andere',
+    premium: 'Premium',
+    free: 'Frei',
+  },
 
   c: {
     mine: 'Meine hervorheben',
@@ -50,12 +55,12 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Hinzufügen',
     yourRating: 'Deine Bewertung:',
     showOnTheMap: 'Auf der Karte anzeigen',
-    openInNewWindow: 'Öffnen in…',
     uploaded: ({ username, createdAt }) => (
       <>
         Hochgeladen von {username} am {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Hochgeladen am {createdAt}</>,
     captured: (takenAt) => <>Aufgenommen am {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -69,7 +74,10 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     modify: 'Bearbeiten',
     premiumOnly:
       'Dieses Foto wurde vom Autor nur für Nutzer mit Premium-Zugang freigegeben.',
+    premiumPhoto: 'Dieses Foto ist Premium-Inhalt.',
     noComments: 'Keine Kommentare',
+    wikimediaCommentNotNotified:
+      'Dieses Foto stammt von Wikimedia Commons. Sein Autor wird über Ihren Kommentar nicht benachrichtigt – wir benachrichtigen nur Autoren von Fotos, die zu Freemap hochgeladen wurden.',
   },
 
   editForm: {
@@ -90,8 +98,11 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Fotos hochladen',
     uploading: (n) => `Wird hochgeladen (${n})`,
     upload: 'Hochladen',
+    hint: {
+      drop: 'Ziehe deine Fotos hierher oder klicke hier, um sie auszuwählen.',
+      tap: 'Tippe hier, um Fotos hinzuzufügen.',
+    },
     rules: `
-      <p>Ziehe deine Fotos hierher oder klicke hier, um sie auszuwählen.</p>
       <ul>
         <li>Lade keine zu kleinen Bilder hoch (Thumbnails). Die maximale Auflösung ist nicht begrenzt, die maximale Dateigröße beträgt jedoch 10 MB. Größere Dateien werden abgelehnt.</li>
         <li>Lade nur Landschafts- oder Dokumentationsfotos hoch. Porträts und Makroaufnahmen gelten als unangemessener Inhalt und werden ohne Vorwarnung gelöscht.</li>
@@ -153,6 +164,7 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     allSources: 'Alle',
   },
 
+  linkToCommons: 'Foto bei Wikimedia Commons',
   allMyPhotos: {
     title: 'Zugriffsänderung',
     premium: 'Alle meine Fotos in Premium-Inhalte aufnehmen',
@@ -168,9 +180,11 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Kürzlich verwendete Tags:',
   filter: 'Filter',
   showPhotosFrom: 'Fotos anzeigen',
+  excludesWikimedia: 'Enthält keine Fotos von Wikimedia',
   showLayer: 'Ebene anzeigen',
   upload: 'Hochladen',
   colorizeBy: 'Einfärben nach',
+  noColorize: 'Keine',
   showDirection: 'Aufnahmerichtung anzeigen',
 
   deletingError: ({ err }) =>

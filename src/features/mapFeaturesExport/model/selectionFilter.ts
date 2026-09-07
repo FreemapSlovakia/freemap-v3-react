@@ -1,5 +1,9 @@
 import type { Selection } from '@app/store/actions.js';
-import { featureIdsEqual, type OsmFeatureId } from '@shared/types/featureId.js';
+import {
+  type FeatureId,
+  featureIdsEqual,
+  type OsmFeatureId,
+} from '@shared/types/featureId.js';
 
 // Intra-source narrowing for an "export only the selected item" export. The
 // export modal already restricts `exportables` to the selected feature's source
@@ -31,6 +35,13 @@ export function keepObject(
   id: OsmFeatureId,
 ): boolean {
   return !only || (only.type === 'objects' && featureIdsEqual(id, only.id));
+}
+
+export function keepSearchResult(
+  only: Selection | undefined,
+  id: FeatureId,
+): boolean {
+  return !only || (only.type === 'search' && featureIdsEqual(id, only.id));
 }
 
 // The track token the selection targets, or null when the selection isn't a

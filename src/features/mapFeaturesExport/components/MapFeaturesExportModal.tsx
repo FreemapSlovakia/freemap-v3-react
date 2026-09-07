@@ -2,16 +2,19 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import type { Position } from 'geojson';
 import {
   type ReactElement,
   type SubmitEvent,
-  useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import {
@@ -20,6 +23,7 @@ import {
   ButtonGroup,
   Form,
   Modal,
+  Spinner,
   ToggleButton,
 } from 'react-bootstrap';
 import {
@@ -27,12 +31,14 @@ import {
   FaDropbox,
   FaFileExport,
   FaGoogle,
+  FaShareAlt,
   FaTimes,
 } from 'react-icons/fa';
 import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import {
   EXPORT_FORMAT_LABELS,
+  EXPORT_PROGRESS_ID,
   type Exportable,
   type ExportElevation,
   ExportElevationSchema,
@@ -42,6 +48,7 @@ import {
   ExportTypeSchema,
   exportMapFeatures,
 } from '../model/actions.js';
+import { type ExportFileType, exportShareMode } from '../model/fileTypes.js';
 import { useMapFeaturesExportMessages } from '../translations/useMapFeaturesExportMessages.js';
 import {
   ExportablesSelector,
@@ -63,6 +70,14 @@ const garminActivityTypes = [
 
 type Props = { show: boolean };
 
+// Module scope: an `import()` in the component body stops the React Compiler
+// lowering it.
+const loadGarminExport = () =>
+  import(
+    /* webpackChunkName: "garmin-export" */
+    '../garminExport.js'
+  );
+
 const toExportType = (value: string | null) =>
   ExportTypeSchema.safeParse(value).data ?? 'gpx';
 
@@ -75,6 +90,8 @@ const toExportElevation = (value: string | null) =>
 export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const m = useMessages();
 
+  const online = useOnline();
+
   const em = useMapFeaturesExportMessages();
 
   useDocumentTitle(show ? m?.mainMenu.mapFeaturesExport : undefined);
@@ -83,11 +100,33 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
   const confirm = useConfirm();
 
+  // Joined single-choice groups with long labels can't shrink, so below `sm`
+  // they stack instead of pushing the modal wider than the viewport.
+  const { sm } = useBreakpointMatches();
+
+  // Seeded from what the map holds, never from the connection: folding that in
+  // would re-seed the checkboxes — losing the user's picks — the moment it
+  // changed while the dialog is open.
   const initExportables = useAvailableExportables();
 
   const selectedExportable = useSelectedExportable();
 
   const selection = useAppSelector((state) => state.main.selection);
+
+  // The export runs in a processor, so its progress id is what tells the form it
+  // is busy — but that id is global and says nothing about who started it, so it
+  // only counts once this modal has. Close stays available and abandons the
+  // export: one that is filling elevation is aborted outright (`setActiveModal`
+  // cancels the request), while one that isn't carries on and lands its file
+  // with the modal already gone — and reopening then gives a usable form rather
+  // than one inert until that export settles.
+  const [exportStarted, setExportStarted] = useState(false);
+
+  const exportInProgress = useAppSelector((state) =>
+    state.progress.includes(EXPORT_PROGRESS_ID),
+  );
+
+  const exporting = exportStarted && exportInProgress;
 
   const userHasGarmin = useAppSelector((state) =>
     state.auth.user?.authProviders.includes('garmin'),
@@ -103,7 +142,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     toExportType,
   );
 
-  const [target, , setTarget] = usePersistentState<ExportTarget>(
+  const [target, setTargetValue, setTarget] = usePersistentState<ExportTarget>(
     'fm.exportFeatures.target',
     String,
     toExportTarget,
@@ -120,6 +159,39 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const [description, setDescription] = useState('');
 
   const [activity, setActivity] = useState('');
+
+  // Sharing goes through the OS share sheet, which some browsers open for no
+  // file at all — so the target is offered per format, and a persisted choice
+  // falls back to the download once the current format can't be shared. A KML
+  // export packs into a KMZ when it carries marker images, so both have to hold
+  // for the answer shown here to match what the export ends up handing over.
+  const shareMode = useMemo(() => {
+    const outputs: ExportFileType[] = type === 'kml' ? ['kml', 'kmz'] : [type];
+
+    const modes = outputs.map((output) => exportShareMode(output));
+
+    return modes.includes(null)
+      ? null
+      : modes.includes('text')
+        ? 'text'
+        : 'native';
+  }, [type]);
+
+  const shareable = shareMode !== null;
+
+  useEffect(() => {
+    if (target === 'share' && !shareable) {
+      setTargetValue('download');
+    }
+  }, [target, shareable, setTargetValue]);
+
+  // The same for a cloud target the connection has taken away: the file can
+  // still be handed to the device, so offer that instead of a dead form.
+  useEffect(() => {
+    if (!online && target !== 'download' && target !== 'share') {
+      setTargetValue('download');
+    }
+  }, [online, target, setTargetValue]);
 
   // Elevation-fill capability of the current selection drives the control's
   // state: `canElevate` is false when nothing selected can carry elevation
@@ -141,71 +213,77 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   // clobbering the persisted preference: no elevation at all when nothing can
   // carry it, and "Override all" collapses to "Fill missing" with nothing
   // recorded to override.
-  const effectiveElevation: ExportElevation = !canElevate
-    ? 'none'
-    : !hasRecorded && elevation === 'all'
-      ? 'missing'
-      : elevation;
+  // Filling elevation asks the elevation API for it, so offline the export can
+  // only carry what the features already have.
+  const effectiveElevation: ExportElevation =
+    !canElevate || !online
+      ? 'none'
+      : !hasRecorded && elevation === 'all'
+        ? 'missing'
+        : elevation;
 
-  const runExport = useCallback(
-    async (e: SubmitEvent) => {
-      e.preventDefault();
+  // A download or a share hands the file to the device, so both work offline;
+  // the cloud targets upload it.
+  const targetOk = (exportTarget: ExportTarget) =>
+    online || exportTarget === 'download' || exportTarget === 'share';
 
-      if (!exportables) {
-        return;
-      }
+  const chosenTargetOk = targetOk(target);
 
-      const exportAction = exportMapFeatures({
-        type,
-        exportables: exportables.split('|').filter((a) => a) as Exportable[],
-        target,
-        name: name || undefined,
-        description: description || undefined,
-        activity: activity || undefined,
-        // Garmin course export has its own elevation handling.
-        elevation: target === 'garmin' ? undefined : effectiveElevation,
-        // Mirrors `effectiveOnlySelected` (declared after this callback);
-        // Garmin is gated by target here since it has its own selection.
-        only:
-          onlySelected && target !== 'garmin' && selectedExportable && selection
-            ? selection
-            : undefined,
-      });
+  // The photos of the area are fetched from the gallery as the file is built,
+  // so offline that source has nothing to contribute and is left out.
+  const pickedExportables = exportables
+    .split('|')
+    .filter((a) => a && (online || a !== 'pictures')) as Exportable[];
 
-      if (target === 'garmin' && !userHasGarmin) {
-        if (
-          await confirm({
-            message:
-              userHasGarmin === false
-                ? em?.garmin.connectPrompt
-                : em?.garmin.authPrompt,
-          })
-        ) {
-          dispatch(
-            authWithGarmin({ connect: true, successAction: exportAction }),
-          );
-        }
-      } else {
-        dispatch(exportAction);
-      }
-    },
-    [
-      dispatch,
+  const runExport = async (e: SubmitEvent) => {
+    e.preventDefault();
+
+    // Enter in a field submits the form whatever the button says.
+    if (!pickedExportables.length || !chosenTargetOk) {
+      return;
+    }
+
+    setExportStarted(true);
+
+    const exportAction = exportMapFeatures({
       type,
-      exportables,
+      exportables: pickedExportables,
       target,
-      name,
-      description,
-      activity,
-      effectiveElevation,
-      onlySelected,
-      selectedExportable,
-      selection,
-      userHasGarmin,
-      em,
-      confirm,
-    ],
-  );
+      name: name || undefined,
+      description: description || undefined,
+      activity: activity || undefined,
+      // Garmin course export has its own elevation handling.
+      elevation: target === 'garmin' ? undefined : effectiveElevation,
+      // Mirrors `effectiveOnlySelected` (declared after this callback);
+      // Garmin is gated by target here since it has its own selection.
+      only:
+        onlySelected && target !== 'garmin' && selectedExportable && selection
+          ? selection
+          : undefined,
+    });
+
+    if (target === 'garmin' && !userHasGarmin) {
+      if (
+        await confirm({
+          message:
+            userHasGarmin === false
+              ? em?.garmin.connectPrompt
+              : em?.garmin.authPrompt,
+        })
+      ) {
+        dispatch(
+          authWithGarmin({ connect: true, successAction: exportAction }),
+        );
+      }
+    } else {
+      dispatch(exportAction);
+    }
+  };
+
+  // A share the browser will only take as plain text says so; one it takes as the file it is says
+  // nothing.
+  const shareNote =
+    target === 'share' && shareMode === 'text' ? em?.shareAsText : undefined;
 
   const isGarmin = target === 'garmin';
 
@@ -213,24 +291,15 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   }
 
-  const handleCheckboxChange = useCallback(
-    (type: Exportable) => {
-      let next = isGarmin ? '|' : exportables;
+  const handleCheckboxChange = (type: Exportable) => {
+    const base = isGarmin ? '|' : exportables;
 
-      if (exportables.includes(`|${type}|`)) {
-        next = exportables.replace(`${type}|`, '');
-
-        if (type === 'plannedRoute') {
-          next = next.replace('|plannedRouteWithStops', '');
-        }
-      } else {
-        next += `${type}|`;
-      }
-
-      setExportables(next);
-    },
-    [exportables, isGarmin],
-  );
+    setExportables(
+      exportables.includes(`|${type}|`)
+        ? base.replace(`${type}|`, '')
+        : `${base}${type}|`,
+    );
+  };
 
   const [garminExportables, setGarminExportables] = useState<
     Partial<Record<Exportable, Position[] | string | null>> | undefined
@@ -243,10 +312,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
       return;
     }
 
-    import(
-      /* webpackChunkName: "garmin-export" */
-      '../garminExport.js'
-    ).then((x) =>
+    loadGarminExport().then((x) =>
       setGarminExportables(
         Object.fromEntries(
           Object.entries(x.getExportables()).map(([exportable, tryExport]) => [
@@ -324,248 +390,267 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <Alert variant="warning">{em?.licenseAlert}</Alert>
+          <fieldset disabled={exporting}>
+            <Alert variant="warning">{em?.licenseAlert}</Alert>
 
-          <Form.Group controlId="target" className="mb-3">
-            <Form.Label>{em?.target}</Form.Label>
+            <Form.Group controlId="target" className="mb-3">
+              <Form.Label>{em?.target}</Form.Label>
 
-            <div>
-              <ButtonGroup>
-                {ExportTargetSchema.options.map((exportTarget) => (
-                  <ToggleButton
-                    id={exportTarget}
-                    key={exportTarget}
-                    type="radio"
-                    variant="outline-primary"
-                    checked={target === exportTarget}
-                    value={exportTarget}
-                    onChange={setTarget}
-                    disabled={!initExportables}
+              <div>
+                <ButtonGroup vertical={!sm}>
+                  {ExportTargetSchema.options
+                    .filter(
+                      (exportTarget) => exportTarget !== 'share' || shareable,
+                    )
+                    .map((exportTarget) => (
+                      <ToggleButton
+                        id={exportTarget}
+                        key={exportTarget}
+                        type="radio"
+                        variant="outline-primary"
+                        checked={target === exportTarget}
+                        value={exportTarget}
+                        onChange={setTarget}
+                        disabled={!initExportables || !targetOk(exportTarget)}
+                      >
+                        {
+                          {
+                            download: (
+                              <>
+                                <FaDownload /> {em?.download}
+                              </>
+                            ),
+                            share: (
+                              <>
+                                <FaShareAlt /> {em?.share}
+                              </>
+                            ),
+                            gdrive: (
+                              <>
+                                <FaGoogle /> Google Drive
+                                <OfflineBadge />
+                              </>
+                            ),
+                            dropbox: (
+                              <>
+                                <FaDropbox /> Dropbox
+                                <OfflineBadge />
+                              </>
+                            ),
+                            garmin: (
+                              <>
+                                <SiGarmin
+                                  title="Garmin"
+                                  className="fm-icon-wordmark"
+                                />
+                                &ensp;
+                                <ExperimentalFunction />
+                                <OfflineBadge />
+                              </>
+                            ),
+                          }[exportTarget]
+                        }
+                      </ToggleButton>
+                    ))}
+                </ButtonGroup>
+              </div>
+
+              {shareNote && (
+                <Form.Text muted className="d-block mt-1">
+                  {shareNote}
+                </Form.Text>
+              )}
+            </Form.Group>
+
+            {isGarmin ? (
+              <>
+                <Form.Group controlId="courseName" className="mb-3">
+                  <Form.Label>{em?.garmin.courseName}</Form.Label>
+
+                  <Form.Control
+                    value={name}
+                    onChange={(e) => setName(e.currentTarget.value)}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="description" className="mb-3">
+                  <Form.Label>{em?.garmin.description}</Form.Label>
+
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    value={description}
+                    onChange={(e) => setDescription(e.currentTarget.value)}
+                  />
+                </Form.Group>
+
+                {/* Too many options with too long labels for a joined group. */}
+                <Form.Group controlId="activityType" className="mb-3">
+                  <Form.Label>{em?.garmin.activityType}</Form.Label>
+
+                  <Form.Select
+                    value={activity}
+                    onChange={(e) => setActivity(e.currentTarget.value)}
                   >
-                    {
-                      {
-                        download: (
-                          <>
-                            <FaDownload /> {em?.download}
-                          </>
-                        ),
-                        gdrive: (
-                          <>
-                            <FaGoogle /> Google Drive
-                          </>
-                        ),
-                        dropbox: (
-                          <>
-                            <FaDropbox /> Dropbox
-                          </>
-                        ),
-                        garmin: (
-                          <>
-                            <SiGarmin
-                              style={{
-                                fontSize: '400%',
-                                marginBlock: '-24px',
-                              }}
-                            />
-                            &ensp;Garmin&ensp;
-                            <ExperimentalFunction />
-                          </>
-                        ),
-                      }[exportTarget]
-                    }
-                  </ToggleButton>
-                ))}
-              </ButtonGroup>
-            </div>
-          </Form.Group>
+                    <option value="" />
 
-          {isGarmin ? (
-            <>
-              <Form.Group controlId="courseName" className="mb-3">
-                <Form.Label>{em?.garmin.courseName}</Form.Label>
-
-                <Form.Control
-                  value={name}
-                  onChange={(e) => setName(e.currentTarget.value)}
-                />
-              </Form.Group>
-
-              <Form.Group controlId="description" className="mb-3">
-                <Form.Label>{em?.garmin.description}</Form.Label>
-
-                <Form.Control
-                  as="textarea"
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.currentTarget.value)}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label className="d-block">
-                  {em?.garmin.activityType}
-                </Form.Label>
+                    {garminActivityTypes.map(([value, labelKey]) => (
+                      <option key={value} value={value}>
+                        {em?.garmin.at[labelKey]}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </>
+            ) : (
+              <Form.Group controlId="format" className="mb-3">
+                <Form.Label>{em?.format}</Form.Label>
 
                 <div>
                   <ButtonGroup>
-                    {garminActivityTypes.map(([value, labelKey]) => (
+                    {ExportTypeSchema.options.map((exportType) => (
                       <ToggleButton
-                        key={value}
-                        id={`at-${value}`}
-                        type="checkbox"
-                        value={value}
+                        id={exportType}
+                        key={exportType}
+                        type="radio"
                         variant="outline-primary"
-                        checked={activity === value}
-                        onChange={() =>
-                          setActivity(activity === value ? '' : value)
-                        }
+                        value={exportType}
+                        checked={type === exportType}
+                        onChange={setType}
+                        disabled={!exportables.length}
                       >
-                        {em?.garmin.at[labelKey]}
+                        {EXPORT_FORMAT_LABELS[exportType]}
                       </ToggleButton>
                     ))}
                   </ButtonGroup>
                 </div>
               </Form.Group>
-            </>
-          ) : (
-            <Form.Group controlId="format" className="mb-3">
-              <Form.Label>{em?.format}</Form.Label>
+            )}
 
-              <div>
-                <ButtonGroup>
-                  {ExportTypeSchema.options.map((exportType) => (
-                    <ToggleButton
-                      id={exportType}
-                      key={exportType}
-                      type="radio"
-                      variant="outline-primary"
-                      value={exportType}
-                      checked={type === exportType}
-                      onChange={setType}
-                      disabled={!exportables.length}
-                    >
-                      {EXPORT_FORMAT_LABELS[exportType]}
-                    </ToggleButton>
-                  ))}
-                </ButtonGroup>
-              </div>
-            </Form.Group>
-          )}
+            <Form.Group controlId="download" className="mb-3">
+              <Form.Label>{m?.general.export}</Form.Label>
 
-          <Form.Group controlId="download" className="mb-3">
-            <Form.Label>{m?.general.export}</Form.Label>
+              {target === 'garmin' ? (
+                <>
+                  <div className="d-flex flex-wrap gap-2">
+                    {exportableDefinitions
+                      .filter(([, , garmin]) => garmin)
+                      .map(([type, Icon]) => {
+                        const value = garminExportables?.[type];
 
-            {target === 'garmin' ? (
-              <>
-                <div className="d-flex flex-wrap gap-2">
+                        const error =
+                          typeof value === 'string' ? value : undefined;
+
+                        const selected = exportables.includes(`|${type}|`);
+
+                        return (
+                          <ToggleButton
+                            key={type}
+                            id={`chk-${type}`}
+                            name="exportable"
+                            type="radio"
+                            variant={
+                              selected && error
+                                ? 'outline-danger'
+                                : 'outline-primary'
+                            }
+                            value={type}
+                            checked={selected}
+                            // only truly empty options are unavailable; options
+                            // with a problem stay selectable so the reason can be
+                            // shown on demand
+                            disabled={!value}
+                            onChange={() => handleCheckboxChange(type)}
+                          >
+                            <Icon /> {em?.what[type]}
+                          </ToggleButton>
+                        );
+                      })}
+                  </div>
+
                   {exportableDefinitions
-                    .filter(([, , garmin]) => garmin)
-                    .map(([type, Icon]) => {
-                      const value = garminExportables?.[type];
+                    .filter(
+                      ([type, , garmin]) =>
+                        garmin &&
+                        exportables.includes(`|${type}|`) &&
+                        typeof garminExportables?.[type] === 'string',
+                    )
+                    .map(([type, Icon]) => (
+                      <Form.Text
+                        key={type}
+                        className="d-block text-danger mt-2"
+                      >
+                        <Icon /> {em?.what[type]}{' '}
+                        {garminExportables?.[type] as string}
+                      </Form.Text>
+                    ))}
+                </>
+              ) : (
+                <>
+                  {selectedExportable && (
+                    <Form.Check
+                      type="switch"
+                      id="onlySelected"
+                      className="mb-2"
+                      label={em?.onlySelected}
+                      checked={onlySelected}
+                      onChange={(e) => setOnlySelected(e.currentTarget.checked)}
+                    />
+                  )}
 
-                      const error =
-                        typeof value === 'string' ? value : undefined;
-
-                      const selected = exportables.includes(`|${type}|`);
-
-                      return (
-                        <ToggleButton
-                          key={type}
-                          id={`chk-${type}`}
-                          name="exportable"
-                          type="radio"
-                          variant={
-                            selected && error
-                              ? 'outline-danger'
-                              : 'outline-primary'
-                          }
-                          value={type}
-                          checked={selected}
-                          // only truly empty options are unavailable; options
-                          // with a problem stay selectable so the reason can be
-                          // shown on demand
-                          disabled={!value}
-                          onChange={() => handleCheckboxChange(type)}
-                        >
-                          <Icon /> {em?.what[type]}
-                        </ToggleButton>
-                      );
-                    })}
-                </div>
-
-                {exportableDefinitions
-                  .filter(
-                    ([type, , garmin]) =>
-                      garmin &&
-                      exportables.includes(`|${type}|`) &&
-                      typeof garminExportables?.[type] === 'string',
-                  )
-                  .map(([type, Icon]) => (
-                    <Form.Text key={type} className="d-block text-danger mt-2">
-                      <Icon /> {em?.what[type]}{' '}
-                      {garminExportables?.[type] as string}
-                    </Form.Text>
-                  ))}
-              </>
-            ) : (
-              <>
-                {selectedExportable && (
-                  <Form.Check
-                    type="switch"
-                    id="onlySelected"
-                    className="mb-2"
-                    label={em?.onlySelected}
-                    checked={onlySelected}
-                    onChange={(e) => setOnlySelected(e.currentTarget.checked)}
-                  />
-                )}
-
-                {!effectiveOnlySelected && (
-                  <ExportablesSelector
-                    value={exportables}
-                    available={initExportables}
-                    onChange={setExportables}
-                  />
-                )}
-              </>
-            )}
-
-            {!effectiveOnlySelected && (
-              <Form.Text muted className="d-block mt-1">
-                {em?.disabledAlert}
-              </Form.Text>
-            )}
-          </Form.Group>
-
-          {!isGarmin && (
-            <Form.Group controlId="elevation" className="mb-3">
-              <Form.Label>{em?.elevation.label}</Form.Label>
-
-              <div>
-                <ButtonGroup>
-                  {ExportElevationSchema.options.map((option) => (
-                    <ToggleButton
-                      id={`ele-${option}`}
-                      key={option}
-                      type="radio"
-                      variant="outline-primary"
-                      value={option}
-                      checked={effectiveElevation === option}
-                      onChange={setElevation}
-                      // The whole control is off when nothing selected can carry
-                      // elevation; "Override all" is off when nothing recorded
-                      // can be overridden (it would equal "Fill missing").
-                      disabled={
-                        !canElevate || (option === 'all' && !hasRecorded)
+                  {!effectiveOnlySelected && (
+                    <ExportablesSelector
+                      value={exportables}
+                      available={
+                        online
+                          ? initExportables
+                          : initExportables.replace('pictures|', '')
                       }
-                    >
-                      {em?.elevation[option]}
-                    </ToggleButton>
-                  ))}
-                </ButtonGroup>
-              </div>
+                      onChange={setExportables}
+                    />
+                  )}
+                </>
+              )}
+
+              {!effectiveOnlySelected && (
+                <Form.Text muted className="d-block mt-1">
+                  {em?.disabledAlert}
+                </Form.Text>
+              )}
             </Form.Group>
-          )}
+
+            {!isGarmin && (
+              <Form.Group controlId="elevation" className="mb-3">
+                <Form.Label>{em?.elevation.label}</Form.Label>
+
+                <div>
+                  <ButtonGroup vertical={!sm}>
+                    {ExportElevationSchema.options.map((option) => (
+                      <ToggleButton
+                        id={`ele-${option}`}
+                        key={option}
+                        type="radio"
+                        variant="outline-primary"
+                        value={option}
+                        checked={effectiveElevation === option}
+                        onChange={setElevation}
+                        // The whole control is off when nothing selected can carry
+                        // elevation; "Override all" is off when nothing recorded
+                        // can be overridden (it would equal "Fill missing").
+                        disabled={
+                          !canElevate ||
+                          (option !== 'none' && !online) ||
+                          (option === 'all' && !hasRecorded)
+                        }
+                      >
+                        {em?.elevation[option]}
+                      </ToggleButton>
+                    ))}
+                  </ButtonGroup>
+                </div>
+              </Form.Group>
+            )}
+          </fieldset>
         </Modal.Body>
 
         <Modal.Footer>
@@ -573,12 +658,19 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             type="submit"
             variant="primary"
             disabled={
-              !exportables.length ||
+              exporting ||
+              !chosenTargetOk ||
+              !pickedExportables.length ||
               garminSelectedError ||
               (target === 'garmin' && (!name.trim() || !activity))
             }
           >
-            <FaFileExport /> {m?.general.export}
+            {exporting ? (
+              <Spinner as="span" size="sm" role="status" />
+            ) : (
+              <FaFileExport />
+            )}{' '}
+            {m?.general.export}
           </Button>
 
           <Button variant="dark" onClick={close}>

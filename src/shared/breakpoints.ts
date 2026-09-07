@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { createContext, useContext, useSyncExternalStore } from 'react';
 
 export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
@@ -109,10 +109,40 @@ function getServerSnapshot(): BreakpointMatches {
   return SERVER_SNAPSHOT;
 }
 
+/** The same matches against a box's own width; see `BreakpointsProvider`. */
+export function matchesForWidth(width: number): BreakpointMatches {
+  return {
+    sm: width >= getMinWidthForBreakpoint('sm'),
+    md: width >= getMinWidthForBreakpoint('md'),
+    lg: width >= getMinWidthForBreakpoint('lg'),
+    xl: width >= getMinWidthForBreakpoint('xl'),
+    xxl: width >= getMinWidthForBreakpoint('xxl'),
+  };
+}
+
+/**
+ * What a panel that is not the viewport measures itself against — set by
+ * `BreakpointsProvider`, `null` where the viewport is the box.
+ */
+export const BreakpointMatchesContext = createContext<BreakpointMatches | null>(
+  null,
+);
+
 /**
  * Reactive `min-width` matches for every breakpoint above `xs`, sharing one set
- * of `matchMedia` listeners across all callers.
+ * of `matchMedia` listeners across all callers — or, inside a
+ * `BreakpointsProvider`, that box's own width. A resizable window is a box of
+ * its own, and everything in it has to collapse against that rather than
+ * against a screen it fills a corner of.
  */
 export function useBreakpointMatches(): BreakpointMatches {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const container = useContext(BreakpointMatchesContext);
+
+  const viewport = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
+
+  return container ?? viewport;
 }

@@ -1,9 +1,11 @@
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
+  FaBinoculars,
   FaBus,
   FaCalendarAlt,
   FaCamera,
+  FaCloudShowersHeavy,
   FaHiking,
   FaMap,
   FaPencilAlt,
@@ -22,10 +24,11 @@ import transparent1x1 from '@/images/1x1-transparent.png';
 import white1x1 from '@/images/1x1-white.png';
 
 export interface AttributionDef {
-  type: 'map' | 'data' | 'photos';
+  type: 'map' | 'data' | 'photos' | 'routing';
   name?: string;
   nameKey?:
     | 'osmData'
+    | 'fixTheMap'
     | 'freemap'
     | 'srtm'
     | 'maptiler'
@@ -33,6 +36,11 @@ export interface AttributionDef {
     | 'photosCc';
   url?: string;
   country?: string;
+  /**
+   * Marks a global source that national data supersedes: it is shown only when
+   * the covered area reaches beyond the listed countries.
+   */
+  exceptCountries?: string[];
 }
 
 const OSM_MAP_ATTR: AttributionDef = {
@@ -41,10 +49,31 @@ const OSM_MAP_ATTR: AttributionDef = {
   url: 'https://osm.org/',
 };
 
-const OSM_DATA_ATTR: AttributionDef = {
+export const OSM_DATA_ATTR: AttributionDef = {
   type: 'data',
   nameKey: 'osmData',
   url: 'https://osm.org/copyright',
+};
+
+/**
+ * Follows {@link OSRM_ROUTING_ATTR} wherever it is shown as a link — a condition
+ * of the FOSSGIS services the OSRM profiles route through.
+ */
+export const FIXTHEMAP_ATTR: AttributionDef = {
+  type: 'data',
+  nameKey: 'fixTheMap',
+  url: 'https://www.openstreetmap.org/fixthemap',
+};
+
+/**
+ * The volunteers whose server answers the OSRM profiles. Their terms ask for the
+ * data's credit rather than their own, so this is courtesy — the GraphHopper
+ * ones are ours to run, and only these are somebody's donated time.
+ */
+export const OSRM_ROUTING_ATTR: AttributionDef = {
+  type: 'routing',
+  name: 'OSRM / FOSSGIS e.\xa0V.',
+  url: 'https://routing.openstreetmap.de/about.html',
 };
 
 const FM_ATTR: AttributionDef = {
@@ -81,17 +110,65 @@ const CUZK_ATTR: AttributionDef = {
   country: 'cz',
 };
 
+/**
+ * The pan-European radar composite behind the weather layer. The national
+ * services that feed it — SHMÚ among them — are credited through the programme
+ * they contribute the data to.
+ */
+const OPERA_ATTR: AttributionDef = {
+  type: 'data',
+  name: 'EUMETNET OPERA',
+  url: 'https://www.eumetnet.eu/observations/weather-radar-network/',
+};
+
+/**
+ * The radar data is CC-BY-4.0 everywhere except over Italy, where the national
+ * composite is CC-BY-SA-4.0 and asks to be credited by this name — so it is
+ * credited on its own, only where a tile can carry it.
+ */
+const DPC_RADAR_ATTR: AttributionDef = {
+  type: 'data',
+  name: 'Radar-DPC (CC\xa0BY-SA\xa04.0)',
+  url: 'https://www.protezionecivile.gov.it/',
+  country: 'it',
+};
+
 const LLS_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#lls';
 
 const OFM_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#ortofoto';
 
-// Attribution shared by the outdoor map and its KST-routes variant: Freemap,
-// OSM data, and every national elevation/relief source the renderer blends in.
-const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
-  FM_ATTR,
-  OSM_DATA_ATTR,
+const GEDTM30_URL = 'https://codeberg.org/openlandmap/GEDTM30';
+
+/**
+ * The global terrain model everything without a national one falls back to —
+ * both for the outdoor renderer's shading and for the elevation API (see
+ * `elevationSources.ts`). Add `exceptCountries` where the national sources are
+ * credited beside it, so it shows only past their coverage.
+ */
+export const GEDTM30_ATTR: AttributionDef = {
+  type: 'data',
+  name: 'GEDTM30',
+  url: GEDTM30_URL,
+};
+
+/**
+ * Every national elevation/relief source the outdoor renderer blends in;
+ * countries missing from this list fall back to GEDTM30. The elevation API
+ * answers from the same models, for the countries in
+ * `ELEVATION_API_DTM_COUNTRIES` — its own list, which need not match this one.
+ */
+export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
+  country: string;
+  /**
+   * Set where the model covers only part of the country. Coverage is reported
+   * per country, so such a model can't be shown only where it reaches — it is
+   * credited over the whole country, and GEDTM30 stays credited beside it for
+   * the part it doesn't cover.
+   */
+  partial?: boolean;
+})[] = [
   {
     type: 'data',
     country: 'at',
@@ -113,8 +190,8 @@ const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
   {
     type: 'data',
     country: 'it',
-    name: 'Tinitaly DEM: INGV',
-    url: 'https://tinitaly.pi.ingv.it/',
+    name: 'HR-DTM 5 m: IRPI-CNR',
+    url: 'https://doi.org/10.5281/zenodo.18335145',
   },
   {
     type: 'data',
@@ -143,7 +220,7 @@ const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
   {
     type: 'data',
     country: 'no',
-    name: 'DTM: Kartverket (Høydedata)',
+    name: 'DTM: Kartverket (NLOD\xa02.0)',
     url: 'https://hoydedata.no/',
   },
   {
@@ -164,6 +241,78 @@ const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
     name: 'MDT05: IGN (CNIG)',
     url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
   },
+  {
+    type: 'data',
+    country: 'hr',
+    name: 'DMR: Državna geodetska uprava',
+    url: 'https://dgu.gov.hr/proizvodi-i-usluge/podaci-topografske-izmjere/digitalni-model-reljefa/180',
+  },
+  {
+    type: 'data',
+    // CC0, so the credit is courtesy rather than a condition.
+    country: 'lu',
+    name: 'MNT LiDAR\xa02024: Administration du cadastre et de la topographie (CC0)',
+    url: 'https://data.public.lu/en/datasets/lidar-2024-releve-3d-du-territoire-luxembourgeois/',
+  },
+  {
+    type: 'data',
+    // The copyright line is what the OGL v3 licence asks for verbatim.
+    country: 'gb',
+    partial: true,
+    name: 'LIDAR Composite DTM 1\xa0m (England, OGL\xa0v3): ©\xa0Environment Agency copyright and/or database right 2022. All rights reserved.',
+    url: 'https://www.data.gov.uk/dataset/01b3ee39-da3f-47b6-83da-dc98e73a461f/lidar-composite-digital-terrain-model-dtm-1m',
+  },
+  // Belgium is two models under one country: SPW's in the south, and DHMV II,
+  // which reaches over Brussels too — no gap there, and no third credit. CC BY
+  // obliges the SPW half to be marked as changed (§3(a)(1)(B)) — hence
+  // "modified"; the Flemish licence asks only for its "Bron:" line verbatim.
+  {
+    type: 'data',
+    country: 'be',
+    name: 'MNT 1\xa0m 2021–2022: ©\xa0Service public de Wallonie (SPW), CC\xa0BY\xa04.0 — modified',
+    url: 'https://geoportail.wallonie.be/catalogue/fe13bc84-e371-46ca-9632-8ad4139f1ee5.html',
+  },
+  {
+    type: 'data',
+    country: 'be',
+    name: 'DHMV\xa0II 1\xa0m — Bron: Digitaal Vlaanderen (Modellicentie gratis hergebruik)',
+    url: 'https://metadata.vlaanderen.be/srv/dut/catalog.search#/metadata/f52b1a13-86bc-4b64-8256-88cc0d1a8735',
+  },
+];
+
+/**
+ * Countries the outdoor renderer shades from a national elevation model over
+ * their whole area, so GEDTM30 isn't credited there. A `partial` model leaves
+ * its country out. The elevation API keeps its own list,
+ * `ELEVATION_API_DTM_COUNTRIES`, which need not hold the same countries.
+ */
+const OUTDOOR_NATIONAL_DTM_COUNTRIES = [
+  // A country can be covered by more than one model, so the codes are deduped.
+  ...new Set(
+    OUTDOOR_NATIONAL_DTM_ATTRIBUTION.filter((a) => !a.partial).map(
+      (a) => a.country,
+    ),
+  ),
+];
+
+// Attribution shared by the outdoor map and its KST-routes variant: Freemap,
+// OSM data, the national elevation sources, and the global GEDTM30 model that
+// covers everywhere else.
+const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
+  FM_ATTR,
+  OSM_DATA_ATTR,
+  ...OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
+  { ...GEDTM30_ATTR, exceptCountries: OUTDOOR_NATIONAL_DTM_COUNTRIES },
+];
+
+// What the terrain service draws from. It never says which model answered and a
+// render reaches 300 km across borders, so all are credited — GEDTM30 without
+// `exceptCountries`, unlike the map layers. (The panorama's footer credits the
+// narrower `ELEVATION_API_DTM_ATTRIBUTION`, which this file cannot import.)
+const TERRAIN_ATTRIBUTION: AttributionDef[] = [
+  FM_ATTR,
+  ...OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
+  GEDTM30_ATTR,
 ];
 
 export type HasUrl = {
@@ -180,6 +329,11 @@ type HasZIndex = {
 
 export type IsIntegratedLayerDef = {
   layerPreview?: boolean;
+  /**
+   * Opacity this overlay is drawn at until the user sets one of their own.
+   * For a layer whose whole point is to be read against the map underneath.
+   */
+  defaultOpacity?: number;
   icon: ReactElement;
   premiumFromZoom?: number;
   experimental?: boolean;
@@ -229,12 +383,37 @@ type IsInteractiveLayerDef = {
   technology: 'interactive';
 };
 
+/**
+ * Animated precipitation radar. Its own technology because a frame's timestamp
+ * is part of the tile URL, so the layer is a series of tile layers the feature
+ * cross-fades rather than the one a `tile` def describes.
+ */
+type IsRadarLayerDef = HasMaxNativeZoom &
+  HasZIndex & {
+    technology: 'radar';
+  };
+
+/**
+ * What can be seen from one point, as a single image the terrain service
+ * renders per viewpoint. Its own technology because it is not a grid of tiles
+ * at all — see `doc/viewshed.md`.
+ */
+type IsViewshedLayerDef = HasZIndex & {
+  technology: 'viewshed';
+};
+
 export type IsWmsLayerDef = HasUrl &
   HasZIndex &
-  HasMaxNativeZoom &
-  HasScaleWithDpi & {
+  HasMaxNativeZoom & {
     technology: 'wms';
     layers: string[];
+    /**
+     * Go back to a grid of tiles instead of one image per settled view. Needed
+     * for a server that caps the image size below what a viewport asks for, or
+     * one behind a tile cache that only repeated tile URLs can hit; the price is
+     * a burst of requests per view and labels clipped at the tile seams.
+     */
+    tiled?: boolean;
   };
 
 type IsMapLibreLayerDef = HasUrl & {
@@ -264,6 +443,19 @@ export type IsOverlayLayerDef = HasZIndex & {
 // The [west, south, east, north] extent a layer covers, or undefined. Cached
 // maps store their actual downloaded extent under `bounds`, which wins over any
 // `bbox` inherited from the source layer; declarative layers use `bbox`.
+/**
+ * The opacity an overlay is drawn at: the user's own setting if they have one,
+ * otherwise whatever the layer asks for, otherwise opaque.
+ */
+export const resolveLayerOpacity = (
+  def: object | undefined,
+  opacity: number | undefined,
+): number =>
+  opacity ??
+  (def && 'defaultOpacity' in def && typeof def.defaultOpacity === 'number'
+    ? def.defaultOpacity
+    : 1);
+
 export const getLayerBbox = (
   def: object,
 ): [number, number, number, number] | undefined => {
@@ -331,10 +523,18 @@ export type IsAllTechnologiesLayerDef =
   | IsGalleryLayerDef
   | IsEventsLayerDef
   | IsInteractiveLayerDef
-  | IsWikipediaLayerDef;
+  | IsWikipediaLayerDef
+  | IsRadarLayerDef
+  | IsViewshedLayerDef;
 
 export type IsCustomLayer = {
   name?: string;
+  /**
+   * The layer's icon as a `drawingIcons` spec (`fa:<name>` / `poi:<name>`).
+   * A string rather than the integrated registry's `ReactElement` so it can be
+   * persisted; missing means the generic custom-map glyph.
+   */
+  iconSpec?: string;
 };
 
 export type IsCustomLayerTechnologiesDef =
@@ -364,6 +564,7 @@ const IsCommonLayerDefSchema = z.object({
 
 const IsCustomLayerSchema = z.object({
   name: z.string().optional(),
+  iconSpec: z.string().optional(),
 });
 
 export const IsTileLayerDefSchema = z.object({
@@ -385,7 +586,7 @@ export const IsWmsLayerDefSchema = z.object({
   layers: z.array(z.string()),
   maxNativeZoom: z.number().optional(),
   zIndex: z.number().optional(),
-  scaleWithDpi: z.boolean().optional(),
+  tiled: z.boolean().optional(),
 });
 
 export const IsMapLibreLayerDefSchema = z.object({
@@ -976,6 +1177,35 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   },
   {
     layer: 'overlay',
+    type: 'R',
+    defaultInMenu: true,
+    technology: 'radar',
+    icon: <FaCloudShowersHeavy />,
+    shortcut: { code: 'KeyR', shift: true },
+    // The measured feed's ceiling. Each feed's real band comes from its own
+    // status document — the forecast is served over a narrower one — so this is
+    // only what the registry advertises (offline export, the layer table).
+    maxNativeZoom: 9,
+    zIndex: 3,
+    // Precipitation is read against the map it falls on, so it starts
+    // translucent rather than hiding the ground.
+    defaultOpacity: 2 / 3,
+    attribution: [OPERA_ATTR, DPC_RADAR_ATTR],
+  },
+  {
+    layer: 'overlay',
+    type: 'v',
+    defaultInMenu: true,
+    technology: 'viewshed',
+    icon: <FaBinoculars />,
+    shortcut: { code: 'KeyV', shift: true },
+    zIndex: 3,
+    // No `defaultOpacity`: the image's own alpha is already faint over most of
+    // a wide view, so there is nothing left to give away.
+    attribution: TERRAIN_ATTRIBUTION,
+  },
+  {
+    layer: 'overlay',
     type: 'h',
     technology: 'parametricShading',
     url: 'https://parametric-shading.tiles.freemap.sk/europe/{z}/{x}/{y}',
@@ -983,14 +1213,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     shortcut: { code: 'KeyH', shift: true },
     scaleWithDpi: true,
     maxNativeZoom: 13,
-    attribution: [
-      FM_ATTR,
-      {
-        type: 'data',
-        name: 'GEDTM30',
-        url: 'https://codeberg.org/openlandmap/GEDTM30',
-      },
-    ],
+    attribution: [FM_ATTR, GEDTM30_ATTR],
     experimental: true,
     zIndex: 2,
   },

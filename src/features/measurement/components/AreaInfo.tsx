@@ -1,3 +1,4 @@
+import { areaUnits, measurementFractionDigits } from '@shared/areaFormatter.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
@@ -9,17 +10,6 @@ type Props = {
   areaLabel: string;
   perimeter: number;
   perimeterLabel: string;
-};
-
-const areaUnits = {
-  'm²': 1,
-  'km²': 1e6,
-  a: 100, // are
-  ha: 10000, // hectare
-  'mi²': 2_589_988.11,
-  'yd²': 0.836127,
-  'ft²': 0.092903,
-  ac: 4046.86, // acre
 };
 
 type Units = keyof typeof areaUnits;
@@ -51,10 +41,7 @@ export function AreaInfo({
 
   const num = length / areaUnits[unit];
 
-  const fractionDigits = Math.max(
-    0,
-    Math.min(20, Math.floor(4 - (num ? Math.log10(num) : 0))),
-  );
+  const fractionDigits = measurementFractionDigits(num);
 
   const nf = useNumberFormat({
     maximumFractionDigits: fractionDigits,

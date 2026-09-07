@@ -1,27 +1,62 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { askingCookieConsentSelector } from '@app/store/selectors.js';
+import type { RootState } from '@app/store/store.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  GENEROUS_MARGIN_PX,
+  panToUncovered,
+} from '@features/map/panToUncovered.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { isPremium } from '@features/premium/premium.js';
+import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import windowClasses from '@shared/components/FloatingWindow.module.css';
+import {
+  FloatingWindowGrips,
+  FullscreenButton,
+} from '@shared/components/FloatingWindowControls.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { formatDistance } from '@shared/distanceFormatter.js';
+import { downloadSvg } from '@shared/downloadSvg.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useFloatingWindow } from '@shared/hooks/useFloatingWindow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
+import { clamp } from '@shared/mathUtils.js';
 import clsx from 'clsx';
 import {
   type ReactElement,
   type PointerEvent as ReactPointerEvent,
+  useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { Button, CloseButton } from 'react-bootstrap';
-import { FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaCog, FaDownload, FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { downloadChartSvg } from '../downloadChartSvg.js';
+import { buildFillStops } from '../chartFill.js';
+import { useChartColorize } from '../hooks/useChartColorize.js';
+import {
+  tooManyElevationSources,
+  useElevationSources,
+  useShowElevationSources,
+} from '../hooks/useElevationSources.js';
 import {
   elevationChartClose,
   elevationChartSetActivePoint,
+  elevationChartSetRange,
+  elevationSetSettings,
 } from '../model/actions.js';
 import type { ElevationProfilePoint } from '../model/reducer.js';
+import { elevatedRuns, profilePointAtDistance } from '../profilePoint.js';
+import { rangeStatsOf } from '../rangeStats.js';
+import { loadElevationChartMessages } from '../translations/loadElevationChartMessages.js';
 import { useElevationChartMessages } from '../translations/useElevationChartMessages.js';
 import classes from './ElevationChart.module.css';
+import { ElevationSourcesInline } from './ElevationSources.js';
 
 const ml = 50,
   mr = 30,
@@ -84,8 +119,52 @@ const ticks = new Array(11)
 
 const EMPTY_ARRAY: ElevationProfilePoint[] = [];
 
+/**
+ * The stretch of the profile on screen, as fractions of its whole length —
+ * fractions rather than distances so a re-route keeps the same part in view.
+ */
+type ChartView = { from: number; to: number };
+
+const WHOLE_VIEW: ChartView = { from: 0, to: 1 };
+
+// Tightest the distance axis can be wound in, as a multiple of the whole.
+const MAX_ZOOM = 1000;
+
+// Farther than this in a press and it was a drag, not a click.
+const CLICK_SLOP_PX = 4;
+
+// What one wheel notch does to the zoom.
+const WHEEL_FACTOR = 1.25;
+
+// How near a marked stretch's edge a press has to land to take hold of it.
+const GRIP_GRAB_PX = 8;
+
+// Geometry of the handle drawn on each edge, at the top of the plot.
+const GRIP_WIDTH = 7;
+const GRIP_HEIGHT = 16;
+
+// A press held this long without moving marks out a stretch — the way a finger
+// asks for one, having no modifier to hold.
+const LONG_PRESS_MS = 500;
+
+// Shortest stretch worth marking. Also what keeps it in the URL, which carries
+// whole metres: a shorter one would round to nothing and come back as none.
+const MIN_RANGE_METERS = 1;
+
+/** Whether the gesture hint has been raised in this run of the app. */
+// The credit toast holds a snapshot of what it was opened with, so it goes when
+// the profile's own credits change — which covers a re-route, a new target and
+// the chart closing (that resets the slice).
+const SOURCES_TOAST_CANCEL = {
+  stateChangePredicate: (state: RootState) => state.elevationChart.attributions,
+};
+
+let hintShown = false;
+
 export default function ElevationChart(): ReactElement | null {
   const m = useElevationChartMessages();
+
+  const gm = useMessages();
 
   const dispatch = useDispatch();
 
@@ -94,6 +173,106 @@ export default function ElevationChart(): ReactElement | null {
   );
 
   const waypoints = useAppSelector((state) => state.elevationChart.waypoints);
+
+  const [view, setView] = useState(WHOLE_VIEW);
+
+  // A profile of something else starts unzoomed; one redrawn for the same
+  // target (a re-route, an arriving position) keeps the stretch being read.
+  const target = useAppSelector((state) => state.elevationChart.target);
+
+  const chartedRef = useRef(target);
+
+  if (chartedRef.current !== target) {
+    chartedRef.current = target;
+
+    setView(WHOLE_VIEW);
+  }
+
+  const prm = usePremiumMessages();
+
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
+
+  const provenance = useAppSelector(
+    (state) => state.elevationChart.provenance ?? undefined,
+  );
+
+  const reportedAttributions = useAppSelector(
+    (state) => state.elevationChart.attributions,
+  );
+
+  // The terrain models behind the drawn elevation, credited under the chart.
+  // Recorded elevation names none, so the line disappears there.
+  const sources = useElevationSources(
+    provenance ?? 'recorded',
+    reportedAttributions,
+  );
+
+  // A read answered from a Sonny-derived dataset credits every agency behind it,
+  // which the footer has no room for; then the count stands in for the list and
+  // opens it. The open list goes when what it credits does — a re-route, another
+  // target, the chart closing — since it snapshots the credits it was given.
+  const tooMany = tooManyElevationSources(sources);
+
+  const showSources = useShowElevationSources(sources, SOURCES_TOAST_CANCEL);
+
+  const preventRangeHint = useAppSelector(
+    (state) => state.elevationSettings.preventRangeHint,
+  );
+
+  // The hint would only pile onto the cookie bar, so it waits for it to go.
+  const askingCookieConsent = useAppSelector(askingCookieConsentSelector);
+
+  // Nothing is persisted until the cookie bar is answered, so the offer to stop
+  // asking is only made where the choice can be stored.
+  const consented = useAppSelector(
+    (state) => state.cookieConsent.cookieConsentResult !== null,
+  );
+
+  const charted = elevationProfilePoints.length > 1;
+
+  // Marking a stretch out is worth knowing about and nothing on screen says it,
+  // so the chart says it once — the same offer the route finder's own hint
+  // makes. Dropped the moment a stretch is marked, that being the answer.
+  useEffect(() => {
+    if (preventRangeHint || !charted || hintShown || askingCookieConsent) {
+      return;
+    }
+
+    // Once a session, whatever the answer — otherwise every profile opened
+    // would raise the same hint again.
+    hintShown = true;
+
+    dispatch(
+      toastsAdd({
+        id: 'elevationChart.rangeHint',
+        // A screen that is touched has no Shift to hold, and a mouse has no
+        // long press: each is told the one way in that it has.
+        messageKey: window.matchMedia?.('(pointer: coarse)').matches
+          ? 'rangeHintTouch'
+          : 'rangeHint',
+        messageLoader: loadElevationChartMessages,
+        style: 'info',
+        actions: [
+          { nameKey: 'general.ok' },
+          ...(consented
+            ? [
+                {
+                  nameKey: 'general.preventShowingAgain' as const,
+                  action: elevationSetSettings({ preventRangeHint: true }),
+                  variant: 'dark' as const,
+                },
+              ]
+            : []),
+        ],
+        cancelType: elevationChartSetRange.type,
+        // The chart goes several ways besides its own close — the tool that
+        // owns it closing, another map-click tool taking the slot, the map
+        // being cleared — and a hint for a panel that is no longer there is
+        // just litter.
+        statePredicate: (state) => state.elevationChart.target === null,
+      }),
+    );
+  }, [preventRangeHint, charted, consented, askingCookieConsent, dispatch]);
 
   const [showWaypoints, setShowWaypoints] = usePersistentBoolean(
     'fm.elevationChart.showWaypoints',
@@ -105,10 +284,14 @@ export default function ElevationChart(): ReactElement | null {
     maximumFractionDigits: 0,
   });
 
-  const nf1 = useNumberFormat({
+  // Signed, so a marked stretch's steepness says which way it goes.
+  const nfSigned1 = useNumberFormat({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
+    signDisplay: 'exceptZero',
   });
+
+  const language = useAppSelector((state) => state.l10n.language);
 
   // The label lines stacked above each waypoint, top to bottom: the name (when
   // named) sits above the elevation readout (when known). Empty when hidden, so
@@ -160,19 +343,100 @@ export default function ElevationChart(): ReactElement | null {
 
   const { climbUp, climbDown } = elevationProfilePoints.at(-1) ?? {};
 
-  const [width, setWidth] = useState(400);
+  const {
+    boxProps,
+    bottomProps,
+    fullscreen,
+    toggleFullscreen,
+    width,
+    height,
+    ...grips
+  } = useFloatingWindow({
+    storageKey: 'fm.elevationChart.window',
+    // The axis margins; what's left over between them is the plot.
+    chromeHeight: mt + mb,
+    boxClassName: classes.elevationChart,
+  });
 
-  const [height, setHeight] = useState(300);
+  const svgRef = useRef<SVGSVGElement>(null);
 
-  const [mapX, mapY, d, vLines, hLines] = useMemo(() => {
-    const eles = elevationProfilePoints
-      .map((pt) => pt.ele)
-      .filter((ele) => Number.isFinite(ele));
+  // The id goes into a `url(#…)` reference, which takes none of the punctuation
+  // React wraps its own ids in.
+  const id = useId().replace(/\W/g, '');
 
-    const min = eles.length ? Math.min(...eles) : 0;
+  const clipId = `ec-plot-${id}`;
 
-    const max = eles.length ? Math.max(...eles) : 0;
+  const fillId = `ec-fill-${id}`;
 
+  const plotWidth = width - ml - mr;
+
+  const d = elevationProfilePoints.at(-1)?.distance ?? NaN;
+
+  const vFrom = d * view.from;
+
+  const vTo = d * view.to;
+
+  // Distance between x-axis ticks, in metres. Out here because the label format
+  // is picked from it, and formatters are hooks.
+  const xStep =
+    ticks.find((step) => (plotWidth * step) / (vTo - vFrom) > 25) ??
+    Number.POSITIVE_INFINITY;
+
+  // As many decimals as it takes for one tick to read differently from the
+  // next: the labels are kilometres, and zoomed in a step can be a few metres.
+  const xDigits = useMemo(() => {
+    const step = xStep / 1000;
+
+    for (let digits = 1; digits < 6; digits++) {
+      if (Number(step.toFixed(digits)) === step) {
+        return digits;
+      }
+    }
+
+    return 6;
+  }, [xStep]);
+
+  const nfX = useNumberFormat({
+    minimumFractionDigits: xDigits,
+    maximumFractionDigits: xDigits,
+  });
+
+  // The colorize of the feature being charted, smoothed against the chart's own
+  // scale the way the map's is against its zoom.
+  const { colorizer, stops } = useChartColorize((vTo - vFrom) / plotWidth, d);
+
+  // The fill's gradient runs along the plot, so a stop is one distance turned
+  // into a fraction of what is on screen. Only the visible stretch is written
+  // out, plus the pair straddling each edge so the ends are colored too; a
+  // categorical mode gets both colors at a boundary rather than a blur across
+  // it, and a run of one color is written once.
+  const fillStops = useMemo(
+    () => buildFillStops(colorizer, stops, vFrom, vTo, plotWidth),
+    [colorizer, stops, vFrom, vTo, plotWidth],
+  );
+
+  // The whole profile sets the elevation range, zoomed in or not: a scale that
+  // followed the window would make two readings of the same chart incomparable,
+  // and the min/max lines would name a local pair. Its own memo, so panning and
+  // zooming — which run per pointer frame — don't rescan the profile; running
+  // comparisons rather than a spread, which a long recorded track overflows.
+  const [min, max] = useMemo(() => {
+    let lo = Number.POSITIVE_INFINITY;
+
+    let hi = Number.NEGATIVE_INFINITY;
+
+    for (const { ele } of elevationProfilePoints) {
+      if (Number.isFinite(ele)) {
+        lo = Math.min(lo, ele);
+
+        hi = Math.max(hi, ele);
+      }
+    }
+
+    return lo <= hi ? [lo, hi] : [0, 0];
+  }, [elevationProfilePoints]);
+
+  const { mapX, unmapX, mapY, endX, vLines, hLines } = useMemo(() => {
     // Guard an empty or flat profile (no finite elevations, or all equal): a
     // zero span would make `mapY` divide by zero and emit NaN chart geometry.
     const diff = max - min || 1;
@@ -181,10 +445,12 @@ export default function ElevationChart(): ReactElement | null {
 
     const chartMax = max + diff / 20;
 
-    const d = elevationProfilePoints.at(-1)?.distance ?? NaN;
-
     function mapX(distance: number) {
-      return ml + ((width - ml - mr) * distance) / d;
+      return ml + (plotWidth * (distance - vFrom)) / (vTo - vFrom);
+    }
+
+    function unmapX(x: number) {
+      return vFrom + ((x - ml) / plotWidth) * (vTo - vFrom);
     }
 
     function mapY(ele: number) {
@@ -212,515 +478,1030 @@ export default function ElevationChart(): ReactElement | null {
 
     const vLines: number[] = [];
 
-    const xStep =
-      ticks.find((step) => mapX(step) - mapX(0) > 25) ??
-      Number.POSITIVE_INFINITY;
-
-    for (let x = 0; x < d; x += xStep) {
-      vLines.push(x);
-    }
-
-    vLines.push(d);
-
-    return [mapX, mapY, d, vLines, hLines];
-  }, [elevationProfilePoints, width, height, mt]);
-
-  const [pointerX, setPointerX] = useState<number | undefined>();
-
-  const handlePointerMove = (e: ReactPointerEvent<SVGRectElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-
-    const x = e.clientX - rect.left;
-
-    setPointerX(x + ml);
-
-    for (const pt of elevationProfilePoints) {
-      if (pt.distance > (d / (width - ml - mr)) * x) {
-        dispatch(elevationChartSetActivePoint(pt));
-
-        break;
+    if (Number.isFinite(xStep)) {
+      for (let x = Math.ceil(vFrom / xStep) * xStep; x < vTo; x += xStep) {
+        vLines.push(x);
       }
     }
+
+    // The profile's end marks itself, whenever the view reaches it.
+    const endX = vTo >= d ? d : null;
+
+    if (endX !== null) {
+      vLines.push(endX);
+    }
+
+    return { mapX, unmapX, mapY, endX, vLines, hLines };
+  }, [min, max, plotWidth, height, mt, d, vFrom, vTo, xStep]);
+
+  // The marked place, wherever it was pointed at: hovering the chart sets it,
+  // and so does hovering the drawn line on the map, which is what puts the
+  // crosshair under the map's pointer.
+  const activePoint = useAppSelector(
+    (state) => state.elevationChart.activePoint,
+  );
+
+  // A profile redrawn while a place is marked can end before it — a re-route
+  // shortening the way, say — and the crosshair belongs inside the plot, so it
+  // goes rather than reaching past its edge. Zoomed in, the same holds for a
+  // place the view has left behind.
+  const pointerX =
+    activePoint && activePoint.distance >= vFrom && activePoint.distance <= vTo
+      ? mapX(activePoint.distance)
+      : undefined;
+
+  // The marked stretch. While an edge is being dragged the draft stands in for
+  // it: the committed one rides in the URL, and rewriting that once per pointer
+  // move is not a thing to do.
+  const committedRange = useAppSelector((state) => state.elevationChart.range);
+
+  const [draftRange, setDraftRange] = useState<{
+    from: number;
+    to: number;
+  } | null>(null);
+
+  const range = draftRange ?? committedRange;
+
+  /** Where a pointer is in the SVG's own coordinates. */
+  const svgX = (clientX: number) => {
+    const rect = svgRef.current?.getBoundingClientRect();
+
+    return rect ? clientX - rect.left : undefined;
   };
 
-  const handlePointerOut = () => {
-    setPointerX(undefined);
+  /**
+   * How far along the profile a pointer is, wherever on the screen it is. Kept
+   * to the profile's own ends: the pointer is captured, so a drag reaching past
+   * the plot would otherwise mark out a stretch longer than the line — and one
+   * starting before zero, which the URL cannot even carry.
+   */
+  const distanceAt = (clientX: number) => {
+    const x = svgX(clientX);
 
-    dispatch(elevationChartSetActivePoint(null));
+    return x === undefined
+      ? undefined
+      : Number.isFinite(d)
+        ? clamp(unmapX(x), 0, d)
+        : unmapX(x);
   };
 
-  const [ref, setRef] = useState<HTMLDivElement | null>(null);
+  /** What the profile holds under a pointer, wherever on the screen it is. */
+  const pointAt = (clientX: number) => {
+    const distance = distanceAt(clientX);
 
-  const [ref2, setRef2] = useState<HTMLDivElement | null>(null);
+    return distance === undefined
+      ? undefined
+      : profilePointAtDistance(elevationProfilePoints, distance);
+  };
 
+  const scrub = (clientX: number) => {
+    const point = pointAt(clientX);
+
+    if (point) {
+      dispatch(elevationChartSetActivePoint(point));
+    }
+  };
+
+  // Zoom about a place rather than about the middle: whatever is under the
+  // pointer, or between the fingers, stays where it is.
+  const zoomAt = useCallback(
+    (x: number, factor: number) => {
+      setView(({ from, to }) => {
+        const span = to - from;
+
+        const next = clamp(span / factor, 1 / MAX_ZOOM, 1);
+
+        const t = clamp((x - ml) / plotWidth, 0, 1);
+
+        const held = from + t * span;
+
+        const nextFrom = clamp(held - t * next, 0, 1 - next);
+
+        return { from: nextFrom, to: nextFrom + next };
+      });
+    },
+    [plotWidth],
+  );
+
+  const panBy = (dx: number) => {
+    setView(({ from, to }) => {
+      const span = to - from;
+
+      const nextFrom = clamp(from - (dx / plotWidth) * span, 0, 1 - span);
+
+      return { from: nextFrom, to: nextFrom + span };
+    });
+  };
+
+  // Not through React's handler: it registers wheel passively, so the page
+  // would scroll as well as the chart zooming.
   useEffect(() => {
-    if (!ref) {
+    const el = svgRef.current;
+
+    if (!el) {
       return;
     }
 
-    const ro = new ResizeObserver(([e]) => {
-      setWidth(e!.contentRect.width);
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
 
-      setHeight(e.contentRect.height - (ref2 ? ref2.offsetHeight : 0));
+      zoomAt(
+        e.clientX - el.getBoundingClientRect().left,
+        e.deltaY < 0 ? WHEEL_FACTOR : 1 / WHEEL_FACTOR,
+      );
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [zoomAt]);
+
+  /** Pressed pointers by id, each at the x it was last seen at. */
+  const pointers = useRef(new Map<number, number>());
+
+  /** Distance between the two fingers on the previous move, while pinching. */
+  const pinchRef = useRef<number | null>(null);
+
+  const travelRef = useRef(0);
+
+  /** Whether a second finger ever joined, which makes the gesture a pinch. */
+  const pinchedRef = useRef(false);
+
+  /**
+   * The distance the far end of a marking gesture is anchored at — the edge
+   * opposite the one being dragged, or where a new stretch was started. Null
+   * when no stretch is being marked out.
+   */
+  const anchorRef = useRef<number | null>(null);
+
+  const longPressRef = useRef(0);
+
+  /** Whether a hovering pointer is over an edge, which is what the cursor says. */
+  const [onGrip, setOnGrip] = useState(false);
+
+  const cancelLongPress = () => {
+    window.clearTimeout(longPressRef.current);
+  };
+
+  // A panel that goes while a finger is held on it — the tool closing, the map
+  // being cleared — must not be written to when the timer comes round.
+  useEffect(() => () => window.clearTimeout(longPressRef.current), []);
+
+  /** Which edge of the marked stretch a press at `x` (in the SVG) takes hold of. */
+  const gripAt = (x: number) => {
+    if (!range) {
+      return null;
+    }
+
+    // An edge the view has left behind is not one to take hold of: its handle
+    // isn't drawn, and the plot's own edge is where the pointer would find it.
+    const edges = (['from', 'to'] as const)
+      .map((end) => ({ end, at: mapX(range[end]) }))
+      .filter(({ at }) => at >= ml && at <= width - mr);
+
+    const nearest = edges.reduce<{ end: 'from' | 'to'; off: number } | null>(
+      (best, { end, at }) => {
+        const off = Math.abs(at - x);
+
+        return !best || off < best.off ? { end, off } : best;
+      },
+      null,
+    );
+
+    return nearest && nearest.off <= GRIP_GRAB_PX ? nearest.end : null;
+  };
+
+  const handlePointerDown = (e: ReactPointerEvent<SVGRectElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+
+    pointers.current.set(e.pointerId, e.clientX);
+
+    // Any change to who is pressing invalidates the pinch's baseline: measured
+    // between one pair and applied to another, it would jump the zoom.
+    pinchRef.current = null;
+
+    if (pointers.current.size > 1) {
+      cancelLongPress();
+
+      // A second finger turns whatever was happening into a pinch. The draft
+      // goes with the gesture it belonged to: left standing it would mask the
+      // marked stretch — the one in the store — for good.
+      anchorRef.current = null;
+
+      setDraftRange(null);
+
+      pinchedRef.current = true;
+
+      return;
+    }
+
+    travelRef.current = 0;
+
+    pinchedRef.current = false;
+
+    const distance = distanceAt(e.clientX);
+
+    if (distance === undefined) {
+      return;
+    }
+
+    const x = svgX(e.clientX);
+
+    const grip = x === undefined ? null : gripAt(x);
+
+    // Taking hold of an edge anchors the other one, so dragging past it turns
+    // the stretch round rather than collapsing it.
+    if (grip && range) {
+      anchorRef.current = grip === 'from' ? range.to : range.from;
+
+      setDraftRange(range);
+
+      return;
+    }
+
+    // Shift is the desktop way of asking for a stretch; a finger holds still.
+    if (e.shiftKey) {
+      anchorRef.current = distance;
+
+      setDraftRange({ from: distance, to: distance });
+
+      return;
+    }
+
+    if (e.pointerType === 'touch') {
+      longPressRef.current = window.setTimeout(() => {
+        anchorRef.current = distance;
+
+        setDraftRange({ from: distance, to: distance });
+      }, LONG_PRESS_MS);
+    }
+
+    // A finger has no hover, so the press is what reads the profile.
+    scrub(e.clientX);
+  };
+
+  const handlePointerMove = (e: ReactPointerEvent<SVGRectElement>) => {
+    const previous = pointers.current.get(e.pointerId);
+
+    if (previous === undefined) {
+      const x = svgX(e.clientX);
+
+      setOnGrip(x !== undefined && gripAt(x) !== null);
+
+      scrub(e.clientX);
+
+      return;
+    }
+
+    pointers.current.set(e.pointerId, e.clientX);
+
+    const xs = [...pointers.current.values()];
+
+    if (xs.length >= 2) {
+      const spread = Math.abs(xs[0]! - xs[1]!);
+
+      // Against the previous frame rather than the start of the gesture, so the
+      // zoom follows the fingers as they move; their midpoint is what stays put.
+      if (pinchRef.current) {
+        const middle = svgX((xs[0]! + xs[1]!) / 2);
+
+        if (middle !== undefined) {
+          zoomAt(middle, spread / pinchRef.current);
+        }
+      }
+
+      pinchRef.current = spread;
+
+      return;
+    }
+
+    const dx = e.clientX - previous;
+
+    travelRef.current += Math.abs(dx);
+
+    if (travelRef.current > CLICK_SLOP_PX) {
+      cancelLongPress();
+    }
+
+    const anchor = anchorRef.current;
+
+    if (anchor !== null) {
+      const distance = distanceAt(e.clientX);
+
+      if (distance !== undefined) {
+        setDraftRange({
+          from: Math.min(anchor, distance),
+          to: Math.max(anchor, distance),
+        });
+      }
+
+      return;
+    }
+
+    // Zoomed in, a drag slides the window along the profile; at full width
+    // there is nothing to slide, so it reads the profile as a hover does.
+    if (view.to - view.from < 1) {
+      panBy(dx);
+    } else {
+      scrub(e.clientX);
+    }
+  };
+
+  const handlePointerUp = (e: ReactPointerEvent<SVGRectElement>) => {
+    if (!pointers.current.delete(e.pointerId)) {
+      return;
+    }
+
+    pinchRef.current = null;
+
+    cancelLongPress();
+
+    if (pointers.current.size > 0) {
+      return;
+    }
+
+    // The stretch reaches the store only now: it rides in the URL, which is not
+    // to be rewritten once a frame. One too narrow to have been meant — a press
+    // with the modifier held, a long press that went nowhere — marks nothing,
+    // and unmarks nothing either: whatever stands is left standing, the × being
+    // what takes it away.
+    if (anchorRef.current !== null) {
+      anchorRef.current = null;
+
+      const marked =
+        draftRange &&
+        mapX(draftRange.to) - mapX(draftRange.from) > CLICK_SLOP_PX &&
+        draftRange.to - draftRange.from >= MIN_RANGE_METERS
+          ? draftRange
+          : null;
+
+      setDraftRange(null);
+
+      if (marked) {
+        dispatch(elevationChartSetRange(marked));
+      }
+
+      return;
+    }
+
+    // A press that went nowhere asks to see the place it marks, and the panel
+    // is usually sitting over it — so the map brings it out into the open. One
+    // already well in view stays put: reading along a profile is a lot of
+    // presses, and the map sliding under each of them helps nobody.
+    if (travelRef.current <= CLICK_SLOP_PX && !pinchedRef.current) {
+      const point = pointAt(e.clientX);
+
+      if (point) {
+        panToUncovered(dispatch, point, {
+          ifHidden: true,
+          margin: GENEROUS_MARGIN_PX,
+        });
+      }
+    }
+  };
+
+  // A gesture the system took away (an OS gesture, a call arriving) completed
+  // nothing, so it is dropped rather than read as the press it never became.
+  const handlePointerCancel = (e: ReactPointerEvent<SVGRectElement>) => {
+    pointers.current.delete(e.pointerId);
+
+    pinchRef.current = null;
+
+    anchorRef.current = null;
+
+    cancelLongPress();
+
+    setDraftRange(null);
+  };
+
+  const handlePointerOut = (e: ReactPointerEvent<SVGRectElement>) => {
+    // A finger lifting fires this straight after the press that set the mark,
+    // so only a pointer that can hover clears it by leaving.
+    if (e.pointerType !== 'touch') {
+      setOnGrip(false);
+
+      dispatch(elevationChartSetActivePoint(null));
+    }
+  };
+
+  const visibleWaypoints = labeledWaypoints.filter(
+    (wp) => wp.distance >= vFrom && wp.distance <= vTo,
+  );
+
+  // What the marked stretch adds up to. The climb totals are cumulative along
+  // the profile, so the stretch's own are the difference between its ends.
+  const rangeStats = useMemo(
+    () => rangeStatsOf(elevationProfilePoints, range),
+    [range, elevationProfilePoints],
+  );
+
+  // The drawn profile, one run of real elevation apiece. Memoized because a
+  // hover re-renders the panel — it marks the place on the map — and rebuilding
+  // a few thousand coordinates into two strings per frame is the most expensive
+  // thing on that path.
+  const paths = useMemo(() => {
+    const baseY = height - mb;
+
+    return elevatedRuns(elevationProfilePoints).map((run) => {
+      const line = run
+        .map((pt) => `${mapX(pt.distance)},${mapY(pt.ele)}`)
+        .join(' ');
+
+      return {
+        line,
+        area: `${mapX(run[0]!.distance)},${baseY} ${line} ${mapX(run.at(-1)!.distance)},${baseY}`,
+      };
     });
-
-    ref.style.width = `${Math.min(
-      Math.max(window.innerWidth / 2, 400),
-      Math.max(window.innerWidth - 14, 40),
-    )}px`;
-
-    ref.style.height = `${Math.min(
-      Math.max(window.innerHeight / 2, 300),
-      Math.max(window.innerHeight - 130, 40),
-    )}px`;
-
-    ro.observe(ref);
-
-    return () => ro.disconnect();
-  }, [ref, ref2]);
-
-  const svgRef = useRef<SVGSVGElement>(null);
-
-  const startPosRef = useRef<[number, number]>(undefined);
-
-  const posRef = useRef([0, 0]);
-
-  const [pos, setPos] = useState({ top: 0, left: 0 });
-
-  useEffect(() => {
-    const handleWindowPointerDown = (e: PointerEvent) => {
-      // Drag only from within the chart itself — not from the toolbar buttons,
-      // whose icons are their own <svg> elements.
-      if (e.target instanceof Node && svgRef.current?.contains(e.target)) {
-        startPosRef.current = [e.clientX, e.clientY];
-      }
-    };
-
-    const handleWindowPointerUp = (e: PointerEvent) => {
-      if (!startPosRef.current) {
-        return;
-      }
-
-      const pos = [
-        e.clientX - startPosRef.current[0] + posRef.current[0],
-        e.clientY - startPosRef.current[1] + posRef.current[1],
-      ];
-
-      setPos({ left: pos[0], top: pos[1] });
-
-      posRef.current = pos;
-
-      startPosRef.current = undefined;
-    };
-
-    const handleWindowPointerMove = (e: PointerEvent) => {
-      if (!startPosRef.current) {
-        return;
-      }
-
-      setPos({
-        left: posRef.current[0] + e.clientX - startPosRef.current[0],
-        top: posRef.current[1] + e.clientY - startPosRef.current[1],
-      });
-    };
-
-    window.addEventListener('pointerdown', handleWindowPointerDown);
-
-    window.addEventListener('pointerup', handleWindowPointerUp);
-
-    window.addEventListener('pointermove', handleWindowPointerMove);
-
-    return () => {
-      window.removeEventListener('pointerdown', handleWindowPointerDown);
-
-      window.removeEventListener('pointerup', handleWindowPointerUp);
-
-      window.removeEventListener('pointermove', handleWindowPointerMove);
-    };
-  }, []);
+  }, [elevationProfilePoints, mapX, mapY, height]);
 
   const handleDownload = () => {
-    downloadChartSvg(svgRef.current, width, height);
+    downloadSvg(svgRef.current, 'elevation-chart.svg');
   };
 
   return (
-    <div
-      className={clsx(classes.elevationChart, 'm-2', 'p-2', 'rounded')}
-      ref={setRef}
-      style={pos}
-    >
+    <div {...boxProps}>
+      {/* The grips are the only way to move or resize it: the plot itself is
+          left to reading, zooming and panning the profile. */}
+      <FloatingWindowGrips fullscreen={fullscreen} {...grips} />
+
       <CloseButton onClick={() => dispatch(elevationChartClose())} />
 
+      {/* Nothing to plot into a box with no room. `Main` hides the panels
+          rather than unmounting them while a place is being picked, and a
+          `display: none` box measures 0, which every width below turns
+          negative. */}
       <svg ref={svgRef} width={width} height={height}>
-        {/* Plot background — also the primary pointer target. */}
-        <rect
-          x={ml}
-          y={mt}
-          width={width - ml - mr}
-          height={height - mt - mb}
-          onMouseMove={handlePointerMove} // for mobiles
-          onPointerMove={handlePointerMove}
-          onPointerOut={handlePointerOut}
-          fill="var(--bs-body-bg)"
-        />
+        {width > ml + mr && height > mt + mb && (
+          <>
+            <defs>
+              {/* Zoomed in, the profile runs past both ends of the plot. */}
+              <clipPath id={clipId}>
+                <rect
+                  x={ml}
+                  y={mt}
+                  width={plotWidth}
+                  height={height - mt - mb}
+                />
+              </clipPath>
 
-        {/* Elevation profile: an area fill with its outline, one group per run
+              {/* User space, not the object's box: the profile is drawn as one
+                  polygon per elevated run, and each would otherwise stretch the
+                  whole gradient across its own width. */}
+              {fillStops && (
+                <linearGradient
+                  id={fillId}
+                  gradientUnits="userSpaceOnUse"
+                  x1={ml}
+                  y1={0}
+                  x2={width - mr}
+                  y2={0}
+                >
+                  {fillStops.map((stop, i) => (
+                    <stop key={i} offset={stop.offset} stopColor={stop.color} />
+                  ))}
+                </linearGradient>
+              )}
+            </defs>
+
+            {/* Plot background. */}
+            <rect
+              x={ml}
+              y={mt}
+              width={plotWidth}
+              height={height - mt - mb}
+              fill="var(--bs-body-bg)"
+            />
+
+            {/* Elevation profile: an area fill with its outline, one group per run
             of points with elevation. A missing value breaks the line and its
             fill rather than dropping to the baseline. */}
-        <g className="chart">
-          {(() => {
-            const segments: ElevationProfilePoint[][] = [];
-
-            let current: ElevationProfilePoint[] = [];
-
-            for (const pt of elevationProfilePoints) {
-              if (Number.isFinite(pt.ele)) {
-                current.push(pt);
-              } else if (current.length) {
-                segments.push(current);
-
-                current = [];
-              }
-            }
-
-            if (current.length) {
-              segments.push(current);
-            }
-
-            return segments.map((seg, i) => {
-              const line = seg
-                .map((pt) => `${mapX(pt.distance)},${mapY(pt.ele)}`)
-                .join(' ');
-
-              const baseY = height - mb;
-
-              return (
+            <g className="chart" clipPath={`url(#${clipId})`}>
+              {paths.map(({ line, area }, i) => (
                 <g className="chart-segment" key={`seg${i}`}>
                   <polygon
-                    points={
-                      `${mapX(seg[0]!.distance)},${baseY} ` +
-                      line +
-                      ` ${mapX(seg.at(-1)!.distance)},${baseY}`
+                    points={area}
+                    fill={
+                      fillStops
+                        ? `url(#${fillId})`
+                        : 'var(--bs-primary-bg-subtle)'
                     }
-                    fill="var(--bs-primary-bg-subtle)"
                   />
 
+                  {/* The colorized fill is what carries the reading, so the
+                      outline steps back to a neutral edge for it. */}
                   <polyline
                     points={line}
-                    stroke="var(--bs-primary)"
+                    stroke={
+                      fillStops ? 'var(--bs-body-color)' : 'var(--bs-primary)'
+                    }
                     strokeWidth={1}
                     fill="none"
                   />
                 </g>
-              );
-            });
-          })()}
-        </g>
+              ))}
+            </g>
 
-        {pointerX !== undefined && (
-          <line
-            className="crosshair"
-            key="pointerx"
-            x1={pointerX}
-            x2={pointerX}
-            y1={mt}
-            y2={height - mb}
-            stroke="var(--bs-danger)"
-            strokeWidth={1}
-          />
-        )}
+            {pointerX !== undefined && (
+              <line
+                className="crosshair"
+                key="pointerx"
+                x1={pointerX}
+                x2={pointerX}
+                y1={mt}
+                y2={height - mb}
+                stroke="var(--bs-danger)"
+                strokeWidth={1}
+              />
+            )}
 
-        {/* Dashed reference lines spanning the plot. */}
-        <g className="grid">
-          <g className="grid-horizontal">
-            {hLines.map((y, i) => {
-              const limit = hLines.length - i < 3;
+            {/* Dashed reference lines spanning the plot. */}
+            <g className="grid">
+              <g className="grid-horizontal">
+                {hLines.map((y, i) => {
+                  const limit = hLines.length - i < 3;
 
-              return (
-                <line
-                  key={`gy${i}`}
-                  x1={ml}
-                  x2={width - mr}
-                  y1={mapY(y)}
-                  y2={mapY(y)}
-                  strokeWidth={1}
-                  stroke={limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'}
-                  opacity={limit ? 0.6 : 0.4}
-                  strokeDasharray="2 2"
-                />
-              );
-            })}
-          </g>
+                  return (
+                    <line
+                      key={`gy${i}`}
+                      x1={ml}
+                      x2={width - mr}
+                      y1={mapY(y)}
+                      y2={mapY(y)}
+                      strokeWidth={1}
+                      stroke={
+                        limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'
+                      }
+                      opacity={limit ? 0.6 : 0.4}
+                      strokeDasharray="2 2"
+                    />
+                  );
+                })}
+              </g>
 
-          <g className="grid-vertical">
-            {vLines.map((x, i) => {
-              const limit = i === vLines.length - 1;
+              <g className="grid-vertical">
+                {vLines.map((x, i) => {
+                  const limit = x === endX;
 
-              return (
-                <line
-                  key={`gx${i}`}
-                  x1={mapX(x)}
-                  x2={mapX(x)}
-                  y1={mt}
-                  y2={height - mb}
-                  strokeWidth={1}
-                  stroke={limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'}
-                  opacity={limit ? 0.6 : 0.4}
-                  strokeDasharray="2 2"
-                />
-              );
-            })}
-          </g>
-        </g>
+                  return (
+                    <line
+                      key={`gx${i}`}
+                      x1={mapX(x)}
+                      x2={mapX(x)}
+                      y1={mt}
+                      y2={height - mb}
+                      strokeWidth={1}
+                      stroke={
+                        limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'
+                      }
+                      opacity={limit ? 0.6 : 0.4}
+                      strokeDasharray="2 2"
+                    />
+                  );
+                })}
+              </g>
+            </g>
 
-        {/* Each axis groups its line with its tick marks and value labels. Ticks
+            {/* Each axis groups its line with its tick marks and value labels. Ticks
             and labels are split into their own layers so each set can be styled
             as a whole; only the min/max/last "limit" marks override the shared
             colour to the accent. */}
-        <g className="axes">
-          {/* y-axis: vertical line at the left edge of the plot. */}
-          <g className="axis axis-y">
-            <line
-              className="axis-line"
-              x1={ml}
-              x2={ml}
-              y1={mt}
-              y2={height - mb}
-              stroke="var(--bs-body-color)"
-              strokeWidth={1}
-            />
+            <g className="axes">
+              {/* y-axis: vertical line at the left edge of the plot. */}
+              <g className="axis axis-y">
+                <line
+                  className="axis-line"
+                  x1={ml}
+                  x2={ml}
+                  y1={mt}
+                  y2={height - mb}
+                  stroke="var(--bs-body-color)"
+                  strokeWidth={1}
+                />
 
-            <g className="ticks" stroke="var(--bs-body-color)" strokeWidth={1}>
-              {hLines.map((y, i) => {
-                const limit = hLines.length - i < 3;
+                <g
+                  className="ticks"
+                  stroke="var(--bs-body-color)"
+                  strokeWidth={1}
+                >
+                  {hLines.map((y, i) => {
+                    const limit = hLines.length - i < 3;
 
-                return (
-                  <line
-                    key={`ty${i}`}
-                    x1={ml - 4}
-                    x2={ml}
-                    y1={mapY(y)}
-                    y2={mapY(y)}
-                    stroke={limit ? 'var(--bs-danger)' : undefined}
-                  />
-                );
-              })}
+                    return (
+                      <line
+                        key={`ty${i}`}
+                        x1={ml - 4}
+                        x2={ml}
+                        y1={mapY(y)}
+                        y2={mapY(y)}
+                        stroke={limit ? 'var(--bs-danger)' : undefined}
+                      />
+                    );
+                  })}
+                </g>
+
+                <g
+                  className="tick-labels"
+                  fill="var(--bs-body-color)"
+                  textAnchor="end"
+                >
+                  {hLines.map((y, i) => {
+                    const limit = hLines.length - i < 3;
+
+                    const show =
+                      limit ||
+                      (Math.abs(mapY(y) - mapY(hLines.at(-1)!)) > 14 &&
+                        Math.abs(mapY(y) - mapY(hLines.at(-2)!)) > 14);
+
+                    return show ? (
+                      <text
+                        key={`ly${i}`}
+                        x={ml - 10}
+                        y={mapY(y)}
+                        dominantBaseline="middle"
+                        fill={limit ? 'var(--bs-danger)' : undefined}
+                      >
+                        {nf0.format(y)}
+                      </text>
+                    ) : null;
+                  })}
+                </g>
+
+                {/* Elevation unit, at the top of the axis — ending on the axis
+                    rather than straddling it, so it stays over its own tick
+                    labels and out of the way of a waypoint label at distance 0,
+                    which leans up and to the right from just inside the plot. */}
+                <text
+                  className="axis-unit"
+                  x={ml}
+                  y={mt - 6}
+                  textAnchor="end"
+                  fill="var(--bs-body-color)"
+                >
+                  {gm?.general.masl}
+                </text>
+              </g>
+
+              {/* x-axis: horizontal line along the plot's baseline. */}
+              <g className="axis axis-x">
+                <line
+                  className="axis-line"
+                  x1={ml}
+                  x2={width - mr}
+                  y1={height - mb}
+                  y2={height - mb}
+                  stroke="var(--bs-body-color)"
+                  strokeWidth={1}
+                />
+
+                <g
+                  className="ticks"
+                  stroke="var(--bs-body-color)"
+                  strokeWidth={1}
+                >
+                  {vLines.map((x, i) => {
+                    const limit = x === endX;
+
+                    return (
+                      <line
+                        key={`tx${i}`}
+                        x1={mapX(x)}
+                        x2={mapX(x)}
+                        y1={height - mb}
+                        y2={height - mb + X_TICK_LEN}
+                        stroke={limit ? 'var(--bs-danger)' : undefined}
+                      />
+                    );
+                  })}
+                </g>
+
+                <g
+                  className="tick-labels"
+                  fill="var(--bs-body-color)"
+                  textAnchor="start"
+                >
+                  {vLines.map((x, i) => {
+                    const limit = x === endX;
+
+                    // Hide a regular label that would collide with the endpoint or
+                    // a waypoint's own distance label (drawn in the waypoints layer).
+                    const show =
+                      limit ||
+                      ((endX === null || Math.abs(mapX(x) - mapX(endX)) > 20) &&
+                        !visibleWaypoints.some(
+                          (wp) => Math.abs(mapX(wp.distance) - mapX(x)) < 20,
+                        ));
+
+                    return show ? (
+                      <text
+                        key={`lx${i}`}
+                        x={mapX(x) + X_LABEL_DX}
+                        y={height - mb + X_LABEL_DY}
+                        dominantBaseline="middle"
+                        transform={`rotate(45, ${mapX(x) + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
+                        fill={limit ? 'var(--bs-danger)' : undefined}
+                      >
+                        {nfX.format(x / 1000)}
+                      </text>
+                    ) : null;
+                  })}
+                </g>
+
+                {/* distance unit, past the right end of the axis */}
+                <text
+                  className="axis-unit"
+                  x={width - mr + 6}
+                  y={height - mb}
+                  textAnchor="start"
+                  dominantBaseline="middle"
+                  fill="var(--bs-body-color)"
+                >
+                  km
+                </text>
+              </g>
             </g>
 
-            <g
-              className="tick-labels"
-              fill="var(--bs-body-color)"
-              textAnchor="end"
-            >
-              {hLines.map((y, i) => {
-                const limit = hLines.length - i < 3;
-
-                const show =
-                  limit ||
-                  (Math.abs(mapY(y) - mapY(hLines.at(-1)!)) > 14 &&
-                    Math.abs(mapY(y) - mapY(hLines.at(-2)!)) > 14);
-
-                return show ? (
-                  <text
-                    key={`ly${i}`}
-                    x={ml - 10}
-                    y={mapY(y)}
-                    dominantBaseline="middle"
-                    fill={limit ? 'var(--bs-danger)' : undefined}
-                  >
-                    {nf0.format(y)}
-                  </text>
-                ) : null;
-              })}
-            </g>
-
-            {/* elevation unit, at the top of the axis */}
-            <text
-              className="axis-unit"
-              x={ml}
-              y={mt - 6}
-              textAnchor="middle"
-              fill="var(--bs-body-color)"
-            >
-              m
-            </text>
-          </g>
-
-          {/* x-axis: horizontal line along the plot's baseline. */}
-          <g className="axis axis-x">
-            <line
-              className="axis-line"
-              x1={ml}
-              x2={width - mr}
-              y1={height - mb}
-              y2={height - mb}
-              stroke="var(--bs-body-color)"
-              strokeWidth={1}
-            />
-
-            <g className="ticks" stroke="var(--bs-body-color)" strokeWidth={1}>
-              {vLines.map((x, i) => {
-                const limit = i === vLines.length - 1;
-
-                return (
-                  <line
-                    key={`tx${i}`}
-                    x1={mapX(x)}
-                    x2={mapX(x)}
-                    y1={height - mb}
-                    y2={height - mb + X_TICK_LEN}
-                    stroke={limit ? 'var(--bs-danger)' : undefined}
-                  />
-                );
-              })}
-            </g>
-
-            <g
-              className="tick-labels"
-              fill="var(--bs-body-color)"
-              textAnchor="start"
-            >
-              {vLines.map((x, i) => {
-                const limit = i === vLines.length - 1;
-
-                // Hide a regular label that would collide with the endpoint or
-                // a waypoint's own distance label (drawn in the waypoints layer).
-                const show =
-                  limit ||
-                  (Math.abs(mapX(x) - mapX(vLines.at(-1)!)) > 20 &&
-                    !labeledWaypoints.some(
-                      (wp) => Math.abs(mapX(wp.distance) - mapX(x)) < 20,
-                    ));
-
-                return show ? (
-                  <text
-                    key={`lx${i}`}
-                    x={mapX(x) + X_LABEL_DX}
-                    y={height - mb + X_LABEL_DY}
-                    dominantBaseline="middle"
-                    transform={`rotate(45, ${mapX(x) + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
-                    fill={limit ? 'var(--bs-danger)' : undefined}
-                  >
-                    {nf1.format(x / 1000)}
-                  </text>
-                ) : null;
-              })}
-            </g>
-
-            {/* distance unit, past the right end of the axis */}
-            <text
-              className="axis-unit"
-              x={width - mr + 6}
-              y={height - mb}
-              textAnchor="start"
-              dominantBaseline="middle"
-              fill="var(--bs-body-color)"
-            >
-              km
-            </text>
-          </g>
-        </g>
-
-        {/* Waypoints pinned along the profile: a stem, a dot on the line, the
+            {/* Waypoints pinned along the profile: a stem, a dot on the line, the
             name and elevation on two lines angled -45° up into the top margin
             (sized to fit the tallest label above), and the distance value
             ticked on the x-axis. Same colour as the elevation line. */}
-        <g className="waypoints">
-          {labeledWaypoints.map((wp, i) => {
-            const x = mapX(wp.distance);
+            <g className="waypoints">
+              {visibleWaypoints.map((wp, i) => {
+                const x = mapX(wp.distance);
 
-            // Seat the block so its lowest point (a wide line's leading end,
-            // whichever line that is) sits a fixed gap above the plot.
-            const labelY = wp.metrics
-              ? mt - LABEL_GAP - wp.metrics.nearDrop
-              : mt;
+                // Seat the block so its lowest point (a wide line's leading end,
+                // whichever line that is) sits a fixed gap above the plot.
+                const labelY = wp.metrics
+                  ? mt - LABEL_GAP - wp.metrics.nearDrop
+                  : mt;
 
-            return (
-              <g className="waypoint" key={`wp${i}`}>
-                <line
-                  x1={x}
-                  x2={x}
-                  y1={mt}
-                  y2={height - mb}
-                  stroke="var(--bs-primary)"
-                  strokeWidth={1}
-                  opacity={0.6}
-                />
+                return (
+                  <g className="waypoint" key={`wp${i}`}>
+                    <line
+                      x1={x}
+                      x2={x}
+                      y1={mt}
+                      y2={height - mb}
+                      stroke="var(--bs-primary)"
+                      strokeWidth={1}
+                      opacity={0.6}
+                    />
 
-                <circle
-                  cx={x}
-                  cy={mapY(wp.ele)}
-                  r={3}
-                  fill="var(--bs-primary)"
-                />
+                    <circle
+                      cx={x}
+                      cy={mapY(wp.ele)}
+                      r={3}
+                      fill="var(--bs-primary)"
+                    />
 
-                {wp.metrics && (
-                  <text
-                    textAnchor="start"
-                    transform={`rotate(-45, ${x + 3}, ${labelY})`}
-                    fill="var(--bs-primary)"
-                  >
-                    {wp.lines.map((line, j) => (
-                      // Each line centered under the widest by an equal start
-                      // nudge along the (rotated) baseline; stacked by baseline.
-                      <tspan
-                        key={j}
-                        x={x + 3 + wp.metrics!.offsets[j]!}
-                        y={labelY + j * LINE_HEIGHT}
+                    {wp.metrics && (
+                      <text
+                        textAnchor="start"
+                        transform={`rotate(-45, ${x + 3}, ${labelY})`}
+                        fill="var(--bs-primary)"
                       >
-                        {line}
-                      </tspan>
-                    ))}
-                  </text>
-                )}
+                        {wp.lines.map((line, j) => (
+                          // Each line centered under the widest by an equal start
+                          // nudge along the (rotated) baseline; stacked by baseline.
+                          <tspan
+                            key={j}
+                            x={x + 3 + wp.metrics!.offsets[j]!}
+                            y={labelY + j * LINE_HEIGHT}
+                          >
+                            {line}
+                          </tspan>
+                        ))}
+                      </text>
+                    )}
 
-                {/* the waypoint's own distance, ticked on the x-axis */}
-                <line
-                  x1={x}
-                  x2={x}
-                  y1={height - mb}
-                  y2={height - mb + X_TICK_LEN}
-                  stroke="var(--bs-primary)"
-                  strokeWidth={1}
+                    {/* the waypoint's own distance, ticked on the x-axis */}
+                    <line
+                      x1={x}
+                      x2={x}
+                      y1={height - mb}
+                      y2={height - mb + X_TICK_LEN}
+                      stroke="var(--bs-primary)"
+                      strokeWidth={1}
+                    />
+
+                    <text
+                      x={x + X_LABEL_DX}
+                      y={height - mb + X_LABEL_DY}
+                      textAnchor="start"
+                      dominantBaseline="middle"
+                      transform={`rotate(45, ${x + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
+                      fill="var(--bs-primary)"
+                    >
+                      {nfX.format(wp.distance / 1000)}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+
+            {/* The marked-out stretch: a band over the plot with a handle on
+                each edge, in the same ink as the crosshair and the map's own
+                highlight of it. */}
+            {range && (
+              <g className="range">
+                <rect
+                  x={clamp(mapX(range.from), ml, width - mr)}
+                  y={mt}
+                  width={
+                    clamp(mapX(range.to), ml, width - mr) -
+                    clamp(mapX(range.from), ml, width - mr)
+                  }
+                  height={height - mt - mb}
+                  fill="var(--bs-danger)"
+                  opacity={0.12}
                 />
 
-                <text
-                  x={x + X_LABEL_DX}
-                  y={height - mb + X_LABEL_DY}
-                  textAnchor="start"
-                  dominantBaseline="middle"
-                  transform={`rotate(45, ${x + X_LABEL_DX}, ${height - mb + X_LABEL_DY})`}
-                  fill="var(--bs-primary)"
-                >
-                  {nf1.format(wp.distance / 1000)}
-                </text>
-              </g>
-            );
-          })}
-        </g>
+                {([range.from, range.to] as const).map((distance, i) => {
+                  const x = mapX(distance);
 
-        {/* Transparent interaction overlay on top. */}
-        <rect
-          x={ml}
-          y={mt}
-          width={width - ml - mr}
-          height={height - mt - mb}
-          onPointerDown={handlePointerMove} // for mobiles
-          onPointerMove={handlePointerMove}
-          onPointerOut={handlePointerOut}
-          opacity={0}
-        />
+                  return x < ml || x > width - mr ? null : (
+                    <g key={i}>
+                      <line
+                        x1={x}
+                        x2={x}
+                        y1={mt}
+                        y2={height - mb}
+                        stroke="var(--bs-danger)"
+                        strokeWidth={1}
+                        opacity={0.8}
+                      />
+
+                      <rect
+                        x={x - GRIP_WIDTH / 2}
+                        y={mt}
+                        width={GRIP_WIDTH}
+                        height={GRIP_HEIGHT}
+                        rx={2}
+                        fill="var(--bs-danger)"
+                      />
+                    </g>
+                  );
+                })}
+              </g>
+            )}
+
+            {/* Which part of the profile the zoomed plot is showing. Informative
+                only, and it sits in the clearance the waypoint labels already
+                keep above the plot, so it costs no room. */}
+            {view.to - view.from < 1 &&
+              (() => {
+                const w = Math.max(plotWidth * (view.to - view.from), 6);
+
+                return (
+                  <g className="view-indicator">
+                    <rect
+                      x={ml}
+                      y={mt - 4}
+                      width={plotWidth}
+                      height={3}
+                      rx={1.5}
+                      fill="var(--bs-secondary)"
+                      opacity={0.25}
+                    />
+
+                    <rect
+                      x={Math.min(
+                        ml + plotWidth * view.from,
+                        ml + plotWidth - w,
+                      )}
+                      y={mt - 4}
+                      width={w}
+                      height={3}
+                      rx={1.5}
+                      fill="var(--bs-primary)"
+                      opacity={0.8}
+                    />
+                  </g>
+                );
+              })()}
+
+            {/* Transparent interaction overlay on top: the whole plot is one
+                target, so a gesture is not interrupted by whatever it passes
+                over. */}
+            <rect
+              x={ml}
+              y={mt}
+              width={plotWidth}
+              height={height - mt - mb}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerCancel}
+              onPointerOut={handlePointerOut}
+              // An edge under the pointer, or one being dragged, says so. The
+              // draft, not the anchor ref: a ref doesn't re-render, so the
+              // cursor would never change while the drag was on.
+              style={onGrip || draftRange ? { cursor: 'ew-resize' } : undefined}
+              opacity={0}
+            />
+          </>
+        )}
       </svg>
 
-      <div className="d-flex align-items-center gap-2 mb-1 mx-2" ref={setRef2}>
-        {typeof climbUp === 'number' && typeof climbDown === 'number' && (
-          <p className="m-0">
-            {m?.uphill}: {nf0.format(climbUp)}&nbsp;m, {m?.downhill}:{' '}
-            {nf0.format(climbDown)}&nbsp;m
+      {/* One wrapping row, measured as a whole so the SVG is sized around it
+          however many lines it takes. */}
+      {/* The ref alone, not `bottomProps`: this panel's bottom is the one
+          wrapping row, so it wants none of the column the two-row panels do. */}
+      <div
+        ref={bottomProps.ref}
+        className={clsx(
+          windowClasses.footer,
+          'd-flex flex-wrap align-items-center gap-2 mb-1 mx-2',
+        )}
+      >
+        {/* A marked stretch takes the line the whole profile's totals had: the
+            figures are the same ones, said of the part being read. Written in
+            the symbols the map's own readout uses rather than in words, which
+            would not fit beside the rest of the row. */}
+        {/* The row wraps between figures, never inside one: a figure broken
+            across two lines reads as two. */}
+        {rangeStats ? (
+          <p className="m-0 d-flex flex-wrap align-items-center gap-2">
+            {/* Divided rather than merely spaced: the figures are four readings
+                of one stretch, and each is itself a pair of numbers. */}
+            {[
+              <>⇄ {formatDistance(rangeStats.length, language)}</>,
+
+              <>
+                ↑ {nf0.format(rangeStats.up)}&nbsp;m ↓{' '}
+                {nf0.format(rangeStats.down)}&nbsp;m
+              </>,
+
+              Number.isFinite(rangeStats.min) && (
+                <>
+                  ▴ {nf0.format(rangeStats.min)}–{nf0.format(rangeStats.max)}
+                  &nbsp;{gm?.general.masl}
+                </>
+              ),
+
+              Number.isFinite(rangeStats.grade) && (
+                <>∡ {nfSigned1.format(rangeStats.grade * 100)}&nbsp;%</>
+              ),
+            ]
+              .filter((part) => part !== false)
+              .map((part, i) => (
+                <span className="text-nowrap" key={i}>
+                  {i > 0 && <span className="opacity-50 me-2">·</span>}
+
+                  {part}
+                </span>
+              ))}
+
+            <LongPressTooltip label={gm?.general.clear}>
+              {({ props }) => (
+                <CloseButton
+                  className="fs-6"
+                  onClick={() => dispatch(elevationChartSetRange(null))}
+                  {...props}
+                />
+              )}
+            </LongPressTooltip>
+          </p>
+        ) : (
+          typeof climbUp === 'number' &&
+          typeof climbDown === 'number' && (
+            <p className="m-0">
+              {m?.uphill}: {nf0.format(climbUp)}&nbsp;m, {m?.downhill}:{' '}
+              {nf0.format(climbDown)}&nbsp;m
+            </p>
+          )
+        )}
+
+        {sources.length > 0 && (
+          // Pushed against the buttons at the right end of its line, so the one
+          // auto margin belongs here rather than to them.
+          <p className="m-0 ms-auto small text-body-secondary">
+            {m?.elevationSource}:{' '}
+            {tooMany ? (
+              <Button
+                variant="link"
+                // `.btn` sets an absolute font size, which beats a `small` class
+                // on the same element — inherit the paragraph's instead.
+                style={{ fontSize: 'inherit' }}
+                className="p-0 align-baseline link-body-emphasis"
+                onClick={showSources}
+              >
+                {m?.showAllSources} ({sources.length})
+              </Button>
+            ) : (
+              <ElevationSourcesInline sources={sources} />
+            )}
+            {/* The finer national models are premium's; say so where they'd
+                otherwise just be missing from the list. */}
+            {!premium && <PremiumGem hint={prm?.higherPrecisionElevation} />}
           </p>
         )}
 
-        <div className="ms-auto d-flex align-items-center gap-1">
+        <div
+          className={clsx(
+            'd-flex align-items-center gap-1',
+            sources.length === 0 && 'ms-auto',
+          )}
+        >
           {waypoints.length > 0 && (
             <LongPressTooltip label={m?.showWaypoints}>
               {({ props }) => (
@@ -737,20 +1518,50 @@ export default function ElevationChart(): ReactElement | null {
             </LongPressTooltip>
           )}
 
-          <LongPressTooltip label={m?.downloadAsSvg}>
+          <LongPressTooltip label={gm?.elevationChart.settings}>
             {({ props }) => (
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={handleDownload}
+                onClick={() =>
+                  dispatch(setActiveModal({ type: 'elevation-settings' }))
+                }
                 {...props}
               >
-                <FaDownload />
+                <FaCog />
               </Button>
             )}
           </LongPressTooltip>
+
+          {/* The embed is a cross-origin iframe, where the browser refuses both
+                the save picker and a synthesized download. */}
+          {!window.fmEmbedded && (
+            <LongPressTooltip label={m?.downloadAsSvg}>
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleDownload}
+                  {...props}
+                >
+                  <FaDownload />
+                </Button>
+              )}
+            </LongPressTooltip>
+          )}
+
+          <FullscreenButton
+            fullscreen={fullscreen}
+            onToggle={toggleFullscreen}
+            size="sm"
+          />
         </div>
       </div>
+
+      {/* Pinned to the corner instead of ending the toolbar row, which wraps
+          its buttons to the left of the next line as the box narrows. Out of
+          that row's flow, so it doesn't count towards the height measured for
+          the chart either. */}
     </div>
   );
 }

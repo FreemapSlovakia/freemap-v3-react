@@ -1,0 +1,19 @@
+/* The strip left behind when the toolbar is collapsed says nothing on its own,
+   so the tool's own dot carries the recording: red, and moving, because a
+   colour alone is missed by the eye that isn't looking for it. */
+.recording {
+  color: var(--bs-danger);
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recording {
+    animation: none;
+  }
+}

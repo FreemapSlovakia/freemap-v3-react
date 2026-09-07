@@ -1,8 +1,8 @@
 import type { MarkerType } from '@features/objects/model/actions.js';
-import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
+import { POI_ICON_KNOCKOUT_VAR, poiIcons } from '@osm/poiIcons.js';
 import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
 import type Leaflet from 'leaflet';
-import { type BaseIconOptions, Icon } from 'leaflet';
+import { type BaseIconOptions, DomUtil, Icon } from 'leaflet';
 import {
   type CSSProperties,
   cloneElement,
@@ -14,20 +14,35 @@ import {
 } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { Marker, type MarkerProps } from 'react-leaflet';
+import { shallowEqual } from 'react-redux';
 import { splitColorAlpha } from '../colorAlpha.js';
-import { COLORS } from '../colors.js';
+import {
+  COLORS,
+  GLYPH_INSET_LIGHT,
+  glyphInsetColor,
+  POI_ARTWORK_INK,
+} from '../colors.js';
+import { HALO_OPACITY } from '../halo.js';
 
 // Fixed glyph box (in viewBox units) and font size, shared by all marker
 // shapes so icon/text size is independent of the shape.
 const GLYPH_SIZE = 160;
 
-// Glyph color; always drawn on a white inset, so a solid black. `var()` only
-// works in CSS `style` (not in the SVG `fill` presentation attribute), so
-// apply it via style.
-const GLYPH_COLOR = 'black';
+// The selection ring, in viewBox units: every shape is drawn 310 units wide
+// into a 24 px icon, so this is a 6 px stroke on screen. It is stroked under
+// the shape, whose fill covers the inner half — leaving a crisp 3 px ring
+// outside, the same as a line's halo shows on each side.
+const HALO_STROKE = (2 * 3 * 310) / 24;
 
+// The pin, shared by its fill and the ring stroked over it.
+const PIN_PATH =
+  'M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z';
+
+// The glyph takes the marker's own color on the inset, so shape and glyph read
+// as one marker. Applies to every monochrome glyph kind — label text, Font
+// Awesome paths, and the poi icons that carry no color of their own, whose
+// drawing is inlined and so follows the fill like any other path.
 const textStyle: CSSProperties = {
-  fill: GLYPH_COLOR,
   fontSize: '150px',
   fontWeight: 'bold',
   whiteSpace: 'pre',
@@ -38,6 +53,17 @@ const textStyle: CSSProperties = {
 interface BaseIconProps {
   color?: string;
   markerType?: MarkerType;
+  /**
+   * Draws a ring of this color around the marker's shape — the halo a line
+   * wears, for something that has no outline to widen.
+   */
+  halo?: string;
+  /**
+   * Color of the glyph on the white inset; defaults to the marker's own color.
+   * Set it when the shape is drawn in a derived color (a paled selection) and
+   * the glyph should keep the original one to stay readable.
+   */
+  glyphColor?: string;
 }
 
 // A Font Awesome icon described as a raw `{ width, height, path }`, embedded
@@ -55,32 +81,32 @@ export interface IconSvg {
 // mutually-exclusive `IconProps` below.
 interface MarkerIconProps extends BaseIconProps {
   label?: string | number;
-  image?: string;
+  poi?: string;
   faIcon?: ReactElement;
   iconSvg?: IconSvg;
-  imageOpacity?: number;
+  poiOpacity?: number;
 }
 
-// `faIcon`, `iconSvg`, `image` (+ `imageOpacity`) and `label` are mutually
+// `faIcon`, `iconSvg`, `poi` (+ `poiOpacity`) and `label` are mutually
 // exclusive.
 type IconContentProps =
   | {
       faIcon?: ReactElement;
       iconSvg?: never;
-      image?: never;
-      imageOpacity?: never;
+      poi?: never;
+      poiOpacity?: never;
       label?: never;
     }
   | {
       iconSvg?: IconSvg;
       faIcon?: never;
-      image?: never;
-      imageOpacity?: never;
+      poi?: never;
+      poiOpacity?: never;
       label?: never;
     }
   | {
-      image?: string;
-      imageOpacity?: number;
+      poi?: string;
+      poiOpacity?: number;
       faIcon?: never;
       iconSvg?: never;
       label?: never;
@@ -89,8 +115,8 @@ type IconContentProps =
       label?: string | number;
       faIcon?: never;
       iconSvg?: never;
-      image?: never;
-      imageOpacity?: never;
+      poi?: never;
+      poiOpacity?: never;
     };
 
 type IconProps = BaseIconProps & IconContentProps;
@@ -106,24 +132,126 @@ export const markerIconOptions = {
   popupAnchor: [0, -34] as [number, number],
 };
 
+/**
+ * Applies `interactive` to a marker that is already on the map.
+ *
+ * Leaflet wires up interactivity (the `leaflet-interactive` class, the map's
+ * hit-test target and the drag handler) while building the icon, and
+ * react-leaflet doesn't diff the option, so the declarative way to change it is
+ * remounting the marker — which throws the icon element away and re-renders its
+ * content through a fresh async React root, leaving the marker blank for a frame
+ * (a visible blink whenever e.g. `state.main.mapTool` changes). Mutating the
+ * live marker avoids that.
+ *
+ * `draggable` is re-applied here because Leaflet only creates the drag handler
+ * for an interactive marker, and on re-creation restores the handler's previous
+ * enabled state instead of the current option.
+ *
+ * react-leaflet won't diff `interactive` itself — see
+ * https://github.com/PaulLeCam/react-leaflet/issues/843, closed with the stance
+ * that it only mirrors props Leaflet has a setter for, and that apps wanting
+ * more should wrap the layer in a custom component
+ * (`createLayerComponent`/`createPathComponent`, as the tile layers here do).
+ */
+function setMarkerInteractive(
+  marker: Leaflet.Marker,
+  interactive: boolean,
+  draggable: boolean,
+): void {
+  const internal = marker as Leaflet.Marker & {
+    _icon?: HTMLElement;
+    _initInteraction(): void;
+  };
+
+  const icon = internal._icon;
+
+  if (!icon) {
+    return;
+  }
+
+  if (Boolean(marker.options.interactive) !== interactive) {
+    marker.options.interactive = interactive;
+
+    if (interactive) {
+      internal._initInteraction();
+    } else {
+      DomUtil.removeClass(icon, 'leaflet-interactive');
+
+      marker.removeInteractiveTarget(icon);
+    }
+  }
+
+  if (marker.dragging) {
+    if (interactive && draggable) {
+      marker.dragging.enable();
+    } else {
+      marker.dragging.disable();
+    }
+  }
+}
+
+/**
+ * Whether two elements would render the same thing — same component, same
+ * props. Shallow, which is all a `react-icons` glyph ever needs.
+ */
+function sameElement(a?: ReactElement, b?: ReactElement): boolean {
+  return (
+    a === b ||
+    (a !== undefined &&
+      b !== undefined &&
+      a.type === b.type &&
+      shallowEqual(a.props, b.props))
+  );
+}
+
 export function RichMarker({
   autoOpenPopup,
   markerType = 'pin',
   color,
+  glyphColor,
+  halo,
   faIcon,
   iconSvg,
-  image,
-  imageOpacity,
+  poi: poiName,
+  poiOpacity,
   label,
   ...restProps
 }: Props): ReactElement {
   const markerRef = useRef<Leaflet.Marker | null>(null);
+
+  // `faIcon` is written inline at the call site, so it is a fresh object every
+  // render — and rebuilding the icon from it reaches Leaflet's `setIcon`, whose
+  // `_initInteraction` **replaces the marker's drag handler**. A marker that
+  // re-renders often is then undraggable: the gesture dies under the finger.
+  // Keep the previous element wherever it says the same thing.
+  const faIconRef = useRef(faIcon);
+
+  if (!sameElement(faIconRef.current, faIcon)) {
+    faIconRef.current = faIcon;
+  }
+
+  const stableFaIcon = faIconRef.current;
 
   useEffect(() => {
     if (autoOpenPopup && markerRef.current) {
       markerRef.current.openPopup();
     }
   }, [autoOpenPopup]);
+
+  // Normalized once and handed to `<Marker>` below as well, so the options the
+  // marker is built with and the ones the effect asserts can't disagree: an
+  // explicit `interactive={undefined}` would otherwise reach Leaflet's
+  // `setOptions` and shadow its `interactive: true` default, making the marker
+  // start out non-interactive while the effect believes it is interactive.
+  const interactive = restProps.interactive ?? true;
+
+  const draggable = restProps.draggable ?? false;
+
+  useEffect(() => {
+    if (markerRef.current) {
+      setMarkerInteractive(markerRef.current, interactive, draggable);
+    }
+  }, [interactive, draggable]);
 
   const icon = useMemo(
     () =>
@@ -140,19 +268,40 @@ export function RichMarker({
         icon: (
           <MarkerIcon
             color={color}
-            faIcon={faIcon}
+            glyphColor={glyphColor}
+            halo={halo}
+            faIcon={stableFaIcon}
             iconSvg={iconSvg}
-            image={image}
-            imageOpacity={imageOpacity}
+            poi={poiName}
+            poiOpacity={poiOpacity}
             label={label}
             markerType={markerType}
           />
         ),
       }),
-    [color, faIcon, iconSvg, image, imageOpacity, label, markerType],
+    [
+      color,
+      glyphColor,
+      halo,
+      stableFaIcon,
+      iconSvg,
+      poiName,
+      poiOpacity,
+      label,
+      markerType,
+    ],
   );
 
-  return <Marker {...restProps} icon={icon} key={markerType} ref={markerRef} />;
+  return (
+    <Marker
+      {...restProps}
+      interactive={interactive}
+      draggable={draggable}
+      icon={icon}
+      key={markerType}
+      ref={markerRef}
+    />
+  );
 }
 
 export class MarkerLeafletIcon extends Icon<
@@ -170,8 +319,6 @@ export class MarkerLeafletIcon extends Icon<
       (this as any)._setIconStyles(div, 'icon');
 
       div._fm_root = createRoot(div);
-
-      div._fm_root.render(this.options.icon);
     }
 
     div._fm_root.render(this.options.icon);
@@ -185,11 +332,13 @@ export class MarkerLeafletIcon extends Icon<
 }
 
 export function MarkerIcon({
-  image,
-  imageOpacity,
+  poi: poiName,
+  poiOpacity,
   faIcon,
   iconSvg,
   color = COLORS.normal,
+  glyphColor,
+  halo,
   label,
   markerType,
 }: MarkerIconProps): ReactElement {
@@ -199,9 +348,42 @@ export function MarkerIcon({
   // background.
   const { color: fillColor, opacity } = splitColorAlpha(color);
 
-  // A glyph (label text, poi image or Font Awesome icon) fills the white inset;
-  // this flag also drives whether the inset is drawn.
-  const hasContent = Boolean(label || image || faIcon || iconSvg);
+  // The shape's own outline, stroked under the marker so only the half outside
+  // it shows — a ring that leaks neither inward nor into a blur. That half
+  // falls past the viewBox, which an SVG root clips by default — hence
+  // `overflow`.
+  const haloProps = halo
+    ? ({
+        fill: 'none',
+        stroke: halo,
+        strokeWidth: HALO_STROKE,
+        // Divided out of the group `opacity` the ring is stroked inside, so it
+        // lands at HALO_OPACITY whatever the marker's own alpha — the line
+        // halos it matches take theirs from a pane, not from the feature.
+        strokeOpacity: Math.min(1, HALO_OPACITY / opacity),
+        // Round, or the default miter shoots a spike out of the pin's tip —
+        // which is the marker's own anchor.
+        strokeLinejoin: 'round',
+      } as const)
+    : undefined;
+
+  const haloStyle: CSSProperties | undefined = halo
+    ? { overflow: 'visible' }
+    : undefined;
+
+  const glyphFill = glyphColor ?? fillColor;
+
+  const icon = poiName === undefined ? undefined : poiIcons[poiName];
+
+  // A poi icon with colors of its own is artwork drawn for a light background,
+  // so it keeps the white inset; everything else is painted in `glyphFill` and
+  // gets whichever inset that reads on.
+  const insetFill =
+    icon && !icon.mono ? GLYPH_INSET_LIGHT : glyphInsetColor(glyphFill);
+
+  // A glyph (label text, poi icon or Font Awesome icon) fills the inset; this
+  // flag also drives whether the inset is drawn.
+  const hasContent = Boolean(label || icon || faIcon || iconSvg);
 
   // The glyph is drawn at a fixed size centered on each shape's inset, so its
   // on-screen size does not depend on the marker shape.
@@ -212,8 +394,8 @@ export function MarkerIcon({
 
     // A `react-icons` element is a self-contained `<svg viewBox=…>`; clone it
     // into a GLYPH_SIZE box centered on the inset so it scales exactly like
-    // `image`/`iconSvg`. Its `fill="currentColor"` resolves to the wrapping
-    // `<g>`'s GLYPH_SIZE color unless the element sets its own `color`.
+    // `poi`/`iconSvg`. Its `fill="currentColor"` resolves to the wrapping
+    // `<g>`'s color unless the element sets its own `color`.
     // Size via `size`, not `width`/`height`: react-icons' IconBase writes its
     // own `height`/`width` from `size` *after* spreading our props, so a cloned
     // `width`/`height` is overridden by the default `1em` (~1px glyph).
@@ -238,24 +420,27 @@ export function MarkerIcon({
 
     // Scale+center the icon by its precomputed drawing bbox (see
     // poiIconGlyphRect), so icons keep the relative sizes the map renders
-    // instead of each filling the box. Icons absent from the table (e.g.
-    // malformed) fall back to filling the full GLYPH_SIZE box.
-    const imageGlyph =
-      image &&
-      (() => {
-        const bbox = poiIconBBoxes[image];
-
-        const rect = bbox
-          ? poiIconGlyphRect(bbox, cx, cy, GLYPH_SIZE)
-          : {
-              x: cx - GLYPH_SIZE / 2,
-              y: cy - GLYPH_SIZE / 2,
-              width: GLYPH_SIZE,
-              height: GLYPH_SIZE,
-            };
-
-        return <image {...rect} xlinkHref={image} opacity={imageOpacity} />;
-      })();
+    // instead of each filling the box.
+    const poiGlyph = icon && (
+      <svg
+        {...poiIconGlyphRect(icon, cx, cy, GLYPH_SIZE)}
+        viewBox={icon.vb.join(' ')}
+        opacity={poiOpacity}
+        fill={icon.mono ? glyphFill : POI_ARTWORK_INK}
+        style={
+          {
+            // `color` as well as `fill`: shapes that carry no paint of their own
+            // inherit the fill, while the ones the drawing paints explicitly say
+            // `currentColor`, which resolves against `color`.
+            color: icon.mono ? glyphFill : POI_ARTWORK_INK,
+            // Knockouts inside the drawing show the inset the glyph sits on.
+            [POI_ICON_KNOCKOUT_VAR]: insetFill,
+          } as CSSProperties
+        }
+        // Build-time markup from the generated icon table, never user input.
+        dangerouslySetInnerHTML={{ __html: icon.body }}
+      />
+    );
 
     return (
       <>
@@ -265,23 +450,23 @@ export function MarkerIcon({
             y={cy}
             textAnchor="middle"
             dominantBaseline="central"
-            style={textStyle}
+            style={{ ...textStyle, fill: glyphFill }}
           >
             {label}
           </text>
         )}
 
-        {imageGlyph}
+        {poiGlyph}
 
         {iconSvg && (
           <path
             d={iconSvg.path}
-            style={{ fill: GLYPH_COLOR }}
+            style={{ fill: glyphFill }}
             transform={iconTransform}
           />
         )}
 
-        {faGlyph && <g style={{ color: GLYPH_COLOR }}>{faGlyph}</g>}
+        {faGlyph && <g style={{ color: glyphFill }}>{faGlyph}</g>}
       </>
     );
   };
@@ -295,11 +480,16 @@ export function MarkerIcon({
           viewBox="0 0 310 310"
           xmlns="http://www.w3.org/2000/svg"
           opacity={opacity}
+          style={haloStyle}
         >
+          {haloProps && (
+            <ellipse cx={155} cy={155} rx={135} ry={135} {...haloProps} />
+          )}
+
           <ellipse cx={155} cy={155} rx={135} ry={135} fill={fillColor} />
 
           {hasContent && (
-            <ellipse cx={155} cy={155} rx={110} ry={110} fill="white" />
+            <ellipse cx={155} cy={155} rx={110} ry={110} fill={insetFill} />
           )}
 
           {renderGlyph(155, 155)}
@@ -311,7 +501,20 @@ export function MarkerIcon({
           viewBox="0 0 310 310"
           xmlns="http://www.w3.org/2000/svg"
           opacity={opacity}
+          style={haloStyle}
         >
+          {haloProps && (
+            <rect
+              x={30}
+              y={30}
+              width={240}
+              height={240}
+              rx={20}
+              ry={20}
+              {...haloProps}
+            />
+          )}
+
           <rect
             x={30}
             y={30}
@@ -330,7 +533,7 @@ export function MarkerIcon({
               height={200}
               rx={20}
               ry={20}
-              fill="white"
+              fill={insetFill}
             />
           )}
 
@@ -343,11 +546,11 @@ export function MarkerIcon({
           viewBox="0 0 310 512"
           xmlns="http://www.w3.org/2000/svg"
           opacity={opacity}
+          style={haloStyle}
         >
-          <path
-            d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z"
-            fill={fillColor}
-          />
+          {haloProps && <path d={PIN_PATH} {...haloProps} />}
+
+          <path d={PIN_PATH} fill={fillColor} />
 
           {hasContent && (
             <ellipse
@@ -355,7 +558,7 @@ export function MarkerIcon({
               cy={163.702}
               rx={119.462}
               ry={119.462}
-              fill="white"
+              fill={insetFill}
             />
           )}
 

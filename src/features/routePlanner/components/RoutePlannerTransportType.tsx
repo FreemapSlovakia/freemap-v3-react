@@ -1,8 +1,10 @@
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { ExternalService } from '@shared/components/ExternalService.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import {
   type TransportType,
   transportTypeDefs,
@@ -33,18 +35,15 @@ export function RoutePlannerTransportType({
 
   const becomePremium = useBecomePremium();
 
-  const sc = useScrollClasses('vertical');
-
   return (
     <Dropdown
-      className="ms-1"
       id="transport-type"
       onSelect={(transportType) =>
         onChange((transportType || undefined) as TransportType)
       }
     >
       <LongPressTooltip
-        breakpoint="lg"
+        breakpoint="md"
         name={rpm?.transportTypeLabel}
         label={
           activeTTDef ? (
@@ -76,55 +75,49 @@ export function RoutePlannerTransportType({
         )}
       </LongPressTooltip>
 
-      <Dropdown.Menu
-        popperConfig={fixedPopperConfig}
-        className="fm-dropdown-with-scroller"
-      >
-        <div className="dropdown-long" ref={sc}>
-          <div />
+      <FmDropdownMenu>
+        {withDefault && (
+          <Dropdown.Item as="button" eventKey="" active={!value}>
+            <FaEquals /> {rpm?.default}
+          </Dropdown.Item>
+        )}
 
-          {withDefault && (
-            <Dropdown.Item as="button" eventKey="" active={!value}>
-              <FaEquals /> {rpm?.default}
-            </Dropdown.Item>
-          )}
+        {(['manual', 'gh', 'osrm'] as const).map((api) => (
+          <Fragment key={api}>
+            {api !== 'manual' && (
+              <Dropdown.Header>
+                {api === 'osrm' ? 'OSRM' : 'GraphHopper '}
+              </Dropdown.Header>
+            )}
 
-          {(['manual', 'gh', 'osrm'] as const).map((api) => (
-            <Fragment key={api}>
-              {api !== 'manual' && (
-                <Dropdown.Header>
-                  {api === 'osrm' ? 'OSRM' : 'GraphHopper '}
-                </Dropdown.Header>
-              )}
-
-              {Object.entries(transportTypeDefs)
-                .filter(([, def]) => !def.hidden && def.api === api)
-                .map(([type, { icon, msgKey: key }]) => (
-                  <Dropdown.Item
-                    as="button"
-                    eventKey={type}
-                    key={type}
-                    title={rpm?.transportType[key]}
-                    active={value === type}
-                    disabled={withDefault && Boolean(becomePremium)}
-                  >
-                    {icon}{' '}
-                    {['car', 'car-toll', 'bikesharing'].includes(type) && (
-                      <FaMoneyBill />
-                    )}{' '}
-                    {rpm?.transportType[key] ?? '…'}
-                    {withDefault && (
-                      <>
-                        {' '}
-                        <PremiumGem className="ms-1" nested />
-                      </>
-                    )}
-                  </Dropdown.Item>
-                ))}
-            </Fragment>
-          ))}
-        </div>
-      </Dropdown.Menu>
+            {Object.entries(transportTypeDefs)
+              .filter(([, def]) => !def.hidden && def.api === api)
+              .map(([type, { icon, msgKey: key, experimental }]) => (
+                <Dropdown.Item
+                  as="button"
+                  eventKey={type}
+                  key={type}
+                  title={rpm?.transportType[key]}
+                  active={value === type}
+                  disabled={withDefault && Boolean(becomePremium)}
+                >
+                  {icon}{' '}
+                  {['car', 'car-toll', 'bikesharing'].includes(type) && (
+                    <FaMoneyBill />
+                  )}{' '}
+                  {rpm?.transportType[key] ?? '…'}
+                  {(experimental || withDefault || api === 'osrm') && (
+                    <MenuGutter>
+                      {experimental && <ExperimentalFunction />}
+                      {api === 'osrm' && <ExternalService />}
+                      {withDefault && <PremiumGem nested />}
+                    </MenuGutter>
+                  )}
+                </Dropdown.Item>
+              ))}
+          </Fragment>
+        ))}
+      </FmDropdownMenu>
     </Dropdown>
   );
 }

@@ -2,8 +2,10 @@ import type { FeatureCollection } from 'geojson';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   activeMapToolSelector,
+  armedModeSelector,
   askingCookieConsentSelector,
   drawingLinePolys,
+  mapModeSelector,
   mouseCursorSelector,
   pickingModeSelector,
   selectingModeSelector,
@@ -25,15 +27,12 @@ import type { RootState } from './store.js';
 type Overrides = Partial<Record<keyof RootState, Record<string, unknown>>>;
 
 function makeState(o: Overrides = {}): RootState {
-  // Convenience: a `tool` override sets it as the single open + active tool.
-  const { tool, ...mainRest } = (o.main ?? {}) as { tool?: string };
-
   return {
     main: {
-      tools: tool ? [tool] : [],
-      activeTool: tool ?? null,
+      mapTool: null,
+      panelTools: [],
       selection: undefined,
-      ...mainRest,
+      ...o.main,
     },
     map: { layers: [], ...o.map },
     homeLocation: { selectingHomeLocation: false, ...o.homeLocation },
@@ -44,10 +43,18 @@ function makeState(o: Overrides = {}): RootState {
       activeImageId: null,
       ...o.gallery,
     },
-    drawingLines: { drawing: false, ...o.drawingLines },
+    drawingLines: { drawing: false, joinWith: undefined, ...o.drawingLines },
     mapArea: { selecting: null, ...o.mapArea },
+    toposcope: { pickingCenter: false, ...o.toposcope },
+    panorama: { picking: null, ...o.panorama },
+    viewshed: { pickingViewpoint: false, ...o.viewshed },
     tracking: { tracks: [], ...o.tracking },
-    trackViewer: { trackGeojson: null, ...o.trackViewer },
+    trackViewer: {
+      trackGeojson: null,
+      joinWith: null,
+      splitting: false,
+      ...o.trackViewer,
+    },
     toasts: { toasts: {}, ...o.toasts },
   } as unknown as RootState;
 }
@@ -88,18 +95,81 @@ describe('pickingModeSelector', () => {
 
     expect(pickingModeSelector(state)).toBe(true);
   });
+
+  it('is true while placing the toposcope centre', () => {
+    const state = makeState({ toposcope: { pickingCenter: true } });
+
+    expect(pickingModeSelector(state)).toBe(true);
+  });
+
+  it('is true while placing the panorama viewpoint', () => {
+    const state = makeState({ panorama: { picking: 'viewpoint' } });
+
+    expect(pickingModeSelector(state)).toBe(true);
+  });
+
+  // An armed mode waits on a click on a feature, so the features stay live.
+  it('is false while a mode is armed on a feature', () => {
+    const state = makeState({ trackViewer: { splitting: true } });
+
+    expect(pickingModeSelector(state)).toBe(false);
+    expect(selectingModeSelector(state)).toBe(true);
+  });
+});
+
+describe('armedModeSelector', () => {
+  it('is false by default', () => {
+    expect(armedModeSelector(makeState())).toBe(false);
+    expect(mapModeSelector(makeState())).toBe(false);
+  });
+
+  // The data viewer's own modes are armed on a selected feature, and its
+  // toolbar — the only way to cancel them — rides that selection.
+  const selected = { selection: { type: 'data-viewer', id: 0 } };
+
+  it.each([
+    ['a drawing line join', { drawingLines: { joinWith: { lineIndex: 0 } } }],
+    [
+      'a track join',
+      { main: selected, trackViewer: { joinWith: { featureIndex: 0 } } },
+    ],
+    ['an armed split', { main: selected, trackViewer: { splitting: true } }],
+  ])('is true while %s waits for its click', (_what, overrides) => {
+    expect(armedModeSelector(makeState(overrides))).toBe(true);
+  });
+
+  it('is false once the selection its toolbar rides has gone', () => {
+    const state = makeState({ trackViewer: { splitting: true } });
+
+    expect(armedModeSelector(state)).toBe(false);
+    expect(mapModeSelector(state)).toBe(false);
+  });
+
+  it('counts towards the map being in a mode, as picking does', () => {
+    const armed = makeState({
+      main: selected,
+      trackViewer: { splitting: true },
+    });
+
+    const picking = makeState({
+      homeLocation: { selectingHomeLocation: true },
+    });
+
+    expect(mapModeSelector(armed)).toBe(true);
+    expect(mapModeSelector(picking)).toBe(true);
+  });
 });
 
 describe('activeMapToolSelector', () => {
   it('returns the selected tool when no picking mode is active', () => {
-    const state = makeState({ main: { tool: 'draw-points' } });
+    const state = makeState({ main: { mapTool: 'draw-points' } });
 
     expect(activeMapToolSelector(state)).toBe('draw-points');
   });
 
   it('masks the tool to null while a picking mode owns the map', () => {
     const state = makeState({
-      main: { tool: 'draw-points' },
+      main: { mapTool: 'draw-points' },
       homeLocation: { selectingHomeLocation: true },
     });
 
@@ -126,7 +196,7 @@ describe('showGalleryPickerSelector', () => {
 
   it('hides the picker for an unrelated tool', () => {
     const state = makeState({
-      main: { tool: 'route-planner' },
+      main: { mapTool: 'route-planner' },
       map: { layers: ['I'] },
     });
 
@@ -135,7 +205,7 @@ describe('showGalleryPickerSelector', () => {
 
   it('hides the picker while a gallery position is being picked', () => {
     const state = makeState({
-      main: { tool: 'photos' },
+      main: { mapTool: 'photos' },
       map: { layers: ['I'] },
       gallery: { pickingPositionForId: 1 },
     });
@@ -184,25 +254,25 @@ describe('mouseCursorSelector', () => {
   });
 
   it('returns the marker cursor for the draw-points tool', () => {
-    const state = makeState({ main: { tool: 'draw-points' } });
+    const state = makeState({ main: { mapTool: 'draw-points' } });
 
     expect(mouseCursorSelector(state)).toContain('13.5 26'); // marker offset
   });
 
   it('returns help for the map-details tool', () => {
-    const state = makeState({ main: { tool: 'map-details' } });
+    const state = makeState({ main: { mapTool: 'map-details' } });
 
     expect(mouseCursorSelector(state)).toBe('help');
   });
 
   it('returns crosshair for route-planner only while a pick mode is active', () => {
     const picking = makeState({
-      main: { tool: 'route-planner' },
+      main: { mapTool: 'route-planner' },
       routePlanner: { pickMode: 'start' },
     });
     expect(mouseCursorSelector(picking)).toBe('crosshair');
 
-    const idle = makeState({ main: { tool: 'route-planner' } });
+    const idle = makeState({ main: { mapTool: 'route-planner' } });
     expect(mouseCursorSelector(idle)).toBe('auto');
   });
 
@@ -263,17 +333,17 @@ describe('selectingModeSelector', () => {
   });
 
   it('is false for a map-interaction tool like draw-points', () => {
-    const state = makeState({ main: { tool: 'draw-points' } });
+    const state = makeState({ main: { mapTool: 'draw-points' } });
 
     expect(selectingModeSelector(state)).toBe(false);
   });
 
   it('is true for route-planner only when not in a pick mode', () => {
-    const idle = makeState({ main: { tool: 'route-planner' } });
+    const idle = makeState({ main: { mapTool: 'route-planner' } });
     expect(selectingModeSelector(idle)).toBe(true);
 
     const picking = makeState({
-      main: { tool: 'route-planner' },
+      main: { mapTool: 'route-planner' },
       routePlanner: { pickMode: 'start' },
     });
     expect(selectingModeSelector(picking)).toBe(false);
@@ -282,38 +352,25 @@ describe('selectingModeSelector', () => {
 
 describe('drawingLinePolys', () => {
   it('is true for the active draw-lines and draw-polygons tools', () => {
-    expect(drawingLinePolys(makeState({ main: { tool: 'draw-lines' } }))).toBe(
-      true,
-    );
     expect(
-      drawingLinePolys(makeState({ main: { tool: 'draw-polygons' } })),
+      drawingLinePolys(makeState({ main: { mapTool: 'draw-lines' } })),
+    ).toBe(true);
+    expect(
+      drawingLinePolys(makeState({ main: { mapTool: 'draw-polygons' } })),
     ).toBe(true);
   });
 
-  it('is false when the drawing tool is open but not active', () => {
+  it('is true while a drawing is in progress with no tool open', () => {
+    // Continuing an existing line keeps capturing clicks so points can still be
+    // appended.
     expect(
-      drawingLinePolys(
-        makeState({ main: { tools: ['draw-lines'], activeTool: null } }),
-      ),
-    ).toBe(false);
-  });
-
-  it('is true while a drawing is in progress even with no active tool', () => {
-    // Continuing an existing line, or a line whose tool was deactivated/closed,
-    // keeps capturing clicks so points can still be appended.
-    expect(
-      drawingLinePolys(
-        makeState({
-          main: { tools: [], activeTool: null },
-          drawingLines: { drawing: true },
-        }),
-      ),
+      drawingLinePolys(makeState({ drawingLines: { drawing: true } })),
     ).toBe(true);
   });
 
   it('is false while a picking mode owns the map', () => {
     const state = makeState({
-      main: { tool: 'draw-lines' },
+      main: { mapTool: 'draw-lines' },
       homeLocation: { selectingHomeLocation: true },
     });
 
@@ -332,9 +389,9 @@ describe('drawingLinePolys', () => {
   });
 
   it('is false for an unrelated active tool', () => {
-    expect(drawingLinePolys(makeState({ main: { tool: 'objects' } }))).toBe(
-      false,
-    );
+    expect(
+      drawingLinePolys(makeState({ main: { mapTool: 'map-details' } })),
+    ).toBe(false);
   });
 });
 

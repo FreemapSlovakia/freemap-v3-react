@@ -1,6 +1,7 @@
 import path from 'node:path';
 import process from 'node:process';
 import type {
+  Compiler,
   Configuration,
   CssExtractRspackLoaderOptions,
 } from '@rspack/core';
@@ -11,16 +12,33 @@ import { RspackManifestPlugin } from 'rspack-manifest-plugin';
 import type { LoaderOptions as SassLoaderOptions } from 'sass-loader';
 import TerserPlugin from 'terser-webpack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
+import { OG_HEIGHT, OG_WIDTH, RspackIconsPlugin } from './RspackIconsPlugin.js';
 import { RspackMarkdownDictPlugin } from './RspackMarkdownDictPlugin.js';
 import { RspackSyncLanguagesPlugin } from './RspackSyncLanguagesPlugin.js';
-
+import {
+  RspackWebManifestPlugin,
+  type WebManifestVariant,
+} from './RspackWebManifestPlugin.js';
+import type { Language } from './src/shared/langUtils.js';
+import {
+  expandSite,
+  type Site,
+  siteNames,
+  siteUrls,
+} from './src/shared/sites.js';
 import csMessages from './src/translations/cs-shared.js';
 import deMessages from './src/translations/de-shared.js';
 import enMessages from './src/translations/en-shared.js';
+import frMessages from './src/translations/fr-shared.js';
 import huMessages from './src/translations/hu-shared.js';
 import itMessages from './src/translations/it-shared.js';
 import plMessages from './src/translations/pl-shared.js';
+import type { SharedMessages } from './src/translations/sharedMessagesInterface.js';
 import skMessages from './src/translations/sk-shared.js';
+import slMessages from './src/translations/sl-shared.js';
+import templatesConfig from './translation-manager/templates.json' with {
+  type: 'json',
+};
 
 const __dirname = import.meta.dirname;
 
@@ -52,22 +70,321 @@ const cssTargets = [
   'not dead',
 ];
 
-const htmlPluginProps = {
-  filename: 'index.html',
-  template: 'index.ejs',
-  inject: false,
-  templateParameters: {
-    lang: 'en',
-    title: enMessages.title,
-    description: enMessages.description,
-    errorHtml:
-      '<h1>Problem starting application</h1>' +
-      '<p>Please make sure you are using recent version of a modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
-    nojsMessage:
-      'JavaScript enabled browser is required to run this application.',
-    loadingMessage: 'Loading…',
-  },
+// Both domains are served from the same directory, so each entry document is
+// emitted once per site with that site's portal name baked in.
+const sites: Site[] = ['sk', 'eu'];
+
+// The bootstrap copy of an entry document. The rest of its parameters (the
+// title, the site name, the base URL) follow from the language and the site.
+type EntryDoc = {
+  lang: Language;
+  shared: SharedMessages;
+  errorHtml: string;
+  nojsMessage: string;
+  loadingMessage: string;
+  /** Web-manifest copy. Site-neutral — the portal name is added per site. */
+  appDescription: string;
+  /** Labels for the base manifest's `shortcuts`, in order. */
+  shortcutNames: string[];
+  /** The line under the wordmark on the social preview image. */
+  tagline: string;
 };
+
+const enDoc: EntryDoc = {
+  lang: 'en',
+  shared: enMessages,
+  errorHtml:
+    '<h1>Problem starting application</h1>' +
+    '<p>Please make sure you are using recent version of a modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+  nojsMessage:
+    'JavaScript enabled browser is required to run this application.',
+  loadingMessage: 'Loading…',
+  appDescription:
+    'Freemap is a free online outdoor map based on OpenStreetMap data',
+  shortcutNames: ['My maps', 'Route finder', 'Objects'],
+  tagline: 'more than just a map',
+};
+
+const entryDocs: EntryDoc[] = [
+  enDoc,
+  {
+    lang: 'sk',
+    shared: skMessages,
+    errorHtml:
+      '<h1>Aplikáciu sa nepodarilo spustiť</h1>' +
+      '<p>Uistite sa, že používate aktuálnu verziu niektorého zo súčasných prehliadačov (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
+    nojsMessage:
+      'Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.',
+    loadingMessage: 'Načítavam…',
+    appDescription:
+      'Freemap je voľne dostupná online outdoorová mapa založená na dátach z OpenStreetMap',
+    shortcutNames: ['Moje mapy', 'Vyhľadávač trás', 'Objekty'],
+    tagline: 'viac než len mapa',
+  },
+  {
+    lang: 'cs',
+    shared: csMessages,
+    errorHtml:
+      '<h1>Aplikaci se nepodařilo spustit</h1>' +
+      '<p>Ujistěte se, že používáte aktuální verzi některého ze současných prohlížečů (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
+    nojsMessage:
+      'Aplikace vyžaduje prohlížeč se zapnutou podporou JavaScriptu.',
+    loadingMessage: 'Načítám…',
+    appDescription:
+      'Freemap je volně dostupná online outdoorová mapa založená na datech z OpenStreetMap',
+    shortcutNames: ['Moje mapy', 'Vyhledávač tras', 'Objekty'],
+    tagline: 'víc než jen mapa',
+  },
+  {
+    lang: 'hu',
+    shared: huMessages,
+    errorHtml:
+      '<h1>Hiba történt az alkalmazás elindításánál</h1>' +
+      '<p>Győződjék meg arról, hogy egy modern böngésző (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …) friss verzióját használja.</p>',
+    nojsMessage:
+      'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
+    loadingMessage: 'Betöltés…',
+    appDescription:
+      'A Freemap szabadon elérhető online szabadidős térkép az OpenStreetMap adatai alapján',
+    shortcutNames: ['Saját térképeim', 'Útvonaltervező', 'Objektumok'],
+    tagline: 'több mint egy térkép',
+  },
+  {
+    lang: 'it',
+    shared: itMessages,
+    errorHtml:
+      "<h1>Problema nell'avvio dell'applicazione</h1>" +
+      '<p>Per favore assicurati di utilizzare una versione recente di un browser moderno (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+    nojsMessage:
+      "E' richiesto un browser con JavaScript abilitato per avviare questa applicazione.",
+    loadingMessage: 'Caricamento…',
+    appDescription:
+      'Freemap è una mappa outdoor online gratuita basata sui dati di OpenStreetMap',
+    shortcutNames: ['Le mie mappe', 'Cerca percorso', 'Oggetti'],
+    tagline: 'più di una semplice mappa',
+  },
+  {
+    lang: 'de',
+    shared: deMessages,
+    errorHtml:
+      '<h1>Fehler beim Starten der Anwendung</h1>' +
+      '<p>Bitte stellen Sie sicher, dass Sie eine aktuelle Version eines modernen Browsers verwenden (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+    nojsMessage:
+      'Zum Ausführen dieser Anwendung ist ein Browser mit aktiviertem JavaScript erforderlich.',
+    loadingMessage: 'Lade…',
+    appDescription:
+      'Freemap ist eine frei zugängliche Outdoor-Onlinekarte auf Basis von OpenStreetMap-Daten',
+    shortcutNames: ['Meine Karten', 'Routenplaner', 'Objekte'],
+    tagline: 'mehr als nur eine Karte',
+  },
+  {
+    lang: 'pl',
+    shared: plMessages,
+    errorHtml:
+      '<h1>Nie udało się uruchomić aplikacji</h1>' +
+      '<p>Upewnij się, że używasz aktualnej wersji jednej ze współczesnych przeglądarek (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+    nojsMessage: 'Aplikacja wymaga przeglądarki z włączoną obsługą JavaScript.',
+    loadingMessage: 'Ładowanie…',
+    appDescription:
+      'Freemap to bezpłatna mapa outdoorowa online oparta na danych OpenStreetMap',
+    shortcutNames: ['Moje mapy', 'Wyszukiwarka tras', 'Obiekty'],
+    tagline: 'więcej niż tylko mapa',
+  },
+  {
+    lang: 'sl',
+    shared: slMessages,
+    errorHtml:
+      '<h1>Aplikacije ni bilo mogoče zagnati</h1>' +
+      '<p>Prepričajte se, da uporabljate najnovejšo različico sodobnega brskalnika (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
+    nojsMessage:
+      'Za zagon te aplikacije potrebujete brskalnik z omogočenim JavaScriptom.',
+    loadingMessage: 'Nalaganje…',
+    appDescription:
+      'Freemap je prosto dostopen spletni zemljevid za dejavnosti v naravi, ki temelji na podatkih OpenStreetMap',
+    shortcutNames: ['Moji zemljevidi', 'Iskalnik poti', 'Objekti'],
+    tagline: 'več kot le zemljevid',
+  },
+  {
+    lang: 'fr',
+    shared: frMessages,
+    errorHtml:
+      "<h1>Impossible de démarrer l'application</h1>" +
+      "<p>Veuillez vous assurer d'utiliser une version récente d'un navigateur moderne (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>",
+    nojsMessage:
+      'Un navigateur avec JavaScript activé est nécessaire pour exécuter cette application.',
+    loadingMessage: 'Chargement…',
+    appDescription:
+      'Freemap est une carte outdoor en ligne gratuite basée sur les données OpenStreetMap',
+    shortcutNames: ['Mes cartes', 'Planificateur d’itinéraire', 'Objets'],
+    tagline: 'plus qu’une simple carte',
+  },
+];
+
+/**
+ * Fails the build when a **shared** stylesheet is emitted into more than one
+ * chunk.
+ *
+ * A `.css` reached only from lazily-loaded components is copied into each of
+ * their chunk stylesheets, and loading the second one re-appends the shared
+ * rules *after* the first component's own — so anything the two disagree about
+ * at equal specificity silently swaps winner. It cost an afternoon once: the
+ * panorama's move grip reverted to Bootstrap's the moment the toposcope opened.
+ *
+ * Nothing shows it in dev, which serves a single bundle, so the check is the
+ * only thing standing between that and production. The fix it asks for is to
+ * give the stylesheet an eager importer — see `doc/build-and-deploy.md`.
+ *
+ * `src/shared/` only, because that is where chunks that can be open at the same
+ * time meet. A feature's own stylesheet reaches several chunks too — a message
+ * that renders a component pulls it into all nine of that feature's language
+ * chunks — but only one language is ever loaded, so those copies never meet and
+ * never reorder anything. Wasted bytes there, not a hazard.
+ */
+class SingleCopyCssPlugin {
+  apply(compiler: Compiler) {
+    compiler.hooks.thisCompilation.tap('SingleCopyCss', (compilation) => {
+      compilation.hooks.afterSeal.tap('SingleCopyCss', () => {
+        const shared = path.resolve(__dirname, 'src/shared');
+
+        // Duplicated, but harmless, and not fixable from here: it belongs to a
+        // shared component and follows it into every chunk that uses it. Its
+        // one rule is written `.toggle.toggle` to outrank a Bootstrap
+        // selector, which puts it out of reach of anything the load order
+        // could do anyway. Left warning about, it would train the eye to skip
+        // this whole check.
+        const benign = ['SelectToggle.module.css'];
+
+        const duplicated = [...compilation.modules]
+          .filter((module) => {
+            const file = module.nameForCondition();
+
+            return (
+              file?.endsWith('.css') &&
+              file.startsWith(shared) &&
+              !benign.some((name) => file.endsWith(name))
+            );
+          })
+          .map((module) => ({
+            file: module.nameForCondition() ?? '?',
+            chunks: compilation.chunkGraph
+              .getModuleChunks(module)
+              .map((chunk) => chunk.name ?? String(chunk.id)),
+          }))
+          .filter(({ chunks }) => chunks.length > 1);
+
+        for (const { file, chunks } of duplicated) {
+          compilation.warnings.push(
+            new rspack.WebpackError(
+              `${path.relative(__dirname, file)} is emitted into ${chunks.length} chunks (${chunks.join(', ')}).\n` +
+                'Whichever loads last wins any equal-specificity conflict with a feature stylesheet. ' +
+                'An eager importer in Main.tsx fixes it where the users are top-level lazy components; ' +
+                'where the stylesheet follows a shared *component* into many chunks it cannot be, so this warns rather than fails. ' +
+                'See doc/build-and-deploy.md.',
+            ),
+          );
+        }
+      });
+    });
+  }
+}
+
+// A language with no row here gets no entry document and no web manifest, and
+// silently falls back to the domain's default ones. This config is not
+// type-checked, so nothing but this guard catches the omission.
+const missingDocs = ['en', ...templatesConfig.langs].filter(
+  (lang) => !entryDocs.some((doc) => doc.lang === lang),
+);
+
+if (missingDocs.length > 0) {
+  throw new Error(`entryDocs has no entry for: ${missingDocs.join(', ')}`);
+}
+
+/**
+ * iOS splash screens, as `[width, height, dpr, orientation]`. The entry document
+ * writes the media queries and `RspackIconsPlugin` renders the images, so both
+ * read this list rather than each keeping their own.
+ */
+const splashScreens: [number, number, number, 'portrait' | 'landscape'][] = [
+  [320, 568, 2, 'portrait'],
+  [375, 667, 2, 'portrait'],
+  [414, 896, 2, 'portrait'],
+  [375, 812, 3, 'portrait'],
+  [414, 736, 3, 'portrait'],
+  [414, 896, 3, 'portrait'],
+  [768, 1024, 2, 'portrait'],
+  [834, 1112, 2, 'portrait'],
+  [834, 1194, 2, 'portrait'],
+  [1024, 1366, 2, 'portrait'],
+  [810, 1080, 2, 'portrait'],
+  [320, 568, 2, 'landscape'],
+  [375, 667, 2, 'landscape'],
+  [414, 896, 2, 'landscape'],
+  [375, 812, 3, 'landscape'],
+  [414, 736, 3, 'landscape'],
+  [414, 896, 3, 'landscape'],
+  [768, 1024, 2, 'landscape'],
+  [834, 1112, 2, 'landscape'],
+  [834, 1194, 2, 'landscape'],
+  [1024, 1366, 2, 'landscape'],
+  [810, 1080, 2, 'landscape'],
+];
+
+/**
+ * Icon sizes the entry document links and `RspackIconsPlugin` renders. Shared
+ * for the same reason as `splashScreens`: a size named in only one of the two
+ * is either a 404 or an asset nothing asks for, and nothing would catch it.
+ */
+const faviconSizes = [16, 32, 48];
+
+const appleTouchSizes = [57, 60, 72, 76, 114, 120, 144, 152, 167, 180, 1024];
+
+/** The pixel size a splash entry renders at, portrait or landscape. */
+const splashPixels = ([w, h, r, o]: (typeof splashScreens)[number]) =>
+  [(o === 'portrait' ? w : h) * r, (o === 'portrait' ? h : w) * r] as [
+    number,
+    number,
+  ];
+
+// The installable app carries the portal name of the domain it was installed
+// from and the copy of the language its entry document was served in.
+// `id`/`start_url` stay `/`, so an already-installed app keeps its identity.
+const webManifestVariants: WebManifestVariant[] = entryDocs.flatMap((doc) =>
+  sites.map((site) => ({
+    filename: `manifest-${site}-${doc.lang}.webmanifest`,
+    name: siteNames[site],
+    lang: doc.lang,
+    description: doc.appDescription,
+    shortcutNames: doc.shortcutNames,
+  })),
+);
+
+const baseUrlOf = (site: Site) =>
+  ({ www: siteUrls[site] })[process.env['DEPLOYMENT']!] ??
+  'https://local.freemap.sk:9000';
+
+function htmlPluginProps(doc: EntryDoc, site: Site, filename: string) {
+  return {
+    filename,
+    template: 'index.ejs',
+    inject: false,
+    templateParameters: {
+      lang: doc.lang,
+      site,
+      title: expandSite(doc.shared.title, site),
+      description: doc.shared.description,
+      siteName: siteNames[site],
+      baseUrl: baseUrlOf(site),
+      errorHtml: doc.errorHtml,
+      nojsMessage: doc.nojsMessage,
+      loadingMessage: doc.loadingMessage,
+      splashScreens,
+      faviconSizes,
+      appleTouchSizes,
+      ogWidth: OG_WIDTH,
+      ogHeight: OG_HEIGHT,
+    },
+  };
+}
 
 const config: Configuration = {
   mode: prod ? 'production' : 'development',
@@ -77,6 +394,15 @@ const config: Configuration = {
   // worse, gets bundled into the `sw`/`upload-sw` service-worker entries where
   // XMLHttpRequest is unavailable. Opt out.
   lazyCompilation: false,
+  // maplibre-gl spawns its worker from a runtime URL (`new Worker(url)`), which
+  // the bundler can't trace. That's by design here — MaplibreLayer supplies the
+  // URL via `setWorkerUrl`.
+  ignoreWarnings: [
+    {
+      module: /maplibre-gl[\\/]dist[\\/]maplibre-gl\.mjs$/,
+      message: /the request of a dependency is an expression/,
+    },
+  ],
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: './app/index.tsx',
@@ -111,6 +437,9 @@ const config: Configuration = {
     minimizer: [
       new TerserPlugin({
         minify: TerserPlugin.swcMinify,
+        // Already-minified maplibre worker assets: re-minifying them buys
+        // nothing and risks breaking the ESM link between the two files.
+        exclude: /^maplibre-gl-(worker|shared)\./,
       }),
       // LightningCSS (replaces cssnano) so it also downlevels native CSS
       // nesting to flat selectors for the browsers in `cssTargets`.
@@ -155,6 +484,12 @@ const config: Configuration = {
                 runtime: 'automatic',
                 refresh: !prod,
               },
+              // Memoizes components and their intermediate values, which this
+              // app needs because `Main` subscribes to some forty selectors and
+              // renders the whole tree beneath it: without it, any store change
+              // re-renders every marker on the map. SWC runs it natively, so it
+              // costs no Babel pass. Needs React 19 for `react/compiler-runtime`.
+              reactCompiler: true,
             },
           },
         },
@@ -163,8 +498,7 @@ const config: Configuration = {
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
         type: 'asset/resource',
-        // Keep the original filename in the emitted asset so URLs are readable
-        // (also lets drawing points reference poi icons by name, not by hash).
+        // Keep the original filename in the emitted asset so URLs are readable.
         generator: { filename: '[name].[contenthash][ext]' },
       },
       {
@@ -193,10 +527,6 @@ const config: Configuration = {
             } satisfies SassLoaderOptions,
           },
         ],
-      },
-      {
-        test: /\.overpass$/,
-        loader: '../overpass-loader',
       },
       {
         test: /\.css$/,
@@ -266,9 +596,19 @@ const config: Configuration = {
         test: /\.(wasm|wgsl)$/,
         type: 'asset/resource',
       },
+      {
+        // maplibre-gl's worker is loaded by URL at runtime, not bundled, so it
+        // stays a raw asset — the `.mjs` rule above would otherwise parse it as
+        // a module. The loader also emits the sibling module it imports.
+        test: /[\\/]maplibre-gl-worker\.mjs$/,
+        type: 'asset/resource',
+        generator: { filename: '[name].[contenthash].js' },
+        use: [{ loader: path.resolve('maplibreWorkerLoader.js') }],
+      },
     ],
   },
   plugins: [
+    new SingleCopyCssPlugin(),
     !prod &&
       new TsCheckerRspackPlugin({
         typescript: {
@@ -301,6 +641,27 @@ const config: Configuration = {
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
+      // Own osm2pgsql-backed API (freemap-osm-api): the objects layer and map
+      // details. Europe only.
+      FM_OSM_API_URL: process.env['FM_OSM_API_URL'] || 'https://osm.freemap.sk',
+      // Changeset listings only — element geometry comes from the own API.
+      OSM_API_URL:
+        process.env['OSM_API_URL'] || 'https://api.openstreetmap.org',
+      // Self-hosted Photon: forward search and reverse geocoding. Its index
+      // fixes which languages `lang=` may ask for — see doc/photon-geocoder.md.
+      PHOTON_URL: process.env['PHOTON_URL'] || 'https://photon.freemap.sk',
+      // Origin for the weather radar layer. Addressed directly: the upstream
+      // authenticates by Referer and sends CORS for our origins, so nothing of
+      // ours needs to sit in the path. Note both depend on the request
+      // carrying a Referer — see the `referrerPolicy` in RadarLayer and in the
+      // status fetch, since the app is served with `Referrer-Policy:
+      // no-referrer`.
+      WEATHER_RADAR_URL:
+        process.env['WEATHER_RADAR_URL'] || 'https://cache.bigware.sk',
+      // Panorama rendering. Addressed directly rather than through the API: it
+      // takes the account's bearer token itself, clamps the quality it grants,
+      // and queues by whatever priority it decides — see doc/panorama.md.
+      TERRAIN_URL: process.env['TERRAIN_URL'] || 'https://terrain.freemap.sk',
       BASE_URL:
         {
           www: 'https://www.freemap.sk',
@@ -320,100 +681,50 @@ const config: Configuration = {
           www: 'https://graphhopper.freemap.sk',
         }[process.env['DEPLOYMENT']!] || 'https://graphhopper.freemap.sk', //'http://localhost:8989',
     }),
-    new HtmlRspackPlugin(htmlPluginProps), // fallback for dev
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-en.html',
+    // Entry documents: one per site × language, plus the plain `index.html`
+    // that dev serves and the service worker keeps as the offline shell.
+    new HtmlRspackPlugin(htmlPluginProps(enDoc, 'sk', 'index.html')),
+    ...entryDocs.flatMap((doc) =>
+      sites.map(
+        (site) =>
+          new HtmlRspackPlugin(
+            htmlPluginProps(doc, site, `index-${site}-${doc.lang}.html`),
+          ),
+      ),
+    ),
+    new RspackWebManifestPlugin({
+      base: 'manifest.webmanifest',
+      variants: webManifestVariants,
     }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-sk.html',
-      templateParameters: {
-        lang: 'sk',
-        title: skMessages.title,
-        description: skMessages.description,
-        errorHtml:
-          '<h1>Aplikáciu sa nepodarilo spustiť</h1>' +
-          '<p>Uistite sa, že používate aktuálnu verziu niektorého zo súčasných prehliadačov (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
-        nojsMessage:
-          'Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.',
-        loadingMessage: 'Načítavam…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-cs.html',
-      templateParameters: {
-        lang: 'cs',
-        title: csMessages.title,
-        description: csMessages.description,
-        errorHtml:
-          '<h1>Aplikaci se nepodařilo spustit</h1>' +
-          '<p>Ujistěte se, že používáte aktuální verzi některého ze současných prohlížečů (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).<p>',
-        nojsMessage:
-          'Aplikace vyžaduje prohlížeč se zapnutou podporou JavaScriptu.',
-        loadingMessage: 'Načítám…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-hu.html',
-      templateParameters: {
-        lang: 'hu',
-        title: huMessages.title,
-        description: huMessages.description,
-        errorHtml:
-          '<h1>Hiba történt az alkalmazás elindításánál</h1>' +
-          '<p>Győződjék meg arról, hogy egy modern böngésző (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …) friss verzióját használja.</p>',
-        nojsMessage:
-          'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
-        loadingMessage: 'Betöltés…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-it.html',
-      templateParameters: {
-        lang: 'it',
-        title: itMessages.title,
-        description: itMessages.description,
-        errorHtml:
-          "<h1>Problema nell'avvio dell'applicazione</h1>" +
-          '<p>Per favore assicurati di utilizzare una versione recente di un browser moderno (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
-        nojsMessage:
-          "E' richiesto un browser con JavaScript abilitato per avviare questa applicazione.",
-        loadingMessage: 'Caricamento…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-de.html',
-      templateParameters: {
-        lang: 'de',
-        title: deMessages.title,
-        description: deMessages.description,
-        errorHtml:
-          '<h1>Fehler beim Starten der Anwendung</h1>' +
-          '<p>Bitte stellen Sie sicher, dass Sie eine aktuelle Version eines modernen Browsers verwenden (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
-        nojsMessage:
-          'Zum Ausführen dieser Anwendung ist ein Browser mit aktiviertem JavaScript erforderlich.',
-        loadingMessage: 'Lade…',
-      },
-    }),
-    new HtmlRspackPlugin({
-      ...htmlPluginProps,
-      filename: 'index-pl.html',
-      templateParameters: {
-        lang: 'pl',
-        title: plMessages.title,
-        description: plMessages.description,
-        errorHtml:
-          '<h1>Nie udało się uruchomić aplikacji</h1>' +
-          '<p>Upewnij się, że używasz aktualnej wersji jednej ze współczesnych przeglądarek (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
-        nojsMessage:
-          'Aplikacja wymaga przeglądarki z włączoną obsługą JavaScript.',
-        loadingMessage: 'Ładowanie…',
-      },
+    new RspackIconsPlugin({
+      flower: 'images/freemap-flower.svg',
+      sites: sites.map((site) => ({
+        site,
+        wordmark: `images/freemap-logo-${site}.svg`,
+      })),
+      splashSizes: splashScreens.map(splashPixels),
+      // Widths must match the `width` each rule gives the header button in
+      // `src/app/styles/index.css`; the rasters are drawn to fill it exactly.
+      headerLogos: [
+        ...sites.map((site) => ({
+          name: `freemap-logo-${site}`,
+          source: `images/freemap-logo-${site}.svg`,
+          width: site === 'eu' ? 136 : 134,
+        })),
+        {
+          name: 'freemap-flower',
+          source: 'images/freemap-flower.svg',
+          width: 45,
+        },
+      ],
+      headerOutDir: 'images/generated',
+      faviconSizes,
+      appleTouchSizes,
+      taglines: entryDocs.map((doc) => ({
+        lang: doc.lang,
+        text: doc.tagline,
+      })),
+      fontFile: 'fonts/LiberationSans-Bold.ttf',
     }),
     new rspack.CopyRspackPlugin({
       patterns: [
@@ -421,6 +732,12 @@ const config: Configuration = {
           from: 'static/**/*',
           to: '[name][ext]',
           globOptions: { dot: true },
+        },
+        {
+          // The pre-JS bootstrap and the service worker fetch the logos by fixed
+          // root URL, so they need an unhashed copy beside the bundled one.
+          from: 'images/freemap-*.svg',
+          to: '[name][ext]',
         },
       ],
     }),

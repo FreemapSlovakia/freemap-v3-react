@@ -1,13 +1,17 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
+import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactNode, useMemo } from 'react';
-import { FaPalette } from 'react-icons/fa';
-import { readCoordTimes } from '../colorize.js';
+import { Button } from 'react-bootstrap';
+import { FaPalette, FaTimes } from 'react-icons/fa';
+import type { Messages } from '@/translations/messagesInterface.js';
+import { readCoordTimes, rgbCss } from '../colorize.js';
 import type { ColorizingMode, HotlinePalette } from '../index.js';
 import { colorizers } from '../index.js';
-import type { ColorizerMessages } from '../translations/ColorizerMessages.js';
+import { steepnessGradeAt } from '../modes/steepness.js';
 import { useColorizerMessages } from '../translations/useColorizerMessages.js';
 
 type Tick = { t: number; label: ReactNode };
@@ -21,7 +25,7 @@ type LegendSpec = {
 /** Render the colorizer palette as a left-to-right CSS gradient. */
 function paletteGradient(palette: HotlinePalette): string {
   return `linear-gradient(to right, ${palette
-    .map((s) => `rgb(${s.r} ${s.g} ${s.b}) ${s.t * 100}%`)
+    .map((s) => `${rgbCss([s.r, s.g, s.b])} ${s.t * 100}%`)
     .join(', ')})`;
 }
 
@@ -54,10 +58,11 @@ function span(values: Iterable<number>): { min: number; max: number } | null {
 function numericRange(
   mode: ColorizingMode,
   feature: Feature<LineString>,
+  zoom: number,
 ): { unit: string; min: number; max: number } | null {
   const lg = colorizers[mode].legend;
 
-  const range = lg && span(lg.values(feature));
+  const range = lg && span(lg.values(feature, { zoom }));
 
   return range ? { unit: lg.unit, ...range } : null;
 }
@@ -73,18 +78,31 @@ function numericRange(
  */
 function legendSpec(
   mode: ColorizingMode,
-  cm: ColorizerMessages,
+  cardinals: Messages['cardinals'],
   features: Feature<LineString>[] | undefined,
   language: string,
+  zoom: number,
+  steepnessScale: number,
 ): LegendSpec {
   switch (mode) {
     case 'steepness':
       return {
         unit: '%',
-        ticks: [-50, -25, 0, 25, 50].map((v, i) => ({
-          t: i / 4,
-          label: `${v > 0 ? '+' : ''}${v}`,
-        })),
+        // Evenly spaced, labelled with whatever grade lands there — round
+        // grades cannot be had at every scale (at ±5 % they collapse onto
+        // zero), and the labels closing up toward the middle is itself what
+        // shows the scale bending.
+        ticks: [0, 1 / 6, 2 / 6, 0.5, 4 / 6, 5 / 6, 1].map((t) => {
+          const v = steepnessGradeAt(t, steepnessScale) * 100;
+
+          return {
+            t,
+            label:
+              Math.abs(v) < 0.05
+                ? '0'
+                : `${v > 0 ? '+' : ''}${Math.abs(v) < 10 ? v.toFixed(1) : Math.round(v)}`,
+          };
+        }),
       };
     case 'battery':
     case 'gsmSignal':
@@ -98,11 +116,11 @@ function legendSpec(
     case 'heading':
       return {
         ticks: [
-          { t: 0, label: cm.compass.n },
-          { t: 0.25, label: cm.compass.e },
-          { t: 0.5, label: cm.compass.s },
-          { t: 0.75, label: cm.compass.w },
-          { t: 1, label: cm.compass.n },
+          { t: 0, label: cardinals.n },
+          { t: 0.25, label: cardinals.e },
+          { t: 0.5, label: cardinals.s },
+          { t: 0.75, label: cardinals.w },
+          { t: 1, label: cardinals.n },
         ],
       };
   }
@@ -137,7 +155,7 @@ function legendSpec(
     return { ticks: [] };
   }
 
-  const numeric = numericRange(mode, feature);
+  const numeric = numericRange(mode, feature, zoom);
 
   if (numeric) {
     const { unit, min, max } = numeric;
@@ -157,42 +175,93 @@ function legendSpec(
 
 type Props = {
   mode: ColorizingMode;
-  /** The host tool's icon, shown before the palette icon (like the gallery). */
-  icon: ReactNode;
+  /**
+   * The button reopening the tool this legend belongs to. A control rather than
+   * a glyph because the legend outlives that tool's toolbar, so it is often the
+   * only way back to it. Kept out of the label, which carries its own
+   * long-press tooltip.
+   */
+  control: ReactNode;
   /** Features being colorized, used to derive real numeric labels (elevation, sensors). */
   features?: Feature<LineString>[];
+  /** Hides the legend. It outlives its tool's toolbar, so it closes itself. */
+  onClose: () => void;
 };
 
 /**
  * Toggleable legend for the route/track colorization, reusing the active mode's
  * Hotline palette as the gradient bar. Mirrors the picture-gallery legend.
  */
-export function ColorizeLegend({ mode, icon, features }: Props) {
+export function ColorizeLegend({ mode, control, features, onClose }: Props) {
   const cm = useColorizerMessages();
 
+  const m = useMessages();
+
   const language = useAppSelector((state) => state.l10n.language);
+
+  // The same zoom the line is colorized at: a mode's smoothing window widens
+  // with it, and the labels describe the smoothed values, not the raw samples.
+  const zoom = useAppSelector((state) => Math.round(state.map.zoom));
+
+  const steepnessScale = useAppSelector(
+    (state) => state.elevationSettings.steepnessScale,
+  );
+
+  const named = colorizers[mode].categories;
+
+  // Walks the lines, so it is memoized like the tick labels below.
+  const categories = useMemo(
+    () => (named && features && cm ? named(features, cm) : []),
+    [named, features, cm],
+  );
 
   // Scanning every coordinate (and building the Intl formatter) is kept off the
   // render path; it only reruns when the mode, features, language, or messages
   // change.
   const { unit, ticks } = useMemo(
-    () => (cm ? legendSpec(mode, cm, features, language) : { ticks: [] }),
-    [mode, cm, features, language],
+    () =>
+      cm && m && !named
+        ? legendSpec(
+            mode,
+            m.cardinals,
+            features,
+            language,
+            zoom,
+            steepnessScale,
+          )
+        : { ticks: [] },
+    [mode, cm, m, named, features, language, zoom, steepnessScale],
   );
 
-  if (!cm) {
+  // A mode outlives the result it was picked for — it is persisted, and only the
+  // dropdown consults `isAvailable`. A scale still has itself to show; a list of
+  // categories would be an empty box beside the label.
+  if (!cm || (named && categories.length === 0)) {
     return null;
   }
 
   const background = paletteGradient(colorizers[mode].palette);
 
   return (
-    <div className="w-100" style={{ maxWidth: '400px' }}>
+    // A gradient takes the width it is given; a list of categories takes what it
+    // needs, capping it would only make a row of labels scroll.
+    <div
+      style={
+        named
+          ? { width: 'fit-content', maxWidth: '100%' }
+          : { width: '100%', maxWidth: '400px' }
+      }
+    >
       <Toolbar className="mt-2 d-flex">
+        {control}
+
         <LongPressTooltip label={cm.legend} breakpoint="sm">
           {({ props, label, labelClassName }) => (
-            <span className="align-self-center ms-1" {...props}>
-              {icon} <FaPalette />{' '}
+            <span
+              className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
+              {...props}
+            >
+              <FaPalette />
               <span className={labelClassName}>
                 {label}
                 {unit ? ` [${unit}]` : ''}
@@ -201,49 +270,88 @@ export function ColorizeLegend({ mode, icon, features }: Props) {
           )}
         </LongPressTooltip>
 
-        <div
-          // Extra left gap so the leftmost value — centered on the gradient's
-          // left edge — overhangs into empty space, not over the legend label.
-          className="ms-4 me-3"
-          style={{
-            flexGrow: '1',
-            position: 'relative',
-            height: '34px',
-          }}
-        >
+        {named ? (
           <div
-            className="border rounded position-absolute"
-            style={{ inset: 0, background }}
-          />
-
-          <div
-            className="text-body position-absolute"
-            style={{
-              inset: 0,
-              paintOrder: 'stroke',
-              WebkitTextStrokeWidth: '2px',
-              WebkitTextStrokeColor: 'var(--bs-body-bg)',
-            }}
+            // `overflow-y` is pinned: `auto` on one axis makes the browser
+            // compute `auto` on the other, which puts a scrollbar beside two
+            // lines that already fit. The padding keeps the clip edge off the
+            // `lh-1` text, whose diacritics rise above the line box.
+            className="ms-4 me-3 py-1 my-n1 d-flex align-items-center gap-3"
+            style={{ overflowX: 'auto', overflowY: 'hidden' }}
           >
-            {ticks.map(({ t, label }) => (
-              <div
-                key={t}
-                style={{
-                  position: 'absolute',
-                  top: '16%',
-                  // Center every label on its position, so the endpoints sit
-                  // centered on the gradient edges (matching the gallery legend).
-                  left: `calc(${t * 100}% - 20px)`,
-                  width: '40px',
-                  textAlign: 'center',
-                  textWrap: 'nowrap',
-                }}
+            {categories.map(({ key, label, meters, color }) => (
+              <span
+                key={key}
+                className="d-flex flex-column align-items-center small lh-1 gap-1 text-nowrap"
               >
-                {label}
-              </div>
+                <span className="d-inline-flex align-items-center gap-1">
+                  <span
+                    className="border rounded"
+                    style={{ width: '1em', height: '1em', background: color }}
+                  />
+
+                  {label}
+                </span>
+
+                <span className="text-secondary">
+                  {formatDistance(meters, language)}
+                </span>
+              </span>
             ))}
           </div>
-        </div>
+        ) : (
+          <div
+            // Extra left gap so the leftmost value — centered on the gradient's
+            // left edge — overhangs into empty space, not over the legend label.
+            className="ms-4 me-3"
+            style={{
+              flexGrow: '1',
+              position: 'relative',
+              height: '34px',
+            }}
+          >
+            <div
+              className="border rounded position-absolute"
+              style={{ inset: 0, background }}
+            />
+
+            <div
+              className="text-body position-absolute"
+              style={{
+                inset: 0,
+                paintOrder: 'stroke',
+                WebkitTextStrokeWidth: '2px',
+                WebkitTextStrokeColor: 'var(--bs-body-bg)',
+              }}
+            >
+              {ticks.map(({ t, label }) => (
+                <div
+                  key={t}
+                  style={{
+                    position: 'absolute',
+                    top: '16%',
+                    // Center every label on its position, so the endpoints sit
+                    // centered on the gradient edges (matching the gallery legend).
+                    left: `calc(${t * 100}% - 20px)`,
+                    width: '40px',
+                    textAlign: 'center',
+                    textWrap: 'nowrap',
+                  }}
+                >
+                  {label}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <LongPressTooltip label={m?.general.close}>
+          {({ props }) => (
+            <Button variant="dark" onClick={onClose} {...props}>
+              <FaTimes />
+            </Button>
+          )}
+        </LongPressTooltip>
       </Toolbar>
     </div>
   );

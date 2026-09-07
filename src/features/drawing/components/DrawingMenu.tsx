@@ -1,4 +1,4 @@
-import { setActiveModal, setTool, ToolSchema } from '@app/store/actions.js';
+import { openTool, setActiveModal, ToolSchema } from '@app/store/actions.js';
 import { openDrawToolSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -13,11 +13,11 @@ import { useDispatch } from 'react-redux';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 export default function DrawingMenu(): ReactElement | undefined {
-  const activeTool = useAppSelector(openDrawToolSelector);
+  const drawTool = useAppSelector(openDrawToolSelector);
 
-  const activeToolDef =
-    (activeTool ?? undefined) &&
-    toolDefinitions.find((td) => td.tool === activeTool);
+  const drawToolDef =
+    (drawTool ?? undefined) &&
+    toolDefinitions.find((td) => td.tool === drawTool);
 
   const dispatch = useDispatch();
 
@@ -26,18 +26,13 @@ export default function DrawingMenu(): ReactElement | undefined {
   const dm = useDrawingMessages();
 
   return (
-    activeToolDef && (
-      <ToolMenu tool={activeToolDef.tool}>
+    drawToolDef && (
+      <ToolMenu tool={drawToolDef.tool}>
         <SelectDropdown
-          className="ms-1"
           breakpoint="lg"
           name={m?.general.drawingTool}
-          value={activeTool}
-          onSelect={(tool) =>
-            dispatch(
-              setTool({ tool: ToolSchema.parse(tool), mode: 'activate' }),
-            )
-          }
+          value={drawTool}
+          onSelect={(tool) => dispatch(openTool(ToolSchema.parse(tool)))}
           options={toolDefinitions
             .filter((td) => td.draw)
             .map(({ tool, icon, msgKey: key, kbd }) => ({
@@ -56,7 +51,6 @@ export default function DrawingMenu(): ReactElement | undefined {
           {({ props, label, labelClassName }) => (
             <Button
               variant="secondary"
-              className="ms-1"
               onClick={() =>
                 dispatch(setActiveModal({ type: 'drawing-properties' }))
               }

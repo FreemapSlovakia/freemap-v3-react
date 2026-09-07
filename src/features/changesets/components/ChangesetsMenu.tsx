@@ -1,12 +1,19 @@
 import { convertToDrawing } from '@app/store/actions.js';
+import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useState } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import { FaDownload, FaEraser, FaHistory, FaPencilAlt } from 'react-icons/fa';
+import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { changesetsRefresh, changesetsSetParams } from '../model/actions.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
@@ -30,7 +37,10 @@ export default function ChangesetsMenu(): ReactElement {
     (state) => state.changesets.lastFetchedBBox,
   );
 
-  const canRefresh = currentBBox !== null && currentBBox !== lastFetchedBBox;
+  const online = useOnline();
+
+  const canRefresh =
+    online && currentBBox !== null && currentBBox !== lastFetchedBBox;
 
   const hasChangesets = useAppSelector(
     (state) => state.changesets.changesets.length > 0,
@@ -38,12 +48,14 @@ export default function ChangesetsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
+  const convertToDataViewer = useConvertToDataViewer();
+
   return (
     <ToolMenu tool="changesets">
       <SelectDropdown
-        className="ms-1"
         id="days"
         breakpoint="lg"
+        disabled={!online}
         toggleIcon={<FaHistory />}
         name={cm?.timeWindow}
         value={String(days)}
@@ -57,7 +69,7 @@ export default function ChangesetsMenu(): ReactElement {
       />
 
       <Form
-        className="ms-1 d-flex flex-nowrap"
+        className="d-flex flex-nowrap"
         onSubmit={(e) => {
           e.preventDefault();
 
@@ -67,6 +79,7 @@ export default function ChangesetsMenu(): ReactElement {
         <InputGroup className="flex-nowrap">
           <Form.Control
             type="text"
+            disabled={!online}
             placeholder={cm?.allAuthors}
             onChange={(e) => {
               setAuthorName(e.target.value || null);
@@ -77,7 +90,7 @@ export default function ChangesetsMenu(): ReactElement {
 
           <Button
             variant="secondary"
-            disabled={!authorName}
+            disabled={!authorName || !online}
             onClick={() => {
               setAuthorName(null);
 
@@ -92,7 +105,6 @@ export default function ChangesetsMenu(): ReactElement {
       <LongPressTooltip label={cm?.refresh}>
         {({ label, labelClassName, props }) => (
           <Button
-            className="ms-1"
             variant="primary"
             disabled={!canRefresh}
             onClick={() => dispatch(changesetsRefresh())}
@@ -105,19 +117,25 @@ export default function ChangesetsMenu(): ReactElement {
       </LongPressTooltip>
 
       {hasChangesets && (
-        <LongPressTooltip label={m?.general.convertToDrawing}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => dispatch(convertToDrawing({ type: 'changesets' }))}
-              {...props}
-            >
-              <FaPencilAlt />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        <ResponsiveActions toggleLabel={m?.general.actions}>
+          <Action
+            icon={<FaPencilAlt />}
+            label={m?.general.convertToDrawing}
+            onClick={() => {
+              dispatch(convertToDrawing({ type: 'changesets' }));
+            }}
+            showFrom="never"
+          />
+
+          <Action
+            icon={<MdShapeLine />}
+            label={m?.general.convertTo({ tool: m?.tools.dataViewer })}
+            onClick={() => {
+              convertToDataViewer({ type: 'changesets' });
+            }}
+            showFrom="never"
+          />
+        </ResponsiveActions>
       )}
     </ToolMenu>
   );

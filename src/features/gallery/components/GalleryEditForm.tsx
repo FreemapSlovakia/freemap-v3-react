@@ -4,7 +4,6 @@ import '@shared/styles/react-tags.scss';
 import {
   type ChangeEvent,
   type ReactElement,
-  useCallback,
   useLayoutEffect,
   useState,
 } from 'react';
@@ -56,87 +55,57 @@ export function GalleryEditForm({
 
   const gm = useGalleryMessages();
 
-  const changeModel = useCallback(
-    (key: keyof PictureModel, value: unknown) => {
-      onModelChange({ ...model, [key]: value });
-    },
-    [model, onModelChange],
-  );
+  const changeModel = (key: keyof PictureModel, value: unknown) => {
+    onModelChange({ ...model, [key]: value });
+  };
 
-  const handleTitleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      changeModel('title', e.currentTarget.value || null);
-    },
-    [changeModel],
-  );
+  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    changeModel('title', e.currentTarget.value || null);
+  };
 
-  const handleDescriptionChange = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
-      changeModel('description', e.currentTarget.value || null);
-    },
-    [changeModel],
-  );
+  const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    changeModel('description', e.currentTarget.value || null);
+  };
 
-  const handleAzimuthChange = useCallback(
-    (e: ChangeEvent<HTMLTextAreaElement>) => {
-      changeModel('azimuth', e.currentTarget.value || null);
-    },
-    [changeModel],
-  );
+  const handleAzimuthChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    changeModel('azimuth', e.currentTarget.value || null);
+  };
 
-  const handleTakenAtChange = useCallback(
-    (value: string) => {
-      changeModel('takenAt', value);
-    },
-    [changeModel],
-  );
+  const handleTakenAtChange = (value: string) => {
+    changeModel('takenAt', value);
+  };
 
-  const handlePositionChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      changeModel('dirtyPosition', e.currentTarget.value || null);
-    },
-    [changeModel],
-  );
+  const handlePositionChange = (e: ChangeEvent<HTMLInputElement>) => {
+    changeModel('dirtyPosition', e.currentTarget.value || null);
+  };
 
-  const handlePremiumChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      changeModel('premium', e.currentTarget.checked);
-    },
-    [changeModel],
-  );
+  const handlePremiumChange = (e: ChangeEvent<HTMLInputElement>) => {
+    changeModel('premium', e.currentTarget.checked);
+  };
 
-  const handleLicenseChange = useCallback(
-    (license: GalleryLicense) => {
-      changeModel('license', license);
-    },
-    [changeModel],
-  );
+  const handleLicenseChange = (license: GalleryLicense) => {
+    changeModel('license', license);
+  };
 
   const dispatch = useDispatch();
 
-  const handleTagAddition = useCallback(
-    ({ value }: Tag) => {
-      const fixed = String(value).toLowerCase().trim().replace(/ {2,}/g, ' ');
+  const handleTagAddition = ({ value }: Tag) => {
+    const fixed = String(value).toLowerCase().trim().replace(/ {2,}/g, ' ');
 
-      dispatch(galleryAddTag(fixed));
+    dispatch(galleryAddTag(fixed));
 
-      if (!model.tags.includes(fixed)) {
-        changeModel('tags', [...model.tags, fixed]);
-      }
-    },
-    [changeModel, dispatch, model.tags],
-  );
+    if (!model.tags.includes(fixed)) {
+      changeModel('tags', [...model.tags, fixed]);
+    }
+  };
 
-  const handleTagDelete = useCallback(
-    (i: number) => {
-      const tags = [...model.tags];
+  const handleTagDelete = (i: number) => {
+    const tags = [...model.tags];
 
-      tags.splice(i, 1);
+    tags.splice(i, 1);
 
-      changeModel('tags', tags);
-    },
-    [changeModel, model.tags],
-  );
+    changeModel('tags', tags);
+  };
 
   // hack to resize tags properly on modal re-appear
   const [key, setKey] = useState(0);
@@ -145,10 +114,8 @@ export function GalleryEditForm({
     setKey(1);
   }, []);
 
-  const handleAzimuthChange2 = useCallback(
-    (a: number) => changeModel('azimuth', a.toFixed(1)),
-    [changeModel],
-  );
+  const handleAzimuthChange2 = (a: number) =>
+    changeModel('azimuth', a.toFixed(1));
 
   return (
     <div>

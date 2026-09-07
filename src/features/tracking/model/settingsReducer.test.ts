@@ -32,4 +32,20 @@ describe('trackingSettingsReducer', () => {
     );
     expect(explicit.colorizeLegend).toBe(false);
   });
+
+  it('setShowPoints / setShowLine store the display flags', () => {
+    const off = trackingSettingsReducer(
+      trackingSettingsInitialState,
+      trackingActions.setShowPoints(false),
+    );
+
+    expect(off.showPoints).toBe(false);
+
+    const line = trackingSettingsReducer(
+      trackingSettingsInitialState,
+      trackingActions.setShowLine(false),
+    );
+
+    expect(line.showLine).toBe(false);
+  });
 });

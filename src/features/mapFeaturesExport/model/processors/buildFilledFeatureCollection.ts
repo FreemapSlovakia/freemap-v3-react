@@ -36,7 +36,6 @@ export async function buildFilledFeatureCollection(
       drawingPoints: set.has('drawingPoints'),
       objects: set.has('objects'),
       plannedRoute: set.has('plannedRoute'),
-      plannedRouteWithStops: set.has('plannedRouteWithStops'),
       tracking: set.has('tracking'),
       import: set.has('import'),
       search: set.has('search'),

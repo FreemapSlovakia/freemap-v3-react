@@ -25,6 +25,9 @@ const cs: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   noPurchases: 'Žádné nákupy',
   premium: 'Premium',
   credits: (amount) => <>Kredity ({amount})</>,
+  managePayments: 'Spravovat platby',
+  managePaymentsHint:
+    'Otevře zákaznický portál poskytovatele plateb Polar, kde můžete zrušit předplatné, změnit způsob platby a stáhnout si faktury. Týká se jen toho, co bylo zaplaceno přes Polar, ne přes Rováš.',
 };
 
 export default cs;

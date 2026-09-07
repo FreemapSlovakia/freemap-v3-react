@@ -3,13 +3,14 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { ShowModalLink } from '@shared/components/ShowModalLink.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback } from 'react';
+import { useOnline } from '@shared/hooks/useOnline.js';
+import type { ReactElement } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { documentShow } from '../documents/model/actions.js';
 import { useSupportUsMessages } from './translations/useSupportUsMessages.js';
 
 type Props = { show: boolean };
@@ -23,13 +24,15 @@ export default function SupportUsModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
+  const online = useOnline();
+
   const prm = usePremiumMessages();
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   useDocumentTitle(show ? m?.mainMenu.supportUs : undefined);
 
@@ -43,6 +46,8 @@ export default function SupportUsModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         {lm?.explanation}
 
         <hr />
@@ -50,7 +55,11 @@ export default function SupportUsModal({ show }: Props): ReactElement {
         {becomePremium && (
           <Alert variant="warning">
             <span dangerouslySetInnerHTML={{ __html: lm?.alert.line1 ?? '' }} />
-            <Button onClick={becomePremium} className="my-3 mx-auto d-block">
+            <Button
+              onClick={becomePremium}
+              disabled={!online}
+              className="my-3 mx-auto d-block"
+            >
               <FaGem /> {prm?.becomePremium}
             </Button>
             {lm?.alert.line2}
@@ -84,7 +93,7 @@ export default function SupportUsModal({ show }: Props): ReactElement {
                 type="hidden"
               />
 
-              <Button type="submit">
+              <Button type="submit" disabled={!online}>
                 <FaPaypal /> {lm?.paypal}
               </Button>
             </Form>
@@ -104,15 +113,9 @@ export default function SupportUsModal({ show }: Props): ReactElement {
           <>
             <p>
               Podporiť prevádzku Freemapu môžete aj Vašimi{' '}
-              <a
-                href="https://www.freemap.sk/#document=dvePercenta"
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(documentShow('dvePercenta'));
-                }}
-              >
+              <ShowModalLink modal={{ type: 'document', key: 'dvePercenta' }}>
                 2 % z dane
-              </a>
+              </ShowModalLink>
               . Následne vás, podľa výpisu z daňového úradu, odmeníme predĺžením
               prémiového prístupu o jeden rok.
             </p>
@@ -125,7 +128,9 @@ export default function SupportUsModal({ show }: Props): ReactElement {
 
         <div className="text-end">
           {lm?.team}{' '}
-          <ShowModalLink modal="about">OZ Freemap Slovakia</ShowModalLink>
+          <ShowModalLink modal={{ type: 'about' }}>
+            OZ Freemap Slovakia
+          </ShowModalLink>
         </div>
       </Modal.Body>
 

@@ -1,12 +1,17 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
-import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
-import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
+import { formatAzimuth } from '@shared/geoutils.js';
+import {
+  HALO_OPACITY,
+  HALO_PANE,
+  HALO_WIDTH,
+  SELECTION_COLOR,
+} from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import { bearing } from '@turf/bearing';
@@ -19,6 +24,8 @@ import {
   divIcon,
   type LatLngBounds,
   type LeafletMouseEvent,
+  type Polygon as LeafletPolygon,
+  type Polyline as LeafletPolyline,
   type PointExpression,
 } from 'leaflet';
 import {
@@ -39,8 +46,10 @@ import {
   useMapEvent,
   useMapEvents,
 } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
+import { drawingLineLabel } from '../labelValues.js';
 import {
+  type DrawnLine,
   drawingLineAddPoint,
   drawingLineJoinFinish,
   drawingLineUpdatePoint,
@@ -56,11 +65,13 @@ const circularIcon = divIcon({
   html: `<div class="${classes.circularMarkerIcon}" style="background-color: var(--color-normal, ${COLORS.normal})"></div>`,
 });
 
+// The selected vertex keeps the line's color and wears the ring instead, as
+// every other selected feature does.
 const selectedCircularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: `<div class="${classes.circularMarkerIcon}" style="background-color: var(--color-selected, ${COLORS.selected})"></div>`,
+  html: `<div class="${classes.circularMarkerIcon}" style="background-color: var(--color-normal, ${COLORS.normal}); box-shadow: 0 0 0 3px ${joinColorAlpha(SELECTION_COLOR, HALO_OPACITY)}"></div>`,
 });
 
 // Each vertex/midpoint handle is a DOM marker, so a many-vertex line would
@@ -81,6 +92,21 @@ const VERTEX_VIEWPORT_LIMIT = 250;
 // Widen the limits while handles are already shown so a small pan across the
 // threshold doesn't flicker them on and off.
 const HANDLE_HYSTERESIS = 1.3;
+
+// Stable reference so the hole selector doesn't hand back a fresh array on
+// every call for the lines that can't have any.
+const NO_HOLES: DrawnLine[] = [];
+
+const toLatLng = ({ lat, lon }: LatLon) => ({ lat, lng: lon });
+
+// Whole object, so a re-render hands Leaflet the same options back instead of
+// restyling every path.
+const SELECTION_HALO = {
+  color: SELECTION_COLOR,
+  opacity: 1,
+  lineCap: 'round',
+  lineJoin: 'round',
+} as const;
 
 type HandleTier = 'all' | 'vertices' | 'none';
 
@@ -106,6 +132,28 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
   const line = useAppSelector((state) => state.drawingLines.lines[lineIndex]);
 
+  // A hole is fully subordinate: it draws no shape of its own and takes its
+  // whole style from the polygon it belongs to.
+  const parent = useAppSelector((state) =>
+    line.holeOfId === undefined
+      ? undefined
+      : state.drawingLines.lines.find((l) => l.id === line.holeOfId),
+  );
+
+  // Compared by element, so a parent only re-renders when its own holes change
+  // — not on every edit anywhere in the drawing.
+  const holes = useAppSelector(
+    (state) =>
+      line.holeOfId === undefined && line.type === 'polygon'
+        ? state.drawingLines.lines.filter((l) => l.holeOfId === line.id)
+        : NO_HOLES,
+    shallowEqual,
+  );
+
+  const isHole = parent !== undefined;
+
+  const style = parent ?? line;
+
   const selected = useAppSelector(
     (state) =>
       state.main.selection?.type === 'draw-line-poly' &&
@@ -119,23 +167,20 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
       : undefined,
   );
 
-  const color = line.color || COLORS.normal;
+  const color = style.color || COLORS.normal;
 
   const stroke = splitColorAlpha(color);
 
-  const renderColor = selected
-    ? Color(stroke.color).lighten(0.75).hex()
-    : stroke.color;
+  // Selection is the halo below, so the shape keeps its own colors.
+  const renderColor = stroke.color;
 
-  const fillRaw = splitColorAlpha(line.fillColor ?? color);
+  const fillRaw = splitColorAlpha(style.fillColor ?? color);
 
-  const renderFillColor = selected
-    ? Color(fillRaw.color).lighten(0.75).hex()
-    : fillRaw.color;
+  const renderFillColor = fillRaw.color;
 
-  const renderFillOpacity = line.fillColor ? fillRaw.opacity : undefined;
+  const renderFillOpacity = style.fillColor ? fillRaw.opacity : undefined;
 
-  const width = line.width || 4;
+  const width = style.width || 4;
 
   const joinWith = useAppSelector((state) => state.drawingLines.joinWith);
 
@@ -242,11 +287,6 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
     dispatch(drawingMeasure({}));
   }
-
-  const azimuthNumberFormat = useNumberFormat({
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 
   function handleSelect() {
     dispatch(
@@ -507,6 +547,39 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     }
   }, [showHandles, handleTier]);
 
+  const polygonRef = useRef<LeafletPolygon>(null);
+
+  const polylineRef = useRef<LeafletPolyline>(null);
+
+  // Leaflet places a path's tooltip once, where the shape's centre was when the
+  // tooltip opened, and leaves it there however the shape moves afterwards —
+  // there is no `move` event on a path to hang a reposition off. So drag a node
+  // and the label stays behind, pointing at nothing. Re-seated after every
+  // render, which is when the geometry can have changed.
+  useEffect(() => {
+    for (const layer of [polygonRef.current, polylineRef.current]) {
+      const tooltip = layer?.getTooltip();
+
+      if (layer && tooltip?.isOpen()) {
+        tooltip.setLatLng(layer.getCenter());
+      }
+    }
+  });
+
+  // A ring being drawn isn't a ring yet; leaving it out keeps the parent from
+  // rendering a degenerate hole while the first points go down.
+  const holeRings = useMemo(
+    () =>
+      holes
+        .filter((hole) => hole.points.length > 2)
+        .map((hole) => hole.points.map(toLatLng)),
+    [holes],
+  );
+
+  // A template whose keys all resolve to nothing expands to nothing, so the
+  // tooltip is decided by the expanded text — an empty one is a blank box.
+  const renderedLabel = line.label ? drawingLineLabel(line, holes).trim() : '';
+
   const joinPoint =
     joinWith?.lineIndex === lineIndex
       ? points.find((pt) => pt.id === joinWith.pointId)
@@ -606,7 +679,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             </>
           ) : null}
           ↔ {formatDistance(dist, language)}
-          <br />∡ {azimuthNumberFormat.format(azimuth)}°
+          <br />∡ {formatAzimuth(azimuth, language)}
         </span>
       ) : null;
 
@@ -617,15 +690,27 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
     <Fragment
       key={[
         line.type,
-        line.width,
-        line.dashArray,
-        line.lineCap,
-        line.lineJoin,
+        style.width,
+        style.dashArray,
+        style.lineCap,
+        style.lineJoin,
         lineIndex,
       ].join(',')}
     >
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
+          {selected && (
+            <Polyline
+              pane={HALO_PANE}
+              weight={width + HALO_WIDTH}
+              pathOptions={SELECTION_HALO}
+              interactive={false}
+              positions={ps
+                .filter((_, i) => i % 2 === 0)
+                .map(({ lat, lon }) => ({ lat, lng: lon }))}
+            />
+          )}
+
           <Polyline
             key={`line-${interactiveLine ? 'a' : 'b'}`}
             weight={width + 8}
@@ -641,30 +726,45 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           />
 
           <Polyline
+            ref={polylineRef}
             weight={width}
             pathOptions={{
               color: renderColor,
               opacity: stroke.opacity,
-              dashArray: line.dashArray,
-              lineCap: line.lineCap ?? 'round',
-              lineJoin: line.lineJoin ?? 'round',
+              dashArray: style.dashArray,
+              lineCap: style.lineCap ?? 'round',
+              lineJoin: style.lineJoin ?? 'round',
             }}
             interactive={false}
             positions={ps
               .filter((_, i) => i % 2 === 0)
               .map(({ lat, lon }) => ({ lat, lng: lon }))}
           >
-            {line.label && (
-              <Tooltip className="compact" permanent>
-                <span>{line.label}</span>
+            {renderedLabel && (
+              <Tooltip className="compact multiline" permanent>
+                <span>{renderedLabel}</span>
               </Tooltip>
             )}
           </Polyline>
         </Fragment>
       )}
 
-      {ps.length > 1 && line.type === 'polygon' && (
+      {ps.length > 1 && line.type === 'polygon' && !isHole && selected && (
         <Polygon
+          pane={HALO_PANE}
+          weight={width + HALO_WIDTH}
+          pathOptions={{ ...SELECTION_HALO, fill: false }}
+          interactive={false}
+          positions={[
+            ps.filter((_, i) => i % 2 === 0).map(toLatLng),
+            ...holeRings,
+          ]}
+        />
+      )}
+
+      {ps.length > 1 && line.type === 'polygon' && !isHole && (
+        <Polygon
+          ref={polygonRef}
           key={`polygon-${interactiveLine ? 'a' : 'b'}`}
           pane="fm-drawing-polygons"
           weight={width}
@@ -673,30 +773,64 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             opacity: stroke.opacity,
             fillColor: renderFillColor,
             fillOpacity: renderFillOpacity,
-            dashArray: line.dashArray,
-            lineCap: line.lineCap ?? 'round',
-            lineJoin: line.lineJoin ?? 'round',
+            dashArray: style.dashArray,
+            lineCap: style.lineCap ?? 'round',
+            lineJoin: style.lineJoin ?? 'round',
           }}
           interactive={interactiveLine}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: handleSelect,
           }}
-          positions={ps
-            .filter((_, i) => i % 2 === 0)
-            .map(({ lat, lon }) => ({ lat, lng: lon }))}
+          // The holes ride along as further rings of the same shape, so the
+          // default `evenodd` fill rule punches them out — and takes the click
+          // through them to whatever is underneath.
+          positions={[
+            ps.filter((_, i) => i % 2 === 0).map(toLatLng),
+            ...holeRings,
+          ]}
         >
-          {line.label && ps.length > 4 && (
+          {renderedLabel && ps.length > 4 && (
             <Tooltip
-              className="compact"
+              className="compact multiline"
               offset={[-4, 0]}
               direction="center"
               permanent
             >
-              <span>{line.label}</span>
+              <span>{renderedLabel}</span>
             </Tooltip>
           )}
         </Polygon>
+      )}
+
+      {/* The parent strokes the hole's ring along with its own, so all this
+          adds is something to click and, while it's picked, a highlight. */}
+      {ps.length > 1 && isHole && (
+        <Fragment key={`hole-${interactiveLine ? 'a' : 'b'}`}>
+          <Polyline
+            pane="fm-drawing-polygons"
+            weight={width + 8}
+            opacity={0}
+            interactive={interactiveLine}
+            bubblingMouseEvents={false}
+            eventHandlers={{
+              click: handleSelect,
+            }}
+            positions={[...points, points[0]!].map(toLatLng)}
+          />
+
+          {/* The halo is the hole's own, not the parent polygon's: it says
+              which ring the toolbar acts on. */}
+          {selected && (
+            <Polyline
+              pane={HALO_PANE}
+              weight={width + HALO_WIDTH}
+              pathOptions={SELECTION_HALO}
+              interactive={false}
+              positions={[...points, points[0]!].map(toLatLng)}
+            />
+          )}
+        </Fragment>
       )}
 
       {futureLinePositions && (
@@ -704,9 +838,9 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           pathOptions={{
             color: Color(stroke.color).lighten(0.75).hex(),
             opacity: stroke.opacity,
-            dashArray: line.dashArray,
-            lineCap: line.lineCap ?? 'round',
-            lineJoin: line.lineJoin ?? 'round',
+            dashArray: style.dashArray,
+            lineCap: style.lineCap ?? 'round',
+            lineJoin: style.lineJoin ?? 'round',
             weight: width,
           }}
           interactive={false}
@@ -849,7 +983,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
                   ↔ {formatDistance(segDist, language)}
                   {i < 2 ? null : (
                     <>
-                      <br />∡ {azimuthNumberFormat.format(azimuth)}°
+                      <br />∡ {formatAzimuth(azimuth, language)}
                     </>
                   )}
                 </span>
@@ -858,8 +992,6 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
           </Marker>
         ),
       )}
-
-      <ElevationChartActivePoint />
     </Fragment>
   );
 }

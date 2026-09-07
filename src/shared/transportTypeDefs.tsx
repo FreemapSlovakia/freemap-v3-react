@@ -1,6 +1,9 @@
 import type { ReactElement } from 'react';
 import {
+  FaBabyCarriage,
   FaBicycle,
+  FaBiking,
+  FaBolt,
   FaCar,
   FaHiking,
   FaMotorcycle,
@@ -13,50 +16,63 @@ export const TransportTypeSchema = z.enum([
   'bike-osrm',
   'car-osrm',
   'foot-osrm',
+  'bike',
   'car',
   'car4wd',
+  'carnotoll',
+  'easyhike',
+  'ebike',
   'foot',
+  'gravelbike',
   'hiking',
   'motorcycle',
   'mtb',
   'racingbike',
+  'stroller',
   'manual',
 ]);
 
 export type TransportType = z.infer<typeof TransportTypeSchema>;
 
-export const TransportTypeCompatSchema = z
-  .preprocess(
-    (v) =>
-      (typeof v === 'string' &&
-        {
-          'car-toll': 'car',
-          'car-free': 'car',
-          'foot-stroller': 'foot',
-          bikesharing: 'bike-osrm',
-          imhd: 'car',
-          bicycle_touring: 'racingbike',
-          nordic: 'hiking',
-          ski: 'hiking',
-          bike: 'bike-osrm',
-          'car-osm': 'car-osrm',
-          'bike-osm': 'bike-osrm',
-          'foot-osm': 'foot-osrm',
-        }[v]) ||
-      v,
-    TransportTypeSchema,
-  )
-  .catch('hiking');
+/** Migrates a legacy id to today's; an unknown one still fails, so a caller
+ * that wants a fallback adds its own `.catch()`. */
+export const TransportTypeCompatSchema = z.preprocess(
+  (v) =>
+    (typeof v === 'string' &&
+      {
+        // Both of these were folded into the nearest profile that existed at
+        // the time. The router has the real ones now, so the old links
+        // resolve to what they always meant.
+        'car-toll': 'car',
+        'car-free': 'carnotoll',
+        'foot-stroller': 'stroller',
+        bikesharing: 'bike-osrm',
+        imhd: 'car',
+        bicycle_touring: 'racingbike',
+        nordic: 'hiking',
+        ski: 'hiking',
+        'car-osm': 'car-osrm',
+        'bike-osm': 'bike-osrm',
+        'foot-osm': 'foot-osrm',
+      }[v]) ||
+    v,
+  TransportTypeSchema,
+);
 
 export type TransportTypeMsgKey =
   | 'bike'
   | 'car'
   | 'car4wd'
+  | 'carnotoll'
+  | 'easyhike'
+  | 'ebike'
   | 'foot'
+  | 'gravelbike'
   | 'hiking'
   | 'motorcycle'
   | 'mtb'
   | 'racingbike'
+  | 'stroller'
   | 'manual';
 
 type TransportTypeDef = {
@@ -65,6 +81,8 @@ type TransportTypeDef = {
   special?: boolean;
   exclude?: string;
   hidden?: boolean;
+  /** Marks the profile as not settled yet; the picker shows a flask beside it. */
+  experimental?: boolean;
 } & (
   | {
       url: string;
@@ -72,15 +90,24 @@ type TransportTypeDef = {
     }
   | {
       api: 'gh';
+      /** The server prepared no CH for this profile, so `ch.disable` must be sent. */
+      noCh?: boolean;
+      /** The server prepared landmarks for this profile, so `lm.disable` must not be. */
+      hasLm?: boolean;
       profile:
         | 'car'
         | 'car4wd'
+        | 'carnotoll'
         | 'foot'
         | 'hike'
         | 'bike'
         | 'motorcycle'
         | 'mtb'
-        | 'racingbike';
+        | 'racingbike'
+        | 'ebike'
+        | 'gravelbike'
+        | 'stroller'
+        | 'easyhike';
     }
   | {
       api: 'manual';
@@ -116,6 +143,7 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     api: 'gh',
     icon: <FaCar />,
     profile: 'car',
+    hasLm: true,
   },
   car4wd: {
     msgKey: 'car4wd',
@@ -123,11 +151,40 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     icon: <FaCar />,
     profile: 'car4wd',
   },
+  carnotoll: {
+    msgKey: 'carnotoll',
+    api: 'gh',
+    icon: <FaCar />,
+    profile: 'carnotoll',
+    noCh: true,
+    hasLm: true,
+    experimental: true,
+  },
   motorcycle: {
     msgKey: 'motorcycle',
     api: 'gh',
     icon: <FaMotorcycle />,
     profile: 'motorcycle',
+  },
+  bike: {
+    msgKey: 'bike',
+    api: 'gh',
+    icon: <FaBicycle />,
+    profile: 'bike',
+  },
+  ebike: {
+    msgKey: 'ebike',
+    api: 'gh',
+    icon: <FaBolt />,
+    profile: 'ebike',
+    experimental: true,
+  },
+  gravelbike: {
+    msgKey: 'gravelbike',
+    api: 'gh',
+    icon: <FaBiking />,
+    profile: 'gravelbike',
+    experimental: true,
   },
   racingbike: {
     msgKey: 'racingbike',
@@ -147,10 +204,24 @@ export const transportTypeDefs: Record<TransportType, TransportTypeDef> = {
     icon: <FaWalking />,
     profile: 'foot',
   },
+  stroller: {
+    msgKey: 'stroller',
+    api: 'gh',
+    icon: <FaBabyCarriage />,
+    profile: 'stroller',
+    experimental: true,
+  },
   hiking: {
     msgKey: 'hiking',
     api: 'gh',
     icon: <FaHiking />,
     profile: 'hike',
+  },
+  easyhike: {
+    msgKey: 'easyhike',
+    api: 'gh',
+    icon: <FaHiking />,
+    profile: 'easyhike',
+    experimental: true,
   },
 };

@@ -6,14 +6,13 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 const de: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   what: {
     plannedRoute: 'gefundene Route',
-    plannedRouteWithStops: 'inklusive Stopps',
     objects: 'Objekte (POIs)',
     pictures: 'Fotos (im sichtbaren Kartenbereich)',
     drawingLines: 'Zeichnung – Linien',
     drawingAreas: 'Zeichnung – Polygone',
     drawingPoints: 'Zeichnung – Punkte',
     tracking: 'Live-Tracking',
-    import: 'Importierte Datei',
+    import: 'Tracks und Daten',
     search: 'Fund',
   },
   garmin: {
@@ -44,6 +43,11 @@ const de: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
       'Du bist noch nicht bei Garmin angemeldet. Möchtest du dich jetzt anmelden?',
   },
   download: 'Download',
+  share: 'Teilen',
+  shareAsText:
+    'Ihr Browser teilt nur Textdateien, daher erhält die Datei die Endung „.txt“. Die empfangende App benötigt sie möglicherweise ohne diese Endung.',
+  sharedAsDownload:
+    'Der Teilen-Dialog ließ sich nicht öffnen, daher wurde die Datei heruntergeladen.',
   format: 'Format',
   target: 'Ziel',
   elevation: {

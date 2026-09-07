@@ -18,10 +18,14 @@ Freemap.sk is an open web and mobile mapping application for outdoor and everyda
 - **Premium map layers** — hi-res detailed shading of Slovakia and Czechia, the highest zoom levels of the Outdoor Map and of the orthophoto maps of Slovakia and Czechia, and various WMS-based maps.
 - **Premium photos** — access to premium photographs shown on the map.
 - **Multimodal routing** — route planning combining multiple modes of transport.
+- **Route point order optimization** — reordering the waypoints of a planned route to minimize the total travel time.
+- **High-resolution elevation data** — detailed national terrain models in many European countries, used for the elevation profile, for colorizing and for filling in elevation; elsewhere elevation comes from a global model.
+- **Weather radar history and forecast** — up to 6 hours of precipitation history instead of 2, plus the one-hour forecast.
+- **Route and track colorizing** — all colorizing modes except elevation, speed and time, which are free for everyone.
 
 ## Price
 
-**EUR 8 per year.** The subscription gives you one year of premium access and renews yearly unless cancelled.
+**EUR 15 per year.** The subscription gives you one year of premium access and renews yearly unless cancelled. It keeps the price it was started at for as long as it stays active; a one-time purchase of a single year keeps it for that year only.
 
 You can manage and cancel your subscription at any time; cancellation takes effect at the end of the paid period. For details on refunds, see our [Refund Policy](#document=refundPolicy).
 

@@ -32,8 +32,8 @@ Params are read from `document.location.hash || document.location.search` (so `?
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `tools` | Open tool toolbar(s) | r/w | `,`-separated tool ids |
-| `tool` | Single tool (legacy) | read-only | tool id |
+| `tools` | Open tools' toolbars | r/w | `,`-separated tool ids; at most one map-click tool (route planner, drawing, map details) opens — the first named |
+| `tool` | Open tool's toolbar (older spelling) | read-only | read exactly like `tools` |
 | `show` | Open modal / viewer | r/w | `type` or `type/arg` (e.g. `gallery-viewer/123`, `wiki/en:Title`) |
 | `document`, `tip`, `image`, `wmc` | Legacy modal aliases → `show=…` | read-only | id |
 
@@ -79,20 +79,59 @@ Params are read from `document.location.hash || document.location.search` (so `?
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `osm-node`, `osm-way`, `osm-relation` | Load/highlight an OSM element | r/w | integer id |
+| `osm-node`, `osm-way`, `osm-relation` | Load/highlight a **kept** OSM element; repeatable | r/w | integer id |
 | `changesets-days` | Changesets time window | r/w | integer days |
 | `changesets-author` | Changesets author filter | r/w | username |
 | `gallery-user-id`, `gallery-tag`, `gallery-rating-from`/`-to`, `gallery-taken-at-from`/`-to`, `gallery-created-at-from`/`-to`, `gallery-pano`, `gallery-premium` | Gallery filters | r/w | see source |
 | `track` | Live-tracking device + props | r/w | `token[/prop:value…]` |
 | `follow` | Followed live device | r/w | token or id |
 
+A search / map-details result the user merely picked is *previewed*: it is on the map only for as long as it is the selected feature, and it is not written to the URL. The selection toolbar's **Keep on the map** toggle keeps it, and only then does it get an `osm-*` param. Elements read from these params come back kept, and the first of them is selected.
+
 ## Drawing geometry
+
+These place standalone map annotations — markers, lines, filled areas — not routing. To open a link showing a **map with markers/points**, use `point` (one per marker); it is the drawing-point param, distinct from the route planner's plural `points` (waypoints of a computed route). Each param is repeatable and accepts optional [style fields](#style-codec) after the coordinates (a leading `%1E` separates them from the last coordinate).
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `point` (repeatable), `info-point` | Drawing point(s) | r/w | `lat/lon[<style fields>]` |
+| `point` (repeatable), `info-point` | Drawing point(s) / markers | r/w | `lat/lon[<style fields>]` |
 | `line`, `polygon` (repeatable) | Drawing line / polygon | r/w | `lat/lon,lat/lon,…[<style fields>]` |
 | `distance-measurement-points`, `area-measurement-points`, `elevation-measurement-point` | Legacy measurement aliases | read-only | coords |
+
+## Toposcope
+
+The dial's **centre and rays are drawn points**, so they travel in the `point=` params above: the centre is the first point carrying the property `toposcope=center` (`%1EPtoposcope%1Fcenter`) — that, and nothing else, is what makes it the centre; its viewpoint icon is only how it looks. This param carries only the dial's own settings, and is omitted entirely while they are all at their defaults.
+
+| Param | Controls | R/W | Format |
+|---|---|---|---|
+| `toposcope` | Dial settings | r/w | `%1E`-separated fields, see below |
+
+Field codes (`serializeToposcope` / `parseToposcope` in [`toposcopeUrl.ts`](../src/features/toposcope/toposcopeUrl.ts)); a field is written only when it differs from the default, and one out of range is read as absent:
+
+| Code | Meaning | Default |
+|---|---|---|
+| `R` | Inner circle radius, 0–80 of the dial's 200-unit span | `25` |
+| `O` | Outer circle radius — the ring the rays stop at, 30–98. The band between it and the inscription circle at 99 is what the inscriptions are written in, centred | `90` |
+| `S` | Scale of the writing on the dial, 25–400 % | `100` |
+| `U` | Turn the western half's labels so none reads upside down (`U0` / `U1`) | on |
+| `A` | Template for a ray's first line | `{label}` |
+| `B` | Template for its second line | `[{elevation} · ]{distance}` |
+| `0`–`3` | The four inscriptions along the outer circle, from the S–E quadrant clockwise. `{attribution}` expands to the map data credit, `{credit}` to the portal's own ("Toposcope by Freemap Slovakia" / "… Europe", by domain) | `''`, `{attribution}`, `''`, `{credit}` |
+
+A ray's lines are written from **templates** rather than from the point's own label. A template can name `{label}` (the point's label, its own property references already resolved), `{elevation}`, `{elevation_ft}`, `{distance}`, `{distance_mi}`, `{azimuth}`, `{location}`, and `{p:<name>}` for any property the point carries. A name the dial knows but has no value for expands to nothing, and a `[…]` group around it goes with it — so the default second line `[{elevation} · ]{distance}` on a point with no elevation reads as the distance alone — while a name it doesn't know stays as written, as in a drawing label. The first template is written above the ray and the second below it. Each yields as many lines as its text and its values have — a multi-line point label or `{location}` keeps its own lines, all of them on that template's side — and one that comes out empty leaves nothing on its side.
+
+Nothing about the toposcope is kept in localStorage, and it is deliberately **not** part of the map-content parts the my-maps unsaved-changes comparison digests — a saved map document has no place for it yet, so including it would report a map as changed the moment it was loaded.
+
+## Panorama
+
+| Param | Controls | R/W | Format |
+|---|---|---|---|
+| `panorama` | Viewpoint | r/w | `lat,lon` (6 decimals) |
+| `panorama-az` | Bearing the view faces | r/w | whole degrees |
+| `panorama-tilt` | Vertical band framed | r/w | preset name (`standard` / `wide` / `flat`), or `altMin,altMax` degrees for a custom band |
+
+The picture itself is not in the link: arriving with a viewpoint renders it again, which is why the param is acted on only while `tools=panorama` is open — a render is seconds of somebody else's server, and without the panel there is nothing to render into. Everything else about the view (quality, vertical range, label density, whether it turns by itself) is a standing preference in the `panoramaSettings` slice, so it is in localStorage rather than in the link. The bearing is in `VIEWPORT_KEYS` in `urlProcessor.ts`, alongside `map`: params listed there are kept out of the content signature, so a change confined to them replaces the current history entry rather than pushing one. Anything that moves at gesture speed belongs there.
+
 
 ## Style codec
 
@@ -109,12 +148,23 @@ Fields are joined by the record-separator character `\x1e` (URL-encoded `%1E`). 
 | `K` | Line cap — `b`utt / `s`quare (default round) | `Kb` |
 | `J` | Line join — `m`iter / `b`evel (default round) | `Jm` |
 | `S` | Marker shape — `s`quare / `r`ing (default pin) | `Sr` |
-| `I` | Marker icon id | `Itourism-hotel` |
+| `I` | Marker icon spec — `poi:<name>` (bundled POI icon) or `fa:<name>` (Font Awesome) | `Ipoi%3Aanimal_shelter` → `poi:animal_shelter` (`%3A` = `:`) |
 | `L` | Label (drawing geometry only) | `LMy point` |
+| `P` | Properties — key/value pairs joined by the unit separator `\x1f` (URL-encoded `%1F`), drawing geometry only | `Pname%1FSitno%1Fele%1F1009` |
 
 Colors are RGBA hex; the alpha channel carries the opacity (e.g. `#3388ff33` ≈ 20 % opacity).
 
 Each default-style param applies only the fields it supports (e.g. `objects-style` reads `C` and `S`), merges them over the current style, and persists the result to local storage.
+
+### Properties
+
+Every drawing point, line and polygon can carry a table of free-form key/value properties — the OSM tags a converted object arrived with, or whatever the user typed into the properties table in the Properties modal. They are written as the `P` field above and are absent entirely when the table is empty.
+
+A `{p:name}` anywhere in a **label** is replaced by that property's value when the feature is drawn, so a label can say `{p:name}` instead of holding a copy of the name. The prefix is required: the bare namespace is reserved for what the app computes, so adding a computed key later cannot change the meaning of a label already written and already shared. A few keys are computed from the geometry instead of read from the table — `{location}` on a point, `{length*}`/`{azimuth}` on a line, `{area*}`/`{perimeter*}` on a polygon (every unit the measurement readout offers, generated from the same tables) — and are resolved by `labelValues.ts`, which every consumer (the map, both exporters, the toposcope) goes through so a label reads the same wherever it is read. A key that answers to nothing is left standing as written, which is what tells a typo — or a forgotten prefix — apart from a deliberate brace.
+
+Square brackets mark an **optional group**: it is written only when every placeholder inside it has a value, so `{p:name}[ ({p:ele} m)]` leaves out the parentheses on a feature with no `ele`. This replaces guessing at punctuation, which cannot work: in `{a} - {b}` the dash joins two values and should go with either, while in `Name: {a}, Surname {b}` the `, Surname ` is a caption belonging to `b` and has to survive `a` going missing — the two are indistinguishable, so the author brackets what is optional. A bracket pair holding no placeholder is text (`[1]`, `[closed]`), and `\[` writes one where that isn't enough; `\]`, `\{`, `\}` and `\\` likewise, while a backslash before anything else is just a backslash. Groups nest, and one holding a key that answers to nothing survives, so the typo stays visible. Converting an object sets the label to `{p:name}` for this reason.
+
+Only a curated set of OSM tags is carried on conversion (`name`, `ele`, `description`, `operator`, `website`, `phone`, `opening_hours`, `wikipedia`, `wikidata`, `ref`) — a well-mapped POI has dozens, they all end up in the URL behind the feature, and bulk-converting a screenful with the lot would produce a link too long to send. The table takes anything by hand.
 
 ### Examples
 
@@ -127,4 +177,10 @@ Each default-style param applies only the fields it supports (e.g. `objects-styl
 
 # Search result: orange 3px outline, faint orange fill
 #search-style=C%23ff8800%1EF%23ff880022%1EW3
+
+# A map with two markers, the second red and labelled "Košice"
+#map=8/48.43/19.18&layers=X&point=48.14816/17.10674&point=48.72083/21.25808%1EC%23ff0000%1ELKošice
+
+# A blue ring marker labelled "Ahoj!" with the animal-shelter icon (tools=draw-points is optional — it only opens the editing toolbar)
+#map=17/48.979457/21.169961&layers=X&tools=draw-points&point=48.979061/21.167738%1EC%230000ff%1ELAhoj!%1ESr%1EIpoi%3Aanimal_shelter
 ```

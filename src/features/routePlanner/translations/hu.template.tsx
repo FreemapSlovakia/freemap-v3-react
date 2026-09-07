@@ -13,8 +13,14 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Vödrök',
     timeLimit: 'Időkorlát',
     distanceLimit: 'Távolságkorlát',
+    reverseFlow: 'Utazás a pontba',
+    reverseFlowHint:
+      'A gyűrűk ekkor azt mutatják, honnan érhető el ez a pont; pipa nélkül azt, hova lehet innen eljutni. A különbséget az egyirányú utcák és a kanyarodási tilalmak adják.',
   },
   milestones: 'Távolságszelvények',
+  milestonesOff: 'Ki',
+  recompute: 'Útvonal újraszámítása',
+  maxAlternatives: 'Felkínált útvonalak max. száma',
   style: {
     menuItem: 'Útvonal stílusa',
     title: 'Útvonal stílusa',
@@ -36,14 +42,21 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     pick: 'Kijelölés a térképen',
     current: 'Az Ön pozíciója',
     home: 'Lakhely',
+    fromStart: 'Indulási pozíció',
+    fromFinish: 'Érkezési pozíció',
     point: 'Útpont',
   },
   transportType: {
     car: 'Gépkocsi',
     car4wd: 'Gépkocsi 4x4',
+    carnotoll: 'Gépkocsi (útdíj nélkül)',
     bike: 'Kerékpár',
+    ebike: 'Elektromos kerékpár',
+    gravelbike: 'Gravel kerékpár',
     foot: 'Gyaloglás',
+    stroller: 'Babakocsi / kerekesszék',
     hiking: 'Túrázás',
+    easyhike: 'Könnyű túrázás',
     mtb: 'Hegyikerékpár',
     racingbike: 'Versenykerékpár',
     motorcycle: 'Motorkerékpár',
@@ -58,6 +71,7 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     isochrone: 'Izokron',
   },
   alternative: 'Alternatíva',
+  isochroneRing: 'Izokron',
   distance: ({ value, diff }) => (
     <>
       Távolság:{' '}
@@ -65,6 +79,11 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
         {value}
         {diff ? ` (+ ${diff})` : ''}
       </b>
+    </>
+  ),
+  tolled: ({ value }) => (
+    <>
+      Fizetős szakaszok: <b>{value}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

@@ -8,4 +8,7 @@ sitemap.tgz
 # Generated CSS Module typings
 **/*.module.d.css.ts
 
+# Header logo rasters, written by RspackIconsPlugin before each compilation
+src/images/generated
+
 tracklogs

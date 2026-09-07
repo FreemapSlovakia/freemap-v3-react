@@ -1,56 +1,103 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { User } from '@features/auth/model/types.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
-import { enumerateTilesInBbox } from '@shared/tileEnumeration.js';
+import {
+  countCachedOf,
+  coverageContains,
+  coverageIncludes,
+  enumerateTilesInBbox,
+  type TileCoord,
+  tileRangeIndex,
+} from '@shared/tileEnumeration.js';
+import { buildTileUrl, pickSubdomain, withTileScale } from '@shared/tileUrl.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Dispatch } from 'redux';
+import { putTileResponse } from '../browseCache.js';
 import {
   deleteCachedTileMap,
   getCachedTileMaps,
   saveCachedTileMap,
+  updateCachedTileMap,
 } from '../cache.js';
-import type { CachedTileMapDef } from '../cachedTileMaps.js';
+import {
+  type CachedTileMapDef,
+  getCachedTileScale,
+  sameCoverage,
+} from '../cachedTileMaps.js';
 import { toCachedLayerUrl } from '../cachedTileUrl.js';
+import { notifyServiceWorker } from '../notifyServiceWorker.js';
+import { premiumZoomLimit } from '../sourceLayer.js';
 import { loadCachedMapsMessages } from '../translations/loadCachedMapsMessages.js';
 import {
   cachedMapDeleted,
-  cachedMapRenamed,
+  cachedMapEdited,
   cachedMapsLoaded,
-  cacheTilesCancel,
   cacheTilesComplete,
   cacheTilesError,
-  cacheTilesPause,
   cacheTilesProgress,
   cacheTilesRestart,
-  cacheTilesResume,
   cacheTilesStart,
+  cacheTilesStop,
 } from './actions.js';
 
 const BATCH_SIZE = 6;
 
+// pruning only touches the local cache, so it can run wider than the download
+const PRUNE_BATCH_SIZE = 32;
+
 const PROGRESS_INTERVAL = 50;
 
-interface DownloadState {
-  abortController: AbortController;
-  paused: boolean;
-  pausePromise: Promise<void> | null;
-  pauseResolve: (() => void) | null;
+// leading tiles probed to find the scale a map without a recorded one holds;
+// more than one because a tile the server refused is simply not there
+const SCALE_PROBE_TILES = 8;
+
+const activeDownloads = new Map<string, AbortController>();
+
+/**
+ * Registers a caching pass so it can be aborted. Called before the first
+ * `await`, so a stop or a delete landing in that window still finds something
+ * to abort.
+ */
+function beginDownload(id: string): AbortController {
+  const abortController = new AbortController();
+
+  activeDownloads.set(id, abortController);
+
+  return abortController;
 }
 
-const activeDownloads = new Map<string, DownloadState>();
+function abortDownload(id: string): void {
+  const abortController = activeDownloads.get(id);
 
-function buildTileUrl(
-  urlTemplate: string,
-  x: number,
-  y: number,
-  z: number,
-): string {
-  return urlTemplate
-    .replace('{x}', String(x))
-    .replace('{y}', String(y))
-    .replace('{z}', String(z))
-    .replace('{s}', 'a');
+  if (abortController) {
+    abortController.abort();
+
+    activeDownloads.delete(id);
+  }
+}
+
+/** Releases the slot, unless an abort or a later pass already took it over. */
+function endDownload(id: string, abortController: AbortController): void {
+  if (activeDownloads.get(id) === abortController) {
+    activeDownloads.delete(id);
+  }
+}
+
+/**
+ * Publishes a map's metadata to the store and to IndexedDB in one step, so the
+ * two can't drift apart. Both sides ignore a map that has been deleted in the
+ * meantime, so a pass still in flight can't bring it back.
+ */
+async function commitMeta(
+  dispatch: Dispatch,
+  meta: CachedTileMapDef,
+): Promise<void> {
+  dispatch(cacheTilesProgress(meta));
+
+  await updateCachedTileMap(meta);
 }
 
 function updateMeta(
@@ -65,60 +112,206 @@ function updateMeta(
   };
 }
 
-async function downloadTiles(
+/** The `{s}` host a tile of this map is fetched from; see `pickSubdomain`. */
+function tileSubdomain(meta: CachedTileMapDef): string {
+  return pickSubdomain('subdomains' in meta ? meta.subdomains : undefined);
+}
+
+function tileCacheKey(
   meta: CachedTileMapDef,
+  [x, y, z]: TileCoord,
+  scale: number | undefined,
+): string {
+  return toCachedLayerUrl(
+    withTileScale(buildTileUrl(meta.url, x, y, z, tileSubdomain(meta)), scale),
+    meta.type,
+  );
+}
+
+/** The `@Nx` variants a map could hold when its metadata records none. */
+function candidateScales(meta: CachedTileMapDef): number[] {
+  return [
+    ...new Set(
+      meta.technology === 'tile' ? [1, ...(meta.extraScales ?? [])] : [1],
+    ),
+  ];
+}
+
+/** The area × zoom range a map covers, as `enumerateTilesInBbox` wants it. */
+function coverageOf(meta: CachedTileMapDef) {
+  return {
+    bounds: meta.bounds,
+    minZoom: meta.minZoom ?? 0,
+    maxZoom: meta.maxNativeZoom ?? 18,
+  };
+}
+
+/**
+ * The scale a partly-downloaded map already holds, or `undefined` when none of
+ * the probed tiles is cached at any scale. Only the leading tiles of the map's
+ * own coverage are probed — a download goes through the enumeration in order,
+ * so those are the ones it got to first.
+ */
+async function detectCachedScale(
+  cache: Cache,
+  meta: CachedTileMapDef,
+): Promise<number | undefined> {
+  const { bounds, minZoom, maxZoom } = coverageOf(meta);
+
+  let probed = 0;
+
+  for (const tile of enumerateTilesInBbox(bounds, minZoom, maxZoom)) {
+    if (probed++ >= SCALE_PROBE_TILES) {
+      break;
+    }
+
+    for (const scale of candidateScales(meta)) {
+      if (await cache.match(tileCacheKey(meta, tile, scale))) {
+        return scale;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * Walks what the map covered before an edit: tiles the new coverage no longer
+ * takes in are deleted, the rest are counted. Both counters come out of this,
+ * and out of the cache itself rather than out of arithmetic on the old ones —
+ * `downloadedCount` is only ever a lower bound on what is really stored, and a
+ * download that was interrupted holds tiles in no order the new coverage could
+ * infer.
+ */
+async function pruneTilesOutside(
+  prev: CachedTileMapDef,
+  next: CachedTileMapDef,
+  signal: AbortSignal,
+): Promise<{ keptCount: number; removedBytes: number }> {
+  const kept = tileRangeIndex(coverageOf(next));
+
+  const scales =
+    prev.tileScale === undefined ? candidateScales(prev) : [prev.tileScale];
+
+  const cache = await caches.open(prev.cacheName);
+
+  let keptCount = 0;
+  let removedBytes = 0;
+
+  const batch: [tile: TileCoord, keep: boolean][] = [];
+
+  async function flush() {
+    await Promise.all(
+      batch.map(async ([tile, keep]) => {
+        for (const scale of scales) {
+          const key = tileCacheKey(prev, tile, scale);
+
+          const existing = await cache.match(key);
+
+          if (!existing) {
+            continue;
+          }
+
+          if (keep) {
+            keptCount++;
+
+            return;
+          }
+
+          const { size } = await existing.blob();
+
+          if (await cache.delete(key)) {
+            removedBytes += size;
+          }
+        }
+      }),
+    );
+
+    batch.length = 0;
+  }
+
+  const { bounds, minZoom, maxZoom } = coverageOf(prev);
+
+  for (const tile of enumerateTilesInBbox(bounds, minZoom, maxZoom)) {
+    if (signal.aborted) {
+      break;
+    }
+
+    batch.push([tile, coverageContains(kept, tile)]);
+
+    if (batch.length >= PRUNE_BATCH_SIZE) {
+      await flush();
+    }
+  }
+
+  if (!signal.aborted) {
+    await flush();
+  }
+
+  return { keptCount, removedBytes };
+}
+
+async function downloadTiles(
+  def: CachedTileMapDef,
   dispatch: Dispatch,
   language: string,
+  user: Pick<User, 'premiumExpiration'> | null,
+  abortController: AbortController = beginDownload(def.type),
 ) {
-  const id = meta.type;
+  const id = def.type;
 
-  const abortController = new AbortController();
+  const cache = await caches.open(def.cacheName);
 
-  const state: DownloadState = {
-    abortController,
-    paused: false,
-    pausePromise: null,
-    pauseResolve: null,
-  };
+  const { bounds, minZoom, maxZoom } = coverageOf(def);
 
-  activeDownloads.set(id, state);
+  // The one place premium zooms are kept out of the cache, whichever path got
+  // here: a map carries the range it was given while the premium access lasted,
+  // and a resume or an edit of it answers to the form's cap no more than a
+  // hand-edited database entry would. A map gated this way stays incomplete —
+  // it is missing tiles, and saying otherwise would be a lie.
+  const premiumLimit = premiumZoomLimit(def.sourceType, user) ?? Infinity;
 
-  const cache = await caches.open(meta.cacheName);
+  const gatedMaxZoom = Math.min(maxZoom, premiumLimit);
 
-  const minZoom = meta.minZoom ?? 0;
+  const gated = gatedMaxZoom < maxZoom;
 
-  const maxZoom = meta.maxNativeZoom ?? 18;
+  const tiles = enumerateTilesInBbox(bounds, minZoom, gatedMaxZoom);
 
-  const tiles = enumerateTilesInBbox(meta.bounds, minZoom, maxZoom);
-
-  let downloaded = 0;
-  let sizeBytes = meta.sizeBytes;
+  let visited = 0;
+  let sizeBytes = def.sizeBytes;
   let lastProgressAt = 0;
 
-  const tileArray: [number, number, number][] = [];
+  const tileArray: TileCoord[] = [];
 
   for (const tile of tiles) {
     tileArray.push(tile);
   }
 
-  const extraScales = meta.technology === 'tile' ? meta.extraScales : undefined;
+  // Pin the scale into the metadata: the render side reads it back to ask for
+  // exactly the variant that is stored, and resuming must continue the variant
+  // the cache already holds even if the screen's DPI says otherwise.
+  const meta: CachedTileMapDef = {
+    ...def,
+    tileScale:
+      def.tileScale ??
+      (await detectCachedScale(cache, def)) ??
+      getCachedTileScale(def),
+  };
 
-  // pick the scale matching this screen's DPI
-  const dpr = window.devicePixelRatio || 1;
+  // Every tile of the coverage is visited, the already-cached ones included, so
+  // how far we are through them is a lower bound on how much the map holds —
+  // and only a lower bound, since an extended map starts out holding more than
+  // has been visited yet. Never report (or store) less than what was already
+  // there, so an interruption can't record a fully cached map as barely begun.
+  const cachedCount = () => Math.max(def.downloadedCount, visited);
 
-  const bestScale = extraScales
-    ?.filter((s) => s <= Math.ceil(dpr))
-    .sort((a, b) => b - a)[0];
+  // tell the store which variant this settled on, so the layer asks for the one
+  // that is actually stored instead of guessing from the screen's DPI
+  if (meta.tileScale !== def.tileScale) {
+    await commitMeta(dispatch, updateMeta(meta, cachedCount(), sizeBytes));
+  }
 
   for (let i = 0; i < tileArray.length; i += BATCH_SIZE) {
-    if (abortController.signal.aborted) {
-      break;
-    }
-
-    if (state.paused && state.pausePromise) {
-      await state.pausePromise;
-    }
-
     if (abortController.signal.aborted) {
       break;
     }
@@ -127,12 +320,12 @@ async function downloadTiles(
 
     const results = await Promise.allSettled(
       batch.map(async ([x, y, z]) => {
-        const baseUrl = buildTileUrl(meta.url, x, y, z);
+        const fetchUrl = withTileScale(
+          buildTileUrl(meta.url, x, y, z, tileSubdomain(meta)),
+          meta.tileScale,
+        );
 
-        const fetchUrl =
-          bestScale !== undefined ? `${baseUrl}@${bestScale}x` : baseUrl;
-
-        const cacheKey = toCachedLayerUrl(fetchUrl, id);
+        const cacheKey = tileCacheKey(meta, [x, y, z], meta.tileScale);
 
         // skip tiles already in cache (resume support)
         const existing = await cache.match(cacheKey);
@@ -150,41 +343,68 @@ async function downloadTiles(
         });
 
         if (response.ok) {
-          const contentLength = response.headers.get('content-length');
+          const blob = await response.blob();
 
-          if (contentLength) {
-            sizeBytes += parseInt(contentLength, 10);
-          } else {
-            const clone = response.clone();
-            const blob = await clone.blob();
+          sizeBytes += blob.size;
 
-            sizeBytes += blob.size;
-          }
-
-          await cache.put(cacheKey, response);
+          await putTileResponse(
+            cache,
+            cacheKey,
+            response.headers.get('content-type'),
+            blob,
+          );
         }
       }),
     );
 
-    downloaded += results.filter((r) => r.status === 'fulfilled').length;
+    visited += results.filter((r) => r.status === 'fulfilled').length;
 
     if (
-      downloaded - lastProgressAt >= PROGRESS_INTERVAL ||
+      visited - lastProgressAt >= PROGRESS_INTERVAL ||
       i + BATCH_SIZE >= tileArray.length
     ) {
-      lastProgressAt = downloaded;
+      lastProgressAt = visited;
 
-      dispatch(cacheTilesProgress({ id, downloaded, sizeBytes }));
-
-      await saveCachedTileMap(updateMeta(meta, downloaded, sizeBytes));
+      await commitMeta(dispatch, updateMeta(meta, cachedCount(), sizeBytes));
     }
   }
 
-  activeDownloads.delete(id);
+  endDownload(id, abortController);
 
-  if (!abortController.signal.aborted) {
-    await saveCachedTileMap(updateMeta(meta, meta.tileCount, sizeBytes));
+  const stopped = abortController.signal.aborted;
 
+  // Committed even when stopped, so the tiles of the last part-batch — already
+  // in the cache, their bytes already counted — aren't lost. A resume skips
+  // them as present and would never add their size again.
+  await commitMeta(
+    dispatch,
+    updateMeta(
+      meta,
+      stopped || gated ? cachedCount() : meta.tileCount,
+      sizeBytes,
+    ),
+  );
+
+  if (stopped) {
+    return;
+  }
+
+  // Ends the row's download whether or not every tile was allowed: it is what
+  // clears `activeDownloads`, and a gated pass has nothing left to do either.
+  dispatch(cacheTilesComplete({ id }));
+
+  if (gated) {
+    // Say why the map stops short of the range it was given, or a Resume that
+    // fetches nothing more looks like a failure.
+    dispatch(
+      toastsAdd({
+        style: 'warning',
+        timeout: 10_000,
+        messageKey: 'premiumSkipped',
+        messageLoader: loadCachedMapsMessages,
+      }),
+    );
+  } else {
     // auto-cache static assets on first completed map
     const allMaps = await getCachedTileMaps();
 
@@ -199,8 +419,6 @@ async function downloadTiles(
         // not critical
       }
     }
-
-    dispatch(cacheTilesComplete({ id }));
 
     const cm = await loadCachedMapsMessages(language);
 
@@ -228,15 +446,41 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
   handle({ action, dispatch, getState }) {
     trackMatomo(['trackEvent', 'MapCache', 'start', action.payload.sourceType]);
 
+    const id = action.payload.type;
+
+    // registered up front so a stop or a delete arriving while the metadata is
+    // being written finds something to abort
+    const abortController = beginDownload(id);
+
     // save initial metadata to IndexedDB, then download in the background;
     // surface a write failure (e.g. IndexedDB blocked) the same way as a
     // download failure instead of leaving it as an unhandled rejection
     saveCachedTileMap(action.payload)
-      .then(() =>
-        downloadTiles(action.payload, dispatch, getState().l10n.language),
-      )
+      .then(async () => {
+        // a delete that beat the write would have been undone by it
+        if (!getState().map.cachedMaps.some((m) => m.type === id)) {
+          await deleteCachedTileMap(id);
+
+          return;
+        }
+
+        // stopped instead: the map stays, at nothing cached yet
+        if (abortController.signal.aborted) {
+          endDownload(id, abortController);
+
+          return;
+        }
+
+        await downloadTiles(
+          action.payload,
+          dispatch,
+          getState().l10n.language,
+          getState().auth.user,
+          abortController,
+        );
+      })
       .catch((err: unknown) => {
-        if (err instanceof DOMException && err.name === 'AbortError') {
+        if (isAbortError(err)) {
           return;
         }
 
@@ -252,81 +496,132 @@ export const cacheTilesStartProcessor: Processor<typeof cacheTilesStart> = {
   },
 };
 
-export const cacheTilesPauseProcessor: Processor<typeof cacheTilesPause> = {
-  actionCreator: cacheTilesPause,
+/**
+ * Halts the caching pass, leaving the tiles and the metadata in place so it can
+ * be picked up again later.
+ */
+export const cacheTilesStopProcessor: Processor<typeof cacheTilesStop> = {
+  actionCreator: cacheTilesStop,
   handle({ action }) {
-    const state = activeDownloads.get(action.payload.id);
-
-    if (state) {
-      state.paused = true;
-
-      state.pausePromise = new Promise<void>((resolve) => {
-        state.pauseResolve = resolve;
-      });
-    }
-  },
-};
-
-export const cacheTilesResumeProcessor: Processor<typeof cacheTilesResume> = {
-  actionCreator: cacheTilesResume,
-  handle({ action }) {
-    const state = activeDownloads.get(action.payload.id);
-
-    if (state) {
-      state.paused = false;
-
-      state.pauseResolve?.();
-
-      state.pausePromise = null;
-      state.pauseResolve = null;
-    }
-  },
-};
-
-export const cacheTilesCancelProcessor: Processor<typeof cacheTilesCancel> = {
-  actionCreator: cacheTilesCancel,
-  async handle({ action }) {
-    const state = activeDownloads.get(action.payload.id);
-
-    if (state) {
-      state.abortController.abort();
-      state.pauseResolve?.();
-
-      activeDownloads.delete(action.payload.id);
-    }
-
-    await caches.delete(`tiles-${action.payload.id}`);
-    await deleteCachedTileMap(action.payload.id);
+    abortDownload(action.payload.id);
   },
 };
 
 export const cachedMapDeletedProcessor: Processor<typeof cachedMapDeleted> = {
   actionCreator: cachedMapDeleted,
   async handle({ action }) {
-    // also cancel if downloading
-    const state = activeDownloads.get(action.payload.id);
-
-    if (state) {
-      state.abortController.abort();
-      state.pauseResolve?.();
-
-      activeDownloads.delete(action.payload.id);
-    }
+    abortDownload(action.payload.id);
 
     await deleteCachedTileMap(action.payload.id);
   },
 };
 
-export const cachedMapRenamedProcessor: Processor<typeof cachedMapRenamed> = {
-  actionCreator: cachedMapRenamed,
-  async handle({ action, getState }) {
-    const meta = getState().map.cachedMaps.find(
-      (cm) => cm.type === action.payload.id,
-    );
+export const cachedMapEditedProcessor: Processor<typeof cachedMapEdited> = {
+  actionCreator: cachedMapEdited,
+  errorKey: 'general.operationError',
+  async handle({ action, dispatch, getState }) {
+    const { prev, next } = action.payload;
 
-    if (meta) {
-      await saveCachedTileMap(meta);
+    const id = next.type;
+
+    // a rename leaves every tile where it is
+    if (sameCoverage(prev, next)) {
+      await updateCachedTileMap(next);
+
+      // The worker remembers where a map's misses go, and an edit is the one
+      // thing that can move them. Only after the write: told any earlier, it
+      // would re-read the metadata this is replacing and keep it for good.
+      notifyServiceWorker('cached-maps-changed');
+
+      return;
     }
+
+    // registered before the pruning, which can take a while on a big shrink, so
+    // a stop or a delete arriving meanwhile has something to abort
+    const abortController = beginDownload(id);
+
+    const cache = await caches.open(prev.cacheName);
+
+    // Resolve the scale from the map as it was: the edited coverage can start
+    // somewhere the download never reached, where probing would find nothing
+    // and fall back to whatever this screen's DPI suggests — orphaning every
+    // tile already stored at the other variant.
+    const tileScale =
+      prev.tileScale ??
+      (await detectCachedScale(cache, prev)) ??
+      getCachedTileScale(prev);
+
+    // Recorded before anything is deleted: a reload mid-prune would otherwise
+    // leave the old coverage on record, claiming as Ready a map whose tiles are
+    // already going. Both counters are estimates here and are replaced with
+    // what the walk below actually finds.
+    const meta: CachedTileMapDef = {
+      ...next,
+      tileScale,
+      downloadedCount: countCachedOf(
+        coverageOf(prev),
+        coverageOf(next),
+        prev.downloadedCount,
+      ),
+    };
+
+    await commitMeta(dispatch, meta);
+
+    notifyServiceWorker('cached-maps-changed');
+
+    // Widening drops nothing, so every tile the map had is still inside and its
+    // own count carries over — no need to walk the cache to find that out.
+    const { keptCount, removedBytes } = coverageIncludes(
+      coverageOf(next),
+      coverageOf(prev),
+    )
+      ? { keptCount: prev.downloadedCount, removedBytes: 0 }
+      : await pruneTilesOutside(
+          { ...prev, tileScale },
+          next,
+          abortController.signal,
+        );
+
+    // Stopped part-way, so these counts describe only what was walked. Leave the
+    // map on the metadata committed before the pruning: writing a late partial
+    // correction would clobber whatever took over meanwhile — a resumed
+    // download, or a second edit. See TODO.md for the tiles left orphaned.
+    if (abortController.signal.aborted) {
+      endDownload(id, abortController);
+
+      return;
+    }
+
+    const pruned: CachedTileMapDef = {
+      ...meta,
+      downloadedCount: keptCount,
+      sizeBytes: Math.max(0, meta.sizeBytes - removedBytes),
+    };
+
+    // A delete landing here aborts, so it is caught above; and `commitMeta`
+    // won't recreate a map that has gone either way.
+    await commitMeta(dispatch, pruned);
+
+    // widening only fetches what the cache lacks, and a pure shrink goes over
+    // the remaining tiles and finds them all present
+    downloadTiles(
+      pruned,
+      dispatch,
+      getState().l10n.language,
+      getState().auth.user,
+      abortController,
+    ).catch((err: unknown) => {
+      if (isAbortError(err)) {
+        return;
+      }
+
+      dispatch(
+        cacheTilesError({
+          id,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+    });
   },
 };
 
@@ -342,8 +637,13 @@ export const cacheTilesRestartProcessor: Processor<typeof cacheTilesRestart> = {
       return;
     }
 
-    downloadTiles(meta, dispatch, getState().l10n.language).catch((err) => {
-      if (err instanceof DOMException && err.name === 'AbortError') {
+    downloadTiles(
+      meta,
+      dispatch,
+      getState().l10n.language,
+      getState().auth.user,
+    ).catch((err) => {
+      if (isAbortError(err)) {
         return;
       }
 

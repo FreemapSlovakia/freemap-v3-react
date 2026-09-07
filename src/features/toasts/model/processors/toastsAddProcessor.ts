@@ -15,7 +15,7 @@ export const toastsAddProcessor: Processor<typeof toastsAdd> = {
       removeTimeout(toast.id);
     }
 
-    if (typeof timeout === 'number') {
+    if (typeof timeout === 'number' && !toast?.pinned) {
       setupTimeout(id, timeout, dispatch);
     }
   },

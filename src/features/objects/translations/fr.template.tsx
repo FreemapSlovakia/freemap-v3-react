@@ -5,14 +5,8 @@ import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
-  detail: ({ result }) => (
-    <ObjectDetails
-      result={result}
-      openText="Ouvrir sur OpenStreetMap.org"
-      historyText="historique"
-      editInJosmText="Modifier dans JOSM"
-    />
-  ),
+  detail: (props) => <ObjectDetails {...props} />,
+  elevation: 'Altitude',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Pour voir les objets par type, vous devez zoomer jusqu’au niveau ${minZoom} au moins.`,
@@ -35,12 +29,14 @@ const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Style de marqueur des objets',
   },
   source: 'Source',
+  showDetails: 'Détails',
+  openInOsm: 'OpenStreetMap.org',
+  osmHistory: 'OpenStreetMap.org (historique)',
   type: 'Type',
   markerShape: 'Forme du marqueur',
-  convertAsPoint: 'En point',
-  convertWithGeometry: 'Avec la géométrie complète',
+  tooManyForLookup: ({ count, limit }) =>
+    `Trop d'objets à afficher comme résultats (${count}, au maximum ${limit}). Zoomez ou restreignez le filtre.`,
   showAsLookup: 'Afficher comme Résultat',
-  convertAll: 'Convertir tous les objets visibles en dessin',
 };
 
 export default fr;

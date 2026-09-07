@@ -1,4 +1,3 @@
-import { DEM_RESOLUTION_METERS } from '@shared/geoutils.js';
 import { getCoords } from '@turf/invariant';
 import type { Feature, LineString } from 'geojson';
 import {
@@ -21,12 +20,11 @@ function elevationSpec(
     c.length >= 3 && Number.isFinite(c[2]) ? (c[2] as number) : NaN,
   );
 
-  // Always denoised over the DEM resolution; widened further when zoomed out.
-  const smoothSpan = featureSmoothingSpan(
-    DEM_RESOLUTION_METERS,
-    coords,
-    options,
-  );
+  // Smoothed only to keep detail finer than a few pixels from reading as color
+  // noise when zoomed out. No baseline of its own: the elevation this reads is
+  // already despiked (`smoothElevation`), and a second fixed window here would
+  // show more terrain in the chart than in the line beside it.
+  const smoothSpan = featureSmoothingSpan(0, coords, options);
 
   return { coords, values, smoothSpan };
 }

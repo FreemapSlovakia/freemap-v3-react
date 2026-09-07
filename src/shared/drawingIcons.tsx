@@ -1,7 +1,7 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import type { Node } from '@osm/types.js';
+import { poiIcons } from '@osm/poiIcons.js';
 import type { IconSvg } from '@shared/components/RichMarker.js';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -569,6 +569,25 @@ export function loadAllIcons(): Promise<IconDefinition[]> {
 }
 
 /**
+ * Resolves a Font Awesome solid icon by `iconName` outside React, loading the
+ * set if needed. Answers from the whole solid set, not just the curated picker
+ * subset, so a stored `fa:<name>` renders even when it isn't pickable.
+ */
+export async function getFaIcon(
+  name: string,
+): Promise<IconDefinition | undefined> {
+  const cached = iconCache.get(name);
+
+  if (cached) {
+    return cached;
+  }
+
+  await loadAllIcons();
+
+  return iconCache.get(name);
+}
+
+/**
  * Resolves a Font Awesome solid icon by `iconName`. Returns a cached definition
  * synchronously when available, otherwise triggers the lazy load and resolves
  * on the next render. Returns `undefined` until ready / if the name is unknown.
@@ -599,46 +618,38 @@ export function useFaIcon(
   return cached;
 }
 
-// Bundled OSM poi icons, mapped name <-> built asset URL. The URLs are taken
-// straight from `osmTagToIconMapping` (the same strings used to display the OSM
-// objects), so converting an object to a drawing point can round-trip its icon
-// as `poi:<name>` without a second enumeration mechanism that could drift.
-export const poiIconNameToUrl: Record<string, string> = {};
+/**
+ * The bundled poi icon name for a feature's OSM tags, or undefined if none
+ * matches. Non-string property values are ignored, so a GeoJSON feature's
+ * properties can be passed straight in.
+ */
+export function tagsToPoiIconName(
+  tags: Record<string, unknown> | null | undefined,
+): string | undefined {
+  if (!tags) {
+    return undefined;
+  }
 
-export const poiIconUrlToName: Record<string, string> = {};
+  const strings: Record<string, string> = {};
 
-// Derives the stable icon name from an asset URL by taking the filename stem
-// (poi filenames have no dots in them, only an extension and optional hash).
-function urlToPoiName(url: string): string {
-  const file = url.split(/[?#]/)[0].split('/').pop() ?? url;
-
-  return file.split('.')[0];
-}
-
-(function collectPoiIcons(node: Node) {
-  for (const value of Object.values(node)) {
+  for (const [key, value] of Object.entries(tags)) {
     if (typeof value === 'string') {
-      const name = urlToPoiName(value);
-
-      poiIconNameToUrl[name] = value;
-
-      poiIconUrlToName[value] = name;
-    } else {
-      collectPoiIcons(value);
+      strings[key] = value;
     }
   }
-})(osmTagToIconMapping);
+
+  return resolveGenericName(osmTagToIconMapping, strings)[0];
+}
 
 /**
- * Resolves the bundled poi icon for a feature's OSM tags as a `poi:<name>`
- * spec, or undefined if the tags map to no icon.
+ * The same icon as a `poi:<name>` spec. `osmTagToIconMapping` already names
+ * icons the way a spec does, so converting an object to a drawing point
+ * round-trips its icon with no second naming mechanism to drift.
  */
 export function tagsToPoiIconSpec(
-  tags: Record<string, string>,
+  tags: Record<string, unknown> | null | undefined,
 ): string | undefined {
-  const url = resolveGenericName(osmTagToIconMapping, tags)[0];
-
-  const name = url ? poiIconUrlToName[url] : undefined;
+  const name = tagsToPoiIconName(tags);
 
   return name ? poiSpec(name) : undefined;
 }
@@ -656,7 +667,7 @@ export function faIconToSvg(def: IconDefinition): IconSvg {
  * `RichMarker` content prop it maps to. Returns `{}` when the spec is missing
  * or a `fa:*` icon hasn't lazy-loaded yet; callers decide how to fall back.
  *
- * The return type is a discriminated union (exactly one of `image`/`iconSvg`/
+ * The return type is a discriminated union (exactly one of `poi`/`iconSvg`/
  * `label` is set, or none) so callers can `{...spread}` it into RichMarker
  * without TS widening the props into a forbidden intersection.
  */
@@ -670,7 +681,11 @@ export function useIconContentProps(icon: string | undefined) {
   const iconSvg = useMemo(() => faDef && faIconToSvg(faDef), [faDef]);
 
   return spec?.kind === 'poi'
-    ? { image: poiIconNameToUrl[spec.name] }
+    ? // An icon that isn't there resolves to nothing, so a caller that falls
+      // back on empty content still gets its fallback rather than a bare marker.
+      poiIcons[spec.name]
+      ? { poi: spec.name }
+      : {}
     : spec?.kind === 'fa'
       ? iconSvg
         ? { iconSvg }

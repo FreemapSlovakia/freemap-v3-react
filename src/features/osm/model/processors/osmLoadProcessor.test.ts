@@ -1,0 +1,243 @@
+import type { RootState } from '@app/store/store.js';
+import {
+  type SearchResult,
+  searchSelectResult,
+  searchUnselectResult,
+} from '@features/search/model/actions.js';
+import { loadingResult } from '@features/search/model/resultUtils.js';
+import { featureIdsEqual, type OsmFeatureId } from '@shared/types/featureId.js';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { osmLoad } from '../osmActions.js';
+import { osmLoadProcessor } from './osmLoadProcessor.js';
+
+// Only the fetch is replaced; the rest of the module is left alone, since other
+// things in the graph use `osmApiFeatureId`.
+vi.mock('@shared/osmApi.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@shared/osmApi.js')>()),
+  fetchOsmFeaturesById: vi.fn(),
+}));
+
+const { fetchOsmFeaturesById } = await import('@shared/osmApi.js');
+
+const fetchMock = vi.mocked(fetchOsmFeaturesById);
+
+/**
+ * The processor loads any number of elements in one fetch, so what it has to
+ * get right is which of them it answers for: each element is shown, dropped, or
+ * reported on its own, out of the one response they share.
+ */
+
+const nodeId = (id: number): OsmFeatureId => ({
+  type: 'osm',
+  elementType: 'node',
+  id,
+});
+
+const nodeFeatures = (...ids: number[]) =>
+  new Map(
+    ids.map((id) => [
+      `node/${id}`,
+      {
+        type: 'Feature' as const,
+        id: `node/${id}`,
+        bbox: [17, 48, 17, 48] as [number, number, number, number],
+        geometry: {
+          type: 'Point' as const,
+          coordinates: [17, 48] as [number, number],
+        },
+        properties: { amenity: 'pub' },
+      },
+    ]),
+  );
+
+/** The shown results, mutable so a dispatch can be played back into them. */
+function harness(initial: SearchResult[], myMaps: object = {}) {
+  let shown = initial;
+
+  const dispatch = vi.fn((action) => {
+    if (searchUnselectResult.match(action)) {
+      shown = shown.filter(
+        (result) => !featureIdsEqual(result.id, action.payload),
+      );
+    }
+
+    return action;
+  });
+
+  const getState = () =>
+    ({
+      search: { selectedResults: shown },
+      myMaps,
+    }) as unknown as RootState;
+
+  return {
+    dispatch,
+    getState,
+    toastError: vi.fn(async () => {}),
+    remove: (id: OsmFeatureId) => {
+      shown = shown.filter((result) => !featureIdsEqual(result.id, id));
+    },
+    selected: () =>
+      dispatch.mock.calls
+        .map(([action]) => action)
+        .filter(searchSelectResult.match)
+        .map((action) => action.payload?.result.id),
+  };
+}
+
+const run = (h: ReturnType<typeof harness>, ids: OsmFeatureId[]) =>
+  osmLoadProcessor.handle?.({
+    action: osmLoad({ ids, focus: false, pin: true }),
+    prevState: h.getState(),
+    getState: h.getState,
+    dispatch: h.dispatch,
+    toastError: h.toastError,
+  });
+
+beforeEach(() => {
+  fetchMock.mockReset();
+});
+
+describe('osmLoadProcessor', () => {
+  it('fetches the whole batch at once and shows every element', async () => {
+    const ids = [nodeId(1), nodeId(2), nodeId(3)];
+
+    fetchMock.mockResolvedValue(nodeFeatures(1, 2, 3));
+
+    const h = harness(ids.map(loadingResult));
+
+    await run(h, ids);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toEqual(ids);
+    expect(h.selected()).toEqual(ids);
+    expect(h.toastError).not.toHaveBeenCalled();
+  });
+
+  it('leaves an element taken off the map while the fetch ran off it', async () => {
+    // One of a batch going doesn't cancel the fetch — the rest of it is still
+    // wanted — so the answer must not put the removed one back on the map.
+    const ids = [nodeId(1), nodeId(2)];
+
+    const h = harness(ids.map(loadingResult));
+
+    fetchMock.mockImplementation(async () => {
+      h.remove(nodeId(1));
+
+      return nodeFeatures(1, 2);
+    });
+
+    await run(h, ids);
+
+    expect(h.selected()).toEqual([nodeId(2)]);
+  });
+
+  it('drops the elements the answer does not hold, and reports them once', async () => {
+    const ids = [nodeId(1), nodeId(2), nodeId(3)];
+
+    fetchMock.mockResolvedValue(nodeFeatures(2));
+
+    const h = harness(ids.map(loadingResult));
+
+    await run(h, ids);
+
+    expect(h.selected()).toEqual([nodeId(2)]);
+
+    expect(
+      h.dispatch.mock.calls
+        .map(([action]) => action)
+        .filter(searchUnselectResult.match)
+        .map((action) => action.payload),
+    ).toEqual([nodeId(1), nodeId(3)]);
+
+    expect(h.toastError).toHaveBeenCalledTimes(1);
+  });
+
+  it('answers per element across a batch of mixed types', async () => {
+    // The database holds only tagged objects, and only within its region, so a
+    // way of the batch can be absent while the node beside it is fine — and
+    // that one must still land on the map.
+    const ids = [
+      nodeId(1),
+      { type: 'osm', elementType: 'way', id: 9 } as const,
+    ];
+
+    fetchMock.mockResolvedValue(nodeFeatures(1));
+
+    const h = harness(ids.map(loadingResult));
+
+    await run(h, [...ids]);
+
+    expect(h.selected()).toEqual([nodeId(1)]);
+    expect(h.toastError).toHaveBeenCalledTimes(1);
+  });
+
+  it('takes the placeholders off when the fetch itself fails', async () => {
+    const ids = [nodeId(1), nodeId(2)];
+
+    fetchMock.mockRejectedValue(new Error('nope'));
+
+    const h = harness(ids.map(loadingResult));
+
+    await run(h, ids);
+
+    expect(h.selected()).toEqual([]);
+
+    expect(
+      h.dispatch.mock.calls
+        .map(([action]) => action)
+        .filter(searchUnselectResult.match),
+    ).toHaveLength(2);
+
+    expect(h.toastError).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the placeholders of a map on its way in when the fetch fails', async () => {
+    // Reloading a saved map offline: every pinned element fails, and the map is
+    // the only thing that can supply them. Taking the placeholders off would
+    // take the elements out of the URL too, and the map would then read as
+    // changed and never be loaded at all.
+    const ids = [nodeId(1), nodeId(2)];
+
+    fetchMock.mockRejectedValue(new Error('offline'));
+
+    const h = harness(ids.map(loadingResult), { restoring: { mapId: 'A' } });
+
+    await run(h, ids);
+
+    expect(
+      h.dispatch.mock.calls
+        .map(([action]) => action)
+        .filter(searchUnselectResult.match),
+    ).toHaveLength(0);
+
+    expect(h.toastError).not.toHaveBeenCalled();
+  });
+
+  it('takes the placeholders off when no map answers for them', async () => {
+    // The same failure for elements the user asked for themselves, with a map
+    // opening: that map carries only what the URL names, so these are theirs to
+    // hear about.
+    const ids = [nodeId(1)] as const;
+
+    fetchMock.mockRejectedValue(new Error('nope'));
+
+    const h = harness(ids.map(loadingResult), { restoring: { mapId: 'A' } });
+
+    await osmLoadProcessor.handle?.({
+      action: osmLoad({ ids: [ids[0]], focus: false }),
+      prevState: h.getState(),
+      getState: h.getState,
+      dispatch: h.dispatch,
+      toastError: h.toastError,
+    });
+
+    expect(
+      h.dispatch.mock.calls
+        .map(([action]) => action)
+        .filter(searchUnselectResult.match),
+    ).toHaveLength(1);
+
+    expect(h.toastError).toHaveBeenCalledTimes(1);
+  });
+});

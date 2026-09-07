@@ -1,28 +1,25 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { PremiumGem } from '@features/premium/components/PremiumGem.js';
-import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { pointToTile } from '@mapbox/tilebelt';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
-import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import {
   type IsTileLayerDef,
   integratedLayerDefs,
   isTileLayerDef,
 } from '@shared/mapDefinitions.js';
+import { pickSubdomain } from '@shared/tileUrl.js';
 import type { LatLon } from '@shared/types/common.js';
-import { Fragment, useCallback, useMemo } from 'react';
-import { Alert, Button, Form, InputGroup, Spinner } from 'react-bootstrap';
+import { Fragment, useMemo } from 'react';
+import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
+import { type ElevationReading, ElevationValue } from './ElevationValue.js';
 
-export type ElevationInfoBaseProps = {
-  elevation: number | null | undefined;
+export type ElevationInfoBaseProps = ElevationReading & {
   point: LatLon;
-  loading: boolean;
 };
 
 export type ElevationInfoProps = ElevationInfoBaseProps & {
@@ -41,15 +38,16 @@ export function ElevationInfo({
   elevation,
   loading,
   point,
+  sources: reportedSources,
+  attributions,
+  error,
   tileMessage,
   maslMessage,
 }: ElevationInfoProps) {
-  const nf01 = useNumberFormat({
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 1,
-  });
-
-  const zoom = useAppSelector((state) => state.map.zoom);
+  // Everything below asks a tile-grid question — which tile holds the point,
+  // which layers reach it, the `z/x/y` shown and searched for — and a tile zoom
+  // is a whole one.
+  const zoom = useAppSelector((state) => Math.round(state.map.zoom));
 
   const [x, y] = pointToTile(point.lon, point.lat, zoom);
 
@@ -57,6 +55,7 @@ export function ElevationInfo({
     url,
     maxNativeZoom,
     extraScales = [],
+    subdomains,
   }: IsTileLayerDef) {
     const [scale] = [1, ...extraScales]
       .map((scale) => [scale, Math.abs(devicePixelRatio - scale)] as const)
@@ -74,13 +73,12 @@ export function ElevationInfo({
         .replace('{x}', String(x))
         .replace('{y}', String(y))
         .replace('{z}', String(z))
-        .replace('{s}', 'a') + (scale !== 1 ? `@${scale}x` : '')
+        .replace('{s}', pickSubdomain(subdomains)) +
+      (scale !== 1 ? `@${scale}x` : '')
     );
   }
 
   const m = useMessages();
-
-  const prm = usePremiumMessages();
 
   const layers = useAppSelector((state) => state.map.layers);
 
@@ -113,9 +111,9 @@ export function ElevationInfo({
     [format, lang, point],
   );
 
-  const handleNextFormatClick = useCallback(() => {
+  const handleNextFormatClick = () => {
     setFormat((f) => (f + 1) % FORMATS.length);
-  }, [setFormat]);
+  };
 
   const copyButton = useCopyButton(coordinates);
 
@@ -123,20 +121,14 @@ export function ElevationInfo({
 
   return (
     <>
-      {loading ? (
-        <div>
-          {maslMessage}: <Spinner animation="border" size="sm" />
-        </div>
-      ) : elevation === undefined ? null : elevation === null ? (
-        <div>
-          {maslMessage}: <span className="text-muted">—</span>
-        </div>
-      ) : (
-        <div>
-          {maslMessage}: <b>{nf01.format(elevation)}</b>&nbsp;{m?.general.masl}
-          <PremiumGem className="ms-1" hint={prm?.higherPrecisionElevation} />
-        </div>
-      )}
+      <ElevationValue
+        elevation={elevation}
+        loading={loading}
+        sources={reportedSources}
+        attributions={attributions}
+        error={error}
+        label={maslMessage}
+      />
 
       <InputGroup size="sm" className="my-2">
         <Form.Control readOnly className="fm-fs-content" value={coordinates} />

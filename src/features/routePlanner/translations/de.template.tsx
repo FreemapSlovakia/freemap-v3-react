@@ -13,19 +13,29 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Intervalle',
     timeLimit: 'Zeitlimit',
     distanceLimit: 'Entfernungslimit',
+    reverseFlow: 'Fahrt zum Punkt',
+    reverseFlowHint:
+      'Die Ringe zeigen dann, von wo aus dieser Punkt erreichbar ist; ohne Haken, wohin man von ihm aus kommt. Einbahnstraßen und Abbiegeverbote machen den Unterschied.',
   },
   point: {
     pick: 'Auf der Karte auswählen',
     current: 'Deine Position',
-    home: 'Startposition',
+    home: 'Heimatposition',
+    fromStart: 'Startposition',
+    fromFinish: 'Zielposition',
     point: 'Routenpunkt',
   },
   transportType: {
     car: 'Auto',
     car4wd: 'Auto (4WD)',
+    carnotoll: 'Auto (mautfrei)',
     bike: 'Fahrrad',
+    ebike: 'E-Bike',
+    gravelbike: 'Gravelbike',
     foot: 'Zu Fuß',
+    stroller: 'Kinderwagen / Rollstuhl',
     hiking: 'Wandern',
+    easyhike: 'Leichtes Wandern',
     mtb: 'Mountainbike',
     racingbike: 'Rennrad',
     motorcycle: 'Motorrad',
@@ -39,6 +49,9 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     isochrone: 'Isochronen',
   },
   milestones: 'Kilometermarkierungen',
+  milestonesOff: 'Aus',
+  recompute: 'Route neu berechnen',
+  maxAlternatives: 'Max. Anzahl der Routenvorschläge',
   style: {
     menuItem: 'Routenstil',
     title: 'Routenstil',
@@ -58,6 +71,7 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Start und Ziel tauschen',
   development: 'in Entwicklung',
   alternative: 'Alternative',
+  isochroneRing: 'Isochrone',
   distance: ({ value, diff }) => (
     <>
       Entfernung:{' '}
@@ -65,6 +79,11 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
         {value}
         {diff ? ` (+ ${diff})` : ''}
       </b>
+    </>
+  ),
+  tolled: ({ value }) => (
+    <>
+      Mautstrecken: <b>{value}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

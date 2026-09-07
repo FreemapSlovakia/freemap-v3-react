@@ -1,10 +1,13 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { mapsLoaded } from '@features/myMaps/model/actions.js';
+import { mapsLoaded, mapsLoadFailed } from '@features/myMaps/model/actions.js';
 import {
   routePlannerAddPoint,
+  routePlannerFindRoute,
+  routePlannerRecompute,
   routePlannerRemovePoint,
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
+  routePlannerSetMaxAlternatives,
   routePlannerSetMode,
   routePlannerSetParams,
   routePlannerSetPoint,
@@ -14,6 +17,7 @@ import {
   routePlannerSetTransportType,
   routePlannerSwapEnds,
 } from '../actions.js';
+import { storedRouteIsShowing } from '../reducer.js';
 
 export const updateRouteTypes = [
   routePlannerSetStart,
@@ -28,11 +32,26 @@ export const updateRouteTypes = [
   routePlannerSetParams,
   routePlannerSetRoundtripParams,
   routePlannerSetIsochroneParams,
+  // Asking for a different number of routes is asking for a different answer.
+  routePlannerSetMaxAlternatives,
+  routePlannerRecompute,
+  routePlannerFindRoute,
   mapsLoaded,
+  // Opens no map, so nothing else answers for the waypoints `deferRouting` left
+  // unrouted.
+  mapsLoadFailed,
 ];
 
 export const routePlannerFindRouteProcessor: Processor = {
   actionCreator: updateRouteTypes,
+  // The map's stored route already answers for these waypoints and is on screen
+  // — asking the router again would cost a request, fail offline, and come back
+  // with whatever the routing graph says today rather than what was planned.
+  // Where it answers but isn't showing, the handler puts it back instead.
+  statePredicate: (state) => !storedRouteIsShowing(state.routePlanner),
+  // See `deferRouting`: the map on its way in owns the route.
+  actionPredicate: (action) =>
+    !routePlannerSetParams.match(action) || !action.payload.deferRouting,
   id: 'routePlanner',
   // route-fetch errors are reported by the handler itself (see
   // findRouteProcessorHandler); unexpected throws fall back to the generic

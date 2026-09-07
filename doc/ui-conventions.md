@@ -3,6 +3,13 @@
 Conventions for react-bootstrap UI so new code looks like the rest of the app.
 Derived from how the codebase already uses these components, not invented.
 
+Covered here: [button variants](#button-variants),
+[single vs. multiple selection](#single-vs-multiple-selection),
+[tokens](#tokens-come-from-bootstrap), [icon sizes](#icon-sizes),
+[touch targets](#touch-targets-and-the-marker-primitive),
+[where a hint goes](#where-a-hint-goes),
+[spacing](#spacing-the-container-decides), [toolbar outlines](#toolbar-outlines).
+
 ## Button variants
 
 `variant` encodes the button's **role**, not its color or its surface. The same
@@ -17,7 +24,322 @@ a floating toolbar over the map.
 | **Destructive** | `danger` | Delete / Remove / Cancel-download and other irreversible actions. **Solid, not `outline-danger`.** Also turns the packed `ResponsiveActions` dropdown item red. |
 | **Toggle** | `outline-primary` | `ToggleButton` / `ToggleButtonGroup` members — bootstrap fills them solid-primary when checked. For a lone `active`-driven toggle button, use `primary` when active and `outline-primary` when not. |
 | **Upsell / notice** | `warning` | Premium prompts, support/donate CTAs, attention notices. Keep rare — it's an attention color. |
-| **Inline text link** | `link` | A button that should read as a hyperlink inside prose or a dense row. |
+| **Inline text link** | `link` | A button that should read as a hyperlink: inside prose, in a dense row, or a footer entry that goes to another screen rather than acting on this one (see the offline-maps list's link to the browse cache). |
+
+### Toggle state vs. pointer state
+
+Toggling is signalled by the fill: `outline-primary` toggles fill solid primary
+when on, `secondary` toggles go near-black (`.btn-secondary.active` in
+`bootstrap-override.css`). For that to read at all, hover and focus must never
+reach for the same fill — stock Bootstrap paints `:hover` and `:focus-visible`
+with exactly the `.active` colors, which makes an off-but-hovered button
+indistinguishable from an on one (and leaves a tapped button looking on until
+the touch device drops its emulated hover). `bootstrap-override.css` therefore
+splits the two channels:
+
+- **off + hover/focus** → a subtle tint (`--bs-*-bg-subtle`), never the fill.
+- **on + hover** → the fill, darkened one step, so a toggled button still reacts.
+- Focus rings and `:active` press feedback are left to Bootstrap.
+
+Use `:focus-visible`, not `:focus`, in any button-state CSS: `:focus` sticks
+after a click or tap and repaints the button long after the pointer has left.
+
+Since color is the only cue, a lone `active`-driven toggle also gets
+`aria-pressed` (react-bootstrap's `active` prop only adds the class) — see the
+tool pill in `ToolMenu`.
+
+## Single vs. multiple selection
+
+Whether toggle buttons are **joined** or **separated** is what tells the user how
+many of them can be on, so it follows the selection, never the layout:
+
+- **Single selection** — a joined `<ButtonGroup>` of `type="radio"`
+  `ToggleButton`s. The shared borders say "exactly one of these".
+- **Multiple selection** — separate `type="checkbox"` `ToggleButton`s in a
+  `d-flex flex-wrap gap-2`, each independently rounded (see
+  `ExportablesSelector`). The gaps say "each of these on its own".
+
+### When a joined group doesn't fit
+
+`.btn-group` is `flex-wrap: nowrap` with no shrink, so a group too wide for its
+container pushes the whole surface wider instead of adapting — on a phone that
+means a modal wider than the viewport, with the last options cut off. Two ways
+out, and the label lengths decide which:
+
+- **A few options** → keep it joined and stack it: `<ButtonGroup vertical={!sm}>`
+  with `sm` from `useBreakpointMatches`. `.btn-group-vertical` carries its own
+  seam rules, so the joining, the corner rounding and the collapsed borders all
+  stay right, and every option stays visible. Don't reach for the `flex-column`
+  utilities instead — they flip the axis but leave `.btn-group`'s horizontal
+  seam rules in place, which staggers the buttons by a pixel and rounds the
+  wrong corners.
+- **Many or long options** → it was the wrong control. Use a `Form.Select`
+  (a bare `<option value="" />` for "none"), which is a single-choice idiom too,
+  so the rule above still holds.
+
+Nothing here wraps a joined group into rows: Bootstrap rounds corners per group,
+not per row, so every wrapped row after the first comes out square-cornered.
+
+`MapAreaToggle` takes a third route — `fm-ellipsis` on each button, so where the
+room runs out the two options truncate instead of pushing the surface wider. It
+reads well because there are exactly two of them and each stays recognizable
+clipped. Treat it as the exception: it costs label text, and with more options,
+or options that differ only near the end, it stops being readable.
+
+A joined group is `inline-flex`, so it takes its content's width and no more —
+which is what a group of short options (`1×`, `2×`, `4×`) should do. Don't add
+`d-flex` to stretch one across the surface: `.btn-group > .btn` is
+`flex: 1 1 auto`, so that stretches every option too, and a two-character label
+in a full-width button reads as a mistake. A `<Form.Label>` above it then needs
+`d-block` of its own, since `label` is `inline-block` and the group no longer
+forces the break.
+
+## Tokens come from Bootstrap
+
+Bootstrap keeps its scales in Sass, and the app's own rules are plain CSS, so
+`index.scss` **republishes them as custom properties** rather than letting a
+literal be re-typed into a rule. Nothing in `index.css` or a component's CSS
+should carry a spacing or size number that Bootstrap already has a name for.
+
+| Token | Derived from | Is |
+| --- | --- | --- |
+| `--fm-space-0…5` | `$spacers`, key for key | `--fm-space-2` is what `.p-2` / `.gap-2` use |
+| `--fm-shadow-1` / `-2` | blur off `$spacers` 1 and 2 | what lifts a thing off the map: toolbars, then the floating panels dragged over them |
+
+The two shadows are the app's own rather than Bootstrap's `.shadow`, which drops
+its shadow *below* the box — right for a card on a page, wrong over a map, where
+a panel is a loose sheet and its top edge has to lift too. So they spread evenly
+and differ only in blur.
+
+Restyle a Bootstrap component through **its own** custom properties, not by
+overriding the property it computes — the coarse-pointer menu row sets
+`--bs-dropdown-item-padding-*` rather than a `padding`. Derive rather than
+measure where the value is implied by another: a toolbar's hit area is its own
+height less its own padding.
+
+An outright constant is fair only where nothing implies it: `.fm-icon-wordmark`'s
+`400%`, which is what a logotype in a square 24×24 viewBox needs to read as a
+word.
+
+## Icon sizes
+
+A react-icons glyph is `1em` of the element it sits in, so **an icon's size is a
+font size**. A `.btn`'s icon therefore comes out at 1rem, while a bare glyph
+beside the button takes whatever the surrounding text is — which is how a toolbar
+ends up reading as two sizes.
+
+Three steps are the only sizes an icon takes, and all three are Bootstrap's own
+classes — the app has none of its own here:
+
+| Class | Is | Use for |
+| --- | --- | --- |
+| `small` | `0.875em` | A mark subordinate to the text it annotates, or one inside a `btn-sm`. Relative, so it stays proportional wherever it lands. |
+| `fs-6` | `1rem` | **The default.** What a `.btn`'s own icon comes out at, and so what a mark in a menu row — where everything is text-sized — has to be. |
+| `fs-5` | `1.25rem` | A glyph that is the whole control and has nothing to match — the social links in the main menu. Rare. |
+
+`fs-*` carries `!important`, so a container cannot resize the marks inside it
+from CSS. Resize them where they are made instead — a different `size` on the
+`GlyphMarker`, or none at all where the mark should take its container's font
+size, which is what a bare glyph in a heading already does.
+
+### One size in a toolbar, and room instead of size
+
+A bare glyph in a toolbar takes `fs-6` — **the same size as the icon in the
+button beside it**. It's tempting to size it up, since a button's box and padding
+give its icon a presence a lone glyph has none of; don't. Two glyphs at two sizes
+a few pixels apart read as a mistake, not as a hierarchy.
+
+What the mark gets instead of size is **room**: the hit area below, of which it
+keeps a step as visible air. That is what makes it hold its own next to a button.
+
+Don't write a one-off `fontSize` or `size={…}` for an icon, or reach for a step
+outside the three above. Two documented exceptions:
+
+- **`fm-icon-wordmark`** — a logotype drawn as an icon (the Garmin mark) is a
+  word, not a glyph, and needs the width of one; a negative block margin in the
+  scaled `em` gives back the empty box so the row's height is unchanged.
+- **Components that size themselves in pixels** — `Rating`,
+  `Azimuth`. Name the constant and tie it to a step (see `GalleryViewerModal`),
+  and give an interactive one at least 24px.
+
+## Touch targets and the marker primitive
+
+A glyph carries about 16px of ink. WCAG 2.2 SC 2.5.8 asks for 24×24 CSS px — so a
+bare glyph that means something is a target a fingertip cannot reliably land on.
+That matters more here than usual: `LongPressTooltip` is the only way these marks
+say what they mean on touch, so a target the finger misses removes the
+explanation entirely, and for an acting mark the action with it.
+
+**`GlyphMarker`** is the one place that decides all of it — the glyph's size, the
+hit area, and pointer events inside a disabled container (a disabled control takes
+pointer events away from its content, and the mark is often what says *why* it is
+disabled). `OfflineBadge`, `PremiumGem`, `ExperimentalFunction`, `StatusIcon` /
+`UnsavedWarningIcon`, `CountryFlag` and `MapSwitchButton`'s layer badges are all
+thin wrappers over it. A new mark should be one too, not another hand-rolled
+`LongPressTooltip` + `<span>`.
+
+Being one place is also what lets a mark know where it is. `LongPressTooltip`
+marks its own body with a context, and a `GlyphMarker` that finds itself in one
+renders the glyph alone — no hit area, no second tooltip. So a mark can go in a
+tooltip's label without the call site deciding anything: the same
+`<OfflineBadge>` or `<CountryFlag>` reads as a mark in a menu row and as a plain
+glyph in the tooltip beside it.
+
+### The hit area is invisible
+
+`.fm-marker-target` is one rule: a step of inline padding each side, and a step
+of block padding given straight back as margin. **24×32**, the same box the
+tool's own head gets from `px-1 py-2 my-n2` — that head is the shape to match.
+
+Not a step more. `py-3` would make it 48px tall, which is taller than a toolbar's
+own content box: the overspill lands on the map, so a tap meant for the map hits
+the mark instead.
+
+Being real padding rather than an overlay, two marks side by side **tile** — one
+can never swallow the other's taps or its tooltip. Where the container already
+puts a step between its children, the first of two marks swallows that gap with a
+trailing negative margin, so the pair doesn't end up a step *plus* a gap *plus* a
+step apart. Every mark keeps the same 24px box that way, and the two boxes meet
+edge to edge; dropping the second mark's leading padding instead would close the
+same distance but leave it 20px wide against its neighbour's 24.
+
+It hangs off the first mark rather than pulling the second one back because these
+containers wrap. At a line break the margin then lands at a line end, where it
+only frees up slack; on the second mark it would push it out past the content
+edge, on a line where there is no gap to cancel in the first place.
+
+The containers that qualify are the ones whose gap is exactly one step — the
+toolbars and a menu row, which set it in CSS, and anything carrying `gap-1`. A
+container with no gap at all needs nothing: two marks already tile there.
+
+**The two axes cost differently.** Block padding is free — that direction is the
+line's own leading, dead space, and it is given straight back as margin so
+nothing moves. Inline padding is not: it is real width, so a mark *does* push its
+neighbours a step apart. That is the deal, and it is why the step is one unit and
+not two — grow it further and the row visibly reshuffles. Reaching instead of
+pushing (padding plus a negative margin) is available where the surrounding text
+already supplies the space, but it needs `position-relative` to beat the text
+that follows, and it must never reach over another mark.
+
+**A mark brings its own step and no more.** Anything wider is the call site's or
+the container's to say — a `gap`, or an `ms-1` where running text wants more air
+than the step (see `ElevationValue`). The mark carries no inline *margin*, so a
+margin utility on it composes normally, and its own step is padding rather than
+margin so the room is room a finger can use.
+
+### The glyph's box
+
+A bare mark's box is `.fm-glyph` — `inline-block` plus `line-height: 0` — and
+that is load bearing. The glyph then sits in an ordinary line box, so the mark's
+baseline is that line box's, which is the glyph's bottom edge: exactly where an
+`<svg>` in the surrounding text sits. **Don't reach for a flex box here.** With
+nothing in it that has a baseline of its own it synthesizes one from its own
+border box, which the padding has just moved, and the mark rides that much above
+the line it annotates. `align-items: baseline` is supposed to fix that and doesn't
+reliably, since a replaced item has no baseline either.
+
+### Everything else is a Bootstrap utility
+
+There is no class for "a toolbar head" or "a bare readout in a toolbar" — those
+were custom classes hiding three Bootstrap utilities and a `:has()` rule that
+guessed what the call site already knew. Write it out instead, where it can be
+read without opening a stylesheet:
+
+| Wanted | Written |
+| --- | --- |
+| A toolbar head (icon + name, its own long-press target) | `align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2` |
+| The same, where the icon is itself a button | drop `px-1 py-2 my-n2` — the button is the target and sits where a button sits |
+| A bare readout or hint in a toolbar | `px-1`, or `ps-1` where a mark follows — a toolbar gives its marks a margin of their own |
+| A taller target on a phrase in prose | `py-2` — vertical padding on an inline box doesn't move the line |
+| A target on a standalone icon link | `p-2 m-n2`, with the row's `gap-3` so the targets meet rather than overlap |
+| A mark where the sentence already puts a space after it | `me-n1 position-relative` — reach over that space instead of adding a second one. `position-relative` is the point: inline content that follows paints over an in-flow box, so without it the gap looks right but answers to the sentence rather than to the mark (see `UserChip`). |
+
+## Where a hint goes
+
+A sentence explaining a setting goes behind a `HintMark` — the `?` beside the
+control — not into a `Form.Text` under it. A panel of eight settings each
+carrying its own paragraph is a wall of prose: the labels stop standing out, and
+the footer gets pushed off a phone screen. The `?` sits **inside** the
+`<Form.Label>`, like any other mark; beside a `Form.Check` it goes outside the
+`<label>`, in a bare `d-flex` row, or tapping the explanation would toggle the
+setting. No `gap` on that row — the mark brings its own step, and a gap on top
+of it reads as a mark that has drifted away from what it explains.
+
+`Form.Text` stays for what a `?` would hide at the moment it is needed:
+
+- **Conditional or state text** — why a control is disabled, what the current
+  filter excludes, a warning about what won't be exported.
+- **A consequence at the point of entry** — what happens to the email address
+  being typed into the field above it.
+- **A reference consulted while typing** — the placeholder keys a label may
+  carry. A tooltip closes as soon as the field is touched.
+- **A description of the current value**, which changes with the selection — a
+  licence's terms, not a fixed explanation of the picker.
+
+## Spacing: the container decides
+
+**One spacing decision per container, never a margin per child.** A toolbar whose
+children each carry their own `ms-1` cannot keep an even rhythm, and a mark
+inserted between two buttons lands wherever its own class puts it.
+
+These containers own the gap; nothing inside them carries a margin:
+
+| Container | Gap | Where |
+| --- | --- | --- |
+| `.fm-toolbar` | `0.25rem` | `index.css` |
+| `.btn-toolbar` | `0.25rem` | `bootstrap-override.css` — a `gap-*` utility overrides it where a toolbar wants more air (see `Toast`) |
+| `.dropdown-item` | `0.25rem` | `bootstrap-override.css`; a wrapping flex row, so a long label still wraps inside its own item |
+| `ResponsiveActions` | `gap` prop | its own `d-inline-flex` |
+
+**One gap vocabulary: Bootstrap's `gap-*` utilities.** The project's own
+`f-gap-1` / `f-gap-2` are gone; don't reintroduce a parallel set.
+
+Margins on children survive in one place, and it is a different thing: content
+appended to **inline running text** — inside a `Form.Label`, a `Form.Check` label,
+a `ToggleButton`'s own caption, a sentence — is part of that text, not a control
+in a row of controls, and is separated by `ms-1` (or a plain space). Making every
+`.btn` and `.form-label` a flex container to avoid that would cost more than it
+buys.
+
+That includes a `GlyphMarker`: it carries no inline *margin* of its own, so a
+margin utility on it composes normally with its step of padding.
+
+A component that renders a row appearing in several kinds of container lays that
+row out itself rather than trusting whichever it lands in — see `MapLayerItem`,
+which shows up in a menu item, in a `<select>`-like toggle, and in plain form
+text.
+
+### Separating inline facts
+
+Two separators are in use, and they are not interchangeable:
+
+- **` · ` (middot) is the default** — short peers on one line: `label: value`
+  runs, a count appended to a button, two clauses of one hint.
+- **`｜` (U+FF5C, fullwidth) is for a dense strip** of independent facts or
+  control groups that wraps across lines, where a middot is too light to find the
+  boundary — the gallery viewer's footer, the offline-export summary. It is a CJK
+  form, picked for its height and its own side-bearings; ASCII `|` is too short.
+
+Spacing follows the rule above: the container decides. In running text the
+separator carries its own spaces (`{' ｜ '}`, `{' · '}`); as an element of a flex
+row that owns a `gap` it is bare (`<div>｜</div>`), where spaces would double the
+gap. Don't mix the two separators in one line.
+
+This is about UI text. What an export writes into a file (`geojsonToKml`,
+`gpxExportProcessorHandler`) answers to that format, not to this.
+
+## Toolbar outlines
+
+Several toolbars share the top of the screen at once, so an outline on one says
+what it is, not merely that it is there. Two exist, both 2px with
+`outline-offset: -1px`, and no third should be added lightly:
+
+- **Blue** (`fm-toolbar-selection`) — a selection toolbar: it acts on the feature
+  that is selected.
+- **Green** (`fm-toolbar-map-click`, bootstrap's `success`) — the toolbar of the tool taking clicks on
+  the map, so a click is no longer selecting features. Carried only while the
+  tool actually owns the clicks: a picking mode (home location, photo position,
+  export area) masks it, and the outline goes with it.
 
 ### Notes & accepted exceptions
 

@@ -1,0 +1,180 @@
+/* A panel floating over the map: draggable by its top-left grip, resizable by
+   its bottom-right one, and sized by whoever puts content in it.
+
+   Out of the flow, so nothing laid out around it can carry it along: the boxes
+   are block-level siblings of the toolbar row inside the header, and in the
+   flow a toolbar growing or another window opening pushed the rest down.
+   `useFloatingWindow` writes the four coordinates onto the element instead; two
+   windows opened together simply overlap, and the answer to that is to drag one.
+
+   `fixed` rather than `absolute`: the coordinates are the viewport's, which is
+   what the hook clamps them against. Absolute would resolve them against the
+   header instead, and agree only for as long as the header stays pinned at the
+   viewport's own corner. */
+.window {
+  position: fixed;
+  overflow: hidden;
+  touch-action: none;
+
+  /* A step above the toolbars, since this is what gets dragged over them. Not
+     Bootstrap's `.shadow`, which lifts a box off a page rather than off a map:
+     it drops the shadow below the box and leaves the top edge flat. */
+  box-shadow: var(--fm-shadow-2);
+
+  /* Translucent over a blurred backdrop, so the map reads behind the panel
+     without its labels and hairlines making the panel's own text unreadable.
+
+     On a pseudo-element, not on the box: `backdrop-filter` would make the box
+     the containing block for `position: fixed` descendants, and the controls'
+     dropdowns are placed by a fixed-strategy popper against the viewport. */
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    backdrop-filter: blur(6px);
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+
+  & > button {
+    position: absolute;
+    z-index: 1;
+    right: 0px;
+    margin-right: 0.5rem;
+  }
+}
+
+/* Not nested under `.window`: `&` inside a `::before` rule resolves through
+   `:is()`, which rejects pseudo-elements, so the whole selector is dropped and
+   dark panels stay white. `:not(.fullscreen)` because this outranks the
+   fullscreen override below, which needs its opaque background to win. */
+[data-bs-theme="dark"] .window:not(.fullscreen)::before {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* The panel taking the screen, dropping the grips it no longer needs. */
+.fullscreen {
+  z-index: 1100;
+
+  /* Nothing behind it is visible, so the blur is pure cost. */
+  &::before {
+    backdrop-filter: none;
+    background-color: var(--bs-body-bg);
+  }
+
+  /* `!important` because the hook writes the geometry as an inline style. The
+     padding and rounding are Bootstrap utilities, which the hook leaves off
+     instead — `!important` would not settle those. */
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* A scrolled row of controls along the bottom of a panel; the scrollbar is
+   given as little of it as the platform will take. */
+.controls-scroller {
+  scrollbar-width: thin;
+
+  /* The fade at the scrolled end is `position: fixed; right: 0` in the shared
+     toolbar styles — the viewport's right edge, which is where the top toolbars
+     end but a floating panel does not. `absolute` re-anchors it to the wrapper
+     the component puts around the scroller, which doesn't scroll.
+
+     Class doubled to beat that base rule: they tie at one class each, and a tie
+     is settled by stylesheet order, which the chunked CSS runtime does not
+     guarantee. */
+  &.controls-scroller > div:first-child::before {
+    position: absolute;
+  }
+}
+
+/* Every control keeps its own width and the row scrolls past them. Left to
+   shrink, the widest button squeezes until its label wraps to a second line and
+   takes the whole row's height with it. */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  & > * {
+    flex: 0 0 auto;
+  }
+}
+
+/* Room kept clear at the row's end for the resize grip, which is pinned to the
+   corner rather than laid out in the row. The footer below keeps the same, but
+   it is empty for most of a panel's life and then the grip lands on this row —
+   on its last control, which is a menu toggle rather than something harmless to
+   press. Off in full screen, where there are no grips. */
+.grip-reserve {
+  padding-right: 1.75rem;
+}
+
+/* Room the toolbar row keeps clear at its end for the grip, which is pinned to
+   the corner rather than laid out in the row — the row wraps, and the grip
+   belongs in the corner on every one of its shapes. Measured from the row's
+   own right edge, which its margin and the box's padding already inset. */
+.footer {
+  padding-right: 1rem;
+
+  /* A footer whose readings are all conditional is a bare box with margins for
+     most of the panel's life, and it takes that height from the picture.
+     Declared rather than made conditional in the caller: the condition would be
+     the disjunction of everything the footer can hold, and would go stale the
+     first time something was added to it.
+
+     `!important` because the callers carry `d-flex`, and Bootstrap's display
+     utilities are themselves `!important` — nothing short of it can put a flex
+     box away. */
+  &:empty {
+    display: none !important;
+  }
+}
+
+/* A finger-sized grip in the top-left corner. The only way to move the window —
+   pressing the content is left to the content, which is the only way a finger
+   can read values off it.
+
+   The z-index is what keeps it reachable: it is laid out before the content, so
+   content of its own that establishes a stacking context — a panorama's
+   viewport, say — would otherwise paint straight over the only handle the
+   window can be moved by. */
+.move-handle {
+  position: absolute;
+  z-index: 1;
+  top: 0.25rem;
+  left: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.25rem;
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+  color: var(--bs-secondary-color);
+}
+
+/* A finger-sized grip in the bottom-right corner: the native `resize: both`
+   corner is a couple of CSS pixels of an element that already sets
+   `touch-action: none`, so a touch pointer can't grab it at all. */
+.resize-handle {
+  position: absolute;
+  z-index: 1;
+  right: -0.25rem;
+  bottom: -0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  /* Larger than the icon's default 1em, so the mark carries about as much
+     weight as the buttons beside it while the target stays finger-sized. */
+  font-size: 1.5rem;
+  cursor: nwse-resize;
+  touch-action: none;
+  user-select: none;
+  color: var(--bs-secondary-color);
+}

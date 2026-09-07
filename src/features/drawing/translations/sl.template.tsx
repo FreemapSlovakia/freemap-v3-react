@@ -4,17 +4,27 @@ import type { DrawingMessages } from './DrawingMessages.js';
 const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Lastnosti',
   edit: {
+    pointKeys:
+      'Napišite {p:ime} za lastnost z imenom ime in {location} za položaj.',
+    lineKeys:
+      'Napišite {p:ime} za lastnost z imenom ime, {length} za dolžino ({length_m}, {length_km}, {length_mi}) in {azimuth} pri ravni črti iz dveh točk.',
+    polygonKeys:
+      'Napišite {p:ime} za lastnost z imenom ime, {area} za površino ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) in {perimeter} za obseg ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Del v [oglatih oklepajih] se izpiše le, kadar ima vse v njem vrednost: {p:ime}[, {p:ele} m] izpusti višino, kadar je ni.',
+    properties: 'Lastnosti',
+    propertyKey: 'Ime',
+    propertyValue: 'Vrednost',
+    addProperty: 'Dodaj lastnost',
+    removeProperty: 'Odstrani lastnost',
+    insertIntoLabel: 'Vstavi v oznako',
     title: 'Lastnosti',
     color: 'Barva',
     fillColor: 'Barva polnila',
     label: 'Oznaka',
     width: 'Širina',
-    hint: 'Če želite oznako odstraniti, pustite polje prazno.',
+    hint: 'S tipko Enter začnete novo vrstico. Če želite oznako odstraniti, pustite polje prazno.',
     shape: 'Oblika',
-    icon: 'Ikona',
-    iconChoose: 'Izberi ikono…',
-    iconNone: 'Brez ikone',
-    iconSearch: 'Iskanje ikon',
     text: 'Besedilo',
     textHint: 'Ikona ali največ 2 znaka, prikazana v oznaki.',
     type: 'Vrsta geometrije',
@@ -45,6 +55,10 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
   },
   reverse: 'Obrni smer',
   simplify: 'Poenostavi',
+  cutHole: 'Izreži luknjo',
+  cutHoleHint: 'Narišite luknjo znotraj tega poligona.',
+  makeHole: 'Spremeni v luknjo v obdajajočem poligonu',
+  detachHole: 'Loči luknjo',
 };
 
 export default sl;

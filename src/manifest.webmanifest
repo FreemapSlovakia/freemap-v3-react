@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "id": "/",
+  "short_name": "Freemap",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#0d6efd",
+  "dir": "auto",
+  "launch_handler": { "client_mode": "navigate-existing" },
+  "categories": ["fitness", "navigation", "sports", "travel", "utilities"],
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=sk.bigware.freemap",
+      "id": "sk.bigware.freemap"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/sk/app/freemap/id6760855105",
+      "id": "6760855105"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/freemap-logo-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/freemap-logo-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/freemap-logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/freemap-logo-256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/freemap-logo-384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/freemap-logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "share_target": {
+    "action": "/upload",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["image/jpeg", "application/gpx+xml"]
+        }
+      ]
+    }
+  },
+  "protocol_handlers": [{ "protocol": "geo", "url": "/?geo=%s" }],
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "application/gpx+xml": [".gpx"],
+        "image/jpeg": [".jpg", ".jpeg"]
+      }
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My maps",
+      "url": "/#show=maps",
+      "icons": [
+        {
+          "src": "/freemap-logo-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Route finder",
+      "url": "/#tool=route-planner",
+      "icons": [
+        {
+          "src": "/freemap-logo-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Objects",
+      "url": "/#tool=objects",
+      "icons": [
+        {
+          "src": "/freemap-logo-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

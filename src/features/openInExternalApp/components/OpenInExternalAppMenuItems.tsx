@@ -1,8 +1,13 @@
 import type { ExternalTarget } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
+import { Chord } from '@shared/components/Chord.js';
+import { CountryFlag } from '@shared/components/CountryFlag.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import type { LatLon } from '@shared/types/common.js';
-import type { ReactElement } from 'react';
+import { canShareFile } from '@shared/webShare.js';
+import type { ReactElement, ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaClipboard,
@@ -10,33 +15,85 @@ import {
   FaShareAlt,
   FaWindowMaximize,
 } from 'react-icons/fa';
-import { Emoji } from '@/shared/components/Emoji.js';
 import {
+  SiApple,
+  SiGeocaching,
+  SiGooglemaps,
+  SiGooglestreetview,
+  SiMapillary,
+  SiOpenstreetmap,
+  SiStrava,
+  SiWaze,
+} from 'react-icons/si';
+import { TbBrandWindy } from 'react-icons/tb';
+import {
+  getAppleMapsUrl,
+  getArkodUrl,
+  getAtlasOkoljaUrl,
+  getBasemapAtUrl,
+  getCuzkUrl,
   getF4mapUrl,
   getGeocachingUrl,
+  getGeoportailUrl,
+  getGeoportalPlUrl,
   getGoogleUrl,
   getHikingSkUrl,
+  getIberpixUrl,
   getIdUrl,
+  getKarttapaikkaUrl,
+  getMapasPtUrl,
   getMapillaryUrl,
   getMapyCzUrl,
+  getMinKartaUrl,
+  getNorgeskartUrl,
   getOmaUrl,
-  getOpenStreetCamUrl,
+  getOsmoseUrl,
   getOsmUrl,
+  getPanoramaxUrl,
+  getPcnUrl,
+  getPdokUrl,
   getPeakfinderUrl,
   getStravaUrl,
+  getStreetViewUrl,
+  getTopomapviewerUrl,
   getWazeUrl,
+  getWindyUrl,
   getZbgisUrl,
 } from '../externalUrlUtils.js';
+import { usePlaceCountries } from '../usePlaceCountries.js';
 
-interface Props extends LatLon {
-  lat: number;
-  lon: number;
-  zoom: number;
-  includePoint?: boolean;
+interface PageProps {
+  /** The page this menu is about: opened in a window, or shared as a link. */
   url?: string;
+  /** The picture itself, where there is one — what the `image` target shares as a file. */
+  imageUrl?: string;
   showKbdShortcut?: boolean;
   copy?: boolean;
+  /** Off where the menu carries "Share location" among its place actions instead. */
+  share?: boolean;
 }
+
+interface TargetProps
+  extends LatLon,
+    Pick<PageProps, 'url' | 'showKbdShortcut'> {
+  zoom: number;
+  includePoint?: boolean;
+  /**
+   * Offer the two editors. Off where the caller has editor entries of its own —
+   * these open whatever is at the position, which for a selected OSM element is
+   * not the same thing as opening the element.
+   */
+  editors?: boolean;
+  /** Targets of the caller's own, standing before the rest. */
+  children?: ReactNode;
+}
+
+/**
+ * Stands where a target has no brand mark, keeping the labels in one column.
+ * An empty `<svg>` rather than a sized box: a menu row lays a glyph out by the
+ * rules it has for `svg`, so only an `svg` gets exactly the same width.
+ */
+const noIcon = <svg width="1em" height="1em" />;
 
 export function openMenuItemProps(externalTarget: ExternalTarget) {
   return {
@@ -44,244 +101,550 @@ export function openMenuItemProps(externalTarget: ExternalTarget) {
   };
 }
 
-export function OpenInExternalAppDropdownItems({
-  lat,
-  lon,
-  zoom,
-  includePoint,
+/**
+ * Which of the page items would render. Sharing the picture itself needs a picture and a browser
+ * that shares files — a different question from knowing the API: Firefox has `canShare` and shares
+ * no file at all, and Chromium has a share sheet only on some platforms.
+ */
+function pageItemFlags({
   url,
-  showKbdShortcut,
+  imageUrl,
   copy = true,
-}: Props): ReactElement {
+  share = true,
+}: PageProps) {
+  return {
+    canCopy: !url && Boolean(window.navigator.clipboard?.writeText) && copy,
+    hasShare: 'share' in window.navigator && share,
+    canShareImage: Boolean(imageUrl) && canShareFile('photo.jpg', 'image/jpeg'),
+  };
+}
+
+/**
+ * Whether anything acts on the page itself here — what {@link SharePageItems}
+ * would render, which decides whether it needs separating from the targets.
+ */
+export function hasPageItems(props: PageProps): boolean {
+  return Object.values(pageItemFlags(props)).some(Boolean);
+}
+
+/** Acting on the page itself: copying its address, sharing it, sharing the picture. */
+export function SharePageItems({
+  showKbdShortcut,
+  ...props
+}: PageProps): ReactElement {
   const m = useMessages();
 
   const oeam = useOpenInExternalAppMessages();
 
-  const hasShare = 'share' in window.navigator;
-
-  const hasClipboard = Boolean(window.navigator.clipboard?.writeText);
+  const { canCopy, hasShare, canShareImage } = pageItemFlags(props);
 
   return (
     <>
-      {url && (
-        <>
-          <Dropdown.Item href={url} target="_blank" eventKey="url">
-            <FaWindowMaximize /> {oeam?.window}
-          </Dropdown.Item>
-
-          {hasShare && (
-            <Dropdown.Item as="button" {...openMenuItemProps('url')}>
-              <FaLink /> {oeam?.url}
-            </Dropdown.Item>
-          )}
-
-          {'canShare' in window.navigator && (
-            <Dropdown.Item as="button" {...openMenuItemProps('image')}>
-              <FaShareAlt /> {oeam?.image}
-            </Dropdown.Item>
-          )}
-
-          <Dropdown.Divider />
-        </>
-      )}
-
-      {!url && hasClipboard && copy && (
+      {canCopy && (
         <Dropdown.Item as="button" {...openMenuItemProps('copy')}>
           <FaClipboard /> {m?.general.copyPageUrl}
           {showKbdShortcut && (
-            <>
-              {' '}
-              <kbd>j</kbd> <kbd>c</kbd>
-            </>
+            <MenuGutter>
+              <Chord external="copy" />
+            </MenuGutter>
           )}
         </Dropdown.Item>
       )}
 
-      {!url && hasShare && (
+      {hasShare && (
         <Dropdown.Item as="button" {...openMenuItemProps('url')}>
           <FaLink /> {oeam?.url}
         </Dropdown.Item>
       )}
 
-      {!url && ((hasClipboard && copy) || hasShare) && <Dropdown.Divider />}
+      {canShareImage && (
+        <Dropdown.Item as="button" {...openMenuItemProps('image')}>
+          <FaShareAlt /> {oeam?.image}
+        </Dropdown.Item>
+      )}
+    </>
+  );
+}
 
-      <Dropdown.Item
+/** Everywhere the place itself can be opened. */
+export function OpenInExternalTargetItems({
+  lat,
+  lon,
+  zoom: rawZoom,
+  includePoint,
+  url,
+  showKbdShortcut,
+  editors = true,
+  children,
+}: TargetProps): ReactElement {
+  // Whole levels only: several of the targets below — ZBGIS, hiking.sk,
+  // Geocaching — take the zoom as an integer and make nothing of a fraction.
+  // The items are plain links, so this is the only thing standing between a
+  // fractional map zoom and their URLs; the targets reached by dispatching
+  // `openInExternalApp` instead are rounded in its processor.
+  const zoom = Math.round(rawZoom);
+
+  const oeam = useOpenInExternalAppMessages();
+
+  // `includePoint` is what tells the two apart: a menu about one place marks it
+  // in the addresses it builds, a menu about the visible map has none to mark.
+  const countries = usePlaceCountries(lat, lon, Boolean(includePoint));
+
+  const sk = countries.includes('sk');
+
+  const fr = countries.includes('fr');
+
+  const pl = countries.includes('pl');
+
+  const at = countries.includes('at');
+
+  const si = countries.includes('si');
+
+  const it = countries.includes('it');
+
+  const no = countries.includes('no');
+
+  const se = countries.includes('se');
+
+  const fi = countries.includes('fi');
+
+  const nl = countries.includes('nl');
+
+  const be = countries.includes('be');
+
+  const es = countries.includes('es');
+
+  const hr = countries.includes('hr');
+
+  const pt = countries.includes('pt');
+
+  const cz = countries.includes('cz');
+
+  // hiking.sk maps Czechia too.
+  const skcz = sk || cz;
+
+  return (
+    <>
+      {url && (
+        <Dropdown.Item href={url} target="_blank" eventKey="url">
+          <FaWindowMaximize /> {oeam?.window}
+        </Dropdown.Item>
+      )}
+
+      {children}
+
+      {(url || children) && <Dropdown.Divider />}
+
+      {/* The map data itself, and the tools that work on it. */}
+      <OnlineOnlyItem
         href={getOsmUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
-        {oeam?.osm}
+        <SiOpenstreetmap /> {oeam?.osm}
         {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>o</kbd>
-          </>
+          <MenuGutter>
+            <Chord external="osm.org" />
+          </MenuGutter>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      {/* The editors of what the item above shows, so they stand with it. */}
+      {editors && (
+        <>
+          <Dropdown.Item as="button" {...openMenuItemProps('josm')}>
+            {noIcon} {oeam?.josm}
+            {showKbdShortcut && (
+              <MenuGutter>
+                <Chord external="josm" />
+              </MenuGutter>
+            )}
+          </Dropdown.Item>
+
+          <OnlineOnlyItem
+            href={getIdUrl(lat, lon, zoom)}
+            target="_blank"
+            eventKey="url"
+          >
+            {noIcon} {oeam?.id}
+            {showKbdShortcut && (
+              <MenuGutter>
+                <Chord external="osm.org/id" />
+              </MenuGutter>
+            )}
+          </OnlineOnlyItem>
+        </>
+      )}
+
+      <OnlineOnlyItem
+        href={getOsmoseUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        {noIcon} Osmose
+      </OnlineOnlyItem>
+
+      <Dropdown.Divider />
+
+      {/* General-purpose maps. */}
+      <OnlineOnlyItem
         href={getMapyCzUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
-        {oeam?.mapy_cz}
+        {noIcon} {oeam?.mapy_cz}
         {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>m</kbd>
-          </>
+          <MenuGutter>
+            <Chord external="mapy.com" />
+          </MenuGutter>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getGoogleUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
-        {oeam?.googleMaps}
+        <SiGooglemaps /> {oeam?.googleMaps}
         {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>g</kbd>
-          </>
+          <MenuGutter>
+            <Chord external="google" />
+          </MenuGutter>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
-        href={getGeocachingUrl(lat, lon, zoom)}
+      <OnlineOnlyItem
+        href={getAppleMapsUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
-        Geocaching
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        href={getF4mapUrl(lat, lon, zoom)}
-        target="_blank"
-        eventKey="url"
-      >
-        F4Map
+        <SiApple /> {oeam?.appleMaps}
         {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>4</kbd>
-          </>
+          <MenuGutter>
+            <Chord external="apple" />
+          </MenuGutter>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item
-        href={getPeakfinderUrl(lat, lon)}
-        target="_blank"
-        eventKey="url"
-      >
-        Peakfinder
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>p</kbd>
-          </>
-        )}
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        href={getMapillaryUrl(lat, lon, zoom)}
-        target="_blank"
-        eventKey="url"
-      >
-        Mapillary
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>l</kbd>
-          </>
-        )}
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        href={getOpenStreetCamUrl(lat, lon, zoom)}
-        target="_blank"
-        eventKey="url"
-      >
-        OpenStreetCam
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        href={getStravaUrl(lat, lon, zoom)}
-        target="_blank"
-        eventKey="url"
-      >
-        Strava
-      </Dropdown.Item>
-
-      <Dropdown.Item
+      <OnlineOnlyItem
         href={getWazeUrl(lat, lon, zoom)}
         target="_blank"
         eventKey="url"
       >
-        Waze
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        href={getOmaUrl(lat, lon, zoom)}
-        target="_blank"
-        eventKey="url"
-      >
-        {oeam?.oma} <Emoji>🇸🇰</Emoji>
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        href={getHikingSkUrl(lat, lon, zoom, includePoint)}
-        target="_blank"
-        eventKey="url"
-      >
-        {oeam?.hiking_sk} <Emoji>🇸🇰</Emoji>
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>h</kbd>
-          </>
-        )}
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        href={getZbgisUrl(lat, lon, zoom)}
-        target="_blank"
-        eventKey="url"
-      >
-        {oeam?.zbgis} <Emoji>🇸🇰</Emoji>
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>z</kbd>
-          </>
-        )}
-      </Dropdown.Item>
+        <SiWaze /> Waze
+      </OnlineOnlyItem>
 
       <Dropdown.Divider />
 
-      <Dropdown.Item as="button" {...openMenuItemProps('josm')}>
-        {oeam?.josm}
-        {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>j</kbd>
-          </>
-        )}
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        href={getIdUrl(lat, lon, zoom)}
+      {/* Seeing the place rather than a map of it. */}
+      <OnlineOnlyItem
+        href={getStreetViewUrl(lat, lon)}
         target="_blank"
         eventKey="url"
       >
-        {oeam?.id}
+        <SiGooglestreetview /> Google Street View
         {showKbdShortcut && (
-          <>
-            {' '}
-            <kbd>j</kbd> <kbd>i</kbd>
-          </>
+          <MenuGutter>
+            <Chord external="streetview" />
+          </MenuGutter>
         )}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        href={getMapillaryUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        <SiMapillary /> Mapillary
+        {showKbdShortcut && (
+          <MenuGutter>
+            <Chord external="mapillary" />
+          </MenuGutter>
+        )}
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        href={getPanoramaxUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        {noIcon} Panoramax
+        {showKbdShortcut && (
+          <MenuGutter>
+            <Chord external="panoramax" />
+          </MenuGutter>
+        )}
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        href={getF4mapUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        {noIcon} F4Map
+        {showKbdShortcut && (
+          <MenuGutter>
+            <Chord external="f4map" />
+          </MenuGutter>
+        )}
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        href={getPeakfinderUrl(lat, lon)}
+        target="_blank"
+        eventKey="url"
+      >
+        {noIcon} Peakfinder
+        {showKbdShortcut && (
+          <MenuGutter>
+            <Chord external="peakfinder" />
+          </MenuGutter>
+        )}
+      </OnlineOnlyItem>
+
+      <Dropdown.Divider />
+
+      {/* Being out there. */}
+      <OnlineOnlyItem
+        href={getStravaUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        <SiStrava /> Strava
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        href={getGeocachingUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        <SiGeocaching /> Geocaching
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem
+        href={getWindyUrl(lat, lon, zoom)}
+        target="_blank"
+        eventKey="url"
+      >
+        <TbBrandWindy /> Windy
+        {showKbdShortcut && (
+          <MenuGutter>
+            <Chord external="windy" />
+          </MenuGutter>
+        )}
+      </OnlineOnlyItem>
+
+      {/* Targets with data in some countries only, offered where the place is in one. */}
+      {(skcz ||
+        at ||
+        pl ||
+        si ||
+        it ||
+        hr ||
+        fr ||
+        es ||
+        pt ||
+        no ||
+        se ||
+        fi ||
+        nl ||
+        be) && <Dropdown.Divider />}
+
+      {sk && (
+        <OnlineOnlyItem
+          href={getOmaUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} {oeam?.oma} <CountryFlag country="sk" />
+        </OnlineOnlyItem>
+      )}
+
+      {skcz && (
+        <OnlineOnlyItem
+          href={getHikingSkUrl(lat, lon, zoom, includePoint)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} {oeam?.hiking_sk} <CountryFlag country="sk" />{' '}
+          <CountryFlag country="cz" />
+          {showKbdShortcut && (
+            <MenuGutter>
+              <Chord external="hiking.sk" />
+            </MenuGutter>
+          )}
+        </OnlineOnlyItem>
+      )}
+
+      {sk && (
+        <OnlineOnlyItem
+          href={getZbgisUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} {oeam?.zbgis} <CountryFlag country="sk" />
+          {showKbdShortcut && (
+            <MenuGutter>
+              <Chord external="zbgis" />
+            </MenuGutter>
+          )}
+        </OnlineOnlyItem>
+      )}
+
+      {cz && (
+        <OnlineOnlyItem
+          href={getCuzkUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} ČÚZK <CountryFlag country="cz" />
+        </OnlineOnlyItem>
+      )}
+
+      {at && (
+        <OnlineOnlyItem
+          href={getBasemapAtUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} basemap.at <CountryFlag country="at" />
+        </OnlineOnlyItem>
+      )}
+
+      {pl && (
+        <OnlineOnlyItem
+          href={getGeoportalPlUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Geoportal <CountryFlag country="pl" />
+        </OnlineOnlyItem>
+      )}
+
+      {si && (
+        <OnlineOnlyItem
+          href={getAtlasOkoljaUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Atlas okolja <CountryFlag country="si" />
+        </OnlineOnlyItem>
+      )}
+
+      {it && (
+        <OnlineOnlyItem
+          href={getPcnUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Geoportale Nazionale <CountryFlag country="it" />
+        </OnlineOnlyItem>
+      )}
+
+      {fr && (
+        <OnlineOnlyItem
+          href={getGeoportailUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Géoportail <CountryFlag country="fr" />
+        </OnlineOnlyItem>
+      )}
+
+      {hr && (
+        <OnlineOnlyItem
+          href={getArkodUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} ARKOD <CountryFlag country="hr" />
+        </OnlineOnlyItem>
+      )}
+
+      {es && (
+        <OnlineOnlyItem
+          href={getIberpixUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Iberpix <CountryFlag country="es" />
+        </OnlineOnlyItem>
+      )}
+
+      {pt && (
+        <OnlineOnlyItem
+          href={getMapasPtUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} MapasPT <CountryFlag country="pt" />
+        </OnlineOnlyItem>
+      )}
+
+      {be && (
+        <OnlineOnlyItem
+          href={getTopomapviewerUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Topomapviewer <CountryFlag country="be" />
+        </OnlineOnlyItem>
+      )}
+
+      {nl && (
+        <OnlineOnlyItem
+          href={getPdokUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} PDOK <CountryFlag country="nl" />
+        </OnlineOnlyItem>
+      )}
+
+      {no && (
+        <OnlineOnlyItem
+          href={getNorgeskartUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Norgeskart <CountryFlag country="no" />
+        </OnlineOnlyItem>
+      )}
+
+      {se && (
+        <OnlineOnlyItem
+          href={getMinKartaUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Min karta <CountryFlag country="se" />
+        </OnlineOnlyItem>
+      )}
+
+      {fi && (
+        <OnlineOnlyItem
+          href={getKarttapaikkaUrl(lat, lon, zoom)}
+          target="_blank"
+          eventKey="url"
+        >
+          {noIcon} Karttapaikka <CountryFlag country="fi" />
+        </OnlineOnlyItem>
+      )}
+    </>
+  );
+}
+
+/** Both halves in one menu, for a menu that is nothing but this. */
+export function OpenInExternalAppDropdownItems(
+  props: TargetProps & PageProps,
+): ReactElement {
+  return (
+    <>
+      <SharePageItems {...props} />
+
+      {hasPageItems(props) && <Dropdown.Divider />}
+
+      <OpenInExternalTargetItems {...props} />
     </>
   );
 }

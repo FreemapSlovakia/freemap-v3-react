@@ -1,28 +1,82 @@
-import { convertToDrawing, selectFeature } from '@app/store/actions.js';
+import {
+  type ConvertCarry,
+  closeTool,
+  convertToDrawing,
+  selectFeature,
+} from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { changesetsSet } from '@features/changesets/model/actions.js';
 import {
+  dataViewerDelete,
+  dataViewerDeleteFeature,
+} from '@features/dataViewer/model/actions.js';
+import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
+import { withProps } from '@features/drawing/labelValues.js';
+import {
   drawingLineAdd,
+  type Line,
   type Point,
 } from '@features/drawing/model/actions/drawingLineActions.js';
-import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import {
+  type DrawingProps,
+  drawingPointAdd,
+  normalizeProps,
+  pickDrawingProps,
+} from '@features/drawing/model/actions/drawingPointActions.js';
+import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
+import type { OsmGeojson } from '@features/osm/model/osmGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
-import { searchClear } from '@features/search/model/actions.js';
+import {
+  ISOCHRONE_FILL_OPACITY,
+  isochroneColor,
+  isochroneLabel,
+} from '@features/routePlanner/model/isochrones.js';
+import {
+  dominantStepMode,
+  STEP_MODE_COLORS,
+  stepModeDashArray,
+  stopNumber,
+  WAYPOINT_COLORS,
+  WAYPOINT_ICONS,
+  waypointKind,
+} from '@features/routePlanner/model/routeColors.js';
+import { alternativeCoordinates } from '@features/routePlanner/model/routeGeometry.js';
+import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
+import { searchUnselectResult } from '@features/search/model/actions.js';
+import { hasGeometry } from '@features/search/model/resultUtils.js';
+import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { trackViewerDelete } from '@features/trackViewer/model/actions.js';
+import {
+  DEFAULT_TRACK_COLOR,
+  DEFAULT_TRACK_WIDTH,
+  resolveTracks,
+  trackLineSegments,
+} from '@features/tracking/tracks.js';
+import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
+import {
+  convertibleProps,
+  defaultLabel,
+  ownTable,
+} from '@shared/featureProperties.js';
 import { mergeLines } from '@shared/geoutils.js';
+import { isAbortError } from '@shared/isAbortError.js';
+import { askSimplification } from '@shared/simplifyDialog.js';
+import {
+  simplifyFeature,
+  simplifyPositions,
+  simplifyRing,
+} from '@shared/simplifyGeo.js';
+import { convertibleLines } from '@shared/simplifyTolerance.js';
 import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { flatten as turfFlatten } from '@turf/flatten';
-import { lineString } from '@turf/helpers';
-import { simplify } from '@turf/simplify';
 import type { Feature, FeatureCollection, Position } from 'geojson';
 import type { Dispatch } from 'redux';
 
@@ -37,6 +91,140 @@ function ringToPoints(ring: Position[], dropClosing: boolean): Point[] {
   }));
 }
 
+/**
+ * The property table an imported feature brings. Our own exports write it whole
+ * — GPX as `<fm:prop>`, GeoJSON as a `freemap:props` object — so every key
+ * survives, not just the OSM tags `pickDrawingProps` carries. Anything else
+ * states its data in the properties themselves.
+ */
+function importedProps(
+  properties: Record<string, unknown> | null | undefined,
+): DrawingProps | undefined {
+  const own = ownTable(properties);
+
+  return own ? normalizeProps(own) : pickDrawingProps(properties ?? undefined);
+}
+
+/**
+ * The label a converted feature takes: the dialog's, else the one this feature
+ * would have got — baked from its own properties where that was asked. A
+ * computed key (`{location}`, `{length}`) is left for the drawing to answer.
+ */
+function carriedLabel(
+  carry: ConvertCarry | undefined,
+  all: DrawingProps,
+  fallback: string | undefined,
+): string | undefined {
+  const template = carry ? (carry.label ?? fallback) : fallback;
+
+  return (
+    (carry?.resolveLabel && template
+      ? interpolateLabel(template, withProps(all))
+      : template) || undefined
+  );
+}
+
+/** The ticked properties alone; unasked, what the conversion always carried. */
+function carriedProps(
+  carry: ConvertCarry | undefined,
+  all: DrawingProps,
+  fallback: DrawingProps | undefined,
+): DrawingProps | undefined {
+  if (!carry) {
+    return fallback;
+  }
+
+  const props: DrawingProps = {};
+
+  for (const key of carry.keys) {
+    const value = all[key];
+
+    if (value !== undefined) {
+      props[key] = value;
+    }
+  }
+
+  return normalizeProps(props);
+}
+
+function featuresToLines(
+  features: Feature[],
+  base: Partial<Line>,
+  labelLinesToo: boolean,
+  carry?: ConvertCarry,
+): Line[] {
+  const lines: Line[] = [];
+
+  const polygonAt = new Map<string, number>();
+
+  const holeRefs: { at: number; of: string }[] = [];
+
+  for (const feature of features) {
+    const { geometry } = feature;
+
+    if (geometry?.type !== 'LineString' && geometry?.type !== 'Polygon') {
+      continue;
+    }
+
+    const isGeoJsonPolygon = geometry.type === 'Polygon';
+
+    const rings: Position[][] = isGeoJsonPolygon
+      ? geometry.coordinates
+      : [geometry.coordinates];
+
+    const start = lines.length;
+
+    // Once per feature: every ring of a polygon shares its table.
+    const all = convertibleProps(feature.properties);
+
+    const props = carriedProps(carry, all, importedProps(feature.properties));
+
+    for (const [i, ring] of rings.entries()) {
+      const closed =
+        !isGeoJsonPolygon &&
+        ring.length > 2 &&
+        ring[0][0] === ring[ring.length - 1][0] &&
+        ring[0][1] === ring[ring.length - 1][1];
+
+      const style = lineStyleFromProperties(feature.properties, closed);
+
+      const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
+
+      lines.push({
+        ...base,
+        ...style,
+        type: isPolygon ? 'polygon' : 'line',
+        label: carriedLabel(carry, all, defaultLabel(feature, labelLinesToo)),
+        props,
+        points: ringToPoints(ring, isGeoJsonPolygon || (isPolygon && closed)),
+        holeOf: isGeoJsonPolygon && i > 0 ? start : undefined,
+      });
+    }
+
+    const polygonId = feature.properties?.['freemap:polygonId'];
+
+    if (typeof polygonId === 'string' && !polygonAt.has(polygonId)) {
+      polygonAt.set(polygonId, start);
+    }
+
+    const holeOf = feature.properties?.['freemap:holeOf'];
+
+    if (typeof holeOf === 'string') {
+      holeRefs.push({ at: start, of: holeOf });
+    }
+  }
+
+  for (const { at, of } of holeRefs) {
+    const parent = polygonAt.get(of);
+
+    if (parent !== undefined && parent !== at) {
+      lines[at] = { ...lines[at]!, holeOf: parent };
+    }
+  }
+
+  return lines;
+}
+
 // Convert an arbitrary GeoJSON Feature/FeatureCollection into drawing points
 // and lines/polygons. Returns counts so callers can decide what to select.
 // Shared between the `search-result` and `objects-geometry` branches.
@@ -44,10 +232,18 @@ function geojsonToDrawing(
   geojson: Feature | FeatureCollection,
   getState: () => RootState,
   dispatch: Dispatch,
+  tolerance = 0,
+  carry?: ConvertCarry,
 ): { lineCount: number; pointCount: number } {
   const { features } = turfFlatten(geojson);
 
   mergeLines(features);
+
+  if (tolerance) {
+    for (const [i, feature] of features.entries()) {
+      features[i] = simplifyFeature(feature, tolerance);
+    }
+  }
 
   let lineCount = 0;
 
@@ -57,93 +253,216 @@ function geojsonToDrawing(
     const { geometry } = feature;
 
     if (geometry?.type === 'Point') {
-      const tags = (feature.properties ?? {}) as Record<string, string>;
-
       // Explicit styling (freemap extensions / Garmin sym / simplestyle) wins
       // over OSM tag inference, then falls back to drawing settings.
       const style = pointStyleFromProperties(feature.properties);
 
       const state = getState();
 
+      const all = convertibleProps(feature.properties);
+
       dispatch(
         drawingPointAdd({
           ...state.drawingSettings.style,
           ...style,
-          label: feature.properties?.['name'],
+          label: carriedLabel(carry, all, defaultLabel(feature, false)),
+          props: carriedProps(carry, all, importedProps(feature.properties)),
           coords: {
             lat: geometry.coordinates[1],
             lon: geometry.coordinates[0],
           },
-          icon: style.icon ?? tagsToPoiIconSpec(tags),
+          icon: style.icon ?? tagsToPoiIconSpec(feature.properties),
           id: state.drawingPoints.points.length,
         }),
       );
 
       pointCount++;
-    } else if (
-      geometry?.type === 'LineString' ||
-      geometry?.type === 'Polygon'
-    ) {
-      // Drawing can't represent holes, so emit every ring (outer + holes) as
-      // its own polygon.
-      const isGeoJsonPolygon = geometry.type === 'Polygon';
-
-      const rings: Position[][] =
-        geometry.type === 'Polygon'
-          ? geometry.coordinates
-          : [geometry.coordinates];
-
-      for (const ring of rings) {
-        const closed =
-          !isGeoJsonPolygon &&
-          ring.length > 2 &&
-          ring[0][0] === ring[ring.length - 1][0] &&
-          ring[0][1] === ring[ring.length - 1][1];
-
-        const style = lineStyleFromProperties(feature.properties, closed);
-
-        const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
-
-        const points = ringToPoints(
-          ring,
-          isGeoJsonPolygon || (isPolygon && closed),
-        );
-
-        const state = getState();
-
-        dispatch(
-          drawingLineAdd({
-            ...state.drawingSettings.style,
-            ...style,
-            type: isPolygon ? 'polygon' : 'line',
-            label: isPolygon ? feature.properties?.['name'] : undefined, // ignore street names
-            points,
-          }),
-        );
-
-        lineCount++;
-      }
     }
+  }
+
+  const lines = featuresToLines(
+    features,
+    getState().drawingSettings.style,
+    false,
+    carry,
+  );
+
+  if (lines.length) {
+    dispatch(drawingLineAdd(lines));
+
+    lineCount += lines.length;
   }
 
   return { lineCount, pointCount };
 }
 
+/**
+ * Selects what was converted when it is a single feature — by its position in
+ * the list, which is what a drawing selection names. `first` holds the two
+ * lengths from before the conversion, so the index is the one the feature
+ * actually landed at.
+ */
 function selectAfterConvert(
   dispatch: Dispatch,
-  getState: () => RootState,
+  first: { lineIndex: number; pointIndex: number },
   lineCount: number,
   pointCount: number,
 ): void {
   dispatch(
     selectFeature(
       lineCount === 1
-        ? { type: 'draw-line-poly', id: getState().drawingLines.lines.length }
+        ? { type: 'draw-line-poly', id: first.lineIndex }
         : pointCount === 1
-          ? { type: 'draw-points', id: getState().drawingPoints.points.length }
+          ? { type: 'draw-points', id: first.pointIndex }
           : null,
     ),
   );
+}
+
+/** Where the next converted line and point land. */
+function firstIndexes(state: RootState) {
+  return {
+    lineIndex: state.drawingLines.lines.length,
+    pointIndex: state.drawingPoints.points.length,
+  };
+}
+
+/**
+ * Turns the route-planner result into drawing features, in the colors the map
+ * gives it: the active alternative as one line (or, for an isochrone, one
+ * polygon per ring, named after the limit it reaches), plus a point per
+ * start/finish/stop. Needs the route-planner messages for the names, so it runs
+ * asynchronously.
+ */
+async function convertPlannedRoute(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  tolerance: number,
+): Promise<void> {
+  const state = getState();
+
+  const { language } = state.l10n;
+
+  const {
+    isochrones,
+    alternatives,
+    activeAlternativeIndex,
+    points,
+    waypoints,
+    finishOnly,
+    mode,
+  } = state.routePlanner;
+
+  const alternative = alternatives[activeAlternativeIndex];
+
+  if (!isochrones?.length && !alternative) {
+    return;
+  }
+
+  const rpm = await loadRoutePlannerMessages(language);
+
+  // Keep the width and opacity the route had on the map, rather than falling
+  // back to the (narrower, opaque) drawing defaults. Opacity rides on the
+  // color's alpha, which is how a drawing feature carries it.
+  const {
+    lineWidth: width,
+    lineOpacity,
+    markerOpacity,
+  } = state.routePlannerSettings;
+
+  const firstLineIndex = state.drawingLines.lines.length;
+
+  let lineCount = 0;
+
+  if (isochrones?.length) {
+    // A band is one polygon with its inner rings as holes, exactly as it draws
+    // on the map.
+    const lines: Line[] = [];
+
+    for (const isochrone of isochrones) {
+      const bucket = isochrone.properties?.['bucket'] ?? 0;
+
+      const color = isochroneColor(bucket, isochrones.length);
+
+      const start = lines.length;
+
+      for (const [i, ring] of isochrone.geometry.coordinates.entries()) {
+        lines.push({
+          ...state.drawingSettings.style,
+          type: 'polygon',
+          label: isochroneLabel(isochrone, bucket, rpm.isochroneRing, language),
+          color: joinColorAlpha(color, lineOpacity),
+          width,
+          // Only the outermost band is filled, as on the map; the inner ones
+          // keep a transparent fill so their interior stays clickable.
+          fillColor: joinColorAlpha(
+            color,
+            bucket === isochrones.length - 1
+              ? ISOCHRONE_FILL_OPACITY * lineOpacity
+              : 0,
+          ),
+          points: ringToPoints(simplifyRing(ring, tolerance), true),
+          holeOf: i > 0 ? start : undefined,
+        });
+      }
+    }
+
+    dispatch(drawingLineAdd(lines));
+
+    lineCount += lines.length;
+  } else if (alternative) {
+    const raw = alternativeCoordinates(alternative);
+
+    const coords = simplifyPositions(raw, tolerance);
+
+    const dominant = dominantStepMode(alternative);
+
+    dispatch(
+      drawingLineAdd({
+        ...state.drawingSettings.style,
+        type: 'line',
+        // A drawing line is one color and one dash pattern, so a multimodal
+        // route takes those of the mode covering most of it. The dash is set
+        // explicitly rather than left to the drawing defaults, which the user
+        // may have made dashed.
+        color: joinColorAlpha(STEP_MODE_COLORS[dominant], lineOpacity),
+        dashArray: stepModeDashArray(dominant) ?? [],
+        width,
+        points: coords.map(([lon, lat], id) => ({ lat, lon, id })),
+      }),
+    );
+
+    lineCount++;
+  }
+
+  for (const [i, pt] of points.entries()) {
+    const kind = waypointKind(i, points.length, finishOnly, mode);
+
+    const number = stopNumber(i, mode, waypoints);
+
+    dispatch(
+      drawingPointAdd({
+        ...state.drawingSettings.style,
+        coords: { lat: pt.lat, lon: pt.lon },
+        color: joinColorAlpha(WAYPOINT_COLORS[kind], markerOpacity),
+        // The marker carries the same glyph the map gives it — a play/stop icon
+        // for the ends, the visiting number for a stop. No `label`: that would
+        // hang a permanent tooltip off every waypoint.
+        icon:
+          WAYPOINT_ICONS[kind] ??
+          (number === undefined ? undefined : String(number)),
+        id: getState().drawingPoints.points.length,
+      }),
+    );
+  }
+
+  dispatch(
+    selectFeature(
+      lineCount === 1 ? { type: 'draw-line-poly', id: firstLineIndex } : null,
+    ),
+  );
+
+  dispatch(routePlannerDelete());
 }
 
 export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
@@ -157,48 +476,9 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
     const state = getState();
 
     if (payload.type === 'planned-route') {
-      const alt =
-        state.routePlanner.alternatives[
-          state.routePlanner.activeAlternativeIndex
-        ];
-
-      if (!alt) {
-        return;
-      }
-
-      // Each leg/step shares its endpoint with the next one's start, so drop
-      // consecutive duplicate coordinates to avoid stacked nodes at the joints.
-      const coords = alt.legs
-        .flatMap((leg) =>
-          leg.steps.flatMap((step) => step.geometry.coordinates),
-        )
-        .filter(
-          (coord, i, all) =>
-            i === 0 || coord[0] !== all[i - 1][0] || coord[1] !== all[i - 1][1],
-        );
-
-      const ls = lineString(coords.map(([lat, lon]) => [lon, lat]));
-
-      dispatch(
-        drawingLineAdd({
-          ...state.drawingSettings.style,
-          type: 'line',
-          points: ls.geometry.coordinates.map((p, id) => ({
-            lat: p[0],
-            lon: p[1],
-            id,
-          })),
-        }),
-      );
-
-      dispatch(
-        selectFeature({
-          type: 'draw-line-poly',
-          id: state.drawingLines.lines.length,
-        }),
-      );
-
-      dispatch(routePlannerDelete());
+      // Naming the waypoints needs the route-planner messages, so this path
+      // runs in `handle` — leave the action alone for it.
+      return action;
     } else if (payload.type === 'objects') {
       // `id` present → convert just that object as a point.
       // `id` absent  → bulk-convert every visible object (points only;
@@ -212,17 +492,38 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       }
 
       for (const object of targets) {
+        const tags = object.tags ?? {};
+
         dispatch(
           drawingPointAdd({
             ...state.drawingSettings.style,
             coords: object.coords,
-            label: object.tags?.['name'], // TODO put object type and some other tags to name
+            // The name is referenced rather than copied, so editing the
+            // property below moves the drawn label with it.
+            label: carriedLabel(
+              payload.carry,
+              tags,
+              tags['name'] ? '{p:name}' : undefined,
+            ),
+            props: carriedProps(
+              payload.carry,
+              tags,
+              pickDrawingProps(object.tags),
+            ),
             color: state.drawingSettings.style.color,
             markerType: state.objectsSettings.selectedIcon,
             icon: tagsToPoiIconSpec(object.tags),
             id: getState().drawingPoints.points.length,
           }),
         );
+      }
+
+      if (!payload.id) {
+        // Every visible object is a drawing now, so the predicate that fetched
+        // them goes with them: left set, it would fetch them again on the next
+        // pan and draw them over what they became. The tool goes too, through
+        // `convertSourceTools` in the main reducer.
+        dispatch(objectsSetFilter([]));
       }
 
       if (targets.length === 1) {
@@ -237,33 +538,50 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       // Async fetch path — leave the action alone so `handle` picks it up.
       return action;
     } else if (payload.type === 'track') {
-      if (!state.trackViewer.trackGeojson) {
+      const { trackGeojson } = state.trackViewer;
+
+      // `id` present → convert just that feature, from its own toolbar.
+      const source =
+        payload.id === undefined
+          ? trackGeojson
+          : trackGeojson?.features[payload.id];
+
+      if (!source) {
         return;
       }
+
+      const first = firstIndexes(state);
 
       let lineCount = 0;
 
       let pointCount = 0;
 
-      const { features } = turfFlatten(state.trackViewer.trackGeojson);
+      const features = turfFlatten(source).features.map((feature) =>
+        simplifyFeature(feature, payload.tolerance),
+      );
 
       for (const feature of features) {
-        const { geometry } = payload.tolerance
-          ? simplify(feature, {
-              mutate: false,
-              highQuality: true,
-              tolerance: payload.tolerance,
-            })
-          : feature;
+        const { geometry } = feature;
 
         if (geometry?.type === 'Point') {
           const style = pointStyleFromProperties(feature.properties);
+
+          const all = convertibleProps(feature.properties);
 
           dispatch(
             drawingPointAdd({
               ...state.drawingSettings.style,
               ...style,
-              label: feature.properties?.['name'],
+              label: carriedLabel(
+                payload.carry,
+                all,
+                defaultLabel(feature, true),
+              ),
+              props: carriedProps(
+                payload.carry,
+                all,
+                importedProps(feature.properties),
+              ),
               markerType:
                 style.markerType ?? state.objectsSettings.selectedIcon,
               coords: {
@@ -275,50 +593,22 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
           );
 
           pointCount++;
-        } else if (
-          geometry?.type === 'LineString' ||
-          geometry?.type === 'Polygon'
-        ) {
-          // GPX tracks arrive as LineStrings; imported GeoJSON may carry native
-          // Polygon geometry (MultiPolygon is split by `turfFlatten`). Drawing
-          // can't represent holes, so emit every ring (outer + holes) as its
-          // own polygon.
-          const isGeoJsonPolygon = geometry.type === 'Polygon';
-
-          const rings: Position[][] =
-            geometry.type === 'Polygon'
-              ? geometry.coordinates
-              : [geometry.coordinates];
-
-          for (const ring of rings) {
-            const closed =
-              !isGeoJsonPolygon &&
-              ring.length > 2 &&
-              ring[0][0] === ring[ring.length - 1][0] &&
-              ring[0][1] === ring[ring.length - 1][1];
-
-            const style = lineStyleFromProperties(feature.properties, closed);
-
-            const isPolygon = isGeoJsonPolygon || style.type === 'polygon';
-
-            const points = ringToPoints(
-              ring,
-              isGeoJsonPolygon || (isPolygon && closed),
-            );
-
-            dispatch(
-              drawingLineAdd({
-                ...state.drawingSettings.style,
-                ...style,
-                type: isPolygon ? 'polygon' : 'line',
-                label: feature.properties?.['name'],
-                points,
-              }),
-            );
-
-            lineCount++;
-          }
         }
+      }
+
+      // GPX tracks arrive as LineStrings; imported GeoJSON may carry native
+      // Polygon geometry (MultiPolygon is split by `turfFlatten`).
+      const lines = featuresToLines(
+        features,
+        state.drawingSettings.style,
+        true,
+        payload.carry,
+      );
+
+      if (lines.length) {
+        dispatch(drawingLineAdd(lines));
+
+        lineCount += lines.length;
       }
 
       // The drawing is a lossy editable copy (per-vertex elevation/heart-rate/
@@ -326,9 +616,67 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       // rather than leave both: a static duplicate over the original would
       // double the geometry and its click hit-area. The menu warns first when
       // there's recorded data to lose.
-      dispatch(trackViewerDelete());
+      dispatch(
+        payload.id === undefined
+          ? dataViewerDelete()
+          : dataViewerDeleteFeature(payload.id),
+      );
 
-      selectAfterConvert(dispatch, getState, lineCount, pointCount);
+      // Converting the only feature empties the viewer, and the main reducer
+      // keeps the tool open for a conversion of one — so an emptied toolbar
+      // would be left behind.
+      if (!getState().trackViewer.trackGeojson) {
+        dispatch(closeTool('import-file'));
+      }
+
+      selectAfterConvert(dispatch, first, lineCount, pointCount);
+    } else if (payload.type === 'tracking') {
+      // The live tracks stay where they are — the feed goes on, so this is a
+      // copy. Each continuous segment converts on its own, at full fidelity, in
+      // the color and width the device is drawn in.
+      const tracks = resolveTracks(
+        state.tracking.tracks,
+        state.tracking.trackedDevices,
+      ).filter(
+        (track) => payload.id === undefined || track.token === payload.id,
+      );
+
+      const first = firstIndexes(state);
+
+      const lines = tracks.flatMap((track) =>
+        trackLineSegments(track).map((segment): Line => {
+          const coords = segment.map(
+            (point): Position => [point.lon, point.lat],
+          );
+
+          return {
+            ...state.drawingSettings.style,
+            type: 'line',
+            label: track.label ?? undefined,
+            color: track.color || DEFAULT_TRACK_COLOR,
+            width: track.width || DEFAULT_TRACK_WIDTH,
+            points: ringToPoints(
+              simplifyPositions(coords, payload.tolerance),
+              false,
+            ),
+          };
+        }),
+      );
+
+      if (lines.length === 0) {
+        return;
+      }
+
+      dispatch(drawingLineAdd(lines));
+
+      // Only a single line takes the selection over. The other branches drop it
+      // when there is nothing to select, but here the device stays watched and
+      // stays selectable, so its selection is left where it is.
+      if (lines.length === 1) {
+        dispatch(
+          selectFeature({ type: 'draw-line-poly', id: first.lineIndex }),
+        );
+      }
     } else if (payload.type === 'changesets') {
       const { changesets } = state.changesets;
 
@@ -358,57 +706,121 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         ),
       );
     } else if (payload.type === 'search-result') {
-      if (!state.search.selectedResult?.geojson) {
+      // The result acted upon becomes a drawing; the others stay results.
+      const result = activeSearchResultSelector(state);
+
+      if (!result || !hasGeometry(result)) {
         return;
       }
 
-      const { lineCount, pointCount } = geojsonToDrawing(
-        state.search.selectedResult.geojson,
+      const first = firstIndexes(state);
 
+      const { lineCount, pointCount } = geojsonToDrawing(
+        result.geojson,
         getState,
         dispatch,
+        payload.tolerance,
+        payload.carry,
       );
 
-      dispatch(searchClear());
+      dispatch(searchUnselectResult(result.id));
 
-      selectAfterConvert(dispatch, getState, lineCount, pointCount);
+      selectAfterConvert(dispatch, first, lineCount, pointCount);
     }
+
+    // The conversion is done here, but the action still has to reach the
+    // reducers: closing the tool it was reached for from is theirs to do
+    // (`convertSourceTools` in the main reducer). A transform that answers
+    // nothing drops the action instead.
+    return action;
   },
   handle: async ({ getState, dispatch, action }) => {
+    if (action.payload.type === 'planned-route') {
+      await convertPlannedRoute(getState, dispatch, action.payload.tolerance);
+
+      return;
+    }
+
     if (action.payload.type !== 'objects-geometry') {
       return;
     }
 
-    const { id } = action.payload;
+    const { id, carry } = action.payload;
 
-    try {
-      const geojson = await fetchOsmFullGeojson(id, getState);
-
-      if (!geojson) {
-        return;
-      }
+    // The dialog that asked already fetched it and settled the tolerance on it.
+    if (action.payload.geojson) {
+      const first = firstIndexes(getState());
 
       const { lineCount, pointCount } = geojsonToDrawing(
-        geojson,
-
+        action.payload.geojson,
         getState,
         dispatch,
+        action.payload.tolerance,
+        carry,
       );
 
-      selectAfterConvert(dispatch, getState, lineCount, pointCount);
-    } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        return;
-      }
+      selectAfterConvert(dispatch, first, lineCount, pointCount);
 
-      dispatch(
-        toastsAdd({
-          style: 'danger',
-          messageKey: 'fetchingError',
-          messageParams: { err },
-          messageLoader: loadObjectsMessages,
-        }),
-      );
+      return;
     }
+
+    const report = (err: unknown) => {
+      if (!isAbortError(err)) {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'fetchingError',
+            messageParams: { err },
+            messageLoader: loadObjectsMessages,
+          }),
+        );
+      }
+    };
+
+    let geojson: OsmGeojson;
+
+    try {
+      geojson = await fetchOsmFullGeojson(id, getState);
+    } catch (err) {
+      report(err);
+
+      return;
+    }
+
+    // Asked here rather than in the menu, which is the one conversion that
+    // doesn't know its own geometry until it has been fetched — a relation can
+    // be tens of thousands of nodes. Left unawaited so `handle` settles with the
+    // fetch: the middleware runs the busy indicator until it does, and the
+    // dialog waits on the user.
+    void askSimplification({ lines: convertibleLines(geojson) })
+      .then((tolerance) => {
+        if (tolerance === null) {
+          return;
+        }
+
+        const first = firstIndexes(getState());
+
+        const { lineCount, pointCount } = geojsonToDrawing(
+          geojson,
+          getState,
+          dispatch,
+          tolerance,
+          carry,
+        );
+
+        selectAfterConvert(dispatch, first, lineCount, pointCount);
+      })
+      // Nothing awaits this any more, so the conversion has to report for
+      // itself. Not as a fetch error: that is done by here, and naming it one
+      // would send the user looking in the wrong place.
+      .catch((err) => {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.operationError',
+            messageParams: { err },
+          }),
+        );
+      });
   },
 };

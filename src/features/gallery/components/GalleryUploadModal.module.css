@@ -1,3 +1,23 @@
+/*
+ * Which hint the dropzone shows follows the pointer, not the user agent:
+ * dragging a file needs a fine pointer, so a coarse-pointer device gets the
+ * tap wording instead. Done in CSS rather than JS so attaching a mouse to a
+ * tablet switches the wording right away.
+ */
+.drop-hint {
+  @media (pointer: coarse) {
+    display: none;
+  }
+}
+
+.tap-hint {
+  display: none;
+
+  @media (pointer: coarse) {
+    display: block;
+  }
+}
+
 .upload-items {
   & > * {
     &:nth-child(odd) {

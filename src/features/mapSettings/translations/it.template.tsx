@@ -7,6 +7,7 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   overlayOpacity: 'Opacità',
   showInMenu: 'Mostra nel menu',
   showInToolbar: 'Mostra nella barra degli strumenti',
+  keyboardShortcut: 'Scorciatoia da tastiera',
   saveSuccess: 'Impostazioni salvate.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Errore nel salvataggio delle impostazioni:', err),

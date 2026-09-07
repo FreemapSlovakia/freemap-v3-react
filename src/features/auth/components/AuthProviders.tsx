@@ -1,7 +1,7 @@
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { ReactElement } from 'react';
-import { type CSSProperties, type ReactNode, useCallback } from 'react';
+import { useOnline } from '@shared/hooks/useOnline.js';
+import type { CSSProperties, ReactElement, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
 import {
   FaApple,
@@ -66,7 +66,7 @@ const PROVIDERS: ProviderDef[] = [
   {
     provider: 'garmin',
     label: 'Garmin',
-    icon: <SiGarmin style={{ fontSize: '400%', marginBlock: '-24px' }} />,
+    icon: <SiGarmin className="fm-icon-wordmark" />,
     style: { backgroundColor: '#1791FF', color: '#fff' },
   },
   {
@@ -119,6 +119,8 @@ type Props = { mode: 'login' | 'connect' | 'disconnect' };
 export function AuthProviders({ mode }: Props): ReactElement {
   const confirm = useConfirm();
 
+  const online = useOnline();
+
   const dispatch = useDispatch();
 
   const authProviders = useAppSelector(
@@ -129,20 +131,17 @@ export function AuthProviders({ mode }: Props): ReactElement {
     (state) => state.cookieConsent.cookieConsentResult,
   );
 
-  const handleClick = useCallback(
-    async (provider: AuthProvider) => {
-      if (mode === 'disconnect') {
-        if (!(await confirm())) {
-          return;
-        }
-
-        dispatch(authDisconnect({ provider }));
-      } else {
-        dispatch(loginAction(provider, mode === 'connect'));
+  const handleClick = async (provider: AuthProvider) => {
+    if (mode === 'disconnect') {
+      if (!(await confirm())) {
+        return;
       }
-    },
-    [dispatch, mode, confirm],
-  );
+
+      dispatch(authDisconnect({ provider }));
+    } else {
+      dispatch(loginAction(provider, mode === 'connect'));
+    }
+  };
 
   function show(provider: AuthProvider) {
     return (
@@ -153,6 +152,12 @@ export function AuthProviders({ mode }: Props): ReactElement {
   }
 
   function disabled(provider: AuthProvider) {
+    // Every mode here — logging in, connecting, disconnecting — is a request to
+    // the server.
+    if (!online) {
+      return true;
+    }
+
     if (mode === 'login') {
       return cookieConsentResult === null;
     }

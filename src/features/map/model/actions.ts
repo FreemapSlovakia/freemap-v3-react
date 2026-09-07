@@ -44,6 +44,7 @@ export const mapRefocus = createAction<
 export const mapFitBbox = createAction<{
   bbox: [number, number, number, number];
   maxZoom?: number;
+  minZoom?: number;
 }>('MAP_FIT_BBOX');
 
 export const mapReplaceLayer = createAction<{ from: string; to: string }>(
@@ -72,6 +73,7 @@ export const mapSetShading = createAction<Shading>('MAP_SET_SHADING');
 export const mapSetLocalPrefs = createAction<{
   resolutionScale?: number | null;
   featureScale?: number;
+  zoomSnap?: number;
 }>('MAP_SET_LOCAL_PREFS');
 
 export const mapSetBounds =

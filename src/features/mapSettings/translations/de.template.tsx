@@ -7,6 +7,7 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   overlayOpacity: 'Deckkraft',
   showInMenu: 'Im Menü anzeigen',
   showInToolbar: 'In der Werkzeugleiste anzeigen',
+  keyboardShortcut: 'Tastenkürzel',
   saveSuccess: 'Einstellungen wurden gespeichert.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Speichern der Einstellungen', err),

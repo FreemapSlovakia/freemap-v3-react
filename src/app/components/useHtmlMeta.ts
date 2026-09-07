@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { expandSite, siteOf } from '@shared/sites.js';
 import { useEffect } from 'react';
 import { useDocumentSubTitle } from '../hooks/useDocumentTitle.js';
 
@@ -6,7 +7,9 @@ import { useDocumentSubTitle } from '../hooks/useDocumentTitle.js';
 // and the active modal's title. The title prefix is contributed per-modal via
 // `useDocumentTitle`; here we only read the resolved value and update the
 // static tags that `index.ejs` renders (mutated in place, never re-created, so
-// the build-time SEO/prerender markup stays intact).
+// the build-time SEO/prerender markup stays intact). The portal name in the
+// title follows the domain, not the language, so every language served from
+// freemap.sk says Freemap Slovakia.
 export function useHtmlMeta(): void {
   const m = useMessages();
 
@@ -19,7 +22,9 @@ export function useHtmlMeta(): void {
 
     const { head } = document;
 
-    const { title, description } = m.main;
+    const { description } = m.main;
+
+    const title = expandSite(m.main.title, siteOf(location.hostname));
 
     const titleElement = head.querySelector('title');
 

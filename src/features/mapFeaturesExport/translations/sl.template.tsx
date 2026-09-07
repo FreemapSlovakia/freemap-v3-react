@@ -5,6 +5,11 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Prenesi',
+  share: 'Deli',
+  shareAsText:
+    'Vaš brskalnik deli samo besedilne datoteke, zato datoteka dobi končnico ».txt«. Ciljna aplikacija jo bo morda treba odstraniti.',
+  sharedAsDownload:
+    'Pogovornega okna za deljenje ni bilo mogoče odpreti, zato se je datoteka prenesla.',
   format: 'Format',
   target: 'Cilj',
   elevation: {
@@ -16,14 +21,13 @@ const sl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Napaka pri izvozu', err),
   what: {
     plannedRoute: 'najdeno pot',
-    plannedRouteWithStops: 's postanki',
     objects: 'objekti (POI)',
     pictures: 'fotografije (v vidnem delu zemljevida)',
     drawingLines: 'risanje - črte',
     drawingAreas: 'risanje - poligoni',
     drawingPoints: 'risanje - točke',
     tracking: 'sledenje v živo',
-    import: 'uvožena datoteka',
+    import: 'sledi in podatki',
     search: 'najdba',
   },
   onlySelected: 'Samo izbrani element',

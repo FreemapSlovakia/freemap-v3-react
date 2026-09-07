@@ -1,46 +1,61 @@
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { RovasLink } from '@shared/components/RovasLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import type { PremiumMessages } from './PremiumMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
   title: 'Získat prémiový přístup',
-  commonHeader: (
+  commonHeader: (price, dtmCountries) => (
     <>
       <p>
         <strong>Freemap Premium</strong> je volitelné roční předplatné, které
         rozšiřuje aplikaci.
       </p>
       <p className="mb-1">
-        Za <b>8 €</b> ročně získáte:
+        Za <b>{price} €</b> ročně získáte:
       </p>
       <ul>
         <li>odstranění reklamního baneru</li>
-        <li
-          className="text-decoration-underline"
-          title="podrobné stínování Slovenska a Česka ve vysokém rozlišení, nejvyšší úrovně přiblížení Outdoor mapy, nejvyšší úrovně přiblížení ortofotomap Slovenska a Česka, různé mapy založené na WMS"
-        >
-          prémiové mapové vrstvy
+        <li>
+          <HintTooltip
+            hint={
+              <ul className="mb-0 ps-3 text-start">
+                <li>nejvyšší úrovně přiblížení Outdoor mapy</li>
+                <li>
+                  nejvyšší úrovně přiblížení ortofotomap Slovenska a Česka
+                </li>
+                <li>
+                  podrobné stínování Slovenska a Česka ve vysokém rozlišení
+                </li>
+                <li>mapy založené na WMS</li>
+              </ul>
+            }
+          >
+            prémiové mapové vrstvy
+          </HintTooltip>
         </li>
         <li>prémiové fotky</li>
         <li>multimodální plánování trasy</li>
-        <li>výšková data ve vysokém rozlišení (řada evropských zemí)</li>
+        <li>optimalizace pořadí bodů trasy</li>
+        <li>
+          <HintTooltip hint={dtmCountries}>
+            výšková data ve vysokém rozlišení (řada evropských zemí)
+          </HintTooltip>
+        </li>
+        <li>panorama ve vyšším rozlišení</li>
+        <li>analýza viditelnosti ve vyšším rozlišení</li>
+        <li>delší historie meteoradaru a jeho předpověď</li>
+        <li>obarvení tras a záznamů (některé režimy jsou jen prémiové)</li>
       </ul>
       <p className="mb-0">Freemap zůstává bezplatný a otevřený.</p>
     </>
   ),
-  stepsForAnonymous: (
+  dtmAreaNames: { gb: 'Anglie' },
+  purchaseAfterLogin: (
     <>
-      <div className="fw-bold">Jak to funguje</div>
-      <div className="mb-3">
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Krok 1</span> - přihlaste se nebo si
-          vytvořte bezplatný účet ve Freemapu (níže).
-        </p>
-        <p className="mb-1 ms-3">
-          <span className="fw-semibold">Krok 2</span> - budete přesměrováni k
-          dokončení platby.
-        </p>
-      </div>
+      Zvolením poskytovatele přihlášení se přihlásíte nebo si vytvoříte
+      bezplatný účet ve Freemapu. Následně budete pokračovat k platbě za{' '}
+      <strong>Freemap Premium</strong>.
     </>
   ),
   success: 'Gratulujeme, získali jste prémiový přístup!',
@@ -50,12 +65,17 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
       Máte prémiový přístup do <b>{date}</b>.
     </>
   ),
+  youArePremiumRenews: (
+    <>Máte prémiový přístup. Předplatné se obnovuje automaticky.</>
+  ),
   premiumOnly: 'Dostupné pouze s prémiovým přístupem.',
   noPremium: 'Nemáte prémiový přístup.',
   clickToActivate: 'Kliknutím aktivujete.',
   higherPrecisionElevation:
     'Přesnější výšková data dostupná s prémiovým přístupem.',
+  higherDetail: 'Jemnější detaily dostupné s prémiovým přístupem.',
   alreadyPremium: 'Máte již prémiový přístup.',
+  alreadySubscribed: 'Již máte aktivní předplatné.',
   premiumUser: 'Uživatel s prémiovým přístupem',
   payOnce: 'Zaplatit jednorázově na jeden rok',
   paySubscription: 'Roční předplatné (automatické obnovení)',
@@ -66,6 +86,8 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <RovasLink>Rováši</RovasLink>, zvolte platbu chrony.
     </>
   ),
+  subscriptionReassurance: ({ price }) =>
+    `Cena ${price}\xa0€ ročně vám zůstane, dokud bude předplatné aktivní. Zrušit ho můžete kdykoli — prémiový přístup pak platí do konce zaplaceného roku.`,
 };
 
 export default cs;

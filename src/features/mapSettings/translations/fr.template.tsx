@@ -13,6 +13,7 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   overlayOpacity: 'Opacité',
   showInMenu: 'Afficher dans le menu',
   showInToolbar: 'Afficher dans la barre d’outils',
+  keyboardShortcut: 'Raccourci clavier',
   saveSuccess: 'Les paramètres ont été enregistrés.',
   customMapSaved: 'La carte personnalisée a été enregistrée.',
 };

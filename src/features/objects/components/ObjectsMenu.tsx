@@ -1,31 +1,33 @@
-import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
+import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HideArrow } from '@features/search/components/SearchMenu.js';
 import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import type { Node, OsmMapping } from '@osm/types.js';
+import type { OsmMapping } from '@osm/types.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import classes from '@shared/poiIcon.module.css';
-import { removeAccents } from '@shared/stringUtils.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
+import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import {
   type ChangeEvent,
+  type KeyboardEvent,
   type ReactElement,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { Button, Dropdown, type DropdownProps, Form } from 'react-bootstrap';
-import { FaPaintBrush, FaPencilAlt, FaTrash } from 'react-icons/fa';
+import { FaPaintBrush, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { objectsSetFilter } from '../model/actions.js';
+import { objectCategories } from '../objectCategories.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
+import { ObjectsConvertMenu } from './ObjectsConvertMenu.js';
 
 export default function ObjectsMenu(): ReactElement {
   const m = useMessages();
@@ -34,64 +36,24 @@ export default function ObjectsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
+  const online = useOnline();
+
   const [filter, setFilter] = useState('');
 
   const [dropdownOpened, setDropdownOpened] = useState(false);
 
-  const handleFilterSet = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+  const handleFilterSet = (e: ChangeEvent<HTMLInputElement>) => {
     setFilter(e.currentTarget.value);
-  }, []);
+  };
 
   const lang = useEffectiveChosenLanguage();
 
   const [osmMapping, setOsmMapping] = useState<OsmMapping>();
 
-  const items = useMemo(() => {
-    if (!osmMapping) {
-      return;
-    }
-
-    const res: { name: string; tags: { key: string; value?: string }[] }[] = [];
-
-    function rec(
-      n: Node,
-      tags: { key: string; value: string }[],
-      key?: string,
-    ) {
-      for (const [tagKeyOrValue, nodeOrName] of Object.entries(n)) {
-        if (nodeOrName === '{}') {
-          continue;
-        }
-
-        if (typeof nodeOrName === 'string') {
-          if (key && tagKeyOrValue === '*') {
-            continue;
-          }
-
-          res.push({
-            name: nodeOrName.replace('{}', '').trim(),
-            tags:
-              !key && tagKeyOrValue === '*'
-                ? tags
-                : [
-                    ...tags,
-                    key
-                      ? { key, value: tagKeyOrValue }
-                      : { key: tagKeyOrValue },
-                  ],
-          });
-        } else if (key) {
-          rec(nodeOrName, [...tags, { key, value: tagKeyOrValue }]);
-        } else {
-          rec(nodeOrName, tags, tagKeyOrValue);
-        }
-      }
-    }
-
-    rec(osmMapping.osmTagToNameMapping, []);
-
-    return res;
-  }, [osmMapping]);
+  const items = useMemo(
+    () => osmMapping && objectCategories(osmMapping),
+    [osmMapping],
+  );
 
   const active = useAppSelector((state) => state.objects.active);
 
@@ -99,20 +61,17 @@ export default function ObjectsMenu(): ReactElement {
     getOsmMapping(lang).then(setOsmMapping);
   }, [lang]);
 
-  const handleSelect = useCallback(
-    (tags: string | null) => {
-      if (tags) {
-        dispatch(
-          objectsSetFilter(
-            active.includes(tags)
-              ? active.filter((item) => item !== tags)
-              : [...active, tags],
-          ),
-        );
-      }
-    },
-    [dispatch, active],
-  );
+  const handleSelect = (tags: string | null) => {
+    if (tags) {
+      dispatch(
+        objectsSetFilter(
+          active.includes(tags)
+            ? active.filter((item) => item !== tags)
+            : [...active, tags],
+        ),
+      );
+    }
+  };
 
   // ugly hack not to close dropdown on open
   const justOpenedRef = useRef(false);
@@ -150,11 +109,24 @@ export default function ObjectsMenu(): ReactElement {
     inputRef.current?.blur();
   };
 
-  const sc = useScrollClasses('vertical');
+  // The dropdown ignores Escape coming from a `search` input, and the global
+  // shortcut handler steps aside while a menu is expanded — so Escape closes
+  // this one here, and only then leaves the input to the app's own handling.
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.code === 'Escape' && dropdownOpened) {
+      setDropdownOpened(false);
+      setFilter('');
+
+      inputRef.current?.blur();
+
+      e.preventDefault();
+    }
+  };
 
   const normalizedFilter = removeAccents(filter.trim().toLowerCase());
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const byName = makeLabelComparator(lang);
+
   const activeSnapshot = useMemo(() => active, [active]);
 
   function makeItems(snapshot?: boolean) {
@@ -163,10 +135,6 @@ export default function ObjectsMenu(): ReactElement {
     }
 
     return items
-      .map((item) => ({
-        ...item,
-        key: item.tags.map((tag) => `${tag.key}=${tag.value}`).join(','),
-      }))
       .filter(
         (item) =>
           item.name &&
@@ -175,7 +143,7 @@ export default function ObjectsMenu(): ReactElement {
             !normalizedFilter ||
             removeAccents(item.name.toLowerCase()).includes(normalizedFilter)),
       )
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => byName(a.name, b.name))
       .map(({ key, name, tags }) => {
         const img = resolveGenericName(
           osmTagToIconMapping,
@@ -183,9 +151,18 @@ export default function ObjectsMenu(): ReactElement {
         );
 
         return (
-          <Dropdown.Item key={key} eventKey={key} active={active.includes(key)}>
+          <Dropdown.Item
+            as="button"
+            key={key}
+            eventKey={key}
+            active={active.includes(key)}
+            // Every change to the set re-runs the search — dropping
+            // one category included — so offline the list only shows what is
+            // active; the trash button clears the lot without asking anyone.
+            disabled={!online}
+          >
             {img.length > 0 ? (
-              <img src={img[0]} className={classes.icon} alt="" />
+              <IconGlyph poi={img[0]} />
             ) : (
               <span
                 style={{
@@ -211,7 +188,6 @@ export default function ObjectsMenu(): ReactElement {
   return (
     <ToolMenu tool="objects">
       <Dropdown
-        className="ms-1"
         id="objectsMenuDropdown"
         show={dropdownOpened}
         onSelect={handleSelect}
@@ -229,30 +205,23 @@ export default function ObjectsMenu(): ReactElement {
 
               setDropdownOpened(true);
             }}
+            onKeyDown={handleKeyDown}
             ref={inputRef}
           />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu
-          popperConfig={fixedPopperConfig}
-          className="fm-dropdown-with-scroller"
-        >
-          <div className="dropdown-long" ref={sc}>
-            <div />
+        <FmDropdownMenu>
+          {activeItems}
 
-            {activeItems}
+          {activeItems?.length ? <Dropdown.Divider /> : null}
 
-            {activeItems?.length ? <Dropdown.Divider /> : null}
-
-            {makeItems()}
-          </div>
-        </Dropdown.Menu>
+          {makeItems()}
+        </FmDropdownMenu>
       </Dropdown>
 
       <LongPressTooltip label={om?.style.button}>
         {({ props }) => (
           <Button
-            className="ms-1"
             variant="secondary"
             onClick={() => {
               dispatch(setActiveModal({ type: 'objects-style' }));
@@ -264,28 +233,12 @@ export default function ObjectsMenu(): ReactElement {
         )}
       </LongPressTooltip>
 
-      {hasObjects && (
-        <LongPressTooltip label={om?.convertAll}>
-          {({ props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={() => {
-                dispatch(convertToDrawing({ type: 'objects' }));
-              }}
-              {...props}
-            >
-              <FaPencilAlt />
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+      {hasObjects && <ObjectsConvertMenu />}
 
       {active.length > 0 && (
         <LongPressTooltip label={m?.general.delete} kbd="Del">
           {({ props }) => (
             <Button
-              className="ms-1"
               variant="danger"
               onClick={() => {
                 dispatch(objectsSetFilter([]));

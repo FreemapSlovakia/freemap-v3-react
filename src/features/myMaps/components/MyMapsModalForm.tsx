@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import '@shared/styles/react-tags.scss';
@@ -8,7 +9,6 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { FaSave, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
-import 'react-tag-autocomplete/example/src/styles.css';
 import z from 'zod';
 import {
   type MapMeta,
@@ -144,7 +144,8 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
     const isEditingActive = target && target.id === activeMap?.id;
 
     if (!target) {
-      dispatch(mapsSave({ name, writers, asCopy: true }));
+      // The save owns the flag here: the map has no id to flag until it exists.
+      dispatch(mapsSave({ name, writers, asCopy: true, offline }));
       onDone();
       return;
     }
@@ -191,7 +192,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
           toastsAdd({
             style: 'success',
             timeout: 5000,
-            messageKey: 'general.saved',
+            messageKey: 'mapUpdated',
+            messageParams: { name },
+            messageLoader: loadMyMapsMessages,
           }),
         );
 
@@ -259,18 +262,16 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
             </Form.Group>
           )}
 
-          {target && (
-            <Form.Group controlId="offline" className="mb-3">
-              <Form.Check
-                type="checkbox"
-                label={mm?.availableOffline}
-                checked={offline}
-                onChange={(e) => setOffline(e.currentTarget.checked)}
-              />
+          <Form.Group controlId="offline" className="mb-3 d-flex">
+            <Form.Check
+              type="checkbox"
+              label={mm?.availableOffline}
+              checked={offline}
+              onChange={(e) => setOffline(e.currentTarget.checked)}
+            />
 
-              <Form.Text muted>{mm?.availableOfflineHint}</Form.Text>
-            </Form.Group>
-          )}
+            <HintMark hint={mm?.availableOfflineHint} />
+          </Form.Group>
         </Form>
       </Modal.Body>
 

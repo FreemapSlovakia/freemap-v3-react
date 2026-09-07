@@ -27,6 +27,9 @@ const fr: DeepPartialWithRequiredObjects<PurchasesMessages> = {
     'Certains virements bancaires ont été rejetés ou ont expiré. Si vous pensez qu’il s’agit d’une erreur, veuillez contacter le support.',
   noPurchases: 'Aucun achat',
   premium: 'Premium',
+  managePayments: 'Gérer les paiements',
+  managePaymentsHint:
+    'Ouvre le portail client de Polar, notre prestataire de paiement, où vous pouvez résilier votre abonnement, changer de moyen de paiement et télécharger vos factures. Cela ne concerne que ce qui a été payé via Polar, et non via Rovas.',
 };
 
 export default fr;

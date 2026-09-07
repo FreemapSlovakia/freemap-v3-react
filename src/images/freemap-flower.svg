@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg id="svg8" viewBox="33.6 0.2 17.735294 13.4" version="1.1" sodipodi:docname="freemap-flower.svg" inkscape:version="1.4.3 (0d15f75042, 2025-12-25)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview id="namedview1" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:zoom="15.209784" inkscape:cx="-3.0243691" inkscape:cy="8.3498885" inkscape:window-width="2150" inkscape:window-height="1206" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="g21768" showgrid="false" />
+  <defs id="defs2">
+    <!-- Petal shading in the flower's own coordinates: bright near the shared
+         centre, deeper at the tips, mirroring the raster original. -->
+    <radialGradient id="petalGreen" cx="146" cy="72" r="78" fx="120" fy="42" gradientUnits="userSpaceOnUse">
+      <stop id="stop1" offset="0" stop-color="#ddf5c0" />
+      <stop id="stop2" offset=".42" stop-color="#bbdd8e" />
+      <stop id="stop3" offset="1" stop-color="#7a9156" />
+    </radialGradient>
+    <radialGradient id="petalRed" cx="146" cy="72" r="78" fx="120" fy="42" gradientUnits="userSpaceOnUse">
+      <stop id="stop4" offset="0" stop-color="#ff9a80" />
+      <stop id="stop5" offset=".42" stop-color="#d01414" />
+      <stop id="stop6" offset="1" stop-color="#8a0505" />
+    </radialGradient>
+    <radialGradient id="petalAmber" cx="146" cy="72" r="78" fx="120" fy="42" gradientUnits="userSpaceOnUse">
+      <stop id="stop7" offset="0" stop-color="#ffdf9b" />
+      <stop id="stop8" offset=".42" stop-color="#e8a01e" />
+      <stop id="stop9" offset="1" stop-color="#b06a00" />
+    </radialGradient>
+    <!-- Specular sheen laid over each flower, light from the upper left. -->
+    <linearGradient id="sheen" x1="100" x2="175" y1="25" y2="115" gradientUnits="userSpaceOnUse">
+      <stop id="stop10" offset="0" stop-color="#fff" stop-opacity=".7" />
+      <stop id="stop11" offset=".35" stop-color="#fff" stop-opacity=".16" />
+      <stop id="stop12" offset=".62" stop-color="#fff" stop-opacity="0" />
+    </linearGradient>
+    <filter id="filter2298" width="1.1616325" height="1.2222792" x="-0.070869391" y="-0.097426304" style="color-interpolation-filters:sRGB">
+      <feFlood id="feFlood2288" flood-color="#000" flood-opacity=".498039" result="flood" />
+      <feComposite id="feComposite2290" in="flood" in2="SourceGraphic" operator="in" result="composite1" />
+      <feGaussianBlur id="feGaussianBlur2292" in="composite1" result="blur" stdDeviation=".4" />
+      <feOffset id="feOffset2294" dx=".3" dy=".3" result="offset" />
+      <feComposite id="feComposite2296" in="SourceGraphic" in2="offset" operator="over" result="composite2" />
+    </filter>
+  </defs>
+  <g id="layer1" transform="translate(-35.236 -82.047)">
+    <g id="g1856" style="filter:url(#filter2298)">
+      <g id="g21768" style="stroke-width:1.71199;stroke-miterlimit:4;stroke-dasharray:none" transform="matrix(.1299 0 0 .12713 58.183 79.116)">
+        <path id="path21753" d="M 169.314,57.478 C 146.595,27.242 122.047,67.012 134.212,71.888 C 146.746,76.911 103.258,33.414 95.174,51.828 C 87.448,69.426 128.994,84.602 123.531,77.737 C 114.635,66.558 101.48359,78.570405 102.91051,90.991461 C 104.10196,101.36273 111.27868,104.64586 119.8737,104.64586 C 133.05627,104.64586 158.21787,95.599305 139.747,88.538 C 118.487,80.409 181.444,132.047 193.481,113.75 C 209.644,89.18 136.616,64.46 148.373,77.49 C 160.246,90.65 181.088,73.148 169.313,57.478" style="fill:url(#petalGreen);fill-opacity:1;fill-rule:evenodd;stroke:none" sodipodi:nodetypes="ccccsscccc" />
+        <path id="path21753-gloss" d="M 169.314,57.478 C 146.595,27.242 122.047,67.012 134.212,71.888 C 146.746,76.911 103.258,33.414 95.174,51.828 C 87.448,69.426 128.994,84.602 123.531,77.737 C 114.635,66.558 101.48359,78.570405 102.91051,90.991461 C 104.10196,101.36273 111.27868,104.64586 119.8737,104.64586 C 133.05627,104.64586 158.21787,95.599305 139.747,88.538 C 118.487,80.409 181.444,132.047 193.481,113.75 C 209.644,89.18 136.616,64.46 148.373,77.49 C 160.246,90.65 181.088,73.148 169.313,57.478" style="fill:url(#sheen);fill-rule:evenodd;stroke:none" sodipodi:nodetypes="ccccsscccc" />
+        <path id="path21753-outline" d="M 169.314,57.478 C 146.595,27.242 122.047,67.012 134.212,71.888 C 146.746,76.911 103.258,33.414 95.174,51.828 C 87.448,69.426 128.994,84.602 123.531,77.737 C 114.635,66.558 101.48359,78.570405 102.91051,90.991461 C 104.10196,101.36273 111.27868,104.64586 119.8737,104.64586 C 133.05627,104.64586 158.21787,95.599305 139.747,88.538 C 118.487,80.409 181.444,132.047 193.481,113.75 C 209.644,89.18 136.616,64.46 148.373,77.49 C 160.246,90.65 181.088,73.148 169.313,57.478 Z" style="fill:none;stroke:#000000;stroke-width:1.71199;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" sodipodi:nodetypes="ccccssccccc" />
+        <path id="path21755" d="M 154.309,33.777 C 118.832,20.672 119.746,67.398 132.612,64.906 C 145.869,62.337 85.75,49.339 88.932,69.196 C 91.972,88.173 135.116,78.42 126.803,75.609 C 113.271,71.033 91.959742,88.292629 109.49774,100.61663 C 136.12374,119.32663 177.148,69.408 146.286,75.902 C 124.012,80.588 204.906,89.881 205.109,67.981 C 205.383,38.573 130.609,57.361 147.551,61.943 C 164.661,66.572 172.695,40.569 154.309,33.777" style="fill:url(#petalRed);fill-opacity:1;fill-rule:evenodd;stroke:none" sodipodi:nodetypes="ccccccccc" />
+        <path id="path21755-gloss" d="M 154.309,33.777 C 118.832,20.672 119.746,67.398 132.612,64.906 C 145.869,62.337 85.75,49.339 88.932,69.196 C 91.972,88.173 135.116,78.42 126.803,75.609 C 113.271,71.033 93.033419,88.65832 110.57142,100.98232 C 137.19742,119.69232 177.148,69.408 146.286,75.902 C 124.012,80.588 204.906,89.881 205.109,67.981 C 205.383,38.573 130.609,57.361 147.551,61.943 C 164.661,66.572 172.695,40.569 154.309,33.777" style="fill:url(#sheen);fill-rule:evenodd;stroke:none" sodipodi:nodetypes="ccccccccc" />
+        <path id="path21755-outline" d="M 154.309,33.777 C 118.832,20.672 119.746,67.398 132.612,64.906 C 145.869,62.337 85.75,49.339 88.932,69.196 C 91.972,88.173 135.116,78.42 126.803,75.609 C 113.271,71.033 93.480785,88.65832 111.01879,100.98232 C 137.64479,119.69232 177.148,69.408 146.286,75.902 C 124.012,80.588 204.906,89.881 205.109,67.981 C 205.383,38.573 130.609,57.361 147.551,61.943 C 164.661,66.572 172.695,40.569 154.309,33.777 Z" style="fill:none;stroke:#000000;stroke-width:1.71199;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" sodipodi:nodetypes="ccccccccc" />
+        <path id="path21697" d="M162.823 43.913c-30.544-22.303-42.437 22.894-29.38 24.013 13.455 1.153-40.822-27.783-43.189-7.813-2.262 19.086 41.904 21.497 34.677 16.521-11.767-8.1-37.059 5.887-23.557 22.535 20.498 25.276 73.68-14.74 42.217-16.929-22.706-1.58 52.567 29.47 58.749 8.46 8.302-28.214-68.76-30.58-53.717-21.54 15.193 9.128 30.03-13.688 14.2-25.247" style="fill:url(#petalAmber);fill-opacity:1;fill-rule:evenodd;stroke:none" />
+        <path id="path21697-gloss" d="M162.823 43.913c-30.544-22.303-42.437 22.894-29.38 24.013 13.455 1.153-40.822-27.783-43.189-7.813-2.262 19.086 41.904 21.497 34.677 16.521-11.767-8.1-37.059 5.887-23.557 22.535 20.498 25.276 73.68-14.74 42.217-16.929-22.706-1.58 52.567 29.47 58.749 8.46 8.302-28.214-68.76-30.58-53.717-21.54 15.193 9.128 30.03-13.688 14.2-25.247" style="fill:url(#sheen);fill-rule:evenodd;stroke:none" />
+        <path id="path21697-outline" d="M162.823 43.913c-30.544-22.303-42.437 22.894-29.38 24.013 13.455 1.153-40.822-27.783-43.189-7.813-2.262 19.086 41.904 21.497 34.677 16.521-11.767-8.1-37.059 5.887-23.557 22.535 20.498 25.276 73.68-14.74 42.217-16.929-22.706-1.58 52.567 29.47 58.749 8.46 8.302-28.214-68.76-30.58-53.717-21.54 15.193 9.128 30.03-13.688 14.2-25.247Z" style="fill:none;stroke:#000;stroke-width:1.71199;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      </g>
+    </g>
+  </g>
+</svg>

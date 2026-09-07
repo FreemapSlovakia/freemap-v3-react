@@ -1,10 +1,11 @@
 import type { Breakpoint } from '@shared/breakpoints.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import classes from './SelectDropdown.module.css';
 
 export type SelectDropdownOption = {
   value: string;
@@ -23,8 +24,16 @@ export type SelectDropdownOption = {
   group?: ReactNode;
   /** Extra content after the label inside the menu item (e.g. a premium badge). */
   extra?: ReactNode;
-  /** Render a divider after this option (e.g. to set off a leading action). */
-  divider?: boolean;
+  /**
+   * Menu content of its own after the option — a setting the option owns, not
+   * something to pick, so it must stop its own clicks from reaching `onSelect`.
+   */
+  after?: ReactNode;
+  /**
+   * Render a divider after this option; `'strong'` draws a heavier one, for a
+   * row set apart from the list rather than one group of it from the next.
+   */
+  divider?: boolean | 'strong';
 };
 
 type Props = {
@@ -48,10 +57,22 @@ type Props = {
   breakpoint?: Breakpoint;
   /** Toggle keyboard hint shown in the tooltip. */
   kbd?: string;
-  /** Wrap the menu in a vertical scroller for long option lists. */
-  scrollable?: boolean;
+  /**
+   * Extra classes on the toggle itself — e.g. `text-warning`, saying the value
+   * on show is the one the account is held to. A mark of its own would need a
+   * tooltip that opens over the toggle's; this needs none, and `toggleHint`
+   * says what it means.
+   */
+  toggleClassName?: string;
+  /**
+   * A line under the toggle's own tooltip, saying what `toggleClassName`
+   * means. Ignored by `asSelect`, whose toggle has no tooltip.
+   */
+  toggleHint?: ReactNode;
   /** Render the toggle as a native-like `<select>` with an always-visible label. */
   asSelect?: boolean;
+  /** Dims the whole control, for when none of the options can be acted on. */
+  disabled?: boolean;
   className?: string;
   id?: string;
 };
@@ -70,13 +91,13 @@ export function SelectDropdown({
   name,
   breakpoint,
   kbd,
-  scrollable,
+  toggleClassName,
+  toggleHint,
   asSelect,
+  disabled,
   className,
   id,
 }: Props): ReactElement {
-  const sc = useScrollClasses('vertical');
-
   const selected = options.find((o) => o.value === value);
 
   const icon = toggleIcon ?? selected?.icon;
@@ -101,33 +122,50 @@ export function SelectDropdown({
     items.push(
       <Dropdown.Item
         key={opt.value}
+        as="button"
+        type="button"
         eventKey={opt.value}
         active={opt.active ?? opt.value === value}
         disabled={opt.disabled}
         title={opt.title}
       >
         {opt.icon}
-        {opt.icon ? ' ' : null}
         {opt.label}
-        {(opt.kbd?.split(' ') ?? []).map((k) => (
-          <Fragment key={k}>
-            {' '}
-            <kbd>{k}</kbd>
-          </Fragment>
-        ))}
-        {opt.extra}
+
+        {(opt.kbd || opt.extra) && (
+          <MenuGutter>
+            {opt.extra}
+            {(opt.kbd?.split(' ') ?? []).map((k) => (
+              <kbd key={k}>{k}</kbd>
+            ))}
+          </MenuGutter>
+        )}
       </Dropdown.Item>,
     );
 
+    if (opt.after) {
+      items.push(<Fragment key={`a${i}`}>{opt.after}</Fragment>);
+    }
+
     if (opt.divider) {
-      items.push(<Dropdown.Divider key={`d${i}`} />);
+      items.push(
+        <Dropdown.Divider
+          key={`d${i}`}
+          className={opt.divider === 'strong' ? classes['strongDivider'] : ''}
+        />,
+      );
     }
   });
 
   return (
     <Dropdown className={className} onSelect={(key) => onSelect(key)}>
       {asSelect ? (
-        <Dropdown.Toggle as={SelectToggle} id={id}>
+        <Dropdown.Toggle
+          as={SelectToggle}
+          id={id}
+          disabled={disabled}
+          className={toggleClassName}
+        >
           {icon}
           {icon && label != null ? ' ' : null}
           {label}
@@ -138,9 +176,16 @@ export function SelectDropdown({
           label={label ?? '…'}
           name={name}
           kbd={kbd}
+          hint={toggleHint}
         >
           {({ label: tipLabel, labelClassName, props }) => (
-            <Dropdown.Toggle variant="secondary" id={id} {...props}>
+            <Dropdown.Toggle
+              variant="secondary"
+              id={id}
+              disabled={disabled}
+              className={toggleClassName}
+              {...props}
+            >
               {icon}
               <span className={labelClassName}>
                 {icon ? ' ' : null}
@@ -151,19 +196,7 @@ export function SelectDropdown({
         </LongPressTooltip>
       )}
 
-      <Dropdown.Menu
-        popperConfig={fixedPopperConfig}
-        className={scrollable ? 'fm-dropdown-with-scroller' : undefined}
-      >
-        {scrollable ? (
-          <div className="dropdown-long" ref={sc}>
-            <div />
-            {items}
-          </div>
-        ) : (
-          items
-        )}
-      </Dropdown.Menu>
+      <FmDropdownMenu>{items}</FmDropdownMenu>
     </Dropdown>
   );
 }

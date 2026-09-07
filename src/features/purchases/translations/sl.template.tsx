@@ -25,6 +25,9 @@ const sl: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   noPurchases: 'Ni nakupov',
   premium: 'Premium',
   credits: (amount) => <>Krediti ({amount})</>,
+  managePayments: 'Upravljanje plačil',
+  managePaymentsHint:
+    'Odpre portal za stranke ponudnika plačil Polar, kjer lahko prekličete naročnino, spremenite način plačila in prenesete račune. Velja samo za tisto, kar je bilo plačano prek Polarja, ne prek Rovasa.',
 };
 
 export default sl;

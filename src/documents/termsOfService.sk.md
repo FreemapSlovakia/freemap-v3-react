@@ -4,7 +4,7 @@ title: Obchodné podmienky
 
 # Obchodné podmienky
 
-Naposledy aktualizované: 11. jún 2026
+Naposledy aktualizované: 1. september 2026
 
 Tieto obchodné podmienky („Podmienky“) upravujú Váš prístup k webovej stránke a aplikáciám Freemap.sk („Služba“) a ich používanie, najmä kúpu a používanie plateného predplatného **Freemap Premium** a **Kreditov**. Prečítajte si ich, prosím, pozorne. Používaním Služby alebo uskutočnením kúpy vyjadrujete súhlas s tým, že ste týmito Podmienkami viazaní.
 
@@ -18,7 +18,7 @@ Slová s veľkým začiatočným písmenom majú význam vymedzený za nasleduj�
 
 Na účely týchto Podmienok:
 
-- **Poskytovateľ / Predávajúci** (ďalej „My“, „Nás“ alebo „Naše“) označuje spoločnosť **Ing. Martin Ždila s.r.o.**, so sídlom Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovenská republika, IČO: 50545876, DIČ: 2120371594, IČ DPH: SK2120371594, zapísanú v Obchodnom registri Okresného súdu Košice I.
+- **Poskytovateľ / Predávajúci** (ďalej „My“, „Nás“ alebo „Naše“) označuje spoločnosť **Ing. Martin Ždila s.r.o.**, so sídlom Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovenská republika, IČO: 50545876, DIČ: 2120371594, IČ DPH: SK2120371594, zapísanú v Obchodnom registri Mestského súdu Košice, oddiel Sro, vložka č. 40119/V.
 
 - **Freemap Slovakia** označuje občianske združenie, ktoré prevádzkuje projekt a značku Freemap.sk. Bezplatné časti Služby poskytuje Freemap Slovakia; platené predplatné **Freemap Premium** predáva a poskytuje Predávajúci.
 
@@ -53,9 +53,9 @@ Presný rozsah funkcií sa môže časom meniť. Jednotlivé prémiové funkcie 
 
 ## Cena a fakturácia
 
-Freemap Premium sa ponúka ako **ročné Predplatné** za cenu **8 EUR ročne** (aktuálna cena je vždy uvedená pri platbe a má prednosť pred akýmkoľvek údajom uvedeným tu). Ceny sú uvedené v eurách (EUR) a zahŕňajú príslušnú daň z pridanej hodnoty (DPH), ak sa vyžaduje; konečná suma vrátane prípadnej DPH sa zobrazí pred potvrdením Vašej objednávky. Ku každej platbe Vám vystavíme doklad alebo faktúru.
+Freemap Premium sa ponúka ako **ročné Predplatné** za cenu **15 EUR ročne** (aktuálna cena je vždy uvedená pri platbe a má prednosť pred akýmkoľvek údajom uvedeným tu). Ceny sú uvedené v eurách (EUR) a zahŕňajú príslušnú daň z pridanej hodnoty (DPH), ak sa vyžaduje; konečná suma vrátane prípadnej DPH sa zobrazí pred potvrdením Vašej objednávky. Ku každej platbe Vám vystavíme doklad alebo faktúru.
 
-Predplatné sa **automaticky obnovuje**: obnovuje sa automaticky na ďalšie jednoročné obdobia za vtedy platnú cenu, pokiaľ ho nezrušíte pred dátumom obnovenia. Pri každom obnovení zaúčtujeme platbu z Vami poskytnutého platobného prostriedku prostredníctvom Nášho Spracovateľa platieb.
+Predplatné sa **automaticky obnovuje**: obnovuje sa automaticky na ďalšie jednoročné obdobia za cenu Vášho Predplatného, pokiaľ ho nezrušíte pred dátumom obnovenia. Zvýšenie ceny sa vzťahuje na nové Predplatné; Vaše Predplatné si svoju cenu ponecháva, pokiaľ zostane aktívne, a ak by sa to niekedy muselo zmeniť, vopred Vás upozorníme. Pri každom obnovení zaúčtujeme platbu z Vami poskytnutého platobného prostriedku prostredníctvom Nášho Spracovateľa platieb.
 
 ## Platba
 

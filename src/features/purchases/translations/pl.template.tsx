@@ -27,6 +27,9 @@ const pl: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   noPurchases: 'Brak zakupów',
   premium: 'Premium',
   credits: (amount) => <>Kredyty ({amount})</>,
+  managePayments: 'Zarządzaj płatnościami',
+  managePaymentsHint:
+    'Otwiera portal klienta Polar, naszego dostawcy płatności, gdzie możesz anulować subskrypcję, zmienić metodę płatności i pobrać faktury. Dotyczy tylko tego, co zostało opłacone przez Polar, a nie przez Rovas.',
 };
 
 export default pl;

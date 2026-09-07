@@ -1,12 +1,15 @@
 import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
-import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
+import { CountryFlag } from '@shared/components/CountryFlag.js';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
+import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import {
   type CustomLayerDef,
   integratedLayerDefMap,
   integratedLayerDefs,
+  resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
 import { type ReactElement, useState } from 'react';
@@ -58,7 +61,12 @@ export function MapLayersSettings({
         <Form.Range
           min={0}
           max={100}
-          value={(layersSettings[activeType]?.opacity ?? 1) * 100}
+          value={
+            resolveLayerOpacity(
+              integratedLayerDefMap[activeType],
+              layersSettings[activeType]?.opacity,
+            ) * 100
+          }
           onChange={(e) =>
             setLayersSettings({
               ...layersSettings,
@@ -83,7 +91,12 @@ export function MapLayersSettings({
       ...def,
       countries: [],
       layerPreview: false,
-      icon: <MdDashboardCustomize />,
+      icon: (
+        <IconSpecGlyph
+          spec={def.iconSpec}
+          fallback={<MdDashboardCustomize />}
+        />
+      ),
       defaultInToolbar: false,
       defaultInMenu: false,
       superseededBy: undefined,
@@ -94,7 +107,7 @@ export function MapLayersSettings({
       .map((cm) => ({
         ...cm,
         countries: [] as string[],
-        icon: <BiWifiOff />,
+        icon: <IconSpecGlyph spec={cm.iconSpec} fallback={<BiWifiOff />} />,
         defaultInToolbar: false,
         defaultInMenu: false,
         superseededBy: undefined,
@@ -110,20 +123,35 @@ export function MapLayersSettings({
 
           <th />
 
+          {/* `ms-n1`: the cell's own padding already puts the glyph over the
+              checkbox below, so the mark reaches back over its leading step
+              rather than adding a second one and sliding off it. */}
           <th>
-            <FaEllipsisH title={msm?.showInToolbar} />
+            <GlyphMarker
+              hint={msm?.showInToolbar}
+              color={null}
+              className="ms-n1"
+            >
+              <FaEllipsisH />
+            </GlyphMarker>
           </th>
 
           <th>
-            <FaRegListAlt title={msm?.showInMenu} />
+            <GlyphMarker hint={msm?.showInMenu} color={null} className="ms-n1">
+              <FaRegListAlt />
+            </GlyphMarker>
           </th>
 
           <th className="text-center">
-            <FaEye title={msm?.overlayOpacity} />
+            <GlyphMarker hint={msm?.overlayOpacity} color={null}>
+              <FaEye />
+            </GlyphMarker>
           </th>
 
           <th className="text-center fm-should-have-keyboard">
-            <FaKeyboard />
+            <GlyphMarker hint={msm?.keyboardShortcut} color={null}>
+              <FaKeyboard />
+            </GlyphMarker>
           </th>
         </tr>
       </thead>
@@ -140,17 +168,14 @@ export function MapLayersSettings({
                 {getName(def)}
 
                 {def.superseededBy && (
-                  <FaHistory
-                    className="text-warning ms-1"
-                    title={m?.mapLayers.legacy}
-                  />
+                  <GlyphMarker hint={m?.mapLayers.legacy}>
+                    <FaHistory />
+                  </GlyphMarker>
                 )}
 
                 {type !== 'X' &&
                   def.countries?.map((country) => (
-                    <Emoji className="ms-1" key={country}>
-                      {countryCodeToFlag(country)}
-                    </Emoji>
+                    <CountryFlag key={country} country={country} />
                   ))}
               </td>
 
@@ -203,7 +228,12 @@ export function MapLayersSettings({
                         <button
                           type="button"
                           style={{
-                            opacity: `${(layersSettings[type]?.opacity ?? 1) * 100}%`,
+                            opacity: `${
+                              resolveLayerOpacity(
+                                integratedLayerDefMap[type],
+                                layersSettings[type]?.opacity,
+                              ) * 100
+                            }%`,
                           }}
                           onClick={() => setActiveType(type)}
                         />

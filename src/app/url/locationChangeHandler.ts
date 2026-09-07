@@ -4,12 +4,33 @@ import {
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
+  dataViewerColorizeTrackBy,
+  dataViewerDownloadTrack,
+  dataViewerGpxLoad,
+  dataViewerRestoreStored,
+  dataViewerSetColorizeLegend,
+  dataViewerSetStyle,
+} from '@features/dataViewer/model/actions.js';
+import {
   drawingLineSetLines,
   type Line,
   type LineCap,
   type LineJoin,
+  toWireHoleIndexes,
 } from '@features/drawing/model/actions/drawingLineActions.js';
-import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
+import {
+  type DrawingProps,
+  drawingPointSetAll,
+  normalizeProps,
+} from '@features/drawing/model/actions/drawingPointActions.js';
+import {
+  elevationChartClose,
+  elevationChartOpen,
+  elevationChartSetRange,
+} from '@features/elevationChart/model/actions.js';
+import type { ChartRange } from '@features/elevationChart/model/reducer.js';
+import type { ElevationChartTarget } from '@features/elevationChart/model/target.js';
+import { targetsEqual } from '@features/elevationChart/model/target.js';
 import {
   type EventsFilter,
   eventsSetFilter,
@@ -36,70 +57,119 @@ import {
   mapSetCustomLayers,
   mapSetShading,
 } from '@features/map/model/actions.js';
-import { mapsLoad } from '@features/myMaps/model/actions.js';
+import {
+  type MapRestore,
+  mapsRestore,
+} from '@features/myMaps/model/actions.js';
 import {
   objectsSetFilter,
   objectsSetStyle,
 } from '@features/objects/model/actions.js';
+import { osmLoad } from '@features/osm/model/osmActions.js';
 import {
-  osmClear,
-  osmLoadNode,
-  osmLoadRelation,
-  osmLoadWay,
-} from '@features/osm/model/osmActions.js';
+  panoramaClear,
+  panoramaPick,
+  panoramaSetAzimuth,
+  panoramaSetRenderAz,
+  panoramaSetSettings,
+} from '@features/panorama/model/actions.js';
+import {
+  FOV_FULL,
+  isFullTurn,
+} from '@features/panorama/model/settingsReducer.js';
+import {
+  parsePanoramaFov,
+  parsePanoramaTilt,
+  parsePanoramaViewpoint,
+  serializePanoramaTilt,
+  serializePanoramaViewpoint,
+} from '@features/panorama/panoramaUrl.js';
 import {
   type ColorStop,
   type Color as ColorType,
   type ShadingComponent,
   serializeShading,
 } from '@features/parameterizedShading/model/Shading.js';
+import { isPremium } from '@features/premium/premium.js';
 import {
   type RoutePoint,
+  routePlannerColorizeBy,
+  routePlannerSetColorizeLegend,
   routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
 import {
+  searchKeepResult,
   searchSetQuery,
   searchSetResultStyle,
+  searchUnselectResult,
 } from '@features/search/model/actions.js';
+import { toposcopeSet } from '@features/toposcope/model/actions.js';
+import {
+  parseToposcope,
+  serializeToposcope,
+} from '@features/toposcope/toposcopeUrl.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
 import type { TrackedDevice } from '@features/tracking/model/types.js';
+import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
 import {
-  type ColorizingMode,
-  trackViewerColorizeTrackBy,
-  trackViewerDownloadTrack,
-  trackViewerGpxLoad,
-  trackViewerSetStyle,
-} from '@features/trackViewer/model/actions.js';
+  viewshedClear,
+  viewshedPick,
+  viewshedSetSettings,
+} from '@features/viewshed/model/actions.js';
+import { grantedRadiusKm } from '@features/viewshed/request.js';
+import {
+  parseViewshed,
+  sameViewpoint,
+} from '@features/viewshed/viewshedUrl.js';
 import {
   wikiLoadPreview,
   wikiSetPreview,
 } from '@features/wiki/model/actions.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
+import {
+  type ColorizingMode,
+  ColorizingModeSchema,
+} from '@shared/colorizers/index.js';
 import { isLanguage } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
   integratedLayerDefMap,
 } from '@shared/mapDefinitions.js';
-import { dedupeOpenTools } from '@shared/toolDefinitions.js';
+import {
+  isMapClickTool,
+  isToolAvailable,
+  unavailableToolsSelector,
+} from '@shared/toolDefinitions.js';
 import {
   type TransportType,
   TransportTypeCompatSchema,
-  TransportTypeSchema,
 } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
+import {
+  featureIdsEqual,
+  type OsmFeatureId,
+  osmElementTypes,
+} from '@shared/types/featureId.js';
+import {
+  serializeDrawingLine,
+  serializeDrawingPoint,
+} from '@shared/urlSerialization.js';
 import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
+  closeTool,
+  openTool,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
-  setTools,
   type Tool,
   ToolSchema,
 } from '../store/actions.js';
 import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
+import { isToolOpen, openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
+import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 import { setUrlUpdatingEnabled } from './urlUpdating.js';
 
@@ -128,9 +198,10 @@ export function handleLocationChange(store: MyStore): void {
 
   const search = (document.location.hash || document.location.search).slice(1);
 
-  const { sq } = (history.state as { sq: string }) ?? {
-    sq: undefined,
-  };
+  const { sq, tr } = (history.state as {
+    sq?: string;
+    tr?: true;
+  } | null) ?? { sq: undefined, tr: undefined };
 
   const parsedQuery = parseQuery(search);
 
@@ -138,21 +209,33 @@ export function handleLocationChange(store: MyStore): void {
     (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
     undefined;
 
+  // Set when the URL names a map, and dispatched at the end — once any
+  // `track-uid=` / `import-url=` is known, so the restore owns the track instead
+  // of racing a fetch started here. Whether the map continues from the browser's
+  // working copy or is re-read from the backend is decided there.
+  let restore: MapRestore | null = null;
+
   if (
     id !== undefined &&
-    id !== (getState().myMaps.loadMeta?.id ?? getState().myMaps.activeMap?.id)
+    id !==
+      (getState().myMaps.loadMeta?.id ??
+        getState().myMaps.restoring?.mapId ??
+        getState().myMaps.activeMap?.id)
   ) {
-    dispatch(
-      mapsLoad({
-        id,
-        ignoreMap: 'map' in parsedQuery,
-        ignoreLayers: 'layers' in parsedQuery,
-      }),
-    );
+    restore = {
+      mapId: id,
+      ignoreMap: 'map' in parsedQuery,
+      ignoreLayers: 'layers' in parsedQuery,
+      // A fresh tab or a shared link has no entry of its own, so nothing of this
+      // map's content was restored above.
+      hasRestoredContent: sq !== undefined,
+    };
   }
 
   const query =
-    id === undefined ? parsedQuery : { ...parsedQuery, ...parseQuery(sq) };
+    id === undefined
+      ? parsedQuery
+      : { ...parsedQuery, ...parseQuery(sq ?? '') };
 
   // Map legacy URL tool tokens to their current ids so older shared/bookmarked
   // links keep working.
@@ -163,27 +246,43 @@ export function handleLocationChange(store: MyStore): void {
     'track-viewer': 'import-file',
   };
 
-  // `tools=` is comma-separated; `tool=` is the legacy single-tool param.
+  const unavailable = unavailableToolsSelector(getState());
+
+  // `tools=` is the comma-separated list of open tools; `tool=` is the older
+  // single-tool spelling, read the same way.
   const toolParam = query['tools'] ?? query['tool'];
 
-  const tools = dedupeOpenTools(
+  const tools =
     typeof toolParam !== 'string' || !toolParam
       ? []
       : toolParam
           .split(',')
           .map((t) => toolAliases[t] ?? ToolSchema.safeParse(t).data)
-          .filter((t): t is Tool => Boolean(t)),
-  );
+          .filter((t): t is Tool => Boolean(t))
+          // A tool this device or account can't offer brings no toolbar, so once
+          // opened nothing could close it again — and it would be written back
+          // into every URL from then on. (`Main` re-checks the gate anyway, for
+          // a tool that becomes unavailable while it is open.)
+          .filter((t) => isToolAvailable(unavailable, t))
+          // Only one tool can own map clicks, so a link naming several opens the
+          // first of them and drops the rest.
+          .filter(
+            (t, i, all) =>
+              !isMapClickTool(t) || all.findIndex(isMapClickTool) === i,
+          );
 
-  // Compare against the deduped form `setTools` will store, so a URL with
-  // duplicate/draw-collapsed tools doesn't re-dispatch on every location change.
-  const currentTools = getState().main.tools;
+  const openTools = openToolsSelector(getState());
 
-  if (
-    currentTools.length !== tools.length ||
-    currentTools.some((t, i) => t !== tools[i])
-  ) {
-    dispatch(setTools(tools));
+  for (const t of openTools) {
+    if (!tools.includes(t)) {
+      dispatch(closeTool(t));
+    }
+  }
+
+  for (const t of tools) {
+    if (!openTools.includes(t)) {
+      dispatch(openTool(t));
+    }
   }
 
   {
@@ -225,7 +324,8 @@ export function handleLocationChange(store: MyStore): void {
           (point !== null || i === 0 || i === qPoints.length - 1) &&
           (point === null ||
             (point.length === 3 &&
-              TransportTypeSchema.optional().safeParse(point[0]).success &&
+              TransportTypeCompatSchema.optional().safeParse(point[0])
+                .success &&
               !Number.isNaN(point[1]) &&
               !Number.isNaN(point[2]))),
       );
@@ -239,7 +339,10 @@ export function handleLocationChange(store: MyStore): void {
           ? 'rel'
           : false;
 
-    if (TransportTypeSchema.safeParse(query['transport']).success && pointsOk) {
+    if (
+      TransportTypeCompatSchema.safeParse(query['transport']).success &&
+      pointsOk
+    ) {
       const {
         points,
         finishOnly,
@@ -253,7 +356,7 @@ export function handleLocationChange(store: MyStore): void {
       const latLons = qPoints.map(
         (point) =>
           point && {
-            transport: point[0],
+            transport: TransportTypeCompatSchema.optional().parse(point[0]),
             lat: point[1],
             lon: point[2],
           },
@@ -266,6 +369,12 @@ export function handleLocationChange(store: MyStore): void {
       }
 
       if (
+        // An unlock the URL carries has to land even when it is the only thing
+        // that moved: pasting a friend's link for the route already on screen
+        // changes nothing else, and without this the premium modes it was
+        // shared to show would stay locked.
+        String(query['route-params-hash'] ?? '') !==
+          (getState().routePlanner.hash ?? '') ||
         finishOnly !== nextFinishOnly ||
         query['transport'] !== transportType ||
         points.length !== latLons.length ||
@@ -283,7 +392,9 @@ export function handleLocationChange(store: MyStore): void {
         String(isochroneParams.buckets) !== (query['iso-buckets'] ?? '1') ||
         String(isochroneParams.distanceLimit) !==
           (query['iso-distance-limit'] ?? '0') ||
-        String(isochroneParams.timeLimit) !== (query['iso-time-limit'] ?? '600')
+        String(isochroneParams.timeLimit) !==
+          (query['iso-time-limit'] ?? '600') ||
+        isochroneParams.reverseFlow !== (query['iso-reverse'] === '1')
       ) {
         const routeMode = query['route-mode'];
 
@@ -307,8 +418,15 @@ export function handleLocationChange(store: MyStore): void {
               distanceLimit: Number(query['iso-distance-limit']) || 0,
               timeLimit: Number(query['iso-time-limit']) || 600,
               buckets: Number(query['iso-buckets']) || 1,
+              reverseFlow: query['iso-reverse'] === '1',
             },
-            hash: String(query['route-params-hash']),
+            // Left undefined rather than the string "undefined" when absent, so
+            // it reads as "no unlock" everywhere it is compared.
+            hash:
+              typeof query['route-params-hash'] === 'string'
+                ? query['route-params-hash']
+                : undefined,
+            deferRouting: restore !== null,
           }),
         );
       }
@@ -336,22 +454,56 @@ export function handleLocationChange(store: MyStore): void {
     typeof trackUID === 'string' &&
     getState().trackViewer.trackUID !== trackUID
   ) {
-    dispatch(trackViewerDownloadTrack(trackUID));
-  }
-
-  const colorizeTrackBy = query['track-colorize-by'];
-
-  if (typeof colorizeTrackBy === 'string') {
-    if (getState().trackViewerSettings.colorizeTrackBy !== colorizeTrackBy) {
-      dispatch(trackViewerColorizeTrackBy(colorizeTrackBy as ColorizingMode));
+    if (restore) {
+      restore.trackUID = trackUID;
+    } else {
+      dispatch(dataViewerDownloadTrack(trackUID));
     }
-  } else if (getState().trackViewerSettings.colorizeTrackBy) {
-    dispatch(trackViewerColorizeTrackBy(null));
   }
+
+  handleColorize(
+    dispatch,
+    query,
+    'track',
+    () => ({
+      mode: getState().trackViewerSettings.colorizeTrackBy,
+      legend: getState().trackViewerSettings.colorizeLegend,
+    }),
+    dataViewerColorizeTrackBy,
+    dataViewerSetColorizeLegend,
+  );
+
+  handleColorize(
+    dispatch,
+    query,
+    'route',
+    () => ({
+      mode: getState().routePlannerSettings.colorizeBy,
+      legend: getState().routePlannerSettings.colorizeLegend,
+    }),
+    routePlannerColorizeBy,
+    routePlannerSetColorizeLegend,
+  );
+
+  handleColorize(
+    dispatch,
+    query,
+    'tracking',
+    () => ({
+      mode: getState().trackingSettings.colorizeBy,
+      legend: getState().trackingSettings.colorizeLegend,
+    }),
+    trackingActions.setColorizeBy,
+    trackingActions.setColorizeLegend,
+  );
 
   handleInfoPoint(getState, dispatch, query);
 
   handleFeatureStyles(getState, dispatch, query);
+
+  handleToposcope(getState, dispatch, query);
+
+  handlePanorama(getState, dispatch, query);
 
   const changesetsDays = query['changesets-days'];
 
@@ -401,8 +553,10 @@ export function handleLocationChange(store: MyStore): void {
       key === 'line' ||
       key === 'polygon'
     ) {
+      // `s` so the style fields survive a label written on several lines: a
+      // bare `.` stops at a newline and would drop every field after it.
       // biome-ignore lint/suspicious/noControlCharactersInRegex: I am aware of this
-      const m = /([^;\x1e]*)([;\x1e].*)?/.exec(value);
+      const m = /([^;\x1e]*)([;\x1e][\s\S]*)?/.exec(value);
 
       if (!m) {
         continue;
@@ -420,6 +574,11 @@ export function handleLocationChange(store: MyStore): void {
         .map(([lat, lon], id) => ({ lat, lon, id }));
 
       if (points.length > 0) {
+        // `H` is geometry-only (the index of the polygon this ring is a hole
+        // of), so it stays out of the style-field codec the point params share.
+        // biome-ignore lint/suspicious/noControlCharactersInRegex: the field separator
+        const holeOf = /\x1eH(\d+)/.exec(m[2] ?? '');
+
         lines.push({
           type:
             key === 'distance-measurement-points' || key === 'line'
@@ -427,14 +586,28 @@ export function handleLocationChange(store: MyStore): void {
               : 'polygon',
           points,
           ...parseColorAndLabel(m[2] ?? ''),
+          holeOf: holeOf ? Number(holeOf[1]) : undefined,
         });
       }
     }
   }
 
+  const stateLines = getState().drawingLines.lines;
+
+  const stateHoleIndexes = toWireHoleIndexes(stateLines);
+
+  // The type prefixes the digest because it is the URL's parameter *name*
+  // (`line=` / `polygon=`) rather than one of the fields the serializer writes,
+  // so without it a polygon and a line of the same shape read alike and a
+  // history entry that only changed the type never arrives.
+  const digestLine = (line: Line, holeOf: number | undefined) =>
+    `${line.type}${serializeDrawingLine(line, holeOf)}`;
+
   if (
-    lines.map(serializePoints).join(';') !==
-    getState().drawingLines.lines.map(serializePoints).join(';')
+    lines.map((line) => digestLine(line, line.holeOf)).join('\x1d') !==
+    stateLines
+      .map((line, i) => digestLine(line, stateHoleIndexes[i]))
+      .join('\x1d')
   ) {
     dispatch(drawingLineSetLines(lines));
   }
@@ -445,47 +618,16 @@ export function handleLocationChange(store: MyStore): void {
     query['load']; /* `gpx-url` and `load` kept for backward compatibility */
 
   if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
-    dispatch(trackViewerGpxLoad(gpxUrl));
+    if (restore) {
+      restore.gpxUrl = gpxUrl;
+    } else {
+      dispatch(dataViewerGpxLoad(gpxUrl));
+    }
   }
 
   const focus = !parsedQuery['map'];
 
-  const osmNode = query['osm-node'];
-
-  const osmNodeId = typeof osmNode === 'string' && parseInt(osmNode, 10);
-
-  if (osmNodeId) {
-    if (osmNodeId !== getState().search.osmNodeId) {
-      dispatch(osmLoadNode({ id: osmNodeId, focus }));
-    }
-  } else if (getState().search.osmNodeId) {
-    dispatch(osmClear());
-  }
-
-  const osmWay = query['osm-way'];
-
-  const osmWayId = typeof osmWay === 'string' && parseInt(osmWay, 10);
-
-  if (osmWayId) {
-    if (osmWayId !== getState().search.osmWayId) {
-      dispatch(osmLoadWay({ id: osmWayId, focus }));
-    }
-  } else if (getState().search.osmWayId) {
-    dispatch(osmClear());
-  }
-
-  const osmRelation = query['osm-relation'];
-
-  const osmRelationId =
-    typeof osmRelation === 'string' && parseInt(osmRelation, 10);
-
-  if (osmRelationId) {
-    if (osmRelationId !== getState().search.osmRelationId) {
-      dispatch(osmLoadRelation({ id: osmRelationId, focus }));
-    }
-  } else if (getState().search.osmRelationId) {
-    dispatch(osmClear());
-  }
+  handleOsmElements(getState, dispatch, query, focus);
 
   handleGallery(getState, dispatch, query);
 
@@ -537,6 +679,10 @@ export function handleLocationChange(store: MyStore): void {
   if (diff && Object.keys(diff).length) {
     dispatch(mapRefocus(diff));
   }
+
+  // After the layers the URL names are on: until here `map.layers` still holds
+  // whatever was stored from last time, and the viewshed gates on it.
+  handleViewshed(getState, dispatch, query);
 
   const { shading } = query;
 
@@ -771,7 +917,7 @@ export function handleLocationChange(store: MyStore): void {
 
       switch (type) {
         case 'f':
-          fromTime = new Date(value);
+          fromTime = parseDate(value) ?? null;
 
           break;
 
@@ -856,7 +1002,167 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
+  handleElevationChart(getState, dispatch, query, restore !== null);
+
+  if (restore) {
+    dispatch(mapsRestore(restore));
+  }
+
+  // The track this browser stored for this history entry. Dispatched last, and a
+  // no-op when something else already owns the track viewer, so a map or a shared
+  // track named in the URL wins.
+  //
+  // A load carrying no flag deliberately does *not* evict the store. The record is
+  // one per origin while the flag is one per history entry, so a second tab — a
+  // fresh load with no flag of its own — would delete the only durable copy of a
+  // ride the first tab is still holding. Hygiene is left to the store being a
+  // single entry that its own delete and the next write reclaim.
+  if (tr) {
+    dispatch(dataViewerRestoreStored());
+  }
+
   setUrlUpdatingEnabled(true);
+}
+
+/**
+ * Re-applies a deferred `elevation-chart=` once the feature it names is in the
+ * store — a drawn line is named by position and has no id until then. A no-op
+ * when nothing is held, and the hold expires per `takeChartRequest`.
+ */
+export function applyElevationChartFromUrl(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+) {
+  const { loadMeta, restoring } = getState().myMaps;
+
+  const honoured = takeChartRequest(
+    (raw) => parseChartTarget(getState, raw),
+    Boolean(loadMeta || restoring),
+  );
+
+  if (!honoured) {
+    return;
+  }
+
+  const { target, range } = honoured;
+
+  if (!targetsEqual(getState().elevationChart.target, target)) {
+    dispatch(elevationChartOpen(target, { fromUrl: true }));
+  }
+
+  // Only a stretch it actually names: a deferred request has nothing to clear —
+  // the open above already did, where the target changed — and by now the chart
+  // may be marked by hand.
+  if (range) {
+    syncChartRange(getState, dispatch, range);
+  }
+}
+
+/**
+ * Applies the stretch a URL marked out. Always after the open, which starts a
+ * new target's chart clean; only when it differs, so a URL that says nothing new
+ * dispatches nothing.
+ */
+function syncChartRange(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  range: ChartRange | null,
+) {
+  const current = getState().elevationChart.range;
+
+  if (range?.from !== current?.from || range?.to !== current?.to) {
+    dispatch(elevationChartSetRange(range));
+  }
+}
+
+/** The target an `elevation-chart=` value names, if it can be resolved now. */
+function parseChartTarget(
+  getState: () => RootState,
+  raw: string,
+): ElevationChartTarget | null {
+  const slash = raw.indexOf('/');
+
+  const type = slash < 0 ? raw : raw.slice(0, slash);
+
+  // A token may itself contain a slash, so the key is everything after the
+  // first one.
+  const key = slash < 0 ? undefined : raw.slice(slash + 1);
+
+  switch (type) {
+    case 'route-planner':
+    case 'track-viewer':
+    case 'gps-recorder':
+      return { type };
+
+    case 'tracking':
+      return key ? { type: 'tracking', token: key } : null;
+
+    case 'drawing': {
+      const line = getState().drawingLines.lines[Number(key ?? Number.NaN)];
+
+      return line ? { type: 'drawing', lineId: line.id } : null;
+    }
+
+    default:
+      return null;
+  }
+}
+
+/**
+ * `elevation-chart=` — which feature's profile is shown, if any: a drawn line
+ * names its position (`drawing/2`), a tracked device its token. Whether a
+ * target that doesn't resolve yet is worth waiting for is the resolver's call,
+ * not this one's; `mapPending` only says whether a map is still to arrive with
+ * content this could name.
+ */
+function handleElevationChart(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  query: Record<string, string | string[]>,
+  mapPending = false,
+) {
+  const raw = query['elevation-chart'];
+
+  const target =
+    typeof raw === 'string' ? parseChartTarget(getState, raw) : null;
+
+  const asked = parseChartRange(query['elevation-chart-range']);
+
+  holdChartRequest(
+    target === null && typeof raw === 'string' ? raw : null,
+    mapPending,
+    asked,
+  );
+
+  if (!targetsEqual(getState().elevationChart.target, target)) {
+    dispatch(
+      target
+        ? elevationChartOpen(target, { fromUrl: true })
+        : elevationChartClose(),
+    );
+  }
+
+  syncChartRange(getState, dispatch, target ? asked : null);
+}
+
+/** `elevation-chart-range=<from>,<to>` — metres along the profile. */
+function parseChartRange(
+  raw: string | string[] | undefined,
+): ChartRange | null {
+  if (typeof raw !== 'string') {
+    return null;
+  }
+
+  const [from, to] = raw.split(',').map(Number);
+
+  return from !== undefined &&
+    to !== undefined &&
+    Number.isFinite(from) &&
+    Number.isFinite(to) &&
+    to > from &&
+    from >= 0
+    ? { from, to }
+    : null;
 }
 
 // TODO use some generic deep compare fn
@@ -868,6 +1174,74 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
     td1.maxCount === td2.maxCount &&
     td1.label === td2.label
   );
+}
+
+/**
+ * Brings the shown OSM elements in line with the `osm-node` / `osm-way` /
+ * `osm-relation` params, each of which can appear any number of times.
+ *
+ * The URL is what a map holds after it is closed, so what it names is kept
+ * rather than previewed, and the first of them is selected — a link to an
+ * element is a link to looking at it. A previewed result is named by nothing
+ * here, so a location change takes it off, which is what leaving the page it
+ * was picked on means.
+ *
+ * A load that is already in flight has its element among the shown results
+ * (as a placeholder), so it isn't started again by a second location change
+ * arriving before it lands. Shown results the URL can't name — a WMS or a
+ * plain-coordinates one — are left alone: they are no more contradicted by
+ * these params than they are described by them.
+ */
+function handleOsmElements(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  query: Record<string, string | string[]>,
+  focus: boolean,
+) {
+  const wanted = osmElementTypes.flatMap((elementType) => {
+    const param = query[`osm-${elementType}`];
+
+    return (param === undefined ? [] : Array.isArray(param) ? param : [param])
+      .map((value) => parseInt(value, 10))
+      .filter((id) => id > 0)
+      .map((id): OsmFeatureId => ({ type: 'osm', elementType, id }));
+  });
+
+  const shown = getState()
+    .search.selectedResults.map(({ id }) => id)
+    .filter((id): id is OsmFeatureId => id.type === 'osm' && id.id > 0);
+
+  for (const id of shown) {
+    if (!wanted.some((w) => featureIdsEqual(w, id))) {
+      dispatch(searchUnselectResult(id));
+    }
+  }
+
+  // In one go, so a link naming many elements is one batch rather than a
+  // separate load each.
+  const toLoad = wanted.filter(
+    (id) => !shown.some((s) => featureIdsEqual(s, id)),
+  );
+
+  if (toLoad.length > 0) {
+    dispatch(osmLoad({ ids: toLoad, focus, pin: true }));
+  }
+
+  // An element the URL names that is currently the previewed one is neither
+  // loaded (it is already shown) nor taken off (it is wanted), so it is
+  // promoted here: the URL carries kept results, and one left transient would
+  // be dropped from the very entry it was just restored from.
+  const { previewId } = getState().search;
+
+  if (previewId && wanted.some((w) => featureIdsEqual(w, previewId))) {
+    dispatch(searchKeepResult(previewId));
+  }
+
+  const [first] = wanted;
+
+  if (first && getState().main.selection === null) {
+    dispatch(selectFeature({ type: 'search', id: first }));
+  }
 }
 
 function handleGallery(
@@ -893,19 +1267,19 @@ function handleGallery(
 
   a = query['gallery-taken-at-from'];
 
-  const qTakenAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+  const qTakenAtFrom = parseDate(a);
 
   a = query['gallery-taken-at-to'];
 
-  const qTakenAtTo = typeof a === 'string' ? new Date(a) : undefined;
+  const qTakenAtTo = parseDate(a);
 
   a = query['gallery-created-at-from'];
 
-  const qCreatedAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+  const qCreatedAtFrom = parseDate(a);
 
   a = query['gallery-created-at-to'];
 
-  const qCreatedAtTo = typeof a === 'string' ? new Date(a) : undefined;
+  const qCreatedAtTo = parseDate(a);
 
   a = query['gallery-pano'];
 
@@ -1106,8 +1480,8 @@ function parseColorAndLabel(m: string): ReturnType<typeof parseStyleFields> {
  * geometry params and the per-feature default-style params (`track-style`,
  * `objects-style`, `search-style`). Field codes: `L`abel, `C`olor,
  * `F`illColor, `W`idth, `D`ashArray, line`K`ap, line`J`oin, `S`hape
- * (markerType), `I`con. A leading separator is tolerated. Only present fields
- * are returned.
+ * (markerType), `I`con, `P`roperties. A leading separator is tolerated. Only
+ * present fields are returned.
  */
 export function parseStyleFields(s: string): {
   label?: string;
@@ -1119,6 +1493,7 @@ export function parseStyleFields(s: string): {
   lineJoin?: LineJoin;
   markerType?: 'pin' | 'square' | 'ring';
   icon?: string;
+  props?: DrawingProps;
 } {
   const out: ReturnType<typeof parseStyleFields> = {};
 
@@ -1150,10 +1525,68 @@ export function parseStyleFields(s: string): {
         field[1] === 's' ? 'square' : field[1] === 'r' ? 'ring' : undefined;
     } else if (field[0] === 'I') {
       out.icon = field.slice(1) || undefined;
+    } else if (field[0] === 'P') {
+      // Key/value pairs, unit-separated. A trailing key with no value is
+      // dropped rather than read as empty, so a truncated link can't invent a
+      // property nobody wrote.
+      const parts = field.slice(1).split('\x1f');
+
+      const props: DrawingProps = {};
+
+      for (let i = 0; i + 1 < parts.length; i += 2) {
+        props[parts[i]!] = parts[i + 1]!;
+      }
+
+      out.props = normalizeProps(props);
     }
   }
 
   return out;
+}
+
+/**
+ * Applies `<prefix>-colorize-by` and `<prefix>-colorize-legend` to one feature's
+ * colorize settings.
+ *
+ * The mode is parsed rather than trusted: an unknown one would reach
+ * `colorizers[mode]` as undefined and take the colorize render with it.
+ *
+ * **Neither is applied unless the URL names it.** Both are persisted
+ * preferences, and both are written only while the feature has a line to color,
+ * so treating absence as a value would wipe a stored choice on every plain
+ * `freemap.sk/` visit, and again whenever a route or track is deleted. What the
+ * URL cannot say is "colorize nothing" — a link omitting the mode leaves the
+ * reader's own, which is the right answer for the reader's own map.
+ */
+function handleColorize(
+  dispatch: Dispatch,
+  query: Record<string, string | string[]>,
+  prefix: string,
+  current: () => { mode: ColorizingMode | null; legend: boolean },
+  setMode: (mode: ColorizingMode | null) => RootAction,
+  setLegend: (shown: boolean) => RootAction,
+) {
+  const mode = ColorizingModeSchema.safeParse(
+    query[`${prefix}-colorize-by`],
+  ).data;
+
+  if (mode && current().mode !== mode) {
+    dispatch(setMode(mode));
+  }
+
+  // Only alongside a mode, and only spelled as written: the pair is always
+  // written together, so a legend flag arriving alone is a hand-edited URL, and
+  // honoring it would overwrite a stored preference over nothing. Anything but
+  // `0`/`1` is ignored rather than read as "hide".
+  const legend = query[`${prefix}-colorize-legend`];
+
+  if (mode && (legend === '0' || legend === '1')) {
+    const shown = legend === '1';
+
+    if (current().legend !== shown) {
+      dispatch(setLegend(shown));
+    }
+  }
 }
 
 /**
@@ -1188,7 +1621,7 @@ function handleFeatureStyles(
     };
 
     if (JSON.stringify(next) !== JSON.stringify(cur)) {
-      dispatch(trackViewerSetStyle(next));
+      dispatch(dataViewerSetStyle(next));
     }
   }
 
@@ -1232,6 +1665,201 @@ function handleFeatureStyles(
   }
 }
 
+/**
+ * The toposcope dial's own settings — a `\x1e`-separated field string; see
+ * `serializeToposcope`. Its centre and rays are drawn points and arrive with
+ * the `point=` params instead.
+ */
+function handleToposcope(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  query: Record<string, string | string[]>,
+) {
+  const param =
+    typeof query['toposcope'] === 'string' ? query['toposcope'] : '';
+
+  // Compared through the serializer that wrote it rather than field by field,
+  // so a setting added later can't be left out of the comparison and quietly
+  // stop arriving.
+  if (param !== serializeToposcope(getState().toposcope)) {
+    dispatch(toposcopeSet(parseToposcope(param)));
+  }
+}
+
+/**
+ * `panorama=` the viewpoint, `panorama-az=` the bearing, `panorama-tilt=` the
+ * vertical band, `panorama-fov=` how much horizon; see `panoramaUrl.ts` for the
+ * formats. The picture is not in the link: arriving with a viewpoint renders it
+ * again, which is the same explicit action a click on the map is.
+ *
+ * A link's framing is applied whatever the standing preference — what the
+ * sender framed is part of what they are showing. Under a slice the bearing is
+ * which way it faces, so it has to be read before the viewpoint renders.
+ */
+function handlePanorama(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  query: Record<string, string | string[]>,
+) {
+  const { viewpoint, azimuth } = getState().panorama;
+
+  // Compared through the serializer that wrote it: a full coordinate rounded on
+  // the way out would otherwise read back as a different place and pay for a
+  // whole render on every step through the history.
+  const next = parsePanoramaViewpoint(
+    typeof query['panorama'] === 'string' ? query['panorama'] : '',
+  );
+
+  if (!next) {
+    if (viewpoint) {
+      dispatch(panoramaClear());
+    }
+
+    return;
+  }
+
+  // Without its panel there is nothing to render into, and a render is seconds
+  // of somebody else's server.
+  if (!isToolOpen(getState(), 'panorama')) {
+    return;
+  }
+
+  // A full turn's `fovDeg` is not written, so a link without the param says
+  // "the whole horizon" rather than "leave whatever was set" — the sender's
+  // framing is what a link carries.
+  const fov =
+    parsePanoramaFov(
+      typeof query['panorama-fov'] === 'string' ? query['panorama-fov'] : '',
+    ) ?? FOV_FULL;
+
+  if (fov !== getState().panoramaSettings.fovDeg) {
+    dispatch(panoramaSetSettings({ fovDeg: fov }));
+  }
+
+  const az = Number(query['panorama-az']);
+
+  if (Number.isFinite(az)) {
+    if (az !== azimuth) {
+      dispatch(panoramaSetAzimuth(az));
+    }
+
+    // Under a slice the bearing is the strip's own, and it decides the render:
+    // set after the fov, which centres the strip on the view it replaces.
+    if (!isFullTurn(fov) && Math.round(az) !== getState().panorama.renderAz) {
+      dispatch(panoramaSetRenderAz(az));
+    }
+  }
+
+  const tilt = parsePanoramaTilt(
+    typeof query['panorama-tilt'] === 'string' ? query['panorama-tilt'] : '',
+  );
+
+  const settings = getState().panoramaSettings;
+
+  if (
+    tilt &&
+    serializePanoramaTilt({ ...settings, ...tilt }) !==
+      serializePanoramaTilt(settings)
+  ) {
+    dispatch(panoramaSetSettings(tilt));
+  }
+
+  if (
+    !viewpoint ||
+    serializePanoramaViewpoint(viewpoint) !== serializePanoramaViewpoint(next)
+  ) {
+    dispatch(panoramaPick(next));
+  }
+}
+
+/**
+ * `viewshed=lat,lon,radiusKm` — where one stands and how far it looks. The
+ * overlay is not in the link: arriving with a viewpoint computes it again.
+ */
+function handleViewshed(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  query: Record<string, string | string[]>,
+) {
+  const { viewpoint } = getState().viewshed;
+
+  // The layer being off keeps the viewpoint on purpose, and stops the URL
+  // carrying the param — which must not read as "the viewshed went".
+  if (!getState().map.layers.includes(VIEWSHED_LAYER)) {
+    return;
+  }
+
+  const next = parseViewshed(
+    typeof query['viewshed'] === 'string' ? query['viewshed'] : '',
+  );
+
+  if (!next) {
+    if (viewpoint) {
+      dispatch(viewshedClear());
+    }
+
+    return;
+  }
+
+  const state = getState();
+
+  const premium = isPremium(state.auth.user);
+
+  // Stored as what this account may actually have: a free reader of a premium
+  // 300 km link is looking at 20, and keeping the 300 would spring it on them
+  // the day they buy premium. Compared against the granted figure too, which is
+  // what the URL was written from, so an account reading its own link back does
+  // not store the clamp over the range it asked for. Before the pick, so a link
+  // naming both is computed at the radius it names.
+  if (
+    next.radiusKm !== undefined &&
+    next.radiusKm !== grantedRadiusKm(state.viewshedSettings.radiusKm, premium)
+  ) {
+    dispatch(
+      viewshedSetSettings({
+        radiusKm: grantedRadiusKm(next.radiusKm, premium),
+      }),
+    );
+  }
+
+  // Only the viewpoint pays for a render, as a click on the map does; a step
+  // through the history that moved only the radius stages it and offers Update.
+  if (!viewpoint || !sameViewpoint(viewpoint, next.viewpoint)) {
+    dispatch(viewshedPick(next.viewpoint));
+  }
+}
+
+/**
+ * One `point=` value: `lat/lon` followed by optional style fields. Returns
+ * `undefined` for anything that isn't a pair of coordinates.
+ *
+ * The tail is matched with `[\s\S]` rather than `.` because a label may be
+ * written on several lines — a bare `.` stops at the newline, the match then
+ * fails against the anchored end, and the point is dropped altogether.
+ */
+export function parseDrawingPointParam(value: string | undefined) {
+  const m = value
+    ? /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)([\s\S]*)$/.exec(value)
+    : null;
+
+  if (!m) {
+    return undefined;
+  }
+
+  const { label, color, markerType, icon, props } = parseColorAndLabel(
+    m[3] ?? '',
+  );
+
+  return {
+    coords: { lat: parseFloat(m[1]!), lon: parseFloat(m[2]!) },
+    label,
+    color,
+    markerType,
+    icon,
+    props,
+  };
+}
+
 function handleInfoPoint(
   getState: () => RootState,
   dispatch: Dispatch,
@@ -1250,27 +1878,8 @@ function handleInfoPoint(
         : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
-    .map((ip) =>
-      ip ? /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)(.*?)?$/.exec(ip) : null,
-    )
-    .filter((ipMatch) => ipMatch)
-    .map((ipMatch) => {
-      // see https://github.com/microsoft/TypeScript/issues/29642
-      const m = ipMatch!;
-
-      const { label, color, markerType, icon } = parseColorAndLabel(m[3] ?? '');
-
-      return {
-        coords: {
-          lat: parseFloat(m[1]!),
-          lon: parseFloat(m[2]!),
-        },
-        label,
-        color,
-        markerType,
-        icon,
-      };
-    });
+    .map(parseDrawingPointParam)
+    .filter((point) => point !== undefined);
 
   // backward compatibility
   const ipl = query['info-point-label'];
@@ -1279,22 +1888,15 @@ function handleInfoPoint(
     ips[0]!.label = typeof ipl === 'string' ? decodeURIComponent(ipl) : '';
   }
 
-  // compare
+  // Compared through the very serializer that wrote the URL, so the comparison
+  // can't overlook a field the way a hand-rolled list of them did. Joined on a
+  // separator no label can contain, so two different sets can't digest alike.
   if (
-    ips
-      .map(
-        ({ coords, label, color, markerType, icon }) =>
-          `${serializePoint(coords)},${label},${color},${markerType},${icon}`,
-      )
-      .sort()
-      .join('\n') !==
+    ips.map(serializeDrawingPoint).sort().join('\x1d') !==
     getState()
-      .drawingPoints.points.map(
-        ({ coords, label, color, markerType, icon }) =>
-          `${serializePoint(coords)},${label},${color},${markerType},${icon}`,
-      )
+      .drawingPoints.points.map(serializeDrawingPoint)
       .sort()
-      .join('\n')
+      .join('\x1d')
   ) {
     dispatch(drawingPointSetAll(ips));
   }
@@ -1304,10 +1906,22 @@ function handleInfoPoint(
   }
 }
 
-function serializePoints(line: Line): string {
-  return `${line.type}:${line.color ?? ''}:${line.fillColor ?? ''}:${line.points
-    .map((point) => serializePoint(point))
-    .join(',')}`;
+/**
+ * A date from the URL, or nothing if it isn't one.
+ *
+ * `new Date('xyz')` yields an Invalid Date, which is truthy and compares
+ * unequal to everything — so unchecked it settles into the store and throws
+ * from `toISOString()` the next time the state is serialized, which since the
+ * unsaved-changes comparison happens during render means a blank screen.
+ */
+function parseDate(value: unknown): Date | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
 function serializePoint(point: LatLon | null | undefined): string {

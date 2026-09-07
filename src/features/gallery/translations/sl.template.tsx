@@ -24,6 +24,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Nedavne oznake za dodelitev:',
   filter: 'Filter',
   showPhotosFrom: 'Prikaži fotografije',
+  excludesWikimedia: 'Ne vključuje fotografij z Wikimedie',
   showLayer: 'Prikaži sloj',
   upload: 'Naloži',
   f: {
@@ -33,8 +34,14 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'od zadnjega komentarja',
   },
   colorizeBy: 'Obarvaj po',
+  noColorize: 'Brez',
   showDirection: 'Prikaži smer fotografiranja',
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Moje',
+    notMine: 'Drugih',
+    premium: 'Premium',
+    free: 'Brezplačne',
+  },
 
   c: {
     mine: 'Razlikuj moje',
@@ -54,12 +61,12 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Dodaj',
     yourRating: 'Tvoja ocena:',
     showOnTheMap: 'Prikaži na zemljevidu',
-    openInNewWindow: 'Odpri v…',
     uploaded: ({ username, createdAt }) => (
       <>
         Naložil {username} dne {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Naloženo dne {createdAt}</>,
     captured: (takenAt) => <>Posneto dne {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -73,7 +80,10 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     modify: 'Uredi',
     premiumOnly:
       'To fotografijo je avtor dal na voljo samo uporabnikom s premium dostopom.',
+    premiumPhoto: 'Ta fotografija je vsebina premium.',
     noComments: 'Ni komentarjev',
+    wikimediaCommentNotNotified:
+      'Ta fotografija je z Wikimedia Commons. Njen avtor ne bo obveščen o vašem komentarju – obveščamo samo avtorje fotografij, naloženih na Freemap.',
   },
   editForm: {
     name: 'Ime',
@@ -92,8 +102,11 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Naloži fotografije',
     uploading: (n) => `Nalaganje (${n})`,
     upload: 'Naloži',
+    hint: {
+      drop: 'Povlecite fotografije sem ali kliknite tukaj za njihovo izbiro.',
+      tap: 'Tapnite sem za dodajanje fotografij.',
+    },
     rules: `
-      <p>Povlecite fotografije sem ali kliknite tukaj za njihovo izbiro.</p>
       <ul>
         <li>Ne nalagajte premajhnih fotografij (sličic). Največje mere niso omejene. Največja velikost datoteke je omejena na 10 MB. Večje datoteke bodo zavrnjene.</li>
         <li>Nalagajte samo fotografije krajine ali dokumentacijske slike. Portreti in makro fotografije so nezaželeni in bodo izbrisani brez opozorila.</li>
@@ -173,6 +186,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
   noPicturesFound: 'Na tem mestu ni bilo najdenih nobenih fotografij.',
   linkToWww: 'fotografija na www.freemap.sk',
   linkToImage: 'slikovna datoteka fotografije',
+  linkToCommons: 'fotografija na Wikimedia Commons',
   allMyPhotos: {
     title: 'Sprememba dostopa',
     premium: 'Vključi vse moje fotografije v premium vsebino',

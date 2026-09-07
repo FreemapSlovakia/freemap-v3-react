@@ -1,0 +1,23 @@
+# Apex → www  (freemap.sk → www.freemap.sk, freemap.eu → www.freemap.eu)
+# One combined Let's Encrypt cert covers both apex names (SAN: freemap.sk, freemap.eu).
+server {
+	server_name freemap.sk freemap.eu;
+
+	return 301 https://www.$host$request_uri;
+
+	listen 443 ssl; # managed by Certbot
+	listen [::]:443 ssl; # managed by Certbot
+	ssl_certificate /etc/letsencrypt/live/freemap.eu/fullchain.pem; # managed by Certbot
+	ssl_certificate_key /etc/letsencrypt/live/freemap.eu/privkey.pem; # managed by Certbot
+	include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+	listen 80;
+	listen [::]:80;
+
+	server_name freemap.sk freemap.eu;
+
+	return 301 https://www.$host$request_uri;
+}

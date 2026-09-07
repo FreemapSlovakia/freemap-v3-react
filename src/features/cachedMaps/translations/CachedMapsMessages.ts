@@ -2,6 +2,10 @@ import type { JSX, ReactNode } from 'react';
 
 export type CachedMapsMessages = {
   cacheOfflineMap: string;
+  modifyOfflineMap: string;
+  deviceOnly: string;
+  deviceOnlyHint: string;
+  toDownload: string;
   addOfflineMap: string;
   emptyMessage: string;
   zoom: string;
@@ -9,14 +13,43 @@ export type CachedMapsMessages = {
   size: string;
   ready: string;
   incomplete: (props: { pct: ReactNode }) => JSX.Element;
-  pause: string;
   resume: string;
+  stop: string;
   total: string;
   largeDownload: (props: { tiles: ReactNode; size: ReactNode }) => JSX.Element;
+  notEnoughSpace: (props: { size: ReactNode; free: ReactNode }) => JSX.Element;
   estSize: string;
   startCaching: string;
   cachedSuccess: (props: { name: string }) => string;
   activate: string;
   focus: string;
   namePrefix: string;
+  premiumZoomHint: string;
+  premiumWiden: string;
+  offlineWiden: string;
+  premiumSkipped: string;
+  networkFallback: string;
+  networkFallbackHint: string;
+  deleteTitle: string;
+  deleteConfirm: (props: { name: string }) => JSX.Element;
+  browse: {
+    intro: string;
+    mode: string;
+    modes: {
+      networkOnly: string;
+      networkFirst: string;
+      cacheFirst: string;
+      cacheOnly: string;
+    };
+    store: string;
+    maxAge: string;
+    maxSize: string;
+    days: (props: { days: ReactNode }) => JSX.Element;
+    keepForever: string;
+    noSizeLimit: string;
+    retentionHint: string;
+    cached: (props: { tiles: ReactNode; size: ReactNode }) => JSX.Element;
+    clear: string;
+    clearConfirm: string;
+  };
 };

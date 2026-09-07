@@ -1,45 +1,57 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
+import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
+import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
   Action,
-  ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
+import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
 import type { ReactElement } from 'react';
 import { Button, ListGroup, Modal, ProgressBar } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaCrosshairs,
+  FaDatabase,
   FaEye,
-  FaPause,
   FaPencilAlt,
   FaPlay,
   FaPlus,
+  FaStop,
   FaTimes,
   FaTrash,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   cachedMapDeleted,
-  cachedMapRenamed,
   cachedMapsSetView,
-  cacheTilesCancel,
-  cacheTilesPause,
   cacheTilesRestart,
-  cacheTilesResume,
+  cacheTilesStop,
 } from '../model/actions.js';
 import { useCachedMapsMessages } from '../translations/useCachedMapsMessages.js';
 
 export function CachedMapsList(): ReactElement {
   const m = useMessages();
 
+  const online = useOnline();
+
   const cmm = useCachedMapsMessages();
 
+  const ome = useOfflineMapExportMessages();
+
   const dispatch = useDispatch();
+
+  const modalLink = useModalLink();
+
+  const confirm = useConfirm();
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
@@ -53,6 +65,14 @@ export function CachedMapsList(): ReactElement {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const byName = makeLabelComparator(language);
+
+  const sortedMaps = [...cachedMaps].sort((a, b) =>
+    byName(a.name || undefined, b.name || undefined),
+  );
 
   const totalSize = cachedMaps.reduce((sum, cm) => sum + cm.sizeBytes, 0);
 
@@ -70,7 +90,7 @@ export function CachedMapsList(): ReactElement {
         ) : (
           <>
             <ListGroup>
-              {cachedMaps.map((cm) => {
+              {sortedMaps.map((cm) => {
                 const dl = activeDownloads[cm.type];
 
                 const isComplete = cm.downloadedCount === cm.tileCount;
@@ -84,8 +104,16 @@ export function CachedMapsList(): ReactElement {
                 return (
                   <ListGroup.Item
                     key={cm.type}
+                    variant={
+                      activeLayers.includes(cm.type) ? 'primary' : undefined
+                    }
                     className="d-flex align-items-center gap-2"
                   >
+                    <IconSpecGlyph
+                      spec={cm.iconSpec}
+                      fallback={<BiWifiOff />}
+                    />
+
                     <div className="flex-grow-1 me-2 min-w-0">
                       <div>{cm.name}</div>
 
@@ -103,6 +131,14 @@ export function CachedMapsList(): ReactElement {
                             <strong>{nf.format(cm.tileCount)}</strong>
                             {' · '}
                           </span>{' '}
+                          {/* only maps that recorded their scale can state it;
+                              for the rest it would be a guess from this screen */}
+                          {cm.tileScale !== undefined && (
+                            <span className="text-nowrap">
+                              {ome?.scale}: <strong>{cm.tileScale}×</strong>
+                              {' · '}
+                            </span>
+                          )}{' '}
                           <span className="text-nowrap">
                             {cmm?.size}:{' '}
                             <strong>
@@ -136,65 +172,55 @@ export function CachedMapsList(): ReactElement {
 
                     <div className="flex-shrink-0">
                       <ResponsiveActions
+                        size="sm"
                         align="end"
                         toggleLabel={m?.general.actions}
                       >
-                        <Action
-                          icon={<FaCrosshairs />}
-                          label={cmm?.focus}
-                          onClick={() =>
-                            dispatch(
-                              mapFitBbox({
-                                bbox: cm.bounds,
-                                maxZoom: cm.maxNativeZoom,
-                              }),
-                            )
-                          }
-                          showFrom="sm"
-                        />
-
-                        {!dl && isComplete && (
+                        {!dl && isComplete ? (
                           <Action
                             icon={<FaEye />}
                             label={cmm?.activate}
-                            variant="outline-primary"
-                            active={activeLayers.includes(cm.type)}
-                            onClick={() =>
-                              dispatch(mapToggleLayer({ type: cm.type }))
-                            }
+                            variant="primary"
+                            onClick={() => {
+                              dispatch(
+                                mapToggleLayer({ type: cm.type, enable: true }),
+                              );
+
+                              dispatch(
+                                mapFitBbox({
+                                  bbox: cm.bounds,
+                                  maxZoom: cm.maxNativeZoom,
+                                  minZoom: cm.minZoom,
+                                }),
+                              );
+                            }}
                             showFrom="sm"
                           />
-                        )}
-
-                        {dl && dl.status === 'downloading' && (
+                        ) : (
                           <Action
-                            icon={<FaPause />}
-                            label={cmm?.pause}
+                            icon={<FaCrosshairs />}
+                            label={cmm?.focus}
                             onClick={() =>
-                              dispatch(cacheTilesPause({ id: cm.type }))
+                              dispatch(
+                                mapFitBbox({
+                                  bbox: cm.bounds,
+                                  maxZoom: cm.maxNativeZoom,
+                                  minZoom: cm.minZoom,
+                                }),
+                              )
                             }
                             showFrom="sm"
                           />
                         )}
 
-                        {dl && dl.status === 'paused' && (
-                          <Action
-                            icon={<FaPlay />}
-                            label={cmm?.resume}
-                            onClick={() =>
-                              dispatch(cacheTilesResume({ id: cm.type }))
-                            }
-                            showFrom="sm"
-                          />
-                        )}
-
+                        {/* halts the caching and keeps what it got; discarding
+                            the map altogether is what Delete is for */}
                         {dl && (
                           <Action
-                            icon={<FaTimes />}
-                            label={m?.general.cancel}
-                            variant="danger"
+                            icon={<FaStop />}
+                            label={cmm?.stop}
                             onClick={() =>
-                              dispatch(cacheTilesCancel({ id: cm.type }))
+                              dispatch(cacheTilesStop({ id: cm.type }))
                             }
                             showFrom="sm"
                           />
@@ -204,49 +230,52 @@ export function CachedMapsList(): ReactElement {
                           <Action
                             icon={<FaPlay />}
                             label={cmm?.resume}
+                            requiresOnline
                             onClick={() =>
-                              dispatch(cacheTilesRestart({ id: cm.type }))
+                              dispatch(
+                                cacheTilesRestart({
+                                  id: cm.type,
+                                  downloaded: cm.downloadedCount,
+                                  total: cm.tileCount,
+                                  sizeBytes: cm.sizeBytes,
+                                }),
+                              )
                             }
-                            showFrom="sm"
-                          />
-                        )}
-
-                        {!dl && <ActionDivider />}
-
-                        {!dl && (
-                          <Action
-                            icon={<FaPencilAlt />}
-                            label={m?.general.modify}
-                            onClick={() => {
-                              const next = window.prompt(
-                                m?.general.name,
-                                cm.name,
-                              );
-
-                              if (next?.trim() && next !== cm.name) {
-                                dispatch(
-                                  cachedMapRenamed({
-                                    id: cm.type,
-                                    name: next.trim(),
-                                  }),
-                                );
-                              }
-                            }}
                             showFrom="sm"
                           />
                         )}
 
                         {!dl && (
                           <Action
-                            icon={<FaTrash />}
-                            label={m?.general.delete}
-                            variant="danger"
+                            icon={<FaPencilAlt />}
+                            label={m?.general.modify}
                             onClick={() =>
-                              dispatch(cachedMapDeleted({ id: cm.type }))
+                              dispatch(cachedMapsSetView({ edit: cm.type }))
                             }
                             showFrom="sm"
                           />
                         )}
+
+                        <Action
+                          icon={<FaTrash />}
+                          label={m?.general.delete}
+                          variant="danger"
+                          onClick={async () => {
+                            if (
+                              await confirm({
+                                title: cmm?.deleteTitle,
+                                message: cmm?.deleteConfirm({
+                                  name: cm.name || `{${cm.type}}`,
+                                }),
+                                confirmLabel: m?.general.delete,
+                                confirmStyle: 'danger',
+                              })
+                            ) {
+                              dispatch(cachedMapDeleted({ id: cm.type }));
+                            }
+                          }}
+                          showFrom="sm"
+                        />
                       </ResponsiveActions>
                     </div>
                   </ListGroup.Item>
@@ -262,12 +291,21 @@ export function CachedMapsList(): ReactElement {
       </Modal.Body>
 
       <Modal.Footer>
+        {/* a real link, so it can be opened or copied like the menu entries
+            that address a modal; the click itself is handled here */}
+        <Button variant="link" {...modalLink({ type: 'browse-cache' })}>
+          <FaDatabase /> {m?.mapLayers.browseCache}
+        </Button>
+
         <Button
           variant="primary"
+          disabled={!online}
           onClick={() => dispatch(cachedMapsSetView('add'))}
         >
           <FaPlus /> {cmm?.addOfflineMap}
         </Button>
+
+        <OfflineBadge />
 
         <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>

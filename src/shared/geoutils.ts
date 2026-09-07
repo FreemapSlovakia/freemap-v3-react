@@ -1,4 +1,5 @@
 import type { LatLon } from '@shared/types/common.js';
+import { bearing as turfBearing } from '@turf/bearing';
 import { booleanContains } from '@turf/boolean-contains';
 import { distance } from '@turf/distance';
 import type {
@@ -127,6 +128,23 @@ export function trackTimeSegments(feature: Feature): unknown[][] {
 }
 
 /**
+ * The track's first recorded time, points carrying none skipped — a times
+ * channel merged from a timed and an untimed track is padded with nulls, and
+ * taking the very first entry would read the whole track as untimed.
+ */
+export function firstTrackTime(feature: Feature): string | undefined {
+  for (const segment of trackTimeSegments(feature)) {
+    for (const time of segment) {
+      if (typeof time === 'string') {
+        return time;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+/**
  * True only when every coordinate of a line-like geometry (`LineString` or
  * multi-segment `MultiLineString`) carries elevation. Any gap (an all-2D OSRM
  * track, or a GraphHopper route with no-data points) yields `false` so the
@@ -182,6 +200,23 @@ export function elevationCoverage(
 }
 
 /**
+ * Properties minus everything indexed per recorded point — `coordinateProperties`
+ * and the top-level `coordTimes`. Readers pair those positionally, so a line
+ * whose points are not the original's must carry neither.
+ */
+export function withoutPerPointData(
+  properties: GeoJsonProperties,
+): GeoJsonProperties {
+  const {
+    coordinateProperties: _cp,
+    coordTimes: _ct,
+    ...rest
+  } = properties ?? {};
+
+  return rest;
+}
+
+/**
  * Horizontal span (in metres) over which elevation is low-pass filtered, and
  * the baseline over which slope is measured. SRTM is ~30 m, so relief finer
  * than this is DEM noise rather than real terrain; smoothing toward it also
@@ -197,6 +232,32 @@ export const DEM_RESOLUTION_METERS = 30;
  */
 export function metersPerPixel(zoom: number, lat: number): number {
   return (156543.03392 * Math.cos((lat * Math.PI) / 180)) / 2 ** zoom;
+}
+
+/**
+ * The first index in `[0, length)` for which `holds` is true, or `length` if
+ * none is — for a sorted sequence, where scanning it whole is what the sorting
+ * was meant to spare. `holds` must be false up to that index and true from it.
+ */
+export function lowerBound(
+  length: number,
+  holds: (index: number) => boolean,
+): number {
+  let lo = 0;
+
+  let hi = length;
+
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+
+    if (holds(mid)) {
+      hi = mid;
+    } else {
+      lo = mid + 1;
+    }
+  }
+
+  return lo;
 }
 
 /**
@@ -216,6 +277,27 @@ export function cumulativeDistances(coords: number[][]): number[] {
   }
 
   return cum;
+}
+
+/**
+ * Cumulative distance to each vertex across segments, the gaps between them
+ * left out — the metric a multi-segment track's length and its path-detail
+ * spans are measured in.
+ */
+export function segmentDistances(segments: Position[][]): number[][] {
+  let total = 0;
+
+  return segments.map((segment) => {
+    if (segment.length === 0) {
+      return [];
+    }
+
+    const cum = cumulativeDistances(segment).map((d) => d + total);
+
+    total = cum.at(-1)!;
+
+    return cum;
+  });
 }
 
 /**
@@ -437,8 +519,85 @@ export function smoothElevations(
   return coords.map((c, i) => [c[0]!, c[1]!, smoothed[i]!]);
 }
 
+export type ElevationStats = {
+  /** `null` where the line carries no elevation at all. */
+  minEle: number | null;
+  maxEle: number | null;
+  ascent: number;
+  descent: number;
+};
+
+/**
+ * Climb, drop and extremes of a line. Each segment is measured on its own, so
+ * nothing is counted across the gap between two of them, and a step is only
+ * counted between points at least `gainStepMeters` apart — a dense, jittery
+ * profile would otherwise inflate the totals. A segment's first point sets the
+ * reference for the climb but is not itself an extreme.
+ */
+export function elevationStats(
+  geometry: LineString | MultiLineString,
+  gainStepMeters = 50,
+): ElevationStats {
+  let minEle = Infinity;
+
+  let maxEle = -Infinity;
+
+  let ascent = 0;
+
+  let descent = 0;
+
+  for (const segment of lineSegments(geometry)) {
+    const smoothed = smoothElevations(segment);
+
+    let prevCoord = smoothed[0];
+
+    for (const coord of smoothed) {
+      const distanceFromPrevPointInMeters = distance(coord, prevCoord!, {
+        units: 'meters',
+      });
+
+      if (gainStepMeters < distanceFromPrevPointInMeters) {
+        const ele = coord[2]!;
+
+        if (ele < minEle) {
+          minEle = ele;
+        }
+
+        if (maxEle < ele) {
+          maxEle = ele;
+        }
+
+        const eleDiff = ele - prevCoord![2]!;
+
+        if (eleDiff < 0) {
+          descent += eleDiff * -1;
+        } else if (eleDiff > 0) {
+          ascent += eleDiff;
+        }
+
+        prevCoord = coord;
+      }
+    }
+  }
+
+  return {
+    minEle: minEle === Infinity ? null : minEle,
+    maxEle: maxEle === -Infinity ? null : maxEle,
+    ascent,
+    descent,
+  };
+}
+
 export function toLatLng({ lat, lon }: LatLon): LatLngLiteral {
   return { lat, lng: lon };
+}
+
+/**
+ * The very same place, to the digit — for telling a marker that has been
+ * dragged from one that has not, where anything but an exact copy has moved.
+ */
+export function sameLatLon(a: LatLon, b: LatLon): boolean {
+  return a.lat === b.lat && a.lon === b.lon;
 }
 
 export function toLatLngArr(arr: LatLon[]): LatLngLiteral[] {
@@ -458,6 +617,53 @@ export function latLonToString(
   )}, ${formatGpsCoord(latLon.lon, 'WE', style, language)}`;
 }
 
+/** Compass bearing from one place to another, degrees clockwise from north. */
+export function bearingTo(from: LatLon, to: LatLon): number {
+  return (turfBearing([from.lon, from.lat], [to.lon, to.lat]) + 360) % 360;
+}
+
+/**
+ * A bearing as the line readout writes it: whole degrees and the degree sign,
+ * with no space between — the precision the panorama and the toposcope write an
+ * angle at. Shared with the `{azimuth}` label placeholder so the label and the
+ * readout beside it can't say the same angle differently.
+ */
+export function formatAzimuth(degrees: number, locale: string): string {
+  // Wrapped after rounding: 359.7° is north, and must not come out as 360°.
+  const whole = ((Math.round(degrees) % 360) + 360) % 360;
+
+  return `${new Intl.NumberFormat(locale).format(whole)}°`;
+}
+
+/** Great-circle distance in metres. */
+export function distanceTo(from: LatLon, to: LatLon): number {
+  return distance([from.lon, from.lat], [to.lon, to.lat], { units: 'meters' });
+}
+
+/**
+ * Degrees, minutes and whole seconds. `cardinals` is the negative and positive
+ * hemisphere letter, e.g. `'SN'` for a latitude. Shorter than
+ * {@link formatGpsCoord}'s DMS, which carries three decimals of a second.
+ */
+function formatWholeSecondCoord(angle: number, cardinals: string): string {
+  // Rounded once, as whole seconds, so a value just short of the next minute
+  // can't come out as 60".
+  const total = Math.round(Math.abs(angle) * 3600);
+
+  return `${cardinals[angle < 0 ? 0 : 1]} ${Math.floor(total / 3600)}° ${Math.floor(
+    (total % 3600) / 60,
+  )}' ${total % 60}"`;
+}
+
+/**
+ * A position as the two lines a toposcope is engraved with, latitude over
+ * longitude. What `{location}` expands to in a drawing label, on the map and on
+ * the dial alike — which is why it lives here rather than with the toposcope.
+ */
+export function formatLocationLines(coords: LatLon): string {
+  return `${formatWholeSecondCoord(coords.lat, 'SN')}\n${formatWholeSecondCoord(coords.lon, 'WE')}`;
+}
+
 export function positionsEqual(pt1?: Position, pt2?: Position): boolean {
   if (!pt1 || !pt2) {
     throw new Error();
@@ -466,7 +672,37 @@ export function positionsEqual(pt1?: Position, pt2?: Position): boolean {
   return pt1[0] === pt2?.[0] && pt1[1] === pt2[1];
 }
 
-export function mergeLines<T extends Geometry>(
+/** Whether the ring closes — three points at least, first meeting last. */
+export function isClosedRing(ring: Position[]): boolean {
+  return ring.length > 2 && positionsEqual(ring[0], ring.at(-1));
+}
+
+/**
+ * Whether the geometry is a closed shape, which is what decides between a line
+ * and a polygon wherever a format has only lines (GPX) or leaves it to a style
+ * key (`freemap:type`).
+ */
+export function isClosedGeometry(geometry: Geometry): boolean {
+  switch (geometry.type) {
+    case 'Polygon':
+    case 'MultiPolygon':
+      return true;
+    case 'LineString':
+      return isClosedRing(geometry.coordinates);
+    case 'MultiLineString':
+      return geometry.coordinates.every(isClosedRing);
+    default:
+      return false;
+  }
+}
+
+/**
+ * Joins `LineString`s end to end, in either direction, until none of them share
+ * an endpoint. Nothing else is touched, and a line that closes on itself stays
+ * a line — which is what a caller wanting one continuous run of coordinates,
+ * such as a Garmin course, is asking for. `mergeLines` goes on from here.
+ */
+export function stitchLines<T extends Geometry>(
   features: Feature<T>[],
   properties: GeoJsonProperties = {},
 ): void {
@@ -527,6 +763,13 @@ export function mergeLines<T extends Geometry>(
 
     break;
   }
+}
+
+export function mergeLines<T extends Geometry>(
+  features: Feature<T>[],
+  properties: GeoJsonProperties = {},
+): void {
+  stitchLines(features, properties);
 
   for (const f of features) {
     const g = f.geometry;
@@ -575,15 +818,4 @@ export function mergeLines<T extends Geometry>(
 
     break;
   }
-}
-
-export function shouldBeArea(tags?: GeoJsonProperties): boolean {
-  return (
-    // taken from https://wiki.openstreetmap.org/wiki/Key:area
-    tags !== null &&
-    tags !== undefined &&
-    tags['area'] !== 'no' &&
-    !tags['barrier'] &&
-    !tags['highway']
-  );
 }

@@ -1,11 +1,11 @@
 import { httpRequest } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
+  openTool,
   selectFeature,
-  setTool,
-  setTools,
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { isToolOpen } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
@@ -41,28 +41,13 @@ export const changesetsTrackProcessor: Processor = {
 
 export const changesetsProcessor: Processor = {
   id: 'changeset.detail',
-  actionCreator: [changesetsSetParams, changesetsRefresh, setTool, setTools],
-  handle: async ({ action, dispatch, getState, toastError }) => {
-    // setTool fires for every tool; only (re)fetch when changesets is the one
-    // being opened, not when some other tool opens while changesets stays up,
-    // nor when changesets itself is being closed.
-    if (
-      setTool.match(action) &&
-      (action.payload.tool !== 'changesets' || action.payload.mode === 'close')
-    ) {
-      return;
-    }
-
+  actionCreator: [changesetsSetParams, changesetsRefresh, openTool],
+  statePredicate: (state) => isToolOpen(state, 'changesets'),
+  handle: async ({ dispatch, getState, toastError }) => {
     const state = getState();
 
-    if (!state.main.tools.includes('changesets')) {
-      return;
-    }
-
-    // Cancel the fetch/toasts whenever the changesets tool leaves the open set —
-    // closing it, closing all tools, or a restore without it.
-    const changesetsClosed = (s: RootState) =>
-      !s.main.tools.includes('changesets');
+    // Cancel the fetch/toasts as soon as the changesets tool is gone.
+    const changesetsClosed = (s: RootState) => !isToolOpen(s, 'changesets');
 
     const { zoom } = state.map;
 
@@ -122,7 +107,7 @@ export const changesetsProcessor: Processor = {
         const res = await httpRequest({
           getState,
           url:
-            '//api.openstreetmap.org/api/0.6/changesets?' +
+            `${process.env['OSM_API_URL']}/api/0.6/changesets?` +
             objectToURLSearchParams({
               bbox,
               time: fromTime + (toTime0 ? `,${toTime0}` : ''),

@@ -23,6 +23,63 @@ CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with 
 
 **Don't** revert to cssnano or remove `cssTargets`. Lowering only runs in the prod minifier, so dev (style-loader, modern browser) is unaffected — verify real output with `DEPLOYMENT=prod npx rspack build`, then grep `dist/*.css` for stray `&` (should be 0).
 
+## A stylesheet reached only from lazy chunks is emitted into every one of them
+
+There is no `splitChunks` CSS grouping, so a `.module.css` imported **only** by
+lazily-loaded components is duplicated into each of their chunk stylesheets.
+Loading the second such component appends that copy *after* the first
+component's own CSS, and any pair of rules that disagree at equal specificity —
+one class each — silently swaps winner.
+
+That is what made the panorama's move grip revert to Bootstrap's muted style the
+moment the toposcope was opened: both panels use
+`shared/components/FloatingWindow.module.css`, whose `.move-handle` sets a
+colour, and the panorama's own `.grip` overrides it — until a second copy of
+`.move-handle` arrived after it.
+
+**Dev cannot show this.** One bundle, one copy, nothing inserted afterwards; it
+only appears in a real production build.
+
+The fix is to give the shared stylesheet an eager importer — `Main.tsx` carries
+a bare `import '@shared/components/FloatingWindow.module.css'` for exactly this
+— which puts it in `main.css`: emitted once, and ahead of every feature
+stylesheet, which is the order a shared base wants regardless.
+
+`SingleCopyCssPlugin` in `rspack.config.ts` **warns** for every stylesheet under
+`src/shared/` that reaches more than one chunk, naming them. Treat the warning as
+"check whether anything overrides these rules", because the duplication only
+bites when a feature stylesheet overrides a shared one **at equal specificity** —
+one class each.
+
+**Load order will not settle it for you.** The chunk-CSS runtime inserts a
+stylesheet *relative to an existing link* — `n.parentNode.insertBefore(l,
+n.nextSibling)`, not `head.appendChild` — so a lazily-loaded feature sheet can
+land **ahead of `main.css`** and lose a tie it looks like it should win. Reading
+the emitted CSS and reasoning "this one is fetched later, so it wins" is how the
+panorama's grips were declared fixed twice while still being black in
+production.
+
+Two fixes, and which one applies depends on why the stylesheet is duplicated:
+
+- **An eager importer**, where the users are top-level lazy components.
+  `FloatingWindow.module.css` had three, and the import in `Main.tsx` removed it
+  from all of them.
+- **Raise the overriding rule's specificity**, so load order stops mattering at
+  all. This is the only option when the stylesheet belongs to a shared
+  *component*, since it follows that component into every chunk that uses it and
+  no import changes that. (`optimization.removeAvailableModules` does not help
+  either — those chunks do not all descend from one parent.)
+
+`SelectToggle.module.css` is the second case and already takes the second fix: it
+is one rule, written `.toggle.toggle` to outrank a Bootstrap selector, so nothing
+the load order does can reach it. It is in the plugin's `benign` list for that
+reason — a warning that fires on every build and is always fine teaches people to
+skip the whole check.
+
+Feature-local CSS reaching several chunks is not flagged: a message that renders
+a component pulls it into all nine of that feature's language chunks, and only
+one language is ever loaded, so those copies never meet.
+
 ## Typed CSS modules need the `.d.css.ts` naming
 
 `*.module.css` files get a precise per-file declaration so `import classes from './x.module.css'` is typed with the actual class names instead of the loose `Record<string, string>` ambient fallback. The wiring (all in `rspack.config.ts` + `tsconfig.json` + `typings/global.d.ts`):
@@ -33,6 +90,66 @@ CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with 
 - The `declare module '*.css'` / `'*.scss'` ambients in `typings/global.d.ts` are still required — for **global** (non-module) stylesheet side-effect imports (`leaflet/dist/leaflet.css`, `./styles/index.scss`, …) and as a pre-build fallback for module CSS. Removing them yields `TS2882` errors. The generated `.d.css.ts` overrides the ambient for module imports when present.
 
 Symptom of breakage: `classes['typo']` stops being a type error (the ambient `Record` is shadowing because no `.d.css.ts` resolved) — check the loader order, the `.d.css.ts` naming, and `allowArbitraryExtensions`.
+
+## maplibre-gl's worker is a build-emitted asset, not a bundled module
+
+Since v6, maplibre-gl no longer inlines its worker. It ships `dist/maplibre-gl-worker.mjs`, resolves it from `import.meta.url` at runtime, and that file `import`s `dist/maplibre-gl-shared.mjs` as a literal `./` sibling. Under a bundler `import.meta.url` points at the bundle, so the auto-detection yields `''` and `new Worker('')` — the map silently fails. rspack even bakes the build machine's `file:///home/…` path into the output. Consumers must call `setWorkerUrl()`; `MaplibreLayer.tsx` does, at module scope.
+
+The wiring (`rspack.config.ts` + `maplibreWorkerLoader.js`):
+
+- A rule matching `maplibre-gl-worker.mjs` makes it `type: 'asset/resource'`. It has to come **after** the generic `.mjs` rule, which would otherwise force it back to `javascript/auto` and bundle it as a module.
+- `maplibreWorkerLoader.js` reads the shared sibling, emits it, and rewrites the worker's import to the emitted name. Nothing else can rewrite that specifier — it's inside an asset the bundler treats as opaque bytes. The loader errors out if the specifier ever disappears.
+- Both are emitted as **`.js`**, not `.mjs`: nginx's stock `mime.types` has no `.mjs` entry, and a module worker served as `application/octet-stream` is rejected by the browser (it would also miss `gzip_types`).
+- Both carry a **content hash**. The offline shell (`offlineStaticCache.ts`) only re-fetches assets whose URL changed, so stable names would pin an old worker against a new bundle after a redeploy.
+- `TerserPlugin` **excludes** them. They're already minified, and re-minifying the two halves separately risks breaking the ESM bindings between them.
+- `ignoreWarnings` drops maplibre's "Critical dependency: the request of a dependency is an expression" — that's the `new Worker(url)` call, which is the intended design here.
+
+Cheap check that the pair still links after a maplibre bump: `cd dist && node --input-type=module -e "import('./maplibre-gl-worker.<hash>.js')"`. `ReferenceError: self is not defined` means the modules linked and only evaluation hit a browser global — that's a pass. A `SyntaxError` about a missing export means the two halves are mismatched.
+
+Also note v6 requires WebGL2, so the vector layers are simply unavailable on devices that lack it.
+
+## sentry-cli: the URL and the auth token must come from the same source
+
+`pnpm sentry-sourcemaps` (run by `pnpm deploy`) uploads to the self-hosted **https://sentry.freemap.sk**, but the `--url` flag is deliberately **not** passed. sentry-cli ≥ 3 refuses to combine a server URL and an auth token that come from different configuration sources — CLI flag + `~/.sentryclirc` token gives:
+
+```
+WARN  Ignoring an auth token because the selected URL comes from a different configuration source.
+error: Auth token is required for this request. Please run `sentry-cli login` and try again!
+```
+
+So the URL has to sit next to the token. Either put both in `~/.sentryclirc`:
+
+```ini
+[auth]
+token=…
+[defaults]
+url=https://sentry.freemap.sk
+```
+
+or pass both through the environment (`SENTRY_URL` + `SENTRY_AUTH_TOKEN`) — e.g. in CI. Re-adding `--url` to the script breaks the file-based setup again, because the flag re-splits the two across sources.
+
+## Icons and social images are rendered at build time
+
+`RspackIconsPlugin` draws every raster from `src/images/freemap-{flower,logo-sk,logo-eu}.svg`
+during the build, so none is committed: the favicons, apple-touch and mstile
+icons and the manifest icons (the flower alone, so both domains share them), the
+iOS splash screens (`apple-touch-startup-image-<site>-WxH.png`) and the social
+previews (`og-<site>-<lang>.png`, 1200×630).
+
+- **The splash list lives once**, as `splashScreens` in `rspack.config.ts`. The
+  entry document writes the media queries from it and the plugin renders from
+  it; a second copy anywhere would drift into 404s.
+- **`OG_WIDTH`/`OG_HEIGHT` are exported from the plugin** and passed to the
+  template, because `og:image:width`/`height` must agree with the bytes — a
+  declared size below 1200×630 makes crawlers lay out the small card.
+- **Sizing measures the drawing, not the viewBox** (`Resvg.getBBox()`). The SVGs
+  carry margin for their drop shadow, so fitting the viewBox under-fills the
+  canvas by about 12%.
+- **The tagline needs the bundled `src/fonts/LiberationSans-Bold.ttf`**
+  (`loadSystemFonts: false`), so CI and local machines render it identically.
+  Its wording is per language in `entryDocs`.
+- Renders are cached on the source files' mtimes, so a watch rebuild doesn't
+  redraw ~8 MB of PNG for an unrelated edit.
 
 ## nginx cache headers
 

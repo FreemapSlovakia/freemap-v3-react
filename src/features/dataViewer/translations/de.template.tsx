@@ -1,0 +1,124 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { addError } from '@/translations/messagesInterface.js';
+import { DataViewerDetails } from '../components/DataViewerDetails.js';
+import type { DataViewerMessages } from './DataViewerMessages.js';
+
+const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
+  style: {
+    title: 'Standardstil',
+  },
+  split: {
+    action: 'Teilen',
+    pick: 'Klicke auf die Spur an der Trennstelle',
+    here: 'Hier teilen',
+    segments: 'In Abschnitte teilen',
+  },
+  join: {
+    action: 'Verbinden',
+    asLine: 'Zu einer Linie verbinden',
+    asSegments: 'Verbinden, Abschnitte behalten',
+    pick: 'Klicke auf die Spur zum Verbinden',
+  },
+  match: {
+    menuItem: 'An Wege anpassen',
+    title: 'An Wege anpassen',
+    help: 'Legt den Track auf das erfasste Wegenetz, was GPS-Streuung beseitigt und — darum geht es — ermittelt, worüber der Track führt, sodass er nach Belag, Wegtyp, Wegqualität und Schwierigkeit eingefärbt werden kann.',
+    transport: 'Fortbewegung',
+    dataLoss:
+      'Die angepasste Linie hat eigene Punkte, daher gehen Zeitstempel und aufgezeichnete Sensordaten (Herzfrequenz, Trittfrequenz, Geschwindigkeit) verloren.',
+    run: 'Anpassen',
+    tooLong: 'Dieser Track hat zu viele Punkte für die Anpassung.',
+    tooShort: 'Der Track ist zu kurz zum Anpassen.',
+    brokenSequence:
+      'Der Track verlässt irgendwo das erfasste Wegenetz und kann daher nicht angepasst werden. Versuchen Sie eine andere Fortbewegung oder lassen Sie den Track, wie er ist.',
+    offNetwork:
+      'Die angepasste Route wurde viel länger als der Track, was bedeutet, dass der Track nicht erfassten Wegen folgte — etwa über eine Wiese. Die Anpassung kann nur mit vorhandenen Wegen antworten, das Ergebnis wäre also nicht Ihr Weg. Der Track bleibt unverändert.',
+    partial:
+      'Einige Teile des Tracks konnten nicht angepasst werden — sie bleiben, wie sie aufgezeichnet wurden. Ein Track, der unterwegs die Fortbewegung wechselt (eine Wanderung, dann die Heimfahrt), muss zuerst geteilt werden.',
+  },
+  info: () => <DataViewerDetails />,
+  details: {
+    startTime: 'Startzeit',
+    finishTime: 'Zielzeit',
+    duration: 'Dauer',
+    distance: 'Entfernung',
+    avgSpeed: 'Durchschnittsgeschwindigkeit',
+    minEle: 'Min. Höhe',
+    maxEle: 'Max. Höhe',
+    uphill: 'Gesamtanstieg',
+    downhill: 'Gesamtabstieg',
+    durationValue: ({ h, m }) => `${h} Stunden ${m} Minuten`,
+    source: 'Höhenquelle',
+    sourceOriginal: 'aufgezeichnet',
+    sourcePartial: 'aufgezeichnet, unvollständig',
+    sourceFilledGaps: 'aufgezeichnet, Lücken ergänzt (Geländemodell)',
+    sourceFilled: 'Geländemodell',
+  },
+  uploadModal: {
+    title: 'Datei importieren',
+    drop: 'Ziehen Sie eine GPX-, KML-, KMZ-, TCX- oder GeoJSON-Datei hierher oder klicken Sie hier zur Auswahl.',
+    mergeTitle: 'Daten bereits geladen',
+    mergeMessage:
+      'Es werden bereits Geodaten angezeigt. Die importierten Daten anhängen oder ersetzen?',
+    existingData: 'Vorhandene Daten',
+    append: 'Anhängen',
+    replace: 'Ersetzen',
+  },
+  elevationFill: {
+    title: 'Höhendaten',
+    introNone: 'Diese Spur enthält keine Höhendaten.',
+    introPartial: 'Bei einigen Punkten dieser Spur fehlt die Höhe.',
+    introFull:
+      'Diese Spur hat bereits Höhendaten, aber ein Geländemodell ist oft ' +
+      'genauer.',
+    premiumHiRes: (premiumLink) => (
+      <>
+        Mit {premiumLink('Premium-Zugang')} werden die Höhendaten in
+        unterstützten Ländern aus einem hochauflösenden nationalen Modell
+        abgetastet — derzeit Slowakei (DMR 5.0: ÚGKK SR), weitere folgen.
+      </>
+    ),
+    question: 'Was möchten Sie tun?',
+    overrideAll: 'Alle überschreiben',
+    overrideAllDesc:
+      'jeden Punkt aus dem Geländemodell ersetzen — ein glattes, ' +
+      'einheitliches Profil',
+    fillMissing: 'Fehlende ergänzen',
+    fillMissingDesc:
+      'die aufgezeichneten Werte behalten und nur die Lücken füllen (an den ' +
+      'Übergängen kann es Stufen geben)',
+    keep: 'Nichts ändern',
+    keepDesc: 'die in der Spur gespeicherte Höhe verwenden',
+    add: 'Höhe ergänzen',
+    update: 'Höhe aktualisieren',
+    updateConfirm: 'Die Höhe der Spur durch das Geländemodell ersetzen?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'Fehlende Höhe wurde ergänzt.'
+        : 'Die Höhe wurde überschrieben.',
+  },
+  upload: 'Hochladen',
+  unnamedTrack: ({ n }) => `Track ${n}`,
+  convertLossWarning:
+    'Beim Umwandeln in eine Zeichnung wird der Track ersetzt und seine aufgezeichneten Daten (Höhe, Herzfrequenz, Geschwindigkeit, Zeit) verworfen.',
+  simplifyAll: 'Alles vereinfachen',
+  moreInfo: 'Mehr Infos',
+  saveAsMap: 'In meinen Karten speichern',
+  loginToSaveMap:
+    'Melde dich zuerst an, um die Strecke in deinen Karten zu speichern.',
+  fetchingError: ({ err }) =>
+    addError(getMessages()!, 'Fehler beim Laden der Streckendaten', err),
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Fehler beim Anpassen des Tracks', err),
+  loadingError: 'Fehler beim Laden der Datei.',
+  onlyOne: 'Es wird nur eine einzelne Datei erwartet.',
+  invalidFormat: 'Die Datei hat kein unterstütztes Format oder ist ungültig.',
+  someFilesFailed: ({ names }) =>
+    `Einige Dateien konnten nicht geladen werden: ${names}.`,
+  unsaved: 'Nicht gespeichert',
+  unsavedTooltip:
+    'Dieser Track ist in keiner gespeicherten Karte enthalten und nicht Teil des Links – er bleibt nur in diesem Browser, das Teilen des Links gibt ihn also nicht weiter. Speichern Sie ihn in Ihren Karten, um ihn zu behalten.',
+};
+
+export default de;

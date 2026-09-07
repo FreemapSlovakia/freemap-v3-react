@@ -28,7 +28,12 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'od ostatniego komentarza',
   },
 
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Moje',
+    notMine: 'Innych',
+    premium: 'Premium',
+    free: 'Bezpłatne',
+  },
 
   c: {
     mine: 'Wyróżnij moje',
@@ -49,12 +54,12 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Dodaj',
     yourRating: 'Twoja ocena:',
     showOnTheMap: 'Pokaż na mapie',
-    openInNewWindow: 'Otwórz w…',
     uploaded: ({ username, createdAt }) => (
       <>
         Przesłał {username} dnia {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Przesłano dnia {createdAt}</>,
     captured: (takenAt) => <>Zrobione dnia {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -68,7 +73,10 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     modify: 'Edytuj',
     premiumOnly:
       'To zdjęcie zostało udostępnione przez autora tylko użytkownikom z dostępem premium.',
+    premiumPhoto: 'To zdjęcie to treść premium.',
     noComments: 'Brak komentarzy',
+    wikimediaCommentNotNotified:
+      'To zdjęcie pochodzi z Wikimedia Commons. Jego autor nie zostanie powiadomiony o Twoim komentarzu – powiadamiamy tylko autorów zdjęć przesłanych do Freemap.',
   },
 
   editForm: {
@@ -89,8 +97,11 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Prześlij zdjęcia',
     uploading: (n) => `Przesyłanie (${n})`,
     upload: 'Prześlij',
+    hint: {
+      drop: 'Upuść tutaj swoje zdjęcia lub kliknij, aby je wybrać.',
+      tap: 'Dotknij tutaj, aby dodać zdjęcia.',
+    },
     rules: `
-      <p>Upuść tutaj swoje zdjęcia lub kliknij, aby je wybrać.</p>
       <ul>
         <li>Nie przesyłaj zbyt małych zdjęć (miniaturek). Maksymalne wymiary nie są ograniczone. Maksymalny rozmiar pliku to 10 MB. Większe pliki zostaną odrzucone.</li>
         <li>Przesyłaj tylko zdjęcia krajobrazów lub zdjęcia dokumentacyjne. Portrety i zdjęcia makro są niepożądane i będą usuwane bez ostrzeżenia.</li>
@@ -153,6 +164,7 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     allSources: 'Wszystkie',
   },
 
+  linkToCommons: 'zdjęcie w Wikimedia Commons',
   allMyPhotos: {
     title: 'Zmiana dostępu',
     premium: 'Uwzględnij wszystkie moje zdjęcia w treściach premium',
@@ -168,9 +180,11 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Ostatnie tagi do przypisania:',
   filter: 'Filtr',
   showPhotosFrom: 'Pokaż zdjęcia',
+  excludesWikimedia: 'Nie obejmuje zdjęć z Wikimedia',
   showLayer: 'Pokaż warstwę',
   upload: 'Prześlij',
   colorizeBy: 'Pokoloruj według',
+  noColorize: 'Brak',
   showDirection: 'Pokaż kierunek fotografowania',
 
   deletingError: ({ err }) =>

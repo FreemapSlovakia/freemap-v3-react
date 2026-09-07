@@ -4,10 +4,11 @@ import {
 } from '@features/progress/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import { isAbortError } from '@shared/isAbortError.js';
 import type { Leaves, MessagePaths } from '@shared/types/common.js';
 import type { Action, Dispatch, Middleware } from 'redux';
 import type { RootState } from '../store.js';
-import { sendError } from './globalErrorHandler.js';
+import { reportError } from './globalErrorHandler.js';
 
 export type BaseActionCreator<P = any, T extends string = string> = {
   (payload: P): PayloadAction<P, T>;
@@ -156,7 +157,7 @@ export function createProcessorMiddleware() {
                 (!actionPredicate || actionPredicate(action as any)))
           ) {
             const handleError = (err: unknown) => {
-              if (err instanceof DOMException && err.name === 'AbortError') {
+              if (isAbortError(err)) {
                 console.log(`Canceled: ${errorKey}; Reason: `, err.message);
               } else {
                 console.log('Error key: ', errorKey);
@@ -182,7 +183,7 @@ export function createProcessorMiddleware() {
               messageKey,
               toastId,
             ) => {
-              if (err instanceof DOMException && err.name === 'AbortError') {
+              if (isAbortError(err)) {
                 return;
               }
 
@@ -242,6 +243,39 @@ export function createProcessorMiddleware() {
         },
       );
 
+      // Attached here rather than inside the timer below, which a processor
+      // rejecting within a microtask never reaches — its failure would then go
+      // unreported and untoasted, and the rejection unhandled.
+      p.catch((error) => {
+        // A deliberately cancelled request (e.g. an errorKey-less processor
+        // whose in-flight fetch was aborted by a newer action) is benign —
+        // skip it here just as `handleError` and `toastError` do, so it
+        // doesn't surface as a spurious generic processor-error toast.
+        if (isAbortError(error)) {
+          console.log('Canceled processor; Reason: ', error.message);
+
+          return;
+        }
+
+        // Reported only: the toast below already tells the user, and states the
+        // cause (offline, a server status) where the generic ticket-id toast
+        // would just add a second box saying less.
+        reportError({ kind: 'processor', error, action });
+
+        dispatch(
+          toastsAdd({
+            // Fixed id: these toasts persist, and a processor failing on a
+            // frequent action would otherwise stack one box per occurrence.
+            id: 'processorError',
+            style: 'danger',
+            messageKey: 'general.processorError',
+            messageParams: {
+              err: error,
+            },
+          }),
+        );
+      });
+
       setTimeout(() => {
         if (isDone) {
           return;
@@ -251,36 +285,13 @@ export function createProcessorMiddleware() {
 
         dispatch(startProgress(pid));
 
-        p.then(
-          () => {
-            dispatch(stopProgress(pid));
-          },
-          (error) => {
-            dispatch(stopProgress(pid));
+        const stop = () => {
+          dispatch(stopProgress(pid));
+        };
 
-            // A deliberately cancelled request (e.g. an errorKey-less processor
-            // whose in-flight fetch was aborted by a newer action) is benign —
-            // skip it here just as `handleError` and `toastError` do, so it
-            // doesn't surface as a spurious generic processor-error toast.
-            if (error instanceof DOMException && error.name === 'AbortError') {
-              console.log('Canceled processor; Reason: ', error.message);
-
-              return;
-            }
-
-            sendError({ kind: 'processor', error, action });
-
-            dispatch(
-              toastsAdd({
-                style: 'danger',
-                messageKey: 'general.processorError',
-                messageParams: {
-                  err: error,
-                },
-              }),
-            );
-          },
-        );
+        // `then(stop, stop)` rather than `finally`, which would re-reject and
+        // leave that rejection unhandled — the failure itself is handled above.
+        p.then(stop, stop);
       });
 
       return result;

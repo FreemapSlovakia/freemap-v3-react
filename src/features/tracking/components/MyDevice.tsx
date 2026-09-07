@@ -1,5 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import {
   Action,
   ActionDivider,
@@ -137,10 +137,15 @@ export function MyDevice({ device }: Props): ReactElement {
           </Overlay>
         )}
 
-        <ResponsiveActions align="end" toggleLabel={m?.general.actions}>
+        <ResponsiveActions
+          size="sm"
+          align="end"
+          toggleLabel={m?.general.actions}
+        >
           <Action
             icon={<FaEdit />}
             label={m?.general.modify}
+            requiresOnline
             onClick={handleModify}
             showFrom="md"
           />
@@ -148,6 +153,7 @@ export function MyDevice({ device }: Props): ReactElement {
           <Action
             icon={<FaKey />}
             label={tm?.devices.watchTokens}
+            requiresOnline
             onClick={handleShowAccessTokens}
             showFrom="lg"
           />
@@ -165,6 +171,7 @@ export function MyDevice({ device }: Props): ReactElement {
             icon={<FaTrash />}
             label={m?.general.delete}
             variant="danger"
+            requiresOnline
             onClick={handleDelete}
             showFrom="md"
           />

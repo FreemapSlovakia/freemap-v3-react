@@ -20,12 +20,32 @@ src/
     components/   Main.tsx (the shell), Layers, Tools, Results, modals host
     hooks/
   features/<name>/   one self-contained feature per folder (see "Feature anatomy")
-  shared/         cross-feature utilities, components, hooks, and the two registries
-                  (mapDefinitions.tsx = layers, toolDefinitions.tsx = tools)
+  shared/         cross-feature utilities, components, hooks, and the three registries
+                  (mapDefinitions.tsx = layers, toolDefinitions.tsx = tools,
+                   commandDefinitions.tsx = what the search box can do)
   translations/   global i18n master (en.messages.tsx) + per-language files + Messages type
   processors/     a handful of cross-cutting processors not owned by one feature
   osm/, sw/, processors/, pica-gpu/, documents/, images/, static/
 ```
+
+### Backend services
+
+Each is behind an rspack `EnvironmentPlugin` variable, so a build can be pointed
+elsewhere:
+
+- **`FM_OSM_API_URL`** (default `https://osm.freemap.sk`) — Freemap's own
+  osm2pgsql-backed OSM query API (`freemap-osm-api` repo), reached through
+  `src/shared/osmApi.ts`: the objects layer (`/v1/features`), map details
+  (`/v1/features/at`) and the geometry of an element a link or a pin names by id
+  (`/v1/features/by-id`). Holds Europe only, and only tagged objects — as do
+  Photon and GraphHopper, so the app is Europe-wide throughout.
+- **`OSM_API_URL`** — the public OSM API, used only for changeset listings
+  (`src/features/changesets/model/processor.ts`). Element geometry comes from
+  the own API above.
+- **`PHOTON_URL`** — geocoding; see [photon-geocoder.md](./photon-geocoder.md).
+- **`FM_MAPSERVER_URL`** — the outdoor map renderer: tiles and the legend.
+- **`API_URL`** — the app's own backend (`freemap-v3-api`): accounts, gallery,
+  tracking, exports.
 
 ### Path aliases
 
@@ -158,12 +178,42 @@ Adding persisted state = add to the slice + add **one `PERSIST` entry** (schema 
 ## URL ⇄ state synchronization
 
 `src/app/url/` (`urlProcessor.ts`, `urlUpdating.ts`, `locationChangeHandler.ts`,
-`urlMapUtils.ts`). The map position/zoom, active layers, open tools, and several
+`urlMapUtils.ts`). The map position/zoom, active layers, the open tools, and several
 modal flags are encoded in the URL hash (`#map=…`, `layers=…`, `#tools=…`,
-`#show=…`, etc.; `tools=` is comma-separated, legacy single `tool=` still read). `urlProcessor` is the **last** processor in the array so it observes the
+`#show=…`, etc.; the comma-separated `tools=` lists every open tool, and the older
+single-tool `tool=` is read the same way). `urlProcessor` is the **last** processor in the array so it observes the
 final state. `hashchange` is handled by `locationChangeHandler`. When you add
 state that should be shareable/bookmarkable, wire it through here **and** update
 the hash-param docs in `src/static/llms.txt`.
+
+**Whether a param costs a history entry is already solved — don't build a second
+mechanism for it.** `urlProcessor`'s `COALESCED_KEYS` names the params a change may be
+confined to without pushing one: such a write replaces the current entry (and is
+rate-limited) instead, so a run of them costs one Back press rather than many. Panning is
+the original case; the colorize params joined it for the opposite reason — a URL that omits
+them does not turn colorizing off, so an entry standing for one would be an entry Back
+cannot honour. Adding a key to that set is the whole change; a parallel signature or a
+per-action flag is reinventing it. Note it coalesces rather than suppresses: the first
+change after other content still pushes, later ones replace it within
+`VIEW_COALESCE_GAP_MS`.
+
+Two neighbouring mechanisms are **not** this one, and each answers a different question:
+`urlUpdating.ts`'s `setUrlUpdatingEnabled(false)` suspends URL writing altogether while the
+store is mutated programmatically (a drag, a popstate restore); and a param's reader in
+`locationChangeHandler` decides what its _absence_ means — clear the state, or leave it
+alone. The colorize params leave it alone, because they are persisted preferences that a
+plain visit would otherwise wipe.
+
+`sessionStash.ts` is the counterweight to the platform losing that URL. An
+installed PWA relaunched after Android reclaims its process is restarted from
+its launch intent, which carries only the manifest's `start_url` — a browser tab
+is spared, since the browser restores tabs itself. So the hash plus its
+`history.state` (`sq`, `tr`) is written to `localStorage` as the page goes away,
+and put back at bootstrap when a **mobile** app window arrives at a bare URL.
+`index.tsx` must call `restoreStashedUrl()` before `handleLocationChange`.
+Desktop is excluded on purpose: it restores its own windows, and a
+`file_handlers` launch there (desktop-only) also arrives at a bare `start_url`,
+so restoring would reopen the last session around the file being opened.
 
 The full list of supported URL params (read/write vs. read-only, formats, and
 the shared `\x1e`-field **style codec** used by the drawing geometry params and
@@ -193,15 +243,69 @@ Gotcha: toast`messageKey`s referenced from processors must resolve against the
 **global** `Messages`, so those namespaces stay global even when the rest of the
   feature's strings are lazy.
 
-## The two registries to keep honest
+## The three registries to keep honest
 
 - `src/shared/mapDefinitions.tsx` — the layer registry (ids, zoom ranges, premium
   thresholds, credits, keyboard shortcuts, countries, base/overlay). The most
   drift-prone file; mirrored in `src/static/llms.txt` and (for POI icons) shared
   by filename with the `freemap-outdoor-map` renderer.
 - `src/shared/toolDefinitions.tsx` — the tool list (id, icon, message key, keyboard
-  shortcut, whether it's a drawing tool). `Tool` itself is a Zod enum in
+  shortcut, whether it's a drawing tool) and `MAP_CLICK_TOOLS`, which decides
+  which slot a tool opens into (see "Open tools"). `Tool` itself is a Zod enum in
   `src/app/store/actions.ts`.
+- `src/shared/commandDefinitions.tsx` — what the search box offers to _do_ beside
+  the places it finds: tools, main-menu modals, help documents and map layers,
+  each with the action a pick dispatches. Labels are taken from the global
+  `Messages` (a lazy per-feature bundle can't name a row synchronously), and
+  synonyms come from `search.commands.keywords`, keyed by command id. Matching is
+  `src/shared/fuzzyMatch.ts`; the rows are assembled and ranked in
+  `features/search/hooks/useCommandMatches.ts` and never enter the store.
+
+## Open tools
+
+`main.mapTool` + `main.panelTools` (`src/app/store/reducer.ts`), driven by
+`openTool(tool)` / `closeTool(tool)`. Which of the two slots a tool opens into is
+`MAP_CLICK_TOOLS`' answer:
+
+- **Map-click tools** (route planner, the three drawing tools, map details) take
+  clicks on the map, so at most one is open — opening another replaces it, and a
+  click stops selecting features while one is. Because there can only be one,
+  which toolbar owns the click is derived (`activeModeSelector`) rather than
+  stored, and its toolbar carries the green `fm-toolbar-map-click` outline (the
+  selection toolbar's is blue). Escape closes it; taking the slot from another
+  tool drops the selection unless the tool opened is the one the selected feature
+  belongs to.
+- **Toolbar-only tools** (objects, tracks and data, changesets, live tracking, GPS
+  recorder) accumulate: any number of them are open at once, in the order opened,
+  alongside a map-click tool. Opening or closing one says nothing about the
+  selection, and Escape leaves them alone — they close by their own button.
+  A toolbar with something worth leaving on the screen can also offer a collapse
+  button (`ToolMenu`'s `collapsible`, local state): only the GPS recorder does,
+  because its strip keeps saying that the phone is recording. A toolbar with
+  nothing to leave behind is closed instead.
+
+### Toolbar strip order
+
+Every toolbar under the logo — the layer menus (connected map, photos, weather
+radar, viewshed), the GPS recorder, each open tool's menu, the selection toolbar
+and the colorize legends — is one entry in the `toolbars` list in `Main.tsx`,
+ordered by `useOpenOrder` (`src/shared/hooks/useOpenOrder.ts`): an entry keeps
+the place it took when it first appeared, and a new one joins the end, so
+opening one doesn't reshuffle the rest. Two rules for adding an entry:
+
+- `open` is the toolbar's own reason to be up and must say nothing about a mode
+  that clears the chrome — that is `hidden`, which keeps the entry's place
+  instead of dropping it to the end when the mode ends.
+- A toolbar that hides itself needs `open` to ask the same question, at least
+  coarsely, or it books its slot from the first render. The colorize legends do:
+  each is gated on there being a colored line, not just on a colorize mode being
+  set. Deliberately no further: the rest of what each legend asks (its dismissal
+  flag, the premium gate) stays its own, so a legend dismissed and brought back
+  reappears where it was rather than at the end.
+
+A reducer that clears its slice when its tool goes must key on `closeTool` with
+its own tool as the payload — another tool opening beside it means nothing (see
+`changesets/model/reducer.ts`, `elevationChart/model/reducer.ts`).
 
 ## Lazy loading / code splitting
 

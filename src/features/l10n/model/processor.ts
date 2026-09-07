@@ -4,7 +4,7 @@ import { authSetUser } from '@features/auth/model/actions.js';
 import { loadMapSettingsMessages } from '@features/mapSettings/translations/loadMapSettingsMessages.js';
 import { getEffectiveChosenLanguage } from '@shared/langUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { setMessages } from '../messagesStore.js';
+import { setLanguage, setMessages } from '../messagesStore.js';
 import { l10nSetChosenLanguage, l10nSetLanguage } from './actions.js';
 
 export const l10nSetLanguageProcessor: Processor = {
@@ -32,6 +32,8 @@ export const l10nSetLanguageProcessor: Processor = {
           )
         ).default,
       );
+
+      setLanguage(language);
 
       dispatch(l10nSetLanguage(language));
 

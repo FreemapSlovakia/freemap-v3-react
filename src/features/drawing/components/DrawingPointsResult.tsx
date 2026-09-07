@@ -1,12 +1,12 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
-import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
+import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import Color from 'color';
 import type {
   DragEndEvent,
   LeafletEvent,
@@ -15,6 +15,7 @@ import type {
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import { drawingPointLabel } from '../labelValues.js';
 import type { DrawingPoint } from '../model/actions/drawingPointActions.js';
 import {
   drawingMeasure,
@@ -102,20 +103,14 @@ export function DrawingPointsResult(): ReactElement {
       {points.map((point, i) => {
         const interactive = interactive0 || activeIndex === i;
 
-        const { color } = point;
-
-        const { color: rgb, opacity } = splitColorAlpha(color || COLORS.normal);
-
-        const renderColor =
-          activeIndex === i
-            ? joinColorAlpha(Color(rgb).lighten(0.75).hex(), opacity)
-            : color || COLORS.normal;
-
         return (
           <DrawingPointMarker
-            key={`${change}-${i}-${interactive ? 'a' : 'b'}`}
+            key={`${change}-${i}`}
             point={point}
-            renderColor={renderColor}
+            renderColor={point.color || COLORS.normal}
+            // Selection is the ring around the marker, so the marker itself
+            // keeps its own color — the same signal a selected line wears.
+            halo={activeIndex === i ? SELECTION_COLOR : undefined}
             interactive={interactive}
             draggable={!window.fmEmbedded && activeIndex === i}
             eventHandlers={{
@@ -139,14 +134,17 @@ export function DrawingPointsResult(): ReactElement {
 }
 
 function DrawingPointMarker({
+  point,
   point: { coords, label, markerType, icon },
   renderColor,
+  halo,
   interactive,
   draggable,
   eventHandlers,
 }: {
   point: DrawingPoint;
   renderColor: string;
+  halo?: string;
   interactive: boolean;
   draggable: boolean;
   eventHandlers: LeafletEventHandlerFnMap;
@@ -161,24 +159,29 @@ function DrawingPointMarker({
   // uniformly transparent.
   const { opacity } = splitColorAlpha(renderColor);
 
+  // A template whose keys all resolve to nothing expands to nothing, so the
+  // tooltip is decided by the expanded text — an empty one is a blank box.
+  const renderedLabel = label ? drawingPointLabel(point).trim() : '';
+
   return (
     <RichMarker
       position={{ lat: coords.lat, lng: coords.lon }}
       color={renderColor}
+      halo={halo}
       markerType={markerType}
       {...contentProps}
       draggable={draggable}
       interactive={interactive}
       eventHandlers={eventHandlers}
     >
-      {label && (
+      {renderedLabel && (
         <Tooltip
-          className="compact"
+          className="compact multiline"
           direction="top"
           permanent
           opacity={0.9 * opacity}
         >
-          <span>{label}</span>
+          <span>{renderedLabel}</span>
         </Tooltip>
       )}
     </RichMarker>

@@ -10,14 +10,8 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Markierungsstil der Objekte',
   },
   source: 'Quelle',
-  detail: ({ result }) => (
-    <ObjectDetails
-      result={result}
-      openText="Öffnen auf OpenStreetMap.org"
-      historyText="Verlauf"
-      editInJosmText="Bearbeiten in JOSM"
-    />
-  ),
+  detail: (props) => <ObjectDetails {...props} />,
+  elevation: 'Höhe',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Um Objekte nach Typ anzuzeigen, müssen Sie mindestens auf Zoomstufe ${minZoom} heranzoomen.`,
@@ -28,10 +22,12 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Ring',
     square: 'Quadrat',
   },
-  convertAsPoint: 'Als Punkt',
-  convertWithGeometry: 'Mit voller Geometrie',
+  tooManyForLookup: ({ count, limit }) =>
+    `Zu viele Objekte, um sie als Funde anzuzeigen (${count}, höchstens ${limit}). Zoomen Sie hinein oder schränken Sie den Filter ein.`,
   showAsLookup: 'Als Fund anzeigen',
-  convertAll: 'Alle sichtbaren Objekte in Zeichnung umwandeln',
+  showDetails: 'Details',
+  openInOsm: 'OpenStreetMap.org',
+  osmHistory: 'OpenStreetMap.org (Verlauf)',
   type: 'Typ',
   tooManyPoints: ({ limit }) =>
     `Das Ergebnis wurde auf ${limit} Objekte begrenzt.`,

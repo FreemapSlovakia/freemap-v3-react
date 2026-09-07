@@ -13,8 +13,14 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Buckets',
     timeLimit: 'Limite tempo',
     distanceLimit: 'Limite distanza',
+    reverseFlow: 'Viaggio verso il punto',
+    reverseFlowHint:
+      'Le aree mostrano allora da dove si può raggiungere questo punto; senza spunta, dove si può arrivare partendo da esso. La differenza la fanno sensi unici e divieti di svolta.',
   },
   milestones: 'Marcatori',
+  milestonesOff: 'Spenti',
+  recompute: 'Ricalcola il percorso',
+  maxAlternatives: 'Numero massimo di percorsi proposti',
   style: {
     menuItem: 'Stile del percorso',
     title: 'Stile del percorso',
@@ -36,14 +42,21 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     pick: 'Seleziona sulla mappa',
     current: 'La tua posizione',
     home: 'Posizione casa',
+    fromStart: 'Posizione di partenza',
+    fromFinish: 'Posizione di arrivo',
     point: 'Punto del percorso',
   },
   transportType: {
     car: 'Auto',
     car4wd: 'Auto 4x4',
+    carnotoll: 'Auto (evita i pedaggi)',
     bike: 'Bici',
+    ebike: 'Bici elettrica',
+    gravelbike: 'Bici gravel',
     foot: 'Camminata',
+    stroller: 'Passeggino / sedia a rotelle',
     hiking: 'Escursione',
+    easyhike: 'Escursione facile',
     mtb: 'Mountain bike',
     racingbike: 'Bici da corsa',
     motorcycle: 'Moto',
@@ -58,6 +71,7 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     isochrone: 'Isocrono',
   },
   alternative: 'Alternativo',
+  isochroneRing: 'Isocrona',
   distance: ({ value, diff }) => (
     <>
       Distance:{' '}
@@ -65,6 +79,11 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
         {value}
         {diff ? ` (+ ${diff})` : ''}
       </b>
+    </>
+  ),
+  tolled: ({ value }) => (
+    <>
+      Tratti a pedaggio: <b>{value}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

@@ -1,12 +1,10 @@
-import { setActiveModal } from '@app/store/actions.js';
-import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
+import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { OverlayTrigger, Tooltip, type TooltipProps } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
 
 type Props = { help: string; credits: string };
 
 export function CreditsText({ credits, help }: Props) {
-  const dispatch = useDispatch();
+  const modalLink = useModalLink();
 
   const renderTooltip = (props: TooltipProps) => {
     const re = /(.*)\[(.*)\](.*)/.exec(help);
@@ -16,16 +14,7 @@ export function CreditsText({ credits, help }: Props) {
         {re ? (
           <>
             {re[1]}
-            <a
-              href={modalMenuItemProps('offline-map-export').href}
-              onClick={(e) => {
-                e.preventDefault();
-
-                dispatch(setActiveModal({ type: 'offline-map-export' }));
-              }}
-            >
-              {re[2]}
-            </a>
+            <a {...modalLink({ type: 'offline-map-export' })}>{re[2]}</a>
             {re[3]}
           </>
         ) : (

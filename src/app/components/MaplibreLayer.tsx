@@ -1,8 +1,17 @@
 import '@maplibre/maplibre-gl-leaflet';
 import { createTileLayerComponent, type LayerProps } from '@react-leaflet/core';
 import * as L from 'leaflet';
-import type { Map as MaplibreMap } from 'maplibre-gl';
+import { type Map as MaplibreMap, setWorkerUrl } from 'maplibre-gl';
 import '../maplibreLanguage.js';
+
+// maplibre-gl ships its worker as a separate file that auto-detects itself from
+// `import.meta.url` — which points at the bundle, not the worker, once rspack
+// has inlined the library, so the URL has to be handed over explicitly. rspack
+// emits the worker and the module it imports as assets; see
+// doc/build-and-deploy.md.
+setWorkerUrl(
+  new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href,
+);
 
 class MaplibreWithLang extends L.MaplibreGL {
   _language?: string | null;
@@ -36,14 +45,27 @@ class MaplibreWithLang extends L.MaplibreGL {
   }
 
   onRemove(map: L.Map) {
-    const self = this as unknown as { _glMap?: { remove(): void } | null };
+    const self = this as unknown as {
+      _glMap?: { remove(): void; painter?: unknown } | null;
+      _container?: HTMLElement;
+    };
 
     // When GL initialization failed (e.g. no WebGL context on a low-end
-    // device), `_glMap` is never assigned and the upstream onRemove throws
-    // dereferencing it. Stub it so the rest of teardown (detaching the pane
-    // container) still runs.
-    if (!self._glMap) {
+    // device), `_glMap` is either missing or a map whose constructor bailed out
+    // before assigning `painter`, and either way `remove()` throws. `painter`
+    // is only ever set on a successful init, so stub on its absence and let the
+    // rest of teardown (detaching the pane container) run.
+    if (!self._glMap?.painter) {
       self._glMap = { remove() {} };
+    }
+
+    // Upstream detaches the container from its pane before disposing the GL
+    // map, and throws if the container was already taken out — put it back so
+    // the disposal still runs and the WebGL context isn't leaked.
+    const pane = map.getPane(this.getPaneName());
+
+    if (pane && self._container && self._container.parentNode !== pane) {
+      pane.appendChild(self._container);
     }
 
     L.MaplibreGL.prototype.onRemove.call(this, map);

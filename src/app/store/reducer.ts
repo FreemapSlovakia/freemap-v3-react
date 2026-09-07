@@ -5,6 +5,11 @@ import {
   authWithGoogle,
   authWithPopupOAuth,
 } from '@features/auth/model/actions.js';
+import {
+  dataViewerDelete,
+  dataViewerDeleteFeature,
+  dataViewerSetData,
+} from '@features/dataViewer/model/actions.js';
 import { documentShow } from '@features/documents/model/actions.js';
 import {
   drawingLineAddPoint,
@@ -13,102 +18,152 @@ import {
   drawingLineSetLines,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { objectsSetResult } from '@features/objects/model/actions.js';
 import {
   routePlannerAddPoint,
+  routePlannerDelete,
   routePlannerSetPoint,
 } from '@features/routePlanner/model/actions.js';
-import { searchSelectResult } from '@features/search/model/actions.js';
-import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import {
-  dedupeOpenTools,
-  isDrawTool,
-  isMapClickTool,
-} from '@shared/toolDefinitions.js';
+  searchSelectResult,
+  searchUnselectResult,
+} from '@features/search/model/actions.js';
+import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { isMapClickTool } from '@shared/toolDefinitions.js';
+import { featureIdsEqual } from '@shared/types/featureId.js';
 import {
   clearMapFeatures,
+  closeTool,
   convertToDrawing,
   deleteFeature,
   hideInfoBar,
+  infoBarShown,
+  openTool,
   type Selection,
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
   setErrorTicketId,
-  setTool,
-  setTools,
   type Tool,
 } from './actions.js';
 import type { ActiveModal } from './activeModal.js';
 
 export interface MainState {
-  tools: Tool[];
-  /** The focused tool whose toolbar is highlighted; the click owner if it's a map-click tool. */
-  activeTool: Tool | null;
+  /**
+   * The open map-click tool — the owner of map clicks, and at most one of them,
+   * so which toolbar takes a click never has to be stored separately.
+   */
+  mapTool: Tool | null;
+  /**
+   * The open tools that only bring a toolbar, in the order they were opened —
+   * any number of them, alongside each other and alongside `mapTool`.
+   */
+  panelTools: Tool[];
   activeModal: ActiveModal | null;
   errorTicketId: string | undefined;
   embedFeatures: string[];
   selection: Selection | null;
   hiddenInfoBars: Record<string, number>;
+  shownInfoBars: Record<string, number>;
 }
 
 export const mainInitialState: MainState = {
-  tools: [],
-  activeTool: null,
+  mapTool: null,
+  panelTools: [],
   activeModal: null,
   errorTicketId: undefined,
   embedFeatures: [],
   selection: null,
   hiddenInfoBars: {},
+  shownInfoBars: {},
+};
+
+/**
+ * Whether the selected feature belongs to `tool` — such a tool keeps the
+ * selection when opened, so reaching for a feature's tool from its selection
+ * toolbar doesn't throw the selection away.
+ */
+function ownsSelection(tool: Tool, selection: Selection | null): boolean {
+  switch (selection?.type) {
+    case 'draw-points':
+      return tool === 'draw-points';
+
+    case 'draw-line-poly':
+    case 'line-point':
+      return tool === 'draw-lines' || tool === 'draw-polygons';
+
+    case 'objects':
+      return tool === 'objects';
+
+    case 'tracking':
+      return tool === 'tracking';
+
+    case 'route-point':
+    case 'route-leg':
+      return tool === 'route-planner';
+
+    default:
+      return false;
+  }
+}
+
+/**
+ * The tool a conversion to drawing was reached for from — its toolbar acted on
+ * features that are a drawing now, so it goes with them. A search result is
+ * converted from its selection toolbar, which belongs to no tool.
+ */
+const convertSourceTools: Record<
+  ReturnType<typeof convertToDrawing>['payload']['type'],
+  Tool | undefined
+> = {
+  objects: 'objects',
+  'objects-geometry': 'objects',
+  'planned-route': 'route-planner',
+  track: 'import-file',
+  changesets: 'changesets',
+  'search-result': undefined,
+  // The live feed goes on after the copy, so tracking keeps its toolbar.
+  tracking: undefined,
 };
 
 export const mainReducer = createReducer(mainInitialState, (builder) => {
   builder
-    .addCase(setTool, (state, action) => {
+    .addCase(openTool, (state, action) => {
       if (window.fmEmbedded) {
         return;
       }
 
-      const { tool, mode } = action.payload;
+      const tool = action.payload;
 
-      if (mode === 'close') {
-        state.tools = state.tools.filter((t) => t !== tool);
-
-        if (state.activeTool === tool) {
-          state.activeTool = null;
+      if (!isMapClickTool(tool)) {
+        if (!state.panelTools.includes(tool)) {
+          state.panelTools.push(tool);
         }
 
         return;
       }
 
-      // open / activate: ensure the tool is open, keeping the order tools were
-      // opened in (already-open keeps its slot). The draw-* tools share one menu,
-      // so a new draw tool replaces the open one in place.
-      const drawIndex = isDrawTool(tool)
-        ? state.tools.findIndex(isDrawTool)
-        : -1;
-
-      if (drawIndex >= 0) {
-        state.tools[drawIndex] = tool;
-      } else if (!state.tools.includes(tool)) {
-        state.tools.push(tool);
-      }
-
-      if (mode === 'activate') {
-        // Focus it (overlays can't be active); a tool and a selection are
-        // mutually exclusive, so drop the selection.
-        state.activeTool = isMapClickTool(tool) ? tool : null;
+      // Taking the map-click slot from another tool leaves the selected feature
+      // behind; reopening the one the feature belongs to keeps it, so reaching
+      // for a feature's tool from its selection toolbar doesn't throw the
+      // selection away. Opening a toolbar-only tool says nothing about the
+      // selection at all.
+      if (tool !== state.mapTool && !ownsSelection(tool, state.selection)) {
         state.selection = null;
-      } else if (state.activeTool === tool) {
-        // mode 'open' is passive — deactivate this tool if it was the active one.
-        state.activeTool = null;
       }
+
+      state.mapTool = tool;
     })
-    .addCase(setTools, (state, action) => {
-      const tools = dedupeOpenTools(action.payload);
+    .addCase(closeTool, (state, action) => {
+      const tool = action.payload;
 
-      state.tools = tools;
+      if (state.mapTool === tool) {
+        state.mapTool = null;
+      }
 
-      state.activeTool = tools.filter(isMapClickTool).at(-1) ?? null;
+      if (state.panelTools.includes(tool)) {
+        state.panelTools = state.panelTools.filter((t) => t !== tool);
+      }
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;
@@ -133,10 +188,27 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         id: action.payload.lineIndex,
       };
     })
-    .addCase(searchSelectResult, (state) => {
-      state.selection = {
-        type: 'search',
-      };
+    // Only a result selects: clearing one leaves the selection to whoever
+    // cleared it, so a `search` selection can't outlive the result behind it.
+    .addCase(searchSelectResult, (state, action) => {
+      const { payload } = action;
+
+      if (payload && (payload.select ?? true)) {
+        state.selection = {
+          type: 'search',
+          id: payload.result.id,
+        };
+      }
+    })
+    // The other shown results stay, but nothing is acted upon until one of them
+    // is picked again — which one would be a guess.
+    .addCase(searchUnselectResult, (state, action) => {
+      if (
+        state.selection?.type === 'search' &&
+        featureIdsEqual(state.selection.id, action.payload)
+      ) {
+        state.selection = null;
+      }
     })
     .addCase(selectFeature, (state, action) => {
       if (
@@ -148,16 +220,42 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       }
 
       state.selection = action.payload;
+    })
+    .addCase(convertToDrawing, (state, action) => {
+      const { payload } = action;
 
-      // Selecting a feature is the active thing now — deactivate any tool (its
-      // toolbar stays open, just unfocused).
-      if (action.payload) {
-        state.activeTool = null;
+      // Converting one feature leaves the tool it came from with the rest of
+      // them; only converting everything it holds takes the tool with it.
+      if ('id' in payload && payload.id !== undefined) {
+        return;
+      }
+
+      const source = convertSourceTools[payload.type];
+
+      if (state.mapTool === source) {
+        state.mapTool = null;
+      }
+
+      if (source && state.panelTools.includes(source)) {
+        state.panelTools = state.panelTools.filter((t) => t !== source);
       }
     })
-    .addCase(convertToDrawing, (state) => {
-      state.tools = [];
-      state.activeTool = null;
+    // An object that is no longer among the found ones can't be the selected
+    // feature: nothing would render its toolbar, so the selection would sit
+    // there with no way to reach it and no way to let it go. Reached by the
+    // filter being cleared, by the objects being handed to another feature, and
+    // by panning until the object drops out of what the search answers.
+    .addCase(objectsSetResult, (state, action) => {
+      const { selection } = state;
+
+      if (
+        selection?.type === 'objects' &&
+        !action.payload.some((object) =>
+          featureIdsEqual(object.id, selection.id),
+        )
+      ) {
+        state.selection = null;
+      }
     })
     .addCase(drawingLineJoinFinish, (state, { payload }) => {
       state.selection = payload.selection;
@@ -183,11 +281,25 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     .addCase(hideInfoBar, (state, action) => {
       state.hiddenInfoBars[action.payload.key] = action.payload.ts;
     })
+    .addCase(infoBarShown, (state, action) => {
+      state.shownInfoBars[action.payload.key] = action.payload.ts;
+    })
     .addCase(routePlannerAddPoint, (state, action) => {
       return {
         ...state,
         selection: { type: 'route-point', id: action.payload.position + 1 },
       };
+    })
+    // The route's own toolbar deletes it directly, so what it deletes must not
+    // stay selected. Only a route selection goes: `convertToDrawing` deletes the
+    // route too, after selecting the drawing line it turned into.
+    .addCase(routePlannerDelete, (state) => {
+      if (
+        state.selection?.type === 'route-point' ||
+        state.selection?.type === 'route-leg'
+      ) {
+        state.selection = null;
+      }
     })
     .addCase(routePlannerSetPoint, (state, action) => {
       return action.payload.preventSelect
@@ -197,6 +309,17 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
             selection: { type: 'route-point', id: action.payload.position },
           };
     })
+    // Loading renumbers the imported features and deleting takes them away, so
+    // a selection that survived either would name another feature or none. What
+    // a fresh load selects instead is `dataViewerSetTrackDataProcessor`.
+    .addMatcher(
+      isAnyOf(dataViewerSetData, dataViewerDelete, dataViewerDeleteFeature),
+      (state) => {
+        if (state.selection?.type === 'data-viewer') {
+          state.selection = null;
+        }
+      },
+    )
     .addMatcher(isAnyOf(drawingLineSetLines, deleteFeature), (state) => {
       state.selection =
         state.selection?.type === 'line-point'

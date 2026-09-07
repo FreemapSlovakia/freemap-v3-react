@@ -1,0 +1,127 @@
+import { getMessages } from '@features/l10n/messagesStore.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import { addError } from '@/translations/messagesInterface.js';
+import { DataViewerDetails } from '../components/DataViewerDetails.js';
+import type { DataViewerMessages } from './DataViewerMessages.js';
+
+const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
+  style: {
+    title: 'Stile predefinito',
+  },
+  split: {
+    action: 'Dividi',
+    pick: 'Clicca la traccia nel punto di divisione',
+    here: 'Dividi qui',
+    segments: 'Dividi in segmenti',
+  },
+  join: {
+    action: 'Unisci',
+    asLine: 'Unisci in una sola linea',
+    asSegments: 'Unisci mantenendo i segmenti',
+    pick: 'Clicca la traccia da unire',
+  },
+  match: {
+    menuItem: 'Aggancia ai percorsi',
+    title: 'Aggancia ai percorsi',
+    help: 'Aggancia la traccia alla rete di strade e sentieri mappati, eliminando la dispersione del GPS e — questo è il punto — determinando su cosa passa la traccia, così da poterla colorare per fondo, tipo di strada, qualità della sterrata e difficoltà.',
+    transport: 'Mezzo',
+    dataLoss:
+      'La linea agganciata ha punti propri, quindi le marche temporali e i dati registrati dai sensori (frequenza cardiaca, cadenza, velocità) andranno persi.',
+    run: 'Aggancia',
+    tooLong: 'Questa traccia ha troppi punti per essere agganciata.',
+    tooShort: 'La traccia è troppo corta per essere agganciata.',
+    brokenSequence:
+      'La traccia esce da qualche parte dalla rete mappata, quindi non può essere agganciata. Prova un altro mezzo oppure lascia la traccia com’è.',
+    offNetwork:
+      'Il percorso agganciato è risultato molto più lungo della traccia, il che significa che la traccia non seguiva percorsi mappati — attraverso un prato, ad esempio. L’aggancio può rispondere solo con percorsi esistenti, quindi il risultato non sarebbe dove sei passato. La traccia resta invariata.',
+    partial:
+      'Alcune parti della traccia non sono state agganciate — restano come registrate. Una traccia che cambia mezzo a metà strada (una camminata, poi il rientro in auto) va prima divisa.',
+  },
+  info: () => <DataViewerDetails />,
+  upload: 'Carica',
+  unnamedTrack: ({ n }) => `Traccia ${n}`,
+  convertLossWarning:
+    'La conversione in disegno sostituisce la traccia e ne scarta i dati registrati (quota, frequenza cardiaca, velocità, tempo).',
+  simplifyAll: 'Semplifica tutto',
+  moreInfo: 'Maggiori info',
+  saveAsMap: 'Salva nelle mie mappe',
+  loginToSaveMap: 'Accedi prima per salvare la traccia nelle tue mappe.',
+  details: {
+    startTime: 'Ora inizio',
+    finishTime: 'Ora fine',
+    duration: 'Durata',
+    distance: 'Distanza',
+    avgSpeed: 'Velocità media',
+    minEle: 'Elevazione min.',
+    maxEle: 'Elevazione max',
+    uphill: 'Ascesa totale',
+    downhill: 'Discesa totale',
+    durationValue: ({ h, m }) => `${h} ore ${m} minuti`,
+    source: 'Origine quota',
+    sourceOriginal: 'registrata',
+    sourcePartial: 'registrata, incompleta',
+    sourceFilledGaps: 'registrata, lacune riempite (modello del terreno)',
+    sourceFilled: 'modello del terreno',
+  },
+  uploadModal: {
+    title: 'Importa file',
+    drop: 'Trascina qui un file GPX, KML, KMZ, TCX o GeoJSON oppure clicca per selezionarlo.',
+    mergeTitle: 'Dati già caricati',
+    mergeMessage:
+      'Alcuni geodati sono già visualizzati. Aggiungere i dati importati o sostituirli?',
+    existingData: 'Dati esistenti',
+    append: 'Aggiungi',
+    replace: 'Sostituisci',
+  },
+  elevationFill: {
+    title: 'Dati di quota',
+    introNone: 'Questa traccia non ha dati di quota.',
+    introPartial: 'In alcuni punti di questa traccia manca la quota.',
+    introFull:
+      'Questa traccia ha già la quota, ma un modello del terreno è spesso ' +
+      'più preciso.',
+    premiumHiRes: (premiumLink) => (
+      <>
+        Con l’{premiumLink('accesso premium')}, nei paesi supportati la quota è
+        campionata da un modello nazionale ad alta risoluzione — per ora
+        Slovacchia (DMR 5.0: ÚGKK SR), altri in arrivo.
+      </>
+    ),
+    question: 'Cosa vuoi fare?',
+    overrideAll: 'Sovrascrivi tutto',
+    overrideAllDesc:
+      'sostituisci ogni punto con il modello del terreno — un profilo ' +
+      'uniforme e coerente',
+    fillMissing: 'Riempi mancanti',
+    fillMissingDesc:
+      'mantieni i valori registrati e riempi solo le lacune (potrebbero ' +
+      'esserci scalini dove i due dati si incontrano)',
+    keep: 'Non modificare',
+    keepDesc: 'usa la quota memorizzata nella traccia',
+    add: 'Aggiungi quota',
+    update: 'Aggiorna quota',
+    updateConfirm:
+      'Sostituire la quota della traccia con il modello del terreno?',
+    updatedToast: ({ mode }) =>
+      mode === 'missing'
+        ? 'La quota mancante è stata riempita.'
+        : 'La quota è stata sovrascritta.',
+  },
+  fetchingError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Errore durante il recupero dei dati della traccia:',
+      err,
+    ),
+  loadingError: 'Errore nel caricamento del file.',
+  onlyOne: "E' atteso un singolo file.",
+  invalidFormat: 'Il file non è in un formato supportato o non è valido.',
+  someFilesFailed: ({ names }) => `Impossibile caricare alcuni file: ${names}.`,
+  unsaved: 'Non salvata',
+  unsavedTooltip:
+    'Questa traccia non si trova in nessuna mappa salvata e non fa parte del collegamento: resta solo in questo browser, quindi condividere il collegamento non la condivide. Salvala nelle tue mappe per conservarla.',
+  matchingError: ({ err }) =>
+    addError(getMessages()!, 'Errore durante l’aggancio della traccia', err),
+};
+
+export default it;

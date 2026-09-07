@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="<%= lang %>" class="notranslate" translate="no">
+<html
+  lang="<%= lang %>"
+  data-site="<%= site %>"
+  class="notranslate"
+  translate="no"
+>
   <head>
     <title><%= title %></title>
 
@@ -25,15 +30,16 @@
 
     <meta property="fb:app_id" content="171410630094006" />
 
+    <meta property="og:site_name" content="<%= siteName %>" />
     <meta property="og:title" content="<%= title %>" />
     <meta
       property="og:image"
-      content="<%= process.env['BASE_URL'] + '/logo.jpg' %>"
+      content="<%= `${baseUrl}/og-${site}-${lang}.png` %>"
     />
-    <meta property="og:image:width" content="600" />
-    <meta property="og:image:height" content="600" />
+    <meta property="og:image:width" content="<%= ogWidth %>" />
+    <meta property="og:image:height" content="<%= ogHeight %>" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="<%= process.env['BASE_URL'] + '/' %>" />
+    <meta property="og:url" content="<%= baseUrl + '/' %>" />
     <meta property="og:description" content="<%= description %>" />
     <meta
       property="og:see_also"
@@ -43,8 +49,6 @@
       property="og:see_also"
       content="https://apps.apple.com/sk/app/freemap/id6760855105"
     />
-
-    <meta http-equiv="Accept-CH" content="Width" />
 
     <meta name="mobile-web-app-capable" content="yes" />
 
@@ -60,7 +64,7 @@
       media="(prefers-color-scheme: dark)"
     />
 
-    <meta name="application-name" content="Freemap Slovakia" />
+    <meta name="application-name" content="<%= siteName %>" />
 
     <link
       rel="sitemap"
@@ -69,33 +73,41 @@
       href="/sitemap/sitemap-index.xml"
     />
 
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link
+      rel="alternate"
+      type="text/plain"
+      title="llms.txt — AI-readable site & URL-parameter reference"
+      href="/llms.txt"
+    />
+
+    <link
+      rel="manifest"
+      href="/manifest-<%= site %>-<%= lang %>.webmanifest"
+    />
 
     <link rel="shortcut icon" href="/favicon.ico" />
 
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <!-- prettier-ignore -->
+    <%= faviconSizes.map((size) => `
+    <link rel="icon" type="image/png" sizes="${size}x${size}" href="/favicon-${size}x${size}.png" />
+    `).join('') %>
+
+    <!-- Last, and sizeless: equal candidates are resolved by document order, so
+         a browser that can take the vector picks it over the PNGs above. -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      sizes="any"
+      href="/freemap-flower.svg"
+    />
 
     <!-- prettier-ignore -->
     <%=
-      [
-        '57x57',
-        '60x60',
-        '72x72',
-        '76x76',
-        '114x114',
-        '120x120',
-        '144x144',
-        '152x152',
-        '167x167',
-        '180x180',
-        '1024x1024',
-      ].map((dim) => `
+      appleTouchSizes.map((size) => `
     <link
       rel="apple-touch-icon"
-      sizes="${dim}"
-      href="/apple-touch-icon-${dim}.png"
+      sizes="${size}x${size}"
+      href="/apple-touch-icon-${size}x${size}.png"
     />
     `).join('') %>
 
@@ -109,33 +121,11 @@
     <meta name="apple-itunes-app" content="app-id=6760855105" />
     <!-- prettier-ignore -->
     <%=
-      [
-        [320, 568, 2, 'portrait'],
-        [375, 667, 2, 'portrait'],
-        [414, 896, 2, 'portrait'],
-        [375, 812, 3, 'portrait'],
-        [414, 736, 3, 'portrait'],
-        [414, 896, 3, 'portrait'],
-        [768, 1024, 2, 'portrait'],
-        [834, 1112, 2, 'portrait'],
-        [834, 1194, 2, 'portrait'],
-        [1024, 1366, 2, 'portrait'],
-        [810, 1080, 2, 'portrait'],
-        [320, 568, 2, 'landscape'],
-        [375, 667, 2, 'landscape'],
-        [414, 896, 2, 'landscape'],
-        [375, 812, 3, 'landscape'],
-        [414, 736, 3, 'landscape'],
-        [414, 896, 3, 'landscape'],
-        [768, 1024, 2, 'landscape'],
-        [834, 1112, 2, 'landscape'],
-        [834, 1194, 2, 'landscape'],
-        [1024, 1366, 2, 'landscape'],
-        [810, 1080, 2, 'landscape']].map(([w, h, r, o]) => `
+      splashScreens.map(([w, h, r, o]) => `
     <link
       rel="apple-touch-startup-image"
       media="(device-width: ${w}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${r}) and (orientation: ${o})"
-      href="/apple-touch-startup-image-${(o === 'portrait' ? w : h) * r}x${(o === 'portrait' ? h : w) * r}.png"
+      href="/apple-touch-startup-image-${site}-${(o === 'portrait' ? w : h) * r}x${(o === 'portrait' ? h : w) * r}.png"
     />
     `).join('') %>
 
@@ -174,12 +164,60 @@
         const u = '//matomo.freemap.sk/';
         _paq.push(['setTrackerUrl', u + 'matomo.php']);
         _paq.push(['setSiteId', '<%= process.env["MATOMO_SITE_ID"] %>']);
-        const d = document,
-          g = d.createElement('script'),
-          s = d.getElementsByTagName('script')[0];
-        g.async = true;
-        g.src = u + 'matomo.js';
-        s.parentNode.insertBefore(g, s);
+
+        /*
+         * The tracker is fetched only once the visit looks human: on the first
+         * real input, or after DWELL_SECONDS with the page visible. Until then
+         * `_paq` is a plain array, so every command pushed meanwhile is queued
+         * and replayed in order the moment the tracker loads — no call site
+         * needs to know about the gate, and nothing is lost.
+         *
+         * What this drops is the drive-by that renders the page, emits a
+         * pageview plus a few events and leaves within seconds without ever
+         * touching it: no request reaches Matomo at all, so it costs no visit,
+         * no goal conversion and no ad impression.
+         *
+         * The dwell fallback keeps the visitor who only reads the map, at the
+         * price of being bypassable by simply waiting — hence a threshold far
+         * above how long such traffic currently stays.
+         */
+        const DWELL_SECONDS = 60;
+
+        const inputs = [
+          'pointerdown',
+          'pointermove',
+          'touchstart',
+          'keydown',
+          'wheel',
+          'scroll',
+        ];
+
+        let dwell = 0;
+
+        const ticker = window.setInterval(function () {
+          if (document.visibilityState === 'visible' && ++dwell >= DWELL_SECONDS) {
+            load();
+          }
+        }, 1000);
+
+        function load() {
+          window.clearInterval(ticker);
+
+          for (const input of inputs) {
+            window.removeEventListener(input, load, true);
+          }
+
+          const d = document,
+            g = d.createElement('script'),
+            s = d.getElementsByTagName('script')[0];
+          g.async = true;
+          g.src = u + 'matomo.js';
+          s.parentNode.insertBefore(g, s);
+        }
+
+        for (const input of inputs) {
+          window.addEventListener(input, load, { capture: true, passive: true });
+        }
       })();
     </script>
     <% } else { %>
@@ -286,7 +324,7 @@
         <div style="display: flex; flex-direction: column; align-items: center">
           <div style="max-width: 200px; padding-bottom: 30px">
             <img
-              src="freemap-logo.png"
+              src="freemap-logo-<%= site %>.svg"
               style="width: 100%; vertical-align: center"
             />
           </div>
@@ -325,8 +363,15 @@
 
     <script>
       function _fm_showError() {
-        (document.getElementById('app') || document.body).innerHTML =
-          '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;"><%= errorHtml %></div>';
+        // both are null while the document is being torn down (navigation away,
+        // a page replaced by an in-app browser); there is nothing to report into
+        var target = document.getElementById('app') || document.body;
+
+        if (target) {
+          // JSON.stringify, not a quoted literal: the message carries
+          // apostrophes in some languages, which would break the script
+          target.innerHTML = <%= JSON.stringify('<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;">' + errorHtml + '</div>') %>;
+        }
       }
     </script>
 
@@ -357,6 +402,10 @@
             /promise rejection with keys: code, message/,
             // Background Sync API quirks across browsers
             /Attempted to register a sync event/,
+            // JS bridges injected by third-party in-app browsers (iOS WKWebView
+            // and Android WebView), which break when their host view goes away
+            /window\.webkit\.messageHandlers/,
+            /Java object is gone/,
             // ubiquitous browser noise
             /ResizeObserver loop/,
             'Non-Error promise rejection captured',

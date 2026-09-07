@@ -1,0 +1,217 @@
+import { clearMapFeatures, closeTool } from '@app/store/actions.js';
+import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
+import { isPremium } from '@features/premium/premium.js';
+import type { CancelTriggers } from '@shared/cancelRegister.js';
+import { sameLatLon } from '@shared/geoutils.js';
+import { isAbortError } from '@shared/isAbortError.js';
+import { terrainErrorCode } from '@shared/terrainService.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
+import type { LatLon } from '@shared/types/common.js';
+import type { Dispatch } from 'redux';
+import { type PanoramaMeta, renderPanorama } from '../../api.js';
+import { labelsFromPeaks } from '../../labels/fromPeaks.js';
+import {
+  buildPanoramaRequest,
+  grantedPanorama,
+  PANORAMA_PREVIEW_QUALITY,
+  type PanoramaGrants,
+  panoramaExpectedMs,
+  panoramaRenderKey,
+} from '../../quality.js';
+import {
+  claimPanoramaRender,
+  isCurrentPanoramaRender,
+  setPanoramaRenderData,
+} from '../../renderHolder.js';
+import {
+  panoramaCancel,
+  panoramaClear,
+  panoramaPick,
+  panoramaRender,
+  panoramaSetError,
+  panoramaSetProgress,
+  panoramaSetRender,
+  panoramaSetRendering,
+} from '../actions.js';
+import type { PanoramaSettingsState } from '../settingsReducer.js';
+
+/**
+ * What makes the render in flight pointless. Hanging up stops the work on the
+ * server too, so a user who reframes the view doesn't queue behind their own
+ * abandoned render.
+ */
+const CANCEL: CancelTriggers = {
+  cancelActions: [
+    panoramaPick,
+    panoramaRender,
+    panoramaCancel,
+    panoramaClear,
+    clearMapFeatures,
+  ],
+  actionPredicate: (action) =>
+    closeTool.match(action) && action.payload === 'panorama',
+};
+
+/**
+ * One render, of what was asked for rather than of whatever the state says by
+ * the time it runs. The two passes are up to forty seconds apart, and dragging
+ * the eye marker moves the viewpoint without cancelling or starting anything —
+ * so re-reading the state here would have the second pass quietly render
+ * somewhere the user never asked to see, and record it as though they had.
+ *
+ * Answers with what the service said of it, or `null` where something has
+ * replaced this render since and there is nothing more to do.
+ */
+async function renderPass(
+  viewpoint: LatLon,
+  settings: PanoramaSettingsState,
+  grants: PanoramaGrants,
+  renderAz: number,
+  preview: boolean,
+  getState: () => RootState,
+  dispatch: Dispatch,
+  farM?: number | null,
+): Promise<PanoramaMeta | null> {
+  const id = claimPanoramaRender();
+
+  const { meta, imageUrl, depth, image } = await renderPanorama(
+    buildPanoramaRequest(viewpoint, settings, grants, renderAz, farM),
+    getState,
+    CANCEL,
+    (progress) => dispatch(panoramaSetProgress(progress)),
+    () => isCurrentPanoramaRender(id),
+  );
+
+  if (!isCurrentPanoramaRender(id)) {
+    URL.revokeObjectURL(imageUrl);
+
+    return null;
+  }
+
+  setPanoramaRenderData({ id, imageUrl, depth, image });
+
+  dispatch(
+    panoramaSetRender({
+      id,
+      viewpoint,
+      key: panoramaRenderKey(viewpoint, settings, grants, renderAz),
+      preview,
+      eyeElevation: meta.eye_elevation,
+      width: meta.width,
+      height: meta.height,
+      azStart: meta.az_start,
+      fov: meta.fov,
+      altMin: meta.alt_min,
+      altMax: meta.alt_max,
+      stepDeg: meta.step_deg,
+      depthLift: settings.depthLift,
+      rangeM: grants.rangeKm * 1000,
+      labels: labelsFromPeaks(meta.peaks ?? []),
+    }),
+  );
+
+  return meta;
+}
+
+/**
+ * Under this the preview pass is not worth its own round trip: it exists to put
+ * a picture up during a long wait, and a narrow slice at a middling tier is
+ * already there before one would have landed.
+ */
+const PREVIEW_WORTH_MS = 4000;
+
+const handle: ProcessorHandler = async ({ getState, dispatch }) => {
+  const { viewpoint, render, renderAz } = getState().panorama;
+
+  if (!viewpoint) {
+    return;
+  }
+
+  // A picture of this very place is already up — a tier, a band or a look
+  // changed, not the viewpoint — so there is already something to turn around
+  // in while the render runs, and it is a better picture than the preview would
+  // be. Waiting behind it also keeps the mark and its readings, which every
+  // render clears.
+  const standing = render !== null && sameLatLon(render.viewpoint, viewpoint);
+
+  const settings = getState().panoramaSettings;
+
+  // The finer tiers and the farther views are premium's. Asking for more
+  // without it would only have the service clamp it back, so the request says
+  // what the account can have.
+  const grants = grantedPanorama(settings, isPremium(getState().auth.user));
+
+  trackMatomo(['trackEvent', 'Panorama', 'render', grants.quality]);
+
+  dispatch(panoramaSetRendering(true));
+
+  try {
+    // The cheapest pass first, so a long render happens behind a picture the
+    // user can already turn around in — which is the whole of what it is for,
+    // and why a picture of the same place standing there does instead. It is
+    // the coarsest tier there is, so where it does run it adds a few percent to
+    // a detailed render rather than the third again a middling one would cost.
+    //
+    // Both passes ask for peaks, and the names are redrawn when the second
+    // lands. It is not free — the peak pass costs a render about two seconds,
+    // and the payload is the larger half — but the labels then answer for the
+    // picture being looked at: visibility is decided by the rays a tier cast,
+    // so only the detailed pass knows which marginal summits it actually drew.
+    let farM: number | null = null;
+
+    if (
+      !standing &&
+      grants.quality !== PANORAMA_PREVIEW_QUALITY &&
+      panoramaExpectedMs(grants.quality, settings.fovDeg) > PREVIEW_WORTH_MS
+    ) {
+      const meta = await renderPass(
+        viewpoint,
+        settings,
+        { ...grants, quality: PANORAMA_PREVIEW_QUALITY },
+        renderAz,
+        true,
+        getState,
+        dispatch,
+      );
+
+      if (!meta) {
+        return;
+      }
+
+      // A gradient asking for `auto` measures the frame it is rendering, and
+      // the two passes sample it differently, so the second one is pinned to
+      // what the first found rather than left to recolour the picture under
+      // someone already looking at it.
+      farM = meta.far_distance ?? null;
+    }
+
+    if (
+      !(await renderPass(
+        viewpoint,
+        settings,
+        grants,
+        renderAz,
+        false,
+        getState,
+        dispatch,
+        farM,
+      ))
+    ) {
+      return;
+    }
+  } catch (err) {
+    // An abort means something newer already owns the flag — the render that
+    // replaced this one, or the panel closing. Clearing it here would say the
+    // panel is idle while the next render is running.
+    if (!isAbortError(err)) {
+      dispatch(panoramaSetError(terrainErrorCode(err)));
+    }
+
+    return;
+  }
+
+  dispatch(panoramaSetRendering(false));
+};
+
+export default handle;

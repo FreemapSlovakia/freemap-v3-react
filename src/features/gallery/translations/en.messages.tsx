@@ -59,7 +59,6 @@ const en: GalleryMessages = {
     addComment: 'Add',
     yourRating: 'Your rating:',
     showOnTheMap: 'Show on the map',
-    openInNewWindow: 'Open in…',
     uploaded: ({ username, createdAt }) => (
       <>
         Uploaded by {username} on {createdAt}
@@ -79,7 +78,10 @@ const en: GalleryMessages = {
     modify: 'Modify',
     premiumOnly:
       'This photo has been made available by its author only to users with premium access.',
+    premiumPhoto: 'This photo is premium content.',
     noComments: 'No comments',
+    wikimediaCommentNotNotified:
+      'This photo comes from Wikimedia Commons. Its author will not be notified of your comment — we only notify authors of photos uploaded to Freemap.',
   },
   editForm: {
     name: 'Name',
@@ -98,8 +100,13 @@ const en: GalleryMessages = {
     title: 'Upload photos',
     uploading: (n) => `Uploading (${n})`,
     upload: 'Upload',
+    hint: {
+      drop: 'Drop your photos here or click here to select them.',
+      // Deliberately silent about where the photos come from: whether the
+      // picker offers the camera is up to the OS and cannot be detected.
+      tap: 'Tap here to add photos.',
+    },
     rules: `
-      <p>Drop your photos here or click here to select them.</p>
       <ul>
         <li>Do not upload too small photos (thumbnails). Maximum dimensions are not limited. The maximum file size is limited to 10MB. Bigger files will be rejected.</li>
         <li>Upload only photos of landscapes or documentation pictures. Portraits and macro photos are undesirable and will be deleted without warning.</li>

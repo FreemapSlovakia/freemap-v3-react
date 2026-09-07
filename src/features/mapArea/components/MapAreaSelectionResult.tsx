@@ -144,7 +144,6 @@ export function MapAreaSelectionResult(): ReactElement | null {
 
       {sides.map(({ position: [lat, lng], icon }, index) => (
         <Marker
-          // eslint-disable-next-line react/no-array-index-key
           key={index}
           draggable
           pane="fm-active-overlay"
@@ -170,7 +169,6 @@ export function MapAreaSelectionResult(): ReactElement | null {
 
       {corners.map(([lat, lng], index) => (
         <Marker
-          // eslint-disable-next-line react/no-array-index-key
           key={index}
           draggable
           pane="fm-active-overlay"

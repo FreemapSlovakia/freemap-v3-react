@@ -3,14 +3,18 @@ import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
   Action,
   ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
@@ -41,6 +45,12 @@ function makeType() {
 export default function CustomMapsModal({ show }: Props): ReactElement {
   const m = useMessages();
 
+  // A custom map is nothing but an entry in the account's settings, so offline
+  // a signed-in user can neither add, change nor remove one.
+  const canSaveSettings = useCanSaveSettings();
+
+  const signedIn = useAppSelector((state) => Boolean(state.auth.user));
+
   const mm = useMyMapsMessages();
 
   const dispatch = useDispatch();
@@ -53,6 +63,14 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
   const activeLayers = useAppSelector((state) => state.map.layers);
 
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const byName = makeLabelComparator(language);
+
+  const sortedLayers = [...customLayers].sort((a, b) =>
+    byName(a.name || undefined, b.name || undefined),
+  );
+
   const [view, setView] = useState<View>({ mode: 'list' });
 
   const [draft, setDraft] = useState<CustomLayerDef | undefined>(undefined);
@@ -63,9 +81,9 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
   useDocumentTitle(show ? m?.mapLayers.customMaps : undefined);
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const goToList = useCallback(() => {
     setDraft(undefined);
@@ -73,45 +91,42 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     setView({ mode: 'list' });
   }, []);
 
-  const handleAddClick = useCallback(() => {
+  const handleAddClick = () => {
     setDraft(undefined);
 
     setView({ mode: 'add', draftType: makeType() });
-  }, []);
+  };
 
-  const handleEditClick = useCallback((type: string) => {
+  const handleEditClick = (type: string) => {
     setDraft(undefined);
 
     setView({ mode: 'edit', type });
-  }, []);
+  };
 
-  const handleDeleteClick = useCallback(
-    async (def: CustomLayerDef) => {
-      const name = def.name || `{${def.type}}`;
+  const handleDeleteClick = async (def: CustomLayerDef) => {
+    const name = def.name || `{${def.type}}`;
 
-      if (
-        !(await confirm({
-          title: mm?.deleteTitle,
-          message: mm?.deleteConfirm(name),
-          confirmLabel: m?.general.delete,
-          confirmStyle: 'danger',
-        }))
-      ) {
-        return;
-      }
+    if (
+      !(await confirm({
+        title: mm?.deleteTitle,
+        message: mm?.deleteConfirm(name),
+        confirmLabel: m?.general.delete,
+        confirmStyle: 'danger',
+      }))
+    ) {
+      return;
+    }
 
-      const next = customLayers.filter((d) => d.type !== def.type);
+    const next = customLayers.filter((d) => d.type !== def.type);
 
-      trackMatomo(['trackEvent', 'MapSettings', 'delete', 'customMap']);
+    trackMatomo(['trackEvent', 'MapSettings', 'delete', 'customMap']);
 
-      dispatch(
-        saveSettings({ settings: { customLayers: next }, keepOpen: true }),
-      );
-    },
-    [customLayers, dispatch, m, mm, confirm],
-  );
+    dispatch(
+      saveSettings({ settings: { customLayers: next }, keepOpen: true }),
+    );
+  };
 
-  const handleSave = useCallback(() => {
+  const handleSave = () => {
     if (!draft) {
       return;
     }
@@ -146,15 +161,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     );
 
     goToList();
-  }, [
-    customLayers,
-    draft,
-    dispatch,
-    goToList,
-    layersSettings,
-    showInMenu,
-    showInToolbar,
-  ]);
+  };
 
   const editingValue =
     view.mode === 'edit'
@@ -189,6 +196,9 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
       onHide={close}
       size={view.mode === 'list' ? 'lg' : undefined}
       contentClassName="bg-body-tertiary"
+      // The icon picker's popover portals outside the modal; the focus trap
+      // would take focus away from its search field.
+      enforceFocus={false}
     >
       <Modal.Header closeButton>
         <Modal.Title>
@@ -205,11 +215,16 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
               </p>
             ) : (
               <ListGroup>
-                {customLayers.map((def) => (
+                {sortedLayers.map((def) => (
                   <ListGroup.Item
                     key={def.type}
                     className="d-flex align-items-center gap-2"
                   >
+                    <IconSpecGlyph
+                      spec={def.iconSpec}
+                      fallback={<MdDashboardCustomize />}
+                    />
+
                     <div className="flex-grow-1 me-2 min-w-0">
                       <div>{def.name || `{${def.type}}`}</div>
 
@@ -227,6 +242,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
                     <div className="flex-shrink-0">
                       <ResponsiveActions
+                        size="sm"
                         align="end"
                         toggleLabel={m?.general.actions}
                       >
@@ -244,6 +260,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
                         <Action
                           icon={<FaPencilAlt />}
                           label={m?.general.modify}
+                          requiresOnline={signedIn}
                           onClick={() => handleEditClick(def.type)}
                           showFrom="sm"
                         />
@@ -254,6 +271,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
                           icon={<FaTrash />}
                           label={m?.general.delete}
                           variant="danger"
+                          requiresOnline={signedIn}
                           onClick={() => handleDeleteClick(def)}
                           showFrom="sm"
                         />
@@ -266,9 +284,15 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button variant="primary" onClick={handleAddClick}>
+            <Button
+              variant="primary"
+              disabled={!canSaveSettings}
+              onClick={handleAddClick}
+            >
               <FaPlus /> {m?.mapLayers.addCustomMap}
             </Button>
+
+            <OfflineBadge offline={!canSaveSettings} />
 
             <Button variant="dark" onClick={close}>
               <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
@@ -287,6 +311,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
             <div className="mt-3">
               <LayerVisibilityFields
+                disabled={!canSaveSettings}
                 showInMenu={showInMenu}
                 showInToolbar={showInToolbar}
                 onChange={(v) => {
@@ -298,9 +323,15 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button variant="primary" onClick={handleSave} disabled={!draft}>
+            <Button
+              variant="primary"
+              onClick={handleSave}
+              disabled={!draft || !canSaveSettings}
+            >
               <FaCheck /> {m?.general.save}
             </Button>
+
+            <OfflineBadge offline={!canSaveSettings} />
 
             <Button variant="dark" onClick={goToList}>
               <FaTimes /> {m?.general.cancel}

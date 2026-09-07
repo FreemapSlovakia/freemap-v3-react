@@ -5,7 +5,6 @@ import type { Leaves } from '@shared/types/common.js';
 import {
   type ReactElement,
   type ReactNode,
-  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -16,6 +15,7 @@ import {
   type ToastAction,
   toastsRemove,
   toastsRestartTimeout,
+  toastsSetPinned,
   toastsStopTimeout,
 } from '../model/actions.js';
 import { Toast } from './Toast.js';
@@ -106,7 +106,16 @@ export function Toasts(): ReactElement {
     () =>
       Object.values(toasts)
         .map(
-          ({ id, actions, style, noClose, timeout, timeoutSince, ...rest }) => {
+          ({
+            id,
+            actions,
+            style,
+            noClose,
+            timeout,
+            timeoutSince,
+            pinned,
+            ...rest
+          }) => {
             const msg = rest.messageLoader ? (
               <LazyToastMessage
                 key={id}
@@ -126,6 +135,7 @@ export function Toasts(): ReactElement {
               noClose,
               timeout,
               timeoutSince,
+              pinned,
             };
           },
         )
@@ -133,28 +143,49 @@ export function Toasts(): ReactElement {
     [m, toasts],
   );
 
-  const handleAction = useCallback(
-    (id: string, action?: RootAction | RootAction[]) => {
-      // TODO use some action flag to indicate that we want the action to close the toast
-      dispatch(toastsRemove(id));
+  const handleAction = (id: string, action?: RootAction | RootAction[]) => {
+    // TODO use some action flag to indicate that we want the action to close the toast
+    dispatch(toastsRemove(id));
 
-      if (action) {
-        if (Array.isArray(action)) {
-          for (const a of action) {
-            dispatch(a);
-          }
-        } else {
-          dispatch(action);
+    if (action) {
+      if (Array.isArray(action)) {
+        for (const a of action) {
+          dispatch(a);
         }
+      } else {
+        dispatch(action);
       }
-    },
-    [dispatch],
-  );
+    }
+  };
+
+  const handleClose = (id: string) => {
+    const { onClose } = toasts[id] ?? {};
+
+    // Before the removal: an `onClose` that invalidates whatever the toast
+    // was derived from gets to take it down itself, rather than racing a
+    // producer that would see the removal and put it straight back.
+    if (onClose) {
+      for (const a of Array.isArray(onClose) ? onClose : [onClose]) {
+        dispatch(a);
+      }
+    }
+
+    dispatch(toastsRemove(id));
+  };
 
   return (
     <div className={classes.toasts}>
       {items.map(
-        ({ id, actions, style, msg, noClose, timeout, timeoutSince }) => {
+        ({
+          id,
+          actions,
+          style,
+          msg,
+          noClose,
+          timeout,
+          timeoutSince,
+          pinned,
+        }) => {
           return (
             <Toast
               key={id}
@@ -163,12 +194,18 @@ export function Toasts(): ReactElement {
               style={style}
               noClose={noClose}
               onAction={handleAction}
+              onClose={handleClose}
               actions={actions.map((action) => ({
                 ...action,
                 name: tx(m, action),
               }))}
               timeout={timeout}
               timeoutSince={timeoutSince}
+              pinned={pinned}
+              onKeepOpen={(id) => {
+                dispatch(toastsSetPinned({ id, pinned: true }));
+                dispatch(toastsStopTimeout(id));
+              }}
               onTimeoutStop={() => dispatch(toastsStopTimeout(id))}
               onTimeoutRestart={() =>
                 dispatch(toastsRestartTimeout({ id, timeoutSince: Date.now() }))

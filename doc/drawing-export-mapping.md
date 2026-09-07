@@ -47,7 +47,9 @@ import.
 | `markerType` | `<fm:markerType>`            | **Lossless**                                                                                                                                  |
 | `icon`       | `<fm:icon>`                  | **Lossless** — preserves `fa:` / `poi:` / literal text prefix                                                                                 |
 | `color`      | `<fm:color>`                 | **Lossless** — preserves full `#RRGGBBAA`                                                                                                     |
-| (derived)    | `<locus:icon>`               | Self-contained SVG data URL mirroring `RichMarker` (shape + inner white + glyph: text/fa path/poi image). Purely visual; not source of truth. |
+| `label`      | `<name>` (rendered) + `<fm:label>` (raw)     | `<name>` carries the label with its `{p:…}` and computed placeholders already expanded, which is what a consumer should show; `<fm:label>` carries it as written, so our own importer restores the template |
+| `props`      | `<fm:prop key="…">` / GeoJSON `properties`   | **Lossless** — one element per pair, every key, since `<name>` says only what the two of them rendered to |
+| (derived)    | `<locus:icon>`               | Self-contained SVG data URL mirroring `RichMarker` (shape + inner white + glyph: text/fa path/poi drawing). Purely visual; not source of truth. |
 
 ### GeoJSON export (per Point feature)
 
@@ -73,6 +75,41 @@ color      ← freemap:color       → osmand:color
                                  → marker-color
 ```
 
+
+## Properties
+
+A drawing feature can carry a table of free-form key/value **properties** (see
+[`url-params.md`](./url-params.md#properties)) — the OSM tags a converted object
+arrived with, or whatever the user typed. A `{p:key}` in the label expands from
+them when the feature is drawn.
+
+- **GeoJSON** carries them as real `properties`, spread first so a style key
+  can never be shadowed by a property that shares its name, with the rendered
+  text in simplestyle's `title` and the raw label in `freemap:label`. The table
+  is written a second time, whole, under `freemap:props`: spread among the style
+  keys it can no longer be told back apart, so that copy is what our own
+  importer reads.
+- **GPX** carries them as one `<fm:prop key="…">value</fm:prop>` per pair
+  inside `<extensions>`, beside the raw `<fm:label>`. `parseGpx` collects them
+  under `freemap:props`.
+- Both formats therefore round-trip **every** key, not only the OSM tags
+  `pickDrawingProps` knows how to carry, so a property the user invented
+  survives. `importedProps` is the single place that decides where a converted
+  feature's table comes from, and prefers `freemap:props` over reading tags off
+  the feature.
+
+A GPX `<name>` holds the label **rendered**, which is our own output: read back
+as data it would become the `name` property, and `{p:name}` would expand to the
+whole of the previous round's line, growing again with every trip. So the table
+is what the conversion reads, and its presence is the whole signal — a file that
+carries one is ours and its `<name>` is ignored; a file without one is read as
+before, the name becoming a property and the label `{p:name}`. (The data-viewer
+point branch instead copies the name as literal text; that predates this.)
+
+An export from before the table existed therefore keeps its old behaviour rather
+than losing its properties, and no separate marker is needed to tell the two
+apart.
+
 ## Drawing lines and polygons
 
 GPX has no native polygon type. We emit polygons as closed `<trk>`s
@@ -80,6 +117,14 @@ GPX has no native polygon type. We emit polygons as closed `<trk>`s
 by `<fm:type>` for lossless round-trip, with `gpx_style:fill` presence on
 a closed ring as the heuristic fallback for other consumers / external
 files.
+
+A polygon's holes are separate lines in the store (`holeOfId`), so GPX
+writes each as its own `<trk>` and ties it to its parent with a shared id
+rather than a position — tracks are written in several passes, and other
+producers' files interleave their own. A hole borrows its parent's
+styling, since that is what it is drawn with, but with a fully
+transparent fill so consumers that ignore `fm:holeOf` outline it instead
+of painting over the shape.
 
 ### GPX export (per `<trk>`)
 
@@ -103,12 +148,15 @@ files.
 | `lineCap`             | `<gpx_style:line><linecap>` + `<fm:lineCap>`     |                                               |
 | `lineJoin`            | `<gpx_style:line><linejoin>` + `<fm:lineJoin>`   |                                               |
 | `dashArray`           | `<gpx_style:line><dasharray>` + `<fm:dashArray>` | Space-separated numbers                       |
+| `holeOfId` (parent)   | `<fm:polygonId>`                                 | Only on a polygon that has holes              |
+| `holeOfId` (hole)     | `<fm:holeOf>`                                    | Matches its parent's `<fm:polygonId>`         |
 
 ### GeoJSON export (per LineString / Polygon feature)
 
 | State field | GeoJSON property            | Notes                                                                                        |
 | ----------- | --------------------------- | -------------------------------------------------------------------------------------------- |
 | `type`      | Geometry type               | Native (`LineString` vs `Polygon`) — no shadow; no `freemap:type` (that's a GPX-only signal) |
+| `holeOfId`  | Interior rings              | Native — a polygon and its holes are one `Polygon` feature; no shadow needed                 |
 | `label`     | `title`                     |                                                                                              |
 | `color`     | `stroke` + `stroke-opacity` | Simplestyle (lossy alpha)                                                                    |
 | `color`     | `freemap:color`             | **Lossless**                                                                                 |
@@ -138,6 +186,14 @@ GeoJSON, `convertToDrawingProcessor` recognises native `Polygon`/`MultiPolygon`
 geometry directly, so no shadow is needed. The closed-ring + `gpx_style:hasFill`
 heuristic is what lets us correctly classify polygons from third-party GPX
 producers that don't write `fm:type`.
+
+Holes come back the same two ways: a GeoJSON polygon's interior rings become
+hole lines of the ring-0 line, and GPX tracks are grouped by
+`freemap:polygonId` / `freemap:holeOf`. `featuresToLines` emits the whole
+import as one batch whose `holeOf` values are indexes into it, and the reducer
+resolves those to parent ids on the way into the store. A hole that names a
+missing, non-polygon or itself-a-hole parent is simply kept as a polygon of its
+own — rings stay flat, so there is no chain to walk and no cycle to guard.
 
 ## Curated icon dictionaries
 
@@ -181,8 +237,10 @@ they're audited by eye and exercised through round-trip exports.
 | `src/features/export/osmandIconMapping.ts`                                      | OsmAnd icon/background ↔ iconSpec/markerType                                                                           |
 | `src/features/export/model/processors/gpxExportProcessorHandler.ts`             | GPX writer (`addDrawingPoints`, `addDrawingLines`, marker SVG builder for Locus icon)                                  |
 | `src/features/export/model/processors/geojsonExportProcessorHandler.ts`         | GeoJSON writer                                                                                                         |
-| `src/features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.ts` | GPX → GeoJSON parser; injects canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk features     |
-| `src/processors/convertToDrawingProcessor.ts`                                   | Turns parsed features into drawing state; hosts `pointStyleFromProperties` / `lineStyleFromProperties` priority chains |
+| `src/features/dataViewer/parseGpx.ts`                                           | GPX → GeoJSON reader; writes the canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk/rte features |
+| `src/processors/convertToDrawingProcessor.ts`                                   | Turns parsed features into drawing state                                                                               |
+| `src/shared/styleFromProperties.ts`                                             | `*StyleFromProperties` priority chains, and the `*StyleToProperties` writers the data viewer's properties editor uses  |
+| `src/shared/featureProperties.ts`                                               | Which property keys are the feature's own data vs. style/bookkeeping; the `freemap:props` table reader                 |
 | `src/shared/drawingIcons.tsx`                                                   | iconSpec parser, FA loader, POI name↔URL maps, `tagsToPoiIconSpec`                                                     |
 | `src/shared/components/RichMarker.tsx`                                          | Renderer the Locus icon SVG mirrors                                                                                    |
 
@@ -192,13 +250,17 @@ If you add a new persisted field to a drawing point/line, the full
 checklist is:
 
 1. Add it to the Zod schema (`DrawingPointSchema` /
-   `LineSchema`) and the action payloads.
+   `LineSchema`) and the action payloads. If the field can't be carried
+   verbatim (like `holeOf`, an index out here but a parent id in the
+   store), the URL (`serializeDrawingLine` / `locationChangeHandler`) and
+   the map document (`mapDocument.ts`) must agree on the wire form, or a
+   map restored from its URL reads as having unsaved changes.
 2. **GPX writer** (`addDrawingPoints` / `addDrawingLines`):
    emit it as `<fm:fieldName>` always; emit it in foreign namespaces
    (osmand/locus/gpx_style) wherever a sensible counterpart exists.
 3. **GeoJSON writer**: emit it as `freemap:fieldName` always; emit a
    simplestyle key if there's a natural fit.
-4. **GPX importer** (`trackViewerSetTrackDataProcessor`): extend
+4. **GPX importer** (`dataViewerSetTrackDataProcessor`): extend
    `enrichWaypointsWithExtensions` / `enrichTracksWithExtensions` to
    inject the canonical key.
 5. **Convert** (`pointStyleFromProperties` /

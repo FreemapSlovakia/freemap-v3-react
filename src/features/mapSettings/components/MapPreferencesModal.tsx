@@ -1,10 +1,21 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
-import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import {
+  locationSetHeadingSource,
+  locationSetShowBearingLine,
+  saveSettings,
+  setActiveModal,
+} from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { isCompassSupported } from '@features/location/compass.js';
+import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
+import { locationSettingsInitialState } from '@features/location/model/settingsReducer.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
+import { HintMark } from '@shared/components/HintMark.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   type ChangeEvent,
@@ -20,13 +31,26 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';
-import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaSlidersH, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+
+// The zoom grid a gesture can settle on, as Leaflet's `zoomSnap`. Finer than a
+// quarter is not offered: the zoom is shared to two decimals, and the labels
+// stop being readable as fractions.
+const ZOOM_SNAPS = [
+  { value: '1', label: '1' },
+  { value: '0.5', label: '½' },
+  { value: '0.25', label: '¼' },
+  // No grid at all, so it is worded rather than numbered.
+  { value: '0', label: undefined },
+] as const;
 
 type Props = { show: boolean };
 
 export default function MapPreferencesModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const canSaveSettings = useCanSaveSettings();
 
   const dispatch = useDispatch();
 
@@ -48,6 +72,24 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
   const [featureScale, setFeatureScale] = useState(initialFeatureScale);
 
+  const initialZoomSnap = useAppSelector((state) => String(state.map.zoomSnap));
+
+  const [zoomSnap, setZoomSnap] = useState(initialZoomSnap);
+
+  const initialHeadingSource = useAppSelector(
+    (state) => state.locationSettings.headingSource,
+  );
+
+  const [headingSource, setHeadingSource] = useState(initialHeadingSource);
+
+  const initialShowBearingLine = useAppSelector(
+    (state) => state.locationSettings.showBearingLine,
+  );
+
+  const [showBearingLine, setShowBearingLine] = useState(
+    initialShowBearingLine,
+  );
+
   const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
 
   useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
@@ -59,7 +101,11 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   // Fills the form fields with defaults; the user then applies them with Save
   // (or closes without saving).
   const handleResetDefaults = useCallback(() => {
-    setMaxZoom(String(mapInitialState.maxZoom));
+    // Leave out the one field the form can't write: resetting it would only
+    // put back a value Save then fails on.
+    if (canSaveSettings) {
+      setMaxZoom(String(mapInitialState.maxZoom));
+    }
 
     setResolutionScale(
       mapInitialState.resolutionScale === null
@@ -68,14 +114,20 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     );
 
     setFeatureScale(String(mapInitialState.featureScale));
-  }, []);
+
+    setZoomSnap(String(mapInitialState.zoomSnap));
+
+    setHeadingSource(locationSettingsInitialState.headingSource);
+
+    setShowBearingLine(locationSettingsInitialState.showBearingLine);
+  }, [canSaveSettings]);
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
     const settings: Parameters<typeof saveSettings>[0]['settings'] = {};
 
-    if (maxZoom !== initialMaxZoom) {
+    if (canSaveSettings && maxZoom !== initialMaxZoom) {
       const maxZoomValue = parseInt(maxZoom, 10);
 
       settings.maxZoom = Number.isNaN(maxZoomValue) ? 20 : maxZoomValue;
@@ -83,15 +135,32 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
     if (
       resolutionScale !== initialResolutionScale ||
-      featureScale !== initialFeatureScale
+      featureScale !== initialFeatureScale ||
+      zoomSnap !== initialZoomSnap
     ) {
       dispatch(
         mapSetLocalPrefs({
           resolutionScale:
             resolutionScale === '' ? null : Number(resolutionScale),
           featureScale: Number(featureScale),
+          zoomSnap: Number(zoomSnap),
         }),
       );
+    }
+
+    if (headingSource !== initialHeadingSource) {
+      dispatch(locationSetHeadingSource(headingSource));
+
+      // Prompt while the reason for it is still on screen. Reviving an
+      // unchanged stored choice cannot happen here — Save is disabled when the
+      // form is clean — so the locate button carries that case instead.
+      if (headingSource === 'compass') {
+        ensureCompassPermission(dispatch);
+      }
+    }
+
+    if (showBearingLine !== initialShowBearingLine) {
+      dispatch(locationSetShowBearingLine(showBearingLine));
     }
 
     if (Object.keys(settings).length > 0) {
@@ -110,18 +179,33 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     [],
   );
 
+  const handleShowBearingLineChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setShowBearingLine(e.currentTarget.checked);
+    },
+    [],
+  );
+
   const dirty =
     maxZoom !== initialMaxZoom ||
     resolutionScale !== initialResolutionScale ||
-    featureScale !== initialFeatureScale;
+    featureScale !== initialFeatureScale ||
+    zoomSnap !== initialZoomSnap ||
+    headingSource !== initialHeadingSource ||
+    showBearingLine !== initialShowBearingLine;
 
+  // `maxZoom` counts only while it can be written; left out, a signed-in offline
+  // user's non-default value would keep the reset button alive forever.
   const atDefault =
-    maxZoom === String(mapInitialState.maxZoom) &&
+    (!canSaveSettings || maxZoom === String(mapInitialState.maxZoom)) &&
     resolutionScale ===
       (mapInitialState.resolutionScale === null
         ? ''
         : String(mapInitialState.resolutionScale)) &&
-    featureScale === String(mapInitialState.featureScale);
+    featureScale === String(mapInitialState.featureScale) &&
+    zoomSnap === String(mapInitialState.zoomSnap) &&
+    headingSource === locationSettingsInitialState.headingSource &&
+    showBearingLine === locationSettingsInitialState.showBearingLine;
 
   return (
     <Modal
@@ -133,19 +217,25 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCog /> {m?.mapLayers.preferences}
+            <FaSlidersH /> {m?.mapLayers.preferences}
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
+          {/* The one preference here kept in the account's settings; the rest
+              are this browser's own and save with no connection. */}
           <Form.Group controlId="maxZoom">
-            <Form.Label>{m?.mapLayers.maxZoom}</Form.Label>
+            <Form.Label>
+              {m?.mapLayers.maxZoom}
+              <OfflineBadge offline={!canSaveSettings} />
+            </Form.Label>
 
             <Form.Control
               type="number"
               min={0}
               max={99}
               value={maxZoom}
+              disabled={!canSaveSettings}
               isInvalid={invalidMaxZoom}
               onChange={handleMaxZoomChange}
             />
@@ -153,7 +243,33 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
+              {m?.mapLayers.zoomSnap}
+              <HintMark hint={m?.mapLayers.zoomSnapHelp} />
+            </Form.Label>
+
+            <ToggleButtonGroup
+              type="radio"
+              name="zoomSnap"
+              value={zoomSnap}
+              onChange={setZoomSnap}
+            >
+              {ZOOM_SNAPS.map(({ value, label }) => (
+                <ToggleButton
+                  key={value}
+                  id={`zs-${value}`}
+                  value={value}
+                  variant="outline-primary"
+                >
+                  {label ?? m?.mapLayers.zoomSnapFree}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Form.Group>
+
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
               {m?.mapLayers.resolutionScale}
+              <HintMark hint={m?.mapLayers.resolutionScaleHelp} />
             </Form.Label>
 
             <ToggleButtonGroup
@@ -177,15 +293,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
-
-            <Form.Text muted className="d-block">
-              {m?.mapLayers.resolutionScaleHelp}
-            </Form.Text>
           </Form.Group>
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
               {m?.mapLayers.featureScale}
+              <HintMark hint={m?.mapLayers.featureScaleHelp} />
             </Form.Label>
 
             <ToggleButtonGroup
@@ -205,10 +318,54 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
+          </Form.Group>
 
-            <Form.Text muted className="d-block">
-              {m?.mapLayers.featureScaleHelp}
-            </Form.Text>
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
+              {m?.main.headingSource}
+              <HintMark hint={m?.main.headingSourceHelp} />
+            </Form.Label>
+
+            <ToggleButtonGroup
+              type="radio"
+              name="headingSource"
+              value={headingSource}
+              onChange={setHeadingSource}
+            >
+              {(['none', 'gps', 'compass'] as const)
+                // No point offering the magnetometer where there is none —
+                // unless it is the stored choice, since dropping the selected
+                // value would leave the group with nothing selected. Keyed on
+                // the stored value, not the live one, or picking another source
+                // would make the option vanish with no way back to it.
+                .filter(
+                  (source) =>
+                    source !== 'compass' ||
+                    isCompassSupported() ||
+                    initialHeadingSource === 'compass',
+                )
+                .map((source) => (
+                  <ToggleButton
+                    key={source}
+                    id={`hs-${source}`}
+                    value={source}
+                    variant="outline-primary"
+                  >
+                    {m?.main.headingSources[source]}
+                  </ToggleButton>
+                ))}
+            </ToggleButtonGroup>
+          </Form.Group>
+
+          <Form.Group className="mt-3 d-flex">
+            <Form.Check
+              id="chk-bearing-line"
+              label={m?.main.bearingLine}
+              checked={showBearingLine}
+              onChange={handleShowBearingLineChange}
+            />
+
+            <HintMark hint={m?.main.bearingLineHelp} />
           </Form.Group>
         </Modal.Body>
 

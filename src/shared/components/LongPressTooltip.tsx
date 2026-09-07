@@ -1,18 +1,42 @@
+import { type Breakpoint, useBreakpointMatches } from '@shared/breakpoints.js';
 import {
-  type Breakpoint,
-  getMinWidthForBreakpoint,
-} from '@shared/breakpoints.js';
-import {
+  createContext,
   Fragment,
   type MouseEvent,
   type PointerEvent,
   type ReactNode,
   useCallback,
-  useEffect,
+  useContext,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { Overlay, Tooltip } from 'react-bootstrap';
+
+const InTooltip = createContext(false);
+
+/**
+ * Whether this is a tooltip's own body. A mark rendered there is already being
+ * explained, so it drops to its glyph rather than offering a tooltip of its own
+ * — see `GlyphMarker`.
+ */
+export function useInTooltip(): boolean {
+  return useContext(InTooltip);
+}
+
+/**
+ * What the render prop hands the control being explained: the tooltip's own
+ * ref and the gestures that open it. A control that isn't an element of the
+ * caller's own — a component wrapping its own button — takes these through a
+ * prop of its own and spreads them there.
+ */
+export type TooltipTargetProps = {
+  ref: (el: HTMLElement | null) => void;
+  onPointerEnter: (e: PointerEvent) => void;
+  onPointerLeave: (e: PointerEvent) => void;
+  onClickCapture: (e: MouseEvent) => void;
+  onContextMenuCapture: (e: MouseEvent) => void;
+};
 
 type Props = {
   label?: ReactNode;
@@ -25,14 +49,18 @@ type Props = {
   delay?: number;
   breakpoint?: Breakpoint;
   kbd?: string;
+  /**
+   * A line under the label — what the control's own words don't say (e.g. that
+   * the value on show is the one a free account is held to).
+   */
+  hint?: ReactNode;
+  /**
+   * Opens on a plain click or tap as well. Only for a mark that does nothing
+   * else — on a control the same tap would activate it.
+   */
+  toggleOnClick?: boolean;
   children: (props: {
-    props: {
-      ref: (el: HTMLElement | null) => void;
-      onPointerEnter: (e: PointerEvent) => void;
-      onPointerLeave: (e: PointerEvent) => void;
-      onClickCapture: (e: MouseEvent) => void;
-      onContextMenuCapture: (e: MouseEvent) => void;
-    };
+    props: TooltipTargetProps;
     label: ReactNode;
     labelClassName: string;
   }) => ReactNode;
@@ -42,54 +70,58 @@ export function LongPressTooltip({
   label = '…',
   name,
   kbd,
+  hint,
   delay = 500,
   breakpoint,
+  toggleOnClick,
   children,
 }: Props) {
-  const preventClickRef = useRef(false);
-
   const [show, setShow] = useState(false);
 
   const [target, setTarget] = useState<HTMLElement | null>(null);
 
-  const [labelHidden, setLabelHidden] = useState(false);
+  // Stable, or React detaches and re-attaches the ref on every render.
+  const attachTarget = useCallback((el: HTMLElement | null) => {
+    setTarget(el);
+  }, []);
+
+  // Whether the pointer that opened the tooltip was a finger or a stylus, which
+  // covers the control it points at and so needs the tooltip pushed clear of it.
+  const [coarse, setCoarse] = useState(false);
+
+  // The same, readable from a handler of the gesture that set it.
+  const coarseRef = useRef(false);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (!breakpoint) {
-      setLabelHidden(true);
-      return;
-    }
+  const matches = useBreakpointMatches();
 
-    const breakpoint1 = breakpoint;
-
-    function checkVisibility() {
-      setLabelHidden(window.innerWidth < getMinWidthForBreakpoint(breakpoint1));
-    }
-
-    checkVisibility();
-
-    window.addEventListener('resize', checkVisibility);
-
-    return () => window.removeEventListener('resize', checkVisibility);
-  }, [breakpoint]);
+  // Named through the tooltip alone where no breakpoint prints the label; the
+  // matches may be a panel's own width rather than the viewport's, so the class
+  // is decided here rather than by a `d-{bp}-inline` utility.
+  const labelHidden =
+    breakpoint === undefined || (breakpoint !== 'xs' && !matches[breakpoint]);
 
   const handleStart = useCallback(
     (e: PointerEvent) => {
-      if ((!labelHidden && name == null) || timeoutRef.current) {
+      const isCoarse = e.pointerType === 'touch' || e.pointerType === 'pen';
+
+      coarseRef.current = isCoarse;
+
+      setCoarse(isCoarse);
+
+      if (
+        (!labelHidden && name == null && hint == null) ||
+        timeoutRef.current
+      ) {
         return;
       }
 
-      const type = e.type;
-
       timeoutRef.current = setTimeout(() => {
-        preventClickRef.current = type !== 'pointerenter';
-
         setShow(true);
       }, delay);
     },
-    [delay, labelHidden, name],
+    [delay, hint, labelHidden, name],
   );
 
   const handleClear = useCallback(() => {
@@ -99,37 +131,40 @@ export function LongPressTooltip({
 
     timeoutRef.current = null;
 
-    setTimeout(() => {
-      preventClickRef.current = false;
-    });
-
-    setShow(false);
-  }, []);
-
-  const handleClickCapture = useCallback((e: MouseEvent) => {
-    if (preventClickRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-    } else {
+    // A finger's pointerleave is the lift, not a move away, and it lands before
+    // the click — closing here would leave the tap below with nothing to close.
+    if (!(toggleOnClick && coarseRef.current)) {
       setShow(false);
     }
-  }, []);
+  }, [toggleOnClick]);
 
+  const handleClickCapture = useCallback(() => {
+    setShow((show) => (toggleOnClick ? !show : false));
+  }, [toggleOnClick]);
+
+  // Stops the native menu on a long press. The tap that ended it raises no
+  // click of its own — the browser has already cancelled the gesture.
   const handleContextMenuCapture = useCallback((e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
   }, []);
 
-  const kbdEl = (kbd?.split(' ') ?? []).map((kbd) => (
-    <Fragment key={kbd}>
+  // The parameter must not be named `kbd`: a binding that shadows an intrinsic
+  // tag name makes the React Compiler rename the `<kbd>` tag itself, and the
+  // element renders as the unknown `<kbd_0>`.
+  const kbdEl = (kbd?.split(' ') ?? []).map((keyName) => (
+    <Fragment key={keyName}>
       {' '}
-      <kbd>{kbd}</kbd>
+      <kbd>{keyName}</kbd>
     </Fragment>
   ));
 
   const tooltipBody =
     name == null ? (
-      label
+      // Nameless and already legible: only a hint has anything left to say.
+      labelHidden ? (
+        label
+      ) : null
     ) : labelHidden ? (
       <>
         {name}: {label}
@@ -138,13 +173,34 @@ export function LongPressTooltip({
       name
     );
 
+  // Undefined for a mouse, so the tooltip keeps Bootstrap's own offset.
+  const offset = useMemo(
+    () => (coarse ? ([0, 30] as [number, number]) : undefined),
+    [coarse],
+  );
+
+  // Near the top edge the preferred `top` placement flips, and for a finger
+  // `bottom` would land right under the fingertip; sidestep to a side first.
+  const popperConfig = useMemo(
+    () =>
+      coarse
+        ? {
+            modifiers: [
+              {
+                name: 'flip',
+                options: { fallbackPlacements: ['right', 'left', 'bottom'] },
+              },
+            ],
+          }
+        : undefined,
+    [coarse],
+  );
+
   return (
     <>
       {children({
         props: {
-          ref: (el) => {
-            setTarget(el);
-          },
+          ref: attachTarget,
           onPointerEnter: handleStart,
           onPointerLeave: handleClear,
           onClickCapture: handleClickCapture,
@@ -157,15 +213,33 @@ export function LongPressTooltip({
         ) : (
           label
         ),
-        labelClassName: `d-none d-${breakpoint}-inline`,
+        labelClassName: labelHidden ? 'd-none' : 'd-inline',
       })}
 
-      {target && (labelHidden || name != null) && (
-        <Overlay target={target} show={show} placement="top" flip>
+      {target && (labelHidden || name != null || hint != null) && (
+        <Overlay
+          target={target}
+          show={show}
+          placement="top"
+          flip
+          offset={offset}
+          popperConfig={popperConfig}
+          rootClose={toggleOnClick}
+          // The click on the mark itself reaches here too, after the capture
+          // handler above has already toggled it.
+          onHide={(e) => {
+            if (!target.contains(e.target as Node)) {
+              setShow(false);
+            }
+          }}
+        >
           {(props) => (
             <Tooltip {...props}>
-              {tooltipBody}
-              {kbdEl}
+              <InTooltip value>
+                {tooltipBody}
+                {kbdEl}
+                {hint != null && <div className="mt-1">{hint}</div>}
+              </InTooltip>
             </Tooltip>
           )}
         </Overlay>

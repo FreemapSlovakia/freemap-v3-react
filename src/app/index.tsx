@@ -2,17 +2,25 @@ import { attachAuthSync } from '@features/auth/authSync.js';
 import { attachGarminLoginMessageHandler } from '@features/auth/garminLoginMessageHandler.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { attachOAuthLoginMessageHandler } from '@features/auth/oauthLoginMessageHandler.js';
+import { readBrowseCacheStats } from '@features/cachedMaps/browseCache.js';
 import { getCachedTileMaps } from '@features/cachedMaps/cache.js';
 import { cachedMapsLoaded } from '@features/cachedMaps/model/actions.js';
+import { syncBrowseCache } from '@features/cachedMaps/model/browseCacheProcessor.js';
 import { invokeGeoip } from '@features/geoip/model/actions.js';
+import { attachRecorderConnection } from '@features/gpsRecorder/connection.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
+import { attachWheelZoomCalibration } from '@features/map/wheelZoomCalibration.js';
 import { mapsOfflineIdsLoaded } from '@features/myMaps/model/actions.js';
+import { refreshOutbox } from '@features/myMaps/model/processors/mapsOutboxProcessor.js';
 import {
   getOfflineMapCount,
   getOfflineMapIds,
 } from '@features/myMaps/offlineStore.js';
-import { ConfirmProvider } from '@shared/components/ConfirmProvider.js';
+import { getPendingCount } from '@features/myMaps/outboxStore.js';
+import { attachOutboxSync } from '@features/myMaps/outboxSync.js';
+import { attachWebMcp } from '@features/webMcp/attachWebMcp.js';
+import { ModalProvider } from '@shared/components/ModalProvider.js';
 import {
   registerOfflineContentProvider,
   syncStaticCache,
@@ -34,6 +42,7 @@ import './styles/bootstrap-override.css';
 import './styles/index.css';
 import { createCookieConsentToastAction } from '@features/cookieConsent/model/toastAction.js';
 import { handleLocationChange } from './url/locationChangeHandler.js';
+import { restoreStashedUrl } from './url/sessionStash.js';
 import { setUrlUpdatingEnabled } from './url/urlUpdating.js';
 
 window.localStorageFallback = storage;
@@ -59,19 +68,9 @@ if (/\/{2,}/.test(window.location.pathname)) {
   );
 }
 
-// workaround to fix blurring menus on hidpi desktop chrome
-if (
-  window.devicePixelRatio > 1 &&
-  window.navigator.userAgent.includes('Chrome/') &&
-  !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(
-    window.navigator.userAgent,
-  )
-) {
-  document.documentElement.style.setProperty(
-    '--scroller-mix-blend-mode',
-    'none',
-  );
-}
+// Before anything reads the URL: an installed app relaunched at its bare
+// `start_url` continues from where the last session ended.
+restoreStashedUrl();
 
 document.body.classList.add(window.fmEmbedded ? 'embedded' : 'full');
 
@@ -104,13 +103,28 @@ getCachedTileMaps()
     console.warn('Reading cached tile maps failed:', err);
   });
 
+// The service worker takes the browse-cache policy from IndexedDB, which only
+// the processors write — so hand it the rehydrated settings once at startup, or
+// storage cleared behind the app's back would leave it working from stale ones.
+syncBrowseCache(store.getState()).catch((err) => {
+  console.warn('Publishing the browse-cache settings failed:', err);
+});
+
 // The static app shell is kept alive as long as any offline content exists.
 // Register every content provider before syncing the static cache.
 registerOfflineContentProvider(() =>
   getCachedTileMaps().then((maps) => maps.length > 0),
 );
 
+registerOfflineContentProvider(() =>
+  readBrowseCacheStats().then((stats) => stats.tiles > 0),
+);
+
 registerOfflineContentProvider(() => getOfflineMapCount().then((c) => c > 0));
+
+// A queued save is work the user is waiting to have pushed, so the shell stays
+// cached for as long as one exists — even with nothing else kept offline.
+registerOfflineContentProvider(() => getPendingCount().then((c) => c > 0));
 
 getOfflineMapIds()
   .then((ids) => {
@@ -122,6 +136,10 @@ getOfflineMapIds()
     console.warn('Reading offline My Maps failed:', err);
   });
 
+refreshOutbox(store.dispatch).catch((err) => {
+  console.warn('Reading queued My Maps saves failed:', err);
+});
+
 syncStaticCache().catch((err) => {
   console.warn('Static cache sync failed:', err);
 });
@@ -132,6 +150,8 @@ window.addEventListener('popstate', () => {
 
 handleLocationChange(store);
 
+attachRecorderConnection(store);
+
 attachOAuthLoginMessageHandler(store);
 
 attachAuthSync(store);
@@ -139,6 +159,17 @@ attachAuthSync(store);
 attachGarminLoginMessageHandler(store);
 
 attachMapStateHandler(store);
+
+attachWheelZoomCalibration(store);
+
+attachOutboxSync(store);
+
+// An embedded map is a slice of someone else's page, and a crawler runs no agent.
+if (!window.fmEmbedded && !window.isRobot) {
+  attachWebMcp(store).catch((err) => {
+    console.warn('Registering WebMCP tools failed:', err);
+  });
+}
 
 setUrlUpdatingEnabled(true);
 
@@ -167,11 +198,11 @@ createRoot(rootElement).render(
         style: { verticalAlign: 'middle', position: 'relative', top: '-1px' },
       }}
     >
-      <ConfirmProvider>
+      <ModalProvider>
         <ErrorCatcher>
           <Main />
         </ErrorCatcher>
-      </ConfirmProvider>
+      </ModalProvider>
     </IconContext.Provider>
   </Provider>,
 );

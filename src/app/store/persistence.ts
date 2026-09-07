@@ -1,30 +1,70 @@
 import { authInitialState } from '@features/auth/model/reducer.js';
 import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
+import { cachedMapsSettingsInitialState } from '@features/cachedMaps/model/settingsReducer.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
+import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
 import {
   DrawingSettingsCompatSchema,
   DrawingStyleSchema,
   drawingSettingsInitialState,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
+import {
+  elevationSettingsInitialState,
+  GRADE_WINDOW_WHOLE_LINE,
+} from '@features/elevationChart/model/settingsReducer.js';
 import { GalleryLicenseSchema } from '@features/gallery/licenses.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import { gallerySettingsInitialState } from '@features/gallery/model/settingsReducer.js';
+import { gpsRecorderSettingsInitialState } from '@features/gpsRecorder/model/settingsReducer.js';
+import { RecorderConfigSchema } from '@features/gpsRecorder/protocol.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
+import {
+  HeadingSourceSchema,
+  locationSettingsInitialState,
+} from '@features/location/model/settingsReducer.js';
 import { LayerSettingsSchema } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
+import {
+  PanoramaGradientSchema,
+  PanoramaGradientStopsSchema,
+} from '@features/panorama/gradient.js';
+import {
+  DEPTH_LIFT_MAX,
+  FOV_FULL,
+  FOV_MIN,
+  LABEL_DENSITY_MAX,
+  LABEL_DISTANCE_WEIGHT_MAX,
+  LABEL_HAZE_MAX_KM,
+  PROMINENCE_WEIGHT_MAX,
+  panoramaSettingsInitialState,
+  RANGE_MAX_KM,
+  RANGE_MIN_KM,
+} from '@features/panorama/model/settingsReducer.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
-import { routePlannerSettingsInitialState } from '@features/routePlanner/model/settingsReducer.js';
+import {
+  MAX_ALTERNATIVES,
+  routePlannerSettingsInitialState,
+} from '@features/routePlanner/model/settingsReducer.js';
 import { SearchResultStyleSchema } from '@features/search/model/actions.js';
 import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
 import { trackingSettingsInitialState } from '@features/tracking/model/settingsReducer.js';
-import { trackViewerSettingsInitialState } from '@features/trackViewer/model/settingsReducer.js';
+import {
+  nearestRadiusKm,
+  VIEWSHED_DETAIL_ORDER,
+  viewshedSettingsInitialState,
+} from '@features/viewshed/model/settingsReducer.js';
+import { weatherRadarSettingsInitialState } from '@features/weatherRadar/model/settingsReducer.js';
 import { ColorizeSettingsShape } from '@shared/colorizers/colorizeSettings.js';
 import { ColorizingModeSchema } from '@shared/colorizers/index.js';
+import {
+  STEEPNESS_DEFAULT_SCALE,
+  STEEPNESS_SCALES,
+} from '@shared/colorizers/modes/steepness.js';
 import { LanguageSchema } from '@shared/langUtils.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
@@ -60,6 +100,7 @@ export const PersistedMapSchema = z
     maxZoom: z.number(),
     resolutionScale: z.number().nullable(),
     featureScale: z.number(),
+    zoomSnap: z.number(),
   })
   .partial();
 
@@ -99,6 +140,7 @@ export const PersistedHomeLocationSchema = z
 export const PersistedMainSchema = z
   .object({
     hiddenInfoBars: z.record(z.string(), z.number()),
+    shownInfoBars: z.record(z.string(), z.number()),
   })
   .partial();
 
@@ -106,6 +148,7 @@ export const PersistedObjectsSettingsSchema = z
   .object({
     selectedIcon: MarkerTypeSchema,
     color: z.string(),
+    showDetails: z.boolean(),
   })
   .partial();
 
@@ -114,7 +157,7 @@ export const PersistedObjectsSettingsSchema = z
 // they are persisted only as last-used defaults that survive a map clear.
 export const PersistedRoutePlannerSchema = z
   .object({
-    transportType: TransportTypeCompatSchema,
+    transportType: TransportTypeCompatSchema.catch('hiking'),
     milestones: z.union([z.literal('abs'), z.literal('rel'), z.literal(false)]),
   })
   .partial();
@@ -126,6 +169,101 @@ export const PersistedRoutePlannerSettingsSchema = z
     lineWidth: z.number(),
     lineOpacity: z.number(),
     markerOpacity: z.number(),
+    // Clamped here: rehydration bypasses the reducer. Caught rather than
+    // rejected — a rejected field takes the whole slice down (see `rehydrate`).
+    maxAlternatives: z
+      .number()
+      .int()
+      .min(1)
+      .max(MAX_ALTERNATIVES)
+      .catch(routePlannerSettingsInitialState.maxAlternatives),
+  })
+  .partial();
+
+export const PersistedElevationSettingsSchema = z
+  .object({
+    despikeWindow: z.number().min(0).max(100),
+    ditchFillWindow: z.number().min(0).max(100),
+    gradeWindow: z.union([
+      z.literal(GRADE_WINDOW_WHOLE_LINE),
+      z.number().min(0).max(200),
+    ]),
+    // Only one of the offered scales: anything else would leave the slider
+    // between its stops. Caught rather than rejected — a rejected field takes
+    // the whole slice down (see `rehydrate`).
+    steepnessScale: z
+      .number()
+      .refine((scale) =>
+        (STEEPNESS_SCALES as readonly number[]).includes(scale),
+      )
+      .catch(STEEPNESS_DEFAULT_SCALE),
+    preventRangeHint: z.boolean(),
+  })
+  .partial();
+
+const PersistedPanoramaSettingsSchema = z
+  .object({
+    quality: z.enum(['superfast', 'fast', 'standard', 'detailed', 'finest']),
+    tilt: z.enum(['standard', 'wide', 'flat', 'custom']),
+    altMin: z.number(),
+    altMax: z.number(),
+    // Bounded because it divides the request's own left edge and the viewer's
+    // pan limits; a zero or a negative from a hand-edited store leaves both
+    // with nothing to work from.
+    fovDeg: z.number().min(FOV_MIN).max(FOV_FULL),
+    eye: z.number(),
+    // Bounded to what the slider offers: the request adds it to the top of the
+    // band, and the service refuses anything past 45 outright.
+    depthLift: z.number().min(0).max(DEPTH_LIFT_MAX),
+    // The asked-for figure, which may be past what a lapsed account may have —
+    // `grantedRangeKm` clamps the request, so premium grants it back silently.
+    rangeKm: z.number().min(RANGE_MIN_KM).max(RANGE_MAX_KM),
+    showRevealedLabels: z.boolean(),
+    ridgeStrength: z.number(),
+    ridgeWidth: z.number(),
+    ridgeColor: z.string(),
+    groundColor: z.string(),
+    // Caught rather than refused, as the viewshed radius is: these are the only
+    // fields here a user can put out of bounds by hand — 33 stops is a few
+    // clicks on the gradient bar — and a refusal takes the whole slice's
+    // defaults with it, resetting the quality, the band and every label slider
+    // over a ramp.
+    groundGradient: PanoramaGradientSchema.nullable().catch(null),
+    recentGradients: z.array(PanoramaGradientStopsSchema).catch([]),
+    // Bounded, because the level indexes the menu's icon and word arrays.
+    labelDensity: z.number().int().min(0).max(LABEL_DENSITY_MAX),
+    showLabelEle: z.boolean(),
+    minDominance: z.number(),
+    // Bounded to what the sliders offer: all three reach `rankLabels`, where a
+    // stored value from outside the range would order the names by something
+    // no control can undo.
+    labelHazeKm: z.number().min(0).max(LABEL_HAZE_MAX_KM),
+    labelDistanceWeight: z.number().min(0).max(LABEL_DISTANCE_WEIGHT_MAX),
+    prominenceWeight: z.number().min(0).max(PROMINENCE_WEIGHT_MAX),
+    autoPan: z.boolean(),
+  })
+  .partial();
+
+const PersistedViewshedSettingsSchema = z
+  .object({
+    // The stops the control offers, not a range: one between two would leave
+    // the dropdown showing nothing while still costing rays. Snapped to the
+    // nearest rather than refused — a failed field here would take the whole
+    // slice's defaults with it, resetting the colour and the rest over a radius
+    // nobody can see, and a store written when the near stops were offered
+    // still says what its owner asked for.
+    radiusKm: z
+      .number()
+      .positive()
+      .transform(nearestRadiusKm)
+      .catch(viewshedSettingsInitialState.radiusKm),
+    detail: z.enum(VIEWSHED_DETAIL_ORDER),
+    eye: z.number().min(0),
+    targetHeight: z.number().min(0),
+    color: z.string(),
+    // The service's own bounds, which it answers 400 to rather than clamping.
+    gamma: z.number().min(0.1).max(10),
+    alphaFloor: z.number().min(0).max(1),
   })
   .partial();
 
@@ -135,7 +273,7 @@ export const PersistedSearchSettingsSchema = z
   })
   .partial();
 
-export const PersistedTrackViewerSettingsSchema = z
+export const PersistedDataViewerSettingsSchema = z
   .object({
     style: DrawingStyleSchema.partial(),
     colorizeTrackBy: ColorizingModeSchema.nullable(),
@@ -144,9 +282,26 @@ export const PersistedTrackViewerSettingsSchema = z
   .partial();
 
 export const PersistedTrackingSettingsSchema = z
-  .object(ColorizeSettingsShape)
+  .object({
+    ...ColorizeSettingsShape,
+    showLine: z.boolean(),
+    showPoints: z.boolean(),
+  })
   .partial();
 
+export const PersistedGpsRecorderSettingsSchema = z
+  .object({
+    ...RecorderConfigSchema.shape,
+    splitGapS: z.number().nonnegative(),
+    feedLocation: z.boolean(),
+    keepScreenAwake: z.boolean(),
+    style: DrawingStyleSchema.partial(),
+  })
+  .partial();
+
+// Historical provider names, kept deliberately — see `MapDetailsSource`. One
+// unrecognised entry fails the whole slice here, silently resetting the user's
+// source filter.
 const MapDetailsSourceSchema = z.union([
   z.literal('nominatim-reverse'),
   z.literal('overpass-nearby'),
@@ -162,6 +317,13 @@ export const PersistedMapDetailsSchema = z
   })
   .partial();
 
+export const PersistedLocationSettingsSchema = z
+  .object({
+    headingSource: HeadingSourceSchema,
+    showBearingLine: z.boolean(),
+  })
+  .partial();
+
 export const PersistedGallerySettingsSchema = z
   .object({
     colorizeBy: GalleryColorizeBySchema.nullable(),
@@ -171,6 +333,10 @@ export const PersistedGallerySettingsSchema = z
     premium: z.boolean(),
     license: GalleryLicenseSchema,
   })
+  .partial();
+
+export const PersistedWeatherRadarSettingsSchema = z
+  .object({ showNowcast: z.boolean() })
   .partial();
 
 /**
@@ -202,11 +368,40 @@ function defineEntry<K extends keyof RootState>(
   return entry as unknown as PersistEntry;
 }
 
+const PersistedCachedMapsSettingsSchema = z
+  .object({
+    mode: z.enum([
+      'network-only',
+      'network-first',
+      'cache-first',
+      'cache-only',
+    ]),
+    store: z.boolean(),
+    maxAgeDays: z.number(),
+    maxSizeMb: z.number(),
+  })
+  .partial();
+
 const PERSIST: PersistEntry[] = [
   defineEntry({
     key: 'map',
     schema: PersistedMapCompatSchema,
     initial: mapInitialState,
+    // Rehydration writes the slice directly, so the zoom bypasses the reducer's
+    // own snapping. A stored zoom can disagree with the stored `zoomSnap` when
+    // the grid was coarsened by something other than the preference — a rebuilt
+    // default, or one browser's storage read by another build — and the map
+    // would then sit a fraction off what the store and the URL claim.
+    rehydrate: (initial, data) => {
+      const merged = { ...initial, ...data };
+
+      return {
+        ...merged,
+        zoom: merged.zoomSnap
+          ? Math.round(merged.zoom / merged.zoomSnap) * merged.zoomSnap
+          : merged.zoom,
+      };
+    },
     persist: (m) => ({
       layersSettings: m.layersSettings,
       lat: m.lat,
@@ -219,6 +414,7 @@ const PERSIST: PersistEntry[] = [
       maxZoom: m.maxZoom,
       resolutionScale: m.resolutionScale,
       featureScale: m.featureScale,
+      zoomSnap: m.zoomSnap,
     }),
   }),
   defineEntry({
@@ -277,13 +473,20 @@ const PERSIST: PersistEntry[] = [
     key: 'main',
     schema: PersistedMainSchema,
     initial: mainInitialState,
-    persist: (s) => ({ hiddenInfoBars: s.hiddenInfoBars }),
+    persist: (s) => ({
+      hiddenInfoBars: s.hiddenInfoBars,
+      shownInfoBars: s.shownInfoBars,
+    }),
   }),
   defineEntry({
     key: 'objectsSettings',
     schema: PersistedObjectsSettingsSchema,
     initial: objectsSettingsInitialState,
-    persist: (o) => ({ selectedIcon: o.selectedIcon, color: o.color }),
+    persist: (o) => ({
+      selectedIcon: o.selectedIcon,
+      color: o.color,
+      showDetails: o.showDetails,
+    }),
   }),
   defineEntry({
     key: 'routePlanner',
@@ -307,6 +510,7 @@ const PERSIST: PersistEntry[] = [
       lineWidth: s.lineWidth,
       lineOpacity: s.lineOpacity,
       markerOpacity: s.markerOpacity,
+      maxAlternatives: s.maxAlternatives,
     }),
   }),
   defineEntry({
@@ -320,9 +524,27 @@ const PERSIST: PersistEntry[] = [
     persist: (s) => ({ resultStyle: s.resultStyle }),
   }),
   defineEntry({
+    key: 'panoramaSettings',
+    schema: PersistedPanoramaSettingsSchema,
+    initial: panoramaSettingsInitialState,
+    persist: (p) => p,
+  }),
+  defineEntry({
+    key: 'elevationSettings',
+    schema: PersistedElevationSettingsSchema,
+    initial: elevationSettingsInitialState,
+    persist: (e) => ({
+      despikeWindow: e.despikeWindow,
+      ditchFillWindow: e.ditchFillWindow,
+      gradeWindow: e.gradeWindow,
+      steepnessScale: e.steepnessScale,
+      preventRangeHint: e.preventRangeHint,
+    }),
+  }),
+  defineEntry({
     key: 'trackViewerSettings',
-    schema: PersistedTrackViewerSettingsSchema,
-    initial: trackViewerSettingsInitialState,
+    schema: PersistedDataViewerSettingsSchema,
+    initial: dataViewerSettingsInitialState,
     // Also read the colorize prefs from the legacy `trackViewer` blob. This
     // slice's key predates the colorize move (it persisted `style`), so the
     // fallback must fill colorize per key rather than be shadowed by the
@@ -341,6 +563,27 @@ const PERSIST: PersistEntry[] = [
     }),
   }),
   defineEntry({
+    key: 'gpsRecorderSettings',
+    schema: PersistedGpsRecorderSettingsSchema,
+    initial: gpsRecorderSettingsInitialState,
+    rehydrate: (initial, data) => ({
+      ...initial,
+      ...data,
+      style: { ...initial.style, ...data.style },
+    }),
+    persist: (g) => ({
+      intervalMs: g.intervalMs,
+      minDistanceM: g.minDistanceM,
+      maxAccuracyM: g.maxAccuracyM,
+      priority: g.priority,
+      source: g.source,
+      splitGapS: g.splitGapS,
+      feedLocation: g.feedLocation,
+      keepScreenAwake: g.keepScreenAwake,
+      style: g.style,
+    }),
+  }),
+  defineEntry({
     key: 'trackingSettings',
     schema: PersistedTrackingSettingsSchema,
     initial: trackingSettingsInitialState,
@@ -349,6 +592,8 @@ const PERSIST: PersistEntry[] = [
     persist: (t) => ({
       colorizeBy: t.colorizeBy,
       colorizeLegend: t.colorizeLegend,
+      showLine: t.showLine,
+      showPoints: t.showPoints,
     }),
   }),
   defineEntry({
@@ -356,6 +601,15 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedMapDetailsSchema,
     initial: mapDetailsInitialState,
     persist: (m) => ({ excludeSources: m.excludeSources }),
+  }),
+  defineEntry({
+    key: 'locationSettings',
+    schema: PersistedLocationSettingsSchema,
+    initial: locationSettingsInitialState,
+    persist: (l) => ({
+      headingSource: l.headingSource,
+      showBearingLine: l.showBearingLine,
+    }),
   }),
   defineEntry({
     key: 'gallerySettings',
@@ -370,6 +624,24 @@ const PERSIST: PersistEntry[] = [
       showLegend: g.showLegend,
       premium: g.premium,
     }),
+  }),
+  defineEntry({
+    key: 'cachedMapsSettings',
+    schema: PersistedCachedMapsSettingsSchema,
+    initial: cachedMapsSettingsInitialState,
+    persist: (s) => s,
+  }),
+  defineEntry({
+    key: 'weatherRadarSettings',
+    schema: PersistedWeatherRadarSettingsSchema,
+    initial: weatherRadarSettingsInitialState,
+    persist: (r) => ({ showNowcast: r.showNowcast }),
+  }),
+  defineEntry({
+    key: 'viewshedSettings',
+    schema: PersistedViewshedSettingsSchema,
+    initial: viewshedSettingsInitialState,
+    persist: (v) => v,
   }),
 ];
 

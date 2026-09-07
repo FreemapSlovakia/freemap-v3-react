@@ -4,6 +4,7 @@ import {
   toastsAdd,
   toastsRemove,
   toastsRestartTimeout,
+  toastsSetPinned,
   toastsStopTimeout,
 } from './actions.js';
 import { toastsReducer } from './reducer.js';
@@ -49,6 +50,47 @@ describe('toastsReducer', () => {
     state = toastsReducer(state, toastsStopTimeout('a'));
 
     expect(state.toasts['a'].timeoutSince).toBeUndefined();
+  });
+
+  it('setPinned flags the toast', () => {
+    let state = toastsReducer(initial, add('a'));
+
+    state = toastsReducer(state, toastsSetPinned({ id: 'a', pinned: true }));
+
+    expect(state.toasts['a'].pinned).toBe(true);
+  });
+
+  it('re-adding keeps a killed countdown killed', () => {
+    let state = toastsReducer(initial, add('a', { timeout: 5000 }));
+
+    state = toastsReducer(state, toastsSetPinned({ id: 'a', pinned: true }));
+    state = toastsReducer(state, add('a', { timeout: 5000 }));
+
+    expect(state.toasts['a'].pinned).toBe(true);
+    expect(state.toasts['a'].timeoutSince).toBeUndefined();
+  });
+
+  it('re-adding without a timeout keeps the countdown killed', () => {
+    let state = toastsReducer(initial, add('a', { timeout: 5000 }));
+
+    state = toastsReducer(state, toastsSetPinned({ id: 'a', pinned: true }));
+    state = toastsReducer(state, add('a'));
+
+    expect(state.toasts['a'].pinned).toBe(true);
+  });
+
+  it('timeout actions tolerate a toast that is already gone', () => {
+    const state = toastsReducer(initial, add('a'));
+
+    expect(() =>
+      toastsReducer(state, toastsSetPinned({ id: 'b', pinned: true })),
+    ).not.toThrow();
+
+    expect(() => toastsReducer(state, toastsStopTimeout('b'))).not.toThrow();
+
+    expect(() =>
+      toastsReducer(state, toastsRestartTimeout({ id: 'b', timeoutSince: 1 })),
+    ).not.toThrow();
   });
 
   it('restartTimeout sets timeoutSince', () => {

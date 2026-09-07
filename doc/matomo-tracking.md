@@ -80,6 +80,7 @@ from both the old and new identities.
 
 | Category | Action | Name (low-cardinality) / value | Previous (historical) | Source |
 |----------|--------|--------------------------------|-----------------------|--------|
+| `Ad` | `impression` / `click` | ad id (`tShirt`/`rovas`/`self`/`zdilaAuthorship`/`zdilaMapNative`); `impression` capped at one event per ad per page load; **value** on `click` = times that ad had been shown when it was clicked | *(added 2026-07)* | [`Ad.tsx`](../src/features/ad/components/Ad.tsx) |
 | `App` | `error` | `error.name` (e.g. `TypeError`); deduped + capped per page load | `Main`/`error` — *dropped Sentry event id (high cardinality)* | [`globalErrorHandler.ts`](../src/app/store/middleware/globalErrorHandler.ts) |
 | `Perf` | `stall` / `storm` / `longtask` | `document.visibilityState` (`visible`/`hidden`/…) | *(added 2026-06)* | [`perfWatchdog.ts`](../src/app/store/middleware/perfWatchdog.ts) |
 | `Auth` | `login` | `login` or `connect` (linking an extra provider) | *(added 2026-06)* | [`loginResponseHandler.ts`](../src/features/auth/model/processors/loginResponseHandler.ts) |
@@ -91,8 +92,8 @@ from both the old and new identities.
 | `Modal` | `open` | modal id (incl. `embed`, `account`, `legend`, `support-us`, `map-preferences`, …) | *(added 2026-06)* | [`setActiveModalProcessor.ts`](../src/processors/setActiveModalProcessor.ts) |
 | `MapShading` | `add` | shading component type (`hillshade-*`/`slope-*`/`color-relief`/`aspect`/`contour`) | *(added 2026-06)* | [`ShadingControl.tsx`](../src/features/parameterizedShading/components/ShadingControl.tsx) |
 | `HomeLocation` | `save` | — | *(added 2026-06)* | [`HomeLocationPickingMenu.tsx`](../src/features/homeLocation/components/HomeLocationPickingMenu.tsx) |
-| `Osm` | `view` | `node` / `way` / `relation` | *(added 2026-06)* | [`osmLoadNodeProcessor.ts`](../src/features/osm/model/processors/osmLoadNodeProcessor.ts), [`…WayProcessor.ts`](../src/features/osm/model/processors/osmLoadWayProcessor.ts), [`…RelationProcessor.ts`](../src/features/osm/model/processors/osmLoadRelationProcessor.ts) |
-| `Tool` | `set` | tool id | `Main`/`setTool` | [`setToolProcessor.ts`](../src/processors/setToolProcessor.ts) |
+| `Osm` | `view` | `node` / `way` / `relation`, with how many of that type the load names as the event value | *(added 2026-06)* | [`osmLoadProcessor.ts`](../src/features/osm/model/processors/osmLoadProcessor.ts) |
+| `Tool` | `set` | tool id | `Main`/`openTool` | [`openToolProcessor.ts`](../src/processors/openToolProcessor.ts) |
 | `Settings` | `save` | — | `Main`/`saveSettings` | [`saveSettingsProcessor.ts`](../src/processors/saveSettingsProcessor.ts) |
 | `Share` | `openExternal` | target (`where`) | `Main`/`openInExternalApp` | [`openInExternalAppProcessor.ts`](../src/features/openInExternalApp/openInExternalAppProcessor.ts) |
 | `Map` | `setLayers` | sorted comma-joined layer ids | *(unchanged)* | [`mapTypeGaProcessor.ts`](../src/features/map/model/processors/mapTypeGaProcessor.ts) |
@@ -101,8 +102,7 @@ from both the old and new identities.
 | `MapDetails` | `search` | — | *(unchanged)* | [`mapDetailsProcessorHandler.ts`](../src/features/mapDetails/model/mapDetailsProcessorHandler.ts) |
 | `Changesets` | `search` | `days` + `byAuthor` (bool) query string | `Changesets`/`set` — *dropped `authorName` (PII)* | [`changesets/model/processor.ts`](../src/features/changesets/model/processor.ts) |
 | `RoutePlanner` | `search` | `transportType` + `mode` query string | *(unchanged)* | [`findRouteProcessorHandler.ts`](../src/features/routePlanner/model/processors/findRouteProcessorHandler.ts) |
-| `RoutePlanner` | `toggleElevationChart` | — | *(unchanged)* | [`toggleElevationChartProcessor.ts`](../src/features/routePlanner/model/processors/toggleElevationChartProcessor.ts) |
-| `TrackViewer` | `toggleElevationChart` | — | `TrackViewer`/`showElevationProfile` | [`trackViewerToggleElevationChartProcessor.ts`](../src/features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.ts), [`trackViewerResolveElevationPromptProcessor.ts`](../src/features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.ts) |
+| `RoutePlanner` / `TrackViewer` / `Drawing` / `Tracking` | `toggleElevationChart` | — | *was emitted per feature; now once, by the chart itself, for all four* | [`elevationChart/model/processor.ts`](../src/features/elevationChart/model/processor.ts) |
 | `Drawing` | `measure` | geometry type — deduped per measured target (not per vertex edit) | *(unchanged)* | [`measurementProcessor.ts`](../src/features/measurement/model/measurementProcessor.ts) |
 | `Drawing` | `convertToDrawing` | source (`track`/`planned-route`/`objects`/`search-result`/`changesets`/…) | *(added 2026-06)* | [`convertToDrawingProcessor.ts`](../src/processors/convertToDrawingProcessor.ts) |
 | `Gallery` | `showPhoto` | — | `Gallery`/`showPhoto` — *dropped image id* | [`galleryShowImageGaProcessor.ts`](../src/features/gallery/model/processors/galleryShowImageGaProcessor.ts) |
@@ -112,6 +112,7 @@ from both the old and new identities.
 | `Gallery` | `savePhoto` | — *(saved edits to own photo)* | *(added 2026-06)* | [`gallerySavePictureProcessor.ts`](../src/features/gallery/model/processors/gallerySavePictureProcessor.ts) |
 | `Gallery` | `deletePhoto` | — | *(added 2026-06)* | [`galleryDeletePictureProcessor.ts`](../src/features/gallery/model/processors/galleryDeletePictureProcessor.ts) |
 | `Tracking` | `create` / `update` | `device`, `accessToken`, or `watchedDevice` | `Tracking`/`saveDevice`, `saveAccessToken` (name was `create`/`modify`); `watchedDevice` *(added 2026-06)* | [`trackingDeviceProcessors.ts`](../src/features/tracking/model/processors/trackingDeviceProcessors.ts), [`trackingAccessTokenProcessors.ts`](../src/features/tracking/model/processors/trackingAccessTokenProcessors.ts), [`TrackedDeviceForm.tsx`](../src/features/tracking/components/TrackedDeviceForm.tsx) |
+| `Tracking` | `copyToDataViewer` | `replace` or `append` — how the copy met what the track viewer held | *(added 2026-08)* | [`trackingCopyProcessor.ts`](../src/features/tracking/model/processors/trackingCopyProcessor.ts) |
 | `DocumentExport` | `export` | format (pdf/svg/png/jpg) | `MapExport`/`export` | [`exportMapToDocument.ts`](../src/features/mapToDocumentExport/model/exportMapToDocument.ts) |
 | `FeaturesExport` | `export` | query string of `type` (gpx/geojson), `target` (download/gdrive/dropbox/garmin), sorted `exportables` | `MapFeaturesExport`/`export` *(added 2026-06)* | [`exportMapFeaturesProcessor.ts`](../src/features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.ts) |
 | `OfflineExport` | `export` | query string of `map`/`format`/`scale` | `DownloadMap`/`downloadMapStart` — *was JSON-wrapped* | [`downloadMapProcessorHandler.ts`](../src/features/offlineMapExport/model/downloadMapProcessorHandler.ts) |
@@ -120,12 +121,26 @@ from both the old and new identities.
 | `MyMaps` | `load` | `replace` or `merge` (only user-initiated, not auth re-validation reloads) | *(added 2026-06)* | [`mapsLoadProcessor.ts`](../src/features/myMaps/model/processors/mapsLoadProcessor.ts) |
 | `MyMaps` | `delete` | — | *(added 2026-06)* | [`mapsDeleteProcessor.ts`](../src/features/myMaps/model/processors/mapsDeleteProcessor.ts) |
 | `MapSettings` | `create` / `update` / `delete` | `customMap` | `CustomMap`/`create`,`edit`,`delete` *(added 2026-06)* | [`CustomMapsModal.tsx`](../src/features/mapSettings/components/CustomMapsModal.tsx) |
-| `Purchase` | `start` / `success` | name = `premium` or `credits`; **value** = credit amount | `Purchase`/`purchaseStart`, `purchaseSuccess` — *was JSON payload* | [`purchaseProcessor.ts`](../src/features/purchases/model/processors/purchaseProcessor.ts) |
+| `Purchase` | `start` / `success` | name = `premium-subscription` / `premium-once` / `premium-chrons` / `credits`; **value** = credit amount | `Purchase`/`purchaseStart`, `purchaseSuccess` — *was JSON payload*; name was a bare `premium` until 2026-08, so premium totals spanning that date must sum all three variants plus `premium` | [`purchaseProcessor.ts`](../src/features/purchases/model/processors/purchaseProcessor.ts) |
+| `Purchase` | `confirmPayOnce` | `shown` / `subscribed` / `continued` | no longer emitted — the pay-once confirmation existed only for the price-lock window (2026-08 to 2026-09-01); the data is still in Matomo | — |
 
 ## Data quality / known issues
 
 Observed in the live Matomo data (30-day window, verified 2026-07-04):
 
+- **`Ad`/`impression` no longer floods the dataset** *(fixed 2026-07-30)*.
+  The banner rotates every 30 s, so tracking every appearance emitted an
+  impression per rotation for as long as a tab stayed open: 1,045,998 events
+  from 61,743 visits (≈17 per visit) over 2026-07-17…30 — **74% of all events**
+  on the site. Because Matomo counts events as actions and derives visit length
+  from the first→last action timestamp, the 30 s heartbeat also made idle tabs
+  look like long active sessions, inflating two site-wide metrics from 2026-07-16
+  on: actions/visit 8–9 → 26–39, avg. session 175 s → 810–1330 s. **Those two
+  metrics are not comparable across 2026-07-16** — the pre-flood baseline is the
+  meaningful one. [`Ad.tsx`](../src/features/ad/components/Ad.tsx) now dedupes on
+  a module-level `Set` (module-level so it survives the remounts caused by the
+  elevation chart and the consent toast), capping impressions at one per ad per
+  page load — ≤5 events per visit. `Ad`/`click` was never affected (343 events).
 - **`Drawing`/`measure` no longer floods the dataset** *(fixed 2026-07-04)*.
   `drawingMeasure` re-fires on every vertex add/drag, which previously made it the
   single largest event source (~275k events from ~2.3k visits, ~120/visit, ≈26%
@@ -190,8 +205,12 @@ Standardize on this so the scheme doesn't drift again:
   already do. A few events are tracked in **components** instead, because the
   distinction or the user gesture only exists at the call site and isn't carried
   by a dedicated action: `MapSettings`/`customMap` (funnels through generic
-  `saveSettings`), `Tracking`/`watchedDevice`, `HomeLocation`/`save`, and
-  `MapShading`/`add`.
+  `saveSettings`), `Tracking`/`watchedDevice`, `HomeLocation`/`save`,
+  `MapShading`/`add`, `Purchase`/`confirmPayOnce` (the dialog and which button
+  ended it exist only in the modal — the `purchase` action carries no trace of
+  it), and `Ad`/`impression`+`click` (the rendered ad id and the
+  outbound-link gesture only exist in `Ad.tsx`; the `click` is caught via
+  `onClickCapture` so it covers the translation-rendered ad variants too).
 - Because `_paq` is a typed queue, adding a new event only requires pushing a
   `['trackEvent', …]` tuple from a processor; no registration step.
 - Keep this table in sync when you add, remove, or rename a `_paq.push` call,

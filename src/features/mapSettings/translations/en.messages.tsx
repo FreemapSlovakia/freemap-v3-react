@@ -6,6 +6,7 @@ const en: MapSettingsMessages = {
   overlayOpacity: 'Opacity',
   showInMenu: 'Show in menu',
   showInToolbar: 'Show in toolbar',
+  keyboardShortcut: 'Keyboard shortcut',
   saveSuccess: 'Settings have been saved.',
   customMapSaved: 'Custom map has been saved.',
   savingError: ({ err }) =>

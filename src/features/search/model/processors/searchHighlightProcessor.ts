@@ -1,49 +1,42 @@
-import {
-  clearMapFeatures,
-  convertToDrawing,
-  selectFeature,
-} from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
-import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
-import {
-  osmLoadNode,
-  osmLoadRelation,
-  osmLoadWay,
-} from '@features/osm/model/osmActions.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import { osmLoad } from '@features/osm/model/osmActions.js';
 import { integratedLayerDefs, isBaseLayerDef } from '@shared/mapDefinitions.js';
 import {
   featureIdsEqual,
   OsmFeatureIdSchema,
 } from '@shared/types/featureId.js';
 import bbox from '@turf/bbox';
-import { searchSelectResult, searchSetResults } from '../actions.js';
+import { searchSelectResult } from '../actions.js';
+import { hasGeometry } from '../resultUtils.js';
 
+/**
+ * Keeps a result that is already on the map from being taken back to the
+ * stand-in the list holds it in — picking a geocoding hit a second time would
+ * otherwise drop the element loaded for it and fetch it again. The pick still
+ * goes through, so it makes its result the active one; only the result itself
+ * is swapped for the one already shown.
+ *
+ * `incomplete` is what tells the two apart, not geometry: a geocoding hit
+ * arrives with a centroid, so it has geometry from the start and is still
+ * waiting for the outline and the rest of its tags.
+ */
 export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
   transform({ action, getState }) {
-    if (
-      !action.payload ||
-      action.payload.result.geojson.type === 'FeatureCollection' ||
-      action.payload.result.geojson.geometry
-    ) {
+    if (!action.payload?.result.incomplete) {
       return action;
     }
 
     const { id } = action.payload.result;
 
-    const sr = getState().search.selectedResult;
+    const shown = getState().search.selectedResults.find((result) =>
+      featureIdsEqual(id, result.id),
+    );
 
-    if (
-      sr &&
-      featureIdsEqual(id, sr.id) &&
-      (sr.geojson.type === 'FeatureCollection' || sr.geojson.geometry)
-    ) {
-      return;
-    }
-
-    return action;
+    return shown && !shown.incomplete && hasGeometry(shown)
+      ? { ...action, payload: { ...action.payload, result: shown } }
+      : action;
   },
 };
 
@@ -60,43 +53,29 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
     const parsed = incomplete ? OsmFeatureIdSchema.safeParse(id) : undefined;
 
     if (parsed?.success) {
-      switch (parsed.data.elementType) {
-        case 'node':
-          dispatch(
-            osmLoadNode({
-              id: parsed.data.id,
-              focus: Boolean(action.payload.focus),
-              showToast: action.payload.showToast,
-            }),
-          );
-
-          break;
-
-        case 'way':
-          dispatch(
-            osmLoadWay({
-              id: parsed.data.id,
-              focus: Boolean(action.payload.focus),
-              showToast: action.payload.showToast,
-            }),
-          );
-
-          break;
-
-        case 'relation':
-          dispatch(
-            osmLoadRelation({
-              id: parsed.data.id,
-              focus: Boolean(action.payload.focus),
-              showToast: action.payload.showToast,
-            }),
-          );
-
-          break;
-      }
+      dispatch(
+        osmLoad({
+          ids: [parsed.data],
+          // A result that is nothing but an id has nothing to fit to yet, so
+          // the map is taken to the element once it lands instead.
+          focus:
+            action.payload.focus !== false &&
+            !hasGeometry(action.payload.result),
+        }),
+      );
     }
 
-    if (action.payload.focus !== false && geojson) {
+    // The fit belongs to the result being looked at. An element kept on the map
+    // while its fetch ran lands after the user has moved on to another one, and
+    // would otherwise yank the map back to itself.
+    const { selection } = getState().main;
+
+    if (
+      action.payload.focus !== false &&
+      hasGeometry(action.payload.result) &&
+      selection?.type === 'search' &&
+      featureIdsEqual(selection.id, id)
+    ) {
       let bounds;
 
       try {
@@ -108,36 +87,19 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       if (bounds) {
         const { layers } = getState().map;
 
-        await fitMapToBbox([bounds[0], bounds[1], bounds[2], bounds[3]], {
-          maxZoom: Math.min(
-            action.payload.result.zoom ?? 18,
-            integratedLayerDefs
-              .filter(isBaseLayerDef)
-              .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
-          ),
-        });
+        await fitMapToBbox(
+          dispatch,
+          [bounds[0], bounds[1], bounds[2], bounds[3]],
+          {
+            maxZoom: Math.min(
+              action.payload.result.zoom ?? 18,
+              integratedLayerDefs
+                .filter(isBaseLayerDef)
+                .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
+            ),
+          },
+        );
       }
-    }
-
-    if (action.payload.showToast) {
-      dispatch(
-        toastsAdd({
-          id: 'mapDetails.tags',
-          messageKey: 'detail',
-          messageLoader: loadObjectsMessages,
-          messageParams: { result: action.payload.result },
-          cancelType: [
-            clearMapFeatures.type,
-            searchSetResults.type,
-            osmLoadNode.type,
-            osmLoadWay.type,
-            osmLoadRelation.type,
-            convertToDrawing.type,
-            selectFeature.type,
-          ],
-          style: 'info',
-        }),
-      );
     }
   },
 };

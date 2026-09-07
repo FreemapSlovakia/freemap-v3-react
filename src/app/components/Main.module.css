@@ -22,6 +22,22 @@
   flex-wrap: wrap;
 }
 
+/* Toolbar dropdowns are `position: fixed` but still confined to the header's
+   stacking context, so at an equal z-index the later-in-DOM bottom controls
+   would cover them. Raise the header while one of its menus is open; the
+   bottom controls keep painting on top the rest of the time (their own
+   upward-opening menus can't be open at the same time). */
+.header:has(:global(.dropdown-menu.show)) {
+  z-index: 1011;
+}
+
+/* Same confinement, for a panel that has gone full screen: whatever z-index it
+   gives itself is settled inside the header, so covering the bottom controls is
+   the header's to do. */
+.header:has(:global(.fm-fullscreen)) {
+  z-index: 1012;
+}
+
 .type-zoom-control {
   display: flex;
   flex-wrap: wrap;

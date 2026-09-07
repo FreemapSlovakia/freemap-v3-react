@@ -1,4 +1,5 @@
 import { type Language, languages } from '@shared/langUtils.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
 
 const languageNames: Record<Language, string> = {
   sk: 'Slovenčina',
@@ -32,14 +33,18 @@ function toFlag(language: Language): string {
 // then English; other domains (freemap.eu, …) lead with English. The remaining
 // languages follow alphabetically by endonym. Deriving the tail by sorting
 // `languages` keeps any newly added language in the menu automatically.
+// Each endonym is in its own language, so the order is collated with a fixed
+// locale — everyone sees the same menu regardless of the UI or browser language.
 function getLanguageItems() {
   const pinned: Language[] = window.location.hostname.endsWith('freemap.sk')
     ? ['sk', 'en']
     : ['en'];
 
+  const byName = makeLabelComparator('en');
+
   const rest = languages
     .filter((code) => !pinned.includes(code))
-    .sort((a, b) => languageNames[a].localeCompare(languageNames[b]));
+    .sort((a, b) => byName(languageNames[a], languageNames[b]));
 
   return [...pinned, ...rest].map((code) => ({
     code,

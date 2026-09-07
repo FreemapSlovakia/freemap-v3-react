@@ -25,6 +25,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Nedávné tagy pro přiřazení:',
   filter: 'Filtr',
   showPhotosFrom: 'Prohlížet fotky',
+  excludesWikimedia: 'Nezahrnuje fotky z Wikimedia',
   showLayer: 'Zobrazit vrstvu',
   upload: 'Nahrát',
   f: {
@@ -34,8 +35,14 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'od posledního komentáře',
   },
   colorizeBy: 'Vybarvit podle',
+  noColorize: 'Žádné',
   showDirection: 'Ukaž směr focení',
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Moje',
+    notMine: 'Ostatní',
+    premium: 'Prémiové',
+    free: 'Volné',
+  },
 
   c: {
     mine: 'Odlišit moje',
@@ -55,12 +62,12 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Přidej',
     yourRating: 'Tvé hodnocení:',
     showOnTheMap: 'Ukázat na mapě',
-    openInNewWindow: 'Otevřít v…',
     uploaded: ({ username, createdAt }) => (
       <>
         Nahrál {username} dne {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Nahráno dne {createdAt}</>,
     captured: (takenAt) => <>Vyfoceno dne {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -74,7 +81,10 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     modify: 'Úprava',
     premiumOnly:
       'Tuto fotografii zpřístupnil její autor pouze uživatelům s prémiovým přístupem.',
+    premiumPhoto: 'Tato fotografie je prémiový obsah.',
     noComments: 'Bez komentáře',
+    wikimediaCommentNotNotified:
+      'Tato fotografie pochází z Wikimedia Commons. Její autor nebude o vašem komentáři upozorněn – upozorňujeme jen autory fotografií nahraných na Freemap.',
   },
   editForm: {
     name: 'Název',
@@ -93,8 +103,11 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Nahrát fotky',
     uploading: (n) => `Nahrávám (${n})`,
     upload: 'Nahrát',
+    hint: {
+      drop: 'Zatáhněte sem fotky, nebo sem klikněte pro jejich výběr.',
+      tap: 'Klepněte sem pro přidání fotek.',
+    },
     rules: `
-      <p>Zatáhněte sem fotky, nebo sem klikněte pro jejich výběr.</p>
       <ul>
         <li>Nevkládejte příliš malé obrázky (miniatury). Maximální rozměr není omezen, je ale omezena velikost souboru na 10MB. Větší soubory server odmítne.</li>
         <li>Vkládejte pouze fotografie krajiny včetně dokumentačních fotografií. Portréty a makro-fotografie jsou považovány za nevhodný obsah a budou bez varování smazány.</li>
@@ -173,6 +186,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
   noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
   linkToWww: 'fotografie na www.freemap.sk',
   linkToImage: 'soubor fotografie',
+  linkToCommons: 'fotografie na Wikimedia Commons',
   allMyPhotos: {
     title: 'Změna přístupu',
     premium: 'Zařadit všechny mé fotky do prémiového obsahu',

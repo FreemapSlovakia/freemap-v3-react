@@ -1,0 +1,133 @@
+import {
+  LongPressTooltip,
+  useInTooltip,
+} from '@shared/components/LongPressTooltip.js';
+import clsx from 'clsx';
+import type {
+  HTMLAttributes,
+  MouseEvent,
+  ReactElement,
+  ReactNode,
+} from 'react';
+
+type Props = Omit<HTMLAttributes<HTMLElement>, 'children' | 'color'> & {
+  /** The glyph — one icon element. */
+  children: ReactNode;
+  /** What the mark means; hover or touch long-press reveals it. */
+  hint?: ReactNode;
+  /** Bootstrap text-colour suffix for the glyph; `null` keeps the surrounding colour. */
+  color?: string | null;
+  /** Step off the icon scale. `md` is what a button's own icon comes out at. */
+  size?: 'sm' | 'md' | 'lg';
+  /**
+   * Text rendered before the glyph as part of the same mark — for inline use in
+   * running text. It keeps the mark wrappable, so the glyph is not held on the
+   * same line as the words, and only the glyph takes `color`.
+   */
+  label?: ReactNode;
+  /** Renders an `<a>` instead of a `<span>`. */
+  href?: string;
+  /**
+   * Overrides what the cursor says — `help` unless the mark has a handler of its
+   * own. Set `pointer` for a mark acted on by its container's handler instead.
+   */
+  cursor?: 'help' | 'pointer';
+  /** Opens the hint on a plain click or tap too — see `LongPressTooltip`. */
+  toggleOnClick?: boolean;
+};
+
+const sizeClass = { sm: 'small', md: 'fs-6', lg: 'fs-5' };
+
+/**
+ * A glyph that stands for a state or an offer — offline, premium, experimental,
+ * unsaved — with what it means in a tooltip, since a toolbar or a menu row has no
+ * room to write it out. One place decides the three things such a mark keeps
+ * getting wrong per call site: the glyph's size, a hit area a fingertip can land
+ * on, and pointer events inside a disabled container.
+ *
+ * `onClick` / `onClickCapture` are composed with the tooltip's own capture
+ * handler, which runs first. A long press raises no click to compose with: the
+ * browser reclassifies the gesture and cancels it.
+ */
+export function GlyphMarker({
+  children,
+  hint,
+  color = 'warning',
+  size = 'md',
+  label,
+  href,
+  cursor,
+  toggleOnClick,
+  className,
+  onClick,
+  onClickCapture,
+  ...rest
+}: Props): ReactElement {
+  const inTooltip = useInTooltip();
+
+  const acts = Boolean(onClick || onClickCapture || href);
+
+  const glyphClass = clsx(sizeClass[size], color && `text-${color}`);
+
+  // Without a label the mark is the glyph, so it wears the glyph's classes
+  // itself; with one, only the glyph inside does.
+  const content =
+    label == null ? (
+      children
+    ) : (
+      <>
+        {label} <span className={glyphClass}>{children}</span>
+      </>
+    );
+
+  // Inside a tooltip the mark is already explained, and a tooltip of its own
+  // could never be read — so there it is the glyph and nothing else.
+  if (inTooltip) {
+    return (
+      <span
+        {...rest}
+        className={clsx(
+          'fm-marker',
+          label == null && `fm-glyph ${glyphClass}`,
+          className,
+        )}
+      >
+        {content}
+      </span>
+    );
+  }
+
+  return (
+    <LongPressTooltip label={hint} toggleOnClick={toggleOnClick}>
+      {({ props }) => {
+        const shared = {
+          ...rest,
+          ...props,
+          className: clsx(
+            'fm-marker fm-marker-target',
+            // A label makes the mark a phrase, which has to be able to wrap;
+            // without one the mark is the glyph, and `fm-glyph` makes its box
+            // exactly that.
+            label == null && `fm-glyph ${glyphClass}`,
+            `fm-cursor-${cursor ?? (acts ? 'pointer' : 'help')}`,
+            className,
+          ),
+          onClick,
+          onClickCapture: (e: MouseEvent<HTMLElement>) => {
+            props.onClickCapture(e);
+
+            onClickCapture?.(e);
+          },
+        };
+
+        return href ? (
+          <a {...shared} href={href}>
+            {content}
+          </a>
+        ) : (
+          <span {...shared}>{content}</span>
+        );
+      }}
+    </LongPressTooltip>
+  );
+}

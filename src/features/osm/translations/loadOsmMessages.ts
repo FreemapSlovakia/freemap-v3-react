@@ -4,8 +4,8 @@ let cache: OsmMessages | undefined;
 
 let cacheLang: string | undefined;
 
-// Loads the OSM messages for a language for use outside React (the node/way/
-// relation load processors' error toasts). Results are cached per language.
+// Loads the OSM messages for a language for use outside React (the element
+// load processor's error toasts). Results are cached per language.
 export async function loadOsmMessages(language: string): Promise<OsmMessages> {
   if (cacheLang !== language) {
     cache = (

@@ -1,5 +1,8 @@
 export type MapFeaturesExportMessages = {
   download: string;
+  share: string;
+  shareAsText: string;
+  sharedAsDownload: string;
   format: string;
   target: string;
   elevation: {
@@ -11,7 +14,6 @@ export type MapFeaturesExportMessages = {
   exportError: (props: { err: unknown }) => string;
   what: {
     plannedRoute: string;
-    plannedRouteWithStops: string;
     objects: string;
     pictures: string;
     drawingLines: string;

@@ -1,4 +1,3 @@
-import { httpRequest } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
   deleteFeature,
@@ -6,37 +5,48 @@ import {
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import {
+  lineLength,
+  measuredRings,
+  ringsArea,
+  ringsPerimeter,
+} from '@features/drawing/measureLine.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
-import { mapRefocus } from '@features/map/model/actions.js';
 import { loadMeasurementMessages } from '@features/measurement/translations/loadMeasurementMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  creditedAttributions,
+  fetchElevations,
+  newElevationCredits,
+} from '@shared/elevation.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
-import { area } from '@turf/area';
-import { lineString, polygon } from '@turf/helpers';
-import { length } from '@turf/length';
-import z from 'zod';
 
-const cancelType = [
-  clearMapFeatures.type,
-  selectFeature.type,
-  deleteFeature.type,
-  mapRefocus.type,
-];
-
-// A point measurement pins a fixed geographic location, so panning/zooming the
-// map (mapRefocus) must not dismiss its readout — only a selection change does.
-const pointCancelType = [
+// Every measurement readout pins a fixed geographic target (a drawn geometry or
+// a picked point), so panning/zooming the map must not dismiss it — only a
+// selection change (or clearing/deleting the feature) does.
+export const cancelType = [
   clearMapFeatures.type,
   selectFeature.type,
   deleteFeature.type,
 ];
 
-// Dismiss the measurement readouts when no drawing tool is open anymore — not
-// merely when some other tool opens (the draw tool stays open then).
-const drawingClosed = (state: RootState) => !state.main.tools.some(isDrawTool);
+// The line/area readout stays visible while a drawing tool is open OR while its
+// line is selected — so it shows in plain selecting mode too (e.g. after
+// converting a route to a drawing, which opens no draw tool). It is dismissed
+// once neither holds; selection changes are handled by cancelType.
+export const measurementStale = (state: RootState) => {
+  const { mapTool, selection } = state.main;
+
+  return (
+    !isDrawTool(mapTool) &&
+    selection?.type !== 'draw-line-poly' &&
+    selection?.type !== 'line-point'
+  );
+};
 
 // `drawingMeasure` re-fires on every vertex add/drag of the same geometry, so
 // tracking each one floods Matomo. Only report when the measured target changes.
@@ -67,19 +77,23 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         trackMatomo(['trackEvent', 'Drawing', 'measure', selection?.type]);
       }
 
-      // The context-menu path measures a free position with no drawing tool
-      // open, so the drawingClosed predicate must not apply there — otherwise it
-      // dismisses the readout (and cancels the fetch) immediately.
-      async function measurePoint(point: LatLon, tiedToDrawing: boolean) {
-        const statePredicate = tiedToDrawing ? drawingClosed : undefined;
-
+      // A point elevation readout is tied to its selection (or a free
+      // context-menu position), not to any drawing tool, so it carries no
+      // statePredicate — cancelType dismisses it when the selection changes.
+      async function measurePoint(point: LatLon) {
         let elevation;
+
+        const credits = newElevationCredits();
 
         const toastParams: ElevationInfoBaseProps = {
           point,
           elevation: null,
           loading: false,
+          sources: [],
+          attributions: [],
         };
+
+        let error: unknown;
 
         if (action.payload.elevation !== false) {
           dispatch(
@@ -89,22 +103,38 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               messageLoader: loadMeasurementMessages,
               messageParams: { ...toastParams, loading: true },
               id: 'measurementInfo',
-              cancelType: pointCancelType,
-              statePredicate,
+              cancelType,
             }),
           );
 
-          const res = await httpRequest({
-            getState,
-            url: `/geotools/elevation?coordinates=${point.lat},${point.lon}`,
-            cancelActions: [drawingMeasure, clearMapFeatures],
-            statePredicate,
-          });
+          try {
+            // Through the shared fetch, so a single point is read the same way a
+            // profile is — and the readout's tooltip credits the model that
+            // actually answered.
+            [elevation] = await fetchElevations(
+              [[point.lat, point.lon]],
+              getState,
+              [drawingMeasure, clearMapFeatures],
+              credits,
+            );
+          } catch (err) {
+            // The coordinates and the tile links stand without an elevation, so
+            // the failure is answered in the readout's own line rather than
+            // thrown at a danger toast beside a spinner that never stops.
+            if (isAbortError(err)) {
+              throw err;
+            }
 
-          elevation = z
-            .array(z.number().nullable())
-            .length(1)
-            .parse(await res.json())[0];
+            error = err;
+          }
+
+          // A selection change takes this toast with it (`cancelType`) without
+          // touching the read, which outlives it. Re-adding it then would put
+          // the point just left — its coordinates, its tile links — beside
+          // whatever is selected now, where nothing is about to replace it.
+          if (!getState().toasts.toasts['measurementInfo']) {
+            return;
+          }
         }
 
         dispatch(
@@ -116,15 +146,17 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             messageParams: {
               ...toastParams,
               elevation,
+              error,
+              sources: [...credits.sources],
+              attributions: creditedAttributions(credits),
             },
-            cancelType: pointCancelType,
-            statePredicate,
+            cancelType,
           }),
         );
       }
 
       if (action.payload.position) {
-        await measurePoint(action.payload.position, false);
+        await measurePoint(action.payload.position);
 
         return;
       }
@@ -148,38 +180,27 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         selection.type === 'draw-line-poly' ||
         selection.type === 'line-point'
       ) {
-        const { points, type } = getState().drawingLines.lines[id];
+        const { lines } = getState().drawingLines;
+
+        const line = lines[id];
+
+        const { points, type } = line;
 
         if (type === 'polygon' && points.length > 2) {
+          const rings = measuredRings(line, lines);
+
           dispatch(
             toastsAdd({
               style: 'info',
               messageKey: 'areaInfo',
               messageLoader: loadMeasurementMessages,
               messageParams: {
-                area: area(
-                  polygon(
-                    [
-                      [...points, points[0]].map((point) => [
-                        point.lon,
-                        point.lat,
-                      ]),
-                    ],
-                    {},
-                  ),
-                ),
-                perimeter: length(
-                  lineString(
-                    [...points, points[0]].map((point) => [
-                      point.lon,
-                      point.lat,
-                    ]),
-                  ),
-                ),
+                area: ringsArea(rings),
+                perimeter: ringsPerimeter(rings) / 1000,
               },
               id: 'measurementInfo',
               cancelType,
-              statePredicate: drawingClosed,
+              statePredicate: measurementStale,
             }),
           );
         } else if (type === 'line' && points.length > 1) {
@@ -189,23 +210,17 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
               messageKey: 'distanceInfo',
               messageLoader: loadMeasurementMessages,
               messageParams: {
-                length: length(
-                  lineString(points.map((point) => [point.lon, point.lat])),
-                ),
+                length: lineLength(line) / 1000,
               },
               id: 'measurementInfo',
               cancelType,
-              statePredicate: drawingClosed,
+              statePredicate: measurementStale,
             }),
           );
         }
       } else if (selection?.type === 'draw-points' || action.payload.position) {
-        // A selected point's elevation readout is tied to the selection, not to
-        // any drawing tool — it stays visible in plain selecting mode too, and
-        // is dismissed via cancelType when the selection changes or clears.
         await measurePoint(
           getState().drawingPoints.points[selection.id].coords,
-          false,
         );
       }
     } catch (err) {

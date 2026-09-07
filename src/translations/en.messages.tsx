@@ -2,8 +2,6 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
-import { AlertLink } from 'react-bootstrap';
 import shared from './en-shared.js';
 import { addError, type Messages } from './messagesInterface.js';
 
@@ -36,6 +34,7 @@ const messages: Messages = {
     delete: 'Delete',
     remove: 'Remove',
     close: 'Close',
+    cancelAutoClose: 'Cancel auto-close',
     collapse: 'Collapse',
     expand: 'Expand',
     apply: 'Apply',
@@ -44,6 +43,11 @@ const messages: Messages = {
     yes: 'Yes',
     no: 'No',
     masl,
+    viewpoint: 'Viewpoint',
+    eyeHeight: 'Eye height',
+    eyeHeightHint:
+      'How high above the ground you are standing — a tower or a drone, not the elevation itself.',
+    maxVisibleDistance: 'Maximum visible distance',
     copyCode: 'Copy code',
     loading: 'Loading…',
     ok: 'OK',
@@ -64,8 +68,42 @@ const messages: Messages = {
     add: 'Add new',
     clear: 'Clear',
     convertToDrawing: 'Convert to drawing',
-    simplifyPrompt:
-      'Please enter simplification factor. Set to zero for no simplification.',
+    copyToDrawing: 'Copy to drawing',
+    copyTo: ({ tool }) => <>Copy to {tool}</>,
+    convertTo: ({ tool }) => <>Convert to {tool}</>,
+    convertAllToDrawing: 'Convert all to drawing',
+    convertAllTo: ({ tool }) => <>Convert all to {tool}</>,
+    openIn: ({ what }) => <>Open in {what}</>,
+    panoramaFromHere: 'Panorama from here',
+    viewshedFromHere: 'Viewshed from here',
+    toposcopeFromHere: 'Toposcope from here',
+    lookAtInPanorama: 'Look at this in the panorama',
+    placeActions: 'What to do with this place',
+    locationActions: 'Location actions',
+    convert: {
+      geometry: 'Geometry',
+      pointOnly: 'Point only',
+      fullGeometry: 'Own geometry',
+      label: 'Label',
+      labelHint: 'Write {p:name} to draw a property called name.',
+      labelMode: 'Store label as',
+      preview: 'Preview',
+      labelTemplate: 'Template',
+      labelResolved: 'Plain text',
+      properties: 'Properties to transfer',
+      noProperties: 'No properties to transfer.',
+      labelKeysKept: 'A property the label uses is always transferred.',
+    },
+    simplify: {
+      title: 'Simplify',
+      deviation: 'Maximum deviation',
+      none: 'none',
+      vertices: ({ from, to }) => (
+        <>
+          Points: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'Copy URL',
     copyPageUrl: 'Copy page URL',
     savingError: ({ err }) => addError(messages, 'Save error', err),
@@ -84,16 +122,26 @@ const messages: Messages = {
       </>
     ),
     name: 'Name',
+    icon: 'Icon',
+    iconChoose: 'Choose icon…',
+    iconNone: 'No icon',
+    iconSearch: 'Search icons',
     load: 'Load',
-    unnamed: 'No name',
+    unknown: 'Unknown',
     enablePopup: 'Please enable pop-up windows for this site in you browser.',
     broadcastChannelUnsupported:
       'This action isn’t supported in your browser (BroadcastChannel is unavailable, e.g. in private mode or an in-app browser). Please use a standard window in a modern browser.',
     componentLoadingError:
       'Component loading error. Please check your internet connection.',
     offline: 'You are not connected to the internet.',
+    offlineUnavailable: 'Unavailable without an internet connection.',
+    offlineToolUnavailable:
+      'This tool can’t load anything without an internet connection.',
+    offlineNotice:
+      'You are not connected to the internet, so nothing here can be loaded or sent.',
     connectionError: 'Error connecting the server.',
     experimentalFunction: 'Experimental function',
+    externalService: 'Someone else’s service, with usage restrictions',
     attribution: () => <Attribution unknown="Map licence is not specified" />,
     unauthenticatedError: 'Please log-in to access this feature.',
     confirmation: 'Confirmation',
@@ -122,11 +170,23 @@ const messages: Messages = {
     auto: 'Automatic mode',
   },
 
+  cardinals: {
+    n: 'N',
+    ne: 'NE',
+    e: 'E',
+    se: 'SE',
+    s: 'S',
+    sw: 'SW',
+    w: 'W',
+    nw: 'NW',
+  },
+
   selections: {
     objects: 'Object (POI)',
     drawPoints: 'Point',
     drawLines: 'Line',
     drawPolygons: 'Polygon',
+    drawPolygonHole: 'Hole in polygon',
     tracking: 'Tracking',
     linePoint: 'Line point',
     polygonPoint: 'Polygon point',
@@ -142,10 +202,13 @@ const messages: Messages = {
     drawPoints: 'Point drawing',
     drawLines: 'Line drawing',
     drawPolygons: 'Polygon drawing',
-    trackViewer: 'File import',
+    dataViewer: 'Tracks and data',
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: 'Live tracking',
+    gpsRecorder: 'GPS recorder',
+    toposcope: 'Toposcope',
+    panorama: 'Panorama',
     myMaps: 'My maps',
     myMap: 'My map',
   },
@@ -186,7 +249,23 @@ const messages: Messages = {
     close: 'Close',
     closeTool: 'Close tool',
     locateMe: 'Locate me',
+    pickHomeLocationPrompt: 'Click the map where your home is',
     locationError: 'Error getting location.',
+    locationNoSignal: 'No GPS signal yet.',
+    headingSource: 'Direction indicator',
+    headingSources: {
+      none: 'Hidden',
+      gps: 'Direction of travel',
+      compass: 'Device compass',
+    },
+    headingSourceHelp:
+      'Direction of travel comes from the GPS and only shows while you are moving. The device compass works while standing still too, but needs permission and can be inaccurate.',
+    bearingLine: 'Distance and bearing',
+    bearingLineHelp:
+      'While locating, draws a line between your position and a crosshair in the middle of the map, labelled with the distance and the bearing from your position to the crosshair. Appears once you pan the map away from your position.',
+    compassPermissionDenied: 'Access to the compass was denied.',
+    compassUnavailable:
+      'No compass data. Your device may have no compass, or access to it is blocked.',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
     devInfo: () => (
@@ -203,17 +282,7 @@ const messages: Messages = {
         analytics="Analytics cookies"
       />
     ),
-    infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji> We stand with Ukraine.{' '}
-          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
-            Support Ukraine ›
-          </AlertLink>{' '}
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
-    },
+    infoBars: {},
   },
 
   search: {
@@ -224,8 +293,12 @@ const messages: Messages = {
     routeTo: 'Route to here',
     fetchingError: ({ err }) => addError(messages, 'Searching error', err),
     buttonTitle: 'Search',
-    placeholder: 'Search in the map',
+    placeholder: 'Search places and functions',
     result: 'Lookup',
+    showMore: 'Show more…',
+    keepOnMap: 'Keep on the map',
+    offlineHint:
+      'Without an internet connection only coordinates, a bounding box, tile numbers (z/x/y) or pasted GeoJSON can be found.',
     sources: {
       bbox: 'Bounding Box',
       geojson: 'GeoJSON',
@@ -238,6 +311,80 @@ const messages: Messages = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
+    osmElementTypes: {
+      node: 'Node',
+      way: 'Way',
+      relation: 'Relation',
+    },
+    commands: {
+      caption: 'Functions',
+      keywords: {
+        'tool-route-planner':
+          'navigation, directions, itinerary, trip, plan a route',
+        'tool-objects': 'points of interest, poi, places, amenities',
+        'tool-draw-points': 'drawing, marker, pin, annotate, note',
+        'tool-draw-lines': 'drawing, measure distance, length, ruler, path',
+        'tool-draw-polygons': 'drawing, measure area, region',
+        'tool-import-file': 'gpx, kml, kmz, tcx, geojson, import, upload, open',
+        'tool-map-details': 'identify, inspect, what is here, wms',
+        'tool-changesets': 'osm edits, editors, contributions, mappers',
+        'tool-tracking': 'share position, watch device, real time, locator',
+        'tool-toposcope': 'peaks, summits, horizon, view board',
+        'tool-panorama': '360, terrain view, peaks, horizon',
+        'tool-gps-recorder': 'record track, logger, recording',
+        'modal-account': 'profile, my account, settings, log out',
+        'modal-login': 'sign in, account',
+        'modal-my-maps': 'saved maps, save map, share map',
+        'modal-map-features-export':
+          'export, gpx, geojson, download data, save features',
+        'modal-map-to-document-export':
+          'export, print, pdf, png, jpeg, svg, image, poster',
+        'modal-offline-map-export':
+          'export, offline, download tiles, mbtiles, sd card',
+        'modal-embed': 'iframe, website, html code',
+        'modal-support-us': 'donate, contribute, sponsor, money',
+        'modal-legend': 'symbols, map key',
+        'modal-about': 'contact, e-mail, feedback',
+        'modal-map-layers-config': 'layers, manage maps, order, opacity',
+        'modal-custom-maps': 'own map, wms, tms, add map source',
+        'modal-offline-maps': 'downloaded maps, storage',
+        'modal-browse-cache': 'cached tiles, storage',
+        'modal-map-preferences': 'settings, options, overlay opacity',
+        'modal-elevation-settings': 'altitude, profile, chart settings',
+        'clear-map-features': 'remove all, erase, reset map',
+        'layer-X': 'outdoor, hiking, cycling, freemap',
+        'layer-XK': 'hiking trails, markers, kst',
+        'layer-O': 'osm, mapnik, standard',
+        'layer-S': 'satellite, orthophoto, imagery',
+        'layer-Z': 'satellite, orthophoto, imagery',
+        'layer-J1': 'satellite, orthophoto, imagery',
+        'layer-J2': 'satellite, orthophoto, imagery',
+        'layer-d': 'transit, buses, trains, timetables',
+        'layer-I': 'pictures, gallery, photographs',
+        'layer-w': 'wiki, articles',
+        'layer-R': 'weather, rain, precipitation, storm, forecast',
+        'layer-v': 'visibility, line of sight, seen from, panorama, terrain',
+        'layer-5': 'hillshade, relief, terrain, elevation',
+        'layer-6': 'hillshade, relief, surface, elevation',
+        'layer-7': 'hillshade, relief, terrain, elevation, lidar',
+        'layer-8': 'hillshade, relief, terrain, elevation, lidar',
+        'layer-h': 'hillshade, relief, slope, aspect, custom shading',
+        'layer-z': 'hillshade, relief, slope, aspect, custom shading',
+        'layer-y': 'hillshade, relief, slope, aspect, custom shading',
+        'layer-l1': 'forest roads, nlc',
+        'layer-l2': 'forest roads, nlc',
+        'layer-VO': 'vector',
+        'layer-VS': 'vector',
+        'layer-VD': 'vector',
+        'layer-VT': 'vector',
+        'layer-WDZ': 'trees, forest, species',
+        'layer-WLT': 'forest, woods',
+        'layer-WGE': 'geology, rocks',
+        'layer-WKA': 'parcels, land registry',
+        'layer-wka': 'parcels, land registry',
+        'layer-WHC': 'water chemistry, hydrology',
+      },
+    },
   },
 
   mapLayers: {
@@ -245,13 +392,14 @@ const messages: Messages = {
     showAll: 'Show all maps',
     filterMaps: 'Filter maps',
     noMapsFound: 'No maps found',
-    settings: 'Map settings',
+    settings: 'Manage maps',
     layers: 'Maps',
     switch: 'Maps',
     photoFilterWarning: 'Photo filtering is active',
     interactiveLayerWarning: 'Map items layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     outsideViewWarning: 'The current view is outside this map',
+    offlineWarning: 'This map is not saved for offline use',
     letters: {
       S: 'Aerial',
       Z: 'Aerial',
@@ -267,6 +415,8 @@ const messages: Messages = {
       l1: 'Forest tracks NLC (2017)',
       l2: 'Forest tracks NLC',
       w: 'Wikipedia',
+      R: 'Weather radar',
+      v: 'Viewshed',
       M: 'Wikimedia Commons photos',
       '5': 'Terrain shading',
       '6': 'Surface shading',
@@ -291,9 +441,11 @@ const messages: Messages = {
       map: 'map',
       data: 'data',
       photos: 'pictures',
+      routing: 'routing',
     },
     attr: {
       osmData: '©\xa0OpenStreetMap contributors',
+      fixTheMap: 'report a map error',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vector tiles from"
@@ -302,7 +454,7 @@ const messages: Messages = {
       ),
       photosCc: 'various Creative Commons licenses',
     },
-    configureLayers: 'Configure map layers',
+    layersConfiguration: 'Layers configuration',
     customMaps: 'Custom maps',
     addCustomMap: 'Add custom map',
     activate: 'Activate',
@@ -322,14 +474,21 @@ const messages: Messages = {
     maxNativeZoom: 'Max Native Zoom',
     extraScales: 'Extra resolutions',
     scaleWithDpi: 'Scale with DPI',
+    tiled: 'Load in tiles',
+    tiledHelp:
+      'A WMS is asked for a single image of the whole view by default: one request instead of dozens, and labels placed without being cut at tile edges. Switch to tiles for a server that limits the image size or that caches tiles, at the cost of a burst of requests per view.',
     layer: {
       layer: 'Layer',
       base: 'Base',
       overlay: 'Overlay',
     },
     zIndex: 'Z-Index',
-    preferences: 'Preferences',
+    preferences: 'Map preferences',
     maxZoom: 'Max zoom',
+    zoomSnap: 'Zoom step',
+    zoomSnapFree: 'Free',
+    zoomSnapHelp:
+      'The smallest zoom change scroll-wheel, pinch and box zoom can settle on. 1 keeps the map on whole zoom levels; a fraction lets it stop between them, and Free lets it stop anywhere. The + and – buttons and keys always go to the next whole level.',
     forcedScale: 'Forced scale',
     resolutionScale: 'Resolution scale',
     resolutionScaleAuto: 'Auto (device default)',
@@ -338,12 +497,18 @@ const messages: Messages = {
     featureScale: 'Feature size',
     featureScaleHelp:
       'Enlarges rendered labels and lines. Has no effect on satellite, shading, WMS, or vector (MapLibre) layers.',
-    searchResultStyle: 'Search result style',
+    lookupStyle: 'Lookup style',
     resetApp: 'Reset application',
     resetAppConfirm:
       'Reset all application settings to their defaults and reload the page? You will be signed out.',
     loadWmsLayers: 'Load layers',
+    serverNotResponding: ({ name }) => (
+      <>
+        No answer from the server of the map <b>{name}</b>.
+      </>
+    ),
     offlineMaps: 'Offline maps',
+    browseCache: 'Cache while browsing',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (
       <>
@@ -358,6 +523,20 @@ const messages: Messages = {
     ele: `Elevation [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Error fetching elevation profile data', err),
+    settings: 'Elevation preferences',
+    settingsHelp:
+      'The first two correct a terrain model, so they apply wherever elevation is read from one: planned routes, drawn lines and measurements, and imported tracks whose elevation you replaced from the server. Recorded altitude — live tracking, or a track you kept as recorded — is left untouched. Exported files always keep their own elevation.',
+    windowOff: 'off',
+    windowWholeLine: 'whole line',
+    despike: 'Remove spikes',
+    despikeHelp:
+      'Where a way is drawn a few metres off the road it describes, the terrain model answers with the bank or rock face beside it. Spikes narrower than half of this are dropped and the profile is lightly rounded; anything wider is kept, being real terrain. Zero switches it off.',
+    ditchFill: 'Fill terrain-model ditches',
+    ditchFillHelp:
+      'The detailed national terrain models, available in some countries, are usually adjusted for hydrology: they dig a ditch through the road at every culvert. Dips narrower than this are filled; wider ones are kept, being real terrain. Zero switches it off, and it changes nothing where the global model is used.',
+    gradeWindow: 'Steepness window',
+    gradeWindowHelp:
+      'Pointing at the elevation profile marks the spot on the map and reports how steep it is there. The steepness is averaged over a stretch this long around that point, so that a couple of metres of GPS noise don’t read as a wall. Zero measures it across just the segment that point stands on; the far end of the scale measures across the whole line at once, reporting its rise over its whole length — on a straight measuring line, the angle one end is seen at from the other.',
   },
 
   errorCatcher: {
@@ -379,8 +558,6 @@ const messages: Messages = {
     addPoint: 'Add here a point',
     startLine: 'Start here drawing a line or measurement',
     queryFeatures: 'Query nearby features',
-    startRoute: 'Plan a route from here',
-    finishRoute: 'Plan a route to here',
     showPhotos: 'Show nearby photos',
   },
 

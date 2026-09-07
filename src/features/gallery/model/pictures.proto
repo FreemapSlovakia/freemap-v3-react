@@ -19,6 +19,9 @@ message Picture {
   optional string license = 17;
   // 0 = own gallery photo (default, omitted on the wire), 1 = Wikimedia Commons.
   uint32 source = 18;
+  // Commons actor_id of a Wikimedia photo's uploader. Deliberately not `user_id`
+  // above: that is a Freemap user.id, and the two id spaces overlap.
+  optional uint32 author_id = 19;
 }
 
 message PicturesResponse {

@@ -1,0 +1,167 @@
+import type { PanoramaMessages } from './PanoramaMessages.js';
+
+const en: PanoramaMessages = {
+  // The space after the icon is explicit: the locale generator drops a plain
+  // one, leaving the fallback languages reading "the 👁button below".
+  pickHint: ({ icon }) => (
+    <>
+      Pick where to look from with the {icon}
+      {' button below.'}
+    </>
+  ),
+  rendering: 'Rendering the panorama…',
+  queued: ({ ahead }) =>
+    ahead === 0
+      ? 'Waiting for the renderer…'
+      : ahead === 1
+        ? 'Waiting — one panorama ahead.'
+        : `Waiting — ${ahead} panoramas ahead.`,
+  cancel: 'Cancel',
+  update: 'Update',
+  outdated: 'The picture is of the previous viewpoint.',
+  locate: 'View from my position',
+  pickViewpoint: 'Pick on the map',
+  pickViewpointPrompt: 'Click the map where you want to look from',
+  lookAt: 'Look at a place on the map',
+  pickTargetPrompt: 'Click the map where you want to look at',
+  createToposcope: 'Create toposcope from this view',
+  toposcopeMergeModal: {
+    title: 'Map is not empty',
+    message:
+      "Some points are already drawn on the map. Append the summits from this view to them, or replace them? The dial's centre moves to this viewpoint either way.",
+    append: 'Append',
+    replace: 'Replace',
+  },
+  settings: {
+    title: 'Panorama settings',
+    tiltHint:
+      'How much sky and ground the picture holds, as the angles above and below the horizon.',
+    custom: 'Exact angles',
+    depthLift: 'Unfold distance',
+    depthLiftOff: 'True view',
+    depthLiftHint:
+      'Raises distant terrain so that far ranges separate from the ridges in front of them, the way a hand-drawn panorama does. It also brings into view summits you could not actually see from here; their names are marked.',
+    rangeHint:
+      'Terrain past 300 km is premium’s. Every extra kilometre is walked along every ray of the picture, so a farther view costs the renderer proportionally more.',
+    look: 'Look',
+    looks: {
+      natural: 'Natural',
+      relief: 'Shaded relief',
+      drawn: 'Drawn',
+      engraved: 'Engraved',
+      custom: 'Custom',
+    },
+    ridgeStrength: 'Ridge line strength',
+    ridgeWidth: 'Ridge line thickness',
+    ridgeColor: 'Ridge colour',
+    ground: 'Ground',
+    groundHint:
+      'One colour, washed towards the sky as the built-in haze thickens with distance — or a gradient, which paints the ground by how far off it is and replaces the haze altogether.',
+    groundSolid: 'Colour',
+    groundGradient: 'Gradient',
+    gradientFar: 'Gradient reaches',
+    gradientFarAuto: 'Automatic',
+    gradientFarHint:
+      'The distance the last colour is reached at; the middle of the bar sits at a third of it. Automatic measures the terrain actually in view, which is what makes the whole palette land on what the picture shows.',
+    gradientSky: 'Fade into the sky',
+    gradientSkyHint:
+      'The last colour becomes the sky itself, so distant ranges dissolve into the horizon instead of edging against it. Off gives the hard skyline a poster wants.',
+    gradientClip: 'Hide terrain beyond',
+    gradientClipHint:
+      'Terrain past that distance is left out rather than painted flat in the last colour, so the whole gradient is spent on what the picture shows. Summits standing on it are not named.',
+  },
+  preview: 'Preview',
+  quality: {
+    label: 'Quality / speed',
+    superfast: 'Lowest / fastest',
+    fast: 'Low / fast',
+    standard: 'Standard',
+    detailed: 'Detailed / slow',
+    finest: 'Finest / slowest',
+  },
+  tilt: {
+    label: 'Vertical view',
+    standard: 'Standard',
+    wide: 'Tall',
+    flat: 'Short',
+  },
+  fov: {
+    label: 'Horizontal view',
+    full: 'All around',
+  },
+  labels: {
+    title: 'Peak names',
+    density: 'Number of names',
+    none: 'None',
+    few: 'Fewer',
+    normal: 'Normal',
+    many: 'More',
+    weight: 'Rank peaks by',
+    weightHint:
+      'Size names the great mountains however far off, the middle names whatever fills the view, and nearness names what is close whatever it looks like.',
+    weights: [
+      'Size',
+      'Mostly size',
+      'Size and nearness',
+      'Mostly nearness',
+      'Nearness',
+    ],
+    prominence: 'Favour real mountains',
+    prominenceOff: 'Off',
+    prominenceHint:
+      'Names a summit for being a mountain in its own right, not only for standing out from where you happen to be — so a famous peak hemmed in by taller neighbours still earns its name. Unknown for many summits, which are then judged as before.',
+    haze: 'How far names carry',
+    hazeOff: 'Clear air',
+    hazeHint:
+      'How far a summit must be before haze counts for more than the summit does. Past three times that, nothing is named at all.',
+    showEle: 'Show elevations',
+    showEleHint:
+      'Writes each summit’s height under its name. Every label is then two lines tall, so fewer of them fit the picture.',
+    showRevealed: 'Name revealed peaks',
+    showRevealedHint:
+      'Summits that unfolding lifted out from behind a nearer ridge: drawn, but not actually visible from here. Their names are drawn faded, and rank below the ones that can be seen where there is no room for both.',
+  },
+  dominance: {
+    label: 'Minimum dominance',
+    all: 'Any',
+  },
+  autoPan: 'Turn with the device, or by itself',
+  peak: {
+    title: ({ name, ele }) => (
+      <>
+        <b>{name}</b>
+        {ele === null ? null : ` (${ele})`}
+      </>
+    ),
+    // The dot is bound to the distance, so a tooltip narrow enough to wrap
+    // breaks after it rather than starting a line with it.
+    figures: ({ distance, azimuth }) => `${distance}\xa0· ${azimuth}`,
+  },
+  errors: {
+    offline:
+      'A panorama has to be rendered on the server, and you are offline.',
+    unreachable:
+      'The rendering service could not be reached. It may be down, or something between you and it is blocking the request.',
+    busy: 'The rendering service is unavailable right now. Try again shortly.',
+    tooMany:
+      'Too many panoramas rendered lately. Try again later, or go premium.',
+    noData:
+      'There is no terrain data for this viewpoint. Try clicking somewhere else.',
+    failed: 'The panorama could not be rendered.',
+  },
+  caveats: {
+    title: 'What the picture does and does not show',
+    bareEarth:
+      'The terrain model is bare earth: forests and buildings are invisible, so a view a forest would block is drawn as if it were clear. This is by far the largest source of error.',
+    coverage:
+      'Detail varies by country. Where a national laser-scanned model exists the near field is sharp; elsewhere a global 30 m model answers.',
+    viewpoint:
+      'The eye is put on the highest point within a few metres of where you clicked, so a summit view is not spoiled by the rock beside it.',
+    depthLift:
+      'Distance is unfolded, so this picture is a drawing rather than a photograph: faded peak names stand behind a ridge that really hides them, and a distance read off the picture no longer means a clear line of sight.',
+  },
+  terrainSource: 'Terrain',
+  peakSource: 'Peak names',
+};
+
+export default en;

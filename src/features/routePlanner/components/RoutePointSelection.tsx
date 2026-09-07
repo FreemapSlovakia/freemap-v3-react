@@ -1,3 +1,4 @@
+import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
@@ -20,15 +21,13 @@ export default function RoutePointSelection():
   return (
     point && (
       <Selection
-        icon={
-          <>
-            <RoutePlannerToggleButton /> <FaMapMarkerAlt />
-          </>
-        }
+        control={<RoutePlannerToggleButton />}
+        icon={<FaMapMarkerAlt />}
         label={rpm?.point.point}
         deletable
-        noLeftMargin
-      />
+      >
+        <PlaceActionsButton lat={point.lat} lon={point.lon} />
+      </Selection>
     )
   );
 }

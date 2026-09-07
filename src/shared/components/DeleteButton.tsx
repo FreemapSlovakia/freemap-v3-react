@@ -22,7 +22,6 @@ export function DeleteButton({ action }: Props = {}): ReactElement {
     <LongPressTooltip label={m?.general.delete} kbd="Del">
       {({ props }) => (
         <Button
-          className="ms-1"
           variant="danger"
           onClick={() => {
             dispatch(action ?? deleteFeature());

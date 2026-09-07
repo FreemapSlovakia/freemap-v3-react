@@ -4,17 +4,27 @@ import type { DrawingMessages } from './DrawingMessages.js';
 const cs: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Vlastnosti',
   edit: {
+    pointKeys:
+      'Napište {p:nazev} pro vlastnost s názvem nazev a {location} pro polohu.',
+    lineKeys:
+      'Napište {p:nazev} pro vlastnost s názvem nazev, {length} pro délku ({length_m}, {length_km}, {length_mi}) a {azimuth} u přímé čáry ze dvou bodů.',
+    polygonKeys:
+      'Napište {p:nazev} pro vlastnost s názvem nazev, {area} pro plochu ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) a {perimeter} pro obvod ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+    optionalKeys:
+      'Část v [hranatých závorkách] se vypíše, jen když má všechno v ní hodnotu: {p:nazev}[, {p:ele} m] vynechá výšku, pokud chybí.',
+    properties: 'Vlastnosti',
+    propertyKey: 'Název',
+    propertyValue: 'Hodnota',
+    addProperty: 'Přidat vlastnost',
+    removeProperty: 'Odstranit vlastnost',
+    insertIntoLabel: 'Vložit do popisu',
     title: 'Vlastnosti',
     color: 'Barva',
     fillColor: 'Barva výplně',
     label: 'Popis',
     width: 'Šířka',
-    hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
+    hint: 'Klávesou Enter začnete nový řádek. Pokud chcete popis odstranit, nechte pole prázdné.',
     shape: 'Tvar',
-    icon: 'Ikona',
-    iconChoose: 'Vybrat ikonu…',
-    iconNone: 'Bez ikony',
-    iconSearch: 'Hledat ikony',
     text: 'Text',
     textHint: 'Ikona nebo nejvýše 2 znaky zobrazené ve značce.',
     type: 'Typ geometrie',
@@ -45,6 +55,10 @@ const cs: DeepPartialWithRequiredObjects<DrawingMessages> = {
   },
   reverse: 'Obrátit směr',
   simplify: 'Zjednodušit',
+  cutHole: 'Vyříznout díru',
+  cutHoleHint: 'Nakreslete díru uvnitř tohoto polygonu.',
+  makeHole: 'Změnit na díru v obklopujícím polygonu',
+  detachHole: 'Oddělit díru',
 };
 
 export default cs;

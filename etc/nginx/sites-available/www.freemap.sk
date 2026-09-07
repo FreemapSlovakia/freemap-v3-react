@@ -1,16 +1,12 @@
 
 server {
 	server_name www.freemap.sk;
-
+	
 	if ($blocked_country) {
 	    return 444;
 	}
 
 	root /home/freemap/www;
-
-	location = /manifest.webmanifest {
-		default_type application/manifest+json;
-    	}
 
 	add_header Alt-Svc 'h3=":443"; ma=86400' always;
 
@@ -27,83 +23,70 @@ server {
 	location = /admin {
 		root /var/www;
 
-		try_files /admin.html =404;
+		try_files /admin.html =404;	
 	}
 
 	location = / {
-		set $cond "";
+		# Serve the matching static prerender to crawlers; humans get the SPA.
+		# The `[/.%]` guard keeps $args from escaping /sitemap/ in the try_files
+		# below (no path separators / dots / percent-escapes → no traversal).
+		set $prerender "";
 
-		#if ($http_user_agent ~ "\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners|Lighthouse)\b") {
 		if ($http_user_agent ~ "\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners)\b") {
-			set $cond a;
+			set $prerender bot;
 		}
 
-		# Allowlist of safe, non-empty prerender query strings. These chars cover
-		# layers= / show= / tool= / osm-…= / tip= / document= / lang= (incl. '~');
-		# none contain '/', '.' or '%', so no path traversal into try_files below.
-		if ($args ~ "^[A-Za-z0-9=&_~-]+$") {
-			set $cond "${cond}b";
+		if ($args ~ "[/.%]") {
+			set $prerender "${prerender}-unsafe";
 		}
 
-		# Bot + recognised query string: serve the matching static prerender
-		# (homepage / hub / feature / document, any language), falling back to
-		# the Slovak homepage when no prerender exists for it.
-		if ($cond = ab) {
+		if ($prerender = bot) {
 			rewrite ^ /__prerender last;
 		}
 
-		# Bot + no / unsupported query string: serve the Slovak homepage prerender.
-		if ($cond = a) {
-			rewrite ^ /sitemap/layers=X&lang=sk;
-		}
-
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
+		add_header Vary 'Accept-Language';
+
+		# Humans: the entry document carrying this domain's portal name, in the
+		# browser's language where we have one. $ui_lang is empty for languages
+		# we do not build, so the fallback applies.
+		try_files /index-sk-$ui_lang.html /index-sk-sk.html;
 	}
 
-	# Internal-only: map a bot's query string to a prerendered HTML file under
-	# /sitemap, with the Slovak homepage as the fallback. Reached via the rewrite
-	# in "location = /"; never requested directly.
+	# Crawler prerender: serve /sitemap/<full query string> if it exists, else the
+	# localized homepage. Canonical + hreflang live inside each prerender file.
 	location = /__prerender {
 		internal;
-
 		default_type 'text/html; charset=UTF-8';
-
-		add_header Cache-Control 'no-store, max-age=0';
-		add_header Referrer-Policy 'no-referrer';
-		add_header Strict-Transport-Security 'max-age=31536000';
-
 		try_files "/sitemap/$args" "/sitemap/layers=X&lang=sk";
 	}
 
-	# Match all unhashed HTML, including the internal redirect "/" -> /index.html
-	# (served outside the "location = /" block, so its headers are lost) and the
-	# index-XX.html variants. Without this, the entry HTML is heuristically cached,
-	# pinning users to stale hashed asset names (broken layout after a deploy).
-	location ~ \.html$ {
+	# Entry documents, the offline page and the build manifest change on every
+	# deploy and point at the current assets, so they must never be cached — not
+	# even heuristically, which nginx does for responses that lack Cache-Control.
+	# The offline page belongs here because the service worker refetches it on
+	# install; a stale copy would reference a logo the worker no longer serves.
+	# This block also serves `/`: the try_files above re-matches locations, so
+	# these headers — not the ones in `location = /` — are what a visitor gets.
+	# Keep it indexable; the raw filenames are kept out of search via robots.txt.
+	location ~ ^/(index(-(sk|eu)-\w\w)?\.html|offline\.html|assets-manifest\.json)$ {
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
+		add_header Vary 'Accept-Language';
 	}
 
-	# Service workers and the asset manifest are unhashed and must never go stale,
-	# otherwise the SW / precache list lags behind the deployed build.
-	location ~ ^/(sw|upload-sw)\.js$ {
-		add_header Cache-Control 'no-store, max-age=0';
+	# Content-hashed assets (16-hex-char [chunk|content]hash — keep in sync with
+	# rspack's hashDigestLength) are immutable: the URL changes when the content
+	# does, so cache them forever without revalidation.
+	location ~ ".+\.[a-z0-9]{16}\..+$" {
+		add_header Cache-Control 'public, max-age=31536000, immutable';
 	}
 
-	location = /assets-manifest.json {
-		add_header Cache-Control 'no-store, max-age=0';
-	}
-
-	# Content-addressed assets (rspack emits 16-char [chunkhash]/[contenthash]).
-	# The old rule required 20 chars and never matched, so bundles were uncached.
-	location ~ "\.[a-z0-9]{16,}\.[a-z0-9]+$" {
-		add_header Cache-Control 'max-age=31536000, immutable';
-	}
-
-	location ~ "\.(png|jpg)$" {
+	# Possibly-unhashed images: cache long, but allow revalidation on change.
+	location ~ "\.png$|\.jpg$|\.svg$|\.ico$" {
 		add_header Cache-Control 'max-age=31536000';
 	}
 
@@ -112,7 +95,7 @@ server {
 	#	}
 
 	location /mbtiles {
-		alias /fm/storage/backend.freemap.sk-data/user-mbtiles;
+		alias /fm/storage1/backend.freemap.sk-data/user-mbtiles;
 	}
 
 	http2 on;
@@ -140,3 +123,4 @@ server {
 
 	return 404; # managed by Certbot
 }
+

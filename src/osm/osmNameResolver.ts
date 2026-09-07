@@ -10,6 +10,12 @@ export function resolveGenericNameWithMeta(
   const parts: Part[] = [];
 
   for (const [k, vs] of Object.entries(tags)) {
+    // An OSM tag is always a string, but these also arrive from WMS feature
+    // info and from geocoding, where a value can be a number, a null or absent.
+    if (typeof vs !== 'string') {
+      continue;
+    }
+
     for (const v of vs.split(';').map((v) => v.trim())) {
       const valMapping = m[k];
 
@@ -27,15 +33,20 @@ export function resolveGenericNameWithMeta(
         continue;
       }
 
-      if (valMapping[v]) {
+      if (Object.hasOwn(valMapping, v)) {
         const subkeyMapping = valMapping[v];
 
         if (typeof subkeyMapping === 'string') {
-          parts.push({
-            text: subkeyMapping.replace('{}', v),
-            tags: { ...usedTags, [k]: v },
-            case: 'b',
-          });
+          // An empty mapping is a deliberate silence — `bridge: { no: '' }` —
+          // and has to stop here, or the key's fallback below claims the
+          // feature is exactly what the tag denies.
+          if (subkeyMapping) {
+            parts.push({
+              text: subkeyMapping.replace('{}', v),
+              tags: { ...usedTags, [k]: v },
+              case: 'b',
+            });
+          }
 
           continue;
         }
@@ -88,6 +99,14 @@ export function resolveGenericNameWithMeta(
               case: `${item.case}f`,
             })),
           );
+        } else if (typeof valMapping['*']['*'] === 'string') {
+          // The subtree needs a second tag to say more (`bridge` + `highway`),
+          // and a geocoding hit carries only one — so take its own fallback.
+          parts.push({
+            text: valMapping['*']['*'].replace('{}', v),
+            tags: { ...usedTags, [k]: v },
+            case: 'g',
+          });
         }
       }
     }
@@ -130,9 +149,15 @@ export function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
 ): string[] {
-  return eliminateMoreGenericNames(
-    resolveGenericNameWithMeta(m, adjustTags(tags), {}),
-  ).map((part) => part.text);
+  // Deduplicated: two keys can name the same thing — `amenity=pharmacy` beside
+  // `healthcare=pharmacy` is the recommended tagging — and it reads once.
+  return [
+    ...new Set(
+      eliminateMoreGenericNames(
+        resolveGenericNameWithMeta(m, adjustTags(tags), {}),
+      ).map((part) => part.text),
+    ),
+  ];
 }
 
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
@@ -187,16 +212,28 @@ export function getNameFromOsmElement(
   tags: Record<string, string>,
   lang: string,
 ): string {
+  return (
+    getOsmName(tags, lang) ||
+    getOsmAddress(tags) ||
+    tags['ref'] ||
+    tags['operator']
+  );
+}
+
+/** What the element is called, and nothing standing in for it. */
+export function getOsmName(tags: Record<string, string>, lang: string): string {
   const langName = tags[`name:${lang}`];
 
   const name = tags['name'];
 
-  const effName =
-    name && langName && langName !== name ? `${langName} (${name})` : name;
-
   // TODO alt_name, loc_name, ...
 
-  const addr = [
+  return name && langName && langName !== name ? `${langName} (${name})` : name;
+}
+
+/** The `addr:*` tags as one line — a place to be, not a name. */
+export function getOsmAddress(tags: Record<string, string>): string {
+  return [
     (tags['addr:place'] ?? tags['addr:street'] ?? '') +
       ' ' +
       (tags['addr:housename'] ??
@@ -216,8 +253,6 @@ export function getNameFromOsmElement(
     .map((a) => a?.trim())
     .filter((a) => a)
     .join(', ');
-
-  return effName || addr || tags['ref'] || tags['operator'];
 }
 
 function adjustTags(tags: Record<string, string>) {
@@ -234,7 +269,6 @@ function adjustTags(tags: Record<string, string>) {
     tags['building'] &&
     tags['building'] !== 'yes'
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { amenity, ...rest } = tags;
 
     res = { ...rest };
@@ -263,13 +297,17 @@ export const categoryKeys = new Set([
   'boundary',
   'building',
   'bus',
+  'club',
   'cusine',
+  'healthcare',
   'highway',
   'historic',
   'information',
+  'junction',
   'landuse',
   'leaf_type',
   'leisure',
+  'lock',
   'man_made',
   'natural',
   'network',

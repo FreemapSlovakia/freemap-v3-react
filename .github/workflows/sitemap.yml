@@ -1,0 +1,46 @@
+name: Sitemap
+
+# The prerender pages are regenerated from OSM data, not from the repo, so this
+# is scheduled rather than pushed: it re-crawls what has changed in OSM since
+# the last run. Deliberately separate from `deploy.yml` — it writes
+# `www/sitemap/`, the site build writes `www/`.
+on:
+  schedule:
+    # Monthly, UTC.
+    - cron: '0 3 1 * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: sitemap
+  cancel-in-progress: false
+
+jobs:
+  sitemap:
+    # fm5 holds the OSM database, which takes local connections only. The runner
+    # must run as the `freemap` user: the read-only role peer-authenticates over
+    # the socket, and its `~/.ssh/config` carries the `freemap-fm6` alias the
+    # rsync goes to. See "Running the generator" in doc/seo-prerender.md.
+    runs-on: [self-hosted, fm5]
+    # Around 320 000 pages across five countries; ~3 minutes of that is database
+    # time and the rest is rendering and writing files.
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.5.0
+
+      # No `cache: pnpm` — that ships the store to GitHub's cache service, and
+      # on a self-hosted runner the store is already on the box, outside the
+      # workspace `actions/checkout` cleans.
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - run: pnpm install --frozen-lockfile
+
+      # One step, so the `&&` that keeps a partial crawl from being rsynced with
+      # --delete lives in package.json rather than being restated here.
+      - name: Generate and deploy to fm6
+        run: pnpm deploy-sitemap

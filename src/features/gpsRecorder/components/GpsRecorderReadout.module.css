@@ -1,0 +1,9 @@
+/* Stands where the status dot stands, so the summary beside it doesn't jump
+   sideways every time the live view drops and comes back. Bootstrap's small
+   spinner is 1rem with a 0.2em border, which is both wider than the dot and
+   heavy enough to read as a control rather than an indicator. */
+.connectingSpinner {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-width: 0.15em;
+}

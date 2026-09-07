@@ -1,10 +1,12 @@
 import { mapSetEsriAttribution } from '@features/map/model/actions.js';
 import toastsClasses from '@features/toasts/components/Toasts.module.css';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
+import { useRoutingAttributions } from '@shared/components/Attribution.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
+import { askingCookieConsentSelector } from '../store/selectors.js';
 
 const EsriWorldImageryAttributionSchema = z.object({
   contributors: z.array(
@@ -45,7 +47,12 @@ export function useAttributionInfo() {
 
   const layers = useAppSelector((state) => state.map.layers);
 
+  const routingAttrs = useRoutingAttributions();
+
+  // Map layers, Esri contributors, routing credits — what the toast has already
+  // said this session, so each source raises it once.
   const licenceShownForRef = useRef([
+    new Set<string>(),
     new Set<string>(),
     new Set<string>(),
   ] as const);
@@ -56,9 +63,15 @@ export function useAttributionInfo() {
     (state) => 'attribution' in state.toasts.toasts,
   );
 
-  // hide attribution on mouse down
+  const askingCookieConsent = useAppSelector(askingCookieConsentSelector);
+
+  const attributionPinned = useAppSelector(
+    (state) => state.toasts.toasts['attribution']?.pinned ?? false,
+  );
+
+  // hide attribution on mouse down, unless the user pinned it
   useEffect(() => {
-    if (!showingAttribution) {
+    if (!showingAttribution || attributionPinned) {
       return;
     }
 
@@ -86,7 +99,45 @@ export function useAttributionInfo() {
     return () => {
       document.body.removeEventListener('pointerdown', handlePointerDown);
     };
-  }, [dispatch, showingAttribution]);
+  }, [dispatch, showingAttribution, attributionPinned]);
+
+  const attributionHeldRef = useRef(false);
+
+  // The consent prompt shares the toast stack, so the attribution is raised
+  // without a timeout while it is unanswered — no timeout also means the toast
+  // ignores the pointer, which would otherwise arm one on leaving it. Answering
+  // the prompt re-raises the toast, now with its five seconds.
+  const showAttributionToast = useCallback(
+    (timeout: number | undefined) => {
+      attributionHeldRef.current = timeout === undefined;
+
+      dispatch(
+        toastsAdd({
+          id: 'attribution',
+          messageKey: 'general.attribution',
+          style: 'info',
+          timeout,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  useEffect(() => {
+    if (
+      showingAttribution &&
+      !askingCookieConsent &&
+      !attributionPinned &&
+      attributionHeldRef.current
+    ) {
+      showAttributionToast(5000);
+    }
+  }, [
+    askingCookieConsent,
+    showingAttribution,
+    attributionPinned,
+    showAttributionToast,
+  ]);
 
   const [esriAttributions, setEsriAttributions] = useState<
     EsriWorldImageryAttribution | undefined
@@ -96,8 +147,13 @@ export function useAttributionInfo() {
 
   const bounds = useAppSelector((state) => state.map.bounds);
 
-  const zoom = useAppSelector((state) =>
-    state.map.zoom + (window.devicePixelRatio || 1) > 1.4 ? 1 : 0,
+  // The zoom the coverage areas below are matched against: the tile zoom, plus
+  // the level a high-density display adds by fetching one deeper (as the tile
+  // layers' own `zoomOffset` does).
+  const zoom = useAppSelector(
+    (state) =>
+      Math.round(state.map.zoom) +
+      ((window.devicePixelRatio || 1) > 1.4 ? 1 : 0),
   );
 
   useEffect(() => {
@@ -160,11 +216,17 @@ export function useAttributionInfo() {
       return;
     }
 
-    const [mapLayers, esriAttributions] = licenceShownForRef.current;
+    const [mapLayers, esriAttributions, routingSources] =
+      licenceShownForRef.current;
+
+    // A route is content from a source the layers never named, so the first one
+    // a router answers raises the toast the way a new layer does.
+    const routingKeys = routingAttrs.map((a) => a.name ?? a.nameKey ?? '');
 
     if (
       layers.every((o) => mapLayers.has(o)) &&
       esriAttribution.every((a) => esriAttributions.has(a)) &&
+      routingKeys.every((a) => routingSources.has(a)) &&
       prevNonceRef.current === nonce
     ) {
       return;
@@ -180,15 +242,19 @@ export function useAttributionInfo() {
       esriAttributions.add(a);
     }
 
-    dispatch(
-      toastsAdd({
-        id: 'attribution',
-        messageKey: 'general.attribution',
-        style: 'info',
-        timeout: 5000,
-      }),
-    );
-  }, [layers, dispatch, nonce, esriAttribution]);
+    for (const a of routingKeys) {
+      routingSources.add(a);
+    }
+
+    showAttributionToast(askingCookieConsent ? undefined : 5000);
+  }, [
+    layers,
+    nonce,
+    esriAttribution,
+    routingAttrs,
+    askingCookieConsent,
+    showAttributionToast,
+  ]);
 
   return useCallback(() => {
     setNonce((n) => n + 1);

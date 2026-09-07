@@ -1,7 +1,8 @@
-import { activeMapToolSelector } from '@app/store/selectors.js';
+import { activeMapToolSelector, isToolOpen } from '@app/store/selectors.js';
 import { ChangesetsResult } from '@features/changesets/components/ChangesetsResult.js';
 import { DrawingLinesResult } from '@features/drawing/components/DrawingLinesResult.js';
 import { DrawingPointsResult } from '@features/drawing/components/DrawingPointsResult.js';
+import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { ObjectsResult } from '@features/objects/components/ObjectsResult.js';
 import { RoutePlannerResult } from '@features/routePlanner/components/RoutePlannerResult.js';
@@ -11,6 +12,27 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
 import { AsyncComponent } from './AsyncComponent.js';
 import { LocationResult } from './LocationResult.js';
+
+// Module scope so each keeps one identity: `useLazy` re-runs its effect when
+// the factory changes, and an inline `import()` also stops the React Compiler
+// lowering this component at all.
+const dataViewerResultFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-result" */
+    '@features/dataViewer/components/DataViewerResult.js'
+  );
+
+const panoramaResultFactory = () =>
+  import(
+    /* webpackChunkName: "panorama-result" */
+    '@features/panorama/components/PanoramaResult.js'
+  );
+
+const gpsRecorderResultFactory = () =>
+  import(
+    /* webpackChunkName: "gps-recorder-result" */
+    '@features/gpsRecorder/components/GpsRecorderResult.js'
+  );
 
 export function Results(): ReactElement {
   // Prefer the densified render copy (extra DEM-sampled points on long
@@ -24,6 +46,15 @@ export function Results(): ReactElement {
     (state) => state.objects.objects.length > 0,
   );
 
+  // A recording to represent, not merely fixes to draw: the wake lock inside
+  // belongs to the ride, and a screen that blanks between pressing Record and
+  // the first fix is the case it exists for.
+  const hasRecording = useAppSelector(
+    (state) =>
+      state.gpsRecorder.points.length > 0 ||
+      (state.gpsRecorder.status?.recording ?? false),
+  );
+
   // Mount the route-planner result only once route planning is engaged — a
   // route exists, or its tool is active (so map clicks add points). This keeps
   // the feature's lazy message bundle out of the initial boot.
@@ -31,6 +62,13 @@ export function Results(): ReactElement {
     (state) =>
       state.routePlanner.points.length > 0 ||
       activeMapToolSelector(state) === 'route-planner',
+  );
+
+  // The panel keeps its viewpoint and picture when closed, so reopening finds
+  // them — but the marks on the map belong to the open panel.
+  const hasPanorama = useAppSelector(
+    (state) =>
+      state.panorama.viewpoint !== null && isToolOpen(state, 'panorama'),
   );
 
   const opacity = useAppSelector(
@@ -55,6 +93,10 @@ export function Results(): ReactElement {
 
   return (
     <>
+      {/* Mounted once for every charted feature: it reads only the chart's own
+          state, and its map hover must listen once. */}
+      <ElevationChartActivePoint />
+
       <SearchResults />
 
       {hasObjects && <ObjectsResult />}
@@ -69,19 +111,18 @@ export function Results(): ReactElement {
 
       {trackGeojson && (
         <AsyncComponent
-          factory={() =>
-            import(
-              /* webpackChunkName: "track-viewer-result" */
-              '@features/trackViewer/components/TrackViewerResult.js'
-            )
-          }
+          factory={dataViewerResultFactory}
           trackGeojson={trackGeojson}
         />
       )}
 
       <ChangesetsResult />
 
+      {hasPanorama && <AsyncComponent factory={panoramaResultFactory} />}
+
       <TrackingResult />
+
+      {hasRecording && <AsyncComponent factory={gpsRecorderResultFactory} />}
     </>
   );
 }

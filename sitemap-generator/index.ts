@@ -3,20 +3,40 @@ import matter from 'gray-matter';
 import htm from 'htm';
 import { marked } from 'marked';
 import vhtml from 'vhtml';
+import { hubs } from './hubs.js';
 import { objects } from './objects.js';
 import {
   appUrl,
-  BASE,
+  BASE_EU,
+  BASE_SK,
   fileName,
   HUB_LANGS,
-  hubs,
   LANGS,
+  type Lang,
   renderDocument,
   renderHome,
   renderHub,
 } from './seo.js';
 
 const html = htm.bind(vhtml);
+
+/** Write a `<sitemapindex>` listing the given child sitemaps on `base`'s host. */
+async function writeSitemapIndex(file: string, base: string, names: string[]) {
+  await writeFile(
+    `../sitemap/${file}`,
+    `<?xml version="1.0" encoding="UTF-8"?>` +
+      html`
+        <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+          ${names.map(
+            (name) =>
+              html`<sitemap>
+                <loc>${base}/sitemap/${name}</loc>
+              </sitemap>`,
+          )}
+        </sitemapindex>
+      `,
+  );
+}
 
 async function gen() {
   const startedAt = Date.now();
@@ -30,31 +50,57 @@ async function gen() {
 
   await mkdir('../sitemap', { recursive: true });
 
-  const sitemapNames: string[] = [];
+  // Core (non-POI) URLs and POI sitemap-shard names, split by home domain:
+  // freemap.sk hosts sk/cs, freemap.eu hosts every other language.
+  const outSk: string[] = [];
+  const outEu: string[] = [];
+  const skShards: string[] = [];
+  const euShards: string[] = [];
 
-  const out: string[] = [];
+  // Route a fully-qualified app URL to its home domain's sitemap.
+  const pushUrl = (url: string) =>
+    (url.startsWith(BASE_EU) ? outEu : outSk).push(url);
+
+  // A prerender's file name is its query string, so two pages naming the same
+  // app state overwrite each other silently while both stay in the sitemap —
+  // and `layers=X` is nginx's fallback for every crawler request it cannot
+  // match. POI pages are excluded: a feature in two categories legitimately
+  // writes the same page twice.
+  const written = new Set<string>();
+
+  const writePage = async (param: string, lang: Lang, html: string) => {
+    const name = fileName(param, lang);
+
+    if (written.has(name)) {
+      throw new Error(`two pages claim the prerender ${name}`);
+    }
+
+    written.add(name);
+
+    await writeFile(`../sitemap/${name}`, html);
+  };
 
   // Homepage, one prerender per UI language (cross-linked via hreflang).
   for (const lang of LANGS) {
-    await writeFile(
-      `../sitemap/${fileName('layers=X', lang)}`,
-      renderHome(lang),
-    );
+    await writePage('layers=X', lang, renderHome(lang));
 
-    out.push(appUrl('layers=X', lang));
+    pushUrl(appUrl('layers=X', lang));
   }
 
   console.log(`Homepages: ${LANGS.length} languages`);
 
-  // Layer/tool landing pages (curated copy from llms.txt), sk + en.
+  // The AI-readable site & URL-parameter reference. Listing it (per domain) gets
+  // it crawled and indexed, so it surfaces in search — which is what lets AI
+  // assistants (whose fetchers only allow URLs seen in results) reach it.
+  outSk.push(`${BASE_SK}/llms.txt`);
+  outEu.push(`${BASE_EU}/llms.txt`);
+
+  // Layer/tool/dialog landing pages, curated copy from llms.txt, every language.
   for (const hub of hubs) {
     for (const lang of HUB_LANGS) {
-      await writeFile(
-        `../sitemap/${fileName(hub.param, lang)}`,
-        renderHub(hub, lang),
-      );
+      await writePage(hub.param, lang, renderHub(hub, lang));
 
-      out.push(appUrl(hub.param, lang));
+      pushUrl(appUrl(hub.param, lang));
     }
   }
 
@@ -104,8 +150,9 @@ async function gen() {
       // Documents carry a YAML frontmatter `title:`; strip it from the body.
       const { data, content } = matter(md);
 
-      await writeFile(
-        `../sitemap/${fileName(docParam, lang)}`,
+      await writePage(
+        docParam,
+        lang,
         renderDocument({
           key,
           lang,
@@ -116,7 +163,7 @@ async function gen() {
         }),
       );
 
-      out.push(appUrl(docParam, lang));
+      pushUrl(appUrl(docParam, lang));
 
       docCount++;
     }
@@ -124,39 +171,30 @@ async function gen() {
 
   console.log(`Document pages: ${docCount} (${docLangs.size} documents)`);
 
-  const name = 'sitemap-core.txt';
+  await writeFile('../sitemap/sitemap-core.txt', outSk.join('\n'));
+  await writeFile('../sitemap/sitemap-core-eu.txt', outEu.join('\n'));
 
-  sitemapNames.push(name);
+  skShards.push('sitemap-core.txt');
+  euShards.push('sitemap-core-eu.txt');
 
-  await writeFile(`../sitemap/${name}`, out.join('\n'));
+  // Appends each country's POI shard names to the sk or eu list per its domain.
+  await objects(skShards, euShards);
 
-  await objects(sitemapNames);
-
-  await writeFile(
-    '../sitemap/sitemap-index.xml',
-    `<?xml version="1.0" encoding="UTF-8"?>` +
-      html`
-        <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-          ${sitemapNames.map(
-            (name) =>
-              html`<sitemap>
-                <loc>${BASE}/sitemap/${name}</loc>
-              </sitemap>`,
-          )}
-        </sitemapindex>
-      `,
-  );
+  await writeSitemapIndex('sitemap-index.xml', BASE_SK, skShards);
+  await writeSitemapIndex('sitemap-index-eu.xml', BASE_EU, euShards);
 
   console.log(
     `Done in ${((Date.now() - startedAt) / 1000).toFixed(1)}s — ` +
-      `${out.length} core URLs, ${sitemapNames.length} sitemap files (sitemap-index.xml written).`,
+      `${outSk.length + outEu.length} core URLs; ` +
+      `sitemap-index.xml (${skShards.length} sk shards), ` +
+      `sitemap-index-eu.xml (${euShards.length} eu shards).`,
   );
 }
 
 gen().catch((err) => {
   console.error(err);
 
-  // Exit non-zero so `dep-sitemap`'s `&& rsync --delete` does not run on a
+  // Exit non-zero so `deploy-sitemap`'s `&& rsync --delete` does not run on a
   // partial crawl and wipe good pages.
   process.exitCode = 1;
 });

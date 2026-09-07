@@ -1,7 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { MapMetaSchema } from '@features/myMaps/model/actions.js';
-import { getMapDataFromState } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
+import { getMapDataFromState } from '@features/myMaps/model/mapDocument.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
 import { eventsLoadList, eventsSave } from '../actions.js';

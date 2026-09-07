@@ -7,19 +7,40 @@ import {
 } from '@features/auth/model/processors/authInitProcessor.js';
 import { authLogoutProcessor } from '@features/auth/model/processors/authLogoutProcessor.js';
 import {
+  browseCacheClearProcessor,
+  browseCacheLayersProcessor,
+  browseCacheOpenProcessor,
+  browseCacheSettingsProcessor,
+} from '@features/cachedMaps/model/browseCacheProcessor.js';
+import {
   cachedMapDeletedProcessor,
-  cachedMapRenamedProcessor,
-  cacheTilesCancelProcessor,
-  cacheTilesPauseProcessor,
+  cachedMapEditedProcessor,
   cacheTilesRestartProcessor,
-  cacheTilesResumeProcessor,
   cacheTilesStartProcessor,
+  cacheTilesStopProcessor,
 } from '@features/cachedMaps/model/cacheTilesProcessor.js';
 import {
   changesetsProcessor,
   changesetsTrackProcessor,
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
+import { dataViewerDeleteFeatureProcessor } from '@features/dataViewer/model/processors/dataViewerDeleteFeatureProcessor.js';
+import { dataViewerDensifyProcessor } from '@features/dataViewer/model/processors/dataViewerDensifyProcessor.js';
+import { dataViewerDownloadTrackProcessor } from '@features/dataViewer/model/processors/dataViewerDownloadTrackProcessor.js';
+import { dataViewerGpxLoadProcessor } from '@features/dataViewer/model/processors/dataViewerGpxLoadProcessor.js';
+import { dataViewerJoinTracksProcessor } from '@features/dataViewer/model/processors/dataViewerJoinTracksProcessor.js';
+import { dataViewerMatchTrackProcessor } from '@features/dataViewer/model/processors/dataViewerMatchTrackProcessor.js';
+import { dataViewerResolveElevationPromptProcessor } from '@features/dataViewer/model/processors/dataViewerResolveElevationPromptProcessor.js';
+import { dataViewerSelectProcessor } from '@features/dataViewer/model/processors/dataViewerSelectProcessor.js';
+import { dataViewerSetTrackDataProcessor } from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
+import {
+  dataViewerForgetStoredProcessor,
+  dataViewerRestoreStoredProcessor,
+  dataViewerStoreProcessor,
+} from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
+import { dataViewerToggleElevationChartProcessor } from '@features/dataViewer/model/processors/dataViewerToggleElevationChartProcessor.js';
+import { drawingDiscardPartialLineProcessor } from '@features/drawing/model/processors/drawingDiscardPartialLineProcessor.js';
+import { elevationChartPendingTargetProcessor } from '@features/elevationChart/model/pendingTargetProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
 import { eventsDeleteProcessor } from '@features/events/model/processors/eventsDeleteProcessor.js';
 import { eventsLoadListProcessor } from '@features/events/model/processors/eventsLoadListProcessor.js';
@@ -41,8 +62,22 @@ import { gallerySubmitCommentProcessor } from '@features/gallery/model/processor
 import { gallerySubmitStarsProcessor } from '@features/gallery/model/processors/gallerySubmitStarsProcessor.js';
 import { galleryUploadModalProcessor } from '@features/gallery/model/processors/galleryUploadModalProcessor.js';
 import { geoipProcessor } from '@features/geoip/model/processors/geoIpProcessor.js';
+import {
+  gpsRecorderClearProcessor,
+  gpsRecorderPauseProcessor,
+  gpsRecorderPushedStatusProcessor,
+  gpsRecorderStartProcessor,
+  gpsRecorderStopProcessor,
+  gpsRecorderSyncProcessor,
+  gpsRecorderToolProcessor,
+} from '@features/gpsRecorder/model/processors.js';
 import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
 import { legendProcessor } from '@features/legend/model/legendProcessor.js';
+import { followLocationProcessor } from '@features/location/model/followProcessor.js';
+import {
+  fixReadyProcessor,
+  locateOnceProcessor,
+} from '@features/location/model/locateOnceProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
 import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
@@ -58,65 +93,87 @@ import {
   mapsSetAllOfflineProcessor,
   mapsSetMapOfflineProcessor,
 } from '@features/myMaps/model/processors/mapsOfflineProcessor.js';
+import {
+  mapsOutboxProcessor,
+  mapsResolveOutboxProcessor,
+} from '@features/myMaps/model/processors/mapsOutboxProcessor.js';
+import { mapsRestoreProcessor } from '@features/myMaps/model/processors/mapsRestoreProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
+import { mapsWorkingCopyProcessor } from '@features/myMaps/model/processors/mapsWorkingCopyProcessor.js';
+import { objectDetailsProcessor } from '@features/objects/model/objectDetailsProcessor.js';
 import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
 } from '@features/objects/model/objectsFetchProcessor.js';
+import { objectsLookupProcessor } from '@features/objects/model/objectsLookupProcessor.js';
 import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadMapProcessor.js';
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
-import { osmLoadNodeProcessor } from '@features/osm/model/processors/osmLoadNodeProcessor.js';
-import { osmLoadRelationProcessor } from '@features/osm/model/processors/osmLoadRelationProcessor.js';
-import { osmLoadWayProcessor } from '@features/osm/model/processors/osmLoadWayProcessor.js';
+import { osmLoadProcessor } from '@features/osm/model/processors/osmLoadProcessor.js';
+import { panoramaFixProcessor } from '@features/panorama/model/processors/panoramaFixProcessor.js';
+import { panoramaLookAtProcessor } from '@features/panorama/model/processors/panoramaLookAtProcessor.js';
+import {
+  panoramaReleaseProcessor,
+  panoramaRenderProcessor,
+} from '@features/panorama/model/processors/panoramaRenderProcessor.js';
+import { panoramaToposcopeProcessor } from '@features/panorama/model/processors/panoramaToposcopeProcessor.js';
 import { purchaseProcessor } from '@features/purchases/model/processors/purchaseProcessor.js';
 import { routePlannerColorizeProcessor } from '@features/routePlanner/model/processors/colorizeProcessor.js';
 import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/processors/findRouteProcessor.js';
+import { routePlannerMidpointHintProcessor } from '@features/routePlanner/model/processors/midpointHintProcessor.js';
 import { routePlannerOptimizeOrderProcessor } from '@features/routePlanner/model/processors/optimizeOrderProcessor.js';
 import { routePlannerRefocusMapProcessor } from '@features/routePlanner/model/processors/refocusMapProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from '@features/routePlanner/model/processors/setFromCurrentPositionProcessor.js';
-import { routePlannerToggleElevationChartProcessor } from '@features/routePlanner/model/processors/toggleElevationChartProcessor.js';
 import * as rpcProcessors from '@features/rpc/model/processors.js';
 import {
   searchHighlightProcessor,
   searchHighlightTrafo,
 } from '@features/search/model/processors/searchHighlightProcessor.js';
+import { searchPreviewProcessor } from '@features/search/model/processors/searchPreviewProcessor.js';
 import { searchProcessor } from '@features/search/model/processors/searchProcessor.js';
 import { toastsAddProcessor } from '@features/toasts/model/processors/toastsAddProcessor.js';
 import { toastsCancelTypeProcessor } from '@features/toasts/model/processors/toastsCancelTypeProcessor.js';
 import { toastsRemoveProcessor } from '@features/toasts/model/processors/toastsRemoveProcessor.js';
 import { toastsRestartTimeoutProcessor } from '@features/toasts/model/processors/toastsRestartTimeoutProcessor.js';
 import { toastsStopTimeoutProcessor } from '@features/toasts/model/processors/toastsStopTimeoutProcessor.js';
+import { toposcopeFixProcessor } from '@features/toposcope/model/toposcopeFixProcessor.js';
 import * as trackingAccessTokenProcessors from '@features/tracking/model/processors/trackingAccessTokenProcessors.js';
+import { trackingCopyToDataViewerProcessor } from '@features/tracking/model/processors/trackingCopyProcessor.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
 import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
-import { trackViewerDensifyProcessor } from '@features/trackViewer/model/processors/trackViewerDensifyProcessor.js';
-import { trackViewerDownloadTrackProcessor } from '@features/trackViewer/model/processors/trackViewerDownloadTrackProcessor.js';
-import { trackViewerGpxLoadProcessor } from '@features/trackViewer/model/processors/trackViewerGpxLoadProcessor.js';
-import { trackViewerRefreshElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerRefreshElevationChartProcessor.js';
-import { trackViewerResolveElevationPromptProcessor } from '@features/trackViewer/model/processors/trackViewerResolveElevationPromptProcessor.js';
-import { trackViewerSetTrackDataProcessor } from '@features/trackViewer/model/processors/trackViewerSetTrackDataProcessor.js';
-import { trackViewerToggleElevationChartProcessor } from '@features/trackViewer/model/processors/trackViewerToggleElevationChartProcessor.js';
+import {
+  viewshedCancelProcessor,
+  viewshedFixProcessor,
+  viewshedLayerProcessor,
+  viewshedReleaseProcessor,
+  viewshedRenderProcessor,
+} from '@features/viewshed/model/processors.js';
+import {
+  weatherRadarLayerProcessor,
+  weatherRadarRefreshProcessor,
+} from '@features/weatherRadar/model/processors.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
+import { convertToDataViewerProcessor } from '@/processors/convertToDataViewerProcessor.js';
 import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
 import { errorProcessor } from '@/processors/errorProcessor.js';
 import { legacyMapWarningProcessor } from '@/processors/legacyMapWarningProcessor.js';
+import { openToolProcessor } from '@/processors/openToolProcessor.js';
 import { resetAppProcessor } from '@/processors/resetAppProcessor.js';
 import { saveSettingsProcessor } from '@/processors/saveSettingsProcessor.js';
 import { setActiveModalTransformer } from '@/processors/setActiveModalProcessor.js';
-import { setToolProcessor } from '@/processors/setToolProcessor.js';
 import { urlProcessor } from '../url/urlProcessor.js';
 
 export const processors = [
   errorProcessor,
   toastsCancelTypeProcessor,
   cancelProcessor,
-  setToolProcessor,
+  openToolProcessor,
   deleteProcessor,
   geoipProcessor,
   convertToDrawingProcessor,
+  convertToDataViewerProcessor,
   cookieConsentProcessor,
   authLogoutProcessor,
   authDisconnectProcessor,
@@ -127,9 +184,14 @@ export const processors = [
   searchProcessor,
   searchHighlightTrafo,
   searchHighlightProcessor,
+  searchPreviewProcessor,
   locateProcessor,
+  locateOnceProcessor,
+  fixReadyProcessor,
+  followLocationProcessor,
   saveSettingsProcessor,
   resetAppProcessor,
+  drawingDiscardPartialLineProcessor,
   measurementProcessor,
   changesetsProcessor,
   changesetsTrackProcessor,
@@ -137,23 +199,30 @@ export const processors = [
   authTrackProcessor,
   l10nSetLanguageProcessor,
   elevationChartProcessor,
+  elevationChartPendingTargetProcessor,
   objectsFetchProcessor,
   objectsChangePredicateProcessor,
-  osmLoadNodeProcessor,
-  osmLoadWayProcessor,
-  osmLoadRelationProcessor,
+  objectDetailsProcessor,
+  objectsLookupProcessor,
+  osmLoadProcessor,
   mapTypeGaProcessor,
   toastsAddProcessor,
   toastsRemoveProcessor,
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
-  trackViewerSetTrackDataProcessor,
-  trackViewerDownloadTrackProcessor,
-  trackViewerGpxLoadProcessor,
-  trackViewerToggleElevationChartProcessor,
-  trackViewerResolveElevationPromptProcessor,
-  trackViewerRefreshElevationChartProcessor,
-  trackViewerDensifyProcessor,
+  dataViewerSetTrackDataProcessor,
+  dataViewerStoreProcessor,
+  dataViewerForgetStoredProcessor,
+  dataViewerRestoreStoredProcessor,
+  dataViewerDownloadTrackProcessor,
+  dataViewerGpxLoadProcessor,
+  dataViewerMatchTrackProcessor,
+  dataViewerToggleElevationChartProcessor,
+  dataViewerResolveElevationPromptProcessor,
+  dataViewerSelectProcessor,
+  dataViewerDeleteFeatureProcessor,
+  dataViewerJoinTracksProcessor,
+  dataViewerDensifyProcessor,
   routePlannerFindRouteProcessor,
   routePlannerOptimizeOrderProcessor,
   galleryDeletePictureProcessor,
@@ -173,28 +242,53 @@ export const processors = [
   galleryMakeAllPremiumOrFreeProcessor,
   galleryAllOfLicenseProcessor,
   routePlannerRefocusMapProcessor,
-  routePlannerToggleElevationChartProcessor,
   routePlannerColorizeProcessor,
   routePlannerSetFromCurrentPositionProcessor,
+  routePlannerMidpointHintProcessor,
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
   trackingFollowProcessor,
+  trackingCopyToDataViewerProcessor,
+  gpsRecorderStartProcessor,
+  gpsRecorderPauseProcessor,
+  gpsRecorderStopProcessor,
+  gpsRecorderSyncProcessor,
+  gpsRecorderPushedStatusProcessor,
+  gpsRecorderClearProcessor,
+  gpsRecorderToolProcessor,
   setActiveModalTransformer,
   mapsLoadListProcessor,
   mapsLoadProcessor,
   mapsDeleteProcessor,
   mapsSaveProcessor,
+  mapsWorkingCopyProcessor,
+  mapsRestoreProcessor,
   mapsSetMapOfflineProcessor,
   mapsSetAllOfflineProcessor,
   mapsOfflinePurgeProcessor,
+  mapsOutboxProcessor,
+  mapsResolveOutboxProcessor,
   eventsLoadListProcessor,
   eventsSaveProcessor,
   eventsDeleteProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
+  weatherRadarLayerProcessor,
+  weatherRadarRefreshProcessor,
   legendProcessor,
   legacyMapWarningProcessor,
   openInExternalAppProcessor,
+  panoramaRenderProcessor,
+  panoramaReleaseProcessor,
+  panoramaFixProcessor,
+  panoramaLookAtProcessor,
+  panoramaToposcopeProcessor,
+  viewshedRenderProcessor,
+  viewshedReleaseProcessor,
+  viewshedCancelProcessor,
+  viewshedLayerProcessor,
+  viewshedFixProcessor,
+  toposcopeFixProcessor,
   ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,
   ...authProcessors,
@@ -202,10 +296,12 @@ export const processors = [
   purchaseProcessor,
   cacheTilesStartProcessor,
   cacheTilesRestartProcessor,
-  cacheTilesPauseProcessor,
-  cacheTilesResumeProcessor,
-  cacheTilesCancelProcessor,
+  cacheTilesStopProcessor,
+  browseCacheSettingsProcessor,
+  browseCacheLayersProcessor,
+  browseCacheOpenProcessor,
+  browseCacheClearProcessor,
   cachedMapDeletedProcessor,
-  cachedMapRenamedProcessor,
+  cachedMapEditedProcessor,
   urlProcessor,
 ];

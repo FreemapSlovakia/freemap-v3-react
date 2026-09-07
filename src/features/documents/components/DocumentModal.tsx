@@ -12,6 +12,14 @@ import { useDocumentsMessages } from '../translations/useDocumentsMessages.js';
 
 type Props = { show: boolean };
 
+// Module scope: an `import()` in the component body stops the React Compiler
+// lowering it.
+const loadDocument = (key: string, lang: string) =>
+  import(
+    /* webpackChunkName: "document-[request]" */
+    `@/documents/${key}.${lang}.md`
+  );
+
 export default DocumentModal;
 function DocumentModal({ show }: Props): ReactElement | null {
   const m = useMessages();
@@ -45,10 +53,7 @@ function DocumentModal({ show }: Props): ReactElement | null {
 
     setLoading(true);
 
-    import(
-      /* webpackChunkName: "document-[request]" */
-      `@/documents/${document.key}.${document.lang}.md`
-    )
+    loadDocument(document.key, document.lang)
       .then(({ default: content }) => {
         setContent(content);
       })

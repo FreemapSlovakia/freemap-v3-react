@@ -1,29 +1,57 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { authSetUser } from '@features/auth/model/actions.js';
+import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
+import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { colorizerNeedsElevation } from '@shared/colorizers/index.js';
+import { unlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import {
   routePlannerColorizeBy,
+  routePlannerRestoreSavedRoute,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetResult,
 } from '../actions.js';
 import { ensureRouteRenderGeojson } from '../ensureRouteRenderGeojson.js';
+import { routePremiumUnlockedSelector } from '../reducer.js';
 
 export const routePlannerColorizeProcessor: Processor<
   | typeof routePlannerColorizeBy
   | typeof routePlannerSetResult
   | typeof routePlannerSetActiveAlternativeIndex
+  | typeof elevationSetSettings
+  | typeof authSetUser
+  | typeof mapsLoaded
+  | typeof routePlannerRestoreSavedRoute
 > = {
   actionCreator: [
     routePlannerColorizeBy,
     routePlannerSetResult,
     routePlannerSetActiveAlternativeIndex,
+    elevationSetSettings,
+    // A route the map had stored arrives by neither of the above.
+    mapsLoaded,
+    routePlannerRestoreSavedRoute,
+    // Signing in or out drops the render line (it's sampled per premium status)
+    // and can unlock a premium mode, so rebuild it right away.
+    authSetUser,
   ],
+  // Only the smoothing windows reset the cache below; the steepness window is
+  // measured off the drawn points, so it rebuilds nothing.
+  actionPredicate: (action) =>
+    !elevationSetSettings.match(action) ||
+    affectsElevationSmoothing(action.payload),
   handle: async ({ dispatch, getState }) => {
-    const { colorizeBy } = getState().routePlannerSettings;
+    const colorizeBy = unlockedColorizingMode(
+      getState().routePlannerSettings.colorizeBy,
+      routePremiumUnlockedSelector(getState()),
+    );
 
     // Elevation-derived modes need the densified DEM render line; it's cached
-    // so switching between them refetches nothing. A new result or a different
-    // alternative resets that cache, so rebuild it while the mode stays
-    // applied. Other modes (e.g. heading) read the route coordinates directly.
+    // so switching between them refetches nothing. A new result, a different
+    // alternative or changed elevation settings reset that cache, so rebuild it
+    // while the mode stays applied — the chart's own refresh can't be relied on
+    // here, as it does nothing while the chart is closed. Other modes (e.g.
+    // heading) read the route coordinates directly.
     if (colorizeBy && colorizerNeedsElevation(colorizeBy)) {
       await ensureRouteRenderGeojson(getState, dispatch);
     }

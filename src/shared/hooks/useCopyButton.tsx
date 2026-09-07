@@ -1,5 +1,5 @@
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaCheck, FaCopy } from 'react-icons/fa';
 
@@ -8,7 +8,7 @@ export function useCopyButton(text: string) {
 
   const tid = useRef<number | undefined>(undefined);
 
-  const handleCopyClick = useCallback(() => {
+  const handleCopyClick = () => {
     // Clipboard access can be missing (insecure context) or rejected by a
     // permissions policy (embedded/webview); swallow so it isn't error noise.
     navigator.clipboard?.writeText(text).catch(() => undefined);
@@ -24,7 +24,7 @@ export function useCopyButton(text: string) {
 
       setChecked(false);
     }, 1000);
-  }, [text]);
+  };
 
   useEffect(
     () => () => {

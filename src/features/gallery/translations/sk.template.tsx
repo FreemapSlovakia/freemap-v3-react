@@ -61,7 +61,6 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Pridať',
     yourRating: 'Tvoje hodnotenie:',
     showOnTheMap: 'Ukázať na mape',
-    openInNewWindow: 'Otvoriť v…',
     uploaded: ({ username, createdAt }) => (
       <>
         Nahral {username} dňa {createdAt}
@@ -81,7 +80,10 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     modify: 'Úprava',
     premiumOnly:
       'Túto fotografiu sprístupnil jej autor len používateľom s prémiovým prístupom.',
+    premiumPhoto: 'Táto fotografia je prémiový obsah.',
     noComments: 'Bez komentára',
+    wikimediaCommentNotNotified:
+      'Táto fotografia pochádza z Wikimedia Commons. Jej autor nebude o vašom komentári upovedomený – upozorňujeme len autorov fotografií nahratých na Freemap.',
   },
   editForm: {
     name: 'Názov',
@@ -100,8 +102,11 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Nahrať fotky',
     uploading: (n) => `Nahrávam (${n})`,
     upload: 'Nahrať',
+    hint: {
+      drop: 'Potiahnite sem fotky alebo kliknite sem pre ich výber.',
+      tap: 'Ťuknite sem pre pridanie fotiek.',
+    },
     rules: `
-      <p>Potiahnite sem fotky alebo kliknite sem pre ich výber.</p>
       <ul>
         <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10 MB. Väčšie súbory server odmietne.</li>
         <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania odstránené.</li>

@@ -1,6 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
+import {
+  documentMenuItemProps,
+  modalMenuItemProps,
+} from '@shared/hooks/useMenuHandler.js';
 import { type JSX, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -11,7 +16,6 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 import { getDocuments } from '@/documents/index.js';
-import { SubmenuHeader } from './SubmenuHeader.js';
 
 export function HelpSubmenu(): JSX.Element {
   const m = useMessages();
@@ -32,28 +36,32 @@ export function HelpSubmenu(): JSX.Element {
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
 
       {layers.some((layer) => legendLayers.has(layer)) && (
-        <Dropdown.Item {...modalMenuItemProps('legend')}>
+        <OnlineOnlyItem {...modalMenuItemProps('legend')}>
           <FaList /> {m?.mainMenu.mapLegend}
-        </Dropdown.Item>
+        </OnlineOnlyItem>
       )}
 
       <Dropdown.Item {...modalMenuItemProps('about')}>
         <FaRegAddressCard /> {m?.mainMenu.contacts}
       </Dropdown.Item>
 
-      <Dropdown.Item href={m?.mainMenu.wikiLink} eventKey="url" target="_blank">
+      <OnlineOnlyItem
+        href={m?.mainMenu.wikiLink}
+        eventKey="url"
+        target="_blank"
+      >
         <FaBook /> {m?.mainMenu.osmWiki}
-      </Dropdown.Item>
+      </OnlineOnlyItem>
 
       {skCs && (
         <>
-          <Dropdown.Item
+          <OnlineOnlyItem
             href="https://groups.google.com/forum/#!forum/osm_sk"
             eventKey="url"
             target="_blank"
           >
             <FaUsers /> Fórum slovenskej OSM komunity
-          </Dropdown.Item>
+          </OnlineOnlyItem>
 
           <Dropdown.Divider />
         </>
@@ -62,18 +70,14 @@ export function HelpSubmenu(): JSX.Element {
       {getDocuments(language)
         .filter((item) => item.listed !== false)
         .map(({ key, icon, title }) => (
-          <Dropdown.Item
-            key={key}
-            href={`?document=${key}`}
-            eventKey={`document-${key}`}
-          >
+          <Dropdown.Item key={key} {...documentMenuItemProps(key)}>
             {icon} {title}
           </Dropdown.Item>
         ))}
 
       <Dropdown.Divider />
 
-      <Dropdown.Item eventKey="reset-app" className="text-danger">
+      <Dropdown.Item as="button" eventKey="reset-app" className="text-danger">
         <FaPowerOff /> {m?.mapLayers.resetApp}
       </Dropdown.Item>
     </>

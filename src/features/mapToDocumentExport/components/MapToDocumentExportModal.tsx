@@ -15,8 +15,10 @@ import {
   useResolvedAttribution,
   useResolvedAttributionText,
 } from '@shared/components/Attribution.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   type ChangeEvent,
@@ -62,6 +64,8 @@ export default function MapToDocumentExportModal({
   show,
 }: Props): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const mtde = useMapToDocumentExportMessages();
 
@@ -195,11 +199,20 @@ export default function MapToDocumentExportModal({
   const attributionCountries =
     area === 'area' ? areaCountries : toAttributionCountries(countries);
 
-  const attribution = useResolvedAttribution(MAP_LAYERS, attributionCountries);
+  // The routers' credit belongs to the drawn route, so it rides on that
+  // exportable rather than on the document merely being made from this map.
+  const exportsRoute = exportables.split('|').includes('plannedRoute');
+
+  const attribution = useResolvedAttribution(
+    MAP_LAYERS,
+    attributionCountries,
+    exportsRoute,
+  );
 
   const attributionText = useResolvedAttributionText(
     MAP_LAYERS,
     attributionCountries,
+    exportsRoute,
   );
 
   const handleExport = useCallback(async () => {
@@ -330,6 +343,8 @@ export default function MapToDocumentExportModal({
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         <fieldset disabled={exporting}>
           <Alert variant="warning">
             {mtde?.alert(
@@ -440,6 +455,7 @@ export default function MapToDocumentExportModal({
       <Modal.Footer>
         <Button
           disabled={
+            !online ||
             exporting ||
             invalidScale ||
             invalidGlowWidth ||

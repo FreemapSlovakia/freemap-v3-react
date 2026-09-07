@@ -1,16 +1,25 @@
 import {
   hasClearableMapFeaturesSelector,
-  toolsSelector,
+  openToolsSelector,
 } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
+import { Chord } from '@shared/components/Chord.js';
 import { Emoji } from '@shared/components/Emoji.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   documentMenuItemProps,
   modalMenuItemProps,
 } from '@shared/hooks/useMenuHandler.js';
-import { isDrawTool, toolDefinitions } from '@shared/toolDefinitions.js';
+import {
+  isDrawTool,
+  isToolAvailable,
+  toolDefinitions,
+  unavailableToolsSelector,
+} from '@shared/toolDefinitions.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -41,7 +50,9 @@ export function MainMenu(): ReactElement {
     state.map.layers.includes('I'),
   );
 
-  const tools = useAppSelector(toolsSelector);
+  const openTools = useAppSelector(openToolsSelector);
+
+  const unavailable = useAppSelector(unavailableToolsSelector);
 
   const hasClearableMapFeatures = useAppSelector(
     hasClearableMapFeaturesSelector,
@@ -60,17 +71,22 @@ export function MainMenu(): ReactElement {
             <Emoji>{flag}</Emoji>{' '}
           </span>
         ))}
-        <FaChevronRight />
+        <MenuGutter>
+          <FaChevronRight />
+        </MenuGutter>
       </Dropdown.Item>
 
       {user ? (
-        <Dropdown.Item {...modalMenuItemProps('account')}>
-          <FaUser /> {m?.mainMenu.account} <kbd>e</kbd> <kbd>a</kbd>
-        </Dropdown.Item>
+        <OnlineOnlyItem {...modalMenuItemProps('account')}>
+          <FaUser /> {m?.mainMenu.account}
+          <MenuGutter>
+            <Chord modal="account" />
+          </MenuGutter>
+        </OnlineOnlyItem>
       ) : (
-        <Dropdown.Item {...modalMenuItemProps('login')}>
+        <OnlineOnlyItem {...modalMenuItemProps('login')}>
           <FaSignInAlt /> {m?.mainMenu.logIn}
-        </Dropdown.Item>
+        </OnlineOnlyItem>
       )}
 
       <Dropdown.Divider />
@@ -80,20 +96,31 @@ export function MainMenu(): ReactElement {
         eventKey="clear-map-features"
         disabled={!hasClearableMapFeatures}
       >
-        <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
+        <FaEraser /> {m?.main.clearMap}
+        <MenuGutter>
+          <Chord command="clear-map-features" />
+        </MenuGutter>
       </Dropdown.Item>
 
+      {/* Only a layer toggle, so it works offline; the layer menu is where the
+          layer that draws nothing is marked. */}
       <Dropdown.Item
-        href="?layers=I"
+        href="#layers=I"
         key="gallery"
         eventKey="gallery"
         active={galleryActive}
       >
-        <FaCamera /> {m?.tools.photos} <kbd>⇧f</kbd>
+        <FaCamera /> {m?.tools.photos}
+        <MenuGutter>
+          <kbd>⇧f</kbd>
+        </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('my-maps')}>
-        <FaRegMap /> {m?.tools.myMaps} <kbd>g</kbd> <kbd>m</kbd>
+        <FaRegMap /> {m?.tools.myMaps}
+        <MenuGutter>
+          <Chord modal="my-maps" />
+        </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('events')}>
@@ -103,69 +130,85 @@ export function MainMenu(): ReactElement {
       <Dropdown.Item
         as="button"
         eventKey="drawing"
-        active={tools.some(isDrawTool)}
+        active={openTools.some(isDrawTool)}
       >
         <FaPencilRuler /> {m?.tools.measurement}
       </Dropdown.Item>
 
       {toolDefinitions
-        .filter(({ draw }) => !draw)
-        .map(
-          ({ tool: newTool, icon, msgKey, kbd }) =>
+        .filter(({ draw, tool }) => !draw && isToolAvailable(unavailable, tool))
+        .map(({ tool: newTool, icon, msgKey, experimental }) => {
+          return (
             newTool && (
               <Dropdown.Item
-                href={`?tools=${newTool}`}
+                href={`#tools=${newTool}`}
                 key={newTool}
                 eventKey={`tool-${newTool}`}
-                active={tools.includes(newTool)}
+                active={openTools.includes(newTool)}
               >
-                {icon} {m?.tools[msgKey]}{' '}
-                {kbd && (
-                  <>
-                    <kbd>g</kbd>{' '}
-                    <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
-                  </>
-                )}
+                {icon} {m?.tools[msgKey]}
+                <MenuGutter>
+                  {experimental && <ExperimentalFunction />}
+                  <Chord tool={newTool} />
+                </MenuGutter>
               </Dropdown.Item>
-            ),
-        )}
+            )
+          );
+        })}
 
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" eventKey="submenu-openExternally">
-        <FaExternalLinkAlt /> {oeam?.openInExternal} <FaChevronRight />
+        <FaExternalLinkAlt /> {oeam?.openInExternal}
+        <MenuGutter>
+          <FaChevronRight />
+        </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('map-features-export')}>
-        <FaFileExport /> {m?.mainMenu.mapFeaturesExport} <kbd>e</kbd>{' '}
-        <kbd>g</kbd>
+        <FaFileExport /> {m?.mainMenu.mapFeaturesExport}
+        <MenuGutter>
+          <Chord modal="map-features-export" />
+        </MenuGutter>
       </Dropdown.Item>
 
-      <Dropdown.Item {...modalMenuItemProps('map-to-document-export')}>
-        <FaPrint /> {m?.mainMenu.mapToDocumentExport} <kbd>e</kbd> <kbd>p</kbd>
-      </Dropdown.Item>
+      <OnlineOnlyItem {...modalMenuItemProps('map-to-document-export')}>
+        <FaPrint /> {m?.mainMenu.mapToDocumentExport}
+        <MenuGutter>
+          <Chord modal="map-to-document-export" />
+        </MenuGutter>
+      </OnlineOnlyItem>
 
-      <Dropdown.Item {...modalMenuItemProps('offline-map-export')}>
-        <FaDatabase /> {m?.mainMenu.offlineMapExport} <kbd>e</kbd> <kbd>m</kbd>
-      </Dropdown.Item>
+      <OnlineOnlyItem {...modalMenuItemProps('offline-map-export')}>
+        <FaDatabase /> {m?.mainMenu.offlineMapExport}
+        <MenuGutter>
+          <Chord modal="offline-map-export" />
+        </MenuGutter>
+      </OnlineOnlyItem>
 
       <Dropdown.Item {...documentMenuItemProps('exports')}>
         <FaMobileAlt /> {m?.mainMenu.gpsDevicesMapExports}
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('embed')}>
-        <FaCode /> {m?.mainMenu.embedMap} <kbd>e</kbd> <kbd>e</kbd>
+        <FaCode /> {m?.mainMenu.embedMap}
+        <MenuGutter>
+          <Chord modal="embed" />
+        </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" eventKey="submenu-help">
-        <FaBook /> {m?.mainMenu.help} <FaChevronRight />
+        <FaBook /> {m?.mainMenu.help}
+        <MenuGutter>
+          <FaChevronRight />
+        </MenuGutter>
       </Dropdown.Item>
 
-      <Dropdown.Item {...modalMenuItemProps('support-us')}>
+      <OnlineOnlyItem {...modalMenuItemProps('support-us')}>
         <FaHeart color="red" /> {m?.mainMenu.supportUs} <FaHeart color="red" />
-      </Dropdown.Item>
+      </OnlineOnlyItem>
     </>
   );
 }

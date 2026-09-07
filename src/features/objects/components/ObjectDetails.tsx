@@ -1,36 +1,31 @@
-import type { SearchResult } from '@features/search/model/actions.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
-  categoryKeys,
+  type ElevationReading,
+  ElevationValue,
+} from '@features/elevationChart/components/ElevationValue.js';
+import { getOsmElementUrl } from '@features/openInExternalApp/externalUrlUtils.js';
+import type { SearchResult } from '@features/search/model/actions.js';
+import {
   getNameFromOsmElement,
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
+import { IconGlyph } from '@shared/components/IconGlyph.js';
+import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import { Fragment, type ReactElement } from 'react';
-import { Button, Table } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { Table } from 'react-bootstrap';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { SourceName } from './SourceName.js';
 
 type Props = {
   result: SearchResult;
-  openText: string;
-  historyText: string;
-  editInJosmText: string;
+  elevation: ElevationReading;
 };
 
-export function ObjectDetails({
-  result,
-  openText,
-  historyText,
-  editInJosmText,
-}: Props): ReactElement {
+export function ObjectDetails({ result, elevation }: Props): ReactElement {
   const { id, geojson } = result;
-
-  const dispatch = useDispatch();
 
   const genericName = useGenericNameResolver(result);
 
@@ -47,105 +42,6 @@ export function ObjectDetails({
 
   const parsedId = OsmFeatureIdSchema.safeParse(id);
 
-  const handleEditInJosm = () => {
-    if (!parsedId.success) {
-      throw new Error('unsupported type');
-    }
-
-    fetch(
-      'http://localhost:8111/load_object?new_layer=true&relation_members=true&objects=' +
-        { node: 'n', way: 'w', relation: 'r' }[parsedId.data.elementType] +
-        parsedId.data.id +
-        '&layer_name=' +
-        encodeURIComponent(
-          `${genericName}${displayName ? ` "${displayName}"` : ''}`,
-        ),
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`Error response from localhost:8111: ${res.status}`);
-        }
-      })
-      .catch((err) => {
-        dispatch?.(
-          toastsAdd({
-            messageKey: 'general.operationError',
-            messageParams: { err },
-            style: 'danger',
-          }),
-        );
-      });
-  };
-
-  function renderKey(k: string) {
-    return !parsedId.success ? (
-      k
-    ) : (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://wiki.openstreetmap.org/wiki/Key:${encodeURIComponent(k)}`}
-      >
-        {k}
-      </a>
-    );
-  }
-  function renderValue(k: string, v: string) {
-    return !parsedId.success ? (
-      v
-    ) : /^https?:\/\//.test(v) ? (
-      <a target="_blank" rel="noreferrer" href={v}>
-        {v}
-      </a>
-    ) : k === 'wikidata' || k.endsWith(':wikidata') ? (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://www.wikidata.org/entity/${encodeURIComponent(v)}`}
-      >
-        {v}
-      </a>
-    ) : k === 'wikipedia' || k.endsWith(':wikipedia') ? (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
-          v.replace(/ /g, '_'),
-        )}`}
-      >
-        {v}
-      </a>
-    ) : k === 'wikimedia_commons' ? (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
-          v.replace(/ /g, '_'),
-        )}`}
-      >
-        {v}
-      </a>
-    ) : ['contact:email', 'email'].includes(k) ? (
-      <a href={`mailto:${v}`}>{v}</a>
-    ) : ['phone', 'contact:phone', 'contact:mobile'].includes(k) ? (
-      <a target="_blank" rel="noreferrer" href={`tel:${v.replace(/ /g, '')}`}>
-        {v}
-      </a>
-    ) : categoryKeys.has(k) ? (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://wiki.openstreetmap.org/wiki/Tag:${encodeURIComponent(
-          k,
-        )}=${encodeURIComponent(v)}`}
-      >
-        {v}
-      </a>
-    ) : (
-      v
-    );
-  }
-
   const om = useObjectsMessages();
 
   return (
@@ -153,29 +49,35 @@ export function ObjectDetails({
       <p className="lead">
         {imgs.map((img) => (
           <Fragment key={img}>
-            <img src={img} style={{ width: '1em', height: '1em' }} alt="" />
+            <IconGlyph poi={img} />
             &ensp;
           </Fragment>
         ))}
-        {genericName} {displayName && <i>{displayName}</i>}
+        {/* Named first, kind of thing second — as the search list reads. */}
+        {displayName && <span className="fw-semibold">{displayName}</span>}
+        {displayName && genericName && ' '}
+        {genericName}
       </p>
 
-      {parsedId.success && (
+      <ElevationValue {...elevation} label={om?.elevation} className="mb-3" />
+
+      {/* An embed has no selection toolbar, so its ⋮ menu can't carry these. */}
+      {window.fmEmbedded && parsedId.success && (
         <p>
           <a
             target="_blank"
             rel="noreferrer"
-            href={`https://www.openstreetmap.org/${parsedId.data.elementType}/${parsedId.data.id}`}
+            href={getOsmElementUrl(parsedId.data)}
           >
-            {openText}
+            {om?.openInOsm}
           </a>
           {' ('}
           <a
             target="_blank"
             rel="noreferrer"
-            href={`https://www.openstreetmap.org/${parsedId.data.elementType}/${parsedId.data.id}/history`}
+            href={getOsmElementUrl(parsedId.data, true)}
           >
-            {historyText}
+            {om?.osmHistory}
           </a>
           )
         </p>
@@ -185,12 +87,6 @@ export function ObjectDetails({
         <p>{geojson.properties['description']}</p>
       )}
 
-      {!window.fmEmbedded && parsedId.success && (
-        <Button onClick={handleEditInJosm} className="mb-4">
-          {editInJosmText}
-        </Button>
-      )}
-
       {geojson.properties && (
         <Table striped bordered size="sm">
           <tbody>
@@ -198,8 +94,13 @@ export function ObjectDetails({
               .filter(([k]) => k !== 'display_name')
               .map(([k, v]) => (
                 <tr key={k}>
-                  <th>{renderKey(k)}</th>
-                  <td>{renderValue(k, v)}</td>
+                  <th>
+                    <OsmTagKey tag={k} osm={parsedId.success} />
+                  </th>
+
+                  <td>
+                    <OsmTagValue tag={k} value={v} osm={parsedId.success} />
+                  </td>
                 </tr>
               ))}
           </tbody>

@@ -4,6 +4,11 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const en: MapFeaturesExportMessages = {
   download: 'Download',
+  share: 'Share',
+  shareAsText:
+    'Your browser only shares plain-text files, so the file gets a “.txt” suffix. The receiving app may need it removed.',
+  sharedAsDownload:
+    'The share sheet could not be opened, so the file has been downloaded instead.',
   format: 'Format',
   target: 'Target',
   elevation: {
@@ -15,14 +20,13 @@ const en: MapFeaturesExportMessages = {
   exportError: ({ err }) => addError(getMessages()!, 'Error exporting', err),
   what: {
     plannedRoute: 'found route',
-    plannedRouteWithStops: 'include stops',
     objects: 'objects (POIs)',
     pictures: 'photos (in the visible map area)',
     drawingLines: 'drawing - lines',
     drawingAreas: 'drawing - polygons',
     drawingPoints: 'drawing - points',
     tracking: 'live tracking',
-    import: 'imported file',
+    import: 'tracks and data',
     search: 'lookup',
   },
   onlySelected: 'Only the selected item',

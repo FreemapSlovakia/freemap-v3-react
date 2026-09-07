@@ -5,14 +5,11 @@ import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const en: ObjectsMessages = {
   source: 'Source',
-  detail: ({ result }) => (
-    <ObjectDetails
-      result={result}
-      openText="Open at OpenStreetMap.org"
-      historyText="history"
-      editInJosmText="Edit in JOSM"
-    />
-  ),
+  detail: (props) => <ObjectDetails {...props} />,
+  elevation: 'Elevation',
+  showDetails: 'Details',
+  openInOsm: 'OpenStreetMap.org',
+  osmHistory: 'OpenStreetMap.org (history)',
   type: 'Type',
   lowZoomAlert: {
     message: ({ minZoom }) =>
@@ -28,10 +25,9 @@ const en: ObjectsMessages = {
     ring: 'Ring',
     square: 'Square',
   },
-  convertAsPoint: 'As point',
-  convertWithGeometry: 'With full geometry',
+  tooManyForLookup: ({ count, limit }) =>
+    `Too many objects to show as lookups (${count}, at most ${limit}). Zoom in or narrow the filter.`,
   showAsLookup: 'Show as Lookup',
-  convertAll: 'Convert all visible objects to drawing',
   style: {
     button: 'Marker style',
     title: 'Object marker style',

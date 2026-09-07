@@ -1,29 +1,40 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { type ModalId, modalOf } from '@app/store/activeModal.js';
-import { type MouseEvent, type ReactNode, useCallback } from 'react';
+import { type ActiveModal, encodeActiveModal } from '@app/store/activeModal.js';
+import type { MouseEvent, ReactNode } from 'react';
 import { Anchor } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 
+/**
+ * Builds the `href`/`onClick` pair that opens a modal in-page. A factory
+ * rather than a hook taking the modal, so conditionally rendered items can
+ * each get their own props without a conditional hook call.
+ */
+export function useModalLink() {
+  const dispatch = useDispatch();
+
+  return (modal: ActiveModal) => {
+    // Null for the two modals that name no id; react-bootstrap then renders
+    // them as `href="#"` with role=button.
+    const show = encodeActiveModal(modal);
+
+    return {
+      href: show === null ? undefined : `#show=${show}`,
+      onClick: (e: MouseEvent) => {
+        e.preventDefault();
+
+        dispatch(setActiveModal(modal));
+      },
+    };
+  };
+}
+
 type Props = {
-  modal: ModalId;
+  modal: ActiveModal;
   children: ReactNode;
 };
 
 export function ShowModalLink({ modal, children }: Props) {
-  const dispatch = useDispatch();
+  const modalLink = useModalLink();
 
-  const handleClick = useCallback(
-    (e: MouseEvent) => {
-      e.preventDefault();
-
-      dispatch(setActiveModal(modalOf(modal)));
-    },
-    [dispatch, modal],
-  );
-
-  return (
-    <Anchor href={`#show=${modal}`} onClick={handleClick}>
-      {children}
-    </Anchor>
-  );
+  return <Anchor {...modalLink(modal)}>{children}</Anchor>;
 }

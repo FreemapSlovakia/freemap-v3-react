@@ -1,16 +1,40 @@
-import { type Breakpoint, useBreakpointMatches } from '@shared/breakpoints.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import type { SelectCallback } from '@restart/ui/types';
+import {
+  type Breakpoint,
+  getMinWidthForBreakpoint,
+  useBreakpointMatches,
+} from '@shared/breakpoints.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import clsx from 'clsx';
 import {
   Children,
+  cloneElement,
+  Fragment,
   isValidElement,
   type ReactElement,
   type ReactNode,
   type Ref,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
 } from 'react';
-import { Button, type ButtonProps, Dropdown } from 'react-bootstrap';
-import { FaEllipsisV } from 'react-icons/fa';
-import { LongPressTooltip } from './LongPressTooltip.js';
+import {
+  Button,
+  ButtonGroup,
+  type ButtonProps,
+  Dropdown,
+} from 'react-bootstrap';
+import { FaChevronRight, FaEllipsisV } from 'react-icons/fa';
+import { useOnline } from '../hooks/useOnline.js';
+import { afterPrefix } from '../types/typeUtils.js';
+import {
+  LongPressTooltip,
+  type TooltipTargetProps,
+} from './LongPressTooltip.js';
+import { MenuGutter } from './MenuGutter.js';
+import { OfflineBadge } from './OfflineBadge.js';
 
 export type ActionProps = {
   label: ReactNode;
@@ -22,12 +46,41 @@ export type ActionProps = {
    * priority — the action collapses sooner.
    */
   showFrom?: Breakpoint | 'never';
+  /**
+   * Also print the label next to the icon of the inline button from this
+   * breakpoint up. Omit to keep the inline button icon-only.
+   */
+  showLabelFrom?: Breakpoint;
+  /**
+   * The action goes to the server: offline it is disabled, and in the packed
+   * menu — where it has a label to sit beside — it is badged with the reason.
+   * A condition rather than a flag, for an action that needs the network only
+   * in some states (a map with no offline copy, say); it must be false wherever
+   * something else is what stands in the way, or the badge stops meaning
+   * "the connection".
+   */
+  requiresOnline?: boolean;
+  /**
+   * `Dropdown.Item`s offering variants of the action. Inline they hang off a
+   * split toggle beside the button; packed they follow it in the menu. Pass
+   * them bare or as an array — a fragment hides them from packed disabling.
+   */
+  menu?: ReactNode;
+  /**
+   * The action *is* its {@link menu}: inline it opens as a plain dropdown
+   * instead of a button with a caret, and packed it opens as a submenu like
+   * {@link ActionSubmenu}. For a choice with no default to press — `onClick` is
+   * never called.
+   */
+  menuOnly?: boolean;
 } & Pick<
   ButtonProps,
   // `variant="danger"` also turns the packed dropdown item red.
   | 'variant'
   | 'onClick'
   | 'href'
+  | 'target'
+  | 'rel'
   | 'disabled'
   | 'active'
   | 'className'
@@ -45,38 +98,153 @@ export function ActionDivider(): null {
   return null;
 }
 
+/** Event key of a submenu opener; bare, it is the way back out. */
+const SUBMENU_PREFIX = 'fm-submenu-';
+
+/**
+ * A group that opens as a submenu of the packed menu instead of running on into
+ * it — for a list long enough to bury what is above it.
+ */
+export function ActionSubmenu(_props: {
+  label: ReactNode;
+  icon?: ReactNode;
+  children: ReactNode;
+}): null {
+  return null;
+}
+
+/**
+ * Menu-only content: `Dropdown.Item`s, headers, or a control of its own. It
+ * never goes inline, and any `eventKey` it carries reaches the `onSelect` given
+ * to {@link ResponsiveActions}.
+ */
+export function ActionItems(_props: { children: ReactNode }): null {
+  return null;
+}
+
 type Props = {
   children: ReactNode;
   /** Dropdown alignment for the packed menu. */
   align?: 'start' | 'end';
   size?: ButtonProps['size'];
+  /** Bootstrap spacing step between the inline buttons and the toggle. */
+  gap?: 0 | 1 | 2 | 3;
   /** Variant for inline buttons that don't set their own, and for the toggle. */
   variant?: ButtonProps['variant'];
   toggle?: ReactNode;
+  /** What the packed menu's toggle is, said in its tooltip. */
   toggleLabel?: string;
+  /** Handles the `eventKey`s of whatever {@link ActionItems} puts in the menu. */
+  onSelect?: SelectCallback;
   toggleRef?: Ref<HTMLButtonElement>;
   className?: string;
+  /**
+   * Pack by what fits rather than by the breakpoints: the row's own scroller is
+   * measured, and actions fold into the menu only while it overflows, largest
+   * `showFrom` first (`xs` or none never folds).
+   *
+   * Only where the scroller's width is given to it — a panel, a modal. Where it
+   * is shrink-to-fit or may wrap onto a line of its own, folding shrinks the
+   * very box the fit is measured against, so both states are self-consistent
+   * and what shows at a given width depends on how that width was arrived at.
+   */
+  fit?: boolean;
 };
+
+/** What an unmeasured action is assumed to take: an icon button and its gap. */
+const ESTIMATED_ACTION_PX = 44;
+
+/** Room a folded action must find over its own width before it comes back. */
+const UNFOLD_SLACK_PX = 8;
+
+/** The gaps and padding the measurement has to add back, in pixels. */
+function readSpacing(root: HTMLElement, row: HTMLElement) {
+  const rowStyle = getComputedStyle(row);
+
+  return {
+    ownGap: Number.parseFloat(getComputedStyle(root).columnGap) || 0,
+    rowGap: Number.parseFloat(rowStyle.columnGap) || 0,
+    rowPadding:
+      Number.parseFloat(rowStyle.paddingLeft) +
+      Number.parseFloat(rowStyle.paddingRight),
+  };
+}
+
+/**
+ * Where an action stands in the folding order, which is the width it asks for:
+ * the one wanting most room goes first, and `0` never folds. The breakpoints'
+ * own widths rather than an order of this component's own, so a new breakpoint
+ * is one edit rather than two.
+ */
+const foldOrder = (showFrom: ActionProps['showFrom']): number =>
+  showFrom === undefined || showFrom === 'never' || showFrom === 'xs'
+    ? 0
+    : getMinWidthForBreakpoint(showFrom);
 
 export function ResponsiveActions({
   children,
   align = 'end',
-  size = 'sm',
+  size,
+  gap = 2,
   variant = 'secondary',
   toggle = <FaEllipsisV />,
   toggleLabel,
   toggleRef,
+  onSelect,
   className,
+  fit,
 }: Props): ReactElement {
   const matches = useBreakpointMatches();
 
-  const isInline = (showFrom: NonNullable<ActionProps['showFrom']> = 'xs') => {
-    return showFrom !== 'never' && (showFrom === 'xs' || matches[showFrom]);
-  };
+  const online = useOnline();
+
+  const [show, setShow] = useState(false);
+
+  // Which submenu the packed menu is showing, by the index of its entry.
+  const [submenu, setSubmenu] = useState<number | null>(null);
+
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  /** How many of the folding order are packed, while `fit` measures. */
+  const [folded, setFolded] = useState(0);
+
+  /** Bumped by the row's own resize, which re-runs the measurement below. */
+  const [, setResized] = useState(0);
+
+  /**
+   * What each action took when it was last inline. Keyed by whether its label
+   * was showing as well as by its child index: an action wide with its label is
+   * narrow without it, and asking for the wrong one keeps a folded action
+   * folded through every width where it would in fact fit.
+   */
+  const widths = useRef(new Map<string, number>());
+
+  const spacingRef = useRef<ReturnType<typeof readSpacing> | null>(null);
+
+  const isOff = (props: Pick<ActionProps, 'disabled' | 'requiresOnline'>) =>
+    props.disabled || (props.requiresOnline && !online);
+
+  // `xs` has no min-width to match, so it is always on.
+  const atLeast = (breakpoint: Breakpoint) =>
+    breakpoint === 'xs' || matches[breakpoint];
+
+  const isInline = (showFrom: NonNullable<ActionProps['showFrom']> = 'xs') =>
+    showFrom !== 'never' && atLeast(showFrom);
+
+  const showsLabel = ({ showLabelFrom }: ActionProps) =>
+    showLabelFrom !== undefined && atLeast(showLabelFrom);
 
   type Entry =
-    | { divider: true }
-    | { divider: false; props: ActionProps; index: number; inline: boolean };
+    | { kind: 'divider' }
+    | { kind: 'items'; items: ReactNode; index: number }
+    | {
+        kind: 'submenu';
+        label: ReactNode;
+        icon?: ReactNode;
+        items: ReactNode;
+        index: number;
+      }
+    | { kind: 'action'; props: ActionProps; index: number; inline: boolean };
 
   const entries: Entry[] = [];
 
@@ -86,12 +254,32 @@ export function ResponsiveActions({
     }
 
     if (child.type === ActionDivider) {
-      entries.push({ divider: true });
+      entries.push({ kind: 'divider' });
+    } else if (child.type === ActionSubmenu) {
+      const props = child.props as {
+        label: ReactNode;
+        icon?: ReactNode;
+        children: ReactNode;
+      };
+
+      entries.push({
+        kind: 'submenu',
+        label: props.label,
+        icon: props.icon,
+        items: props.children,
+        index,
+      });
+    } else if (child.type === ActionItems) {
+      entries.push({
+        kind: 'items',
+        items: (child.props as { children: ReactNode }).children,
+        index,
+      });
     } else if (child.type === Action) {
       const props = child.props as ActionProps;
 
       entries.push({
-        divider: false,
+        kind: 'action',
         props,
         index,
         inline: isInline(props.showFrom),
@@ -99,120 +287,477 @@ export function ResponsiveActions({
     }
   });
 
+  // The order they fold in: the largest breakpoint first, as it is the one
+  // asking for most room. `never` is already packed and `xs` never folds, so
+  // neither is in it.
+  const folding = entries
+    .filter(
+      (e): e is Extract<Entry, { kind: 'action' }> =>
+        e.kind === 'action' && foldOrder(e.props.showFrom) > 0,
+    )
+    .sort((a, b) => foldOrder(b.props.showFrom) - foldOrder(a.props.showFrom));
+
+  if (fit) {
+    const packedByFit = new Set(folding.slice(0, folded).map((e) => e.index));
+
+    for (const entry of entries) {
+      if (entry.kind === 'action' && entry.props.showFrom !== 'never') {
+        entry.inline = !packedByFit.has(entry.index);
+      }
+    }
+  }
+
+  const isPacked = (entry: Entry) =>
+    entry.kind === 'items' ||
+    entry.kind === 'submenu' ||
+    (entry.kind === 'action' && !entry.inline);
+
   // Collapsing a single action into a dropdown costs more chrome than it saves,
-  // so promote a lone packed action back to an inline button.
+  // so promote a lone packed action back to an inline button — unless it asked
+  // for the menu with `never`, which is a decision, not a lack of room, or raw
+  // items are holding the menu open anyway.
   const packedActions = entries.filter(
-    (e): e is Extract<Entry, { divider: false }> => !e.divider && !e.inline,
+    (e): e is Extract<Entry, { kind: 'action' }> =>
+      e.kind === 'action' && !e.inline,
   );
 
-  if (packedActions.length === 1) {
+  if (
+    !fit &&
+    packedActions.length === 1 &&
+    packedActions[0].props.showFrom !== 'never' &&
+    !entries.some((e) => e.kind === 'items' || e.kind === 'submenu')
+  ) {
     packedActions[0].inline = true;
   }
 
   const lastPackedPos = entries.reduce(
-    (pos, entry, i) => (!entry.divider && !entry.inline ? i : pos),
+    (pos, entry, i) => (isPacked(entry) ? i : pos),
     -1,
   );
 
   // Drop leading, trailing, and consecutive dividers left dangling by packing:
-  // keep a divider only when a packed action immediately precedes it and another
-  // packed action still follows.
+  // keep a divider only when packed content immediately precedes it and more
+  // packed content still follows.
   const packed = entries.filter((entry, i) => {
-    if (!entry.divider) {
-      return !entry.inline;
+    if (entry.kind !== 'divider') {
+      return isPacked(entry);
     }
 
     const prev = entries[i - 1];
 
-    return prev?.divider === false && !prev.inline && i < lastPackedPos;
+    return prev !== undefined && isPacked(prev) && i < lastPackedPos;
   });
 
+  // Packed, an action's variants are plain items in the shared menu, so a
+  // disabled action has to hand its state down to them itself.
+  const renderPackedMenu = (menu: ReactNode, off: boolean | undefined) =>
+    off
+      ? Children.map(menu, (child) =>
+          isValidElement<{ disabled?: boolean }>(child)
+            ? cloneElement(child, { disabled: true })
+            : child,
+        )
+      : menu;
+
   const renderButton = (
-    { label, icon, showFrom, variant: ownVariant, ...rest }: ActionProps,
+    {
+      label,
+      icon,
+      showFrom,
+      showLabelFrom,
+      variant: ownVariant,
+      requiresOnline,
+      disabled,
+      menu,
+      menuOnly,
+      ...rest
+    }: ActionProps,
     key: number,
   ) => {
-    // Inline actions are icon-only; the label moves into the tooltip.
+    const off = isOff({ disabled, requiresOnline });
+
+    const dropdown = (content: ReactNode, tipProps?: TooltipTargetProps) => (
+      <Dropdown key={key} as={ButtonGroup} align={align} onSelect={onSelect}>
+        <Dropdown.Toggle
+          variant={ownVariant ?? variant}
+          size={size}
+          disabled={off}
+          active={rest.active}
+          className={rest.className}
+          {...tipProps}
+        >
+          {content}
+        </Dropdown.Toggle>
+
+        <FmDropdownMenu>{menu}</FmDropdownMenu>
+      </Dropdown>
+    );
+
+    const split = (button: ReactNode) => (
+      <Dropdown key={key} as={ButtonGroup} align={align} onSelect={onSelect}>
+        {button}
+
+        <Dropdown.Toggle
+          split
+          variant={ownVariant ?? variant}
+          size={size}
+          disabled={off}
+        />
+
+        <FmDropdownMenu>{menu}</FmDropdownMenu>
+      </Dropdown>
+    );
+
+    const renderPlain = () => {
+      if (menuOnly) {
+        return dropdown(label);
+      }
+
+      const button = (
+        <Button
+          key={key}
+          variant={ownVariant ?? variant}
+          size={size}
+          disabled={off}
+          {...rest}
+        >
+          {label}
+        </Button>
+      );
+
+      return menu ? split(button) : button;
+    };
+
+    // An inline action is icon-only unless `showLabelFrom` prints the label
+    // beside the icon; where the label is hidden it shows in the tooltip.
     return icon ? (
-      <LongPressTooltip key={key} label={label}>
-        {({ props: tipProps }) => (
-          <Button
-            variant={ownVariant ?? variant}
-            size={size}
-            {...rest}
-            {...tipProps}
-            aria-label={
-              rest['aria-label'] ??
-              (typeof label === 'string' ? label : undefined)
-            }
-          >
-            {icon}
-          </Button>
-        )}
+      <LongPressTooltip key={key} label={label} breakpoint={showLabelFrom}>
+        {({ label: tipLabel, labelClassName, props: tipProps }) => {
+          const content = (
+            <>
+              {icon}
+              {showLabelFrom && (
+                <span className={labelClassName}> {tipLabel}</span>
+              )}
+            </>
+          );
+
+          if (menuOnly) {
+            return dropdown(content, tipProps);
+          }
+
+          const button = (
+            <Button
+              variant={ownVariant ?? variant}
+              size={size}
+              disabled={off}
+              {...rest}
+              {...tipProps}
+              aria-label={
+                rest['aria-label'] ??
+                (typeof label === 'string' ? label : undefined)
+              }
+            >
+              {content}
+            </Button>
+          );
+
+          return menu ? split(button) : button;
+        }}
       </LongPressTooltip>
     ) : (
-      <Button key={key} variant={ownVariant ?? variant} size={size} {...rest}>
-        {label}
-      </Button>
+      renderPlain()
     );
   };
 
-  const inline = entries
-    .filter(
-      (e): e is Extract<Entry, { divider: false }> => !e.divider && e.inline,
-    )
-    .map((e) => renderButton(e.props, e.index));
+  const inlineEntries = entries.filter(
+    (e): e is Extract<Entry, { kind: 'action' }> =>
+      e.kind === 'action' && e.inline,
+  );
 
-  const hasPacked = packed.some((entry) => !entry.divider);
+  const inline = inlineEntries.map((e) => renderButton(e.props, e.index));
+
+  const hasPacked = packed.some((entry) => entry.kind !== 'divider');
+
+  // What fits, measured on the row this sits in rather than guessed from the
+  // window: the rest of the row is nobody's business here, so only its own
+  // scroller can say whether there is room. Each inline action's width is kept
+  // as it is rendered, which is what lets a folded one be counted back in — it
+  // is not in the DOM to measure. One pass settles it: the natural width is the
+  // same however many are folded, so the count cannot oscillate.
+  useLayoutEffect(() => {
+    // First, and before the walk up the tree: every row of every list that
+    // carries one of these renders this component, and none of them measures.
+    if (!fit) {
+      return;
+    }
+
+    const root = rootRef.current;
+
+    const row = root?.parentElement;
+
+    const scroller = root?.closest('.fm-ib-scroller');
+
+    if (!root || !row || !(scroller instanceof HTMLElement)) {
+      return;
+    }
+
+    // Read once and kept between resizes: this runs on every render, and the
+    // gaps and padding move only with the box — full screen drops the room a
+    // floating panel keeps clear for its resize grip, which is a padding
+    // change and a resize at once.
+    spacingRef.current ??= readSpacing(root, row);
+
+    const spacing = spacingRef.current;
+
+    const kids = [...root.children];
+
+    const widthKey = (entry: Extract<Entry, { kind: 'action' }>) =>
+      `${entry.index}:${showsLabel(entry.props)}`;
+
+    inlineEntries.forEach((entry, i) => {
+      const el = kids[i];
+
+      if (el instanceof HTMLElement && el.offsetWidth > 0) {
+        widths.current.set(widthKey(entry), el.offsetWidth + spacing.ownGap);
+      }
+    });
+
+    const width = (entry: Extract<Entry, { kind: 'action' }>) =>
+      widths.current.get(widthKey(entry)) ?? ESTIMATED_ACTION_PX;
+
+    // Added up rather than read off the row's `scrollWidth`: an `ms-auto` on
+    // this element eats the slack into a margin, so an overflowing row and a
+    // half-empty one measure exactly the same there.
+    let rowWidth =
+      spacing.rowPadding +
+      folding.slice(0, folded).reduce((sum, e) => sum + width(e), 0);
+
+    for (const kid of row.children) {
+      if (kid instanceof HTMLElement && kid.offsetWidth > 0) {
+        rowWidth += kid.offsetWidth + spacing.rowGap;
+      }
+    }
+
+    let need = 0;
+
+    while (rowWidth > scroller.clientWidth + 1 && need < folding.length) {
+      rowWidth -= width(folding[need]!);
+
+      need++;
+    }
+
+    // Unfolding only where the row has room to spare, not merely enough:
+    // widths move by a pixel with a label or a scrollbar, and a button that
+    // came back only to be folded again on the next pass would flicker.
+    if (need < folded && rowWidth + UNFOLD_SLACK_PX > scroller.clientWidth) {
+      return;
+    }
+
+    if (need !== folded) {
+      setFolded(need);
+    }
+  });
+
+  // A panel resized by its grip doesn't re-render this on its own.
+  useEffect(() => {
+    const scroller = rootRef.current?.closest('.fm-ib-scroller');
+
+    if (!fit || !scroller) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      // The spacing goes with it: a panel going full screen drops the room it
+      // keeps clear for its grip, and that arrives as a resize.
+      spacingRef.current = null;
+
+      setResized((n) => n + 1);
+    });
+
+    observer.observe(scroller);
+
+    return () => observer.disconnect();
+  }, [fit]);
+
+  // A packed `menuOnly` action opens as a submenu of its own, so its variants
+  // are read under the name of the action they belong to rather than loose.
+  const openEntry = entries.find(
+    (entry) =>
+      (entry.kind === 'submenu' ||
+        (entry.kind === 'action' && entry.props.menuOnly)) &&
+      entry.index === submenu,
+  );
+
+  const openSubmenu =
+    openEntry?.kind === 'submenu'
+      ? openEntry
+      : openEntry?.kind === 'action'
+        ? {
+            label: openEntry.props.label,
+            icon: openEntry.props.icon,
+            items: openEntry.props.menu,
+          }
+        : undefined;
+
+  const openMenu = (next: boolean) => {
+    setShow(next);
+
+    if (!next) {
+      setSubmenu(null);
+    }
+  };
+
+  const renderToggle = () => {
+    const button = (tipProps?: TooltipTargetProps) => (
+      <Dropdown.Toggle
+        variant={variant}
+        size={size}
+        {...tipProps}
+        ref={(el: HTMLButtonElement | null) => {
+          tipProps?.ref(el);
+
+          if (typeof toggleRef === 'function') {
+            toggleRef(el);
+          } else if (toggleRef) {
+            toggleRef.current = el;
+          }
+        }}
+      >
+        {toggle}
+      </Dropdown.Toggle>
+    );
+
+    // Named only in the tooltip: the toggle is a glyph wherever it appears, and
+    // the label would crowd a toolbar that packed its actions for want of room.
+    return toggleLabel ? (
+      <LongPressTooltip label={toggleLabel}>
+        {({ props }) => button(props)}
+      </LongPressTooltip>
+    ) : (
+      button()
+    );
+  };
 
   return (
     <div
+      ref={rootRef}
       className={clsx(
-        'd-inline-flex flex-wrap align-items-center gap-2',
+        'd-inline-flex flex-nowrap align-items-center',
+        `gap-${gap}`,
         className,
       )}
     >
       {inline}
 
       {hasPacked && (
-        <Dropdown align={align}>
-          <Dropdown.Toggle
-            ref={toggleRef}
-            variant={variant}
-            size={size}
-            aria-label={toggleLabel}
-          >
-            {toggle}
-          </Dropdown.Toggle>
+        <Dropdown
+          align={align}
+          show={show}
+          onToggle={openMenu}
+          // Selecting closes the menu below, so that opening a submenu — the one
+          // selection that must leave it up — can decline to.
+          autoClose="outside"
+          onSelect={(eventKey, e) => {
+            const level = afterPrefix(String(eventKey), SUBMENU_PREFIX);
 
-          <Dropdown.Menu popperConfig={fixedPopperConfig}>
-            {packed.map((entry, i) =>
-              entry.divider ? (
-                <Dropdown.Divider key={`divider-${i}`} />
-              ) : (
-                <Dropdown.Item
-                  key={entry.index}
-                  onClick={entry.props.onClick}
-                  href={entry.props.href}
-                  disabled={entry.props.disabled}
-                  active={entry.props.active}
-                  className={clsx(
-                    entry.props.variant === 'danger' && 'text-danger',
-                    entry.props.className,
-                  )}
-                  title={entry.props.title}
-                  aria-label={entry.props['aria-label']}
-                >
-                  {entry.props.icon ? (
-                    <>
-                      {entry.props.icon} {entry.props.label}
-                    </>
-                  ) : (
-                    entry.props.label
-                  )}
-                </Dropdown.Item>
-              ),
+            if (level !== undefined) {
+              setSubmenu(level === '' ? null : Number(level));
+
+              return;
+            }
+
+            onSelect?.(eventKey, e);
+
+            openMenu(false);
+          }}
+        >
+          {renderToggle()}
+
+          <FmDropdownMenu level={submenu}>
+            {openSubmenu && (
+              <>
+                <SubmenuHeader
+                  icon={openSubmenu.icon}
+                  title={openSubmenu.label}
+                  backEventKey={SUBMENU_PREFIX}
+                  kbd={false}
+                />
+
+                {openSubmenu.items}
+              </>
             )}
-          </Dropdown.Menu>
+
+            {!openSubmenu &&
+              packed.map((entry, i) =>
+                entry.kind === 'divider' ? (
+                  <Dropdown.Divider key={`divider-${i}`} />
+                ) : entry.kind === 'items' ? (
+                  <Fragment key={entry.index}>{entry.items}</Fragment>
+                ) : entry.kind === 'submenu' ? (
+                  <Dropdown.Item
+                    key={entry.index}
+                    as="button"
+                    eventKey={`${SUBMENU_PREFIX}${entry.index}`}
+                  >
+                    {entry.icon} {entry.label}
+                    <MenuGutter>
+                      <FaChevronRight />
+                    </MenuGutter>
+                  </Dropdown.Item>
+                ) : entry.props.menuOnly ? (
+                  <Dropdown.Item
+                    key={entry.index}
+                    as="button"
+                    disabled={isOff(entry.props)}
+                    eventKey={`${SUBMENU_PREFIX}${entry.index}`}
+                  >
+                    {entry.props.icon} {entry.props.label}
+                    <MenuGutter>
+                      <FaChevronRight />
+                      {entry.props.requiresOnline && <OfflineBadge />}
+                    </MenuGutter>
+                  </Dropdown.Item>
+                ) : (
+                  <Fragment key={entry.index}>
+                    <Dropdown.Item
+                      {...(entry.props.href
+                        ? {
+                            href: entry.props.href,
+                            target: entry.props.target,
+                            rel: entry.props.rel,
+                          }
+                        : ({ as: 'button', type: 'button' } as const))}
+                      onClick={entry.props.onClick}
+                      disabled={isOff(entry.props)}
+                      active={entry.props.active}
+                      className={clsx(
+                        entry.props.variant === 'danger' && 'text-danger',
+                        entry.props.className,
+                      )}
+                      title={entry.props.title}
+                      aria-label={entry.props['aria-label']}
+                    >
+                      {entry.props.icon ? (
+                        <>
+                          {entry.props.icon} {entry.props.label}
+                        </>
+                      ) : (
+                        entry.props.label
+                      )}
+
+                      {entry.props.requiresOnline && (
+                        <MenuGutter>
+                          <OfflineBadge />
+                        </MenuGutter>
+                      )}
+                    </Dropdown.Item>
+
+                    {renderPackedMenu(entry.props.menu, isOff(entry.props))}
+                  </Fragment>
+                ),
+              )}
+          </FmDropdownMenu>
         </Dropdown>
       )}
     </div>

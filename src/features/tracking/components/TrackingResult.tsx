@@ -1,74 +1,64 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
-import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import {
+  availableColorizer,
   type ColorizedPoint,
+  colorizerHotlineOptions,
   NO_DATA_COLOR,
   NO_DATA_OPACITY,
   noDataRuns,
   splitOnGaps,
 } from '@shared/colorizers/colorize.js';
 import { colorizers, type HotlinePalette } from '@shared/colorizers/index.js';
+import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { toLatLng, toLatLngArr } from '@shared/geoutils.js';
+import {
+  HALO_COLOR,
+  HALO_PANE,
+  HALO_WIDTH,
+  SELECTION_COLOR,
+} from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { distance } from '@turf/distance';
 import { Fragment, type ReactElement, useMemo, useRef, useState } from 'react';
 import { FaRegUser, FaUser } from 'react-icons/fa';
-import { Circle, Polyline, Tooltip } from 'react-leaflet';
+import { Circle, Pane, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
+import { hasElevation } from '../chartTrack.js';
 import type { TrackPoint } from '../model/types.js';
 import { trackPointsToFeature } from '../trackGeojson.js';
+import {
+  DEFAULT_TRACK_COLOR,
+  DEFAULT_TRACK_WIDTH,
+  resolveTracks,
+  splitTrackSegments,
+} from '../tracks.js';
 import { TrackingPoint, tooltipText } from './TrackingPoint.js';
+
+const POINTS_PANE = 'fm-tracking-points';
+
+// Whole objects, so a re-render hands Leaflet the same options back instead of
+// restyling every path.
+const HALO_OPTIONS = {
+  opacity: 1,
+  lineCap: 'round',
+  lineJoin: 'round',
+} as const;
+
+const SELECTION_HALO = { ...HALO_OPTIONS, color: SELECTION_COLOR };
+
+// What an unselected colorized track wears instead: its colors are the mode's,
+// so it needs an outline of its own to stay legible over the map.
+const CASING = { ...HALO_OPTIONS, color: HALO_COLOR };
 
 type HotlineOpts = {
   weight: number;
   outlineWidth: number;
   palette: HotlinePalette | undefined;
 };
-
-// Break a track's points into segments at the configured distance/duration
-// gaps, so each continuous run is rendered (and colorized) on its own.
-function splitTrackSegments(track: {
-  trackPoints: TrackPoint[];
-  splitDistance?: number | null;
-  splitDuration?: number | null;
-}): TrackPoint[][] {
-  const segments: TrackPoint[][] = [];
-
-  let curSegment: TrackPoint[] | null = null;
-
-  let prevTp: TrackPoint | undefined;
-
-  for (const tp of track.trackPoints) {
-    if (
-      prevTp &&
-      ((typeof track.splitDistance === 'number' &&
-        distance([tp.lon, tp.lat], [prevTp.lon, prevTp.lat], {
-          units: 'meters',
-        }) > track.splitDistance) ||
-        (typeof track.splitDuration === 'number' &&
-          tp.ts.getTime() - prevTp.ts.getTime() > track.splitDuration * 60000))
-    ) {
-      curSegment = null;
-    }
-
-    if (!curSegment) {
-      curSegment = [];
-
-      segments.push(curSegment);
-    }
-
-    curSegment.push(tp);
-
-    prevTp = tp;
-  }
-
-  return segments;
-}
 
 // TODO hooks-based rewrite causes massive re-rendering; revisit
 export function TrackingResult(): ReactElement {
@@ -78,9 +68,11 @@ export function TrackingResult(): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const showLine = useAppSelector((state) => state.tracking.showLine);
+  const showLine = useAppSelector((state) => state.trackingSettings.showLine);
 
-  const showPoints = useAppSelector((state) => state.tracking.showPoints);
+  const showPoints = useAppSelector(
+    (state) => state.trackingSettings.showPoints,
+  );
 
   const trackedDevices = useAppSelector(
     (state) => state.tracking.trackedDevices,
@@ -88,13 +80,19 @@ export function TrackingResult(): ReactElement {
 
   const tracks = useAppSelector((state) => state.tracking.tracks);
 
-  const colorizeBy = useAppSelector(
-    (state) => state.trackingSettings.colorizeBy,
+  const colorizeBy = useUnlockedColorizingMode(
+    useAppSelector((state) => state.trackingSettings.colorizeBy),
   );
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const activeColorizer = colorizeBy ? colorizers[colorizeBy] : null;
+  // Colorized here rather than through `useZoomColorize` (the tracks are kept
+  // apart), so the option that hook passes has to be read here too.
+  const steepnessScale = useAppSelector(
+    (state) => state.elevationSettings.steepnessScale,
+  );
+
+  const picked = colorizeBy ? colorizers[colorizeBy] : null;
 
   // Stable per (colorizer, width) so the Hotline's options-effect doesn't fire
   // on every render; tracks may each carry their own line width.
@@ -108,7 +106,7 @@ export function TrackingResult(): ReactElement {
         opts = {
           weight: w,
           outlineWidth: 0,
-          palette: activeColorizer?.palette,
+          ...colorizerHotlineOptions(picked),
         };
 
         cache.set(w, opts);
@@ -116,16 +114,12 @@ export function TrackingResult(): ReactElement {
 
       return opts;
     };
-  }, [activeColorizer]);
+  }, [picked]);
 
-  const tracks1 = useMemo(() => {
-    const tdMap = new Map(trackedDevices.map((td) => [td.token, td]));
-
-    return tracks.map((track) => ({
-      ...track,
-      ...tdMap.get(track.token),
-    }));
-  }, [trackedDevices, tracks]);
+  const tracks1 = useMemo(
+    () => resolveTracks(tracks, trackedDevices),
+    [trackedDevices, tracks],
+  );
 
   const activeTrackId = useAppSelector((state) =>
     state.main.selection?.type === 'tracking'
@@ -163,11 +157,24 @@ export function TrackingResult(): ReactElement {
     for (const track of tracks1) {
       const segments = splitTrackSegments(track);
 
-      // Colorized points per segment; empty when the active mode has no data
-      // for this track, in which case the plain colored line is kept.
-      const colorizedPositions = activeColorizer
+      // The mode is persisted, so it outlives the tracks it was picked for and
+      // is asked of every device. Where it has nothing to say about this one,
+      // its own colored line stands rather than a line of no-data grey.
+      // Elevation a device never reported can't be filled in, hence the same
+      // gate the chart button uses.
+      const colorizer =
+        picked?.needsElevation && !hasElevation(track.trackPoints)
+          ? null
+          : availableColorizer(picked, [
+              trackPointsToFeature(track.trackPoints),
+            ]);
+
+      const colorizedPositions = colorizer
         ? segments.flatMap((segment) =>
-            activeColorizer.compute([trackPointsToFeature(segment)], { zoom }),
+            colorizer.compute([trackPointsToFeature(segment)], {
+              zoom,
+              steepnessScale,
+            }),
           )
         : [];
 
@@ -175,14 +182,19 @@ export function TrackingResult(): ReactElement {
     }
 
     return map;
-  }, [tracks1, activeColorizer, zoom]);
+  }, [tracks1, picked, zoom, steepnessScale]);
 
   return (
     <>
-      {tracks1.map((track) => {
-        const color = track.color || '#7239a8';
+      {/* The points and the line's hit area, above the colorize canvas (default
+          overlayPane, zIndex 400) — which would otherwise cover the points and
+          take every pointer event meant for them. */}
+      <Pane name={POINTS_PANE} style={{ zIndex: 450 }} />
 
-        const width = track.width || 4;
+      {tracks1.map((track) => {
+        const color = track.color || DEFAULT_TRACK_COLOR;
+
+        const width = track.width || DEFAULT_TRACK_WIDTH;
 
         let handleClick = clickHandlerMemo.current[track.token];
 
@@ -232,26 +244,47 @@ export function TrackingResult(): ReactElement {
 
             {showLine &&
               track.trackPoints.length > 1 &&
+              (showColorized || track.token === activeTrackId) &&
+              segments.map((segment, i) => (
+                <Polyline
+                  key={`halo-${i}`}
+                  pane={HALO_PANE}
+                  positions={toLatLngArr(segment)}
+                  weight={width + HALO_WIDTH}
+                  pathOptions={
+                    track.token === activeTrackId ? SELECTION_HALO : CASING
+                  }
+                  interactive={false}
+                />
+              ))}
+
+            {/* Invisible hit line per segment, wider than the line so a mouse
+                or a finger doesn't have to land on it exactly. A colorized
+                track's Hotline is a non-interactive canvas, so that one has to
+                be caught from the pane above it; anything else stays in the
+                overlay pane, where it doesn't outrank the other features'
+                lines. */}
+            {showLine &&
+              track.trackPoints.length > 1 &&
+              segments.map((segment, i) => (
+                <Polyline
+                  key={`hit-${i}-${interactive ? 'a' : 'b'}`}
+                  pane={showColorized ? POINTS_PANE : undefined}
+                  positions={toLatLngArr(segment)}
+                  weight={width + 8}
+                  opacity={0}
+                  bubblingMouseEvents={false}
+                  eventHandlers={{
+                    click: handleClick,
+                  }}
+                  interactive={interactive}
+                />
+              ))}
+
+            {showLine &&
+              track.trackPoints.length > 1 &&
               (showColorized ? (
                 <>
-                  {/* Invisible hit line per segment: the colorized Hotline is a
-                      non-interactive canvas, so clicks select the track here. */}
-                  {segments.map((segment, i) => (
-                    <Polyline
-                      key={`hit-${i}-${activeTrackId === track.token}-${
-                        interactive ? 'a' : 'b'
-                      }`}
-                      positions={toLatLngArr(segment)}
-                      weight={width + 8}
-                      opacity={0}
-                      bubblingMouseEvents={false}
-                      eventHandlers={{
-                        click: handleClick,
-                      }}
-                      interactive={interactive}
-                    />
-                  ))}
-
                   {noDataRunsList.map((run, j) => (
                     <Polyline
                       key={`nodata-${colorizeBy}-${j}-${
@@ -287,18 +320,11 @@ export function TrackingResult(): ReactElement {
               ) : (
                 segments.map((segment, i) => (
                   <Polyline
-                    key={`seg-${i}-${activeTrackId === track.token}-${
-                      interactive ? 'a' : 'b'
-                    }`}
+                    key={`seg-${i}`}
                     positions={toLatLngArr(segment)}
                     weight={width}
                     color={color}
-                    bubblingMouseEvents={false}
-                    eventHandlers={{
-                      click: handleClick,
-                    }}
-                    interactive={interactive}
-                    opacity={track.token === activeTrackId ? 1 : 0.75}
+                    interactive={false}
                   />
                 ))
               ))}
@@ -309,9 +335,7 @@ export function TrackingResult(): ReactElement {
             ).map((tp, i) =>
               !showPoints || i === track.trackPoints.length - 1 ? (
                 <RichMarker
-                  key={`rm-${tp.id}-${activeTrackId === track.token}-${
-                    interactive ? 'a' : 'b'
-                  }`}
+                  key={`rm-${tp.id}-${activeTrackId === track.token}`}
                   interactive={interactive}
                   position={toLatLon(track.trackPoints.at(-1)!)}
                   color={color}
@@ -338,6 +362,7 @@ export function TrackingResult(): ReactElement {
                   key={`tp-${tp.id}-${activeTrackId}-${
                     interactive ? 'a' : 'b'
                   }`}
+                  pane={POINTS_PANE}
                   interactive={interactive}
                   tp={tp}
                   width={width}
@@ -345,15 +370,12 @@ export function TrackingResult(): ReactElement {
                   language={language}
                   onActivePointSet={setActivePoint}
                   onClick={handleClick}
-                  opacity={track.token === activeTrackId ? 1 : 0.75}
                 />
               ),
             )}
           </Fragment>
         );
       })}
-
-      <ElevationChartActivePoint />
     </>
   );
 }

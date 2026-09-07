@@ -8,11 +8,17 @@ import {
   saveHomeLocation,
   setSelectingHomeLocation,
 } from '@features/homeLocation/model/actions.js';
-import { setLocation, toggleLocate } from '@features/location/model/actions.js';
+import {
+  locationSetHeadingSource,
+  locationSetShowBearingLine,
+  setLocation,
+  toggleLocate,
+} from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
-import type { OsmFeatureId } from '@shared/types/featureId.js';
+import type { FeatureId, OsmFeatureId } from '@shared/types/featureId.js';
+import type { Feature } from 'geojson';
 import z from 'zod';
 import type { ActiveModal } from './activeModal.js';
 
@@ -21,31 +27,32 @@ export const ToolSchema = z.enum([
   'draw-lines',
   'draw-points',
   'draw-polygons',
+  'gps-recorder',
   'import-file',
   'map-details',
   'objects',
+  'panorama',
   'route-planner',
+  'toposcope',
   'tracking',
 ]);
 
 export type Tool = z.infer<typeof ToolSchema>;
 
 /**
- * Sets a single tool's state, the only action for opening/focusing/closing one:
- * - `open` — show the toolbar, passive (and deactivate it if it was the active
- *   one); doesn't touch other tools or the selection.
- * - `activate` — show + make it the focused/active tool (a map-click tool then
- *   captures clicks); clears the selection (a tool and a selection are exclusive).
- * - `close` — remove it from the open set.
- *
- * The `draw-*` tools share one menu, so opening one replaces the open one.
+ * Opens a tool. A map-click tool replaces the open one — at most one of them
+ * owns map clicks — and drops the selection unless it owns the selected
+ * feature. A tool that only brings a toolbar joins the ones already open and
+ * leaves the selection alone.
  */
-export type ToolMode = 'open' | 'activate' | 'close';
+export const openTool = createAction<Tool>('OPEN_TOOL');
 
-export const setTool = createAction<{ tool: Tool; mode: ToolMode }>('SET_TOOL');
-
-/** Replaces the whole open-tools set (URL restore; `[]` closes everything). */
-export const setTools = createAction<Tool[]>('SET_TOOLS');
+/**
+ * Closes one named tool. There is no "close whatever is open": a reducer that
+ * clears its slice when its tool goes has to tell that from another tool being
+ * opened beside it.
+ */
+export const closeTool = createAction<Tool>('CLOSE_TOOL');
 
 export const setActiveModal = createAction<ActiveModal | null>(
   'SET_ACTIVE_MODAL',
@@ -58,7 +65,13 @@ export const clearMapFeatures = createAction('CLEAR_MAP_FEATURES');
 /** Drops the persisted local settings and reloads the app from defaults. */
 export const resetApp = createAction('RESET_APP');
 
-export { saveHomeLocation, setSelectingHomeLocation, toggleLocate };
+export {
+  locationSetHeadingSource,
+  locationSetShowBearingLine,
+  saveHomeLocation,
+  setSelectingHomeLocation,
+  toggleLocate,
+};
 
 type Settings = {
   layersSettings?: Record<string, LayerSettings>;
@@ -137,6 +150,14 @@ export interface RouteSegmentSelection {
 
 export interface SearchSelection {
   type: 'search';
+  /** Which of the shown results this is — the map can hold several at once. */
+  id: FeatureId;
+}
+
+export interface DataViewerSelection {
+  type: 'data-viewer';
+  /** Index into `trackViewer.trackGeojson.features`. */
+  id: number;
 }
 
 export type Selection =
@@ -147,21 +168,73 @@ export type Selection =
   | TrackingSelection
   | RoutePointSelection
   | RouteSegmentSelection
-  | SearchSelection;
+  | SearchSelection
+  | DataViewerSelection;
 
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 
+/**
+ * What the conversion dialog answered about the features' own data; see
+ * `useConvertPrompt`. Absent, a conversion carries what it always has.
+ */
+export type ConvertCarry = {
+  /** Property keys to carry onto the drawn feature; the rest are dropped. */
+  keys: string[];
+  /**
+   * The label to give every converted feature, `{p:key}` reaching the
+   * properties above. Absent, each keeps the label it would have got.
+   */
+  label?: string;
+  /** Bake the label from the source's own properties instead of carrying it. */
+  resolveLabel: boolean;
+};
+
 export const convertToDrawing = createAction<
   // objects: `id` omitted → bulk-convert every visible object as a point
+  | { type: 'objects'; id?: OsmFeatureId; carry?: ConvertCarry }
+  // objects-geometry: `geojson` is the element already fetched by the dialog
+  // that asked, which then also settled `tolerance`; without it both are done
+  // by the processor.
+  | {
+      type: 'objects-geometry';
+      id: OsmFeatureId;
+      carry?: ConvertCarry;
+      geojson?: Feature;
+      tolerance?: number;
+    }
+  | { type: 'planned-route'; tolerance: number }
+  // track: `id` indexes the loaded collection; omitted converts every feature
+  | { type: 'track'; tolerance: number; id?: number; carry?: ConvertCarry }
+  // tracking: `id` is a watched device's token; omitted converts every one of them
+  | { type: 'tracking'; id?: string; tolerance: number }
+  | { type: 'search-result'; tolerance: number; carry?: ConvertCarry }
+  | { type: 'changesets' }>('CONVERT_TO_DRAWING');
+
+/** What a conversion to the track viewer takes its features from. */
+export type DataViewerSource =
+  // objects: `id` omitted → every visible object, as points
   | { type: 'objects'; id?: OsmFeatureId }
   | { type: 'objects-geometry'; id: OsmFeatureId }
   | { type: 'planned-route' }
-  | { type: 'track'; tolerance: number }
-  | { type: 'search-result' }
   | { type: 'changesets' }
->('CONVERT_TO_DRAWING');
+  | { type: 'search-result' }
+  | { type: 'drawing-point'; index: number }
+  | { type: 'drawing-line'; index: number };
+
+/**
+ * Hands map features to the track viewer ("Tracks and data"), where they become
+ * ordinary loaded data — the mirror of {@link convertToDrawing}, and like it the
+ * source goes with them. One object is the exception and is copied: objects are
+ * live data, refetched on every pan, so a single one cannot be taken away.
+ */
+export const convertToDataViewer = createAction<{
+  source: DataViewerSource;
+  /** How it meets what the viewer already holds; see `useDataMergeMode`. */
+  mode: 'append' | 'replace';
+}>('CONVERT_TO_DATA_VIEWER');
 
 export type ExternalTarget =
+  | 'apple'
   | 'copy'
   | 'f4map'
   | 'google'
@@ -171,13 +244,15 @@ export type ExternalTarget =
   | 'mapillary'
   | 'mapy.com'
   | 'oma.sk'
-  | 'openstreetcam'
   | 'osm.org'
   | 'osm.org/id'
+  | 'panoramax'
   | 'peakfinder'
+  | 'streetview'
   | 'url'
   | 'waze'
   | 'window'
+  | 'windy'
   | 'zbgis';
 
 export const openInExternalApp = createAction<{
@@ -188,8 +263,21 @@ export const openInExternalApp = createAction<{
   mapType?: string;
   includePoint?: boolean;
   pointTitle?: string;
+  /**
+   * What the point is, as OSM tags — JOSM adds the node carrying them. Given
+   * (even empty) it decides the tags outright; without it the title, where
+   * there is one, goes as the `name`.
+   */
+  pointTags?: Record<string, string>;
   pointDescription?: string;
+  /** The page this is about: opened in a window, or shared as a link. */
   url?: string;
+  /**
+   * The picture itself, for `image` — the one target that shares a file rather than an address, so
+   * it needs the bytes and not a page about them. Separate from `url` because the two differ:
+   * a Wikimedia photo's `url` is its Commons file page.
+   */
+  imageUrl?: string;
 }>('OPEN_IN_EXTERNAL');
 
 export { applyCookieConsent, setAnalyticCookiesAllowed };
@@ -198,5 +286,11 @@ export const hideInfoBar = createAction<{
   key: string;
   ts: number;
 }>('HIDE_INFO_BAR');
+
+/** Records that an info bar was displayed, so that the next one gets its turn. */
+export const infoBarShown = createAction<{
+  key: string;
+  ts: number;
+}>('INFO_BAR_SHOWN');
 
 export const init = createAction('INIT');

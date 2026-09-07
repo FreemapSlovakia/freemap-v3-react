@@ -3,11 +3,14 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { shareViaSheet } from '@shared/webShare.js';
 import { bbox } from '@turf/bbox';
 import { buffer } from '@turf/buffer';
 import { point } from '@turf/helpers';
 import {
+  getAppleMapsUrl,
   getF4mapUrl,
   getGoogleUrl,
   getHikingSkUrl,
@@ -15,12 +18,43 @@ import {
   getMapillaryUrl,
   getMapyCzUrl,
   getOmaUrl,
-  getOpenStreetCamUrl,
   getOsmUrl,
+  getPanoramaxUrl,
   getPeakfinderUrl,
+  getStreetViewUrl,
   getWazeUrl,
+  getWindyUrl,
   getZbgisUrl,
 } from './externalUrlUtils.js';
+
+/**
+ * What the shared picture is called where it lands. The photo's own title is the name a recipient
+ * would recognize, reduced to what every filesystem takes; a photo without one falls back to the
+ * site's name. The extension comes from the type the server actually served.
+ */
+function imageFileName(title: string | undefined, mime: string): string {
+  // `image/jpeg` → `jpg`, and a subtype carrying a suffix or parameters
+  // (`image/svg+xml`, `image/png; charset=binary`) reduces to its bare name.
+  const ext =
+    mime
+      .slice('image/'.length)
+      .replace(/[;+].*$/, '')
+      .trim()
+      .replace(/^jpeg$/, 'jpg') || 'jpg';
+
+  const stem =
+    title
+      ?.replace(/[^\p{L}\p{N} ._-]/gu, '')
+      .trim()
+      // A Commons title is the file name, extension and all, so keep exactly
+      // one — the extension appended below, which names what the bytes are.
+      .replace(/\.(jpe?g|png|gif|webp|tiff?|svg|bmp|avif|heic|heif)$/i, '')
+      .trim()
+      .slice(0, 80)
+      .trim() || 'freemap-photo';
+
+  return `${stem}.${ext}`;
+}
 
 export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
   actionCreator: openInExternalApp,
@@ -29,14 +63,39 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       where,
       lat = getState().map.lat,
       lon = getState().map.lon,
-      zoom = getState().map.zoom,
+      zoom: rawZoom = getState().map.zoom,
       includePoint,
       pointTitle,
+      pointTags,
       pointDescription,
       url,
+      imageUrl,
     } = action.payload;
 
+    // Whole levels only: several of the targets below — `geo:`, ZBGIS,
+    // hiking.sk — take the zoom as an integer and make nothing of a fraction.
+    const zoom = Math.round(rawZoom);
+
     trackMatomo(['trackEvent', 'Share', 'openExternal', where]);
+
+    // Both share targets hand their outcome here. Dismissing the sheet rejects
+    // with AbortError — closing what you just opened is not a failure to report
+    // — but anything else is, including a share that never got a sheet at all:
+    // the user tapped share, and silence is the one answer that leaves them
+    // with nothing to act on.
+    const reportShareProblem = (err: unknown) => {
+      if (isAbortError(err)) {
+        return;
+      }
+
+      dispatch(
+        toastsAdd({
+          messageKey: 'general.operationError',
+          messageParams: { err },
+          style: 'danger',
+        }),
+      );
+    };
 
     switch (where) {
       case 'window':
@@ -120,8 +179,19 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
                 lon: String(lon),
               });
 
-              if (pointTitle) {
-                usp.set('addtags', `name=${pointTitle}`);
+              const addtags = Object.entries(
+                pointTags ?? (pointTitle ? { name: pointTitle } : {}),
+              )
+                // `|` separates the pairs and the first `=` splits one, so a
+                // key or value carrying either would land as a different tag.
+                .filter(
+                  ([k, v]) =>
+                    !k.includes('|') && !k.includes('=') && !v.includes('|'),
+                )
+                .map(([k, v]) => `${k}=${v}`);
+
+              if (addtags.length > 0) {
+                usp.set('addtags', addtags.join('|'));
               }
 
               url.search = usp.toString();
@@ -175,13 +245,28 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
         break;
 
-      case 'openstreetcam':
-        window.open(getOpenStreetCamUrl(lat, lon, zoom));
+      case 'mapillary':
+        window.open(getMapillaryUrl(lat, lon, zoom));
 
         break;
 
-      case 'mapillary':
-        window.open(getMapillaryUrl(lat, lon, zoom));
+      case 'panoramax':
+        window.open(getPanoramaxUrl(lat, lon, zoom));
+
+        break;
+
+      case 'streetview':
+        window.open(getStreetViewUrl(lat, lon));
+
+        break;
+
+      case 'apple':
+        window.open(getAppleMapsUrl(lat, lon, zoom, includePoint));
+
+        break;
+
+      case 'windy':
+        window.open(getWindyUrl(lat, lon, zoom));
 
         break;
 
@@ -200,21 +285,17 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
 
         const text = [pointDescription, geo].filter(Boolean).join('\n');
 
-        window.navigator
-          .share({
-            title: pointTitle,
-            text,
-            url: url || window.location.href,
+        shareViaSheet({
+          title: pointTitle,
+          text,
+          url: url || window.location.href,
+        })
+          .then((shared) => {
+            if (!shared) {
+              throw new Error('another share is already open');
+            }
           })
-          .catch((err: unknown) => {
-            dispatch(
-              toastsAdd({
-                messageKey: 'general.operationError',
-                messageParams: { err },
-                style: 'danger',
-              }),
-            );
-          });
+          .catch(reportShareProblem);
 
         break;
       }
@@ -222,15 +303,27 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       case 'image':
         {
           const share = async () => {
-            if (!url) {
-              throw new Error('missong url');
+            if (!imageUrl) {
+              throw new Error('missing image url');
             }
 
-            const response = await fetch(url);
+            const response = await fetch(imageUrl);
+
+            if (!response.ok) {
+              throw new Error(`fetching the picture: HTTP ${response.status}`);
+            }
+
+            const blob = await response.blob();
+
+            // The server says what the picture is; a Commons original may well be a PNG. Anything
+            // that doesn't answer with an image type is not one to name `.jpg` and hand on.
+            if (!blob.type.startsWith('image/')) {
+              throw new Error(`not an image: ${blob.type || 'no type'}`);
+            }
 
             const filesArray = [
-              new File([await response.blob()], 'picture.jpg', {
-                type: 'image/jpeg',
+              new File([blob], imageFileName(pointTitle, blob.type), {
+                type: blob.type,
               }),
             ];
 
@@ -238,22 +331,23 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
               throw new Error("can't share");
             }
 
-            await window.navigator.share({
-              files: filesArray,
-              title: pointTitle,
-              text: pointDescription,
-            });
+            // The picture is fetched first, so another share tapped meanwhile
+            // can reach the sheet ahead of this one — and by then the user may
+            // have swiped to a different picture entirely. Whatever is on that
+            // sheet, it is not what this asked for, so say so rather than
+            // vanish.
+            if (
+              !(await shareViaSheet({
+                files: filesArray,
+                title: pointTitle,
+                text: pointDescription,
+              }))
+            ) {
+              throw new Error('another share is already open');
+            }
           };
 
-          share().catch((err) => {
-            dispatch(
-              toastsAdd({
-                messageKey: 'general.operationError',
-                messageParams: { err },
-                style: 'danger',
-              }),
-            );
-          });
+          share().catch(reportShareProblem);
         }
 
         break;

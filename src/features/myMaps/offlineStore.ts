@@ -1,7 +1,7 @@
 import { clear, createStore, del, get, keys, set } from 'idb-keyval';
 import z from 'zod';
 import { type MapData, type MapMeta, MapMetaSchema } from './model/actions.js';
-import { MapsLoadResponseSchema } from './model/loadMapDocument.js';
+import { MapsLoadResponseSchema } from './model/mapDocumentSchema.js';
 
 const store = createStore('fm-myMaps-offline', 'kv');
 

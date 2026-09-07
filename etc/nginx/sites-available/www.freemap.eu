@@ -9,19 +9,10 @@ if ($blocked_country) {
 
 	root /home/freemap/www;
 
-    location = /manifest.webmanifest {
-      default_type application/manifest+json;
-    }
-
 	location ~ ^/~(.+?)(/.*)?$ {
 		charset UTF-8;
 		alias /home/$1/www$2;
 		autoindex on;
-	}
-
-	location /sitemap/layers=X&lang=sk {
-		add_header Link '<https://www.freemap.sk/?layers=X&lang=sk>; rel=\"canonical\"';
-		default_type 'text/html; charset=UTF-8';
 	}
 
 	location /sitemap {
@@ -29,63 +20,67 @@ if ($blocked_country) {
 	}
 
 	location = / {
-		set $cond "";
+		# Serve the matching static prerender to crawlers; humans get the SPA.
+		# The `[/.%]` guard keeps $args from escaping /sitemap/ in the try_files
+		# below (no path separators / dots / percent-escapes → no traversal).
+		set $prerender "";
 
 		if ($http_user_agent ~ "\b(UCBrowser|PetalBot|YaBrowser|Applebot|Googlebot|AdsBot|Bingbot|Slurp|DuckDuckBot|Baiduspider|YandexBot|Sogou|ia_archiver|Mediapartners)\b") {
-			set $cond a;
+			set $prerender bot;
 		}
 
-		if ($args ~ "layers=X&osm-(node|way|relation)=\d+&lang=sk") {
-			set $cond "${cond}b";
+		if ($args ~ "[/.%]") {
+			set $prerender "${prerender}-unsafe";
 		}
 
-		if ($args ~ "layers=X&tip=\w+&lang=sk") {
-			set $cond "${cond}b";
+		if ($prerender = bot) {
+			rewrite ^ /__prerender last;
 		}
 
-		if ($cond = ab) {
-			rewrite ^ /sitemap/$args;
-		}
-
-		if ($cond = a) {
-			rewrite ^ /sitemap/layers=X&lang=sk;
-		}
-
-		#set $lang_sup "en,sk,cs,hu";
-		#set_by_lua_file $lang_accept /etc/nginx/lang.lua $lang_sup;
-		#try_files $uri /index-$lang_accept.html;
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
+		add_header Vary 'Accept-Language';
+
+		# Humans: the entry document carrying this domain's portal name, in the
+		# browser's language where we have one. $ui_lang is empty for languages
+		# we do not build, so the fallback applies.
+		try_files /index-eu-$ui_lang.html /index-eu-en.html;
 	}
 
-	# Match all unhashed HTML, including the internal redirect "/" -> /index.html
-	# (served outside the "location = /" block, so its headers are lost) and the
-	# index-XX.html variants. Without this, the entry HTML is heuristically cached,
-	# pinning users to stale hashed asset names (broken layout after a deploy).
-	location ~ \.html$ {
+	# Crawler prerender: serve /sitemap/<full query string> if it exists, else the
+	# English homepage (freemap.eu is the international domain). Canonical +
+	# hreflang live inside each prerender file.
+	location = /__prerender {
+		internal;
+		default_type 'text/html; charset=UTF-8';
+		try_files "/sitemap/$args" "/sitemap/layers=X&lang=en";
+	}
+
+	# Entry documents, the offline page and the build manifest change on every
+	# deploy and point at the current assets, so they must never be cached — not
+	# even heuristically, which nginx does for responses that lack Cache-Control.
+	# The offline page belongs here because the service worker refetches it on
+	# install; a stale copy would reference a logo the worker no longer serves.
+	# This block also serves `/`: the try_files above re-matches locations, so
+	# these headers — not the ones in `location = /` — are what a visitor gets.
+	# Keep it indexable; the raw filenames are kept out of search via robots.txt.
+	location ~ ^/(index(-(sk|eu)-\w\w)?\.html|offline\.html|assets-manifest\.json)$ {
 		add_header Cache-Control 'no-store, max-age=0';
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
+		add_header Vary 'Accept-Language';
 	}
 
-	# Service workers and the asset manifest are unhashed and must never go stale,
-	# otherwise the SW / precache list lags behind the deployed build.
-	location ~ ^/(sw|upload-sw)\.js$ {
-		add_header Cache-Control 'no-store, max-age=0';
+	# Content-hashed assets (16-hex-char [chunk|content]hash — keep in sync with
+	# rspack's hashDigestLength) are immutable: the URL changes when the content
+	# does, so cache them forever without revalidation.
+	location ~ ".+\.[a-z0-9]{16}\..+$" {
+		add_header Cache-Control 'public, max-age=31536000, immutable';
 	}
 
-	location = /assets-manifest.json {
-		add_header Cache-Control 'no-store, max-age=0';
-	}
-
-	# Content-addressed assets (rspack emits 16-char [chunkhash]/[contenthash]).
-	# The old rule required 20 chars and never matched, so bundles were uncached.
-	location ~ "\.[a-z0-9]{16,}\.[a-z0-9]+$" {
-		add_header Cache-Control 'max-age=31536000, immutable';
-	}
-
-	location ~ "\.(png|jpg)$" {
+	# Possibly-unhashed images: cache long, but allow revalidation on change.
+	location ~ "\.png$|\.jpg$|\.svg$|\.ico$" {
 		add_header Cache-Control 'max-age=31536000';
 	}
 
@@ -94,18 +89,20 @@ if ($blocked_country) {
 	}
 
 	location /mbtiles {
-		alias /fm/storage/user-mbtiles;
+		alias /fm/storage1/backend.freemap.sk-data/user-mbtiles;
 	}
 
 	location / {
 		if ($http_origin ~* (glitchtip\.freemap\.sk)) {
 			add_header "Access-Control-Allow-Origin" "$http_origin";
+			add_header Vary Origin always;
 			add_header "Access-Control-Allow-Methods" "GET, POST, OPTIONS";
 			add_header "Access-Control-Allow-Headers" "Authorization, Content-Type";
 		}
 
 		if ($request_method = 'OPTIONS') {
 			add_header "Access-Control-Allow-Origin" "glitchtip.freemap.sk";
+			add_header Vary Origin always;
 			add_header "Access-Control-Allow-Methods" "GET, POST, OPTIONS";
 			add_header "Access-Control-Allow-Headers" "Authorization, Content-Type";
 			add_header "Content-Length" 0;
@@ -114,10 +111,23 @@ if ($blocked_country) {
 		}
 	}
 
+	location /tiles/parametric-shading {
+		proxy_set_header Host $host;
+	        proxy_set_header X-Real-IP $remote_addr;
+        	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	        proxy_set_header X-Forwarded-Proto $scheme;
+
+		expires 30d;
+		add_header Cache-Control "public, no-transform";
+
+		rewrite ^/tiles/parametric-shading/(.*)$ /$1 break;
+        	proxy_pass http://localhost:3033/;
+	}
+
 	http2 on;
 
-    listen 443 quic;
-    listen [::]:443 quic;
+        listen 443 quic;
+        listen [::]:443 quic;
 
 	listen [::]:443 ssl; # managed by Certbot
 	listen 443 ssl; # managed by Certbot

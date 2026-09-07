@@ -6,14 +6,13 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   what: {
     plannedRoute: 'znaleziona trasa',
-    plannedRouteWithStops: 'z przystankami',
     objects: 'obiekty (POI)',
     pictures: 'zdjęcia (w widocznym obszarze mapy)',
     drawingLines: 'rysowanie – linie',
     drawingAreas: 'rysowanie – poligony',
     drawingPoints: 'rysowanie – punkty',
     tracking: 'śledzenie na żywo',
-    import: 'zaimportowany plik',
+    import: 'trasy i dane',
     search: 'wynik',
   },
   garmin: {
@@ -41,6 +40,11 @@ const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
       'Nie jesteś jeszcze zalogowany do Garmin. Chcesz się teraz zalogować?',
   },
   download: 'Pobierz',
+  share: 'Udostępnij',
+  shareAsText:
+    'Twoja przeglądarka udostępnia tylko pliki tekstowe, dlatego plik otrzyma rozszerzenie „.txt”. Aplikacja docelowa może wymagać jego usunięcia.',
+  sharedAsDownload:
+    'Nie udało się otworzyć okna udostępniania, więc plik został pobrany.',
   format: 'Format',
   target: 'Cel',
   elevation: {

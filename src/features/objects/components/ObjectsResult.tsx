@@ -1,17 +1,6 @@
-import {
-  clearMapFeatures,
-  convertToDrawing,
-  selectFeature,
-} from '@app/store/actions.js';
+import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import {
-  osmLoadNode,
-  osmLoadRelation,
-  osmLoadWay,
-} from '@features/osm/model/osmActions.js';
-import { searchSetResults } from '@features/search/model/actions.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
@@ -20,8 +9,8 @@ import {
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import type { OsmMapping } from '@osm/types.js';
-import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
+import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -30,11 +19,9 @@ import {
   OsmFeatureIdSchema,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import { point } from '@turf/helpers';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 
 export function ObjectsResult(): ReactElement | ReactElement[] | null {
   const m = useMessages();
@@ -98,52 +85,33 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
 
         return (
           <RichMarker
-            key={`poi-${stringifyFeatureId(id)}-${interactive ? 'a' : 'b'}`}
+            key={`poi-${stringifyFeatureId(id)}`}
             interactive={interactive}
             position={{ lat: coords.lat, lng: coords.lon }}
-            image={img[0]}
-            imageOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
-            color={
+            poi={img[0]}
+            poiOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
+            color={color}
+            // Selection is the ring, so the marker keeps the color the objects
+            // settings give every POI.
+            halo={
               activeId && featureIdsEqual(activeId, id)
-                ? COLORS.selected
-                : color
+                ? SELECTION_COLOR
+                : undefined
             }
             markerType={markerType}
             eventHandlers={{
               click() {
                 dispatch(selectFeature({ type: 'objects', id }));
-
-                dispatch(
-                  toastsAdd({
-                    id: 'mapDetails.tags',
-                    messageKey: 'detail',
-                    messageLoader: loadObjectsMessages,
-                    messageParams: {
-                      result: {
-                        id,
-                        source: 'osm',
-                        geojson: point([coords.lon, coords.lat], tags),
-                      },
-                    },
-                    cancelType: [
-                      clearMapFeatures.type,
-                      searchSetResults.type,
-                      osmLoadNode.type,
-                      osmLoadWay.type,
-                      osmLoadRelation.type,
-                      convertToDrawing.type,
-                      selectFeature.type,
-                    ],
-                    style: 'info',
-                  }),
-                );
               },
             }}
           >
             <Tooltip key={selectedIconValue} direction="top">
               <span>
                 {/* {m?.objects.subcategories[pt.id]} */}
-                {gn} <i>{name}</i>
+                {/* Named first, kind of thing second — as the search list reads. */}
+                {name && <b>{name}</b>}
+                {name && gn && ' '}
+                {gn}
                 {ele && <br />}
                 {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
               </span>

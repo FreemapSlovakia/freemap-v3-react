@@ -5,18 +5,22 @@ import type { MapFeaturesExportMessages } from './MapFeaturesExportMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Letöltés',
+  share: 'Megosztás',
+  shareAsText:
+    'A böngésződ csak szöveges fájlokat oszt meg, ezért a fájl „.txt” kiterjesztést kap. A fogadó alkalmazásnak lehet, hogy el kell távolítani.',
+  sharedAsDownload:
+    'A megosztási ablakot nem sikerült megnyitni, ezért a fájl letöltésre került.',
   exportError: ({ err }) =>
     addError(getMessages()!, 'Hiba a exportálásakor', err),
   what: {
     plannedRoute: 'útvonal',
-    plannedRouteWithStops: 'megállásokkal',
     objects: 'érdekes pontok (POI-k)',
     pictures: 'fényképek (a látható térképterületen)',
     drawingLines: 'rajzolás - vonalak',
     drawingAreas: 'rajzolás - sokszögek',
     drawingPoints: 'rajzolás - pontok',
     tracking: 'élő nyomkövetés',
-    import: 'importált fájl',
+    import: 'nyomvonalak és adatok',
     search: 'találat',
   },
   onlySelected: 'Csak a kijelölt elem',

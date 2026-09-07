@@ -1,17 +1,22 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { SubmenuHeader } from '@features/mainMenu/components/SubmenuHeader.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { LEGEND_ITEM } from '@shared/colorizers/components/legendToggleOption.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { Chord } from '@shared/components/Chord.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import type { IconType } from 'react-icons';
 import {
@@ -84,6 +89,8 @@ export default function GalleryMenu() {
 
   const m = useMessages();
 
+  const online = useOnline();
+
   const gm = useGalleryMessages();
 
   const dispatch = useDispatch();
@@ -134,74 +141,71 @@ export default function GalleryMenu() {
     return () => window.removeEventListener('keydown', handle);
   }, [moreView]);
 
-  const handleMoreSelect = useCallback(
-    async (eventKey: string | null) => {
-      if (!eventKey) {
-        return;
-      }
+  const handleMoreSelect = async (eventKey: string | null) => {
+    if (!eventKey) {
+      return;
+    }
 
-      if (eventKey === 'submenu-license') {
-        setMoreView('license');
+    if (eventKey === 'submenu-license') {
+      setMoreView('license');
 
-        return;
-      }
+      return;
+    }
 
-      if (eventKey === 'submenu-') {
-        setMoreView('root');
+    if (eventKey === 'submenu-') {
+      setMoreView('root');
 
-        return;
-      }
+      return;
+    }
 
-      // Every remaining branch is a terminal action that closes the menu.
-      setMoreView('closed');
+    // Every remaining branch is a terminal action that closes the menu.
+    setMoreView('closed');
 
-      if (eventKey.startsWith('all-')) {
-        if (
-          await confirm({
-            title: gm?.allMyPhotos.title,
-            message:
-              eventKey === 'all-premium'
-                ? gm?.allMyPhotos.confirmPremium
-                : gm?.allMyPhotos.confirmFree,
-            icon: eventKey === 'all-premium' ? <FaGem /> : <FaDove />,
-            confirmLabel: m?.general.yes,
-            cancelLabel: m?.general.no,
-          })
-        ) {
-          dispatch(
-            galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
-          );
-        }
-      } else if (eventKey.startsWith('lic:')) {
-        const license = eventKey.slice('lic:'.length) as GalleryLicense;
-
-        if (
-          await confirm({
-            title: gm?.license.chooseForAll,
-            message: gm?.allMyPhotos.confirmLicense(
-              gm?.license.names[license] ?? license,
-            ),
-            icon: <FaCreativeCommons />,
-            confirmLabel: m?.general.yes,
-            cancelLabel: m?.general.no,
-          })
-        ) {
-          dispatch(galleryAllOfLicense(license));
-        }
-      } else if (eventKey === 'emails') {
+    if (eventKey.startsWith('all-')) {
+      if (
+        await confirm({
+          title: gm?.allMyPhotos.title,
+          message:
+            eventKey === 'all-premium'
+              ? gm?.allMyPhotos.confirmPremium
+              : gm?.allMyPhotos.confirmFree,
+          icon: eventKey === 'all-premium' ? <FaGem /> : <FaDove />,
+          confirmLabel: m?.general.yes,
+          cancelLabel: m?.general.no,
+        })
+      ) {
         dispatch(
-          saveSettings({
-            user: {
-              sendGalleryEmails: !sendGalleryEmails,
-            },
-          }),
+          galleryAllPremiumOrFree(eventKey.slice(4) as 'premium' | 'free'),
         );
-      } else if (eventKey === 'direction') {
-        dispatch(galleryToggleDirection());
       }
-    },
-    [dispatch, sendGalleryEmails, confirm, m, gm],
-  );
+    } else if (eventKey.startsWith('lic:')) {
+      const license = eventKey.slice('lic:'.length) as GalleryLicense;
+
+      if (
+        await confirm({
+          title: gm?.license.chooseForAll,
+          message: gm?.allMyPhotos.confirmLicense(
+            gm?.license.names[license] ?? license,
+          ),
+          icon: <FaCreativeCommons />,
+          confirmLabel: m?.general.yes,
+          cancelLabel: m?.general.no,
+        })
+      ) {
+        dispatch(galleryAllOfLicense(license));
+      }
+    } else if (eventKey === 'emails') {
+      dispatch(
+        saveSettings({
+          user: {
+            sendGalleryEmails: !sendGalleryEmails,
+          },
+        }),
+      );
+    } else if (eventKey === 'direction') {
+      dispatch(galleryToggleDirection());
+    }
+  };
 
   const [hidden, setHidden] = usePersistentBoolean('fm.galleryMenu.collapsed');
 
@@ -214,11 +218,17 @@ export default function GalleryMenu() {
           <ButtonToolbar>
             <LongPressTooltip label={m?.tools.photos} breakpoint="sm">
               {({ props, label, labelClassName }) => (
-                <span className="align-self-center ms-1" {...props}>
-                  <FaCamera /> <span className={labelClassName}>{label}</span>
+                <span
+                  className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
+                  {...props}
+                >
+                  <FaCamera />
+                  <span className={labelClassName}>{label}</span>
                 </span>
               )}
             </LongPressTooltip>
+
+            <OfflineBadge />
 
             {!hidden && (
               <>
@@ -226,7 +236,7 @@ export default function GalleryMenu() {
                   {({ props, label, labelClassName }) => (
                     <Button
                       variant="secondary"
-                      className="ms-1"
+                      disabled={!online}
                       onClick={() =>
                         dispatch(setActiveModal({ type: 'gallery-upload' }))
                       }
@@ -241,7 +251,6 @@ export default function GalleryMenu() {
                 <LongPressTooltip label={gm?.filter} kbd="p f" breakpoint="lg">
                   {({ props, label, labelClassName }) => (
                     <Button
-                      className="ms-1"
                       variant="secondary"
                       onClick={() =>
                         dispatch(setActiveModal({ type: 'gallery-filter' }))
@@ -256,7 +265,6 @@ export default function GalleryMenu() {
                 </LongPressTooltip>
 
                 <Dropdown
-                  className="ms-1"
                   onSelect={(colorizeBy) => {
                     if (colorizeBy === LEGEND_ITEM) {
                       dispatch(galleryToggleLegend());
@@ -286,10 +294,11 @@ export default function GalleryMenu() {
                     )}
                   </LongPressTooltip>
 
-                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                  <FmDropdownMenu>
                     {pictureLegendApplies(colorizeBy) && (
                       <>
                         <Dropdown.Item
+                          as="button"
                           eventKey={LEGEND_ITEM}
                           active={showLegend}
                         >
@@ -301,7 +310,11 @@ export default function GalleryMenu() {
                       </>
                     )}
 
-                    <Dropdown.Item eventKey="none" active={!colorizeBy}>
+                    <Dropdown.Item
+                      as="button"
+                      eventKey="none"
+                      active={!colorizeBy}
+                    >
                       <FaBan /> {gm?.noColorize ?? '…'}
                     </Dropdown.Item>
 
@@ -310,6 +323,7 @@ export default function GalleryMenu() {
 
                       return (
                         <Dropdown.Item
+                          as="button"
                           eventKey={by}
                           key={by}
                           title={gm?.c[by]}
@@ -319,42 +333,45 @@ export default function GalleryMenu() {
                         </Dropdown.Item>
                       );
                     })}
-                  </Dropdown.Menu>
+                  </FmDropdownMenu>
                 </Dropdown>
 
                 <Dropdown
-                  className="ms-1"
                   onSelect={(listBy) =>
                     dispatch(galleryList(listBy as GalleryListOrder))
                   }
                 >
                   <LongPressTooltip label={gm?.showPhotosFrom} breakpoint="md">
                     {({ props, label, labelClassName }) => (
-                      <Dropdown.Toggle variant="secondary" {...props}>
+                      <Dropdown.Toggle
+                        variant="secondary"
+                        disabled={!online}
+                        {...props}
+                      >
                         <FaBook />{' '}
                         <span className={labelClassName}>{label}</span>
                       </Dropdown.Toggle>
                     )}
                   </LongPressTooltip>
 
-                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                  <FmDropdownMenu>
                     {(Object.keys(gm?.f ?? {}) as GalleryListOrder[]).map(
                       (key) => {
                         const Icon = LIST_ORDER_ICONS[key];
 
                         return (
                           <Dropdown.Item key={key} as="button" eventKey={key}>
-                            <Icon /> {gm?.f[key]}{' '}
+                            <Icon /> {gm?.f[key]}
                             {key === '-createdAt' && (
-                              <>
-                                <kbd>p</kbd> <kbd>l</kbd>
-                              </>
+                              <MenuGutter>
+                                <Chord command="gallery-list" />
+                              </MenuGutter>
                             )}
                           </Dropdown.Item>
                         );
                       },
                     )}
-                  </Dropdown.Menu>
+                  </FmDropdownMenu>
                 </Dropdown>
 
                 <LongPressTooltip
@@ -364,8 +381,8 @@ export default function GalleryMenu() {
                 >
                   {({ props, label, labelClassName }) => (
                     <Button
-                      className="ms-1"
                       variant="secondary"
+                      disabled={!online}
                       onClick={() =>
                         dispatch(
                           setActiveModal({ type: 'gallery-leaderboard' }),
@@ -380,7 +397,6 @@ export default function GalleryMenu() {
                 </LongPressTooltip>
 
                 <Dropdown
-                  className="ms-1"
                   id="more"
                   onSelect={handleMoreSelect}
                   autoClose="outside"
@@ -391,7 +407,10 @@ export default function GalleryMenu() {
                     <FaCog />
                   </Dropdown.Toggle>
 
-                  <Dropdown.Menu popperConfig={fixedPopperConfig}>
+                  {/* Closing is not a level of its own — it reopens at the root. */}
+                  <FmDropdownMenu
+                    level={moreView === 'closed' ? 'root' : moreView}
+                  >
                     {moreView === 'license' ? (
                       <>
                         <SubmenuHeader
@@ -400,14 +419,14 @@ export default function GalleryMenu() {
                         />
 
                         {PHOTO_LICENSES.map(({ id }) => (
-                          <Dropdown.Item
+                          <OnlineOnlyItem
                             as="button"
                             eventKey={`lic:${id}`}
                             key={id}
                           >
                             <LicenseBadge licenseId={id} />{' '}
                             {gm?.license.names[id] ?? id}
-                          </Dropdown.Item>
+                          </OnlineOnlyItem>
                         ))}
                       </>
                     ) : (
@@ -419,38 +438,40 @@ export default function GalleryMenu() {
 
                         {sendGalleryEmails !== undefined && (
                           <>
-                            <Dropdown.Item as="button" eventKey="emails">
+                            <OnlineOnlyItem as="button" eventKey="emails">
                               <Checkbox value={sendGalleryEmails} />{' '}
                               <FaEnvelope /> {gm?.sendGalleryEmails}
-                            </Dropdown.Item>
+                            </OnlineOnlyItem>
 
                             <Dropdown.Divider />
 
-                            <Dropdown.Item as="button" eventKey="all-premium">
+                            <OnlineOnlyItem as="button" eventKey="all-premium">
                               <FaGem /> {gm?.allMyPhotos.premium}
-                            </Dropdown.Item>
+                            </OnlineOnlyItem>
 
-                            <Dropdown.Item as="button" eventKey="all-free">
+                            <OnlineOnlyItem as="button" eventKey="all-free">
                               <FaDove /> {gm?.allMyPhotos.free}
-                            </Dropdown.Item>
+                            </OnlineOnlyItem>
 
-                            <Dropdown.Item
+                            <OnlineOnlyItem
                               as="button"
                               eventKey="submenu-license"
                             >
-                              <FaCreativeCommons /> {gm?.license.chooseForAll}{' '}
-                              <FaChevronRight />
-                            </Dropdown.Item>
+                              <FaCreativeCommons /> {gm?.license.chooseForAll}
+                              <MenuGutter>
+                                <FaChevronRight />
+                              </MenuGutter>
+                            </OnlineOnlyItem>
                           </>
                         )}
                       </>
                     )}
-                  </Dropdown.Menu>
+                  </FmDropdownMenu>
                 </Dropdown>
               </>
             )}
 
-            <ButtonGroup className="ms-1">
+            <ButtonGroup>
               <LongPressTooltip
                 label={hidden ? m?.general.expand : m?.general.collapse}
               >

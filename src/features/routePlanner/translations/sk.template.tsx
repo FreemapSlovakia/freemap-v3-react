@@ -16,8 +16,14 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Počet delení',
     timeLimit: 'Časový limit',
     distanceLimit: 'Limit vzdialenosti',
+    reverseFlow: 'Cesta do bodu',
+    reverseFlowHint:
+      'Oblasti potom pokrývajú, odkiaľ sa dá do tohto bodu doraziť; bez zaškrtnutia to, kam sa z neho dá dostať. Rozdiel robia jednosmerky a zákazy odbočenia.',
   },
   milestones: 'Kilometrovník',
+  milestonesOff: 'Vypnuté',
+  recompute: 'Prepočítať trasu',
+  maxAlternatives: 'Max. počet ponúkaných trás',
   style: {
     menuItem: 'Štýl trasy',
     title: 'Štýl trasy',
@@ -34,7 +40,7 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   start: 'Štart',
   finish: 'Cieľ',
-  stop: 'Zasávka',
+  stop: 'Zastávka',
   swap: 'Prehodiť štart a cieľ',
   point: {
     point: 'Bod trasy',
@@ -47,9 +53,14 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   transportType: {
     car: 'Auto',
     car4wd: 'Auto 4x4',
+    carnotoll: 'Auto (bez mýta)',
     bike: 'Bicykel',
+    ebike: 'Elektrobicykel',
+    gravelbike: 'Gravel bicykel',
     foot: 'Pešo',
+    stroller: 'Kočík / vozík',
     hiking: 'Turistika',
+    easyhike: 'Ľahká turistika',
     mtb: 'Horský bicykel',
     racingbike: 'Cestný bicykel',
     motorcycle: 'Motocykel',
@@ -66,6 +77,7 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   modeLabel: 'Režim trasovania',
   alternative: 'Alternatíva',
+  isochroneRing: 'Izochróna',
   distance: ({ value, diff }) => (
     <>
       Vzdialenosť:{' '}
@@ -73,6 +85,11 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
         {value}
         {diff ? ` (+ ${diff})` : ''}
       </b>
+    </>
+  ),
+  tolled: ({ value }) => (
+    <>
+      Spoplatnené úseky: <b>{value}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

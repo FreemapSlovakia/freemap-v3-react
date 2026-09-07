@@ -36,11 +36,7 @@ export function RecentTags({
   return tags.length === 0 ? null : (
     <div
       className={clsx(
-        'd-flex',
-        'flex-wrap',
-        'f-gap-1',
-        'align-items-center',
-        'overflow-auto',
+        'd-flex flex-wrap gap-1 align-items-center overflow-auto',
         className,
       )}
     >
@@ -48,14 +44,14 @@ export function RecentTags({
 
       <div className="flex-shrink-0">{gm?.recentTags}</div>
 
-      <div className="d-flex overflow-auto">
+      <div className="d-flex gap-1 overflow-auto">
         {tags.map((tag) => (
           <Button
             key={tag}
             onClick={() => onAdd(tag)}
             variant="secondary"
             size="sm"
-            className="py-0 ms-1"
+            className="py-0"
           >
             {tag}
           </Button>

@@ -10,11 +10,17 @@ export interface TrackingSettingsState {
   colorizeBy: ColorizingMode | null;
   // Whether the colorize legend is shown; independent of the other tools.
   colorizeLegend: boolean;
+  // How tracked devices are drawn — a display preference of the viewer, not a
+  // property of any particular map.
+  showLine: boolean;
+  showPoints: boolean;
 }
 
 export const trackingSettingsInitialState: TrackingSettingsState = {
   colorizeBy: null,
   colorizeLegend: true,
+  showLine: true,
+  showPoints: true,
 };
 
 export const trackingSettingsReducer = createReducer(
@@ -26,5 +32,11 @@ export const trackingSettingsReducer = createReducer(
       })
       .addCase(trackingActions.setColorizeLegend, (state, { payload }) => {
         toggleColorizeLegend(state, payload);
+      })
+      .addCase(trackingActions.setShowLine, (state, { payload }) => {
+        state.showLine = payload;
+      })
+      .addCase(trackingActions.setShowPoints, (state, { payload }) => {
+        state.showPoints = payload;
       }),
 );

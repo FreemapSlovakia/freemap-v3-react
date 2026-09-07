@@ -2,19 +2,44 @@ import type { Selection } from '@app/store/actions.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import type { DrawingLineType } from '@features/drawing/model/actions/drawingLineActions.js';
+import type { DataViewerState } from '@features/dataViewer/model/reducer.js';
+import {
+  drawingLineLabel,
+  drawingPointLabel,
+} from '@features/drawing/labelValues.js';
+import type {
+  DrawingLineType,
+  DrawnLine,
+  Line,
+} from '@features/drawing/model/actions/drawingLineActions.js';
 import type { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
 import type { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import type { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
 import { loadGalleryMessages } from '@features/gallery/translations/loadGalleryMessages.js';
 import type { ObjectsState } from '@features/objects/model/reducer.js';
+import {
+  ISOCHRONE_FILL_OPACITY,
+  isochroneColor,
+  isochroneLabel,
+} from '@features/routePlanner/model/isochrones.js';
 import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import {
+  dominantStepMode,
+  INACTIVE_ALTERNATIVE_COLOR,
+  STEP_MODE_COLORS,
+  stepModeDashArray,
+  stopNumber,
+  WAYPOINT_COLORS,
+  WAYPOINT_ICONS,
+  waypointKind,
+} from '@features/routePlanner/model/routeColors.js';
+import type { RoutePlannerSettingsState } from '@features/routePlanner/model/settingsReducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
+import { hasGeometry } from '@features/search/model/resultUtils.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
-import type { TrackViewerState } from '@features/trackViewer/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
 import { fetchElevations } from '@shared/elevation.js';
@@ -35,6 +60,7 @@ import {
   keepDrawingLine,
   keepDrawingPoint,
   keepObject,
+  keepSearchResult,
   selectedTrackToken,
 } from '../selectionFilter.js';
 import {
@@ -45,6 +71,7 @@ import {
 import { exportElevationCancelActions } from './fillElevations.js';
 import {
   addAttribute,
+  appendProps,
   createElement,
   FM_NS,
   GARMIN_NS,
@@ -134,6 +161,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     drawingPoints,
     objects,
     routePlanner,
+    routePlannerSettings,
     tracking,
     trackViewer,
     search,
@@ -169,12 +197,13 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     addObjects(doc, objects, only);
   }
 
-  if (set.has('plannedRoute') || set.has('plannedRouteWithStops')) {
+  if (set.has('plannedRoute')) {
     addPlannedRoute(
       doc,
       routePlanner,
-      set.has('plannedRouteWithStops'),
+      routePlannerSettings,
       await loadRoutePlannerMessages(language),
+      language,
     );
   }
 
@@ -187,9 +216,9 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('search')) {
-    const geojson = search.selectedResult?.geojson;
-
-    if (geojson) {
+    for (const { geojson } of search.selectedResults
+      .filter((result) => keepSearchResult(only, result.id))
+      .filter(hasGeometry)) {
       addGeojson(doc, geojson);
     }
   }
@@ -460,154 +489,238 @@ function addDrawingLines(
   type: DrawingLineType,
   only: Selection | undefined,
 ) {
+  const indexById = new Map(lines.map((line, i) => [line.id, i]));
+
   for (const [index, line] of lines.entries()) {
-    if (line.type !== type || !keepDrawingLine(only, index)) {
+    if (line.type !== type) {
       continue;
     }
 
-    const trkEle = createElement(doc.documentElement, 'trk');
+    const parentIndex =
+      line.holeOfId === undefined ? undefined : indexById.get(line.holeOfId);
 
-    if (line.label) {
-      createElement(trkEle, 'name', line.label);
-    }
-
-    const extEle = createElement(trkEle, 'extensions');
-
-    const stroke = splitColorAlpha(line.color ?? COLORS.normal);
-    const rgb = stroke.color.slice(1);
-
-    const fillSrc = line.fillColor ?? line.color ?? COLORS.normal;
-    const fillRaw = splitColorAlpha(fillSrc);
-    const fill = {
-      color: fillRaw.color,
-      opacity: line.fillColor ? fillRaw.opacity : 0.33,
-    };
-    const fillRgb = fill.color.slice(1);
-
-    if (type === 'polygon') {
-      const fillStyleEle = createElement(extEle, [GPX_STYLE_NS, 'fill']);
-
-      createElement(fillStyleEle, [GPX_STYLE_NS, 'color'], fillRgb);
-
-      createElement(
-        fillStyleEle,
-        [GPX_STYLE_NS, 'opacity'],
-        fill.opacity.toFixed(2),
+    // A hole is part of its parent's shape, so picking either one writes both.
+    const kept =
+      keepDrawingLine(only, index) ||
+      (parentIndex !== undefined && keepDrawingLine(only, parentIndex)) ||
+      lines.some(
+        (other, i) => other.holeOfId === line.id && keepDrawingLine(only, i),
       );
+
+    if (!kept) {
+      continue;
     }
 
-    const lineStyleEle = createElement(extEle, [GPX_STYLE_NS, 'line']);
-
-    createElement(lineStyleEle, [GPX_STYLE_NS, 'color'], rgb);
-
-    createElement(
-      lineStyleEle,
-      [GPX_STYLE_NS, 'opacity'],
-      stroke.opacity.toFixed(2),
+    // GPX has no polygon type and so no interior rings either: a hole goes out
+    // as its own track, tied to its parent by a shared id. Positional would be
+    // fragile — tracks are written in several passes, and other producers'
+    // files interleave their own.
+    addStyledTrk(
+      doc,
+      line,
+      parentIndex === undefined
+        ? lines.some((other) => other.holeOfId === line.id)
+          ? { polygonId: String(index) }
+          : undefined
+        : { holeOf: String(parentIndex), style: lines[parentIndex]! },
+      lines,
     );
-
-    createElement(
-      lineStyleEle,
-      [GPX_STYLE_NS, 'width'],
-      String(line.width || 4),
-    );
-
-    if (line.lineCap) {
-      createElement(lineStyleEle, [GPX_STYLE_NS, 'linecap'], line.lineCap);
-    }
-
-    if (line.lineJoin) {
-      createElement(lineStyleEle, [GPX_STYLE_NS, 'linejoin'], line.lineJoin);
-    }
-
-    if (line.dashArray && line.dashArray.length > 0) {
-      createElement(
-        lineStyleEle,
-        [GPX_STYLE_NS, 'dasharray'],
-        line.dashArray.join(' '),
-      );
-    }
-
-    const ext2Ele = createElement(lineStyleEle, 'extensions');
-
-    createElement(
-      ext2Ele,
-      [LOCUS_NS, 'locus:lsColorBase'],
-      `#${toLocusAlpha(stroke.opacity)}${rgb}`,
-    );
-
-    createElement(
-      ext2Ele,
-      [LOCUS_NS, 'locus:lsWidth'],
-      String(line.width ?? 4),
-    );
-
-    createElement(ext2Ele, [LOCUS_NS, 'locus:lsUnits'], 'PIXELS');
-
-    if (type === 'polygon') {
-      createElement(
-        ext2Ele,
-        [LOCUS_NS, 'locus:lsColorFill'],
-        `#${toLocusAlpha(fill.opacity)}${fillRgb}`,
-      );
-    }
-
-    // Freemap-private extensions for lossless round-trip. GPX has no native
-    // polygon type — `fm:type=polygon` is the unambiguous signal for our
-    // importer, separate from the gpx_style:fill heuristic that other
-    // consumers use. Color/lineCap/lineJoin/dashArray are duplicated here
-    // because gpx_style splits color into RGB+opacity (losing the original
-    // hex alpha precision) and not every reader handles linecap/linejoin.
-    appendNs(extEle, FM_NS, 'fm:type', type);
-
-    if (line.color) {
-      appendNs(extEle, FM_NS, 'fm:color', line.color);
-    }
-
-    if (type === 'polygon' && line.fillColor) {
-      appendNs(extEle, FM_NS, 'fm:fillColor', line.fillColor);
-    }
-
-    if (line.lineCap) {
-      appendNs(extEle, FM_NS, 'fm:lineCap', line.lineCap);
-    }
-
-    if (line.lineJoin) {
-      appendNs(extEle, FM_NS, 'fm:lineJoin', line.lineJoin);
-    }
-
-    if (line.dashArray && line.dashArray.length > 0) {
-      appendNs(extEle, FM_NS, 'fm:dashArray', line.dashArray.join(' '));
-    }
-
-    if (line.width != null) {
-      appendNs(extEle, FM_NS, 'fm:width', String(line.width));
-    }
-
-    // OsmAnd track styling: a single colour element + width, plus a fill
-    // colour for polygons. OsmAnd renders closed tracks with a fill colour
-    // as filled areas.
-    if (line.color) {
-      appendNs(extEle, OSMAND_NS, 'osmand:color', stroke.color);
-    }
-
-    if (line.width != null) {
-      appendNs(extEle, OSMAND_NS, 'osmand:width', String(line.width));
-    }
-
-    if (type === 'polygon') {
-      appendNs(extEle, OSMAND_NS, 'osmand:fill_color', fill.color);
-    }
-
-    const trksegEle = createElement(trkEle, 'trkseg');
-
-    const points =
-      type === 'line' ? line.points : [...line.points, line.points[0]];
-
-    for (const { lat, lon } of points) {
-      createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
-    }
   }
+}
+
+/**
+ * Writes one line/polygon as a `<trk>` carrying its full styling: gpx_style for
+ * generic consumers, Locus and OsmAnd extensions for those apps, and the
+ * freemap-private `fm:*` shadows for a lossless round-trip through our own
+ * importer. A polygon's ring is closed here, since drawing polygons are stored
+ * open.
+ *
+ * A hole borrows its parent's styling, since that is what it is drawn with —
+ * consumers that know nothing of `fm:holeOf` then at least outline it to match.
+ */
+function addStyledTrk(
+  doc: Document,
+  line: Line,
+  hole?: { polygonId: string } | { holeOf: string; style: Line },
+  // The whole collection, so a label naming `{area}` is measured with the holes
+  // taken off it, exactly as the readout and the map do.
+  lines: readonly DrawnLine[] = [],
+) {
+  const trkEle = createElement(doc.documentElement, 'trk');
+
+  const renderedLabel = drawingLineLabel(line, lines);
+
+  if (renderedLabel && (!hole || 'polygonId' in hole)) {
+    createElement(trkEle, 'name', renderedLabel);
+  }
+
+  const extEle = writeTrkStyle(
+    trkEle,
+    hole && 'style' in hole ? hole.style : line,
+    hole !== undefined && 'style' in hole,
+  );
+
+  // As written, `<name>` above holding it rendered.
+  if (line.label) {
+    appendNs(extEle, FM_NS, 'fm:label', line.label);
+  }
+
+  appendProps(extEle, line.props);
+
+  if (hole) {
+    appendNs(
+      extEle,
+      FM_NS,
+      'polygonId' in hole ? 'fm:polygonId' : 'fm:holeOf',
+      'polygonId' in hole ? hole.polygonId : hole.holeOf,
+    );
+  }
+
+  const trksegEle = createElement(trkEle, 'trkseg');
+
+  const points =
+    line.type === 'line' ? line.points : [...line.points, line.points[0]];
+
+  for (const { lat, lon } of points) {
+    createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
+  }
+}
+
+// Writes a track's `<extensions>` styling block and hands it back for callers
+// with more to add. Split out of {@link addStyledTrk} so the planned route can
+// carry the same styling while writing its own trackpoints (which additionally
+// hold elevation). `noFill` keeps a hole's ring transparent for consumers that
+// don't understand `fm:holeOf`, so they outline it instead of painting it in.
+function writeTrkStyle(
+  trkEle: Element,
+  line: Omit<Line, 'points'>,
+  noFill = false,
+): Element {
+  const type = line.type;
+
+  const extEle = createElement(trkEle, 'extensions');
+
+  const stroke = splitColorAlpha(line.color ?? COLORS.normal);
+  const rgb = stroke.color.slice(1);
+
+  const fillSrc = line.fillColor ?? line.color ?? COLORS.normal;
+  const fillRaw = splitColorAlpha(fillSrc);
+  const fill = {
+    color: fillRaw.color,
+    opacity: noFill ? 0 : line.fillColor ? fillRaw.opacity : 0.33,
+  };
+  const fillRgb = fill.color.slice(1);
+
+  if (type === 'polygon') {
+    const fillStyleEle = createElement(extEle, [GPX_STYLE_NS, 'fill']);
+
+    createElement(fillStyleEle, [GPX_STYLE_NS, 'color'], fillRgb);
+
+    createElement(
+      fillStyleEle,
+      [GPX_STYLE_NS, 'opacity'],
+      fill.opacity.toFixed(2),
+    );
+  }
+
+  const lineStyleEle = createElement(extEle, [GPX_STYLE_NS, 'line']);
+
+  createElement(lineStyleEle, [GPX_STYLE_NS, 'color'], rgb);
+
+  createElement(
+    lineStyleEle,
+    [GPX_STYLE_NS, 'opacity'],
+    stroke.opacity.toFixed(2),
+  );
+
+  createElement(lineStyleEle, [GPX_STYLE_NS, 'width'], String(line.width || 4));
+
+  if (line.lineCap) {
+    createElement(lineStyleEle, [GPX_STYLE_NS, 'linecap'], line.lineCap);
+  }
+
+  if (line.lineJoin) {
+    createElement(lineStyleEle, [GPX_STYLE_NS, 'linejoin'], line.lineJoin);
+  }
+
+  if (line.dashArray && line.dashArray.length > 0) {
+    createElement(
+      lineStyleEle,
+      [GPX_STYLE_NS, 'dasharray'],
+      line.dashArray.join(' '),
+    );
+  }
+
+  const ext2Ele = createElement(lineStyleEle, 'extensions');
+
+  createElement(
+    ext2Ele,
+    [LOCUS_NS, 'locus:lsColorBase'],
+    `#${toLocusAlpha(stroke.opacity)}${rgb}`,
+  );
+
+  createElement(ext2Ele, [LOCUS_NS, 'locus:lsWidth'], String(line.width ?? 4));
+
+  createElement(ext2Ele, [LOCUS_NS, 'locus:lsUnits'], 'PIXELS');
+
+  if (type === 'polygon') {
+    createElement(
+      ext2Ele,
+      [LOCUS_NS, 'locus:lsColorFill'],
+      `#${toLocusAlpha(fill.opacity)}${fillRgb}`,
+    );
+  }
+
+  // Freemap-private extensions for lossless round-trip. GPX has no native
+  // polygon type — `fm:type=polygon` is the unambiguous signal for our
+  // importer, separate from the gpx_style:fill heuristic that other
+  // consumers use. Color/lineCap/lineJoin/dashArray are duplicated here
+  // because gpx_style splits color into RGB+opacity (losing the original
+  // hex alpha precision) and not every reader handles linecap/linejoin.
+  appendNs(extEle, FM_NS, 'fm:type', type);
+
+  if (line.color) {
+    appendNs(extEle, FM_NS, 'fm:color', line.color);
+  }
+
+  if (type === 'polygon' && line.fillColor) {
+    appendNs(extEle, FM_NS, 'fm:fillColor', line.fillColor);
+  }
+
+  if (line.lineCap) {
+    appendNs(extEle, FM_NS, 'fm:lineCap', line.lineCap);
+  }
+
+  if (line.lineJoin) {
+    appendNs(extEle, FM_NS, 'fm:lineJoin', line.lineJoin);
+  }
+
+  if (line.dashArray && line.dashArray.length > 0) {
+    appendNs(extEle, FM_NS, 'fm:dashArray', line.dashArray.join(' '));
+  }
+
+  if (line.width != null) {
+    appendNs(extEle, FM_NS, 'fm:width', String(line.width));
+  }
+
+  // OsmAnd track styling: a single colour element + width, plus a fill
+  // colour for polygons. OsmAnd renders closed tracks with a fill colour
+  // as filled areas.
+  if (line.color) {
+    appendNs(extEle, OSMAND_NS, 'osmand:color', stroke.color);
+  }
+
+  if (line.width != null) {
+    appendNs(extEle, OSMAND_NS, 'osmand:width', String(line.width));
+  }
+
+  // OsmAnd has no opacity to zero out — the presence of a fill colour is what
+  // makes it fill a closed track — so a hole's is left out entirely.
+  if (type === 'polygon' && !noFill) {
+    appendNs(extEle, OSMAND_NS, 'osmand:fill_color', fill.color);
+  }
+
+  return extEle;
 }
 
 async function addDrawingPoints(
@@ -616,9 +729,8 @@ async function addDrawingPoints(
   only: Selection | undefined,
 ) {
   // Caches shared across all points in this export, so a thousand identical
-  // poi/fa icons resolve once, and identical markers rasterize to PNG once.
+  // fa icons resolve once, and identical markers rasterize to PNG once.
   const faCache = new Map<string, IconDefinition | undefined>();
-  const poiSvgCache = new Map<string, Promise<string | undefined>>();
   const locusIconCache = new Map<string, Promise<string | undefined>>();
 
   // Build the synchronous parts (and kick off the async Locus-icon work) in
@@ -628,7 +740,7 @@ async function addDrawingPoints(
 
   for (const [
     index,
-    { coords, label, color, markerType, icon },
+    { coords, label, color, markerType, icon, props },
   ] of points.entries()) {
     if (!keepDrawingPoint(only, index)) {
       continue;
@@ -641,8 +753,10 @@ async function addDrawingPoints(
       toLatLon(coords),
     );
 
-    if (label) {
-      createElement(wptEle, 'name', label);
+    const renderedLabel = drawingPointLabel({ coords, label, props });
+
+    if (renderedLabel) {
+      createElement(wptEle, 'name', renderedLabel);
     }
 
     // `<sym>` carries the icon for Garmin / BaseCamp / MapSource and many
@@ -657,7 +771,14 @@ async function addDrawingPoints(
 
     const extEle = createElement(wptEle, 'extensions');
 
-    // Lossless round-trip metadata for our own importer.
+    // For our own importer: the label as written and the table it draws from,
+    // `<name>` above holding the two of them rendered together.
+    if (label) {
+      appendNs(extEle, FM_NS, 'fm:label', label);
+    }
+
+    appendProps(extEle, props);
+
     if (markerType) {
       appendNs(extEle, FM_NS, 'fm:markerType', markerType);
     }
@@ -706,7 +827,6 @@ async function addDrawingPoints(
         label,
         icon,
         faCache,
-        poiSvgCache,
       });
 
       locusIconCache.set(key, locusIcon);
@@ -761,23 +881,18 @@ async function buildLocusIconDataUrl({
   label,
   icon,
   faCache,
-  poiSvgCache,
 }: {
   markerType: DrawingPointsState['points'][number]['markerType'];
   color: string;
   label?: string;
   icon?: string;
   faCache: Map<string, IconDefinition | undefined>;
-  poiSvgCache: Map<string, Promise<string | undefined>>;
 }): Promise<string | undefined> {
-  const { text, faSvg, poiSvg, poiBBox, hasContent } = await resolveMarkerGlyph(
-    {
-      icon,
-      label,
-      faCache,
-      poiSvgCache,
-    },
-  );
+  const { text, faSvg, poi, hasContent } = await resolveMarkerGlyph({
+    icon,
+    label,
+    faCache,
+  });
 
   const { svg, width, height } = buildMarkerSvg({
     markerType,
@@ -785,8 +900,7 @@ async function buildLocusIconDataUrl({
     hasContent,
     text,
     faSvg,
-    poiSvg,
-    poiBBox,
+    poi,
   });
 
   // Base64-encode via UTF-8-safe path so non-ASCII labels survive btoa.
@@ -824,42 +938,132 @@ function addObjects(
 
 function addPlannedRoute(
   doc: Document,
-  { alternatives, points, finishOnly }: RoutePlannerState,
-  withStops: boolean,
+  {
+    alternatives,
+    activeAlternativeIndex,
+    isochrones,
+    points,
+    waypoints,
+    finishOnly,
+    mode,
+  }: RoutePlannerState,
+  { lineWidth, lineOpacity, markerOpacity }: RoutePlannerSettingsState,
   rpm: RoutePlannerMessages,
+  language: string,
 ) {
   // TODO add itinerar details and metadata
   // TODO add option to only export selected alternative
 
-  if (withStops) {
-    for (const [i, point] of points.entries()) {
-      const midpointWptEle = createElement(
-        doc.documentElement,
-        'wpt',
-        undefined,
-        toLatLon(point),
-      );
+  // The start/finish/stop markers are part of what the route puts on the map,
+  // so they always come along.
+  for (const [i, point] of points.entries()) {
+    const midpointWptEle = createElement(
+      doc.documentElement,
+      'wpt',
+      undefined,
+      toLatLon(point),
+    );
 
-      createElement(
-        midpointWptEle,
-        'name',
-        i === 0 && !finishOnly
-          ? rpm.start
-          : i === points.length - 1
-            ? rpm.finish // TODO not for roundtrip?
-            : `${rpm.stop} ${i + 1}`,
-      );
+    const kind = waypointKind(i, points.length, finishOnly, mode);
+
+    const number = stopNumber(i, mode, waypoints);
+
+    createElement(
+      midpointWptEle,
+      'name',
+      kind === 'start'
+        ? rpm.start
+        : kind === 'finish'
+          ? rpm.finish
+          : `${rpm.stop} ${number ?? i}`,
+    );
+
+    // The glyph the map draws: the play/stop icon, or the stop's number as
+    // text. No curated Garmin sym stands for either, so `<sym>` carries the
+    // spec's bare name and the extensions below do the lossless round trip.
+    const icon =
+      WAYPOINT_ICONS[kind] ??
+      (kind === 'stop' && number !== undefined ? String(number) : undefined);
+
+    const sym = iconToBareSym(icon);
+
+    if (sym) {
+      createElement(midpointWptEle, 'sym', sym);
     }
+
+    const extEle = createElement(midpointWptEle, 'extensions');
+
+    appendNs(extEle, FM_NS, 'fm:markerType', 'pin');
+
+    if (icon) {
+      appendNs(extEle, FM_NS, 'fm:icon', icon);
+    }
+
+    const color = joinColorAlpha(WAYPOINT_COLORS[kind], markerOpacity);
+
+    appendNs(extEle, FM_NS, 'fm:color', color);
+
+    appendNs(extEle, OSMAND_NS, 'osmand:color', WAYPOINT_COLORS[kind]);
   }
 
-  for (const [i, { legs }] of alternatives.entries()) {
+  // Isochrones replace the route alternatives, so they are what the route
+  // source exports when present. GPX has no polygon type, so each ring goes out
+  // as a styled closed track — the same representation a drawing polygon uses,
+  // which our importer reads back as a polygon.
+  if (isochrones?.length) {
+    for (const isochrone of isochrones) {
+      const bucket = isochrone.properties?.['bucket'] ?? 0;
+
+      const color = isochroneColor(bucket, isochrones.length);
+
+      for (const ring of isochrone.geometry.coordinates) {
+        addStyledTrk(doc, {
+          type: 'polygon',
+          label: isochroneLabel(isochrone, bucket, rpm.isochroneRing, language),
+          color: joinColorAlpha(color, lineOpacity),
+          width: lineWidth,
+          // Only the outermost ring is filled, as on the map, which fades the
+          // whole ring group — so the fill takes `lineOpacity` on top of its own.
+          fillColor: joinColorAlpha(
+            color,
+            bucket === isochrones.length - 1
+              ? ISOCHRONE_FILL_OPACITY * lineOpacity
+              : 0,
+          ),
+          // The ring arrives closed; `addStyledTrk` closes polygons itself.
+          points: ring.slice(0, -1).map(([lon, lat], id) => ({ lat, lon, id })),
+        });
+      }
+    }
+
+    return;
+  }
+
+  for (const [i, alternative] of alternatives.entries()) {
+    const dominant = dominantStepMode(alternative);
+
     const trkEle = createElement(doc.documentElement, 'trk');
 
     createElement(trkEle, 'name', `${rpm.alternative} ${i + 1}`);
 
+    // A GPX track is one line, so a multimodal route takes its dominant mode's
+    // color; alternatives the user isn't following are dimmed, as on the map.
+    writeTrkStyle(trkEle, {
+      type: 'line',
+      // The alpha becomes the gpx_style/Locus opacity in `writeTrkStyle`.
+      color: joinColorAlpha(
+        i === activeAlternativeIndex
+          ? STEP_MODE_COLORS[dominant]
+          : INACTIVE_ALTERNATIVE_COLOR,
+        lineOpacity,
+      ),
+      width: lineWidth,
+      dashArray: stepModeDashArray(dominant),
+    });
+
     const trksegEle = createElement(trkEle, 'trkseg');
 
-    for (const leg of legs) {
+    for (const leg of alternative.legs) {
       for (const step of leg.steps) {
         for (const [lon, lat, ele] of step.geometry.coordinates) {
           const trkptEle = createElement(
@@ -981,7 +1185,7 @@ function addTracking(
   }
 }
 
-function addImportedTrack(doc: Document, { trackGeojson }: TrackViewerState) {
+function addImportedTrack(doc: Document, { trackGeojson }: DataViewerState) {
   if (trackGeojson) {
     addGeojson(doc, trackGeojson);
   }

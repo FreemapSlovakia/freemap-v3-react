@@ -33,8 +33,6 @@ const withTracks = (tracks: Track[]) => ({
   modifiedAccessTokenId: undefined,
   trackedDevices: [],
   tracks,
-  showLine: true,
-  showPoints: true,
 });
 
 describe('trackingReducer — tracked devices', () => {
@@ -140,20 +138,6 @@ describe('trackingReducer — device editor state', () => {
     expect(next.devices).toEqual([]);
     expect(next.modifiedDeviceId).toBeUndefined();
     expect(next.accessTokensDeviceId).toBeUndefined();
-  });
-
-  it('setShowPoints / setShowLine store the flags', () => {
-    const off = trackingReducer(
-      withTracks([]),
-      trackingActions.setShowPoints(false),
-    );
-    expect(off.showPoints).toBe(false);
-
-    const line = trackingReducer(
-      withTracks([]),
-      trackingActions.setShowLine(false),
-    );
-    expect(line.showLine).toBe(false);
   });
 });
 

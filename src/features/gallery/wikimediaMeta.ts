@@ -329,8 +329,11 @@ export async function fetchWikimediaMeta(
 
   const licenseKey = pickLang(meta?.License?.value, language)?.toLowerCase();
 
-  // Commons file title (e.g. "Foo_castle.jpg") — strip the "File:" prefix.
-  const fileName = page.title.replace(/^File:/, '');
+  // The Commons file name is the photo's only title, so it is shown as one:
+  // without the "File:" prefix and without the extension.
+  const fileName = page.title
+    .replace(/^File:/, '')
+    .replace(/\.(jpe?g|png|gif|tiff?|webp|svg)$/i, '');
 
   // A full equirectangular 360 panorama is exactly 2:1; nothing else on Commons
   // marks these (no GPano/XMP), so the dimensions are the only signal.

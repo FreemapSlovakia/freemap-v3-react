@@ -2,9 +2,7 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { AlertLink } from 'react-bootstrap';
 import shared from './de-shared.js';
 import { addError, type Messages } from './messagesInterface.js';
 
@@ -30,6 +28,7 @@ const outdoorMap = 'Wandern, Radfahren, Langlauf, Reiten';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Automatisches Schließen abbrechen',
     iso: 'de_DE',
     elevationProfile: 'Höhenprofil',
     save: 'Speichern',
@@ -46,6 +45,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     yes: 'Ja',
     no: 'Nein',
     masl,
+    viewpoint: 'Standpunkt',
+    eyeHeight: 'Augenhöhe',
+    eyeHeightHint:
+      'Wie hoch über dem Boden Sie stehen — ein Turm oder eine Drohne, nicht die Höhe über dem Meer.',
+    maxVisibleDistance: 'Maximale Sichtweite',
     copyCode: 'Code kopieren',
     loading: 'Lade…',
     ok: 'OK',
@@ -66,8 +70,44 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Neu hinzufügen',
     clear: 'Löschen',
     convertToDrawing: 'In Zeichnung umwandeln',
-    simplifyPrompt:
-      'Bitte den Vereinfachungsfaktor eingeben. Null für keine Vereinfachung eingeben.',
+    copyToDrawing: 'In die Zeichnung kopieren',
+    copyTo: ({ tool }) => <>Nach {tool} kopieren</>,
+    convertTo: ({ tool }) => <>Nach {tool} umwandeln</>,
+    convertAllToDrawing: 'Alles in Zeichnung umwandeln',
+    convertAllTo: ({ tool }) => <>Alles nach {tool} umwandeln</>,
+    openIn: ({ what }) => <>In {what} öffnen</>,
+    panoramaFromHere: 'Panorama von hier',
+    viewshedFromHere: 'Sichtbarkeit von hier',
+    toposcopeFromHere: 'Panoramatafel von hier',
+    lookAtInPanorama: 'Das im Panorama anschauen',
+    placeActions: 'Was man mit diesem Ort tun kann',
+    locationActions: 'Aktionen für diesen Ort',
+    convert: {
+      geometry: 'Geometrie',
+      pointOnly: 'Nur Punkt',
+      fullGeometry: 'Eigene Geometrie',
+      label: 'Beschriftung',
+      labelHint:
+        'Schreiben Sie {p:name}, um eine Eigenschaft namens name zu zeichnen.',
+      labelMode: 'Beschriftung speichern als',
+      preview: 'Vorschau',
+      labelTemplate: 'Vorlage',
+      labelResolved: 'Fester Text',
+      properties: 'Zu übernehmende Eigenschaften',
+      noProperties: 'Nichts zu übernehmen.',
+      labelKeysKept:
+        'Eine von der Beschriftung genutzte Eigenschaft wird immer übernommen.',
+    },
+    simplify: {
+      title: 'Vereinfachen',
+      deviation: 'Maximale Abweichung',
+      none: 'keine',
+      vertices: ({ from, to }) => (
+        <>
+          Punkte: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'URL kopieren',
     copyPageUrl: 'Seiten-URL kopieren',
     savingError: ({ err }) => addError(messages, 'Fehler beim Speichern', err),
@@ -87,8 +127,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     name: 'Name',
+    icon: 'Symbol',
+    iconChoose: 'Symbol auswählen…',
+    iconNone: 'Kein Symbol',
+    iconSearch: 'Symbole suchen',
     load: 'Laden',
-    unnamed: 'Kein Name',
+    unknown: 'Unbekannt',
     enablePopup:
       'Bitte aktivieren Sie Pop-up-Fenster für diese Seite in Ihrem Browser.',
     broadcastChannelUnsupported:
@@ -96,6 +140,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     componentLoadingError:
       'Fehler beim Laden der Komponente. Bitte überprüfen Sie Ihre Internetverbindung.',
     offline: 'Sie sind nicht mit dem Internet verbunden.',
+    offlineUnavailable: 'Ohne Internetverbindung nicht verfügbar.',
+    offlineToolUnavailable:
+      'Dieses Werkzeug kann ohne Internetverbindung nichts laden.',
+    offlineNotice:
+      'Sie sind nicht mit dem Internet verbunden, daher kann hier nichts geladen oder gesendet werden.',
     connectionError: 'Fehler beim Verbinden mit dem Server.',
     experimentalFunction: 'Experimentelle Funktion',
     attribution: () => (
@@ -129,11 +178,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     auto: 'Automatischer Modus',
   },
 
+  cardinals: {
+    n: 'N',
+    ne: 'NO',
+    e: 'O',
+    se: 'SO',
+    s: 'S',
+    sw: 'SW',
+    w: 'W',
+    nw: 'NW',
+  },
+
   selections: {
     objects: 'Objekt (POI)',
     drawPoints: 'Punkt',
     drawLines: 'Linie',
     drawPolygons: 'Polygon',
+    drawPolygonHole: 'Loch im Polygon',
     tracking: 'Verfolgung',
     linePoint: 'Linienpunkt',
     polygonPoint: 'Polygonpunkt',
@@ -148,12 +209,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Punkte zeichnen',
     drawLines: 'Linien zeichnen',
     drawPolygons: 'Polygone zeichnen',
-    trackViewer: 'Dateiimport',
+    dataViewer: 'Tracks und Daten',
     changesets: 'Kartenänderungen',
     mapDetails: 'Kartendetails',
     tracking: 'Live-Tracking',
     myMaps: 'Meine Karten',
     myMap: 'Meine Karte',
+    gpsRecorder: 'GPS-Recorder',
+    toposcope: 'Panoramatafel',
+    panorama: 'Panorama',
   },
 
   mainMenu: {
@@ -186,25 +250,30 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   main: {
-    infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji>&ensp;Wir stehen an der Seite der Ukraine.{' '}
-          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
-            Ukraine unterstützen ›
-          </AlertLink>
-          &ensp;
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
-    },
+    infoBars: {},
     title: shared.title,
     description: shared.description,
     clearMap: 'Kartenelemente löschen',
     close: 'Schließen',
     closeTool: 'Werkzeug schließen',
     locateMe: 'Standort ermitteln',
+    pickHomeLocationPrompt: 'Klicken Sie auf die Karte, wo Sie wohnen',
     locationError: 'Fehler beim Abrufen des Standorts.',
+    locationNoSignal: 'Noch kein GPS-Signal.',
+    headingSource: 'Richtungsanzeige',
+    headingSources: {
+      none: 'Ausgeblendet',
+      gps: 'Bewegungsrichtung',
+      compass: 'Gerätekompass',
+    },
+    headingSourceHelp:
+      'Die Bewegungsrichtung stammt vom GPS und erscheint nur in Bewegung. Der Gerätekompass funktioniert auch im Stand, benötigt aber eine Berechtigung und kann ungenau sein.',
+    bearingLine: 'Entfernung und Peilung',
+    bearingLineHelp:
+      'Zeichnet während der Ortung eine Linie zwischen Ihrer Position und einem Fadenkreuz in der Kartenmitte, beschriftet mit der Entfernung und der Peilung von Ihrer Position zum Fadenkreuz. Erscheint, sobald Sie die Karte von Ihrer Position wegschieben.',
+    compassPermissionDenied: 'Zugriff auf den Kompass wurde verweigert.',
+    compassUnavailable:
+      'Keine Kompassdaten. Ihr Gerät hat möglicherweise keinen Kompass, oder der Zugriff darauf ist blockiert.',
     zoomIn: 'Vergrößern',
     zoomOut: 'Verkleinern',
     devInfo: () => (
@@ -225,6 +294,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    showMore: 'Mehr anzeigen…',
+    offlineHint:
+      'Ohne Internetverbindung können nur Koordinaten, ein Begrenzungsrahmen, Kachelnummern (z/x/y) oder eingefügtes GeoJSON gefunden werden.',
     inProgress: 'Suche…',
     noResults: 'Keine Ergebnisse gefunden',
     prompt: 'Ort eingeben',
@@ -232,8 +304,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routeTo: 'Route hierher',
     fetchingError: ({ err }) => addError(messages, 'Fehler bei der Suche', err),
     buttonTitle: 'Suchen',
-    placeholder: 'In der Karte suchen',
+    placeholder: 'Orte und Funktionen suchen',
     result: 'Fund',
+    keepOnMap: 'Auf der Karte behalten',
     sources: {
       'nominatim-reverse': 'Reverse-Geokodierung',
       'overpass-nearby': 'Nahegelegene Objekte',
@@ -246,10 +319,90 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
+    osmElementTypes: {
+      node: 'Knoten',
+      way: 'Weg',
+      relation: 'Relation',
+    },
+    commands: {
+      caption: 'Funktionen',
+      keywords: {
+        'tool-route-planner':
+          'navigation, routenplaner, wegbeschreibung, tour, radtour',
+        'tool-objects': 'sehenswürdigkeiten, poi, orte, einrichtungen',
+        'tool-draw-points': 'zeichnen, markierung, stecknadel, notiz',
+        'tool-draw-lines':
+          'zeichnen, entfernung messen, länge, lineal, strecke',
+        'tool-draw-polygons': 'zeichnen, fläche messen, gebiet',
+        'tool-import-file':
+          'gpx, kml, kmz, tcx, geojson, import, hochladen, datei öffnen',
+        'tool-map-details': 'identifizieren, was ist hier, wms',
+        'tool-changesets':
+          'osm bearbeitungen, änderungssätze, mapper, beiträge',
+        'tool-tracking': 'standort teilen, gerät verfolgen, live, tracking',
+        'tool-toposcope': 'gipfel, berge, horizont, toposkop, toposcope',
+        'tool-panorama': '360, aussicht, gipfel, horizont, gelände',
+        'tool-gps-recorder': 'track aufzeichnen, logger, aufnahme',
+        'modal-account': 'profil, mein konto, einstellungen, abmelden',
+        'modal-login': 'anmelden, konto',
+        'modal-my-maps': 'gespeicherte karten, karte speichern, karte teilen',
+        'modal-map-features-export':
+          'export, gpx, geojson, daten herunterladen, objekte speichern',
+        'modal-map-to-document-export':
+          'export, drucken, pdf, png, jpeg, svg, bild, poster',
+        'modal-offline-map-export':
+          'export, offline, kacheln herunterladen, mbtiles, sd-karte',
+        'modal-embed': 'iframe, einbetten, webseite, html code',
+        'modal-support-us': 'spenden, unterstützen, sponsor, geld',
+        'modal-legend': 'zeichenerklärung, symbole, kartenlegende',
+        'modal-about': 'kontakt, e-mail, feedback',
+        'modal-map-layers-config':
+          'ebenen, karten verwalten, reihenfolge, deckkraft',
+        'modal-custom-maps': 'eigene karte, wms, tms, kartenquelle hinzufügen',
+        'modal-offline-maps': 'heruntergeladene karten, speicher',
+        'modal-browse-cache': 'zwischenspeicher, cache, kacheln, speicher',
+        'modal-map-preferences':
+          'einstellungen, optionen, deckkraft der überlagerung',
+        'modal-elevation-settings': 'höhenprofil, höhe, diagramm',
+        'clear-map-features': 'alles entfernen, löschen, karte zurücksetzen',
+        'layer-X': 'outdoor, wandern, radfahren, freemap',
+        'layer-XK': 'wanderwege, markierungen, kst',
+        'layer-O': 'osm, mapnik, standard',
+        'layer-S': 'satellit, orthofoto, luftbild',
+        'layer-Z': 'satellit, orthofoto, luftbild',
+        'layer-J1': 'satellit, orthofoto, luftbild',
+        'layer-J2': 'satellit, orthofoto, luftbild',
+        'layer-d': 'öpnv, nahverkehr, busse, züge, fahrpläne',
+        'layer-I': 'bilder, galerie, fotos',
+        'layer-w': 'wiki, artikel',
+        'layer-R': 'wetter, regen, niederschlag, gewitter, vorhersage',
+        'layer-v':
+          'sichtbarkeitsanalyse, sichtfeld, sichtlinie, aussicht, gelände',
+        'layer-5': 'schummerung, relief, gelände, höhe',
+        'layer-6': 'schummerung, relief, oberfläche, höhe',
+        'layer-7': 'schummerung, relief, gelände, höhe, lidar',
+        'layer-8': 'schummerung, relief, gelände, höhe, lidar',
+        'layer-h': 'schummerung, relief, hangneigung, exposition, inversion',
+        'layer-z': 'schummerung, relief, hangneigung, exposition, inversion',
+        'layer-y': 'schummerung, relief, hangneigung, exposition, inversion',
+        'layer-l1': 'waldwege, nlc',
+        'layer-l2': 'waldwege, nlc',
+        'layer-VO': 'vektor',
+        'layer-VS': 'vektor',
+        'layer-VD': 'vektor',
+        'layer-VT': 'vektor',
+        'layer-WDZ': 'bäume, wald, baumarten',
+        'layer-WLT': 'wald, waldtypen',
+        'layer-WGE': 'geologie, gestein',
+        'layer-WKA': 'parzellen, kataster, grundbuch',
+        'layer-wka': 'parzellen, kataster, grundbuch',
+        'layer-WHC': 'wasserchemie, hydrologie',
+      },
+    },
   },
 
   mapLayers: {
-    searchResultStyle: 'Stil der Suchergebnisse',
+    lookupStyle: 'Stil des Fundes',
     resetApp: 'Anwendung zurücksetzen',
     resetAppConfirm:
       'Alle Anwendungseinstellungen auf die Standardwerte zurücksetzen und die Seite neu laden? Sie werden abgemeldet.',
@@ -261,11 +414,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Öffentlicher Verkehr (ÖPNV)',
       X: outdoorMap,
+      XK: 'KST-Wanderwege',
       i: 'Datenschicht',
       I: 'Fotos',
       l1: 'Forststraßen NLC (2017)',
       l2: 'Forststraßen NLC',
       w: 'Wikipedia',
+      R: 'Wetterradar',
+      v: 'Sichtbarkeit',
       '5': 'Geländeschattierung',
       '6': 'Oberflächenschattierung',
       '7': 'Detaillierte Geländeschattierung',
@@ -290,22 +446,25 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       map: 'Karte',
       data: 'Daten',
       photos: 'Bilder',
+      routing: 'Routing',
     },
 
     attr: {
       osmData: '© OpenStreetMap-Mitwirkende',
+      fixTheMap: 'Kartenfehler melden',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorkacheln von"
           hostedBy="gehostet von"
         />
       ),
+      photosCc: 'verschiedene Creative-Commons-Lizenzen',
     },
 
     showAll: 'Alle Karten anzeigen',
     filterMaps: 'Karten filtern',
     noMapsFound: 'Keine Karten gefunden',
-    settings: 'Karteneinstellungen',
+    settings: 'Karten verwalten',
     layers: 'Karten',
     switch: 'Karten',
     photoFilterWarning: 'Fotofilter ist aktiv',
@@ -313,6 +472,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     minZoomWarning: (minZoom) => `Verfügbar ab Zoomstufe ${minZoom}`,
     outsideViewWarning:
       'Der aktuelle Kartenausschnitt liegt außerhalb dieser Karte',
+    offlineWarning: 'Diese Karte ist nicht für die Offline-Nutzung gespeichert',
     customBase: 'Benutzerdefinierte Karte',
     customMaps: 'Benutzerdefinierte Karten',
     addCustomMap: 'Benutzerdefinierte Karte hinzufügen',
@@ -326,9 +486,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Max. native Zoomstufe',
     extraScales: 'Zusätzliche Auflösungen',
     scaleWithDpi: 'Mit DPI skalieren',
+    tiled: 'In Kacheln laden',
+    tiledHelp:
+      'Ein WMS wird standardmäßig als ein einziges Bild des gesamten Ausschnitts angefordert: eine Anfrage statt Dutzender, und Beschriftungen werden nicht an Kachelrändern abgeschnitten. Kacheln lohnen sich für einen Server, der die Bildgröße begrenzt oder Kacheln zwischenspeichert — um den Preis vieler Anfragen pro Ansicht.',
     zIndex: 'Z-Index',
-    preferences: 'Einstellungen',
+    preferences: 'Karteneinstellungen',
     maxZoom: 'Maximale Zoomstufe',
+    zoomSnap: 'Zoomschritt',
+    zoomSnapFree: 'Stufenlos',
+    zoomSnapHelp:
+      'Die kleinste Zoomänderung, auf der Mausrad-, Pinch- und Rahmenzoom stehen bleiben können. 1 hält die Karte auf ganzen Zoomstufen, ein Bruchteil lässt sie auch dazwischen halten, und Stufenlos überall. Die Tasten und Schaltflächen + und – gehen immer zur nächsten ganzen Stufe.',
     forcedScale: 'Erzwungene Auflösung',
     resolutionScale: 'Auflösungsskala',
     resolutionScaleAuto: 'Automatisch (Gerätestandard)',
@@ -343,7 +510,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Overlay',
     },
     showMore: 'Mehr Karten anzeigen',
-    configureLayers: 'Kartenebenen konfigurieren',
+    layersConfiguration: 'Ebenenkonfiguration',
     technologies: {
       tile: 'Bildkacheln (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',
@@ -352,7 +519,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     technology: 'Typ',
     loadWmsLayers: 'Layer laden',
+    serverNotResponding: ({ name }) => (
+      <>
+        Der Server der Karte <b>{name}</b> antwortet nicht.
+      </>
+    ),
     offlineMaps: 'Offline-Karten',
+    browseCache: 'Beim Stöbern zwischenspeichern',
     legacy: 'veraltet',
     legacyMapWarning: ({ from, to }) => (
       <>
@@ -367,6 +540,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ele: `Höhe [${masl}]`,
     fetchError: ({ err }) =>
       addError(messages, 'Fehler beim Abrufen des Höhenprofils', err),
+    settings: 'Höheneinstellungen',
+    settingsHelp:
+      'Die ersten beiden Einstellungen korrigieren ein Geländemodell und gelten daher überall dort, wo die Höhe daraus gelesen wird: bei geplanten Routen, gezeichneten Linien und Messungen sowie bei importierten Tracks, deren Höhe Sie vom Server ersetzt haben. Aufgezeichnete Höhen — Live-Tracking oder ein Track, den Sie wie aufgezeichnet belassen haben — bleiben unangetastet. Exportierte Dateien behalten immer ihre eigene Höhe.',
+    windowOff: 'aus',
+    windowWholeLine: 'ganze Linie',
+    despike: 'Spitzen entfernen',
+    despikeHelp:
+      'Wenn ein Weg einige Meter neben der Straße gezeichnet ist, die er beschreibt, liefert das Geländemodell die Böschung oder Felswand daneben. Spitzen, die schmaler als die Hälfte dieses Werts sind, werden entfernt und das Profil leicht geglättet; breitere bleiben erhalten, da sie echtes Gelände sind. Null schaltet die Funktion ab.',
+    ditchFill: 'Gräben des Geländemodells auffüllen',
+    ditchFillHelp:
+      'Die detaillierten nationalen Geländemodelle, die in einigen Ländern verfügbar sind, sind meist hydrologisch angepasst: An jedem Durchlass graben sie einen Graben durch die Straße. Senken, die schmaler als dieser Wert sind, werden aufgefüllt; breitere bleiben erhalten, da sie echtes Gelände sind. Null schaltet die Funktion ab und ändert nichts, wo das globale Modell verwendet wird.',
+    gradeWindow: 'Fenster für die Steigung',
+    gradeWindowHelp:
+      'Wenn Sie auf das Höhenprofil zeigen, wird die Stelle auf der Karte markiert und ihre Steigung angezeigt. Die Steigung wird über einen Abschnitt dieser Länge um den Punkt gemittelt, damit ein paar Meter GPS-Rauschen nicht wie eine Wand wirken. Null misst sie zwischen benachbarten Punkten des Profils.',
   },
 
   errorCatcher: {
@@ -388,8 +575,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Punkt hier hinzufügen',
     startLine: 'Linie oder Messung hier starten',
     queryFeatures: 'Objekte in der Nähe abfragen',
-    startRoute: 'Route von hier planen',
-    finishRoute: 'Route bis hier planen',
     showPhotos: 'Fotos in der Nähe anzeigen',
   },
   errorStatus: {

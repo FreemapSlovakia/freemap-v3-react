@@ -1,5 +1,9 @@
 import { hasRole } from '@features/auth/model/types.js';
 import {
+  dataViewerSetJoining,
+  dataViewerSetSplitting,
+} from '@features/dataViewer/model/actions.js';
+import {
   drawingLineJoinStart,
   drawingLineStopDrawing,
 } from '@features/drawing/model/actions/drawingLineActions.js';
@@ -13,28 +17,35 @@ import {
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
 } from '@features/gallery/model/actions.js';
-import { mapToggleLayer } from '@features/map/model/actions.js';
+import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
+import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
+import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
+import { panoramaSetPicking } from '@features/panorama/model/actions.js';
+import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
+import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import {
   clearMapFeatures,
+  closeTool,
   deleteFeature,
   openInExternalApp,
+  openTool,
   selectFeature,
   setActiveModal,
   setSelectingHomeLocation,
-  setTool,
-  setTools,
 } from './store/actions.js';
-import { showGalleryViewerSelector } from './store/selectors.js';
+import { modalOf } from './store/activeModal.js';
+import { isToolOpen, showGalleryViewerSelector } from './store/selectors.js';
 import type { MyStore, RootState } from './store/store.js';
 
 let keyTimer: number | null = null;
 
-let initCode: 'KeyE' | 'KeyG' | 'KeyP' | 'KeyJ' | 'KeyM' | null = null;
+/** The key that started a chord, while the next one is awaited. */
+let initCode: string | null = null;
 
-function handleEvent(event: KeyboardEvent, state: RootState) {
+export function handleEvent(event: KeyboardEvent, state: RootState) {
   const withModifiers =
     event.ctrlKey || event.altKey || event.metaKey || event.isComposing;
 
@@ -42,7 +53,8 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     state.homeLocation.selectingHomeLocation !== false ||
     state.gallery.pickingPositionForId ||
     state.gallery.showPosition ||
-    state.mapArea.selecting;
+    state.mapArea.selecting ||
+    state.toposcope.pickingCenter;
 
   // Overlays that own their open-state outside main.activeModal: the gallery
   // viewer (own + Wikimedia Commons photos), and the Wikipedia preview (shown
@@ -67,16 +79,37 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       return state.gallery.editModel ? galleryEditPicture() : galleryClear();
     }
 
-    if (state.elevationChart.elevationProfilePoints) {
-      return elevationChartClose();
+    // A modal in the foreground owns Escape: it closes itself on its own
+    // document listener, which only fires while the key is not already claimed
+    // — and this handler, registered first, would claim it. The picking
+    // overlays hide their modal and leave the map live, so they keep the
+    // dismissals below.
+    if (showingModal && !suspendedModal) {
+      return undefined;
     }
 
+    // Before the panels and the selection: the map is in a mode of its own,
+    // and leaving it is what Escape is for here.
+    if (state.toposcope.pickingCenter) {
+      return toposcopeSetPickingCenter(false);
+    }
+
+    if (state.panorama.picking) {
+      return panoramaSetPicking(null);
+    }
+
+    // Before the chart and the panels below it: a mode waiting on a click has
+    // put them away, so Escape has to be about the mode itself.
     if (state.drawingLines.joinWith) {
       return drawingLineJoinStart(undefined);
     }
 
-    if (state.drawingLines.drawing) {
-      return drawingLineStopDrawing();
+    if (state.trackViewer.joinWith) {
+      return dataViewerSetJoining(null);
+    }
+
+    if (state.trackViewer.splitting) {
+      return dataViewerSetSplitting(false);
     }
 
     if (state.mapArea.selecting) {
@@ -87,6 +120,20 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       return setSelectingHomeLocation(false);
     }
 
+    if (state.elevationChart.target) {
+      return elevationChartClose();
+    }
+
+    // Waiting for a hole to be drawn is a mode of its own — no line is being
+    // drawn yet — so leaving it must not fall through to clearing the
+    // selection, which would drop the polygon the hole was meant for.
+    if (
+      state.drawingLines.drawing ||
+      state.drawingLines.holeFor !== undefined
+    ) {
+      return drawingLineStopDrawing();
+    }
+
     if (state.gallery.showPosition) {
       return galleryCancelShowOnTheMap();
     }
@@ -95,14 +142,12 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
       return selectFeature(null);
     }
 
-    // Back out gradually: first unfocus the active tool (keeping it open), then
-    // on a further Esc close all open tools.
-    if (!showingModal && !suspendedModal && state.main.activeTool) {
-      return setTool({ tool: state.main.activeTool, mode: 'open' });
-    }
-
-    if (!showingModal && !suspendedModal && state.main.tools.length > 0) {
-      return setTools([]);
+    // Only the tool that owns map clicks: it is the one holding the map in a
+    // mode, and Escape is for leaving a mode. The toolbar-only tools sit there
+    // passively, several at a time, and are closed by their own button — one of
+    // them going on an Escape aimed at something else would be a surprise.
+    if (!showingModal && !suspendedModal && state.main.mapTool) {
+      return closeTool(state.main.mapTool);
     }
 
     return undefined;
@@ -198,6 +243,10 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
   if (
     event.code === 'Delete' &&
     state.drawingLines.joinWith === undefined &&
+    // An armed mode has no toolbar of its own to delete from, so the key would
+    // take away the very track it is aimed at.
+    state.trackViewer.joinWith === null &&
+    !state.trackViewer.splitting &&
     !keyTimer &&
     !showingModal &&
     !suspendedModal &&
@@ -223,15 +272,7 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     return undefined;
   }
 
-  if (
-    !window.fmEmbedded &&
-    !keyTimer &&
-    (event.code === 'KeyG' ||
-      event.code === 'KeyE' ||
-      event.code === 'KeyP' ||
-      event.code === 'KeyJ' ||
-      event.code === 'KeyM')
-  ) {
+  if (!window.fmEmbedded && !keyTimer && chordPrefixCodes.has(event.code)) {
     initCode = event.code;
 
     keyTimer = window.setTimeout(() => {
@@ -243,144 +284,187 @@ function handleEvent(event: KeyboardEvent, state: RootState) {
     return 'I';
   }
 
-  if (keyTimer) {
+  if (keyTimer && initCode) {
     if (initCode === 'KeyG') {
-      if (event.code === 'KeyC') {
-        return clearMapFeatures();
-      }
-
-      if (event.code === 'KeyM') {
-        return setActiveModal({ type: 'my-maps' });
-      }
-
       const toolDefinition = toolDefinitions.find(
         (td) => td.kbd === event.code,
       );
 
       if (toolDefinition?.kbd) {
-        return setTool({ tool: toolDefinition.tool, mode: 'activate' });
+        // The shortcut toggles, like the menu item it stands for.
+        return isToolOpen(state, toolDefinition.tool)
+          ? closeTool(toolDefinition.tool)
+          : openTool(toolDefinition.tool);
       }
+    }
 
-      if (event.code === 'KeyW') {
-        return setActiveModal({ type: 'tracking-watched' });
-      }
+    const target = chordTarget(initCode, event.code);
 
-      if (event.code === 'KeyD') {
-        return setActiveModal({ type: 'tracking-my' });
-      }
-
+    if (!target) {
       return undefined;
     }
 
-    if (initCode === 'KeyJ') {
-      switch (event.code) {
-        case 'KeyC':
-          return openInExternalApp({ where: 'copy' });
-
-        case 'KeyG':
-          return openInExternalApp({ where: 'google' });
-
-        case 'KeyJ':
-          return openInExternalApp({ where: 'josm' });
-
-        case 'KeyO':
-          return openInExternalApp({ where: 'osm.org' });
-
-        case 'KeyI':
-          return openInExternalApp({ where: 'osm.org/id' });
-
-        case 'KeyM':
-          return openInExternalApp({ where: 'mapy.com' });
-
-        case 'KeyH':
-          return openInExternalApp({ where: 'hiking.sk' });
-
-        case 'KeyZ':
-          return openInExternalApp({ where: 'zbgis' });
-
-        case 'KeyP':
-          return openInExternalApp({ where: 'peakfinder' });
-
-        case 'KeyL':
-          return openInExternalApp({ where: 'mapillary' });
-
-        case 'Digit4':
-          return openInExternalApp({ where: 'f4map' });
-
-        default:
-          return undefined;
-      }
+    if ('modal' in target) {
+      return setActiveModal(modalOf(target.modal));
     }
 
-    if (initCode === 'KeyP') {
-      switch (event.code) {
-        case 'KeyL':
-          return galleryList('-createdAt');
-
-        case 'KeyU':
-          return setActiveModal({ type: 'gallery-upload' });
-
-        case 'KeyF':
-          return setActiveModal({ type: 'gallery-filter' });
-
-        case 'KeyB':
-          return setActiveModal({ type: 'gallery-leaderboard' });
-
-        default:
-          return undefined;
-      }
+    if ('external' in target) {
+      return openInExternalApp({ where: target.external });
     }
 
-    if (initCode === 'KeyE') {
-      switch (event.code) {
-        case 'KeyA':
-          return setActiveModal({ type: 'account' });
+    switch (target.command) {
+      case 'clear-map-features':
+        return clearMapFeatures();
 
-        case 'KeyG':
-          return setActiveModal({ type: 'map-features-export' });
-
-        case 'KeyP':
-          return setActiveModal({ type: 'map-to-document-export' });
-
-        case 'KeyE':
-          return setActiveModal({ type: 'embed' });
-
-        case 'KeyD':
-          return setActiveModal({ type: 'drawing-properties' });
-
-        case 'KeyM':
-          return setActiveModal({ type: 'offline-map-export' });
-      }
-
-      return undefined;
-    }
-
-    if (initCode === 'KeyM') {
-      switch (event.code) {
-        case 'KeyP':
-          return setActiveModal({ type: 'map-preferences' });
-
-        case 'KeyO':
-          return setActiveModal({ type: 'offline-maps' });
-
-        case 'KeyY':
-          return setActiveModal({ type: 'map-layers-config' });
-
-        case 'KeyC':
-          return setActiveModal({ type: 'custom-maps' });
-
-        case 'KeyL':
-          return setActiveModal({ type: 'legend' });
-      }
-
-      return undefined;
+      case 'gallery-list':
+        return galleryList('-createdAt');
     }
   }
 
   return undefined;
 }
 
+const zoomKeyDirections: Record<string, 1 | -1> = {
+  '+': 1,
+  '=': 1,
+  '-': -1,
+  _: -1,
+};
+
+// Leaflet's own `keyboardPanDelta`, so the step is the size users of the
+// focused map already know.
+const PAN_PX = 80;
+
+const panKeyOffsets: Record<string, [number, number]> = {
+  ArrowLeft: [-PAN_PX, 0],
+  ArrowRight: [PAN_PX, 0],
+  ArrowUp: [0, -PAN_PX],
+  ArrowDown: [0, PAN_PX],
+};
+
+/**
+ * Moving the map with `+`/`-` and the arrow keys. Leaflet binds its own on the
+ * map container, which only receives keys once the map has been clicked; going
+ * through the store instead makes them work anywhere and matches what the
+ * on-screen controls do. Holding shift triples an arrow step, as Leaflet does;
+ * a zoom step ignores shift, because on most layouts `+` is typed as shift-`=`
+ * and there is no telling that shift from a deliberate one.
+ *
+ * Routing a zoom through the store also means the store learns it before the
+ * map does, which is what keeps GPS following alive across a zoom — whereas an
+ * arrow key carries coordinates and so ends following, being a deliberate move
+ * away from the located position.
+ */
+export function handleMapKey(event: KeyboardEvent, state: RootState) {
+  const zoomDirection = zoomKeyDirections[event.key];
+
+  const panOffset = panKeyOffsets[event.key];
+
+  if (
+    (!zoomDirection && !panOffset) ||
+    event.ctrlKey ||
+    event.altKey ||
+    event.metaKey ||
+    event.isComposing
+  ) {
+    return undefined;
+  }
+
+  if (
+    event.target instanceof HTMLElement &&
+    ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())
+  ) {
+    return undefined;
+  }
+
+  // An open dropdown moves its own selection with the arrow keys, and this
+  // handler runs in the capture phase, so it would claim them before the menu
+  // ever sees them. Same signal the Escape handling above uses.
+  if (document.querySelector('*[aria-expanded=true]') !== null) {
+    return undefined;
+  }
+
+  // The picking/selecting overlays leave the map live underneath, so moving it
+  // stays available there; a real modal takes the keys — which is also what
+  // leaves the gallery viewer its own arrow-key handling.
+  const suspendedModal =
+    state.homeLocation.selectingHomeLocation !== false ||
+    state.gallery.pickingPositionForId ||
+    state.gallery.showPosition ||
+    state.mapArea.selecting;
+
+  const showingModal =
+    Boolean(state.main.activeModal) ||
+    Boolean(state.gallery.activeImageId) ||
+    Boolean(state.wiki.preview) ||
+    Boolean(state.wiki.loading);
+
+  if (showingModal && !suspendedModal) {
+    return undefined;
+  }
+
+  const map = getMapLeafletElement();
+
+  if (!map) {
+    return undefined;
+  }
+
+  if (panOffset) {
+    const step = event.shiftKey ? 3 : 1;
+
+    // Panning starts from where the map actually is, not from the store, which
+    // while following runs ahead of it.
+    const mapZoom = map.getZoom();
+
+    const { lat, lng } = map.unproject(
+      map
+        .project(map.getCenter(), mapZoom)
+        .add([panOffset[0] * step, panOffset[1] * step]),
+      mapZoom,
+    );
+
+    return mapRefocus({ lat, lon: lng });
+  }
+
+  const zoom = Math.min(
+    map.getMaxZoom(),
+    Math.max(map.getMinZoom(), steppedZoom(state.map.zoom, zoomDirection)),
+  );
+
+  return zoom === state.map.zoom ? undefined : mapRefocus({ zoom });
+}
+
 export function attachKeyboardHandler(store: MyStore): void {
+  // Capture phase, so the key is claimed before it reaches the map container
+  // and Leaflet's own handler moves the map a second time on top.
+  document.addEventListener(
+    'keydown',
+    (e) => {
+      const action = handleMapKey(e, store.getState());
+
+      if (!action) {
+        return;
+      }
+
+      store.dispatch(action);
+
+      e.preventDefault();
+
+      e.stopPropagation();
+
+      // The document-level handler below never sees this key, so the pending
+      // multi-key sequence it would have cancelled is cleared here instead.
+      if (keyTimer) {
+        window.clearTimeout(keyTimer);
+
+        keyTimer = null;
+
+        initCode = null;
+      }
+    },
+    { capture: true },
+  );
+
   document.addEventListener('keydown', (e) => {
     const action = handleEvent(e, store.getState());
 

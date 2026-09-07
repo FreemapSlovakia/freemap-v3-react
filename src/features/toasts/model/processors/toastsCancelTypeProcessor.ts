@@ -6,21 +6,25 @@ export const toastsCancelTypeProcessor: Processor = {
   handle: async ({ dispatch, getState, prevState, action }) => {
     const state = getState();
 
-    const toCancel = Object.values(state.toasts.toasts).filter((toast) =>
-      combineResults(
-        [
-          toast.cancelType === undefined
-            ? undefined
-            : matches(action.type, toast.cancelType),
-          toast.actionPredicate?.(action),
-          toast.statePredicate?.(state),
-          toast.stateChangePredicate
-            ? toast.stateChangePredicate(state) !==
-              toast.stateChangePredicate(prevState)
-            : undefined,
-        ],
-        toast.predicatesOperation,
-      ),
+    // A pin outranks these dismissals: they fire when the toast's subject is
+    // gone, which is not a reason to take away what the user asked to keep.
+    const toCancel = Object.values(state.toasts.toasts).filter(
+      (toast) =>
+        !toast.pinned &&
+        combineResults(
+          [
+            toast.cancelType === undefined
+              ? undefined
+              : matches(action.type, toast.cancelType),
+            toast.actionPredicate?.(action),
+            toast.statePredicate?.(state),
+            toast.stateChangePredicate
+              ? toast.stateChangePredicate(state) !==
+                toast.stateChangePredicate(prevState)
+              : undefined,
+          ],
+          toast.predicatesOperation,
+        ),
     );
 
     for (const { id } of toCancel) {

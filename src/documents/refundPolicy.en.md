@@ -43,7 +43,7 @@ Credits are a prepaid balance used for consumption-based features (currently off
 
 # How to request a refund
 
-To request a refund, **email Us** at freemap@freemap.sk from the email address used for the purchase and, if available, include the order or invoice number from Your receipt.
+To request a refund, **email Us** at info@zdila.sk from the email address used for the purchase and, if available, include the order or invoice number from Your receipt.
 
 We aim to acknowledge refund requests within a few business days. Once a refund is approved, We process it to Your original payment method through Our payment processor; the time for the funds to appear depends on Your bank or card issuer.
 
@@ -59,5 +59,5 @@ We may update this Refund Policy from time to time. We will post the updated ver
 
 If You have any questions about refunds, You can contact Us:
 
-- By email: freemap@freemap.sk
+- By email: info@zdila.sk
 - By post: Ing. Martin Ždila s.r.o., Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovak Republic

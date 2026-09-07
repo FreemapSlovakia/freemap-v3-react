@@ -1,16 +1,21 @@
 import {
   clearMapFeatures,
+  closeTool,
   type ExternalTarget,
   openInExternalApp,
+  openTool,
   resetApp,
   saveSettings,
   setActiveModal,
-  setTool,
-  setTools,
   type Tool,
   ToolSchema,
 } from '@app/store/actions.js';
-import { type ModalId, modalOf } from '@app/store/activeModal.js';
+import {
+  encodeActiveModal,
+  type ModalId,
+  modalOf,
+} from '@app/store/activeModal.js';
+import { openToolsSelector } from '@app/store/selectors.js';
 import {
   type Document,
   documentShow,
@@ -19,9 +24,10 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import type { Submenu } from '@features/mainMenu/components/submenu.js';
 import { mapRefocus } from '@features/map/model/actions.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Language } from '@shared/langUtils.js';
+import type { LatLon } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -43,25 +49,44 @@ export type EventKey =
   | `modal-${ModalId}`;
 
 export function modalMenuItemProps(modalId: ModalId) {
+  // Through the codec, so the two modals that name no id yield no href
+  // instead of one that decodes to nothing (Bootstrap renders those as `#`).
+  const show = encodeActiveModal(modalOf(modalId));
+
   return {
     eventKey: `modal-${modalId}`,
-    href: `#show=${modalId}`,
+    href: show === null ? undefined : `#show=${show}`,
   };
 }
 
 export function documentMenuItemProps(document: string) {
   return {
     eventKey: `document-${document}`,
-    href: `document=${document}`,
+    href: `#document=${document}`,
   };
 }
 
 export function useMenuHandler({
   pointTitle,
+  pointTags,
   pointDescription,
+  imageUrl,
+  at,
+  includePoint,
 }: {
   pointTitle?: string;
+  /** What the place is, as OSM tags; see the `openInExternalApp` payload. */
+  pointTags?: Record<string, string>;
   pointDescription?: string;
+  /** The picture the `image` target shares as a file; nothing else here needs an address. */
+  imageUrl?: string;
+  /**
+   * Where the external-app targets act, when that is not the middle of the map
+   * — the position a menu belongs to, such as a drawn point's.
+   */
+  at?: LatLon;
+  /** The position is a place in its own right: JOSM puts a node there. */
+  includePoint?: boolean;
 } = {}) {
   const dispatch = useDispatch();
 
@@ -69,15 +94,16 @@ export function useMenuHandler({
 
   const confirm = useConfirm();
 
-  const lat = useAppSelector((state) => state.map.lat);
+  // A caller that says where it acts doesn't re-render with the map.
+  const lat = useAppSelector((state) => at?.lat ?? state.map.lat);
 
-  const lon = useAppSelector((state) => state.map.lon);
+  const lon = useAppSelector((state) => at?.lon ?? state.map.lon);
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const tools = useAppSelector((state) => state.main.tools);
+  const openTools = useAppSelector(openToolsSelector);
 
   const [menuShown, setShow] = useState(false);
 
@@ -178,22 +204,14 @@ export function useMenuHandler({
       const tool = afterPrefix(key, 'tool-');
 
       if (tool !== undefined) {
-        if (!tool) {
-          dispatch(setTools([]));
-        } else {
-          const parsed = ToolSchema.safeParse(tool);
+        const parsed = ToolSchema.safeParse(tool);
 
-          if (parsed.success) {
-            const t = parsed.data;
+        if (parsed.success) {
+          const t = parsed.data;
 
-            // Menu items toggle: close if open, otherwise open and focus it.
-            dispatch(
-              setTool({
-                tool: t,
-                mode: tools.includes(t) ? 'close' : 'activate',
-              }),
-            );
-          }
+          // Menu items toggle: close it if it is open, otherwise open it beside
+          // whatever else is.
+          dispatch(openTools.includes(t) ? closeTool(t) : openTool(t));
         }
 
         setShow(false);
@@ -204,12 +222,7 @@ export function useMenuHandler({
       if (key === 'drawing') {
         const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
 
-        dispatch(
-          setTool({
-            tool: parsed.success ? parsed.data : 'draw-points',
-            mode: 'activate',
-          }),
-        );
+        dispatch(openTool(parsed.success ? parsed.data : 'draw-points'));
 
         setShow(false);
 
@@ -260,8 +273,11 @@ export function useMenuHandler({
             lat,
             lon,
             zoom,
+            includePoint,
             pointTitle,
+            pointTags,
             pointDescription,
+            imageUrl,
           }),
         );
 
@@ -310,11 +326,14 @@ export function useMenuHandler({
       confirm,
       lat,
       lon,
+      includePoint,
       pointDescription,
       pointTitle,
+      pointTags,
+      imageUrl,
       zoom,
       layers,
-      tools,
+      openTools,
       sendGalleryEmails,
     ],
   );

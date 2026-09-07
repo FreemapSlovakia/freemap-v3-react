@@ -1,20 +1,40 @@
 import type { Selection } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
+import {
+  drawingLineLabel,
+  drawingPointLabel,
+} from '@features/drawing/labelValues.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
+import {
+  ISOCHRONE_FILL_OPACITY,
+  isochroneColor,
+  isochroneLabel,
+} from '@features/routePlanner/model/isochrones.js';
 import type { RoutePlannerState } from '@features/routePlanner/model/reducer.js';
+import {
+  dominantStepMode,
+  INACTIVE_ALTERNATIVE_COLOR,
+  routeModeRuns,
+  STEP_MODE_COLORS,
+  stepModeDashArray,
+  stopNumber,
+  WAYPOINT_COLORS,
+  WAYPOINT_ICONS,
+  waypointKind,
+} from '@features/routePlanner/model/routeColors.js';
+import type { RoutePlannerSettingsState } from '@features/routePlanner/model/settingsReducer.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
+import { hasGeometry } from '@features/search/model/resultUtils.js';
 import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { resolveGenericName } from '@osm/osmNameResolver.js';
-import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import { poiIconBBoxes } from '@osm/poiIconBBoxes.js';
-import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { poiIcons } from '@osm/poiIcons.js';
+import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
+import { tagsToPoiIconName } from '@shared/drawingIcons.js';
 import {
   buildMarkerSvg,
-  fetchSvgText,
   resolveMarkerGlyph,
   svgToPngDataUrl,
   utf8ToBase64,
@@ -40,6 +60,7 @@ import {
   keepDrawingLine,
   keepDrawingPoint,
   keepObject,
+  keepSearchResult,
   selectedTrackToken,
 } from './selectionFilter.js';
 
@@ -64,7 +85,6 @@ export interface ExportInclude {
   drawingPoints?: boolean;
   objects?: boolean;
   plannedRoute?: boolean;
-  plannedRouteWithStops?: boolean;
   tracking?: boolean;
   import?: boolean;
   search?: boolean;
@@ -78,9 +98,10 @@ export interface BuildExportOptions {
    */
   only?: Selection;
   /**
-   * Planned-route geometry: `all` emits every alternative as a MultiLineString
-   * (data export); `active` emits only the active alternative as a single
-   * LineString (raster map).
+   * Planned-route geometry: `all` emits every alternative as one
+   * MultiLineString (data export); `active` emits only the active alternative,
+   * split into one LineString per same-mode stretch so each carries the color
+   * and dash the map gives it (raster map).
    */
   route?: 'all' | 'active';
   /**
@@ -96,7 +117,6 @@ export interface BuildExportOptions {
 
 interface Caches {
   faCache: Map<string, IconDefinition | undefined>;
-  poiSvgCache: Map<string, Promise<string | undefined>>;
 }
 
 interface MarkerSpec {
@@ -105,33 +125,12 @@ interface MarkerSpec {
   icon?: string;
   label?: string;
   /**
-   * Pre-resolved icon image URL (e.g. an OSM-tag-resolved POI SVG). When set it
-   * is fetched and embedded instead of resolving `icon`.
+   * Pre-resolved poi icon name (e.g. resolved from OSM tags). When set, its
+   * drawing is embedded instead of resolving `icon`.
    */
-  iconUrl?: string;
-  /** Icon spec to use when neither `icon`/`label` nor `iconUrl` yields content. */
+  iconName?: string;
+  /** Icon spec to use when neither `icon`/`label` nor `iconName` yields content. */
   fallbackIcon?: string;
-}
-
-// Resolves a POI icon (the bundled SVG URL) from a feature's OSM tags — the
-// same mapping the in-app POI and search markers use. Returns undefined when no
-// tag matches. Non-string property values are ignored.
-function osmTagIconUrl(
-  props: Record<string, unknown> | null | undefined,
-): string | undefined {
-  if (!props) {
-    return undefined;
-  }
-
-  const tags: Record<string, string> = {};
-
-  for (const [k, v] of Object.entries(props)) {
-    if (typeof v === 'string') {
-      tags[k] = v;
-    }
-  }
-
-  return resolveGenericName(osmTagToIconMapping, tags)[0];
 }
 
 // Bakes the `marker-svg` / `marker-png` properties for a point, mirroring the
@@ -155,22 +154,11 @@ async function bakeMarkerProps(
     ...caches,
   });
 
-  if (!glyph.hasContent && spec.iconUrl) {
-    let p = caches.poiSvgCache.get(spec.iconUrl);
+  if (!glyph.hasContent && spec.iconName) {
+    const poi = poiIcons[spec.iconName];
 
-    if (!p) {
-      p = fetchSvgText(spec.iconUrl);
-      caches.poiSvgCache.set(spec.iconUrl, p);
-    }
-
-    const poiSvg = await p;
-
-    if (poiSvg) {
-      glyph = {
-        poiSvg,
-        poiBBox: poiIconBBoxes[spec.iconUrl],
-        hasContent: true,
-      };
+    if (poi) {
+      glyph = { poi, hasContent: true };
     }
   }
 
@@ -184,8 +172,7 @@ async function bakeMarkerProps(
     hasContent: glyph.hasContent,
     text: glyph.text,
     faSvg: glyph.faSvg,
-    poiSvg: glyph.poiSvg,
-    poiBBox: glyph.poiBBox,
+    poi: glyph.poi,
     // Center the anchor so a shape-agnostic renderer places every marker by
     // centering it on the coordinate.
     anchorAtCenter: true,
@@ -215,7 +202,7 @@ async function bakeMarkerProps(
 // Converts a foreign GeoJSON FeatureCollection (an imported GPX/GeoJSON track
 // or a search result, carrying simplestyle / freemap:* / osmand:* / Garmin
 // <sym> styling in its properties) into export features: points become baked
-// markers, lines/polygons become simplestyle. Mirrors how `TrackViewerResult`
+// markers, lines/polygons become simplestyle. Mirrors how `DataViewerResult`
 // renders the same features in-app, so the export matches the on-screen
 // preview. Unstyled features fall back to the supplied default style (the
 // track-viewer or search result style, matching the on-map rendering).
@@ -250,7 +237,7 @@ async function convertForeignFeatures(
           // No explicit icon → resolve one from OSM tags (search results /
           // POIs), then fall back to a flag glyph (matching the in-app
           // waypoint).
-          iconUrl: style.icon ? undefined : osmTagIconUrl(props),
+          iconName: style.icon ? undefined : tagsToPoiIconName(props),
           fallbackIcon: 'fa:flag',
         },
         mode,
@@ -344,61 +331,158 @@ function addPictures(features: Feature[], pictures: Picture[]) {
   }
 }
 
-function addPlannedRoute(
+async function addPlannedRoute(
   features: Feature[],
   {
     alternatives,
     activeAlternativeIndex,
+    isochrones,
     points,
+    waypoints,
     finishOnly,
+    mode,
   }: RoutePlannerState,
+  { lineWidth, lineOpacity, markerOpacity }: RoutePlannerSettingsState,
   selection: 'all' | 'active',
-  withStops: boolean,
   rpm: RoutePlannerMessages,
+  language: string,
+  pointMode: PointRenderMode,
+  caches: Caches,
 ) {
-  if (withStops) {
-    for (const [i, pt] of points.entries()) {
-      features.push(
-        point([pt.lon, pt.lat], {
-          title:
-            i === 0 && !finishOnly
-              ? rpm.start
-              : i === points.length - 1
-                ? rpm.finish
-                : `${rpm.stop} ${i + 1}`,
-        }),
-      );
+  // The start/finish/stop markers are part of what the route puts on the map,
+  // so they always come along, in the colors and glyphs the map gives them.
+  for (const [i, pt] of points.entries()) {
+    const kind = waypointKind(i, points.length, finishOnly, mode);
+
+    // `markerOpacity` rides on the color's alpha: both the baked SVG and the
+    // in-app marker turn it into a group opacity, fading shape, inset and glyph
+    // together.
+    const color = joinColorAlpha(WAYPOINT_COLORS[kind], markerOpacity);
+
+    const number = stopNumber(i, mode, waypoints);
+
+    // Stops are numbered inside their marker, in the visiting order the map
+    // shows.
+    const label =
+      kind === 'stop' && number !== undefined ? String(number) : undefined;
+
+    const props: Record<string, unknown> = {};
+
+    // A waypoint's name is generated boilerplate, and its marker already shows
+    // the play/stop glyph or the stop's number — so it goes only into the data
+    // formats, where a name is the sole way to tell waypoints apart. A rendered
+    // map would just get "Start"/"Finish" repeating what the marker says.
+    if (pointMode.props) {
+      props['title'] =
+        kind === 'start'
+          ? rpm.start
+          : kind === 'finish'
+            ? rpm.finish
+            : `${rpm.stop} ${number ?? i}`;
+
+      props['marker-color'] = WAYPOINT_COLORS[kind];
+
+      if (markerOpacity < 1) {
+        props['marker-color-opacity'] = markerOpacity;
+      }
+
+      // The glyph the map draws, spelled as a drawing point spells it, so a
+      // consumer that reads these back gets the same marker. No
+      // `marker-symbol`: no Garmin sym stands for a play/stop or a number.
+      props['markerType'] = 'pin';
+      props['icon'] = WAYPOINT_ICONS[kind] ?? label;
     }
+
+    Object.assign(
+      props,
+      await bakeMarkerProps(
+        {
+          markerType: 'pin',
+          color,
+          icon: WAYPOINT_ICONS[kind],
+          label,
+        },
+        pointMode,
+        caches,
+      ),
+    );
+
+    features.push(point([pt.lon, pt.lat], props));
   }
 
-  if (selection === 'active') {
-    const alt = alternatives[activeAlternativeIndex];
+  // Isochrones replace the route alternatives, so they are what the route
+  // source exports when present. Simplestyle mirrors the on-map rendering:
+  // per-bucket stroke color, fill on the outermost ring only.
+  if (isochrones?.length) {
+    for (const isochrone of isochrones) {
+      const bucket = isochrone.properties?.['bucket'] ?? 0;
 
-    if (alt) {
-      const coords: Position[] = [];
+      const color = isochroneColor(bucket, isochrones.length);
 
-      for (const leg of alt.legs) {
-        for (const step of leg.steps) {
-          coords.push(...step.geometry.coordinates);
-        }
-      }
-
-      if (coords.length >= 2) {
-        features.push(lineString(coords, {}));
-      }
+      features.push({
+        type: 'Feature',
+        properties: {
+          title: isochroneLabel(isochrone, bucket, rpm.isochroneRing, language),
+          stroke: color,
+          'stroke-opacity': lineOpacity < 1 ? lineOpacity : undefined,
+          'stroke-width': lineWidth,
+          fill: color,
+          // The inner rings are outlines only; a fully transparent fill says so
+          // explicitly, so no consumer falls back to a default fill. The map
+          // fades the whole ring group, so the fill takes `lineOpacity` on top
+          // of its own.
+          'fill-opacity':
+            bucket === isochrones.length - 1
+              ? ISOCHRONE_FILL_OPACITY * lineOpacity
+              : 0,
+        },
+        geometry: isochrone.geometry,
+      });
     }
 
     return;
   }
 
-  for (const [i, { legs }] of alternatives.entries()) {
+  // One feature per same-mode stretch, each in the color the map paints it, so
+  // a multimodal route reads the same on paper as on screen.
+  if (selection === 'active') {
+    const alt = alternatives[activeAlternativeIndex];
+
+    for (const run of alt ? routeModeRuns(alt) : []) {
+      features.push(
+        lineString(run.coordinates, {
+          stroke: STEP_MODE_COLORS[run.mode],
+          'stroke-opacity': lineOpacity < 1 ? lineOpacity : undefined,
+          'stroke-width': lineWidth,
+          'stroke-dasharray': stepModeDashArray(run.mode),
+        }),
+      );
+    }
+
+    return;
+  }
+
+  for (const [i, alternative] of alternatives.entries()) {
+    const dominant = dominantStepMode(alternative);
+
     features.push(
       multiLineString(
-        legs.flatMap((leg) =>
+        alternative.legs.flatMap((leg) =>
           leg.steps.map((step) => step.geometry.coordinates),
         ),
         {
           title: `${rpm.alternative} ${i + 1}`,
+          // One feature per alternative keeps the data export's structure, so
+          // a multimodal route gets its dominant mode's color rather than a
+          // per-stretch one. Alternatives the user isn't following are drawn
+          // dimmed, as on the map.
+          stroke:
+            i === activeAlternativeIndex
+              ? STEP_MODE_COLORS[dominant]
+              : INACTIVE_ALTERNATIVE_COLOR,
+          'stroke-opacity': lineOpacity < 1 ? lineOpacity : undefined,
+          'stroke-width': lineWidth,
+          'stroke-dasharray': stepModeDashArray(dominant),
         },
       ),
     );
@@ -482,6 +566,25 @@ function addTracking(
   }
 }
 
+// A property set to `undefined` is not JSON. A written file loses it to
+// `JSON.stringify`, but a collection handed to the track viewer is kept as it
+// is and validated when stored, so the two must not differ. Copies rather than
+// deletes: some features come straight out of the store.
+function withoutUndefinedProps(feature: Feature): Feature {
+  const props = feature.properties;
+
+  if (!props || !Object.values(props).some((v) => v === undefined)) {
+    return feature;
+  }
+
+  return {
+    ...feature,
+    properties: Object.fromEntries(
+      Object.entries(props).filter(([, v]) => v !== undefined),
+    ),
+  };
+}
+
 // Builds the GeoJSON FeatureCollection shared by the data export
 // (`pointMode: { props: true }`) and the raster map export
 // (`pointMode: { svgMarker: true }`). Source order matches the legacy
@@ -503,6 +606,7 @@ export async function buildExportFeatureCollection({
     objects,
     objectsSettings,
     routePlanner,
+    routePlannerSettings,
     tracking,
     trackViewer,
     trackViewerSettings,
@@ -512,7 +616,6 @@ export async function buildExportFeatureCollection({
 
   const caches: Caches = {
     faCache: new Map(),
-    poiSvgCache: new Map(),
   };
 
   const markerMode = Boolean(pointMode.svgMarker || pointMode.pngMarker);
@@ -525,12 +628,34 @@ export async function buildExportFeatureCollection({
     addPictures(features, await fetchPictures(getState));
   }
 
+  // A hole has no meaning apart from the polygon it belongs to: it is written
+  // as one of its interior rings, and picking either one exports the shape.
+  const holeIndexes = new Map<number, number[]>();
+
+  for (const [i, line] of drawingLines.lines.entries()) {
+    if (line.holeOfId !== undefined) {
+      const bucket = holeIndexes.get(line.holeOfId);
+
+      if (bucket) {
+        bucket.push(i);
+      } else {
+        holeIndexes.set(line.holeOfId, [i]);
+      }
+    }
+  }
+
   for (const [lineIndex, line] of drawingLines.lines.entries()) {
     if (line.type === 'line' ? !include.drawingLines : !include.drawingAreas) {
       continue;
     }
 
-    if (!keepDrawingLine(only, lineIndex)) {
+    if (line.holeOfId !== undefined) {
+      continue;
+    }
+
+    const holes = holeIndexes.get(line.id) ?? [];
+
+    if (![lineIndex, ...holes].some((i) => keepDrawingLine(only, i))) {
       continue;
     }
 
@@ -539,7 +664,16 @@ export async function buildExportFeatureCollection({
     const fill = line.fillColor ? splitColorAlpha(line.fillColor) : undefined;
 
     const props = {
-      title: line.label,
+      // The feature's own data first, so a style key can't be shadowed by a
+      // property that happens to share its name.
+      ...line.props,
+      title: drawingLineLabel(line, drawingLines.lines) || undefined,
+      // The label as written, template and all; `title` is what it renders to.
+      'freemap:label': line.label,
+      // The table again, whole: spread above it reads well for other tooling
+      // but is indistinguishable from the style keys, so our importer takes
+      // this copy instead and no key of the user's is lost.
+      ...(line.props && { 'freemap:props': line.props }),
       stroke: stroke?.color,
       'stroke-opacity':
         stroke && stroke.opacity < 1 ? stroke.opacity : undefined,
@@ -564,7 +698,19 @@ export async function buildExportFeatureCollection({
       properties: props,
       geometry:
         line.type === 'polygon'
-          ? { type: 'Polygon', coordinates: [positions] }
+          ? {
+              type: 'Polygon',
+              coordinates: [
+                positions,
+                ...holes.map((i) => {
+                  const { points } = drawingLines.lines[i]!;
+
+                  return [...points, points[0]!].map(
+                    (p) => [p.lon, p.lat] as Position,
+                  );
+                }),
+              ],
+            }
           : { type: 'LineString', coordinates: positions },
     });
   }
@@ -575,7 +721,12 @@ export async function buildExportFeatureCollection({
         continue;
       }
 
-      const props: Record<string, unknown> = { title: p.label };
+      const props: Record<string, unknown> = {
+        ...p.props,
+        title: drawingPointLabel(p) || undefined,
+        'freemap:label': p.label,
+        ...(p.props && { 'freemap:props': p.props }),
+      };
 
       if (pointMode.props) {
         const marker = p.color ? splitColorAlpha(p.color) : undefined;
@@ -624,7 +775,7 @@ export async function buildExportFeatureCollection({
           {
             markerType: objectsSettings.selectedIcon,
             color: objectsSettings.color,
-            iconUrl: osmTagIconUrl(tags),
+            iconName: tagsToPoiIconName(tags),
           },
           pointMode,
           caches,
@@ -647,13 +798,16 @@ export async function buildExportFeatureCollection({
     }
   }
 
-  if (include.plannedRoute || include.plannedRouteWithStops) {
-    addPlannedRoute(
+  if (include.plannedRoute) {
+    await addPlannedRoute(
       features,
       routePlanner,
+      routePlannerSettings,
       options.route ?? 'all',
-      Boolean(include.plannedRouteWithStops),
       await loadRoutePlannerMessages(getState().l10n.language),
+      getState().l10n.language,
+      pointMode,
+      caches,
     );
   }
 
@@ -684,14 +838,12 @@ export async function buildExportFeatureCollection({
   }
 
   if (include.search) {
-    const geojson = search.selectedResult?.geojson;
-
-    const searchFeatures =
-      geojson?.type === 'FeatureCollection'
-        ? geojson.features
-        : geojson?.type === 'Feature'
-          ? [geojson]
-          : [];
+    const searchFeatures = search.selectedResults
+      .filter((result) => keepSearchResult(only, result.id))
+      .filter(hasGeometry)
+      .flatMap(({ geojson }) =>
+        geojson.type === 'FeatureCollection' ? geojson.features : [geojson],
+      );
 
     if (markerMode) {
       features.push(
@@ -707,5 +859,5 @@ export async function buildExportFeatureCollection({
     }
   }
 
-  return featureCollection(features);
+  return featureCollection(features.map(withoutUndefinedProps));
 }

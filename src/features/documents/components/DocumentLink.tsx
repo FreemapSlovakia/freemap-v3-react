@@ -1,28 +1,18 @@
-import { type MouseEvent, type ReactNode, useCallback } from 'react';
-import { Anchor } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import { type Document, documentShow } from '../model/actions.js';
+import { ShowModalLink } from '@shared/components/ShowModalLink.js';
+import type { ReactNode } from 'react';
+import type { Document } from '../model/actions.js';
 
 type Props = {
   doc: Document;
   children: ReactNode;
 };
 
+/** Names a document by key, where `ShowModalLink`'s modal shape reads poorly —
+ * chiefly inside translated message JSX. */
 export function DocumentLink({ doc, children }: Props) {
-  const dispatch = useDispatch();
-
-  const handleClick = useCallback(
-    (e: MouseEvent) => {
-      e.preventDefault();
-
-      dispatch(documentShow(doc));
-    },
-    [dispatch, doc],
-  );
-
   return (
-    <Anchor href={`#document=${doc}`} onClick={handleClick}>
+    <ShowModalLink modal={{ type: 'document', key: doc }}>
       {children}
-    </Anchor>
+    </ShowModalLink>
   );
 }

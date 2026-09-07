@@ -1,0 +1,166 @@
+import { clearMapFeatures } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { mapOpeningSelector } from '@features/myMaps/model/selectors.js';
+import {
+  searchSelectResult,
+  searchUnselectResult,
+} from '@features/search/model/actions.js';
+import { isResultLoadingSelector } from '@features/search/model/selectors.js';
+import { fetchOsmFeaturesById } from '@shared/osmApi.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
+import {
+  featureIdsEqual,
+  type OsmFeatureId,
+  osmElementTypes,
+  stringifyFeatureId,
+} from '@shared/types/featureId.js';
+import { loadOsmMessages } from '../../translations/loadOsmMessages.js';
+import { osmLoad } from '../osmActions.js';
+import { toOsmGeojson } from '../osmGeojson.js';
+import { copyDisplayName } from './copyDisplayName.js';
+
+export const osmLoadProcessor: Processor<typeof osmLoad> = {
+  actionCreator: osmLoad,
+  handle: async ({ dispatch, action, getState, toastError }) => {
+    const { ids, focus, pin } = action.payload;
+
+    if (ids.length === 0) {
+      return;
+    }
+
+    // Which of them started as stand-ins for a fetch, as opposed to elements
+    // already on the map being upgraded — which decides what a failure means.
+    const wasPlaceholder = new Set(
+      ids
+        .filter((id) => isResultLoadingSelector(getState(), id))
+        .map(stringifyFeatureId),
+    );
+
+    /**
+     * Takes the elements that didn't arrive off the map, and reports the
+     * failure unless every one of them is a load a map answers for.
+     */
+    async function fail(failed: OsmFeatureId[], err: unknown) {
+      // A map on its way in answers for the elements the URL named (`pin`),
+      // which are the ones it carries: it is about to supply them from its own
+      // document, and offline that document is the only thing that can. An
+      // element the user asked for themselves is theirs to hear about, whatever
+      // else happens to be loading at the time.
+      const answeredByMap = pin && mapOpeningSelector(getState());
+
+      let report = false;
+
+      for (const id of failed) {
+        const placeholder = isResultLoadingSelector(getState(), id);
+
+        // Only a placeholder goes: it is nothing but an id, and would sit on the
+        // map as an empty result and in the URL as a promise that reloading
+        // can't keep. A result that arrived from the list with geometry of its
+        // own stays — a failed upgrade is no reason to take away what was
+        // picked.
+        //
+        // One a map answers for stays too, for the map to replace: it is in the
+        // URL, and so in the digest the map is compared against, so taking it
+        // off would report the map as changed — and the load that was going to
+        // supply the element is only started when it reads as saved.
+        if (placeholder && !answeredByMap) {
+          dispatch(searchUnselectResult(id));
+        }
+
+        // Nothing to report where a map answers for the element, nor where one
+        // landed while the fetch was failing and already has — which is why a
+        // placeholder that stopped being one counts too.
+        if (
+          !answeredByMap &&
+          !(pin && wasPlaceholder.has(stringifyFeatureId(id)) && !placeholder)
+        ) {
+          report = true;
+        }
+      }
+
+      if (report) {
+        await toastError(err, loadOsmMessages, 'fetchingError');
+      }
+    }
+
+    for (const elementType of osmElementTypes) {
+      const count = ids.filter((id) => id.elementType === elementType).length;
+
+      // One event per type rather than per element: a link restoring hundreds
+      // of pins is one load, and would otherwise be hundreds of tracker hits.
+      if (count > 0) {
+        trackMatomo(['trackEvent', 'Osm', 'view', elementType, count]);
+      }
+    }
+
+    let byId;
+
+    try {
+      byId = await fetchOsmFeaturesById(ids, {
+        getState,
+        cancelActions: [clearMapFeatures],
+        // Only all of them going off the map invalidates the fetch — other
+        // results coming and going alongside them don't.
+        stateChangePredicate: (state) =>
+          ids.some((id) =>
+            state.search.selectedResults.some((result) =>
+              featureIdsEqual(result.id, id),
+            ),
+          ),
+      });
+    } catch (err) {
+      await fail(ids, err);
+
+      return;
+    }
+
+    // Elements taken off the map while the batch was in flight are left off:
+    // one of them going no longer cancels the fetch (the rest of the batch is
+    // still wanted), so what it asked for has to be dropped here instead.
+    const stillWanted = ids.filter((id) =>
+      getState().search.selectedResults.some((result) =>
+        featureIdsEqual(result.id, id),
+      ),
+    );
+
+    const failed: OsmFeatureId[] = [];
+
+    for (const id of stillWanted) {
+      const feature = byId.get(`${id.elementType}/${id.id}`);
+
+      if (!feature) {
+        failed.push(id);
+
+        continue;
+      }
+
+      const geojson = toOsmGeojson(feature);
+
+      copyDisplayName(
+        getState().search.selectedResults,
+        id,
+        geojson.properties,
+      );
+
+      dispatch(
+        searchSelectResult({
+          result: { source: 'osm', id, geojson },
+          focus,
+          tier: 'keep',
+          select: false,
+        }),
+      );
+    }
+
+    if (failed.length > 0) {
+      await fail(
+        failed,
+        new Error(
+          `OSM elements not found: ${failed
+            .map(({ elementType, id }) => `${elementType} ${id}`)
+            .join(', ')}`,
+        ),
+      );
+    }
+  },
+};

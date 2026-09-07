@@ -2,8 +2,11 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { deleteMapRecord } from '../../mapStore.js';
+import { deletePendingSave } from '../../outboxStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import { mapsDelete, mapsDisconnect, mapsLoadList } from '../actions.js';
+import { refreshOutbox } from './mapsOutboxProcessor.js';
 
 export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
   actionCreator: mapsDelete,
@@ -14,6 +17,9 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
     toastError,
   }) => {
     trackMatomo(['trackEvent', 'MyMaps', 'delete']);
+
+    // Read before the request; the list is reloaded once the map is gone.
+    const name = getState().myMaps.maps.find((map) => map.id === id)?.name;
 
     try {
       await httpRequest({
@@ -32,14 +38,41 @@ export const mapsDeleteProcessor: Processor<typeof mapsDelete> = {
       dispatch(mapsDisconnect());
     }
 
+    // Or navigating back to its `id=` would reopen it from the working copy,
+    // connected, until the backend answers 404. Best effort, like the other
+    // store writes: the map is already gone from the server, so a blocked
+    // IndexedDB must not turn a successful delete into an error.
+    deleteMapRecord(id).catch((err) => {
+      console.warn('Error clearing map working copy:', err);
+    });
+
+    // Along with a save the outbox still holds for it: it would answer
+    // `readMapDocument` for a map that no longer exists, count towards the
+    // logout warning, and keep the app shell cached on its own.
+    try {
+      await deletePendingSave(id);
+
+      await refreshOutbox(dispatch);
+    } catch (err) {
+      console.warn('Error clearing queued save:', err);
+    }
+
     dispatch(mapsLoadList());
 
     dispatch(
-      toastsAdd({
-        style: 'success',
-        timeout: 5000,
-        messageKey: 'general.deleted',
-      }),
+      name === undefined
+        ? toastsAdd({
+            style: 'success',
+            timeout: 5000,
+            messageKey: 'general.deleted',
+          })
+        : toastsAdd({
+            style: 'success',
+            timeout: 5000,
+            messageKey: 'mapDeleted',
+            messageParams: { name },
+            messageLoader: loadMyMapsMessages,
+          }),
     );
   },
 };

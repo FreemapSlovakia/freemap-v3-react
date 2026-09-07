@@ -5,6 +5,20 @@ const LAYERS_RE = new RegExp(
   `^(${Object.keys(integratedLayerDefMap).join('|')})|[.:]\\d`,
 );
 
+// How precisely `map=` carries the zoom. Two decimals put roughly 140 steps
+// between the widest and the closest view — finer than any gesture can be
+// repeated — and a whole level still writes as a bare integer, so links to one
+// read exactly as they always have.
+const ZOOM_DECIMALS = 2;
+
+// Half of the last digit `serializeZoom` keeps, so a URL compared against the
+// full-precision zoom it was written from reads as unchanged.
+const ZOOM_EPSILON = 0.5 / 10 ** ZOOM_DECIMALS;
+
+export function serializeZoom(zoom: number): string {
+  return String(Number(zoom.toFixed(ZOOM_DECIMALS)));
+}
+
 export function getMapStateFromUrl(): Partial<MapViewState> {
   const query = new URLSearchParams(
     (location.hash || location.search).slice(1),
@@ -29,7 +43,7 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
 
   const lon = undefineNaN(parseFloat(lonFrag ?? ''));
 
-  const zoom = undefineNaN(parseInt(zoomFrag ?? '', 10));
+  const zoom = undefineNaN(parseFloat(zoomFrag ?? ''));
 
   let layersStr = query.get('layers');
 
@@ -153,7 +167,7 @@ export function getMapStateDiffFromUrl(
     changes.lon = lon;
   }
 
-  if (zoom !== undefined && zoom !== state2.zoom) {
+  if (zoom !== undefined && Math.abs(zoom - state2.zoom) > ZOOM_EPSILON) {
     changes.zoom = zoom;
   }
 

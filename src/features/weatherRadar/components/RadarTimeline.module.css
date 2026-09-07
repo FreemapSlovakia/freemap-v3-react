@@ -1,0 +1,77 @@
+/* The bands live here rather than on the slider's own track, because the
+   slider only spans the stretch this user may open. Painting them on the
+   wrapper is what lets the thumb be physically unable to enter a locked band,
+   instead of entering it and being corrected afterwards — which a native range
+   always makes visible, since any click on it is a jump request.
+
+   Warning is the app's upsell colour (see doc/ui-conventions.md), so both
+   locked bands take it and a free user's track reads as one statement at each
+   end: "this is the premium part". The tail's colour follows what it means —
+   warning while locked, info once the user may open it, where it marks a
+   forecast rather than an offer. Info because the neutral middle is already a
+   grey, so a muted grey tail would not be told apart from it, and primary on a
+   track reads as a filled-in portion.
+
+   Two boundaries suffice: a free user's trailing locked band starts exactly
+   where the forecast does, and a premium user has no locked band at all. */
+.track {
+  /* Half a thumb: the slider hangs this far past each end (see below), so the
+     wrapper has to stand clear by the same, as margin — padding won't do it. */
+  --fm-radar-overhang: var(--fm-space-2);
+
+  position: relative;
+  width: 9rem;
+  height: var(--fm-space-4);
+  flex: none;
+
+  /* A step more on the left, where the round thumb meets a filled button. */
+  margin-inline-start: calc(var(--fm-radar-overhang) + var(--fm-space-1));
+  margin-inline-end: var(--fm-radar-overhang);
+  padding: 0;
+  border: 0;
+  border-radius: var(--bs-border-radius-pill);
+  background: linear-gradient(
+    to right,
+    rgba(var(--bs-warning-rgb), 0.5) 0 var(--fm-radar-locked-until),
+    var(--bs-tertiary-bg) var(--fm-radar-locked-until)
+      var(--fm-radar-warning-from),
+    var(--fm-radar-tail) var(--fm-radar-warning-from) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% var(--fm-space-2);
+  background-position: center;
+}
+
+/* Laid over its own share of the wrapper, stretched by `--fm-radar-overhang` at
+   both ends — see the wrapper. */
+input.timeline {
+  position: absolute;
+  top: 0;
+  left: calc(var(--fm-radar-open-from) - var(--fm-radar-overhang));
+  width: calc(
+    var(--fm-radar-open-to) -
+    var(--fm-radar-open-from) +
+    2 *
+    var(--fm-radar-overhang)
+  );
+  margin: 0;
+}
+
+/* The wrapper carries the colours; the slider's own track must not cover them. */
+input.timeline::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+input.timeline::-moz-range-track {
+  background: transparent;
+}
+
+/* Fixed width, so the toolbar doesn't shift as the animation steps through
+   times of different lengths. The toolbar sets `white-space: nowrap`, so an
+   over-long value spills rather than wraps — the longest this has to hold is
+   the six-hour end in Hungarian, "5 ó és 54 p ezelőtt". */
+.label {
+  width: 8rem;
+  flex: none;
+  line-height: 1.1;
+}

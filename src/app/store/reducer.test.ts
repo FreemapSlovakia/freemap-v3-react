@@ -1,29 +1,41 @@
 import {
+  closeTool,
+  convertToDrawing,
+  openTool,
   selectFeature,
-  setTool,
-  setTools,
-  type Tool,
-  type ToolMode,
 } from '@app/store/actions.js';
+import { dataViewerSetData } from '@features/dataViewer/model/actions.js';
 import { drawingLineStopDrawing } from '@features/drawing/model/actions/drawingLineActions.js';
+import { objectsSetResult } from '@features/objects/model/actions.js';
+import {
+  type SearchResult,
+  searchSelectResult,
+  searchUnselectResult,
+} from '@features/search/model/actions.js';
 import type { Action } from '@reduxjs/toolkit';
+import type { Feature, FeatureCollection } from 'geojson';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { type MainState, mainInitialState, mainReducer } from './reducer.js';
 
 /**
- * The open-tools / active-tool state machine in the main reducer. Rules pinned
- * here: tools render in the order opened, the three draw-* tools share one slot,
- * only map-click tools can be the active (click-owning) one, a tool and a
- * feature selection are mutually exclusive, and `setTool`'s mode chooses between
- * opening passively, focusing, and closing.
+ * The open-tool state machine in the main reducer. Rules pinned here: at most
+ * one map-click tool is open and opening another replaces it, toolbar-only
+ * tools accumulate, and taking the map-click slot from another tool drops the
+ * selection unless the tool opened is the one the selected feature belongs to.
  */
 
 const run = (...actions: Action[]): MainState =>
   actions.reduce(mainReducer, mainInitialState);
 
-const tool = (tool: Tool, mode: ToolMode) => setTool({ tool, mode });
-
 const aLine = { type: 'draw-line-poly', id: 0 } as const;
+
+const aResult = {
+  id: { type: 'osm', elementType: 'node', id: 1 },
+} as SearchResult;
+
+const anotherResult = {
+  id: { type: 'osm', elementType: 'way', id: 2 },
+} as SearchResult;
 
 beforeEach(() => {
   window.fmEmbedded = false;
@@ -33,177 +45,279 @@ afterEach(() => {
   window.fmEmbedded = false;
 });
 
-describe("setTool mode 'activate'", () => {
-  it('opens a map-click tool and makes it active', () => {
-    const s = run(tool('route-planner', 'activate'));
+describe('openTool', () => {
+  it('opens a map-click tool into the map-click slot', () => {
+    const s = run(openTool('route-planner'));
 
-    expect(s.tools).toEqual(['route-planner']);
-    expect(s.activeTool).toBe('route-planner');
+    expect(s.mapTool).toBe('route-planner');
+    expect(s.panelTools).toEqual([]);
   });
 
-  it('appends newly opened tools in order and keeps an already-open one in place', () => {
+  it('opens a toolbar-only tool beside the map-click one', () => {
+    const s = run(openTool('route-planner'), openTool('objects'));
+
+    expect(s.mapTool).toBe('route-planner');
+    expect(s.panelTools).toEqual(['objects']);
+  });
+
+  it('keeps toolbar-only tools open alongside each other, in the order opened', () => {
     const s = run(
-      tool('route-planner', 'activate'),
-      tool('objects', 'activate'),
-      tool('changesets', 'activate'),
-      tool('route-planner', 'activate'),
+      openTool('objects'),
+      openTool('tracking'),
+      openTool('import-file'),
     );
 
-    expect(s.tools).toEqual(['route-planner', 'objects', 'changesets']);
+    expect(s.panelTools).toEqual(['objects', 'tracking', 'import-file']);
   });
 
-  it('never makes an overlay active and deactivates the current mode', () => {
-    const s = run(
-      tool('route-planner', 'activate'),
-      tool('objects', 'activate'),
-    );
+  it('replaces the open map-click tool — only one of them owns the clicks', () => {
+    const s = run(openTool('route-planner'), openTool('draw-points'));
 
-    expect(s.tools).toEqual(['route-planner', 'objects']);
-    expect(s.activeTool).toBe(null);
+    expect(s.mapTool).toBe('draw-points');
   });
 
-  it('replaces the open draw tool in place (they share one menu)', () => {
-    const s = run(
-      tool('objects', 'activate'),
-      tool('draw-points', 'activate'),
-      tool('changesets', 'activate'),
-      tool('draw-lines', 'activate'),
-    );
+  it('opens an already open tool only once', () => {
+    const s = run(openTool('objects'), openTool('objects'));
 
-    expect(s.tools).toEqual(['objects', 'draw-lines', 'changesets']);
-    expect(s.activeTool).toBe('draw-lines');
-  });
-
-  it('clears the selection', () => {
-    const s = run(selectFeature(aLine), tool('draw-lines', 'activate'));
-
-    expect(s.selection).toBe(null);
-  });
-
-  it('re-activating an already-active tool keeps it active (no toggle)', () => {
-    const s = run(
-      tool('route-planner', 'activate'),
-      tool('route-planner', 'activate'),
-    );
-
-    expect(s.activeTool).toBe('route-planner');
+    expect(s.panelTools).toEqual(['objects']);
   });
 
   it('does nothing while embedded', () => {
     window.fmEmbedded = true;
 
-    expect(run(tool('route-planner', 'activate')).tools).toEqual([]);
+    const s = run(openTool('route-planner'), openTool('objects'));
+
+    expect(s.mapTool).toBe(null);
+    expect(s.panelTools).toEqual([]);
   });
 });
 
-describe("setTool mode 'open'", () => {
-  it('opens a toolbar without activating it or clearing the selection', () => {
-    const s = run(selectFeature(aLine), tool('objects', 'open'));
+describe('closeTool', () => {
+  it('closes the named map-click tool', () => {
+    const s = run(openTool('route-planner'), closeTool('route-planner'));
 
-    expect(s.tools).toEqual(['objects']);
-    expect(s.activeTool).toBe(null);
+    expect(s.mapTool).toBe(null);
+  });
+
+  it('closes the named toolbar-only tool and leaves the others open', () => {
+    const s = run(
+      openTool('objects'),
+      openTool('tracking'),
+      closeTool('objects'),
+    );
+
+    expect(s.panelTools).toEqual(['tracking']);
+  });
+
+  it('leaves the map-click tool alone when a panel is closed', () => {
+    const s = run(
+      openTool('draw-lines'),
+      openTool('tracking'),
+      closeTool('tracking'),
+    );
+
+    expect(s.mapTool).toBe('draw-lines');
+  });
+});
+
+describe('openTool and the selection', () => {
+  it('drops the selection when an unrelated tool takes the map-click slot', () => {
+    const s = run(selectFeature(aLine), openTool('route-planner'));
+
+    expect(s.selection).toBe(null);
+  });
+
+  it('keeps the selection for the tool the feature belongs to', () => {
+    for (const tool of ['draw-lines', 'draw-polygons'] as const) {
+      const s = run(selectFeature(aLine), openTool(tool));
+
+      expect(s.selection).toEqual(aLine);
+    }
+  });
+
+  it('keeps the selection when a toolbar-only tool is opened', () => {
+    // Opening one is no mode change — it takes no clicks off the map.
+    const s = run(selectFeature(aLine), openTool('tracking'));
+
     expect(s.selection).toEqual(aLine);
   });
 
-  it('leaves another mode active when a different tool is opened', () => {
-    const s = run(tool('route-planner', 'activate'), tool('objects', 'open'));
-
-    expect(s.tools).toEqual(['route-planner', 'objects']);
-    expect(s.activeTool).toBe('route-planner');
-  });
-
-  it('deactivates the active tool when it is the one opened (toggle off)', () => {
+  it('keeps the selection when a tool is closed', () => {
     const s = run(
-      tool('route-planner', 'activate'),
-      tool('route-planner', 'open'),
+      openTool('objects'),
+      selectFeature(aLine),
+      closeTool('objects'),
     );
 
-    expect(s.tools).toEqual(['route-planner']);
-    expect(s.activeTool).toBe(null);
+    expect(s.selection).toEqual(aLine);
+  });
+
+  it('keeps the selection when the open map-click tool is reopened', () => {
+    const s = run(
+      openTool('draw-lines'),
+      selectFeature(aLine),
+      openTool('draw-lines'),
+    );
+
+    expect(s.selection).toEqual(aLine);
   });
 });
 
-describe("setTool mode 'close'", () => {
-  it('drops the active tool when it is the one closed', () => {
-    const open = run(
-      tool('objects', 'activate'),
-      tool('route-planner', 'activate'),
-    );
+describe('selecting a feature', () => {
+  it('leaves the open tool alone', () => {
+    const s = run(openTool('route-planner'), selectFeature(aLine));
 
-    const s = mainReducer(open, tool('route-planner', 'close'));
-
-    expect(s.tools).toEqual(['objects']);
-    expect(s.activeTool).toBe(null);
+    expect(s.selection).toEqual(aLine);
+    expect(s.mapTool).toBe('route-planner');
   });
 
-  it('keeps the active tool when a different tool is closed', () => {
-    const open = run(
-      tool('objects', 'activate'),
-      tool('route-planner', 'activate'),
+  it('keeps the tool open when a search result is selected', () => {
+    // The selection toolbar renders alongside the tool's own toolbar.
+    const s = run(
+      openTool('map-details'),
+      searchSelectResult({ result: aResult }),
     );
 
-    const s = mainReducer(open, tool('objects', 'close'));
+    expect(s.selection).toEqual({ type: 'search', id: aResult.id });
+    expect(s.mapTool).toBe('map-details');
+  });
 
-    expect(s.tools).toEqual(['route-planner']);
-    expect(s.activeTool).toBe('route-planner');
+  it('clearing the result leaves the selection to whoever cleared it', () => {
+    const s = run(
+      searchSelectResult({ result: aResult }),
+      selectFeature(null),
+      searchSelectResult(null),
+    );
+
+    expect(s.selection).toBeNull();
+  });
+
+  it('the last result picked is the one acted upon', () => {
+    const s = run(
+      searchSelectResult({ result: aResult }),
+      searchSelectResult({ result: anotherResult }),
+    );
+
+    expect(s.selection).toEqual({ type: 'search', id: anotherResult.id });
+  });
+
+  it('taking the acted-upon result off the map deselects it', () => {
+    const s = run(
+      searchSelectResult({ result: aResult }),
+      searchUnselectResult(aResult.id),
+    );
+
+    expect(s.selection).toBeNull();
+  });
+
+  it('leaves the selection alone when another shown result goes', () => {
+    const s = run(
+      searchSelectResult({ result: aResult }),
+      searchUnselectResult(anotherResult.id),
+    );
+
+    expect(s.selection).toEqual({ type: 'search', id: aResult.id });
   });
 });
 
-describe('setTools (restore)', () => {
-  it('dedupes draw tools and focuses the last open map-click tool', () => {
+describe('convertToDrawing', () => {
+  it('closes the tool the conversion was reached for from', () => {
     const s = run(
-      setTools([
-        'draw-points',
-        'objects',
-        'draw-lines',
-        'route-planner',
-        'changesets',
+      openTool('objects'),
+      openTool('tracking'),
+      convertToDrawing({ type: 'objects' }),
+    );
+
+    expect(s.panelTools).toEqual(['tracking']);
+  });
+
+  it('leaves the tool open when one object of many is converted', () => {
+    // The other objects are still there for its toolbar to act on.
+    const s = run(
+      openTool('objects'),
+      convertToDrawing({
+        type: 'objects',
+        id: { type: 'osm', elementType: 'node', id: 1 },
+      }),
+    );
+
+    expect(s.panelTools).toEqual(['objects']);
+  });
+
+  it('leaves the tools alone when converting from a selection toolbar', () => {
+    const s = run(
+      openTool('objects'),
+      convertToDrawing({ type: 'search-result', tolerance: 0 }),
+    );
+
+    expect(s.panelTools).toEqual(['objects']);
+  });
+});
+
+describe('objectsSetResult', () => {
+  const anObject = { type: 'osm', elementType: 'node', id: 1 } as const;
+
+  it('deselects an object that is no longer among the found ones', () => {
+    // Nothing renders a toolbar for it, so the selection could be neither
+    // reached nor let go of.
+    const s = run(
+      selectFeature({ type: 'objects', id: anObject }),
+      objectsSetResult([]),
+    );
+
+    expect(s.selection).toBeNull();
+  });
+
+  it('keeps the selection while the object is still found', () => {
+    const s = run(
+      selectFeature({ type: 'objects', id: anObject }),
+      objectsSetResult([
+        { id: anObject, coords: { lat: 48, lon: 17 }, tags: {} },
       ]),
     );
 
-    expect(s.tools).toEqual([
-      'draw-points',
-      'objects',
-      'route-planner',
-      'changesets',
-    ]);
-    expect(s.activeTool).toBe('route-planner');
+    expect(s.selection).toEqual({ type: 'objects', id: anObject });
   });
 
-  it('setTools([]) closes everything', () => {
-    const s = run(
-      tool('route-planner', 'activate'),
-      tool('objects', 'activate'),
-      setTools([]),
-    );
+  it('leaves another kind of selection alone', () => {
+    const s = run(selectFeature(aLine), objectsSetResult([]));
 
-    expect(s.tools).toEqual([]);
-    expect(s.activeTool).toBe(null);
+    expect(s.selection).toEqual(aLine);
   });
 });
 
-describe('tool / selection mutual exclusivity', () => {
-  it('selecting a feature deactivates the active tool but keeps it open', () => {
-    const open = run(tool('route-planner', 'activate'));
+describe('dataViewerSetData', () => {
+  const line: Feature = {
+    type: 'Feature',
+    properties: null,
+    geometry: { type: 'LineString', coordinates: [] },
+  };
 
-    const s = mainReducer(open, selectFeature(aLine));
+  const fc = (...features: Feature[]): FeatureCollection => ({
+    type: 'FeatureCollection',
+    features,
+  });
 
-    expect(s.selection).toEqual(aLine);
-    expect(s.activeTool).toBe(null);
-    expect(s.tools).toEqual(['route-planner']);
+  // What a fresh load selects instead is `dataViewerSetTrackDataProcessor`.
+  it('drops a stale data-viewer selection but leaves another feature selected', () => {
+    expect(
+      run(
+        selectFeature({ type: 'data-viewer', id: 3 }),
+        dataViewerSetData({ trackGeojson: fc(line) }),
+      ).selection,
+    ).toBe(null);
+
+    expect(
+      run(selectFeature(aLine), dataViewerSetData({ trackGeojson: fc(line) }))
+        .selection,
+    ).toEqual(aLine);
   });
 });
 
 describe('drawingLineStopDrawing', () => {
-  it('closes the drawing tool and clears its active state', () => {
-    const open = run(
-      tool('objects', 'activate'),
-      tool('draw-lines', 'activate'),
-    );
+  it('keeps the draw tool open — stopping only clears the drawing flag in the drawingLines slice', () => {
+    const s = run(openTool('draw-lines'), drawingLineStopDrawing());
 
-    const s = mainReducer(open, drawingLineStopDrawing());
-
-    expect(s.tools).toEqual(['objects']);
-    expect(s.activeTool).toBe(null);
+    expect(s.mapTool).toBe('draw-lines');
   });
 });

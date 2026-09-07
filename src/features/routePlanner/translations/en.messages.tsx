@@ -15,8 +15,14 @@ const en: RoutePlannerMessages = {
     buckets: 'Buckets',
     timeLimit: 'Time limit',
     distanceLimit: 'Distance limit',
+    reverseFlow: 'Travel to the point',
+    reverseFlowHint:
+      'The rings then cover where a journey to this point can start; unchecked, where a journey from it can end. One-way streets and turn restrictions tell the two apart.',
   },
   milestones: 'Milestones',
+  milestonesOff: 'Off',
+  recompute: 'Recompute route',
+  maxAlternatives: 'Max routes to offer',
   style: {
     menuItem: 'Route style',
     title: 'Route style',
@@ -46,9 +52,14 @@ const en: RoutePlannerMessages = {
   transportType: {
     car: 'Car',
     car4wd: 'Car (4WD)',
+    carnotoll: 'Car (avoid tolls)',
     bike: 'Bicycle',
+    ebike: 'E-bike',
+    gravelbike: 'Gravel bike',
     foot: 'Walking',
+    stroller: 'Stroller / wheelchair',
     hiking: 'Hiking',
+    easyhike: 'Easy hiking',
     mtb: 'Mountain bike',
     racingbike: 'Racing bike',
     motorcycle: 'Motorcycle',
@@ -65,6 +76,7 @@ const en: RoutePlannerMessages = {
   },
   modeLabel: 'Routing mode',
   alternative: 'Alternative',
+  isochroneRing: 'Isochrone',
   distance: ({ value, diff }) => (
     <>
       Distance:{' '}
@@ -72,6 +84,11 @@ const en: RoutePlannerMessages = {
         {value}
         {diff ? ` (+ ${diff})` : ''}
       </b>
+    </>
+  ),
+  tolled: ({ value }) => (
+    <>
+      Toll roads: <b>{value}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

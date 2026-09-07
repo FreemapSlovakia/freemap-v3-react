@@ -24,6 +24,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
   legend: 'Jelmagyarázat',
   filter: 'Szűrő',
   showPhotosFrom: 'Fényképek megtekintése',
+  excludesWikimedia: 'Nem tartalmazza a Wikimedia fényképeit',
   showLayer: 'Réteg megjelenítése',
   upload: 'Feltöltés',
 
@@ -36,7 +37,12 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
 
   showDirection: 'Mutasd a fényképezés irányát',
 
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Sajátok',
+    notMine: 'Mások',
+    premium: 'Prémium',
+    free: 'Ingyenes',
+  },
 
   c: {
     mine: 'Különítsd el a sajátjaimat',
@@ -57,12 +63,12 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Hozzáadás',
     yourRating: 'Az Ön értékelése:',
     showOnTheMap: 'Megjelenítés a térképen',
-    openInNewWindow: 'Megnyitás…',
     uploaded: ({ username, createdAt }) => (
       <>
         {username} töltötte fel ekkor: {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Feltöltve: {createdAt}</>,
     captured: (takenAt) => <>Ekkor készült: {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -76,7 +82,10 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     modify: 'Módosítás',
     premiumOnly:
       'Ezt a fényképet a szerzője csak prémium hozzáféréssel rendelkező felhasználók számára tette elérhetővé.',
+    premiumPhoto: 'Ez a fénykép prémium tartalom.',
     noComments: 'Nincs hozzászólás',
+    wikimediaCommentNotNotified:
+      'Ez a fénykép a Wikimedia Commonsról származik. A szerzője nem kap értesítést a hozzászólásáról – csak a Freemapra feltöltött fényképek szerzőit értesítjük.',
   },
 
   editForm: {
@@ -97,8 +106,11 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Fényképek feltöltése',
     uploading: (n) => `Feltöltés folyamatban (${n})`,
     upload: 'Feltöltés',
+    hint: {
+      drop: 'Húzza ide a fényképeit vagy kattintson ide a kijelölésükhöz.',
+      tap: 'Koppintson ide fényképek hozzáadásához.',
+    },
     rules: `
-      <p>Húzza ide a fényképeit vagy kattintson ide a kijelölésükhöz.</p>
       <ul>
         <li>Ne töltsön fel túl kicsi fényképeket (bélyegképek/thumbnails). A fénykép legnagyobb mérete nincs korlátozva. A legnagyobb fájlméret 10MB, a nagyobb fájlok elutasíttatnak.</li>
         <li>Csak tájak fényképeit vagy dokumentációs jellegű képeket töltsön fel. A portrék és a makrofényképek nem kívánatosak, és figyelmeztetés nélkül töröltetnek.</li>
@@ -187,6 +199,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     allSources: 'Mind',
   },
 
+  linkToCommons: 'fénykép a Wikimedia Commonson',
   allMyPhotos: {
     title: 'Hozzáférés módosítása',
     premium: 'Minden fotóm felvétele a prémium tartalomba',
@@ -200,6 +213,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
 
   recentTags: 'Legutóbbi címkék hozzárendeléshez:',
   colorizeBy: 'Színezés ez alapján',
+  noColorize: 'Nincs',
   noPicturesFound: 'Ezen a helyen nem találhatók fotók.',
   linkToWww: 'fotó a www.freemap.sk oldalon',
   linkToImage: 'fotófájl',

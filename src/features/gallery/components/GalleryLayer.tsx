@@ -29,6 +29,9 @@ class LGalleryLayer extends LGridLayer {
 
   private _workerPool: WorkerPool;
 
+  /** Set once the layer is going, so a tile in flight stops trying to finish. */
+  private _removed = false;
+
   constructor(options?: GalleryLayerOptions) {
     super(options);
 
@@ -48,9 +51,26 @@ class LGalleryLayer extends LGridLayer {
 
     this.supportsOffscreen = typeof window.OffscreenCanvas !== 'undefined';
 
-    this._workerPool = createWorkerPool(
+    this._workerPool = this.makePool();
+  }
+
+  private makePool(): WorkerPool {
+    return createWorkerPool(
       () => new Worker(new URL('./galleryLayerWorker.js', import.meta.url)),
     );
+  }
+
+  /**
+   * A destroyed pool stays destroyed, so the same instance being taken off the
+   * map and put back — which `useLayerLifecycle` does whenever its context
+   * changes — needs a fresh one, or the layer would sit there drawing nothing.
+   */
+  onAdd(map: LeafletMap): this {
+    this._removed = false;
+
+    this._workerPool = this.makePool();
+
+    return super.onAdd(map);
   }
 
   createTile(coords: Coords, done: DoneCallback) {
@@ -126,11 +146,9 @@ class LGalleryLayer extends LGridLayer {
       );
     }
 
+    // `createFilter` above already appended the (expanded) `sources` params;
+    // this is only to detect the "all deselected" case below.
     const sources = this._options?.filter.sources ?? GALLERY_SOURCES;
-
-    for (const source of sources) {
-      sp.append('sources', source);
-    }
 
     // With all sources filtered out there's nothing to request — leave the tile
     // blank. Required because an empty `sources` param is read server-side as
@@ -198,7 +216,11 @@ class LGalleryLayer extends LGridLayer {
               lat: lat / 1e6,
               lon: lon / 1e6,
               rating: picture.rating ?? 0,
-              userId: picture.userId ?? 0,
+              // Wikimedia photos report their Commons actor id as `authorId`;
+              // our own report `userId`. The `?? userId` also covers a backend
+              // still sending the Commons id as `userId`, from before the two
+              // id spaces were given separate field names.
+              authorId: picture.authorId ?? picture.userId ?? 0,
               createdAt: picture.createdAt ?? 0,
               takenAt: picture.takenAt ?? null,
               pano: picture.pano,
@@ -233,7 +255,14 @@ class LGalleryLayer extends LGridLayer {
           workerRendered = true;
         } catch (err) {
           // Fall back to the main thread only when the worker actually failed,
-          // so a successful tile is never drawn twice.
+          // so a successful tile is never drawn twice — and not at all once the
+          // layer is going, when the pool rejects everything it still owed and
+          // every tile in flight would redraw itself, on the main thread, into
+          // a canvas about to be thrown away.
+          if (this._removed) {
+            throw err;
+          }
+
           console.warn(
             'gallery worker render failed; main-thread fallback',
             err,
@@ -261,6 +290,8 @@ class LGalleryLayer extends LGridLayer {
   }
 
   onRemove(map: LeafletMap): this {
+    this._removed = true;
+
     this._workerPool.destroy();
 
     return super.onRemove(map);

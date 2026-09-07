@@ -17,8 +17,16 @@ export type RoutePlannerMessages = {
     buckets: string;
     timeLimit: string;
     distanceLimit: string;
+    reverseFlow: string;
+    reverseFlowHint: string;
   };
   milestones: string;
+  /** The milestone setting's third state, beside the km and % ones. */
+  milestonesOff: string;
+  /** Discards the route a saved map carried and asks the router again. */
+  recompute: string;
+  /** How many routes to ask for — a ceiling, not a promise. */
+  maxAlternatives: string;
   style: {
     menuItem: string;
     title: string;
@@ -51,7 +59,11 @@ export type RoutePlannerMessages = {
   mode: Record<RoutingMode | 'routndtrip-gh', string>;
   modeLabel: string;
   alternative: string;
+  /** Singular label of one isochrone ring, numbered in exports. */
+  isochroneRing: string;
   distance: ({ value, diff }: { value: string; diff?: string }) => JSX.Element;
+  /** How much of the route runs on road the driver pays for. */
+  tolled: ({ value }: { value: string }) => JSX.Element;
   duration: ({
     h,
     m,

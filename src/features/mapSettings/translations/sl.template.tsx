@@ -7,6 +7,7 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   overlayOpacity: 'Vidnost',
   showInMenu: 'Prikaži v meniju',
   showInToolbar: 'Prikaži v orodni vrstici',
+  keyboardShortcut: 'Bližnjica na tipkovnici',
   saveSuccess: 'Nastavitve so bile shranjene.',
   customMapSaved: 'Zemljevid po meri je bil shranjen.',
   savingError: ({ err }) =>

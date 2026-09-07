@@ -1,27 +1,37 @@
-import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
-import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
+import { clearMapFeatures } from '@app/store/actions.js';
+import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
-import { fetchElevations } from '@shared/elevation.js';
+import {
+  creditedAttributions,
+  fetchElevations,
+  mergeAttributions,
+  newElevationCredits,
+} from '@shared/elevation.js';
+import { smoothElevationSeries } from '@shared/elevationSmoothing.js';
 import {
   containsElevations,
   lineSegments,
   trackTimeSegments,
 } from '@shared/geoutils.js';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import { along } from '@turf/along';
 import { distance } from '@turf/distance';
 import { getCoord } from '@turf/invariant';
 import { length } from '@turf/length';
 import type { Feature, LineString, MultiLineString, Position } from 'geojson';
+import type { Dispatch } from 'redux';
 import {
   type ElevationWaypoint,
   elevationChartClose,
+  elevationChartOpen,
+  elevationChartRedraw,
   elevationChartSetElevationProfile,
-  elevationChartSetTrackGeojson,
 } from './actions.js';
 import type {
   ElevationProfilePoint,
   ElevationProfileWaypoint,
 } from './reducer.js';
+import type { ResolvedProfileSource } from './resolve.js';
 
 // A waypoint nearer than this to the track is considered "on" it and pinned to
 // the profile; farther ones (a POI off to the side) are omitted.
@@ -30,9 +40,11 @@ const WAYPOINT_SNAP_METERS = 100;
 // The profile points plus, index-aligned, each point's recorded time (epoch ms)
 // when available — empty/undefined when the source has no per-point time (the
 // API-sampled path), in which case waypoints fall back to spatial pairing.
+// `attributions` are the credits the API resolved for the points it answered.
 interface ResolvedProfile {
   points: ElevationProfilePoint[];
   times: (number | undefined)[];
+  attributions: AttributionDef[];
 }
 
 function toEpoch(value: unknown): number | undefined {
@@ -45,31 +57,40 @@ function toEpoch(value: unknown): number | undefined {
   return Number.isFinite(t) ? t : undefined;
 }
 
-const handle: ProcessorHandler<typeof elevationChartSetTrackGeojson> = async ({
-  dispatch,
-  getState,
-  action,
-}) => {
-  const { trackGeojson, keepRecorded, waypoints } = action.payload;
-
+/** Computes the profile for an already-resolved line and puts it on screen. */
+const computeProfile = async (
+  { trackGeojson, keepRecorded, waypoints, credit }: ResolvedProfileSource,
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  /** False once the chart has moved on and this result is no longer wanted. */
+  stillCurrent: () => boolean = () => true,
+) => {
   // `keepRecorded` shows the recorded elevation verbatim (gaps included); a
   // fully-elevated track is read locally regardless. Everything else samples a
   // complete profile from the server. The local path also carries each point's
   // recorded time (for time-based waypoint pairing); the API path has none.
-  const { points, times } =
+  const { points, times, attributions } =
     keepRecorded || containsElevations(trackGeojson)
       ? resolveElevationProfilePointsLocally(trackGeojson)
       : await resolveElevationProfilePointsViaApi(getState, trackGeojson);
+
+  if (!stillCurrent()) {
+    return;
+  }
 
   dispatch(
     elevationChartSetElevationProfile({
       points,
       waypoints: pairWaypoints(points, times, waypoints),
+      // What the feature's owner sampled, plus whatever this profile sampled
+      // itself — one model may have answered for either.
+      attributions: mergeAttributions(credit.attributions ?? [], attributions),
+      provenance: credit.provenance,
     }),
   );
 };
 
-export default handle;
+export default computeProfile;
 
 // Pins each waypoint onto the profile. A waypoint counts as "on" the track only
 // where the profile passes within the snap threshold; among those candidates it
@@ -187,7 +208,11 @@ function resolveElevationProfilePointsLocally(
 
     const segment = segments[s]!;
 
-    const segTimes = coordTimes[s] ?? [];
+    // Positional, so a mismatched pair would time every point by its neighbour
+    // rather than itself — a producer that reshapes the line has to drop them.
+    const raw = coordTimes[s];
+
+    const segTimes = raw?.length === segment.length ? raw : [];
 
     for (let j = 0; j < segment.length; j++) {
       const pt = segment[j]!;
@@ -233,7 +258,9 @@ function resolveElevationProfilePointsLocally(
     }
   }
 
-  return { points: elevationProfilePoints, times };
+  // The elevation is the feature's own, so only its owner can name a source for
+  // it — nothing is read here.
+  return { points: elevationProfilePoints, times, attributions: [] };
 }
 
 async function resolveElevationProfilePointsViaApi(
@@ -300,16 +327,52 @@ async function resolveElevationProfilePointsViaApi(
 
   const sampled = entries.filter((e) => !e.gap);
 
+  const credits = newElevationCredits();
+
   const eles = await fetchElevations(
     sampled.map(({ lat, lon }) => [lat, lon]),
     getState,
+    // A redraw supersedes whatever is in flight — it is how every reshape of a
+    // drawn line arrives, so leaving it out let a drag stack up requests.
     [
-      elevationChartSetTrackGeojson,
-      selectFeature,
+      elevationChartOpen,
+      elevationChartRedraw,
       elevationChartClose,
       clearMapFeatures,
     ],
+    credits,
   );
+
+  // The samples come straight from the terrain model, so they carry the same
+  // artifacts as a planned route's profile; clean each run the same way. A
+  // no-data point breaks a run, like a segment gap does.
+  const windows = getState().elevationSettings;
+
+  let runStart = 0;
+
+  const smoothRun = (end: number) => {
+    if (end - runStart > 1) {
+      const cum = sampled.slice(runStart, end).map((e) => e.distance);
+
+      smoothElevationSeries(
+        eles.slice(runStart, end) as number[],
+        cum,
+        windows,
+      ).forEach((ele, k) => {
+        eles[runStart + k] = ele;
+      });
+    }
+
+    runStart = end + 1;
+  };
+
+  for (let k = 0; k < eles.length; k++) {
+    if (eles[k] == null) {
+      smoothRun(k);
+    }
+  }
+
+  smoothRun(eles.length);
 
   let climbUp = 0;
 
@@ -357,5 +420,9 @@ async function resolveElevationProfilePointsViaApi(
 
   // The API path resamples the track, so there are no per-point recorded times;
   // waypoints fall back to spatial pairing.
-  return { points: entries.map(({ gap: _gap, ...point }) => point), times: [] };
+  return {
+    points: entries.map(({ gap: _gap, ...point }) => point),
+    times: [],
+    attributions: creditedAttributions(credits),
+  };
 }

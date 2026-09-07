@@ -1,11 +1,14 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
-import type { RootState } from '@app/store/store.js';
-import { isPremium } from '@features/premium/premium.js';
-import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAnyOf } from '@reduxjs/toolkit';
-import { positionsEqual } from '@shared/geoutils.js';
+import {
+  cumulativeDistances,
+  lowerBound,
+  positionsEqual,
+} from '@shared/geoutils.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
@@ -13,7 +16,6 @@ import {
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
 import distance from '@turf/distance';
-import { hash } from 'ohash';
 import z from 'zod';
 import {
   GeoJSONFeatureGenericSchema,
@@ -25,30 +27,116 @@ import {
 import { loadRoutePlannerMessages } from '../../translations/loadRoutePlannerMessages.js';
 import {
   type Alternative,
+  AlternativeSchema,
   type Leg,
   type RoutePoint,
-  routePlannerAddPoint,
-  routePlannerPreventHint,
+  routeKey,
+  routePlannerRecompute,
+  routePlannerRestoreSavedRoute,
   routePlannerSetFinish,
   routePlannerSetIsochrones,
   routePlannerSetResult,
   routePlannerSetStart,
+  routePlannerSupersedeSavedRoute,
   type Step,
   type StepCoordinate,
   type StepMode,
+  type StepStructure,
   type Waypoint,
+  WaypointSchema,
 } from '../actions.js';
 import {
   GraphhopperPathCostSchema,
   ghSnapPreventions,
   graphhopperRouteUrl,
 } from '../graphhopperRoute.js';
+import { withIsochroneLimits } from '../isochrones.js';
+import { legTransports } from '../legTransports.js';
+import { pathDetailKeys } from '../pathDetails.js';
+import {
+  routePremiumUnlockedSelector,
+  standingSavedRoute,
+  storedRouteIsShowing,
+} from '../reducer.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
+import { raiseMidpointHint } from './midpointHintProcessor.js';
 
 const cancelTypes = [...updateRouteTypes, clearMapFeatures];
 
-const routePlannerClosed = (state: RootState) =>
-  !state.main.tools.includes('route-planner');
+/** `osrm-routed`'s own `--max-alternatives` default, which the OSRM we use runs. */
+const OSRM_MAX_ALTERNATIVES = 3;
+
+/** The profiles a rider can be told to get off and push. */
+const BIKE_TRANSPORTS = new Set<TransportType>([
+  'bike',
+  'ebike',
+  'gravelbike',
+  'mtb',
+  'racingbike',
+]);
+
+/** How each profile's steps are drawn. Exhaustive so a new profile can't fall
+ * through to the red dotted `error` line. */
+const TRANSPORT_STEP_MODES: Record<TransportType, StepMode> = {
+  manual: 'manual',
+  'car-osrm': 'driving',
+  'bike-osrm': 'cycling',
+  'foot-osrm': 'foot',
+  car: 'driving',
+  car4wd: 'driving',
+  carnotoll: 'driving',
+  motorcycle: 'driving',
+  bike: 'cycling',
+  ebike: 'cycling',
+  gravelbike: 'cycling',
+  mtb: 'cycling',
+  racingbike: 'cycling',
+  foot: 'foot',
+  stroller: 'foot',
+  hiking: 'foot',
+  easyhike: 'foot',
+};
+
+/**
+ * `[start, end]` cut wherever `get_off_bike` changes, so a stretch that has to
+ * be walked becomes a step of its own — and is drawn dotted — instead of
+ * colouring a whole instruction. A dismount runs a point or two where an
+ * instruction runs tens, so a test for one lying wholly inside the other never
+ * fires.
+ */
+export function splitByPushing(
+  start: number,
+  end: number,
+  pushing: [number, number][],
+): { from: number; to: number; pushing: boolean }[] {
+  const covered = (from: number, to: number) =>
+    pushing.some(([a, b]) => from >= a && to <= b);
+
+  // `FINISH` and `REACHED_VIA` arrive as `[n, n]`, and cutting an empty interval
+  // would yield no step at all — which the leg joining below reads as a missing
+  // connector rather than as an arrival.
+  if (start === end) {
+    return [{ from: start, to: end, pushing: covered(start, end) }];
+  }
+
+  const cuts = new Set([start, end]);
+
+  for (const span of pushing) {
+    for (const cut of span) {
+      if (cut > start && cut < end) {
+        cuts.add(cut);
+      }
+    }
+  }
+
+  const sorted = [...cuts].sort((a, b) => a - b);
+
+  return sorted.slice(0, -1).map((from, i) => {
+    const to = sorted[i + 1]!;
+
+    return { from, to, pushing: covered(from, to) };
+  });
+}
 
 enum GraphhopperSign {
   UNKNOWN = -99,
@@ -130,89 +218,6 @@ const IsochroneResponseSchema = z.object({
   ),
 });
 
-const StepModeSchema = z.enum([
-  'foot',
-  'walking',
-  'cycling',
-  'driving',
-  'ferry',
-  'train',
-  'pushing bike',
-  'manual',
-  'error',
-]);
-
-const ManeuverModifierSchema = z.enum([
-  'uturn',
-  'sharp right',
-  'slight right',
-  'right',
-  'sharp left',
-  'slight left',
-  'left',
-  'straight',
-]);
-
-const RouteStepExtraSchema = z.object({
-  type: z.enum(['foot', 'bicycle']),
-  destination: z.string(),
-  departure: z.number().optional(),
-  duration: z.number().optional(),
-  number: z.number().optional(),
-});
-
-const StepSchema = z.object({
-  maneuver: z.object({
-    type: z.enum([
-      'turn',
-      'new name',
-      'depart',
-      'arrive',
-      'merge',
-      'on ramp',
-      'off ramp',
-      'fork',
-      'end of road',
-      'continue',
-      'roundabout',
-      'rotary',
-      'roundabout turn',
-      'exit rotary',
-      'exit roundabout',
-      'notification',
-    ]),
-    modifier: ManeuverModifierSchema.optional(),
-  }),
-  distance: z.number(),
-  duration: z.number(),
-  name: z.string(),
-  mode: StepModeSchema,
-  geometry: z.object({
-    coordinates: z.array(z.tuple([z.number(), z.number()])),
-  }),
-  extra: RouteStepExtraSchema.optional(),
-});
-
-const LegSchema = z.object({
-  steps: z.array(StepSchema),
-  distance: z.number(),
-  duration: z.number(),
-});
-
-const AlternativeSchema = z.object({
-  legs: z.array(LegSchema),
-  distance: z.number(),
-  duration: z.number(),
-});
-
-const WaypointSchema = z.object({
-  name: z.string(),
-  location: z.tuple([z.number(), z.number()]),
-  distance: z.number().optional(),
-  waypoint_index: z.number().optional(),
-  trips_index: z.number().optional(),
-});
-
 const OsrmResultSchema = z.object({
   code: z.string(),
   trips: z.array(AlternativeSchema).optional(),
@@ -230,9 +235,28 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     isochroneParams,
   } = getState().routePlanner;
 
+  const { maxAlternatives } = getState().routePlannerSettings;
+
+  // Getting past the stored route is what a recompute is for.
+  const recomputing = routePlannerRecompute.match(action);
+
+  // The open map already has this very route stored — putting it back costs no
+  // request and works offline, so an edit and its undo come home to the route
+  // that was planned.
+  if (!recomputing && standingSavedRoute(getState().routePlanner)) {
+    dispatch(routePlannerRestoreSavedRoute());
+
+    return;
+  }
+
+  // What is about to be routed, recorded with the result so a save can tell
+  // whether the waypoints have moved past it since.
+  const key = routeKey({ points, mode, transportType, roundtripParams });
+
   const clearResultAction = routePlannerSetResult({
     timestamp: Date.now(),
     transportType,
+    key,
     alternatives: [],
     waypoints: [],
   });
@@ -273,6 +297,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           buckets: Math.min(5, Math.max(1, isochroneParams.buckets)),
           time_limit: isochroneParams.timeLimit,
           distance_limit: isochroneParams.distanceLimit || -1,
+          reverse_flow: isochroneParams.reverseFlow,
           point: `${points[0]!.lat},${points[0]!.lon}`,
         }),
       expectedStatus: 200,
@@ -281,8 +306,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
 
     dispatch(
       routePlannerSetIsochrones({
-        isochrones: IsochroneResponseSchema.parse(await response.json())
-          .polygons,
+        isochrones: withIsochroneLimits(
+          IsochroneResponseSchema.parse(await response.json()).polygons,
+          isochroneParams,
+        ),
         timestamp: Date.now(),
       }),
     );
@@ -299,9 +326,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   });
 
   const segments =
-    mode === 'route' &&
-    (isPremium(getState().auth.user) ||
-      hash([points, mode, transportType]) === getState().routePlanner.hash)
+    mode === 'route' && routePremiumUnlockedSelector(getState())
       ? segmentize(points, transportType)
       : [{ transport: transportType, points }];
 
@@ -316,6 +341,31 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     dispatch(clearResultAction);
 
     throw err;
+  }
+
+  const failure = datas.find((data) => data.status === 'rejected')?.reason;
+
+  // A failure that is nobody's to report: cancelled by something newer, or a map
+  // on its way in that will say what the route is. Deferred rather than dropped —
+  // whichever way that map ends, `mapsLoaded` / `mapsLoadFailed` / the restore's
+  // own trigger asks again, and the error surfaces then. Reloading a saved map
+  // applies its URL before the map arrives, and offline that request fails long
+  // before anything can cancel it.
+  if (
+    failure &&
+    (isAbortError(failure) ||
+      getState().myMaps.loadMeta ||
+      getState().myMaps.restoring)
+  ) {
+    return;
+  }
+
+  // A map landed while this was in flight and its stored route answers for these
+  // waypoints. Cancelling can't be relied on to have stopped this — a response
+  // already on its way in isn't undone by an abort — so drop what came back
+  // rather than draw it over the route that was planned.
+  if (storedRouteIsShowing(getState().routePlanner)) {
+    return;
   }
 
   const alternativeSets: Alternative[][] = [];
@@ -365,14 +415,34 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     }
   }
 
+  // Nothing came back, and the map's own route stands for these very waypoints:
+  // put it back rather than draw straight `error` legs over it. A recompute that
+  // fails then costs nothing instead of losing the route it meant to refresh.
+  if (errored.some(Boolean) && standingSavedRoute(getState().routePlanner)) {
+    dispatch(routePlannerRestoreSavedRoute());
+
+    return;
+  }
+
   let alternatives: Alternative[];
 
   if (alternativeSets.length === 1 && alternativeSets[0]!.length > 1) {
     alternatives = alternativeSets[0]!;
   } else {
+    const routedDistance = alternativeSets.reduce(
+      (a, c) => a + (c[0]?.distance ?? 0),
+      0,
+    );
+
+    // Seconds per metre, for the straight legs below. Nothing routed — a
+    // straight-line transport, or every segment failing — leaves nothing to
+    // derive it from, and dividing by zero would put `NaN` into every duration:
+    // shown as `NaN h NaN m`, and stored as `null`, which no longer parses.
     const tpd =
-      alternativeSets.reduce((a, c) => a + (c[0]?.duration ?? 0), 0) /
-      alternativeSets.reduce((a, c) => a + (c[0]?.distance ?? 0), 0);
+      routedDistance > 0
+        ? alternativeSets.reduce((a, c) => a + (c[0]?.duration ?? 0), 0) /
+          routedDistance
+        : 0;
 
     const legs: Leg[] = [];
 
@@ -493,43 +563,25 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     routePlannerSetResult({
       timestamp: Date.now(),
       transportType,
+      key,
       alternatives,
       waypoints,
     }),
   );
+
+  // The route the map stored is no longer what's on screen — but only now that
+  // one actually came back to replace it.
+  if (recomputing) {
+    dispatch(routePlannerSupersedeSavedRoute());
+  }
 
   const isStartOrFinishAction = isAnyOf(
     routePlannerSetStart,
     routePlannerSetFinish,
   );
 
-  if (
-    !(ttDef.api === 'gh' && mode !== 'route') &&
-    !getState().routePlannerSettings.preventHint &&
-    points.length < 3 &&
-    isStartOrFinishAction(action)
-  ) {
-    const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
-
-    if (getState().cookieConsent.cookieConsentResult !== null) {
-      actions.push({
-        nameKey: 'general.preventShowingAgain',
-        action: routePlannerPreventHint(),
-        variant: 'dark',
-      });
-    }
-
-    dispatch(
-      toastsAdd({
-        id: 'routePlanner.showMidpointHint',
-        messageKey: 'showMidpointHint',
-        messageLoader: loadRoutePlannerMessages,
-        style: 'info',
-        actions,
-        cancelType: routePlannerAddPoint.type,
-        statePredicate: routePlannerClosed,
-      }),
-    );
+  if (points.length < 3 && isStartOrFinishAction(action)) {
+    raiseMidpointHint(getState(), dispatch);
   }
 
   /// functions /////////////////////////////////////////
@@ -538,6 +590,8 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
     const ttDef = transportTypeDefs[segment.transport];
 
     if (ttDef.api === 'gh') {
+      const chDisable = mode === 'roundtrip' || Boolean(ttDef.noCh);
+
       const response = await httpRequest({
         getState,
         method: 'POST',
@@ -548,14 +602,33 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           algorithm:
             mode === 'roundtrip'
               ? 'round_trip'
-              : multiModal || segment.points.length > 2
+              : multiModal ||
+                  segment.points.length > 2 ||
+                  // Asking the alternatives algorithm for one route is asking
+                  // it to do its work and throw the point of it away.
+                  maxAlternatives < 2
                 ? undefined
                 : 'alternative_route',
           'round_trip.distance': roundtripParams.distance,
           'round_trip.seed': roundtripParams.seed,
-          'ch.disable': mode === 'roundtrip',
-          'alternative_route.max_paths': 2,
+          'ch.disable': chDisable,
+          // Without CH the router falls back to landmarks; asking for ones the
+          // profile has none of is a 400.
+          'lm.disable': chDisable && !ttDef.hasLm,
+          // A ceiling, not a count: `max_weight_factor` (1.4) and
+          // `max_share_factor` (0.6) decide how many the router actually finds.
+          'alternative_route.max_paths': maxAlternatives,
           instructions: true,
+          // Bridges and tunnels, so the elevation profile can ignore the
+          // terrain model where it describes the ground instead of the road;
+          // the rest is what the categorical colorize modes paint.
+          details: [
+            'road_environment',
+            // Shapes step modes rather than colorize, so it is asked for here
+            // and not in `pathDetailKeys` — which track matching shares.
+            ...(BIKE_TRANSPORTS.has(segment.transport) ? ['get_off_bike'] : []),
+            ...pathDetailKeys(segment.transport),
+          ],
           profile: ttDef.profile,
           points_encoded: false,
           locale: getState().l10n.language,
@@ -619,7 +692,13 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             mode === 'route' ? 'route' : 'trip',
           )}/${allPoints}?` +
           objectToURLSearchParams({
-            alternatives: (mode === 'route' && !multiModal) || undefined,
+            // OSRM counts alternatives *besides* the route it returns anyway,
+            // where GraphHopper's `max_paths` counts them all. Over
+            // `osrm-routed`'s limit the whole request is refused as `TooBig`.
+            alternatives:
+              mode === 'route' && !multiModal && maxAlternatives > 1
+                ? Math.min(maxAlternatives - 1, OSRM_MAX_ALTERNATIVES)
+                : undefined,
             steps: true,
             geometries: 'geojson',
             roundtrip:
@@ -631,6 +710,10 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
           }),
         expectedStatus: [200, 400],
         cancelActions: cancelTypes,
+        // FOSSGIS ask for an origin on their routing servers where it is
+        // technically possible, and it is: the app is served with
+        // `Referrer-Policy: no-referrer`, so only an override sends one.
+        referrerPolicy: 'strict-origin-when-cross-origin',
       });
 
       const result = OsrmResultSchema.parse(await response.json());
@@ -657,27 +740,15 @@ type Segment = {
 function segmentize(points: RoutePoint[], defaultTransport: TransportType) {
   const segments: Segment[] = [];
 
-  let prevPoint: RoutePoint | undefined;
-
-  for (const point of points) {
-    if (!prevPoint) {
-      prevPoint = point;
-
-      continue;
+  // Consecutive legs sharing a transport are routed as one request, so each
+  // change of transport opens a segment that starts at the leg's own point.
+  legTransports(points, defaultTransport).forEach((transport, i) => {
+    if (segments.at(-1)?.transport !== transport) {
+      segments.push({ transport, points: [points[i]!] });
     }
 
-    const prevTransport = prevPoint.transport ?? defaultTransport;
-
-    if (segments.length === 0) {
-      segments.push({ transport: prevTransport, points: [prevPoint] });
-    } else if (prevTransport !== segments.at(-1)?.transport) {
-      segments.push({ transport: prevTransport, points: [prevPoint] });
-    }
-
-    segments.at(-1)?.points.push(point);
-
-    prevPoint = point;
-  }
+    segments.at(-1)!.points.push(points[i + 1]!);
+  });
 
   return segments;
 }
@@ -697,52 +768,95 @@ function fromGraphhopper(
 
     let steps: Step[] = [];
 
-    const gob = (path.details['get_off_bike'] ?? []).filter((q) => q[2]);
+    const gob = (path.details['get_off_bike'] ?? [])
+      .filter((q) => q[2])
+      .map(([from, to]): [number, number] => [from, to]);
+
+    // Whole-path coordinate ranges; clipped to each step's own interval below.
+    const structures = (path.details['road_environment'] ?? []).flatMap(
+      ([from, to, value]): StepStructure[] =>
+        value === 'bridge' || value === 'tunnel'
+          ? [{ from, to, kind: value }]
+          : [],
+    );
+
+    // The remaining details, same story. A null value is what the router
+    // reports where it has none, and is dropped so the stretch reads as
+    // unknown rather than as a category of its own.
+    const details = Object.entries(path.details).filter(
+      ([key]) => key !== 'road_environment' && key !== 'get_off_bike',
+    );
 
     for (const instruction of path.instructions) {
+      const [start, end] = instruction.interval;
+
       dist += instruction.distance;
 
       time += instruction.time;
 
-      steps.push({
-        duration: instruction.time / 1000,
-        distance: instruction.distance,
-        // TODO
-        maneuver: {
-          // location: [0, 0],
-          type: 'continue',
-        },
-        name: instruction.text,
-        mode:
-          transportType === 'mtb' || transportType === 'racingbike'
-            ? gob.some(
-                (seg) =>
-                  instruction.interval[0] >= seg[0] &&
-                  instruction.interval[1] <= seg[1],
-              )
-              ? 'pushing bike' // TODO can it happen that not whole interval has the same GOB value?
-              : 'cycling'
-            : ((
-                {
-                  foot: 'foot',
-                  hiking: 'foot',
-                  car: 'driving',
-                  motorcycle: 'driving',
-                  car4wd: 'driving',
-                } as Partial<Record<TransportType, StepMode>>
-              )[transportType] ?? 'error'),
-        geometry: {
-          // GraphHopper yields 0 when elevation is unavailable; normalize such
-          // points to 2D so the bogus sea-level reading doesn't leak downstream.
-          // Arities can be mixed within a single response, so map per-point.
-          coordinates: path.points.coordinates
-            .slice(instruction.interval[0], instruction.interval[1] + 1)
-            .map(
-              (c): StepCoordinate =>
-                c[2] ? [c[0]!, c[1]!, c[2]] : [c[0]!, c[1]!],
-            ),
-        },
-      });
+      // Cut where the rider has to dismount, so only that stretch is drawn as
+      // pushed; every other transport yields the instruction whole.
+      const runs = BIKE_TRANSPORTS.has(transportType)
+        ? splitByPushing(start, end, gob)
+        : [{ from: start, to: end, pushing: false }];
+
+      // Measured, not counted: GraphHopper's vertices are nowhere near evenly
+      // spaced, so a dismount holding 2 of 30 points can still be most of the
+      // instruction's length — and `dominantStepMode` weighs steps by distance.
+      const cum = cumulativeDistances(
+        path.points.coordinates.slice(start, end + 1),
+      );
+
+      const spanLength = cum.at(-1) ?? 0;
+
+      for (const run of runs) {
+        // The instruction reports one distance for all its points; only the
+        // run's own share of the length is the run's own.
+        const share =
+          spanLength > 0
+            ? ((cum[run.to - start] ?? 0) - (cum[run.from - start] ?? 0)) /
+              spanLength
+            : 1 / runs.length;
+
+        steps.push({
+          duration: (instruction.time / 1000) * share,
+          distance: instruction.distance * share,
+          // TODO
+          maneuver: {
+            // location: [0, 0],
+            type: 'continue',
+          },
+          name: instruction.text,
+          mode:
+            BIKE_TRANSPORTS.has(transportType) && run.pushing
+              ? 'pushing bike'
+              : TRANSPORT_STEP_MODES[transportType],
+          geometry: {
+            // GraphHopper yields 0 when elevation is unavailable; normalize such
+            // points to 2D so the bogus sea-level reading doesn't leak
+            // downstream. Arities can be mixed within a single response, so map
+            // per-point.
+            coordinates: path.points.coordinates
+              .slice(run.from, run.to + 1)
+              .map(
+                (c): StepCoordinate =>
+                  c[2] ? [c[0]!, c[1]!, c[2]] : [c[0]!, c[1]!],
+              ),
+          },
+          structures: structures.flatMap(({ from, to, kind }) => {
+            const a = Math.max(from, run.from);
+
+            const b = Math.min(to, run.to);
+
+            // A structure crossing a step boundary is clipped into both steps;
+            // the flattening in `ensureRouteRenderGeojson` joins the parts again.
+            return b > a
+              ? [{ from: a - run.from, to: b - run.from, kind }]
+              : [];
+          }),
+          details: clipDetails(details, run.from, run.to),
+        });
+      }
 
       if (
         instruction.sign === GraphhopperSign.FINISH ||
@@ -768,4 +882,45 @@ function fromGraphhopper(
       legs,
     };
   });
+}
+
+/**
+ * The details covering `[start, end]`, as ranges into that slice's own points.
+ * Both lists run ascending, so the overlap is found by search rather than by
+ * rescanning every segment for every step.
+ */
+function clipDetails(
+  details: [string, z.infer<typeof GraphhopperDetailSegmentSchema>[]][],
+  start: number,
+  end: number,
+): Step['details'] {
+  const clipped: NonNullable<Step['details']> = {};
+
+  for (const [key, segments] of details) {
+    const spans: [number, number, string][] = [];
+
+    const first = lowerBound(segments.length, (i) => segments[i]![1] > start);
+
+    for (let i = first; i < segments.length; i++) {
+      const [from, to, value] = segments[i]!;
+
+      if (from >= end) {
+        break;
+      }
+
+      const a = Math.max(from, start);
+
+      const b = Math.min(to, end);
+
+      if (b > a && value !== null && value !== undefined) {
+        spans.push([a - start, b - start, String(value)]);
+      }
+    }
+
+    if (spans.length > 0) {
+      clipped[key] = spans;
+    }
+  }
+
+  return Object.keys(clipped).length > 0 ? clipped : undefined;
 }

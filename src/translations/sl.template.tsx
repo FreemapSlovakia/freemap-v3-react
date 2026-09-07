@@ -2,9 +2,7 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { AlertLink } from 'react-bootstrap';
 import { addError, type Messages } from './messagesInterface.js';
 import shared from './sl-shared.js';
 
@@ -30,6 +28,7 @@ const outdoorMap = 'Pohodništvo, Kolesarjenje, Smučanje, Jahanje';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Prekliči samodejno zapiranje',
     iso: 'sl_SI',
     elevationProfile: 'Višinski profil',
     save: 'Shrani',
@@ -46,6 +45,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     yes: 'Da',
     no: 'Ne',
     masl,
+    viewpoint: 'Opazovališče',
+    eyeHeight: 'Višina oči',
+    eyeHeightHint:
+      'Kako visoko nad tlemi stojite — razgledni stolp ali dron, ne nadmorska višina.',
+    maxVisibleDistance: 'Največja vidna razdalja',
     copyCode: 'Kopiraj kodo',
     loading: 'Nalaganje…',
     ok: 'V redu',
@@ -66,8 +70,42 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Dodaj novo',
     clear: 'Počisti',
     convertToDrawing: 'Pretvori v risbo',
-    simplifyPrompt:
-      'Vnesite faktor poenostavitve. Za brez poenostavitve vnesite nič.',
+    copyToDrawing: 'Kopiraj v risbo',
+    copyTo: ({ tool }) => <>Kopiraj v {tool}</>,
+    convertTo: ({ tool }) => <>Pretvori v {tool}</>,
+    convertAllToDrawing: 'Pretvori vse v risbo',
+    convertAllTo: ({ tool }) => <>Pretvori vse v {tool}</>,
+    openIn: ({ what }) => <>Odpri v {what}</>,
+    panoramaFromHere: 'Panorama od tu',
+    viewshedFromHere: 'Vidnost od tu',
+    toposcopeFromHere: 'Panoramska tabla od tu',
+    lookAtInPanorama: 'Poglej to v panorami',
+    placeActions: 'Kaj se da narediti s tem krajem',
+    locationActions: 'Dejanja za ta kraj',
+    convert: {
+      geometry: 'Geometrija',
+      pointOnly: 'Samo točka',
+      fullGeometry: 'Lastna geometrija',
+      label: 'Oznaka',
+      labelHint: 'Napišite {p:name} za izris lastnosti z imenom name.',
+      labelMode: 'Oznako shrani kot',
+      preview: 'Predogled',
+      labelTemplate: 'Predloga',
+      labelResolved: 'Navadno besedilo',
+      properties: 'Lastnosti za prenos',
+      noProperties: 'Ni česa prenesti.',
+      labelKeysKept: 'Lastnost, ki jo uporablja oznaka, se vedno prenese.',
+    },
+    simplify: {
+      title: 'Poenostavi',
+      deviation: 'Največji odklon',
+      none: 'brez',
+      vertices: ({ from, to }) => (
+        <>
+          Točke: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'Kopiraj URL',
     copyPageUrl: 'Kopiraj URL strani',
     savingError: ({ err }) =>
@@ -88,8 +126,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     name: 'Ime',
+    icon: 'Ikona',
+    iconChoose: 'Izberi ikono…',
+    iconNone: 'Brez ikone',
+    iconSearch: 'Iskanje ikon',
     load: 'Naloži',
-    unnamed: 'Brez imena',
+    unknown: 'Neznano',
     enablePopup:
       'V brskalniku omogočite pojavna (pop-up) okna za to spletno mesto.',
     broadcastChannelUnsupported:
@@ -97,6 +139,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     componentLoadingError:
       'Komponente ni bilo mogoče naložiti. Preverite svojo internetno povezavo.',
     offline: 'Niste povezani z internetom.',
+    offlineUnavailable: 'Ni na voljo brez internetne povezave.',
+    offlineToolUnavailable:
+      'To orodje brez internetne povezave ne more ničesar naložiti.',
+    offlineNotice:
+      'Niste povezani z internetom, zato tukaj ni mogoče ničesar naložiti ali poslati.',
     connectionError: 'Napaka pri povezovanju s strežnikom.',
     experimentalFunction: 'Poskusna funkcija',
     attribution: () => <Attribution unknown="Licenca zemljevida ni določena" />,
@@ -127,11 +174,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     auto: 'Samodejni način',
   },
 
+  cardinals: {
+    n: 'S',
+    ne: 'SV',
+    e: 'V',
+    se: 'JV',
+    s: 'J',
+    sw: 'JZ',
+    w: 'Z',
+    nw: 'SZ',
+  },
+
   selections: {
     objects: 'Objekt (POI)',
     drawPoints: 'Točka',
     drawLines: 'Črta',
     drawPolygons: 'Poligon',
+    drawPolygonHole: 'Luknja v poligonu',
     tracking: 'Sledenje',
     linePoint: 'Točka črte',
     polygonPoint: 'Točka poligona',
@@ -146,12 +205,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Risanje točk',
     drawLines: 'Risanje črt',
     drawPolygons: 'Risanje poligonov',
-    trackViewer: 'Uvoz datoteke',
+    dataViewer: 'Sledi in podatki',
     changesets: 'Spremembe v zemljevidu',
     mapDetails: 'Podrobnosti zemljevida',
     tracking: 'Sledenje v živo',
     myMaps: 'Moji zemljevidi',
     myMap: 'Moj zemljevid',
+    gpsRecorder: 'GPS snemalnik',
+    toposcope: 'Panoramska tabla',
+    panorama: 'Panorama',
   },
 
   mainMenu: {
@@ -190,7 +252,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Zapri',
     closeTool: 'Zapri orodje',
     locateMe: 'Kje sem?',
+    pickHomeLocationPrompt: 'Kliknite na zemljevid tja, kjer stanujete',
     locationError: 'Napaka pri pridobivanju lokacije.',
+    locationNoSignal: 'Signala GPS še ni.',
+    headingSource: 'Kazalnik smeri',
+    headingSources: {
+      none: 'Skrit',
+      gps: 'Smer gibanja',
+      compass: 'Kompas naprave',
+    },
+    headingSourceHelp:
+      'Smer gibanja izhaja iz GPS in je vidna le med gibanjem. Kompas naprave deluje tudi na mestu, a zahteva dovoljenje in je lahko nenatančen.',
+    bearingLine: 'Razdalja in azimut',
+    bearingLineHelp:
+      'Med lociranjem nariše črto med vašim položajem in merkom na sredini zemljevida, z oznako razdalje in azimuta od vašega položaja do merka. Prikaže se, ko zemljevid premaknete stran od svojega položaja.',
+    compassPermissionDenied: 'Dostop do kompasa je bil zavrnjen.',
+    compassUnavailable:
+      'Ni podatkov kompasa. Vaša naprava ga morda nima ali pa je dostop do njega blokiran.',
     zoomIn: 'Približaj',
     zoomOut: 'Oddalji',
     devInfo: () => (
@@ -207,20 +285,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         analytics="Analitični piškotki"
       />
     ),
-    infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji> Stojimo ob Ukrajini.{' '}
-          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
-            Podprite Ukrajino ›
-          </AlertLink>{' '}
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
-    },
+    infoBars: {},
   },
 
   search: {
+    showMore: 'Prikaži več…',
+    offlineHint:
+      'Brez internetne povezave je mogoče najti samo koordinate, omejevalni okvir, številke ploščic (z/x/y) ali prilepljen GeoJSON.',
     inProgress: 'Iščem…',
     noResults: 'Ni najdenih rezultatov',
     prompt: 'Vnesite kraj',
@@ -228,8 +299,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routeTo: 'Pot do sem',
     fetchingError: ({ err }) => addError(messages, 'Napaka pri iskanju', err),
     buttonTitle: 'Išči',
-    placeholder: 'Iskanje po zemljevidu',
+    placeholder: 'Iskanje krajev in funkcij',
     result: 'Zadetek',
+    keepOnMap: 'Ohrani na zemljevidu',
     sources: {
       bbox: 'Omejevalni okvir',
       geojson: 'GeoJSON',
@@ -242,6 +314,82 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
+    osmElementTypes: {
+      node: 'Vozlišče',
+      way: 'Pot',
+      relation: 'Relacija',
+    },
+    commands: {
+      caption: 'Funkcije',
+      keywords: {
+        'tool-route-planner': 'navigacija, načrtovalnik poti, pot, izlet, kolo',
+        'tool-objects': 'zanimive točke, poi, kraji, storitve',
+        'tool-draw-points': 'risanje, oznaka, bucika, opomba',
+        'tool-draw-lines': 'risanje, merjenje razdalje, dolžina, ravnilo',
+        'tool-draw-polygons': 'risanje, merjenje površine, območje',
+        'tool-import-file':
+          'gpx, kml, kmz, tcx, geojson, uvoz, nalaganje, odpri datoteko',
+        'tool-map-details': 'identificiraj, kaj je tukaj, wms',
+        'tool-changesets': 'osm urejanja, nizi sprememb, uredniki, prispevki',
+        'tool-tracking':
+          'deljenje lokacije, sledenje napravi, v živo, tracking',
+        'tool-toposcope': 'vrhovi, gore, obzorje, toposkop, toposcope',
+        'tool-panorama': '360, pogled, vrhovi, obzorje, teren',
+        'tool-gps-recorder': 'snemanje sledi, zapisovalnik, snemanje',
+        'modal-account': 'profil, moj račun, nastavitve, odjava',
+        'modal-login': 'prijava, račun',
+        'modal-my-maps': 'shranjene karte, shrani karto, deli karto',
+        'modal-map-features-export': 'izvoz, gpx, geojson, prenos podatkov',
+        'modal-map-to-document-export':
+          'izvoz, tiskanje, pdf, png, jpeg, svg, slika, plakat',
+        'modal-offline-map-export':
+          'izvoz, brez povezave, prenos ploščic, mbtiles, sd kartica',
+        'modal-embed': 'iframe, vgradnja, spletna stran, html koda',
+        'modal-support-us': 'donacija, podpri, prispevaj, denar',
+        'modal-legend': 'simboli, legenda karte',
+        'modal-about': 'kontakt, e-pošta, povratne informacije',
+        'modal-map-layers-config':
+          'sloji, upravljanje kart, vrstni red, prosojnost',
+        'modal-custom-maps': 'lastna karta, wms, tms, dodaj vir karte',
+        'modal-offline-maps': 'prenesene karte, shramba',
+        'modal-browse-cache': 'predpomnilnik, ploščice, shramba',
+        'modal-map-preferences':
+          'nastavitve, možnosti, prosojnost prekrivnih slojev',
+        'modal-elevation-settings': 'višinski profil, nadmorska višina, graf',
+        'clear-map-features': 'odstrani vse, izbriši, ponastavi karto',
+        'layer-X': 'outdoor, pohodništvo, kolesarjenje, freemap',
+        'layer-XK': 'planinske poti, markacije, kst',
+        'layer-O': 'osm, mapnik, standardna',
+        'layer-S': 'satelitska, ortofoto, letalski posnetki',
+        'layer-Z': 'satelitska, ortofoto, letalski posnetki',
+        'layer-J1': 'satelitska, ortofoto, letalski posnetki',
+        'layer-J2': 'satelitska, ortofoto, letalski posnetki',
+        'layer-d': 'javni prevoz, avtobusi, vlaki, vozni redi',
+        'layer-I': 'slike, galerija, fotografije',
+        'layer-w': 'wiki, članki',
+        'layer-R': 'vreme, dež, padavine, nevihta, napoved',
+        'layer-v': 'analiza vidnosti, razgled, vidno polje, teren',
+        'layer-5': 'senčenje, relief, teren, višina',
+        'layer-6': 'senčenje, relief, površje, višina',
+        'layer-7': 'senčenje, relief, teren, višina, lidar',
+        'layer-8': 'senčenje, relief, teren, višina, lidar',
+        'layer-h': 'senčenje, relief, naklon, ekspozicija, inverzija',
+        'layer-z': 'senčenje, relief, naklon, ekspozicija, inverzija',
+        'layer-y': 'senčenje, relief, naklon, ekspozicija, inverzija',
+        'layer-l1': 'gozdne ceste, nlc',
+        'layer-l2': 'gozdne ceste, nlc',
+        'layer-VO': 'vektorska',
+        'layer-VS': 'vektorska',
+        'layer-VD': 'vektorska',
+        'layer-VT': 'vektorska',
+        'layer-WDZ': 'drevesa, gozd, vrste',
+        'layer-WLT': 'gozd, gozdni tipi',
+        'layer-WGE': 'geologija, kamnine',
+        'layer-WKA': 'parcele, kataster',
+        'layer-wka': 'parcele, kataster',
+        'layer-WHC': 'kemija vode, hidrologija',
+      },
+    },
   },
 
   mapLayers: {
@@ -249,13 +397,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     showAll: 'Pokaži vse zemljevide',
     filterMaps: 'Filtriraj zemljevide',
     noMapsFound: 'Ni najdenih zemljevidov',
-    settings: 'Nastavitve zemljevidov',
+    settings: 'Upravljanje zemljevidov',
     layers: 'Zemljevidi',
     switch: 'Zemljevidi',
     photoFilterWarning: 'Filter fotografij je aktiven',
     interactiveLayerWarning: 'Podatkovni sloj je skrit',
     minZoomWarning: (minZoom) => `Dostopno od povečave ${minZoom}`,
     outsideViewWarning: 'Trenutni pogled je zunaj tega zemljevida',
+    offlineWarning: 'Ta zemljevid ni shranjen za uporabo brez povezave',
     letters: {
       S: 'Letalska',
       Z: 'Letalska',
@@ -264,11 +413,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Javni prevoz (ÖPNV)',
       X: outdoorMap,
+      XK: 'Pohodniške poti KST',
       i: 'Podatkovni sloj',
       I: 'Fotografije',
       l1: 'Gozdne poti NLC (2017)',
       l2: 'Gozdne poti NLC',
       w: 'Wikipedia',
+      R: 'Vremenski radar',
+      v: 'Vidnost',
       M: 'Fotografije iz Wikimedia Commons',
       '5': 'Senčenje terena',
       '6': 'Senčenje površja',
@@ -293,17 +445,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       map: 'zemljevid',
       data: 'podatki',
       photos: 'slike',
+      routing: 'iskanje poti',
     },
     attr: {
       osmData: '©\xa0sodelavci OpenStreetMap',
+      fixTheMap: 'prijavi napako na zemljevidu',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorske ploščice od"
           hostedBy="gostuje"
         />
       ),
+      photosCc: 'različne licence Creative Commons',
     },
-    configureLayers: 'Nastavitev slojev zemljevida',
+    layersConfiguration: 'Nastavitev slojev',
     customMaps: 'Zemljevidi po meri',
     addCustomMap: 'Dodaj zemljevid po meri',
     activate: 'Aktiviraj',
@@ -323,14 +478,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Največja naravna povečava',
     extraScales: 'Dodatne ločljivosti',
     scaleWithDpi: 'Prilagodi z DPI',
+    tiled: 'Naloži po ploščicah',
+    tiledHelp:
+      'WMS se privzeto zahteva kot ena sama slika celotnega pogleda: ena zahteva namesto več deset, napisi pa niso prerezani na robovih ploščic. Ploščice vklopite za strežnik, ki omejuje velikost slike ali ki ploščice shranjuje v predpomnilnik — za ceno vala zahtev ob vsakem pogledu.',
     layer: {
       layer: 'Sloj',
       base: 'Osnovni',
       overlay: 'Prekrivni',
     },
     zIndex: 'Z-Index',
-    preferences: 'Nastavitve',
+    preferences: 'Nastavitve zemljevida',
     maxZoom: 'Največja povečava',
+    zoomSnap: 'Korak povečave',
+    zoomSnapFree: 'Prosto',
+    zoomSnapHelp:
+      'Najmanjša sprememba povečave, na kateri se lahko ustavi povečevanje s kolescem, ščipom in pravokotnikom. 1 ohranja zemljevid na celih stopnjah, ulomek mu dovoli, da se ustavi tudi med njima, Prosto pa kjer koli. Gumba in tipki + in – vedno preskočita na naslednjo celo stopnjo.',
     forcedScale: 'Vsiljena ločljivost',
     resolutionScale: 'Lestvica ločljivosti',
     resolutionScaleAuto: 'Samodejno (privzeto za napravo)',
@@ -339,12 +501,18 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Velikost elementov',
     featureScaleHelp:
       'Poveča izrisane oznake in črte. Ne vpliva na satelitske, senčene, WMS ali vektorske (MapLibre) sloje.',
-    searchResultStyle: 'Slog rezultata iskanja',
+    lookupStyle: 'Slog zadetka',
     resetApp: 'Ponastavi aplikacijo',
     resetAppConfirm:
       'Ponastavim vse nastavitve aplikacije na privzete in znova naložim stran? Odjavljeni boste.',
     loadWmsLayers: 'Naloži sloje',
+    serverNotResponding: ({ name }) => (
+      <>
+        Strežnik zemljevida <b>{name}</b> se ne odziva.
+      </>
+    ),
     offlineMaps: 'Zemljevidi brez povezave',
+    browseCache: 'Shranjevanje med brskanjem',
     legacy: 'zastarela',
     legacyMapWarning: ({ from, to }) => (
       <>
@@ -364,6 +532,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Napaka pri pridobivanju podatkov višinskega profila',
         err,
       ),
+    settings: 'Nastavitve nadmorske višine',
+    settingsHelp:
+      'Prvi dve nastavitvi popravljata model terena, zato veljata povsod, kjer se višina bere iz njega: pri načrtovanih poteh, narisanih črtah in meritvah ter pri uvoženih sledeh, ki ste jim višino nadomestili s strežnika. Zabeležena nadmorska višina — sledenje v živo ali sled, ki ste jo ohranili tako, kot je bila zabeležena — ostane nedotaknjena. Izvožene datoteke vedno ohranijo svojo višino.',
+    windowOff: 'izklopljeno',
+    windowWholeLine: 'celotna črta',
+    despike: 'Odstrani konice',
+    despikeHelp:
+      'Kadar je pot narisana nekaj metrov stran od ceste, ki jo opisuje, model terena vrne višino brežine ali skalne stene ob njej. Konice, ožje od polovice te vrednosti, se odstranijo in profil se rahlo zaokroži; širše se ohranijo, saj gre za resnični teren. Nič to izklopi.',
+    ditchFill: 'Zapolni jarke modela terena',
+    ditchFillHelp:
+      'Podrobni nacionalni modeli terena, ki so na voljo v nekaterih državah, so običajno prilagojeni hidrologiji: pri vsakem prepustu izkopljejo jarek čez cesto. Vdolbine, ožje od te vrednosti, se zapolnijo; širše se ohranijo, saj gre za resnični teren. Nič to izklopi, tam, kjer se uporablja globalni model, pa ne spremeni ničesar.',
+    gradeWindow: 'Okno naklona',
+    gradeWindowHelp:
+      'Ko pokažete na višinski profil, se mesto označi na zemljevidu skupaj z naklonom na njem. Naklon se povpreči na odseku te dolžine okoli te točke, da nekaj metrov šuma GPS ne izpade kot stena. Nič ga izmeri med sosednjima točkama profila.',
   },
 
   errorCatcher: {
@@ -385,8 +567,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Dodaj sem točko',
     startLine: 'Začni tukaj risati črto ali meriti',
     queryFeatures: 'Poizvedi po bližnjih objektih',
-    startRoute: 'Načrtuj pot od tukaj',
-    finishRoute: 'Načrtuj pot do sem',
     showPhotos: 'Pokaži bližnje fotografije',
   },
 

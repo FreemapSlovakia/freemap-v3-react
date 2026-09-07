@@ -5,6 +5,7 @@ import {
   mapReplaceLayer,
   mapSetCountries,
   mapSetEsriAttribution,
+  mapSetLocalPrefs,
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
 } from './actions.js';
@@ -119,14 +120,39 @@ describe('mapReducer — mapRefocus', () => {
     expect(next.layers).toEqual(mapInitialState.layers);
   });
 
-  it('ignores zoom 0 (falsy guard) but accepts lat/lon 0', () => {
+  it('accepts zoom 0 along with lat/lon 0', () => {
     const state = { ...mapInitialState, zoom: 8 };
 
     const next = mapReducer(state, mapRefocus({ lat: 0, lon: 0, zoom: 0 }));
 
-    expect(next.zoom).toBe(8); // zoom 0 skipped by `if (zoom)`
-    expect(next.lat).toBe(0); // lat/lon use `!== undefined`
+    // The whole world at once: layers that go down to zoom 0 make it a view
+    // the `-` button and a fit to a world-spanning extent can both land on.
+    expect(next.zoom).toBe(0);
+    expect(next.lat).toBe(0);
     expect(next.lon).toBe(0);
+  });
+
+  it('pulls an off-grid zoom onto the zoomSnap grid', () => {
+    // What a link shared from a browser set to a finer step carries.
+    const snapped = (zoomSnap: number, zoom: number) =>
+      mapReducer({ ...mapInitialState, zoomSnap }, mapRefocus({ zoom })).zoom;
+
+    expect(snapped(1, 13.75)).toBe(14);
+    expect(snapped(0.5, 13.75)).toBe(14);
+    expect(snapped(0.5, 13.7)).toBe(13.5);
+    expect(snapped(0.25, 13.7)).toBe(13.75);
+
+    // No grid: taken as it comes.
+    expect(snapped(0, 13.7)).toBe(13.7);
+  });
+
+  it('keeps the zoom when asked for one that is not a number', () => {
+    const state = { ...mapInitialState, zoom: 8 };
+
+    // What a missing or malformed `data-refocus-zoom` reads back as.
+    const next = mapReducer(state, mapRefocus({ zoom: Number(undefined) }));
+
+    expect(next.zoom).toBe(8);
   });
 
   it('coerces gpsTracked to false when lat+lon are given without the flag', () => {
@@ -203,5 +229,20 @@ describe('mapReducer — misc setters', () => {
 
     const c = mapReducer(mapInitialState, mapSetCountries(['sk', 'cz']));
     expect(c.countries).toEqual(['sk', 'cz']);
+  });
+
+  it('mapSetLocalPrefs pulls the standing zoom onto a coarser grid', () => {
+    const state = { ...mapInitialState, zoomSnap: 0.25, zoom: 13.75 };
+
+    expect(mapReducer(state, mapSetLocalPrefs({ zoomSnap: 1 })).zoom).toBe(14);
+
+    expect(mapReducer(state, mapSetLocalPrefs({ zoomSnap: 0.5 })).zoom).toBe(
+      14,
+    );
+
+    // A finer grid, or none, leaves the view exactly where it is.
+    expect(mapReducer(state, mapSetLocalPrefs({ zoomSnap: 0 })).zoom).toBe(
+      13.75,
+    );
   });
 });

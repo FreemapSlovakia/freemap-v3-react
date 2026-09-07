@@ -1,8 +1,8 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { mapsLoad } from '@features/myMaps/model/actions.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import {
   Badge,
   Button,

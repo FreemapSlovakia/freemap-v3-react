@@ -13,6 +13,7 @@ const en: OfflineMapExportMessages = {
   success:
     'The map is being prepared. Once ready, a download link will be sent to your email.',
   summaryTiles: 'Tiles',
+  summarySize: 'Est. size',
   summaryPrice: (amount) => <>Total price: {amount} credits</>,
   usageIntro: 'Where you can use downloaded MBTiles maps:',
   usageDesktop: 'Desktop:',

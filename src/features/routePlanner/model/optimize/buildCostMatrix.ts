@@ -19,6 +19,10 @@ export interface BuildCostMatrixParams {
   points: LatLon[];
   /** GraphHopper profile (e.g. `car`, `hike`) from the selected transport type. */
   profile: string;
+  /** The profile has no CH prepared. */
+  chDisable?: boolean;
+  /** The profile has no landmarks prepared either; only meaningful with `chDisable`. */
+  noLm?: boolean;
   /** UI language, forwarded to GraphHopper like the main route request. */
   locale: string;
   getState: () => RootState;
@@ -38,6 +42,8 @@ export interface BuildCostMatrixParams {
 export async function buildCostMatrix({
   points,
   profile,
+  chDisable = false,
+  noLm = false,
   locale,
   getState,
   cancelActions,
@@ -86,6 +92,10 @@ export async function buildCostMatrix({
           calc_points: false,
           instructions: false,
           points_encoded: false,
+          'ch.disable': chDisable,
+          // Without CH the router falls back to landmarks; asking for ones the
+          // profile has none of is a 400.
+          'lm.disable': chDisable && noLm,
           profile,
           locale,
           points: [

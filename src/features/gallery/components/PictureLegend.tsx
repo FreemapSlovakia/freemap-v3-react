@@ -37,8 +37,12 @@ function LegendShell({
       >
         <LongPressTooltip label={gm?.legend} breakpoint="sm">
           {({ props, label, labelClassName }) => (
-            <span className="align-self-center ms-1 me-2" {...props}>
-              <FaCamera /> <FaPalette />{' '}
+            <span
+              className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
+              {...props}
+            >
+              <FaCamera />
+              <FaPalette />
               <span className={labelClassName}>{label}</span>
             </span>
           )}
@@ -137,16 +141,16 @@ export function PictureLegend() {
 
   if (swatches) {
     return (
-      <LegendShell fit toolbarClassName="flex-wrap align-items-center">
+      <LegendShell fit toolbarClassName="flex-wrap align-items-center gap-2">
         {swatches.map(({ color, label, title }) => (
           <LongPressTooltip key={color} label={title}>
             {({ props }) => (
               <span
                 {...props}
-                className="d-inline-flex align-items-center me-2"
+                className="d-inline-flex align-items-center gap-1"
               >
                 <span
-                  className="border rounded d-inline-block me-1"
+                  className="border rounded d-inline-block"
                   style={{
                     width: '16px',
                     height: '16px',
@@ -169,6 +173,9 @@ export function PictureLegend() {
   return (
     <LegendShell>
       <div
+        // Not the toolbar's rhythm: the outermost tick is centred on the
+        // gradient's edge, so it needs room to overhang into (as in
+        // `ColorizeLegend`).
         className="mx-2"
         style={{
           flexGrow: '1',

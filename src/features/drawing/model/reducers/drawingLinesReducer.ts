@@ -1,25 +1,31 @@
 import {
   applySettings,
   clearMapFeatures,
+  closeTool,
+  openTool,
   selectFeature,
-  setTool,
-  setTools,
 } from '@app/store/actions.js';
+import { normalizeProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { createReducer, isAnyOf } from '@reduxjs/toolkit';
-import { lineString } from '@turf/helpers';
-import { simplify as turfSimplify } from '@turf/simplify';
+import { createReducer } from '@reduxjs/toolkit';
+import { simplifyPositions, simplifyRing } from '@shared/simplifyGeo.js';
+import { isDrawTool, isMapClickTool } from '@shared/toolDefinitions.js';
+import { serializeDrawingLine } from '@shared/urlSerialization.js';
+import type { Position } from 'geojson';
 import {
+  type DrawnLine,
   drawingLineAdd,
   drawingLineAddPoint,
   drawingLineChangeProperties,
   drawingLineContinue,
+  drawingLineCutHole,
   drawingLineDelete,
   drawingLineDeletePoint,
   drawingLineJoinFinish,
   drawingLineJoinStart,
   drawingLineRemovePoint,
   drawingLineReverse,
+  drawingLineSetHoleOf,
   drawingLineSetLines,
   drawingLineSimplify,
   drawingLineSplit,
@@ -31,40 +37,161 @@ import {
 
 export interface DrawingLinesState {
   drawing: boolean;
-  lines: Line[];
+  lines: DrawnLine[];
   joinWith: undefined | { lineIndex: number; pointId: number };
+  /** `id` of the polygon the next drawn ring becomes a hole of, when armed. */
+  holeFor: undefined | number;
 }
 
 export const initialState: DrawingLinesState = {
   drawing: false,
   lines: [],
   joinWith: undefined,
+  holeFor: undefined,
 };
+
+// Line ids are handed out here because the reducer is the one funnel every
+// line reaches the store through — a URL parse, a loaded map, a conversion, a
+// split, the draw tool — so no caller has to remember to supply one. Monotonic
+// rather than `max + 1`, so an id is never reused by a later line and anything
+// holding one (the elevation chart) can't be silently re-pointed.
+let nextLineId = 0;
+
+function withId({ holeOf: _holeOf, ...line }: Line): DrawnLine {
+  return { ...line, id: ++nextLineId };
+}
+
+// Everything a `Line` is, minus its id: `serializeDrawingLine` covers every
+// field except `type`, which the URL carries as the param name instead, and
+// hole membership, which the two sides address differently (index vs. parent
+// id) and so is reduced to the flag that matters — whether it is a hole at all.
+function lineIdentity(line: Line, isHole: boolean): string {
+  return `${isHole ? 'H' : ''}${line.type}\x1f${serializeDrawingLine(line)}`;
+}
+
+/**
+ * Resolves each wire line's `holeOf` index against the store lines just made
+ * from it. Rings stay flat: a hole hangs off a top-level polygon, never off
+ * another hole, so there is no chain to walk and no cycle to guard against.
+ */
+function linkHoles(wire: Line[], lines: DrawnLine[]): DrawnLine[] {
+  return lines.map((line, i) => {
+    const at = wire[i]!.holeOf;
+
+    const parent = at === undefined ? undefined : wire[at];
+
+    const holeOfId =
+      at !== undefined &&
+      parent !== undefined &&
+      parent !== wire[i] &&
+      wire[i]!.type === 'polygon' &&
+      parent.type === 'polygon' &&
+      parent.holeOf === undefined
+        ? lines[at]!.id
+        : undefined;
+
+    return line.holeOfId === holeOfId ? line : { ...line, holeOfId };
+  });
+}
+
+function ingest(wire: Line[]): DrawnLine[] {
+  return linkHoles(wire, wire.map(withId));
+}
+
+/** A hole whose parent is gone reverts to a polygon of its own. */
+function dropDanglingHoles(lines: DrawnLine[]): DrawnLine[] {
+  const parents = new Set(
+    lines.filter((line) => line.holeOfId === undefined).map((line) => line.id),
+  );
+
+  return lines.map((line) =>
+    line.holeOfId === undefined || parents.has(line.holeOfId)
+      ? line
+      : { ...line, holeOfId: undefined },
+  );
+}
 
 export const drawingLinesReducer = createReducer(initialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => initialState)
     .addCase(drawingLineAdd, (state, { payload }) => ({
       ...state,
-      lines: [...state.lines, payload],
+      lines: [
+        ...state.lines,
+        ...ingest(Array.isArray(payload) ? payload : [payload]),
+      ],
     }))
     .addCase(drawingLineChangeProperties, (state, { payload }) => {
-      Object.assign(state.lines[payload.index], payload.properties);
+      const line = state.lines[payload.index];
+
+      Object.assign(line, payload.properties);
+
+      line.props = normalizeProps(line.props);
+
+      // Only a polygon can be a hole or hold one, so turning this ring into a
+      // line frees both it and its own holes.
+      if (payload.properties.type === 'line') {
+        line.holeOfId = undefined;
+
+        freeHolesOf(state.lines, line.id);
+      }
     })
-    .addCase(drawingLineDelete, (state, { payload }) => ({
-      ...state,
-      lines: state.lines.filter((_, i) => i !== payload.lineIndex),
-    }))
+    .addCase(drawingLineDelete, (state, { payload }) => {
+      // The index can already be stale: `deleteProcessor` clears the selection
+      // first, and that drops a line too short to keep — so there may be
+      // nothing here to take holes from.
+      const id = state.lines[payload.lineIndex]?.id;
+
+      return {
+        ...state,
+        lines: state.lines.filter(
+          (line, i) =>
+            i !== payload.lineIndex &&
+            // A hole is part of its parent, so deleting the parent takes it
+            // along.
+            (id === undefined || line.holeOfId !== id),
+        ),
+      };
+    })
+    .addCase(drawingLineSetHoleOf, (state, { payload }) => {
+      const line = state.lines[payload.lineIndex];
+
+      const parent =
+        payload.parentLineIndex === undefined
+          ? undefined
+          : state.lines[payload.parentLineIndex];
+
+      line.holeOfId = !parent || parent === line ? undefined : parent.id;
+
+      // Rings stay flat, so a polygon taking a parent gives up its own holes.
+      if (line.holeOfId !== undefined) {
+        freeHolesOf(state.lines, line.id);
+      }
+    })
+    .addCase(drawingLineCutHole, (state, { payload }) => {
+      state.holeFor = state.lines[payload.parentLineIndex]?.id;
+
+      state.drawing = false;
+
+      state.joinWith = undefined;
+    })
     .addCase(drawingLineDeletePoint, (state, { payload }) => {
       const line = state.lines[payload.lineIndex];
 
       line.points = line.points.filter((point) => point.id !== payload.pointId);
     })
-    .addCase(selectFeature, (state) => ({
+    .addCase(selectFeature, (state, { payload }) => ({
       ...state,
-      lines: state.lines.filter(linefilter),
+      // A line selection addresses its line by index, so it must neither drop
+      // the line it selects nor renumber the others; abandoned partial lines
+      // go on the next selection made elsewhere.
+      lines:
+        payload?.type === 'draw-line-poly' || payload?.type === 'line-point'
+          ? state.lines
+          : dropDanglingHoles(state.lines.filter(isCompleteLine)),
       drawing: false,
       joinWith: undefined,
+      holeFor: undefined,
     }))
     .addCase(applySettings, (state, { payload }) => {
       if (!payload.drawingApplyAll) {
@@ -83,7 +210,7 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       if ('lineProps' in action.payload) {
         const { lineProps } = action.payload;
 
-        line = {
+        line = withId({
           type: lineProps.type,
           color: lineProps.color,
           fillColor: lineProps.fillColor,
@@ -92,11 +219,29 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
           lineCap: lineProps.lineCap,
           lineJoin: lineProps.lineJoin,
           points: [],
-        };
+        });
+
+        // Hole mode is spent on the ring it starts; the rest of that ring's
+        // points arrive through the `lineIndex` branch below.
+        if (
+          lineProps.type === 'polygon' &&
+          state.lines.some(
+            (l) => l.id === state.holeFor && l.holeOfId === undefined,
+          )
+        ) {
+          line.holeOfId = state.holeFor;
+        }
+
+        state.holeFor = undefined;
 
         state.lines.push(line);
       } else {
         line = state.lines[action.payload.lineIndex];
+
+        // A handle's click/dragstart can arrive after its line is gone.
+        if (!line) {
+          return;
+        }
       }
 
       if (action.payload.drawing) {
@@ -137,15 +282,17 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
           return;
         }
 
-        const ls = lineString(line.points.map((p) => [p.lon, p.lat]));
+        const points = line.points.map((p): Position => [p.lon, p.lat]);
 
-        turfSimplify(ls, { mutate: true, highQuality: true, tolerance });
+        // Rings are stored open, so a polygon is closed for the thinning and
+        // reopened after: `simplifyRing` eases the tolerance rather than letting
+        // it collapse the shape into a line, which nothing here could undo.
+        const kept =
+          line.type === 'polygon'
+            ? simplifyRing([...points, points[0]!], tolerance).slice(0, -1)
+            : simplifyPositions(points, tolerance);
 
-        line.points = ls.geometry.coordinates.map((c, id) => ({
-          lat: c[1]!,
-          lon: c[0]!,
-          id,
-        }));
+        line.points = kept.map((c, id) => ({ lat: c[1]!, lon: c[0]!, id }));
       },
     )
     .addCase(drawingLineSplit, (state, action) => {
@@ -163,14 +310,22 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
             ...line,
             points: line.points.slice(0, pos + 1),
           },
-          { ...line, points: line.points.slice(pos) },
+          // The tail is a new line, so it gets its own id; the head keeps the
+          // original's, which is what an open chart on it goes on following.
+          withId({ ...line, points: line.points.slice(pos) }),
           ...state.lines.slice(lineIndex + 1),
         ],
       };
     })
+    // Filtering after ingesting, so the dropped lines still occupy the
+    // positions the surviving `holeOf` indexes were written against.
     .addCase(drawingLineSetLines, (state, action) => ({
       ...state,
-      lines: action.payload.filter(linefilter),
+      lines: dropDanglingHoles(
+        ingest(action.payload).filter((_, i) =>
+          isCompleteLine(action.payload[i]!),
+        ),
+      ),
     }))
     .addCase(
       drawingLineContinue,
@@ -184,13 +339,9 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
         }
       },
     )
-    .addCase(mapsLoaded, (state, { payload }) => ({
-      ...state,
-      joinWith: undefined,
-      drawing: false,
-      lines: [
-        ...(payload.merge ? state.lines : []),
-        ...(payload.data.lines ?? initialState.lines).map((line) => ({
+    .addCase(mapsLoaded, (state, { payload }) => {
+      const incoming: Line[] = (payload.data.lines ?? initialState.lines).map(
+        (line) => ({
           ...line,
           type:
             // compatibility
@@ -199,9 +350,55 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
               : (line.type as string) === 'distance'
                 ? 'line'
                 : line.type,
-        })),
-      ],
-    }))
+        }),
+      );
+
+      // Installing a document must not change line identity. The same lines
+      // arrive twice on a restore — from the URL first, so the map draws at
+      // once, then from the document to reconcile with the backend — and
+      // anything holding an id (the elevation chart names its line that way)
+      // would lose its line if the second pass renumbered them.
+      //
+      // So each incoming line adopts an identical one already shown, keeping
+      // its id *and* its object, and only a genuinely new line is allocated
+      // one. Per line rather than all-or-nothing: a document that differs in
+      // one line must not renumber the rest. Matched on the id-free content
+      // string the my-maps dirty check already treats as a line's identity,
+      // and consumed as it matches, so two identical lines stay two lines.
+      const reusable = new Map<string, DrawnLine[]>();
+
+      for (const line of payload.merge ? [] : state.lines) {
+        const key = lineIdentity(line, line.holeOfId !== undefined);
+
+        const bucket = reusable.get(key);
+
+        if (bucket) {
+          bucket.push(line);
+        } else {
+          reusable.set(key, [line]);
+        }
+      }
+
+      // Hole membership is resolved after the matching, since a reused line
+      // carries the id the incoming one's `holeOf` index has to land on.
+      const adopted = incoming.map(
+        (line) =>
+          reusable
+            .get(lineIdentity(line, line.holeOf !== undefined))
+            ?.shift() ?? withId(line),
+      );
+
+      return {
+        ...state,
+        joinWith: undefined,
+        holeFor: undefined,
+        drawing: false,
+        lines: dropDanglingHoles([
+          ...(payload.merge ? state.lines : []),
+          ...linkHoles(incoming, adopted),
+        ]),
+      };
+    })
     .addCase(drawingLineJoinStart, (state, action) => ({
       ...state,
       joinWith: action.payload,
@@ -237,28 +434,38 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
 
       state.joinWith = undefined;
     })
-    // Merely deactivating (unfocusing) or closing the draw tool must not abort an
-    // in-progress drawing — you can keep appending points. Only activating a tool
-    // does, since that clears the drawing line's selection.
-    .addCase(setTool, (state, { payload }) => {
-      state.joinWith = undefined;
-
-      if (payload.mode === 'activate') {
-        state.drawing = false;
-      }
-    })
-    .addMatcher(isAnyOf(setTools, drawingLineStopDrawing), (state) => ({
-      ...state,
-      drawing: false,
-      joinWith: undefined,
-    })),
+    // Reaching for another tool that takes map clicks ends the line being drawn,
+    // as does closing the drawing tool. A toolbar-only tool opening beside it
+    // takes no clicks, so the line survives it — and a "continue" resumes a line
+    // without touching the tool at all, so that keeps appending points.
+    .addMatcher(
+      (action) =>
+        (openTool.match(action) && isMapClickTool(action.payload)) ||
+        (closeTool.match(action) && isDrawTool(action.payload)) ||
+        drawingLineStopDrawing.match(action),
+      (state) => ({
+        ...state,
+        drawing: false,
+        joinWith: undefined,
+        holeFor: undefined,
+      }),
+    ),
 );
 
-function linefilter(line: Line) {
+/** Whether the line has enough points to be one; anything less is a partial draw. */
+export function isCompleteLine(line: Line) {
   return (
     (line.type === 'line' && line.points.length > 1) ||
     (line.type === 'polygon' && line.points.length > 2)
   );
+}
+
+function freeHolesOf(lines: DrawnLine[], parentId: number) {
+  for (const line of lines) {
+    if (line.holeOfId === parentId) {
+      line.holeOfId = undefined;
+    }
+  }
 }
 
 function reverse(points: Point[]) {

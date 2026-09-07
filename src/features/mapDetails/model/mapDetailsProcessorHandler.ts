@@ -12,6 +12,7 @@ import {
   searchSetQuery,
   searchSetResults,
 } from '@features/search/model/actions.js';
+import { photonToSearchResult } from '@features/search/model/resultUtils.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   type IsWmsLayerDef,
@@ -19,26 +20,63 @@ import {
   isWmsLayerDef,
   type LayerDef,
 } from '@shared/mapDefinitions.js';
+import {
+  fetchFeaturesAt,
+  type OsmApiFeature,
+  osmApiFeatureId,
+} from '@shared/osmApi.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { FeatureId } from '@shared/types/featureId.js';
-import { NominatimResultSchema } from '@shared/types/nominatimResult.js';
 import {
-  type OverpassBounds,
-  OverpassBoundsExtraSchema,
-  overpassResultSchema,
-} from '@shared/types/overpass.js';
-import { distance } from '@turf/distance';
-import { feature, point } from '@turf/helpers';
+  PhotonResponseSchema,
+  photonLang,
+  photonOsmElementType,
+} from '@shared/types/photonResult.js';
+import { wmsBaseUrl } from '@shared/wms.js';
+import { point } from '@turf/helpers';
 import { toWgs84 } from '@turf/projection';
 import type { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import type { Dispatch } from 'redux';
 import { loadMapDetailsMessages } from '../translations/loadMapDetailsMessages.js';
 
-const OverpassResultBoundsSchema = overpassResultSchema(
-  OverpassBoundsExtraSchema,
-);
+/** An object is worth reporting when it carries one of these keys. */
+const osmKeys = [
+  'aerialway',
+  'aeroway',
+  'amenity',
+  'attraction',
+  'barrier',
+  'border',
+  'boundary',
+  'building',
+  'club',
+  'craft',
+  'emergency',
+  'fitness_station',
+  'healthcare',
+  'highway',
+  'historic',
+  'information',
+  'landuse',
+  'leisure',
+  'man_made',
+  'military',
+  'mountain_pass',
+  'natural',
+  'office',
+  'place',
+  'playground',
+  'power',
+  'public_transport',
+  'railway',
+  'route',
+  'shop',
+  'sport',
+  'tourism',
+  'waterway',
+];
 
 const cancelType = [
   clearMapFeatures.type,
@@ -47,10 +85,9 @@ const cancelType = [
   searchSetQuery.type,
 ];
 
-// Dismiss the details toast when the map-details tool is closed — not merely
-// when another tool opens alongside it.
+// Dismiss the details toast once the map-details tool is gone.
 const mapDetailsClosed = (state: RootState) =>
-  !state.main.tools.includes('map-details');
+  state.main.mapTool !== 'map-details';
 
 export async function handle(
   [lat, lon]: [number, number],
@@ -61,9 +98,6 @@ export async function handle(
 
   trackMatomo(['trackEvent', 'MapDetails', 'search']);
 
-  const kvFilter =
-    '[~"^(aerialway|amenity|barrier|border|boundary|building|highway|historic|information|landuse|leisure|man_made|natural|place|power|railway|route|shop|sport|tourism|waterway)$"~"."]';
-
   const wmsLayerDefs = [
     ...integratedLayerDefs,
     ...getState().map.customLayers,
@@ -71,54 +105,32 @@ export async function handle(
 
   const wmsLayerTypes = wmsLayerDefs.map((def) => def.type);
 
-  const [resNearby, resSurrounding, resReverse, ...wms] = await Promise.all([
-    excludeSources.includes('overpass-nearby')
-      ? undefined
-      : httpRequest({
-          getState,
-          method: 'POST',
-          url: 'https://overpass.freemap.sk/api/interpreter',
-          // url: 'https://overpass-api.de/api/interpreter',
-          headers: { 'Content-Type': 'text/plain' },
-          body:
-            '[out:json];(' +
-            `nwr(around:33,${lat},${lon})${kvFilter};` +
-            ');out tags bb;',
-          expectedStatus: 200,
-        }).then((res) => res.json()),
+  const wantNearby = !excludeSources.includes('overpass-nearby');
 
-    excludeSources.includes('overpass-surrounding')
-      ? undefined
-      : httpRequest({
-          getState,
-          method: 'POST',
-          url: 'https://overpass.freemap.sk/api/interpreter', // was: fails with memory error
-          // url: 'https://overpass-api.de/api/interpreter',
-          headers: { 'Content-Type': 'text/plain' },
-          body: `[out:json];
-          is_in(${lat},${lon});
-          wr(pivot)${kvFilter};
-          out tags bb;`,
-          expectedStatus: 200,
-        }).then((res) => res.json()),
+  const wantSurrounding = !excludeSources.includes('overpass-surrounding');
+
+  const [resOsm, resReverse, ...wms] = await Promise.all([
+    // Both halves come from one request, so one of them being switched off
+    // saves nothing but the work of reading it.
+    wantNearby || wantSurrounding
+      ? fetchFeaturesAt({ lat, lon, radius: 33, keys: osmKeys }, { getState })
+      : undefined,
 
     excludeSources.includes('nominatim-reverse')
       ? undefined
       : httpRequest({
           getState,
           url:
-            'https://nominatim.openstreetmap.org/reverse?' +
+            process.env['PHOTON_URL'] +
+            '/reverse?' +
             objectToURLSearchParams({
               lat,
               lon,
-              format: 'json',
-              polygon_geojson: 1,
-              extratags: 1,
-              zoom: getState().map.zoom,
-              namedetails: 0, // TODO maybe use some more details
-              limit: 20,
-              'accept-language': getState().l10n.language,
-              email: 'martin.zdila@freemap.sk',
+              // Never left out: without it Photon reads `Accept-Language`,
+              // which the vhost blanks so one URL means one thing to the cache.
+              lang: photonLang(getState().l10n.language),
+              // The nearest one place; what else is here comes from OSM data.
+              limit: 1,
             }),
           expectedStatus: 200,
         }).then((res) => res.json()),
@@ -147,13 +159,24 @@ export async function handle(
           const a = CRS.EPSG3857.project(bounds.getSouthWest());
           const b = CRS.EPSG3857.project(bounds.getNorthEast());
 
-          const url = new URL(def.url);
+          const url = new URL(
+            wmsBaseUrl(def.url, [
+              ...(def.layers.length ? ['layers'] : []),
+              'query_layers',
+              'info_format',
+              'i',
+              'j',
+              'feature_count',
+            ]),
+          );
 
           url.searchParams.set('request', 'GetFeatureInfo');
           url.searchParams.set('service', 'WMS');
           url.searchParams.set('version', '1.3.0');
           url.searchParams.set('LAYERS', def.layers.join(','));
           url.searchParams.set('QUERY_LAYERS', def.layers.join(','));
+          // Part of the map request GetFeatureInfo copies, and mandatory there.
+          url.searchParams.set('STYLES', '');
           url.searchParams.set('INFO_FORMAT', 'application/geo+json'); // TODO
           url.searchParams.set('CRS', 'EPSG:3857'); // TODO
           url.searchParams.set('I', point.x.toFixed());
@@ -179,34 +202,29 @@ export async function handle(
       ),
   ]);
 
-  const nearbyElements = (
-    resNearby ? OverpassResultBoundsSchema.parse(resNearby).elements : []
-  )
-    .map((e) => ({
-      e,
-      d: distance(
-        [lon, lat],
-        e.type === 'node'
-          ? [e.lon, e.lat]
-          : [
-              (e.bounds.minlon + e.bounds.maxlon) / 2,
-              (e.bounds.minlat + e.bounds.maxlat) / 2,
-            ],
-        { units: 'meters' },
-      ),
-    }))
-    .sort((a, b) => a.d - b.d)
-    .map((a) => a.e);
+  // Both arrive ordered: nearby by distance, surrounding by area ascending.
+  const nearbyElements = wantNearby ? (resOsm?.nearby.features ?? []) : [];
 
-  const surroundingElements = resSurrounding
-    ? OverpassResultBoundsSchema.parse(resSurrounding).elements
+  const surroundingElements = wantSurrounding
+    ? (resOsm?.containing.features ?? [])
     : [];
 
-  const reverseGeocodingElement =
-    NominatimResultSchema.optional().parse(resReverse);
+  // Photon answers with a collection; `limit=1` makes it the nearest place.
+  const reverseGeocodingElement = resReverse
+    ? PhotonResponseSchema.parse(resReverse).features[0]
+    : undefined;
+
+  const reverseProps = reverseGeocodingElement?.properties;
+
+  // In the same `type/id` form the OSM API answers with, so the reverse
+  // geocoding hit and an object can be told apart below.
+  const reverseOsm =
+    reverseProps?.osm_type !== undefined && reverseProps.osm_id !== undefined
+      ? `${photonOsmElementType(reverseProps.osm_type)}/${reverseProps.osm_id}`
+      : undefined;
 
   const surroundingElementsSet = new Set(
-    surroundingElements.map((item) => item.type + item.id),
+    surroundingElements.map((item) => item.id),
   );
 
   const sr: SearchResult[] = [];
@@ -252,137 +270,42 @@ export async function handle(
           genericName: (wms.info as unknown as { layerName: unknown })
             .layerName as string, // ArcGIS only?,
           source: `wms:${wms.type}`,
-          showToast: true,
         } satisfies SearchResult;
       }),
   );
 
   if (reverseGeocodingElement) {
-    sr.push({
-      source: 'nominatim-reverse',
-      id:
-        reverseGeocodingElement.osm_type && reverseGeocodingElement.osm_id
-          ? {
-              type: 'osm',
-              elementType: reverseGeocodingElement.osm_type,
-              id: reverseGeocodingElement.osm_id,
-            }
-          : { type: 'other' },
-      incomplete: true,
-      displayName: reverseGeocodingElement.display_name,
-      geojson: feature(
-        reverseGeocodingElement.geojson ?? null,
-        {
-          [reverseGeocodingElement.class]: reverseGeocodingElement.type,
-          name: reverseGeocodingElement.name,
-          ...reverseGeocodingElement.extratags,
-        },
-        reverseGeocodingElement.boundingbox
-          ? {
-              bbox: [
-                Number(reverseGeocodingElement.boundingbox[2]),
-                Number(reverseGeocodingElement.boundingbox[1]),
-                Number(reverseGeocodingElement.boundingbox[3]),
-                Number(reverseGeocodingElement.boundingbox[0]),
-              ],
-            }
-          : undefined,
-      ),
-    });
+    sr.push(photonToSearchResult(reverseGeocodingElement, 'nominatim-reverse'));
   }
 
   const elements = [
     ...nearbyElements
       .filter(
         // remove dupes
-        (e) =>
-          !surroundingElementsSet.has(e.type + e.id) &&
-          (!reverseGeocodingElement ||
-            reverseGeocodingElement.osm_type !== e.type ||
-            reverseGeocodingElement.osm_id !== e.id),
+        (e) => !surroundingElementsSet.has(e.id) && e.id !== reverseOsm,
       )
-      .map((element) => ({ ...element, source: 'overpass-nearby' as const })),
+      .map((element) => ({ element, source: 'overpass-nearby' as const })),
     ...surroundingElements
-      .filter(
-        (e) =>
-          !reverseGeocodingElement ||
-          reverseGeocodingElement.osm_type !== e.type ||
-          reverseGeocodingElement.osm_id !== e.id,
-      )
-      .map((e) => ({
-        e,
-        area: e.type === 'node' ? 0 : approxAreaMeters2(e.bounds),
-      }))
-      .sort((a, b) => a.area - b.area)
-      .map((a) => ({ ...a.e, source: 'overpass-surrounding' as const })),
+      .filter((e) => e.id !== reverseOsm)
+      .map((element) => ({
+        element,
+        source: 'overpass-surrounding' as const,
+      })),
   ];
 
-  for (const element of elements) {
-    switch (element.type) {
-      case 'node':
-        sr.push({
-          source: element.source,
-          id: { type: 'osm', elementType: 'node', id: element.id },
-          geojson: point([element.lon, element.lat], element.tags),
-          incomplete: true,
-        });
+  for (const { element, source } of elements) {
+    const id = osmApiFeatureId(element.id);
 
-        break;
-
-      case 'way':
-        sr.push({
-          source: element.source,
-          id: { type: 'osm', elementType: 'way', id: element.id },
-          incomplete: true,
-          geojson: point(
-            [
-              (element.bounds.minlon + element.bounds.maxlon) / 2,
-              (element.bounds.minlat + element.bounds.maxlat) / 2,
-            ],
-            element.tags,
-            {
-              bbox: [
-                element.bounds.minlon,
-                element.bounds.minlat,
-                element.bounds.maxlon,
-                element.bounds.maxlat,
-              ],
-            },
-          ),
-        });
-
-        break;
-
-      case 'relation':
-        {
-          sr.push({
-            source: element.source,
-            id: { type: 'osm', elementType: 'relation', id: element.id },
-            incomplete: true,
-            geojson: point(
-              [
-                (element.bounds.minlon + element.bounds.maxlon) / 2,
-                (element.bounds.minlat + element.bounds.maxlat) / 2,
-              ],
-              element.tags,
-              {
-                bbox: [
-                  element.bounds.minlon,
-                  element.bounds.minlat,
-                  element.bounds.maxlon,
-                  element.bounds.maxlat,
-                ],
-              },
-            ),
-          });
-        }
-
-        break;
-    }
+    sr.push({
+      source,
+      id,
+      incomplete: true,
+      geojson: osmApiGeojson(element, id.elementType === 'node'),
+    });
   }
 
   if (sr.length > 0) {
-    // dispatch(setTool(null));
+    // dispatch(closeTool('map-details'));
 
     dispatch(searchSetResults(sr));
   } else {
@@ -402,16 +325,14 @@ export async function handle(
 
 export default handle;
 
-function approxAreaMeters2(b?: OverpassBounds): number {
-  if (!b) {
-    return 0;
-  }
-
-  const midLatRad = (b.minlat + b.maxlat) * 0.5 * (Math.PI / 180);
-  const metersPerDegLon = 111_320 * Math.cos(midLatRad);
-
-  const dx = Math.max(0, b.maxlon - b.minlon) * metersPerDegLon;
-  const dy = Math.max(0, b.maxlat - b.minlat) * 111_132;
-
-  return dx * dy;
+/**
+ * The label point the API answers with, carrying the element's tags. A node
+ * gets no bbox: a zero-size one would make the map zoom all the way in.
+ */
+function osmApiGeojson(feature: OsmApiFeature, isNode: boolean) {
+  return point(
+    feature.geometry.coordinates,
+    feature.properties,
+    isNode ? {} : { bbox: feature.bbox },
+  );
 }

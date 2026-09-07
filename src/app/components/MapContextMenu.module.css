@@ -1,3 +1,11 @@
+/* The ear hangs off the edge of the menu, so this one menu cannot clip itself
+   to its rounded corners the way `.fm-dropdown-with-scroller` otherwise does —
+   that would erase it. Its scrollbar reaching into a corner is the lesser
+   evil. */
+.menu:global(.fm-dropdown-with-scroller) {
+  overflow: visible;
+}
+
 /* Popover-style "ear" pointing at the clicked map point. The fmArrow modifier
    sets its horizontal offset; here we place it on the top or bottom edge and
    draw a bordered triangle (outline ::before + fill ::after) so it joins the

@@ -13,19 +13,29 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Segmenty',
     timeLimit: 'Limit czasu',
     distanceLimit: 'Limit dystansu',
+    reverseFlow: 'Podróż do punktu',
+    reverseFlowHint:
+      'Obszary pokazują wtedy, skąd można dotrzeć do tego punktu; bez zaznaczenia — dokąd można z niego dojechać. Różnicę robią jednokierunkowe ulice i zakazy skrętu.',
   },
   point: {
     pick: 'Wybierz na mapie',
     current: 'Twoja pozycja',
     home: 'Pozycja domowa',
+    fromStart: 'Pozycja startu',
+    fromFinish: 'Pozycja mety',
     point: 'Punkt trasy',
   },
   transportType: {
     car: 'Samochód',
     car4wd: 'Samochód (4x4)',
+    carnotoll: 'Samochód (bez opłat drogowych)',
     bike: 'Rower',
+    ebike: 'Rower elektryczny',
+    gravelbike: 'Gravel',
     foot: 'Pieszo',
+    stroller: 'Wózek dziecięcy / inwalidzki',
     hiking: 'Turystyka piesza',
+    easyhike: 'Łatwa turystyka piesza',
     mtb: 'Rower górski',
     racingbike: 'Rower szosowy',
     motorcycle: 'Motocykl',
@@ -43,6 +53,9 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     setHome: 'Ustaw',
   },
   milestones: 'Słupki kilometrowe',
+  milestonesOff: 'Wyłączone',
+  recompute: 'Przelicz trasę ponownie',
+  maxAlternatives: 'Maks. liczba proponowanych tras',
   style: {
     menuItem: 'Styl trasy',
     title: 'Styl trasy',
@@ -62,6 +75,7 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Zamień start i metę',
   development: 'w przygotowaniu',
   alternative: 'Alternatywa',
+  isochroneRing: 'Izolinia czasu',
   distance: ({ value, diff }) => (
     <>
       Dystans:{' '}
@@ -69,6 +83,11 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
         {value}
         {diff ? ` (+ ${diff})` : ''}
       </b>
+    </>
+  ),
+  tolled: ({ value }) => (
+    <>
+      Odcinki płatne: <b>{value}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

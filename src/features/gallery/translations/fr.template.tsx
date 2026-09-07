@@ -25,7 +25,12 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-rating': 'de la mieux notée',
     '-lastCommentedAt': 'du dernier commentaire',
   },
-  legendCategory: {},
+  legendCategory: {
+    mine: 'Les miennes',
+    notMine: 'Autres',
+    premium: 'Premium',
+    free: 'Gratuites',
+  },
 
   c: {
     mine: 'Distinguer les miennes',
@@ -44,6 +49,7 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
         Importée par {username} le {createdAt}
       </>
     ),
+    uploadedOn: (createdAt) => <>Importée le {createdAt}</>,
     captured: (takenAt) => <>Prise le {takenAt}</>,
     deletePrompt: (title) =>
       title ? (
@@ -59,12 +65,14 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Ajouter',
     yourRating: 'Votre note :',
     showOnTheMap: 'Afficher sur la carte',
-    openInNewWindow: 'Ouvrir dans…',
     deleteTitle: 'Suppression de la photo',
     modify: 'Modifier',
     premiumOnly:
       'Cette photo n’a été rendue disponible par son auteur qu’aux utilisateurs disposant d’un accès premium.',
+    premiumPhoto: 'Cette photo est un contenu premium.',
     noComments: 'Aucun commentaire',
+    wikimediaCommentNotNotified:
+      'Cette photo provient de Wikimedia Commons. Son auteur ne sera pas informé de votre commentaire : nous n’informons que les auteurs des photos téléversées sur Freemap.',
   },
   editForm: {
     takenAt: {
@@ -81,8 +89,11 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
   uploadModal: {
     uploading: (n) => `Import en cours (${n})`,
+    hint: {
+      drop: 'Déposez vos photos ici ou cliquez ici pour les sélectionner.',
+      tap: 'Touchez ici pour ajouter des photos.',
+    },
     rules: `
-      <p>Déposez vos photos ici ou cliquez ici pour les sélectionner.</p>
       <ul>
         <li>N’importez pas de photos trop petites (miniatures). Les dimensions maximales ne sont pas limitées. La taille maximale du fichier est limitée à 10 Mo. Les fichiers plus volumineux seront refusés.</li>
         <li>N’importez que des photos de paysages ou des photos documentaires. Les portraits et les photos macro sont indésirables et seront supprimés sans avertissement.</li>
@@ -162,6 +173,7 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     source: 'Source',
     allSources: 'Toutes',
   },
+  linkToCommons: 'photo sur Wikimedia Commons',
   allMyPhotos: {
     title: 'Modification d’accès',
     premium: 'Inclure toutes mes photos dans le contenu premium',
@@ -177,9 +189,11 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
   recentTags: 'Étiquettes récentes à attribuer :',
   filter: 'Filtre',
   showPhotosFrom: 'Voir les photos',
+  excludesWikimedia: 'N’inclut pas les photos de Wikimedia',
   showLayer: 'Afficher la couche',
   upload: 'Importer',
   colorizeBy: 'Colorer selon',
+  noColorize: 'Aucun',
   showDirection: 'Afficher la direction de prise de vue',
   missingPositionError: 'Emplacement manquant.',
   invalidPositionError: 'Format de coordonnées de l’emplacement invalide.',

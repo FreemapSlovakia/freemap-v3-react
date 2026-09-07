@@ -6,7 +6,10 @@ import {
   type LineCap,
   type LineJoin,
 } from '@features/drawing/model/actions/drawingLineActions.js';
-import { garminSymToIconSpec } from '@features/mapFeaturesExport/garminSymMapping.js';
+import {
+  garminSymToIconSpec,
+  iconSpecToGarminSym,
+} from '@features/mapFeaturesExport/garminSymMapping.js';
 import {
   osmAndBackgroundToMarkerType,
   osmAndIconToIconSpec,
@@ -15,7 +18,7 @@ import {
   type MarkerType,
   MarkerTypeSchema,
 } from '@features/objects/model/actions.js';
-import { joinColorAlpha } from '@shared/colorAlpha.js';
+import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 
 // Simplestyle splits a colour into a base hex plus a separate `*-opacity`
 // number (e.g. `fill` + `fill-opacity`). Foreign imports (KML, third-party
@@ -190,4 +193,105 @@ export function lineStyleFromProperties(
   }
 
   return lineStyle;
+}
+
+/** Opacity as simplestyle states it: separately, and only when it is not 1. */
+const alpha = (color: { opacity: number } | undefined): number | undefined =>
+  color && color.opacity < 1 ? color.opacity : undefined;
+
+/** Writes the patch onto a copy, dropping the keys it sets to `undefined`. */
+function patched(
+  properties: Record<string, unknown> | null | undefined,
+  patch: Record<string, unknown>,
+): Record<string, unknown> {
+  const out = { ...properties };
+
+  for (const [key, value] of Object.entries(patch)) {
+    if (value === undefined) {
+      delete out[key];
+    } else {
+      out[key] = value;
+    }
+  }
+
+  return out;
+}
+
+/**
+ * The inverse of {@link lineStyleFromProperties}: `freemap:*` for our own
+ * lossless read-back, mirrored into simplestyle for everyone else, and the
+ * lower-priority dialects dropped so nothing stale contradicts what is written.
+ */
+export function lineStyleToProperties(
+  properties: Record<string, unknown> | null | undefined,
+  style: {
+    type: DrawingLineType;
+    color: string;
+    fillColor?: string;
+    width?: number;
+    lineCap?: LineCap;
+    lineJoin?: LineJoin;
+    dashArray?: number[];
+  },
+): Record<string, unknown> {
+  const stroke = splitColorAlpha(style.color);
+
+  // Both dialects read a dash as a string; our own reader takes nothing else.
+  const dash = style.dashArray?.length ? style.dashArray.join(' ') : undefined;
+
+  const fillColor = style.type === 'polygon' ? style.fillColor : undefined;
+
+  const fill = fillColor ? splitColorAlpha(fillColor) : undefined;
+
+  return patched(properties, {
+    'freemap:type': style.type,
+    'freemap:color': style.color,
+    'freemap:fillColor': fillColor,
+    'freemap:width': style.width,
+    'freemap:lineCap': style.lineCap,
+    'freemap:lineJoin': style.lineJoin,
+    'freemap:dashArray': dash,
+    stroke: stroke.color,
+    'stroke-opacity': alpha(stroke),
+    'stroke-width': style.width,
+    'stroke-linecap': style.lineCap,
+    'stroke-linejoin': style.lineJoin,
+    'stroke-dasharray': dash,
+    fill: fill?.color,
+    'fill-opacity': alpha(fill),
+    'osmand:color': undefined,
+    'osmand:fill_color': undefined,
+    'osmand:width': undefined,
+    'gpx_style:hasFill': undefined,
+  });
+}
+
+/** The inverse of {@link pointStyleFromProperties}; see {@link lineStyleToProperties}. */
+export function pointStyleToProperties(
+  properties: Record<string, unknown> | null | undefined,
+  style: { color: string; markerType?: MarkerType; icon?: string },
+): Record<string, unknown> {
+  const marker = splitColorAlpha(style.color);
+
+  const icon = style.icon || undefined;
+
+  const sym = iconSpecToGarminSym(icon);
+
+  return patched(properties, {
+    'freemap:color': style.color,
+    'freemap:markerType': style.markerType,
+    'freemap:icon': icon,
+    'marker-color': marker.color,
+    'marker-color-opacity': alpha(marker),
+    'marker-symbol': sym,
+    markerType: style.markerType,
+    icon,
+    // GPX export writes `<sym>` from this one.
+    sym,
+    'osmand:color': undefined,
+    'osmand:icon': undefined,
+    'osmand:background': undefined,
+    'icon-color': undefined,
+    'icon-opacity': undefined,
+  });
 }

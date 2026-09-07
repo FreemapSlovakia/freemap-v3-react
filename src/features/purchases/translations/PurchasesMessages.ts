@@ -21,4 +21,7 @@ export type PurchasesMessages = {
   noPurchases: string;
   premium: string;
   credits: (amount: ReactNode) => JSX.Element;
+  /** Opens the Polar customer portal (cancel, payment method, invoices). */
+  managePayments: string;
+  managePaymentsHint: string;
 };

@@ -1,9 +1,11 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import clsx from 'clsx';
 import {
   type DragEvent as ReactDragEvent,
@@ -41,6 +43,8 @@ type Props = { show: boolean };
 
 export default function GalleryUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const online = useOnline();
 
   const gm = useGalleryMessages();
 
@@ -94,21 +98,18 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
-  const handleModelChange = useCallback(
-    (id: number, model: PictureModel) => {
-      const azimuth = parseFloat(model.azimuth);
+  const handleModelChange = (id: number, model: PictureModel) => {
+    const azimuth = parseFloat(model.azimuth);
 
-      handleItemMerge({
-        id,
-        ...model,
-        azimuth: Number.isNaN(azimuth) ? null : azimuth,
-        takenAt: model.takenAt ? new Date(model.takenAt) : null,
-      });
-    },
-    [handleItemMerge],
-  );
+    handleItemMerge({
+      id,
+      ...model,
+      azimuth: Number.isNaN(azimuth) ? null : azimuth,
+      takenAt: model.takenAt ? new Date(model.takenAt) : null,
+    });
+  };
 
-  const handleClose = useCallback(async () => {
+  const handleClose = async () => {
     if (
       !items.length ||
       (await confirm({
@@ -120,14 +121,11 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     ) {
       dispatch(setActiveModal(null));
     }
-  }, [dispatch, items, confirm, m]);
+  };
 
-  const handleItemAdd = useCallback(
-    (item: GalleryItem) => {
-      dispatch(galleryAddItem(item));
-    },
-    [dispatch],
-  );
+  const handleItemAdd = (item: GalleryItem) => {
+    dispatch(galleryAddItem(item));
+  };
 
   const handleFileDrop = usePictureDropHandler(
     showPreview,
@@ -145,73 +143,57 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     },
   });
 
-  const handlePositionPick = useCallback(
-    (id: number) => {
-      dispatch(gallerySetItemForPositionPicking(id));
-    },
-    [dispatch],
-  );
+  const handlePositionPick = (id: number) => {
+    dispatch(gallerySetItemForPositionPicking(id));
+  };
 
-  const handleItemRemove = useCallback(
-    (id: number) => {
-      dispatch(galleryRemoveItem(id));
-    },
-    [dispatch],
-  );
+  const handleItemRemove = (id: number) => {
+    dispatch(galleryRemoveItem(id));
+  };
 
   const premiumCheck = useRef<HTMLInputElement | null>(null);
   const [draggingOverDropzone, setDraggingOverDropzone] = useState(false);
 
-  const handleDropzoneDragCapture = useCallback(
-    (event: ReactDragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
-      setDraggingOverDropzone(true);
-    },
-    [],
-  );
+  const handleDropzoneDragCapture = (event: ReactDragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDraggingOverDropzone(true);
+  };
 
-  const handleDropzoneDragLeaveCapture = useCallback(
-    (event: ReactDragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
-      setDraggingOverDropzone(false);
-    },
-    [],
-  );
+  const handleDropzoneDragLeaveCapture = (
+    event: ReactDragEvent<HTMLDivElement>,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDraggingOverDropzone(false);
+  };
 
-  const handleDropzoneDropCapture = useCallback(
-    (event: ReactDragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
-      setDraggingOverDropzone(false);
+  const handleDropzoneDropCapture = (event: ReactDragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDraggingOverDropzone(false);
 
-      const droppedFiles = Array.from(event.dataTransfer?.files ?? []).filter(
-        (file) =>
-          file.type === 'image/jpeg' ||
-          file.type === 'image/heic' ||
-          file.type === 'image/heif' ||
-          /\.(jpe?g|heic|heif)$/i.test(file.name.toLowerCase()),
-      );
+    const droppedFiles = Array.from(event.dataTransfer?.files ?? []).filter(
+      (file) =>
+        file.type === 'image/jpeg' ||
+        file.type === 'image/heic' ||
+        file.type === 'image/heif' ||
+        /\.(jpe?g|heic|heif)$/i.test(file.name.toLowerCase()),
+    );
 
-      if (droppedFiles.length) {
-        handleFileDrop(droppedFiles);
-      }
-    },
-    [handleFileDrop],
-  );
+    if (droppedFiles.length) {
+      handleFileDrop(droppedFiles);
+    }
+  };
 
-  const handleDropzoneMouseDown = useCallback(
-    (event: ReactMouseEvent<HTMLDivElement>) => {
-      if (event.button !== 0) {
-        return;
-      }
+  const handleDropzoneMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (event.button !== 0) {
+      return;
+    }
 
-      event.preventDefault();
-      open();
-    },
-    [open],
-  );
+    event.preventDefault();
+    open();
+  };
 
   useEffect(() => {
     if (!premiumCheck.current) {
@@ -246,6 +228,8 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <OfflineAlert />
+
         {items.length > 0 && (
           <div className={classes.uploadItems}>
             {items.map(
@@ -339,6 +323,11 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
               )}
             >
               <input {...getInputProps()} />
+
+              <p className={classes.dropHint}>{gm?.uploadModal.hint.drop}</p>
+
+              <p className={classes.tapHint}>{gm?.uploadModal.hint.tap}</p>
+
               {m && (
                 <div
                   dangerouslySetInnerHTML={{
@@ -356,7 +345,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
           onClick={() => {
             dispatch(galleryUpload());
           }}
-          disabled={uploading}
+          disabled={uploading || !online}
         >
           <FaUpload />{' '}
           {uploading

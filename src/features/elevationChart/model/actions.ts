@@ -1,9 +1,12 @@
 import type {
+  ChartRange,
   ElevationProfilePoint,
   ElevationProfileWaypoint,
 } from '@features/elevationChart/model/reducer.js';
 import { createAction } from '@reduxjs/toolkit';
-import type { Feature, LineString, MultiLineString } from 'geojson';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
+import type { ElevationSettingsState } from './settingsReducer.js';
+import type { ElevationChartTarget } from './target.js';
 
 /** A waypoint to pair onto the profile (by time, else nearest track point). */
 export interface ElevationWaypoint {
@@ -14,30 +17,84 @@ export interface ElevationWaypoint {
   time?: string;
 }
 
-export const elevationChartSetTrackGeojson = createAction(
-  'ELEVATION_CHART_SET_TRACK_GEOJSON',
-  // `keepRecorded` renders the feature's own elevation as-is (with gaps where
-  // it's missing) instead of sampling a complete profile from the server. A
-  // `MultiLineString` is a multi-segment recording (an interrupted track): its
-  // segments are laid end-to-end on the distance axis with a break between them.
-  // `waypoints` are points (e.g. GPX <wpt>) to mark along the profile.
-  (
-    trackGeojson: Feature<LineString | MultiLineString>,
-    keepRecorded = false,
-    waypoints: ElevationWaypoint[] = [],
-  ) => ({
-    payload: { trackGeojson, keepRecorded, waypoints },
+/**
+ * Which terrain model the elevation a profile draws came from, so the chart can
+ * credit it:
+ *
+ * - `terrain-model` — sampled from our elevation API (a drawn line, a route
+ *   whose vertices were overridden, a track the user had filled from the
+ *   server), so it carries the national high-resolution models or GEDTM30.
+ * - `sonny` — GraphHopper's own elevation, kept as the router returned it.
+ * - `recorded` — the feature's own measured values (a GPS recording, an imported
+ *   file), which no terrain model can be credited for.
+ */
+export type ElevationProvenance = 'terrain-model' | 'sonny' | 'recorded';
+
+/**
+ * What the chart may credit a profile's elevation to: where it came from, plus —
+ * for `terrain-model` — the credits the elevation API resolved when it was
+ * sampled. Only the feature being charted knows them, so its resolver states
+ * them; the chart's own sampling adds whatever it reads itself.
+ */
+export type ElevationCredit = {
+  provenance: ElevationProvenance;
+  attributions?: AttributionDef[];
+};
+
+/**
+ * Shows the chart on `target`. The geometry needn't exist yet: the chart is a
+ * derived view, so `elevationChartProcessor` resolves the target against
+ * current state — now, and again whenever what it resolves to changes.
+ *
+ * `fromUrl` marks a target restored from the URL rather than asked for by the
+ * user — a page load is not a toggle, so it isn't reported as one. Whether to
+ * wait for geometry that hasn't arrived is not decided here: the target's
+ * resolver says whether it is still coming.
+ */
+export const elevationChartOpen = createAction(
+  'ELEVATION_CHART_OPEN',
+  (target: ElevationChartTarget, { fromUrl = false } = {}) => ({
+    payload: { target, fromUrl },
   }),
 );
 
 export const elevationChartClose = createAction('ELEVATION_CHART_CLOSE');
+
+/**
+ * Redraw the current target now. Carries nothing and changes no state — it
+ * exists so the chart's own debounce can hand work back to the processor
+ * without awaiting a timer inside it, which would hold a progress indicator
+ * open for the length of a drag.
+ */
+export const elevationChartRedraw = createAction('ELEVATION_CHART_REDRAW');
 
 export const elevationChartSetActivePoint =
   createAction<ElevationProfilePoint | null>(
     'ELEVATION_CHART_SET_ACTIVE_POINT',
   );
 
+/**
+ * The stretch of the profile the reader has marked out, in metres along it, or
+ * `null` for none. In the store rather than in the panel because the map draws
+ * it too, and the URL carries it.
+ */
+export const elevationChartSetRange = createAction<ChartRange | null>(
+  'ELEVATION_CHART_SET_RANGE',
+);
+
+export const elevationSetSettings = createAction<
+  Partial<ElevationSettingsState>
+>('ELEVATION_SET_SETTINGS');
+
 export const elevationChartSetElevationProfile = createAction<{
   points: ElevationProfilePoint[];
   waypoints: ElevationProfileWaypoint[];
+  /** What the drawn elevation is credited to; see {@link ElevationCredit}. */
+  provenance: ElevationProvenance;
+  /**
+   * The credits for the terrain models behind this profile. Empty when the API
+   * named none — the elevation came from the feature itself, or the API doesn't
+   * report them — in which case the profile credits nobody.
+   */
+  attributions: AttributionDef[];
 }>('ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS');

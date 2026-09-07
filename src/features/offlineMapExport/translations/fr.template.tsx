@@ -15,6 +15,7 @@ const fr: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   success:
     'La carte est en cours de préparation. Une fois prête, un lien de téléchargement sera envoyé à votre adresse e-mail.',
   summaryTiles: 'Tuiles',
+  summarySize: 'Taille estimée',
   summaryPrice: (amount) => <>Prix total : {amount} crédits</>,
   usageIntro: 'Où vous pouvez utiliser les cartes MBTiles téléchargées :',
   usageDesktop: 'Ordinateur :',

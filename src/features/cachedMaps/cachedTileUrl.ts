@@ -6,7 +6,14 @@ export function toCachedLayerUrl(realTemplate: string, mapId: string): string {
   return `${location.origin}${CACHED_TILE_PATH_PREFIX}${encodeURIComponent(mapId)}${pathFromTemplate}`;
 }
 
-export function parseCachedTileMapId(pathname: string): string | null {
+/**
+ * Splits a `/__cached__/<id>/<path>` pathname into the map it addresses and the
+ * path below it — which is the source layer's own path, since
+ * `toCachedLayerUrl` replaces nothing but the origin.
+ */
+export function parseCachedTilePath(
+  pathname: string,
+): { mapId: string; path: string } | null {
   if (!pathname.startsWith(CACHED_TILE_PATH_PREFIX)) {
     return null;
   }
@@ -19,5 +26,8 @@ export function parseCachedTileMapId(pathname: string): string | null {
     return null;
   }
 
-  return decodeURIComponent(rest.slice(0, slashIdx));
+  return {
+    mapId: decodeURIComponent(rest.slice(0, slashIdx)),
+    path: rest.slice(slashIdx),
+  };
 }

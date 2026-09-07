@@ -5,12 +5,17 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
+import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
+import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
 import {
   type IntegratedLayerDef,
   type IsTileLayerDef,
@@ -23,7 +28,6 @@ import type { BBox } from 'geojson';
 import {
   type ReactElement,
   type SubmitEvent,
-  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -35,6 +39,7 @@ import {
   Form,
   InputGroup,
   Modal,
+  Spinner,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';
@@ -43,6 +48,9 @@ import { useDispatch } from 'react-redux';
 import { downloadMap } from '../model/actions.js';
 import { useOfflineMapExportMessages } from '../translations/useOfflineMapExportMessages.js';
 
+// pre-filled upper bound; the layer's own `maxNativeZoom` still caps it
+const DEFAULT_MAX_ZOOM = 16;
+
 type Props = { show: boolean };
 
 export default function OfflineMapExportModal({
@@ -50,13 +58,15 @@ export default function OfflineMapExportModal({
 }: Props): ReactElement | null {
   const m = useMessages();
 
+  const online = useOnline();
+
   const ome = useOfflineMapExportMessages();
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const user = useAppSelector((state) => state.auth.user);
 
@@ -143,9 +153,20 @@ export default function OfflineMapExportModal({
       return;
     }
 
+    // scales are per-layer; keeping the previous one would ask for `@3x` tiles
+    // the new layer doesn't serve
+    setScale('1');
+
     setMinZoom(String(mapDef.minZoom ?? 0));
 
-    setMaxZoom(String(mapDef.maxNativeZoom));
+    setMaxZoom(
+      String(
+        Math.max(
+          mapDef.minZoom ?? 0,
+          Math.min(mapDef.maxNativeZoom ?? Infinity, DEFAULT_MAX_ZOOM),
+        ),
+      ),
+    );
   }, [mapDef]);
 
   const tileCount = useMemo(() => {
@@ -178,25 +199,43 @@ export default function OfflineMapExportModal({
     mapDef?.maxNativeZoom,
   );
 
-  const handleSubmit = useCallback(
-    (event: SubmitEvent<HTMLFormElement>) => {
-      event.preventDefault();
+  // the export is rendered server-side at the scale picked here, not at this
+  // screen's DPR; `1` means the plain tile URL
+  const exportScale = parseInt(scale, 10) || 1;
 
-      dispatch(
-        downloadMap({
-          email,
-          name,
-          map: mapType,
-          format,
-          maxZoom: parseInt(maxZoom, 10),
-          minZoom: parseInt(minZoom, 10),
-          scale: parseInt(scale, 10),
-          boundary: bboxPolygon(bbox as BBox),
-        }),
-      );
-    },
-    [dispatch, email, name, mapType, format, maxZoom, minZoom, scale, bbox],
-  );
+  const { bytes: estimatedSize, sampling } = useTilesSizeEstimate({
+    // the server gets the `http:` form, but sampling from this page must stay
+    // on https or the browser blocks it as mixed content
+    urlTemplate: mapDef?.url.replace(/^http:/, 'https:'),
+    bbox,
+    minZoom: Number(minZoom),
+    maxZoom: Number(maxZoom),
+    tileCount,
+    scale: exportScale === 1 ? undefined : exportScale,
+    enabled: show && !invalidMinZoom && !invalidMaxZoom,
+  });
+
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    // Enter in a field submits the form whatever the button says.
+    if (!online) {
+      return;
+    }
+
+    dispatch(
+      downloadMap({
+        email,
+        name,
+        map: mapType,
+        format,
+        maxZoom: parseInt(maxZoom, 10),
+        minZoom: parseInt(minZoom, 10),
+        scale: parseInt(scale, 10),
+        boundary: bboxPolygon(bbox as BBox),
+      }),
+    );
+  };
 
   // refresh user (credits)
   useEffect(() => {
@@ -243,6 +282,8 @@ export default function OfflineMapExportModal({
         </Modal.Header>
 
         <Modal.Body>
+          <OfflineAlert />
+
           <div>
             <p>
               <strong>{ome?.usageIntro}</strong>
@@ -359,18 +400,23 @@ export default function OfflineMapExportModal({
                 {mapDef ? getItem(mapDef) : ome?.unknownMapType}
               </Dropdown.Toggle>
 
-              <Dropdown.Menu popperConfig={sameMinWidthPopperConfig}>
+              <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
                 {mapDefs.map((def) => (
-                  <Dropdown.Item key={def.type} eventKey={def.type}>
+                  <Dropdown.Item
+                    as="button"
+                    type="button"
+                    key={def.type}
+                    eventKey={def.type}
+                  >
                     {getItem(def)}
                   </Dropdown.Item>
                 ))}
-              </Dropdown.Menu>
+              </FmDropdownMenu>
             </Dropdown>
           </Form.Group>
 
           <Form.Group controlId="downloadArea">
-            <Form.Label>{ome?.downloadArea}</Form.Label>
+            <Form.Label className="d-block">{ome?.downloadArea}</Form.Label>
 
             <MapAreaToggle
               className="mb-3"
@@ -463,14 +509,13 @@ export default function OfflineMapExportModal({
 
           {mapDef?.extraScales && (
             <Form.Group controlId="scale" className="mb-3">
-              <Form.Label>{ome?.scale}</Form.Label>
+              <Form.Label className="d-block">{ome?.scale}</Form.Label>
 
               <ToggleButtonGroup
                 type="radio"
                 name="scale"
                 value={scale}
                 onChange={setScale}
-                className="d-flex"
               >
                 {[1, ...mapDef.extraScales].map((scale) => (
                   <ToggleButton
@@ -504,7 +549,19 @@ export default function OfflineMapExportModal({
         <Modal.Footer className="flex-wrap">
           {tileCount !== undefined && mapDef && (
             <div className="w-100 text-end">
-              {ome?.summaryTiles}: <b>{cnf.format(tileCount)}</b> ｜{' '}
+              {ome?.summaryTiles}: <b>{cnf.format(tileCount)}</b>
+              {estimatedSize !== undefined && (
+                <>
+                  {' '}
+                  ｜ {ome?.summarySize}:{' '}
+                  {sampling ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : (
+                    <b>{formatSize(estimatedSize)}</b>
+                  )}
+                </>
+              )}{' '}
+              ｜{' '}
               <span
                 className={
                   price >= Math.floor(user?.credits ?? 0) ? 'text-danger' : ''
@@ -520,6 +577,7 @@ export default function OfflineMapExportModal({
             onClick={close}
             type="submit"
             disabled={
+              !online ||
               invalidEmail ||
               invalidMinZoom ||
               invalidMaxZoom ||

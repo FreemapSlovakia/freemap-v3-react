@@ -1,13 +1,11 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import {
-  type ReactElement,
-  type SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import {
   Button,
   ButtonGroup,
@@ -30,9 +28,9 @@ export default function CurrentDrawingPropertiesModal({
 
   const [credits, setCredits] = useState('500');
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
   const buyPolar = () => {
     dispatch(purchase({ type: 'credits', amount: Number(credits) }));
@@ -51,6 +49,8 @@ export default function CurrentDrawingPropertiesModal({
   };
 
   const m = useMessages();
+
+  const online = useOnline();
 
   const cm = useCreditsMessages();
 
@@ -76,6 +76,8 @@ export default function CurrentDrawingPropertiesModal({
         </Modal.Header>
 
         <Modal.Body>
+          <OfflineAlert />
+
           <CreditsAlert explainCredits />
 
           <Form.Group controlId="amount">
@@ -106,7 +108,7 @@ export default function CurrentDrawingPropertiesModal({
           <Dropdown as={ButtonGroup}>
             <Button
               variant="primary"
-              disabled={invalidCredits}
+              disabled={invalidCredits || !online}
               onClick={buyPolar}
             >
               <FaCheck /> {cm?.buy}
@@ -116,18 +118,20 @@ export default function CurrentDrawingPropertiesModal({
               split
               variant="primary"
               id="credits-buy"
-              disabled={invalidCredits}
+              disabled={invalidCredits || !online}
             />
 
-            <Dropdown.Menu renderOnMount popperConfig={{ strategy: 'fixed' }}>
+            <FmDropdownMenu renderOnMount>
               <Dropdown.Item
+                as="button"
+                type="button"
                 className="text-nowrap"
-                disabled={invalidCredits}
+                disabled={invalidCredits || !online}
                 onClick={buyWithChrons}
               >
                 <FaStopwatch /> {cm?.payWithChrons}
               </Dropdown.Item>
-            </Dropdown.Menu>
+            </FmDropdownMenu>
           </Dropdown>
 
           <Button variant="dark" onClick={close}>

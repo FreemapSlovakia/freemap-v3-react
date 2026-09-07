@@ -15,6 +15,7 @@ const sl: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   success:
     'Zemljevid se pripravlja. Ko bo pripravljen, boste na svoj e-poštni naslov prejeli povezavo za prenos.',
   summaryTiles: 'Ploščic',
+  summarySize: 'Ocenjena velikost',
   summaryPrice: (amount) => <>Skupna cena: {amount} kreditov</>,
   usageIntro: 'Kje lahko uporabljate prenesene zemljevide MBTiles:',
   usageDesktop: 'Računalnik:',

@@ -1,28 +1,27 @@
-import { documentShow } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Chord } from '@shared/components/Chord.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { modalMenuItemProps } from '@shared/hooks/useMenuHandler.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaFileContract,
+  FaInfoCircle,
   FaList,
   FaLock,
   FaMoneyBillWave,
-  FaQuestion,
   FaRegCopyright,
 } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { setActiveModal } from '../store/actions.js';
 import { useAttributionInfo } from './useAttributionInfo.js';
 
 export function CopyrightButton(): ReactElement {
   const m = useMessages();
-
-  const dispatch = useDispatch();
 
   const skCs = useAppSelector((state) =>
     ['sk', 'cs'].includes(state.l10n.language),
@@ -48,6 +47,8 @@ export function CopyrightButton(): ReactElement {
 
   const showLegendButton = layers.some((type) => legendLayers.has(type));
 
+  const modalLink = useModalLink();
+
   const showAttribution = useAttributionInfo();
 
   return (
@@ -61,12 +62,12 @@ export function CopyrightButton(): ReactElement {
               variant="secondary"
               {...props}
             >
-              <FaQuestion />
+              <FaInfoCircle />
             </Dropdown.Toggle>
           )}
         </LongPressTooltip>
 
-        <Dropdown.Menu style={{ width: 'max-content' }}>
+        <FmDropdownMenu style={{ width: 'max-content' }}>
           <Dropdown.Item
             key="attribution"
             as="button"
@@ -76,54 +77,41 @@ export function CopyrightButton(): ReactElement {
           </Dropdown.Item>
 
           {showLegendButton && (
-            <Dropdown.Item
-              {...modalMenuItemProps('legend')}
-              onClick={(e) => {
-                e.preventDefault();
-
-                dispatch(setActiveModal({ type: 'legend' }));
-              }}
-            >
-              <FaList /> {m?.mainMenu.mapLegend} <kbd>m</kbd> <kbd>l</kbd>
-            </Dropdown.Item>
+            <OnlineOnlyItem {...modalLink({ type: 'legend' })}>
+              <FaList /> {m?.mainMenu.mapLegend}
+              <MenuGutter>
+                <Chord modal="legend" />
+              </MenuGutter>
+            </OnlineOnlyItem>
           )}
 
           <Dropdown.Item
             key="privacyPolicy"
-            href="#document=privacyPolicy"
-            onClick={(e) => {
-              e.preventDefault();
-
-              dispatch(documentShow('privacyPolicy'));
-            }}
+            {...modalLink({ type: 'document', key: 'privacyPolicy' })}
           >
             <FaLock /> {m?.general.privacyPolicy}
           </Dropdown.Item>
 
           <Dropdown.Item
             key="termsOfService"
-            href="#document=termsOfService"
-            onClick={(e) => {
-              e.preventDefault();
-
-              dispatch(documentShow('termsOfService'));
-            }}
+            {...modalLink({ type: 'document', key: 'termsOfService' })}
           >
             <FaFileContract /> {m?.general.termsOfService}
           </Dropdown.Item>
 
-          <Dropdown.Item
-            key="refundPolicy"
-            href="#document=refundPolicy"
-            onClick={(e) => {
-              e.preventDefault();
-
-              dispatch(documentShow('refundPolicy'));
-            }}
-          >
-            <FaMoneyBillWave /> {m?.general.refundPolicy}
-          </Dropdown.Item>
-        </Dropdown.Menu>
+          {/* Terms of a purchase, and an embed sells nothing — its premium gem
+              leaves for the portal, which states them where the money is
+              actually taken. The two policies above stay: the embed does
+              process the visitor's data, and they are using the service. */}
+          {!window.fmEmbedded && (
+            <Dropdown.Item
+              key="refundPolicy"
+              {...modalLink({ type: 'document', key: 'refundPolicy' })}
+            >
+              <FaMoneyBillWave /> {m?.general.refundPolicy}
+            </Dropdown.Item>
+          )}
+        </FmDropdownMenu>
       </Dropdown>
     </Toolbar>
   );

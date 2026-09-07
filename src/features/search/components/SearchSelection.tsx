@@ -1,27 +1,37 @@
-import {
-  convertToDrawing,
-  setActiveModal,
-  setTool,
-} from '@app/store/actions.js';
+import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
+import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import {
-  routePlannerSetFinish,
-  routePlannerSetStart,
-} from '@features/routePlanner/model/actions.js';
+import { DetailsToggle } from '@features/objects/components/DetailsToggle.js';
+import { useObjectActions } from '@features/objects/components/useObjectActions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
+import {
+  conversionSeed,
+  featuresOf,
+  useConvertPrompt,
+} from '@shared/convertDialog.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { center } from '@turf/center';
+import { convertibleLines } from '@shared/simplifyTolerance.js';
+import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import {
   FaPaintBrush,
   FaPencilAlt,
-  FaPlay,
   FaSearch,
-  FaStop,
+  FaThumbtack,
 } from 'react-icons/fa';
+import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
+import { searchKeepResult } from '../model/actions.js';
+import {
+  activeSearchResultKeptSelector,
+  activeSearchResultSelector,
+} from '../model/selectors.js';
 
 type Props = {
   hidden?: boolean;
@@ -32,91 +42,101 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   const dispatch = useDispatch();
 
-  const selectedResult = useAppSelector((state) => state.search.selectedResult);
+  const askConversion = useConvertPrompt();
 
-  return selectedResult && !window.fmEmbedded && !hidden ? (
-    <Selection icon={<FaSearch />} label={m?.search.result} deletable>
-      <ButtonGroup className="ms-1">
-        <LongPressTooltip label={m?.search.routeFrom}>
-          {({ props }) => (
+  const convertToDataViewer = useConvertToDataViewer();
+
+  const selectedResult = useAppSelector(activeSearchResultSelector);
+
+  // False for every freshly picked result: it is on the map because it is being
+  // looked at, and goes when that stops.
+  const kept = useAppSelector(activeSearchResultKeptSelector);
+
+  const { actions, onSelect } = useObjectActions({
+    result: selectedResult ?? null,
+  });
+
+  return selectedResult &&
+    !selectedResult.loading &&
+    !window.fmEmbedded &&
+    !hidden ? (
+    // One button says what can be done about the result being on the map, and
+    // which one it is says what it is doing there: a result being looked at can
+    // be kept, and a kept one can be taken off. They share the slot the delete
+    // button holds on every other selection toolbar, right before the ×.
+    <Selection icon={<FaSearch />} label={m?.search.result} deletable={kept}>
+      <DetailsToggle />
+
+      <ResponsiveActions
+        gap={1}
+        align="start"
+        toggleLabel={m?.general.actions}
+        onSelect={onSelect}
+      >
+        <Action
+          icon={<FaPencilAlt />}
+          label={m?.general.convertToDrawing}
+          onClick={() => {
+            const { geojson } = selectedResult;
+
+            void askConversion({
+              lines: geojson ? convertibleLines(geojson) : [],
+              osm: OsmFeatureIdSchema.safeParse(selectedResult.id).success,
+              ...conversionSeed(featuresOf(geojson)),
+            }).then((choices) => {
+              if (!choices) {
+                return;
+              }
+
+              dispatch(
+                convertToDrawing({
+                  type: 'search-result',
+                  tolerance: choices.tolerance,
+                  carry: choices.carry,
+                }),
+              );
+            });
+          }}
+          showFrom="never"
+        />
+
+        <Action
+          icon={<MdShapeLine />}
+          label={m?.general.convertTo({ tool: m?.tools.dataViewer })}
+          onClick={() => {
+            convertToDataViewer({ type: 'search-result' });
+          }}
+          showFrom="never"
+        />
+
+        <Action
+          icon={<FaPaintBrush />}
+          label={m?.mapLayers.lookupStyle}
+          onClick={() => {
+            dispatch(setActiveModal({ type: 'search-result-style' }));
+          }}
+          showFrom="never"
+        />
+
+        {actions}
+      </ResponsiveActions>
+
+      {!kept && (
+        <LongPressTooltip breakpoint="sm" label={m?.search.keepOnMap}>
+          {({ label, labelClassName, props }) => (
             <Button
               variant="secondary"
-              {...props}
               onClick={() => {
-                dispatch(setTool({ tool: 'route-planner', mode: 'activate' }));
-
-                if (selectedResult.geojson) {
-                  const c = center(selectedResult.geojson).geometry.coordinates;
-
-                  dispatch(
-                    routePlannerSetStart({
-                      lat: c[1],
-                      lon: c[0],
-                    }),
-                  );
-                }
+                dispatch(searchKeepResult(selectedResult.id));
               }}
+              {...props}
             >
-              <FaPlay color="#32CD32" />
+              <FaThumbtack />
+              <span className={labelClassName}> {label}</span>
             </Button>
           )}
         </LongPressTooltip>
-
-        <LongPressTooltip label={m?.search.routeTo}>
-          {({ props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(setTool({ tool: 'route-planner', mode: 'activate' }));
-
-                if (selectedResult.geojson) {
-                  const c = center(selectedResult.geojson).geometry.coordinates;
-
-                  dispatch(
-                    routePlannerSetFinish({
-                      lat: c[1],
-                      lon: c[0],
-                    }),
-                  );
-                }
-              }}
-              {...props}
-            >
-              <FaStop color="#FF6347" />
-            </Button>
-          )}
-        </LongPressTooltip>
-      </ButtonGroup>
-
-      <LongPressTooltip label={m?.general.convertToDrawing}>
-        {({ props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => {
-              dispatch(convertToDrawing({ type: 'search-result' }));
-            }}
-            {...props}
-          >
-            <FaPencilAlt />
-          </Button>
-        )}
-      </LongPressTooltip>
-
-      <LongPressTooltip label={m?.mapLayers.searchResultStyle}>
-        {({ props }) => (
-          <Button
-            className="ms-1"
-            variant="secondary"
-            onClick={() => {
-              dispatch(setActiveModal({ type: 'search-result-style' }));
-            }}
-            {...props}
-          >
-            <FaPaintBrush />
-          </Button>
-        )}
-      </LongPressTooltip>
+      )}
     </Selection>
   ) : null;
 }

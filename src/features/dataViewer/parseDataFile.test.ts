@@ -1,0 +1,332 @@
+import type { Feature, LineString } from 'geojson';
+import { describe, expect, it } from 'vitest';
+import { parseDataFile } from './parseDataFile.js';
+
+const KML = `<?xml version="1.0"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document><Placemark>
+  <name>Path</name>
+  <LineString><coordinates>17,48,500 17.1,48.1,510</coordinates></LineString>
+</Placemark></Document></kml>`;
+
+const TCX = `<?xml version="1.0"?>
+<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" xmlns:ns3="http://www.garmin.com/xmlschemas/ActivityExtension/v2">
+ <Activities><Activity Sport="Biking"><Id>2020-01-01T00:00:00Z</Id>
+  <Lap StartTime="2020-01-01T00:00:00Z"><Track>
+   <Trackpoint><Time>2020-01-01T00:00:00Z</Time><Position><LatitudeDegrees>48</LatitudeDegrees><LongitudeDegrees>17</LongitudeDegrees></Position><AltitudeMeters>500</AltitudeMeters><HeartRateBpm><Value>120</Value></HeartRateBpm><Cadence>80</Cadence><Extensions><ns3:TPX><ns3:Speed>2.5</ns3:Speed><ns3:Watts>200</ns3:Watts></ns3:TPX></Extensions></Trackpoint>
+   <Trackpoint><Time>2020-01-01T00:00:05Z</Time><Position><LatitudeDegrees>48.001</LatitudeDegrees><LongitudeDegrees>17.001</LongitudeDegrees></Position><AltitudeMeters>510</AltitudeMeters><HeartRateBpm><Value>130</Value></HeartRateBpm><Cadence>82</Cadence><Extensions><ns3:TPX><ns3:Speed>3.0</ns3:Speed><ns3:Watts>210</ns3:Watts></ns3:TPX></Extensions></Trackpoint>
+  </Track></Lap></Activity></Activities>
+</TrainingCenterDatabase>`;
+
+const GPX = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:fm="https://www.freemap.sk/GPX/1/0" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1">
+ <trk><name>T</name>
+  <extensions><fm:color>#ff0000ff</fm:color></extensions>
+  <trkseg>
+   <trkpt lat="48" lon="17"><extensions><gpxpx:PowerExtension><gpxpx:PowerInWatts>200</gpxpx:PowerInWatts></gpxpx:PowerExtension></extensions></trkpt>
+   <trkpt lat="48.1" lon="17.1"><extensions><gpxpx:PowerExtension><gpxpx:PowerInWatts>210</gpxpx:PowerInWatts></gpxpx:PowerExtension></extensions></trkpt>
+  </trkseg>
+ </trk>
+</gpx>`;
+
+// A track whose points carry `<time>` and Garmin sensor extensions, which
+// togeojson's recursive lookups would otherwise hoist onto the track itself.
+const GPX_HOISTED = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1">
+ <trk><name>T</name>
+  <extensions><gpxx:DisplayColor>Red</gpxx:DisplayColor></extensions>
+  <trkseg>
+   <trkpt lat="48" lon="17"><time>2024-06-01T08:00:00Z</time><extensions>
+     <gpxtpx:TrackPointExtension><gpxtpx:hr>120</gpxtpx:hr><gpxtpx:atemp>18</gpxtpx:atemp></gpxtpx:TrackPointExtension>
+     <gpxpx:PowerExtension><gpxpx:PowerInWatts>200</gpxpx:PowerInWatts></gpxpx:PowerExtension>
+   </extensions></trkpt>
+   <trkpt lat="48.1" lon="17.1"><time>2024-06-01T08:00:08Z</time><extensions>
+     <gpxtpx:TrackPointExtension><gpxtpx:hr>125</gpxtpx:hr><gpxtpx:atemp>18.2</gpxtpx:atemp></gpxtpx:TrackPointExtension>
+     <gpxpx:PowerExtension><gpxpx:PowerInWatts>209</gpxpx:PowerInWatts></gpxpx:PowerExtension>
+   </extensions></trkpt>
+  </trkseg>
+ </trk>
+</gpx>`;
+
+const GPX_ROUTE_AND_WAYPOINT = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+ <wpt lat="48" lon="17"><name>WP</name></wpt>
+ <rte><name>R</name><rtept lat="48" lon="17"/><rtept lat="48.1" lon="17.1"/></rte>
+</gpx>`;
+
+describe('parseDataFile', () => {
+  it('converts GPX, enriching freemap:* and aliasing Garmin power', () => {
+    const r = parseDataFile(GPX, 'track.gpx');
+
+    expect(r).not.toBeNull();
+
+    if (r) {
+      const f = r.features[0]!;
+
+      expect(f.properties?.['freemap:color']).toBe('#ff0000ff');
+
+      // A GPX <trk> is a recorded track.
+      expect(f.properties?.['fm:kind']).toBe('track');
+
+      const cp = f.properties?.['coordinateProperties'] as Record<
+        string,
+        unknown
+      >;
+
+      expect(cp['powers']).toEqual([200, 210]);
+      expect(cp['gpxpx:PowerExtensions']).toBeUndefined();
+    }
+  });
+
+  it('keeps a track to its own metadata, not its trackpoints’', () => {
+    const r = parseDataFile(GPX_HOISTED, 'track.gpx');
+
+    const props = r?.features[0]?.properties;
+
+    // The track's own, both a direct child and an extension of its own — the
+    // latter under the name the file wrote, not a prefix-dependent flattening.
+    expect(props?.['name']).toBe('T');
+    expect(props?.['gpxx:DisplayColor']).toBe('Red');
+
+    // Its trackpoints': `time` would be the first point's, the rest the last
+    // point's. The series themselves live in `coordinateProperties`.
+    expect(props?.['time']).toBeUndefined();
+    expect(props?.['gpxtpx_atemp']).toBeUndefined();
+    expect(props?.['gpxpx_PowerInWatts']).toBeUndefined();
+    expect(props?.['gpxpx_PowerExtension']).toBeUndefined();
+  });
+
+  it('detects GPX by content when the extension is generic', () => {
+    expect(parseDataFile(GPX, 'track.dat')).not.toBeNull();
+  });
+
+  it('lets a recognized root element override a wrong extension', () => {
+    // GPX content mislabeled as .tcx must still import as GPX, not error.
+    expect(parseDataFile(GPX, 'mislabeled.tcx')).not.toBeNull();
+  });
+
+  it('reports an error for non-XML content', () => {
+    expect(parseDataFile('whatever', 'track.dat')).toBeNull();
+  });
+
+  it('parses a dropped GeoJSON file and normalizes title -> name', () => {
+    const r = parseDataFile(
+      JSON.stringify({
+        type: 'Feature',
+        properties: { title: 'X' },
+        geometry: { type: 'Point', coordinates: [17, 48] },
+      }),
+      'x.geojson',
+    );
+
+    expect(r?.features[0]?.properties?.['name']).toBe('X');
+  });
+
+  it('moves a root-spelled times channel into coordinateProperties', () => {
+    const times = ['2026-01-01T00:00:00Z', '2026-01-01T00:01:00Z'];
+
+    const r = parseDataFile(
+      JSON.stringify({
+        type: 'Feature',
+        properties: {
+          coordTimes: times,
+          coordinateProperties: { heart: [1, 2] },
+        },
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [17, 48],
+            [17.001, 48],
+          ],
+        },
+      }),
+      'x.geojson',
+    );
+
+    const props = r?.features[0]?.properties;
+
+    // Only `coordinateProperties` is written back, so the GPX export of a
+    // root-spelled track would otherwise carry no `<time>`.
+    expect(props?.['coordTimes']).toBeUndefined();
+
+    expect(props?.['coordinateProperties']).toEqual({
+      times,
+      heart: [1, 2],
+    });
+  });
+
+  it('leaves a coordTimes that is nobody’s per-point series alone', () => {
+    const r = parseDataFile(
+      JSON.stringify({
+        type: 'Feature',
+        properties: { coordTimes: '2020-01-01' },
+        geometry: { type: 'Point', coordinates: [17, 48] },
+      }),
+      'x.geojson',
+    );
+
+    // Somebody's own data column, which the properties editor still shows.
+    expect(r?.features[0]?.properties?.['coordTimes']).toBe('2020-01-01');
+  });
+
+  it('converts KML to GeoJSON', () => {
+    const r = parseDataFile(KML, 'path.kml');
+
+    expect(r).not.toBeNull();
+
+    if (r) {
+      expect(r.features[0]?.geometry.type).toBe('LineString');
+      expect(r.features[0]?.properties?.['name']).toBe('Path');
+    }
+  });
+
+  it('detects KML by content when the extension is generic', () => {
+    expect(parseDataFile(KML, 'path.xml')).not.toBeNull();
+  });
+
+  it('converts TCX and normalizes channels onto coordinateProperties', () => {
+    const r = parseDataFile(TCX, 'ride.tcx');
+
+    expect(r).not.toBeNull();
+
+    if (r) {
+      const f = r.features[0] as Feature<LineString>;
+
+      // Elevation rides in the coordinates; the rest moves under coordProps.
+      expect(f.geometry.coordinates).toEqual([
+        [17, 48, 500],
+        [17.001, 48.001, 510],
+      ]);
+
+      const cp = f.properties?.['coordinateProperties'] as Record<
+        string,
+        unknown
+      >;
+
+      expect(cp['heart']).toEqual([120, 130]);
+      expect(cp['cads']).toEqual([80, 82]);
+      expect(cp['speeds']).toEqual([2.5, 3]);
+      expect(cp['powers']).toEqual([200, 210]);
+
+      // Top-level TCX names are removed once relocated.
+      expect(f.properties?.['cadences']).toBeUndefined();
+      expect(f.properties?.['watts']).toBeUndefined();
+    }
+  });
+
+  it('reports an error for unparseable XML claiming to be KML', () => {
+    expect(parseDataFile('<kml><broken', 'x.kml')).toBeNull();
+  });
+
+  it('reports an error for invalid GeoJSON', () => {
+    expect(parseDataFile('not json', 'x.geojson')).toBeNull();
+  });
+
+  it('keeps a gpx_style line width in pixels (not mm-scaled by togeojson)', () => {
+    const gpx = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+ <trk><name>T</name>
+  <extensions>
+   <line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+    <color>0000FF</color><opacity>0.7</opacity><width>6.0</width>
+   </line>
+  </extensions>
+  <trkseg><trkpt lat="48" lon="17"/><trkpt lat="48.1" lon="17.1"/></trkseg>
+ </trk>
+</gpx>`;
+
+    const f = parseDataFile(gpx, 't.gpx')?.features[0];
+
+    // togeojson would scale 6 mm → ~22.7 px; we honor it as 6 px.
+    expect(f?.properties?.['stroke-width']).toBe(6);
+  });
+
+  it('stamps fm:kind from the source: route and waypoint for GPX rte/wpt', () => {
+    const r = parseDataFile(GPX_ROUTE_AND_WAYPOINT, 'r.gpx');
+
+    const kinds = r?.features.map((f) => f.properties?.['fm:kind']);
+
+    expect(kinds).toContain('route');
+    expect(kinds).toContain('waypoint');
+  });
+
+  it('stamps fm:kind: TCX is a track, KML line is generic, GeoJSON point is a waypoint', () => {
+    expect(
+      parseDataFile(TCX, 'ride.tcx')?.features[0]?.properties?.['fm:kind'],
+    ).toBe('track');
+
+    expect(
+      parseDataFile(KML, 'path.kml')?.features[0]?.properties?.['fm:kind'],
+    ).toBe('feature');
+
+    expect(
+      parseDataFile(
+        JSON.stringify({
+          type: 'Feature',
+          properties: {},
+          geometry: { type: 'Point', coordinates: [17, 48] },
+        }),
+        'p.geojson',
+      )?.features[0]?.properties?.['fm:kind'],
+    ).toBe('waypoint');
+  });
+});
+
+/** What this app's own exporter writes for a labelled point carrying a table. */
+const OWN_GPX = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:fm="https://www.freemap.sk/GPX/1/0">
+ <wpt lat="49.05648" lon="21.316533">
+  <ele>514.22</ele>
+  <name>Dubník 504</name>
+  <extensions>
+   <fm:label>{p:name} {p:ele}</fm:label>
+   <fm:prop key="name">Dubník</fm:prop>
+   <fm:prop key="ele">504</fm:prop>
+   <fm:prop key="my own">kept</fm:prop>
+   <fm:prop key="blank"></fm:prop>
+   <fm:prop key="padded"> spaced </fm:prop>
+  </extensions>
+ </wpt>
+</gpx>`;
+
+/** Somebody else's file, which says what it means in `<name>`. */
+const FOREIGN_GPX = `<?xml version="1.0"?>
+<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+ <wpt lat="49.05648" lon="21.316533"><name>Dubník</name></wpt>
+</gpx>`;
+
+const propsOf = (text: string, filename: string) =>
+  parseDataFile(text, filename)?.features[0]?.properties;
+
+describe('parseDataFile drawing extensions', () => {
+  it('brings the label as written and the table it draws from', () => {
+    const props = propsOf(OWN_GPX, 'own.gpx');
+
+    expect(props?.['freemap:label']).toBe('{p:name} {p:ele}');
+
+    expect(props?.['freemap:props']).toEqual({
+      name: 'Dubník',
+      ele: '504',
+      'my own': 'kept',
+      blank: '',
+      padded: ' spaced ',
+    });
+
+    // Said once: togeojson's flattened copies of the same elements are gone.
+    expect(props?.['fm_label']).toBeUndefined();
+    expect(props?.['fm_prop']).toBeUndefined();
+  });
+
+  it('keeps `<name>` too, which the viewer titles the feature by', () => {
+    // The table is what the conversion reads; `<name>` holds the label
+    // rendered, and is the only thing somebody else's file says.
+    expect(propsOf(OWN_GPX, 'own.gpx')?.['name']).toBe('Dubník 504');
+  });
+
+  it('leaves a file with no extensions of ours alone', () => {
+    const props = propsOf(FOREIGN_GPX, 'foreign.gpx');
+
+    expect(props?.['name']).toBe('Dubník');
+
+    expect(props?.['freemap:props']).toBeUndefined();
+  });
+});

@@ -50,7 +50,6 @@ export type GalleryMessages = {
     addComment: string;
     yourRating: string;
     showOnTheMap: string;
-    openInNewWindow: string;
     uploaded: ({
       username,
       createdAt,
@@ -64,7 +63,11 @@ export type GalleryMessages = {
     deleteTitle: string;
     modify: string;
     premiumOnly: string;
+    premiumPhoto: string;
     noComments: string;
+    // Shown when commenting a Wikimedia photo: only own-gallery authors get
+    // notified.
+    wikimediaCommentNotNotified: string;
   };
   editForm: {
     name: string;
@@ -83,6 +86,10 @@ export type GalleryMessages = {
     title: string;
     uploading: (n: number) => string;
     upload: string;
+    hint: {
+      drop: string;
+      tap: string;
+    };
     rules: string;
     success: string;
     showPreview: string;

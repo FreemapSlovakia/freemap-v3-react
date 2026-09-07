@@ -1,9 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { hideInfoBar } from '../store/actions.js';
+import { hideInfoBar, infoBarShown } from '../store/actions.js';
 import classes from './InfoBar.module.css';
 
 export function InfoBar(): ReactElement | null {
@@ -15,6 +15,12 @@ export function InfoBar(): ReactElement | null {
 
   const hiddenInfoBars = useAppSelector((state) => state.main.hiddenInfoBars);
 
+  const shownInfoBars = useAppSelector((state) => state.main.shownInfoBars);
+
+  // Frozen at mount: recording the chosen bar as shown (below) must not rotate
+  // it away mid-session.
+  const rotation = useRef(shownInfoBars).current;
+
   useEffect(() => {
     const ref = window.setInterval(
       () => setShow((s) => s + 1),
@@ -24,23 +30,31 @@ export function InfoBar(): ReactElement | null {
     return () => window.clearInterval(ref);
   }, []);
 
-  if (!m || !show) {
-    return null;
-  }
-
-  const { infoBars } = m.main;
-
   const ts = Date.now();
 
-  const key = Object.keys(infoBars).find(
-    (key) => ts - (hiddenInfoBars[key] ?? 0) > 24 * 60 * 60_000, // expire in a day
-  );
+  const infoBars = m?.main.infoBars;
 
-  if (!key) {
+  // The least recently shown bar that isn't dismissed, so that none of them
+  // starves while another one is up.
+  const key = Object.keys(infoBars ?? {})
+    .filter((key) => ts - (hiddenInfoBars[key] ?? 0) > 24 * 60 * 60_000) // dismissal expires in a day
+    .sort((a, b) => (rotation[a] ?? 0) - (rotation[b] ?? 0))[0];
+
+  useEffect(() => {
+    if (key) {
+      dispatch(infoBarShown({ key, ts: Date.now() }));
+    }
+  }, [key, dispatch]);
+
+  if (!show || !key) {
     return null;
   }
 
-  const InfoBarContent = infoBars[key]!;
+  const InfoBarContent = infoBars?.[key];
+
+  if (!InfoBarContent) {
+    return null;
+  }
 
   return (
     <div className={classes.infoBar}>

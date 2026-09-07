@@ -8,6 +8,7 @@ export async function getCachedTileMaps(): Promise<CachedTileMapDef[]> {
   return (await get<CachedTileMapDef[]>(CACHED_TILE_MAPS_KEY)) ?? [];
 }
 
+/** Adds the map, or replaces the stored copy of one already there. */
 export async function saveCachedTileMap(meta: CachedTileMapDef): Promise<void> {
   const maps = await getCachedTileMaps();
 
@@ -18,6 +19,28 @@ export async function saveCachedTileMap(meta: CachedTileMapDef): Promise<void> {
   } else {
     maps.push(meta);
   }
+
+  await set(CACHED_TILE_MAPS_KEY, maps);
+}
+
+/**
+ * Replaces the stored copy of a map, doing nothing if it is no longer there.
+ * What a caching pass writes its progress through: a delete can land while the
+ * pass is mid-batch, and re-adding the map it just removed would leave a ghost
+ * entry with no tiles behind it.
+ */
+export async function updateCachedTileMap(
+  meta: CachedTileMapDef,
+): Promise<void> {
+  const maps = await getCachedTileMaps();
+
+  const idx = maps.findIndex((m) => m.type === meta.type);
+
+  if (idx < 0) {
+    return;
+  }
+
+  maps[idx] = meta;
 
   await set(CACHED_TILE_MAPS_KEY, maps);
 }

@@ -10,14 +10,8 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Styl znacznika obiektu',
   },
   source: 'Źródło',
-  detail: ({ result }) => (
-    <ObjectDetails
-      result={result}
-      openText="Otwórz na OpenStreetMap.org"
-      historyText="historia"
-      editInJosmText="Edytuj w JOSM"
-    />
-  ),
+  detail: (props) => <ObjectDetails {...props} />,
+  elevation: 'Wysokość n.p.m.',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Aby zobaczyć obiekty według ich typu, powiększ co najmniej do poziomu ${minZoom}.`,
@@ -28,15 +22,17 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Pierścień',
     square: 'Kwadrat',
   },
+  showDetails: 'Szczegóły',
+  openInOsm: 'OpenStreetMap.org',
+  osmHistory: 'OpenStreetMap.org (historia)',
   type: 'Typ',
   tooManyPoints: ({ limit }) =>
     `Wynik został ograniczony do ${limit} obiektów.`,
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas pobierania obiektów (POI)', err),
-  convertAsPoint: 'Jako punkt',
-  convertWithGeometry: 'Z pełną geometrią',
+  tooManyForLookup: ({ count, limit }) =>
+    `Zbyt wiele obiektów, aby pokazać je jako wyniki (${count}, najwyżej ${limit}). Przybliż mapę lub zawęź filtr.`,
   showAsLookup: 'Pokaż jako Wynik',
-  convertAll: 'Przekształć wszystkie widoczne obiekty na rysunek',
   markerShape: 'Kształt znacznika',
 };
 

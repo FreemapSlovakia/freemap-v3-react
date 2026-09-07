@@ -4,6 +4,26 @@
   $enable-negative-margins: true
 );
 
+// The app's own tokens, all derived from Bootstrap's scales rather than typed as
+// literals — Bootstrap keeps these in Sass only, and the app's own rules are
+// plain CSS, so they are republished here as custom properties. Documented in
+// `doc/ui-conventions.md`.
+:root {
+  // Bootstrap's spacing scale, key for key: `--fm-space-2` is what `.p-2` and
+  // `.gap-2` use.
+  @each $key, $value in bootstrap.$spacers {
+    --fm-space-#{$key}: #{$value};
+  }
+
+  // What lifts a thing off the map, in two steps: the toolbars, and the
+  // floating panels that are dragged over them. Bootstrap's own shadows are
+  // dropped below their box, which suits a card on a page; a panel over a map
+  // has no ground under it and needs its top edge lifted too, so these spread
+  // evenly instead. The blur is the spacing scale, one step apart.
+  --fm-shadow-1: 0 0 var(--fm-space-1) rgba(0, 0, 0, 0.4);
+  --fm-shadow-2: 0 0 var(--fm-space-2) rgba(0, 0, 0, 0.4);
+}
+
 // Bootstrap ships no min-width:0 utility; needed so flex children can shrink
 // below their content width (lets inner text wrap instead of overflowing).
 .min-w-0 {

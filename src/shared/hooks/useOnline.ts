@@ -1,29 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
-export function useOnline() {
-  const [online, setOnline] = useState(window.navigator.onLine);
+function subscribe(onChange: () => void) {
+  window.addEventListener('online', onChange);
 
-  useEffect(() => {
-    function offlineHandler() {
-      setOnline(false);
-    }
+  window.addEventListener('offline', onChange);
 
-    function onlineHandler() {
-      setOnline(true);
-    }
+  return () => {
+    window.removeEventListener('online', onChange);
 
-    setOnline(window.navigator.onLine);
+    window.removeEventListener('offline', onChange);
+  };
+}
 
-    window.addEventListener('online', onlineHandler);
-
-    window.addEventListener('offline', offlineHandler);
-
-    return () => {
-      window.removeEventListener('online', onlineHandler);
-
-      window.removeEventListener('offline', offlineHandler);
-    };
-  }, []);
-
-  return online;
+/**
+ * Whether the browser has a connection. The single source of truth for the
+ * offline state — pair it with `OfflineBadge` / `OfflineAlert` / `OnlineOnlyItem`
+ * rather than reading `navigator.onLine` in a component.
+ */
+export function useOnline(): boolean {
+  return useSyncExternalStore(
+    subscribe,
+    () => window.navigator.onLine,
+    () => true,
+  );
 }

@@ -1,9 +1,17 @@
+import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import type { JSX } from 'react';
 
 export type ObjectsMessages = {
   source: string;
-  detail: (props: { result: SearchResult }) => JSX.Element;
+  detail: (props: {
+    result: SearchResult;
+    elevation: ElevationReading;
+  }) => JSX.Element;
+  elevation: string;
+  showDetails: string;
+  openInOsm: string;
+  osmHistory: string;
   type: string;
   lowZoomAlert: {
     message: (props: { minZoom: number }) => string;
@@ -17,10 +25,8 @@ export type ObjectsMessages = {
     ring: string;
     square: string;
   };
-  convertAsPoint: string;
-  convertWithGeometry: string;
   showAsLookup: string;
-  convertAll: string;
+  tooManyForLookup: (props: { count: number; limit: number }) => string;
   style: {
     button: string;
     title: string;

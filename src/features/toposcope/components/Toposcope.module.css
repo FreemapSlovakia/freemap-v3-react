@@ -1,0 +1,18 @@
+/* On top of the shared floating-window box: the size it falls back to before
+   the stored one is applied. */
+.toposcope {
+  width: 300px;
+  height: 300px;
+}
+
+/* The dial is square and centred in whatever the window leaves it. */
+.dial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & > svg {
+    user-select: none;
+    font-family: Arial, sans-serif;
+  }
+}

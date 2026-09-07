@@ -6,6 +6,19 @@
   bottom: 0;
   top: 0;
 
+  /* "Drag me": Leaflet's own is the pointing hand every interactive layer
+     wears, which says nothing about the marker being movable. */
+  & .leaflet-marker-draggable {
+    cursor: grab;
+  }
+
+  /* On for the map's whole life, not just the gesture: the one-finger zoom
+     suspends dragging, which takes Leaflet's own `touch-action` with it, and the
+     browser latches this when the finger goes down — too late to set per gesture. */
+  &.fm-double-tap-drag-zoom {
+    touch-action: none;
+  }
+
   & .leaflet-tooltip {
     background-color: var(--bs-body-bg);
     border-color: var(--bs-body-bg);
@@ -13,6 +26,17 @@
 
     &.compact {
       padding: 0 3px;
+    }
+
+    /* A user's own text, which may run to several lines. `pre` rather than
+       `pre-line`: both honour the newlines the user typed, but `pre-line` also
+       breaks a long line to fit the box, which turned every label wider than
+       the tooltip into two — Leaflet's own `nowrap` never did that. Lines are
+       broken where the label says and nowhere else, and the box is centred on
+       the longest of them. */
+    &.multiline {
+      white-space: pre;
+      text-align: center;
     }
   }
 
@@ -97,9 +121,6 @@ a.leaflet-control-layers-toggle {
 
 .fm-nonpremium-tile {
   background-color: #aaa8;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 2px #fff;
-  color: #000a;
   font-size: 1.2em;
   display: flex;
   align-items: center;
@@ -107,13 +128,57 @@ a.leaflet-control-layers-toggle {
 
   & > a {
     pointer-events: all;
-    text-decoration: none;
-    color: #000080;
+    color: #0d6efd;
   }
 
   & > * {
     transform: rotate(45deg);
     max-width: 200px;
     text-align: center;
+  }
+}
+
+/*
+ * A WMS asked for one image per view shows nothing at all while it renders, so
+ * a request still running after a few seconds makes the area it covers breathe.
+ * The period is shared with `WmsImageLayer`, which holds each element back to
+ * the next turn of it — so one appears at the first frame rather than part-way
+ * through, and several waiting at once pulse together instead of each on its
+ * own beat.
+ */
+.fm-wms-pulse {
+  background-color: #808080;
+  animation: fm-wms-pulse 1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* The closed hand while the drag is in flight. Leaflet says the same at one
+   class less, which a tie would settle by stylesheet order — and the chunked
+   CSS runtime does not guarantee one. The wedge's swing is its own gesture, so
+   Leaflet knows nothing of it: `:active` is what holds there, the pointer being
+   captured for the whole swing. */
+body.leaflet-dragging .leaflet-container .leaflet-marker-draggable {
+  cursor: grabbing;
+}
+
+.leaflet-container .fm-beam-grab:active {
+  cursor: grabbing;
+}
+
+@keyframes fm-wms-pulse {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fm-wms-pulse {
+    animation: none;
+    opacity: 0.08;
   }
 }

@@ -14,6 +14,7 @@ const de: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   success:
     'Die Karte wird vorbereitet. Sobald sie fertig ist, erhalten Sie einen Download-Link per E-Mail.',
   summaryTiles: 'Kacheln',
+  summarySize: 'Geschätzte Größe',
   summaryPrice: (amount) => <>Gesamtpreis: {amount} Credits</>,
   usageIntro: 'Wo Sie heruntergeladene MBTiles-Karten nutzen können:',
   usageDesktop: 'Desktop:',

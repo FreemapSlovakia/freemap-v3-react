@@ -1,16 +1,23 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import clsx from 'clsx';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
+import type { HTMLAttributes, ReactElement } from 'react';
 import { FaFlask } from 'react-icons/fa';
-import type { IconBaseProps } from 'react-icons/lib';
 
-export function ExperimentalFunction({ className, ...props }: IconBaseProps) {
+/**
+ * Marks a function as not finished yet.
+ *
+ * Goes **beside** a `<Button>`, never inside one: the flask carries its own
+ * long-press tooltip, and a press that has to mean either "explain the flask" or
+ * "press the button" can only get one of them wrong.
+ */
+export function ExperimentalFunction(
+  props: HTMLAttributes<HTMLElement>,
+): ReactElement {
   const m = useMessages();
 
   return (
-    <FaFlask
-      title={m?.general.experimentalFunction}
-      {...props}
-      className={clsx('text-warning', className)}
-    />
+    <GlyphMarker hint={m?.general.experimentalFunction} {...props}>
+      <FaFlask />
+    </GlyphMarker>
   );
 }

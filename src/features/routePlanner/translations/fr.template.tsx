@@ -16,8 +16,14 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Intervalles',
     timeLimit: 'Limite de temps',
     distanceLimit: 'Limite de distance',
+    reverseFlow: 'Trajet vers le point',
+    reverseFlowHint:
+      'Les zones indiquent alors d’où l’on peut atteindre ce point ; sans la case cochée, jusqu’où l’on peut aller depuis celui-ci. Les sens uniques et les interdictions de tourner font la différence.',
   },
   milestones: 'Bornes kilométriques',
+  milestonesOff: 'Aucune',
+  recompute: 'Recalculer l’itinéraire',
+  maxAlternatives: 'Nombre max. d’itinéraires proposés',
   style: {
     menuItem: 'Style de l’itinéraire',
     title: 'Style de l’itinéraire',
@@ -47,9 +53,14 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   transportType: {
     car: 'Voiture',
     car4wd: 'Voiture (4x4)',
+    carnotoll: 'Voiture (sans péage)',
     bike: 'Vélo',
+    ebike: 'Vélo électrique',
+    gravelbike: 'Vélo gravel',
     foot: 'Marche',
+    stroller: 'Poussette / fauteuil roulant',
     hiking: 'Randonnée',
+    easyhike: 'Randonnée facile',
     mtb: 'VTT',
     racingbike: 'Vélo de course',
     motorcycle: 'Moto',
@@ -66,6 +77,7 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   modeLabel: 'Mode de calcul d’itinéraire',
   alternative: 'Alternative',
+  isochroneRing: 'Isochrone',
   distance: ({ value, diff }) => (
     <>
       Distance :{' '}
@@ -73,6 +85,11 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
         {value}
         {diff ? ` (+ ${diff})` : ''}
       </b>
+    </>
+  ),
+  tolled: ({ value }) => (
+    <>
+      Sections à péage: <b>{value}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

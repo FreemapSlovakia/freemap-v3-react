@@ -1,6 +1,7 @@
 import { HttpError, NetworkError } from '@app/httpRequest.js';
 import type { SearchSource } from '@features/search/model/actions.js';
 import type { DeepPartial } from '@shared/types/deepPartial.js';
+import type { OsmFeatureId } from '@shared/types/featureId.js';
 import type { JSX, ReactNode } from 'react';
 
 type Err = { err: unknown };
@@ -15,6 +16,7 @@ export type Messages = {
     delete: string;
     remove: string;
     close: string;
+    cancelAutoClose: string;
     collapse: string;
     expand: string;
     apply: string;
@@ -23,6 +25,13 @@ export type Messages = {
     yes: string;
     no: string;
     masl: string;
+    /** Where one stands and looks from; names the elevation the marks report. */
+    viewpoint: string;
+    /** How high above the ground the eye is, shared by every terrain view. */
+    eyeHeight: string;
+    eyeHeightHint: string;
+    /** How far such a view reaches. */
+    maxVisibleDistance: string;
     copyCode: string;
     loading: string;
     ok: string;
@@ -41,7 +50,44 @@ export type Messages = {
     add: string;
     clear: string;
     convertToDrawing: string;
-    simplifyPrompt: string;
+    copyToDrawing: string;
+    copyTo: (props: { tool: ReactNode }) => JSX.Element;
+    convertTo: (props: { tool: ReactNode }) => JSX.Element;
+    convertAllToDrawing: string;
+    convertAllTo: (props: { tool: ReactNode }) => JSX.Element;
+    /** Names an app the feature is handed to, where nothing else says so. */
+    openIn: (props: { what: ReactNode }) => JSX.Element;
+    panoramaFromHere: string;
+    viewshedFromHere: string;
+    toposcopeFromHere: string;
+    /** Turns the panorama already on screen to face this place. */
+    lookAtInPanorama: string;
+    /** Names the ⋮ menu a panel carries for the place it is about. */
+    placeActions: string;
+    locationActions: string;
+    convert: {
+      geometry: string;
+      pointOnly: string;
+      fullGeometry: string;
+      label: string;
+      labelHint: string;
+      labelMode: string;
+      preview: string;
+      labelTemplate: string;
+      labelResolved: string;
+      properties: string;
+      noProperties: string;
+      labelKeysKept: string;
+    };
+    simplify: {
+      /** Names the action, the dialog and its confirm button. */
+      title: string;
+      /** Names the slider: how far a point may sit off the simplified line. */
+      deviation: string;
+      /** Reads where the slider sits at zero. */
+      none: string;
+      vertices: (props: { from: ReactNode; to: ReactNode }) => JSX.Element;
+    };
     copyUrl: string;
     copyPageUrl: string;
     savingError: (props: Err) => string;
@@ -55,14 +101,22 @@ export type Messages = {
     copyOk: string;
     noCookies: () => JSX.Element;
     name: string;
+    icon: string;
+    iconChoose: string;
+    iconNone: string;
+    iconSearch: string;
     load: string;
-    unnamed: string;
+    unknown: string;
     enablePopup: string;
     broadcastChannelUnsupported: string;
     componentLoadingError: string;
     offline: string;
+    offlineUnavailable: string;
+    offlineToolUnavailable: string;
+    offlineNotice: string;
     connectionError: string;
     experimentalFunction: string;
+    externalService: string;
     attribution: () => JSX.Element;
     unauthenticatedError: string;
     confirmation: string;
@@ -88,11 +142,26 @@ export type Messages = {
     dark: string;
     auto: string;
   };
+  /**
+   * The eight compass points, as the single letters written on a dial, a
+   * compass strip or a north arrow.
+   */
+  cardinals: {
+    n: string;
+    ne: string;
+    e: string;
+    se: string;
+    s: string;
+    sw: string;
+    w: string;
+    nw: string;
+  };
   selections: {
     objects: string;
     drawPoints: string;
     drawLines: string;
     drawPolygons: string;
+    drawPolygonHole: string;
     tracking: string;
     linePoint: string;
     polygonPoint: string;
@@ -107,10 +176,13 @@ export type Messages = {
     drawPoints: string;
     drawLines: string;
     drawPolygons: string;
-    trackViewer: string;
+    dataViewer: string;
     changesets: string;
     mapDetails: string;
     tracking: string;
+    gpsRecorder: string;
+    toposcope: string;
+    panorama: string;
     myMap: string;
     myMaps: string;
   };
@@ -149,7 +221,17 @@ export type Messages = {
     close: string;
     closeTool: string;
     locateMe: string;
+    /** Asks for the map click that sets the user's home location. */
+    pickHomeLocationPrompt: string;
     locationError: string;
+    locationNoSignal: string;
+    headingSource: string;
+    headingSources: Record<'none' | 'gps' | 'compass', string>;
+    headingSourceHelp: string;
+    bearingLine: string;
+    bearingLineHelp: string;
+    compassPermissionDenied: string;
+    compassUnavailable: string;
     zoomIn: string;
     zoomOut: string;
     devInfo: () => JSX.Element;
@@ -167,7 +249,20 @@ export type Messages = {
     buttonTitle: string;
     placeholder: string;
     result: string;
+    showMore: string;
+    keepOnMap: string;
+    offlineHint: string;
     sources: Record<SearchSource, string>;
+    /** What an element the query names by id is called before it is fetched. */
+    osmElementTypes: Record<OsmFeatureId['elementType'], string>;
+    commands: {
+      caption: string;
+      /**
+       * Synonyms per command id, comma-separated. A command missing from here
+       * is found by its label alone.
+       */
+      keywords: Record<string, string>;
+    };
   };
   mapLayers: {
     showMore: string;
@@ -181,15 +276,17 @@ export type Messages = {
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
     outsideViewWarning: string;
+    offlineWarning: string;
     letters: Record<string, string>;
     customBase: string;
     type: {
       map: string;
       data: string;
       photos: string;
+      routing: string;
     };
     attr: Record<string, ReactNode>;
-    configureLayers: string;
+    layersConfiguration: string;
     customMaps: string;
     addCustomMap: string;
     activate: string;
@@ -208,6 +305,8 @@ export type Messages = {
     maxNativeZoom: string;
     extraScales: string;
     scaleWithDpi: string;
+    tiled: string;
+    tiledHelp: string;
     layer: {
       layer: string;
       base: string;
@@ -216,17 +315,22 @@ export type Messages = {
     zIndex: string;
     preferences: string;
     maxZoom: string;
+    zoomSnap: string;
+    zoomSnapFree: string;
+    zoomSnapHelp: string;
     forcedScale: string;
     resolutionScale: string;
     resolutionScaleAuto: string;
     resolutionScaleHelp: string;
     featureScale: string;
     featureScaleHelp: string;
-    searchResultStyle: string;
+    lookupStyle: string;
     resetApp: string;
     resetAppConfirm: string;
     loadWmsLayers: string;
+    serverNotResponding: (props: { name: string }) => JSX.Element;
     offlineMaps: string;
+    browseCache: string;
     legacy: string;
     legacyMapWarning: (props: { from: string; to: string }) => JSX.Element;
   };
@@ -234,6 +338,16 @@ export type Messages = {
     distance: string;
     ele: string;
     fetchError: (props: Err) => string;
+    settings: string;
+    settingsHelp: string;
+    windowOff: string;
+    windowWholeLine: string;
+    despike: string;
+    despikeHelp: string;
+    ditchFill: string;
+    ditchFillHelp: string;
+    gradeWindow: string;
+    gradeWindowHelp: string;
   };
   errorCatcher: {
     html: (ticketId?: string) => string;
@@ -244,8 +358,6 @@ export type Messages = {
     addPoint: string;
     startLine: string;
     queryFeatures: string;
-    startRoute: string;
-    finishRoute: string;
     showPhotos: string;
   };
   errorStatus: Record<number, string>;

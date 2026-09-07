@@ -1,20 +1,15 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
-import { useConfirm } from '@shared/components/ConfirmProvider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import {
   Action,
   ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import {
-  Fragment,
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-} from 'react';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Button, ListGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaClipboard, FaEdit, FaRegEye, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -43,11 +38,11 @@ export function AccessToken({ accessToken }: Props): ReactElement {
     minute: '2-digit',
   });
 
-  const handleModify = useCallback(() => {
+  const handleModify = () => {
     dispatch(trackingActions.modifyAccessToken(accessToken.id));
-  }, [accessToken.id, dispatch]);
+  };
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = async () => {
     if (
       await confirm({
         title: tm?.accessToken.deleteTitle,
@@ -58,22 +53,22 @@ export function AccessToken({ accessToken }: Props): ReactElement {
     ) {
       dispatch(trackingActions.deleteAccessToken(accessToken.id));
     }
-  }, [accessToken.id, accessToken.token, dispatch, confirm, m, tm]);
+  };
 
-  const handleCopyClick = useCallback(() => {
+  const handleCopyClick = () => {
     copyToClipboard(
       dispatch,
       `${location.origin}/?track=${encodeURIComponent(
         accessToken.token,
       )}&follow=${encodeURIComponent(accessToken.token)}`,
     );
-  }, [accessToken.token, dispatch]);
+  };
 
-  const handleView = useCallback(() => {
+  const handleView = () => {
     dispatch(
       setActiveModal({ type: 'tracking-watched', token: accessToken.token }),
     );
-  }, [accessToken.token, dispatch]);
+  };
 
   const meta: { key: string; label: string; value: ReactNode }[] = [];
 
@@ -154,10 +149,15 @@ export function AccessToken({ accessToken }: Props): ReactElement {
       </div>
 
       <div className="flex-shrink-0">
-        <ResponsiveActions align="end" toggleLabel={m?.general.actions}>
+        <ResponsiveActions
+          size="sm"
+          align="end"
+          toggleLabel={m?.general.actions}
+        >
           <Action
             icon={<FaRegEye />}
             label={tm?.devices.watch}
+            requiresOnline
             onClick={handleView}
             showFrom="lg"
           />
@@ -165,6 +165,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           <Action
             icon={<FaEdit />}
             label={m?.general.modify}
+            requiresOnline
             onClick={handleModify}
             showFrom="md"
           />
@@ -175,6 +176,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
             icon={<FaTrash />}
             label={m?.general.delete}
             variant="danger"
+            requiresOnline
             onClick={handleDelete}
             showFrom="md"
           />

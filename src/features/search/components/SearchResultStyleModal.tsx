@@ -18,7 +18,7 @@ export default function SearchResultStyleModal({ show }: Props): ReactElement {
   return (
     <DrawingStyleSettingsModal
       show={show}
-      title={m?.mapLayers.searchResultStyle}
+      title={m?.mapLayers.lookupStyle}
       current={style}
       defaults={searchSettingsInitialState.resultStyle}
       onSave={(s) => dispatch(searchSetResultStyle(s))}

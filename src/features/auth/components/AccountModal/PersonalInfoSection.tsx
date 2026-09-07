@@ -6,6 +6,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   type ChangeEvent,
   type ReactElement,
@@ -23,6 +24,8 @@ export function PersonalInfoSection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
+
+  const online = useOnline();
 
   const am = useAuthMessages();
 
@@ -131,6 +134,11 @@ export function PersonalInfoSection(): ReactElement | null {
       onSubmit={(e) => {
         e.preventDefault();
 
+        // Enter in a field submits the form whatever the Save button says.
+        if (!online) {
+          return;
+        }
+
         dispatch(
           saveSettings({
             user: {
@@ -164,13 +172,19 @@ export function PersonalInfoSection(): ReactElement | null {
             <Button
               variant="secondary"
               size="sm"
+              disabled={!online}
               onClick={() => fileInputRef.current?.click()}
             >
               <FaUpload /> {am?.account.choosePicture}
             </Button>
 
             {canRemovePicture && (
-              <Button variant="danger" size="sm" onClick={handleRemovePicture}>
+              <Button
+                variant="danger"
+                size="sm"
+                disabled={!online}
+                onClick={handleRemovePicture}
+              >
                 <FaTimes /> {m?.general.remove}
               </Button>
             )}
@@ -231,7 +245,7 @@ export function PersonalInfoSection(): ReactElement | null {
         className="ms-auto d-block"
         variant="primary"
         type="submit"
-        disabled={!userMadeChanges || invalidName || invalidEmail}
+        disabled={!online || !userMadeChanges || invalidName || invalidEmail}
       >
         <FaCheck /> {m?.general.save}
       </Button>

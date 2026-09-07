@@ -6,14 +6,11 @@ import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Vir',
-  detail: ({ result }) => (
-    <ObjectDetails
-      result={result}
-      openText="Odpri na OpenStreetMap.org"
-      historyText="zgodovina"
-      editInJosmText="Uredi v JOSM"
-    />
-  ),
+  detail: (props) => <ObjectDetails {...props} />,
+  elevation: 'Nadmorska višina',
+  showDetails: 'Podrobnosti',
+  openInOsm: 'OpenStreetMap.org',
+  osmHistory: 'OpenStreetMap.org (zgodovina)',
   type: 'Tip',
   lowZoomAlert: {
     message: ({ minZoom }) =>
@@ -29,10 +26,9 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Obroč',
     square: 'Kvadrat',
   },
-  convertAsPoint: 'Kot točka',
-  convertWithGeometry: 'S celotno geometrijo',
+  tooManyForLookup: ({ count, limit }) =>
+    `Preveč objektov za prikaz kot najdbe (${count}, največ ${limit}). Približajte ali zožite filter.`,
   showAsLookup: 'Prikaži kot Najdba',
-  convertAll: 'Pretvori vse vidne objekte v risbo',
   style: {
     button: 'Slog oznake',
     title: 'Slog oznake objekta',

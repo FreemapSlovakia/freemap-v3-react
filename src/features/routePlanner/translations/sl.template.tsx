@@ -16,8 +16,14 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     buckets: 'Število razdelkov',
     timeLimit: 'Časovna omejitev',
     distanceLimit: 'Omejitev razdalje',
+    reverseFlow: 'Pot do točke',
+    reverseFlowHint:
+      'Območja tedaj kažejo, od kod je mogoče priti do te točke; brez kljukice pa, kam je mogoče priti z nje. Razliko delajo enosmerne ceste in prepovedi zavijanja.',
   },
   milestones: 'Kilometrski kažipoti',
+  milestonesOff: 'Izklopljeno',
+  recompute: 'Preračunaj pot',
+  maxAlternatives: 'Največje število ponujenih poti',
   style: {
     menuItem: 'Slog poti',
     title: 'Slog poti',
@@ -47,9 +53,14 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   transportType: {
     car: 'Avto',
     car4wd: 'Avto (4WD)',
+    carnotoll: 'Avto (brez cestnin)',
     bike: 'Kolo',
+    ebike: 'Električno kolo',
+    gravelbike: 'Gravel kolo',
     foot: 'Peš',
+    stroller: 'Voziček / invalidski voziček',
     hiking: 'Pohodništvo',
+    easyhike: 'Lahko pohodništvo',
     mtb: 'Gorsko kolo',
     racingbike: 'Cestno kolo',
     motorcycle: 'Motocikel',
@@ -66,6 +77,7 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   modeLabel: 'Način načrtovanja poti',
   alternative: 'Alternativa',
+  isochroneRing: 'Izokrona',
   distance: ({ value, diff }) => (
     <>
       Razdalja:{' '}
@@ -73,6 +85,11 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
         {value}
         {diff ? ` (+ ${diff})` : ''}
       </b>
+    </>
+  ),
+  tolled: ({ value }) => (
+    <>
+      Cestninski odseki: <b>{value}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

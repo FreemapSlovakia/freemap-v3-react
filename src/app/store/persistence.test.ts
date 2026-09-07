@@ -1,5 +1,6 @@
 import { authInitialState } from '@features/auth/model/reducer.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
+import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
 import { drawingSettingsInitialState } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
@@ -7,7 +8,6 @@ import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import { routePlannerSettingsInitialState } from '@features/routePlanner/model/settingsReducer.js';
-import { trackViewerSettingsInitialState } from '@features/trackViewer/model/settingsReducer.js';
 import storage from 'local-storage-fallback';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
@@ -101,6 +101,23 @@ describe('getInitialState — legacy map migration { mapType, overlays } → { l
     // `mapType` is stripped (not in PersistedMapSchema); layers comes straight
     // from the blob, unmigrated.
     expect(map?.layers).toEqual(['Y']);
+  });
+});
+
+describe('getInitialState — map zoom snapping', () => {
+  it('pulls a rehydrated zoom onto the stored zoomSnap grid', () => {
+    // Rehydration writes the slice directly, so this is the reducer's snapping
+    // done again on the way in — a stored zoom that disagrees with the stored
+    // grid would otherwise leave the map off what the store and the URL claim.
+    seed({ map: { layers: ['X'], zoom: 12.47, zoomSnap: 0.5 } });
+
+    expect(getInitialState().map?.zoom).toBe(12.5);
+  });
+
+  it('leaves a rehydrated zoom alone when no grid is stored', () => {
+    seed({ map: { layers: ['X'], zoom: 12.47, zoomSnap: 0 } });
+
+    expect(getInitialState().map?.zoom).toBe(12.47);
   });
 });
 
@@ -241,7 +258,7 @@ describe('getInitialState — merge over initialState', () => {
     seed({ trackViewerSettings: { colorizeTrackBy: 'heartRate' } });
 
     expect(getInitialState().trackViewerSettings).toEqual({
-      ...trackViewerSettingsInitialState,
+      ...dataViewerSettingsInitialState,
       colorizeTrackBy: 'heartRate',
     });
   });
@@ -252,7 +269,7 @@ describe('getInitialState — merge over initialState', () => {
     // letting the present primary shadow it.
     seed({
       trackViewerSettings: {
-        style: { ...trackViewerSettingsInitialState.style, color: '#abcdef' },
+        style: { ...dataViewerSettingsInitialState.style, color: '#abcdef' },
       },
       trackViewer: { colorizeTrackBy: 'heartRate', colorizeLegend: false },
     });
@@ -280,7 +297,7 @@ describe('getInitialState — merge over initialState', () => {
 
     expect(user?.name).toBe('Tester');
     expect(user?.premiumExpiration).toBeInstanceOf(Date);
-    expect((user?.premiumExpiration as Date).toISOString()).toBe(
+    expect((user?.premiumExpiration as Date)?.toISOString()).toBe(
       '2026-05-17T12:00:48.000Z',
     );
   });

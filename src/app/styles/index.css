@@ -1,6 +1,4 @@
 :root {
-  --scroller-mix-blend-mode: normal;
-
   --scroller-pct: 5%;
 }
 
@@ -37,30 +35,23 @@ button#freemap-logo {
   border: none;
   outline: none;
   background-color: rgba(255, 255, 255, 0);
-  background-image: url("@/images/freemap-logo.png");
-  background-size: 122px 34px;
+  /* Raster, not the SVG: at this fixed size Firefox draws our SVGs blurred, and
+     a vector buys nothing when the box never changes. No `background-size` —
+     `image-set` divides each candidate's intrinsic size by its density, which
+     lands exactly on the box. */
+  background-image: image-set(
+    url("@/images/generated/freemap-logo-sk-1x.png") 1x,
+    url("@/images/generated/freemap-logo-sk-2x.png") 2x,
+    url("@/images/generated/freemap-logo-sk-3x.png") 3x,
+    url("@/images/generated/freemap-logo-sk-4x.png") 4x
+  );
   background-repeat: no-repeat;
-  margin-right: 3px;
   height: 34px;
-  width: 122px;
-  -webkit-transform: scale(1);
-  transform: scale(1);
-  -webkit-transition: 0.1s ease-in-out;
+  width: 134px;
   transition: 0.1s ease-in-out;
 
   &.in-progress {
     animation: pulse 1s infinite;
-  }
-
-  &.offline::after {
-    content: "";
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background-color: var(--bs-danger);
   }
 
   &:hover {
@@ -70,12 +61,29 @@ button#freemap-logo {
   }
 }
 
+/* `data-site` comes from the entry document, so the domain picks the wordmark. */
+[data-site="eu"] button#freemap-logo {
+  background-image: image-set(
+    url("@/images/generated/freemap-logo-eu-1x.png") 1x,
+    url("@/images/generated/freemap-logo-eu-2x.png") 2x,
+    url("@/images/generated/freemap-logo-eu-3x.png") 3x,
+    url("@/images/generated/freemap-logo-eu-4x.png") 4x
+  );
+  width: 136px;
+}
+
+/* The flower alone is site-neutral. Equal specificity to the `eu` rule above,
+   so it must stay after it to win on narrow screens. */
 @media (max-width: 767px) {
   .full {
     button#freemap-logo {
-      background-image: url("@/images/freemap-logo-small.png");
-      background-size: 42px 34px;
-      width: 42px;
+      background-image: image-set(
+        url("@/images/generated/freemap-flower-1x.png") 1x,
+        url("@/images/generated/freemap-flower-2x.png") 2x,
+        url("@/images/generated/freemap-flower-3x.png") 3x,
+        url("@/images/generated/freemap-flower-4x.png") 4x
+      );
+      width: 45px;
     }
   }
 }
@@ -106,11 +114,16 @@ button#freemap-logo {
     vertical-align: top;
     align-items: center;
 
-    padding: 0.25rem;
-    margin-inline: 0.5rem;
+    /* The toolbar owns the rhythm between its own children, so nothing in it
+       carries a margin of its own — see `doc/ui-conventions.md`. */
+    gap: var(--fm-space-1);
+
+    padding: var(--fm-space-1);
+    margin-inline: var(--fm-space-2);
 
     border: 0;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+
+    box-shadow: var(--fm-shadow-1);
   }
 
   @media print {
@@ -123,18 +136,32 @@ button#freemap-logo {
     & * {
       white-space: nowrap;
     }
+
+    /* A menu is not a toolbar row: it drops out of the row's own layout and has
+       room to wrap, which anything holding prose needs. Scoped here rather than
+       escaped again in each menu — this is the third one that had to. */
+    & .dropdown-menu,
+    & .dropdown-menu * {
+      white-space: normal;
+    }
   }
 }
 
-/* The focused tool toolbar (its title also renders as a filled/active pill). */
-.fm-toolbar-active {
+/* A selection toolbar, outlined to set the selected feature apart from the
+   toolbars that are simply on screen. */
+.fm-toolbar-selection {
   @media screen {
     outline: 2px solid rgba(13, 110, 253, 0.8);
+    outline-offset: -1px;
+  }
+}
 
-    &.fm-toolbar-selection {
-      /*outline: 2px solid rgba(25, 135, 34, 0.8);*/
-      outline: 2px solid rgba(13, 202, 240, 0.8);
-    }
+/* The toolbar of the tool taking clicks on the map — while it is open a click
+   no longer selects a feature, and several tool toolbars can be up at once, so
+   it says which one the map belongs to. Green rather than the selection's blue. */
+.fm-toolbar-map-click {
+  @media screen {
+    outline: 2px solid rgba(var(--bs-success-rgb), 0.8);
     outline-offset: -1px;
   }
 }
@@ -144,7 +171,7 @@ button#freemap-logo {
 }
 
 /* The toolbar has no bottom room, and `useLeftMarginAdjuster` removes the left
-   margin of non-first toolbars so they pack tightly — so the active outline
+   margin of non-first toolbars so they pack tightly — so the selection outline
    would be clipped at the bottom and left by `overflow: auto`. Extend the clip
    box on those edges with padding and cancel the size change with a matching
    negative margin, so the outline shows without shifting layout. */
@@ -168,17 +195,16 @@ button#freemap-logo {
 }
 
 .fm-menu-scroller {
-  /* hack to prevent popovers go outside view on mobiles */
-  max-height: calc(100dvh - 160px);
+  /* `availableHeightModifier` measures the room below the toggle; the constant
+     is the fallback for scrollers outside a popper. */
+  max-height: var(--fm-menu-available-height, calc(100dvh - 160px));
   overflow-y: auto;
 }
 
 .fm-ib-scroller::before,
 .fm-ib-scroller > div:first-child::before,
 .fm-menu-scroller::before,
-.fm-menu-scroller > div:first-child::before,
-.dropdown-long::before,
-.dropdown-long > div:first-child::before {
+.fm-menu-scroller > div:first-child::before {
   content: "";
   position: fixed;
   z-index: 100;
@@ -190,7 +216,6 @@ button#freemap-logo {
 .fm-ib-scroller::before {
   width: 2rem;
   height: 3rem;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
     var(--scroller-to) var(--scroller-pct),
@@ -202,7 +227,6 @@ button#freemap-logo {
   width: 2rem;
   height: 3rem;
   right: 0;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
     var(--scroller-from) var(--scroller-pct),
@@ -213,7 +237,6 @@ button#freemap-logo {
 .fm-ib-scroller-top::before {
   width: 2rem;
   height: 3rem;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to right,
     var(--scroller-to) var(--scroller-pct),
@@ -226,11 +249,9 @@ button#freemap-logo {
   margin-top: 0.5rem;
 }
 
-.fm-menu-scroller::before,
-.dropdown-long::before {
+.fm-menu-scroller::before {
   width: 100%;
   height: 2rem;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to bottom,
     var(--scroller-to) var(--scroller-pct),
@@ -240,12 +261,10 @@ button#freemap-logo {
   border-top-right-radius: 4px;
 }
 
-.fm-menu-scroller > div:first-child::before,
-.dropdown-long > div:first-child::before {
+.fm-menu-scroller > div:first-child::before {
   width: 100%;
   height: 2rem;
   bottom: 0;
-  mix-blend-mode: var(--scroller-mix-blend-mode);
   background: linear-gradient(
     to bottom,
     var(--scroller-from) var(--scroller-pct),
@@ -257,11 +276,6 @@ button#freemap-logo {
 
 .fm-menu-scroller::before,
 .fm-menu-scroller > div:first-child::before {
-  margin-top: -0.5rem;
-}
-
-.dropdown-long::before,
-.dropdown-long > div:first-child::before {
   margin-top: -0.5rem;
 }
 
@@ -307,6 +321,70 @@ button#freemap-logo {
   field-sizing: content;
 }
 
+.fm-cursor-help {
+  cursor: help;
+}
+
+.fm-cursor-pointer {
+  cursor: pointer;
+}
+
+/* A logotype drawn as an icon (the Garmin wordmark) needs the width of a word,
+   so it sits off the scale on purpose: a square 24×24 viewBox needs the scale-up
+   to read at all. The negative block margin — in the scaled em, so it tracks the
+   size — gives back the empty box around it, keeping the row's height. */
+.fm-icon-wordmark {
+  font-size: 400%;
+  margin-block: -0.375em;
+}
+
+/* A glyph standing for a state or an offer, explained by a tooltip
+   (`GlyphMarker`). Pointer events are the mark's own: a disabled container takes
+   them away from its content, and the mark is often what says why the container
+   is disabled. */
+.fm-marker {
+  pointer-events: initial;
+
+  /* A mark never stretches — in a `.btn-toolbar` the default `stretch` would give
+     it the height of the buttons — and never shrinks: a squashed glyph reads as
+     a different one. */
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* The mark's hit area. Padding rather than an overlay, so two marks side by side
+   tile instead of one swallowing the other's taps; the block step is given back
+   as margin so nothing moves. */
+.fm-marker-target {
+  padding-inline: var(--fm-space-1);
+  padding-block: var(--fm-space-2);
+  margin-block: calc(-1 * var(--fm-space-2));
+}
+
+/* A container that puts a step between its children would otherwise leave two
+   marks a step *plus a gap plus a step* apart. It hangs off the first of the
+   pair, not the second — these containers wrap, and see `doc/ui-conventions.md`
+   for why that matters. */
+:is(.fm-toolbar, .btn-toolbar, .dropdown-item, .gap-1)
+> .fm-marker-target:has(+ .fm-marker-target) {
+  margin-inline-end: calc(-1 * var(--fm-space-1));
+}
+
+/* The glyph's own box, sitting on the text baseline like any inline `<svg>`.
+   Not a flex box: with no baseline of its own inside it, one gets synthesized
+   from the border box, and the padding then lifts the mark off the line. */
+.fm-glyph {
+  display: inline-block;
+  line-height: 0;
+}
+
+/* A phrase with an explanation behind it (see `HintTooltip`). */
+.fm-hint {
+  cursor: help;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+
 .fm-ellipsis {
   max-width: 100%;
   overflow: hidden;
@@ -316,6 +394,12 @@ button#freemap-logo {
 
 .fm-dropdown-with-scroller {
   padding: 0;
+
+  /* The scroller is a square box in a rounded one, so its scrollbar (Chrome)
+     and its highlighted items (Firefox) paint into the corners. Clipping here
+     rounds them off, because the menu's padding box is what carries the inner
+     radius. */
+  overflow: hidden;
 
   & > div {
     padding-block: 0.5rem;

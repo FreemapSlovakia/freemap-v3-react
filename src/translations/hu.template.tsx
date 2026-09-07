@@ -2,9 +2,7 @@ import { MaptilerAttribution } from '@app/components/MaptilerAttribution.js';
 import { CookiesConsentText } from '@features/auth/components/CookiesConsentText.js';
 import { CookieConsent } from '@features/cookieConsent/components/CookieConsent.js';
 import { Attribution } from '@shared/components/Attribution.js';
-import { Emoji } from '@shared/components/Emoji.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { AlertLink } from 'react-bootstrap';
 import shared from './hu-shared.js';
 import { addError, type Messages } from './messagesInterface.js';
 
@@ -29,6 +27,7 @@ const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
+    cancelAutoClose: 'Automatikus bezárás megszakítása',
     iso: 'hu_HU',
     elevationProfile: 'Magassági profil',
     save: 'Mentés',
@@ -45,6 +44,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     yes: 'Igen',
     no: 'Nem',
     masl,
+    viewpoint: 'Megfigyelési pont',
+    eyeHeight: 'Szemmagasság',
+    eyeHeightHint:
+      'Milyen magasan áll a talaj felett — kilátó vagy drón, nem a tengerszint feletti magasság.',
+    maxVisibleDistance: 'Legnagyobb látótávolság',
     copyCode: 'Kód másolása',
     loading: 'Töltés…',
     ok: 'OK',
@@ -65,8 +69,43 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Új hozzáadása',
     clear: 'Törlés',
     convertToDrawing: 'Átalakítás rajzzá',
-    simplifyPrompt:
-      'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
+    copyToDrawing: 'Másolás a rajzba',
+    copyTo: ({ tool }) => <>Másolás ide: {tool}</>,
+    convertTo: ({ tool }) => <>Átalakítás ide: {tool}</>,
+    convertAllToDrawing: 'Összes átalakítása rajzzá',
+    convertAllTo: ({ tool }) => <>Összes átalakítása ide: {tool}</>,
+    openIn: ({ what }) => <>Megnyitás itt: {what}</>,
+    panoramaFromHere: 'Panoráma innen',
+    viewshedFromHere: 'Láthatóság innen',
+    toposcopeFromHere: 'Panorámatábla innen',
+    lookAtInPanorama: 'Megnézés a panorámában',
+    placeActions: 'Mit lehet kezdeni ezzel a hellyel',
+    locationActions: 'Műveletek ezzel a hellyel',
+    convert: {
+      geometry: 'Geometria',
+      pointOnly: 'Csak pont',
+      fullGeometry: 'Saját geometria',
+      label: 'Felirat',
+      labelHint:
+        'Írja be a {p:name} kulcsot a name nevű tulajdonság kirajzolásához.',
+      labelMode: 'Felirat mentése mint',
+      preview: 'Előnézet',
+      labelTemplate: 'Sablon',
+      labelResolved: 'Egyszerű szöveg',
+      properties: 'Átvihető tulajdonságok',
+      noProperties: 'Nincs mit átvinni.',
+      labelKeysKept: 'A feliratban használt tulajdonság mindig átkerül.',
+    },
+    simplify: {
+      title: 'Egyszerűsítés',
+      deviation: 'Maximális eltérés',
+      none: 'nincs',
+      vertices: ({ from, to }) => (
+        <>
+          Pontok: {from} → {to}
+        </>
+      ),
+    },
     copyUrl: 'URL másolása',
     copyPageUrl: 'Oldal URL-jének másolása',
     savingError: ({ err }) => addError(messages, 'Mentési hiba', err),
@@ -92,11 +131,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     name: 'Név',
+    icon: 'Ikon',
+    iconChoose: 'Ikon kiválasztása…',
+    iconNone: 'Nincs ikon',
+    iconSearch: 'Ikonok keresése',
     load: 'Betöltés',
-    unnamed: 'Névtelen',
+    unknown: 'Ismeretlen',
     componentLoadingError:
       'Nem sikerült betölteni a komponenst. Kérlek, ellenőrizd az internetkapcsolatodat.',
     offline: 'Nincs internetkapcsolatod.',
+    offlineUnavailable: 'Internetkapcsolat nélkül nem érhető el.',
+    offlineToolUnavailable:
+      'Ez az eszköz internetkapcsolat nélkül semmit sem tud betölteni.',
+    offlineNotice:
+      'Nincs internetkapcsolatod, ezért itt semmit sem lehet betölteni vagy elküldeni.',
     connectionError: 'Hiba a szerverhez való csatlakozáskor.',
     experimentalFunction: 'Kísérleti funkció',
     attribution: () => (
@@ -127,11 +175,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     auto: 'Automatikus mód',
   },
 
+  cardinals: {
+    n: 'É',
+    ne: 'ÉK',
+    e: 'K',
+    se: 'DK',
+    s: 'D',
+    sw: 'DNy',
+    w: 'Ny',
+    nw: 'ÉNy',
+  },
+
   selections: {
     objects: 'Objektum (érdekes pont, POI)',
     drawPoints: 'Pont',
     drawLines: 'Vonal',
     drawPolygons: 'Sokszög',
+    drawPolygonHole: 'Lyuk a sokszögben',
     tracking: 'Követés',
 
     linePoint: 'Vonal pontja',
@@ -148,12 +208,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawPoints: 'Pont rajzolása',
     drawLines: 'Vonal rajzolása',
     drawPolygons: 'Sokszög rajzolása',
-    trackViewer: 'Fájlimportálás',
+    dataViewer: 'Nyomvonalak és adatok',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
     tracking: 'Élő követés',
     myMaps: 'Saját térképeim',
     myMap: 'Térképem',
+    gpsRecorder: 'GPS-rögzítő',
+    toposcope: 'Panorámatábla',
+    panorama: 'Panoráma',
   },
 
   mainMenu: {
@@ -192,7 +255,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Bezárás',
     closeTool: 'Eszköz bezárása',
     locateMe: 'Saját pozícióm',
+    pickHomeLocationPrompt: 'Kattintson a térképre oda, ahol lakik',
     locationError: 'Nem sikerült megtalálni a helyzetét.',
+    locationNoSignal: 'Még nincs GPS-jel.',
+    headingSource: 'Irányjelző',
+    headingSources: {
+      none: 'Rejtett',
+      gps: 'Haladási irány',
+      compass: 'Az eszköz iránytűje',
+    },
+    headingSourceHelp:
+      'A haladási irány a GPS-ből származik, és csak mozgás közben látszik. Az eszköz iránytűje állva is működik, de engedélyt igényel, és pontatlan lehet.',
+    bearingLine: 'Távolság és irányszög',
+    bearingLineHelp:
+      'Helymeghatározás közben vonalat rajzol az Ön helyzete és a térkép közepén lévő célkereszt között, a távolság és a helyzetétől a célkeresztig mért irányszög feltüntetésével. Akkor jelenik meg, ha a térképet elhúzza a helyzetétől.',
+    compassPermissionDenied: 'Az iránytűhöz való hozzáférés megtagadva.',
+    compassUnavailable:
+      'Nincsenek iránytűadatok. Lehet, hogy az eszközén nincs iránytű, vagy a hozzáférés blokkolva van.',
     zoomIn: 'Nagyítás',
     zoomOut: 'Kicsinyítés',
 
@@ -205,18 +284,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
     copyright: 'Szerzői jog',
 
-    infoBars: {
-      ua: () => (
-        <>
-          <Emoji>🇺🇦</Emoji>&ensp;Ukrajna mellett állunk.{' '}
-          <AlertLink href="https://u24.gov.ua/" target="_blank" rel="noopener">
-            Ukrajna támogatása ›
-          </AlertLink>
-          &ensp;
-          <Emoji>🇺🇦</Emoji>
-        </>
-      ),
-    },
+    infoBars: {},
 
     cookieConsent: () => (
       <CookieConsent
@@ -228,6 +296,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
+    showMore: 'Több megjelenítése…',
+    offlineHint:
+      'Internetkapcsolat nélkül csak koordináták, határoló keret, csempeszámok (z/x/y) vagy beillesztett GeoJSON találhatók meg.',
     inProgress: 'Keresés…',
     noResults: 'Nincs találat',
     prompt: 'Adja meg a helyet',
@@ -235,8 +306,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routeTo: 'Útvonal ide',
     fetchingError: ({ err }) => addError(messages, 'Keresési hiba', err),
     buttonTitle: 'Keresés',
-    placeholder: 'Keresés a térképen',
+    placeholder: 'Helyek és funkciók keresése',
     result: 'Találat',
+    keepOnMap: 'Megtartás a térképen',
     sources: {
       'nominatim-reverse': 'Fordított geokódolás',
       'overpass-nearby': 'Közeli objektumok',
@@ -249,10 +321,88 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       osm: 'OpenStreetMap',
       'wms:': 'WMS',
     },
+    osmElementTypes: {
+      node: 'Pont',
+      way: 'Vonal',
+      relation: 'Kapcsolat',
+    },
+    commands: {
+      caption: 'Funkciók',
+      keywords: {
+        'tool-route-planner':
+          'navigáció, útvonaltervező, útvonal, túra, kerékpár',
+        'tool-objects': 'érdekes helyek, poi, helyek, szolgáltatások',
+        'tool-draw-points': 'rajzolás, jelölő, gombostű, jegyzet',
+        'tool-draw-lines': 'rajzolás, távolság mérése, hossz, vonalzó',
+        'tool-draw-polygons': 'rajzolás, terület mérése, régió',
+        'tool-import-file':
+          'gpx, kml, kmz, tcx, geojson, importálás, feltöltés, fájl megnyitása',
+        'tool-map-details': 'azonosítás, mi van itt, wms',
+        'tool-changesets':
+          'osm szerkesztések, változtatáscsomagok, szerkesztők',
+        'tool-tracking':
+          'helyzet megosztása, eszköz követése, valós idejű, tracking',
+        'tool-toposcope': 'csúcsok, hegyek, horizont, toposzkóp, toposcope',
+        'tool-panorama': '360, kilátás, csúcsok, horizont, terep',
+        'tool-gps-recorder': 'nyomvonal rögzítése, naplózó, felvétel',
+        'modal-account': 'profil, fiókom, beállítások, kijelentkezés',
+        'modal-login': 'bejelentkezés, fiók',
+        'modal-my-maps': 'mentett térképek, térkép mentése, térkép megosztása',
+        'modal-map-features-export': 'export, gpx, geojson, adatok letöltése',
+        'modal-map-to-document-export':
+          'export, nyomtatás, pdf, png, jpeg, svg, kép, poszter',
+        'modal-offline-map-export':
+          'export, offline, csempék letöltése, mbtiles, sd kártya',
+        'modal-embed': 'iframe, beágyazás, weboldal, html kód',
+        'modal-support-us': 'adományozás, támogatás, pénz',
+        'modal-legend': 'jelmagyarázat, jelek, szimbólumok',
+        'modal-about': 'kapcsolat, e-mail, visszajelzés',
+        'modal-map-layers-config':
+          'rétegek, térképek kezelése, sorrend, átlátszóság',
+        'modal-custom-maps': 'saját térkép, wms, tms, térképforrás hozzáadása',
+        'modal-offline-maps': 'letöltött térképek, tárhely',
+        'modal-browse-cache': 'gyorsítótár, csempék, tárhely',
+        'modal-map-preferences': 'beállítások, opciók, fedvény átlátszósága',
+        'modal-elevation-settings':
+          'magassági profil, tengerszint feletti magasság, diagram',
+        'clear-map-features': 'összes törlése, törlés, térkép visszaállítása',
+        'layer-X': 'outdoor, túrázás, kerékpározás, freemap',
+        'layer-XK': 'turistautak, jelzések, kst',
+        'layer-O': 'osm, mapnik, alap',
+        'layer-S': 'műhold, ortofotó, légifotó',
+        'layer-Z': 'műhold, ortofotó, légifotó',
+        'layer-J1': 'műhold, ortofotó, légifotó',
+        'layer-J2': 'műhold, ortofotó, légifotó',
+        'layer-d': 'tömegközlekedés, buszok, vonatok, menetrendek',
+        'layer-I': 'képek, galéria, fotók',
+        'layer-w': 'wiki, cikkek',
+        'layer-R': 'időjárás, eső, csapadék, vihar, előrejelzés',
+        'layer-v': 'kilátás, láthatósági elemzés, rálátás, terep',
+        'layer-5': 'domborzatárnyékolás, relief, terep, magasság',
+        'layer-6': 'domborzatárnyékolás, relief, felszín, magasság',
+        'layer-7': 'domborzatárnyékolás, relief, terep, magasság, lidar',
+        'layer-8': 'domborzatárnyékolás, relief, terep, magasság, lidar',
+        'layer-h': 'árnyékolás, relief, lejtő, kitettség, inverzió',
+        'layer-z': 'árnyékolás, relief, lejtő, kitettség, inverzió',
+        'layer-y': 'árnyékolás, relief, lejtő, kitettség, inverzió',
+        'layer-l1': 'erdei utak, nlc',
+        'layer-l2': 'erdei utak, nlc',
+        'layer-VO': 'vektoros',
+        'layer-VS': 'vektoros',
+        'layer-VD': 'vektoros',
+        'layer-VT': 'vektoros',
+        'layer-WDZ': 'fák, erdő, fafajok',
+        'layer-WLT': 'erdő, erdőtípusok',
+        'layer-WGE': 'geológia, kőzetek',
+        'layer-WKA': 'telkek, kataszter, földhivatal',
+        'layer-wka': 'telkek, kataszter, földhivatal',
+        'layer-WHC': 'vízkémia, hidrológia',
+      },
+    },
   },
 
   mapLayers: {
-    searchResultStyle: 'Keresési találat stílusa',
+    lookupStyle: 'Találat stílusa',
     resetApp: 'Alkalmazás visszaállítása',
     resetAppConfirm:
       'Visszaállítja az alkalmazás összes beállítását az alapértékekre és újratölti az oldalt? Ki lesz jelentkeztetve.',
@@ -260,6 +410,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     photoFilterWarning: 'A fényképszűrés aktív',
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
     outsideViewWarning: 'A jelenlegi nézet ezen a térképen kívül esik',
+    offlineWarning: 'Ez a térkép nincs elmentve offline használatra',
 
     letters: {
       S: 'Légifelvétel',
@@ -269,11 +420,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       O: 'OpenStreetMap',
       d: 'Tömegközlekedés',
       X: outdoorMap,
+      XK: 'KST turistautak',
       i: 'Adatréteg',
       I: 'Fényképek',
       l1: 'Erdészeti utak NLC (2017)',
       l2: 'Erdészeti utak NLC',
       w: 'Wikipedia',
+      R: 'Csapadékradar',
+      v: 'Láthatóság',
       '5': 'Terepárnyékolás',
       '6': 'Felszínárnyékolás',
       '7': 'Részletes terepárnyékolás',
@@ -300,21 +454,24 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       map: 'térkép',
       data: 'adatok',
       photos: 'képek',
+      routing: 'útvonaltervezés',
     },
 
     attr: {
       osmData: '©\xa0OpenStreetMap közreműködők',
+      fixTheMap: 'térképhiba jelentése',
       maptiler: (
         <MaptilerAttribution
           tilesFrom="Vektorcsempék innen:"
           hostedBy="hosztolva:"
         />
       ),
+      photosCc: 'különböző Creative Commons licencek',
     },
     showAll: 'Összes térkép megjelenítése',
     filterMaps: 'Térképek szűrése',
     noMapsFound: 'Nem található térkép',
-    settings: 'Térkép beállítások',
+    settings: 'Térképek kezelése',
     switch: 'Térképek',
     interactiveLayerWarning: 'Az adatréteg rejtve van',
     customBase: 'Egyéni térkép',
@@ -330,9 +487,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     maxNativeZoom: 'Maximális natív nagyítás',
     extraScales: 'Extra felbontások',
     scaleWithDpi: 'Méretezés DPI alapján',
+    tiled: 'Betöltés csempékben',
+    tiledHelp:
+      'A WMS alapértelmezés szerint a teljes nézetről egyetlen képként töltődik be: egy kérés több tucat helyett, és a feliratokat nem vágja el a csempék határa. A csempéket olyan kiszolgálóhoz kapcsolja be, amely korlátozza a kép méretét vagy gyorsítótárazza a csempéket — cserébe nézetenként sok kérés indul.',
     zIndex: 'Z-index',
-    preferences: 'Beállítások',
+    preferences: 'Térkép beállításai',
     maxZoom: 'Maximális nagyítás',
+    zoomSnap: 'Nagyítási lépték',
+    zoomSnapFree: 'Szabad',
+    zoomSnapHelp:
+      'A legkisebb nagyításváltozás, amelyen az egérgörgővel, csippentéssel és területkijelöléssel végzett nagyítás megállhat. Az 1 egész nagyítási szinteken tartja a térképet, a törtérték engedi köztük is megállni, a Szabad pedig bárhol. A + és – gombok és billentyűk mindig a következő egész szintre lépnek.',
     forcedScale: 'Kényszerített felbontás',
     resolutionScale: 'Felbontás skála',
     resolutionScaleAuto: 'Automatikus (eszköz alapértelmezett)',
@@ -347,7 +511,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Átfedő',
     },
     showMore: 'További térképek megjelenítése',
-    configureLayers: 'Térképrétegek beállítása',
+    layersConfiguration: 'Rétegek beállítása',
     technologies: {
       tile: 'Képcsempék (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',
@@ -356,7 +520,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     technology: 'Típus',
     loadWmsLayers: 'Rétegek betöltése',
+    serverNotResponding: ({ name }) => (
+      <>
+        A(z) <b>{name}</b> térkép kiszolgálója nem válaszol.
+      </>
+    ),
     offlineMaps: 'Offline térképek',
+    browseCache: 'Gyorsítótárazás böngészés közben',
     legacy: 'elavult',
     legacyMapWarning: ({ from, to }) => (
       <>
@@ -375,6 +545,20 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Hiba történt a magasságiprofil-adatok lekérésénél',
         err,
       ),
+    settings: 'Magasság beállításai',
+    settingsHelp:
+      'Az első két beállítás a terepmodellt korrigálja, ezért mindenhol érvényes, ahol a magasság abból származik: tervezett útvonalaknál, rajzolt vonalaknál és méréseknél, valamint olyan importált nyomvonalaknál, amelyek magasságát a kiszolgálóról cserélte le. A rögzített tengerszint feletti magasság — élő nyomkövetés, vagy rögzített formában megtartott nyomvonal — érintetlen marad. Az exportált fájlok mindig megtartják a saját magasságukat.',
+    windowOff: 'ki',
+    windowWholeLine: 'teljes vonal',
+    despike: 'Tüskék eltávolítása',
+    despikeHelp:
+      'Ha egy utat néhány méterrel az általa leírt úttest mellé rajzoltak, a terepmodell a mellette lévő rézsű vagy sziklafal magasságát adja vissza. Az ennek felénél keskenyebb tüskék eltűnnek, a profil pedig enyhén lekerekedik; a szélesebbek megmaradnak, mert valódi terepet jelentenek. A nulla kikapcsolja.',
+    ditchFill: 'Terepmodell-árkok feltöltése',
+    ditchFillHelp:
+      'A részletes nemzeti terepmodellek, amelyek egyes országokban érhetők el, rendszerint hidrológiai szempontból vannak igazítva: minden áteresznél árkot vágnak az úton keresztül. Az ennél keskenyebb mélyedések feltöltődnek; a szélesebbek megmaradnak, mert valódi terepet jelentenek. A nulla kikapcsolja, és ott, ahol a globális modell van használatban, semmit sem változtat.',
+    gradeWindow: 'Meredekség ablaka',
+    gradeWindowHelp:
+      'Ha a magassági profilra mutat, a hely megjelenik a térképen, az ottani meredekséggel együtt. A meredekség az adott pont körüli, ilyen hosszú szakaszra átlagolódik, hogy néhány méternyi GPS-zaj ne tűnjön falnak. A nulla a profil szomszédos pontjai között méri.',
   },
 
   errorCatcher: {
@@ -396,8 +580,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     addPoint: 'Pont hozzáadása ide',
     startLine: 'Vonal vagy mérés indítása innen',
     queryFeatures: 'Részletek lekérdezése a közelben',
-    startRoute: 'Útvonal tervezése innen',
-    finishRoute: 'Útvonal tervezése idáig',
     showPhotos: 'Közeli fotók megjelenítése',
   },
 

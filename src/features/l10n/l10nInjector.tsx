@@ -9,11 +9,10 @@ export function useLocalMessages<T>(
 ): T | undefined {
   const language = useAppSelector((state) => state.l10n.language);
 
-  // NOTE factory dependenct is disabled for simpler parent code
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // `factory` must be module-scope stable; an inline one re-imports every render.
   const f = useMemo(
     () => factory.bind(undefined, language),
-    [language, factory.bind],
+    [factory, language],
   );
 
   return useLazy(f);

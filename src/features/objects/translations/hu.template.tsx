@@ -10,14 +10,11 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Objektum jelölőjének stílusa',
   },
   source: 'Forrás',
-  detail: ({ result }) => (
-    <ObjectDetails
-      result={result}
-      openText="Megnyitás az OpenStreetMap.org oldalon"
-      historyText="előzmények"
-      editInJosmText="Szerkesztés JOSM-ben"
-    />
-  ),
+  detail: (props) => <ObjectDetails {...props} />,
+  elevation: 'Magasság',
+  showDetails: 'Részletek',
+  openInOsm: 'OpenStreetMap.org',
+  osmHistory: 'OpenStreetMap.org (előzmények)',
   type: 'Típus',
   lowZoomAlert: {
     message: ({ minZoom }) =>
@@ -35,10 +32,9 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Gyűrű',
     square: 'Négyzet',
   },
-  convertAsPoint: 'Pontként',
-  convertWithGeometry: 'Teljes geometriával',
+  tooManyForLookup: ({ count, limit }) =>
+    `Túl sok objektum a találatként való megjelenítéshez (${count}, legfeljebb ${limit}). Nagyítson rá, vagy szűkítse a szűrőt.`,
   showAsLookup: 'Megjelenítés találatként',
-  convertAll: 'Minden látható objektum átalakítása rajzzá',
   tooManyPoints: ({ limit }) =>
     `Az eredmény ${limit} objektumra lett korlátozva.`,
   markerShape: 'Jelölő alakja',

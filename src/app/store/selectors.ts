@@ -1,6 +1,7 @@
+import { COOKIE_CONSENT_TOAST_ID } from '@features/cookieConsent/model/toastAction.js';
+import { isTrackLine } from '@features/dataViewer/trackSelection.js';
 import type { PickMode } from '@features/routePlanner/model/actions.js';
 import type { Track } from '@features/tracking/model/types.js';
-import { isTrackLine } from '@features/trackViewer/trackSelection.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import { createSelector } from 'reselect';
 import marker from '@/images/cursors/marker.svg';
@@ -8,18 +9,28 @@ import pencil from '@/images/cursors/pencil.svg';
 import type { Tool } from '../store/actions.js';
 import type { RootState } from '../store/store.js';
 
-export const toolsSelector = (state: RootState): Tool[] => state.main.tools;
+// Whether a tool's toolbar is on the screen, whichever slot it is open in.
+export const isToolOpen = (state: RootState, tool: Tool): boolean =>
+  state.main.mapTool === tool || state.main.panelTools.includes(tool);
 
-// The focused/active tool — i.e. the one that owns map clicks. The reducer only
-// ever sets `activeTool` to a map-click tool (or null), so it always reflects
-// "the active mode" without further filtering.
+// Every open tool, the map-click one first — memoized, so subscribing to it
+// doesn't re-render on every unrelated action the way a fresh array would.
+export const openToolsSelector = createSelector(
+  (state: RootState) => state.main.mapTool,
+  (state: RootState) => state.main.panelTools,
+  (mapTool, panelTools): Tool[] =>
+    mapTool ? [mapTool, ...panelTools] : panelTools,
+);
+
+// The open tool as far as map clicks go — i.e. the one that owns them; null
+// while only toolbar-only tools are open.
 export const activeModeSelector = (state: RootState): Tool | null =>
-  state.main.activeTool;
+  state.main.mapTool;
 
-// The open draw-* tool, regardless of which tool is focused (the three draw
-// tools share one menu, so at most one is open).
+// The open draw-* tool (the three of them share one menu, and the map-click
+// slot they all take).
 export const openDrawToolSelector = (state: RootState): Tool | null =>
-  state.main.tools.find(isDrawTool) ?? null;
+  isDrawTool(state.main.mapTool) ? state.main.mapTool : null;
 
 export const mapLayersSelector = (state: RootState): string[] =>
   state.map.layers;
@@ -44,48 +55,62 @@ export const drawingLineSelector = (state: RootState): boolean =>
 export const mapAreaSelectingSelector = (state: RootState): boolean =>
   state.mapArea.selecting !== null;
 
-// True while the map is in a dedicated mode that takes over the map: picking a
-// home location, picking or showing a photo location, or drawing an export/cache
-// area. In these modes the regular features stay visible but non-interactive and
-// the tools stay inert (clicks don't draw points, add route legs, etc.).
+export const toposcopePickingCenterSelector = (state: RootState): boolean =>
+  state.toposcope.pickingCenter;
+
+export const panoramaPickingSelector = (state: RootState): boolean =>
+  state.panorama.picking !== null;
+
+export const viewshedPickingViewpointSelector = (state: RootState): boolean =>
+  state.viewshed.pickingViewpoint;
+
+/**
+ * True while the map is given over to a click that says where. Features stay
+ * visible but non-interactive, the tools go inert, and `Main` puts the toolbars
+ * and the floating panels away. Every such mode belongs here rather than in a
+ * list of its own.
+ */
 export const pickingModeSelector = (state: RootState): boolean =>
   selectingHomeLocationSelector(state) ||
+  toposcopePickingCenterSelector(state) ||
+  panoramaPickingSelector(state) ||
+  viewshedPickingViewpointSelector(state) ||
   galleryPickingPositionForIdSelector(state) !== null ||
   galleryShowPositionSelector(state) ||
   mapAreaSelectingSelector(state);
 
+/**
+ * True while the map is given over to a click on a *feature* — joining two
+ * lines, aiming a cut. The chrome goes away as it does for a picking mode, but
+ * the features stay live: the click these are waiting for is a click on one.
+ * The armed mode's own toolbar says what it wants and cancels it.
+ */
+export const armedModeSelector = (state: RootState): boolean =>
+  state.drawingLines.joinWith !== undefined ||
+  // The data viewer's toolbar rides its selection, so a mode can never take
+  // the chrome away without it.
+  (state.main.selection?.type === 'data-viewer' &&
+    (state.trackViewer.joinWith !== null || state.trackViewer.splitting));
+
+/** Whether the map is in a mode of its own, whichever kind. */
+export const mapModeSelector = (state: RootState): boolean =>
+  pickingModeSelector(state) || armedModeSelector(state);
+
 // The active tool as far as map interaction is concerned: the open map-click
 // tool, but masked to null while a picking mode owns the map so it goes inert.
-// Map-interaction code should read this; menus/processors that want the open
-// set should use toolsSelector / activeModeSelector.
+// Map-interaction code should read this; menus/processors that want to know
+// whether a toolbar is up should use isToolOpen.
 export const activeMapToolSelector = (state: RootState): Tool | null =>
   pickingModeSelector(state) ? null : activeModeSelector(state);
 
 export const showGalleryPickerSelector = createSelector(
   activeMapToolSelector,
   mapLayersSelector,
-  galleryPickingPositionForIdSelector,
-  galleryShowPositionSelector,
-  selectingHomeLocationSelector,
+  pickingModeSelector,
   drawingLineSelector,
-  mapAreaSelectingSelector,
-  (
-    tool,
-    layers,
-    galleryPickingPositionForId,
-    galleryShowPosition,
-    selectingHomeLocation,
-    drawingLine,
-    mapAreaSelecting,
-  ) =>
-    // gallery picker is available only when no map-click tool owns the click
-    !tool &&
-    layers.includes('I') &&
-    galleryPickingPositionForId === null &&
-    !galleryShowPosition &&
-    !selectingHomeLocation &&
-    !drawingLine &&
-    !mapAreaSelecting,
+  (tool, layers, picking, drawingLine) =>
+    // The picker takes clicks of its own, so it wants the map to itself.
+    !tool && layers.includes('I') && !picking && !drawingLine,
 );
 
 export const showGalleryViewerSelector = (state: RootState): boolean =>
@@ -104,6 +129,9 @@ export const mouseCursorSelector = createSelector(
   showGalleryPickerSelector,
   galleryShowPositionSelector,
   (state: RootState) => state.drawingLines.drawing,
+  toposcopePickingCenterSelector,
+  panoramaPickingSelector,
+  viewshedPickingViewpointSelector,
   (
     selectingHomeLocation,
     tool,
@@ -111,12 +139,21 @@ export const mouseCursorSelector = createSelector(
     showGalleryPicker,
     galleryShowPosition,
     drawing,
+    toposcopePickingCenter,
+    panoramaPicking,
+    viewshedPickingViewpoint,
   ) => {
     if (galleryShowPosition) {
       return 'auto';
     }
 
-    if (selectingHomeLocation || showGalleryPicker) {
+    if (
+      selectingHomeLocation ||
+      showGalleryPicker ||
+      toposcopePickingCenter ||
+      panoramaPicking ||
+      viewshedPickingViewpoint
+    ) {
       return 'crosshair';
     }
 
@@ -182,10 +219,9 @@ export const selectingModeSelector = (state: RootState): boolean => {
 };
 
 export const drawingLinePolys = (state: RootState): boolean => {
-  // The active drawing tool captures clicks (to start a line) — being merely
-  // open (visible toolbar) must not. An in-progress drawing also captures
-  // clicks (to append points) even after its tool was deactivated or closed,
-  // and during a "continue" that never activated a tool.
+  // The open drawing tool captures clicks (to start a line). So does an
+  // in-progress drawing (to append points), which a "continue" starts without
+  // opening any tool.
   const tool = activeMapToolSelector(state);
 
   return (
@@ -205,7 +241,7 @@ export const trackGeojsonIsSuitableForElevationChart = (
   (state.trackViewer.trackGeojson?.features ?? []).some(isTrackLine);
 
 export const askingCookieConsentSelector = (state: RootState): boolean =>
-  'cookieConsent' in state.toasts.toasts;
+  COOKIE_CONSENT_TOAST_ID in state.toasts.toasts;
 
 // Whether `clearMapFeatures` would actually remove anything from the map —
 // drives showing the "Clear map" command. Mirrors the slices that reset on
@@ -218,6 +254,6 @@ export const hasClearableMapFeaturesSelector = (state: RootState): boolean =>
   state.routePlanner.points.length > 0 ||
   state.objects.objects.length > 0 ||
   state.changesets.changesets.length > 0 ||
-  state.search.selectedResult !== null ||
+  state.search.selectedResults.length > 0 ||
   state.trackViewer.trackGeojson !== null ||
   state.tracking.trackedDevices.length > 0;

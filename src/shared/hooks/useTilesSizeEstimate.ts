@@ -1,0 +1,139 @@
+import { useEffect, useRef, useState } from 'react';
+import { fallbackTilesSize, sampleTilesSize } from '../tileSizeSampler.js';
+
+const DEBOUNCE = 700;
+
+export type TilesSizeEstimateParams = {
+  urlTemplate: string | undefined;
+  /** The `{s}` host to sample from; see `pickSubdomain`. */
+  subdomain?: string;
+  bbox: [number, number, number, number] | undefined;
+  minZoom: number;
+  maxZoom: number;
+  tileCount: number | undefined;
+  /**
+   * How many tiles to price, when that isn't the whole `tileCount` — extending
+   * a cached map only fetches the tiles it doesn't already hold. The sample is
+   * still normalized by `tileCount`, since it extrapolates the whole range.
+   */
+  estimateForCount?: number;
+  /** The `@Nx` variant that will really be downloaded; see `pickTileScale`. */
+  scale?: number;
+  enabled?: boolean;
+};
+
+export type TilesSizeEstimate = {
+  bytes: number | undefined;
+  /** `false` while the flat-constant fallback is being shown. */
+  sampled: boolean;
+  sampling: boolean;
+};
+
+/**
+ * Debounced download-size estimate for a tile bbox × zoom range, sampled from
+ * the real layer; shows the flat-constant fallback until the first samples
+ * land.
+ */
+export function useTilesSizeEstimate({
+  urlTemplate,
+  subdomain,
+  bbox,
+  minZoom,
+  maxZoom,
+  tileCount,
+  estimateForCount,
+  scale,
+  enabled = true,
+}: TilesSizeEstimateParams): TilesSizeEstimate {
+  // the average is kept per tile and keyed by layer so that editing the area or
+  // the zoom range rescales the shown size right away, while the fresh samples
+  // are still on their way
+  const [sample, setSample] = useState<{ key: string; bytesPerTile: number }>();
+
+  const [sampling, setSampling] = useState(false);
+
+  const bboxKey = bbox?.join(',');
+
+  const tileCountRef = useRef(tileCount);
+
+  tileCountRef.current = tileCount;
+
+  const key = `${urlTemplate}@${scale}`;
+
+  useEffect(() => {
+    if (
+      !enabled ||
+      !urlTemplate ||
+      !bboxKey ||
+      !Number.isFinite(tileCountRef.current) ||
+      minZoom > maxZoom
+    ) {
+      setSampling(false);
+
+      return;
+    }
+
+    const abortController = new AbortController();
+
+    setSampling(true);
+
+    const timeout = setTimeout(() => {
+      sampleTilesSize({
+        urlTemplate,
+        subdomain,
+        bbox: bboxKey.split(',').map(Number) as [
+          number,
+          number,
+          number,
+          number,
+        ],
+        minZoom,
+        maxZoom,
+        scale,
+        signal: abortController.signal,
+      })
+        .then((estimate) => {
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          const count = tileCountRef.current;
+
+          if (estimate && count) {
+            setSample({ key, bytesPerTile: estimate.totalBytes / count });
+          }
+
+          setSampling(false);
+        })
+        .catch(() => {
+          if (!abortController.signal.aborted) {
+            setSampling(false);
+          }
+        });
+    }, DEBOUNCE);
+
+    return () => {
+      clearTimeout(timeout);
+
+      abortController.abort();
+    };
+  }, [enabled, urlTemplate, subdomain, bboxKey, minZoom, maxZoom, scale, key]);
+
+  const bytesPerTile = sample?.key === key ? sample.bytesPerTile : undefined;
+
+  const pricedCount = estimateForCount ?? tileCount;
+
+  return {
+    bytes:
+      pricedCount === undefined ||
+      tileCount === undefined ||
+      !Number.isFinite(pricedCount)
+        ? undefined
+        : bytesPerTile === undefined
+          ? fallbackTilesSize(pricedCount, scale ?? 1)
+          : // the sampled average is fractional; bytes are not
+            Math.round(bytesPerTile * pricedCount),
+    sampled: bytesPerTile !== undefined,
+    sampling,
+  };
+}

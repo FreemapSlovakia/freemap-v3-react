@@ -7,11 +7,17 @@ export type DrawingMessages = {
     label: string;
     width: string;
     hint: string;
+    /**
+     * What a `{key}` in the label can name beyond the feature's own properties.
+     * Listed per geometry, since only a polygon has an area and only a point
+     * has one position.
+     */
+    pointKeys: string;
+    lineKeys: string;
+    polygonKeys: string;
+    /** How `[…]` marks a part of the label to leave out when a value is missing. */
+    optionalKeys: string;
     shape: string;
-    icon: string;
-    iconChoose: string;
-    iconNone: string;
-    iconSearch: string;
     text: string;
     textHint: string;
     type: string;
@@ -24,6 +30,15 @@ export type DrawingMessages = {
     lineJoinRound: string;
     lineJoinMiter: string;
     lineJoinBevel: string;
+    /** Heading over the feature's own data table. */
+    properties: string;
+    /** Column placeholders for one row of it. */
+    propertyKey: string;
+    propertyValue: string;
+    addProperty: string;
+    removeProperty: string;
+    /** Writes `{key}` into the label being edited. */
+    insertIntoLabel: string;
   };
   split: string;
   join: string;
@@ -42,4 +57,8 @@ export type DrawingMessages = {
   };
   reverse: string;
   simplify: string;
+  cutHole: string;
+  cutHoleHint: string;
+  makeHole: string;
+  detachHole: string;
 };

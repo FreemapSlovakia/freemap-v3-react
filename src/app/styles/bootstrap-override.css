@@ -2,6 +2,29 @@
   z-index: 10000;
 }
 
+/* Popper writes the real `position` only on its second render — its instance is
+   created in an effect — so the menu spends its first frame on Bootstrap's
+   `position: absolute`. Inside a `.fm-toolbar`, which is `inline-flex`, Chromium
+   folds that frame's box into the toolbar's intrinsic width and doesn't
+   re-measure once popper flips the menu to `fixed`, so the toolbar stays wider
+   for as long as the menu is open. Opening out of flow from the start keeps the
+   menu out of that measurement. Only for menus popper positions with
+   `strategy: 'fixed'` — `fm-dropdown-fixed` marks those. */
+.dropdown-menu.fm-dropdown-fixed {
+  position: fixed;
+}
+
+/* A menu with no scroller of its own scrolls as a whole, so every menu is
+   bounded by the viewport without each one having to opt in. Both custom
+   properties come from `availableHeightModifier`; where it doesn't run, they
+   are unset and these declarations resolve to `none` / `visible`, leaving the
+   menu unconstrained as before. `.fm-dropdown-with-scroller` marks the menus
+   that cap an inner element instead, which must not scroll twice. */
+.dropdown-menu:not(.fm-dropdown-with-scroller) {
+  max-height: var(--fm-menu-available-height);
+  overflow-y: var(--fm-menu-scroll, visible);
+}
+
 /* a <form> that wraps Modal.Header/Body/Footer must be transparent to the
    scrollable-modal flex chain, so its box is removed from layout */
 .d-contents {
@@ -20,11 +43,6 @@
       display: inline-block;
     }
   }
-}
-
-.dropdown-long {
-  overflow-x: auto;
-  max-height: calc(100dvh - 150px);
 }
 
 .accordion > .card > .card-header {
@@ -58,7 +76,7 @@
   border-color: #343a40;
 
   &:hover,
-  &:focus {
+  &:focus-visible {
     background-color: #23272b;
     border-color: #1d2124;
   }
@@ -78,20 +96,42 @@ kbd,
 
 kbd {
   background-color: #bbb;
-  line-height: 0;
+
+  /* Just enough leading for the pill's own glyph, so a key never grows the line
+     it sits in — a menu row is a flex container, which blockifies a key into a
+     box whose height is exactly this. */
+  line-height: 1;
 }
 
-.f-gap-1 {
-  gap: 0.25rem;
+/* A toolbar decides the spacing between the controls it holds, so its children
+   carry no margins of their own; a `gap-*` utility overrides this where a
+   toolbar wants a wider rhythm. */
+.btn-toolbar {
+  gap: var(--fm-space-1);
 }
 
-.f-gap-2 {
-  gap: 0.5rem;
-}
-
+/* A menu row decides the rhythm between the icon, the label and the badges that
+   follow it, so nothing in the row carries a margin of its own. It still wraps
+   on a narrow screen: `white-space: normal` lets a long label wrap inside its own
+   flex item, and the row wraps between items. */
 .dropdown-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fm-space-1);
+  white-space: normal;
+
+  /* A glyph in the row never gives up width to the label — a squashed icon
+     reads as a different icon. */
+  & > svg,
+  & > img {
+    flex-shrink: 0;
+  }
+
+  /* A finger needs a taller row and more room to miss the edge by. */
   @media (pointer: coarse) {
-    padding: 0.5rem 1.5rem;
+    --bs-dropdown-item-padding-y: var(--fm-space-2);
+    --bs-dropdown-item-padding-x: var(--fm-space-4);
   }
 }
 
@@ -110,10 +150,6 @@ legend {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
   }
-}
-
-.dropdown-item {
-  white-space: normal; /* to see all menu text on narrow mobile screens */
 }
 
 .w-4 {
@@ -156,7 +192,50 @@ legend {
   margin-left: var(--bs-dropdown-item-padding-x);
 }
 
+/* An outline toggle must not look toggled just because the pointer is over it,
+   or because it kept focus after a tap. Bootstrap paints hover and
+   :focus-visible with the same solid fill it uses for `.active`, so the fill is
+   reserved for the toggled state and hover/focus get a subtle tint instead
+   (the focus ring itself is left untouched). `:active` stays solid — that is
+   press feedback, not state. */
 .btn-outline-primary,
 .btn-outline-secondary {
   background-color: var(--bs-body-bg);
+
+  &:not(.active, .show, :disabled, .disabled):is(:hover, :focus-visible) {
+    color: var(--bs-btn-color);
+    background-color: var(--fm-btn-subtle-bg);
+    border-color: var(--bs-btn-border-color);
+  }
+}
+
+.btn-outline-primary {
+  --fm-btn-subtle-bg: var(--bs-primary-bg-subtle);
+  --fm-btn-on-hover-bg: #0b5ed7;
+  --fm-btn-on-hover-border: #0a58ca;
+}
+
+.btn-outline-secondary {
+  --fm-btn-subtle-bg: var(--bs-secondary-bg-subtle);
+  --fm-btn-on-hover-bg: #5c636a;
+  --fm-btn-on-hover-border: #565e64;
+}
+
+/* A toggled outline button still has to react to the pointer, so it darkens on
+   hover the way a solid button of the same variant does. */
+.btn-outline-primary.active,
+.btn-outline-secondary.active,
+.btn-check:checked + .btn-outline-primary,
+.btn-check:checked + .btn-outline-secondary {
+  &:is(:hover, :focus-visible) {
+    color: var(--bs-btn-active-color);
+    background-color: var(--fm-btn-on-hover-bg);
+    border-color: var(--fm-btn-on-hover-border);
+  }
+}
+
+/* Bootstrap's 200px folds a hint into a narrow column, and the `?` marks explain
+   in whole sentences. Bounded by the viewport so a phone keeps it on screen. */
+.tooltip {
+  --bs-tooltip-max-width: min(24rem, calc(100vw - 2rem));
 }

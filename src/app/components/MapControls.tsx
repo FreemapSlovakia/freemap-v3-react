@@ -1,18 +1,27 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { type MapViewState, mapRefocus } from '@features/map/model/actions.js';
+import { steppedZoom } from '@features/map/zoomStep.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
 import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
+import { useMediaQuery } from 'react-responsive';
 import { toggleLocate } from '../store/actions.js';
+import { MapManageButton } from './MapManageButton.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
 
 export function MapControls(): ReactElement | null {
+  // The zoom buttons read Leaflet's live min/max zoom, which follows the
+  // attached layers — a change the compiler cannot see, so a memoized toolbar
+  // keeps a button greyed out after a layer swap.
+  'use no memo';
+
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -23,7 +32,50 @@ export function MapControls(): ReactElement | null {
 
   const locate = useAppSelector((state) => state.location.locate);
 
+  const locating = useAppSelector((state) => state.location.locating);
+
   const gpsTracked = useAppSelector((state) => state.map.gpsTracked);
+
+  const headingSource = useAppSelector(
+    (state) => state.locationSettings.headingSource,
+  );
+
+  const location = useAppSelector((state) => state.location.location);
+
+  // while picking a photo position or drawing a map-area rectangle, the map
+  // switcher is restricted to plain layer switching — managing maps is out of
+  // the way of the pick
+  const restrictToMapSwitching = useAppSelector(
+    (state) =>
+      state.gallery.pickingPositionForId !== null ||
+      state.mapArea.selecting !== null,
+  );
+
+  const handleLocateClick = useCallback(() => {
+    // Locating on but not following — the user panned away from the position.
+    // Pressing the button then means "take me back", not "stop locating"; only
+    // a press while following turns locating off.
+    if (locate && !gpsTracked) {
+      dispatch(
+        mapRefocus(
+          location
+            ? { lat: location.lat, lon: location.lon, gpsTracked: true }
+            : { gpsTracked: true },
+        ),
+      );
+
+      return;
+    }
+
+    // iOS forgets the orientation grant between page loads while the preference
+    // survives, so a stored compass choice needs a gesture to revive it; this is
+    // the earliest one that means "I want to be located".
+    if (!locate && headingSource === 'compass') {
+      ensureCompassPermission(dispatch);
+    }
+
+    dispatch(toggleLocate(undefined));
+  }, [dispatch, gpsTracked, headingSource, locate, location]);
 
   const onMapRefocus = useCallback(
     (changes: Partial<MapViewState>) => {
@@ -31,6 +83,12 @@ export function MapControls(): ReactElement | null {
     },
     [dispatch],
   );
+
+  // An installed app has no browser chrome to escape, so the button would win
+  // nothing. Deliberately not `(display-mode: fullscreen)` as well: that also
+  // matches while the Fullscreen API is active, which would take the button
+  // away at the moment it is needed to leave again.
+  const installed = useMediaQuery({ query: '(display-mode: standalone)' });
 
   const map = useMap();
 
@@ -48,11 +106,13 @@ export function MapControls(): ReactElement | null {
     }
   }, []);
 
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [fullscreen, setFullscreen] = useState(() =>
+    Boolean(document.fullscreenElement),
+  );
 
   useEffect(() => {
     function handler() {
-      setForceUpdate(forceUpdate + 1);
+      setFullscreen(Boolean(document.fullscreenElement));
     }
 
     document.addEventListener('fullscreenchange', handler);
@@ -60,7 +120,7 @@ export function MapControls(): ReactElement | null {
     return () => {
       document.removeEventListener('fullscreenchange', handler);
     };
-  }, [forceUpdate]);
+  }, []);
 
   return !map ? null : (
     <Toolbar className="m-2">
@@ -68,13 +128,13 @@ export function MapControls(): ReactElement | null {
         <MapSwitchButton />
       )}
 
-      <ButtonGroup className="ms-1">
+      <ButtonGroup>
         <LongPressTooltip label={m?.main.zoomIn}>
           {({ props }) => (
             <Button
               variant="secondary"
               onClick={() => {
-                onMapRefocus({ zoom: zoom + 1 });
+                onMapRefocus({ zoom: steppedZoom(zoom, 1) });
               }}
               disabled={zoom >= map.getMaxZoom()}
               {...props}
@@ -89,7 +149,7 @@ export function MapControls(): ReactElement | null {
             <Button
               variant="secondary"
               onClick={() => {
-                onMapRefocus({ zoom: zoom - 1 });
+                onMapRefocus({ zoom: steppedZoom(zoom, -1) });
               }}
               disabled={zoom <= map.getMinZoom()}
               {...props}
@@ -104,44 +164,42 @@ export function MapControls(): ReactElement | null {
         <LongPressTooltip label={m?.main.locateMe}>
           {({ props }) => (
             <Button
-              className="ms-1"
-              onClick={() => {
-                dispatch(toggleLocate(undefined));
-              }}
+              onClick={handleLocateClick}
               active={locate}
               variant={gpsTracked ? 'warning' : 'secondary'}
               {...props}
             >
-              <FaRegDotCircle />
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
-
-      {document.fullscreenEnabled && (
-        <LongPressTooltip
-          label={
-            document.fullscreenElement
-              ? m?.general.exitFullscreen
-              : m?.general.fullscreen
-          }
-        >
-          {({ props }) => (
-            <Button
-              className="ms-1"
-              variant="secondary"
-              onClick={handleFullscreenClick}
-              {...props}
-            >
-              {document.fullscreenElement ? (
-                <RiFullscreenExitLine />
+              {locating ? (
+                <Spinner animation="border" size="sm" />
               ) : (
-                <RiFullscreenLine />
+                <FaRegDotCircle />
               )}
             </Button>
           )}
         </LongPressTooltip>
       )}
+
+      {document.fullscreenEnabled && !installed && (
+        <LongPressTooltip
+          label={fullscreen ? m?.general.exitFullscreen : m?.general.fullscreen}
+        >
+          {({ props }) => (
+            <Button
+              variant="secondary"
+              onClick={handleFullscreenClick}
+              {...props}
+            >
+              {fullscreen ? <RiFullscreenExitLine /> : <RiFullscreenLine />}
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
+
+      {/* Last, being the one button that leads away from the map rather than
+          acting on it. Never in an embed: the layer table, the custom maps and
+          the caches behind it belong to the visitor's own account and browser,
+          not to the page the map is embedded in. */}
+      {!window.fmEmbedded && !restrictToMapSwitching && <MapManageButton />}
     </Toolbar>
   );
 }

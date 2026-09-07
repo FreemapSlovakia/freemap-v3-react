@@ -2,14 +2,11 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import {
-  type ReactElement,
-  type SubmitEvent,
-  useCallback,
-  useState,
-} from 'react';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaLayerGroup, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -24,39 +21,38 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
 
   const m = useMessages();
 
+  const canSaveSettings = useCanSaveSettings();
+
   const [layersSettings, setLayersSettings] = useState(initLayersSettings);
 
   const dispatch = useDispatch();
 
-  const close = useCallback(() => {
+  const close = () => {
     dispatch(setActiveModal(null));
-  }, [dispatch]);
+  };
 
-  const handleReset = useCallback(() => {
+  const handleReset = () => {
     setLayersSettings(mapInitialState.layersSettings);
-  }, []);
+  };
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
-  useDocumentTitle(show ? m?.mapLayers.configureLayers : undefined);
+  useDocumentTitle(show ? m?.mapLayers.layersConfiguration : undefined);
 
-  const handleSubmit = useCallback(
-    (e: SubmitEvent) => {
-      e.preventDefault();
+  const handleSubmit = (e: SubmitEvent) => {
+    e.preventDefault();
 
-      dispatch(saveSettings({ settings: { layersSettings } }));
-    },
-    [dispatch, layersSettings],
-  );
+    dispatch(saveSettings({ settings: { layersSettings } }));
+  };
 
   return (
     <Modal show={show} onHide={close} scrollable>
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaLayerGroup /> {m?.mapLayers.configureLayers}
+            <FaLayerGroup /> {m?.mapLayers.layersConfiguration}
           </Modal.Title>
         </Modal.Header>
 
@@ -73,10 +69,12 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
           <Button
             variant="primary"
             type="submit"
-            disabled={layersSettings === initLayersSettings}
+            disabled={layersSettings === initLayersSettings || !canSaveSettings}
           >
             <FaCheck /> {m?.general.save}
           </Button>
+
+          <OfflineBadge offline={!canSaveSettings} />
 
           <ResetToDefaultsButton
             onClick={handleReset}

@@ -16,7 +16,7 @@ For example:
 - browse photos using the left and right arrow keys
 - press <kbd>g</kbd>, then <kbd>r</kbd> to start route search
 - press <kbd>g</kbd>, then <kbd>l</kbd> to start the line drawing mode
-- press <kbd>g</kbd>, then <kbd>l</kbd> to view photos starting from the most recently uploaded
+- press <kbd>p</kbd>, then <kbd>l</kbd> to view photos starting from the most recently uploaded
 - press <kbd>Esc</kbd> to close dialogs and tools
 
 You can find more shortcuts directly next to items in the menu and toolbars.

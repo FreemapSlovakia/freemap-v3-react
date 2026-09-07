@@ -6,7 +6,7 @@ icon: FaFileContract
 
 # Terms of Service
 
-Last updated: June 11, 2026
+Last updated: September 1, 2026
 
 These Terms of Service ("Terms") govern Your access to and use of the Freemap.sk website and applications (the "Service") and, in particular, the purchase and use of the paid **Freemap Premium** subscription and of **Credits**. Please read them carefully. By using the Service or making a purchase, You agree to be bound by these Terms.
 
@@ -20,7 +20,7 @@ The words of which the initial letter is capitalized have meanings defined under
 
 For the purposes of these Terms:
 
-- **Service Provider / Seller** (referred to as "We", "Us" or "Our") refers to **Ing. Martin Ždila s.r.o.**, with its registered seat at Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovak Republic, Company ID (IČO): 50545876, Tax ID (DIČ): 2120371594, VAT ID (IČ DPH): SK2120371594, registered in the Commercial Register of the District Court Košice I.
+- **Service Provider / Seller** (referred to as "We", "Us" or "Our") refers to **Ing. Martin Ždila s.r.o.**, with its registered seat at Humenská 347/47, 040 11 Košice – mestská časť Západ, Slovak Republic, Company ID (IČO): 50545876, Tax ID (DIČ): 2120371594, VAT ID (IČ DPH): SK2120371594, registered in the Commercial Register of the City Court Košice (Mestský súd Košice), Section Sro, Insert No. 40119/V.
 
 - **Freemap Slovakia** refers to the civic association that operates the Freemap.sk project and brand. The free parts of the Service are provided by Freemap Slovakia; the paid **Freemap Premium** subscription is sold and provided by the Seller.
 
@@ -55,9 +55,9 @@ The exact set of features may evolve over time. We may add, change or remove ind
 
 ## Price and billing
 
-Freemap Premium is offered as a **yearly Subscription** at the price of **EUR 8 per year** (the current price is always shown at checkout and prevails over any figure stated here). Prices are stated in euro (EUR) and include applicable value-added tax (VAT) where required; the final amount, including any VAT, is shown before You confirm Your purchase. We issue You a receipt or invoice for each payment.
+Freemap Premium is offered as a **yearly Subscription** at the price of **EUR 15 per year** (the current price is always shown at checkout and prevails over any figure stated here). Prices are stated in euro (EUR) and include applicable value-added tax (VAT) where required; the final amount, including any VAT, is shown before You confirm Your purchase. We issue You a receipt or invoice for each payment.
 
-The Subscription is **auto-renewing**: it renews automatically for successive one-year periods at the then-current price, unless You cancel before the renewal date. We will charge the payment method You provided, through Our Payment Processor, at each renewal.
+The Subscription is **auto-renewing**: it renews automatically for successive one-year periods at the price of Your Subscription, unless You cancel before the renewal date. A price increase applies to new Subscriptions; Your Subscription keeps its price for as long as it stays active, and We will notify You in advance if that ever has to change. We will charge the payment method You provided, through Our Payment Processor, at each renewal.
 
 ## Payment
 

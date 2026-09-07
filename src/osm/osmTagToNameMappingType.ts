@@ -77,6 +77,7 @@ export type OsmTagToNameMapping = {
     driving_school: string;
     embassy: string;
     events_venue: string;
+    exhibition_centre: string;
     fast_food: string;
     feeding_place: string;
     ferry_terminal: string;
@@ -94,7 +95,10 @@ export type OsmTagToNameMapping = {
     ice_cream: string;
     kindergarten: string;
     language_school: string;
+    letter_box: string;
     library: string;
+    loading_dock: string;
+    lounger: string;
     marketplace: string;
     monastery: string;
     money_transfer: string;
@@ -114,7 +118,9 @@ export type OsmTagToNameMapping = {
     post_office: string;
     prison: string;
     pub: string;
+    public_bath: string;
     public_bookcase: string;
+    public_building: string;
     ranger_station: string;
     recycling: string;
     restaurant: string;
@@ -248,6 +254,15 @@ export type OsmTagToNameMapping = {
   };
   boundary: {
     '*': string;
+    aboriginal_lands: string;
+    cadastral: string;
+    census: string;
+    forest_compartment: string;
+    forest_planning: string;
+    'geomorphological-unit': string;
+    health: string;
+    local_authority: string;
+    maritime: string;
     marker: string;
     administrative: {
       '*': string;
@@ -264,13 +279,111 @@ export type OsmTagToNameMapping = {
       };
     };
     national_park: string;
+    political: string;
+    postal_code: string;
     protected_area: string;
+    religious_administration: string;
+    statistical: string;
+    water_protection_area: string;
   };
   'abandoned:building': {
     '*': string;
   };
+  changing_table: {
+    yes: string;
+    limited: string;
+    no: string;
+  };
+  club: {
+    '*': string;
+    automobile: string;
+    charity: string;
+    culture: string;
+    fishing: string;
+    hunting: string;
+    music: string;
+    nature: string;
+    scout: string;
+    social: string;
+    sport: string;
+    veterans: string;
+    no: string;
+  };
   'disused:building': {
     '*': string;
+  };
+  healthcare: {
+    '*': string;
+    alternative: string;
+    audiologist: string;
+    blood_donation: string;
+    centre: string;
+    clinic: string;
+    counselling: string;
+    dentist: string;
+    dialysis: string;
+    doctor: string;
+    hospital: string;
+    laboratory: string;
+    midwife: string;
+    nurse: string;
+    optometrist: string;
+    pharmacy: string;
+    physiotherapist: string;
+    podiatrist: string;
+    psychotherapist: string;
+    rehabilitation: string;
+    speech_therapist: string;
+    no: string;
+  };
+  junction: {
+    '*': string;
+    circular: string;
+    intersection: string;
+    jughandle: string;
+    roundabout: string;
+    no: string;
+  };
+  lock: {
+    '*': string;
+    no: string;
+  };
+  office: {
+    '*': string;
+    accountant: string;
+    advertising_agency: string;
+    architect: string;
+    association: string;
+    company: string;
+    consulting: string;
+    coworking: string;
+    diplomatic: string;
+    educational_institution: string;
+    employment_agency: string;
+    energy_supplier: string;
+    estate_agent: string;
+    financial: string;
+    financial_advisor: string;
+    forestry: string;
+    government: string;
+    insurance: string;
+    it: string;
+    lawyer: string;
+    logistics: string;
+    newspaper: string;
+    ngo: string;
+    notary: string;
+    political_party: string;
+    property_management: string;
+    religion: string;
+    research: string;
+    security: string;
+    tax_advisor: string;
+    telecommunication: string;
+    travel_agent: string;
+    union: string;
+    water_utility: string;
+    no: string;
   };
   'ruins:building': {
     '*': string;
@@ -289,18 +402,24 @@ export type OsmTagToNameMapping = {
       };
     };
     abandoned: string;
+    agricultural: string;
+    allotment_house: string;
     apartments: string;
     barn: string;
+    boathouse: string;
     bungalow: string;
     bunker: string;
     cabin: string;
+    carport: string;
     cathedral: string;
     chapel: string;
     church: string;
     civic: string;
     collapsed: string;
+    college: string;
     commercial: string;
     construction: string;
+    container: string;
     cowshed: string;
     detached: string;
     dormitory: string;
@@ -308,6 +427,7 @@ export type OsmTagToNameMapping = {
     entrance: string;
     farm_auxiliary: string;
     farm: string;
+    fire_station: string;
     garage: string;
     garages: string;
     government: string;
@@ -315,6 +435,7 @@ export type OsmTagToNameMapping = {
     greenhouse: string;
     hangar: string;
     hayloft: string;
+    historic: string;
     hospital: string;
     hotel: string;
     house: string;
@@ -326,7 +447,9 @@ export type OsmTagToNameMapping = {
     manufacture: string;
     mosque: string;
     office: string;
+    outbuilding: string;
     parking: string;
+    pavilion: string;
     public: string;
     residential: string;
     retail: string;
@@ -337,6 +460,9 @@ export type OsmTagToNameMapping = {
     service: string;
     shed: string;
     shrine: string;
+    silo: string;
+    sports_centre: string;
+    sports_hall: string;
     stable: string;
     stadium: string;
     static_caravan: string;
@@ -345,17 +471,75 @@ export type OsmTagToNameMapping = {
     supermarket: string;
     synagogue: string;
     temple: string;
+    tent: string;
     terrace: string;
+    toilets: string;
     train_station: string;
     transformer_tower: string;
     transportation: string;
     university: string;
     warehouse: string;
     yes: string;
+    no: string;
+  };
+  craft: {
+    '*': string;
+    yes: string;
+    bakery: string;
+    beekeeper: string;
+    blacksmith: string;
+    brewery: string;
+    builder: string;
+    carpenter: string;
+    caterer: string;
+    cleaning: string;
+    confectionery: string;
+    distillery: string;
+    dressmaker: string;
+    electrician: string;
+    electronics_repair: string;
+    gardener: string;
+    glaziery: string;
+    grinding_mill: string;
+    handicraft: string;
+    hvac: string;
+    jeweller: string;
+    joiner: string;
+    key_cutter: string;
+    locksmith: string;
+    metal_construction: string;
+    painter: string;
+    photographer: string;
+    plumber: string;
+    pottery: string;
+    roofer: string;
+    sawmill: string;
+    shoemaker: string;
+    signmaker: string;
+    stonemason: string;
+    tailor: string;
+    tiler: string;
+    upholsterer: string;
+    watchmaker: string;
+    window_construction: string;
+    winery: string;
   };
   emergency: {
+    access_point: string;
+    ambulance_station: string;
+    assembly_point: string;
     defibrillator: string;
+    fire_extinguisher: string;
+    fire_hose: string;
+    fire_hydrant: string;
+    fire_water_pond: string;
+    landing_site: string;
+    life_ring: string;
+    lifeguard: string;
     phone: string;
+    siren: string;
+    suction_point: string;
+    water_tank: string;
   };
   entrance: {
     '*': string;
@@ -429,17 +613,49 @@ export type OsmTagToNameMapping = {
     private: string;
     designated: string;
   };
+  fitness_station: {
+    air_walker: string;
+    balance_beam: string;
+    box: string;
+    elliptical_trainer: string;
+    exercise_bike: string;
+    horizontal_bar: string;
+    horizontal_ladder: string;
+    hyperextension: string;
+    parallel_bars: string;
+    'push-up': string;
+    rings: string;
+    rower: string;
+    sign: string;
+    'sit-up': string;
+    stairs: string;
+    wall_bars: string;
+    yes: string;
+  };
   highway: {
     '*': string;
     bridleway: string;
     bus_stop: string;
+    busway: string;
     construction: string;
+    corridor: string;
     crossing: string;
     cycleway: string;
+    elevator: string;
+    emergency_access_point: string;
+    emergency_bay: string;
+    escape: string;
     footway: string;
+    give_way: string;
+    hitchhiking: string;
+    ladder: string;
     living_street: string;
+    milestone: string;
+    mini_roundabout: string;
     motorway: string;
+    motorway_junction: string;
     motorway_link: string;
+    passing_place: string;
     path: {
       '*': string;
       foot: {
@@ -455,12 +671,14 @@ export type OsmTagToNameMapping = {
     platform: string;
     primary: string;
     primary_link: string;
+    priority: string;
+    proposed: string;
     raceway: string;
     residential: string;
     rest_area: string;
     road: string;
     secondary: string;
-    secondaty_link: string;
+    secondary_link: string;
     service: {
       '*': string;
       service: {
@@ -473,10 +691,15 @@ export type OsmTagToNameMapping = {
         parking_aisle: string;
       };
     };
+    services: string;
+    speed_camera: string;
+    speed_display: string;
     steps: string;
+    stop: string;
     street_lamp: string;
     tertiary: string;
     tertiary_link: string;
+    toll_gantry: string;
     track: {
       '*': string;
       tracktype: {
@@ -487,13 +710,30 @@ export type OsmTagToNameMapping = {
         grade5: string;
       };
     };
+    traffic_calming: string;
+    traffic_island: string;
+    traffic_mirror: string;
+    traffic_sign: string;
+    traffic_signals: string;
+    trailhead: string;
     trunk: string;
     trunk_link: string;
+    turning_circle: string;
+    turning_loop: string;
     unclassified: string;
     via_ferrata: string;
   };
   historic: {
     '*': string;
+    battlefield: string;
+    bomb_crater: string;
+    bunker: string;
+    dome: string;
+    quarry: string;
+    railway: string;
+    railway_station: string;
+    roman_road: string;
+    tower: string;
     yes: string;
     aircraft: string;
     archaeological_site: string;
@@ -533,35 +773,71 @@ export type OsmTagToNameMapping = {
   landuse: {
     '*': string;
     allotments: string;
+    animal_keeping: string;
+    apiary: string;
+    aquaculture: string;
     basin: string;
     brownfield: string;
     cemetery: string;
+    churchyard: string;
+    civic: string;
+    civic_admin: string;
     commercial: string;
+    conservation: string;
     construction: string;
+    culture: string;
+    depot: string;
     education: string;
+    emergency: string;
+    fairground: string;
+    farm: string;
     farmland: string;
     farmyard: string;
+    flowerbed: string;
     forest: string;
+    forestry: string;
     garages: string;
+    garden: string;
     grass: string;
+    greenery: string;
     greenfield: string;
+    greenhouse_horticulture: string;
+    harbour: string;
+    healthcare: string;
+    highway: string;
+    houseboat: string;
     industrial: string;
+    institutional: string;
     landfill: string;
     logging: string;
     meadow: string;
     military: string;
+    mine_spoils: string;
     orchard: string;
+    paddock: string;
+    peat_cutting: string;
     pedestrian: string;
+    piste: string;
     plant_nursery: string;
+    plantation: string;
     quarry: string;
     railway: string;
     recreation_ground: string;
-    religions: string;
+    religious: string;
     reservoir: string;
     residential: string;
     retail: string;
-    vineyard: string;
+    salt_pond: string;
+    school: string;
+    shrubs: string;
+    static_caravan: string;
+    storage: string;
+    tourism: string;
+    traffic_island: string;
+    tree_pit: string;
     village_green: string;
+    vineyard: string;
+    wasteland: string;
     winter_sports: string;
   };
   leisure: {
@@ -574,6 +850,7 @@ export type OsmTagToNameMapping = {
     bird_hide: string;
     bleachers: string;
     bowling_alley: string;
+    common: string;
     dance: string;
     disc_golf_course: string;
     dog_park: string;
@@ -587,7 +864,9 @@ export type OsmTagToNameMapping = {
     hackerspace: string;
     high_ropes_course: string;
     horse_riding: string;
+    hot_tub: string;
     ice_rink: string;
+    indoor_play: string;
     marina: string;
     miniature_golf: string;
     nature_reserve: string;
@@ -602,6 +881,7 @@ export type OsmTagToNameMapping = {
     };
     pitch: string;
     playground: string;
+    recreation_ground: string;
     resort: string;
     sauna: {
       '*': string;
@@ -615,6 +895,7 @@ export type OsmTagToNameMapping = {
         infrared: string;
       };
     };
+    schoolyard: string;
     slipway: string;
     sports_centre: string;
     sports_hall: string;
@@ -648,6 +929,7 @@ export type OsmTagToNameMapping = {
     apiary: string;
     beacon: string;
     beehive: string;
+    breakwater: string;
     bridge: string;
     bunker_silo: string;
     cairn: string;
@@ -697,6 +979,7 @@ export type OsmTagToNameMapping = {
       };
     };
     pumping_station: string;
+    quay: string;
     reservoir_covered: string;
     silo: string;
     snow_cannon: string;
@@ -728,6 +1011,7 @@ export type OsmTagToNameMapping = {
         watchtower: string;
       };
     };
+    tunnel: string;
     utility_pole: string;
     wastewater_plant: string;
     water_tap: string;
@@ -765,26 +1049,38 @@ export type OsmTagToNameMapping = {
   natural: {
     '*': string;
     arch: string;
+    arete: string;
     bare_rock: string;
     basin: string;
     bay: string;
     beach: string;
     birds_nest: string;
+    cape: string;
     cave_entrance: string;
     cliff: string;
+    crevasse: string;
+    dune: string;
     earth_bank: string;
     fell: string;
     geyser: string;
     glacier: string;
+    grass: string;
     grassland: string;
     gully: string;
     heath: string;
+    hill: string;
     hot_spring: string;
+    isthmus: string;
+    land: string;
+    landform: string;
     landslide: string;
     mountain_range: string;
     mud: string;
     peak: string;
+    peninsula: string;
+    plain: string;
     plateau: string;
+    reef: string;
     ridge: string;
     rock: string;
     saddle: string;
@@ -792,7 +1088,9 @@ export type OsmTagToNameMapping = {
     scree: string;
     scrub: string;
     shingle: string;
+    shoal: string;
     shrub: string;
+    shrubbery: string;
     sinkhole: string;
     spring: {
       '*': string;
@@ -815,6 +1113,7 @@ export type OsmTagToNameMapping = {
       };
     };
     stone: string;
+    strait: string;
     tree: {
       '*': string;
       protected: {
@@ -828,10 +1127,33 @@ export type OsmTagToNameMapping = {
         agricultural: string;
       };
     };
+    tree_group: string;
     tree_row: string;
+    tree_stump: string;
     valley: string;
     volcano: string;
-    water: string;
+    water: {
+      '*': string;
+      water: {
+        basin: string;
+        canal: string;
+        ditch: string;
+        drain: string;
+        fish_pass: string;
+        lagoon: string;
+        lake: string;
+        moat: string;
+        oxbow: string;
+        pond: string;
+        reflecting_pool: string;
+        reservoir: string;
+        river: string;
+        salt_pond: string;
+        stream: string;
+        stream_pool: string;
+        wastewater: string;
+      };
+    };
     wetland: {
       '*': string;
       wetland: {
@@ -858,24 +1180,104 @@ export type OsmTagToNameMapping = {
   };
   place: {
     '*': string;
+    allotments: string;
+    archipelago: string;
+    borough: string;
+    cadastral_community: string;
     city: string;
+    city_block: string;
+    civil_parish: string;
     country: string;
+    county: string;
+    croft: string;
+    district: string;
     farm: string;
     hamlet: string;
     island: string;
     islet: string;
     isolated_dwelling: string;
     locality: string;
+    municipality: string;
+    neighbourhood: string;
     ocean: string;
+    plot: string;
+    province: string;
+    quarter: string;
+    region: string;
     sea: string;
     square: string;
     state: string;
+    subdivision: string;
     suburb: string;
     town: string;
+    township: string;
     village: string;
+    // Not real OSM tags: Nominatim classifies address objects, address
+    // interpolations and computed postcode areas this way, and Photon falls back
+    // to `yes` for a class it cannot use. See doc/photon-geocoder.md.
+    house: string;
+    house_number: string;
+    postcode: string;
+    yes: string;
+  };
+  playground: {
+    '*': string;
+    activitypanel: string;
+    aerialrotator: string;
+    agility_trail: string;
+    baby_swing: string;
+    balancebeam: string;
+    basketrotator: string;
+    basketswing: string;
+    bridge: string;
+    climbing: string;
+    climbing_pole: string;
+    climbing_slope: string;
+    climbingframe: string;
+    climbingwall: string;
+    cushion: string;
+    exercise: string;
+    hammock: string;
+    hopscotch: string;
+    horizontal_bar: string;
+    ladder: string;
+    platform: string;
+    playhouse: string;
+    pump: string;
+    rope_traverse: string;
+    roundabout: string;
+    sandpit: string;
+    seesaw: string;
+    sledding: string;
+    slide: string;
+    spinner: string;
+    splash_pad: string;
+    spring_board: string;
+    springy: string;
+    stepping_stone: string;
+    steps: string;
+    structure: string;
+    swing: string;
+    teenshelter: string;
+    trampoline: string;
+    tunnel_tube: string;
+    water: string;
+    water_channel: string;
+    wobble_bridge: string;
+    youth_bench: string;
+    zipwire: string;
   };
   power: {
     '*': string;
+    cable: string;
+    cable_distribution: string;
+    cable_distribution_cabinet: string;
+    catenary_mast: string;
+    catenary_portal: string;
+    circuit: string;
+    compensator: string;
+    connection: string;
+    converter: string;
     generator: {
       '*': string;
       'generator:source': {
@@ -955,8 +1357,14 @@ export type OsmTagToNameMapping = {
         };
       };
     };
+    heliostat: string;
+    insulator: string;
+    inverter: string;
     line: string;
+    line_section: string;
+    minor_cable: string;
     minor_line: string;
+    minor_underground_cable: string;
     plant: {
       '*': string;
       'plant:source': {
@@ -1037,9 +1445,15 @@ export type OsmTagToNameMapping = {
       };
     };
     pole: string;
+    portal: string;
+    roof_pole: string;
     substation: string;
+    switch: string;
+    switchgear: string;
+    terminal: string;
     tower: string;
     transformer: string;
+    transition: string;
   };
   public_transport: {
     platform: string;
@@ -1054,10 +1468,13 @@ export type OsmTagToNameMapping = {
     crossing: string;
     derail: string;
     disused: string;
+    facility: string;
     funicular: string;
     halt: string;
+    junction: string;
     level_crossing: string;
     light_rail: string;
+    milestone: string;
     miniature: string;
     monorail: string;
     narrow_gauge: string;
@@ -1066,13 +1483,19 @@ export type OsmTagToNameMapping = {
     proposed: string;
     rail: string;
     railway_crossing: string;
+    razed: string;
     roundhouse: string;
     signal: string;
+    signal_box: string;
+    site: string;
     station: string;
     stop: string;
     subway_entrance: string;
     subway: string;
     switch: string;
+    train_station_entrance: string;
+    tram_crossing: string;
+    tram_level_crossing: string;
     tram_stop: string;
     tram: string;
     traverser: string;
@@ -1081,9 +1504,11 @@ export type OsmTagToNameMapping = {
     wash: string;
     water_crane: string;
     workshop: string;
+    yard: string;
   };
   shop: {
     '*': string;
+    agrarian: string;
     alcohol: string;
     antiques: string;
     art: string;
@@ -1190,10 +1615,12 @@ export type OsmTagToNameMapping = {
     shoes: string;
     sports: string;
     stationery: string;
+    storage_rental: string;
     supermarket: string;
     tailor: string;
     tattoo: string;
     tea: string;
+    telecommunication: string;
     ticket: string;
     tobacco: string;
     toys: string;
@@ -1441,6 +1868,8 @@ export type OsmTagToNameMapping = {
       };
     };
     attraction: string;
+    cabin: string;
+    camp_pitch: string;
     camp_site: string;
     caravan_site: string;
     chalet: string;
@@ -1448,6 +1877,7 @@ export type OsmTagToNameMapping = {
     guest_house: string;
     hostel: string;
     hotel: string;
+    hunting_lodge: string;
     information: {
       '*': string;
       information: {
@@ -1472,9 +1902,37 @@ export type OsmTagToNameMapping = {
       '*': string;
       route: {
         '*': string;
-        bicycle: string;
+        aerialway: string;
+        bicycle: {
+          '*': string;
+          network: {
+            lcn: string;
+            rcn: string;
+            ncn: string;
+            icn: string;
+          };
+        };
         bus: string;
-        foot: string;
+        canoe: string;
+        canyoning: string;
+        detour: string;
+        emergency_access: string;
+        ferry: string;
+        fitness_trail: string;
+        foot: {
+          '*': string;
+          network: {
+            lwn: string;
+            rwn: string;
+            nwn: string;
+            iwn: string;
+          };
+          pilgrimage: {
+            '*': string;
+            no: string;
+          };
+        };
+        funicular: string;
         hiking: {
           '*': string;
           network: {
@@ -1483,13 +1941,48 @@ export type OsmTagToNameMapping = {
             nwn: string;
             iwn: string;
           };
+          pilgrimage: {
+            '*': string;
+            no: string;
+          };
         };
-        horse: string;
+        historic: string;
+        historic_railway: string;
+        horse: {
+          '*': string;
+          network: {
+            lhn: string;
+            rhn: string;
+          };
+        };
+        inline_skates: string;
+        junction: string;
+        light_rail: string;
+        motorboat: string;
         mtb: string;
+        nordic_walking: string;
+        pipeline: string;
         piste: string;
+        portage: string;
+        power: string;
         railway: string;
+        road: string;
+        running: string;
+        share_taxi: string;
         ski: string;
+        subway: string;
+        tracks: string;
+        train: string;
         tram: string;
+        trolleybus: string;
+        via_ferrata: string;
+        waterway: string;
+        worship: {
+          '*': string;
+          worship: {
+            stations_of_the_cross: string;
+          };
+        };
       };
     };
   };
@@ -1523,20 +2016,27 @@ export type OsmTagToNameMapping = {
   };
   waterway: {
     '*': string;
+    boatyard: string;
     canal: string;
     canoe_pass: string;
     dam: string;
     ditch: string;
+    dock: string;
     drain: string;
+    drystream: string;
     fairway: string;
     fish_pass: string;
     flowline: string;
     link: string;
+    lock_gate: string;
+    milestone: string;
     pressurised: string;
     rapids: string;
     river: string;
+    sluice_gate: string;
     stream: string;
     tidal_channel: string;
+    wadi: string;
     waterfall: string;
     weir: string;
   };

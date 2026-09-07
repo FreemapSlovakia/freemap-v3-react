@@ -18,10 +18,21 @@ const premiumDate = new Date('2026-05-17T12:00:48.000Z');
 function makeState(): RootState {
   return {
     l10n: { chosenLanguage: 'sk', language: 'en' },
-    main: { hiddenInfoBars: { foo: 1 } },
+    main: { hiddenInfoBars: { foo: 1 }, shownInfoBars: { foo: 2 } },
     homeLocation: { homeLocation: { lat: 1, lon: 2 } },
     // In state but not persisted (no PERSIST entry).
-    location: { locate: true, location: { lat: 1, lon: 2, accuracy: 5 } },
+    location: {
+      locate: true,
+      location: {
+        lat: 1,
+        lon: 2,
+        accuracy: 5,
+        heading: null,
+        speed: null,
+        at: 0,
+      },
+    },
+    locationSettings: { headingSource: 'compass', showBearingLine: false },
     cookieConsent: { cookieConsentResult: true, analyticCookiesAllowed: false },
     drawingSettings: {
       style: {
@@ -72,6 +83,7 @@ function makeState(): RootState {
       maxZoom: 20,
       resolutionScale: null,
       featureScale: 1,
+      zoomSnap: 0.5,
     },
     gallerySettings: {
       colorizeBy: null,
@@ -81,6 +93,12 @@ function makeState(): RootState {
       premium: true,
     },
     mapDetails: { excludeSources: [] },
+    weatherRadarSettings: { showNowcast: false },
+    elevationSettings: {
+      despikeWindow: 25,
+      ditchFillWindow: 25,
+      gradeWindow: 50,
+    },
     searchSettings: {
       resultStyle: {
         color: '#3388ff',
@@ -105,7 +123,30 @@ function makeState(): RootState {
       colorizeTrackBy: 'heartRate',
       colorizeLegend: true,
     },
-    trackingSettings: { colorizeBy: 'speed', colorizeLegend: true },
+    trackingSettings: {
+      colorizeBy: 'speed',
+      colorizeLegend: true,
+      showLine: false,
+      showPoints: false,
+    },
+    gpsRecorderSettings: {
+      intervalMs: 2000,
+      minDistanceM: 5,
+      maxAccuracyM: 30,
+      priority: 'balanced',
+      splitGapS: 120,
+      feedLocation: false,
+      keepScreenAwake: true,
+      style: {
+        color: '#ff0000',
+        fillColor: '#ff000033',
+        width: 4,
+        markerType: 'pin',
+        dashArray: [],
+        lineCap: 'round',
+        lineJoin: 'round',
+      },
+    },
   } as unknown as RootState;
 }
 
@@ -139,7 +180,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
 
     expect(saved).toEqual({
       l10n: { chosenLanguage: 'sk' },
-      main: { hiddenInfoBars: { foo: 1 } },
+      main: { hiddenInfoBars: { foo: 1 }, shownInfoBars: { foo: 2 } },
       homeLocation: { homeLocation: { lat: 1, lon: 2 } },
       cookieConsent: {
         cookieConsentResult: true,
@@ -195,7 +236,9 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         maxZoom: 20,
         resolutionScale: null,
         featureScale: 1,
+        zoomSnap: 0.5,
       },
+      locationSettings: { headingSource: 'compass', showBearingLine: false },
       gallerySettings: {
         colorizeBy: null,
         recentTags: ['x'],
@@ -204,6 +247,11 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         premium: true,
       },
       mapDetails: { excludeSources: [] },
+      elevationSettings: {
+        despikeWindow: 25,
+        ditchFillWindow: 25,
+        gradeWindow: 50,
+      },
       searchSettings: {
         resultStyle: {
           color: '#3388ff',
@@ -228,7 +276,31 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         colorizeTrackBy: 'heartRate',
         colorizeLegend: true,
       },
-      trackingSettings: { colorizeBy: 'speed', colorizeLegend: true },
+      trackingSettings: {
+        colorizeBy: 'speed',
+        colorizeLegend: true,
+        showLine: false,
+        showPoints: false,
+      },
+      gpsRecorderSettings: {
+        intervalMs: 2000,
+        minDistanceM: 5,
+        maxAccuracyM: 30,
+        priority: 'balanced',
+        splitGapS: 120,
+        feedLocation: false,
+        keepScreenAwake: true,
+        style: {
+          color: '#ff0000',
+          fillColor: '#ff000033',
+          width: 4,
+          markerType: 'pin',
+          dashArray: [],
+          lineCap: 'round',
+          lineJoin: 'round',
+        },
+      },
+      weatherRadarSettings: { showNowcast: false },
     });
   });
 
@@ -247,6 +319,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'drawingSettings',
         'homeLocation',
         'l10n',
+        'locationSettings',
         'main',
         'map',
         'mapDetails',
@@ -255,8 +328,11 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'routePlanner',
         'routePlannerSettings',
         'searchSettings',
+        'elevationSettings',
         'trackViewerSettings',
         'trackingSettings',
+        'gpsRecorderSettings',
+        'weatherRadarSettings',
       ].sort(),
     );
   });
@@ -312,6 +388,7 @@ describe('save → rehydrate round-trip', () => {
 
     expect(initial.l10n?.chosenLanguage).toBe('sk');
     expect(initial.main?.hiddenInfoBars).toEqual({ foo: 1 });
+    expect(initial.main?.shownInfoBars).toEqual({ foo: 2 });
     expect(initial.homeLocation?.homeLocation).toEqual({ lat: 1, lon: 2 });
     expect(initial.cookieConsent?.cookieConsentResult).toBe(true);
     expect(initial.objectsSettings?.selectedIcon).toBe('pin');
@@ -319,15 +396,29 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.routePlanner?.transportType).toBe('hiking');
     expect(initial.map?.layers).toEqual(['X']);
     expect(initial.map?.zoom).toBe(8);
+    expect(initial.map?.zoomSnap).toBe(0.5);
     expect(initial.gallerySettings?.recentTags).toEqual(['x']);
     // trackViewerSettings.colorizeTrackBy round-trips through save → rehydrate.
     expect(initial.trackViewerSettings?.colorizeTrackBy).toBe('heartRate');
-    // trackingSettings.colorizeBy round-trips through save → rehydrate.
+    // trackingSettings round-trips through save → rehydrate. The display prefs
+    // are non-default here on purpose: with the fixture's defaults they would
+    // round-trip even if they were dropped from the schema or the persist call.
     expect(initial.trackingSettings?.colorizeBy).toBe('speed');
+    expect(initial.trackingSettings?.showLine).toBe(false);
+    expect(initial.trackingSettings?.showPoints).toBe(false);
+    // gpsRecorderSettings round-trips both halves: what the recorder is asked
+    // for, and what only this app acts on.
+    expect(initial.gpsRecorderSettings?.priority).toBe('balanced');
+    expect(initial.gpsRecorderSettings?.maxAccuracyM).toBe(30);
+    expect(initial.gpsRecorderSettings?.splitGapS).toBe(120);
+    expect(initial.gpsRecorderSettings?.['feedLocation']).toBe(false);
+    // Non-default in the fixture, so a key dropped from the schema or the
+    // persist call shows up here as a default.
+    expect(initial.weatherRadarSettings?.showNowcast).toBe(false);
 
     // premiumExpiration round-trips Date → ISO string → Date.
     expect(initial.auth?.user?.premiumExpiration).toBeInstanceOf(Date);
-    expect((initial.auth?.user?.premiumExpiration as Date).toISOString()).toBe(
+    expect((initial.auth?.user?.premiumExpiration as Date)?.toISOString()).toBe(
       premiumDate.toISOString(),
     );
   });

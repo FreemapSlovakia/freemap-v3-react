@@ -1,13 +1,22 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
-import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { LocationActionItems } from '@shared/components/LocationActionItems.js';
+import type { TooltipTargetProps } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
-import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import type { LatLon } from '@shared/types/common.js';
-import type { JSX, ReactElement } from 'react';
+import type { JSX, ReactElement, ReactNode } from 'react';
 import type { OverlayProps } from 'react-bootstrap';
 import { Dropdown } from 'react-bootstrap';
-import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems.js';
+import { FaChevronRight, FaExternalLinkAlt, FaMapPin } from 'react-icons/fa';
+import {
+  hasPageItems,
+  OpenInExternalTargetItems,
+  SharePageItems,
+} from './OpenInExternalAppMenuItems.js';
 
 interface Props extends LatLon {
   lat: number;
@@ -15,9 +24,22 @@ interface Props extends LatLon {
   placement?: OverlayProps['placement'];
   includePoint?: boolean;
   pointTitle?: string;
+  /** What the place is, as OSM tags; see the `openInExternalApp` payload. */
+  pointTags?: Record<string, string>;
   pointDescription?: string;
   url?: string;
+  /** The picture itself, where there is one — what the `image` target shares as a file. */
+  imageUrl?: string;
   className?: string;
+  /**
+   * The tooltip props for the toggle, from a `LongPressTooltip` the caller
+   * wraps this in — the toggle is ours, so they can only reach it through here.
+   */
+  toggleProps?: TooltipTargetProps;
+  /** Items the menu carries above the external ones — what else this place can do. */
+  menuItems?: ReactNode;
+  /** Run when one of the shared place actions fires — a modal over the map closes itself here. */
+  onAct?: () => void;
   children: JSX.Element | JSX.Element[];
 }
 
@@ -27,49 +49,130 @@ export function OpenInExternalAppMenuButton({
   placement,
   includePoint,
   pointTitle,
+  pointTags,
   pointDescription,
   url,
+  imageUrl,
+  toggleProps,
+  menuItems,
+  onAct,
   children,
   className,
 }: Props): ReactElement {
+  const m = useMessages();
+
   const oeam = useOpenInExternalAppMessages();
 
-  const { handleSelect, menuShown, handleMenuToggle } = useMenuHandler({
-    pointTitle,
-    pointDescription,
-  });
+  // `url` deliberately stays out of this: it is what the "New window" item opens, which for a
+  // gallery photo is the picture's own address, `hmac` token and all. "Share location" shares the
+  // page the user is on instead, which is the address worth passing to someone else.
+  const { handleSelect, menuShown, handleMenuToggle, submenu } = useMenuHandler(
+    {
+      pointTitle,
+      pointTags,
+      pointDescription,
+      imageUrl,
+      at: { lat, lon },
+      includePoint,
+    },
+  );
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const sc = useScrollClasses('vertical');
+  // Same `share: false` the items get below, or the divider outlives them.
+  const pageItems = hasPageItems({ url, imageUrl, share: false });
 
   return (
     <Dropdown
       placement={placement}
       className={className}
-      onSelect={handleSelect}
+      // An item with an `eventKey` closes the menu in `handleSelect`; one
+      // without has done its own work here, and opening the submenu must leave
+      // the menu up — so closing is nobody's business but ours.
+      autoClose="outside"
+      onSelect={(eventKey, e) => {
+        handleSelect(eventKey, e);
+
+        if (eventKey === null) {
+          handleMenuToggle(false);
+        }
+      }}
       show={menuShown}
       onToggle={handleMenuToggle}
     >
-      <Dropdown.Toggle variant="secondary" title={oeam?.openInExternal}>
+      <Dropdown.Toggle
+        variant="secondary"
+        // Only where nothing else explains it.
+        title={toggleProps ? undefined : oeam?.openInExternal}
+        {...toggleProps}
+      >
         {children}
       </Dropdown.Toggle>
 
-      <Dropdown.Menu
-        popperConfig={fixedPopperConfig}
-        className="fm-dropdown-with-scroller"
-      >
-        <div className="fm-menu-scroller" ref={sc}>
-          <div />
-          <OpenInExternalAppDropdownItems
-            lat={lat}
-            lon={lon}
-            zoom={zoom}
-            includePoint={includePoint}
-            url={url}
-          />
-        </div>
-      </Dropdown.Menu>
+      <FmDropdownMenu level={submenu}>
+        {submenu === 'openExternally' ? (
+          <>
+            <SubmenuHeader icon={<FaExternalLinkAlt />} title={oeam?.openIn} />
+
+            <OpenInExternalTargetItems
+              lat={lat}
+              lon={lon}
+              zoom={zoom}
+              includePoint={includePoint}
+              url={url}
+            />
+          </>
+        ) : submenu === 'locationActions' ? (
+          <>
+            <SubmenuHeader
+              icon={<FaMapPin />}
+              title={m?.general.locationActions}
+            />
+
+            <LocationActionItems
+              lat={lat}
+              lon={lon}
+              pointTitle={pointTitle}
+              pointDescription={pointDescription}
+              url={url}
+              onAct={() => {
+                handleMenuToggle(false);
+
+                onAct?.();
+              }}
+            />
+          </>
+        ) : (
+          <>
+            {menuItems && (
+              <>
+                {menuItems}
+
+                <Dropdown.Divider />
+              </>
+            )}
+
+            {/* "Share location" is among the place actions instead. */}
+            <SharePageItems url={url} imageUrl={imageUrl} share={false} />
+
+            {pageItems && <Dropdown.Divider />}
+
+            <Dropdown.Item as="button" eventKey="submenu-locationActions">
+              <FaMapPin /> {m?.general.locationActions}
+              <MenuGutter>
+                <FaChevronRight />
+              </MenuGutter>
+            </Dropdown.Item>
+
+            <Dropdown.Item as="button" eventKey="submenu-openExternally">
+              <FaExternalLinkAlt /> {oeam?.openIn}
+              <MenuGutter>
+                <FaChevronRight />
+              </MenuGutter>
+            </Dropdown.Item>
+          </>
+        )}
+      </FmDropdownMenu>
     </Dropdown>
   );
 }

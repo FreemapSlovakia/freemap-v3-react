@@ -7,15 +7,18 @@ import z from 'zod';
 const URL_MODAL_IDS = [
   'about',
   'account',
+  'browse-cache',
   'credits-purchase',
   'custom-maps',
   'drawing-properties',
+  'elevation-settings',
   'embed',
   'events',
   'file-import',
   'gallery-filter',
   'gallery-leaderboard',
   'gallery-upload',
+  'gps-recorder-settings',
   'legend',
   'login',
   'map-features-export',
@@ -23,11 +26,17 @@ const URL_MODAL_IDS = [
   'map-preferences',
   'map-to-document-export',
   'my-maps',
+  'objects-style',
   'offline-map-export',
   'offline-maps',
+  'panorama-settings',
   'premium',
   'route-planner-style',
+  'search-result-style',
   'support-us',
+  'toposcope-settings',
+  'track-viewer-style',
+  'track-viewer-match',
   'tracking-my',
   'tracking-watched',
 ] as const;
@@ -48,14 +57,32 @@ const MODAL_RENAMES: Record<string, string> = {
   'upload-track': 'file-import',
   'buy-credits': 'credits-purchase',
   maps: 'my-maps',
+  'premium-switch': 'premium',
 };
 
+/**
+ * Modals an embedded map refuses to open: those that manage the visitor's own
+ * maps, or that sign them in and take their money — neither of which belongs
+ * in an iframe on somebody else's page. Their buttons are hidden there and the
+ * keyboard chords never start, so a `show=` in the iframe's own URL is the last
+ * way in; premium reaches its modal by opening the portal in a tab of its own.
+ */
+const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
+  'browse-cache',
+  'custom-maps',
+  'elevation-settings',
+  'map-layers-config',
+  'map-preferences',
+  'offline-maps',
+  'premium',
+]);
+
+// The two that name no id of their own: they edit whatever is selected, which
+// a `show=` in a shared link knows nothing about.
 export const ModalIdSchema = z.enum([
   ...URL_MODAL_IDS,
   'current-drawing-properties',
-  'track-viewer-style',
-  'objects-style',
-  'search-result-style',
+  'data-viewer-properties',
 ]);
 
 export type ModalId = z.infer<typeof ModalIdSchema>;
@@ -118,6 +145,11 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
 
   const type = MODAL_RENAMES[rawType] ?? rawType;
 
+  // After the rename, so an old name for a forbidden modal is refused too.
+  if (window.fmEmbedded && EMBED_FORBIDDEN_MODAL_IDS.has(type)) {
+    return null;
+  }
+
   switch (type) {
     case 'tracking-watched':
       return arg
@@ -147,7 +179,7 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
     default: {
       const r = UrlModalIdSchema.safeParse(type);
 
-      return r.success ? { type: r.data } : null;
+      return r.success ? modalOf(r.data) : null;
     }
   }
 }
