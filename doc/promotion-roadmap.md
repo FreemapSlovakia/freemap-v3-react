@@ -81,7 +81,7 @@ organised around **a need only Freemap serves for free** have no incumbent. Rank
 
 | Vertical | Hook with no free equivalent | Europe fit |
 |---|---|---|
-| **Geocaching (DE, CZ, AT, SK)** ← **do this first** | coordinate entry in many formats, offline area download, GPX + Garmin/Locus export, drawing/measurement, custom WMS/TMS overlays | DE and CZ are the two densest geocaching countries in the world — exactly where the national high-res terrain is |
+| **Geocaching (CZ, AT, SK; DE later)** | coordinate entry in many formats, offline area download, GPX + Garmin/Locus export, drawing/measurement, custom WMS/TMS overlays | DE and CZ are the two densest geocaching countries in the world — exactly where the national high-res terrain is |
 | Paragliding / free flight (Alps) | 360° panorama with named peaks, viewshed, hi-res relief, custom airspace WMS | Alps = AT/CH/IT/SI/FR, all with national DTM |
 | Ham radio, drone (VLOS), hunting | **viewshed** — line of sight from a point | EU-wide; drone VLOS is an EASA legal requirement |
 | Gravel / bikepacking | multi-profile routing + surface / steepness / track-grade colorize | DE/AT strong, but komoot is entrenched |
@@ -106,6 +106,24 @@ pattern that worked in Italy and Austria.
 **Not yet done:** confirm current activity on both, check registration flow before
 writing copy (the mtb-forum lesson), and check whether Freemap is mentioned on
 geoclub.de at all.
+
+### Revised order (2026-09-07, after Martin's steer)
+
+Martin's direction: **stay with hiking/bicycle forums and add Facebook groups** — those
+are proven here — but change the *message* to the whole application rather than the
+cartography. Germany is postponed (see Phase 3). Facebook division of labour: **agent
+drafts, Martin posts** (Facebook fights automation, and the Polish group post that
+worked went out from his own account).
+
+Next market must have hi-res terrain already **and** an untapped forum scene, which
+points at **Czechia**: DMR 5G coverage, Czech UI shipped, very high engagement in
+Matomo, and Martin can verify Czech copy himself.
+
+Czech venues found: **bike-forum.cz** (largest CZ MTB/road forum), **nakole.cz**
+(cycle touring). Editorial rather than forum, so embed/partnership targets instead:
+**treking.cz**, **horydoly.cz**, **mtbs.cz**. Note horydoly.cz ran a "Live sledovanie
+Cesty SNP" piece — live tracking is a Freemap feature, worth checking for an existing
+connection.
 
 ### Start here, next session
 
@@ -198,6 +216,18 @@ touching Italy — it carries which venues already know Freemap (and so must nev
 **Austria is the entry point for the German-language push, not Germany** — see
 [`promotion-austria.md`](./promotion-austria.md) for the venue research and drafts.
 
+- [ ] **Germany is POSTPONED (decided 2026-09-07)** until hi-res shading + contours cover
+      it. Martin's call, and the right one: entering the biggest market with the weakest
+      terrain spends the one first impression on a weaker product. Revisit when the German
+      high-resolution data ships. German venues researched and parked meanwhile:
+      **mtb-news.de** (largest DE MTB forum, XenForo, registration has a question-captcha),
+      **wanderforum.de** (already has a thread "Online-Wanderkarten für Tschechien und die
+      Slowakei" mentioning Freemap — warm), **rennrad-news.de**, **trekkingguide.de**.
+      Also worth knowing when the time comes: **komoot was acquired by Bending Spoons in
+      March 2025 with mass layoffs**, and German forums carry long-running threads
+      ("Komoot wird immer unbrauchbarer", "Navigation Apps - Alternativen zu Komoot").
+      Displaced-user moment in exactly this category — but it is a slow grumble, not a
+      stampede, so do not overestimate it.
 - [ ] Germany — biggest untapped ceiling BUT **no national high-res DTM** (`de` is absent
       from `OUTDOOR_NATIONAL_DTM_ATTRIBUTION`; it falls back to 30 m GEDTM30), so the
       terrain hook cannot be used there. Lead with tools/offline/OSS instead.
