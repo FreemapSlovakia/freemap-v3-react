@@ -32,9 +32,12 @@
 
     <meta property="og:site_name" content="<%= siteName %>" />
     <meta property="og:title" content="<%= title %>" />
-    <meta property="og:image" content="<%= baseUrl + '/logo.jpg' %>" />
-    <meta property="og:image:width" content="600" />
-    <meta property="og:image:height" content="600" />
+    <meta
+      property="og:image"
+      content="<%= `${baseUrl}/og-${site}-${lang}.png` %>"
+    />
+    <meta property="og:image:width" content="<%= ogWidth %>" />
+    <meta property="og:image:height" content="<%= ogHeight %>" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="<%= baseUrl + '/' %>" />
     <meta property="og:description" content="<%= description %>" />
@@ -84,29 +87,27 @@
 
     <link rel="shortcut icon" href="/favicon.ico" />
 
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <!-- prettier-ignore -->
+    <%= faviconSizes.map((size) => `
+    <link rel="icon" type="image/png" sizes="${size}x${size}" href="/favicon-${size}x${size}.png" />
+    `).join('') %>
+
+    <!-- Last, and sizeless: equal candidates are resolved by document order, so
+         a browser that can take the vector picks it over the PNGs above. -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      sizes="any"
+      href="/freemap-flower.svg"
+    />
 
     <!-- prettier-ignore -->
     <%=
-      [
-        '57x57',
-        '60x60',
-        '72x72',
-        '76x76',
-        '114x114',
-        '120x120',
-        '144x144',
-        '152x152',
-        '167x167',
-        '180x180',
-        '1024x1024',
-      ].map((dim) => `
+      appleTouchSizes.map((size) => `
     <link
       rel="apple-touch-icon"
-      sizes="${dim}"
-      href="/apple-touch-icon-${dim}.png"
+      sizes="${size}x${size}"
+      href="/apple-touch-icon-${size}x${size}.png"
     />
     `).join('') %>
 
@@ -120,33 +121,11 @@
     <meta name="apple-itunes-app" content="app-id=6760855105" />
     <!-- prettier-ignore -->
     <%=
-      [
-        [320, 568, 2, 'portrait'],
-        [375, 667, 2, 'portrait'],
-        [414, 896, 2, 'portrait'],
-        [375, 812, 3, 'portrait'],
-        [414, 736, 3, 'portrait'],
-        [414, 896, 3, 'portrait'],
-        [768, 1024, 2, 'portrait'],
-        [834, 1112, 2, 'portrait'],
-        [834, 1194, 2, 'portrait'],
-        [1024, 1366, 2, 'portrait'],
-        [810, 1080, 2, 'portrait'],
-        [320, 568, 2, 'landscape'],
-        [375, 667, 2, 'landscape'],
-        [414, 896, 2, 'landscape'],
-        [375, 812, 3, 'landscape'],
-        [414, 736, 3, 'landscape'],
-        [414, 896, 3, 'landscape'],
-        [768, 1024, 2, 'landscape'],
-        [834, 1112, 2, 'landscape'],
-        [834, 1194, 2, 'landscape'],
-        [1024, 1366, 2, 'landscape'],
-        [810, 1080, 2, 'landscape']].map(([w, h, r, o]) => `
+      splashScreens.map(([w, h, r, o]) => `
     <link
       rel="apple-touch-startup-image"
       media="(device-width: ${w}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${r}) and (orientation: ${o})"
-      href="/apple-touch-startup-image-${(o === 'portrait' ? w : h) * r}x${(o === 'portrait' ? h : w) * r}.png"
+      href="/apple-touch-startup-image-${site}-${(o === 'portrait' ? w : h) * r}x${(o === 'portrait' ? h : w) * r}.png"
     />
     `).join('') %>
 

@@ -128,6 +128,29 @@ url=https://sentry.freemap.sk
 
 or pass both through the environment (`SENTRY_URL` + `SENTRY_AUTH_TOKEN`) — e.g. in CI. Re-adding `--url` to the script breaks the file-based setup again, because the flag re-splits the two across sources.
 
+## Icons and social images are rendered at build time
+
+`RspackIconsPlugin` draws every raster from `src/images/freemap-{flower,logo-sk,logo-eu}.svg`
+during the build, so none is committed: the favicons, apple-touch and mstile
+icons and the manifest icons (the flower alone, so both domains share them), the
+iOS splash screens (`apple-touch-startup-image-<site>-WxH.png`) and the social
+previews (`og-<site>-<lang>.png`, 1200×630).
+
+- **The splash list lives once**, as `splashScreens` in `rspack.config.ts`. The
+  entry document writes the media queries from it and the plugin renders from
+  it; a second copy anywhere would drift into 404s.
+- **`OG_WIDTH`/`OG_HEIGHT` are exported from the plugin** and passed to the
+  template, because `og:image:width`/`height` must agree with the bytes — a
+  declared size below 1200×630 makes crawlers lay out the small card.
+- **Sizing measures the drawing, not the viewBox** (`Resvg.getBBox()`). The SVGs
+  carry margin for their drop shadow, so fitting the viewBox under-fills the
+  canvas by about 12%.
+- **The tagline needs the bundled `src/fonts/LiberationSans-Bold.ttf`**
+  (`loadSystemFonts: false`), so CI and local machines render it identically.
+  Its wording is per language in `entryDocs`.
+- Renders are cached on the source files' mtimes, so a watch rebuild doesn't
+  redraw ~8 MB of PNG for an unrelated edit.
+
 ## nginx cache headers
 
 Live vhost configs are `etc/nginx/sites-available/www.freemap.sk` and `www.freemap.eu` (deployed under `/home/freemap/www`; no `.htaccess`). Rules that must hold:

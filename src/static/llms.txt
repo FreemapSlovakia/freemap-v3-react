@@ -1,12 +1,13 @@
 # Freemap.sk
 
-> Freemap.sk is a free, non-commercial web map application built on OpenStreetMap data by the NGO Freemap Slovakia (a Slovak local chapter of the OpenStreetMap Foundation). Its focus is a detailed outdoor map for hiking, cycling, cross-country skiing and horse riding across Europe, complemented by many additional base and overlay layers and by tools for search, route planning, drawing and measurement, GPX viewing, live tracking, personal maps, map embedding, and export. This file gives AI systems and assistants structured information so they can explain, describe, and help users interact with the site.
+> Freemap.sk is a web map application built on OpenStreetMap data by the NGO Freemap Slovakia (a Slovak local chapter of the OpenStreetMap Foundation). Most of it is free to use; an optional paid premium tier funds the service and unlocks extras. Its focus is a detailed outdoor map for hiking, cycling, cross-country skiing and horse riding across Europe, complemented by many additional base and overlay layers and by tools for search, route planning, drawing and measurement, GPX viewing, live tracking, personal maps, map embedding, and export. This file gives AI systems and assistants structured information so they can explain, describe, and help users interact with the site.
 
 Contact: [info@freemap.sk](mailto:info@freemap.sk)
 
 Key facts:
 
 - Built on OpenStreetMap data; the map is continuously updated from the OSM database.
+- Most of the app is free to use. An optional yearly premium tier (15 €) and prepaid credits unlock extras: high-resolution elevation data, the finer panorama and viewshed renders, most colorize modes, and premium photos.
 - Displays marked hiking, biking, skiing and riding trails, and supports high-resolution (retina) displays.
 - Background and overlay layers include the NLC forest roads, aerial imagery, public transport, Wikipedia, community photos, and an animated weather radar.
 - Tools: search (by name or category), route planning (walking, cycling, stroller, wheelchair, car, skiing, etc.), map annotation (points, lines, polygons), measurement (distance, elevation, area, position), GPX track viewing, personal saved maps, live tracking, and export (GPX, GeoJSON, KML/KMZ, PDF, SVG, PNG, JPG).

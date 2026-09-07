@@ -30,18 +30,21 @@ body {
   }
 }
 
-@-moz-document url-prefix() {
-  button#freemap-logo {
-      background-size: 134px 35px; /* HACK fix blurred logo for FF on mdpi */
-  }
-}
-
 button#freemap-logo {
   position: relative;
   border: none;
   outline: none;
   background-color: rgba(255, 255, 255, 0);
-  background-image: url("@/images/freemap-logo-sk.svg");
+  /* Raster, not the SVG: at this fixed size Firefox draws our SVGs blurred, and
+     a vector buys nothing when the box never changes. No `background-size` —
+     `image-set` divides each candidate's intrinsic size by its density, which
+     lands exactly on the box. */
+  background-image: image-set(
+    url("@/images/generated/freemap-logo-sk-1x.png") 1x,
+    url("@/images/generated/freemap-logo-sk-2x.png") 2x,
+    url("@/images/generated/freemap-logo-sk-3x.png") 3x,
+    url("@/images/generated/freemap-logo-sk-4x.png") 4x
+  );
   background-repeat: no-repeat;
   height: 34px;
   width: 134px;
@@ -60,8 +63,12 @@ button#freemap-logo {
 
 /* `data-site` comes from the entry document, so the domain picks the wordmark. */
 [data-site="eu"] button#freemap-logo {
-  background-image: url("@/images/freemap-logo-eu.svg");
-  background-size: 136px 34px;
+  background-image: image-set(
+    url("@/images/generated/freemap-logo-eu-1x.png") 1x,
+    url("@/images/generated/freemap-logo-eu-2x.png") 2x,
+    url("@/images/generated/freemap-logo-eu-3x.png") 3x,
+    url("@/images/generated/freemap-logo-eu-4x.png") 4x
+  );
   width: 136px;
 }
 
@@ -70,8 +77,12 @@ button#freemap-logo {
 @media (max-width: 767px) {
   .full {
     button#freemap-logo {
-      background-image: url("@/images/freemap-flower.svg");
-      background-size: 45px 34px;
+      background-image: image-set(
+        url("@/images/generated/freemap-flower-1x.png") 1x,
+        url("@/images/generated/freemap-flower-2x.png") 2x,
+        url("@/images/generated/freemap-flower-3x.png") 3x,
+        url("@/images/generated/freemap-flower-4x.png") 4x
+      );
       width: 45px;
     }
   }

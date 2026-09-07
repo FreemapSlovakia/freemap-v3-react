@@ -12,6 +12,7 @@ import { RspackManifestPlugin } from 'rspack-manifest-plugin';
 import type { LoaderOptions as SassLoaderOptions } from 'sass-loader';
 import TerserPlugin from 'terser-webpack-plugin';
 import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
+import { OG_HEIGHT, OG_WIDTH, RspackIconsPlugin } from './RspackIconsPlugin.js';
 import { RspackMarkdownDictPlugin } from './RspackMarkdownDictPlugin.js';
 import { RspackSyncLanguagesPlugin } from './RspackSyncLanguagesPlugin.js';
 import {
@@ -85,6 +86,8 @@ type EntryDoc = {
   appDescription: string;
   /** Labels for the base manifest's `shortcuts`, in order. */
   shortcutNames: string[];
+  /** The line under the wordmark on the social preview image. */
+  tagline: string;
 };
 
 const enDoc: EntryDoc = {
@@ -99,6 +102,7 @@ const enDoc: EntryDoc = {
   appDescription:
     'Freemap is a free online outdoor map based on OpenStreetMap data',
   shortcutNames: ['My maps', 'Route finder', 'Objects'],
+  tagline: 'more than just a map',
 };
 
 const entryDocs: EntryDoc[] = [
@@ -115,6 +119,7 @@ const entryDocs: EntryDoc[] = [
     appDescription:
       'Freemap je voľne dostupná online outdoorová mapa založená na dátach z OpenStreetMap',
     shortcutNames: ['Moje mapy', 'Vyhľadávač trás', 'Objekty'],
+    tagline: 'viac než len mapa',
   },
   {
     lang: 'cs',
@@ -128,6 +133,7 @@ const entryDocs: EntryDoc[] = [
     appDescription:
       'Freemap je volně dostupná online outdoorová mapa založená na datech z OpenStreetMap',
     shortcutNames: ['Moje mapy', 'Vyhledávač tras', 'Objekty'],
+    tagline: 'víc než jen mapa',
   },
   {
     lang: 'hu',
@@ -141,6 +147,7 @@ const entryDocs: EntryDoc[] = [
     appDescription:
       'A Freemap szabadon elérhető online szabadidős térkép az OpenStreetMap adatai alapján',
     shortcutNames: ['Saját térképeim', 'Útvonaltervező', 'Objektumok'],
+    tagline: 'több mint egy térkép',
   },
   {
     lang: 'it',
@@ -154,6 +161,7 @@ const entryDocs: EntryDoc[] = [
     appDescription:
       'Freemap è una mappa outdoor online gratuita basata sui dati di OpenStreetMap',
     shortcutNames: ['Le mie mappe', 'Cerca percorso', 'Oggetti'],
+    tagline: 'più di una semplice mappa',
   },
   {
     lang: 'de',
@@ -167,6 +175,7 @@ const entryDocs: EntryDoc[] = [
     appDescription:
       'Freemap ist eine frei zugängliche Outdoor-Onlinekarte auf Basis von OpenStreetMap-Daten',
     shortcutNames: ['Meine Karten', 'Routenplaner', 'Objekte'],
+    tagline: 'mehr als nur eine Karte',
   },
   {
     lang: 'pl',
@@ -179,6 +188,7 @@ const entryDocs: EntryDoc[] = [
     appDescription:
       'Freemap to bezpłatna mapa outdoorowa online oparta na danych OpenStreetMap',
     shortcutNames: ['Moje mapy', 'Wyszukiwarka tras', 'Obiekty'],
+    tagline: 'więcej niż tylko mapa',
   },
   {
     lang: 'sl',
@@ -192,6 +202,7 @@ const entryDocs: EntryDoc[] = [
     appDescription:
       'Freemap je prosto dostopen spletni zemljevid za dejavnosti v naravi, ki temelji na podatkih OpenStreetMap',
     shortcutNames: ['Moji zemljevidi', 'Iskalnik poti', 'Objekti'],
+    tagline: 'več kot le zemljevid',
   },
   {
     lang: 'fr',
@@ -205,6 +216,7 @@ const entryDocs: EntryDoc[] = [
     appDescription:
       'Freemap est une carte outdoor en ligne gratuite basée sur les données OpenStreetMap',
     shortcutNames: ['Mes cartes', 'Planificateur d’itinéraire', 'Objets'],
+    tagline: 'plus qu’une simple carte',
   },
 ];
 
@@ -287,6 +299,52 @@ if (missingDocs.length > 0) {
   throw new Error(`entryDocs has no entry for: ${missingDocs.join(', ')}`);
 }
 
+/**
+ * iOS splash screens, as `[width, height, dpr, orientation]`. The entry document
+ * writes the media queries and `RspackIconsPlugin` renders the images, so both
+ * read this list rather than each keeping their own.
+ */
+const splashScreens: [number, number, number, 'portrait' | 'landscape'][] = [
+  [320, 568, 2, 'portrait'],
+  [375, 667, 2, 'portrait'],
+  [414, 896, 2, 'portrait'],
+  [375, 812, 3, 'portrait'],
+  [414, 736, 3, 'portrait'],
+  [414, 896, 3, 'portrait'],
+  [768, 1024, 2, 'portrait'],
+  [834, 1112, 2, 'portrait'],
+  [834, 1194, 2, 'portrait'],
+  [1024, 1366, 2, 'portrait'],
+  [810, 1080, 2, 'portrait'],
+  [320, 568, 2, 'landscape'],
+  [375, 667, 2, 'landscape'],
+  [414, 896, 2, 'landscape'],
+  [375, 812, 3, 'landscape'],
+  [414, 736, 3, 'landscape'],
+  [414, 896, 3, 'landscape'],
+  [768, 1024, 2, 'landscape'],
+  [834, 1112, 2, 'landscape'],
+  [834, 1194, 2, 'landscape'],
+  [1024, 1366, 2, 'landscape'],
+  [810, 1080, 2, 'landscape'],
+];
+
+/**
+ * Icon sizes the entry document links and `RspackIconsPlugin` renders. Shared
+ * for the same reason as `splashScreens`: a size named in only one of the two
+ * is either a 404 or an asset nothing asks for, and nothing would catch it.
+ */
+const faviconSizes = [16, 32, 48];
+
+const appleTouchSizes = [57, 60, 72, 76, 114, 120, 144, 152, 167, 180, 1024];
+
+/** The pixel size a splash entry renders at, portrait or landscape. */
+const splashPixels = ([w, h, r, o]: (typeof splashScreens)[number]) =>
+  [(o === 'portrait' ? w : h) * r, (o === 'portrait' ? h : w) * r] as [
+    number,
+    number,
+  ];
+
 // The installable app carries the portal name of the domain it was installed
 // from and the copy of the language its entry document was served in.
 // `id`/`start_url` stay `/`, so an already-installed app keeps its identity.
@@ -319,6 +377,11 @@ function htmlPluginProps(doc: EntryDoc, site: Site, filename: string) {
       errorHtml: doc.errorHtml,
       nojsMessage: doc.nojsMessage,
       loadingMessage: doc.loadingMessage,
+      splashScreens,
+      faviconSizes,
+      appleTouchSizes,
+      ogWidth: OG_WIDTH,
+      ogHeight: OG_HEIGHT,
     },
   };
 }
@@ -632,6 +695,36 @@ const config: Configuration = {
     new RspackWebManifestPlugin({
       base: 'manifest.webmanifest',
       variants: webManifestVariants,
+    }),
+    new RspackIconsPlugin({
+      flower: 'images/freemap-flower.svg',
+      sites: sites.map((site) => ({
+        site,
+        wordmark: `images/freemap-logo-${site}.svg`,
+      })),
+      splashSizes: splashScreens.map(splashPixels),
+      // Widths must match the `width` each rule gives the header button in
+      // `src/app/styles/index.css`; the rasters are drawn to fill it exactly.
+      headerLogos: [
+        ...sites.map((site) => ({
+          name: `freemap-logo-${site}`,
+          source: `images/freemap-logo-${site}.svg`,
+          width: site === 'eu' ? 136 : 134,
+        })),
+        {
+          name: 'freemap-flower',
+          source: 'images/freemap-flower.svg',
+          width: 45,
+        },
+      ],
+      headerOutDir: 'images/generated',
+      faviconSizes,
+      appleTouchSizes,
+      taglines: entryDocs.map((doc) => ({
+        lang: doc.lang,
+        text: doc.tagline,
+      })),
+      fontFile: 'fonts/LiberationSans-Bold.ttf',
     }),
     new rspack.CopyRspackPlugin({
       patterns: [

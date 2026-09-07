@@ -679,39 +679,39 @@ The logo became vector in `f0cf4885` (2026-09-01): `freemap-logo-sk.svg`,
 `freemap-logo-eu.svg` and the site-neutral `freemap-flower.svg`, with gloss from
 gradients rather than SVG filters, and text converted to paths. The entry
 document stamps `data-site` on `<html>`, so CSS, the pre-JS bootstrap and the
-print logo all pick the same wordmark. What the rework did not reach:
+print logo all pick the same wordmark.
 
-- [ ] **Decide the `.eu` tagline, then regenerate the raster lockups.**
-      `logo.jpg` (the `og:image`), `apple-touch-icon-{152,180,1024}`,
-      `mstile-{150,310x150,310x310}`, `firefox_app_*` and every
-      `apple-touch-startup-image-*` bake in "digitálna mapa Slovenska" and are
-      shared by both domains. Needs three answers first: whether `.eu` carries a
-      tagline at all, one fixed English line vs. per-language, and whether it
-      describes the map or follows the `siteNames` in `src/shared/sites.ts`
-      (*Freemap Slovakia* / *Freemap Europe*). `og:image` also has to split per
-      site once it stops being one file. The flower-only icons in that set are
-      already site-neutral and need nothing.
+`RspackIconsPlugin` then renders every raster from those SVGs at build time, so
+no generated bitmap is committed: the favicons, apple-touch and mstile icons and
+the manifest icons are the flower alone (site-neutral, all sizes), the iOS splash
+screens carry the wordmark per domain, and the `og:image` is 1200×630 with the
+tagline under it, per domain and language. The tagline lives in `entryDocs` in
+`rspack.config.ts` beside the other build-time copy, and is set in the bundled
+`src/fonts/LiberationSans-Bold.ttf` so CI and local renders match. Still open:
+
+- [ ] **Have the taglines reviewed by native speakers.** "more than just a map"
+      was written here and translated by an agent; only `en` and `sk` have had a
+      human eye. `hu`, `it` and `fr` deliberately aren't literal — Hungarian
+      drops "just", Italian and French say "more than a *simple* map".
 - [ ] **Commit the editable masters.** The shipped SVGs are outlined, so the
       wordmark can no longer be retyped in them. The versions that still carry
       live Sriracha text sit outside the repo in `~/freemap-new-logo-shaded.svg`,
       `~/freemap-new-logo-shaded-eu.svg` and `~/freemap-new-flower.svg` — one
       lost home directory and the next logo edit starts from tracing.
 - [ ] **A small-size wordmark variant.** Below roughly 110 px wide the black
-      outline swallows the white letters — the same reason `freemap-logo-small.png`
-      existed. The narrow header dodges it by switching to the flower, but any
-      future small wordmark use needs a thinner-stroke cut.
+      outline swallows the white letters. The narrow header dodges it by
+      switching to the flower, but any future small wordmark use needs a
+      thinner-stroke cut.
 - [ ] **Drop the baked drop shadow.** All three SVGs still carry an
       `feGaussianBlur` drop-shadow filter, the one part that renders unevenly
       across engines and rasterizes on PDF export. Browsers handle it fine, so
       this only matters for print/export paths; the fix is a CSS
       `filter: drop-shadow()` at the usage sites, or an offset vector copy.
 - [ ] **Retire the orphaned rasters once the access log says it is safe.**
-      `src/images/freemap-logo{,-small,-print}.png` and
-      `src/static/freemap-logo.{png,jpg}` plus `freemap-logo-for-garmin.jpg` are
+      `src/static/freemap-logo.{png,jpg}` and `freemap-logo-for-garmin.jpg` are
       unreferenced but deliberately kept: they may be registered as the app icon
-      with an external OAuth provider. Settle it by counting hits in the fm6
-      access log (the `src/static/` ones are stable public URLs; the
-      `src/images/` ones were always content-hashed and are far less likely).
+      with an external OAuth provider, and `static/**/*` ships them at stable
+      public URLs regardless. Settle it by counting hits in the fm6 access log.
       Note the deploy rsync has no `--delete`, so removing them from the repo
       does not remove them from the server.
 

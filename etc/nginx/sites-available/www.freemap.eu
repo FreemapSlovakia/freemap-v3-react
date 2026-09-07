@@ -80,7 +80,7 @@ if ($blocked_country) {
 	}
 
 	# Possibly-unhashed images: cache long, but allow revalidation on change.
-	location ~ "\.png$|\.jpg$|\.svg$" {
+	location ~ "\.png$|\.jpg$|\.svg$|\.ico$" {
 		add_header Cache-Control 'max-age=31536000';
 	}
 
