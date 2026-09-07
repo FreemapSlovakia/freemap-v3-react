@@ -710,11 +710,12 @@ small size, and a vector buys nothing where the box never changes. The tagline l
 - [x] **Keep the unreferenced rasters — they are still being fetched.** Nothing
       in the app links `src/static/logo.jpg`, `freemap-logo.{png,jpg}` or
       `freemap-logo-for-garmin.jpg`, but the fm6 access log for 2026-09-06 shows
-      114, 39, 32 and 35 requests that day. `logo.jpg` is the `og:image` of every
-      link shared before it changed, so WhatsApp and iMessage keep unfurling
-      against it; the others come from real browsers, so something outside this
-      repo embeds them. Deleting them would only appear safe because the deploy
-      rsync has no `--delete`.
+      114, 39, 32 and 35 requests that day. `logo.jpg` was the `og:image` until
+      `d7fbc64c`, so WhatsApp and iMessage keep unfurling every link shared
+      before then against it; the others come from real browsers, so something
+      outside this repo embeds them. Deleting any of them would only appear safe
+      because the deploy rsync has no `--delete` — one clean deploy and they
+      404. `logo.jpg` is kept for that reason alone, referenced by nothing.
 
 ## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
 
