@@ -2,7 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { mapsLoad } from '@features/myMaps/model/actions.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaSignInAlt } from 'react-icons/fa';
 import { Popup } from 'react-leaflet';

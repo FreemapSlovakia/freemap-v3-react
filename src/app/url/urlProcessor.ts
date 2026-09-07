@@ -430,20 +430,6 @@ function updateUrl(state: RootState, forced: boolean): void {
   // unsaved-changes comparison so the two can't disagree.
   historyParts.push(...getMapContentParts(state));
 
-  // The events list filter. Outside the map content: it says which events are
-  // listed, not what the map holds, so a saved map must not carry it.
-  pushDate(historyParts, 'events-from', eventsFilter.from);
-
-  pushDate(historyParts, 'events-to', eventsFilter.to);
-
-  if (eventsFilter.inMapArea) {
-    historyParts.push(['events-in-map-area', '1']);
-  }
-
-  if (eventsFilter.activityType) {
-    historyParts.push(['events-activity', eventsFilter.activityType]);
-  }
-
   // The dial's own settings. Deliberately outside the map content: the centre
   // and the rays are drawn points and travel with them, but this has no place
   // in a saved map document yet, and adding it to that comparison would report
@@ -537,6 +523,21 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   if (changesets.authorName) {
     queryParts.push(['changesets-author', changesets.authorName]);
+  }
+
+  // Which events are listed, not what the map holds — so it stays in the
+  // address bar (and thus in a shared link) even under a saved map, and no map
+  // document carries it.
+  pushDate(queryParts, 'events-from', eventsFilter.from);
+
+  pushDate(queryParts, 'events-to', eventsFilter.to);
+
+  if (eventsFilter.inMapArea) {
+    queryParts.push(['events-in-map-area', '1']);
+  }
+
+  if (eventsFilter.activityType) {
+    queryParts.push(['events-activity', eventsFilter.activityType]);
   }
 
   {

@@ -76,6 +76,14 @@ export const eventsLoadList = createAction('EVENTS_LOAD_LIST');
 
 export const eventsSetFilter = createAction<EventsFilter>('EVENTS_SET_FILTER');
 
+/** `list` shows the browser; an object opens the create/edit form. */
+export type EventsView = 'list' | { editing?: EventItem; mapId?: string };
+
+export const eventsSetView = createAction<EventsView>('EVENTS_SET_VIEW');
+
 export const eventsSave = createAction<EventSavePayload>('EVENTS_SAVE');
+
+/** The save request settled; the form is released either way. */
+export const eventsSaveDone = createAction('EVENTS_SAVE_DONE');
 
 export const eventsDelete = createAction<string>('EVENTS_DELETE');

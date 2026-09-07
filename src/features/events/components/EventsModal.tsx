@@ -1,19 +1,16 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactElement, useCallback, useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import { FaCalendarAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import type { EventItem } from '../model/actions.js';
+import { eventsSetView } from '../model/actions.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { EventsModalForm } from './EventsModalForm.js';
 import { EventsModalList } from './EventsModalList.js';
 
 type Props = { show: boolean };
-
-/** `list` shows the browser; an object opens the create/edit form. */
-type View = 'list' | { editing?: EventItem; mapId?: string };
 
 export default function EventsModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
@@ -32,17 +29,17 @@ export default function EventsModal({ show }: Props): ReactElement {
       : undefined,
   );
 
-  const [view, setView] = useState<View>(
-    createTarget ? { mapId: createTarget.mapId } : 'list',
-  );
+  const view = useAppSelector((state) => state.events.view);
 
   // The modal instance can outlive a close (fade-out), so reset the view on each
   // open to match how it was opened.
   useEffect(() => {
     if (show) {
-      setView(createTarget ? { mapId: createTarget.mapId } : 'list');
+      dispatch(
+        eventsSetView(createTarget ? { mapId: createTarget.mapId } : 'list'),
+      );
     }
-  }, [show, createTarget]);
+  }, [show, createTarget, dispatch]);
 
   useDocumentTitle(show ? em?.title : undefined);
 
@@ -62,14 +59,14 @@ export default function EventsModal({ show }: Props): ReactElement {
 
       {view === 'list' ? (
         <EventsModalList
-          onCreate={() => setView({})}
-          onEdit={(ev) => setView({ editing: ev })}
+          onCreate={() => dispatch(eventsSetView({}))}
+          onEdit={(ev) => dispatch(eventsSetView({ editing: ev }))}
         />
       ) : (
         <EventsModalForm
           editing={view.editing}
           initialMapId={view.mapId}
-          onDone={() => setView('list')}
+          onCancel={() => dispatch(eventsSetView('list'))}
         />
       )}
     </Modal>

@@ -1411,17 +1411,13 @@ function handleEvents(
   dispatch: Dispatch<RootAction>,
   query: Record<string, string | string[]>,
 ) {
-  let a = query['events-from'];
+  const qFrom = parseDate(query['events-from']);
 
-  const qFrom = typeof a === 'string' ? new Date(a) : undefined;
-
-  a = query['events-to'];
-
-  const qTo = typeof a === 'string' ? new Date(a) : undefined;
+  const qTo = parseDate(query['events-to']);
 
   const qInMapArea = query['events-in-map-area'] === '1';
 
-  a = query['events-activity'];
+  const a = query['events-activity'];
 
   const qActivity = typeof a === 'string' ? a : undefined;
 

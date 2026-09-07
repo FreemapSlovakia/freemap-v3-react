@@ -1,6 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { EventsMessages } from './EventsMessages.js';
+import type { EventsMessages } from './EventsMessages.js';
 
 const en: EventsMessages = {
   title: 'Events',

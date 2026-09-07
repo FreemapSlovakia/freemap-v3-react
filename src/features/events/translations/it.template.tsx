@@ -1,7 +1,7 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
+import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { EventsMessages } from './EventsMessages.js';
+import type { EventsMessages } from './EventsMessages.js';
 
 const it: DeepPartialWithRequiredObjects<EventsMessages> = {
   title: 'Eventi',

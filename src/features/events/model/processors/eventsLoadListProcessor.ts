@@ -60,7 +60,11 @@ export const eventsLoadListProcessor: Processor = {
     }
 
     if (filter.to) {
-      params['to'] = filter.to.toISOString();
+      // The picker yields UTC midnight, and the bound reads as inclusive of the
+      // day it names — so it goes out as that day's last instant.
+      params['to'] = new Date(
+        filter.to.getTime() + 86_400_000 - 1,
+      ).toISOString();
     }
 
     if (filter.inMapArea) {
@@ -73,7 +77,12 @@ export const eventsLoadListProcessor: Processor = {
         getState,
         url: '/events?' + objectToURLSearchParams(params),
         expectedStatus: 200,
-        cancelActions: triggers,
+        // A pan cancels the request only when the viewport is part of the
+        // query — the run it triggers otherwise returns above, so cancelling on
+        // it would abort a request nothing replaces and leave the list empty.
+        cancelActions: filter.inMapArea
+          ? triggers
+          : triggers.filter((trigger) => trigger !== mapRefocus),
       });
 
       dispatch(eventsSetList(z.array(EventSchema).parse(await res.json())));

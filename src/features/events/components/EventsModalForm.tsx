@@ -15,7 +15,7 @@ import { useEventsMessages } from '../translations/useEventsMessages.js';
 type Props = {
   editing?: EventItem;
   initialMapId?: string;
-  onDone: () => void;
+  onCancel: () => void;
 };
 
 /** Converts a Date to a `datetime-local` input value (local wall-clock). */
@@ -32,7 +32,7 @@ function toDateTimeLocal(d: Date | null | undefined): string {
 export function EventsModalForm({
   editing,
   initialMapId,
-  onDone,
+  onCancel,
 }: Props): ReactElement {
   const dispatch = useDispatch();
 
@@ -45,6 +45,8 @@ export function EventsModalForm({
   );
 
   const routeStart = useAppSelector((state) => getStart(state.routePlanner));
+
+  const saving = useAppSelector((state) => state.events.saving);
 
   const [source, setSource] = useState<'map' | 'current'>(
     editing || initialMapId || writableMaps.length ? 'map' : 'current',
@@ -106,8 +108,6 @@ export function EventsModalForm({
         visibility,
       }),
     );
-
-    onDone();
   }
 
   return (
@@ -273,11 +273,11 @@ export function EventsModalForm({
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={onDone}>
+        <Button variant="secondary" onClick={onCancel} disabled={saving}>
           {m?.general.cancel}
         </Button>
 
-        <Button type="submit" variant="primary" disabled={!valid}>
+        <Button type="submit" variant="primary" disabled={!valid || saving}>
           {m?.general.save}
         </Button>
       </Modal.Footer>
