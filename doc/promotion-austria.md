@@ -382,3 +382,38 @@ a symbol means.
   so re-map them after every post.
 - Comment boxes are plain textareas (no CKEditor) — plain text, bare URLs are linked
   automatically. This differs from the post editor, which needs HTML.
+
+## Replies on the German hikr post — record and tone rule
+
+Answered so far: Bergmax (Priele + contours, conceded, issue #83 linked), ABoehlen
+(swisstopo TLM-Regio quality manager — thanks + attribution note), kopfsalat (twice).
+
+**kopfsalat, 2026-09-07/08.** Opened with "for people who can't read maps, coloured
+paths are the only way to know where to walk … for demanding map work completely
+unusable, I might as well use OSM", then asked two real questions: is swissALTI3D
+resolution premium-only, and what happens offline. Answered 2026-09-08 under `c578149`
+("Antworten zu swissALTI3D und Offline"):
+
+- **swissALTI3D shading and contours are free for everyone.** Premium unlocks z19–20 and
+  switches the *elevation values* (profile, colorize, readout) from SRTM to the national
+  model. Worth repeating: people keep assuming the good terrain is paywalled. It is not.
+- **Offline keeps the full shading** — it is baked into the tiles; only downloading
+  z19–20 needs premium, since cached tiles are permanent. The native iOS/Android app with
+  on-device offline routing was mentioned here too.
+- **"I might as well use OSM"** → `https://www.freemap.eu/#layers=O`. OSM Carto is one of
+  our own base layers, and it has no hillshading or contours. The fact is the punchline.
+
+**Tone rules learned here, worth keeping:**
+
+- This is not a symmetrical argument. An anonymous member versus the project author
+  posting under a product name: bystanders side with the member whoever is right. The
+  reply is for the silent readers, not the critic.
+- **Never quote an insult back.** Restate positively what the design is *for* — the
+  waymark colours mirror the signs standing on the ground, so map and signage agree.
+  Same point, none of the heat.
+- **Do not answer questions that were not asked.** A draft refused a terrain-only layer
+  he had never requested; pre-emptively refusing an unmade request reads as defensive.
+- Standing position if it ever comes up: a terrain-only layer from the national models
+  was never claimed and is not planned. Do not raise it unprompted.
+- **One exchange reads as responsive; three read as an argument.** If he returns with
+  more of the same, stop replying.
