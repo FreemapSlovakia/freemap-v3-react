@@ -417,3 +417,29 @@ resolution premium-only, and what happens offline. Answered 2026-09-08 under `c5
   was never claimed and is not planned. Do not raise it unprompted.
 - **One exchange reads as responsive; three read as an argument.** If he returns with
   more of the same, stop replying.
+
+### Ask people to use it — plainly (rule from 2026-09-09)
+
+The opening of the German and Italian posts used a rhetorical disclaimer:
+
+> *"Ich stelle sie nicht vor, damit ihr sie benutzt, sondern weil ihr genau die Leute
+> seid, die mir sagen können, wo sie falsch liegt."*
+> (IT: *"Non la porto qui perché la usiate, ma perché siete esattamente le persone in
+> grado di dirmi dove sbaglia."*)
+
+It did its job — disclaiming the sales motive is what stopped the post reading as an
+advert, and it produced four substantive conversations. **But it overshoots into
+something untrue** (of course we want people to use it), and `georgb` duly quoted it
+back on 2026-09-09: *"Wer soll sie dann benutzen?"*
+
+**Rule:** disclaim the *motive*, never the *outcome*, and ask plainly for what you want.
+
+- ✗ "I'm not presenting it so that you use it…"
+- ✓ "I'm not here to advertise. **Please try it** — and tell me where it's wrong for
+  your area."
+- DE: *"Probiert sie aus — und sagt mir dann, wo sie für eure Gegend danebenliegt."*
+- IT: *"Provatela e ditemi dove sbaglia sulle vostre montagne."*
+
+Keep the "tell me where it's wrong" invitation: it is what produced every piece of
+useful feedback so far. Just pair it with a straightforward request to use the thing.
+Apply to all future drafts, the Czech ones included.
