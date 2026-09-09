@@ -623,6 +623,7 @@ const PERSIST: PersistEntry[] = [
       showDirection: g.showDirection,
       showLegend: g.showLegend,
       premium: g.premium,
+      license: g.license,
     }),
   }),
   defineEntry({
