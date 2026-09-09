@@ -123,6 +123,8 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'Samodejno prikaži predoglede (porabi več procesorske moči in pomnilnika)',
     loadPreview: 'Naloži predogled',
     premium: 'Daj na voljo samo uporabnikom s premium dostopom',
+    notAdded:
+      'Ni bilo mogoče dodati vseh datotek – mape, nepodprti zapisi in neberljive datoteke so preskočene.',
   },
   license: {
     label: 'Licenca',

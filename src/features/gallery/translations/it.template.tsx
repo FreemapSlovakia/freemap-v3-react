@@ -128,6 +128,8 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     showPreview:
       "Mostra automaticamente l'anteprima (aumenta il consumo di CPU e memoria)",
     premium: 'Disponibile solo per gli utenti con accesso completo',
+    notAdded:
+      'Non è stato possibile aggiungere tutti i file: cartelle, formati non supportati e file illeggibili vengono ignorati.',
     loadPreview: 'Carica anteprima',
   },
   license: {

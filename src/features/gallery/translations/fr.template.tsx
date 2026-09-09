@@ -112,6 +112,8 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'Afficher automatiquement les aperçus (consomme davantage de processeur et de mémoire)',
     loadPreview: 'Charger l’aperçu',
     premium: 'Rendre disponible uniquement aux utilisateurs avec accès premium',
+    notAdded:
+      'Tous les fichiers n’ont pas pu être ajoutés — les dossiers, les formats non pris en charge et les fichiers illisibles sont ignorés.',
   },
   license: {
     label: 'Licence',

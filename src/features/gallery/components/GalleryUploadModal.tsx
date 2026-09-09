@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
@@ -18,9 +19,10 @@ import {
   useState,
 } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { useDropzone } from 'react-dropzone';
+import { type FileRejection, useDropzone } from 'react-dropzone';
 import { FaCamera, FaTimes, FaUpload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { isUploadablePicture } from '../galleryUtils.js';
 import { usePictureDropHandler } from '../hooks/usePictureDropHandler.js';
 import {
   type GalleryItem,
@@ -33,6 +35,7 @@ import {
   galleryToggleShowPreview,
   galleryUpload,
 } from '../model/actions.js';
+import { loadGalleryMessages } from '../translations/loadGalleryMessages.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import type { PictureModel } from './GalleryEditForm.js';
 import { GalleryLicenseSelect } from './GalleryLicenseSelect.js';
@@ -134,14 +137,36 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     handleItemMerge,
   );
 
-  const { getRootProps, getInputProps, open } = useDropzone({
-    onDrop: handleFileDrop,
-    accept: {
-      'image/jpeg': ['.jpg', '.jpeg'],
-      'image/heic': ['.heic'],
-      'image/heif': ['.heif'],
+  const warnNotAdded = () => {
+    dispatch(
+      toastsAdd({
+        id: 'gallery.notAdded',
+        style: 'danger',
+        timeout: 5000,
+        messageKey: 'uploadModal.notAdded',
+        messageLoader: loadGalleryMessages,
+      }),
+    );
+  };
+
+  const handleDrop = (accepted: File[], rejected: FileRejection[]) => {
+    handleFileDrop(accepted);
+
+    if (rejected.length) {
+      warnNotAdded();
+    }
+  };
+
+  const { getRootProps, getInputProps, open, isFileDialogActive } = useDropzone(
+    {
+      onDrop: handleDrop,
+      accept: {
+        'image/jpeg': ['.jpg', '.jpeg'],
+        'image/heic': ['.heic'],
+        'image/heif': ['.heif'],
+      },
     },
-  });
+  );
 
   const handlePositionPick = (id: number) => {
     dispatch(gallerySetItemForPositionPicking(id));
@@ -173,16 +198,18 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     event.stopPropagation();
     setDraggingOverDropzone(false);
 
-    const droppedFiles = Array.from(event.dataTransfer?.files ?? []).filter(
-      (file) =>
-        file.type === 'image/jpeg' ||
-        file.type === 'image/heic' ||
-        file.type === 'image/heif' ||
-        /\.(jpe?g|heic|heif)$/i.test(file.name.toLowerCase()),
-    );
+    // This capture handler stops the event, so react-dropzone's own drop never
+    // runs — the filtering and the warning have to happen here.
+    const files = Array.from(event.dataTransfer?.files ?? []);
+
+    const droppedFiles = files.filter(isUploadablePicture);
 
     if (droppedFiles.length) {
       handleFileDrop(droppedFiles);
+    }
+
+    if (droppedFiles.length < files.length) {
+      warnNotAdded();
     }
   };
 
@@ -193,6 +220,15 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
 
     event.preventDefault();
     open();
+  };
+
+  // react-dropzone opens the picker on the click that follows too, and its
+  // second `open()` clears the file input while the picker is already up, which
+  // on iOS loses the selection. Stopping propagation skips its click handler.
+  const handleDropzoneClick = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (isFileDialogActive) {
+      event.stopPropagation();
+    }
   };
 
   useEffect(() => {
@@ -312,6 +348,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
             <div
               {...getRootProps({
                 onMouseDown: handleDropzoneMouseDown,
+                onClick: handleDropzoneClick,
                 onDragEnterCapture: handleDropzoneDragCapture,
                 onDragOverCapture: handleDropzoneDragCapture,
                 onDragLeaveCapture: handleDropzoneDragLeaveCapture,

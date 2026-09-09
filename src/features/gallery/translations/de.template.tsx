@@ -118,6 +118,8 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     showPreview:
       'Vorschauen automatisch anzeigen (erhöht CPU- und Speicherbedarf)',
     premium: 'Nur für Nutzer mit Premiumzugang verfügbar machen',
+    notAdded:
+      'Es konnten nicht alle Dateien hinzugefügt werden – Ordner, nicht unterstützte Formate und unlesbare Dateien werden übersprungen.',
     loadPreview: 'Vorschau laden',
   },
   license: {

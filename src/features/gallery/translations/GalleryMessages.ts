@@ -95,6 +95,7 @@ export type GalleryMessages = {
     showPreview: string;
     loadPreview: string;
     premium: string;
+    notAdded: string;
   };
   license: {
     label: string;

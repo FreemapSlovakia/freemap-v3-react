@@ -122,6 +122,8 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     showPreview: 'Automaticky zobraziť náhľady (náročnejšie na výkon a pamäť)',
     loadPreview: 'Načítať náhľad',
     premium: 'Sprístupniť len používateľom s prémiovým prístupom',
+    notAdded:
+      'Nepodarilo sa pridať všetky súbory – priečinky, nepodporované formáty a nečitateľné súbory sa preskakujú.',
   },
   license: {
     label: 'Licencia',

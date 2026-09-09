@@ -122,6 +122,8 @@ const en: GalleryMessages = {
     showPreview: 'Automatically show previews (uses more CPU load and memory)',
     loadPreview: 'Load preview',
     premium: 'Make available only to users with premium access',
+    notAdded:
+      'Not all files could be added — folders, unsupported formats and unreadable files are skipped.',
   },
   license: {
     label: 'License',

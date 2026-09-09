@@ -7,6 +7,7 @@ import {
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
+import { isUploadablePicture } from '@features/gallery/galleryUtils.js';
 import { usePictureDropHandler } from '@features/gallery/hooks/usePictureDropHandler.js';
 import {
   type GalleryItem,
@@ -766,9 +767,7 @@ export function Main(): ReactElement {
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const pictureFiles = acceptedFiles.filter(
-        (file) => file.type === 'image/jpeg',
-      );
+      const pictureFiles = acceptedFiles.filter(isUploadablePicture);
 
       if (pictureFiles.length) {
         dispatch(setActiveModal({ type: 'gallery-upload' })); // if no user then it displays valuable error

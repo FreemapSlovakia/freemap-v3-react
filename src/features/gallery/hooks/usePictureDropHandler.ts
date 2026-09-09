@@ -1,10 +1,13 @@
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { latLonToString } from '@shared/geoutils.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import ExifReader, { type Tags } from 'exifreader';
 import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { loadPreview } from '../imagePreview.js';
 import type { GalleryItem } from '../model/actions.js';
+import { loadGalleryMessages } from '../translations/loadGalleryMessages.js';
 
 let nextId = 1;
 
@@ -18,12 +21,25 @@ export function usePictureDropHandler(
 
   const license = useAppSelector((state) => state.gallerySettings.license);
 
+  const dispatch = useDispatch();
+
   const processFile = useCallback(
     (file: File, cb: (err?: unknown) => void) => {
       const reader = new FileReader();
 
       reader.onerror = () => {
         reader.abort();
+
+        // No item is added for a file that cannot be read, so say so.
+        dispatch(
+          toastsAdd({
+            id: 'gallery.notAdded',
+            style: 'danger',
+            timeout: 5000,
+            messageKey: 'uploadModal.notAdded',
+            messageLoader: loadGalleryMessages,
+          }),
+        );
 
         cb(new Error());
       };
@@ -175,7 +191,15 @@ export function usePictureDropHandler(
 
       reader.readAsArrayBuffer(isHeif ? file : file.slice(0, 128 * 1024));
     },
-    [showPreview, language, onItemAdd, onItemChange, premium, license],
+    [
+      showPreview,
+      language,
+      onItemAdd,
+      onItemChange,
+      premium,
+      license,
+      dispatch,
+    ],
   );
 
   return useCallback(

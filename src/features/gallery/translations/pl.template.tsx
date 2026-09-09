@@ -117,6 +117,8 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     showPreview:
       'Automatyczne wyświetlanie podglądu (zwiększone zużycie procesora i pamięci)',
     premium: 'Udostępnij tylko użytkownikom z dostępem premium',
+    notAdded:
+      'Nie udało się dodać wszystkich plików – foldery, nieobsługiwane formaty i nieczytelne pliki są pomijane.',
     loadPreview: 'Wczytaj podgląd',
   },
   license: {
