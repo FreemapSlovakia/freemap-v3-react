@@ -569,6 +569,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     hollow_way: 'Hohlweg',
     house: 'Historisches Haus',
     milestone: 'Historischer Meilenstein',
+    mine_adit: 'Historischer Stollen',
     mine_shaft: 'Historischer Schacht',
     mine: 'Historisches Bergwerk',
     shieling: 'Almhütte (saisonal)',
@@ -823,6 +824,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
     monitoring_station: 'Überwachungsstation',
     nesting_site: 'Nistplatz',
+    obelisk: 'Obelisk',
     observatory: 'Observatorium',
     pier: 'Pier',
 
@@ -1911,6 +1913,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   'abandoned:building': {
     '*': 'Aufgegebenes Gebäude',
   },
+  'abandoned:man_made': {
+    adit: 'Aufgegebener Stollen',
+    mineshaft: 'Aufgegebener Bergwerkschacht',
+  },
 
   'disused:building': {
     '*': 'Stillgelegtes Gebäude',
@@ -1919,6 +1925,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   'ruins:building': {
     '*': 'Ruins of a building',
   },
+  ruins: { yes: 'In Ruinen' },
 
   fixme: {
     '*': 'Fehlerhaft oder unvollständig kartiertes Objekt',

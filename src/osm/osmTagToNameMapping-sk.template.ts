@@ -306,6 +306,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_protection_area: 'Ochranné pásmo vodného zdroja',
   },
   'abandoned:building': { '*': 'Trvalo opustená budova' },
+  'abandoned:man_made': {
+    adit: 'Trvalo opustená banská štôlňa',
+    mineshaft: 'Trvalo opustená banská šachta',
+  },
   changing_table: {
     yes: 'Prebaľovací pult',
     limited: 'Provizórne miesto na prebaľovanie',
@@ -396,6 +400,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_utility: 'Vodárenská spoločnosť',
   },
   'ruins:building': { '*': 'Ruina budovy' },
+  ruins: { yes: 'V ruinách' },
   building: {
     '*': {
       '*': 'Budova',
@@ -759,6 +764,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     manor: 'Panstvo',
     memorial: 'Pamätník',
     milestone: 'Historický míľnik',
+    mine_adit: 'Historická banská štôlňa',
     mine_shaft: 'Historická banská šachta',
     mine: 'Historická baňa',
     monastery: 'Historický kláštor',
@@ -976,6 +982,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     },
     monitoring_station: 'Monitorovacia stanica',
     nesting_site: 'Hniezdo',
+    obelisk: 'Obelisk',
     observatory: 'Observatórium',
     pier: 'Mólo',
     pipeline: {

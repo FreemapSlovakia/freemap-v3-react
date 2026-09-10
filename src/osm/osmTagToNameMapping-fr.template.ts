@@ -304,6 +304,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_protection_area: 'Périmètre de protection des eaux',
   },
   'abandoned:building': { '*': 'Bâtiment abandonné' },
+  'abandoned:man_made': {
+    adit: 'Galerie de mine abandonnée',
+    mineshaft: 'Puits de mine abandonné',
+  },
   changing_table: {
     yes: 'Table à langer',
     limited: 'Coin à langer improvisé',
@@ -394,6 +398,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_utility: 'Régie des eaux',
   },
   'ruins:building': { '*': 'Ruines d’un bâtiment' },
+  ruins: { yes: 'En ruine' },
   building: {
     '*': {
       '*': 'Bâtiment',
@@ -757,6 +762,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     manor: 'Manoir',
     memorial: 'Mémorial',
     milestone: 'Borne historique',
+    mine_adit: 'Galerie de mine historique',
     mine_shaft: 'Puits de mine historique',
     mine: 'Mine historique',
     monastery: 'Monastère historique',
@@ -974,6 +980,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     },
     monitoring_station: 'Station de surveillance',
     nesting_site: 'Site de nidification',
+    obelisk: 'Obélisque',
     observatory: 'Observatoire',
     pier: 'Jetée',
     pipeline: {

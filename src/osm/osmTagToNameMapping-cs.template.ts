@@ -584,6 +584,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     house: 'Historický dům',
     milestone: 'Historický milník',
     mine: 'Historický důl',
+    mine_adit: 'Historická důlní štola',
     mine_shaft: 'Historická důlní šachta',
     shieling: 'Salaš (sezónní horská chata)',
     stone: 'Historický kámen',
@@ -815,6 +816,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
     monitoring_station: 'Monitorovací stanice',
     nesting_site: 'Hnízdo',
+    obelisk: 'Obelisk',
     observatory: 'Observatorium',
     pier: 'Molo',
 
@@ -2012,6 +2014,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   'abandoned:building': {
     '*': 'Trvale opuštěná budova',
   },
+  'abandoned:man_made': {
+    adit: 'Trvale opuštěná důlní štola',
+    mineshaft: 'Trvale opuštěná důlní šachta',
+  },
 
   'disused:building': {
     '*': 'Nepoužívaná budova',
@@ -2020,6 +2026,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   'ruins:building': {
     '*': 'Ruiny budovy',
   },
+  ruins: { yes: 'V ruinách' },
 
   fixme: {
     '*': 'Nesprávně nebo částečně zmapovaný prvek',

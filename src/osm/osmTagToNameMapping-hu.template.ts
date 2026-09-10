@@ -591,6 +591,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     house: 'Történelmi ház',
     milestone: 'Történelmi mérföldkő',
     mine: 'Történelmi bánya',
+    mine_adit: 'Történelmi táró',
     mine_shaft: 'Történelmi akna',
     shieling: 'Pásztorszállás',
     stone: 'Történelmi kő',
@@ -845,6 +846,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
     monitoring_station: 'Megfigyelőállomás',
     nesting_site: 'Fészkelőhely',
+    obelisk: 'Obeliszk',
     observatory: 'Obszervatórium',
     pier: 'Móló',
 
@@ -1905,6 +1907,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   'abandoned:building': {
     '*': 'Elhagyott épület',
   },
+  'abandoned:man_made': {
+    adit: 'Elhagyott táró',
+    mineshaft: 'Elhagyott bányakürtő',
+  },
 
   'disused:building': {
     '*': 'Használaton kívüli épület',
@@ -1913,6 +1919,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   'ruins:building': {
     '*': 'Épületrom',
   },
+  ruins: { yes: 'Romos' },
 
   attraction: {
     amusement_ride: 'Vidámparki játék',

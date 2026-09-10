@@ -307,6 +307,10 @@ export type OsmTagToNameMapping = {
   'abandoned:building': {
     '*': string;
   };
+  'abandoned:man_made': {
+    adit: string;
+    mineshaft: string;
+  };
   changing_table: {
     yes: string;
     limited: string;
@@ -405,6 +409,9 @@ export type OsmTagToNameMapping = {
   };
   'ruins:building': {
     '*': string;
+  };
+  ruins: {
+    yes: string;
   };
   building: {
     '*': {
@@ -771,6 +778,7 @@ export type OsmTagToNameMapping = {
     memorial: string;
     milestone: string;
     mine: string;
+    mine_adit: string;
     mine_shaft: string;
     monastery: string;
     monument: string;
@@ -987,6 +995,7 @@ export type OsmTagToNameMapping = {
     };
     monitoring_station: string;
     nesting_site: string;
+    obelisk: string;
     observatory: string;
     pier: string;
     pipeline: {

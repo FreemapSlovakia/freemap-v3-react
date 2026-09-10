@@ -305,6 +305,10 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     water_protection_area: 'Water protection area',
   },
   'abandoned:building': { '*': 'Abandoned building' },
+  'abandoned:man_made': {
+    adit: 'Abandoned adit',
+    mineshaft: 'Abandoned mineshaft',
+  },
   changing_table: {
     yes: 'Baby changing table',
     limited: 'Improvised baby changing facility',
@@ -400,6 +404,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     no: '',
   },
   'ruins:building': { '*': 'Ruins of a building' },
+  ruins: { yes: 'In ruins' },
   building: {
     '*': {
       '*': 'Building',
@@ -764,6 +769,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     manor: 'Manor',
     memorial: 'Memorial',
     milestone: 'Historic milestone',
+    mine_adit: 'Historic mine adit',
     mine_shaft: 'Historic mine shaft',
     mine: 'Historic mine',
     monastery: 'Historic monastery',
@@ -981,6 +987,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     },
     monitoring_station: 'Monitoring station',
     nesting_site: 'Nesting site',
+    obelisk: 'Obelisk',
     observatory: 'Observatory',
     pier: 'Pier',
     pipeline: {

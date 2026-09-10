@@ -306,6 +306,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_protection_area: 'Vodovarstveno območje',
   },
   'abandoned:building': { '*': 'Opuščena stavba' },
+  'abandoned:man_made': {
+    adit: 'Zapuščen rudniški rov',
+    mineshaft: 'Zapuščen rudniški jašek',
+  },
   changing_table: {
     yes: 'Previjalna miza',
     limited: 'Improvizirano mesto za previjanje',
@@ -396,6 +400,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     water_utility: 'Vodovodno podjetje',
   },
   'ruins:building': { '*': 'Ruševina stavbe' },
+  ruins: { yes: 'V ruševinah' },
   building: {
     '*': {
       '*': 'Stavba',
@@ -759,6 +764,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     manor: 'Graščina',
     memorial: 'Spominsko obeležje',
     milestone: 'Zgodovinski miljnik',
+    mine_adit: 'Zgodovinski rudniški rov',
     mine_shaft: 'Zgodovinski rudniški jašek',
     mine: 'Zgodovinski rudnik',
     monastery: 'Zgodovinski samostan',
@@ -976,6 +982,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     },
     monitoring_station: 'Nadzorna postaja',
     nesting_site: 'Gnezdišče',
+    obelisk: 'Obelisk',
     observatory: 'Observatorij',
     pier: 'Pomol',
     pipeline: {
