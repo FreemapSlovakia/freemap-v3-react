@@ -3,9 +3,13 @@
 import { BROWSE_CACHE_NAME } from '@features/cachedMaps/browseCache.js';
 import {
   CACHED_TILE_PATH_PREFIX,
+  cachedTilePath,
   parseCachedTilePath,
+  toCachedLayerUrl,
 } from '@features/cachedMaps/cachedTileUrl.js';
 import {
+  buildTileUrl,
+  parseTileUrl,
   stripTileScale,
   tileSubdomains,
   withTileScale,
@@ -19,6 +23,7 @@ import {
   refreshBrowseState,
 } from './browseTileCache.js';
 import { fetchTile } from './fetchTile.js';
+import { flipY, type TileCoords, upscaledTile } from './upscaledTile.js';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -40,12 +45,37 @@ const CACHED_TILE_MAPS_KEY = 'cachedTileMaps';
 // how soon an unknown map id may send us back to the database
 const RELOAD_MS = 5000;
 
-/** As much of a cached map's metadata as reaching its tile server takes. */
+// how long a tile server is left alone after a fetch of it failed — `onLine` is
+// true for a phone with a radio but no data. The screenful already in flight
+// still pays the failure and its retry; the pans after it don't.
+const ORIGIN_DEAD_MS = 5000;
+
+/** As much of a cached map's metadata as serving its tiles takes. */
 type CachedTileMapMeta = {
   type: string;
   url: string;
   subdomains?: string | string[];
   networkFallback?: boolean;
+  tms?: boolean;
+  minZoom?: number;
+  tileScale?: number;
+};
+
+/** What a map's tiles are served from, kept per map id in {@link tileSources}. */
+type TileSource = {
+  /**
+   * Hosts a missing tile may be fetched from, in `{s}` order; `null` for a map
+   * whose template gives no origin, or which may not reach the network at all.
+   */
+  origins: string[] | null;
+  /** The url template minus its origin — what a request path was built from. */
+  template: string;
+  /** Rows numbered from the south, as Leaflet's `tms` option means it. */
+  tms: boolean;
+  /** Shallowest zoom the map holds; there is nothing to be had above it. */
+  minZoom: number;
+  /** The one `@Nx` the map holds, when its metadata records which. */
+  scale: number | undefined;
 };
 
 self.addEventListener('install', (event) => {
@@ -152,23 +182,21 @@ async function serveStaticAsset(event: FetchEvent): Promise<Response> {
 }
 
 /**
- * The hosts a cached map's tiles can come from, keyed by map id; `null` for a
- * map whose template gives no origin, or which may not reach the network at all.
- * A fetch asks the first, as the download did; the rest are only worth looking
- * under in the browse cache, which a browsing session may have spread over any
- * of them.
+ * What every cached map's tiles are served from, keyed by map id. A fetch asks
+ * the first origin, as the download did; the rest are only worth looking under
+ * in the browse cache, which a browsing session may have spread over any of them.
  *
  * Refreshed from the database at most every {@link RELOAD_MS}, so an edit the
  * worker was never told about — a dropped `cached-maps-changed` — costs seconds
  * rather than the rest of its life.
  */
-let tileSources = new Map<string, string[] | null>();
+let tileSources = new Map<string, TileSource>();
 
 let tileSourcesReadAt = 0;
 
 let tileSourcesReading: Promise<void> | null = null;
 
-async function tileSource(mapId: string): Promise<string[] | undefined> {
+async function tileSource(mapId: string): Promise<TileSource | undefined> {
   // No more often than this, lest a pan over a map whose metadata is gone open a
   // transaction per tile. A pan's worth of tiles all miss at once, so they share
   // one read rather than each starting their own.
@@ -207,17 +235,33 @@ async function readTileSources(): Promise<void> {
       return;
     }
 
-    for (const { type, url, subdomains, networkFallback } of metas) {
+    for (const {
+      type,
+      url,
+      subdomains,
+      networkFallback,
+      tms,
+      minZoom,
+      tileScale,
+    } of metas) {
+      let origins: string[] | null;
+
       try {
-        tileSources.set(
-          type,
-          networkFallback === false ? null : tileOrigins(url, subdomains),
-        );
+        origins =
+          networkFallback === false ? null : tileOrigins(url, subdomains);
       } catch {
         // A map whose url template won't parse doesn't fall through — and is
         // remembered as such, so it doesn't re-read the table per tile.
-        tileSources.set(type, null);
+        origins = null;
       }
+
+      tileSources.set(type, {
+        origins,
+        template: cachedTilePath(url),
+        tms: tms === true,
+        minZoom: minZoom ?? 0,
+        scale: tileScale,
+      });
     }
 
     // Only a read that landed starts the window. A failed one leaves the next
@@ -258,6 +302,15 @@ function tileOrigins(
   ];
 }
 
+/** When a tile server last refused to answer at all, by origin. */
+const deadOrigins = new Map<string, number>();
+
+function isOriginDead(origin: string): boolean {
+  const failedAt = deadOrigins.get(origin);
+
+  return failedAt !== undefined && Date.now() - failedAt < ORIGIN_DEAD_MS;
+}
+
 async function serveCachedTile(event: FetchEvent): Promise<Response> {
   const url = new URL(event.request.url);
 
@@ -286,23 +339,21 @@ async function serveCachedTile(event: FetchEvent): Promise<Response> {
   }
 
   // Nothing stored for this tile: the map is being browsed outside the area it
-  // covers, or its download hasn't reached here. A map set to stay sealed has
-  // nothing more to show; the rest may look further afield.
-  const origins = await tileSource(mapId);
-
-  if (!origins) {
-    return new Response(null, { status: 404 });
-  }
+  // covers, past the zooms it holds, or its download hasn't reached here.
+  const source = await tileSource(mapId);
 
   const tilePath = `${parsed.path}${url.search}`;
 
-  // Ask the map's own tile server, so a cached map isn't a walled garden while
-  // there is a connection; the answer is not written back. Skipped where the
-  // connection is known to be gone, which would cost every tile the retry's
-  // delay to discover.
-  if (navigator.onLine) {
+  // A map set to stay sealed looks no further than its own tiles; the rest ask
+  // their own tile server, so a cached map isn't a walled garden while there is
+  // a connection. The answer is not written back. Skipped where the connection
+  // is known to be gone, which would cost every tile the retry's delay to
+  // discover.
+  const origins = source?.origins;
+
+  if (origins && navigator.onLine && !isOriginDead(origins[0])) {
     try {
-      return await fetchTile(`${origins[0]}${tilePath}`, {
+      const response = await fetchTile(`${origins[0]}${tilePath}`, {
         // A tile <img> without `crossOrigin` asks in no-cors mode, and an
         // opaque answer is both returnable to it and free of any need for the
         // source layer to send CORS headers. One that does set `crossOrigin`
@@ -311,20 +362,97 @@ async function serveCachedTile(event: FetchEvent): Promise<Response> {
         // as downloadTiles does, for providers that authenticate by `Referer`
         referrerPolicy: 'strict-origin-when-cross-origin',
       });
+
+      deadOrigins.delete(origins[0]);
+
+      return response;
     } catch {
-      // offline after all; the browse cache is the one place left to look
+      // offline after all; what is stored is all there is
+      deadOrigins.set(origins[0], Date.now());
     }
   }
 
-  // The same tile may well have been kept while browsing the source layer.
-  const browsed = await browseCachedTile(
-    event,
-    scaleVariants(parsed.path).flatMap((path) =>
-      origins.map((origin) => `${origin}${path}${url.search}`),
-    ),
-  );
+  if (origins) {
+    // The same tile may well have been kept while browsing the source layer.
+    const browsed = await browseCachedTile(
+      event,
+      scaleVariants(parsed.path).flatMap((path) =>
+        origins.map((origin) => `${origin}${path}${url.search}`),
+      ),
+    );
 
-  return browsed ?? new Response(null, { status: 404 });
+    if (browsed) {
+      return browsed;
+    }
+  }
+
+  // Last resort, and the usual one past the deepest zoom a map holds: draw the
+  // tile from an ancestor it does hold. Leaflet stretches a whole grid past
+  // `maxNativeZoom`, but a tile it believes in and can't get is an error tile.
+  const upscaled =
+    source && (await upscaleFromCache(cache, mapId, source, tilePath));
+
+  return upscaled ?? new Response(null, { status: 404 });
+}
+
+/**
+ * The tile drawn from the nearest ancestor the map's own cache holds, or `null`
+ * when it holds none — or when the path is not one the map's template can
+ * produce, so there are no coordinates to climb from.
+ */
+async function upscaleFromCache(
+  cache: Cache,
+  mapId: string,
+  source: TileSource,
+  tilePath: string,
+): Promise<Response | null> {
+  const coords = parseTileUrl(source.template, tilePath);
+
+  if (!coords) {
+    return null;
+  }
+
+  // the `@Nx` asked for, so a sweep starts with the variant most likely stored
+  const scaleSuffix = tilePath.slice(stripTileScale(tilePath).length);
+
+  const lookup = async ({ x, y, z }: TileCoords) => {
+    const path = buildTileUrl(
+      source.template,
+      x,
+      source.tms ? flipY(y, z) : y,
+      z,
+      coords.s,
+    );
+
+    // A map that records its scale holds exactly that one, so one lookup answers
+    // it. Only a map from before the scale was recorded is swept for.
+    const keys =
+      source.scale === undefined
+        ? scaleVariants(path + scaleSuffix)
+        : [withTileScale(path, source.scale)];
+
+    for (const key of keys) {
+      const hit = await cache.match(toCachedLayerUrl(key, mapId), {
+        ignoreVary: true,
+      });
+
+      if (hit) {
+        return hit;
+      }
+    }
+
+    return undefined;
+  };
+
+  return upscaledTile(
+    {
+      x: coords.x,
+      y: source.tms ? flipY(coords.y, coords.z) : coords.y,
+      z: coords.z,
+    },
+    lookup,
+    source.minZoom,
+  );
 }
 
 async function serveFallback(event: FetchEvent) {

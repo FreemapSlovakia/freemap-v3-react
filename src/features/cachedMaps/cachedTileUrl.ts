@@ -1,9 +1,12 @@
 export const CACHED_TILE_PATH_PREFIX = '/__cached__/';
 
-export function toCachedLayerUrl(realTemplate: string, mapId: string): string {
-  const pathFromTemplate = realTemplate.replace(/^https?:\/\/[^/]+/, '');
+/** The part of a layer's url template that a cached tile's path is made of. */
+export function cachedTilePath(realTemplate: string): string {
+  return realTemplate.replace(/^https?:\/\/[^/]+/, '');
+}
 
-  return `${location.origin}${CACHED_TILE_PATH_PREFIX}${encodeURIComponent(mapId)}${pathFromTemplate}`;
+export function toCachedLayerUrl(realTemplate: string, mapId: string): string {
+  return `${location.origin}${CACHED_TILE_PATH_PREFIX}${encodeURIComponent(mapId)}${cachedTilePath(realTemplate)}`;
 }
 
 /**
