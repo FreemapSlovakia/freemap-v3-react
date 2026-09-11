@@ -91,7 +91,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     grave_yard: 'Cimitero',
     grit_bin: 'Pattumiera',
     hospital: 'Ospedale',
-    hunting_stand: 'Supporto da caccia',
+    hunting_stand: 'Postazione di caccia',
     ice_cream: 'Gelati',
     kindergarten: 'Scuola materna',
     language_school: 'Scuola di lingue',
@@ -787,7 +787,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     cooling_tower: 'Torre di raffreddamento',
     crane: 'Gru',
     cross: 'Croce',
-    cutline: 'Linea disboscata',
+    cutline: 'Margine di bosco',
     dyke: 'Diga',
     embankment: 'Terrapieno',
     flagpole: 'Bandiera',
@@ -937,8 +937,8 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
 
       refitted: {
-        yes: 'Rettificata',
-        no: 'Non rettificata',
+        yes: 'Sorgente protetta',
+        no: 'Sorgente non protetta',
       },
 
       intermittent: {
@@ -958,7 +958,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     tree: {
       '*': 'Albero',
       protected: {
-        yes: 'Albero protetto',
+        yes: 'Albero monumentale',
       },
       denotation: {
         natural_monument: 'Albero monumentale naturale',
@@ -970,7 +970,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     },
 
     tree_group: 'Gruppo di alberi',
-    tree_row: 'Filare alberi',
+    tree_row: 'Filare',
     tree_stump: 'Ceppo',
     valley: 'Valle',
     water: {
@@ -1326,15 +1326,15 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         },
       },
     },
-    pole: 'Polo di alimentazione',
+    pole: 'Palo elettrico',
     portal: 'Portale di linea elettrica',
     roof_pole: 'Palo elettrico da tetto',
     substation: 'Sottostazione',
     switch: 'Sezionatore',
     switchgear: 'Quadro di manovra',
     terminal: 'Terminale di linea elettrica',
-    tower: 'Torre di potenza',
-    transformer: 'Transformatore',
+    tower: 'Traliccio',
+    transformer: 'Trasformatore',
     transition: 'Transizione linea-cavo',
   },
 
@@ -1771,9 +1771,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     information: {
       '*': 'Informazioni',
       information: {
-        '*': 'Informatzioni {}',
+        '*': 'Informazioni {}',
         board: 'Pannello informativo',
-        guidepost: 'Posto Guida',
+        guidepost: 'Cartello segnavia',
         map: 'Mappa',
         office: 'Ufficio informazioni',
         route_marker: 'Segnavia',
