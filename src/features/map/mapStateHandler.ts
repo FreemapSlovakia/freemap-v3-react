@@ -1,7 +1,7 @@
 import type { MyStore } from '@app/store/store.js';
 import { onMap } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus, mapSetBounds } from './model/actions.js';
-import { isProgrammaticMove } from './moveOrigin.js';
+import { duringMapSync, isProgrammaticMove } from './moveOrigin.js';
 
 export function attachMapStateHandler(store: MyStore) {
   // re-binds to every map instance; a max-zoom change recreates the map
@@ -82,7 +82,11 @@ export function attachMapStateHandler(store: MyStore) {
       }
 
       if (zoomChanged || centerMoved) {
-        store.dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
+        duringMapSync(() =>
+          store.dispatch(
+            mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }),
+          ),
+        );
       }
     }
 

@@ -1,6 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '../../hooks/leafletElementHolder.js';
-import { duringProgrammaticMove } from '../../moveOrigin.js';
+import { duringProgrammaticMove, isMapSync } from '../../moveOrigin.js';
 import { mapRefocus } from '../actions.js';
 
 export const mapRefocusProcessor: Processor = {
@@ -8,6 +8,9 @@ export const mapRefocusProcessor: Processor = {
   stateChangePredicate: ({ map: { lat, lon, zoom } }) =>
     `${lat},${lon},${zoom}`,
   handle: async ({ dispatch, getState }) => {
+    // Read before the await, while the dispatch that raised this is on the stack.
+    const fromMap = isMapSync();
+
     const { zoom, lat, lon } = getState().map;
 
     const map = await mapPromise;
@@ -27,6 +30,10 @@ export const mapRefocusProcessor: Processor = {
 
     while (fixedLon > 180) {
       fixedLon -= 360;
+    }
+
+    if (fromMap && lon === fixedLon) {
+      return;
     }
 
     if (

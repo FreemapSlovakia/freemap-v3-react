@@ -6,7 +6,7 @@ import { setMapLeafletElement } from './hooks/leafletElementHolder.js';
 import { attachMapStateHandler } from './mapStateHandler.js';
 import { mapRefocus } from './model/actions.js';
 import { type MapState, mapInitialState, mapReducer } from './model/reducer.js';
-import { duringProgrammaticMove } from './moveOrigin.js';
+import { duringProgrammaticMove, isMapSync } from './moveOrigin.js';
 
 /**
  * Exercises `attachMapStateHandler` against a stand-in for the Leaflet map —
@@ -107,12 +107,17 @@ let mapState: MapState = mapInitialState;
 
 const dispatched: { type: string; payload?: unknown }[] = [];
 
+// Whether each dispatch ran inside `duringMapSync`, index for index.
+const dispatchedFromMap: boolean[] = [];
+
 // Attached once: `attachMapStateHandler` subscribes for the lifetime of the
 // page, so re-attaching per test would stack handlers on every later map.
 const store = {
   getState: () => ({ map: mapState }),
   dispatch: (action: { type: string; payload?: unknown }) => {
     dispatched.push(action);
+
+    dispatchedFromMap.push(isMapSync());
 
     mapState = mapReducer(mapState, action as Parameters<typeof mapReducer>[1]);
 
@@ -132,6 +137,8 @@ function setup(gpsTracked = false) {
   };
 
   dispatched.length = 0;
+
+  dispatchedFromMap.length = 0;
 
   const fake = makeFakeMap({ ...CENTER }, ZOOM);
 
@@ -307,6 +314,18 @@ describe('attachMapStateHandler — moveend while not following', () => {
       lon: CENTER.lng + AWAY,
       zoom: ZOOM,
     });
+  });
+
+  // The refocus processor would otherwise pan the map back to this center while
+  // a drag that stopped an inertia pan carries it on.
+  it('marks the sync as coming from the map, so it is not applied back', () => {
+    const { moveTo, fire } = setup();
+
+    moveTo(CENTER.lat + AWAY, CENTER.lng + AWAY);
+
+    fire('moveend');
+
+    expect(dispatchedFromMap).toEqual([true]);
   });
 
   it('stays quiet when the settled center already matches the store', () => {
