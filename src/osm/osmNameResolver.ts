@@ -286,7 +286,44 @@ function adjustTags(tags: Record<string, string>) {
     res = { ...rest, fixme };
   }
 
+  // Mappers' case varies and a tree is often tagged by its species alone, so
+  // match `genus`/`species` in botanical case, the genus taken from the species.
+  if (tags['natural'] === 'tree') {
+    const species = [tags['species'], tags['taxon']].find(
+      (v) => typeof v === 'string' && v,
+    );
+
+    const genus =
+      typeof tags['genus'] === 'string' && tags['genus']
+        ? tags['genus']
+        : species;
+
+    res = {
+      ...res,
+      ...(genus && { genus: toTaxonCase(genus, 1) }),
+      ...(species && { species: toTaxonCase(species, 2) }),
+    };
+  }
+
   return res;
+}
+
+/** `quercus Robur 'Fastigiata'` → `Quercus robur`, keeping `;`-separated values. */
+function toTaxonCase(value: string, words: number) {
+  // Deduplicated: identical parts eliminate each other as more generic, which
+  // `Quercus robur;Quercus petraea` would otherwise yield as the genus.
+  return [
+    ...new Set(
+      value.split(';').map((v) => {
+        const [first = '', ...rest] = v.trim().toLowerCase().split(/\s+/);
+
+        return [
+          first.charAt(0).toUpperCase() + first.slice(1),
+          ...rest.slice(0, words - 1),
+        ].join(' ');
+      }),
+    ),
+  ].join(';');
 }
 
 // TODO add others
