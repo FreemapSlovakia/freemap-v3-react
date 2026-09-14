@@ -844,7 +844,13 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     street_cabinet: 'Armadio di derivazione',
     surveillance: 'Sorveglianza',
     survey_point: 'Punto trigonometrico',
-    telescope: 'Telescopio',
+    telescope: {
+      '*': 'Telescopio',
+      'telescope:type': {
+        optical: 'Telescopio ottico',
+        radio: 'Radiotelescopio',
+      },
+    },
 
     tower: {
       '*': 'Torre',
@@ -865,6 +871,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         radar: 'Torre radar',
         siren: 'Torre con sirena',
         watchtower: 'Torre di guardia',
+      },
+      'tower:construction': {
+        dish: 'Antenna parabolica',
+        dome: 'Torre a cupola',
+        lattice: 'Torre a traliccio',
       },
     },
 

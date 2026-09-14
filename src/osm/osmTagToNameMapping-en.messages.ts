@@ -1008,7 +1008,13 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     street_cabinet: 'Street cabinet',
     surveillance: 'Surveillance',
     survey_point: 'Survey point',
-    telescope: 'Telescope',
+    telescope: {
+      '*': 'Telescope',
+      'telescope:type': {
+        optical: 'Optical telescope',
+        radio: 'Radio telescope',
+      },
+    },
     tower: {
       '*': 'Tower',
       'tower:type': {
@@ -1028,6 +1034,11 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
         radar: 'Radar tower',
         siren: 'Siren tower',
         watchtower: 'Watchtower',
+      },
+      'tower:construction': {
+        dish: 'Dish antenna',
+        dome: 'Dome tower',
+        lattice: 'Lattice tower',
       },
     },
     tunnel: 'Utility tunnel',

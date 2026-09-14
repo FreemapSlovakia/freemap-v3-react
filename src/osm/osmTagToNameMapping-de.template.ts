@@ -764,6 +764,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         siren: 'Sirenenturm',
         watchtower: 'Wachturm',
       },
+      'tower:construction': {
+        dish: 'Parabolantenne',
+        dome: 'Kuppelturm',
+        lattice: 'Gittermast',
+      },
       '*': 'Turm',
     },
 
@@ -846,7 +851,13 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     street_cabinet: 'Straßenschrank',
     surveillance: 'Überwachungskamera',
     survey_point: 'Vermessungspunkt',
-    telescope: 'Teleskop',
+    telescope: {
+      '*': 'Teleskop',
+      'telescope:type': {
+        optical: 'Optisches Teleskop',
+        radio: 'Radioteleskop',
+      },
+    },
     tunnel: 'Versorgungstunnel',
     utility_pole: 'Strommast',
     wastewater_plant: 'Kläranlage',

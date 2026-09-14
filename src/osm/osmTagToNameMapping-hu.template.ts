@@ -786,6 +786,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         siren: 'Szirénatorony',
         watchtower: 'Őrtorony',
       },
+      'tower:construction': {
+        dish: 'Parabolaantenna',
+        dome: 'Kupolás torony',
+        lattice: 'Rácsos torony',
+      },
       '*': 'Torony',
     },
 
@@ -868,7 +873,13 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     street_cabinet: 'Utcai közműszekrény',
     surveillance: 'Térfigyelő berendezés',
     survey_point: 'Földmérési alappont',
-    telescope: 'Teleszkóp',
+    telescope: {
+      '*': 'Teleszkóp',
+      'telescope:type': {
+        optical: 'Optikai teleszkóp',
+        radio: 'Rádióteleszkóp',
+      },
+    },
     tunnel: 'Közműalagút',
     utility_pole: 'Közműoszlop',
     wastewater_plant: 'Szennyvíztisztító',

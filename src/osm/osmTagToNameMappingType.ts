@@ -1016,7 +1016,13 @@ export type OsmTagToNameMapping = {
     street_cabinet: string;
     surveillance: string;
     survey_point: string;
-    telescope: string;
+    telescope: {
+      '*': string;
+      'telescope:type': {
+        optical: string;
+        radio: string;
+      };
+    };
     tower: {
       '*': string;
       'tower:type': {
@@ -1036,6 +1042,11 @@ export type OsmTagToNameMapping = {
         radar: string;
         siren: string;
         watchtower: string;
+      };
+      'tower:construction': {
+        dish: string;
+        dome: string;
+        lattice: string;
       };
     };
     tunnel: string;

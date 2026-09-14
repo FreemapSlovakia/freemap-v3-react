@@ -1003,7 +1003,13 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     street_cabinet: 'Pouličná skriňa',
     surveillance: 'Bezpečnostná kamera',
     survey_point: 'Geodetický bod',
-    telescope: 'Teleskop',
+    telescope: {
+      '*': 'Teleskop',
+      'telescope:type': {
+        optical: 'Optický teleskop',
+        radio: 'Rádioteleskop',
+      },
+    },
     tower: {
       '*': 'Veža',
       'tower:type': {
@@ -1023,6 +1029,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         radar: 'Radarová veža',
         siren: 'Veža so sirénou',
         watchtower: 'Strážna veža',
+      },
+      'tower:construction': {
+        dish: 'Parabolická anténa',
+        dome: 'Kupolová veža',
+        lattice: 'Priehradová veža',
       },
     },
     tunnel: 'Technický tunel',

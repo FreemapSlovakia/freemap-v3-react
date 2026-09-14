@@ -1003,7 +1003,13 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     street_cabinet: 'Ulična omarica',
     surveillance: 'Nadzorna kamera',
     survey_point: 'Geodetska točka',
-    telescope: 'Teleskop',
+    telescope: {
+      '*': 'Teleskop',
+      'telescope:type': {
+        optical: 'Optični teleskop',
+        radio: 'Radijski teleskop',
+      },
+    },
     tower: {
       '*': 'Stolp',
       'tower:type': {
@@ -1023,6 +1029,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         radar: 'Radarski stolp',
         siren: 'Stolp s sireno',
         watchtower: 'Stražni stolp',
+      },
+      'tower:construction': {
+        dish: 'Parabolična antena',
+        dome: 'Stolp s kupolo',
+        lattice: 'Rešetkasti stolp',
       },
     },
     tunnel: 'Komunalni predor',
