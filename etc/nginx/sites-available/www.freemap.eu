@@ -5,6 +5,7 @@ if ($blocked_country) {
     return 444;
 }
 
+	# Repeated in every location with add_header of its own, which drops this.
 	add_header Alt-Svc 'h3=":443"; ma=86400';
 
 	root /home/freemap/www;
@@ -70,6 +71,7 @@ if ($blocked_country) {
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
 		add_header Vary 'Accept-Language';
+		add_header Alt-Svc 'h3=":443"; ma=86400';
 	}
 
 	# Content-hashed assets (16-hex-char [chunk|content]hash — keep in sync with
@@ -77,11 +79,13 @@ if ($blocked_country) {
 	# does, so cache them forever without revalidation.
 	location ~ ".+\.[a-z0-9]{16}\..+$" {
 		add_header Cache-Control 'public, max-age=31536000, immutable';
+		add_header Alt-Svc 'h3=":443"; ma=86400';
 	}
 
 	# Possibly-unhashed images: cache long, but allow revalidation on change.
 	location ~ "\.png$|\.jpg$|\.svg$|\.ico$" {
 		add_header Cache-Control 'max-age=31536000';
+		add_header Alt-Svc 'h3=":443"; ma=86400';
 	}
 
 	location /pgbadger {
@@ -119,6 +123,7 @@ if ($blocked_country) {
 
 		expires 30d;
 		add_header Cache-Control "public, no-transform";
+		add_header Alt-Svc 'h3=":443"; ma=86400';
 
 		rewrite ^/tiles/parametric-shading/(.*)$ /$1 break;
         	proxy_pass http://localhost:3033/;
