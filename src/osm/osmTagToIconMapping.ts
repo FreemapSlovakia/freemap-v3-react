@@ -546,6 +546,9 @@ export const osmTagToIconMapping: IconNode = {
       '*': 'temaki:tree_broadleaved',
       species: { 'Pinus mugo': 'temaki:shrub' },
     },
+    Prunus: {
+      species: { 'Prunus spinosa': 'temaki:shrub' },
+    },
     Rosa: 'temaki:shrub',
     Rubus: 'temaki:shrub',
     Sambucus: 'temaki:shrub',
