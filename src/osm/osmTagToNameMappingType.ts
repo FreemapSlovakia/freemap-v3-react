@@ -337,31 +337,52 @@ export type OsmTagToNameMapping = {
   genus: {
     Abies: string;
     Acer: string;
+    Actinidia: string;
     Aesculus: string;
     Ailanthus: string;
     Albizia: string;
     Alnus: string;
     Amelanchier: string;
+    Aronia: string;
+    Berberis: string;
     Betula: string;
+    Buxus: string;
+    Camellia: string;
     Carpinus: string;
     Castanea: string;
     Catalpa: string;
     Cedrus: string;
     Celtis: string;
     Cercis: string;
+    Chaenomeles: string;
     Chamaecyparis: string;
     Citrus: string;
-    Cornus: string;
+    Clematis: string;
+    Cornus: {
+      '*': string;
+      species: {
+        'Cornus mas': string;
+      };
+    };
     Corylus: string;
+    Cotoneaster: string;
     Crataegus: string;
     Cupressus: string;
     Cydonia: string;
+    Diospyros: string;
     Eucalyptus: string;
+    Euonymus: string;
     Fagus: string;
     Ficus: string;
+    Forsythia: string;
     Fraxinus: string;
     Ginkgo: string;
     Gleditsia: string;
+    Hedera: string;
+    Hibiscus: string;
+    Hippophae: string;
+    Humulus: string;
+    Hydrangea: string;
     Ilex: string;
     Juglans: string;
     Juniperus: string;
@@ -369,18 +390,24 @@ export type OsmTagToNameMapping = {
     Lagerstroemia: string;
     Larix: string;
     Laurus: string;
+    Lavandula: string;
     Ligustrum: string;
     Liquidambar: string;
     Liriodendron: string;
+    Lonicera: string;
     Magnolia: string;
+    Mahonia: string;
     Malus: string;
     Melia: string;
+    Mespilus: string;
     Metasequoia: string;
     Morus: string;
+    Nerium: string;
     Olea: string;
     Ostrya: string;
     Parrotia: string;
     Paulownia: string;
+    Philadelphus: string;
     Phoenix: string;
     Picea: string;
     Pinus: {
@@ -401,6 +428,7 @@ export type OsmTagToNameMapping = {
         'Prunus cerasus': string;
         'Prunus domestica': string;
         'Prunus dulcis': string;
+        'Prunus laurocerasus': string;
         'Prunus padus': string;
         'Prunus persica': string;
         'Prunus serrulata': string;
@@ -409,12 +437,25 @@ export type OsmTagToNameMapping = {
     };
     Pseudotsuga: string;
     Pterocarya: string;
+    Punica: string;
+    Pyracantha: string;
     Pyrus: string;
     Quercus: {
       '*': string;
       species: {
         'Quercus ilex': string;
         'Quercus suber': string;
+      };
+    };
+    Rhododendron: string;
+    Ribes: {
+      '*': string;
+      species: {
+        'Ribes alpinum': string;
+        'Ribes nigrum': string;
+        'Ribes rubrum': string;
+        'Ribes sanguineum': string;
+        'Ribes uva-crispa': string;
       };
     };
     Robinia: string;
@@ -461,6 +502,11 @@ export type OsmTagToNameMapping = {
         'Vaccinium vitis-idaea': string;
       };
     };
+    Viburnum: string;
+    Vitis: string;
+    Weigela: string;
+    Wisteria: string;
+    Yucca: string;
     Zelkova: string;
   };
   healthcare: {
