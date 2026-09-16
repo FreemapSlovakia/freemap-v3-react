@@ -1,10 +1,10 @@
 import type { PoiIconName } from './poiIcons.js';
 
-// Every leaf names a bundled icon, so a mistyped or removed one is a build
-// error instead of a silently missing icon. Structurally a `Node`, which is
-// what the generic tag resolver takes.
+// Every leaf names a bundled icon, so a mistyped one is a build error rather
+// than a silent gap. Structurally a `Node`, as the tag resolver takes; `''` is
+// its deliberate silence, keeping a `*` fallback off a denying tag.
 interface IconNode {
-  [key: string]: IconNode | PoiIconName;
+  [key: string]: IconNode | PoiIconName | '';
 }
 
 // Also used on its own under `amenity=place_of_worship`, where the `*` fallback
@@ -20,6 +20,16 @@ const worshipBuildingMapping: IconNode = {
 };
 
 // hack to have only single icon for churches...
+// Also read under `tourism=zoo`: a zoo carrying a `zoo` sub-tag has to resolve
+// from the pair, or the generic zoo icon wins on tag order alone.
+const zooMapping: IconNode = {
+  '*': 'zoo',
+  aquarium: 'maki:aquarium',
+  aviary: 'bird_hide',
+  birds: 'bird_hide',
+  falconry: 'bird_hide',
+};
+
 const buildingMapping: IconNode = {
   '*': 'building',
   ...worshipBuildingMapping,
@@ -195,6 +205,7 @@ export const osmTagToIconMapping: IconNode = {
     vending_machine: {
       '*': 'vending_machine',
       vending: {
+        animal_feed: 'manger',
         parking_tickets: 'parking_tickets',
         public_transport_tickets: 'public_transport_tickets',
       },
@@ -282,6 +293,7 @@ export const osmTagToIconMapping: IconNode = {
   },
   bridge: {
     '*': 'bridge',
+    no: '',
   },
   boundary: {
     administrative: {
@@ -358,7 +370,8 @@ export const osmTagToIconMapping: IconNode = {
   },
   entrance: {
     '*': 'entrance',
-    // no: no_entrance, // TODO
+    // TODO an icon of its own would say more than nothing
+    no: '',
   },
   fitness_station: {
     // One drawing for the whole outdoor gym, whatever the exercise.
@@ -1143,6 +1156,7 @@ export const osmTagToIconMapping: IconNode = {
   },
   toll: {
     '*': 'toll',
+    no: '',
   },
   tourism: {
     alpine_hut: 'alpine_hut',
@@ -1173,7 +1187,7 @@ export const osmTagToIconMapping: IconNode = {
     picnic_site: 'picnic_table',
     viewpoint: 'viewpoint',
     wilderness_hut: 'wilderness_hut',
-    zoo: 'zoo',
+    zoo: { '*': 'zoo', zoo: zooMapping },
     aquarium: 'maki:aquarium',
     caravan_site: 'caravan_site',
     gallery: 'gallery',
@@ -1184,7 +1198,7 @@ export const osmTagToIconMapping: IconNode = {
   },
   tunnel: {
     '*': 'tunnel',
-    // no: '', TODO
+    no: '',
   },
   waterway: {
     dam: 'dam',
@@ -1266,6 +1280,7 @@ export const osmTagToIconMapping: IconNode = {
     circuit: 'id:power-line',
     line_section: 'id:power-line',
   },
+  zoo: zooMapping,
   public_transport: {
     platform: 'temaki:board_transit',
     station: 'station',

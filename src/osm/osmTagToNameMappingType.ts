@@ -182,6 +182,7 @@ export type OsmTagToNameMapping = {
     vending_machine: {
       '*': string;
       vending: {
+        animal_feed: string;
         bicycle_tube: string;
         bread: string;
         bottle_return: string;
@@ -2285,5 +2286,18 @@ export type OsmTagToNameMapping = {
     bad: string;
     horrible: string;
     no: string;
+  };
+  zoo: {
+    aquarium: string;
+    aviary: string;
+    birds: string;
+    butterfly: string;
+    enclosure: string;
+    falconry: string;
+    petting_zoo: string;
+    reptile: string;
+    safari_park: string;
+    terrarium: string;
+    wildlife_park: string;
   };
 };

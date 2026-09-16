@@ -183,6 +183,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     vending_machine: {
       '*': 'Automat',
       vending: {
+        animal_feed: 'Automat na krmivo',
         bicycle_tube: 'Automat na bicyklové duše',
         bread: 'Automat na chlieb',
         bottle_return: 'Automat na vrátenie zálohovaných fliaš',
@@ -2272,6 +2273,19 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     bad: 'Zlá viditeľnosť trasy',
     horrible: 'Hrozná viditeľnosť trasy',
     no: 'Žiadna viditeľnosť trasy',
+  },
+  zoo: {
+    aquarium: 'Akvárium',
+    aviary: 'Voliéra',
+    birds: 'Vtáčí park',
+    butterfly: 'Motýlí dom',
+    enclosure: 'Výbeh',
+    falconry: 'Sokoliarstvo',
+    petting_zoo: 'Detská zoo',
+    reptile: 'Pavilón plazov',
+    safari_park: 'Safari park',
+    terrarium: 'Terárium',
+    wildlife_park: 'Obora',
   },
 };
 

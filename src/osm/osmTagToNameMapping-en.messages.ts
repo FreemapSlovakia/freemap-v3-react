@@ -182,6 +182,7 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     vending_machine: {
       '*': 'Vending machine',
       vending: {
+        animal_feed: 'Animal feed vending machine',
         bicycle_tube: 'Bicycle tube vending machine',
         bread: 'Bread vending machine',
         bottle_return: 'Deposit bottle return machine',
@@ -2271,6 +2272,19 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     bad: 'Bad trail visibility',
     horrible: 'Horrible trail visibility',
     no: 'No trail visibility',
+  },
+  zoo: {
+    aquarium: 'Aquarium',
+    aviary: 'Aviary',
+    birds: 'Bird park',
+    butterfly: 'Butterfly house',
+    enclosure: 'Animal enclosure',
+    falconry: 'Falconry',
+    petting_zoo: 'Petting zoo',
+    reptile: 'Reptile house',
+    safari_park: 'Safari park',
+    terrarium: 'Terrarium',
+    wildlife_park: 'Wildlife park',
   },
 };
 

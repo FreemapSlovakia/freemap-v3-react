@@ -70,6 +70,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
     vending_machine: {
       vending: {
+        animal_feed: 'Automat z karmą dla zwierząt',
         bicycle_tube: 'Automat z dętkami rowerowymi',
         bread: 'Automat z chlebem',
         bottle_return: 'Automat do zwrotu butelek',
@@ -2358,6 +2359,19 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     garage: 'Wejście do garażu',
     shop: 'Wejście do sklepu',
     no: 'Brak wejścia',
+  },
+  zoo: {
+    aquarium: 'Akwarium',
+    aviary: 'Woliera',
+    birds: 'Park ptaków',
+    butterfly: 'Motylarnia',
+    enclosure: 'Wybieg',
+    falconry: 'Sokolnictwo',
+    petting_zoo: 'Mini zoo',
+    reptile: 'Pawilon gadów',
+    safari_park: 'Safari',
+    terrarium: 'Terrarium',
+    wildlife_park: 'Park dzikich zwierząt',
   },
 };
 
