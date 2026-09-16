@@ -394,6 +394,20 @@ describe('objectCategories', () => {
       },
     ]);
   });
+
+  it('leaves out a value the mapping deliberately silences', () => {
+    expect(
+      objectCategories({
+        osmTagToNameMapping: { bridge: { yes: 'Bridge', no: '' } },
+      } as never),
+    ).toEqual([
+      {
+        name: 'Bridge',
+        key: 'bridge=yes',
+        tags: [{ key: 'bridge', value: 'yes' }],
+      },
+    ]);
+  });
 });
 
 describe('elevationStats', () => {

@@ -32,17 +32,21 @@ export function objectCategories(osmMapping: OsmMapping): ObjectCategory[] {
 
   function rec(n: Node, tags: ObjectCategory['tags'], key?: string) {
     for (const [tagKeyOrValue, nodeOrName] of Object.entries(n)) {
-      if (nodeOrName === '{}') {
-        continue;
-      }
-
       if (typeof nodeOrName === 'string') {
         if (key && tagKeyOrValue === '*') {
           continue;
         }
 
+        const name = nodeOrName.replace('{}', '').trim();
+
+        // An empty mapping is the resolver's deliberate silence — `bridge=no`
+        // denies the feature rather than being one to search for.
+        if (!name) {
+          continue;
+        }
+
         push(
-          nodeOrName.replace('{}', '').trim(),
+          name,
           !key && tagKeyOrValue === '*'
             ? tags
             : [
