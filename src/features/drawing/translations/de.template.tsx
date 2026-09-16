@@ -17,6 +17,12 @@ const de: DeepPartialWithRequiredObjects<DrawingMessages> = {
     addProperty: 'Eigenschaft hinzufügen',
     removeProperty: 'Eigenschaft entfernen',
     insertIntoLabel: 'In die Beschriftung einfügen',
+    showLabel: 'Beschriftung anzeigen',
+    labelVisibility: {
+      always: 'Immer',
+      hover: 'Beim Überfahren',
+      selected: 'Wenn ausgewählt',
+    },
     title: 'Eigenschaften',
     color: 'Farbe',
     fillColor: 'Füllfarbe',

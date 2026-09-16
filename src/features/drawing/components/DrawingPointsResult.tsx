@@ -7,6 +7,10 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
 import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import {
+  type LabelTooltipMode,
+  labelTooltipMode,
+} from '@shared/labelVisibility.js';
 import type {
   DragEndEvent,
   LeafletEvent,
@@ -98,6 +102,10 @@ export function DrawingPointsResult(): ReactElement {
 
   const change = useAppSelector((state) => state.drawingPoints.change);
 
+  const labelVisibility = useAppSelector(
+    (state) => state.drawingSettings.labelVisibility,
+  );
+
   return (
     <>
       {points.map((point, i) => {
@@ -108,6 +116,7 @@ export function DrawingPointsResult(): ReactElement {
             key={`${change}-${i}`}
             point={point}
             renderColor={point.color || COLORS.normal}
+            labelMode={labelTooltipMode(labelVisibility, activeIndex === i)}
             // Selection is the ring around the marker, so the marker itself
             // keeps its own color — the same signal a selected line wears.
             halo={activeIndex === i ? SELECTION_COLOR : undefined}
@@ -137,6 +146,7 @@ function DrawingPointMarker({
   point,
   point: { coords, label, markerType, icon },
   renderColor,
+  labelMode,
   halo,
   interactive,
   draggable,
@@ -144,6 +154,7 @@ function DrawingPointMarker({
 }: {
   point: DrawingPoint;
   renderColor: string;
+  labelMode: LabelTooltipMode | undefined;
   halo?: string;
   interactive: boolean;
   draggable: boolean;
@@ -174,11 +185,12 @@ function DrawingPointMarker({
       interactive={interactive}
       eventHandlers={eventHandlers}
     >
-      {renderedLabel && (
+      {renderedLabel && labelMode && (
         <Tooltip
+          key={labelMode}
           className="compact multiline"
           direction="top"
-          permanent
+          permanent={labelMode === 'permanent'}
           opacity={0.9 * opacity}
         >
           <span>{renderedLabel}</span>

@@ -14,6 +14,7 @@ import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { labelTooltipMode } from '@shared/labelVisibility.js';
 import {
   featureIdsEqual,
   OsmFeatureIdSchema,
@@ -61,6 +62,10 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
 
   const color = useAppSelector((state) => state.objectsSettings.color);
 
+  const labelVisibility = useAppSelector(
+    (state) => state.objectsSettings.labelVisibility,
+  );
+
   return !osmMapping
     ? null
     : objects.map(({ id, coords, tags }) => {
@@ -83,6 +88,10 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
 
         const access = tags['access'];
 
+        const selected = Boolean(activeId && featureIdsEqual(activeId, id));
+
+        const labelMode = labelTooltipMode(labelVisibility, selected);
+
         return (
           <RichMarker
             key={`poi-${stringifyFeatureId(id)}`}
@@ -93,11 +102,7 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
             color={color}
             // Selection is the ring, so the marker keeps the color the objects
             // settings give every POI.
-            halo={
-              activeId && featureIdsEqual(activeId, id)
-                ? SELECTION_COLOR
-                : undefined
-            }
+            halo={selected ? SELECTION_COLOR : undefined}
             markerType={markerType}
             eventHandlers={{
               click() {
@@ -105,17 +110,23 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
               },
             }}
           >
-            <Tooltip key={selectedIconValue} direction="top">
-              <span>
-                {/* {m?.objects.subcategories[pt.id]} */}
-                {/* Named first, kind of thing second — as the search list reads. */}
-                {name && <b>{name}</b>}
-                {name && gn && ' '}
-                {gn}
-                {ele && <br />}
-                {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
-              </span>
-            </Tooltip>
+            {labelMode && (
+              <Tooltip
+                key={`${selectedIconValue}-${labelMode}`}
+                direction="top"
+                permanent={labelMode === 'permanent'}
+              >
+                <span>
+                  {/* {m?.objects.subcategories[pt.id]} */}
+                  {/* Named first, kind of thing second — as the search list reads. */}
+                  {name && <b>{name}</b>}
+                  {name && gn && ' '}
+                  {gn}
+                  {ele && <br />}
+                  {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
+                </span>
+              </Tooltip>
+            )}
           </RichMarker>
         );
       });

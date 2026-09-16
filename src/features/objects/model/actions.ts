@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
@@ -28,6 +29,10 @@ export const objectsSetStyle = createAction<{
   selectedIcon: MarkerType;
   color: string;
 }>('OBJECTS_SET_STYLE');
+
+export const objectsSetLabelVisibility = createAction<LabelVisibility>(
+  'OBJECTS_SET_LABEL_VISIBILITY',
+);
 
 /**
  * Shows an object as a lookup result — or, with no `id`, every visible one at

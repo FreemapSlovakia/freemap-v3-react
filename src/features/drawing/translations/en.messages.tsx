@@ -36,6 +36,12 @@ const en: DrawingMessages = {
     addProperty: 'Add property',
     removeProperty: 'Remove property',
     insertIntoLabel: 'Write into the label',
+    showLabel: 'Show label',
+    labelVisibility: {
+      always: 'Always',
+      hover: 'On hover',
+      selected: 'When selected',
+    },
   },
   continue: 'Continue',
   join: 'Join',

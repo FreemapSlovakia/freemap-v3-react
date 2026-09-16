@@ -26,6 +26,10 @@ import {
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import {
+  type LabelTooltipMode,
+  labelTooltipMode,
+} from '@shared/labelVisibility.js';
+import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
@@ -197,6 +201,13 @@ export default function DataViewerResult({
       ? state.main.selection.id
       : undefined,
   );
+
+  const labelVisibility = useAppSelector(
+    (state) => state.trackViewerSettings.labelVisibility,
+  );
+
+  const labelModeOf = (featureIndex: number) =>
+    labelTooltipMode(labelVisibility, featureIndex === selectedIndex);
 
   const dispatch = useDispatch();
 
@@ -445,9 +456,7 @@ export default function DataViewerResult({
           }}
         >
           {name && (
-            <Tooltip className="compact" direction="top" permanent>
-              <span>{name}</span>
-            </Tooltip>
+            <LabelTooltip mode={labelModeOf(featureIndex)} label={name} />
           )}
         </Polyline>
       ))}
@@ -541,9 +550,7 @@ export default function DataViewerResult({
           }}
         >
           {name && (
-            <Tooltip className="compact" direction="top" permanent>
-              <span>{name}</span>
-            </Tooltip>
+            <LabelTooltip mode={labelModeOf(featureIndex)} label={name} />
           )}
         </Polygon>
       ))}
@@ -556,6 +563,7 @@ export default function DataViewerResult({
           name={properties?.['name']}
           properties={properties}
           interactive={interactive}
+          labelMode={labelModeOf(featureIndex)}
           selected={featureIndex === selectedIndex}
           onClick={() => select(featureIndex)}
         />
@@ -664,6 +672,7 @@ function WaypointMarker({
   name,
   properties,
   interactive,
+  labelMode,
   selected,
   onClick,
 }: {
@@ -672,6 +681,7 @@ function WaypointMarker({
   name: string | undefined;
   properties: Record<string, unknown> | null | undefined;
   interactive: boolean;
+  labelMode: LabelTooltipMode | undefined;
   selected: boolean;
   onClick: () => void;
 }): ReactElement {
@@ -704,11 +714,37 @@ function WaypointMarker({
         ? contentProps
         : { faIcon: <FaFlag color={color} /> })}
     >
-      {name && (
-        <Tooltip className="compact" direction="top" permanent>
+      {name && labelMode && (
+        <Tooltip
+          key={labelMode}
+          className="compact"
+          direction="top"
+          permanent={labelMode === 'permanent'}
+        >
           <span>{name}</span>
         </Tooltip>
       )}
     </RichMarker>
   );
+}
+
+/** A path's name; a hover one follows the pointer, as the shape's centre may be off-screen. */
+function LabelTooltip({
+  mode,
+  label,
+}: {
+  mode: LabelTooltipMode | undefined;
+  label: string;
+}): ReactElement | null {
+  return mode ? (
+    <Tooltip
+      key={mode}
+      className="compact"
+      direction="top"
+      permanent={mode === 'permanent'}
+      sticky={mode === 'hover'}
+    >
+      <span>{label}</span>
+    </Tooltip>
+  ) : null;
 }

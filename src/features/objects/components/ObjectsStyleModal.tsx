@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { LabelVisibilityField } from '@features/drawing/components/LabelVisibilityField.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
@@ -10,7 +11,10 @@ import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { objectsSetStyle } from '../model/actions.js';
+import {
+  objectsSetLabelVisibility,
+  objectsSetStyle,
+} from '../model/actions.js';
 import { objectsSettingsInitialState } from '../model/settingsReducer.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
@@ -29,9 +33,16 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
 
   const color = useAppSelector((state) => state.objectsSettings.color);
 
+  const labelVisibility = useAppSelector(
+    (state) => state.objectsSettings.labelVisibility,
+  );
+
   const [editedMarkerType, setEditedMarkerType] = useState(markerType);
 
   const [editedColor, setEditedColor] = useState(color);
+
+  const [editedLabelVisibility, setEditedLabelVisibility] =
+    useState(labelVisibility);
 
   const dispatch = useDispatch();
 
@@ -46,6 +57,8 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
       objectsSetStyle({ selectedIcon: editedMarkerType, color: editedColor }),
     );
 
+    dispatch(objectsSetLabelVisibility(editedLabelVisibility));
+
     close();
   };
 
@@ -53,9 +66,14 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
     setEditedMarkerType(objectsSettingsInitialState.selectedIcon);
 
     setEditedColor(objectsSettingsInitialState.color);
+
+    setEditedLabelVisibility(objectsSettingsInitialState.labelVisibility);
   };
 
-  const dirty = editedMarkerType !== markerType || editedColor !== color;
+  const dirty =
+    editedMarkerType !== markerType ||
+    editedColor !== color ||
+    editedLabelVisibility !== labelVisibility;
 
   useDocumentTitle(show ? om?.style.title : undefined);
 
@@ -92,6 +110,11 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
 
             <RgbaColorPicker value={editedColor} onChange={setEditedColor} />
           </Form.Group>
+
+          <LabelVisibilityField
+            value={editedLabelVisibility}
+            onChange={setEditedLabelVisibility}
+          />
         </Modal.Body>
 
         <Modal.Footer>
@@ -103,7 +126,9 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
             onClick={handleReset}
             disabled={
               editedMarkerType === objectsSettingsInitialState.selectedIcon &&
-              editedColor === objectsSettingsInitialState.color
+              editedColor === objectsSettingsInitialState.color &&
+              editedLabelVisibility ===
+                objectsSettingsInitialState.labelVisibility
             }
           />
 

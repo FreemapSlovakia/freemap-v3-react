@@ -17,6 +17,12 @@ const pl: DeepPartialWithRequiredObjects<DrawingMessages> = {
     addProperty: 'Dodaj właściwość',
     removeProperty: 'Usuń właściwość',
     insertIntoLabel: 'Wstaw do etykiety',
+    showLabel: 'Pokaż etykietę',
+    labelVisibility: {
+      always: 'Zawsze',
+      hover: 'Po najechaniu',
+      selected: 'Po zaznaczeniu',
+    },
     title: 'Właściwości',
     color: 'Kolor',
     fillColor: 'Kolor wypełnienia',

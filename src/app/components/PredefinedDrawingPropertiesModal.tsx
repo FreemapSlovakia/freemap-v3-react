@@ -1,7 +1,12 @@
 import { DrawingStyleSettingsModal } from '@features/drawing/components/DrawingStyleSettingsModal.js';
-import { drawingSettingsInitialState } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
+import { drawingSetLabelVisibility } from '@features/drawing/model/actions/drawingPointActions.js';
+import {
+  type DrawingStyle,
+  drawingSettingsInitialState,
+} from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
 import type { ReactElement } from 'react';
 import { FaFill } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -16,7 +21,21 @@ export default function PredefinedDrawingPropertiesModal({
 
   const style = useAppSelector((state) => state.drawingSettings.style);
 
+  const labelVisibility = useAppSelector(
+    (state) => state.drawingSettings.labelVisibility,
+  );
+
   const dispatch = useDispatch();
+
+  const save = (
+    drawing: DrawingStyle,
+    labelVisibility: LabelVisibility,
+    drawingApplyAll: boolean,
+  ) => {
+    dispatch(applySettings({ drawing, drawingApplyAll }));
+
+    dispatch(drawingSetLabelVisibility(labelVisibility));
+  };
 
   return (
     <DrawingStyleSettingsModal
@@ -25,16 +44,15 @@ export default function PredefinedDrawingPropertiesModal({
       documentTitle={dm?.defProps.menuItem}
       current={style}
       defaults={drawingSettingsInitialState.style}
-      onSave={(drawing) =>
-        dispatch(applySettings({ drawing, drawingApplyAll: false }))
-      }
+      currentLabelVisibility={labelVisibility}
+      defaultLabelVisibility={drawingSettingsInitialState.labelVisibility}
+      onSave={(drawing, lv) => save(drawing, lv, false)}
       extraActions={[
         {
           key: 'apply-all',
           label: dm?.defProps.applyToAll,
           icon: <FaFill />,
-          onClick: (drawing) =>
-            dispatch(applySettings({ drawing, drawingApplyAll: true })),
+          onClick: (drawing, lv) => save(drawing, lv, true),
         },
       ]}
     />

@@ -4,6 +4,7 @@ import {
   type ColorizingMode,
   ColorizingModeSchema,
 } from '@shared/colorizers/index.js';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { TransportType } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -19,6 +20,10 @@ export { type ColorizingMode, ColorizingModeSchema };
  */
 export const dataViewerSetStyle = createAction<DrawingStyle>(
   'DATA_VIEWER_SET_STYLE',
+);
+
+export const dataViewerSetLabelVisibility = createAction<LabelVisibility>(
+  'DATA_VIEWER_SET_LABEL_VISIBILITY',
 );
 
 export interface TrackPoint extends LatLon {

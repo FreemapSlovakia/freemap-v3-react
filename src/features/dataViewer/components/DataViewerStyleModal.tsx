@@ -2,7 +2,10 @@ import { DrawingStyleSettingsModal } from '@features/drawing/components/DrawingS
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-import { dataViewerSetStyle } from '../model/actions.js';
+import {
+  dataViewerSetLabelVisibility,
+  dataViewerSetStyle,
+} from '../model/actions.js';
 import { dataViewerSettingsInitialState } from '../model/settingsReducer.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 
@@ -13,6 +16,10 @@ export default function DataViewerStyleModal({ show }: Props): ReactElement {
 
   const style = useAppSelector((state) => state.trackViewerSettings.style);
 
+  const labelVisibility = useAppSelector(
+    (state) => state.trackViewerSettings.labelVisibility,
+  );
+
   const dispatch = useDispatch();
 
   return (
@@ -21,7 +28,13 @@ export default function DataViewerStyleModal({ show }: Props): ReactElement {
       title={tvm?.style.title}
       current={style}
       defaults={dataViewerSettingsInitialState.style}
-      onSave={(s) => dispatch(dataViewerSetStyle(s))}
+      currentLabelVisibility={labelVisibility}
+      defaultLabelVisibility={dataViewerSettingsInitialState.labelVisibility}
+      onSave={(s, lv) => {
+        dispatch(dataViewerSetStyle(s));
+
+        dispatch(dataViewerSetLabelVisibility(lv));
+      }}
     />
   );
 }

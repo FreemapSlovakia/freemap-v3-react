@@ -18,6 +18,12 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
     addProperty: 'Dodaj lastnost',
     removeProperty: 'Odstrani lastnost',
     insertIntoLabel: 'Vstavi v oznako',
+    showLabel: 'Prikaži oznako',
+    labelVisibility: {
+      always: 'Vedno',
+      hover: 'Ob prehodu miške',
+      selected: 'Ko je izbrano',
+    },
     title: 'Lastnosti',
     color: 'Barva',
     fillColor: 'Barva polnila',

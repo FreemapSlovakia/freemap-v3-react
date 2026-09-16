@@ -18,6 +18,12 @@ const it: DeepPartialWithRequiredObjects<DrawingMessages> = {
     addProperty: 'Aggiungi proprietà',
     removeProperty: 'Rimuovi proprietà',
     insertIntoLabel: "Inserisci nell'etichetta",
+    showLabel: 'Mostra etichetta',
+    labelVisibility: {
+      always: 'Sempre',
+      hover: 'Al passaggio del mouse',
+      selected: 'Se selezionato',
+    },
     title: 'Proprietà',
     color: 'Colore',
     fillColor: 'Colore di riempimento',

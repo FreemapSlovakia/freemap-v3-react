@@ -13,6 +13,10 @@ import {
 } from '@shared/components/RichMarker.js';
 import { HALO_PANE, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import {
+  type LabelTooltipMode,
+  labelTooltipMode,
+} from '@shared/labelVisibility.js';
 import { escapeHtml } from '@shared/stringUtils.js';
 import {
   featureIdsEqual,
@@ -94,15 +98,24 @@ export function SearchResults(): ReactElement | null {
   // headless renderer asks for a style outright, and gets it whatever happens.
   const marksActive = !window.fmHeadless?.searchResultStyle;
 
+  const labelVisibility = useAppSelector(
+    (state) => state.searchSettings.labelVisibility,
+  );
+
   return (
     <>
       {shown.map((result) => {
+        const selected = Boolean(
+          activeId && featureIdsEqual(result.id, activeId),
+        );
+
         const active = Boolean(
           marksActive &&
-            activeId &&
-            featureIdsEqual(result.id, activeId) &&
+            selected &&
             !(previewId && featureIdsEqual(result.id, previewId)),
         );
+
+        const labelMode = labelTooltipMode(labelVisibility, selected);
 
         return (
           <ResultGeometry
@@ -112,7 +125,8 @@ export function SearchResults(): ReactElement | null {
               markerColor +
               resultStyle.markerType +
               JSON.stringify(pathStyle) +
-              active
+              active +
+              labelMode
             }
             result={result}
             markerColor={markerColor}
@@ -120,6 +134,7 @@ export function SearchResults(): ReactElement | null {
             // Selection is the halo around the result, so the result itself
             // stays in the style it was given.
             active={active}
+            labelMode={labelMode}
           />
         );
       })}
@@ -165,6 +180,7 @@ type Props = {
   pathStyle: PathOptions;
   /** Whether this is the result being looked at, which wears the halo. */
   active?: boolean;
+  labelMode?: LabelTooltipMode;
   /**
    * The result is only being pointed at in the list, so it takes neither clicks
    * nor tooltips: the pointer is over the list, and the row under it already
@@ -178,6 +194,7 @@ function ResultGeometry({
   markerColor,
   pathStyle,
   active,
+  labelMode,
   preview,
 }: Props): ReactElement {
   const isOsm = result.id.type === 'osm';
@@ -220,6 +237,10 @@ function ResultGeometry({
 
   const annotateFeature = useCallback(
     async (feature: Feature, layer: Layer) => {
+      if (!labelMode) {
+        return;
+      }
+
       const genericName: string =
         feature.properties?.['__fm_genericName'] ||
         (isOsm
@@ -249,19 +270,22 @@ function ResultGeometry({
           // Named first, kind of thing second — as the search list reads.
           (displayName ? `<b>${escapeHtml(displayName)}</b> ` : '') +
             escapeHtml(genericName),
-          isPoi
-            ? // Clear of the pin, whose tip is the position.
-              { direction: 'top', offset: [0, -36] }
-            : // A line or an area labels itself at the pointer. Anchored at the
-              // shape's centre instead, the tooltip covers the very thing it
-              // names once the shape is smaller than the label — a building,
-              // say — and for a shape large enough that its centre is off the
-              // screen, it is drawn where nobody can see it.
-              { direction: 'top', sticky: true },
+          {
+            direction: 'top',
+            permanent: labelMode === 'permanent',
+            ...(isPoi
+              ? // Clear of the pin, whose tip is the position.
+                { offset: [0, -36] }
+              : // A hovered line or area labels itself at the pointer. Anchored
+                // at the shape's centre instead, the tooltip covers a shape
+                // smaller than the label, and one whose centre is off-screen
+                // is drawn where nobody can see it.
+                { sticky: labelMode === 'hover' }),
+          },
         );
       }
     },
-    [isOsm, language],
+    [isOsm, language, labelMode],
   );
 
   const dispatch = useDispatch();

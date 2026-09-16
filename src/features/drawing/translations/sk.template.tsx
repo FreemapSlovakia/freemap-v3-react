@@ -18,6 +18,12 @@ const sk: DeepPartialWithRequiredObjects<DrawingMessages> = {
     addProperty: 'Pridať vlastnosť',
     removeProperty: 'Odstrániť vlastnosť',
     insertIntoLabel: 'Vložiť do popisu',
+    showLabel: 'Zobraziť popis',
+    labelVisibility: {
+      always: 'Vždy',
+      hover: 'Pri prejdení myšou',
+      selected: 'Keď je vybraný',
+    },
     title: 'Vlastnosti',
     color: 'Farba',
     fillColor: 'Farba výplne',

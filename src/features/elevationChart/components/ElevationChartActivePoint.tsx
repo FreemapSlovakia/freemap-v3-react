@@ -6,7 +6,7 @@ import { HALO_OVER_Z, HALO_PANE, HALO_WIDTH } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type LeafletMouseEvent, Point } from 'leaflet';
-import type { ReactElement } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { FaInfo } from 'react-icons/fa';
 import { Pane, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
@@ -92,7 +92,23 @@ function useProfileHover() {
     }
   });
 
-  useMapEvent('mouseout', clear);
+  // Not the map's `mouseout`: a layer listening for it (a hover label) takes the
+  // event when the pointer leaves the map straight from that layer.
+  useEffect(() => {
+    if (activeDistance === undefined) {
+      return;
+    }
+
+    const container = map.getContainer();
+
+    const handleLeave = () => {
+      dispatch(elevationChartSetActivePoint(null));
+    };
+
+    container.addEventListener('mouseleave', handleLeave);
+
+    return () => container.removeEventListener('mouseleave', handleLeave);
+  }, [map, dispatch, activeDistance]);
 }
 
 /**

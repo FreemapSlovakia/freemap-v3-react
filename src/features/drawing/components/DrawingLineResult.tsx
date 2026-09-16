@@ -12,6 +12,7 @@ import {
   SELECTION_COLOR,
 } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { labelTooltipMode } from '@shared/labelVisibility.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import { bearing } from '@turf/bearing';
@@ -555,12 +556,13 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   // tooltip opened, and leaves it there however the shape moves afterwards —
   // there is no `move` event on a path to hang a reposition off. So drag a node
   // and the label stays behind, pointing at nothing. Re-seated after every
-  // render, which is when the geometry can have changed.
+  // render, which is when the geometry can have changed. A hover label follows
+  // the pointer instead.
   useEffect(() => {
     for (const layer of [polygonRef.current, polylineRef.current]) {
       const tooltip = layer?.getTooltip();
 
-      if (layer && tooltip?.isOpen()) {
+      if (layer && tooltip?.isOpen() && tooltip.options.permanent) {
         tooltip.setLatLng(layer.getCenter());
       }
     }
@@ -579,6 +581,17 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
   // A template whose keys all resolve to nothing expands to nothing, so the
   // tooltip is decided by the expanded text — an empty one is a blank box.
   const renderedLabel = line.label ? drawingLineLabel(line, holes).trim() : '';
+
+  const labelVisibility = useAppSelector(
+    (state) => state.drawingSettings.labelVisibility,
+  );
+
+  const labelMode = renderedLabel
+    ? labelTooltipMode(
+        labelVisibility,
+        selected || selectedPointId !== undefined,
+      )
+    : undefined;
 
   const joinPoint =
     joinWith?.lineIndex === lineIndex
@@ -711,7 +724,9 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             />
           )}
 
+          {/* Carries the label, as the visible line takes no hover. */}
           <Polyline
+            ref={polylineRef}
             key={`line-${interactiveLine ? 'a' : 'b'}`}
             weight={width + 8}
             opacity={0}
@@ -723,10 +738,20 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             positions={ps
               .filter((_, i) => i % 2 === 0)
               .map(({ lat, lon }) => ({ lat, lng: lon }))}
-          />
+          >
+            {labelMode && (
+              <Tooltip
+                key={labelMode}
+                className="compact multiline"
+                permanent={labelMode === 'permanent'}
+                sticky={labelMode === 'hover'}
+              >
+                <span>{renderedLabel}</span>
+              </Tooltip>
+            )}
+          </Polyline>
 
           <Polyline
-            ref={polylineRef}
             weight={width}
             pathOptions={{
               color: renderColor,
@@ -739,13 +764,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             positions={ps
               .filter((_, i) => i % 2 === 0)
               .map(({ lat, lon }) => ({ lat, lng: lon }))}
-          >
-            {renderedLabel && (
-              <Tooltip className="compact multiline" permanent>
-                <span>{renderedLabel}</span>
-              </Tooltip>
-            )}
-          </Polyline>
+          />
         </Fragment>
       )}
 
@@ -790,12 +809,14 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
             ...holeRings,
           ]}
         >
-          {renderedLabel && ps.length > 4 && (
+          {labelMode && ps.length > 4 && (
             <Tooltip
+              key={labelMode}
               className="compact multiline"
               offset={[-4, 0]}
               direction="center"
-              permanent
+              permanent={labelMode === 'permanent'}
+              sticky={labelMode === 'hover'}
             >
               <span>{renderedLabel}</span>
             </Tooltip>

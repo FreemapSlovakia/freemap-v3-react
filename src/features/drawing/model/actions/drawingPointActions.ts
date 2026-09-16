@@ -3,6 +3,7 @@ import {
   MarkerTypeSchema,
 } from '@features/objects/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
 import { type LatLon, LatLonSchema } from '@shared/types/common.js';
 import z from 'zod';
 
@@ -98,6 +99,11 @@ export const drawingMeasure = createAction<{
 export const drawingPointDelete = createAction<{
   index: number;
 }>('DRAWING_POINT_DELETE');
+
+/** When the labels of drawn points, lines and polygons show. */
+export const drawingSetLabelVisibility = createAction<LabelVisibility>(
+  'DRAWING_SET_LABEL_VISIBILITY',
+);
 
 /**
  * The OSM tags worth carrying onto a drawn feature. An allowlist rather than

@@ -2,11 +2,13 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
 import {
   type ReactElement,
   type ReactNode,
   type SubmitEvent,
   useCallback,
+  useState,
 } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
@@ -15,6 +17,7 @@ import {
   type DrawingStyle,
   drawingStyleEquals,
 } from '../model/reducers/drawingSettingsReducer.js';
+import { LabelVisibilityField } from './LabelVisibilityField.js';
 import { useDrawingStyleEditor } from './useDrawingStyleEditor.js';
 
 /** An extra footer action (between Save and Reset), e.g. drawing's "Apply to all". */
@@ -23,8 +26,8 @@ type ExtraAction = {
   label: ReactNode;
   icon?: ReactNode;
   variant?: string;
-  /** Receives the edited style; the modal closes afterwards. */
-  onClick: (style: DrawingStyle) => void;
+  /** Receives the edited values; the modal closes afterwards. */
+  onClick: (style: DrawingStyle, labelVisibility: LabelVisibility) => void;
 };
 
 type Props = {
@@ -39,9 +42,11 @@ type Props = {
   current: DrawingStyle;
   /** Style the "Reset to default" button refills the form with. */
   defaults: DrawingStyle;
+  currentLabelVisibility: LabelVisibility;
+  defaultLabelVisibility: LabelVisibility;
   widthStep?: number;
-  /** Receives the edited style on Save; the modal closes afterwards. */
-  onSave: (style: DrawingStyle) => void;
+  /** Receives the edited values on Save; the modal closes afterwards. */
+  onSave: (style: DrawingStyle, labelVisibility: LabelVisibility) => void;
   extraActions?: ExtraAction[];
 };
 
@@ -58,6 +63,8 @@ export function DrawingStyleSettingsModal({
   icon = <FaPaintBrush />,
   current,
   defaults,
+  currentLabelVisibility,
+  defaultLabelVisibility,
   widthStep = 0.1,
   onSave,
   extraActions,
@@ -68,6 +75,10 @@ export function DrawingStyleSettingsModal({
 
   const editor = useDrawingStyleEditor(current, { widthStep });
 
+  const [labelVisibility, setLabelVisibility] = useState(
+    currentLabelVisibility,
+  );
+
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
@@ -75,7 +86,7 @@ export function DrawingStyleSettingsModal({
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    onSave(editor.style);
+    onSave(editor.style, labelVisibility);
 
     close();
   };
@@ -104,10 +115,23 @@ export function DrawingStyleSettingsModal({
           </Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>{editor.element}</Modal.Body>
+        <Modal.Body>
+          {editor.element}
+
+          <LabelVisibilityField
+            value={labelVisibility}
+            onChange={setLabelVisibility}
+          />
+        </Modal.Body>
 
         <Modal.Footer>
-          <Button type="submit" disabled={editor.invalid || !editor.dirty}>
+          <Button
+            type="submit"
+            disabled={
+              editor.invalid ||
+              (!editor.dirty && labelVisibility === currentLabelVisibility)
+            }
+          >
             <FaCheck /> {m?.general.save}
           </Button>
 
@@ -117,7 +141,7 @@ export function DrawingStyleSettingsModal({
               variant={action.variant ?? 'secondary'}
               disabled={editor.invalid}
               onClick={() => {
-                action.onClick(editor.style);
+                action.onClick(editor.style, labelVisibility);
 
                 close();
               }}
@@ -127,10 +151,16 @@ export function DrawingStyleSettingsModal({
           ))}
 
           <ResetToDefaultsButton
-            onClick={() => editor.reset(defaults)}
+            onClick={() => {
+              editor.reset(defaults);
+
+              setLabelVisibility(defaultLabelVisibility);
+            }}
             // Enabled while invalid so reset can recover a broken field.
             disabled={
-              !editor.invalid && drawingStyleEquals(editor.style, defaults)
+              !editor.invalid &&
+              drawingStyleEquals(editor.style, defaults) &&
+              labelVisibility === defaultLabelVisibility
             }
           />
 

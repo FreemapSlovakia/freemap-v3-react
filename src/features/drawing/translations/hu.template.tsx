@@ -18,6 +18,12 @@ const hu: DeepPartialWithRequiredObjects<DrawingMessages> = {
     addProperty: 'Tulajdonság hozzáadása',
     removeProperty: 'Tulajdonság eltávolítása',
     insertIntoLabel: 'Beszúrás a feliratba',
+    showLabel: 'Felirat megjelenítése',
+    labelVisibility: {
+      always: 'Mindig',
+      hover: 'Rámutatáskor',
+      selected: 'Kijelöléskor',
+    },
     title: 'Tulajdonságok',
     color: 'Szín',
     fillColor: 'Kitöltőszín',

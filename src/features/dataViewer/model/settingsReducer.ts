@@ -9,11 +9,13 @@ import {
   colorizerNeedsElevation,
 } from '@shared/colorizers/index.js';
 import { elevationCoverage } from '@shared/geoutils.js';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
 import { isTrackLine } from '../trackSelection.js';
 import {
   dataViewerColorizeTrackBy,
   dataViewerSetColorizeLegend,
   dataViewerSetData,
+  dataViewerSetLabelVisibility,
   dataViewerSetStyle,
 } from './actions.js';
 
@@ -24,6 +26,7 @@ export interface DataViewerSettingsState {
   // Style applied to imported track-viewer features that carry no style of
   // their own.
   style: DrawingStyle;
+  labelVisibility: LabelVisibility;
   colorizeTrackBy: ColorizingMode | null;
   // Whether the colorize legend is shown; independent of the other tools.
   colorizeLegend: boolean;
@@ -31,6 +34,7 @@ export interface DataViewerSettingsState {
 
 export const dataViewerSettingsInitialState: DataViewerSettingsState = {
   style: makeDrawingStyle('#0000ff', 4),
+  labelVisibility: 'always',
   colorizeTrackBy: null,
   colorizeLegend: true,
 };
@@ -41,6 +45,9 @@ export const dataViewerSettingsReducer = createReducer(
     builder
       .addCase(dataViewerSetStyle, (state, action) => {
         state.style = action.payload;
+      })
+      .addCase(dataViewerSetLabelVisibility, (state, action) => {
+        state.labelVisibility = action.payload;
       })
       .addCase(dataViewerColorizeTrackBy, (state, action) => {
         state.colorizeTrackBy = action.payload;

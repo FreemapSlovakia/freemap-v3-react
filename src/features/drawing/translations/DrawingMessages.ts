@@ -1,3 +1,5 @@
+import type { LabelVisibility } from '@shared/labelVisibility.js';
+
 export type DrawingMessages = {
   modify: string;
   edit: {
@@ -39,6 +41,8 @@ export type DrawingMessages = {
     removeProperty: string;
     /** Writes `{key}` into the label being edited. */
     insertIntoLabel: string;
+    showLabel: string;
+    labelVisibility: Record<LabelVisibility, string>;
   };
   split: string;
   join: string;

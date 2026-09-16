@@ -65,6 +65,7 @@ import {
   STEEPNESS_DEFAULT_SCALE,
   STEEPNESS_SCALES,
 } from '@shared/colorizers/modes/steepness.js';
+import { LabelVisibilitySchema } from '@shared/labelVisibility.js';
 import { LanguageSchema } from '@shared/langUtils.js';
 import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
@@ -148,6 +149,7 @@ export const PersistedObjectsSettingsSchema = z
   .object({
     selectedIcon: MarkerTypeSchema,
     color: z.string(),
+    labelVisibility: LabelVisibilitySchema,
     showDetails: z.boolean(),
   })
   .partial();
@@ -270,12 +272,14 @@ const PersistedViewshedSettingsSchema = z
 export const PersistedSearchSettingsSchema = z
   .object({
     resultStyle: SearchResultStyleSchema.partial(),
+    labelVisibility: LabelVisibilitySchema,
   })
   .partial();
 
 export const PersistedDataViewerSettingsSchema = z
   .object({
     style: DrawingStyleSchema.partial(),
+    labelVisibility: LabelVisibilitySchema,
     colorizeTrackBy: ColorizingModeSchema.nullable(),
     colorizeLegend: z.boolean(),
   })
@@ -485,6 +489,7 @@ const PERSIST: PersistEntry[] = [
     persist: (o) => ({
       selectedIcon: o.selectedIcon,
       color: o.color,
+      labelVisibility: o.labelVisibility,
       showDetails: o.showDetails,
     }),
   }),
@@ -519,9 +524,13 @@ const PERSIST: PersistEntry[] = [
     initial: searchSettingsInitialState,
     rehydrate: (initial, data) => ({
       ...initial,
+      ...data,
       resultStyle: { ...initial.resultStyle, ...data.resultStyle },
     }),
-    persist: (s) => ({ resultStyle: s.resultStyle }),
+    persist: (s) => ({
+      resultStyle: s.resultStyle,
+      labelVisibility: s.labelVisibility,
+    }),
   }),
   defineEntry({
     key: 'panoramaSettings',
@@ -558,6 +567,7 @@ const PERSIST: PersistEntry[] = [
     }),
     persist: (t) => ({
       style: t.style,
+      labelVisibility: t.labelVisibility,
       colorizeTrackBy: t.colorizeTrackBy,
       colorizeLegend: t.colorizeLegend,
     }),

@@ -1,6 +1,7 @@
 import { applySettings } from '@app/store/actions.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { LabelVisibilitySchema } from '@shared/labelVisibility.js';
 import z from 'zod';
 import {
   drawingLineChangeProperties,
@@ -8,7 +9,10 @@ import {
   LineCapSchema,
   LineJoinSchema,
 } from '../actions/drawingLineActions.js';
-import { drawingPointChangeProperties } from '../actions/drawingPointActions.js';
+import {
+  drawingPointChangeProperties,
+  drawingSetLabelVisibility,
+} from '../actions/drawingPointActions.js';
 
 // The default style applied to newly drawn points/lines/polygons. Spread
 // directly onto `drawingPointAdd`/`drawingLineAdd` payloads, so it must hold
@@ -63,6 +67,8 @@ export function drawingStyleEquals(a: DrawingStyle, b: DrawingStyle): boolean {
 
 export const DrawingSettingsSchema = z.object({
   style: DrawingStyleSchema,
+  // Not part of `style`, which is copied onto every drawn feature.
+  labelVisibility: LabelVisibilitySchema,
   recentColors: z.array(z.string()),
   preventCutHoleHint: z.boolean(),
 });
@@ -115,6 +121,7 @@ export const DrawingSettingsCompatSchema = z.preprocess(
   },
   z.object({
     style: DrawingStyleSchema.partial(),
+    labelVisibility: LabelVisibilitySchema.optional(),
     recentColors: z.array(z.string()).optional(),
     preventCutHoleHint: z.boolean().optional(),
   }),
@@ -122,6 +129,7 @@ export const DrawingSettingsCompatSchema = z.preprocess(
 
 export const drawingSettingsInitialState: DrawingSettings = {
   style: makeDrawingStyle('#0000ff', 4),
+  labelVisibility: 'always',
   recentColors: [],
   preventCutHoleHint: false,
 };
@@ -175,6 +183,9 @@ export const drawingSettingsReducer = createReducer(
       })
       .addCase(drawingPreventCutHoleHint, (state) => {
         state.preventCutHoleHint = true;
+      })
+      .addCase(drawingSetLabelVisibility, (state, { payload }) => {
+        state.labelVisibility = payload;
       })
       .addMatcher(
         isAnyOf(drawingLineChangeProperties, drawingPointChangeProperties),
