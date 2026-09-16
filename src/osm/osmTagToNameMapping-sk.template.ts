@@ -383,6 +383,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     Juglans: 'Orech',
     Juniperus: 'Borievka',
     Koelreuteria: 'Jaseňovec',
+    Laburnum: 'Štedrec (zlatý dážď)',
     Lagerstroemia: 'Lagerstrémia',
     Larix: 'Smrekovec',
     Laurus: 'Vavrín',

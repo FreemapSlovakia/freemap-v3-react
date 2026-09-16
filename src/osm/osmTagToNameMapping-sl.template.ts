@@ -383,6 +383,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     Juglans: 'Oreh',
     Juniperus: 'Brin',
     Koelreuteria: 'Kelreuterija',
+    Laburnum: 'Nagnoj (zlati dež)',
     Lagerstroemia: 'Lagerstremija',
     Larix: 'Macesen',
     Laurus: 'Lovor',

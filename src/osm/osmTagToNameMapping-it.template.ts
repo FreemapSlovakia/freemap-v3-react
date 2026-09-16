@@ -466,6 +466,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     Juglans: 'Noce',
     Juniperus: 'Ginepro',
     Koelreuteria: 'Koelreuteria',
+    Laburnum: 'Maggiociondolo',
     Lagerstroemia: 'Lagerstroemia',
     Larix: 'Larice',
     Laurus: 'Alloro',

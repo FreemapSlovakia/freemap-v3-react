@@ -387,6 +387,7 @@ export type OsmTagToNameMapping = {
     Juglans: string;
     Juniperus: string;
     Koelreuteria: string;
+    Laburnum: string;
     Lagerstroemia: string;
     Larix: string;
     Laurus: string;

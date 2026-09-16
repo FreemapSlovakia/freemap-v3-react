@@ -469,6 +469,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     Juglans: 'Diófa',
     Juniperus: 'Boróka',
     Koelreuteria: 'Csörgőfa',
+    Laburnum: 'Aranyeső',
     Lagerstroemia: 'Selyemmirtusz',
     Larix: 'Vörösfenyő',
     Laurus: 'Babér',
