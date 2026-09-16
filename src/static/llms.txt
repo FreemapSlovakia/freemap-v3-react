@@ -117,6 +117,9 @@ Supported login providers:
 - Google
 - OpenStreetMap
 - Garmin
+- GitHub
+- Microsoft
+- Strava — login and connect work only on `www.freemap.sk`, because Strava's API app accepts only that callback domain; disconnecting works everywhere
 
 For each provider the modal shows either a **Connect** button (to link it) or a **Disconnect** button (if already linked), so multiple providers can be linked to a single Freemap account.
 
