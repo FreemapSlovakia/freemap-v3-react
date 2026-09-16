@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import { taxonSearchFilters } from '@osm/taxon.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
 import { fetchFeaturesInBbox, osmApiFeatureId } from '@shared/osmApi.js';
 import type { ObjectsResult } from './model/actions.js';
@@ -13,7 +14,8 @@ export type ObjectsBounds = {
 /**
  * The objects tool's search: one filter per active category, each a
  * comma-joined set of `key=value` pairs (a leading `!` on the key means
- * "without this tag", a missing value means "with any").
+ * "without this tag", a missing value means "with any"). A genus or species
+ * category widens to the filters `taxonSearchFilters` makes of it.
  */
 export async function fetchObjects(
   {
@@ -24,7 +26,7 @@ export async function fetchObjects(
   request: CancelTriggers & { getState: () => RootState },
 ): Promise<{ objects: ObjectsResult[]; truncated: boolean }> {
   const { features, truncated } = await fetchFeaturesInBbox(
-    { bbox: bounds, filters: active, limit },
+    { bbox: bounds, filters: active.flatMap(taxonSearchFilters), limit },
     request,
   );
 

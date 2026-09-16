@@ -334,6 +334,135 @@ export type OsmTagToNameMapping = {
   'disused:building': {
     '*': string;
   };
+  genus: {
+    Abies: string;
+    Acer: string;
+    Aesculus: string;
+    Ailanthus: string;
+    Albizia: string;
+    Alnus: string;
+    Amelanchier: string;
+    Betula: string;
+    Carpinus: string;
+    Castanea: string;
+    Catalpa: string;
+    Cedrus: string;
+    Celtis: string;
+    Cercis: string;
+    Chamaecyparis: string;
+    Citrus: string;
+    Cornus: string;
+    Corylus: string;
+    Crataegus: string;
+    Cupressus: string;
+    Cydonia: string;
+    Eucalyptus: string;
+    Fagus: string;
+    Ficus: string;
+    Fraxinus: string;
+    Ginkgo: string;
+    Gleditsia: string;
+    Ilex: string;
+    Juglans: string;
+    Juniperus: string;
+    Koelreuteria: string;
+    Lagerstroemia: string;
+    Larix: string;
+    Laurus: string;
+    Ligustrum: string;
+    Liquidambar: string;
+    Liriodendron: string;
+    Magnolia: string;
+    Malus: string;
+    Melia: string;
+    Metasequoia: string;
+    Morus: string;
+    Olea: string;
+    Ostrya: string;
+    Parrotia: string;
+    Paulownia: string;
+    Phoenix: string;
+    Picea: string;
+    Pinus: {
+      '*': string;
+      species: {
+        'Pinus mugo': string;
+        'Pinus pinea': string;
+      };
+    };
+    Platanus: string;
+    Populus: string;
+    Prunus: {
+      '*': string;
+      species: {
+        'Prunus armeniaca': string;
+        'Prunus avium': string;
+        'Prunus cerasifera': string;
+        'Prunus cerasus': string;
+        'Prunus domestica': string;
+        'Prunus dulcis': string;
+        'Prunus padus': string;
+        'Prunus persica': string;
+        'Prunus serrulata': string;
+        'Prunus spinosa': string;
+      };
+    };
+    Pseudotsuga: string;
+    Pterocarya: string;
+    Pyrus: string;
+    Quercus: {
+      '*': string;
+      species: {
+        'Quercus ilex': string;
+        'Quercus suber': string;
+      };
+    };
+    Robinia: string;
+    Rosa: {
+      '*': string;
+      species: {
+        'Rosa canina': string;
+      };
+    };
+    Rubus: {
+      '*': string;
+      species: {
+        'Rubus fruticosus': string;
+        'Rubus idaeus': string;
+      };
+    };
+    Salix: {
+      '*': string;
+      species: {
+        'Salix babylonica': string;
+      };
+    };
+    Sambucus: string;
+    Sequoiadendron: string;
+    Sorbus: {
+      '*': string;
+      species: {
+        'Sorbus aria': string;
+      };
+    };
+    Spiraea: string;
+    Styphnolobium: string;
+    Syringa: string;
+    Taxus: string;
+    Thuja: string;
+    Tilia: string;
+    Tipuana: string;
+    Trachycarpus: string;
+    Ulmus: string;
+    Vaccinium: {
+      '*': string;
+      species: {
+        'Vaccinium myrtillus': string;
+        'Vaccinium vitis-idaea': string;
+      };
+    };
+    Zelkova: string;
+  };
   healthcare: {
     '*': string;
     alternative: string;
@@ -839,7 +968,31 @@ export type OsmTagToNameMapping = {
     meadow: string;
     military: string;
     mine_spoils: string;
-    orchard: string;
+    orchard: {
+      '*': string;
+      trees: {
+        almond_trees: string;
+        apple_trees: string;
+        apricot_trees: string;
+        blueberry_plants: string;
+        cherry_trees: string;
+        chestnut_trees: string;
+        christmas_trees: string;
+        fig_trees: string;
+        hazel_plants: string;
+        hop_plants: string;
+        kiwi_plants: string;
+        lemon_trees: string;
+        oak_trees: string;
+        olive_trees: string;
+        orange_trees: string;
+        peach_trees: string;
+        pear_trees: string;
+        pistachio_trees: string;
+        plum_trees: string;
+        walnut_trees: string;
+      };
+    };
     paddock: string;
     peat_cutting: string;
     pedestrian: string;
@@ -1163,51 +1316,6 @@ export type OsmTagToNameMapping = {
         avenue: string;
         urban: string;
         agricultural: string;
-      };
-      genus: {
-        Abies: string;
-        Acer: string;
-        Aesculus: string;
-        Alnus: string;
-        Betula: string;
-        Carpinus: string;
-        Castanea: string;
-        Corylus: string;
-        Crataegus: string;
-        Cupressus: string;
-        Fagus: string;
-        Fraxinus: string;
-        Juglans: string;
-        Juniperus: string;
-        Larix: string;
-        Malus: string;
-        Morus: string;
-        Olea: string;
-        Picea: string;
-        Pinus: string;
-        Platanus: string;
-        Populus: string;
-        Prunus: {
-          '*': string;
-          species: {
-            'Prunus armeniaca': string;
-            'Prunus avium': string;
-            'Prunus cerasus': string;
-            'Prunus domestica': string;
-            'Prunus dulcis': string;
-            'Prunus padus': string;
-            'Prunus persica': string;
-          };
-        };
-        Pyrus: string;
-        Quercus: string;
-        Robinia: string;
-        Salix: string;
-        Sorbus: string;
-        Taxus: string;
-        Thuja: string;
-        Tilia: string;
-        Ulmus: string;
       };
     };
     tree_group: string;

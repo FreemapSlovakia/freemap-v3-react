@@ -538,6 +538,21 @@ export const osmTagToIconMapping: IconNode = {
     school: 'school',
     trench: 'temaki:trench',
   },
+  genus: {
+    '*': 'temaki:tree_broadleaved',
+    Buxus: 'temaki:shrub',
+    Ligustrum: 'temaki:shrub',
+    Pinus: {
+      '*': 'temaki:tree_broadleaved',
+      species: { 'Pinus mugo': 'temaki:shrub' },
+    },
+    Rosa: 'temaki:shrub',
+    Rubus: 'temaki:shrub',
+    Sambucus: 'temaki:shrub',
+    Spiraea: 'temaki:shrub',
+    Syringa: 'temaki:shrub',
+    Vaccinium: 'temaki:shrub',
+  },
   natural: {
     arch: 'arch',
     beach: 'beach',

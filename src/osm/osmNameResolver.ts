@@ -1,3 +1,4 @@
+import { normalizeTaxonTags } from './taxon.js';
 import type { Node, OsmMapping } from './types.js';
 
 type Part = { text: string; tags: Record<string, string>; case: string };
@@ -148,16 +149,47 @@ export function eliminateMoreGenericNames(items: Part[]): Part[] {
 export function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
+  /** A tree or shrub with a genus is the genus ("Linden"), not both. */
+  preferGenus = false,
 ): string[] {
   // Deduplicated: two keys can name the same thing — `amenity=pharmacy` beside
   // `healthcare=pharmacy` is the recommended tagging — and it reads once.
   return [
     ...new Set(
-      eliminateMoreGenericNames(
-        resolveGenericNameWithMeta(m, adjustTags(tags), {}),
+      pickPlantOrGenus(
+        eliminateMoreGenericNames(
+          resolveGenericNameWithMeta(m, adjustTags(tags), {}),
+        ),
+        preferGenus,
       ).map((part) => part.text),
     ),
   ];
+}
+
+const singlePlants = new Set(['tree', 'shrub', 'scrub']);
+
+/**
+ * A single plant with a genus resolves as both. A name keeps the genus over the
+ * bare plant; an icon keeps the plant, so a juniper shrub stays a shrub.
+ */
+function pickPlantOrGenus(parts: Part[], preferGenus: boolean): Part[] {
+  const hasGenus = (part: Part) => 'genus' in part.tags;
+
+  const isPlant = (part: Part) =>
+    singlePlants.has(part.tags['natural'] ?? '') && !hasGenus(part);
+
+  const isBarePlant = (part: Part) =>
+    isPlant(part) && Object.keys(part.tags).length === 1;
+
+  if (!parts.some(hasGenus)) {
+    return parts;
+  }
+
+  return preferGenus
+    ? parts.filter((part) => !isBarePlant(part))
+    : parts.some(isPlant)
+      ? parts.filter((part) => !hasGenus(part))
+      : parts;
 }
 
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
@@ -192,7 +224,7 @@ export function getGenericNameFromOsmElementSync(
   osmTagToNameMapping: Node,
   colorNames: Record<string, string>,
 ): string {
-  const parts = resolveGenericName(osmTagToNameMapping, tags);
+  const parts = resolveGenericName(osmTagToNameMapping, tags, true);
 
   let gn = parts.length === 0 ? undefined : parts.join('; ');
 
@@ -286,44 +318,7 @@ function adjustTags(tags: Record<string, string>) {
     res = { ...rest, fixme };
   }
 
-  // Mappers' case varies and a tree is often tagged by its species alone, so
-  // match `genus`/`species` in botanical case, the genus taken from the species.
-  if (tags['natural'] === 'tree') {
-    const species = [tags['species'], tags['taxon']].find(
-      (v) => typeof v === 'string' && v,
-    );
-
-    const genus =
-      typeof tags['genus'] === 'string' && tags['genus']
-        ? tags['genus']
-        : species;
-
-    res = {
-      ...res,
-      ...(genus && { genus: toTaxonCase(genus, 1) }),
-      ...(species && { species: toTaxonCase(species, 2) }),
-    };
-  }
-
-  return res;
-}
-
-/** `quercus Robur 'Fastigiata'` → `Quercus robur`, keeping `;`-separated values. */
-function toTaxonCase(value: string, words: number) {
-  // Deduplicated: identical parts eliminate each other as more generic, which
-  // `Quercus robur;Quercus petraea` would otherwise yield as the genus.
-  return [
-    ...new Set(
-      value.split(';').map((v) => {
-        const [first = '', ...rest] = v.trim().toLowerCase().split(/\s+/);
-
-        return [
-          first.charAt(0).toUpperCase() + first.slice(1),
-          ...rest.slice(0, words - 1),
-        ].join(' ');
-      }),
-    ),
-  ].join(';');
+  return normalizeTaxonTags(res);
 }
 
 // TODO add others

@@ -11,6 +11,7 @@ import {
 import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
 import { savedRouteFromState } from '@features/routePlanner/model/savedRoute.js';
 import { savedSearchResultsFromState } from '@features/search/model/savedSearchResults.js';
+import { upgradeObjectFilter } from '@osm/taxon.js';
 import { hash } from 'ohash';
 import { createSelector } from 'reselect';
 import type { MapData } from './actions.js';
@@ -188,7 +189,12 @@ export function fingerprintDocument(data: MapData, base: RootState): string {
     // `finishOnly`) — falling back to the screen would make a genuinely changed
     // map read as saved.
     routePlanner: routePlannerFromMapData(data.routePlanner),
-    objects: { ...base.objects, active: data.objectsV2?.active ?? [] },
+    objects: {
+      ...base.objects,
+      active: [
+        ...new Set((data.objectsV2?.active ?? []).map(upgradeObjectFilter)),
+      ],
+    },
     // Nothing is previewed in a document: a stored result was kept, or it
     // wouldn't have been stored. A document written before pins were stored
     // says nothing about them and so is read as holding whatever is on screen —
