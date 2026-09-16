@@ -11,6 +11,35 @@ export type IconSpec =
   | { kind: 'poi'; name: string }
   | { kind: 'text'; text: string };
 
+// Icons that took the map renderer's file name, so the two sets stay in sync,
+// and the borrowed drawings the renderer's own replaced — a borrowed icon is
+// bundled only while the tag mapping names it. A spec stored before that (by
+// hand, or by converting map features to drawing) still names the old icon.
+const renamedPoi: Record<string, string> = {
+  'maki:art-gallery': 'gallery',
+  'temaki:camper_trailer': 'caravan_site',
+  'temaki:storage_tank': 'storage_tank',
+  'temaki:telescope': 'telescope_dome',
+  'temaki:vending_lockers': 'parcel_locker',
+  'temaki:wind_turbine': 'generator_wind',
+  bell_tower: 'tower_bell_tower',
+  diy: 'doityourself',
+  emergency_phone: 'phone',
+  ferry: 'ferry_terminal',
+  golf: 'golf_course',
+  heliport: 'helipad',
+  hillclimbing: 'climbing',
+  iceskating: 'ice_skating',
+  library: 'books',
+  mast_other: 'mast',
+  office: 'information_office',
+  pitch: 'running',
+  rental_bicycle: 'bicycle_rental',
+  rental_car: 'car_rental',
+  skiing_downhill: 'skiing',
+  tower_other: 'tower',
+};
+
 export function parseIconSpec(icon: string | undefined): IconSpec | undefined {
   if (!icon) {
     return undefined;
@@ -21,7 +50,13 @@ export function parseIconSpec(icon: string | undefined): IconSpec | undefined {
   }
 
   if (icon.startsWith('poi:')) {
-    return { kind: 'poi', name: icon.slice(4) };
+    const name = icon.slice(4);
+
+    // `hasOwn`, or a spec naming `toString` would resolve to Object's own.
+    return {
+      kind: 'poi',
+      name: Object.hasOwn(renamedPoi, name) ? renamedPoi[name] : name,
+    };
   }
 
   // Anything else is literal text; only the first 2 chars fit in the marker.

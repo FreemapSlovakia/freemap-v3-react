@@ -1,7 +1,7 @@
-<svg version="1.0" width="11" height="15.093983"
-  xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-
+<svg
+   width="8"
+   height="12.094"
+   xmlns="http://www.w3.org/2000/svg">
   <path
-    d="M 1.5,1.5 V 2.5 H 2.5 V 7.5 L 1.756,13.406 L 3.244,13.594 L 4.014,7.5 H 6.99 L 7.756,13.594 L 9.244,13.406 L 8.5,7.48 V 2.5 H 9.5 V 1.5 H 2.5 Z M 4.5,3.5 H 6.531 L 6.5,4.5 H 4.5 Z"
-  />
+     d="M 0,0 V 1 H 1 V 6 L 0.256,11.906 1.744,12.094 2.514,6 H 5.49 L 6.256,12.094 7.744,11.906 7,5.98 V 1 H 8 V 0 H 1 Z M 3,2 H 5.031 L 5,3 H 3 Z" />
 </svg>

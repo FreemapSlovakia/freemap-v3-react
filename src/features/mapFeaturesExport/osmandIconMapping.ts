@@ -8,7 +8,7 @@
 // the `<key>_<value>` convention used throughout OsmAnd's POI rendering.
 
 import type { MarkerType } from '@features/objects/model/actions.js';
-import { faSpec, poiSpec } from '@shared/drawingIcons.js';
+import { faSpec, parseIconSpec, poiSpec } from '@shared/drawingIcons.js';
 
 // markerType <-> OsmAnd background. OsmAnd's valid values are exactly these
 // three; we render `pin` as `octagon` since OsmAnd has no pointed-pin shape.
@@ -113,7 +113,7 @@ const POI_TO_OSMAND: Record<string, string> = {
   college: 'amenity_college',
   university: 'amenity_university',
   kindergarten: 'amenity_kindergarten',
-  library: 'amenity_library',
+  books: 'amenity_library',
   // recreation & nature
   park: 'leisure_park',
   playground: 'leisure_playground',
@@ -266,15 +266,14 @@ export function iconSpecToOsmAndIcon(
     return undefined;
   }
 
-  if (icon.startsWith('poi:')) {
-    return POI_TO_OSMAND[icon.slice(4)];
-  }
+  // Through the parser, so a spec naming a renamed icon finds its row.
+  const spec = parseIconSpec(icon);
 
-  if (icon.startsWith('fa:')) {
-    return FA_TO_OSMAND[icon.slice(3)];
-  }
-
-  return undefined;
+  return spec?.kind === 'poi'
+    ? POI_TO_OSMAND[spec.name]
+    : spec?.kind === 'fa'
+      ? FA_TO_OSMAND[spec.name]
+      : undefined;
 }
 
 /**
