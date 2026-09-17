@@ -55,6 +55,10 @@ Older version (map updated, style not):
 - [Map style V3](orux-mf-theme://download.freemap.sk/LocusMap/orux_theme.zip)
 - [Slovakia map V3](orux-map://download.freemap.sk/LocusMap/slovakia-topo-osm-srtm.zip)
 
+Additional maps for OruxMaps:
+
+- [Outdoor (also in @2x, @3x and @4x resolution), Orthophoto SR, DMR5 and DMP1 hillshading, NLC forest roads (online)](https://download.freemap.sk/OruxMaps/onlinemapsources.xml) — save the file to the `oruxmaps/mapfiles/customonlinemaps/` folder, restart OruxMaps and refresh the map list. If you already have an `onlinemapsources.xml` there, merge the two.
+
 ### BackCountry Navigator
 
 <a href="https://play.google.com/store/apps/details?id=com.crittermap.backcountrynavigator.license" target="_blank" rel="noopener noreferrer"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="56"></a>
