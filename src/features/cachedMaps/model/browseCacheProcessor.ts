@@ -1,8 +1,9 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { integratedLayerDefs, isTileLayerDef } from '@shared/mapDefinitions.js';
 import {
+  type BrowseTileTemplate,
   clearBrowseCache,
   readBrowseCacheStats,
   writeBrowseCacheConfig,
@@ -16,10 +17,10 @@ import { browseCacheCleared, browseCacheStatsLoaded } from './actions.js';
  * layers: a WMS asks for a rendered extent rather than a tile of a fixed grid,
  * and the downloaded offline maps have their own cache and their own path.
  */
-function tileTemplates(state: RootState): string[] {
+function tileTemplates(state: RootState): BrowseTileTemplate[] {
   return [...integratedLayerDefs, ...state.map.customLayers]
-    .filter((def) => def.technology === 'tile')
-    .map((def) => def.url);
+    .filter(isTileLayerDef)
+    .map((def) => ({ url: def.url, tms: def.tms }));
 }
 
 /** Hands the service worker the settings and the layer set it works from. */

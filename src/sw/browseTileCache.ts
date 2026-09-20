@@ -13,6 +13,7 @@ import {
   BROWSE_CACHE_NAME,
   type BrowseCacheConfig,
   type BrowseTileEntry,
+  type BrowseTileTemplate,
   browseCacheActive,
   browseCacheDefaults,
   putTileResponse,
@@ -22,7 +23,9 @@ import {
   writeBrowseCacheStats,
   writeBrowseIndex,
 } from '@features/cachedMaps/browseCache.js';
+import { buildTileUrl, parseTileUrl, stripTileScale } from '@shared/tileUrl.js';
 import { fetchTile } from './fetchTile.js';
+import { flipY, type TileCoords, upscaledTile } from './upscaledTile.js';
 
 // how soon the settings and the layer templates may be re-read
 const RELOAD_MS = 5000;
@@ -48,7 +51,9 @@ const DAY_MS = 86_400_000;
 
 let config: BrowseCacheConfig | null = null;
 
-let matchers: RegExp[] = [];
+// the layers the cache answers for, each with the template its urls are read
+// back through
+let matchers: { re: RegExp; template: BrowseTileTemplate }[] = [];
 
 let readAt = 0;
 
@@ -89,7 +94,7 @@ async function readState(): Promise<void> {
 
     matchers = state.templates.flatMap((template) => {
       try {
-        return [tileTemplateToRegExp(template)];
+        return [{ re: tileTemplateToRegExp(template.url), template }];
       } catch {
         return [];
       }
@@ -134,11 +139,14 @@ void loadState();
 
 /** The settings under which this URL is ours to answer, if it is. */
 function configFor(url: string): BrowseCacheConfig | undefined {
-  return config &&
-    browseCacheActive(config) &&
-    matchers.some((re) => re.test(url))
+  return config && browseCacheActive(config) && templateFor(url)
     ? config
     : undefined;
+}
+
+/** The layer this URL is a tile of, as far as the templates say. */
+function templateFor(url: string): BrowseTileTemplate | undefined {
+  return matchers.find(({ re }) => re.test(url))?.template;
 }
 
 /**
@@ -609,7 +617,9 @@ async function serveBrowseTile(
   }
 
   if (settings.mode === 'cache-only') {
-    return new Response(null, { status: 404 });
+    return (
+      (await upscaleBrowsed(event, held)) ?? new Response(null, { status: 404 })
+    );
   }
 
   try {
@@ -649,6 +659,84 @@ async function serveBrowseTile(
       return cached;
     }
 
+    // `network-only` is not to be answered from the cache at all, upscaled or
+    // otherwise; the other modes would rather show blur than an error tile.
+    const upscaled =
+      settings.mode === 'network-only'
+        ? null
+        : await upscaleBrowsed(event, held);
+
+    if (upscaled) {
+      return upscaled;
+    }
+
     throw err;
   }
+}
+
+/**
+ * The tile drawn from the nearest ancestor the cache holds — what an area that
+ * was browsed at a shallower zoom shows instead of an error tile. Only spellings
+ * the index knows are looked up, so the usual miss costs no cache reads at all.
+ */
+async function upscaleBrowsed(
+  event: FetchEvent,
+  held: BrowseIndex,
+): Promise<Response | null> {
+  const { url } = event.request;
+
+  const template = templateFor(url);
+
+  const coords = template && parseTileUrl(template.url, url);
+
+  if (!template || !coords) {
+    return null;
+  }
+
+  const scaleSuffix = url.slice(stripTileScale(url).length);
+
+  // `{s}` is cycled per tile, so an ancestor can be held under any host the
+  // template names — Leaflet's own default set included.
+  const subdomains = [...new Set([coords.s, 'a', 'b', 'c'])];
+
+  const lookup = async ({ x, y, z }: TileCoords) => {
+    for (const subdomain of subdomains) {
+      const candidate = buildTileUrl(
+        template.url,
+        x,
+        template.tms ? flipY(y, z) : y,
+        z,
+        subdomain,
+      );
+
+      for (const spelling of [candidate + scaleSuffix, candidate]) {
+        if (!held.entries.has(spelling)) {
+          continue;
+        }
+
+        // by name, not `openCache`: nothing here should create the cache
+        const stored = await caches.match(spelling, {
+          cacheName: BROWSE_CACHE_NAME,
+          ignoreVary: true,
+        });
+
+        if (stored) {
+          touchTile(event, held, spelling, stored);
+
+          return stored;
+        }
+      }
+    }
+
+    return undefined;
+  };
+
+  return upscaledTile(
+    {
+      x: coords.x,
+      y: template.tms ? flipY(coords.y, coords.z) : coords.y,
+      z: coords.z,
+    },
+    lookup,
+  );
 }
