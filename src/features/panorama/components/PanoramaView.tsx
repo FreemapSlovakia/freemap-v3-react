@@ -988,7 +988,7 @@ export function PanoramaView({
         }
 
         if (parts.length) {
-          texts.set(label.id, parts.join('\u00a0· '));
+          texts.set(label.id, parts.join(' · '));
         }
       }
     }
