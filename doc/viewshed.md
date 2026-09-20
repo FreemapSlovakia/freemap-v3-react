@@ -75,6 +75,14 @@ explicit act. Beside the eye button it carries a `PlaceActionsButton` for the
 viewpoint — the map context menu's own items, minus the viewshed from here,
 which is what is already on screen.
 
+The toolbar keeps only the two settings worth reaching for often, range and
+detail. The rest — eye and target height, strength, minimum opacity, colour —
+are in `ViewshedSettingsModal` (`#show=viewshed-settings`), for the reason the
+panorama's are: they are all in the render key, so none of them moves what is on
+screen, and a stray click on a slider would cost a render. The heights are typed
+rather than dragged, being figures one knows. It edits a draft and writes it on
+Save, as the panorama's modal does — saving stages, and Update pays.
+
 ## What premium grants
 
 Distance and detail, the two settings that decide what a render costs: without

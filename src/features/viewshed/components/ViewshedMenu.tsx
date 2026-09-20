@@ -1,16 +1,14 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
-import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
-import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
-import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -23,7 +21,6 @@ import {
   Button,
   ButtonGroup,
   ButtonToolbar,
-  Form,
   ProgressBar,
 } from 'react-bootstrap';
 import {
@@ -50,7 +47,6 @@ import {
   viewshedOutdatedSelector,
 } from '../model/selectors.js';
 import {
-  GAMMA_MAX,
   VIEWSHED_DETAIL_ORDER,
   VIEWSHED_DETAILS,
   VIEWSHED_RADIUS_STEPS_KM,
@@ -61,12 +57,6 @@ import { useViewshedMessages } from '../translations/useViewshedMessages.js';
 
 /** Constant, so the menu doesn't rebuild its items on every render. */
 const VIEWPOINT_OMIT: ViewFromHere[] = ['viewshed'];
-
-/** Highest a target may be raised, metres — a mast, not a mountain. */
-const TARGET_HEIGHT_MAX = 100;
-
-/** Eye heights worth offering: a child on the ground up to a tower. */
-const EYE_MAX = 50;
 
 /**
  * Everything the viewshed is driven by. A layer rather than a tool, so its
@@ -85,8 +75,6 @@ export default function ViewshedMenu(): ReactElement {
   const { viewpoint, rendering, progress } = useAppSelector(
     (state) => state.viewshed,
   );
-
-  const settings = useAppSelector((state) => state.viewshedSettings);
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
@@ -109,13 +97,6 @@ export default function ViewshedMenu(): ReactElement {
     unit: 'meter',
     maximumFractionDigits: 1,
   });
-
-  const nfPercent = useNumberFormat({
-    style: 'percent',
-    maximumFractionDigits: 0,
-  });
-
-  const nfGamma = useNumberFormat({ maximumFractionDigits: 2 });
 
   const bar = useTerrainProgress(
     rendering,
@@ -253,87 +234,22 @@ export default function ViewshedMenu(): ReactElement {
                 toggleHint={premium ? undefined : prm?.higherDetail}
               />
 
-              {/* The rest, which all cost a render but are set once and left:
-                  they sit behind a toggle rather than in reach of a stray
-                  click. */}
-              <SliderDropdown
-                icon={<FaCog />}
-                toggleLabel={m?.settings}
-                breakpoint="xxl"
-              >
-                <LabeledSlider
-                  id="fm-viewshed-eye"
-                  label={gm?.general.eyeHeight}
-                  hint={gm?.general.eyeHeightHint}
-                  valueLabel={nfM.format(settings.eye)}
-                  min={0}
-                  max={EYE_MAX}
-                  step={0.1}
-                  value={settings.eye}
-                  onChange={(eye) => dispatch(viewshedSetSettings({ eye }))}
-                />
-
-                {/* The faintness is in the pixels — the image's own alpha is
-                    the sine of the grazing angle — so this is the only control
-                    that can lift it; the layer's opacity can only take away. */}
-                <LabeledSlider
-                  id="fm-viewshed-gamma"
-                  label={m?.strength}
-                  valueLabel={
-                    settings.gamma === 1
-                      ? m?.strengthMeasured
-                      : nfGamma.format(settings.gamma)
-                  }
-                  hint={m?.strengthHint}
-                  min={1}
-                  max={GAMMA_MAX}
-                  step={0.25}
-                  value={settings.gamma}
-                  onChange={(gamma) => dispatch(viewshedSetSettings({ gamma }))}
-                />
-
-                <LabeledSlider
-                  id="fm-viewshed-floor"
-                  label={m?.minOpacity}
-                  valueLabel={nfPercent.format(settings.alphaFloor)}
-                  hint={m?.minOpacityHint}
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  value={settings.alphaFloor}
-                  onChange={(alphaFloor) =>
-                    dispatch(viewshedSetSettings({ alphaFloor }))
-                  }
-                />
-
-                <LabeledSlider
-                  id="fm-viewshed-target"
-                  label={m?.targetHeight}
-                  valueLabel={nfM.format(settings.targetHeight)}
-                  hint={m?.targetHeightHint}
-                  min={0}
-                  max={TARGET_HEIGHT_MAX}
-                  step={1}
-                  value={settings.targetHeight}
-                  onChange={(targetHeight) =>
-                    dispatch(viewshedSetSettings({ targetHeight }))
-                  }
-                />
-
-                {/* Label above and the swatch across the menu, as the sliders
-                    above read: the colour is the row's value, not its unit. */}
-                <div className="d-flex flex-column">
-                  <Form.Label className="mb-0">{m?.color}</Form.Label>
-
-                  <RgbaColorPicker
-                    value={settings.color}
-                    onChange={(color) =>
-                      dispatch(viewshedSetSettings({ color }))
+              {/* The rest all cost a render and are set once, so they sit in
+                  a modal rather than in reach of a stray click. */}
+              <LongPressTooltip label={m?.settings} breakpoint="xxl">
+                {({ props, label, labelClassName }) => (
+                  <Button
+                    variant="secondary"
+                    onClick={() =>
+                      dispatch(setActiveModal({ type: 'viewshed-settings' }))
                     }
-                    alpha={false}
-                  />
-                </div>
-              </SliderDropdown>
+                    {...props}
+                  >
+                    <FaCog />
+                    <span className={labelClassName}> {label}</span>
+                  </Button>
+                )}
+              </LongPressTooltip>
 
               {rendering ? (
                 <>

@@ -324,6 +324,12 @@ const toposcopeSettingsModalFactory = () =>
     '@features/toposcope/components/ToposcopeSettingsModal.js'
   );
 
+const viewshedSettingsModalFactory = () =>
+  import(
+    /* webpackChunkName: "viewshed-settings-modal" */
+    '@features/viewshed/components/ViewshedSettingsModal.js'
+  );
+
 const trackingModalFactory = () =>
   import(
     /* webpackChunkName: "tracking-modal" */
@@ -1363,6 +1369,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'toposcope-settings'}
         factory={toposcopeSettingsModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'viewshed-settings'}
+        factory={viewshedSettingsModalFactory}
       />
 
       <AsyncModal
