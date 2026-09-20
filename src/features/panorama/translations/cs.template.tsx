@@ -116,6 +116,9 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     showEle: 'Zobrazit nadmořské výšky',
     showEleHint:
       'Pod jméno každého vrcholu napíše jeho výšku. Popisek je pak dvouřádkový, takže se jich do obrázku vejde méně.',
+    showDistance: 'Zobrazit vzdálenosti',
+    showDistanceHint:
+      'Pod jméno píše, jak daleko vrchol je — vedle nadmořské výšky, jsou-li zapnuté obě.',
     showRevealed: 'Pojmenovat odhalené vrcholy',
     showRevealedHint:
       'Vrcholy, které rozvinutí dálky vytáhlo zpoza bližšího hřebene: jsou nakreslené, ale odtud je ve skutečnosti není vidět. Jejich názvy jsou světlejší a když není místo pro oba, přednost dostane vrchol, který je vidět.',

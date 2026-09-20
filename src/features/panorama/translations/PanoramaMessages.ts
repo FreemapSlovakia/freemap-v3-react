@@ -126,6 +126,10 @@ export type PanoramaMessages = {
     showEle: string;
     /** Warns that a two-line label leaves room for fewer names. */
     showEleHint: string;
+    /** Whether that second line also says how far off the summit is. */
+    showDistance: string;
+    /** Says it shares the line with the elevation rather than adding one. */
+    showDistanceHint: string;
     /** Whether summits only the unfolding brings into view are named at all. */
     showRevealed: string;
     /** Says what such a summit is, and how its name is marked. */

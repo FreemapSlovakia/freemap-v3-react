@@ -92,6 +92,7 @@ import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 const LABEL_DEFAULTS = {
   labelDensity: panoramaSettingsInitialState.labelDensity,
   showLabelEle: panoramaSettingsInitialState.showLabelEle,
+  showLabelDistance: panoramaSettingsInitialState.showLabelDistance,
   minDominance: panoramaSettingsInitialState.minDominance,
   labelDistanceWeight: panoramaSettingsInitialState.labelDistanceWeight,
   prominenceWeight: panoramaSettingsInitialState.prominenceWeight,
@@ -428,6 +429,24 @@ export function PanoramaControls({
           />
 
           <HintMark hint={m?.labels.showEleHint} />
+        </div>
+
+        <div className="d-flex">
+          <Form.Check
+            id="fm-panorama-label-distance"
+            type="checkbox"
+            label={m?.labels.showDistance}
+            checked={settings.showLabelDistance}
+            onChange={(e) =>
+              dispatch(
+                panoramaSetSettings({
+                  showLabelDistance: e.currentTarget.checked,
+                }),
+              )
+            }
+          />
+
+          <HintMark hint={m?.labels.showDistanceHint} />
         </div>
 
         <LabeledSlider

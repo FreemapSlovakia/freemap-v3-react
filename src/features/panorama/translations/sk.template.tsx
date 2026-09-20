@@ -116,6 +116,9 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     showEle: 'Zobraziť nadmorské výšky',
     showEleHint:
       'Pod meno každého vrchu napíše jeho výšku. Menovka je potom dvojriadková, takže sa ich do obrázka zmestí menej.',
+    showDistance: 'Zobraziť vzdialenosti',
+    showDistanceHint:
+      'Pod meno píše, ako ďaleko štít je — vedľa nadmorskej výšky, ak sú zapnuté obe.',
     showRevealed: 'Pomenovať odhalené vrchy',
     showRevealedHint:
       'Vrchy, ktoré rozvinutie diaľky vytiahlo spoza bližšieho hrebeňa: sú nakreslené, no odtiaľto ich v skutočnosti nevidno. Ich názvy sú svetlejšie a keď nie je miesto pre oba, prednosť dostane vrch, ktorý vidno.',

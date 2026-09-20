@@ -254,6 +254,22 @@ export function PanoramaView({
     maximumFractionDigits: 0,
   });
 
+  // Kilometres, and a decimal only while one is worth reading: at 120 km it
+  // would be noise under a name.
+  const nfDistNear = useNumberFormat({
+    style: 'unit',
+    unit: 'kilometer',
+    unitDisplay: 'short',
+    maximumFractionDigits: 1,
+  });
+
+  const nfDistFar = useNumberFormat({
+    style: 'unit',
+    unit: 'kilometer',
+    unitDisplay: 'short',
+    maximumFractionDigits: 0,
+  });
+
   // The whole altitude band fits the panel to begin with. Zooming past the
   // image's own pixels magnifies rather than reveals, but it is still worth
   // having: it spreads a crowded skyline out, which brings more names with it,
@@ -951,26 +967,46 @@ export function PanoramaView({
     [candidates, degPerPx, limits, width],
   );
 
-  // Each summit's height as it is written, worked out once per set of names
+  // What each summit's second line says, worked out once per set of names
   // rather than per frame: formatting a number is dear, and the layout below
   // asks for every one of them on every frame of a pan.
-  const eleTexts = useMemo(() => {
+  const subTexts = useMemo(() => {
     const texts = new Map<string, string>();
 
-    if (settings.showLabelEle) {
+    if (settings.showLabelEle || settings.showLabelDistance) {
       for (const label of named) {
-        if (label.ele !== null) {
-          texts.set(label.id, nfEle.format(label.ele));
+        const parts = [];
+
+        if (settings.showLabelEle && label.ele !== null) {
+          parts.push(nfEle.format(label.ele));
+        }
+
+        if (settings.showLabelDistance) {
+          const km = label.distance / 1000;
+
+          parts.push((km < 10 ? nfDistNear : nfDistFar).format(km));
+        }
+
+        if (parts.length) {
+          texts.set(label.id, parts.join('\u00a0· '));
         }
       }
     }
 
     return texts;
-  }, [named, nfEle, settings.showLabelEle]);
+  }, [
+    named,
+    nfEle,
+    nfDistNear,
+    nfDistFar,
+    settings.showLabelEle,
+    settings.showLabelDistance,
+  ]);
 
-  const labelHeight = settings.showLabelEle
-    ? LINE_HEIGHT + ELE_LINE_HEIGHT
-    : LINE_HEIGHT;
+  const labelHeight =
+    settings.showLabelEle || settings.showLabelDistance
+      ? LINE_HEIGHT + ELE_LINE_HEIGHT
+      : LINE_HEIGHT;
 
   // No `limits` guard of its own: `named` is already empty without them.
   const placements = useMemo(
@@ -980,11 +1016,11 @@ export function PanoramaView({
         // The wider of the two lines: both are centred on the subject, so
         // that is the box the neighbours have to be kept out of.
         measure: (label) => {
-          const ele = eleTexts.get(label.id);
+          const sub = subTexts.get(label.id);
 
           return Math.max(
             measureText(label.name),
-            ele ? measureText(ele, ELE_FONT) : 0,
+            sub ? measureText(sub, ELE_FONT) : 0,
           );
         },
         viewportWidth: width,
@@ -994,7 +1030,7 @@ export function PanoramaView({
         minTop: COMPASS_HEIGHT + 2,
         maxClimb: limits?.maxClimbPx ?? 0,
       }),
-    [anchor, eleTexts, labelHeight, limits, named, width],
+    [anchor, subTexts, labelHeight, limits, named, width],
   );
 
   // Every label the strip can carry, worked out once per language: the eight
@@ -1170,8 +1206,8 @@ export function PanoramaView({
           {/* A summit the terrain model had no height for keeps its one line;
               the box was laid out for two either way, which costs nothing but
               a little air above it. */}
-          {eleTexts.has(p.label.id) && (
-            <span className={classes.labelEle}>{eleTexts.get(p.label.id)}</span>
+          {subTexts.has(p.label.id) && (
+            <span className={classes.labelEle}>{subTexts.get(p.label.id)}</span>
           )}
         </button>
       ))}

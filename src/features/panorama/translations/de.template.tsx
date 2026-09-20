@@ -113,6 +113,9 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     showEle: 'Höhen anzeigen',
     showEleHint:
       'Schreibt unter jeden Gipfelnamen seine Höhe. Jede Beschriftung ist dann zwei Zeilen hoch, sodass weniger davon ins Bild passen.',
+    showDistance: 'Entfernungen anzeigen',
+    showDistanceHint:
+      'Schreibt unter den Namen, wie weit der Gipfel entfernt ist — neben der Höhe, wenn beides an ist.',
     showRevealed: 'Aufgedeckte Gipfel benennen',
     showRevealedHint:
       'Gipfel, die das Entfalten der Ferne hinter einem näheren Grat hervorgeholt hat: gezeichnet, aber von hier aus nicht wirklich sichtbar. Ihre Namen sind blasser und treten dort zurück, wo neben einem sichtbaren Gipfel kein Platz für beide ist.',

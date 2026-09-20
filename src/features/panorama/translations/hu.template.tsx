@@ -119,6 +119,9 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     showEle: 'Magasságok megjelenítése',
     showEleHint:
       'Minden csúcs neve alá odaírja a magasságát. A felirat így kétsoros, ezért kevesebb fér el belőlük a képen.',
+    showDistance: 'Távolságok megjelenítése',
+    showDistanceHint:
+      'A név alá írja, milyen messze van a csúcs — a magasság mellé, ha mindkettő be van kapcsolva.',
     showRevealed: 'Feltárt csúcsok elnevezése',
     showRevealedHint:
       'Csúcsok, amelyeket a távolság kibontása húzott elő egy közelebbi gerinc mögül: meg vannak rajzolva, de innen valójában nem látszanak. A nevük halványabb, és ha nincs hely mindkettőnek, a látható csúcs kapja meg.',
