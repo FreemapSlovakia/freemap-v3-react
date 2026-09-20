@@ -1,7 +1,7 @@
 import type { Colorizer, HotlinePalette } from '@shared/colorizers/colorize.js';
 import { NO_DATA_COLOR } from '@shared/colorizers/colorize.js';
 import { describe, expect, it } from 'vitest';
-import { buildFillStops } from './chartFill.js';
+import { buildFillBands, buildFillStops } from './chartFill.js';
 import type { ColorizedAtDistance } from './hooks/useChartColorize.js';
 
 // Black at one end, white at the other, so a palette position reads back as a
@@ -82,24 +82,6 @@ describe('buildFillStops', () => {
     ]);
   });
 
-  it('gives a categorical mode both colours at a boundary, so it meets at an edge', () => {
-    const stops = buildFillStops(
-      categorical,
-      [at(0, 0), at(150, 0), at(150, 1), at(300, 1)],
-      0,
-      300,
-      PLOT,
-    );
-
-    // Black up to the middle, then white from the same offset on.
-    expect(stops).toEqual([
-      { offset: 0, color: 'rgb(0 0 0)' },
-      { offset: 0.5, color: 'rgb(0 0 0)' },
-      { offset: 0.5, color: 'rgb(255 255 255)' },
-      { offset: 1, color: 'rgb(255 255 255)' },
-    ]);
-  });
-
   it('paints a stretch the mode cannot value in the map’s own grey', () => {
     const stops = buildFillStops(
       smooth,
@@ -133,5 +115,69 @@ describe('buildFillStops', () => {
     expect(stops!.at(0)!.offset).toBeLessThanOrEqual(1 / PLOT);
 
     expect(stops!.at(-1)?.offset).toBe(1);
+  });
+});
+
+// A gradient cannot hold a hard edge: a browser rasterizes a wide one through a
+// lookup table of its own size, smearing every step over several pixels. So a
+// mode that names categories is painted as solid bands instead.
+describe('buildFillBands', () => {
+  it('gives each stretch of one value a band, meeting at the boundary', () => {
+    expect(
+      buildFillBands(
+        categorical,
+        [at(0, 0), at(150, 0), at(150, 1), at(300, 1)],
+        0,
+        300,
+      ),
+    ).toEqual([
+      { from: 0, to: 150, color: 'rgb(0 0 0)' },
+      { from: 150, to: 300, color: 'rgb(255 255 255)' },
+    ]);
+  });
+
+  it('keeps a band narrower than a pixel, which is what a gradient washed away', () => {
+    const bands = buildFillBands(
+      categorical,
+      [at(0, 0), at(100, 0), at(100, 1), at(105, 1), at(105, 0), at(300, 0)],
+      0,
+      300,
+    );
+
+    expect(bands).toHaveLength(3);
+
+    expect(bands![1]).toEqual({
+      from: 100,
+      to: 105,
+      color: 'rgb(255 255 255)',
+    });
+  });
+
+  it('clips to what is on screen and drops what is off it', () => {
+    expect(
+      buildFillBands(
+        categorical,
+        [at(0, 0), at(150, 0), at(150, 1), at(300, 1)],
+        200,
+        300,
+      ),
+    ).toEqual([{ from: 200, to: 300, color: 'rgb(255 255 255)' }]);
+  });
+
+  it('bands a stretch the mode cannot value in the map’s own grey', () => {
+    expect(
+      buildFillBands(
+        categorical,
+        [at(0, 0), at(100, 0), at(100, 0, true), at(300, 0, true)],
+        0,
+        300,
+      )?.at(-1),
+    ).toEqual({ from: 100, to: 300, color: NO_DATA_COLOR });
+  });
+
+  it('paints nothing without a colorizer or a second stop', () => {
+    expect(buildFillBands(null, [at(0, 0), at(100, 1)], 0, 100)).toBeNull();
+
+    expect(buildFillBands(categorical, [at(0, 0)], 0, 100)).toBeNull();
   });
 });
