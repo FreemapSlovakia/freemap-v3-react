@@ -243,7 +243,9 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
       // modal turns it off.
       enforceFocus={false}
     >
-      <form onSubmit={handleSubmit} className="d-contents">
+      {/* `step` is what the arrows move by, not a rule: without this the
+          browser refuses to submit 1.65 m while Save sits there enabled. */}
+      <form onSubmit={handleSubmit} className="d-contents" noValidate>
         <Modal.Header closeButton>
           <Modal.Title>
             <FaCog /> {m?.settings.title}
