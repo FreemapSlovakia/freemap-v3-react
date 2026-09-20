@@ -32,6 +32,12 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Panorama-Einstellungen',
     tiltHint:
       'Wie viel Himmel und Boden das Bild fasst — die Winkel über und unter dem Horizont.',
+    tiltInvalid: ({ limit }) => (
+      <>
+        Der untere Winkel muss kleiner als der obere sein, beide im Bereich ±
+        {limit}°.
+      </>
+    ),
     custom: 'Genaue Winkel',
     depthLift: 'Ferne entfalten',
     depthLiftOff: 'Naturgetreu',

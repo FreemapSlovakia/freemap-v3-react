@@ -58,6 +58,7 @@ const fr: DeepPartialWithRequiredObjects<DrawingMessages> = {
     projectPoint: 'Projeter un point',
     azimuth: 'Azimut',
     distance: 'Distance',
+    add: 'Ajouter',
   },
   reverse: 'Inverser le sens',
   simplify: 'Simplifier',

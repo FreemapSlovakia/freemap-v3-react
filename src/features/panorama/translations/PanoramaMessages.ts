@@ -39,6 +39,8 @@ export type PanoramaMessages = {
     title: string;
     /** Says what the vertical band is, which its name alone does not. */
     tiltHint: string;
+    /** Why the two angles are refused: the order and the bound they must keep. */
+    tiltInvalid: (params: { limit: ReactNode }) => ReactNode;
     /** The vertical band given as its two angles rather than by name. */
     custom: string;
     /** Raises far terrain, unfolding the distance the projection compresses. */

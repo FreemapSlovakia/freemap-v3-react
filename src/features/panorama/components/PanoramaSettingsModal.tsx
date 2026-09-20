@@ -151,20 +151,23 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  // A band the wrong way round would render nothing; the eye is metres above
-  // the ground, and a number field can be left empty mid-edit.
-  const invalid =
-    !Number.isFinite(draft.eye) ||
-    draft.eye < EYE_MIN ||
-    draft.eye > EYE_MAX ||
+  // The eye is metres above the ground, and a number field can be left empty
+  // mid-edit.
+  const invalidEye =
+    !Number.isFinite(draft.eye) || draft.eye < EYE_MIN || draft.eye > EYE_MAX;
+
+  // A band the wrong way round would render nothing, and a band is angles above
+  // and below the horizon; anything wider is not a view, and `panoramaStep`
+  // would work a step out of it and ask the service for something it refuses —
+  // with the bad band persisted behind it.
+  const invalidBand =
     !Number.isFinite(draft.altMin) ||
     !Number.isFinite(draft.altMax) ||
     draft.altMax <= draft.altMin ||
-    // A band is angles above and below the horizon; anything wider is not a
-    // view, and `panoramaStep` would work a step out of it and ask the service
-    // for something it refuses — with the bad band persisted behind it.
     draft.altMin < -ALT_LIMIT ||
     draft.altMax > ALT_LIMIT;
+
+  const invalid = invalidEye || invalidBand;
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
@@ -254,13 +257,14 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               <HintMark hint={gm?.general.eyeHeightHint} />
             </Form.Label>
 
-            <InputGroup>
+            <InputGroup hasValidation>
               <Form.Control
                 id="fm-panorama-eye"
                 type="number"
                 min={EYE_MIN}
                 max={EYE_MAX}
                 step={0.1}
+                isInvalid={invalidEye}
                 value={Number.isFinite(draft.eye) ? draft.eye : ''}
                 onChange={(e) =>
                   patch({
@@ -272,6 +276,13 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               {/* Literal, as the shading modal's metre fields are: the symbol
                   is the sam */}
               <InputGroup.Text>m</InputGroup.Text>
+
+              <Form.Control.Feedback type="invalid">
+                {gm?.general.valueRange({
+                  min: `${EYE_MIN}\u00a0m`,
+                  max: `${EYE_MAX}\u00a0m`,
+                })}
+              </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 
@@ -292,10 +303,13 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
 
             {/* An en dash rather than a hyphen: the lower angle is normally
                 negative, and a hyphen beside a minus sign reads as arithmetic. */}
-            <InputGroup>
+            <InputGroup hasValidation>
               <Form.Control
                 type="number"
                 step={1}
+                min={-ALT_LIMIT}
+                max={ALT_LIMIT}
+                isInvalid={invalidBand}
                 value={Number.isFinite(draft.altMin) ? draft.altMin : ''}
                 onChange={(e) =>
                   patch({
@@ -309,6 +323,9 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               <Form.Control
                 type="number"
                 step={1}
+                min={-ALT_LIMIT}
+                max={ALT_LIMIT}
+                isInvalid={invalidBand}
                 value={Number.isFinite(draft.altMax) ? draft.altMax : ''}
                 onChange={(e) =>
                   patch({
@@ -318,6 +335,10 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               />
 
               <InputGroup.Text>°</InputGroup.Text>
+
+              <Form.Control.Feedback type="invalid">
+                {m?.settings.tiltInvalid({ limit: ALT_LIMIT })}
+              </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 

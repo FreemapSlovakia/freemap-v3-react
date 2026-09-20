@@ -58,6 +58,8 @@ export type DrawingMessages = {
     projectPoint: string;
     distance: string;
     azimuth: string;
+    /** Confirms the dialog: places the point the two numbers describe. */
+    add: string;
   };
   reverse: string;
   simplify: string;

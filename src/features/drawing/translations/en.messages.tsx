@@ -57,6 +57,7 @@ const en: DrawingMessages = {
     projectPoint: 'Project point',
     azimuth: 'Azimuth',
     distance: 'Distance',
+    add: 'Add',
   },
   reverse: 'Reverse direction',
   simplify: 'Simplify',

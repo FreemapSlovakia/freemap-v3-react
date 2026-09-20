@@ -32,6 +32,12 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Impostazioni del panorama',
     tiltHint:
       'Quanto cielo e quanto terreno entrano nell’immagine — gli angoli sopra e sotto l’orizzonte.',
+    tiltInvalid: ({ limit }) => (
+      <>
+        L’angolo inferiore deve essere minore di quello superiore, entrambi
+        entro ±{limit}°.
+      </>
+    ),
     custom: 'Angoli esatti',
     depthLift: 'Dispiega la distanza',
     depthLiftOff: 'Vista reale',

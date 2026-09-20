@@ -52,6 +52,7 @@ const pl: DeepPartialWithRequiredObjects<DrawingMessages> = {
     projectPoint: 'Wyznacz punkt',
     azimuth: 'Azymut',
     distance: 'Dystans',
+    add: 'Dodaj',
   },
   modify: 'Właściwości',
   continue: 'Kontynuuj',

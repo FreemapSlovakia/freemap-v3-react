@@ -57,6 +57,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving: 'Fenster mit ungespeicherten Änderungen schließen?',
     resetToDefaults: 'Auf Standard zurücksetzen',
     back: 'Zurück',
+    valueRange: ({ min, max }) => (
+      <>
+        Geben Sie einen Wert zwischen {min} und {max} ein.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Geben Sie einen Wert größer als {min} ein.</>,
+    invalidUrl:
+      'Geben Sie eine URL ein, die mit http:// oder https:// beginnt.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),

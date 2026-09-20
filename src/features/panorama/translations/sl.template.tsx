@@ -34,6 +34,9 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Nastavitve panorame',
     tiltHint:
       'Koliko neba in tal zajame slika — kota nad obzorjem in pod njim.',
+    tiltInvalid: ({ limit }) => (
+      <>Spodnji kot mora biti manjši od zgornjega, oba v obsegu ±{limit}°.</>
+    ),
     custom: 'Natančna kota',
     depthLift: 'Razgrni daljavo',
     depthLiftOff: 'Verni pogled',

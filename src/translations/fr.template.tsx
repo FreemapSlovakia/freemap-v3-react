@@ -76,6 +76,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Fermer la fenêtre sans enregistrer les modifications ?',
     resetToDefaults: 'Réinitialiser par défaut',
     back: 'Retour',
+    valueRange: ({ min, max }) => (
+      <>
+        Saisissez une valeur comprise entre {min} et {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Saisissez une valeur supérieure à {min}.</>,
+    invalidUrl: 'Saisissez une URL commençant par http:// ou https://.',
     seconds: 'secondes',
     minutes: 'minutes',
     meters: 'mètres',

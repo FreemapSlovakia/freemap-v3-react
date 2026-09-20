@@ -32,6 +32,12 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Panoráma beállításai',
     tiltHint:
       'Mennyi égbolt és talaj fér a képbe — a horizont feletti és alatti szög.',
+    tiltInvalid: ({ limit }) => (
+      <>
+        Az alsó szögnek kisebbnek kell lennie a felsőnél, mindkettő a ±{limit}
+        °-os tartományban.
+      </>
+    ),
     custom: 'Pontos szögek',
     depthLift: 'Távolság kibontása',
     depthLiftOff: 'Hű kilátás',

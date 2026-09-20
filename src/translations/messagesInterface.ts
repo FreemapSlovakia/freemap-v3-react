@@ -39,6 +39,12 @@ export type Messages = {
     closeWithoutSaving: string;
     resetToDefaults: string;
     back: string;
+    /** Why a number field is refusing what is typed: the bounds it accepts. */
+    valueRange: (props: { min: ReactNode; max: ReactNode }) => JSX.Element;
+    /** The same, where only a lower bound is refused and it is exclusive. */
+    valueAbove: (props: { min: ReactNode }) => JSX.Element;
+    /** Why a URL field is refusing what is typed. */
+    invalidUrl: string;
     internalError: ({ ticketId }: { ticketId?: string }) => JSX.Element;
     processorError: (props: Err) => string;
     seconds: string;

@@ -465,10 +465,13 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             {isGarmin ? (
               <>
                 <Form.Group controlId="courseName" className="mb-3">
-                  <Form.Label>{em?.garmin.courseName}</Form.Label>
+                  <Form.Label className="required">
+                    {em?.garmin.courseName}
+                  </Form.Label>
 
                   <Form.Control
                     value={name}
+                    required
                     onChange={(e) => setName(e.currentTarget.value)}
                   />
                 </Form.Group>
@@ -486,10 +489,13 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
                 {/* Too many options with too long labels for a joined group. */}
                 <Form.Group controlId="activityType" className="mb-3">
-                  <Form.Label>{em?.garmin.activityType}</Form.Label>
+                  <Form.Label className="required">
+                    {em?.garmin.activityType}
+                  </Form.Label>
 
                   <Form.Select
                     value={activity}
+                    required
                     onChange={(e) => setActivity(e.currentTarget.value)}
                   >
                     <option value="" />

@@ -55,6 +55,13 @@ const messages: Messages = {
     closeWithoutSaving: 'Close the window with unsaved changes?',
     resetToDefaults: 'Reset to default',
     back: 'Back',
+    valueRange: ({ min, max }) => (
+      <>
+        Enter a value between {min} and {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Enter a value above {min}.</>,
+    invalidUrl: 'Enter a URL starting with http:// or https://.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),

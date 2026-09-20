@@ -32,6 +32,9 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Nastavenia panorámy',
     tiltHint:
       'Koľko oblohy a zeme obrázok zachytí — uhly nad obzorom a pod ním.',
+    tiltInvalid: ({ limit }) => (
+      <>Dolný uhol musí byť menší ako horný, oba v rozsahu ±{limit}°.</>
+    ),
     custom: 'Presné uhly',
     depthLift: 'Rozvinúť diaľku',
     depthLiftOff: 'Verný pohľad',

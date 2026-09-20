@@ -32,6 +32,9 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Nastavení panoramatu',
     tiltHint:
       'Kolik oblohy a země obrázek zachytí — úhly nad obzorem a pod ním.',
+    tiltInvalid: ({ limit }) => (
+      <>Dolní úhel musí být menší než horní, oba v rozsahu ±{limit}°.</>
+    ),
     custom: 'Přesné úhly',
     depthLift: 'Rozvinout dálku',
     depthLiftOff: 'Věrný pohled',

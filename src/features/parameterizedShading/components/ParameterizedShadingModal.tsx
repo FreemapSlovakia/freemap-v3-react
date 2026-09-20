@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { isInvalidFloat } from '@shared/numberValidator.js';
 import Color from 'color';
 import type { ReactElement } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
@@ -78,6 +79,13 @@ export function ParameterizedShadingModal({
     deAboveColor,
   );
 
+  // Not `required`, so an empty field is merely unfinished rather than wrong:
+  // the elevation opens empty and reddening it on sight would read as broken.
+  const invalidElevation = isInvalidFloat(elevation, false, 0, colorReliefMax);
+
+  // A band taller than the terrain itself paints the whole map one colour.
+  const invalidWidth = isInvalidFloat(width, false, 0, colorReliefMax);
+
   function handleSubmit() {
     const ele = Number(elevation);
 
@@ -149,34 +157,51 @@ export function ParameterizedShadingModal({
           <Form.Group className="mb-3" controlId="ps-elevation">
             <Form.Label>{sm?.elevation}</Form.Label>
 
-            <InputGroup>
+            <InputGroup hasValidation>
               <Form.Control
                 type="number"
                 step="any"
                 value={elevation}
                 onChange={(e) => setElevation(e.currentTarget.value)}
                 autoFocus
+                isInvalid={invalidElevation}
                 min={0}
                 max={colorReliefMax}
               />
 
               <InputGroup.Text>m</InputGroup.Text>
+
+              <Form.Control.Feedback type="invalid">
+                {m?.general.valueRange({
+                  min: '0\u00a0m',
+                  max: `${colorReliefMax}\u00a0m`,
+                })}
+              </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="ps-width">
             <Form.Label>{sm?.elevationBandWidth}</Form.Label>
 
-            <InputGroup>
+            <InputGroup hasValidation>
               <Form.Control
                 type="number"
                 step="any"
                 min={0}
+                max={colorReliefMax}
                 value={width}
                 onChange={(e) => setWidth(e.currentTarget.value)}
+                isInvalid={invalidWidth}
               />
 
               <InputGroup.Text>m</InputGroup.Text>
+
+              <Form.Control.Feedback type="invalid">
+                {m?.general.valueRange({
+                  min: '0\u00a0m',
+                  max: `${colorReliefMax}\u00a0m`,
+                })}
+              </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 
@@ -214,7 +239,12 @@ export function ParameterizedShadingModal({
           <Button
             type="submit"
             variant="primary"
-            disabled={elevation === '' || width === ''}
+            disabled={
+              elevation === '' ||
+              width === '' ||
+              invalidElevation ||
+              invalidWidth
+            }
           >
             {sm?.add}
           </Button>

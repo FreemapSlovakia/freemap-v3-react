@@ -58,6 +58,7 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
     projectPoint: 'Projiciraj točko',
     azimuth: 'Azimut',
     distance: 'Razdalja',
+    add: 'Dodaj',
   },
   reverse: 'Obrni smer',
   simplify: 'Poenostavi',

@@ -59,6 +59,8 @@ const ZOOM_0_RESOLUTION = 156543.03392804097;
 /** The pixel size a WMS scale denominator is defined against, in metres. */
 const WMS_PIXEL_SIZE = 0.00028;
 
+const URL_RE = /^https?:\/\/\w+/;
+
 function flatten(layers: Layer[]): Layer[] {
   return layers.flatMap((layer) => [layer, ...flatten(layer.children)]);
 }
@@ -320,6 +322,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   const [loadingLayers, setLoadingLayers] = useState(false);
 
+  // Only what has been typed can be wrong; the field opens empty for a new map.
+  const invalidUrl = model.url !== '' && !URL_RE.test(model.url);
+
   const handleLoadLayersClick = () => {
     setLoadingLayers(true);
 
@@ -524,14 +529,19 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       {/* URL */}
       {model.technology !== 'parametricShading' && (
         <Form.Group controlId="url" className="mt-3">
-          <Form.Label>{m?.mapLayers.url}</Form.Label>
+          <Form.Label className="required">{m?.mapLayers.url}</Form.Label>
 
           <Form.Control
             className={classes.gridSpan}
             type="text"
             value={model.url}
+            isInvalid={invalidUrl}
             onChange={handlers.url}
           />
+
+          <Form.Control.Feedback type="invalid">
+            {m?.general.invalidUrl}
+          </Form.Control.Feedback>
         </Form.Group>
       )}
 
@@ -540,7 +550,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           <Button
             className={clsx('mt-3', classes.gridSpan)}
             onClick={handleLoadLayersClick}
-            disabled={!model.url.match(/^https?:\/\/\w+/) || loadingLayers}
+            disabled={!URL_RE.test(model.url) || loadingLayers}
           >
             <Spinner className="invisible" size="sm" />
 
