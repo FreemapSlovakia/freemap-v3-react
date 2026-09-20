@@ -138,9 +138,18 @@ export function LongPressTooltip({
     }
   }, [toggleOnClick]);
 
-  const handleClickCapture = useCallback(() => {
-    setShow((show) => (toggleOnClick ? !show : false));
-  }, [toggleOnClick]);
+  const handleClickCapture = useCallback(
+    (e: MouseEvent) => {
+      // Inside a `<label>` the tap would otherwise focus the labelled control
+      // and forward a click to it, which `rootClose` reads as a click outside.
+      if (toggleOnClick) {
+        e.preventDefault();
+      }
+
+      setShow((show) => (toggleOnClick ? !show : false));
+    },
+    [toggleOnClick],
+  );
 
   // Stops the native menu on a long press. The tap that ended it raises no
   // click of its own — the browser has already cancelled the gesture.
