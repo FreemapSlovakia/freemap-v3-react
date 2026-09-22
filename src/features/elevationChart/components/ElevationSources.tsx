@@ -10,12 +10,7 @@ const keyOf = (attr: AttributionDef) => `${attr.name} ${attr.url ?? ''}`;
 /* A model we have no link for is still named, just not as a link. */
 function SourceName({ attr }: { attr: AttributionDef }): ReactNode {
   return attr.url ? (
-    <a
-      href={attr.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="link-body-emphasis"
-    >
+    <a href={attr.url} target="_blank" rel="noopener noreferrer">
       {attr.name}
     </a>
   ) : (

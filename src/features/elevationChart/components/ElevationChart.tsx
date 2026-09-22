@@ -1482,7 +1482,7 @@ export default function ElevationChart(): ReactElement | null {
                 // `.btn` sets an absolute font size, which beats a `small` class
                 // on the same element — inherit the paragraph's instead.
                 style={{ fontSize: 'inherit' }}
-                className="p-0 align-baseline link-body-emphasis"
+                className="p-0 align-baseline"
                 onClick={showSources}
               >
                 {m?.showAllSources} ({sources.length})
