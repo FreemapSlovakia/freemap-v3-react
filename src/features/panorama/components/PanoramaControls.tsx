@@ -205,11 +205,15 @@ export function PanoramaControls({
     DETAIL_MAX,
   ];
 
-  // An ask the frame has since outgrown — narrowed band, widened view — sits on
-  // the last stop, which is what it is being served anyway.
-  const askedIndex = detailStops.indexOf(settings.detail);
+  // The handle sits on what is being served, not on what was asked: a stored
+  // detail this frame or this account no longer affords is granted the nearest
+  // stop below it, and the handle has to say so.
+  const servedIndex =
+    settings.detail === DETAIL_MAX
+      ? detailStops.length - 1
+      : detailStops.indexOf(grants.pxPerDeg);
 
-  const detailIndex = askedIndex < 0 ? detailStops.length - 1 : askedIndex;
+  const detailIndex = servedIndex < 0 ? detailStops.length - 1 : servedIndex;
 
   // Pixels per degree rather than the request's own degrees per pixel: it reads
   // the way a person expects — more is sharper — and it says the same thing

@@ -184,12 +184,19 @@ export function grantedPanorama(
   settings: PanoramaSettingsState,
   premium: boolean,
 ): PanoramaGrants {
+  const stops = panoramaDetailStops(settings, premium);
+
   const ceiling = grantedCeiling(settings, premium);
 
+  // Down to a stop the budget will pay for, not merely under the ceiling: the
+  // affordable set has gaps, so a stored 40 sits below a granted 50 and is
+  // still over. Reachable after premium lapses, like the range.
+  const asked = settings.detail;
+
   const pxPerDeg =
-    settings.detail === DETAIL_MAX
+    asked === DETAIL_MAX
       ? ceiling
-      : Math.min(settings.detail, ceiling);
+      : (stops.filter((px) => px <= asked).at(-1) ?? Math.min(asked, ceiling));
 
   return {
     pxPerDeg,

@@ -724,6 +724,15 @@ export function getInitialState(): Partial<RootState> {
   return initial;
 }
 
+/**
+ * The slices {@link selectPersistedState} reads. Nothing else in the store can
+ * change what gets written, so identical references across all of them mean the
+ * write would be byte-for-byte what is already there.
+ */
+export const PERSISTED_KEYS: (keyof RootState)[] = PERSIST.filter(
+  (entry) => entry.persist,
+).map((entry) => entry.key);
+
 export function selectPersistedState(state: RootState): Partial<RootState> {
   const out: Record<string, unknown> = {};
 

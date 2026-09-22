@@ -380,6 +380,49 @@ describe('statePersistingMiddleware — what gets persisted', () => {
   });
 });
 
+describe('statePersistingMiddleware — writing only on a real change', () => {
+  it('does NOT write again when no persisted slice changed', () => {
+    const state = makeState();
+
+    runMiddleware(state);
+
+    expect(storage.getItem('store')).not.toBeNull();
+
+    storage.clear();
+
+    runMiddleware(state);
+
+    expect(storage.getItem('store')).toBeNull();
+  });
+
+  it('does NOT write when only an unpersisted slice changed', () => {
+    const state = makeState();
+
+    runMiddleware(state);
+
+    storage.clear();
+
+    runMiddleware({ ...state, location: { ...state.location, locate: false } });
+
+    expect(storage.getItem('store')).toBeNull();
+  });
+
+  it('writes again once a persisted slice changes', () => {
+    const state = makeState();
+
+    runMiddleware(state);
+
+    storage.clear();
+
+    runMiddleware({
+      ...state,
+      homeLocation: { ...state.homeLocation, homeLocation: { lat: 9, lon: 9 } },
+    });
+
+    expect(storage.getItem('store')).toContain('"lat":9');
+  });
+});
+
 describe('save → rehydrate round-trip', () => {
   it('persisted slices survive a save followed by getInitialState', () => {
     runMiddleware(makeState());
