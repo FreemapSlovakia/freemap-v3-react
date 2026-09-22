@@ -144,10 +144,6 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   caveats: {
     title: 'Ce que l’image montre et ce qu’elle ne montre pas',
-    bareEarth:
-      'Le modèle de terrain est le sol nu : les forêts et les bâtiments n’y figurent pas, si bien qu’une vue qu’une forêt masquerait est dessinée comme dégagée. C’est de loin la principale source d’erreur.',
-    coverage:
-      'Le détail varie selon les pays. Là où existe un modèle national issu d’un relevé laser, le premier plan est net ; ailleurs, c’est un modèle mondial à 30 m qui répond.',
     viewpoint:
       'L’œil est placé sur le point le plus haut à quelques mètres de votre clic, pour qu’un rocher voisin ne gâche pas la vue depuis le sommet.',
     depthLift:

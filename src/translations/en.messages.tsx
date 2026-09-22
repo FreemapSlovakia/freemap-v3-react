@@ -48,6 +48,12 @@ const messages: Messages = {
     eyeHeightHint:
       'How high above the ground you are standing — a tower or a drone, not the elevation itself.',
     maxVisibleDistance: 'Maximum visible distance',
+    terrain: {
+      bareEarth:
+        'The terrain model is bare earth: forests and buildings are invisible, so ground a forest would hide is treated as open. This is by far the largest source of error.',
+      coverage:
+        'Detail varies by country. Where a national laser-scanned model exists the near field is sharp; elsewhere a global 30 m model answers.',
+    },
     copyCode: 'Copy code',
     loading: 'Loading…',
     ok: 'OK',

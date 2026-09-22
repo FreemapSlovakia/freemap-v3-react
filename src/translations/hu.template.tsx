@@ -49,6 +49,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeightHint:
       'Milyen magasan áll a talaj felett — kilátó vagy drón, nem a tengerszint feletti magasság.',
     maxVisibleDistance: 'Legnagyobb látótávolság',
+    terrain: {
+      bareEarth:
+        'A domborzatmodell csupasz föld: erdők és épületek nincsenek benne, így az a terep, amelyet egy erdő eltakarna, szabadnak számít. Messze ez a legnagyobb hibaforrás.',
+      coverage:
+        'A részletesség országonként eltér. Ahol van országos lézerszkennelt modell, ott a közeli terep éles; máshol egy globális, 30 m-es modell felel.',
+    },
     copyCode: 'Kód másolása',
     loading: 'Töltés…',
     ok: 'OK',

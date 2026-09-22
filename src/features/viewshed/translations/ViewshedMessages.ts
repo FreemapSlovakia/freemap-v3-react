@@ -5,6 +5,8 @@ export type ViewshedMessages = {
   locate: string;
   /** Shown over the map while it waits for the click. */
   pickViewpointPrompt: string;
+  /** Names the one control that sizes a render: how far, and how fine. */
+  extent: string;
   /** How fine the raster is; worded as the panorama's tier control. */
   detail: string;
   details: {
@@ -27,6 +29,12 @@ export type ViewshedMessages = {
   /** Least opacity visible ground may take. */
   minOpacity: string;
   minOpacityHint: string;
+  /**
+   * What the overlay shows and what it doesn't; the toolbar's `?`. What the
+   * terrain model itself does not say is `general.terrain`, shared with the
+   * panorama — only this one is the viewshed's own.
+   */
+  caveats: { viewpoint: string };
   update: string;
   /** Why the Update button is there: the overlay is of other settings. */
   outdated: string;

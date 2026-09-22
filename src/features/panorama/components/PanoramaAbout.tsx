@@ -32,9 +32,9 @@ export function PanoramaAbout({ depthLift, terrain }: Props): ReactElement {
 
   return (
     <>
-      <p className="mb-1">{m?.caveats.bareEarth}</p>
+      <p className="mb-1">{gm?.general.terrain.bareEarth}</p>
 
-      <p className="mb-1">{m?.caveats.coverage}</p>
+      <p className="mb-1">{gm?.general.terrain.coverage}</p>
 
       <p className="mb-1">{m?.caveats.viewpoint}</p>
 

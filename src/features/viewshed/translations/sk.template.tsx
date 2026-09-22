@@ -25,6 +25,10 @@ const sk: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Najnižšia sýtosť',
   minOpacityHint:
     'Ako sýto je vykreslený viditeľný terén, aj keď ho vidíte takmer zboku. Pri 100 % je vrstva iba šablóna: buď vidno, alebo nevidno, nič medzi tým.',
+  caveats: {
+    viewpoint:
+      'Viditeľnosť je na presné stanovisko oveľa citlivejšia než panoráma: pár metrov vedľa vrcholu môže pripraviť o celé kvadranty.',
+  },
   update: 'Aktualizovať',
   outdated: 'Vrstva je z predchádzajúceho stanoviska.',
   queued: ({ ahead }) =>

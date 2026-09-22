@@ -144,10 +144,6 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   caveats: {
     title: 'Mit mutat a kép, és mit nem',
-    bareEarth:
-      'A domborzatmodell csupasz föld: erdők és épületek nincsenek benne, így az a kilátás, amelyet egy erdő eltakarna, szabadként van megrajzolva. Messze ez a legnagyobb hibaforrás.',
-    coverage:
-      'A részletesség országonként eltér. Ahol van országos lézerszkennelt modell, ott a közeli terep éles; máshol egy globális, 30 m-es modell felel.',
     viewpoint:
       'A szem a kattintástól számított néhány méteren belüli legmagasabb pontra kerül, hogy a csúcsról nyíló kilátást ne rontsa el a mellette álló szikla.',
     depthLift:

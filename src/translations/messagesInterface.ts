@@ -32,6 +32,15 @@ export type Messages = {
     eyeHeightHint: string;
     /** How far such a view reaches. */
     maxVisibleDistance: string;
+    /**
+     * What the terrain model itself does and does not say, which is true of
+     * every view rendered from it — the panorama's and the viewshed's alike.
+     */
+    terrain: {
+      /** The big one: no trees and no buildings are in the model. */
+      bareEarth: string;
+      coverage: string;
+    };
     copyCode: string;
     loading: string;
     ok: string;

@@ -139,10 +139,6 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   caveats: {
     title: 'Was das Bild zeigt und was nicht',
-    bareEarth:
-      'Das Geländemodell ist blanke Erde: Wälder und Gebäude fehlen darin, eine Sicht, die ein Wald verstellen würde, ist also frei gezeichnet. Das ist mit Abstand die größte Fehlerquelle.',
-    coverage:
-      'Die Genauigkeit hängt vom Land ab. Wo ein nationales Laserscan-Modell vorliegt, ist der Nahbereich scharf; sonst antwortet ein globales 30-m-Modell.',
     viewpoint:
       'Das Auge wird auf den höchsten Punkt im Umkreis weniger Meter um Ihren Klick gesetzt, damit der Fels daneben die Gipfelsicht nicht verdirbt.',
     depthLift:

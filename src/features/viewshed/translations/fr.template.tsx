@@ -25,6 +25,10 @@ const fr: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Opacité minimale',
   minOpacityHint:
     'L’intensité du relief visible, même vu presque par la tranche. À 100 %, la couche n’est qu’un pochoir : visible ou non, rien entre les deux.',
+  caveats: {
+    viewpoint:
+      'Une analyse de visibilité est bien plus sensible au point de vue exact qu’un panorama : quelques mètres à côté du sommet peuvent faire perdre des quadrants entiers.',
+  },
   update: 'Actualiser',
   outdated: 'La couche montre le point de vue précédent.',
   queued: ({ ahead }) =>

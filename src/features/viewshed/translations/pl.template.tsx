@@ -25,6 +25,10 @@ const pl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Najniższe krycie',
   minOpacityHint:
     'Jak mocno rysowany jest widoczny teren, nawet oglądany niemal z boku. Przy 100% warstwa jest zwykłym szablonem: widać albo nie widać, nic pomiędzy.',
+  caveats: {
+    viewpoint:
+      'Widoczność jest znacznie bardziej czuła na dokładny punkt obserwacji niż panorama: kilka metrów obok szczytu może pozbawić całych kwadrantów.',
+  },
   update: 'Aktualizuj',
   outdated: 'Warstwa jest z poprzedniego punktu obserwacji.',
   queued: ({ ahead }) =>

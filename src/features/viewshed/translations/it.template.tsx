@@ -25,6 +25,10 @@ const it: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Opacità minima',
   minOpacityHint:
     'Con quanta intensità è disegnato il terreno visibile, anche se lo vedi quasi di taglio. Al 100% il livello è una semplice maschera: visibile o no, niente in mezzo.',
+  caveats: {
+    viewpoint:
+      'La visibilità è molto più sensibile al punto di vista esatto di quanto lo sia un panorama: pochi metri accanto alla cima possono far perdere interi quadranti.',
+  },
   update: 'Aggiorna',
   outdated: 'Il livello è del punto di osservazione precedente.',
   queued: ({ ahead }) =>

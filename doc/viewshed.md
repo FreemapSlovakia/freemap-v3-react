@@ -87,12 +87,20 @@ premium the range is held at `FREE_RADIUS_MAX_KM` (20 km) and the tier at
 `FREE_DETAIL` (the coarsest). **The service clamps neither**, so `grantedViewshed`
 in `request.ts` is the only thing keeping the request honest — everything that
 speaks about what is on the map (the request, the render key, the circle, the
-wait estimate, both dropdowns) reads the granted figures rather than the stored
+wait estimate, the toolbar) reads the granted figures rather than the stored
 ones, or it would claim a picture nobody rendered.
 
-The locked options stay in the menus wearing a `PremiumGem`; picking one opens
-the purchase flow instead of storing a choice the next render would clamp away.
-The stored choice is kept either way, so premium grants it back silently.
+Both ride one `SliderDropdown`, the way the panorama's fov and detail do — they
+trade against each other, a shorter reach buying a finer raster for the same
+pixels. The sliders stop where the grant does and carry a `PremiumGem`: a
+handle that ran past it would stand where nothing is rendered. The stored
+choice is kept either way, so premium grants it back silently.
+
+What the overlay does not promise is a `HintMark` beside them. The layer has no
+window of its own to lay a panel over the way the panorama does, and only the
+viewpoint sensitivity is the viewshed's own — what the terrain model itself
+does not say is `general.terrain`, shared with the panorama so one fact is
+translated once.
 
 ## The render is an explicit act
 

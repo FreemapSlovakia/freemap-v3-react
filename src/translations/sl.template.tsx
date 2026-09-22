@@ -50,6 +50,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeightHint:
       'Kako visoko nad tlemi stojite — razgledni stolp ali dron, ne nadmorska višina.',
     maxVisibleDistance: 'Največja vidna razdalja',
+    terrain: {
+      bareEarth:
+        'Model površja je gola zemlja: gozdov in stavb v njem ni, zato se površje, ki bi ga zakril gozd, šteje za odprto. To je daleč največji vir odstopanj.',
+      coverage:
+        'Podrobnost se razlikuje po državah. Kjer obstaja državni lasersko skenirani model, je bližnja okolica ostra; drugod odgovarja globalni 30-metrski model.',
+    },
     copyCode: 'Kopiraj kodo',
     loading: 'Nalaganje…',
     ok: 'V redu',

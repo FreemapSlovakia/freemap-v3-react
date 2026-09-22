@@ -145,10 +145,6 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   caveats: {
     title: 'Co obraz pokazuje, a czego nie',
-    bareEarth:
-      'Model terenu to naga ziemia: nie ma w nim lasów ani budynków, więc widok, który zasłoniłby las, narysowany jest jako wolny. To zdecydowanie największe źródło błędu.',
-    coverage:
-      'Szczegółowość zależy od kraju. Tam, gdzie istnieje krajowy model z lotniczego skaningu laserowego, bliskie otoczenie jest ostre; gdzie indziej odpowiada globalny model 30 m.',
     viewpoint:
       'Oko umieszczane jest na najwyższym punkcie w promieniu kilku metrów od kliknięcia, żeby widoku ze szczytu nie psuła skała obok ciebie.',
     depthLift:

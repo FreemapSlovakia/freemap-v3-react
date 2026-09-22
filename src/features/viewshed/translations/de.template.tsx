@@ -25,6 +25,10 @@ const de: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Geringste Deckkraft',
   minOpacityHint:
     'Wie kräftig sichtbares Gelände erscheint, auch wenn es fast von der Seite gesehen wird. Bei 100 % ist die Ebene eine reine Schablone: sichtbar oder nicht, nichts dazwischen.',
+  caveats: {
+    viewpoint:
+      'Eine Sichtbarkeitsanalyse reagiert weit empfindlicher auf den genauen Standort als ein Panorama: wenige Meter neben dem Gipfel können ganze Quadranten kosten.',
+  },
   update: 'Aktualisieren',
   outdated: 'Die Ebene zeigt den vorherigen Blickpunkt.',
   queued: ({ ahead }) =>

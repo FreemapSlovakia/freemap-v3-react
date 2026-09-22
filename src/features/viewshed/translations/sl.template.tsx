@@ -25,6 +25,10 @@ const sl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Najmanjša prekrivnost',
   minOpacityHint:
     'Kako močno je izrisano vidno površje, tudi če ga vidite skoraj od strani. Pri 100 % je sloj le šablona: vidno ali ne, nič vmes.',
+  caveats: {
+    viewpoint:
+      'Vidnost je na natančno razgledišče veliko bolj občutljiva kot panorama: nekaj metrov stran od vrha lahko odvzame cele kvadrante.',
+  },
   update: 'Posodobi',
   outdated: 'Sloj je s prejšnjega razgledišča.',
   queued: ({ ahead }) =>

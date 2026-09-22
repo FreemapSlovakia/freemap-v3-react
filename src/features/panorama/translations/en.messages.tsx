@@ -151,10 +151,6 @@ const en: PanoramaMessages = {
   },
   caveats: {
     title: 'What the picture does and does not show',
-    bareEarth:
-      'The terrain model is bare earth: forests and buildings are invisible, so a view a forest would block is drawn as if it were clear. This is by far the largest source of error.',
-    coverage:
-      'Detail varies by country. Where a national laser-scanned model exists the near field is sharp; elsewhere a global 30 m model answers.',
     viewpoint:
       'The eye is put on the highest point within a few metres of where you clicked, so a summit view is not spoiled by the rock beside it.',
     depthLift:

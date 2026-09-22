@@ -143,10 +143,6 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   caveats: {
     title: 'Čo obrázok ukazuje a čo nie',
-    bareEarth:
-      'Model terénu je holá zem: lesy ani budovy v ňom nie sú, takže výhľad, ktorý by les zakryl, je nakreslený ako voľný. Toto je zďaleka najväčší zdroj odchýlok.',
-    coverage:
-      'Podrobnosť sa líši podľa krajiny. Kde existuje národný laserový model, je blízke okolie ostré; inde odpovedá globálny 30 m model.',
     viewpoint:
       'Oko je umiestnené na najvyšší bod v okruhu niekoľkých metrov od miesta kliknutia, aby výhľad z vrcholu nekazila skala vedľa vás.',
     depthLift:

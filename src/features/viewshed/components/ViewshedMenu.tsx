@@ -1,15 +1,14 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
-import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
-import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
@@ -35,7 +34,7 @@ import {
   FaSync,
   FaTimes,
 } from 'react-icons/fa';
-import { TbGridDots, TbRulerMeasure } from 'react-icons/tb';
+import { TbRulerMeasure } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { VIEWSHED_LAYER } from '../api.js';
 import {
@@ -53,9 +52,14 @@ import {
   GAMMA_MAX,
   VIEWSHED_DETAIL_ORDER,
   VIEWSHED_RADIUS_STEPS_KM,
-  type ViewshedDetail,
 } from '../model/settingsReducer.js';
-import { grantedDetail, grantedRadiusKm, viewshedScale } from '../request.js';
+import {
+  FREE_DETAIL,
+  FREE_RADIUS_MAX_KM,
+  grantedDetail,
+  grantedRadiusKm,
+  viewshedScale,
+} from '../request.js';
 import { useViewshedMessages } from '../translations/useViewshedMessages.js';
 
 /** Constant, so the menu doesn't rebuild its items on every render. */
@@ -91,8 +95,6 @@ export default function ViewshedMenu(): ReactElement {
 
   const prm = usePremiumMessages();
 
-  const becomePremium = useBecomePremium();
-
   const grants = useAppSelector(viewshedGrantsSelector);
 
   const [hidden, setHidden] = usePersistentBoolean('fm.viewshedMenu.collapsed');
@@ -124,39 +126,22 @@ export default function ViewshedMenu(): ReactElement {
     viewshedAtRenderedViewpointSelector,
   );
 
-  const radiusOptions = useMemo(
+  // Only what the account may have: a slider that ran past the grant would
+  // stand where nothing is rendered, unlike a menu that can price each row.
+  const radiusSteps = useMemo(
     () =>
-      VIEWSHED_RADIUS_STEPS_KM.map((km) => ({
-        value: String(km),
-        label: nfKm.format(km),
-        extra:
-          grantedRadiusKm(km, premium) === km ? undefined : (
-            <PremiumGem nested />
-          ),
-      })),
-    [nfKm, premium],
+      VIEWSHED_RADIUS_STEPS_KM.filter(
+        (km) => grantedRadiusKm(km, premium) === km,
+      ),
+    [premium],
   );
 
-  // The ground each pixel covers, beside every tier: what a tier is worth
-  // depends on the range, and nothing else on the toolbar would say so.
-  const detailOptions = useMemo(
+  const detailTiers = useMemo(
     () =>
-      VIEWSHED_DETAIL_ORDER.map((detail) => ({
-        value: detail,
-        label: m?.details[detail],
-        extra: (
-          <>
-            {grantedDetail(detail, premium) === detail ? null : (
-              <PremiumGem nested />
-            )}
-            {/* Not a message — the same in every language. */}
-            <span className="text-body-secondary">
-              {nfM.format(viewshedScale(grants.radiusKm, detail))}/px
-            </span>
-          </>
-        ),
-      })),
-    [m, nfM, premium, grants.radiusKm],
+      VIEWSHED_DETAIL_ORDER.filter(
+        (detail) => grantedDetail(detail, premium) === detail,
+      ),
+    [premium],
   );
 
   return (
@@ -204,48 +189,84 @@ export default function ViewshedMenu(): ReactElement {
                 />
               )}
 
-              <SelectDropdown
+              {/* The two that decide what a render costs, and they trade
+                  against each other — a shorter reach buys a finer raster for
+                  the same pixels. Together, as the panorama's frame is. */}
+              <SliderDropdown
+                icon={<TbRulerMeasure />}
                 // What is actually being rendered, not what is stored: an
                 // account whose premium lapsed keeps its wider choice, and
                 // showing that figure would be a lie.
-                value={String(grants.radiusKm)}
-                onSelect={(value) => {
-                  const asked = Number(value ?? grants.radiusKm);
-
-                  // Offering to buy what the distance costs, rather than
-                  // quietly storing a choice the next render would clamp away.
-                  if (grantedRadiusKm(asked, premium) !== asked) {
-                    becomePremium?.();
-                  } else {
-                    dispatch(viewshedSetSettings({ radiusKm: asked }));
-                  }
-                }}
-                options={radiusOptions}
-                toggleIcon={<TbRulerMeasure />}
-                name={gm?.general.maxVisibleDistance}
-                breakpoint="md"
-              />
-
-              <SelectDropdown
-                value={grants.detail}
-                onSelect={(value) => {
-                  const asked = (value ?? 'standard') as ViewshedDetail;
-
-                  if (grantedDetail(asked, premium) !== asked) {
-                    becomePremium?.();
-                  } else {
-                    dispatch(viewshedSetSettings({ detail: asked }));
-                  }
-                }}
-                options={detailOptions}
-                toggleIcon={<TbGridDots />}
-                name={m?.detail}
+                toggleLabel={`${nfKm.format(grants.radiusKm)} · ${nfM.format(viewshedScale(grants.radiusKm, grants.detail))}/px`}
+                name={m?.extent}
                 breakpoint="md"
                 // Says on the toolbar why the overlay is the coarse one; the
-                // tier names are only in the menu, which nobody opens to find
-                // out what they lack. The offer to buy is on the tiers.
+                // reason is otherwise only inside a menu nobody opens to find
+                // out what they lack.
                 toggleClassName={premium ? undefined : 'text-warning'}
                 toggleHint={premium ? undefined : prm?.higherDetail}
+              >
+                <LabeledSlider
+                  id="fm-viewshed-radius"
+                  label={
+                    <>
+                      {gm?.general.maxVisibleDistance}
+
+                      {!premium && <PremiumGem hint={prm?.higherDetail} />}
+                    </>
+                  }
+                  valueLabel={nfKm.format(grants.radiusKm)}
+                  min={0}
+                  max={radiusSteps.length - 1}
+                  value={Math.max(0, radiusSteps.indexOf(grants.radiusKm))}
+                  onChange={(index) =>
+                    dispatch(
+                      viewshedSetSettings({
+                        radiusKm: radiusSteps[index] ?? FREE_RADIUS_MAX_KM,
+                      }),
+                    )
+                  }
+                />
+
+                <LabeledSlider
+                  id="fm-viewshed-detail"
+                  label={
+                    <>
+                      {m?.detail}
+
+                      {!premium && <PremiumGem hint={prm?.higherDetail} />}
+                    </>
+                  }
+                  // The ground a pixel covers beside the tier's name: what a
+                  // tier is worth depends on the reach, and nothing else here
+                  // would say so.
+                  valueLabel={`${m?.details[grants.detail]} · ${nfM.format(viewshedScale(grants.radiusKm, grants.detail))}/px`}
+                  min={0}
+                  max={detailTiers.length - 1}
+                  value={Math.max(0, detailTiers.indexOf(grants.detail))}
+                  onChange={(index) =>
+                    dispatch(
+                      viewshedSetSettings({
+                        detail: detailTiers[index] ?? FREE_DETAIL,
+                      }),
+                    )
+                  }
+                />
+              </SliderDropdown>
+
+              {/* What the overlay does not promise. A mark rather than a panel:
+                  the viewshed is a layer, so there is no window of its own to
+                  lay this over the way the panorama does. */}
+              <HintMark
+                hint={
+                  <>
+                    <p className="mb-1">{gm?.general.terrain.bareEarth}</p>
+
+                    <p className="mb-1">{gm?.general.terrain.coverage}</p>
+
+                    <p className="mb-0">{m?.caveats.viewpoint}</p>
+                  </>
+                }
               />
 
               {/* The rest, which all cost a render but are set once and left:

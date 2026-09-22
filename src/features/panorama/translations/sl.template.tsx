@@ -146,10 +146,6 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   caveats: {
     title: 'Kaj slika kaže in česa ne',
-    bareEarth:
-      'Model površja je gola zemlja: gozdov in stavb v njem ni, zato je pogled, ki bi ga zakril gozd, narisan kot prost. To je daleč največji vir odstopanj.',
-    coverage:
-      'Podrobnost se razlikuje po državah. Kjer obstaja državni lasersko skenirani model, je bližnja okolica ostra; drugod odgovarja globalni 30-metrski model.',
     viewpoint:
       'Oko je postavljeno na najvišjo točko v obsegu nekaj metrov od vašega klika, da razgleda z vrha ne pokvari skala poleg vas.',
     depthLift:

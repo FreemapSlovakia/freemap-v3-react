@@ -34,6 +34,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeightHint:
       'À quelle hauteur au-dessus du sol vous vous tenez — une tour ou un drone, pas l’altitude.',
     maxVisibleDistance: 'Distance visible maximale',
+    terrain: {
+      bareEarth:
+        'Le modèle de terrain est le sol nu : les forêts et les bâtiments n’y figurent pas, si bien qu’un terrain qu’une forêt masquerait est tenu pour dégagé. C’est de loin la principale source d’erreur.',
+      coverage:
+        'Le détail varie selon les pays. Là où existe un modèle national issu d’un relevé laser, le premier plan est net ; ailleurs, c’est un modèle mondial à 30 m qui répond.',
+    },
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),

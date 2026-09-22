@@ -25,6 +25,10 @@ const hu: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Legkisebb átlátszatlanság',
   minOpacityHint:
     'Milyen erősen jelenik meg a látható terep, akkor is, ha szinte élből látszik. 100%-on a réteg egyszerű sablon: látszik vagy nem, semmi közte.',
+  caveats: {
+    viewpoint:
+      'A láthatóság sokkal érzékenyebb a pontos nézőpontra, mint egy panoráma: néhány méterrel a csúcs mellett egész negyedek eshetnek ki.',
+  },
   update: 'Frissítés',
   outdated: 'A réteg az előző nézőpontból készült.',
   queued: ({ ahead }) =>

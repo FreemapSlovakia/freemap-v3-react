@@ -160,11 +160,13 @@ export type PanoramaMessages = {
     noData: string;
     failed: string;
   };
+  /**
+   * What the picture does not promise. What the terrain model itself does not
+   * say is `general.terrain`, shared with the viewshed; these two are the
+   * picture's own.
+   */
   caveats: {
     title: string;
-    /** The big one: the terrain model has no trees or buildings on it. */
-    bareEarth: string;
-    coverage: string;
     viewpoint: string;
     /** Said only while the picture is unfolded, which it takes back. */
     depthLift: string;

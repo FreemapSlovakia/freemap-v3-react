@@ -144,10 +144,6 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   caveats: {
     title: 'Che cosa mostra e che cosa non mostra l’immagine',
-    bareEarth:
-      'Il modello del terreno è suolo nudo: boschi ed edifici non ci sono, quindi una vista che un bosco coprirebbe è disegnata come libera. È di gran lunga la maggiore fonte di errore.',
-    coverage:
-      'Il dettaglio varia da paese a paese. Dove esiste un modello nazionale da scansione laser il primo piano è nitido; altrove risponde un modello globale da 30 m.',
     viewpoint:
       'L’occhio viene posto sul punto più alto entro pochi metri dal tuo clic, così la vista dalla cima non è rovinata dalla roccia lì accanto.',
     depthLift:
