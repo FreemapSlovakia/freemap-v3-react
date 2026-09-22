@@ -6,7 +6,9 @@ const LicenseSchema = z.object({
   url: z.string().optional(),
 });
 
-export const LicenseDictSchema = z.record(z.string(), LicenseSchema);
+// Several per code: one dataset key can cover ground held under more than one
+// licence — `shading:be` is Wallonia's and Flanders', each with its own terms.
+export const LicenseDictSchema = z.record(z.string(), z.array(LicenseSchema));
 
 /** What each dataset code stands for, as the renderer itself names it. */
 export type LicenseDict = z.infer<typeof LicenseDictSchema>;

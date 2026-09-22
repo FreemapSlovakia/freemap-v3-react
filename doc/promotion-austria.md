@@ -24,16 +24,18 @@ same subject instead** and do not quote or @-mention people from the old one.
 
 ## Why Austria before Germany
 
-The roadmap calls Germany the "biggest untapped ceiling", but the code says the
-terrain hook does not work there. The renderer's `/licenses`
-(`curl https://outdoor.tiles.freemap.sk/licenses`) carries a `shading:<cc>` entry
-for AT, CZ, FR, IT, PL, SK, SI, CH, NO, SE, FI, ES, HR, LU, BE and England —
-**no `de`**. Germany falls back to global 30 m
-GEDTM30, so "see every gully and old road" is not a claim that can be made there.
-
 Austria has **ALS DTM (Geoland.at)** over the whole country, 13 actions/visit (the
 best engagement figure in the roadmap), Alpine and ski-touring culture, and German
-copy that is reusable for Germany and Switzerland later. It is the better bet.
+copy that is reusable for Germany and Switzerland later.
+
+**Germany is now partly covered too**, which is a change of premise rather than a
+detail: the renderer carries `shading:de_by`, `de_ni`, `de_nw`, `de_sn` and
+`de_th` — Bavaria, Lower Saxony, North Rhine-Westphalia, Saxony and Thuringia.
+Bavaria in particular is the German Alps and the Bavarian Forest, where the
+terrain claim is at its strongest. The rest of Germany still falls back to global
+30 m GEDTM30, so the hook is a regional one there, not a national one. Check what
+is covered before writing German copy:
+`curl https://outdoor.tiles.freemap.sk/licenses`.
 
 ## The warm channel: gipfeltreffen.at
 

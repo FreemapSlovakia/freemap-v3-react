@@ -37,10 +37,10 @@ md me mk nl no pl pt ro rs se si sk sm tr ua uk va xk
 
 Zoom 5–20; **premium from zoom 19**.
 
-**National high-resolution terrain — 16 entries** (the renderer's `shading:<cc>`
-datasets; `curl https://outdoor.tiles.freemap.sk/licenses`).
-This is the single strongest differentiator, and it decides which markets are worth
-entering:
+**National high-resolution terrain — 22 datasets** (the renderer's `shading:`
+entries; `curl https://outdoor.tiles.freemap.sk/licenses` is the live list and the
+only one worth quoting from). This is the single strongest differentiator, and it
+decides which markets are worth entering:
 
 | Country                | Model                                       |
 | ---------------------- | ------------------------------------------- |
@@ -49,6 +49,7 @@ entering:
 | Croatia                | DMR, Državna geodetska uprava               |
 | Czechia                | DMR 5G, ČÚZK                                |
 | England only (partial) | LIDAR Composite DTM 1 m, Environment Agency |
+| Germany — 5 states     | DGM1 for BY, NI, NW, SN, TH                 |
 | Finland                | Korkeusmalli 2 m, Maanmittauslaitos         |
 | France                 | RGE ALTI, IGN                               |
 | Italy                  | HR-DTM 5 m, CNR-IRPI                        |
@@ -57,13 +58,15 @@ entering:
 | Poland                 | NMT, GUGiK                                  |
 | Slovakia               | DMR 5.0, ÚGKK SR                            |
 | Slovenia               | DMR, Ministrstvo za okolje in prostor       |
+| Netherlands            | AHN                                         |
 | Spain                  | MDT05, IGN/CNIG                             |
 | Sweden                 | Markhöjdmodell, Lantmäteriet                |
 | Switzerland            | swissALTI3D, swisstopo                      |
 
-**Everywhere else falls back to global 30 m GEDTM30** — including **Germany**,
-**Netherlands**, **Hungary**, **Ireland**, the Balkans. Do not use the terrain hook in
-those markets. (Germany's absence is why the German push is postponed.)
+**Everywhere else falls back to global 30 m GEDTM30** — **Hungary**, **Ireland**, the
+Balkans, and the German states outside the five above. Do not use the terrain hook in
+those markets. Germany is now a regional case rather than a blank: Bavaria is covered,
+which is where the German terrain claim is strongest.
 
 Country-specific extras are **Slovakia-heavy**: detailed shading (`7`), terrain/surface
 shading (`5`,`6`), cadastre, forest types, tree composition, geology, hydrochemistry,

@@ -4,6 +4,7 @@ import {
   type AttributionDef,
   FM_ATTR,
   OSM_DATA_ATTR,
+  RENDERER_COUNTRIES,
 } from './mapDefinitions.js';
 import { type LicenseDict, loadTileLicenses } from './tileLicenses.js';
 
@@ -338,27 +339,34 @@ const PRESENTED_LOCALLY: Record<string, AttributionDef> = {
   osm: OSM_DATA_ATTR,
 };
 
-/** A dataset key naming a country rather than a global source. */
-const COUNTRY_KEY = /^[a-z]{2}$/;
+/**
+ * The country a dataset key belongs to, for narrowing the catalogue by what is
+ * in view. A key can name a region (`de_by`), so only the part before the
+ * underscore is read; anything the coverage doesn't name as a country — `en`,
+ * or a global source — is left uncountried and therefore always credited, which
+ * is the direction to fail in.
+ */
+function countryOf(code: string): string | undefined {
+  const key = code.split(':')[1]?.split('_')[0];
+
+  return key && RENDERER_COUNTRIES.has(key) ? key : undefined;
+}
 
 /**
  * Every dataset the renderer knows, for crediting a layer whose tiles didn't say
- * which of them they drew. The country in a key keeps the list narrowable by
- * what is in view; a global source carries none and so is always shown.
+ * which of them they drew.
  */
 export function licenseAttributions(licenses: LicenseDict): AttributionDef[] {
   return Object.entries(licenses)
     .filter(([code]) => !PRESENTED_LOCALLY[code])
-    .map(([code, { title, url }]) => {
-      const key = code.split(':')[1] ?? '';
-
-      return {
-        type: 'data',
+    .flatMap(([code, entries]) =>
+      entries.map(({ title, url }) => ({
+        type: 'data' as const,
         name: title,
         url,
-        ...(COUNTRY_KEY.test(key) && { country: key }),
-      };
-    });
+        country: countryOf(code),
+      })),
+    );
 }
 
 /**
@@ -398,13 +406,15 @@ export function resolveTileCodes(
       continue;
     }
 
-    const license = licenses[expanded];
+    const entries = licenses[expanded];
 
-    if (!license) {
+    if (!entries) {
       return null;
     }
 
-    resolved.push({ type: 'data', name: license.title, url: license.url });
+    for (const { title, url } of entries) {
+      resolved.push({ type: 'data', name: title, url });
+    }
   }
 
   return resolved;

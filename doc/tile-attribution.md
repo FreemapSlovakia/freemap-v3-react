@@ -8,11 +8,16 @@ each tile; `src/shared/tileAttribution.ts` collects those reports and
 ## The codes
 
 A dataset is named by a short code. `o` is OSM, `s<key>` its shading, `c<key>`
-its contours, where `<key>` is a country code or `_` for the global fallback —
-shading and contours are namespaced apart because a region can draw them from
-different sources under different licences. `expandCode` turns each into the
-form `/licenses` is keyed by: `o` → `osm`, `ssk` → `shading:sk`, `c_` →
+its contours — namespaced apart because a region can draw them from different
+sources under different licences. `expandCode` turns each into the form
+`/licenses` is keyed by: `o` → `osm`, `ssk` → `shading:sk`, `c_` →
 `contours:_`.
+
+**`<key>` is the renderer's own identifier, not a country code.** `_` is the
+global fallback, `de_by` is Bavaria, `en` is England — which is not a country
+and never matches what `/geotools/covered-countries` answers. `countryOf` reads
+the part before the underscore and uses it only when the coverage names it a
+country, so anything it cannot place is credited everywhere rather than nowhere.
 
 A tile that credits nothing — outside the renderer's coverage — reports an empty
 list, which is not the same as reporting nothing. Both paths below keep that
@@ -78,6 +83,10 @@ string cannot — a translated label, a link into the app — does a local
 is the rights-holder's own text, so a local copy of it would only be the
 dictionary going stale.
 
+**A code maps to a list, not to one licence**, and `url` is optional — the same
+key can cover ground held under separate terms, as `shading:be` does for
+Wallonia and Flanders.
+
 `resolveTileCodes` seeds `FM_ATTR` and `OSM_DATA_ATTR`: neither has a code, the
 renderer is ours to credit whatever a tile drew, and the map is an OSM-derived
 work even where a tile put none of it on screen. Any code it cannot resolve
@@ -94,10 +103,9 @@ clears the in-flight promise, so a later call asks again.
 
 Old Safari has no `serverTiming`, a middlebox can strip the header, the
 dictionary fetch can fail. Then `RENDERER_LAYER_TYPES` are credited with every
-entry in `/licenses`, narrowed by the countries in view — the country lives in
-the key (`shading:sk`), so the catalogue stays filterable without any list here.
-Past that, `OUTDOOR_ATTRIBUTION` is the floor: Freemap and OSM, the two knowable
-without the server.
+entry in `/licenses`, narrowed by whatever of it `countryOf` can place against
+the countries in view. Past that, `OUTDOOR_ATTRIBUTION` is the floor: Freemap
+and OSM, the two knowable without the server.
 
 The direction is the point. Exact codes only ever *narrow* a correct-by-default
 answer, so no transport's flakiness can cause a licence breach — only a credit

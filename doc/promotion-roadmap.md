@@ -192,9 +192,10 @@ afterwards. Check copy against this list before posting.
 | ski-touring or horse routing profile | Neither exists. The profiles are foot, hiking, easyhike, bike, mtb, gravelbike, racingbike, ebike, stroller, car, carnotoll, car4wd, motorcycle, manual (`src/shared/transportTypeDefs.tsx`). "Hiking, Bicycle, Ski, Riding" is the **map layer's** name — not a profile list. |
 
 **Safe to claim:** open source; no user tracking (self-hosted analytics only, no ad
-network, no third-party trackers); national high-resolution terrain in the countries
-the renderer serves a `shading:<cc>` dataset for — `curl https://outdoor.tiles.freemap.sk/licenses`
-(**not** Germany); trails drawn from
+network, no third-party trackers); national high-resolution terrain wherever the
+renderer serves a `shading:` dataset — `curl https://outdoor.tiles.freemap.sk/licenses`,
+which is per territory and includes five German states but not all of Germany;
+trails drawn from
 `osmc:symbol` with `ref`/`name` labels; offline download; Garmin/Locus/OsmAnd exports.
 
 **Verify feature claims against the code, not against this roadmap.** Hook 4 below
@@ -273,9 +274,11 @@ touching Italy — it carries which venues already know Freemap (and so must nev
       ("Komoot wird immer unbrauchbarer", "Navigation Apps - Alternativen zu Komoot").
       Displaced-user moment in exactly this category — but it is a slow grumble, not a
       stampede, so do not overestimate it.
-- [ ] Germany — biggest untapped ceiling BUT **no national high-res DTM** (no
-      `shading:de` in the renderer's `/licenses`; it falls back to 30 m GEDTM30), so the
-      terrain hook cannot be used there. Lead with tools/offline/OSS instead.
+- [ ] Germany — biggest untapped ceiling, and the terrain hook now works in **five
+      states**: Bavaria, Lower Saxony, NRW, Saxony and Thuringia (`shading:de_by`,
+      `de_ni`, `de_nw`, `de_sn`, `de_th`). Elsewhere it falls back to 30 m GEDTM30, so
+      target those states — Bavaria above all, being the Alps and the Bavarian Forest —
+      and lead with tools/offline/OSS for the rest.
       German outdoor forums, Wander/MTB subreddits, Fediverse. (talk-de intro done once.)
 - [ ] Austria — Alpine, ALS DTM (Geoland.at), 13 actions/visit; **warm channel found**:
       gipfeltreffen.at (ÖAV-affiliated) already carries a 2023 organic mention from two
