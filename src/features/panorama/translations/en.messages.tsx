@@ -1,4 +1,3 @@
-import { PanoramaAbout } from '../components/PanoramaAbout.js';
 import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const en: PanoramaMessages = {
@@ -163,7 +162,6 @@ const en: PanoramaMessages = {
   },
   terrainSource: 'Terrain',
   peakSource: 'Peak names',
-  about: (props) => <PanoramaAbout {...props} />,
 };
 
 export default en;

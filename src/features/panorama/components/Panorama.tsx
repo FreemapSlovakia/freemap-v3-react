@@ -1,6 +1,5 @@
 import { closeTool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { BreakpointsProvider } from '@shared/components/BreakpointsProvider.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import { FloatingWindowGrips } from '@shared/components/FloatingWindowControls.js';
@@ -22,16 +21,12 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import {
-  type PanoramaProbe,
-  panoramaCancel,
-  panoramaSetRender,
-} from '../model/actions.js';
+import { type PanoramaProbe, panoramaCancel } from '../model/actions.js';
 import { usePanoramaRenderData } from '../renderHolder.js';
-import { loadPanoramaMessages } from '../translations/loadPanoramaMessages.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import { usePanoramaAim, usePanoramaProgress } from '../viewStore.js';
 import classes from './Panorama.module.css';
+import { PanoramaAbout } from './PanoramaAbout.js';
 import { PanoramaControls } from './PanoramaControls.js';
 import { PanoramaProbeReadout, readoutOf } from './PanoramaProbeReadout.js';
 import { PanoramaView, PICKED_INK } from './PanoramaView.js';
@@ -57,23 +52,7 @@ export default function Panorama(): ReactElement {
 
   const data = usePanoramaRenderData();
 
-  // A snapshot, so it is cancelled by the next render rather than left standing
-  // beside a picture it no longer describes.
-  const showAbout = () => {
-    dispatch(
-      toastsAdd({
-        id: 'panorama.about',
-        messageKey: 'about',
-        messageLoader: loadPanoramaMessages,
-        messageParams: {
-          depthLift: render?.depthLift ?? 0,
-          terrain: terrainAttributions(render?.attributions),
-        },
-        style: 'info',
-        cancelType: panoramaSetRender.type,
-      }),
-    );
-  };
+  const [showAbout, setShowAbout] = useState(false);
 
   const { boxProps, bottomProps, fullscreen, toggleFullscreen, ...grips } =
     useFloatingWindow({ storageKey: 'fm.panorama.window' });
@@ -220,10 +199,8 @@ export default function Panorama(): ReactElement {
             </div>
           )}
 
-          {/* What the picture is and is not, kept off the picture: the whole of
-              it — caveats and credits both — opens in a toast, where the
-              credits' links can actually be clicked. Hidden while a render is
-              on, the scrim below taking the same corner. */}
+          {/* Hidden while a render is on, the progress scrim taking the same
+              corner. */}
           {render && !rendering && (
             <LongPressTooltip label={m?.caveats.title}>
               {({ props }) => (
@@ -233,13 +210,42 @@ export default function Panorama(): ReactElement {
                     classes.aboutMark,
                     'position-absolute z-1 bottom-0 end-0 m-2 p-1 lh-1 rounded-circle border-0 bg-dark bg-opacity-50 text-white pe-auto',
                   )}
-                  onClick={showAbout}
+                  onClick={() => setShowAbout((v) => !v)}
                   {...props}
                 >
                   <FaInfoCircle />
                 </button>
               )}
             </LongPressTooltip>
+          )}
+
+          {/* Over the picture rather than under it: in the footer this took a
+              block of the panel and pushed the picture up as it opened. It
+              carries links, so it cannot be its own dismiss target — the ⓘ
+              toggles it and the × closes it. */}
+          {render && showAbout && (
+            <div
+              className={clsx(
+                classes.about,
+                'position-absolute z-2 top-0 bottom-0 start-0 end-0 p-3 bg-dark bg-opacity-75 text-white small',
+              )}
+            >
+              <LongPressTooltip label={gm?.general.close}>
+                {({ props }) => (
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white float-end ms-2"
+                    onClick={() => setShowAbout(false)}
+                    {...props}
+                  />
+                )}
+              </LongPressTooltip>
+
+              <PanoramaAbout
+                depthLift={render.depthLift}
+                terrain={terrainAttributions(render.attributions)}
+              />
+            </div>
           )}
 
           {/* Over the picture, not above it: a row of its own takes its height

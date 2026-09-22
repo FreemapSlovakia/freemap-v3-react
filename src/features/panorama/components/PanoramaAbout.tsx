@@ -18,7 +18,7 @@ function SourceName({ attr }: { attr: AttributionDef }): ReactNode {
       href={attr.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="link-body-emphasis"
+      className="link-light"
     >
       {attr.name}
     </a>
@@ -27,11 +27,7 @@ function SourceName({ attr }: { attr: AttributionDef }): ReactNode {
   );
 }
 
-/**
- * What the picture shows, what it doesn't, and what it was drawn from. In a
- * toast because the credits carry links a tooltip cannot be reached to click —
- * the same reason the elevation chart puts its own list in one.
- */
+/** What the picture shows, what it doesn't, and what it was drawn from. */
 export function PanoramaAbout({ depthLift, terrain }: Props): ReactElement {
   const m = usePanoramaMessages();
 
@@ -68,7 +64,7 @@ export function PanoramaAbout({ depthLift, terrain }: Props): ReactElement {
           href="https://osm.org/copyright"
           target="_blank"
           rel="noopener noreferrer"
-          className="link-body-emphasis"
+          className="link-light"
         >
           {gm?.mapLayers.attr['osmData']}
         </a>

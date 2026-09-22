@@ -53,6 +53,14 @@
   }
 }
 
+/* The whole picture is its backdrop, so a long disclaimer on a tall-enough
+   panel is read without the panel changing size — and scrolls when the window
+   is too short for it. */
+.about {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 /* Clears the two grips for an overlay in a top corner: they sit 0.25rem down
    and stand 2rem tall, measured from the *box*, while the overlay is measured
    from the content inside it. Bootstrap's spacing scale steps 1.5rem to 3rem,

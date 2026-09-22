@@ -1,4 +1,3 @@
-import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { ReactNode } from 'react';
 import type { PanoramaLook } from '../model/settingsReducer.js';
 
@@ -174,6 +173,4 @@ export type PanoramaMessages = {
   terrainSource: string;
   /** Credits OSM, which every name in the picture comes from. */
   peakSource: string;
-  /** The caveats and the credits together, as the ⓘ opens them in a toast. */
-  about: (props: { depthLift: number; terrain: AttributionDef[] }) => ReactNode;
 };

@@ -1,5 +1,4 @@
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
-import { PanoramaAbout } from '../components/PanoramaAbout.js';
 import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
@@ -156,7 +155,6 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   terrainSource: 'Terreno',
   peakSource: 'Nomi delle cime',
-  about: (props) => <PanoramaAbout {...props} />,
 };
 
 export default it;
