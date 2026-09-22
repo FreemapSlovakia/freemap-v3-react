@@ -270,7 +270,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               <HintMark hint={m?.settings.tiltHint} />
             </Form.Label>
 
-            <ButtonGroup size="sm" className="d-flex mb-2">
+            <ButtonGroup className="mb-2">
               {TILT_PRESETS.map((preset) => {
                 const [lo, hi] = PANORAMA_TILTS[preset];
 
@@ -280,7 +280,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                     variant={
                       draft.altMin === lo && draft.altMax === hi
                         ? 'primary'
-                        : 'outline-secondary'
+                        : 'outline-primary'
                     }
                     onClick={() => patch({ altMin: lo, altMax: hi })}
                   >
