@@ -50,14 +50,12 @@ import {
 } from '../model/selectors.js';
 import {
   GAMMA_MAX,
-  VIEWSHED_DETAIL_ORDER,
   VIEWSHED_RADIUS_STEPS_KM,
 } from '../model/settingsReducer.js';
 import {
-  FREE_DETAIL,
   FREE_RADIUS_MAX_KM,
-  grantedDetail,
   grantedRadiusKm,
+  viewshedDetailTiers,
   viewshedScale,
 } from '../request.js';
 import { useViewshedMessages } from '../translations/useViewshedMessages.js';
@@ -136,12 +134,11 @@ export default function ViewshedMenu(): ReactElement {
     [premium],
   );
 
+  // Against the reach being rendered, not the stored one: the tiers a short
+  // viewshed affords are not the tiers a long one does.
   const detailTiers = useMemo(
-    () =>
-      VIEWSHED_DETAIL_ORDER.filter(
-        (detail) => grantedDetail(detail, premium) === detail,
-      ),
-    [premium],
+    () => viewshedDetailTiers(grants.radiusKm, premium),
+    [grants.radiusKm, premium],
   );
 
   return (
@@ -265,7 +262,7 @@ export default function ViewshedMenu(): ReactElement {
                   onChange={(index) =>
                     dispatch(
                       viewshedSetSettings({
-                        detail: detailTiers[index] ?? FREE_DETAIL,
+                        detail: detailTiers[index] ?? grants.detail,
                       }),
                     )
                   }

@@ -83,8 +83,15 @@ looked at from. See `doc/panorama.md`.
 ## What premium grants
 
 Distance and detail, the two settings that decide what a render costs: without
-premium the range is held at `FREE_RADIUS_MAX_KM` (20 km) and the tier at
-`FREE_DETAIL` (the coarsest). **The service clamps neither**, so `grantedViewshed`
+premium the range is held at `FREE_RADIUS_MAX_KM` (20 km) and the tier to what
+`FREE_PIXELS` affords *at the reach being rendered* — the raster the free reach
+comes to at the coarsest tier, so nothing an account had is taken away, but a
+short viewshed spends the same allowance on detail instead. 20 km still buys
+the coarsest; 10 km buys `fast`, 5 km `detailed`. Pixels rise with the tier, so
+the affordable set is a prefix and its last member is the ceiling — unlike the
+panorama's ray budget, which is not monotonic and has to be searched.
+
+**The service clamps neither**, so `grantedViewshed`
 in `request.ts` is the only thing keeping the request honest — everything that
 speaks about what is on the map (the request, the render key, the circle, the
 wait estimate, the toolbar) reads the granted figures rather than the stored

@@ -48,14 +48,44 @@ export function viewshedScale(
   );
 }
 
-/** The finest tier an account without premium may have. */
-export const FREE_DETAIL: ViewshedDetail = 'superfast';
+/** The coarsest tier, which is what the free budget buys at the free reach. */
+const FREE_DETAIL: ViewshedDetail = 'superfast';
 
 /**
  * How far an account without premium may look, kilometres. Distance is what a
  * viewshed costs most: rays grow with the rim and each marches to the edge.
  */
 export const FREE_RADIUS_MAX_KM = 20;
+
+/** How big the raster a request comes to, which is what it costs to draw. */
+function viewshedPixels(radiusKm: number, detail: ViewshedDetail): number {
+  return ((radiusKm * 2000) / viewshedScale(radiusKm, detail)) ** 2;
+}
+
+/**
+ * Pixels a render may cost without premium. Exactly what the free reach at the
+ * coarsest tier has always cost, so nothing an account had is taken away — but
+ * the budget is spent rather than assumed, and a short reach, being cheap in
+ * pixels, buys detail with it.
+ */
+const FREE_PIXELS = viewshedPixels(FREE_RADIUS_MAX_KM, FREE_DETAIL);
+
+/**
+ * The tiers this reach and this account may render at, coarsest first — what
+ * the Detail slider offers, and where {@link grantedDetail} reads its answer.
+ *
+ * Pixels rise with the tier, so what the budget affords is a prefix and the
+ * last of them is the finest. That is what makes a short reach worth detail:
+ * at 5 km the same allowance pays for four tiers up.
+ */
+export function viewshedDetailTiers(
+  radiusKm: number,
+  premium: boolean,
+): ViewshedDetail[] {
+  return VIEWSHED_DETAIL_ORDER.filter(
+    (detail) => premium || viewshedPixels(radiusKm, detail) <= FREE_PIXELS,
+  );
+}
 
 /**
  * What the account may actually have of what it asked for. The service does not
@@ -65,12 +95,19 @@ export const FREE_RADIUS_MAX_KM = 20;
 export function grantedDetail(
   asked: ViewshedDetail,
   premium: boolean,
+  radiusKm: number,
 ): ViewshedDetail {
-  return premium ||
-    VIEWSHED_DETAIL_ORDER.indexOf(asked) <=
-      VIEWSHED_DETAIL_ORDER.indexOf(FREE_DETAIL)
-    ? asked
-    : FREE_DETAIL;
+  const tiers = viewshedDetailTiers(radiusKm, premium);
+
+  const askedAt = VIEWSHED_DETAIL_ORDER.indexOf(asked);
+
+  // Down to the finest tier the budget affords at or below what was asked.
+  // Nothing affordable means a reach so long that even the coarsest is over —
+  // it renders the coarsest rather than nothing.
+  return (
+    tiers.filter((d) => VIEWSHED_DETAIL_ORDER.indexOf(d) <= askedAt).at(-1) ??
+    VIEWSHED_DETAIL_ORDER[0]!
+  );
 }
 
 export function grantedRadiusKm(asked: number, premium: boolean): number {
@@ -87,9 +124,13 @@ export function grantedViewshed(
   settings: ViewshedSettingsState,
   premium: boolean,
 ): ViewshedGrants {
+  // The reach first: what the detail costs is measured against the reach that
+  // will actually be rendered, not the one a lapsed account still has stored.
+  const radiusKm = grantedRadiusKm(settings.radiusKm, premium);
+
   return {
-    detail: grantedDetail(settings.detail, premium),
-    radiusKm: grantedRadiusKm(settings.radiusKm, premium),
+    detail: grantedDetail(settings.detail, premium, radiusKm),
+    radiusKm,
   };
 }
 
