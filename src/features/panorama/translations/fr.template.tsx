@@ -69,7 +69,6 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Le relief au-delà de cette distance est omis plutôt que peint à plat dans la dernière couleur, de sorte que tout le dégradé se dépense sur ce que l’image montre. Les sommets qui s’y trouvent ne sont pas nommés.',
   },
   quality: {
-    label: 'Qualité / vitesse',
     detail: 'Détail',
     maximum: 'Maximum',
   },

@@ -4,6 +4,7 @@ import {
   requestTerrainRender,
   TerrainCreditsSchema,
   type TerrainProgress,
+  terrainParts,
 } from '@shared/terrainService.js';
 import z from 'zod';
 import type { PanoramaDepth } from './depth.js';
@@ -240,19 +241,7 @@ export async function renderPanorama(
     onProgress,
   );
 
-  const metaPart = form.get('meta');
-
-  if (typeof metaPart !== 'string') {
-    throw new Error('missing terrain meta');
-  }
-
-  const imagePart = form.get('image');
-
-  if (!(imagePart instanceof Blob)) {
-    throw new Error('missing terrain image');
-  }
-
-  const meta = MetaSchema.parse(JSON.parse(metaPart));
+  const { meta, image: imagePart } = terrainParts(form, MetaSchema);
 
   if (isCurrent && !isCurrent()) {
     return { meta, bitmap: null, depth: null };

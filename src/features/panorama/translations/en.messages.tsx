@@ -73,7 +73,6 @@ const en: PanoramaMessages = {
       'Terrain past that distance is left out rather than painted flat in the last colour, so the whole gradient is spent on what the picture shows. Summits standing on it are not named.',
   },
   quality: {
-    label: 'Quality / speed',
     detail: 'Detail',
     maximum: 'Maximum',
   },

@@ -78,13 +78,12 @@ export type PanoramaMessages = {
     gradientClipHint: string;
   };
   quality: {
-    label: string;
     /** How fine the picture is, in pixels per degree. */
     detail: string;
     /** The last stop of that slider: as fine as this frame allows. */
     maximum: string;
   };
-  /** Names the one control that frames a render: view, band and detail. */
+  /** Names the one control that frames a render: horizontal view and detail. */
   frame: string;
   tilt: {
     label: string;

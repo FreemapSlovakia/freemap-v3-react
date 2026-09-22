@@ -78,5 +78,7 @@ export async function renderViewshed(
     onProgress,
   );
 
-  return terrainParts(form, MetaSchema);
+  const { meta, image } = terrainParts(form, MetaSchema);
+
+  return { meta, imageUrl: URL.createObjectURL(image) };
 }

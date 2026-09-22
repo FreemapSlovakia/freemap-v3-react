@@ -69,7 +69,6 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'A távolságon túli terep kimarad ahelyett, hogy laposan az utolsó színnel lenne kitöltve, így az egész színátmenet arra jut, amit a kép mutat. Az ott álló csúcsok nem kapnak nevet.',
   },
   quality: {
-    label: 'Minőség / sebesség',
     detail: 'Részletesség',
     maximum: 'Maximum',
   },

@@ -71,10 +71,9 @@ import {
 } from '../model/settingsReducer.js';
 import {
   DETAIL_MAX,
-  DETAIL_STOPS,
-  grantedCeiling,
   grantedPanorama,
   type PanoramaDetail,
+  panoramaDetailStops,
   panoramaExpectedMs,
   panoramaRenderKey,
 } from '../quality.js';
@@ -202,7 +201,7 @@ export function PanoramaControls({
   // the frame or the account allows are not offered at all, rather than offered
   // and then clamped out from under the handle.
   const detailStops: PanoramaDetail[] = [
-    ...DETAIL_STOPS.filter((px) => px <= grantedCeiling(settings, premium)),
+    ...panoramaDetailStops(settings, premium),
     DETAIL_MAX,
   ];
 

@@ -69,7 +69,6 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Gelände jenseits dieser Entfernung wird weggelassen statt flach in der letzten Farbe gemalt, sodass der ganze Verlauf auf das entfällt, was das Bild zeigt. Gipfel, die darauf stehen, werden nicht benannt.',
   },
   quality: {
-    label: 'Qualität / Geschwindigkeit',
     detail: 'Detail',
     maximum: 'Maximum',
   },

@@ -271,26 +271,24 @@ export default function Panorama(): ReactElement {
 
                 <p className="mb-1">
                   {m?.terrainSource}:{' '}
-                  {terrainAttributions(render?.attributions ?? []).map(
-                    (attr, i) => (
-                      <Fragment key={attr.name}>
-                        {i > 0 ? ', ' : null}
+                  {terrainAttributions(render?.attributions).map((attr, i) => (
+                    <Fragment key={attr.name}>
+                      {i > 0 ? ', ' : null}
 
-                        {attr.url ? (
-                          <a
-                            href={attr.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="link-body-emphasis"
-                          >
-                            {attr.name}
-                          </a>
-                        ) : (
-                          attr.name
-                        )}
-                      </Fragment>
-                    ),
-                  )}
+                      {attr.url ? (
+                        <a
+                          href={attr.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link-body-emphasis"
+                        >
+                          {attr.name}
+                        </a>
+                      ) : (
+                        attr.name
+                      )}
+                    </Fragment>
+                  ))}
                 </p>
 
                 {/* Every name in the picture is an OSM node — the summit's own

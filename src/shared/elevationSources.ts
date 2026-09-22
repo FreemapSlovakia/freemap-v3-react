@@ -59,20 +59,25 @@ export const ELEVATION_API_DTM_ATTRIBUTION =
  * only reached when the service names nothing, so it has to be the widest thing
  * that could have answered.
  */
-export const ALL_TERRAIN_ATTRIBUTION = [
+const ALL_TERRAIN_ATTRIBUTION = [
   ...OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
   GEDTM30_ATTR,
 ];
 
 /**
- * What to credit a terrain render to: the models the service says answered it,
- * or every model where it said nothing — naming one that contributed nothing is
- * the harmless error, dropping one whose licence asks to be named is not.
+ * What to credit a terrain render to. Nothing rendered credits nobody; a render
+ * that named no model credits every one it could have used — naming one that
+ * contributed nothing is the harmless error, dropping one whose licence asks to
+ * be named is not.
  */
 export function terrainAttributions(
-  reported: AttributionDef[],
+  reported: AttributionDef[] | undefined,
 ): AttributionDef[] {
-  return reported.length === 0 ? ALL_TERRAIN_ATTRIBUTION : reported;
+  return !reported
+    ? []
+    : reported.length === 0
+      ? ALL_TERRAIN_ATTRIBUTION
+      : reported;
 }
 
 /**

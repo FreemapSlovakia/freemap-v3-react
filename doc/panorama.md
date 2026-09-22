@@ -33,7 +33,7 @@ this side:
   addressed directly rather than through `freemap-v3-api`, so `httpRequest`
   adds no credentials of its own (it only does that for relative URLs) and the
   header is set explicitly. The service itself is policy-free — it bounds what
-  one request may cost, not who may ask for it — so `grantedQuality` is what
+  one request may cost, not who may ask for it — so `grantedPanorama` is what
   actually holds a free account to the free tier, and the public vhost forces
   queue priority to 0 whatever the token says.
 
@@ -90,8 +90,8 @@ answers as the wedge moves, and no tool loses its click.
 Three things make it work. A shape of its own takes the press (`grabbable` in
 `makeBeamIcon`): the marker's box is 240 px square and the wedge itself fades to
 nothing well before its rim, so either would eat presses over bare map — the hit
-shape reaches `GRAB_REACH` of the radius, which is about as far as the gradient
-can still be seen. `mousedown` and `touchstart` are stopped so the map does not
+shape is the visible wedge itself, which is about as far as the gradient can
+still be seen. `mousedown` and `touchstart` are stopped so the map does not
 pan from under it (it starts its pan from those, which a stopped `pointerdown`
 never reaches) — those two alone, since `disableClickPropagation` would take the
 click as well, and a press on the wedge is a press on the map under every mode
@@ -649,10 +649,10 @@ default.
 Two consequences the client owns.
 
 **The band is raised with it.** The horizon rises by exactly the lift, so
-`renderTiltRange` adds the same amount to `alt_max` before the request goes out
-— otherwise the far ridges the lift exists to separate climb straight out of an
-unchanged frame. `panoramaStep` works from the raised band too, since the pixel
-cap binds through it. The tilt setting itself is left alone: the toolbar and the
+`renderFrame` adds the same amount to `alt_max`, and everything that prices,
+grants or sends a render reads the frame from there — otherwise the far ridges
+the lift exists to separate climb straight out of an unchanged frame, and an
+estimate quotes a picture smaller than the one asked for. The tilt setting itself is left alone: the toolbar and the
 modal go on saying what the user framed, and `panoramaRenderKey` carries the
 lift as an entry of its own, because a lift of 1° over a 12° top is a different
 picture from none over 13°.

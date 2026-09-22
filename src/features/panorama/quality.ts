@@ -5,8 +5,6 @@ import { gradientRequest } from './gradient.js';
 import { PROM_DOUBTED_TRUST, PROM_TRUSTED_M } from './labels/fromPeaks.js';
 import {
   ALT_LIMIT,
-  FOV_FULL,
-  FOV_MIN,
   isFullTurn,
   type PanoramaSettingsState,
   panoramaSettingsInitialState,
@@ -22,9 +20,7 @@ import {
  * one of them means the same picture in every frame; {@link DETAIL_MAX} is the
  * stop that moves with the frame instead.
  */
-export const DETAIL_STOPS = [
-  5, 7, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150,
-] as const;
+const DETAIL_STOPS = [5, 7, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150] as const;
 
 /** As fine as this frame allows, which the fov and the band decide. */
 export const DETAIL_MAX = 'max';
@@ -60,7 +56,7 @@ const RAYS_MAX_PER_PX = 3;
  */
 const RAYS_COARSE_BELOW_PX = 10;
 
-export function raysForDetail(pxPerDeg: number): number {
+function raysForDetail(pxPerDeg: number): number {
   return pxPerDeg < RAYS_COARSE_BELOW_PX
     ? 1
     : Math.min(
@@ -75,7 +71,7 @@ export function raysForDetail(pxPerDeg: number): number {
  * the budget is now spent rather than assumed, and a narrow slice, being cheap
  * in rays, buys detail with it.
  */
-export const FREE_RAYS = 1800;
+const FREE_RAYS = 1800;
 
 /**
  * Sub-rows per pixel, never a setting: they cost no rays, only buffer, and they
@@ -117,6 +113,33 @@ export function grantedRangeKm(asked: number, premium: boolean): number {
   return premium ? asked : Math.min(asked, FREE_RANGE_MAX_KM);
 }
 
+/** The frame a request will carry, as against the one the settings read as. */
+interface RenderFrame {
+  fovDeg: number;
+  altMin: number;
+  altMax: number;
+}
+
+/**
+ * What the render will actually be of. One value rather than a fov and a band
+ * fetched separately: every caller needs both, and taking half of the pair —
+ * the raised band with the asked-for fov, or the reverse — prices and grants a
+ * frame the request does not ask for.
+ *
+ * A depth lift raises the horizon by exactly its own degrees, so the same is
+ * added on top: without it the far ridges the lift exists to separate climb
+ * straight out of an unchanged frame.
+ */
+function renderFrame(settings: PanoramaSettingsState): RenderFrame {
+  const [altMin, altMax] = tiltRange(settings);
+
+  return {
+    fovDeg: settings.fovDeg,
+    altMin,
+    altMax: Math.min(altMax + settings.depthLift, ALT_LIMIT),
+  };
+}
+
 /**
  * The finest this frame can be rendered at, pixels per degree, at this
  * sampling — the Detail slider's top stop, and what {@link DETAIL_MAX} means.
@@ -131,10 +154,7 @@ export function grantedRangeKm(asked: number, premium: boolean): number {
  * `height` *up* before checking them, so a step that exactly fits comes back a
  * 400.
  */
-export function maxPxPerDeg(
-  [altMin, altMax]: [number, number],
-  fovDeg: number,
-): number {
+function maxPxPerDeg({ fovDeg, altMin, altMax }: RenderFrame): number {
   const margin = 1.001;
 
   const pixels = Math.min(MAX_PANORAMA_PIXELS, MAX_CLIENT_PIXELS);
@@ -166,10 +186,10 @@ export function grantedPanorama(
 ): PanoramaGrants {
   const ceiling = grantedCeiling(settings, premium);
 
-  const pxPerDeg = Math.min(
-    settings.detail === DETAIL_MAX ? ceiling : settings.detail,
-    ceiling,
-  );
+  const pxPerDeg =
+    settings.detail === DETAIL_MAX
+      ? ceiling
+      : Math.min(settings.detail, ceiling);
 
   return {
     pxPerDeg,
@@ -179,40 +199,50 @@ export function grantedPanorama(
 }
 
 /**
- * The finest this account may render this frame — the Detail slider's last
- * stop, and what {@link DETAIL_MAX} resolves to: the frame's own ceiling, or
- * what {@link FREE_RAYS} buys of it.
+ * The stops this frame and this account may render at — what the Detail slider
+ * offers, and where {@link grantedCeiling} reads its answer.
  *
- * The free answer is the last *stop* the budget affords, not a formula:
- * {@link raysForDetail} steps up partway along the scale, so cost is not
- * monotonic in detail and a closed form for it silently sold a stop the budget
- * could not pay for. At a full turn the answer is the coarsest stop, exactly as
- * before; at a 30° slice it is four times that for the same rays.
+ * Filtered rather than bounded, because the affordable set is not a prefix:
+ * {@link raysForDetail} steps down partway along the scale, so at a 30° slice
+ * 40 px/° costs more rays than 50 does. Anything testing `px <= ceiling`
+ * instead sells a stop the budget cannot pay for.
+ */
+export function panoramaDetailStops(
+  settings: PanoramaSettingsState,
+  premium: boolean,
+): number[] {
+  const frame = renderFrame(settings);
+
+  const ceiling = maxPxPerDeg(frame);
+
+  return DETAIL_STOPS.filter(
+    (px) =>
+      px <= ceiling &&
+      (premium || frame.fovDeg * px * raysForDetail(px) <= FREE_RAYS),
+  );
+}
+
+/**
+ * The finest this account may render this frame — what {@link DETAIL_MAX}
+ * resolves to. Premium is held only by the frame, which is not a stop; free is
+ * held to the last stop {@link FREE_RAYS} affords.
  */
 export function grantedCeiling(
   settings: PanoramaSettingsState,
   premium: boolean,
 ): number {
-  const fovDeg = renderFov(settings);
-
-  const frame = maxPxPerDeg(renderTiltRange(settings), fovDeg);
+  const ceiling = maxPxPerDeg(renderFrame(settings));
 
   if (premium) {
-    return frame;
+    return ceiling;
   }
-
-  const affordable = DETAIL_STOPS.filter(
-    (px) => px <= frame && fovDeg * px * raysForDetail(px) <= FREE_RAYS,
-  );
 
   // Nothing affordable means a frame so wide that even the coarsest stop is
   // over — rather than no picture at all, it renders the coarsest.
-  return affordable.at(-1) ?? Math.min(frame, DETAIL_STOPS[0]);
-}
-
-/** The fov a request would carry: a frame with no width renders nothing. */
-function renderFov(settings: PanoramaSettingsState): number {
-  return Math.min(Math.max(settings.fovDeg, FOV_MIN), FOV_FULL);
+  return (
+    panoramaDetailStops(settings, premium).at(-1) ??
+    Math.min(ceiling, DETAIL_STOPS[0])
+  );
 }
 
 /**
@@ -253,9 +283,7 @@ export function panoramaExpectedMs(
 ): number {
   // The frame the request will ask for, not the one the settings read as: a
   // depth lift grows the band, and pricing the unlifted one under-quotes it.
-  const fovDeg = renderFov(settings);
-
-  const [altMin, altMax] = renderTiltRange(settings);
+  const { fovDeg, altMin, altMax } = renderFrame(settings);
 
   const bandDeg = altMax - altMin;
 
@@ -333,17 +361,6 @@ const PEAK_RANK: PeakRankExpression = [
 ];
 
 /**
- * The band actually asked for. A depth lift raises the horizon by exactly its
- * own degrees, so the same is added on top: without it the far ridges the lift
- * exists to separate climb straight out of an unchanged frame.
- */
-function renderTiltRange(settings: PanoramaSettingsState): [number, number] {
-  const [altMin, altMax] = tiltRange(settings);
-
-  return [altMin, Math.min(altMax + settings.depthLift, ALT_LIMIT)];
-}
-
-/**
  * `renderAz` is the bearing the middle of the slice faces; a full turn ignores
  * it, having no direction to face.
  */
@@ -353,11 +370,9 @@ export function buildPanoramaRequest(
   { pxPerDeg, raysPerPixel, rangeKm }: PanoramaGrants,
   renderAz: number,
 ): PanoramaRequest {
-  const band = renderTiltRange(settings);
+  const { fovDeg: fov, altMin, altMax } = renderFrame(settings);
 
   const gradient = settings.groundGradient;
-
-  const fov = renderFov(settings);
 
   return {
     lon: viewpoint.lon,
@@ -366,8 +381,8 @@ export function buildPanoramaRequest(
     // The wire wants the left edge; a full turn starts wherever the service
     // likes, and saying so would only pin it for nothing.
     ...(isFullTurn(fov) ? {} : { az: mod(renderAz - fov / 2, 360) }),
-    alt_min: band[0],
-    alt_max: band[1],
+    alt_min: altMin,
+    alt_max: altMax,
     eye: settings.eye,
     range: rangeKm * 1000,
     depth: true,

@@ -71,13 +71,9 @@ const ProgressSchema = z.object({
  * word, and it is seconds of the wait on a fine render, so whoever is showing
  * progress has to be told about it too.
  */
-export interface TerrainProgress {
+export type TerrainProgress = Omit<z.infer<typeof ProgressSchema>, 'phase'> & {
   phase: z.infer<typeof ProgressSchema>['phase'] | 'decoding';
-  /** Renders that must finish before this one starts; `0` means next. */
-  ahead: number;
-  /** 0–100 through the render; a column or ray count, so the rate drifts. */
-  percent: number;
-}
+};
 
 /**
  * Rejects the service's `unknown` phase along with anything malformed: the
@@ -185,13 +181,13 @@ export async function requestTerrainRender(
 
 /**
  * The two parts every render answers with: its JSON `meta`, parsed by the
- * endpoint's own schema, and the picture as an object URL. A `depth` part, where
- * one was asked for, is the caller's to take out of the same form.
+ * endpoint's own schema, and the picture itself. A `depth` part, where one was
+ * asked for, is the caller's to take out of the same form.
  */
 export function terrainParts<T>(
   form: FormData,
   schema: { parse: (data: unknown) => T },
-): { meta: T; imageUrl: string } {
+): { meta: T; image: Blob } {
   const metaPart = form.get('meta');
 
   if (typeof metaPart !== 'string') {
@@ -204,8 +200,5 @@ export function terrainParts<T>(
     throw new Error('missing terrain image');
   }
 
-  return {
-    meta: schema.parse(JSON.parse(metaPart)),
-    imageUrl: URL.createObjectURL(imagePart),
-  };
+  return { meta: schema.parse(JSON.parse(metaPart)), image: imagePart };
 }

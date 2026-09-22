@@ -69,7 +69,6 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Terén za touto vzdialenosťou sa nevykreslí, namiesto toho, aby bol vyplnený poslednou farbou, takže sa celý prechod minie na to, čo je na obrázku. Vrcholy, ktoré na ňom stoja, sa nepomenujú.',
   },
   quality: {
-    label: 'Kvalita / rýchlosť',
     detail: 'Detail',
     maximum: 'Maximum',
   },

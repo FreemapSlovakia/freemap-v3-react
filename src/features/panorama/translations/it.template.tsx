@@ -69,7 +69,6 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Il terreno oltre quella distanza viene omesso invece di essere dipinto piatto nell’ultimo colore, così tutto il gradiente si spende su ciò che l’immagine mostra. Le cime che vi si trovano non vengono nominate.',
   },
   quality: {
-    label: 'Qualità / velocità',
     detail: 'Dettaglio',
     maximum: 'Massimo',
   },

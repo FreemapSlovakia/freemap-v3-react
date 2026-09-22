@@ -70,7 +70,6 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Teren za tą odległością nie jest rysowany, zamiast być wypełniony ostatnim kolorem, więc cały gradient przypada na to, co pokazuje obraz. Szczyty na nim stojące nie są nazywane.',
   },
   quality: {
-    label: 'Jakość / szybkość',
     detail: 'Szczegółowość',
     maximum: 'Maksimum',
   },

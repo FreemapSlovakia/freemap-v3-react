@@ -176,16 +176,15 @@ function useCategorizedAttribution(
 
   // Past the country filter: the service names the models its render was
   // answered from, which the viewport it is looked at from cannot narrow.
-  const terrainDefs =
-    layers.includes('v') && viewshedCredits
-      ? terrainAttributions(viewshedCredits)
-      : [];
+  const terrainDefs = layers.includes('v')
+    ? terrainAttributions(viewshedCredits)
+    : [];
 
-  const categorized = categorize(
-    linked && defs.includes(OSRM_ROUTING_ATTR)
-      ? [...defs, ...terrainDefs, FIXTHEMAP_ATTR]
-      : [...defs, ...terrainDefs],
-  );
+  const categorized = categorize([
+    ...defs,
+    ...terrainDefs,
+    ...(linked && defs.includes(OSRM_ROUTING_ATTR) ? [FIXTHEMAP_ATTR] : []),
+  ]);
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
 

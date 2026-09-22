@@ -71,7 +71,6 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Površje onkraj te razdalje se ne nariše, namesto da bi bilo ploskovno zapolnjeno z zadnjo barvo, tako da se ves preliv porabi za to, kar slika kaže. Vrhovi, ki stojijo na njem, niso poimenovani.',
   },
   quality: {
-    label: 'Kakovost / hitrost',
     detail: 'Podrobnost',
     maximum: 'Največ',
   },
