@@ -227,14 +227,14 @@ export default function Panorama(): ReactElement {
             <div
               className={clsx(
                 classes.about,
-                'position-absolute z-2 top-0 bottom-0 start-0 end-0 p-3 bg-dark bg-opacity-75 text-white small',
+                'position-absolute z-2 top-0 bottom-0 start-0 end-0 p-3 bg-body-tertiary small',
               )}
             >
               <LongPressTooltip label={gm?.general.close}>
                 {({ props }) => (
                   <button
                     type="button"
-                    className="btn-close btn-close-white float-end ms-2"
+                    className="btn-close float-end ms-2"
                     onClick={() => setShowAbout(false)}
                     {...props}
                   />
