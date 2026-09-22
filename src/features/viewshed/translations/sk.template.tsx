@@ -7,7 +7,7 @@ const sk: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpointPrompt: 'Kliknite do mapy tam, odkiaľ sa chcete pozerať',
   extent: 'Dosah a detail',
   rangeHint:
-    'Pohľad ďalej než 20 km patrí prémiu: vzdialenosť stojí viditeľnosť najviac — lúčov pribúda s obvodom a každý ide až na okraj.',
+    'Pohľad ďalej než 20 km je prémiová funkcia: vzdialenosť stojí viditeľnosť najviac — lúčov pribúda s obvodom a každý ide až na okraj.',
   detail: 'Detail',
   details: {
     superfast: 'Najnižšia / najrýchlejšia',
