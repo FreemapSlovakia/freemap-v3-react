@@ -77,6 +77,15 @@ const COMPASS_HEIGHT = 24;
 const AUTO_PAN_DEG_PER_S = 6;
 
 /**
+ * Half that for a slice, which reverses: at the turning rate a short one is
+ * back before the eye has followed it out.
+ */
+const SLICE_PAN_DEG_PER_S = 3;
+
+/** How long it stands at an end before starting back. */
+const SLICE_HOLD_MS = 1500;
+
+/**
  * Roughly how long the view takes to close on where the phone points. Long
  * enough that a magnetometer's jitter reads as a still picture rather than a
  * shiver, short enough that turning to look at something arrives with the turn.
@@ -559,9 +568,7 @@ export function PanoramaView({
     // `display: none` box, re-laying out every peak label each frame, on the
     // phone the user is picking on.
     //
-    // A slice has nothing to turn through: the pan would peg against its end
-    // and the compass would sit there whenever the device faced elsewhere.
-    if (!settings.autoPan || dragging || width === 0 || !full) {
+    if (!settings.autoPan || dragging || width === 0) {
       return;
     }
 
@@ -569,12 +576,63 @@ export function PanoramaView({
 
     let last = performance.now();
 
+    // A slice sweeps between its ends instead of turning: which way it is
+    // going, and until when it is standing at the end it just reached.
+    let dir = 1;
+
+    let holdUntil = 0;
+
     const step = (now: number) => {
       const dt = now - last;
 
       last = now;
 
       const compass = compassRef.current;
+
+      // A slice does not follow the device: it would hold every bearing outside
+      // itself at one end, which reads as a picture stuck rather than as a view
+      // that does not reach there. It sweeps between its ends instead.
+      //
+      // Reversing is a side effect, so it happens here rather than inside the
+      // updater below — React may run an updater twice to surface impurity,
+      // which would turn the sweep back round twice and never reverse it.
+      if (!full) {
+        if (now >= holdUntil) {
+          const {
+            azimuth: a,
+            render: r,
+            width: w,
+            degPerPx: dpp,
+          } = geomRef.current;
+
+          // The ends: the middle of the slice, and how far the aim may stray
+          // from it before the picture's edge reaches the viewport's. Zero once
+          // the whole slice is on screen — nothing to sweep, so it stands still
+          // rather than juddering in place.
+          const span = panoramaSpanDeg(r);
+
+          const middle = r.azStart + span / 2;
+
+          const reach = Math.max(0, (span - w * dpp) / 2);
+
+          const next =
+            angleDiff(a, middle) + (dir * SLICE_PAN_DEG_PER_S * dt) / 1000;
+
+          if (Math.abs(next) >= reach) {
+            dir = -dir;
+
+            holdUntil = now + SLICE_HOLD_MS;
+
+            setAzimuth(mod(middle + Math.sign(next) * reach, 360));
+          } else {
+            setAzimuth(mod(middle + next, 360));
+          }
+        }
+
+        raf = requestAnimationFrame(step);
+
+        return;
+      }
 
       setAzimuth((a) =>
         compass && now - compass.at < COMPASS_STALE_MS

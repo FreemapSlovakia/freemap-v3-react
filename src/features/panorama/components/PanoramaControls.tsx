@@ -222,6 +222,10 @@ export function PanoramaControls({
 
   const expectedMs = panoramaExpectedMs(grants.pxPerDeg, settings);
 
+  // Of the picture on screen, not of the setting: the turning follows what was
+  // rendered, so a narrowed view not yet asked for still follows the device.
+  const sweepsWithDevice = !render || isFullTurn(render.fov);
+
   const dominanceStep = nearestStep(DOMINANCE_STEPS_M, settings.minDominance);
 
   const dominanceLabel =
@@ -580,21 +584,14 @@ export function PanoramaControls({
             magnetometer the view follows it rather than turning by itself, so a
             play mark would promise the wrong thing — see `PanoramaView`.
 
-            Off and looking at a slice, there is nothing to turn through and
-            pressing it would do nothing, so it is disabled. Still pressable
-            while it is *on*: a phone starts out following, and someone who
-            narrowed the view has to be able to stop it. Judged on the picture
-            on screen rather than the setting, which is what the turning reads
-            — a narrowed view not yet rendered still turns. */}
+            A slice sweeps between its ends rather than following the device,
+            so it wears the play mark there whatever the phone can do. */}
         <Action
-          disabled={
-            !settings.autoPan && render !== null && !isFullTurn(render.fov)
-          }
           label={m?.autoPan}
           icon={
             settings.autoPan ? (
               <FaStop />
-            ) : isCompassSupported() ? (
+            ) : isCompassSupported() && sweepsWithDevice ? (
               <FaCompass />
             ) : (
               <FaPlay />
