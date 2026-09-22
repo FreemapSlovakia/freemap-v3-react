@@ -91,10 +91,15 @@ the coarsest; 10 km buys `fast`, 5 km `detailed`. Pixels rise with the tier, so
 the affordable set is a prefix and its last member is the ceiling — unlike the
 panorama's ray budget, which is not monotonic and has to be searched.
 
+`MIN_SIDE_PX` floors the raster, so at a short reach the coarsest tiers run
+together: at 5 km `superfast` and `fast` both come to 16.67 m/px. Two slider
+stops then draw the same picture — the render key holds the scale rather than
+the tier, so the second of them costs nothing and raises no Update.
+
 **The service clamps neither**, so `grantedViewshed`
 in `request.ts` is the only thing keeping the request honest — everything that
 speaks about what is on the map (the request, the render key, the circle, the
-wait estimate, the toolbar) reads the granted figures rather than the stored
+toolbar) reads the granted figures rather than the stored
 ones, or it would claim a picture nobody rendered.
 
 Both ride one `SliderDropdown`, the way the panorama's fov and detail do — they
