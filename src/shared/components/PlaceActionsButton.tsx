@@ -45,7 +45,7 @@ export function PlaceActionsButton({
       size={size}
       variant={variant}
       className={className}
-      toggleLabel={m?.general.placeActions}
+      toggleLabel={m?.general.locationActions}
       onSelect={onSelect}
     >
       {children}

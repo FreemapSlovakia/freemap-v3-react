@@ -92,7 +92,6 @@ const messages: Messages = {
     viewshedFromHere: 'Viewshed from here',
     toposcopeFromHere: 'Toposcope from here',
     lookAtInPanorama: 'Look at this in the panorama',
-    placeActions: 'What to do with this place',
     locationActions: 'Location actions',
     convert: {
       geometry: 'Geometry',

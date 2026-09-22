@@ -1,4 +1,3 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
@@ -11,7 +10,7 @@ import type { LatLon } from '@shared/types/common.js';
 import type { JSX, ReactElement, ReactNode } from 'react';
 import type { OverlayProps } from 'react-bootstrap';
 import { Dropdown } from 'react-bootstrap';
-import { FaChevronRight, FaExternalLinkAlt, FaMapPin } from 'react-icons/fa';
+import { FaChevronRight, FaExternalLinkAlt } from 'react-icons/fa';
 import {
   hasPageItems,
   OpenInExternalTargetItems,
@@ -59,8 +58,6 @@ export function OpenInExternalAppMenuButton({
   children,
   className,
 }: Props): ReactElement {
-  const m = useMessages();
-
   const oeam = useOpenInExternalAppMessages();
 
   // `url` deliberately stays out of this: it is what the "New window" item opens, which for a
@@ -122,26 +119,6 @@ export function OpenInExternalAppMenuButton({
               url={url}
             />
           </>
-        ) : submenu === 'locationActions' ? (
-          <>
-            <SubmenuHeader
-              icon={<FaMapPin />}
-              title={m?.general.locationActions}
-            />
-
-            <LocationActionItems
-              lat={lat}
-              lon={lon}
-              pointTitle={pointTitle}
-              pointDescription={pointDescription}
-              url={url}
-              onAct={() => {
-                handleMenuToggle(false);
-
-                onAct?.();
-              }}
-            />
-          </>
         ) : (
           <>
             {menuItems && (
@@ -157,12 +134,20 @@ export function OpenInExternalAppMenuButton({
 
             {pageItems && <Dropdown.Divider />}
 
-            <Dropdown.Item as="button" eventKey="submenu-locationActions">
-              <FaMapPin /> {m?.general.locationActions}
-              <MenuGutter>
-                <FaChevronRight />
-              </MenuGutter>
-            </Dropdown.Item>
+            <LocationActionItems
+              lat={lat}
+              lon={lon}
+              pointTitle={pointTitle}
+              pointDescription={pointDescription}
+              url={url}
+              onAct={() => {
+                handleMenuToggle(false);
+
+                onAct?.();
+              }}
+            />
+
+            <Dropdown.Divider />
 
             <Dropdown.Item as="button" eventKey="submenu-openExternally">
               <FaExternalLinkAlt /> {oeam?.openIn}

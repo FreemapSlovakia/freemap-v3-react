@@ -93,7 +93,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     viewshedFromHere: 'Láthatóság innen',
     toposcopeFromHere: 'Panorámatábla innen',
     lookAtInPanorama: 'Megnézés a panorámában',
-    placeActions: 'Mit lehet kezdeni ezzel a hellyel',
     locationActions: 'Műveletek ezzel a hellyel',
     convert: {
       geometry: 'Geometria',

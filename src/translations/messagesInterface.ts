@@ -80,7 +80,6 @@ export type Messages = {
     /** Turns the panorama already on screen to face this place. */
     lookAtInPanorama: string;
     /** Names the ⋮ menu a panel carries for the place it is about. */
-    placeActions: string;
     locationActions: string;
     convert: {
       geometry: string;

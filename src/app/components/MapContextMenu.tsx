@@ -1,4 +1,3 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
@@ -6,6 +5,7 @@ import type { Modifier, Obj } from '@popperjs/core';
 import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -19,11 +19,7 @@ import {
   useState,
 } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaExternalLinkAlt,
-} from 'react-icons/fa';
+import { FaChevronRight, FaExternalLinkAlt } from 'react-icons/fa';
 import classes from './MapContextMenu.module.css';
 
 const initialState = {
@@ -95,8 +91,6 @@ function createArrowModifier(
 }
 
 export function MapContextMenu(): ReactElement {
-  const m = useMessages();
-
   const oeam = useOpenInExternalAppMessages();
 
   const [contextMenu, setContextMenu] = useState(initialState);
@@ -213,18 +207,10 @@ export function MapContextMenu(): ReactElement {
 
           {submenu === 'openExternally' ? (
             <>
-              <Dropdown.Header>
-                <FaExternalLinkAlt /> {oeam?.openInExternal}
-              </Dropdown.Header>
-
-              <Dropdown.Item as="button" eventKey="submenu-">
-                <FaChevronLeft /> {m?.mainMenu.back}
-                <MenuGutter>
-                  <kbd>Esc</kbd>
-                </MenuGutter>
-              </Dropdown.Item>
-
-              <Dropdown.Divider />
+              <SubmenuHeader
+                icon={<FaExternalLinkAlt />}
+                title={oeam?.openIn}
+              />
 
               <OpenInExternalAppDropdownItems
                 lat={contextMenu.lat}
@@ -236,22 +222,26 @@ export function MapContextMenu(): ReactElement {
               />
             </>
           ) : (
-            // The place's own menu, flat: this one *is* the location menu, so
-            // there is nothing to hide it behind.
-            <LocationActionItems
-              lat={contextMenu.lat}
-              lon={contextMenu.lon}
-              onAct={closeMenu}
-            >
+            <>
+              <LocationActionItems
+                lat={contextMenu.lat}
+                lon={contextMenu.lon}
+                onAct={closeMenu}
+              />
+
               {!window.fmEmbedded && (
-                <Dropdown.Item as="button" eventKey="submenu-openExternally">
-                  <FaExternalLinkAlt /> {oeam?.openInExternal}
-                  <MenuGutter>
-                    <FaChevronRight />
-                  </MenuGutter>
-                </Dropdown.Item>
+                <>
+                  <Dropdown.Divider />
+
+                  <Dropdown.Item as="button" eventKey="submenu-openExternally">
+                    <FaExternalLinkAlt /> {oeam?.openIn}
+                    <MenuGutter>
+                      <FaChevronRight />
+                    </MenuGutter>
+                  </Dropdown.Item>
+                </>
               )}
-            </LocationActionItems>
+            </>
           )}
         </div>
       </Dropdown.Menu>

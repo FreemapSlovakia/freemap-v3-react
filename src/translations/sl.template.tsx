@@ -94,7 +94,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     viewshedFromHere: 'Vidnost od tu',
     toposcopeFromHere: 'Panoramska tabla od tu',
     lookAtInPanorama: 'Poglej to v panorami',
-    placeActions: 'Kaj se da narediti s tem krajem',
     locationActions: 'Dejanja za ta kraj',
     convert: {
       geometry: 'Geometrija',

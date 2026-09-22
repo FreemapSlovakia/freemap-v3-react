@@ -18,7 +18,7 @@ import {
 } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LatLon } from '@shared/types/common.js';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaCamera,
@@ -36,8 +36,6 @@ type Props = LatLon & {
   onAct?: () => void;
   /** Views this place is already the subject of; see {@link ViewFromHereItems}. */
   omit?: readonly ViewFromHere[];
-  /** Items slotted after the group that only looks at the place. */
-  children?: ReactNode;
   /** What the place is called, for the share sheet. */
   pointTitle?: string;
   pointDescription?: string;
@@ -48,15 +46,13 @@ type Props = LatLon & {
 /**
  * Everything the map can do with a place: centre on it, name it, ask what is
  * around it, draw at it, route from or to it, take a view from it. Dropdown
- * items, so the map's context menu carries them flat while any menu that knows
- * a position carries the same list behind one entry.
+ * items, so every menu that knows a position carries the same flat list.
  */
 export function LocationActionItems({
   lat,
   lon,
   onAct,
   omit,
-  children,
   pointTitle,
   pointDescription,
   url,
@@ -126,8 +122,6 @@ export function LocationActionItems({
           <FaCamera /> {m?.mapCtxMenu.showPhotos}
         </OnlineOnlyItem>
       )}
-
-      {children}
 
       {!window.fmEmbedded && (
         <>

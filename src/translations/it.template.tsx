@@ -97,7 +97,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     viewshedFromHere: 'Visibilità da qui',
     toposcopeFromHere: 'Tavola d’orientamento da qui',
     lookAtInPanorama: 'Guarda questo nel panorama',
-    placeActions: 'Cosa fare con questo luogo',
     locationActions: 'Azioni per questo luogo',
     convert: {
       geometry: 'Geometria',

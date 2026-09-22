@@ -1,5 +1,4 @@
 import { openInExternalApp } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalTargetItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import {
   getIdElementUrl,
@@ -18,6 +17,7 @@ import { LocationActionItems } from '@shared/components/LocationActionItems.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import {
   ActionDivider,
+  ActionItems,
   ActionSubmenu,
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -30,7 +30,7 @@ import {
 import { afterPrefix } from '@shared/types/typeUtils.js';
 import { type ReactNode, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaExternalLinkAlt, FaMapPin } from 'react-icons/fa';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
@@ -53,8 +53,6 @@ export function useObjectActions({ result }: Props): {
   actions: ReactNode[];
   onSelect: SelectCallback;
 } {
-  const m = useMessages();
-
   const om = useObjectsMessages();
 
   const oeam = useOpenInExternalAppMessages();
@@ -163,13 +161,11 @@ export function useObjectActions({ result }: Props): {
     actions.push(
       <ActionDivider key="place-divider" />,
 
-      <ActionSubmenu
-        key="location"
-        label={m?.general.locationActions}
-        icon={<FaMapPin />}
-      >
+      <ActionItems key="location">
         <LocationActionItems {...coords} pointTitle={displayName} />
-      </ActionSubmenu>,
+      </ActionItems>,
+
+      <ActionDivider key="open-in-divider" />,
 
       openIn(
         <OpenInExternalTargetItems
