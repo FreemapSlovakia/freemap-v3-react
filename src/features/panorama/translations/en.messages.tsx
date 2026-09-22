@@ -74,7 +74,6 @@ const en: PanoramaMessages = {
   },
   quality: {
     detail: 'Detail',
-    maximum: 'Maximum',
   },
   frame: 'View and detail',
   tilt: {

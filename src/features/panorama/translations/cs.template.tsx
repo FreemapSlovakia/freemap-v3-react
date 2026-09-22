@@ -70,7 +70,6 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   quality: {
     detail: 'Detail',
-    maximum: 'Maximum',
   },
   frame: 'Výřez a detail',
   tilt: {

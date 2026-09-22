@@ -70,7 +70,6 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   quality: {
     detail: 'Detail',
-    maximum: 'Maximum',
   },
   frame: 'Výrez a detail',
   tilt: {

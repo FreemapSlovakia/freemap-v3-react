@@ -71,7 +71,6 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   quality: {
     detail: 'Szczegółowość',
-    maximum: 'Maksimum',
   },
   frame: 'Kadr i szczegółowość',
   tilt: {

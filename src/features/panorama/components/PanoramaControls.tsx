@@ -215,11 +215,6 @@ export function PanoramaControls({
   // slice coarser for being smaller.
   const pxLabel = `${nfInt.format(grants.pxPerDeg)} px/°`;
 
-  const detailLabel =
-    settings.detail === DETAIL_MAX
-      ? `${m?.quality.maximum} · ${pxLabel}`
-      : pxLabel;
-
   const expectedMs = panoramaExpectedMs(grants.pxPerDeg, settings);
 
   // Of the picture on screen, not of the setting: the turning follows what was
@@ -350,7 +345,7 @@ export function PanoramaControls({
               {!premium && <PremiumGem hint={prm?.higherDetail} />}
             </>
           }
-          valueLabel={detailLabel}
+          valueLabel={pxLabel}
           min={0}
           max={detailStops.length - 1}
           value={detailIndex}

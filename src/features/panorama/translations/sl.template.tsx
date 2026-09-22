@@ -72,7 +72,6 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   },
   quality: {
     detail: 'Podrobnost',
-    maximum: 'Največ',
   },
   frame: 'Izrez in podrobnost',
   tilt: {
