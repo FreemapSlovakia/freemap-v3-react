@@ -5,7 +5,10 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>Miejsce obserwacji wybierz przyciskiem {icon} poniżej.</>
   ),
+  preparing: 'Panorama jest przygotowywana…',
   rendering: 'Renderowanie panoramy…',
+  encoding: 'Kompresja obrazu…',
+  decoding: 'Rozpakowywanie obrazu…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Czekanie na renderer…'
@@ -33,7 +36,6 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   settings: {
     title: 'Ustawienia panoramy',
     tiltHint: 'Ile nieba i ziemi mieści obraz — kąty nad horyzontem i pod nim.',
-    custom: 'Dokładne kąty',
     depthLift: 'Rozwiń dal',
     depthLiftOff: 'Widok wierny',
     depthLiftHint:
@@ -67,20 +69,19 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Teren za tą odległością nie jest rysowany, zamiast być wypełniony ostatnim kolorem, więc cały gradient przypada na to, co pokazuje obraz. Szczyty na nim stojące nie są nazywane.',
   },
-  preview: 'Podgląd',
   quality: {
     label: 'Jakość / szybkość',
-    superfast: 'Najniższa / najszybsza',
-    fast: 'Niska / szybka',
-    standard: 'Standardowa',
-    detailed: 'Szczegółowa / wolna',
-    finest: 'Najdokładniejsza / najwolniejsza',
+    detail: 'Szczegółowość',
+    maximum: 'Maksimum',
   },
+  frame: 'Kadr i szczegółowość',
   tilt: {
     label: 'Zakres pionowy',
     standard: 'Standardowy',
     wide: 'Wysoki',
     flat: 'Niski',
+    below: 'Poniżej horyzontu',
+    above: 'Powyżej horyzontu',
   },
   fov: {
     label: 'Zakres poziomy',

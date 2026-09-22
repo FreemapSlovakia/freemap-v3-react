@@ -5,7 +5,7 @@ import {
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
-import { SONNY_ATTR } from '@shared/elevationSources.js';
+import { SONNY_ATTR, terrainAttributions } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, type ReactElement, useMemo } from 'react';
@@ -162,6 +162,10 @@ function useCategorizedAttribution(
 
   const routingAttrs = useRoutingAttributions();
 
+  const viewshedCredits = useAppSelector(
+    (state) => state.viewshed.render?.attributions,
+  );
+
   const defs = [
     ...integratedLayerDefs
       .filter(({ type }) => layers.includes(type))
@@ -170,10 +174,17 @@ function useCategorizedAttribution(
     ...(creditRouting ? routingAttrs : []),
   ].filter((def) => coversCountries(def, countries));
 
+  // Past the country filter: the service names the models its render was
+  // answered from, which the viewport it is looked at from cannot narrow.
+  const terrainDefs =
+    layers.includes('v') && viewshedCredits
+      ? terrainAttributions(viewshedCredits)
+      : [];
+
   const categorized = categorize(
     linked && defs.includes(OSRM_ROUTING_ATTR)
-      ? [...defs, FIXTHEMAP_ATTR]
-      : defs,
+      ? [...defs, ...terrainDefs, FIXTHEMAP_ATTR]
+      : [...defs, ...terrainDefs],
   );
 
   const esriAttribution = useAppSelector((state) => state.map.esriAttribution);

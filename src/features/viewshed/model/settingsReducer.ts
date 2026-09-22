@@ -41,13 +41,13 @@ export type ViewshedDetail = (typeof VIEWSHED_DETAIL_ORDER)[number];
  */
 export const VIEWSHED_DETAILS: Record<
   ViewshedDetail,
-  { scale: number; maxPixels: number; expectedMs: number }
+  { scale: number; maxPixels: number }
 > = {
-  superfast: { scale: 30, maxPixels: 4e6, expectedMs: 1500 },
-  fast: { scale: 20, maxPixels: 9e6, expectedMs: 3000 },
-  standard: { scale: 12, maxPixels: 16e6, expectedMs: 5000 },
-  detailed: { scale: 8, maxPixels: 36e6, expectedMs: 10_000 },
-  finest: { scale: 6, maxPixels: 64e6, expectedMs: 18_000 },
+  superfast: { scale: 30, maxPixels: 4e6 },
+  fast: { scale: 20, maxPixels: 9e6 },
+  standard: { scale: 12, maxPixels: 16e6 },
+  detailed: { scale: 8, maxPixels: 36e6 },
+  finest: { scale: 6, maxPixels: 64e6 },
 };
 
 export interface ViewshedSettingsState {

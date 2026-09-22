@@ -16,7 +16,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
@@ -62,6 +62,9 @@ type Draft = Pick<
   | 'groundGradient'
 >;
 
+/** Shortest frame to tallest, as a row of presses above the two sliders. */
+const TILT_PRESETS = ['flat', 'standard', 'wide'] as const;
+
 const EYE_MIN = 0;
 
 const EYE_MAX = 300;
@@ -76,8 +79,8 @@ function typedNumber(value: string): number {
   return value.trim() ? Number(value) : Number.NaN;
 }
 
-/** The current settings as a form: the band as its two angles, whichever way it
- * is stored, so the fields read as the numbers behind what is framed now. */
+/** The current settings as a form: the band as its two angles, whichever way
+ * it is stored, so the sliders read as what is framed now. */
 function seedDraft(settings: PanoramaSettingsState): Draft {
   const [altMin, altMax] = tiltRange(settings);
 
@@ -128,6 +131,13 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
     maximumFractionDigits: 0,
   });
 
+  const nfDeg = useNumberFormat({
+    style: 'unit',
+    unit: 'degree',
+    unitDisplay: 'narrow',
+    maximumFractionDigits: 0,
+  });
+
   // A copy to edit, so a render landing underneath the modal can't rewrite what
   // is being typed and Cancel really is a cancel.
   const [draft, setDraft] = useState<Draft>(() => seedDraft(settings));
@@ -151,56 +161,31 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  // A band the wrong way round would render nothing; the eye is metres above
-  // the ground, and a number field can be left empty mid-edit.
+  // The eye is metres above the ground, and a number field can be left empty
+  // mid-edit.
   const invalid =
-    !Number.isFinite(draft.eye) ||
-    draft.eye < EYE_MIN ||
-    draft.eye > EYE_MAX ||
-    !Number.isFinite(draft.altMin) ||
-    !Number.isFinite(draft.altMax) ||
-    draft.altMax <= draft.altMin ||
-    // A band is angles above and below the horizon; anything wider is not a
-    // view, and `panoramaStep` would work a step out of it and ask the service
-    // for something it refuses — with the bad band persisted behind it.
-    draft.altMin < -ALT_LIMIT ||
-    draft.altMax > ALT_LIMIT;
+    !Number.isFinite(draft.eye) || draft.eye < EYE_MIN || draft.eye > EYE_MAX;
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    const [altMin, altMax] = tiltRange(settings);
+    const { altMin, altMax, ...rest } = draft;
 
-    const { altMin: _min, altMax: _max, ...rest } = draft;
-
-    // A band that is exactly a preset's is that preset, whether it was typed or
-    // came from Reset. Storing it as `custom` would leave the toolbar showing
-    // "−18…12°" with the Standard item unticked, for the standard band.
-    const preset = (
-      Object.keys(PANORAMA_TILTS) as (keyof typeof PANORAMA_TILTS)[]
-    ).find(
+    // A band that is exactly a preset's is stored as that preset, whether it
+    // was dragged there or came from Reset: kept as `custom` it would say the
+    // same thing in a form no control marks as chosen.
+    const preset = TILT_PRESETS.find(
       (name) =>
-        PANORAMA_TILTS[name][0] === draft.altMin &&
-        PANORAMA_TILTS[name][1] === draft.altMax,
+        PANORAMA_TILTS[name][0] === altMin &&
+        PANORAMA_TILTS[name][1] === altMax,
     );
 
     dispatch(
       panoramaSetSettings({
         ...rest,
-        // The angles are written only when they are actually being changed.
-        // Writing them regardless would overwrite a custom band the user had
-        // set and then stepped away from with a preset — `altMin`/`altMax` are
-        // deliberately left standing while a preset is chosen, so the band can
-        // be returned to.
-        ...(draft.altMin === altMin && draft.altMax === altMax
-          ? {}
-          : preset
-            ? { tilt: preset }
-            : {
-                tilt: 'custom' as const,
-                altMin: draft.altMin,
-                altMax: draft.altMax,
-              }),
+        ...(preset
+          ? { tilt: preset }
+          : { tilt: 'custom' as const, altMin, altMax }),
       }),
     );
 
@@ -275,50 +260,57 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
             </InputGroup>
           </Form.Group>
 
-          {/* The angles themselves, not another preset list — picking a preset
-              is the toolbar's job, and offering it here as well would be the
-              same control in two places, free to disagree. Seeded from whatever
-              is framed now, so this reads as "and here are the numbers behind
-              it"; typing different ones is what makes the band custom. */}
+          {/* Here rather than on the toolbar: a band is set to taste and then
+              left, where the view angle and the detail are changed for every
+              other picture. The presets are one press and what most views want;
+              the sliders under them are the same setting said exactly. */}
           <Form.Group className="mb-3">
-            {/* The toolbar's name for it, not "Exact angles": this is that
-                setting, written as its numbers. The toolbar item that opens
-                this modal is the one thing "Exact angles" names, and that is a
-                door rather than a setting. */}
             <Form.Label>
               {m?.tilt.label}
               <HintMark hint={m?.settings.tiltHint} />
             </Form.Label>
 
-            {/* An en dash rather than a hyphen: the lower angle is normally
-                negative, and a hyphen beside a minus sign reads as arithmetic. */}
-            <InputGroup>
-              <Form.Control
-                type="number"
-                step={1}
-                value={Number.isFinite(draft.altMin) ? draft.altMin : ''}
-                onChange={(e) =>
-                  patch({
-                    altMin: typedNumber(e.currentTarget.value),
-                  })
-                }
-              />
+            <ButtonGroup size="sm" className="d-flex mb-2">
+              {TILT_PRESETS.map((preset) => {
+                const [lo, hi] = PANORAMA_TILTS[preset];
 
-              <InputGroup.Text>–</InputGroup.Text>
+                return (
+                  <Button
+                    key={preset}
+                    variant={
+                      draft.altMin === lo && draft.altMax === hi
+                        ? 'primary'
+                        : 'outline-secondary'
+                    }
+                    onClick={() => patch({ altMin: lo, altMax: hi })}
+                  >
+                    {m?.tilt[preset]}
+                  </Button>
+                );
+              })}
+            </ButtonGroup>
 
-              <Form.Control
-                type="number"
-                step={1}
-                value={Number.isFinite(draft.altMax) ? draft.altMax : ''}
-                onChange={(e) =>
-                  patch({
-                    altMax: typedNumber(e.currentTarget.value),
-                  })
-                }
-              />
+            {/* Degrees from the horizon, so both read positive and neither can
+                be dragged through the other into a band with no height. */}
+            <LabeledSlider
+              id="fm-panorama-alt-max"
+              label={m?.tilt.above}
+              valueLabel={nfDeg.format(draft.altMax)}
+              min={1}
+              max={ALT_LIMIT}
+              value={draft.altMax}
+              onChange={(altMax) => patch({ altMax })}
+            />
 
-              <InputGroup.Text>°</InputGroup.Text>
-            </InputGroup>
+            <LabeledSlider
+              id="fm-panorama-alt-min"
+              label={m?.tilt.below}
+              valueLabel={nfDeg.format(-draft.altMin)}
+              min={1}
+              max={ALT_LIMIT}
+              value={-draft.altMin}
+              onChange={(below) => patch({ altMin: -below })}
+            />
           </Form.Group>
 
           {/* Beside the band because it moves it: the horizon rises by exactly

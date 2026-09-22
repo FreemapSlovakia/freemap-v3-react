@@ -89,6 +89,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
         bounds: meta.bounds,
         radiusKm: grants.radiusKm,
         eyeElevation: meta.eye_elevation,
+        attributions: meta.sources,
       }),
     );
   } catch (err) {

@@ -75,6 +75,11 @@ explicit act. Beside the eye button it carries a `PlaceActionsButton` for the
 viewpoint — the map context menu's own items, minus the viewshed from here,
 which is what is already on screen.
 
+The layer's registry entry credits only Freemap. The terrain models and their
+credit lines come from the render (`meta.sources`), and `Attribution` adds them
+past its country filter — a 300 km disc is not narrowed by the viewport it is
+looked at from. See `doc/panorama.md`.
+
 ## What premium grants
 
 Distance and detail, the two settings that decide what a render costs: without

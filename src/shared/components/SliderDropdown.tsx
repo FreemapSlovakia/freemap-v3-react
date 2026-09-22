@@ -12,6 +12,14 @@ type Props = {
   name?: ReactNode;
   /** Below this the toggle label collapses into the tooltip. */
   breakpoint?: Breakpoint;
+  /**
+   * Extra classes on the toggle itself — e.g. `text-warning`, saying the value
+   * on show is the one the account is held to; `toggleHint` says what it means.
+   * As in `SelectDropdown`.
+   */
+  toggleClassName?: string;
+  /** A line under the toggle's own tooltip, saying what `toggleClassName` means. */
+  toggleHint?: ReactNode;
   /** `LabeledSlider`s, and whatever else answers the same question. */
   children: ReactNode;
 };
@@ -26,6 +34,8 @@ export function SliderDropdown({
   toggleLabel,
   name,
   breakpoint,
+  toggleClassName,
+  toggleHint,
   children,
 }: Props): ReactElement {
   const [show, setShow] = useState(false);
@@ -54,11 +64,13 @@ export function SliderDropdown({
         breakpoint={breakpoint}
         label={toggleLabel ?? '…'}
         name={name}
+        hint={toggleHint}
       >
         {({ label: tipLabel, labelClassName, props }) => (
           <Dropdown.Toggle
             variant="secondary"
             bsPrefix="fm-dropdown-toggle-nocaret"
+            className={toggleClassName}
             {...props}
           >
             {icon}

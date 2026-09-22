@@ -2,6 +2,7 @@ import type { RootState } from '@app/store/store.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
 import {
   requestTerrainRender,
+  TerrainCreditsSchema,
   type TerrainProgress,
   terrainParts,
 } from '@shared/terrainService.js';
@@ -50,6 +51,8 @@ const MetaSchema = z.object({
   height: z.number(),
   radius: z.number(),
   scale: z.number(),
+  /** The credits for the models behind this disc; see `TerrainCreditsSchema`. */
+  sources: TerrainCreditsSchema,
 });
 
 export type ViewshedMeta = z.infer<typeof MetaSchema>;

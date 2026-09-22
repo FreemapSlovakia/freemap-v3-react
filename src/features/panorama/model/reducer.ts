@@ -1,11 +1,9 @@
 import { clearMapFeatures, closeTool } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { sameLatLon } from '@shared/geoutils.js';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import { angleDiff, mod } from '@shared/mathUtils.js';
-import type {
-  TerrainErrorCode,
-  TerrainProgress,
-} from '@shared/terrainService.js';
+import type { TerrainErrorCode } from '@shared/terrainService.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaLabel } from '../labels/types.js';
 import {
@@ -20,7 +18,6 @@ import {
   panoramaSetError,
   panoramaSetPicking,
   panoramaSetProbe,
-  panoramaSetProgress,
   panoramaSetRender,
   panoramaSetRenderAz,
   panoramaSetRendering,
@@ -38,8 +35,6 @@ export interface PanoramaRenderInfo {
   viewpoint: LatLon;
   /** What it is of, quality included; see `panoramaRenderKey`. */
   key: string;
-  /** The fast pass, shown while the detailed one is still rendering. */
-  preview: boolean;
   /** Metres above sea level, eye height included. */
   eyeElevation: number;
   width: number;
@@ -64,6 +59,11 @@ export interface PanoramaRenderInfo {
   depthLift: number;
   /** Farthest terrain it considered, metres — where the lift reaches its full. */
   rangeM: number;
+  /**
+   * What the service says this view was answered from. Empty where it reported
+   * nothing, which credits every model instead.
+   */
+  attributions: AttributionDef[];
   labels: PanoramaLabel[];
 }
 
@@ -71,8 +71,6 @@ export interface PanoramaState {
   /** Where the marker stands; the picture may still be of somewhere else. */
   viewpoint: LatLon | null;
   rendering: boolean;
-  /** How far the pass in flight has got; `null` while nothing is known. */
-  progress: TerrainProgress | null;
   error: TerrainErrorCode | null;
   render: PanoramaRenderInfo | null;
   /** Bearing the middle of the viewer looks at; see `panoramaSetAzimuth`. */
@@ -90,7 +88,6 @@ export interface PanoramaState {
 export const panoramaInitialState: PanoramaState = {
   viewpoint: null,
   rendering: false,
-  progress: null,
   error: null,
   render: null,
   azimuth: 0,
@@ -127,14 +124,9 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
     .addCase(panoramaSetRendering, (state, { payload }) => {
       state.rendering = payload;
 
-      state.progress = null;
-
       if (payload) {
         state.error = null;
       }
-    })
-    .addCase(panoramaSetProgress, (state, { payload }) => {
-      state.progress = payload;
     })
     .addCase(panoramaSetRender, (state, { payload }) => {
       // Read before the render is replaced: whether the mark below survives is
@@ -159,9 +151,6 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
         state.probe = null;
       }
 
-      // A pass has ended; whatever the next one reports starts from nothing.
-      state.progress = null;
-
       // A strip has ends, so the bearing being looked at may be outside the one
       // just rendered — a re-aimed render, or a fov narrowed round something
       // else. A bearing this picture never held says nothing about where in it
@@ -177,13 +166,9 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
       state.error = payload;
 
       state.rendering = false;
-
-      state.progress = null;
     })
     .addCase(panoramaCancel, (state) => {
       state.rendering = false;
-
-      state.progress = null;
     })
     .addCase(panoramaSetAzimuth, (state, { payload }) => {
       state.azimuth = mod(payload, 360);
@@ -217,8 +202,6 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
     .addCase(closeTool, (state, { payload }) => {
       if (payload === 'panorama') {
         state.rendering = false;
-
-        state.progress = null;
 
         state.picking = null;
       }

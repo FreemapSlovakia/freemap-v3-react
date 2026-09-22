@@ -53,7 +53,7 @@ const AttributionSchema = z
  * a malformed entry is dropped on its own and a malformed list credits nobody —
  * neither may take an elevation read down with it.
  */
-const AttributionListSchema = z
+export const AttributionListSchema = z
   .array(z.unknown())
   .catch([])
   .transform((entries) =>

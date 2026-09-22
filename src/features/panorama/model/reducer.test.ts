@@ -13,7 +13,6 @@ function render(middle: number, fov: number): PanoramaRenderInfo {
     id: 1,
     viewpoint: { lat: 49, lon: 20 },
     key: 'k',
-    preview: false,
     eyeElevation: 1000,
     width: fov / 0.1,
     height: 300,
@@ -24,6 +23,7 @@ function render(middle: number, fov: number): PanoramaRenderInfo {
     stepDeg: 0.1,
     depthLift: 0,
     rangeM: 300_000,
+    attributions: [],
     labels: [],
   };
 }

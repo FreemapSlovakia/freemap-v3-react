@@ -1,6 +1,7 @@
 import { HttpError, httpRequest, isNetworkError } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
+import { AttributionListSchema } from '@shared/elevation.js';
 import z from 'zod';
 
 /**
@@ -39,6 +40,21 @@ export function terrainErrorCode(err: unknown): TerrainErrorCode {
   return 'failed';
 }
 
+/**
+ * The credits a render's `meta.sources` carries, flattened: the service names
+ * the models it was answered from and what to display for each, so nothing here
+ * keeps a copy of the licence text. Empty from a service too old to report
+ * them, which callers read as "credit every model".
+ */
+export const TerrainCreditsSchema = z
+  .array(z.looseObject({ attributions: z.unknown() }))
+  .catch([])
+  .transform((sources) =>
+    sources.flatMap((source) =>
+      AttributionListSchema.parse(source.attributions),
+    ),
+  );
+
 const ProgressSchema = z.object({
   phase: z.enum(['queued', 'rendering', 'encoding', 'done']),
   /** Renders that must finish before this one starts; `0` means next. */
@@ -50,8 +66,18 @@ const ProgressSchema = z.object({
 /**
  * How far along a render is. The picture arrives all at once at the end, so
  * this comes over a side channel — see the service's `docs/API.md`.
+ *
+ * `decoding` is not one of the service's: it is what happens after its last
+ * word, and it is seconds of the wait on a fine render, so whoever is showing
+ * progress has to be told about it too.
  */
-export type TerrainProgress = z.infer<typeof ProgressSchema>;
+export interface TerrainProgress {
+  phase: z.infer<typeof ProgressSchema>['phase'] | 'decoding';
+  /** Renders that must finish before this one starts; `0` means next. */
+  ahead: number;
+  /** 0–100 through the render; a column or ray count, so the rate drifts. */
+  percent: number;
+}
 
 /**
  * Rejects the service's `unknown` phase along with anything malformed: the
@@ -141,8 +167,8 @@ export async function requestTerrainRender(
       ...cancel,
       getState,
       method: 'POST',
-      // Absolute, so `httpRequest` adds no credentials of its own; the terrain
-      // service clamps quality per account and needs the token to do it.
+      // Absolute, so `httpRequest` adds no credentials of its own; the bearer
+      // token goes on explicitly instead.
       url: `${process.env['TERRAIN_URL']}${path}`,
       data: request,
       headers: {

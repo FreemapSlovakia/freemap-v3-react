@@ -12,7 +12,7 @@ is the service's own `docs/API.md` (in the `dem-pyramid` repo); what matters on
 this side:
 
 - **It is slow and serialised.** One render saturates the machine, so requests
-  queue. About 9 s for the fast tier and 27 s for the detailed one at 360°.
+  queue. About 9 s at 20 px/° over a full turn, and 27 s at 20 px/° ×9.
   Nothing may fire a render on map movement — see "The render is an explicit
   act" below.
 - **Hanging up cancels the work**, within about a second, queued or running. So
@@ -32,9 +32,10 @@ this side:
 - **The client sends the account's bearer token itself.** The service is
   addressed directly rather than through `freemap-v3-api`, so `httpRequest`
   adds no credentials of its own (it only does that for relative URLs) and the
-  header is set explicitly. The service clamps the quality an account may have
-  and decides queue priority; asking for more than the tier allows is not the
-  client's business to prevent, only to avoid embarrassing itself over.
+  header is set explicitly. The service itself is policy-free — it bounds what
+  one request may cost, not who may ask for it — so `grantedQuality` is what
+  actually holds a free account to the free tier, and the public vhost forces
+  queue priority to 0 whatever the token says.
 
 The endpoint is `process.env['TERRAIN_URL']`, defined in `rspack.config.ts`.
 
@@ -311,8 +312,8 @@ free.
 
 By that test nothing moved into the modal when it arrived — the toolbar's
 controls all pass. The peak-name sliders act on the picture already in hand, so
-they are instant and belong under the eye. Quality is the most-changed render
-param and doubles as the premium surface, showing the tier actually granted.
+they are instant and belong under the eye. Detail and rays are the most-changed
+render params and double as the premium surface, showing what is granted.
 The tilt presets are how a view is framed, which is a thing done while looking
 at it. Locate and Update are actions.
 
@@ -414,12 +415,11 @@ end is put back to the colour the stop holds for when the fade is turned off —
 otherwise unticking the box would hand back a sky the user never chose. It is
 off by default: it is a different picture rather than a better one.
 
-**The far distance is measured, and the two passes must agree about it.**
-`auto` measures the frame being rendered, and the preview and the detailed pass
-sample it differently — the ladder the service rounds to usually hides that, but
-where it doesn't the whole picture recolours under someone already looking at
-it. So `renderPass` answers with `meta.far_distance` and the second pass is
-pinned to what the first found. The slider offers that same ladder, so a figure
+**The far distance is measured.** `auto` measures the frame being rendered, so
+it answers to the detail as much as to the terrain; `meta.far_distance` says
+what it came to, and the service rounds it to a ladder, which is what keeps two
+renders of one viewpoint from recolouring under someone looking at them. The
+slider offers that same ladder, so a figure
 read back out of `meta` lands on a stop of it.
 
 Three bounds the client owns, all of them at the wire rather than in the
@@ -453,7 +453,7 @@ ground is actually painted in.
 `fovDeg` — the toolbar's **Horizontal view** — is how much of the turn to
 render: `PANORAMA_FOVS` offers 360, 180, 120, 90, 60, 30. Cost is about linear
 in it, so it is the one setting here that buys time back rather than spending
-it, and `panoramaExpectedMs` scales the tier's figure by it. A list rather than
+it — unless the detail is `max`, which spends what narrowing saves. A list rather than
 the tilt's preset/modal split: a fov is one number with a handful of useful
 values, so the presets are the whole control, and an off-preset figure from a
 link is displayed on the toggle the way a custom band is.
@@ -549,29 +549,50 @@ snaps anything inside `isFullTurn`'s slack up to 360, or the request would drop
 its `az` while still asking for a fraction less than a turn — and the viewer
 would wrap a picture that does not meet itself.
 
-**The speed does not buy a finer tier.** `grantedQuality` and the service both
-clamp per tier, not by cost, so a 60° render at `detailed` is refused exactly as
-a full turn would be. A slice gives the tier already granted, sooner; making it
-buy more is a `dem-pyramid`-side change.
+**A slice buys detail at `max`, and time at every other stop.** A detail the
+user named asks for the same picture whatever the fov, so narrowing it gives
+that picture sooner — which is what a quick look around wants. `max` spends the
+room instead: it resolves to whatever the caps allow, so halving the fov buys
+half the step.
 
-## Quality, and the pixel cap
+## Detail and rays, and the caps over them
 
-Five tiers in `PANORAMA_QUALITIES`, coarsest to finest — `step`/sampling
-0.2/1×3, 0.1/3×3, 0.05/3×3, 0.05/9×9, 0.033/9×9, about 1.5 / 5 / 9 / 27 / 41 s
-for a full turn. Cost runs with `supersample_x / step`, so each tier steps
-along one of the two axes. Only the coarsest is free, the rest premium's;
-`grantedQuality` is the single place that says so — the request, the menu and
-the progress bar all ask it rather than each repeating the rule, and asking for
-*less* than the account may have is never blocked.
+A render is **one setting, not a tier**: `detail`, pixels per degree — a stop
+from `DETAIL_STOPS` (5…150, absolute, so one of them means the same picture in
+every frame) or `DETAIL_MAX`, the last stop, which follows the frame. Tiers
+bundled resolution with sampling under words like *Detailed*, which priced the
+same picture twice as soon as a cap held two tiers to one resolution.
 
-The setting **defaults to a middling tier**, not the free one, because the
-account is what decides whether it is granted: asking for more without premium
-is put back to `FREE_QUALITY` before the request goes out, and defaulting the other way
-would leave a premium user on the free picture until they found the control.
-Middling rather than finest because the top tier is the better part of a minute
-of a server that renders one at a time — a default nobody chose should not cost
-that. For the same reason the menu shows the tier being rendered rather than the
-one stored.
+**The rays per pixel follow from it**, `raysForDetail`. The service casts them
+per output column and box-averages the block behind each pixel, so they are
+antialiasing across bearing: at one ray a column is a single bearing and
+anything narrower than it is there whole or not at all. Two things escape the
+average and are why it is not merely cosmetic — the distance buffer takes the
+*nearest* sub-sample, and a summit's visibility is answered by the rays
+bracketing its bearing.
+
+What that is worth depends on how wide a column is. `TARGET_RAYS_PER_DEG` (60)
+is where a pixel is about one 6 m DEM cell at the distances that matter, so the
+rule is that many rays per degree, capped at three per pixel and dropping to
+one past 60 px/° — there is nothing left inside a pixel to average, which is
+why ×1 and ×9 are the same picture at a fine detail. Under 10 px/° it is one
+ray regardless: that render is the free account's, and it has to stay cheap. `supersample_y` is not a setting either — it costs no rays, only
+buffer.
+
+**Without premium an account is held by the rays a render costs** —
+`FREE_RAYS`, 1800, which is exactly what a full turn at the coarsest stop has
+always cost, so nothing anyone had is taken away. What is new is that the
+budget is now *spent*: a 30° slice is cheap in rays, so it buys 20 px/° where
+the old free tier gave 5 everywhere. `grantedCeiling` tries both sides of the
+sampling step and takes the better, since the step makes the budget
+non-monotonic in detail. It is the single place any of this is said; asking for
+*less* is never blocked.
+
+The setting **defaults above the free figure**, because the account decides
+what is granted: a premium user would otherwise sit on the coarse picture until
+they found the control. Middling rather than `max`, which at a full turn is a
+quarter-minute of a server that renders one at a time. For the same reason the
+toolbar shows the figure being rendered rather than the one stored.
 
 **How far the picture sees** is the other setting an account can overreach on:
 `rangeKm`, 10–400 km, past `FREE_RANGE_MAX_KM` (300 — the service's own default,
@@ -584,15 +605,37 @@ over a figure it cannot have. The modal's slider stops at what the account may
 have and wears a gem, rather than running to 400 and being clamped behind the
 user's back — the same shape as the cached-map zoom range.
 
-`panoramaStep` then raises the asked-for step wherever the frame over the
-current vertical band would exceed the service's 24 Mpx cap. Neither tier
-reaches it today, but the headroom is thinner than it looks: pixels and cost
-both run with `1/step²`, so one notch finer is several times the render — 0.02
-at the standard tilt is 27 Mpx, over the cap and about a minute of somebody
-else's server. The cap binds through the **tilt** and the **fov** as much as
-through the quality — `fov × band / step²` pixels — which is why all three are
-in the render key. A slice therefore stops the cap binding at all, and gets its
-tier's nominal step.
+`maxPxPerDeg` is the frame's own ceiling, under three caps. Two are the
+service's, each a 400 of its own:
+
+- **24 Mpx**, `fov × band / step²` — how big the answer is.
+- **162 000 rays**, `fov × raysPerPixel / step` — how long it takes, since that
+  is what the marcher casts. A short band buys none of them back.
+
+The third is this side's, and it is what actually binds: **`MAX_CLIENT_PIXELS`,
+10 Mpx**. A pixel costs four bytes decoded and two in the distance buffer, and
+the distance buffer is also what the response weighs — 19 MB raw, ~1.8 MB
+gzipped at the cap, against 161 KB for the picture itself. The service's own
+24 Mpx would be a quarter-gigabyte in the tab and several megabytes on the
+wire, which is a phone's whole data budget for a view.
+
+Pixels run with `1/step²`, so halving the fov buys a factor of √2, while rays
+run with `1/step` and buy the whole half — which is why a slice is where `max`
+pays. All three bind through the **tilt** and the **fov** as much as through
+the setting, which is why all three are in the render key, and why the Detail
+slider's stops are rebuilt per frame: a stop the frame cannot reach is not
+offered, rather than offered and then clamped out from under the handle.
+
+`panoramaExpectedMs` derives the wait from the same numbers — `RAY_MS` per ray
+plus `RENDER_OVERHEAD_MS`, fitted to the measured renders, which the ray count
+alone explains to within a tenth — **and `CLIENT_MS_PER_MPX` on top**, because
+the render is not the whole wait: a 10-bit AVIF to decode, a distance buffer to
+inflate and the viewer's own scaling took about fifteen seconds on a 10 Mpx
+render, which is why the bar reaching 100% is not the picture appearing. It
+prices the slider, and
+every option of the **horizontal view** menu, where both halves move: `max` and
+the free budget are both answers to the fov, so a narrower slice reads as a
+finer picture there rather than only as a shorter wait.
 
 ## Unfolding distance
 
@@ -635,58 +678,27 @@ every seeable top: what the lift reveals is usually the range the picture was
 unfolded to see, and a strict tier would hand its name to the near ridge that
 hides it.
 
-## Two passes
-
-A fine tier would leave the panel blank for half a minute or more, so the
-handler renders `PANORAMA_PREVIEW_QUALITY` first — the cheapest tier there is,
-about a second — publishes it marked `preview`, and renders the asked-for one
-behind it. Nothing turns it off, because being the *coarsest* tier it adds a few
-percent to a detailed render, where a middling preview would have cost the third
-again that once made it worth asking about.
-
-**Except where a picture of that very place is already up.** Filling a blank
-panel is the whole of what the preview is for, and a tier, a band or a look
-changed without the viewpoint moving leaves a better picture standing than the
-preview would draw — one already turned to where the user was looking, with the
-mark and its readings still on it, all of which a published render clears.
-Waiting behind it costs nothing and takes a coarse flash away.
-
-**And except where the asked-for pass is already quick.** Under
-`PREVIEW_WORTH_MS` the preview is a round trip spent to fill a wait that is
-already over — which is what a narrow fov at a middling tier amounts to.
-
-**Both passes ask for peaks**, and the names are redrawn when the second lands.
-They do not fully agree: `visible` is decided by the two rays bracketing a
-summit, 0.2° apart at preview quality and 0.017° at the finest, and a summit
-whose neighbourhood is near-level can still swing its dominance — together, four
-of the top forty labels changed under the second pass at an Ötztal viewpoint.
-Asking once and carrying the first answer over was tried and reverted: it saved
-the second peak pass, about two seconds of a server that renders one at a time,
-but it made the *coarse* pass answer for visibility, so summits the detailed
-picture draws behind a ridge kept their names. Redrawing is the honest half of
-that bargain — the labels answer for the picture actually being looked at.
-
-Everything else about a peak is tier-independent, which is worth knowing before
-optimising here: over 2470 peaks common to both passes of that view, `ele`,
-`distance`, `azimuth` and `altitude` were identical to the last digit, and `y`
-is a closed form in `altitude` and `step`. Only `visible`, `revealed` and
-`dominance` move.
-
 ## What the store holds, and what it can't
 
 `PanoramaRenderInfo` (in `model/reducer.ts`) is the serializable half of a
-render. The image's object URL and the decoded distance buffer are neither
-serializable nor small, so they live in `renderHolder.ts`, matched by `id`.
-The holder revokes what it replaces; `panoramaReleaseProcessor` clears it when
-the tool closes or the map is cleared.
+render. The decoded bitmap and the distance buffer are neither serializable nor
+small, so they live in `renderHolder.ts`, matched by `id`. The holder closes the
+bitmap it replaces; `panoramaReleaseProcessor` clears it when the tool closes or
+the map is cleared.
+
+**The progress of a render is not in Redux either** — see `viewStore.ts`. It
+arrives four times a second for the length of a render, nothing outside the
+panel reads it, and every dispatch runs `statePersistingMiddleware`, which
+serialises the whole persisted state and writes it to `localStorage`. Sixty of
+those per render is a great deal of work to move a spinner's caption.
 
 ## Getting the answer onto the screen
 
 Between the response landing and the picture appearing there is real work, and
-all of it used to be on the main thread — long enough that the progress bar
-stopped animating and the page stopped answering the mouse while the
-compositor-driven logo kept turning, which is what a blocked main thread looks
-like. Two things now run **at once, and neither in the page**:
+none of it may run in the page: on a fine render it is seconds, and the panel
+stops answering the mouse while the compositor-driven logo keeps turning, which
+is what a blocked main thread looks like. Two things run **at once, and neither
+on the main thread**:
 
 - **The distance buffer** goes to `depthWorker` through `depthDecoder`'s pool: a
   gunzip to 8.6 MB (standard) or 19.8 MB (finest), an allocation the same size
@@ -700,10 +712,14 @@ like. Two things now run **at once, and neither in the page**:
   The worker is **never torn down**: it is one worker, idle between serialised
   renders, and giving it back when the map is cleared cost more than it saved —
   see the note in `depthDecoder.ts`.
-- **The picture** is put through `img.decode()` before it is published. Left to
-  the stylesheet, a 4–10 Mpx AVIF is first decoded on the paint path, which is a
-  freeze rather than a wait. A refused decode is not fatal: the background paint
-  will simply try again, which is what always used to happen.
+- **The picture** is decoded by `createImageBitmap` before it is published, and
+  published as the bitmap rather than as an object URL. An `<img>` decode does
+  not do: a browser's decoded-image cache is keyed by the *scale* the image was
+  drawn at, so decoding at natural size paid nothing towards the scaled-down
+  paint that followed, and the picture was decoded a second time on the paint
+  path — seconds of frozen tab after the bar had reached 100%. A decode that
+  fails is a failed render: there is then nothing to draw, and every readout the
+  viewer carries answers for pixels that are not there.
 
 **Native for both**, deliberately: `DecompressionStream` and the browser's own
 image decoder beat anything shipped as JS, and both are available where they are
@@ -715,11 +731,17 @@ parallelism that pays is the picture decoding beside it.
 
 ## Panning
 
-The image is a repeating background, not a canvas: a 360° render's last column
-abuts its first, so `background-repeat: repeat-x` makes panning an offset with
-no end to run off — and it keeps a 7200 px image out of a canvas, which older
-mobile GPUs cannot hold. A slice turns the repeat off and stops at its ends
-instead; see "How much horizon".
+The picture is **drawn into a canvas** from the decoded bitmap, one
+`drawImage` of the visible strip per render — source rectangle in image pixels,
+destination the panel in device pixels, so a high-DPI screen is shown the
+picture's own pixels. A 360° render wraps, its last column abutting its first,
+so a strip that runs off the end takes a second `drawImage` from column zero;
+a slice stops at its ends instead, leaving bare panel, and see "How much
+horizon".
+
+It is a `useLayoutEffect`, not a passive one: the names and the compass move
+with the same render, and a picture painted a frame later would trail them for
+the length of every drag.
 
 The view fits the whole altitude band by default (`fitScale = viewportHeight /
 render.height`) and magnifies from there up to `MAX_ZOOM`, or further where the
@@ -827,8 +849,8 @@ nothing could clear — its `pointerup` finds no gesture to end, and
 The reading is held as a bearing and an image row, not as the pixel it was
 taken at, so it stays over its own terrain while the view turns — a press-set
 one has to survive the compass moving the picture under it. It is dropped when
-a new render lands: the two passes are different heights, and the same row in
-the preview and in the detailed picture are different altitudes. Each carries a dashed line back to the viewpoint — the
+a new render lands: two renders of one viewpoint can be different heights, and
+the same row in each is then a different altitude. Each carries a dashed line back to the viewpoint — the
 line of sight the reading was taken along.
 
 The press also leaves a dot in the picture itself, in the picked names' ink,
@@ -983,22 +1005,22 @@ against a fixed cut.
 
 **Dominance is signed.** A top that never rises clear of its own ridge scores
 how far the ridge stands over it — a shoulder around −37 m, a bump inside a
-massif around −281 m — so the near field, which used to tie at zero in its
-hundreds, now orders itself. `0` means only that there was nothing at that
+massif around −281 m — which is what lets the near field order itself instead
+of tying at zero in its hundreds. `0` means only that there was nothing at that
 depth to compare against. Rank on the value; nothing here may treat it as a
 magnitude, and a request floor of `0` would drop exactly the near-field tops a
 panorama most wants named — hence `MIN_DOMINANCE_M` sits far below any real
 terrain.
 
 **Which peaks come back depends on the render**, since visibility is tested
-against the rays the tier actually cast — two bracketing a summit stand 0.2°
-apart at preview quality and 0.017° at the finest, so a marginal top appears at
-one tier and not the other. From an Ötztal viewpoint the two passes shared 2470
-peaks and disagreed about 358 of them. Dominance no longer moves with the tier
-in the same way (the service measures it on a grid of its own), though a summit
-whose neighbourhood is near-level can still swing hard — 634 m against −0.8 m
-for one of them. So the names are redrawn when the detailed pass lands; see
-"Two passes".
+against the rays it actually cast — two bracketing a summit stand 0.2° apart at
+the coarsest detail and 0.017° at a fine one, so a marginal top appears at one
+and not the other. Measured across two renders of an Ötztal viewpoint: 2470
+peaks in common, 358 of them disagreed about. Dominance does not move the same
+way (the service measures it on a grid of its own), though a summit whose
+neighbourhood is near-level can still swing hard — 634 m against −0.8 m for one
+of them. So a picture's names answer for that picture, and nothing carries them
+between renders.
 
 Everything about placement is ours, in two passes. `thinLabels` decides which
 summits get a name at all: one per pitch of horizon, in rank order. `layoutLabels`
@@ -1280,9 +1302,16 @@ otherwise generate:
   peak is really behind a ridge, and a distance read off the depth buffer no
   longer implies a line of sight.
 
-Attribution credits every model the pyramid can answer from — the same set the
-elevation API credits (`ELEVATION_API_DTM_ATTRIBUTION`) plus `GEDTM30_ATTR` —
-since the service names none per render and a 300 km view crosses borders.
+Attribution follows the render and comes from the service, which reads it from
+the same `source.json` tree the elevation API credits a read from — so a model's
+licence text is written once, on the server, and nothing here keeps a copy.
+`meta.sources` names the models behind this view, each with its own credit.
+`TerrainCreditsSchema` (`shared/terrainService.ts`) flattens them, and
+`terrainAttributions` (`shared/elevationSources.ts`) falls back to crediting
+every model where the service named none — naming one that contributed nothing
+is harmless, dropping one that did is a licence breach. The viewshed's credit is
+the same list, added past `Attribution`'s country filter: a 300 km render is not
+narrowed by the viewport it is looked at from.
 
 ## Not done yet
 

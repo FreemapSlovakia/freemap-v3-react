@@ -1,18 +1,16 @@
 import { closeTool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { isPremium } from '@features/premium/premium.js';
 import { BreakpointsProvider } from '@shared/components/BreakpointsProvider.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import { FloatingWindowGrips } from '@shared/components/FloatingWindowControls.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
-import { ELEVATION_API_DTM_ATTRIBUTION } from '@shared/elevationSources.js';
+import { terrainAttributions } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useFloatingWindow } from '@shared/hooks/useFloatingWindow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useTerrainProgress } from '@shared/hooks/useTerrainProgress.js';
-import { GEDTM30_ATTR } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
 import {
   Fragment,
@@ -21,26 +19,17 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Alert, Button, ProgressBar } from 'react-bootstrap';
+import { Alert, Button, Spinner } from 'react-bootstrap';
 import { FaCrosshairs, FaStreetView, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { type PanoramaProbe, panoramaCancel } from '../model/actions.js';
-import { grantedQuality, panoramaExpectedMs } from '../quality.js';
 import { usePanoramaRenderData } from '../renderHolder.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
-import { usePanoramaAim } from '../viewStore.js';
+import { usePanoramaAim, usePanoramaProgress } from '../viewStore.js';
 import classes from './Panorama.module.css';
 import { PanoramaControls } from './PanoramaControls.js';
 import { PanoramaProbeReadout, readoutOf } from './PanoramaProbeReadout.js';
 import { PanoramaView, PICKED_INK } from './PanoramaView.js';
-
-/**
- * Every model the panorama can be drawn from: the national ones the outdoor map
- * credits, and the global fallback past their borders. The service says nothing
- * about which of them answered, and a view reaches 300 km across borders, so
- * they are all credited.
- */
-const TERRAIN_SOURCES = [...ELEVATION_API_DTM_ATTRIBUTION, GEDTM30_ATTR];
 
 export default function Panorama(): ReactElement {
   const m = usePanoramaMessages();
@@ -49,16 +38,17 @@ export default function Panorama(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const { render, rendering, progress, error, probe, viewpoint } =
-    useAppSelector((state) => state.panorama);
+  const { render, rendering, error, probe, viewpoint } = useAppSelector(
+    (state) => state.panorama,
+  );
+
+  // Outside Redux, being four ticks a second of something only this panel
+  // reads; see `viewStore`.
+  const progress = usePanoramaProgress();
 
   // Plain, not the `meter` unit style: `general.masl` follows it and says both
   // the unit and what it is measured from.
   const nfEle = useNumberFormat({ maximumFractionDigits: 0 });
-
-  const settings = useAppSelector((state) => state.panoramaSettings);
-
-  const premium = useAppSelector((state) => isPremium(state.auth.user));
 
   const data = usePanoramaRenderData();
 
@@ -96,15 +86,7 @@ export default function Panorama(): ReactElement {
     return () => observer.disconnect();
   }, []);
 
-  // What the picture is being drawn at and how much horizon of it, which is
-  // also how long to expect to wait — the two-pass preview aside, that is the
-  // whole of it.
-  const expectedMs = panoramaExpectedMs(
-    grantedQuality(settings.quality, premium),
-    settings.fovDeg,
-  );
-
-  const bar = useTerrainProgress(rendering, progress, expectedMs);
+  const bar = useTerrainProgress(rendering, progress);
 
   return (
     // The window is resized by its own grip, so its controls collapse against
@@ -159,9 +141,12 @@ export default function Panorama(): ReactElement {
               {m?.errors[error]}
             </Alert>
           ) : (
+            // While a render is on, the one general line — what stage it is at
+            // belongs to the spinner along the bottom, and saying the phase in
+            // both places had them disagree a second apart.
             <p className="m-0 text-center text-body-secondary">
               {rendering
-                ? m?.rendering
+                ? m?.preparing
                 : m?.pickHint({ icon: <FaStreetView /> })}
             </p>
           )}
@@ -208,13 +193,6 @@ export default function Panorama(): ReactElement {
                     )}
                   </div>
                 )}
-
-                {/* Says the picture on screen is the fast first pass. Under the
-                    elevation, not over it: it comes and goes with every render,
-                    and above it would shift the box below it each time. */}
-                {render?.preview && (
-                  <span className="badge text-bg-secondary">{m?.preview}</span>
-                )}
               </div>
 
               <MarkBox probe={probe} />
@@ -226,21 +204,23 @@ export default function Panorama(): ReactElement {
             render. On a scrim, since it lies over whatever is on screen. */}
           {rendering && (
             <div className="position-absolute z-1 bottom-0 start-0 end-0 m-2 p-2 rounded bg-dark bg-opacity-50">
-              {bar.queued && (
-                <p className="mb-1 small text-white">
-                  {m?.queued({ ahead: bar.queued.ahead })}
-                </p>
-              )}
-
+              {/* A spinner and the stage it is at, rather than a fraction: the
+                  service counts only its marching, which on a slice is two
+                  seconds of twelve. The seconds say as much as a bar would and
+                  never stand still at the end. */}
               <div className="d-flex align-items-center gap-2">
-                <ProgressBar
-                  className="flex-grow-1"
-                  striped
-                  animated
-                  variant={bar.variant}
-                  now={bar.now}
-                  label={bar.label}
-                />
+                <Spinner animation="border" size="sm" className="text-white" />
+
+                <span className="flex-grow-1 small text-white">
+                  {bar.queued
+                    ? m?.queued({ ahead: bar.queued.ahead })
+                    : bar.phase === 'encoding'
+                      ? m?.encoding
+                      : bar.phase === 'decoding'
+                        ? m?.decoding
+                        : m?.rendering}{' '}
+                  <span className="opacity-75">{bar.label}</span>
+                </span>
 
                 <Button
                   variant="dark"
@@ -291,24 +271,26 @@ export default function Panorama(): ReactElement {
 
                 <p className="mb-1">
                   {m?.terrainSource}:{' '}
-                  {TERRAIN_SOURCES.map((attr, i) => (
-                    <Fragment key={attr.name}>
-                      {i > 0 ? ', ' : null}
+                  {terrainAttributions(render?.attributions ?? []).map(
+                    (attr, i) => (
+                      <Fragment key={attr.name}>
+                        {i > 0 ? ', ' : null}
 
-                      {attr.url ? (
-                        <a
-                          href={attr.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="link-body-emphasis"
-                        >
-                          {attr.name}
-                        </a>
-                      ) : (
-                        attr.name
-                      )}
-                    </Fragment>
-                  ))}
+                        {attr.url ? (
+                          <a
+                            href={attr.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="link-body-emphasis"
+                          >
+                            {attr.name}
+                          </a>
+                        ) : (
+                          attr.name
+                        )}
+                      </Fragment>
+                    ),
+                  )}
                 </p>
 
                 {/* Every name in the picture is an OSM node — the summit's own

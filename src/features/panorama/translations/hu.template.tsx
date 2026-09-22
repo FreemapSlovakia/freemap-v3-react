@@ -5,7 +5,10 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>A nézőpontot az alábbi {icon} gombbal válassza ki.</>
   ),
+  preparing: 'A panoráma készül…',
   rendering: 'Panoráma renderelése…',
+  encoding: 'Kép tömörítése…',
+  decoding: 'Kép kicsomagolása…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Várakozás a renderelőre…'
@@ -32,7 +35,6 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Panoráma beállításai',
     tiltHint:
       'Mennyi égbolt és talaj fér a képbe — a horizont feletti és alatti szög.',
-    custom: 'Pontos szögek',
     depthLift: 'Távolság kibontása',
     depthLiftOff: 'Hű kilátás',
     depthLiftHint:
@@ -66,20 +68,19 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'A távolságon túli terep kimarad ahelyett, hogy laposan az utolsó színnel lenne kitöltve, így az egész színátmenet arra jut, amit a kép mutat. Az ott álló csúcsok nem kapnak nevet.',
   },
-  preview: 'Előnézet',
   quality: {
     label: 'Minőség / sebesség',
-    superfast: 'Legalacsonyabb / leggyorsabb',
-    fast: 'Alacsony / gyors',
-    standard: 'Normál',
-    detailed: 'Részletes / lassú',
-    finest: 'Legfinomabb / leglassabb',
+    detail: 'Részletesség',
+    maximum: 'Maximum',
   },
+  frame: 'Kivágás és részletesség',
   tilt: {
     label: 'Függőleges tartomány',
     standard: 'Normál',
     wide: 'Magas',
     flat: 'Alacsony',
+    below: 'A horizont alatt',
+    above: 'A horizont felett',
   },
   fov: {
     label: 'Vízszintes tartomány',

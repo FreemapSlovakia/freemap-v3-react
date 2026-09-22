@@ -3,7 +3,10 @@ import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => <>Místo pohledu zvolte tlačítkem {icon} níže.</>,
-  rendering: 'Vykresluji panorama…',
+  preparing: 'Panorama se připravuje…',
+  rendering: 'Výpočet panoramatu…',
+  encoding: 'Komprese obrázku…',
+  decoding: 'Rozbalování obrázku…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Čeká se na vykreslovací službu…'
@@ -32,7 +35,6 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Nastavení panoramatu',
     tiltHint:
       'Kolik oblohy a země obrázek zachytí — úhly nad obzorem a pod ním.',
-    custom: 'Přesné úhly',
     depthLift: 'Rozvinout dálku',
     depthLiftOff: 'Věrný pohled',
     depthLiftHint:
@@ -66,20 +68,19 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Terén za touto vzdáleností se nevykreslí, místo aby byl vyplněn poslední barvou, takže se celý přechod spotřebuje na to, co je na obrázku. Vrcholy, které na něm stojí, se nepojmenují.',
   },
-  preview: 'Náhled',
   quality: {
     label: 'Kvalita / rychlost',
-    superfast: 'Nejnižší / nejrychlejší',
-    fast: 'Nízká / rychlá',
-    standard: 'Standardní',
-    detailed: 'Detailní / pomalá',
-    finest: 'Nejjemnější / nejpomalejší',
+    detail: 'Detail',
+    maximum: 'Maximum',
   },
+  frame: 'Výřez a detail',
   tilt: {
     label: 'Svislý rozsah',
     standard: 'Standardní',
     wide: 'Vysoký',
     flat: 'Nízký',
+    below: 'Pod obzorem',
+    above: 'Nad obzorem',
   },
   fov: {
     label: 'Vodorovný rozsah',

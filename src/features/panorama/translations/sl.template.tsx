@@ -5,7 +5,10 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>Mesto opazovanja izberite z gumbom {icon} spodaj.</>
   ),
-  rendering: 'Izrisovanje panorame…',
+  preparing: 'Panorama se pripravlja…',
+  rendering: 'Izračun panorame…',
+  encoding: 'Stiskanje slike…',
+  decoding: 'Razpakiranje slike…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Čakanje na izrisovalnik…'
@@ -34,7 +37,6 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Nastavitve panorame',
     tiltHint:
       'Koliko neba in tal zajame slika — kota nad obzorjem in pod njim.',
-    custom: 'Natančna kota',
     depthLift: 'Razgrni daljavo',
     depthLiftOff: 'Verni pogled',
     depthLiftHint:
@@ -68,20 +70,19 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Površje onkraj te razdalje se ne nariše, namesto da bi bilo ploskovno zapolnjeno z zadnjo barvo, tako da se ves preliv porabi za to, kar slika kaže. Vrhovi, ki stojijo na njem, niso poimenovani.',
   },
-  preview: 'Predogled',
   quality: {
     label: 'Kakovost / hitrost',
-    superfast: 'Najnižja / najhitrejša',
-    fast: 'Nizka / hitra',
-    standard: 'Standardna',
-    detailed: 'Podrobna / počasna',
-    finest: 'Najfinejša / najpočasnejša',
+    detail: 'Podrobnost',
+    maximum: 'Največ',
   },
+  frame: 'Izrez in podrobnost',
   tilt: {
     label: 'Navpični obseg',
     standard: 'Standarden',
     wide: 'Visok',
     flat: 'Nizek',
+    below: 'Pod obzorjem',
+    above: 'Nad obzorjem',
   },
   fov: {
     label: 'Vodoravni obseg',

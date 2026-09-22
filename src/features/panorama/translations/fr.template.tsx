@@ -5,7 +5,10 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>Choisissez d’où regarder avec le bouton {icon} ci-dessous.</>
   ),
+  preparing: 'Préparation du panorama…',
   rendering: 'Rendu du panorama…',
+  encoding: "Compression de l'image…",
+  decoding: "Décompression de l'image…",
   queued: ({ ahead }) =>
     ahead === 0
       ? 'En attente du moteur de rendu…'
@@ -32,7 +35,6 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Paramètres du panorama',
     tiltHint:
       'La quantité de ciel et de sol que contient l’image — les angles au-dessus et au-dessous de l’horizon.',
-    custom: 'Angles exacts',
     depthLift: 'Déplier la distance',
     depthLiftOff: 'Vue fidèle',
     depthLiftHint:
@@ -66,20 +68,19 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Le relief au-delà de cette distance est omis plutôt que peint à plat dans la dernière couleur, de sorte que tout le dégradé se dépense sur ce que l’image montre. Les sommets qui s’y trouvent ne sont pas nommés.',
   },
-  preview: 'Aperçu',
   quality: {
     label: 'Qualité / vitesse',
-    superfast: 'Minimale / la plus rapide',
-    fast: 'Basse / rapide',
-    standard: 'Standard',
-    detailed: 'Détaillée / lente',
-    finest: 'Maximale / la plus lente',
+    detail: 'Détail',
+    maximum: 'Maximum',
   },
+  frame: 'Cadrage et détail',
   tilt: {
     label: 'Étendue verticale',
     standard: 'Standard',
     wide: 'Haute',
     flat: 'Basse',
+    below: "Sous l'horizon",
+    above: "Au-dessus de l'horizon",
   },
   fov: {
     label: 'Étendue horizontale',

@@ -2,8 +2,8 @@ import type { RootState } from '@app/store/store.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
 import {
   requestTerrainRender,
+  TerrainCreditsSchema,
   type TerrainProgress,
-  terrainParts,
 } from '@shared/terrainService.js';
 import z from 'zod';
 import type { PanoramaDepth } from './depth.js';
@@ -180,6 +180,8 @@ const MetaSchema = z.object({
    * several renders only agree about colour if they agree about this.
    */
   far_distance: z.number().nullish(),
+  /** The credits for the models behind this view; see `TerrainCreditsSchema`. */
+  sources: TerrainCreditsSchema,
   depth: DepthMetaSchema.nullish(),
   peaks: z.array(PeakSchema).nullish(),
 });
@@ -188,35 +190,31 @@ export type PanoramaMeta = z.infer<typeof MetaSchema>;
 
 export interface PanoramaResponse {
   meta: PanoramaMeta;
-  /** Object URL of the rendered image; revoke it when it goes off screen. */
-  imageUrl: string;
+  /** The decoded picture; `close()` it when it goes off screen. */
+  bitmap: ImageBitmap | null;
   depth: PanoramaDepth | null;
-  /** Kept only to hold the decode; see `PanoramaRenderData.image`. */
-  image?: HTMLImageElement;
 }
 
 /**
- * Waits for the picture to be decoded, so the paint that puts it up has nothing
- * left to do. Left to the stylesheet, a 4–10 Mpx AVIF is first decoded on the
- * paint path, which is a freeze rather than a wait.
+ * Decodes the picture into a bitmap the viewer can blit.
  *
- * Never fatal: a decode this refuses will simply be attempted again when the
- * background is painted, which is what used to happen every time.
+ * `createImageBitmap` rather than an `<img>`: the picture is 10-bit 4:4:4 AVIF,
+ * which is expensive to decode, and a browser's decoded-image cache is keyed by
+ * the *scale* it was drawn at — so decoding an element at natural size does not
+ * pay for the scaled-down paint that follows, and a picture shown through CSS
+ * was decoded twice, the second time on the paint path. That was seconds of
+ * frozen tab after the progress bar had already reached 100%.
+ *
+ * Never fatal: without a bitmap the panel says the render failed, which is
+ * better than a picture nothing can draw.
  */
-async function decodeImage(url: string): Promise<HTMLImageElement | undefined> {
+async function decodeBitmap(blob: Blob): Promise<ImageBitmap | null> {
   try {
-    const img = new Image();
-
-    img.src = url;
-
-    await img.decode();
-
-    // Handed back to be kept alive with the render; see `PanoramaRenderData`.
-    return img;
+    return await createImageBitmap(blob);
   } catch (err) {
-    console.warn('panorama image could not be decoded ahead of paint', err);
+    console.warn('panorama image could not be decoded', err);
 
-    return undefined;
+    return null;
   }
 }
 
@@ -242,10 +240,22 @@ export async function renderPanorama(
     onProgress,
   );
 
-  const { meta, imageUrl } = terrainParts(form, MetaSchema);
+  const metaPart = form.get('meta');
+
+  if (typeof metaPart !== 'string') {
+    throw new Error('missing terrain meta');
+  }
+
+  const imagePart = form.get('image');
+
+  if (!(imagePart instanceof Blob)) {
+    throw new Error('missing terrain image');
+  }
+
+  const meta = MetaSchema.parse(JSON.parse(metaPart));
 
   if (isCurrent && !isCurrent()) {
-    return { meta, imageUrl, depth: null };
+    return { meta, bitmap: null, depth: null };
   }
 
   const depthPart = form.get('depth');
@@ -257,22 +267,27 @@ export async function renderPanorama(
   // Both halves at once: the distance buffer is inflated and delta-decoded in a
   // worker while the browser decodes the picture, and neither is on the main
   // thread. They are the whole of the wait between the response landing and
-  // something appearing.
-  const [depth, image] = await Promise.all([
-    meta.depth && depthPart instanceof Blob
+  // something appearing — which is why the panel is told about them; the
+  // service's last word was several seconds ago by the time they finish.
+  onProgress?.({ phase: 'decoding', ahead: 0, percent: 100 });
+
+  const depthMeta = meta.depth;
+
+  const [depth, bitmap] = await Promise.all([
+    depthMeta && depthPart instanceof Blob
       ? decodeDepthOffThread(
           depthPart,
           meta.width,
           meta.height,
-          meta.depth,
+          depthMeta,
         ).catch((err: unknown) => {
           console.warn('panorama depth buffer could not be decoded', err);
 
           return null;
         })
       : null,
-    decodeImage(imageUrl),
+    decodeBitmap(imagePart),
   ]);
 
-  return { meta, imageUrl, depth, image };
+  return { meta, bitmap, depth };
 }

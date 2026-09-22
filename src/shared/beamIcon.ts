@@ -13,23 +13,16 @@ export interface BeamIconOptions {
   /** Two beams on one map must not share a gradient id. */
   gradientId: string;
   /**
-   * The wedge is grabbed and swung. A shape of its own takes the press — the
-   * marker's box is square, and the wedge itself fades to nothing well before
-   * its rim, so either would catch presses over bare map. The marker must stay
-   * **non**-interactive for that: Leaflet's own interactivity is the whole box,
-   * and its absence is what leaves this the only way in. Written as a style
-   * rather than left to the class beside it, which several Leaflet rules of
-   * two classes would outrank.
+   * The wedge is grabbed and swung, anywhere on it — `pointer-events: all`
+   * takes the press where the gradient has faded to nothing as well, which is
+   * most of its length. The marker must stay **non**-interactive for that:
+   * Leaflet's own interactivity is the whole square box, which would catch
+   * presses on bare map outside the wedge. Written as a style rather than left
+   * to the class beside it, which several Leaflet rules of two classes would
+   * outrank.
    */
   grabbable?: boolean;
 }
-
-/**
- * How far out a grabbable wedge takes presses, as a fraction of its radius.
- * The gradient reaches nothing at the rim, so past this it is map to look at
- * and would be a swing to press.
- */
-const GRAB_REACH = 0.65;
 
 /**
  * A wedge fading outwards from its apex, drawn pointing north; the caller turns
@@ -71,11 +64,7 @@ export function makeBeamIcon({
           <stop offset="${innerStop}" stop-color="${color}" stop-opacity="${innerOpacity}"/>
           <stop offset="1" stop-color="${color}" stop-opacity="0"/>
         </radialGradient>
-        <path fill="url(#${gradientId})" d="${wedge(radius)}"/>${
-          grabbable
-            ? `\n        <path class="fm-beam-grab" style="pointer-events:all;cursor:grab" fill="none" d="${wedge(radius * GRAB_REACH)}"/>`
-            : ''
-        }
+        <path${grabbable ? ' class="fm-beam-grab" style="pointer-events:all;cursor:grab"' : ''} fill="url(#${gradientId})" d="${wedge(radius)}"/>
       </svg>
     </div>`,
   });

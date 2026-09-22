@@ -304,15 +304,10 @@ const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
   { ...GEDTM30_ATTR, exceptCountries: OUTDOOR_NATIONAL_DTM_COUNTRIES },
 ];
 
-// What the terrain service draws from. It never says which model answered and a
-// render reaches 300 km across borders, so all are credited — GEDTM30 without
-// `exceptCountries`, unlike the map layers. (The panorama's footer credits the
-// narrower `ELEVATION_API_DTM_ATTRIBUTION`, which this file cannot import.)
-const TERRAIN_ATTRIBUTION: AttributionDef[] = [
-  FM_ATTR,
-  ...OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
-  GEDTM30_ATTR,
-];
+// The terrain models behind a viewshed are not here: the service names the ones
+// its render was answered from, and `Attribution` adds those. A render reaches
+// 300 km, so the countries in view cannot stand in for them.
+const VIEWSHED_ATTRIBUTION: AttributionDef[] = [FM_ATTR];
 
 export type HasUrl = {
   url: string;
@@ -1185,7 +1180,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     zIndex: 3,
     // No `defaultOpacity`: the image's own alpha is already faint over most of
     // a wide view, so there is nothing left to give away.
-    attribution: TERRAIN_ATTRIBUTION,
+    attribution: VIEWSHED_ATTRIBUTION,
   },
   {
     layer: 'overlay',

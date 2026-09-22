@@ -80,14 +80,14 @@
   }
 }
 
-/* A 360° render wraps: its last column abuts its first, so repeating it
-   sideways turns panning into an offset with nothing to run off the end of.
-   Repeating also keeps the whole thing out of a canvas, which on older mobile
-   GPUs cannot hold an image 7200 pixels wide. */
+/* The picture, blitted from a decoded bitmap — see the draw in `PanoramaView`.
+   Its backing store is sized in device pixels, so the element is stretched to
+   the panel rather than left at its intrinsic size. */
 .image {
   position: absolute;
   inset: 0;
-  background-repeat: repeat-x;
+  width: 100%;
+  height: 100%;
   image-rendering: auto;
 }
 

@@ -1,3 +1,4 @@
+import type { TerrainProgress } from '@shared/terrainService.js';
 import type { LatLon } from '@shared/types/common.js';
 import { useSyncExternalStore } from 'react';
 
@@ -80,6 +81,22 @@ const hoverSlot = makeSlot<LatLon>(
 export const setPanoramaHover = hoverSlot.set;
 
 export const usePanoramaHover = hoverSlot.useValue;
+
+/**
+ * How far along the pass in flight is. Reported four times a second for the
+ * length of a render, and nothing outside the panel reads it — through Redux
+ * each of those ticks wrote the whole persisted state to `localStorage` and
+ * woke every subscriber in the app, which is a great deal of work to move a
+ * spinner's caption. Cleared by whoever starts and ends the pass.
+ */
+const progressSlot = makeSlot<TerrainProgress>(
+  (a, b) =>
+    a.phase === b.phase && a.ahead === b.ahead && a.percent === b.percent,
+);
+
+export const setPanoramaProgress = progressSlot.set;
+
+export const usePanoramaProgress = progressSlot.useValue;
 
 /** Where the map is aiming the viewer, while a gesture there is doing it. */
 export interface PanoramaAim {

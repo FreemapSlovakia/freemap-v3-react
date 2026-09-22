@@ -8,7 +8,7 @@ import {
   rememberedGradients,
 } from '../gradient.js';
 import { PROMINENCE_WEIGHT } from '../labels/fromPeaks.js';
-import type { PanoramaQuality } from '../quality.js';
+import type { PanoramaDetail } from '../quality.js';
 import { panoramaSetSettings } from './actions.js';
 
 /**
@@ -369,10 +369,11 @@ export function panoramaLookOf(style: PanoramaStyle): PanoramaLook {
 
 export interface PanoramaSettingsState {
   /**
-   * Which tier to ask for. Everything above the coarsest is premium's, and the
-   * service clamps what an account may have regardless of what is asked.
+   * How fine a picture to ask for, pixels per degree, or `max` for whatever
+   * the frame allows — which moves with the fov and the band. What an account
+   * may have of it is decided by `grantedPanorama`, not here.
    */
-  quality: PanoramaQuality;
+  detail: PanoramaDetail;
   /** How much sky and ground the frame holds; `custom` uses the two below. */
   tilt: PanoramaTilt;
   altMin: number;
@@ -455,11 +456,11 @@ function touchDevice(): boolean {
 
 export const panoramaSettingsInitialState: PanoramaSettingsState = {
   // What to ask for, not what will be granted: an account without premium is
-  // put back to `FREE_QUALITY` before the request goes out. Defaulting to a
-  // middling tier rather than the free one keeps a premium user off the free
-  // picture without their finding this control, and rather than the finest one
-  // because that is half a minute of a server that renders one at a time.
-  quality: 'standard',
+  // held to what its ray budget buys before the request goes out. Middling
+  // rather than the free figure, which would leave a premium user on the coarse
+  // picture until they found the control — and rather than `max`, which is the
+  // better part of a minute of a server that renders one at a time.
+  detail: 20,
   tilt: 'standard',
   altMin: -18,
   altMax: 12,

@@ -9,7 +9,10 @@ const en: PanoramaMessages = {
       {' button below.'}
     </>
   ),
+  preparing: 'The panorama is being prepared…',
   rendering: 'Rendering the panorama…',
+  encoding: 'Compressing the picture…',
+  decoding: 'Unpacking the picture…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Waiting for the renderer…'
@@ -36,7 +39,6 @@ const en: PanoramaMessages = {
     title: 'Panorama settings',
     tiltHint:
       'How much sky and ground the picture holds, as the angles above and below the horizon.',
-    custom: 'Exact angles',
     depthLift: 'Unfold distance',
     depthLiftOff: 'True view',
     depthLiftHint:
@@ -70,20 +72,19 @@ const en: PanoramaMessages = {
     gradientClipHint:
       'Terrain past that distance is left out rather than painted flat in the last colour, so the whole gradient is spent on what the picture shows. Summits standing on it are not named.',
   },
-  preview: 'Preview',
   quality: {
     label: 'Quality / speed',
-    superfast: 'Lowest / fastest',
-    fast: 'Low / fast',
-    standard: 'Standard',
-    detailed: 'Detailed / slow',
-    finest: 'Finest / slowest',
+    detail: 'Detail',
+    maximum: 'Maximum',
   },
+  frame: 'View and detail',
   tilt: {
     label: 'Vertical view',
     standard: 'Standard',
     wide: 'Tall',
     flat: 'Short',
+    below: 'Below the horizon',
+    above: 'Above the horizon',
   },
   fov: {
     label: 'Horizontal view',

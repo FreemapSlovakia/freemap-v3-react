@@ -24,7 +24,7 @@ import {
   ButtonGroup,
   ButtonToolbar,
   Form,
-  ProgressBar,
+  Spinner,
 } from 'react-bootstrap';
 import {
   FaAngleLeft,
@@ -52,7 +52,6 @@ import {
 import {
   GAMMA_MAX,
   VIEWSHED_DETAIL_ORDER,
-  VIEWSHED_DETAILS,
   VIEWSHED_RADIUS_STEPS_KM,
   type ViewshedDetail,
 } from '../model/settingsReducer.js';
@@ -117,11 +116,7 @@ export default function ViewshedMenu(): ReactElement {
 
   const nfGamma = useNumberFormat({ maximumFractionDigits: 2 });
 
-  const bar = useTerrainProgress(
-    rendering,
-    progress,
-    VIEWSHED_DETAILS[grants.detail].expectedMs,
-  );
+  const bar = useTerrainProgress(rendering, progress);
 
   const outdated = useAppSelector(viewshedOutdatedSelector);
 
@@ -337,21 +332,18 @@ export default function ViewshedMenu(): ReactElement {
 
               {rendering ? (
                 <>
-                  {/* The queue position instead of a figure, where the row has
-                      no second line to put it on. */}
-                  <ProgressBar
-                    className="align-self-center"
-                    style={{ width: '8rem' }}
-                    striped
-                    animated
-                    variant={bar.variant}
-                    now={bar.now}
-                    label={
-                      bar.queued
-                        ? m?.queued({ ahead: bar.queued.ahead })
-                        : bar.label
-                    }
-                  />
+                  {/* The queue position instead of the seconds, where the row
+                      has no second line to put both on. A spinner rather than a
+                      bar, as in the panorama: the service's figure covers its
+                      marching, and the encode of a 10 Mpx overlay and its
+                      decode here are the rest. */}
+                  <span className="align-self-center d-flex align-items-center gap-2">
+                    <Spinner animation="border" size="sm" />
+
+                    {bar.queued
+                      ? m?.queued({ ahead: bar.queued.ahead })
+                      : bar.label}
+                  </span>
 
                   <Button
                     variant="secondary"

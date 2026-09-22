@@ -44,6 +44,7 @@ import {
   RANGE_MAX_KM,
   RANGE_MIN_KM,
 } from '@features/panorama/model/settingsReducer.js';
+import { DETAIL_MAX, type PanoramaDetail } from '@features/panorama/quality.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import {
@@ -205,7 +206,10 @@ export const PersistedElevationSettingsSchema = z
 
 const PersistedPanoramaSettingsSchema = z
   .object({
-    quality: z.enum(['superfast', 'fast', 'standard', 'detailed', 'finest']),
+    // The asked-for figures, which may be past what a lapsed account may have:
+    // `grantedPanorama` holds the request to the budget, and premium grants
+    // them back silently.
+    detail: z.union([z.number().positive(), z.literal(DETAIL_MAX)]),
     tilt: z.enum(['standard', 'wide', 'flat', 'custom']),
     altMin: z.number(),
     altMax: z.number(),
@@ -245,6 +249,29 @@ const PersistedPanoramaSettingsSchema = z
     autoPan: z.boolean(),
   })
   .partial();
+
+/** The detail each named tier asked for; its sampling is now derived. */
+const PANORAMA_TIER_DETAIL: Record<string, PanoramaDetail> = {
+  superfast: 5,
+  fast: 10,
+  standard: 20,
+  detailed: 25,
+  finest: 30,
+  maximum: DETAIL_MAX,
+};
+
+const PersistedPanoramaSettingsCompatSchema = z.preprocess((s) => {
+  if (!s || typeof s !== 'object' || !('quality' in s)) {
+    return s;
+  }
+
+  const { quality, ...rest } = s as { quality: unknown };
+
+  const detail =
+    typeof quality === 'string' ? PANORAMA_TIER_DETAIL[quality] : undefined;
+
+  return detail === undefined ? rest : { ...rest, detail };
+}, PersistedPanoramaSettingsSchema);
 
 const PersistedViewshedSettingsSchema = z
   .object({
@@ -534,7 +561,7 @@ const PERSIST: PersistEntry[] = [
   }),
   defineEntry({
     key: 'panoramaSettings',
-    schema: PersistedPanoramaSettingsSchema,
+    schema: PersistedPanoramaSettingsCompatSchema,
     initial: panoramaSettingsInitialState,
     persist: (p) => p,
   }),

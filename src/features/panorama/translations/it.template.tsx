@@ -5,7 +5,10 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>Scegli da dove guardare con il pulsante {icon} qui sotto.</>
   ),
+  preparing: 'Il panorama è in preparazione…',
   rendering: 'Rendering del panorama…',
+  encoding: "Compressione dell'immagine…",
+  decoding: "Decompressione dell'immagine…",
   queued: ({ ahead }) =>
     ahead === 0
       ? 'In attesa del renderer…'
@@ -32,7 +35,6 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Impostazioni del panorama',
     tiltHint:
       'Quanto cielo e quanto terreno entrano nell’immagine — gli angoli sopra e sotto l’orizzonte.',
-    custom: 'Angoli esatti',
     depthLift: 'Dispiega la distanza',
     depthLiftOff: 'Vista reale',
     depthLiftHint:
@@ -66,20 +68,19 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Il terreno oltre quella distanza viene omesso invece di essere dipinto piatto nell’ultimo colore, così tutto il gradiente si spende su ciò che l’immagine mostra. Le cime che vi si trovano non vengono nominate.',
   },
-  preview: 'Anteprima',
   quality: {
     label: 'Qualità / velocità',
-    superfast: 'Minima / velocissima',
-    fast: 'Bassa / veloce',
-    standard: 'Standard',
-    detailed: 'Dettagliata / lenta',
-    finest: 'Massima / lentissima',
+    detail: 'Dettaglio',
+    maximum: 'Massimo',
   },
+  frame: 'Inquadratura e dettaglio',
   tilt: {
     label: 'Ampiezza verticale',
     standard: 'Standard',
     wide: 'Alta',
     flat: 'Bassa',
+    below: "Sotto l'orizzonte",
+    above: "Sopra l'orizzonte",
   },
   fov: {
     label: 'Ampiezza orizzontale',

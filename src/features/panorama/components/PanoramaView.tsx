@@ -13,6 +13,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -238,6 +239,8 @@ export function PanoramaView({
 
   const viewportRef = useRef<HTMLDivElement>(null);
 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const nfDeg = useNumberFormat({
     style: 'unit',
     unit: 'degree',
@@ -303,6 +306,110 @@ export function PanoramaView({
   const maxOffsetY = Math.max(0, render.height - height / scale);
 
   const clampedOffsetY = Math.min(offsetY, maxOffsetY);
+
+  // The picture is *drawn* rather than set as a background image. It arrives as
+  // an `ImageBitmap` decoded off the main thread, and blitting the visible part
+  // of it is work for the compositor — where a CSS background scaled down to
+  // the panel is a decode and a resample the renderer does on its paint path,
+  // which on a few megapixels of 10-bit AVIF is seconds of frozen tab.
+  //
+  // Before the paint, not after: the names and the compass move with the same
+  // render, and a passive effect would leave the picture a frame behind them
+  // for the length of every drag.
+  useLayoutEffect(() => {
+    const canvas = canvasRef.current;
+
+    const bitmap = data.bitmap;
+
+    if (!canvas || !bitmap || width === 0 || height === 0) {
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      return;
+    }
+
+    // The backing store is in device pixels, so a high-DPI panel is shown the
+    // picture's own pixels rather than a scaled copy of a CSS-pixel one.
+    const dpr = window.devicePixelRatio || 1;
+
+    const bw = Math.round(width * dpr);
+
+    const bh = Math.round(height * dpr);
+
+    if (canvas.width !== bw || canvas.height !== bh) {
+      canvas.width = bw;
+
+      canvas.height = bh;
+    }
+
+    // `high` asks Chrome for a multi-pass resample, and a fit view is a 2–5×
+    // downscale of several megapixels: the `drawImage` call itself records an
+    // op and returns — which is why the span around it reads nothing — while
+    // the resample happens at raster, inside the frame and on the main thread.
+    // `medium` is a mip-based filter, a fraction of the cost and no worse than
+    // the bitmap it samples from.
+    ctx.imageSmoothingQuality = 'medium';
+
+    ctx.clearRect(0, 0, bw, bh);
+
+    // What of the picture is on screen, in its own pixels. `fitScale` keeps the
+    // panel from asking for more of it than there is, bar the rounding.
+    const sw = Math.min(width / scale, bitmap.width);
+
+    const sh = Math.min(height / scale, bitmap.height - clampedOffsetY);
+
+    if (sh <= 0) {
+      return;
+    }
+
+    const dh = sh * scale * dpr;
+
+    const left = relLeftDeg / render.stepDeg;
+
+    // A full turn wraps, so the strip can start past the last column and run
+    // into the first, which takes a second draw from column zero.
+    const sx = full ? mod(left, bitmap.width) : left;
+
+    const head = Math.min(sw, bitmap.width - sx);
+
+    ctx.drawImage(
+      bitmap,
+      sx,
+      clampedOffsetY,
+      head,
+      sh,
+      0,
+      0,
+      head * scale * dpr,
+      dh,
+    );
+
+    if (head < sw) {
+      ctx.drawImage(
+        bitmap,
+        0,
+        clampedOffsetY,
+        sw - head,
+        sh,
+        head * scale * dpr,
+        0,
+        (sw - head) * scale * dpr,
+        dh,
+      );
+    }
+  }, [
+    clampedOffsetY,
+    data.bitmap,
+    full,
+    height,
+    relLeftDeg,
+    render.stepDeg,
+    scale,
+    width,
+  ]);
 
   /** Where a bearing lands in the viewport, taking the 360° wrap either way. */
   const screenX = useCallback(
@@ -373,11 +480,10 @@ export function PanoramaView({
   }, [storedAzimuth]);
 
   // A reading belongs to the picture it was taken from. `iy` is an image row,
-  // and the two passes are not the same height — the preview's rows are a
-  // quarter of the detailed one's — so a reading carried across would be put
-  // back at the wrong altitude while still claiming the old distance. A new
-  // viewpoint is the same story, and the reducer already clears the map's mark
-  // for it.
+  // and two renders of one viewpoint are not the same height — a detail or a
+  // band apart — so a reading carried across would be put back at the wrong
+  // altitude while still claiming the old distance. A new viewpoint is the same
+  // story, and the reducer already clears the map's mark for it.
   // biome-ignore lint/correctness/useExhaustiveDependencies: the render's identity is the point
   useEffect(() => {
     setHover(null);
@@ -1078,18 +1184,7 @@ export function PanoramaView({
         }
       }}
     >
-      <div
-        className={classes.image}
-        style={{
-          backgroundImage: `url(${data.imageUrl})`,
-          backgroundSize: `${render.width * scale}px ${render.height * scale}px`,
-          backgroundPositionX: `${(-relLeftDeg / render.stepDeg) * scale}px`,
-          backgroundPositionY: `${-clampedOffsetY * scale}px`,
-          // The sheet repeats, which is what a full turn wants; a slice tiled
-          // would draw the same ridge again past its own end.
-          backgroundRepeat: full ? undefined : 'no-repeat',
-        }}
-      />
+      <canvas ref={canvasRef} className={classes.image} />
 
       {/* Each leader is drawn twice, dark under light, the way the names carry
           a shadow: a pale line alone disappears against the sky, which is

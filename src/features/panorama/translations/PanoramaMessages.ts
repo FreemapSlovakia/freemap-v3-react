@@ -7,7 +7,13 @@ export type PanoramaMessages = {
    * icon is passed in rather than named, so a locale needs no imports.
    */
   pickHint: (params: { icon: ReactNode }) => ReactNode;
+  /** The panel's own line while a render is on; the spinner says the stage. */
+  preparing: string;
   rendering: string;
+  /** The service's own work is done and it is compressing the picture. */
+  encoding: string;
+  /** Said while this side decodes what arrived — seconds, on a fine render. */
+  decoding: string;
   /** Said while the render waits its turn; `ahead` is how many go first. */
   queued: (params: { ahead: number }) => string;
   cancel: string;
@@ -39,8 +45,6 @@ export type PanoramaMessages = {
     title: string;
     /** Says what the vertical band is, which its name alone does not. */
     tiltHint: string;
-    /** The vertical band given as its two angles rather than by name. */
-    custom: string;
     /** Raises far terrain, unfolding the distance the projection compresses. */
     depthLift: string;
     /** The step that leaves the view true. */
@@ -73,22 +77,23 @@ export type PanoramaMessages = {
     gradientClip: string;
     gradientClipHint: string;
   };
-  /** Marks the fast pass while the detailed one is still rendering. */
-  preview: string;
   quality: {
     label: string;
-    /** Coarsest to finest; everything past the first is premium's. */
-    superfast: string;
-    fast: string;
-    standard: string;
-    detailed: string;
-    finest: string;
+    /** How fine the picture is, in pixels per degree. */
+    detail: string;
+    /** The last stop of that slider: as fine as this frame allows. */
+    maximum: string;
   };
+  /** Names the one control that frames a render: view, band and detail. */
+  frame: string;
   tilt: {
     label: string;
     standard: string;
     wide: string;
     flat: string;
+    /** The two sliders under the presets, in degrees from the horizon. */
+    below: string;
+    above: string;
   };
   fov: {
     label: string;

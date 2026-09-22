@@ -1,5 +1,6 @@
 import {
   type AttributionDef,
+  GEDTM30_ATTR,
   OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
 } from './mapDefinitions.js';
 
@@ -42,14 +43,37 @@ export const ELEVATION_API_DTM_COUNTRIES = [
 ];
 
 /**
- * The national models above as attribution entries — what the panorama's footer
- * credits, the terrain service naming no model itself. An elevation read credits
+ * The national models above as attribution entries. An elevation read credits
  * what the API resolved for it instead (`readElevationAttributions`).
  */
 export const ELEVATION_API_DTM_ATTRIBUTION =
   OUTDOOR_NATIONAL_DTM_ATTRIBUTION.filter((attr) =>
     ELEVATION_API_DTM_COUNTRIES.includes(attr.country),
   );
+
+/**
+ * Every model a terrain render can be drawn from: the national ones and the
+ * global fallback past their borders.
+ *
+ * The whole national list, not the elevation API's narrower cut of it — this is
+ * only reached when the service names nothing, so it has to be the widest thing
+ * that could have answered.
+ */
+export const ALL_TERRAIN_ATTRIBUTION = [
+  ...OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
+  GEDTM30_ATTR,
+];
+
+/**
+ * What to credit a terrain render to: the models the service says answered it,
+ * or every model where it said nothing — naming one that contributed nothing is
+ * the harmless error, dropping one whose licence asks to be named is not.
+ */
+export function terrainAttributions(
+  reported: AttributionDef[],
+): AttributionDef[] {
+  return reported.length === 0 ? ALL_TERRAIN_ATTRIBUTION : reported;
+}
 
 /**
  * The LiDAR-derived terrain model GraphHopper is built on: it serves its own

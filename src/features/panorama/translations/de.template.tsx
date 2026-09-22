@@ -5,7 +5,10 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>Wählen Sie den Blickpunkt mit der Schaltfläche {icon} unten.</>
   ),
+  preparing: 'Panorama wird vorbereitet…',
   rendering: 'Panorama wird berechnet…',
+  encoding: 'Bild wird komprimiert…',
+  decoding: 'Bild wird entpackt…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Warten auf den Renderer…'
@@ -32,7 +35,6 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Panorama-Einstellungen',
     tiltHint:
       'Wie viel Himmel und Boden das Bild fasst — die Winkel über und unter dem Horizont.',
-    custom: 'Genaue Winkel',
     depthLift: 'Ferne entfalten',
     depthLiftOff: 'Naturgetreu',
     depthLiftHint:
@@ -66,20 +68,19 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Gelände jenseits dieser Entfernung wird weggelassen statt flach in der letzten Farbe gemalt, sodass der ganze Verlauf auf das entfällt, was das Bild zeigt. Gipfel, die darauf stehen, werden nicht benannt.',
   },
-  preview: 'Vorschau',
   quality: {
     label: 'Qualität / Geschwindigkeit',
-    superfast: 'Niedrigste / schnellste',
-    fast: 'Niedrige / schnelle',
-    standard: 'Standard',
-    detailed: 'Detailliert / langsam',
-    finest: 'Feinste / langsamste',
+    detail: 'Detail',
+    maximum: 'Maximum',
   },
+  frame: 'Ausschnitt und Detail',
   tilt: {
     label: 'Senkrechter Ausschnitt',
     standard: 'Standard',
     wide: 'Hoch',
     flat: 'Flach',
+    below: 'Unter dem Horizont',
+    above: 'Über dem Horizont',
   },
   fov: {
     label: 'Waagerechter Ausschnitt',
