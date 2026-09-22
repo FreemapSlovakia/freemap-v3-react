@@ -35,13 +35,6 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Paramètres du panorama',
     tiltHint:
       'La quantité de ciel et de sol que contient l’image — les angles au-dessus et au-dessous de l’horizon.',
-    tiltInvalid: ({ limit }) => (
-      <>
-        L’angle inférieur doit être inférieur à l’angle supérieur, tous deux
-        dans la limite de ±{limit}°.
-      </>
-    ),
-    custom: 'Angles exacts',
     depthLift: 'Déplier la distance',
     depthLiftOff: 'Vue fidèle',
     depthLiftHint:

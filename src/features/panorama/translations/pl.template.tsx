@@ -36,10 +36,6 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   settings: {
     title: 'Ustawienia panoramy',
     tiltHint: 'Ile nieba i ziemi mieści obraz — kąty nad horyzontem i pod nim.',
-    tiltInvalid: ({ limit }) => (
-      <>Dolny kąt musi być mniejszy od górnego, oba w zakresie ±{limit}°.</>
-    ),
-    custom: 'Dokładne kąty',
     depthLift: 'Rozwiń dal',
     depthLiftOff: 'Widok wierny',
     depthLiftHint:

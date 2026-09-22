@@ -39,10 +39,6 @@ const en: PanoramaMessages = {
     title: 'Panorama settings',
     tiltHint:
       'How much sky and ground the picture holds, as the angles above and below the horizon.',
-    tiltInvalid: ({ limit }) => (
-      <>The lower angle must be below the upper one, both within ±{limit}°.</>
-    ),
-    custom: 'Exact angles',
     depthLift: 'Unfold distance',
     depthLiftOff: 'True view',
     depthLiftHint:
