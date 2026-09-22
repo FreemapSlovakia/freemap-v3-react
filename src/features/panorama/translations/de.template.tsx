@@ -40,7 +40,7 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLiftHint:
       'Hebt entferntes Gelände an, sodass sich ferne Ketten von den Graten davor abheben — so wie es ein von Hand gezeichnetes Panorama tut. Dadurch kommen auch Gipfel ins Bild, die von hier aus gar nicht zu sehen wären; ihre Namen sind gekennzeichnet.',
     rangeHint:
-      'Gelände jenseits von 300 km gehört zu Premium. Jeder weitere Kilometer wird entlang jedes Strahls des Bildes abgeschritten, eine weitere Sicht kostet den Renderer also entsprechend mehr.',
+      'Gelände jenseits von 300 km ist eine Premium-Funktion. Jeder weitere Kilometer wird entlang jedes Strahls des Bildes abgeschritten, eine weitere Sicht kostet den Renderer also entsprechend mehr.',
     look: 'Stil',
     looks: {
       natural: 'Natürlich',

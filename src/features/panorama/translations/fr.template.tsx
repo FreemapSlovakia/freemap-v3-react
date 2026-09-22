@@ -40,7 +40,7 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLiftHint:
       'Relève le relief lointain, de sorte que les chaînes éloignées se détachent des crêtes qui les précèdent, comme sur un panorama dessiné à la main. Cela fait aussi entrer dans l’image des sommets que vous ne verriez pas réellement d’ici ; leurs noms sont signalés.',
     rangeHint:
-      'Le relief au-delà de 300 km relève du premium. Chaque kilomètre supplémentaire est parcouru le long de chaque rayon de l’image : une vue plus lointaine coûte donc proportionnellement plus au moteur de rendu.',
+      'Le relief au-delà de 300 km est une fonction premium. Chaque kilomètre supplémentaire est parcouru le long de chaque rayon de l’image : une vue plus lointaine coûte donc proportionnellement plus au moteur de rendu.',
     look: 'Style',
     looks: {
       natural: 'Naturel',

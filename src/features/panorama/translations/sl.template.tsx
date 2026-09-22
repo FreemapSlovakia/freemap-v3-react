@@ -42,7 +42,7 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLiftHint:
       'Dvigne oddaljeno površje, tako da se daljna pogorja ločijo od grebenov pred njimi — tako kot na ročno narisani panorami. S tem pridejo na sliko tudi vrhovi, ki jih od tod v resnici ne bi videli; njihova imena so označena.',
     rangeHint:
-      'Površje nad 300 km sodi k premiju. Vsak dodatni kilometer se prehodi po vsakem žarku slike, zato daljši pogled izrisovalnik stane sorazmerno več.',
+      'Površje nad 300 km je funkcija premija. Vsak dodatni kilometer se prehodi po vsakem žarku slike, zato daljši pogled izrisovalnik stane sorazmerno več.',
     look: 'Videz',
     looks: {
       natural: 'Naraven',

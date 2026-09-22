@@ -40,7 +40,7 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLiftHint:
       'Nadzvedne vzdálený terén, takže se daleká pohoří oddělí od hřebenů před nimi — tak, jak to dělají ručně kreslená panoramata. Zároveň se tím do obrázku dostanou vrcholy, které byste odtud ve skutečnosti neviděli; jejich názvy jsou odlišené.',
     rangeHint:
-      'Terén nad 300 km patří prémiu. Každý kilometr navíc se projde po každém paprsku obrázku, takže vzdálenější výhled stojí vykreslování úměrně víc.',
+      'Terén nad 300 km je prémiová funkce. Každý kilometr navíc se projde po každém paprsku obrázku, takže vzdálenější výhled stojí vykreslování úměrně víc.',
     look: 'Vzhled',
     looks: {
       natural: 'Přirozený',

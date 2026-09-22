@@ -7,7 +7,7 @@ const pl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpointPrompt: 'Kliknij na mapie miejsce, z którego chcesz patrzeć',
   extent: 'Zasięg i szczegółowość',
   rangeHint:
-    'Patrzenie dalej niż 20 km należy do premium: odległość kosztuje widoczność najwięcej — promieni przybywa wraz z obwodem, a każdy idzie aż do krawędzi.',
+    'Patrzenie dalej niż 20 km to funkcja premium: odległość kosztuje widoczność najwięcej — promieni przybywa wraz z obwodem, a każdy idzie aż do krawędzi.',
   detail: 'Szczegółowość',
   details: {
     superfast: 'Najniższa / najszybsza',

@@ -41,7 +41,7 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLiftHint:
       'Podnosi odległy teren, dzięki czemu dalekie pasma odrywają się od grani przed nimi — tak jak na panoramie rysowanej ręcznie. Do obrazu trafiają przez to również szczyty, których stąd naprawdę nie widać; ich nazwy są oznaczone.',
     rangeHint:
-      'Teren powyżej 300 km należy do premium. Każdy dodatkowy kilometr przechodzony jest wzdłuż każdego promienia obrazu, więc dalszy widok kosztuje renderer proporcjonalnie więcej.',
+      'Teren powyżej 300 km to funkcja premium. Każdy dodatkowy kilometr przechodzony jest wzdłuż każdego promienia obrazu, więc dalszy widok kosztuje renderer proporcjonalnie więcej.',
     look: 'Wygląd',
     looks: {
       natural: 'Naturalny',

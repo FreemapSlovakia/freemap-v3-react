@@ -40,7 +40,7 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLiftHint:
       'Megemeli a távoli terepet, így a messzi hegyláncok elválnak az előttük álló gerincektől — ahogy a kézzel rajzolt panorámákon. Ezzel olyan csúcsok is a képre kerülnek, amelyeket innen valójában nem látna; a nevük meg van jelölve.',
     rangeHint:
-      'A 300 km-en túli terep a prémiumé. Minden további kilométert a kép minden sugara mentén be kell járni, így a távolabbi kilátás arányosan többe kerül a renderelőnek.',
+      'A 300 km-en túli terep prémium funkció. Minden további kilométert a kép minden sugara mentén be kell járni, így a távolabbi kilátás arányosan többe kerül a renderelőnek.',
     look: 'Megjelenés',
     looks: {
       natural: 'Természetes',

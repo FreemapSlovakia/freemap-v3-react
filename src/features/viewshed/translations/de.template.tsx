@@ -7,7 +7,7 @@ const de: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpointPrompt: 'Klicken Sie auf die Karte, von wo aus Sie schauen',
   extent: 'Reichweite und Detail',
   rangeHint:
-    'Weiter als 20 km zu schauen gehört dem Premium: Entfernung kostet eine Sichtbarkeitsanalyse am meisten — die Strahlen wachsen mit dem Umfang und jeder läuft bis zum Rand.',
+    'Weiter als 20 km zu schauen ist eine Premium-Funktion: Entfernung kostet eine Sichtbarkeitsanalyse am meisten — die Strahlen wachsen mit dem Umfang und jeder läuft bis zum Rand.',
   detail: 'Detail',
   details: {
     superfast: 'Niedrigste / schnellste',

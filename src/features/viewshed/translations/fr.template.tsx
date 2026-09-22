@@ -7,7 +7,7 @@ const fr: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpointPrompt: 'Cliquez sur la carte à l’endroit d’où regarder',
   extent: 'Portée et détail',
   rangeHint:
-    'Regarder au-delà de 20 km relève du premium : la distance est ce qui coûte le plus à une analyse de visibilité — les rayons croissent avec le pourtour et chacun va jusqu’au bord.',
+    'Regarder au-delà de 20 km est une fonction premium : la distance est ce qui coûte le plus à une analyse de visibilité — les rayons croissent avec le pourtour et chacun va jusqu’au bord.',
   detail: 'Détail',
   details: {
     superfast: 'Minimale / la plus rapide',

@@ -7,7 +7,7 @@ const sl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpointPrompt: 'Kliknite na zemljevid tja, od koder želite gledati',
   extent: 'Doseg in podrobnost',
   rangeHint:
-    'Pogled dlje od 20 km sodi k premiju: razdalja vidnost stane največ — žarkov je več z obsegom in vsak teče do roba.',
+    'Pogled dlje od 20 km je funkcija premija: razdalja vidnost stane največ — žarkov je več z obsegom in vsak teče do roba.',
   detail: 'Podrobnost',
   details: {
     superfast: 'Najnižja / najhitrejša',

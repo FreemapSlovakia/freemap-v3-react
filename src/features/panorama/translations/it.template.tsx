@@ -40,7 +40,7 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLiftHint:
       'Solleva il terreno lontano, così le catene distanti si staccano dalle creste davanti a loro, come in un panorama disegnato a mano. Porta però nell’immagine anche cime che da qui non si vedrebbero davvero; i loro nomi sono contrassegnati.',
     rangeHint:
-      'Il terreno oltre i 300 km è riservato al premium. Ogni chilometro in più viene percorso lungo ogni raggio dell’immagine, quindi una vista più lontana costa al renderer proporzionalmente di più.',
+      'Il terreno oltre i 300 km è una funzione premium. Ogni chilometro in più viene percorso lungo ogni raggio dell’immagine, quindi una vista più lontana costa al renderer proporzionalmente di più.',
     look: 'Aspetto',
     looks: {
       natural: 'Naturale',
