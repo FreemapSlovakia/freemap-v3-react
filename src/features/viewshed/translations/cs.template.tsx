@@ -5,7 +5,7 @@ const cs: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Vybrat v mapě',
   locate: 'Viditelnost z mé polohy',
   pickViewpointPrompt: 'Klikněte do mapy tam, odkud se chcete dívat',
-  detail: 'Kvalita / rychlost',
+  detail: 'Detail',
   details: {
     superfast: 'Nejnižší / nejrychlejší',
     fast: 'Nízká / rychlá',

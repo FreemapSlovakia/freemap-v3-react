@@ -33,7 +33,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeight: 'Hauteur des yeux',
     eyeHeightHint:
       'À quelle hauteur au-dessus du sol vous vous tenez — une tour ou un drone, pas l’altitude.',
-    maxVisibleDistance: 'Distance visible maximale',
+    maxVisibleDistance: 'Distance visible max.',
     terrain: {
       bareEarth:
         'Le modèle de terrain est le sol nu : les forêts et les bâtiments n’y figurent pas, si bien qu’un terrain qu’une forêt masquerait est tenu pour dégagé. C’est de loin la principale source d’erreur.',

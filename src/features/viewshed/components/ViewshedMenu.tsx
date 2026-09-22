@@ -165,6 +165,24 @@ export default function ViewshedMenu(): ReactElement {
             )}
           </LongPressTooltip>
 
+          {/* Beside the layer's own name, since it qualifies the whole overlay
+              rather than any one control. A mark rather than a panel: the
+              viewshed is a layer, so there is no window of its own to lay this
+              over the way the panorama does. */}
+          <span className="align-self-center me-2">
+            <HintMark
+              hint={
+                <>
+                  <p className="mb-1">{gm?.general.terrain.bareEarth}</p>
+
+                  <p className="mb-1">{gm?.general.terrain.coverage}</p>
+
+                  <p className="mb-0">{m?.caveats.viewpoint}</p>
+                </>
+              }
+            />
+          </span>
+
           {!hidden && (
             <>
               {/* First, because nothing else in the row means anything until
@@ -237,10 +255,10 @@ export default function ViewshedMenu(): ReactElement {
                       {!premium && <PremiumGem hint={prm?.higherDetail} />}
                     </>
                   }
-                  // The ground a pixel covers beside the tier's name: what a
-                  // tier is worth depends on the reach, and nothing else here
-                  // would say so.
-                  valueLabel={`${m?.details[grants.detail]} · ${nfM.format(viewshedScale(grants.radiusKm, grants.detail))}/px`}
+                  // The ground a pixel covers, not the tier's name: the figure
+                  // says what the tier is worth at this reach, which the name
+                  // cannot, and the names run to three words.
+                  valueLabel={`${nfM.format(viewshedScale(grants.radiusKm, grants.detail))}/px`}
                   min={0}
                   max={detailTiers.length - 1}
                   value={Math.max(0, detailTiers.indexOf(grants.detail))}
@@ -253,21 +271,6 @@ export default function ViewshedMenu(): ReactElement {
                   }
                 />
               </SliderDropdown>
-
-              {/* What the overlay does not promise. A mark rather than a panel:
-                  the viewshed is a layer, so there is no window of its own to
-                  lay this over the way the panorama does. */}
-              <HintMark
-                hint={
-                  <>
-                    <p className="mb-1">{gm?.general.terrain.bareEarth}</p>
-
-                    <p className="mb-1">{gm?.general.terrain.coverage}</p>
-
-                    <p className="mb-0">{m?.caveats.viewpoint}</p>
-                  </>
-                }
-              />
 
               {/* The rest, which all cost a render but are set once and left:
                   they sit behind a toggle rather than in reach of a stray

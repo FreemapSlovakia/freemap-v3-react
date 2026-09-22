@@ -49,7 +49,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeight: 'Augenhöhe',
     eyeHeightHint:
       'Wie hoch über dem Boden Sie stehen — ein Turm oder eine Drohne, nicht die Höhe über dem Meer.',
-    maxVisibleDistance: 'Maximale Sichtweite',
+    maxVisibleDistance: 'Max. Sichtweite',
     terrain: {
       bareEarth:
         'Das Geländemodell ist blanke Erde: Wälder und Gebäude fehlen darin, Gelände, das ein Wald verdecken würde, gilt also als frei. Das ist mit Abstand die größte Fehlerquelle.',

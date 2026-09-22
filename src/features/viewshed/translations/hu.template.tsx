@@ -5,7 +5,7 @@ const hu: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Kijelölés a térképen',
   locate: 'Láthatóság a helyzetemből',
   pickViewpointPrompt: 'Kattintson a térképre oda, ahonnan nézni szeretne',
-  detail: 'Minőség / sebesség',
+  detail: 'Részletesség',
   details: {
     superfast: 'Legalacsonyabb / leggyorsabb',
     fast: 'Alacsony / gyors',

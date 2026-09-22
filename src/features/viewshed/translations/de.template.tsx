@@ -5,7 +5,7 @@ const de: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Auf der Karte wählen',
   locate: 'Sichtbarkeit von meinem Standort',
   pickViewpointPrompt: 'Klicken Sie auf die Karte, von wo aus Sie schauen',
-  detail: 'Qualität / Geschwindigkeit',
+  detail: 'Detail',
   details: {
     superfast: 'Niedrigste / schnellste',
     fast: 'Niedrige / schnelle',

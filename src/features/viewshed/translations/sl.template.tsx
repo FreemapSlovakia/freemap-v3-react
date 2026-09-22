@@ -5,7 +5,7 @@ const sl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Izberi na zemljevidu',
   locate: 'Vidnost z mojega položaja',
   pickViewpointPrompt: 'Kliknite na zemljevid tja, od koder želite gledati',
-  detail: 'Kakovost / hitrost',
+  detail: 'Podrobnost',
   details: {
     superfast: 'Najnižja / najhitrejša',
     fast: 'Nizka / hitra',
