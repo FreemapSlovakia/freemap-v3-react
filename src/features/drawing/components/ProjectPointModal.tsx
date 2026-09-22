@@ -41,6 +41,10 @@ export function ProjectPointModal({
 
   const dm = useDrawingMessages();
 
+  // Only what has been typed can be wrong: the fields open empty, and reddening
+  // them before anything is entered would mark the dialog as broken on sight.
+  const invalidDistance = distance !== '' && !(parseFloat(distance) > 0);
+
   function isValid() {
     return parseFloat(distance) > 0 && !Number.isNaN(parseFloat(azimuth));
   }
@@ -63,15 +67,20 @@ export function ProjectPointModal({
           <Form.Group controlId="distance" className="mb-3">
             <Form.Label>{dm?.projection.distance}</Form.Label>
 
-            <InputGroup>
+            <InputGroup hasValidation>
               <Form.Control
                 type="number"
                 value={distance}
                 onChange={(e) => setDistance(e.currentTarget.value)}
+                isInvalid={invalidDistance}
                 min={0}
               />
 
               <InputGroup.Text>m</InputGroup.Text>
+
+              <Form.Control.Feedback type="invalid">
+                {m?.general.valueAbove({ min: '0\u00a0m' })}
+              </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 
@@ -92,7 +101,7 @@ export function ProjectPointModal({
 
         <Modal.Footer>
           <Button type="submit" disabled={!isValid()}>
-            Add
+            {dm?.projection.add}
           </Button>
 
           <Button variant="dark" onClick={onClose}>

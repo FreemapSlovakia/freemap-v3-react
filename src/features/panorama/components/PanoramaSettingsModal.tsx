@@ -162,7 +162,8 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
   };
 
   // The eye is metres above the ground, and a number field can be left empty
-  // mid-edit.
+  // mid-edit. The band needs no such check: the presets and the two sliders
+  // cannot express a bad one, each running 1..ALT_LIMIT on its own side.
   const invalid =
     !Number.isFinite(draft.eye) || draft.eye < EYE_MIN || draft.eye > EYE_MAX;
 
@@ -225,7 +226,9 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
       // modal turns it off.
       enforceFocus={false}
     >
-      <form onSubmit={handleSubmit} className="d-contents">
+      {/* `step` is what the arrows move by, not a rule: without this the
+          browser refuses to submit 1.65 m while Save sits there enabled. */}
+      <form onSubmit={handleSubmit} className="d-contents" noValidate>
         <Modal.Header closeButton>
           <Modal.Title>
             <FaCog /> {m?.settings.title}
@@ -239,13 +242,14 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               <HintMark hint={gm?.general.eyeHeightHint} />
             </Form.Label>
 
-            <InputGroup>
+            <InputGroup hasValidation>
               <Form.Control
                 id="fm-panorama-eye"
                 type="number"
                 min={EYE_MIN}
                 max={EYE_MAX}
                 step={0.1}
+                isInvalid={invalid}
                 value={Number.isFinite(draft.eye) ? draft.eye : ''}
                 onChange={(e) =>
                   patch({
@@ -257,6 +261,13 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               {/* Literal, as the shading modal's metre fields are: the symbol
                   is the sam */}
               <InputGroup.Text>m</InputGroup.Text>
+
+              <Form.Control.Feedback type="invalid">
+                {gm?.general.valueRange({
+                  min: `${EYE_MIN}\u00a0m`,
+                  max: `${EYE_MAX}\u00a0m`,
+                })}
+              </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 

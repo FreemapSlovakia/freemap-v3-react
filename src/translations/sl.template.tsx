@@ -64,6 +64,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving: 'Zaprem okno brez shranjevanja sprememb?',
     resetToDefaults: 'Ponastavi na privzeto',
     back: 'Nazaj',
+    valueRange: ({ min, max }) => (
+      <>
+        Vnesite vrednost med {min} in {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Vnesite vrednost, večjo od {min}.</>,
+    invalidUrl: 'Vnesite URL, ki se začne s http:// ali https://.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),

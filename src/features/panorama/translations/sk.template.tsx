@@ -35,6 +35,10 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Nastavenia panorámy',
     tiltHint:
       'Koľko oblohy a zeme obrázok zachytí — uhly nad obzorom a pod ním.',
+    tiltInvalid: ({ limit }) => (
+      <>Dolný uhol musí byť menší ako horný, oba v rozsahu ±{limit}°.</>
+    ),
+    custom: 'Presné uhly',
     depthLift: 'Rozvinúť diaľku',
     depthLiftOff: 'Verný pohľad',
     depthLiftHint:
@@ -112,6 +116,9 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     showEle: 'Zobraziť nadmorské výšky',
     showEleHint:
       'Pod meno každého vrchu napíše jeho výšku. Menovka je potom dvojriadková, takže sa ich do obrázka zmestí menej.',
+    showDistance: 'Zobraziť vzdialenosti',
+    showDistanceHint:
+      'Pod meno píše, ako ďaleko štít je — vedľa nadmorskej výšky, ak sú zapnuté obe.',
     showRevealed: 'Pomenovať odhalené vrchy',
     showRevealedHint:
       'Vrchy, ktoré rozvinutie diaľky vytiahlo spoza bližšieho hrebeňa: sú nakreslené, no odtiaľto ich v skutočnosti nevidno. Ich názvy sú svetlejšie a keď nie je miesto pre oba, prednosť dostane vrch, ktorý vidno.',

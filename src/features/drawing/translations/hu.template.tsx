@@ -65,6 +65,7 @@ const hu: DeepPartialWithRequiredObjects<DrawingMessages> = {
     projectPoint: 'Pont vetítése',
     distance: 'Távolság',
     azimuth: 'Azimut',
+    add: 'Hozzáadás',
   },
 };
 

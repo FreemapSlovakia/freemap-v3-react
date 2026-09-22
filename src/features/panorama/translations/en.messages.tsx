@@ -39,6 +39,10 @@ const en: PanoramaMessages = {
     title: 'Panorama settings',
     tiltHint:
       'How much sky and ground the picture holds, as the angles above and below the horizon.',
+    tiltInvalid: ({ limit }) => (
+      <>The lower angle must be below the upper one, both within ±{limit}°.</>
+    ),
+    custom: 'Exact angles',
     depthLift: 'Unfold distance',
     depthLiftOff: 'True view',
     depthLiftHint:
@@ -116,6 +120,9 @@ const en: PanoramaMessages = {
     showEle: 'Show elevations',
     showEleHint:
       'Writes each summit’s height under its name. Every label is then two lines tall, so fewer of them fit the picture.',
+    showDistance: 'Show distances',
+    showDistanceHint:
+      'Writes how far each summit is under its name, beside the height where both are on.',
     showRevealed: 'Name revealed peaks',
     showRevealedHint:
       'Summits that unfolding lifted out from behind a nearer ridge: drawn, but not actually visible from here. Their names are drawn faded, and rank below the ones that can be seen where there is no room for both.',

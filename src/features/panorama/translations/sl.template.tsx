@@ -37,6 +37,10 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Nastavitve panorame',
     tiltHint:
       'Koliko neba in tal zajame slika — kota nad obzorjem in pod njim.',
+    tiltInvalid: ({ limit }) => (
+      <>Spodnji kot mora biti manjši od zgornjega, oba v obsegu ±{limit}°.</>
+    ),
+    custom: 'Natančna kota',
     depthLift: 'Razgrni daljavo',
     depthLiftOff: 'Verni pogled',
     depthLiftHint:
@@ -114,6 +118,9 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     showEle: 'Prikaži nadmorske višine',
     showEleHint:
       'Pod ime vsakega vrha izpiše njegovo višino. Napis je tedaj dvovrstičen, zato jih gre na sliko manj.',
+    showDistance: 'Prikaži razdalje',
+    showDistanceHint:
+      'Pod ime zapiše, kako daleč je vrh — ob nadmorski višini, če sta vklopljena oba.',
     showRevealed: 'Poimenuj razkrite vrhove',
     showRevealedHint:
       'Vrhovi, ki jih je razgrnitev daljave potegnila izza bližjega grebena: narisani so, a od tod jih v resnici ni videti. Njihova imena so bledejša in kadar ni prostora za oba, ima prednost vrh, ki ga je videti.',

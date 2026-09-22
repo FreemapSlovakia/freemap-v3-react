@@ -35,6 +35,13 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Paramètres du panorama',
     tiltHint:
       'La quantité de ciel et de sol que contient l’image — les angles au-dessus et au-dessous de l’horizon.',
+    tiltInvalid: ({ limit }) => (
+      <>
+        L’angle inférieur doit être inférieur à l’angle supérieur, tous deux
+        dans la limite de ±{limit}°.
+      </>
+    ),
+    custom: 'Angles exacts',
     depthLift: 'Déplier la distance',
     depthLiftOff: 'Vue fidèle',
     depthLiftHint:
@@ -112,6 +119,9 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     showEle: 'Afficher les altitudes',
     showEleHint:
       'Écrit l’altitude sous le nom de chaque sommet. L’étiquette fait alors deux lignes, si bien qu’il en tient moins dans l’image.',
+    showDistance: 'Afficher les distances',
+    showDistanceHint:
+      'Écrit sous le nom la distance du sommet — à côté de l’altitude si les deux sont activées.',
     showRevealed: 'Nommer les sommets révélés',
     showRevealedHint:
       'Sommets que le dépliement de la distance a fait sortir de derrière une crête plus proche : ils sont dessinés, mais on ne les voit pas réellement d’ici. Leurs noms sont plus pâles et, quand la place manque pour les deux, la priorité va au sommet que l’on voit.',

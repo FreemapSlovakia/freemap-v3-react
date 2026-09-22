@@ -64,6 +64,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
     resetToDefaults: 'Alapértékek visszaállítása',
     back: 'Vissza',
+    valueRange: ({ min, max }) => (
+      <>
+        Adjon meg egy értéket {min} és {max} között.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Adjon meg {min}-nél nagyobb értéket.</>,
+    invalidUrl: 'Adjon meg egy http:// vagy https:// kezdetű URL-t.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),

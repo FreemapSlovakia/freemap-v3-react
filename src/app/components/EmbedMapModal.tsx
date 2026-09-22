@@ -35,6 +35,12 @@ const toWidth = (value: string | null) => value ?? '640';
 
 const toHeight = (value: string | null) => value ?? '480';
 
+const SIZE_MIN = 100;
+
+const WIDTH_MAX = 1600;
+
+const HEIGHT_MAX = 1200;
+
 export default function EmbedMapModal({ show }: Props): ReactElement {
   const m = useMessages();
 
@@ -164,9 +170,9 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
     allow.push('geolocation');
   }
 
-  const invalidWidth = isInvalidInt(width, true, 100, 1600);
+  const invalidWidth = isInvalidInt(width, true, SIZE_MIN, WIDTH_MAX);
 
-  const invalidHeight = isInvalidInt(width, true, 100, 1200);
+  const invalidHeight = isInvalidInt(height, true, SIZE_MIN, HEIGHT_MAX);
 
   const cookiesEnabled = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult !== null,
@@ -217,34 +223,48 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
           <Form.Label className="required">{lm?.dimensions}</Form.Label>
 
           <div className="d-flex gap-2">
-            <InputGroup>
+            <InputGroup hasValidation>
               <InputGroup.Text>{lm?.width}</InputGroup.Text>
 
               <Form.Control
                 type="number"
                 value={width}
-                min={100}
-                max={1600}
+                min={SIZE_MIN}
+                max={WIDTH_MAX}
                 step={10}
                 isInvalid={invalidWidth}
                 required
                 onChange={setWidth}
               />
+
+              <Form.Control.Feedback type="invalid">
+                {m?.general.valueRange({
+                  min: `${SIZE_MIN}\u00a0px`,
+                  max: `${WIDTH_MAX}\u00a0px`,
+                })}
+              </Form.Control.Feedback>
             </InputGroup>
 
-            <InputGroup>
+            <InputGroup hasValidation>
               <InputGroup.Text>{lm?.height}</InputGroup.Text>
 
               <Form.Control
                 type="number"
                 value={height}
-                min={100}
-                max={1200}
+                min={SIZE_MIN}
+                max={HEIGHT_MAX}
                 step={10}
                 isInvalid={invalidHeight}
                 required
                 onChange={setHeight}
               />
+
+              <Form.Control.Feedback type="invalid">
+                {m?.general.valueRange({
+                  min: `${SIZE_MIN}\u00a0px`,
+                  max: `${HEIGHT_MAX}\u00a0px`,
+                })}
+              </Form.Control.Feedback>
             </InputGroup>
           </div>
         </Form.Group>

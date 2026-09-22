@@ -36,6 +36,10 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   settings: {
     title: 'Ustawienia panoramy',
     tiltHint: 'Ile nieba i ziemi mieści obraz — kąty nad horyzontem i pod nim.',
+    tiltInvalid: ({ limit }) => (
+      <>Dolny kąt musi być mniejszy od górnego, oba w zakresie ±{limit}°.</>
+    ),
+    custom: 'Dokładne kąty',
     depthLift: 'Rozwiń dal',
     depthLiftOff: 'Widok wierny',
     depthLiftHint:
@@ -113,6 +117,9 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     showEle: 'Pokaż wysokości',
     showEleHint:
       'Pod nazwą każdego szczytu wypisuje jego wysokość. Podpis ma wtedy dwa wiersze, więc mieści się ich na obrazie mniej.',
+    showDistance: 'Pokaż odległości',
+    showDistanceHint:
+      'Pod nazwą pisze, jak daleko jest szczyt — obok wysokości, gdy włączone są obie.',
     showRevealed: 'Nazywaj odsłonięte szczyty',
     showRevealedHint:
       'Szczyty, które rozwinięcie dali wyciągnęło zza bliższej grani: są narysowane, ale stąd naprawdę ich nie widać. Ich nazwy są jaśniejsze, a gdy brakuje miejsca dla obu, pierwszeństwo ma szczyt widoczny.',

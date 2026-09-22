@@ -58,6 +58,7 @@ const sk: DeepPartialWithRequiredObjects<DrawingMessages> = {
     projectPoint: 'Zamerať bod',
     distance: 'Vzdialenosť',
     azimuth: 'Azimut',
+    add: 'Pridať',
   },
   reverse: 'Obrátiť smer',
   simplify: 'Zjednodušiť',

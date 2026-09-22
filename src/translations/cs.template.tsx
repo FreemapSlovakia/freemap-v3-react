@@ -65,6 +65,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
     resetToDefaults: 'Obnovit výchozí',
     back: 'Zpět',
+    valueRange: ({ min, max }) => (
+      <>
+        Zadejte hodnotu mezi {min} a {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Zadejte hodnotu větší než {min}.</>,
+    invalidUrl: 'Zadejte URL začínající na http:// nebo https://.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),

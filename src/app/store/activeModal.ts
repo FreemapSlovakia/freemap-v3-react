@@ -38,6 +38,7 @@ const URL_MODAL_IDS = [
   'track-viewer-match',
   'tracking-my',
   'tracking-watched',
+  'viewshed-settings',
 ] as const;
 
 export const UrlModalIdSchema = z.enum(URL_MODAL_IDS);

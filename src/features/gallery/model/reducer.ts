@@ -134,6 +134,9 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       const set = (activeImageId: number) => {
         Object.assign(state, {
           activeImageId,
+          // Another photo's record must not stay on screen if the fetch fails.
+          // A re-fetch of the same photo keeps it until the fresh one lands.
+          image: activeImageId === state.activeImageId ? state.image : null,
           comment: '',
           editModel: null,
         });

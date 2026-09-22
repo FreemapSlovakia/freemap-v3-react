@@ -300,7 +300,7 @@ function LegendItems({
                             ? 'bg-primary text-light'
                             : 'bg-body-secondary',
                         )}
-                        href={'/#objects=' + encodeURIComponent(next.join(';'))}
+                        href={`/#objects=${encodeURIComponent(next.join(';'))}`}
                         onClick={(e) => {
                           e.preventDefault();
 

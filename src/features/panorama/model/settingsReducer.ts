@@ -419,6 +419,11 @@ export interface PanoramaSettingsState {
    * default: a two-line label is taller, so fewer names fit the picture.
    */
   showLabelEle: boolean;
+  /**
+   * Whether that second line also says how far off the summit is. Shares the
+   * line with the elevation rather than taking one of its own.
+   */
+  showLabelDistance: boolean;
   /** Metres of dominance a summit needs to be named; see {@link DOMINANCE_STEPS_M}. */
   minDominance: number;
   /**
@@ -477,6 +482,7 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   recentGradients: [],
   labelDensity: 5,
   showLabelEle: false,
+  showLabelDistance: false,
   minDominance: NO_DOMINANCE_FILTER,
   labelHazeKm: 120,
   labelDistanceWeight: 0.5,

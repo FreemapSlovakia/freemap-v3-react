@@ -80,6 +80,22 @@ credit lines come from the render (`meta.sources`), and `Attribution` adds them
 past its country filter — a 300 km disc is not narrowed by the viewport it is
 looked at from. See `doc/panorama.md`.
 
+What the overlay does not promise is a `HintMark` beside the layer's name. The
+layer has no window of its own to lay a panel over the way the panorama does,
+and only the viewpoint sensitivity is the viewshed's own — what the terrain
+model itself does not say is `general.terrain`, shared with the panorama so one
+fact is translated once.
+
+The toolbar keeps only the two settings worth reaching for often, range and
+detail, and they ride one `SliderDropdown` the way the panorama's fov and
+detail do — they trade against each other, a shorter reach buying a finer
+raster for the same pixels. The rest — eye and target height, strength, minimum opacity, colour —
+are in `ViewshedSettingsModal` (`#show=viewshed-settings`), for the reason the
+panorama's are: they are all in the render key, so none of them moves what is on
+screen, and a stray click on a slider would cost a render. The heights are typed
+rather than dragged, being figures one knows. It edits a draft and writes it on
+Save, as the panorama's modal does — saving stages, and Update pays.
+
 ## What premium grants
 
 Distance and detail, the two settings that decide what a render costs: without
@@ -102,17 +118,9 @@ speaks about what is on the map (the request, the render key, the circle, the
 toolbar) reads the granted figures rather than the stored
 ones, or it would claim a picture nobody rendered.
 
-Both ride one `SliderDropdown`, the way the panorama's fov and detail do — they
-trade against each other, a shorter reach buying a finer raster for the same
-pixels. The sliders stop where the grant does and carry a `PremiumGem`: a
-handle that ran past it would stand where nothing is rendered. The stored
-choice is kept either way, so premium grants it back silently.
-
-What the overlay does not promise is a `HintMark` beside them. The layer has no
-window of its own to lay a panel over the way the panorama does, and only the
-viewpoint sensitivity is the viewshed's own — what the terrain model itself
-does not say is `general.terrain`, shared with the panorama so one fact is
-translated once.
+The locked options stay in the menus wearing a `PremiumGem`; picking one opens
+the purchase flow instead of storing a choice the next render would clamp away.
+The stored choice is kept either way, so premium grants it back silently.
 
 ## The render is an explicit act
 
