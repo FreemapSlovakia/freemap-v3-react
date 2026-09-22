@@ -224,7 +224,7 @@ export function PanoramaControls({
 
   // Of the picture on screen, not of the setting: the turning follows what was
   // rendered, so a narrowed view not yet asked for still follows the device.
-  const sweepsWithDevice = !render || isFullTurn(render.fov);
+  const followsDevice = !render || isFullTurn(render.fov);
 
   const dominanceStep = nearestStep(DOMINANCE_STEPS_M, settings.minDominance);
 
@@ -591,7 +591,7 @@ export function PanoramaControls({
           icon={
             settings.autoPan ? (
               <FaStop />
-            ) : isCompassSupported() && sweepsWithDevice ? (
+            ) : isCompassSupported() && followsDevice ? (
               <FaCompass />
             ) : (
               <FaPlay />

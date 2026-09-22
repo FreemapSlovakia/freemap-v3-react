@@ -7,6 +7,8 @@ export type ViewshedMessages = {
   pickViewpointPrompt: string;
   /** Names the one control that sizes a render: how far, and how fine. */
   extent: string;
+  /** The gem's tooltip: why looking further is premium's. */
+  rangeHint: string;
   /** How fine the raster is; worded as the panorama's tier control. */
   detail: string;
   details: {

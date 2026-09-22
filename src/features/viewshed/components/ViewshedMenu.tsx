@@ -230,7 +230,7 @@ export default function ViewshedMenu(): ReactElement {
                     <>
                       {gm?.general.maxVisibleDistance}
 
-                      {!premium && <PremiumGem hint={prm?.higherDetail} />}
+                      {!premium && <PremiumGem hint={m?.rangeHint} />}
                     </>
                   }
                   valueLabel={nfKm.format(grants.radiusKm)}

@@ -5,6 +5,9 @@ const fr: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Choisir sur la carte',
   locate: 'Visibilité depuis ma position',
   pickViewpointPrompt: 'Cliquez sur la carte à l’endroit d’où regarder',
+  extent: 'Portée et détail',
+  rangeHint:
+    'Regarder au-delà de 20 km relève du premium : la distance est ce qui coûte le plus à une analyse de visibilité — les rayons croissent avec le pourtour et chacun va jusqu’au bord.',
   detail: 'Détail',
   details: {
     superfast: 'Minimale / la plus rapide',

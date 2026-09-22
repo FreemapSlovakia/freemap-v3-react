@@ -5,6 +5,8 @@ const en: ViewshedMessages = {
   locate: 'Viewshed from my position',
   pickViewpointPrompt: 'Click the map where you want to look from',
   extent: 'Range and detail',
+  rangeHint:
+    'Looking further than 20 km is premium’s: distance is what a viewshed costs most, the rays growing with the rim and each marching to the edge.',
   detail: 'Detail',
   details: {
     superfast: 'Lowest / fastest',
