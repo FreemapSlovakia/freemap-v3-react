@@ -32,7 +32,6 @@ import {
   FaCog,
   FaCompass,
   FaCrosshairs,
-  FaInfoCircle,
   FaPlay,
   FaStop,
   FaStreetView,
@@ -102,17 +101,12 @@ const LABEL_SETTING_KEYS = Object.keys(
 const FOV_STOPS = [...PANORAMA_FOVS].reverse();
 
 type Props = {
-  /** The caveats panel is the footer's to draw; this only presses the button. */
-  showCaveats: boolean;
-  onToggleCaveats: () => void;
   fullscreen: boolean;
   onToggleFullscreen: () => void;
 };
 
 /** Everything the panorama is driven by; see `FloatingWindowControls`. */
 export function PanoramaControls({
-  showCaveats,
-  onToggleCaveats,
   fullscreen,
   onToggleFullscreen,
 }: Props): ReactElement {
@@ -611,14 +605,6 @@ export function PanoramaControls({
 
             dispatch(panoramaSetSettings({ autoPan: !settings.autoPan }));
           }}
-        />
-
-        <Action
-          label={showCaveats ? gm?.general.close : m?.caveats.title}
-          icon={<FaInfoCircle />}
-          showFrom="xl"
-          active={showCaveats}
-          onClick={onToggleCaveats}
         />
 
         <Action {...fullscreenAction} onClick={onToggleFullscreen} />

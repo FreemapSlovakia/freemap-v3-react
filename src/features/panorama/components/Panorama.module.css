@@ -35,6 +35,24 @@
   cursor: pointer;
 }
 
+/* Subtle over the picture rather than a toolbar button: a fingertip target in
+   the corner the picture can spare, which only says what it is on hover. */
+.about-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.65;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
 /* Clears the two grips for an overlay in a top corner: they sit 0.25rem down
    and stand 2rem tall, measured from the *box*, while the overlay is measured
    from the content inside it. Bootstrap's spacing scale steps 1.5rem to 3rem,

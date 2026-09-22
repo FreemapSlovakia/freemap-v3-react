@@ -1,0 +1,78 @@
+import { useMessages } from '@features/l10n/l10nInjector.js';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
+import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
+
+type Props = {
+  /** Degrees of unfolding the picture on screen was drawn with. */
+  depthLift: number;
+  terrain: AttributionDef[];
+};
+
+// One model can be credited under one name with several links.
+const keyOf = (attr: AttributionDef) => `${attr.name} ${attr.url ?? ''}`;
+
+function SourceName({ attr }: { attr: AttributionDef }): ReactNode {
+  return attr.url ? (
+    <a
+      href={attr.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="link-body-emphasis"
+    >
+      {attr.name}
+    </a>
+  ) : (
+    attr.name
+  );
+}
+
+/**
+ * What the picture shows, what it doesn't, and what it was drawn from. In a
+ * toast because the credits carry links a tooltip cannot be reached to click —
+ * the same reason the elevation chart puts its own list in one.
+ */
+export function PanoramaAbout({ depthLift, terrain }: Props): ReactElement {
+  const m = usePanoramaMessages();
+
+  const gm = useMessages();
+
+  return (
+    <>
+      <p className="mb-1">{m?.caveats.bareEarth}</p>
+
+      <p className="mb-1">{m?.caveats.coverage}</p>
+
+      <p className="mb-1">{m?.caveats.viewpoint}</p>
+
+      {/* Of the render, not of the setting: this says what the picture on
+          screen is, and a lift only staged has not drawn it yet. */}
+      {depthLift > 0 && <p className="mb-1">{m?.caveats.depthLift}</p>}
+
+      <p className="mb-1">
+        {m?.terrainSource}:{' '}
+        {terrain.map((attr, i) => (
+          <Fragment key={keyOf(attr)}>
+            {i > 0 ? ', ' : null}
+
+            <SourceName attr={attr} />
+          </Fragment>
+        ))}
+      </p>
+
+      {/* Every name in the picture is an OSM node — the summit's own elevation
+          comes from the terrain model above, but what it is called does not. */}
+      <p className="mb-0">
+        {m?.peakSource}:{' '}
+        <a
+          href="https://osm.org/copyright"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link-body-emphasis"
+        >
+          {gm?.mapLayers.attr['osmData']}
+        </a>
+      </p>
+    </>
+  );
+}
