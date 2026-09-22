@@ -580,11 +580,16 @@ export function PanoramaControls({
             magnetometer the view follows it rather than turning by itself, so a
             play mark would promise the wrong thing — see `PanoramaView`.
 
-            Never disabled, though a slice has nothing to turn through: a phone
-            starts out following, so disabling it there would leave someone
-            unable to turn it off and the view spinning again the moment they
-            went back to a full turn. It sets the preference either way. */}
+            Off and looking at a slice, there is nothing to turn through and
+            pressing it would do nothing, so it is disabled. Still pressable
+            while it is *on*: a phone starts out following, and someone who
+            narrowed the view has to be able to stop it. Judged on the picture
+            on screen rather than the setting, which is what the turning reads
+            — a narrowed view not yet rendered still turns. */}
         <Action
+          disabled={
+            !settings.autoPan && render !== null && !isFullTurn(render.fov)
+          }
           label={m?.autoPan}
           icon={
             settings.autoPan ? (
