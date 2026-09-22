@@ -202,7 +202,7 @@ export default function Panorama(): ReactElement {
           {/* Hidden while a render is on, the progress scrim taking the same
               corner. */}
           {render && !rendering && (
-            <LongPressTooltip label={m?.caveats.title}>
+            <LongPressTooltip label={gm?.general.info}>
               {({ props }) => (
                 <button
                   type="button"

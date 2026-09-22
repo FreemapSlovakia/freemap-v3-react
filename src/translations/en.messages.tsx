@@ -48,6 +48,7 @@ const messages: Messages = {
     eyeHeightHint:
       'How high above the ground you are standing — a tower or a drone, not the elevation itself.',
     maxVisibleDistance: 'Max. visible distance',
+    info: 'Information',
     terrain: {
       bareEarth:
         'The terrain model is bare earth: forests and buildings are invisible, so ground a forest would hide is treated as open. This is by far the largest source of error.',

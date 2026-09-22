@@ -142,7 +142,6 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Panorama se nepodařilo vykreslit.',
   },
   caveats: {
-    title: 'Co obrázek ukazuje a co ne',
     viewpoint:
       'Oko je umístěno na nejvyšší bod v okruhu několika metrů od místa kliknutí, aby výhled z vrcholu nekazila skála vedle vás.',
     depthLift:

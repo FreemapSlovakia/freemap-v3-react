@@ -143,7 +143,6 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Le panorama n’a pas pu être rendu.',
   },
   caveats: {
-    title: 'Ce que l’image montre et ce qu’elle ne montre pas',
     viewpoint:
       'L’œil est placé sur le point le plus haut à quelques mètres de votre clic, pour qu’un rocher voisin ne gâche pas la vue depuis le sommet.',
     depthLift:

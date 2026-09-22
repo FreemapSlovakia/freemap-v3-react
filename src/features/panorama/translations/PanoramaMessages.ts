@@ -166,7 +166,6 @@ export type PanoramaMessages = {
    * picture's own.
    */
   caveats: {
-    title: string;
     viewpoint: string;
     /** Said only while the picture is unfolded, which it takes back. */
     depthLift: string;

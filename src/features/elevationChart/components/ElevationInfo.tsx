@@ -13,7 +13,7 @@ import {
 import { pickSubdomain } from '@shared/tileUrl.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useMemo } from 'react';
-import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
+import { Button, Form, InputGroup } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { type ElevationReading, ElevationValue } from './ElevationValue.js';
@@ -143,16 +143,17 @@ export function ElevationInfo({
       {!window.fmEmbedded && (
         <div>
           {tileMessage}:{' '}
-          <Alert.Link
+          <a
             onClick={(e) => {
               e.preventDefault();
               dispatch(searchSetQuery({ query: `${zoom}/${x}/${y}` }));
             }}
             href={`#q=${encodeURIComponent(`${zoom}/${x}/${y}`)}`}
             target="_blank"
+            rel="noopener"
           >
             {zoom}/{x}/{y}
-          </Alert.Link>
+          </a>
           {tileUrls.length > 0 && (
             <>
               {' '}
@@ -160,11 +161,11 @@ export function ElevationInfo({
               {tileUrls.map((def, i) => (
                 <Fragment key={def.type}>
                   {i > 0 ? ', ' : null}
-                  <Alert.Link href={def.tileUrl} target="_blank">
+                  <a href={def.tileUrl} target="_blank" rel="noopener">
                     {'name' in def
                       ? (def.name ?? def.type)
                       : (m?.mapLayers.letters[def.type] ?? def.type)}
-                  </Alert.Link>
+                  </a>
                 </Fragment>
               ))}
               )

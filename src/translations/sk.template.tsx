@@ -50,6 +50,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeightHint:
       'Ako vysoko nad zemou stojíte — rozhľadňa či dron, nie nadmorská výška.',
     maxVisibleDistance: 'Max. viditeľná vzdialenosť',
+    info: 'Informácie',
     terrain: {
       bareEarth:
         'Model terénu je holá zem: lesy ani budovy v ňom nie sú, takže terén, ktorý by les zakryl, sa berie ako voľný. Toto je zďaleka najväčší zdroj odchýlok.',

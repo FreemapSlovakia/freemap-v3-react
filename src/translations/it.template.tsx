@@ -49,6 +49,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeightHint:
       'Quanto sei in alto rispetto al terreno — una torre o un drone, non la quota sul livello del mare.',
     maxVisibleDistance: 'Distanza max. visibile',
+    info: 'Informazioni',
     terrain: {
       bareEarth:
         'Il modello del terreno è suolo nudo: boschi ed edifici non ci sono, quindi un terreno che un bosco coprirebbe è considerato libero. È di gran lunga la maggiore fonte di errore.',

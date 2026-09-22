@@ -143,7 +143,6 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'A panorámát nem sikerült renderelni.',
   },
   caveats: {
-    title: 'Mit mutat a kép, és mit nem',
     viewpoint:
       'A szem a kattintástól számított néhány méteren belüli legmagasabb pontra kerül, hogy a csúcsról nyíló kilátást ne rontsa el a mellette álló szikla.',
     depthLift:

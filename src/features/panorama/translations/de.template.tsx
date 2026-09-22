@@ -138,7 +138,6 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Das Panorama konnte nicht berechnet werden.',
   },
   caveats: {
-    title: 'Was das Bild zeigt und was nicht',
     viewpoint:
       'Das Auge wird auf den höchsten Punkt im Umkreis weniger Meter um Ihren Klick gesetzt, damit der Fels daneben die Gipfelsicht nicht verdirbt.',
     depthLift:

@@ -51,6 +51,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeightHint:
       'Jak wysoko nad ziemią stoisz — wieża albo dron, a nie wysokość nad poziomem morza.',
     maxVisibleDistance: 'Maks. widoczna odległość',
+    info: 'Informacje',
     terrain: {
       bareEarth:
         'Model terenu to naga ziemia: nie ma w nim lasów ani budynków, więc teren, który zasłoniłby las, traktowany jest jako odsłonięty. To zdecydowanie największe źródło błędu.',

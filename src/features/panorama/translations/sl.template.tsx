@@ -145,7 +145,6 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Panorame ni bilo mogoče izrisati.',
   },
   caveats: {
-    title: 'Kaj slika kaže in česa ne',
     viewpoint:
       'Oko je postavljeno na najvišjo točko v obsegu nekaj metrov od vašega klika, da razgleda z vrha ne pokvari skala poleg vas.',
     depthLift:

@@ -32,6 +32,8 @@ export type Messages = {
     eyeHeightHint: string;
     /** How far such a view reaches. */
     maxVisibleDistance: string;
+    /** Names a mark that opens what there is to say, rather than saying it. */
+    info: string;
     /**
      * What the terrain model itself does and does not say, which is true of
      * every view rendered from it — the panorama's and the viewshed's alike.

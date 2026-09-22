@@ -144,7 +144,6 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Nie udało się wyrenderować panoramy.',
   },
   caveats: {
-    title: 'Co obraz pokazuje, a czego nie',
     viewpoint:
       'Oko umieszczane jest na najwyższym punkcie w promieniu kilku metrów od kliknięcia, żeby widoku ze szczytu nie psuła skała obok ciebie.',
     depthLift:

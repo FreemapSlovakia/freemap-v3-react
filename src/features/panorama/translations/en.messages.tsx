@@ -150,7 +150,6 @@ const en: PanoramaMessages = {
     failed: 'The panorama could not be rendered.',
   },
   caveats: {
-    title: 'What the picture does and does not show',
     viewpoint:
       'The eye is put on the highest point within a few metres of where you clicked, so a summit view is not spoiled by the rock beside it.',
     depthLift:
