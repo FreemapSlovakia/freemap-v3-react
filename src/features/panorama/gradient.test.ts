@@ -233,11 +233,4 @@ describe('gradientRequest', () => {
       [1, '#ffffff'],
     ]);
   });
-
-  // What a previous pass measured, so several renders agree about colour.
-  it('takes a pinned distance over the setting, in metres', () => {
-    expect(gradientRequest(gradient, 300_000, 70_000).far_distance).toBe(
-      70_000,
-    );
-  });
 });

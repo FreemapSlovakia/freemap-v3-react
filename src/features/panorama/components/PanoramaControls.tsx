@@ -68,7 +68,6 @@ import {
   PROMINENCE_WEIGHT_STEP,
   panoramaSettingsInitialState,
   prominenceWeightStep,
-  tiltRange,
 } from '../model/settingsReducer.js';
 import {
   DETAIL_MAX,
@@ -224,15 +223,7 @@ export function PanoramaControls({
       ? `${m?.quality.maximum} · ${pxLabel}`
       : pxLabel;
 
-  const [altMin, altMax] = tiltRange(settings);
-
-  const bandDeg = altMax - altMin;
-
-  const expectedMs = panoramaExpectedMs(
-    grants.pxPerDeg,
-    settings.fovDeg,
-    bandDeg,
-  );
+  const expectedMs = panoramaExpectedMs(grants.pxPerDeg, settings);
 
   const dominanceStep = nearestStep(DOMINANCE_STEPS_M, settings.minDominance);
 

@@ -353,15 +353,13 @@ export type GroundGradientRequest = {
   stops: [number, string][];
 };
 
-/** `pinnedFarM` overrides the setting with a distance a previous pass measured. */
 export function gradientRequest(
   gradient: PanoramaGradient,
   rangeM: number,
-  pinnedFarM?: number | null,
 ): GroundGradientRequest {
   const stops = normalizeStops(gradient.stops);
 
-  const farM = pinnedFarM ?? (gradient.farKm && gradient.farKm * 1000);
+  const farM = gradient.farKm && gradient.farKm * 1000;
 
   return {
     // Never past `range`: the service refuses a ramp ending beyond anything the

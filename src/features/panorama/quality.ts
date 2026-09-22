@@ -249,9 +249,16 @@ const CLIENT_MS_PER_MPX = 1500;
  */
 export function panoramaExpectedMs(
   pxPerDeg: number,
-  fovDeg: number,
-  bandDeg: number,
+  settings: PanoramaSettingsState,
 ): number {
+  // The frame the request will ask for, not the one the settings read as: a
+  // depth lift grows the band, and pricing the unlifted one under-quotes it.
+  const fovDeg = renderFov(settings);
+
+  const [altMin, altMax] = renderTiltRange(settings);
+
+  const bandDeg = altMax - altMin;
+
   const rays = Math.round(fovDeg * pxPerDeg) * raysForDetail(pxPerDeg);
 
   const megapixels = (fovDeg * pxPerDeg * bandDeg * pxPerDeg) / 1e6;
@@ -338,16 +345,13 @@ function renderTiltRange(settings: PanoramaSettingsState): [number, number] {
 
 /**
  * `renderAz` is the bearing the middle of the slice faces; a full turn ignores
- * it, having no direction to face. `farM` pins the ramp where a previous pass
- * measured it; without it a gradient asking for `auto` measures each pass's own
- * frame, and the two can land on different rungs of the service's ladder.
+ * it, having no direction to face.
  */
 export function buildPanoramaRequest(
   viewpoint: LatLon,
   settings: PanoramaSettingsState,
   { pxPerDeg, raysPerPixel, rangeKm }: PanoramaGrants,
   renderAz: number,
-  farM?: number | null,
 ): PanoramaRequest {
   const band = renderTiltRange(settings);
 
@@ -381,7 +385,7 @@ export function buildPanoramaRequest(
     // so `ground_color` beside it would only say something untrue.
     ...(gradient
       ? {
-          ground_gradient: gradientRequest(gradient, rangeKm * 1000, farM),
+          ground_gradient: gradientRequest(gradient, rangeKm * 1000),
         }
       : { ground_color: settings.groundColor }),
     depth_lift: settings.depthLift,
