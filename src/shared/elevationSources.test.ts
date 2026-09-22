@@ -1,26 +1,5 @@
-import {
-  ELEVATION_API_DTM_ATTRIBUTION,
-  ELEVATION_API_DTM_COUNTRIES,
-  hasSubMeterPrecision,
-} from '@shared/elevationSources.js';
+import { hasSubMeterPrecision } from '@shared/elevationSources.js';
 import { describe, expect, it } from 'vitest';
-
-describe('ELEVATION_API_DTM_ATTRIBUTION', () => {
-  it('credits a national model for every country the API serves one for', () => {
-    expect(
-      [...new Set(ELEVATION_API_DTM_ATTRIBUTION.map((attr) => attr.country))] //
-        .sort(),
-    ).toEqual([...ELEVATION_API_DTM_COUNTRIES].sort());
-  });
-
-  it('names and links every source it credits', () => {
-    for (const attr of ELEVATION_API_DTM_ATTRIBUTION) {
-      expect(attr.name).toBeTruthy();
-
-      expect(attr.url).toBeTruthy();
-    }
-  });
-});
 
 describe('hasSubMeterPrecision', () => {
   it('holds for a national model, whatever its case', () => {

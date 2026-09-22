@@ -193,7 +193,8 @@ afterwards. Check copy against this list before posting.
 
 **Safe to claim:** open source; no user tracking (self-hosted analytics only, no ad
 network, no third-party trackers); national high-resolution terrain in the countries
-listed in `OUTDOOR_NATIONAL_DTM_ATTRIBUTION` (**not** Germany); trails drawn from
+the renderer serves a `shading:<cc>` dataset for — `curl https://outdoor.tiles.freemap.sk/licenses`
+(**not** Germany); trails drawn from
 `osmc:symbol` with `ref`/`name` labels; offline download; Garmin/Locus/OsmAnd exports.
 
 **Verify feature claims against the code, not against this roadmap.** Hook 4 below
@@ -272,8 +273,8 @@ touching Italy — it carries which venues already know Freemap (and so must nev
       ("Komoot wird immer unbrauchbarer", "Navigation Apps - Alternativen zu Komoot").
       Displaced-user moment in exactly this category — but it is a slow grumble, not a
       stampede, so do not overestimate it.
-- [ ] Germany — biggest untapped ceiling BUT **no national high-res DTM** (`de` is absent
-      from `OUTDOOR_NATIONAL_DTM_ATTRIBUTION`; it falls back to 30 m GEDTM30), so the
+- [ ] Germany — biggest untapped ceiling BUT **no national high-res DTM** (no
+      `shading:de` in the renderer's `/licenses`; it falls back to 30 m GEDTM30), so the
       terrain hook cannot be used there. Lead with tools/offline/OSS instead.
       German outdoor forums, Wander/MTB subreddits, Fediverse. (talk-de intro done once.)
 - [ ] Austria — Alpine, ALS DTM (Geoland.at), 13 actions/visit; **warm channel found**:

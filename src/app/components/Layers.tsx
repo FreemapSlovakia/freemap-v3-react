@@ -14,6 +14,7 @@ import {
   type LayerDef,
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
+import { tileAttributionHandlers } from '@shared/tileAttribution.js';
 import { wmsBaseUrl } from '@shared/wms.js';
 import type { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
@@ -393,6 +394,9 @@ export function Layers(): ReactElement | null {
           onPremiumClick={
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }
+          // Every tile layer is counted; only the ones whose server reports its
+          // datasets ever resolve to anything, the rest stay on their own list.
+          eventHandlers={tileAttributionHandlers(type)}
           className={`fm-${layerDef.layer}`}
         />
       );

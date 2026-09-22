@@ -43,16 +43,20 @@ export function PanoramaAbout({ depthLift, terrain }: Props): ReactElement {
       {depthLift > 0 && <p className="mb-1">{m?.caveats.depthLift}</p>}
 
       <ul className="m-0 ps-3">
-        <li>
-          {m?.terrainSource}:{' '}
-          {terrain.map((attr, i) => (
-            <Fragment key={keyOf(attr)}>
-              {i > 0 ? ', ' : null}
+        {/* Omitted rather than left dangling when the render named no model:
+            a label with nothing after the colon credits nobody either. */}
+        {terrain.length > 0 && (
+          <li>
+            {m?.terrainSource}:{' '}
+            {terrain.map((attr, i) => (
+              <Fragment key={keyOf(attr)}>
+                {i > 0 ? ', ' : null}
 
-              <SourceName attr={attr} />
-            </Fragment>
-          ))}
-        </li>
+                <SourceName attr={attr} />
+              </Fragment>
+            ))}
+          </li>
+        )}
 
         {/* Every name in the picture is an OSM node — the summit's own
             elevation comes from the terrain model above, but what it is called

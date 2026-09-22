@@ -6,7 +6,6 @@ import { FloatingWindowGrips } from '@shared/components/FloatingWindowControls.j
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
-import { terrainAttributions } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useFloatingWindow } from '@shared/hooks/useFloatingWindow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -243,7 +242,7 @@ export default function Panorama(): ReactElement {
 
               <PanoramaAbout
                 depthLift={render.depthLift}
-                terrain={terrainAttributions(render.attributions)}
+                terrain={render.attributions}
               />
             </div>
           )}

@@ -5,8 +5,14 @@ import {
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
-import { SONNY_ATTR, terrainAttributions } from '@shared/elevationSources.js';
+import { SONNY_ATTR } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import {
+  licenseAttributions,
+  resolveTileCodes,
+  useTileAttribution,
+} from '@shared/tileAttribution.js';
+import { useTileLicenses } from '@shared/tileLicenses.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, type ReactElement, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
@@ -16,6 +22,7 @@ import {
   integratedLayerDefs,
   OSM_DATA_ATTR,
   OSRM_ROUTING_ATTR,
+  RENDERER_LAYER_TYPES,
 } from '../mapDefinitions.js';
 
 type Props = { unknown: string };
@@ -40,20 +47,14 @@ export function toAttributionCountries(
 
 /**
  * Tells whether an attribution applies to the covered `countries`: a
- * country-specific source needs its country in the list, and a global fallback
- * (`exceptCountries`) needs at least one covered country the national sources
- * don't serve. An `undefined` country list means "unknown", so everything shows.
+ * country-specific source needs its country in the list, a global one always
+ * applies. An `undefined` country list means "unknown", so everything shows.
  */
 function coversCountries(
   def: AttributionDef,
   countries: string[] | undefined,
 ): boolean {
-  return (
-    !countries ||
-    ((!def.country || countries.includes(def.country)) &&
-      (!def.exceptCountries ||
-        countries.some((country) => !def.exceptCountries?.includes(country))))
-  );
+  return !countries || !def.country || countries.includes(def.country);
 }
 
 export function Attribution({ unknown }: Props): ReactElement {
@@ -64,6 +65,8 @@ export function Attribution({ unknown }: Props): ReactElement {
   const attribution = useResolvedAttribution(
     layers,
     toAttributionCountries(countriesState),
+    true,
+    true,
   );
 
   return attribution === null ? (
@@ -147,18 +150,19 @@ export function useRoutingAttributions(): AttributionDef[] {
  * "fix the map" obligation applies: it is a link or it is nothing, and baking
  * its label into an exported image would only add noise. It is FOSSGIS' term,
  * so it rides along with the OSRM credit and nothing else.
+ *
+ * `fromPaintedTiles` credits a layer by what its tiles report having drawn
+ * rather than by the countries in view. Only for the map on screen — an export
+ * covers an area the painted tiles say nothing about.
  */
 function useCategorizedAttribution(
   layers: string[],
   countries?: string[],
   creditRouting = true,
   linked = false,
+  fromPaintedTiles = false,
 ) {
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
-
-  const cachedAttrs = cachedMaps
-    .filter((cm) => layers.includes(cm.type) && cm.attribution)
-    .flatMap((cm) => cm.attribution!);
 
   const routingAttrs = useRoutingAttributions();
 
@@ -166,19 +170,82 @@ function useCategorizedAttribution(
     (state) => state.viewshed.render?.attributions,
   );
 
+  const tileAttribution = useTileAttribution();
+
+  const licenses = useTileLicenses();
+
+  // A layer whose tiles reported their datasets is credited from those and
+  // skips the country filter — the codes are the exact answer it approximates.
+  const exact: AttributionDef[] = [];
+
+  const guessed: AttributionDef[] = [];
+
+  for (const def of integratedLayerDefs) {
+    if (!layers.includes(def.type)) {
+      continue;
+    }
+
+    const resolved = fromPaintedTiles
+      ? resolveTileCodes(tileAttribution[def.type], licenses)
+      : null;
+
+    if (resolved) {
+      exact.push(...resolved);
+    } else {
+      guessed.push(...def.attribution);
+
+      // The tiles didn't say which datasets they drew, so credit every one the
+      // renderer could have drawn on. Narrowed by the countries in view below,
+      // which the codes in the catalogue's keys make possible.
+      if (licenses && RENDERER_LAYER_TYPES.includes(def.type)) {
+        guessed.push(...licenseAttributions(licenses));
+      }
+    }
+  }
+
+  // A cached map carries the codes of everything it downloaded, and the
+  // dictionary to read them by; a map from before that wears its source
+  // layer's credit instead.
+  for (const cm of cachedMaps) {
+    if (!layers.includes(cm.type)) {
+      continue;
+    }
+
+    // Only a map of the renderer's own layers can carry codes; another
+    // provider's tile that happened to start with a comment segment would
+    // otherwise be read as one, and credited to the wrong people.
+    const fromRenderer = RENDERER_LAYER_TYPES.includes(cm.sourceType);
+
+    const resolved = fromRenderer
+      ? resolveTileCodes(cm.attributionCodes, cm.attributionLicenses)
+      : null;
+
+    if (resolved) {
+      exact.push(...resolved);
+    } else {
+      guessed.push(
+        ...(integratedLayerDefs.find(({ type }) => type === cm.sourceType)
+          ?.attribution ?? []),
+      );
+
+      // As for a layer on screen: a map that couldn't say what it drew credits
+      // everything it could have drawn on, rather than the floor alone.
+      if (fromRenderer && licenses) {
+        guessed.push(...licenseAttributions(licenses));
+      }
+    }
+  }
+
   const defs = [
-    ...integratedLayerDefs
-      .filter(({ type }) => layers.includes(type))
-      .flatMap((def) => def.attribution),
-    ...cachedAttrs,
-    ...(creditRouting ? routingAttrs : []),
-  ].filter((def) => coversCountries(def, countries));
+    ...exact,
+    ...[...guessed, ...(creditRouting ? routingAttrs : [])].filter((def) =>
+      coversCountries(def, countries),
+    ),
+  ];
 
   // Past the country filter: the service names the models its render was
   // answered from, which the viewport it is looked at from cannot narrow.
-  const terrainDefs = layers.includes('v')
-    ? terrainAttributions(viewshedCredits)
-    : [];
+  const terrainDefs = layers.includes('v') ? (viewshedCredits ?? []) : [];
 
   const categorized = categorize([
     ...defs,
@@ -241,6 +308,7 @@ export function useResolvedAttribution(
   layers: string[],
   countries?: string[],
   creditRouting = true,
+  fromPaintedTiles = false,
 ): [string, ReactElement][] | null {
   const m = useMessages();
 
@@ -249,6 +317,7 @@ export function useResolvedAttribution(
     countries,
     creditRouting,
     true,
+    fromPaintedTiles,
   );
 
   const dispatch = useDispatch();

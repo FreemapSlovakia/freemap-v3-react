@@ -245,23 +245,15 @@ elevation, which never went through the API at all.
 Nothing carries them to the chart, onto geometry, or into the store — the credit travels
 alone.
 
-`ELEVATION_API_DTM_COUNTRIES` / `ELEVATION_API_DTM_ATTRIBUTION` remain for the two places
-that credit before any read has happened: the premium offer's country list, and the
-panorama's footer. They are drawn from the outdoor renderer's shading sources
-(`OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in `mapDefinitions.tsx`), and stay a separate list
-because either side can gain a model the other doesn't hold.
+`ELEVATION_API_DTM_COUNTRIES` remains for the one place that credits before any read has
+happened: the premium offer's country list. It names no model — a read credits whatever the
+API reports for the points it answered.
 
 Coverage is reported per country (`/geotools/covered-countries` answers `alpha2` codes), so a
-model that covers only part of one is marked `partial` and its country left out of GEDTM30's
-`exceptCountries`: the model is credited over the whole country and GEDTM30 beside it, both
-over-credits rather than a missing one. England's LIDAR composite is the case. The premium
-offer's country list names such an area through `dtmAreaNames` instead of the country —
-`Intl.DisplayNames` names countries alone.
-
-A country can also be covered by **more than one model** — Belgium is SPW's in the south and
-DHMV II in the north (which reaches over Brussels as well, so there is no gap and no third
-credit), each with its own licence — so the attribution list holds an entry per model while
-`ELEVATION_API_DTM_COUNTRIES` and GEDTM30's `exceptCountries` hold each country once.
+model covering only part of one is listed for the whole of it, an over-credit rather than a
+missing one. England's LIDAR composite is the case, and the premium offer's country list names
+such an area through `dtmAreaNames` instead of the country — `Intl.DisplayNames` names
+countries alone.
 
 Which model answers depends on the read, not only on the place: a **premium** read gets the
 national models and GEDTM30 past their borders, while a **non-premium** one is answered from

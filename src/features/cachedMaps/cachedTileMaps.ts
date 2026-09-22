@@ -1,9 +1,9 @@
 import type {
-  AttributionDef,
   CustomLayerDef,
   IsTileLayerDef,
   IsWmsLayerDef,
 } from '@shared/mapDefinitions.js';
+import type { LicenseDict } from '@shared/tileLicenses.js';
 import { pickTileScale } from '@shared/tileUrl.js';
 
 export type CachedTileMapDef = CustomLayerDef<
@@ -16,7 +16,17 @@ export type CachedTileMapDef = CustomLayerDef<
   cacheName: string;
   createdAt: string;
   sizeBytes: number;
-  attribution?: AttributionDef[];
+  /**
+   * The union of the dataset codes the downloaded tiles reported, absent when
+   * any of them didn't — the map is then credited from its source layer, which
+   * names more sources than it holds rather than fewer.
+   */
+  attributionCodes?: string[];
+  /**
+   * What those codes mean, taken from the renderer at download time. An offline
+   * map can't ask, so it carries the answer.
+   */
+  attributionLicenses?: LicenseDict;
   /**
    * The `@Nx` variant the tiles are stored at (1 = plain tiles). A cached map
    * holds exactly one, so it is rendered at this scale whatever the screen and

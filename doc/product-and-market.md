@@ -37,7 +37,8 @@ md me mk nl no pl pt ro rs se si sk sm tr ua uk va xk
 
 Zoom 5–20; **premium from zoom 19**.
 
-**National high-resolution terrain — 16 entries** (`OUTDOOR_NATIONAL_DTM_ATTRIBUTION`).
+**National high-resolution terrain — 16 entries** (the renderer's `shading:<cc>`
+datasets; `curl https://outdoor.tiles.freemap.sk/licenses`).
 This is the single strongest differentiator, and it decides which markets are worth
 entering:
 

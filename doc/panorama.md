@@ -1306,12 +1306,11 @@ Attribution follows the render and comes from the service, which reads it from
 the same `source.json` tree the elevation API credits a read from — so a model's
 licence text is written once, on the server, and nothing here keeps a copy.
 `meta.sources` names the models behind this view, each with its own credit.
-`TerrainCreditsSchema` (`shared/terrainService.ts`) flattens them, and
-`terrainAttributions` (`shared/elevationSources.ts`) falls back to crediting
-every model where the service named none — naming one that contributed nothing
-is harmless, dropping one that did is a licence breach. The viewshed's credit is
-the same list, added past `Attribution`'s country filter: a 300 km render is not
-narrowed by the viewport it is looked at from.
+`TerrainCreditsSchema` (`shared/terrainService.ts`) flattens them, and the panel
+shows what came back — a render always names its models, so nothing stands in for
+them here. The viewshed's credit is the same list, added past `Attribution`'s
+country filter: a 300 km render is not narrowed by the viewport it is looked at
+from.
 
 ## Not done yet
 

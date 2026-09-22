@@ -25,9 +25,10 @@ same subject instead** and do not quote or @-mention people from the old one.
 ## Why Austria before Germany
 
 The roadmap calls Germany the "biggest untapped ceiling", but the code says the
-terrain hook does not work there. `OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in
-`src/shared/mapDefinitions.tsx` lists AT, CZ, FR, IT, PL, SK, SI, CH, NO, SE, FI,
-ES, HR, LU, BE and England — **no `de`**. Germany falls back to global 30 m
+terrain hook does not work there. The renderer's `/licenses`
+(`curl https://outdoor.tiles.freemap.sk/licenses`) carries a `shading:<cc>` entry
+for AT, CZ, FR, IT, PL, SK, SI, CH, NO, SE, FI, ES, HR, LU, BE and England —
+**no `de`**. Germany falls back to global 30 m
 GEDTM30, so "see every gully and old road" is not a claim that can be made there.
 
 Austria has **ALS DTM (Geoland.at)** over the whole country, 13 actions/visit (the

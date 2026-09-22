@@ -64,6 +64,13 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
+- [ ] **Bake an export's credit from what the server exported.** `GET /export`
+      answers with the codes on `X-Attribution`, but `exportMapToDocument` bakes
+      a string resolved before the export runs — the whole `/licenses`
+      catalogue narrowed by the countries in the area, where the header names
+      exactly what was drawn. Read the header and resolve it through
+      `resolveTileCodes` instead, the way the map already does.
+
 - [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
       `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
       `useMemo` is left. Same method — see

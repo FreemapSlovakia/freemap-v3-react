@@ -43,8 +43,8 @@ export function terrainErrorCode(err: unknown): TerrainErrorCode {
 /**
  * The credits a render's `meta.sources` carries, flattened: the service names
  * the models it was answered from and what to display for each, so nothing here
- * keeps a copy of the licence text. Empty from a service too old to report
- * them, which callers read as "credit every model".
+ * keeps a copy of the licence text. Empty only from a service too old to report
+ * them, and then nothing is credited — there is no list here to stand in.
  */
 export const TerrainCreditsSchema = z
   .array(z.looseObject({ attributions: z.unknown() }))

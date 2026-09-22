@@ -1,0 +1,411 @@
+import type { LeafletEventHandlerFnMap, TileEvent } from 'leaflet';
+import { useSyncExternalStore } from 'react';
+import {
+  type AttributionDef,
+  FM_ATTR,
+  OSM_DATA_ATTR,
+} from './mapDefinitions.js';
+import { type LicenseDict, loadTileLicenses } from './tileLicenses.js';
+
+/** The `Server-Timing` metric the renderer names its dataset codes in. */
+const METRIC = 'attr';
+
+/** Tiles whose codes are remembered; a dropped one reads back as unknown. */
+const MAX_REMEMBERED = 2048;
+
+/**
+ * The renderer spaces the codes on the wire and commas them in the tile, so both
+ * separators are taken either way — one reader accepting what the other rejects
+ * would show up only as the online and offline credits disagreeing.
+ */
+const CODE_SEPARATOR = /[,\s]+/;
+
+function splitCodes(payload: string): string[] {
+  return payload.split(CODE_SEPARATOR).filter(Boolean);
+}
+
+const codesByUrl = new Map<string, string[]>();
+
+/** The tiles currently painted, by the element drawing them. */
+const painted = new Map<Element, { url: string; type: string }>();
+
+const listeners = new Set<() => void>();
+
+/**
+ * Per layer type, the codes of every tile it currently paints — or `null` while
+ * any of them is unaccounted for, which is every layer the renderer doesn't
+ * serve.
+ */
+export type TileAttribution = Record<string, string[] | null>;
+
+const EMPTY: TileAttribution = {};
+
+let snapshot: TileAttribution = EMPTY;
+
+function compute(): TileAttribution {
+  const byType = new Map<string, Set<string> | null>();
+
+  for (const [tile, { url, type }] of painted) {
+    // react-leaflet unbinds the handlers before it removes the layer, so a
+    // layer switched off announces none of its removals. Leaflet takes a tile
+    // out of the DOM before it says so, which outlives that.
+    if (!tile.isConnected) {
+      painted.delete(tile);
+
+      continue;
+    }
+
+    if (byType.get(type) === null) {
+      continue;
+    }
+
+    const codes = codesByUrl.get(url);
+
+    if (!codes) {
+      byType.set(type, null);
+
+      continue;
+    }
+
+    const set = byType.get(type) ?? new Set<string>();
+
+    for (const code of codes) {
+      set.add(code);
+    }
+
+    byType.set(type, set);
+  }
+
+  const next: TileAttribution = {};
+
+  for (const [type, set] of byType) {
+    next[type] = set && [...set].sort();
+  }
+
+  return next;
+}
+
+function same(a: TileAttribution, b: TileAttribution): boolean {
+  const keys = Object.keys(a);
+
+  return (
+    keys.length === Object.keys(b).length &&
+    keys.every((key) => {
+      const x = a[key];
+
+      const y = b[key];
+
+      return x == null || y == null
+        ? x === y
+        : x.length === y.length && x.every((code, i) => code === y[i]);
+    })
+  );
+}
+
+let scheduled = false;
+
+function schedule(): void {
+  if (scheduled) {
+    return;
+  }
+
+  scheduled = true;
+
+  queueMicrotask(() => {
+    scheduled = false;
+
+    const next = compute();
+
+    if (!same(snapshot, next)) {
+      snapshot = next;
+
+      for (const listener of listeners) {
+        listener();
+      }
+    }
+  });
+}
+
+function remember(url: string, codes: string[]): void {
+  codesByUrl.delete(url);
+
+  codesByUrl.set(url, codes);
+
+  if (codesByUrl.size > MAX_REMEMBERED) {
+    const oldest = codesByUrl.keys().next();
+
+    if (!oldest.done) {
+      codesByUrl.delete(oldest.value);
+    }
+  }
+}
+
+let observing = false;
+
+function observe(): void {
+  if (observing || typeof PerformanceObserver === 'undefined') {
+    return;
+  }
+
+  observing = true;
+
+  // Fetched as soon as a tile is drawn rather than when something asks for the
+  // credit: a session that never opened the panel would otherwise persist no
+  // dictionary, and have none to fall back on next time it is offline.
+  void loadTileLicenses();
+
+  try {
+    new PerformanceObserver((list) => {
+      let changed = false;
+
+      for (const entry of list.getEntries() as PerformanceResourceTiming[]) {
+        if (entry.initiatorType !== 'img') {
+          continue;
+        }
+
+        // The metric's presence is what says the codes are known: an empty
+        // `desc` is a tile that credits nothing, no metric at all is a tile
+        // rendered before the renderer carried attribution.
+        const metric = entry.serverTiming?.find(({ name }) => name === METRIC);
+
+        if (metric) {
+          remember(entry.name, splitCodes(metric.description));
+
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        schedule();
+      }
+      // `buffered` so tiles that loaded before the first layer mounted count too
+    }).observe({ type: 'resource', buffered: true });
+  } catch {
+    observing = false;
+
+    return;
+  }
+
+  // entries are read as they arrive, so the buffer only has to not grow
+  addEventListener('resourcetimingbufferfull', () => {
+    performance.clearResourceTimings();
+  });
+}
+
+/**
+ * Tiles whose image failed. Leaflet swaps in `errorTileUrl`, which then loads
+ * like any other tile and announces itself as one — and that URL carries no
+ * codes, so it would blank the whole layer's credit.
+ */
+const errored = new WeakSet<Element>();
+
+const handlers = new Map<string, LeafletEventHandlerFnMap>();
+
+/**
+ * Leaflet handlers keeping a layer's painted tiles counted. Cached per layer
+ * type because react-leaflet rebinds whenever the object's identity changes.
+ */
+export function tileAttributionHandlers(
+  type: string,
+): LeafletEventHandlerFnMap {
+  let cached = handlers.get(type);
+
+  if (!cached) {
+    cached = {
+      tileload(event) {
+        const { tile } = event as TileEvent;
+
+        // a premium placeholder is a `div`, and paints nothing to credit
+        if (errored.has(tile) || !(tile instanceof HTMLImageElement)) {
+          return;
+        }
+
+        // taken now: Leaflet blanks `src` before it announces the removal
+        const url = tile.currentSrc || tile.src;
+
+        if (url) {
+          observe();
+
+          painted.set(tile, { url, type });
+
+          schedule();
+        }
+      },
+
+      // Announced before the placeholder's own load, so the entry is gone and
+      // the element marked by the time that arrives.
+      tileerror(event) {
+        const { tile } = event as TileEvent;
+
+        errored.add(tile);
+
+        if (painted.delete(tile)) {
+          schedule();
+        }
+      },
+
+      tileunload(event) {
+        if (painted.delete((event as TileEvent).tile)) {
+          schedule();
+        }
+      },
+    };
+
+    handlers.set(type, cached);
+  }
+
+  return cached;
+}
+
+function subscribe(listener: () => void): () => void {
+  observe();
+
+  // A layer switched off announces no removals — react-leaflet unbinds the
+  // handlers first — so its tiles are only pruned the next time this runs.
+  schedule();
+
+  listeners.add(listener);
+
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+export function useTileAttribution(): TileAttribution {
+  return useSyncExternalStore(
+    subscribe,
+    () => snapshot,
+    () => EMPTY,
+  );
+}
+
+/** Enough of a tile for its first segment; the codes run to a few dozen bytes. */
+const HEAD_BYTES = 512;
+
+/**
+ * The codes a rendered tile carries in its first JPEG segment, or `null` for
+ * anything that doesn't start with one. The renderer writes `FF D8 FF FE` and
+ * the payload at a fixed offset, so this needs no JPEG parser.
+ */
+export async function readTileCodes(blob: Blob): Promise<string[] | null> {
+  const head = new Uint8Array(await blob.slice(0, HEAD_BYTES).arrayBuffer());
+
+  if (
+    head.length < 6 ||
+    head[0] !== 0xff ||
+    head[1] !== 0xd8 ||
+    head[2] !== 0xff ||
+    head[3] !== 0xfe
+  ) {
+    return null;
+  }
+
+  // the length counts itself, so the payload ends at 4 + it
+  const end = 4 + ((head[4] << 8) | head[5]);
+
+  if (end > head.length) {
+    return null;
+  }
+
+  return splitCodes(new TextDecoder().decode(head.subarray(6, end)));
+}
+
+/** The namespace each one-character code prefix is short for. */
+const NAMESPACES: Record<string, string> = {
+  s: 'shading',
+  c: 'contours',
+};
+
+/** The code as `/licenses` keys it, or `null` if it isn't one at all. */
+export function expandCode(code: string): string | null {
+  if (code === 'o') {
+    return 'osm';
+  }
+
+  const namespace = NAMESPACES[code[0] ?? ''];
+
+  const key = code.slice(1);
+
+  return namespace && key ? `${namespace}:${key}` : null;
+}
+
+/**
+ * Codes the app renders in its own words. Only for the ones it says something
+ * the renderer's string can't — a translated label, a link into the app — since
+ * anywhere else a local copy would just be the dictionary going stale.
+ */
+const PRESENTED_LOCALLY: Record<string, AttributionDef> = {
+  osm: OSM_DATA_ATTR,
+};
+
+/** A dataset key naming a country rather than a global source. */
+const COUNTRY_KEY = /^[a-z]{2}$/;
+
+/**
+ * Every dataset the renderer knows, for crediting a layer whose tiles didn't say
+ * which of them they drew. The country in a key keeps the list narrowable by
+ * what is in view; a global source carries none and so is always shown.
+ */
+export function licenseAttributions(licenses: LicenseDict): AttributionDef[] {
+  return Object.entries(licenses)
+    .filter(([code]) => !PRESENTED_LOCALLY[code])
+    .map(([code, { title, url }]) => {
+      const key = code.split(':')[1] ?? '';
+
+      return {
+        type: 'data',
+        name: title,
+        url,
+        ...(COUNTRY_KEY.test(key) && { country: key }),
+      };
+    });
+}
+
+/**
+ * The sources a tile's codes stand for, or `null` if any of them is unresolved:
+ * the credit then has to widen back to the layer's whole list rather than
+ * silently drop a source. The renderer is what says which sources those are —
+ * `licenses` is its dictionary, and without it nothing resolves.
+ */
+export function resolveTileCodes(
+  codes: string[] | null | undefined,
+  licenses: LicenseDict | null | undefined,
+): AttributionDef[] | null {
+  if (!codes || !licenses) {
+    return null;
+  }
+
+  // Neither has a code of its own: the renderer is ours to credit whatever a
+  // tile drew, and the map is an OSM-derived work even where a tile — open sea,
+  // an empty quarter — put none of it on screen.
+  const resolved: AttributionDef[] = [FM_ATTR, OSM_DATA_ATTR];
+
+  for (const code of codes) {
+    const expanded = expandCode(code);
+
+    if (!expanded) {
+      return null;
+    }
+
+    const local = PRESENTED_LOCALLY[expanded];
+
+    if (local) {
+      // `osm` is seeded above, so its code adds nothing
+      if (!resolved.includes(local)) {
+        resolved.push(local);
+      }
+
+      continue;
+    }
+
+    const license = licenses[expanded];
+
+    if (!license) {
+      return null;
+    }
+
+    resolved.push({ type: 'data', name: license.title, url: license.url });
+  }
+
+  return resolved;
+}

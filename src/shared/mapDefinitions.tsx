@@ -35,11 +35,6 @@ export interface AttributionDef {
     | 'photosCc';
   url?: string;
   country?: string;
-  /**
-   * Marks a global source that national data supersedes: it is shown only when
-   * the covered area reaches beyond the listed countries.
-   */
-  exceptCountries?: string[];
 }
 
 const OSM_MAP_ATTR: AttributionDef = {
@@ -75,7 +70,7 @@ export const OSRM_ROUTING_ATTR: AttributionDef = {
   url: 'https://routing.openstreetmap.de/about.html',
 };
 
-const FM_ATTR: AttributionDef = {
+export const FM_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0Freemap Slovakia',
   url: 'https://www.freemap.sk',
@@ -143,8 +138,7 @@ const GEDTM30_URL = 'https://codeberg.org/openlandmap/GEDTM30';
 /**
  * The global terrain model everything without a national one falls back to —
  * both for the outdoor renderer's shading and for the elevation API (see
- * `elevationSources.ts`). Add `exceptCountries` where the national sources are
- * credited beside it, so it shows only past their coverage.
+ * `elevationSources.ts`).
  */
 export const GEDTM30_ATTR: AttributionDef = {
   type: 'data',
@@ -153,156 +147,19 @@ export const GEDTM30_ATTR: AttributionDef = {
 };
 
 /**
- * Every national elevation/relief source the outdoor renderer blends in;
- * countries missing from this list fall back to GEDTM30. The elevation API
- * answers from the same models, for the countries in
- * `ELEVATION_API_DTM_COUNTRIES` — its own list, which need not match this one.
+ * The layers the outdoor renderer serves, whose tiles name the datasets they
+ * drew. One of these that reported none is credited from the whole `/licenses`
+ * catalogue rather than from {@link OUTDOOR_ATTRIBUTION} alone.
  */
-export const OUTDOOR_NATIONAL_DTM_ATTRIBUTION: (AttributionDef & {
-  country: string;
-  /**
-   * Set where the model covers only part of the country. Coverage is reported
-   * per country, so such a model can't be shown only where it reaches — it is
-   * credited over the whole country, and GEDTM30 stays credited beside it for
-   * the part it doesn't cover.
-   */
-  partial?: boolean;
-})[] = [
-  {
-    type: 'data',
-    country: 'at',
-    name: 'ALS DTM: Digitales Geländemodell Österreich (Geoland.at open data)',
-    url: 'https://www.data.gv.at/katalog/dataset/d88a1246-9684-480b-a480-ff63286b35b7',
-  },
-  {
-    type: 'data',
-    country: 'cz',
-    name: 'DMR 5G: ČÚZK Geoportál',
-    url: 'https://geoportal.cuzk.cz/(S(a21rqp1jhcnkz4iqcen2w50l))/Default.aspx?head_tab=sekce-02-gp&lng=EN&menu=302&metadataID=CZ-CUZK-DMR5G-V&mode=TextMeta&side=vyskopis',
-  },
-  {
-    type: 'data',
-    country: 'fr',
-    name: 'RGE ALTI: IGN (Etalab Open Licence)',
-    url: 'https://geoservices.ign.fr/rgealti',
-  },
-  {
-    type: 'data',
-    country: 'it',
-    name: 'HR-DTM 5 m: IRPI-CNR',
-    url: 'https://doi.org/10.5281/zenodo.18335145',
-  },
-  {
-    type: 'data',
-    country: 'pl',
-    name: 'NMT: GUGiK',
-    url: 'https://www.geoportal.gov.pl/',
-  },
-  {
-    type: 'data',
-    country: 'sk',
-    name: 'DMR 5.0: ÚGKK SR',
-    url: LLS_URL,
-  },
-  {
-    type: 'data',
-    country: 'si',
-    name: 'DMR: Ministrstvo za okolje in prostor',
-    url: 'https://gis.arso.gov.si/evode/profile.aspx?id=atlas_voda_Lidar@Arso',
-  },
-  {
-    type: 'data',
-    country: 'ch',
-    name: 'swissALTI3D: © swisstopo',
-    url: 'https://www.swisstopo.admin.ch/en/height-models/swissalti3d.html',
-  },
-  {
-    type: 'data',
-    country: 'no',
-    name: 'DTM: Kartverket (NLOD\xa02.0)',
-    url: 'https://hoydedata.no/',
-  },
-  {
-    type: 'data',
-    country: 'se',
-    name: 'Markhöjdmodell Nedladdning: Lantmäteriet',
-    url: 'https://www.lantmateriet.se/en/geodata/our-products/product-list/elevation-model-download/',
-  },
-  {
-    type: 'data',
-    country: 'fi',
-    name: 'Korkeusmalli 2 m: Maanmittauslaitos',
-    url: 'https://www.maanmittauslaitos.fi/en/maps-and-spatial-data/datasets-and-interfaces/product-descriptions/elevation-model-2-m',
-  },
-  {
-    type: 'data',
-    country: 'es',
-    name: 'MDT05: IGN (CNIG)',
-    url: 'https://centrodedescargas.cnig.es/CentroDescargas/modelos-digitales-elevaciones',
-  },
-  {
-    type: 'data',
-    country: 'hr',
-    name: 'DMR: Državna geodetska uprava',
-    url: 'https://dgu.gov.hr/proizvodi-i-usluge/podaci-topografske-izmjere/digitalni-model-reljefa/180',
-  },
-  {
-    type: 'data',
-    // CC0, so the credit is courtesy rather than a condition.
-    country: 'lu',
-    name: 'MNT LiDAR\xa02024: Administration du cadastre et de la topographie (CC0)',
-    url: 'https://data.public.lu/en/datasets/lidar-2024-releve-3d-du-territoire-luxembourgeois/',
-  },
-  {
-    type: 'data',
-    // The copyright line is what the OGL v3 licence asks for verbatim.
-    country: 'gb',
-    partial: true,
-    name: 'LIDAR Composite DTM 1\xa0m (England, OGL\xa0v3): ©\xa0Environment Agency copyright and/or database right 2022. All rights reserved.',
-    url: 'https://www.data.gov.uk/dataset/01b3ee39-da3f-47b6-83da-dc98e73a461f/lidar-composite-digital-terrain-model-dtm-1m',
-  },
-  // Belgium is two models under one country: SPW's in the south, and DHMV II,
-  // which reaches over Brussels too — no gap there, and no third credit. CC BY
-  // obliges the SPW half to be marked as changed (§3(a)(1)(B)) — hence
-  // "modified"; the Flemish licence asks only for its "Bron:" line verbatim.
-  {
-    type: 'data',
-    country: 'be',
-    name: 'MNT 1\xa0m 2021–2022: ©\xa0Service public de Wallonie (SPW), CC\xa0BY\xa04.0 — modified',
-    url: 'https://geoportail.wallonie.be/catalogue/fe13bc84-e371-46ca-9632-8ad4139f1ee5.html',
-  },
-  {
-    type: 'data',
-    country: 'be',
-    name: 'DHMV\xa0II 1\xa0m — Bron: Digitaal Vlaanderen (Modellicentie gratis hergebruik)',
-    url: 'https://metadata.vlaanderen.be/srv/dut/catalog.search#/metadata/f52b1a13-86bc-4b64-8256-88cc0d1a8735',
-  },
-];
+export const RENDERER_LAYER_TYPES = ['X', 'XK'];
 
 /**
- * Countries the outdoor renderer shades from a national elevation model over
- * their whole area, so GEDTM30 isn't credited there. A `partial` model leaves
- * its country out. The elevation API keeps its own list,
- * `ELEVATION_API_DTM_COUNTRIES`, which need not hold the same countries.
+ * What the outdoor map and its KST-routes variant credit before their tiles are
+ * heard from: the two that are ours to name whatever the renderer answers, and
+ * that stand even when it cannot be reached at all. Every terrain source comes
+ * from the renderer itself — see `tileAttribution.ts`.
  */
-const OUTDOOR_NATIONAL_DTM_COUNTRIES = [
-  // A country can be covered by more than one model, so the codes are deduped.
-  ...new Set(
-    OUTDOOR_NATIONAL_DTM_ATTRIBUTION.filter((a) => !a.partial).map(
-      (a) => a.country,
-    ),
-  ),
-];
-
-// Attribution shared by the outdoor map and its KST-routes variant: Freemap,
-// OSM data, the national elevation sources, and the global GEDTM30 model that
-// covers everywhere else.
-const OUTDOOR_ATTRIBUTION: AttributionDef[] = [
-  FM_ATTR,
-  OSM_DATA_ATTR,
-  ...OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
-  { ...GEDTM30_ATTR, exceptCountries: OUTDOOR_NATIONAL_DTM_COUNTRIES },
-];
+const OUTDOOR_ATTRIBUTION: AttributionDef[] = [FM_ATTR, OSM_DATA_ATTR];
 
 // The terrain models behind a viewshed are not here: the service names the ones
 // its render was answered from, and `Attribution` adds those. A render reaches
