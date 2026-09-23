@@ -138,7 +138,10 @@ function schedule(): void {
 
   scheduled = true;
 
-  queueMicrotask(() => {
+  // A frame, not a microtask: a pan's worth of tile events collapses into one
+  // pass, and the rects it reads are measured after layout has settled rather
+  // than between Leaflet's own writes.
+  requestAnimationFrame(() => {
     scheduled = false;
 
     const next = compute();
@@ -167,32 +170,16 @@ function remember(url: string, codes: string[]): void {
   }
 }
 
-let licensesLoading = false;
-
-/** Wanted as soon as a tile is drawn, not when something asks for the credit. */
-function loadLicensesOnce(): void {
-  if (!licensesLoading) {
-    licensesLoading = true;
-
-    void loadTileLicenses().then((dict) => {
-      // A page opened during one offline moment would otherwise go the whole
-      // session with nothing to resolve codes by.
-      if (!dict) {
-        licensesLoading = false;
-      }
-    });
-  }
-}
-
 /**
- * What a tile reported, off the response that delivered it. A `null` header
- * leaves the tile unknown, which widens its layer's credit.
+ * What a tile reported, off the response that delivered it. Reporting nothing
+ * leaves the tile unknown, which widens its layer's credit. No recompute: this
+ * runs before the tile is painted, and the `tileload` that follows schedules.
  */
-export function noteTileCodes(url: string, header: string | null): void {
-  if (header !== null) {
-    remember(url, splitAttributionHeader(header));
+export function noteTileCodes(url: string, headers: Headers): void {
+  const codes = readTileCodes(headers);
 
-    schedule();
+  if (codes) {
+    remember(url, codes);
   }
 }
 
@@ -224,13 +211,13 @@ export function tileAttributionHandlers(
           return;
         }
 
-        // What it was fetched from, which `src` no longer says — that is an
-        // object URL. Taken now either way: Leaflet blanks `src` before it
-        // announces the removal.
-        const url = tile.dataset['tileUrl'] || tile.currentSrc || tile.src;
+        // What it was fetched from: `src` may be an object URL, and Leaflet
+        // blanks it before announcing the removal anyway.
+        const url = tile.dataset['tileUrl'];
 
         if (url) {
-          loadLicensesOnce();
+          // wanted as soon as a tile is drawn, not when the credit is asked for
+          void loadTileLicenses();
 
           painted.set(tile, {
             url,
@@ -281,7 +268,7 @@ export function tileAttributionHandlers(
 export const scheduleTileAttribution = schedule;
 
 function subscribe(listener: () => void): () => void {
-  loadLicensesOnce();
+  void loadTileLicenses();
 
   // A layer switched off announces no removals — react-leaflet unbinds the
   // handlers first — so its tiles are only pruned the next time this runs.

@@ -41,6 +41,11 @@ let dict: LicenseDict | null = remembered();
 
 let loading: Promise<LicenseDict | null> | null = null;
 
+/** Not before this: a tile draw asks, so a failure must not ask once per tile. */
+let retryAt = 0;
+
+const RETRY_MS = 30_000;
+
 const listeners = new Set<() => void>();
 
 /**
@@ -49,6 +54,10 @@ const listeners = new Set<() => void>();
  * added since the last visit is never resolved from a stale copy.
  */
 export function loadTileLicenses(): Promise<LicenseDict | null> {
+  if (!loading && Date.now() < retryAt) {
+    return Promise.resolve(dict);
+  }
+
   loading ??= fetch(LICENSES_URL)
     .then((res) => (res.ok ? res.json() : null))
     .then((body) => {
@@ -56,8 +65,10 @@ export function loadTileLicenses(): Promise<LicenseDict | null> {
 
       if (!parsed.success) {
         // A refusal or a malformed answer is no more final than a dropped
-        // connection; both let a later call ask again.
+        // connection; both let a later call ask again, once the wait is up.
         loading = null;
+
+        retryAt = Date.now() + RETRY_MS;
 
         return dict;
       }
@@ -80,6 +91,8 @@ export function loadTileLicenses(): Promise<LicenseDict | null> {
       // Not cached as the answer: a download started later in the session would
       // otherwise inherit one offline moment and store no dictionary at all.
       loading = null;
+
+      retryAt = Date.now() + RETRY_MS;
 
       return dict;
     });

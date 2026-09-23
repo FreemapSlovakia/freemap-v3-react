@@ -1,5 +1,5 @@
 import { createTileLayerComponent } from '@react-leaflet/core';
-import { ATTRIBUTION_HEADER, noteTileCodes } from '@shared/tileAttribution.js';
+import { noteTileCodes } from '@shared/tileAttribution.js';
 import { pickTileScale, withTileScale } from '@shared/tileUrl.js';
 import {
   type Coords,
@@ -14,33 +14,52 @@ type Props = TileLayerProps & {
   extraScales?: number[];
   forcedScale?: number;
   cors?: boolean;
-  /** Whether this layer's tiles name the datasets they drew; see `fetchTile`. */
+  /** Whether this layer's tiles name the datasets they drew; see `loadTile`. */
   reportsAttribution?: boolean;
   premiumFromZoom?: number;
   premiumOnlyText?: string;
   onPremiumClick?: () => void;
 };
 
-const inFlight = new WeakMap<HTMLImageElement, AbortController>();
+/** What one tile's load owns, and how far it has got. */
+type TileLoad = {
+  /** The attempt in flight; a retry swaps it. */
+  controller: AbortController;
+  /** The `@Nx` that attempt asked for, which a decode failure has to know. */
+  scale: number;
+  objectUrl?: string;
+  /** `done` has been called, so the tile is no longer loading. */
+  reported: boolean;
+  /** Unloaded or aborted: nothing wants it any more. */
+  released: boolean;
+};
 
-const objectUrls = new WeakMap<HTMLImageElement, string>();
+const loads = new WeakMap<HTMLImageElement, TileLoad>();
 
-/** Drops the bytes a tile holds. Its presence in `inFlight` is what says it is still wanted. */
-function release(img: HTMLImageElement): void {
-  inFlight.get(img)?.abort();
+function loading(img: HTMLImageElement): boolean {
+  const load = loads.get(img);
 
-  inFlight.delete(img);
-
-  revokeObjectUrl(img);
+  return load !== undefined && !load.reported && !load.released;
 }
 
-function revokeObjectUrl(img: HTMLImageElement): void {
-  const objectUrl = objectUrls.get(img);
+function revoke(load: TileLoad): void {
+  if (load.objectUrl) {
+    URL.revokeObjectURL(load.objectUrl);
 
-  if (objectUrl) {
-    URL.revokeObjectURL(objectUrl);
+    load.objectUrl = undefined;
+  }
+}
 
-    objectUrls.delete(img);
+/** Drops what a tile holds: nothing wants its bytes or its request any more. */
+function release(img: HTMLImageElement): void {
+  const load = loads.get(img);
+
+  if (load) {
+    load.released = true;
+
+    load.controller.abort();
+
+    revoke(load);
   }
 }
 
@@ -102,32 +121,56 @@ class LScaledTileLayer extends TileLayer {
    * object URL, which decodes exactly as any other image does. The element is
    * built here rather than by Leaflet, which would set `src` and fetch it twice.
    *
-   * The object URL is revoked on `tileunload` and the fetch aborted with it: a
-   * pan away from a tile still loading must not go on paying for it.
+   * The fetch is aborted and the object URL revoked on `tileunload` and on
+   * `tileabort`: a pan or a zoom away from a tile still loading must not go on
+   * paying for it.
    */
-  private fetchTile(
+  private loadTile(
     img: HTMLImageElement,
     base: string,
     scale: number,
     done: DoneCallback,
   ): void {
-    let settled = false;
+    const load: TileLoad = {
+      controller: new AbortController(),
+      scale,
+      reported: false,
+      released: false,
+    };
+
+    loads.set(img, load);
+
+    // Leaflet reads `complete` to ask whether a tile is still loading, and an
+    // element given no `src` yet answers that it is not — so a zoom would leave
+    // ours behind rather than dropping them. Answered from the load instead.
+    Object.defineProperty(img, 'complete', {
+      configurable: true,
+      get: () => !loading(img),
+    });
 
     const finish = (err?: Error) => {
-      if (!settled) {
-        settled = true;
-
-        // No longer loading, which is what `inFlight` marks — a tile that kept
-        // its entry would read as pending and be dropped by `_abortLoading`.
-        inFlight.delete(img);
+      if (!load.reported) {
+        load.reported = true;
 
         done(err, img);
       }
     };
 
-    // What Leaflet's `_tileOnError` would have done, the element no longer
-    // loading through it.
-    const giveUp = (err: Error) => {
+    const { referrerPolicy } = this.options;
+
+    const failed = (err: Error, at: number) => {
+      // A provider with no `@Nx` of this tile answers the plain one, as
+      // dropping `srcset` on error used to let the browser do — but not where a
+      // scale was asked for outright, which had no such fallback either, and
+      // where one transient failure would leave the tile blurry for good.
+      if (at > 1 && this.forcedScale === undefined) {
+        attempt(1);
+
+        return;
+      }
+
+      // What Leaflet's `_tileOnError` would have done, the element no longer
+      // loading through it.
       const { errorTileUrl } = this.options;
 
       if (errorTileUrl && img.src !== errorTileUrl) {
@@ -137,20 +180,61 @@ class LScaledTileLayer extends TileLayer {
       finish(err);
     };
 
-    let current = scale;
+    const attempt = (at: number) => {
+      const url = withTileScale(base, at);
 
-    const failed = (err: Error) => {
-      // A provider with no `@Nx` of this tile answers the plain one, as
-      // dropping `srcset` on error used to let the browser do — but not where a
-      // scale was asked for outright, which had no such fallback either, and
-      // where one transient failure would leave the tile blurry for good.
-      if (current > 1 && this.forcedScale === undefined) {
-        current = 1;
+      // The `src` becomes an object URL, so what the tile was fetched from —
+      // the key its codes are remembered under — is kept on the element.
+      img.dataset['tileUrl'] = url;
 
-        attempt();
-      } else {
-        giveUp(err);
-      }
+      const controller = new AbortController();
+
+      load.controller = controller;
+
+      load.scale = at;
+
+      fetch(url, {
+        signal: controller.signal,
+        // a tile is not what anyone is waiting on; the app's own calls are
+        priority: 'low',
+        ...(typeof referrerPolicy === 'string' && { referrerPolicy }),
+      } as RequestInit)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`tile ${response.status}`);
+          }
+
+          noteTileCodes(url, response.headers);
+
+          return response.blob();
+        })
+        .then((blob) => {
+          // A body already buffered resolves even after the abort.
+          if (load.controller !== controller || load.released) {
+            return;
+          }
+
+          // a retry's bytes replace the attempt's before them
+          revoke(load);
+
+          load.objectUrl = URL.createObjectURL(blob);
+
+          img.src = load.objectUrl;
+        })
+        .catch((err: Error) => {
+          // Nothing to report on a tile Leaflet has already dropped — and
+          // reporting it would raise `tileerror` for an ordinary pan, which a
+          // native tile never does.
+          if (load.released) {
+            return;
+          }
+
+          if (load.controller !== controller) {
+            finish(err);
+          } else {
+            failed(err, at);
+          }
+        });
     };
 
     // Bound once, not per attempt: a retry on the same element would otherwise
@@ -158,104 +242,15 @@ class LScaledTileLayer extends TileLayer {
     img.addEventListener('load', () => finish());
 
     img.addEventListener('error', () => {
-      // Revoking on unload surfaces here too, on a tile nothing wants any more
-      // — retrying that would fetch for a detached element and leak what it got.
-      if (!settled && inFlight.has(img)) {
-        failed(new Error('tile did not decode'));
+      // Revoking on release surfaces here too, on a tile nothing wants now.
+      // The attempt's own scale, not the one asked for: the scale-1 retry
+      // failing to decode would otherwise retry at 1 again, without end.
+      if (loading(img)) {
+        failed(new Error('tile did not decode'), load.scale);
       }
     });
 
-    const { referrerPolicy } = this.options;
-
-    const attempt = () => {
-      const url = withTileScale(base, current);
-
-      // The `src` becomes an object URL, so what the tile was fetched from —
-      // the key its codes are remembered under — is kept on the element.
-      img.dataset['tileUrl'] = url;
-
-      const abort = new AbortController();
-
-      inFlight.set(img, abort);
-
-      fetch(url, {
-        signal: abort.signal,
-        ...(typeof referrerPolicy === 'string' && { referrerPolicy }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`tile ${response.status}`);
-          }
-
-          noteTileCodes(url, response.headers.get(ATTRIBUTION_HEADER));
-
-          return response.blob();
-        })
-        .then((blob) => {
-          // A body already buffered resolves even after the abort, and by then
-          // `release` has cleared what would have revoked this.
-          if (inFlight.get(img) !== abort) {
-            return;
-          }
-
-          // a retry's bytes replace the attempt's before them
-          revokeObjectUrl(img);
-
-          const objectUrl = URL.createObjectURL(blob);
-
-          objectUrls.set(img, objectUrl);
-
-          img.src = objectUrl;
-        })
-        .catch((err: Error) => {
-          // Gone while this was in flight: the tile was unloaded, or a zoom
-          // left it behind. Reported so the layer stops waiting on it, and not
-          // retried — nothing would revoke what a retry produced.
-          if (inFlight.get(img) !== abort) {
-            finish(err);
-          } else if (abort.signal.aborted) {
-            inFlight.delete(img);
-
-            finish(err);
-          } else {
-            failed(err);
-          }
-        });
-    };
-
-    attempt();
-  }
-
-  /**
-   * Drops the tiles a zoom left behind, which Leaflet cannot: it acts only on an
-   * element still loading, and ours has no `src` until its bytes arrive, so
-   * `complete` is true and it would be skipped — left running, then reported
-   * loaded and retained as a parent, which shows as a square that never fills.
-   */
-  _abortLoading(): void {
-    const layer = this as unknown as {
-      _tiles: Record<string, { el: HTMLImageElement; coords: Coords }>;
-      _tileZoom?: number;
-      fire(type: string, data: unknown): void;
-    };
-
-    for (const [key, tile] of Object.entries(layer._tiles)) {
-      if (tile.coords.z !== layer._tileZoom && inFlight.has(tile.el)) {
-        // Before the abort's rejection lands, so `_tileReady` finds it gone
-        // rather than marking it loaded.
-        delete layer._tiles[key];
-
-        release(tile.el);
-
-        tile.el.remove();
-
-        layer.fire('tileabort', { tile: tile.el, coords: tile.coords });
-      }
-    }
-
-    (
-      TileLayer.prototype as unknown as { _abortLoading(): void }
-    )._abortLoading.call(this);
+    attempt(scale);
   }
 
   createTile(coords: Coords, done: DoneCallback) {
@@ -298,7 +293,7 @@ class LScaledTileLayer extends TileLayer {
 
       // `srcset` is what picked the `@Nx` variant by screen density when no
       // scale is forced; fetching one URL, the density is read here instead.
-      this.fetchTile(
+      this.loadTile(
         img,
         this.getTileUrl(coords),
         this.forcedScale ?? pickTileScale(this.extraScales),
@@ -318,11 +313,11 @@ class LScaledTileLayer extends TileLayer {
 
     if (this.forcedScale !== undefined) {
       if (this.forcedScale > 1) {
-        img.src += `@${this.forcedScale}x`;
+        img.src = withTileScale(img.src, this.forcedScale);
       }
     } else if (this.extraScales?.length) {
       img.srcset = `${img.src}, ${this.extraScales
-        .map((es) => `${img.src}@${es}x ${es}x`) // TODO add support for extensions
+        .map((es) => `${withTileScale(img.src, es)} ${es}x`) // TODO add support for extensions
         .join(', ')}`;
 
       img.addEventListener(
@@ -333,6 +328,9 @@ class LScaledTileLayer extends TileLayer {
         { once: true },
       );
     }
+
+    // One writer for the key the credit is looked up by, as on the fetch path.
+    img.dataset['tileUrl'] = img.src;
 
     return img;
   }

@@ -7,6 +7,7 @@ import {
 } from '@features/cachedMaps/cachedTileUrl.js';
 import {
   stripTileScale,
+  TILE_SCALE_SUFFIX,
   tileSubdomains,
   withTileScale,
 } from '@shared/tileUrl.js';
@@ -33,7 +34,9 @@ const FALLBACK_LOGO_URL = '/freemap-flower.svg';
 const TILE_CACHE_PREFIX = 'tiles-';
 
 /** `…/z/x/y`, with the `@Nx` and the extension a tile may carry. */
-const TILE_PATH = /\/\d+\/-?\d+\/-?\d+(?:@\d+(?:\.\d+)?x)?(?:\.\w+)?$/;
+const TILE_PATH = new RegExp(
+  String.raw`/\d+/-?\d+/-?\d+(?:${TILE_SCALE_SUFFIX})?(?:\.\w+)?$`,
+);
 
 // the scales any layer offers, cheapest lookup first
 const TILE_SCALES = [1, 2, 3, 4];
@@ -101,16 +104,18 @@ self.addEventListener('fetch', (event) => {
   // copying them into — that cache would both duplicate the download and, in
   // `cache-only` mode, hand the downloader 404s it would record as tiles it had
   // fetched. The renderer's own tiles are a `fetch` now, so `destination` no
-  // longer tells the two apart and the download says which it is by demanding
-  // the network.
-  const isImage = event.request.destination === 'image';
-
-  const looksLikeTile = isImage || TILE_PATH.test(url.pathname);
-
-  // A force-reload asks for `reload` on every subresource too, so an `<img>`
-  // layer keeps its cache there — it never had another way of saying it was a
-  // download. Only the renderer's own tiles, which do, go to the network.
-  if (looksLikeTile && (isImage || event.request.cache !== 'reload')) {
+  // longer tells the two apart: a download asks for a revalidation instead,
+  // which a force-reload — `reload` on every subresource it touches — never
+  // spells the same way.
+  // An `<img>` is never a download and has no other way of saying so, so the
+  // marker is read only where it can mean anything. `reload` rather than a
+  // revalidation: only a force-reload asks for it, where an ordinary one can
+  // ask to revalidate every subresource it touches — and a marker a common
+  // reload collides with would drop the map out of its own cache.
+  if (
+    event.request.destination === 'image' ||
+    (TILE_PATH.test(url.pathname) && event.request.cache !== 'reload')
+  ) {
     refreshBrowseState();
 
     // Waiting on settings not read yet is for cross-origin tiles alone: the
