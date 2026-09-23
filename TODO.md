@@ -64,14 +64,6 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
-- [ ] **Mark an offline download with something the worker cannot lose.** What
-      separates it from the map drawing is `cache: 'reload'` on its `fetch`,
-      read back as `event.request.cache` — both ask for the same URL the same
-      way otherwise. A browser that doesn't report `cache` faithfully puts the
-      download into the browse cache, which duplicates it and, in `cache-only`
-      mode, answers 404s that count as tiles fetched. A marker on the URL itself
-      would not depend on the browser reporting an init option.
-
 - [ ] **Credit a downloaded map by what is on screen.** It shows the union over
       everything it holds, where the live map and the browse cache both narrow
       to the tiles in view — its layers are built with `cors: false`, so they

@@ -65,3 +65,35 @@ export const TILE_SCALE_SUFFIX = String.raw`@\d+(?:\.\d+)?x`;
 export function stripTileScale(url: string): string {
   return url.replace(new RegExp(`${TILE_SCALE_SUFFIX}$`), '');
 }
+
+/**
+ * Marks a tile the map is drawing, as against one a download or the size
+ * sampler asked for — all three fetch the same URL, and nothing else tells the
+ * service worker which is which. See `doc/tile-attribution.md`.
+ */
+export const TILE_DRAW_PARAM = 'fm-draw';
+
+export function markDrawnTile(url: string): string {
+  // ahead of any fragment, or the query it is added to is not one
+  const hash = url.indexOf('#');
+
+  const base = hash < 0 ? url : url.slice(0, hash);
+
+  return `${base}${base.includes('?') ? '&' : '?'}${TILE_DRAW_PARAM}=1${
+    hash < 0 ? '' : url.slice(hash)
+  }`;
+}
+
+/**
+ * The same tile without the marker. Everything a cache keys by goes through
+ * this: a tile browsed and a tile downloaded are one tile, and a key carrying
+ * the marker would orphan everything stored before it existed.
+ */
+export function unmarkDrawnTile(url: string): string {
+  return url.replace(
+    new RegExp(`([?&])${TILE_DRAW_PARAM}=1(&|(?=#)|$)`),
+    // Textual, so a protocol-relative template survives it — `new URL` would
+    // not take one.
+    (_, before: string, after: string) => (after ? before : ''),
+  );
+}

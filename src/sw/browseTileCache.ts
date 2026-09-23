@@ -23,6 +23,7 @@ import {
   writeBrowseIndex,
 } from '@features/cachedMaps/browseCache.js';
 import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
+import { unmarkDrawnTile } from '@shared/tileUrl.js';
 import { fetchTile } from './fetchTile.js';
 
 // how soon the settings and the layer templates may be re-read
@@ -157,7 +158,7 @@ export function browseTileResponse(
     return mayWait ? serveWhenReady(event) : undefined;
   }
 
-  const settings = configFor(event.request.url);
+  const settings = configFor(unmarkDrawnTile(event.request.url));
 
   return settings && serveBrowseTile(event, settings);
 }
@@ -177,7 +178,7 @@ async function serveWhenReady(event: FetchEvent): Promise<Response> {
   // lands.
   config ??= browseCacheDefaults;
 
-  const settings = configFor(event.request.url);
+  const settings = configFor(unmarkDrawnTile(event.request.url));
 
   return settings ? serveBrowseTile(event, settings) : fetch(event.request);
 }
@@ -560,7 +561,9 @@ async function serveBrowseTile(
   event: FetchEvent,
   settings: BrowseCacheConfig,
 ): Promise<Response> {
-  const { url } = event.request;
+  // What the tile is, not how it was asked for: a download stores and a draw
+  // looks up under one key.
+  const url = unmarkDrawnTile(event.request.url);
 
   let held: BrowseIndex;
 

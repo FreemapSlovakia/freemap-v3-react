@@ -1,6 +1,10 @@
 import { createTileLayerComponent } from '@react-leaflet/core';
 import { noteTileCodes } from '@shared/tileAttribution.js';
-import { pickTileScale, withTileScale } from '@shared/tileUrl.js';
+import {
+  markDrawnTile,
+  pickTileScale,
+  withTileScale,
+} from '@shared/tileUrl.js';
 import {
   type Coords,
   type DoneCallback,
@@ -181,7 +185,7 @@ class LScaledTileLayer extends TileLayer {
     };
 
     const attempt = (at: number) => {
-      const url = withTileScale(base, at);
+      const url = markDrawnTile(withTileScale(base, at));
 
       // The `src` becomes an object URL, so what the tile was fetched from —
       // the key its codes are remembered under — is kept on the element.

@@ -57,10 +57,18 @@ check"*, so it is permanently empty for tiles in Safari. A response a service
 worker answers with is also timing-opaque in every browser, whatever headers it
 carries. Both are why the codes come off the response instead.
 
-**The worker tells a download from the map by `cache: 'reload'`.** Both ask for
-the same URL with `fetch` now, so `destination` no longer separates them: the
-offline downloader and the size sampler demand the network, and the browse
-cache leaves those alone.
+**The worker tells a download from the map by `fm-draw` on the URL.** All three
+ask for the same tile with `fetch` now, so `destination` no longer separates
+them, and a request's cache mode is an init option the browser may spell its own
+way. Only the renderer's layers are fetched, so the marker never reaches another
+provider, and the renderer ignores it.
+
+**Nothing a cache keys by carries it.** `unmarkDrawnTile` strips it first, or a
+tile browsed and the same tile downloaded would be two entries — and everything
+stored before the marker existed would be orphaned. It does reach the network,
+so a drawn tile and a downloaded one are separate entries in the browser's HTTP
+cache and in anything in front of the renderer — panning over an area just
+downloaded refetches it, where the browse cache, when it is on, absorbs that.
 
 The renderer also writes the list into the tile's JPEG `COM` segment. That is
 its own record, for rebuilding these headers when it serves a tile it did not

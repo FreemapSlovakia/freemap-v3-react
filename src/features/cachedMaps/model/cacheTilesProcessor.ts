@@ -404,12 +404,6 @@ async function downloadTiles(
           // require a Referer header — e.g. OSM's usage policy — aren't blocked
           // (and 403s aren't silently counted as downloaded) during caching.
           referrerPolicy: 'strict-origin-when-cross-origin',
-          // What tells the worker this is a download rather than the map
-          // drawing, now that both ask for the tile the same way. A
-          // asked for the network outright, which a reload of the page can
-          // only collide with by being forced — where a revalidation is what an
-          // ordinary one asks of everything.
-          cache: 'reload',
         });
 
         if (response.ok) {
