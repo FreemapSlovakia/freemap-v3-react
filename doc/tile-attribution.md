@@ -56,11 +56,23 @@ would show up only as the online and offline credits disagreeing.
 ## What is painted, not what is in view
 
 `tileAttributionHandlers` keeps a live set of the tiles each layer currently
-paints, from `tileload`/`tileunload`, and the credit is the union over that set.
-It grows with the picture: a tile still loading contributes no pixels, so
-omitting its sources is exact rather than short. During a zoom Leaflet keeps the
-previous level's tiles painted underneath, and those are counted too — which a
-bounding box at the new zoom could not express.
+paints, from `tileload`/`tileunload`, and the credit is the union over the ones
+on screen. It grows with the picture: a tile still loading contributes no
+pixels, so omitting its sources is exact rather than short. During a zoom
+Leaflet keeps the previous level's tiles painted underneath, and those are
+counted too — which a bounding box at the new zoom could not express.
+
+**On screen is measured, not calculated.** Leaflet retains whole rings of tiles
+past the viewport after a pan (`keepBuffer`), and ground nobody can see credits
+nobody; `onScreen` intersects each tile's rect with the map container's rather
+than deriving it from the coordinates, which would have to mirror every
+`tileSize`/`zoomOffset` the hi-DPI and feature-scale paths set.
+
+What this cannot narrow is a tile only partly in view: the codes are per tile,
+so one straddling the edge credits everything it drew anywhere. At low zoom that
+is a lot — a z5 tile over central Europe reports ten sources — which is the
+price of the exactness the codes buy elsewhere, and it errs towards crediting
+too many rather than too few.
 
 Three things that are not what they look like:
 

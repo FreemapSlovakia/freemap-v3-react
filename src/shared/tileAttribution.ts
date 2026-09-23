@@ -28,7 +28,10 @@ function splitCodes(payload: string): string[] {
 const codesByUrl = new Map<string, string[]>();
 
 /** The tiles currently painted, by the element drawing them. */
-const painted = new Map<Element, { url: string; type: string }>();
+const painted = new Map<
+  Element,
+  { url: string; type: string; container: Element | null }
+>();
 
 const listeners = new Set<() => void>();
 
@@ -43,16 +46,53 @@ const EMPTY: TileAttribution = {};
 
 let snapshot: TileAttribution = EMPTY;
 
+/**
+ * Whether a tile is on screen at all. Measured rather than computed from its
+ * coordinates, which would have to mirror every `tileSize`/`zoomOffset` the
+ * hi-DPI and feature-scale paths set.
+ */
+function onScreen(
+  tile: Element,
+  container: Element,
+  rects: Map<Element, DOMRect>,
+): boolean {
+  let view = rects.get(container);
+
+  if (!view) {
+    view = container.getBoundingClientRect();
+
+    rects.set(container, view);
+  }
+
+  const rect = tile.getBoundingClientRect();
+
+  return (
+    rect.right > view.left &&
+    rect.left < view.right &&
+    rect.bottom > view.top &&
+    rect.top < view.bottom
+  );
+}
+
 function compute(): TileAttribution {
   const byType = new Map<string, Set<string> | null>();
 
-  for (const [tile, { url, type }] of painted) {
+  const rects = new Map<Element, DOMRect>();
+
+  for (const [tile, { url, type, container }] of painted) {
     // react-leaflet unbinds the handlers before it removes the layer, so a
     // layer switched off announces none of its removals. Leaflet takes a tile
     // out of the DOM before it says so, which outlives that.
     if (!tile.isConnected) {
       painted.delete(tile);
 
+      continue;
+    }
+
+    // Leaflet keeps whole rings of tiles past the viewport after a pan
+    // (`keepBuffer`). Skipped rather than dropped: a pan can bring one back
+    // with no event of its own to put it there again.
+    if (container && !onScreen(tile, container, rects)) {
       continue;
     }
 
@@ -227,10 +267,20 @@ export function tileAttributionHandlers(
         if (url) {
           observe();
 
-          painted.set(tile, { url, type });
+          painted.set(tile, {
+            url,
+            type,
+            container: tile.closest('.leaflet-container'),
+          });
 
           schedule();
         }
+      },
+
+      // Every visible tile is in, so the view has settled — which is when the
+      // measurements a zoom was animating through are worth taking again.
+      load() {
+        schedule();
       },
 
       // Announced before the placeholder's own load, so the entry is gone and
