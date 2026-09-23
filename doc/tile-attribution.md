@@ -44,10 +44,12 @@ byte is fetched twice.
   layer mounted still count.
 
 **Offline, out of the bytes.** A rendered tile carries the same list in a JPEG
-`COM` segment written as its first segment — `FF D8 | FF FE | len_hi len_lo |
-payload` — so `readTileCodes` takes it from a fixed offset without a JPEG
-parser. This is what the offline-map downloader reads, because it holds the
-blob already; nothing else reads tile bytes.
+`COM` segment, today after the JFIF header — `FF D8 | FF E0 …JFIF… | FF FE
+len_hi len_lo | payload`. `readTileCodes` walks the segment chain to it rather
+than reading an offset: where it sits is whatever the encoder wrote ahead of it,
+and is not guaranteed. It reads the first 4 KiB and the whole tile only if the
+comment lies past that. This is what the offline-map downloader reads, because
+it holds the blob already; nothing else reads tile bytes.
 
 The two spellings differ — the header spaces the codes where the segment commas
 them — so `splitCodes` accepts both. One reader rejecting what the other accepts
@@ -142,10 +144,12 @@ offline there is nobody to ask. The rules that keep it honest:
   map on its layer's list rather than on a union that predates its own cache.
 - **One tile short and the whole map falls back.** A union missing a source is
   the one failure that matters.
-- **A settled map is not read back.** A completed pass answered for every tile,
-  so a resume trusts its verdict; anything less rebuilds from scratch, reading
-  the stored tiles. Otherwise every resume would materialise every tile a large
-  map holds.
+- **A map already credited is not read back.** A completed pass that published a
+  union answered for every tile, so a resume trusts it — an empty union
+  included, that being an answer. A map with no union recorded is rebuilt from
+  scratch off the stored tiles, which is also how one downloaded while the bytes
+  could not be read repairs itself. Otherwise every resume would materialise
+  every tile a large map holds.
 - **Only `RENDERER_LAYER_TYPES` are read at all.** Another provider's JPEG may
   well open with a comment segment of its own, and reading it would both cost
   the whole tile and persist a string nothing can resolve.

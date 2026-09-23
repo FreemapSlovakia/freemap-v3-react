@@ -337,35 +337,85 @@ export function useTileAttribution(): TileAttribution {
   );
 }
 
-/** Enough of a tile for its first segment; the codes run to a few dozen bytes. */
-const HEAD_BYTES = 512;
+/** Enough of a tile to reach the comment past whatever precedes it. */
+const HEAD_BYTES = 4096;
+
+/** Absent is not the same as out of reach: one is an answer, the other asks for more bytes. */
+type Walk = { codes: string[] } | 'truncated' | null;
+
+function walkToComment(head: Uint8Array): Walk {
+  if (head[0] !== 0xff || head[1] !== 0xd8) {
+    return null;
+  }
+
+  let pos = 2;
+
+  while (pos + 2 <= head.length) {
+    if (head[pos] !== 0xff) {
+      return null;
+    }
+
+    let marker = head[pos + 1];
+
+    // `FF` may repeat as fill ahead of the marker byte
+    while (marker === 0xff && pos + 2 < head.length) {
+      pos++;
+
+      marker = head[pos + 1];
+    }
+
+    // the scan's entropy-coded data starts here, and carries no comment
+    if (marker === 0xda || marker === 0xd9) {
+      return null;
+    }
+
+    // the markers that carry no length of their own
+    if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
+      pos += 2;
+
+      continue;
+    }
+
+    if (pos + 4 > head.length) {
+      return 'truncated';
+    }
+
+    const length = (head[pos + 2] << 8) | head[pos + 3];
+
+    if (marker === 0xfe) {
+      const end = pos + 2 + length;
+
+      return end > head.length
+        ? 'truncated'
+        : {
+            codes: splitCodes(
+              new TextDecoder().decode(head.subarray(pos + 4, end)),
+            ),
+          };
+    }
+
+    pos += 2 + length;
+  }
+
+  return 'truncated';
+}
 
 /**
- * The codes a rendered tile carries in its first JPEG segment, or `null` for
- * anything that doesn't start with one. The renderer writes `FF D8 FF FE` and
- * the payload at a fixed offset, so this needs no JPEG parser.
+ * The codes a rendered tile carries in its JPEG comment segment, or `null` for
+ * anything without one. Walked to rather than read at an offset, since where it
+ * sits is whatever the encoder wrote ahead of it. The head is read first and the
+ * whole tile only if the comment lies past it, so the common tile costs 4 KiB.
  */
 export async function readTileCodes(blob: Blob): Promise<string[] | null> {
-  const head = new Uint8Array(await blob.slice(0, HEAD_BYTES).arrayBuffer());
+  let walk = walkToComment(
+    new Uint8Array(await blob.slice(0, HEAD_BYTES).arrayBuffer()),
+  );
 
-  if (
-    head.length < 6 ||
-    head[0] !== 0xff ||
-    head[1] !== 0xd8 ||
-    head[2] !== 0xff ||
-    head[3] !== 0xfe
-  ) {
-    return null;
+  if (walk === 'truncated' && blob.size > HEAD_BYTES) {
+    walk = walkToComment(new Uint8Array(await blob.arrayBuffer()));
   }
 
-  // the length counts itself, so the payload ends at 4 + it
-  const end = 4 + ((head[4] << 8) | head[5]);
-
-  if (end > head.length) {
-    return null;
-  }
-
-  return splitCodes(new TextDecoder().decode(head.subarray(6, end)));
+  return walk && walk !== 'truncated' ? walk.codes : null;
 }
 
 /** The namespace each one-character code prefix is short for. */

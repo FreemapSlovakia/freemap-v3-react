@@ -289,16 +289,20 @@ async function downloadTiles(
   let sizeBytes = def.sizeBytes;
   let lastProgressAt = 0;
 
-  // Only the renderer's own layers carry codes. Another provider's tiles would
-  // be read back — every byte of them — to record a comment segment of its own
-  // making that nothing will ever resolve.
-  const capturesAttribution = RENDERER_LAYER_TYPES.includes(def.sourceType);
+  // Only the renderer's own layers carry codes, and only a pass that can
+  // publish what it finds is worth the reading — a gated one discards it, and
+  // that discard would cost every byte of every tile the map holds.
+  const capturesAttribution =
+    RENDERER_LAYER_TYPES.includes(def.sourceType) && !gated;
 
-  // A pass that walked every tile answered for all of them, so its verdict
-  // stands and the stored tiles need not be read back — which would materialise
-  // every tile of a large map on each resume. Anything short of that may hold
-  // tiles no pass ever published codes for, so it is rebuilt from scratch.
-  const settled = def.tileCount > 0 && def.downloadedCount >= def.tileCount;
+  // A pass that walked every tile and published a union answered for all of
+  // them, so its verdict stands and the stored tiles need not be read back —
+  // which would materialise every tile of a large map on each resume. Anything
+  // else may hold tiles no pass ever published codes for, so it is rebuilt.
+  const settled =
+    def.tileCount > 0 &&
+    def.downloadedCount >= def.tileCount &&
+    def.attributionCodes !== undefined;
 
   const attributionCodes = new Set(settled ? def.attributionCodes : undefined);
 
@@ -307,8 +311,7 @@ async function downloadTiles(
   // Only a map every tile of which reported its datasets may be credited from
   // them; one tile short and the union would name fewer sources than the map
   // holds.
-  let attributionKnown =
-    capturesAttribution && (!settled || def.attributionCodes !== undefined);
+  let attributionKnown = capturesAttribution;
 
   async function noteAttribution(blob: Blob): Promise<void> {
     const codes = await readTileCodes(blob);

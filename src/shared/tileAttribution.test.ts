@@ -6,9 +6,15 @@ import {
   resolveTileCodes,
 } from './tileAttribution.js';
 
-function jpeg(comment: string | null): Blob {
+// As the renderer writes them: SOI, the JFIF header, then the comment.
+const JFIF = [
+  0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0x02, 0x00, 0x00,
+  0x01, 0x00, 0x01, 0x00, 0x00,
+];
+
+function jpeg(comment: string | null, lead = JFIF): Blob {
   if (comment === null) {
-    return new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 16])]);
+    return new Blob([new Uint8Array([0xff, 0xd8, ...lead, 0xff, 0xda, 0, 2])]);
   }
 
   const payload = new TextEncoder().encode(comment);
@@ -16,22 +22,44 @@ function jpeg(comment: string | null): Blob {
   const size = payload.length + 2;
 
   return new Blob([
-    new Uint8Array([0xff, 0xd8, 0xff, 0xfe, size >> 8, size & 0xff]),
+    new Uint8Array([0xff, 0xd8, ...lead, 0xff, 0xfe, size >> 8, size & 0xff]),
     payload,
   ]);
 }
 
 describe('readTileCodes', () => {
-  it('reads the codes of the leading comment segment', async () => {
+  it('reads the codes past whatever segments precede the comment', async () => {
     await expect(readTileCodes(jpeg('o,ssk,csk'))).resolves.toEqual([
       'o',
       'ssk',
       'csk',
     ]);
+
+    // straight after SOI, and behind a segment larger than the JFIF header
+    await expect(readTileCodes(jpeg('o', []))).resolves.toEqual(['o']);
+
+    await expect(
+      readTileCodes(
+        jpeg('o', [0xff, 0xe2, 0x01, 0x04, ...new Array(258).fill(0)]),
+      ),
+    ).resolves.toEqual(['o']);
   });
 
   it('reads a tile that credits nothing as crediting nothing', async () => {
     await expect(readTileCodes(jpeg(''))).resolves.toEqual([]);
+  });
+
+  it('reaches a comment past the head it reads first', async () => {
+    // an APP2 bigger than the 4 KiB head, as an embedded colour profile is
+    const icc = [0xff, 0xe2, 0x18, 0x00, ...new Array(0x17fe).fill(0)];
+
+    await expect(readTileCodes(jpeg('ssk', icc))).resolves.toEqual(['ssk']);
+  });
+
+  it('walks past fill bytes and markers that carry no length', async () => {
+    await expect(
+      readTileCodes(jpeg('o', [0xff, 0xff, 0xff, 0x01, ...JFIF])),
+    ).resolves.toEqual(['o']);
   });
 
   it('leaves anything else unknown', async () => {
