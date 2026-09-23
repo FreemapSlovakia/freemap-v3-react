@@ -23,7 +23,7 @@ A tile that credits nothing — outside the renderer's coverage — reports an e
 list, which is not the same as reporting nothing. Both paths below keep that
 apart, since an empty list narrows the credit while silence widens it.
 
-## Two ways in, for two situations
+## Three ways in, for three situations
 
 **Online, off the response.** Every tile carries
 `Server-Timing: src;desc="…", attr;desc="o ssk csk"`, and
@@ -59,6 +59,21 @@ offline-map downloader here, and the API's mbtiles builder server-side.
   cached `Response`, so a resume reads what a tile credits out of the cache
   instead of fetching the tile again — and a tile stored before that cannot be
   credited later, there being nowhere else to read it from.
+
+**From the service worker, by message.** A tile the worker answers is
+**timing-opaque** — `transferSize` 0, `nextHopProtocol` empty, `serverTiming`
+empty — whatever headers the response carries and whether it came from the
+network or from Cache Storage. No header fixes that, because the opacity is the
+worker being in the path rather than anything about the body. So `announcing`
+reads `X-Attribution` off whatever it is about to return and posts `{url,
+codes}` to the client, and the page feeds that into the same store the observer
+fills.
+
+- **Every branch that answers announces**, the pass-through `fetch` included:
+  it is worker-owned too.
+- **The page listens at module scope.** The worker posts when the response
+  resolves, which is before the image loads — a listener installed on
+  `tileload` would miss the first screenful, which is the whole initial view.
 
 The renderer also writes the list into the tile's JPEG `COM` segment. That is
 its own record, for rebuilding these headers when it serves a tile it did not

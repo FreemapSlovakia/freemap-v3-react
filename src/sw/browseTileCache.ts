@@ -22,8 +22,13 @@ import {
   writeBrowseCacheStats,
   writeBrowseIndex,
 } from '@features/cachedMaps/browseCache.js';
-import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
+import {
+  ATTRIBUTION_HEADER,
+  TILE_ATTRIBUTION_MESSAGE,
+} from '@shared/tileAttribution.js';
 import { fetchTile } from './fetchTile.js';
+
+declare const self: ServiceWorkerGlobalScope;
 
 // how soon the settings and the layer templates may be re-read
 const RELOAD_MS = 5000;
@@ -159,7 +164,35 @@ export function browseTileResponse(
 
   const settings = configFor(event.request.url);
 
-  return settings && serveBrowseTile(event, settings);
+  return settings && announcing(event, serveBrowseTile(event, settings));
+}
+
+/**
+ * Hands the page what the tile credits. A response this worker answers with is
+ * timing-opaque however it was obtained, so the page's observer sees no
+ * `Server-Timing` metric for it and has to be told outright.
+ */
+function announcing(
+  event: FetchEvent,
+  answer: Promise<Response>,
+): Promise<Response> {
+  return answer.then((response) => {
+    const codes = response.headers.get(ATTRIBUTION_HEADER);
+
+    if (codes !== null) {
+      event.waitUntil(
+        self.clients.get(event.clientId).then((client) => {
+          client?.postMessage({
+            type: TILE_ATTRIBUTION_MESSAGE,
+            url: event.request.url,
+            codes,
+          });
+        }),
+      );
+    }
+
+    return response;
+  });
 }
 
 async function serveWhenReady(event: FetchEvent): Promise<Response> {
@@ -179,7 +212,10 @@ async function serveWhenReady(event: FetchEvent): Promise<Response> {
 
   const settings = configFor(event.request.url);
 
-  return settings ? serveBrowseTile(event, settings) : fetch(event.request);
+  return announcing(
+    event,
+    settings ? serveBrowseTile(event, settings) : fetch(event.request),
+  );
 }
 
 // ---------------------------------------------------------------------------

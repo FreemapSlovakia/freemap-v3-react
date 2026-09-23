@@ -223,6 +223,22 @@ function observe(): void {
   });
 }
 
+// At module scope, not in `observe()`: the worker posts a tile's codes when its
+// response resolves, which is before the image loads and so before any
+// `tileload` could install this. Undefined inside the worker, where this same
+// module is pulled in by the browse cache.
+navigator.serviceWorker?.addEventListener('message', ({ data }) => {
+  if (
+    data?.type === TILE_ATTRIBUTION_MESSAGE &&
+    typeof data.url === 'string' &&
+    typeof data.codes === 'string'
+  ) {
+    remember(data.url, splitAttributionHeader(data.codes));
+
+    schedule();
+  }
+});
+
 /**
  * Tiles whose image failed. Leaflet swaps in `errorTileUrl`, which then loads
  * like any other tile and announces itself as one — and that URL carries no
@@ -329,6 +345,13 @@ export function useTileAttribution(): TileAttribution {
 
 /** The header a tile names its datasets in, for a reader holding the response. */
 export const ATTRIBUTION_HEADER = 'X-Attribution';
+
+/**
+ * What the service worker posts a tile's codes to the page under. A response it
+ * answers with is timing-opaque whatever headers it carries, so the observer
+ * never sees the metric for a tile it served.
+ */
+export const TILE_ATTRIBUTION_MESSAGE = 'fm-tile-attribution';
 
 /**
  * The codes a tile response reports, or `null` if it reports none — present and
