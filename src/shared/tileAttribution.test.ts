@@ -56,6 +56,19 @@ describe('readTileCodes', () => {
     await expect(readTileCodes(jpeg('ssk', icc))).resolves.toEqual(['ssk']);
   });
 
+  it('refuses a segment whose length cannot even cover itself', async () => {
+    // Not `[]`: a corrupt tile has to widen the credit, not narrow it.
+    for (const length of [0, 1]) {
+      await expect(
+        readTileCodes(
+          new Blob([
+            new Uint8Array([0xff, 0xd8, ...JFIF, 0xff, 0xfe, 0, length]),
+          ]),
+        ),
+      ).resolves.toBeNull();
+    }
+  });
+
   it('walks past fill bytes and markers that carry no length', async () => {
     await expect(
       readTileCodes(jpeg('o', [0xff, 0xff, 0xff, 0x01, ...JFIF])),

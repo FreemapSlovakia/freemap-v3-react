@@ -382,6 +382,13 @@ function walkToComment(head: Uint8Array): Walk {
 
     const length = (head[pos + 2] << 8) | head[pos + 3];
 
+    // The length counts itself, so anything shorter is malformed — and on a
+    // comment it would read as an empty list, which is an answer, not a
+    // refusal to give one.
+    if (length < 2) {
+      return null;
+    }
+
     if (marker === 0xfe) {
       const end = pos + 2 + length;
 
