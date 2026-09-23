@@ -5,7 +5,11 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { RENDERER_LAYER_TYPES } from '@shared/mapDefinitions.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
-import { expandCode, readTileCodes } from '@shared/tileAttribution.js';
+import {
+  ATTRIBUTION_HEADER,
+  expandCode,
+  readTileCodes,
+} from '@shared/tileAttribution.js';
 import {
   countCachedOf,
   coverageContains,
@@ -289,9 +293,8 @@ async function downloadTiles(
   let sizeBytes = def.sizeBytes;
   let lastProgressAt = 0;
 
-  // Only the renderer's own layers carry codes, and only a pass that can
-  // publish what it finds is worth the reading — a gated one discards it, and
-  // that discard would cost every byte of every tile the map holds.
+  // Only the renderer's own layers report their datasets, and only a pass that
+  // can publish what it finds is worth the reading — a gated one discards it.
   const capturesAttribution =
     RENDERER_LAYER_TYPES.includes(def.sourceType) && !gated;
 
@@ -313,8 +316,8 @@ async function downloadTiles(
   // holds.
   let attributionKnown = capturesAttribution;
 
-  async function noteAttribution(blob: Blob): Promise<void> {
-    const codes = await readTileCodes(blob);
+  function noteAttribution(headers: Headers): void {
+    const codes = readTileCodes(headers);
 
     if (codes) {
       for (const code of codes) {
@@ -389,7 +392,7 @@ async function downloadTiles(
 
         if (existing) {
           if (capturesAttribution && !settled) {
-            await noteAttribution(await existing.blob());
+            noteAttribution(existing.headers);
           }
 
           return;
@@ -409,7 +412,7 @@ async function downloadTiles(
           sizeBytes += blob.size;
 
           if (capturesAttribution) {
-            await noteAttribution(blob);
+            noteAttribution(response.headers);
           }
 
           await putTileResponse(
@@ -417,6 +420,7 @@ async function downloadTiles(
             cacheKey,
             response.headers.get('content-type'),
             blob,
+            response.headers.get(ATTRIBUTION_HEADER),
           );
         }
       }),

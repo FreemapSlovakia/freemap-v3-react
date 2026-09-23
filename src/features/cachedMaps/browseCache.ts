@@ -1,3 +1,4 @@
+import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
 import { TILE_SCALE_SUFFIX } from '@shared/tileUrl.js';
 import {
   clear,
@@ -164,20 +165,30 @@ export async function clearBrowseCache(): Promise<void> {
 }
 
 /**
- * Stores a tile under `key`, stripped to its body and content type. The source
- * server's CORS headers and `Vary` mean nothing under a cache key of our own and
- * only make `cache.match` browser-dependent.
+ * Stores a tile under `key`, stripped to its body, content type and the
+ * datasets the source said it drew from — which a later pass reads back off the
+ * stored response rather than fetching the tile again. The rest of the source
+ * server's headers mean nothing under a cache key of our own, and its `Vary`
+ * only makes `cache.match` browser-dependent.
  */
 export async function putTileResponse(
   cache: Cache,
   key: string,
   contentType: string | null,
   body: Blob,
+  attribution?: string | null,
 ): Promise<void> {
   await cache.put(
     key,
     new Response(body, {
-      headers: { 'Content-Type': contentType ?? 'application/octet-stream' },
+      headers: {
+        'Content-Type': contentType ?? 'application/octet-stream',
+        // null is unknown and stays unsaid; empty credits nothing, and is kept
+        ...(attribution !== null &&
+          attribution !== undefined && {
+            [ATTRIBUTION_HEADER]: attribution,
+          }),
+      },
     }),
   );
 }

@@ -2,13 +2,10 @@ import type { RootState } from '@app/store/store.js';
 import type { Exportable } from '@features/mapFeaturesExport/model/actions.js';
 import { buildExportFeatureCollection } from '@features/mapFeaturesExport/model/buildExportFeatureCollection.js';
 import { COLORS } from '@shared/colors.js';
+import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import z from 'zod';
-import {
-  ATTRIBUTION_HEADER,
-  type ExportCredits,
-  resolveExportCredits,
-} from './exportCredits.js';
+import { type ExportCredits, resolveExportCredits } from './exportCredits.js';
 import type { CustomLayerOrder, ExportableLayer, Format } from './types.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];

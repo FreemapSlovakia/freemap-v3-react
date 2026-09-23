@@ -22,6 +22,7 @@ import {
   writeBrowseCacheStats,
   writeBrowseIndex,
 } from '@features/cachedMaps/browseCache.js';
+import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
 import { fetchTile } from './fetchTile.js';
 
 // how soon the settings and the layer templates may be re-read
@@ -477,6 +478,7 @@ async function putTile(
       url,
       response.headers.get('content-type'),
       blob,
+      response.headers.get(ATTRIBUTION_HEADER),
     );
   } catch {
     // Out of quota, most likely. Nothing was stored, so the index needs no

@@ -14,10 +14,10 @@ sources under different licences. `expandCode` turns each into the form
 `contours:_`.
 
 **`<key>` is the renderer's own identifier, not a country code.** `_` is the
-global fallback, `de_by` is Bavaria, `en` is England — which is not a country
-and never matches what `/geotools/covered-countries` answers. `countryOf` reads
-the part before the underscore and uses it only when the coverage names it a
-country, so anything it cannot place is credited everywhere rather than nowhere.
+global fallback, `de_by` is Bavaria, `en` is England. `countryOf` reads the part
+before the underscore, maps the territories the coverage spells differently
+(`en` → `gb`) and uses the result only when `/geotools/covered-countries` names
+it, so anything it cannot place is credited everywhere rather than nowhere.
 
 A tile that credits nothing — outside the renderer's coverage — reports an empty
 list, which is not the same as reporting nothing. Both paths below keep that
@@ -43,17 +43,26 @@ byte is fetched twice.
 - **`buffered: true`** on the observer, so tiles that loaded before the first
   layer mounted still count.
 
-**Offline, out of the bytes.** A rendered tile carries the same list in a JPEG
-`COM` segment, today after the JFIF header — `FF D8 | FF E0 …JFIF… | FF FE
-len_hi len_lo | payload`. `readTileCodes` walks the segment chain to it rather
-than reading an offset: where it sits is whatever the encoder wrote ahead of it,
-and is not guaranteed. It reads the first 4 KiB and the whole tile only if the
-comment lies past that. This is what the offline-map downloader reads, because
-it holds the blob already; nothing else reads tile bytes.
+**Off a response, `X-Attribution`.** Anything holding the response reads the
+codes off `X-Attribution: csk,o,ssk` — comma-separated, as `/export` answers —
+rather than the metric, whose grammar would have to be parsed. That is the
+offline-map downloader here, and the API's mbtiles builder server-side.
 
-The two spellings differ — the header spaces the codes where the segment commas
-them — so `splitCodes` accepts both. One reader rejecting what the other accepts
-would show up only as the online and offline credits disagreeing.
+- **`Access-Control-Expose-Headers: X-Attribution` is what makes this one
+  work.** Reading a header from a cross-origin `fetch` is gated by CORS, not by
+  `Timing-Allow-Origin` — two headers, two gates, and the observer path having
+  codes says nothing about whether this one does. Server-to-server there is no
+  gate at all.
+- **Present and empty credits nothing; absent is unknown.** The same
+  distinction the metric draws with `desc`.
+- **A stored tile keeps the header.** `putTileResponse` carries it into the
+  cached `Response`, so a resume reads what a tile credits out of the cache
+  instead of fetching the tile again — and a tile stored before that cannot be
+  credited later, there being nowhere else to read it from.
+
+The renderer also writes the list into the tile's JPEG `COM` segment. That is
+its own record, for rebuilding these headers when it serves a tile it did not
+just render; nothing here reads it.
 
 ## What is painted, not what is in view
 
@@ -121,14 +130,16 @@ clears the in-flight promise, so a later call asks again.
 ## When the codes do not arrive
 
 Old Safari has no `serverTiming`, a middlebox can strip the header, the
-dictionary fetch can fail. Then `RENDERER_LAYER_TYPES` are credited with every
-entry in `/licenses`, narrowed by whatever of it `countryOf` can place against
-the countries in view. Past that, `OUTDOOR_ATTRIBUTION` is the floor: Freemap
-and OSM, the two knowable without the server.
+dictionary fetch can fail. The map on screen then stops at
+`OUTDOOR_ATTRIBUTION` — Freemap and OSM, the two knowable without the server. A
+terrain dataset is named by the tiles that drew it or not at all: no tile
+painted yet, nothing to credit.
 
-The direction is the point. Exact codes only ever *narrow* a correct-by-default
-answer, so no transport's flakiness can cause a licence breach — only a credit
-wider than this particular screen earned, which nobody has been sued over.
+The catalogue of everything the renderer could have drawn on is only for what
+the painted tiles cannot answer for — an export's chosen area, and an offline
+map downloaded before the header was kept. Both name an area the tiles on screen
+say nothing about, so there `countryOf` narrows `/licenses` by the countries the
+area covers.
 
 ## Offline maps
 
@@ -147,12 +158,14 @@ offline there is nobody to ask. The rules that keep it honest:
 - **A map already credited is not read back.** A completed pass that published a
   union answered for every tile, so a resume trusts it — an empty union
   included, that being an answer. A map with no union recorded is rebuilt from
-  scratch off the stored tiles, which is also how one downloaded while the bytes
-  could not be read repairs itself. Otherwise every resume would materialise
-  every tile a large map holds.
-- **Only `RENDERER_LAYER_TYPES` are read at all.** Another provider's JPEG may
-  well open with a comment segment of its own, and reading it would both cost
-  the whole tile and persist a string nothing can resolve.
+  the headers its stored tiles carry.
+- **A tile stored without its header cannot be credited later.** What a tile
+  drew is only on the response that delivered it, and a resume does not fetch
+  one it already holds. So a map cached before the header was kept stays on its
+  layer's list until it is downloaded again.
+- **Only `RENDERER_LAYER_TYPES` are read**, and only where the pass can publish
+  what it finds. A gated one cannot, having left the tiles above its ceiling
+  unvisited, so reading them would be work thrown away.
 
 ## Exports
 

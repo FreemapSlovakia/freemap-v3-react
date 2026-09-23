@@ -194,10 +194,14 @@ function useCategorizedAttribution(
     } else {
       guessed.push(...def.attribution);
 
-      // The tiles didn't say which datasets they drew, so credit every one the
-      // renderer could have drawn on. Narrowed by the countries in view below,
-      // which the codes in the catalogue's keys make possible.
-      if (licenses && RENDERER_LAYER_TYPES.includes(def.type)) {
+      // Only an export credits every dataset the renderer could have drawn on,
+      // narrowed by the countries in view. On screen a dataset is named by the
+      // tiles that drew it or not at all.
+      if (
+        !fromPaintedTiles &&
+        licenses &&
+        RENDERER_LAYER_TYPES.includes(def.type)
+      ) {
         guessed.push(...licenseAttributions(licenses));
       }
     }
@@ -211,9 +215,7 @@ function useCategorizedAttribution(
       continue;
     }
 
-    // Only a map of the renderer's own layers can carry codes; another
-    // provider's tile that happened to start with a comment segment would
-    // otherwise be read as one, and credited to the wrong people.
+    // Only the renderer's own layers report their datasets at all.
     const fromRenderer = RENDERER_LAYER_TYPES.includes(cm.sourceType);
 
     const resolved = fromRenderer

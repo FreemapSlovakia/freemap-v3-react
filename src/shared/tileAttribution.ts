@@ -14,17 +14,6 @@ const METRIC = 'attr';
 /** Tiles whose codes are remembered; a dropped one reads back as unknown. */
 const MAX_REMEMBERED = 2048;
 
-/**
- * The renderer spaces the codes on the wire and commas them in the tile, so both
- * separators are taken either way — one reader accepting what the other rejects
- * would show up only as the online and offline credits disagreeing.
- */
-const CODE_SEPARATOR = /[,\s]+/;
-
-function splitCodes(payload: string): string[] {
-  return payload.split(CODE_SEPARATOR).filter(Boolean);
-}
-
 const codesByUrl = new Map<string, string[]>();
 
 /** The tiles currently painted, by the element drawing them. */
@@ -210,7 +199,8 @@ function observe(): void {
         const metric = entry.serverTiming?.find(({ name }) => name === METRIC);
 
         if (metric) {
-          remember(entry.name, splitCodes(metric.description));
+          // spaced, a comma being what separates one metric from the next
+          remember(entry.name, metric.description.split(/\s+/).filter(Boolean));
 
           changed = true;
         }
@@ -337,92 +327,29 @@ export function useTileAttribution(): TileAttribution {
   );
 }
 
-/** Enough of a tile to reach the comment past whatever precedes it. */
-const HEAD_BYTES = 4096;
+/** The header a tile names its datasets in, for a reader holding the response. */
+export const ATTRIBUTION_HEADER = 'X-Attribution';
 
-/** Absent is not the same as out of reach: one is an answer, the other asks for more bytes. */
-type Walk = { codes: string[] } | 'truncated' | null;
+/**
+ * The codes a tile response reports, or `null` if it reports none — present and
+ * empty being a tile that credits nothing, which is an answer. Cross-origin the
+ * header must be named in `Access-Control-Expose-Headers` to be readable at
+ * all, a different gate from the `Timing-Allow-Origin` the observer goes
+ * through, and missing it looks exactly like a tile reporting nothing.
+ */
+export function readTileCodes(headers: Headers): string[] | null {
+  const header = headers.get(ATTRIBUTION_HEADER);
 
-function walkToComment(head: Uint8Array): Walk {
-  if (head[0] !== 0xff || head[1] !== 0xd8) {
-    return null;
-  }
-
-  let pos = 2;
-
-  while (pos + 2 <= head.length) {
-    if (head[pos] !== 0xff) {
-      return null;
-    }
-
-    let marker = head[pos + 1];
-
-    // `FF` may repeat as fill ahead of the marker byte
-    while (marker === 0xff && pos + 2 < head.length) {
-      pos++;
-
-      marker = head[pos + 1];
-    }
-
-    // the scan's entropy-coded data starts here, and carries no comment
-    if (marker === 0xda || marker === 0xd9) {
-      return null;
-    }
-
-    // the markers that carry no length of their own
-    if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
-      pos += 2;
-
-      continue;
-    }
-
-    if (pos + 4 > head.length) {
-      return 'truncated';
-    }
-
-    const length = (head[pos + 2] << 8) | head[pos + 3];
-
-    // The length counts itself, so anything shorter is malformed — and on a
-    // comment it would read as an empty list, which is an answer, not a
-    // refusal to give one.
-    if (length < 2) {
-      return null;
-    }
-
-    if (marker === 0xfe) {
-      const end = pos + 2 + length;
-
-      return end > head.length
-        ? 'truncated'
-        : {
-            codes: splitCodes(
-              new TextDecoder().decode(head.subarray(pos + 4, end)),
-            ),
-          };
-    }
-
-    pos += 2 + length;
-  }
-
-  return 'truncated';
+  return header === null ? null : splitAttributionHeader(header);
 }
 
 /**
- * The codes a rendered tile carries in its JPEG comment segment, or `null` for
- * anything without one. Walked to rather than read at an offset, since where it
- * sits is whatever the encoder wrote ahead of it. The head is read first and the
- * whole tile only if the comment lies past it, so the common tile costs 4 KiB.
+ * Commas, which is how the header spells the list wherever it appears — a tile's
+ * and an export's alike. The `Server-Timing` metric spaces them instead, a comma
+ * there being what separates one metric from the next.
  */
-export async function readTileCodes(blob: Blob): Promise<string[] | null> {
-  let walk = walkToComment(
-    new Uint8Array(await blob.slice(0, HEAD_BYTES).arrayBuffer()),
-  );
-
-  if (walk === 'truncated' && blob.size > HEAD_BYTES) {
-    walk = walkToComment(new Uint8Array(await blob.arrayBuffer()));
-  }
-
-  return walk && walk !== 'truncated' ? walk.codes : null;
+export function splitAttributionHeader(header: string): string[] {
+  return header.split(',').filter(Boolean);
 }
 
 /** The namespace each one-character code prefix is short for. */
@@ -453,15 +380,19 @@ const PRESENTED_LOCALLY: Record<string, AttributionDef> = {
   osm: OSM_DATA_ATTR,
 };
 
+/** Dataset keys the renderer names by a territory the coverage lists differently. */
+const COUNTRY_ALIASES: Record<string, string> = { en: 'gb' };
+
 /**
  * The country a dataset key belongs to, for narrowing the catalogue by what is
  * in view. A key can name a region (`de_by`), so only the part before the
- * underscore is read; anything the coverage doesn't name as a country — `en`,
- * or a global source — is left uncountried and therefore always credited, which
- * is the direction to fail in.
+ * underscore is read; a global source is left uncountried and therefore always
+ * credited, which is the direction to fail in.
  */
 function countryOf(code: string): string | undefined {
-  const key = code.split(':')[1]?.split('_')[0];
+  const name = code.split(':')[1]?.split('_')[0];
+
+  const key = name && (COUNTRY_ALIASES[name] ?? name);
 
   return key && RENDERER_COUNTRIES.has(key) ? key : undefined;
 }

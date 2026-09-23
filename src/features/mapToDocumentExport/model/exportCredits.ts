@@ -1,9 +1,6 @@
 import type { AttributionDef } from '@shared/mapDefinitions.js';
-import { expandCode } from '@shared/tileAttribution.js';
+import { expandCode, splitAttributionHeader } from '@shared/tileAttribution.js';
 import { loadTileLicenses } from '@shared/tileLicenses.js';
-
-/** Response header the export carries its dataset codes in. */
-export const ATTRIBUTION_HEADER = 'X-Attribution';
 
 export type ExportCredits = {
   /** The datasets the render drew from. The caller puts its own around these. */
@@ -46,9 +43,7 @@ export async function resolveExportCredits(
 ): Promise<ExportCredits> {
   const reported = header !== null;
 
-  const codes = (header ?? '')
-    .split(/[,\s]+/)
-    .filter(Boolean)
+  const codes = splitAttributionHeader(header ?? '')
     .map((code) => expandCode(code) ?? code)
     // Credited by the caller instead, in the app's own words.
     .filter((code) => code !== 'osm');
