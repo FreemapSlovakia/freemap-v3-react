@@ -244,6 +244,41 @@ navigator.serviceWorker?.addEventListener('message', ({ data }) => {
 // the worker posts into a queue nothing is taken off.
 navigator.serviceWorker?.startMessages();
 
+// TEMPORARY: `?attrdebug` says what the credit was worked out from, for a
+// device with no console to read it in.
+if (typeof alert === 'function' && location.search.includes('attrdebug')) {
+  setTimeout(() => {
+    const tiles = performance
+      .getEntriesByType('resource')
+      .filter((entry) =>
+        entry.name.startsWith(process.env['FM_MAPSERVER_URL'] ?? '\0'),
+      ) as PerformanceResourceTiming[];
+
+    let dict = 'threw';
+
+    try {
+      dict = String(Boolean(localStorage.getItem('fm.tileLicenses')));
+    } catch {
+      // private mode
+    }
+
+    alert(
+      JSON.stringify(
+        {
+          tiles: tiles.length,
+          withTiming: tiles.filter((e) => e.serverTiming?.length).length,
+          first: tiles[0] && [tiles[0].nextHopProtocol, tiles[0].transferSize],
+          controlled: Boolean(navigator.serviceWorker?.controller),
+          dict,
+          codes: snapshot,
+        },
+        null,
+        1,
+      ),
+    );
+  }, 6000);
+}
+
 /**
  * Tiles whose image failed. Leaflet swaps in `errorTileUrl`, which then loads
  * like any other tile and announces itself as one — and that URL carries no
