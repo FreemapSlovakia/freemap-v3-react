@@ -55,6 +55,8 @@ export const gallerySavePictureProcessor: Processor = {
 
     dispatch(gallerySetLayerDirty());
 
-    dispatch(galleryRequestImage(id));
+    if (getState().gallery.activeImageId === id) {
+      dispatch(galleryRequestImage(id));
+    }
   },
 };

@@ -59,6 +59,8 @@ export const galleryQuickAddTagProcessor: Processor<
 
     dispatch(gallerySetLayerDirty());
 
-    dispatch(galleryRequestImage(id));
+    if (getState().gallery.activeImageId === id) {
+      dispatch(galleryRequestImage(id));
+    }
   },
 };

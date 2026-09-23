@@ -70,6 +70,7 @@ import {
   galleryShowOnTheMap,
   gallerySubmitComment,
   gallerySubmitStars,
+  type Picture,
 } from '../model/actions.js';
 import { pictureIdToPath } from '../pictureIdPath.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
@@ -152,6 +153,22 @@ const SHARED_IMAGE_WIDTH = 3840;
 const READOUT_STAR_SIZE = 20;
 const RATING_STAR_SIZE = 24;
 
+// The photo whose details are on screen, with its Commons metadata if any.
+interface ShownDetails {
+  image: Picture;
+  meta: WikimediaMeta | null;
+}
+
+// A premium photo is hidden from all but premium users and its author.
+function premiumLocked(
+  image: Picture | null,
+  user: RootState['auth']['user'],
+): boolean {
+  return (
+    Boolean(image?.premium) && !isPremium(user) && user?.id !== image?.user?.id
+  );
+}
+
 // The modal content's CSS width by Bootstrap breakpoint (xl / lg / smaller),
 // shared by the image-fetch width, the display rescale, and the pano canvas.
 function modalContentWidth(): number {
@@ -203,7 +220,11 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const imageIds = useAppSelector((state) => state.gallery.imageIds);
 
-  const image = useAppSelector((state) => state.gallery.image);
+  const storedImage = useAppSelector((state) => state.gallery.image);
+
+  const imageFetchFailed = useAppSelector(
+    (state) => state.gallery.imageFetchFailed,
+  );
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -244,22 +265,28 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const becomePremium = useBecomePremium();
 
+  const [shown, setShown] = useState<ShownDetails | null>(null);
+
   if (reduxActiveImageId !== activeImageId) {
     setLoading(true);
 
     setActiveImageId(reduxActiveImageId);
 
     setCommentFocused(false);
+
+    if (activeImageId === null) {
+      setShown(null);
+    }
   }
 
   // Wikimedia photos have a negative id (internal `-pageId`). Deriving this from
   // the id — not `image.source` — means we know it's a Commons photo before its
   // picture record loads, so we never point <img> at our own server for it (a
   // 404 that would flash a broken image instead of the spinner).
-  const isWikimedia = activeImageId !== null && activeImageId < 0;
+  const liveWikimedia = activeImageId !== null && activeImageId < 0;
 
   // Commons pageId of the current Wikimedia photo (id = -pageId), or null.
-  const wmPageId = isWikimedia ? -activeImageId : null;
+  const wmPageId = liveWikimedia ? -activeImageId : null;
 
   // Metadata is read from the cache during render, keyed on the id alone — so a
   // prefetched neighbour is shown instantly, without waiting for the Redux
@@ -270,12 +297,52 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       ? undefined
       : commonsCache.current.get(`${language}/${wmPageId}`);
 
-  const commonsMeta =
+  const liveMeta =
     commonsEntry && commonsEntry !== 'error' ? commonsEntry : null;
 
   // Whether the current Wikimedia photo's image/metadata failed to load — so we
   // can show an error instead of an endless spinner.
   const commonsError = commonsEntry === 'error';
+
+  const liveImage = storedImage?.id === activeImageId ? storedImage : null;
+
+  // Own photos carry the pano flag server-side; Commons 360s have no GPano/XMP,
+  // so they're detected from their exact 2:1 dimensions in the fetched metadata.
+  const pano = liveWikimedia
+    ? Boolean(liveMeta?.pano)
+    : Boolean(liveImage?.pano);
+
+  const liveDisabledPremium = premiumLocked(liveImage, user);
+
+  // Whether the photo area shows the current photo rather than a spinner.
+  const photoShown = !loading || pano || liveDisabledPremium || commonsError;
+
+  // Everything around the photo keeps showing the previous one's details until
+  // the new photo is on screen and its record has landed, so it swaps at once.
+  const fresh: ShownDetails | null =
+    photoShown && liveImage ? { image: liveImage, meta: liveMeta } : null;
+
+  if (fresh && (fresh.image !== shown?.image || fresh.meta !== shown.meta)) {
+    setShown(fresh);
+  }
+
+  // After a failed fetch the old details must not linger beside this photo.
+  const recordPending = !liveImage && !imageFetchFailed;
+
+  const details = fresh ?? (recordPending || !photoShown ? shown : null);
+
+  const image = details?.image ?? null;
+
+  // With no record to show, the header still credits a Commons photo.
+  const shownId = details ? details.image.id : activeImageId;
+
+  const isWikimedia = shownId !== null && shownId < 0;
+
+  const commonsMeta = details ? details.meta : liveMeta;
+
+  // Controls act on the stored record, so they're inert while the previous
+  // photo's details are on screen.
+  const detailsStale = image !== null && image !== liveImage;
 
   useEffect(() => {
     function handleFullscreenChange() {
@@ -370,20 +437,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const premium = Boolean(image?.premium);
 
-  const disabledPremium =
-    premium && !isPremium(user) && user?.id !== image?.user?.id;
-
-  // Own photos carry the pano flag server-side; Commons 360s have no GPano/XMP,
-  // so they're detected from their exact 2:1 dimensions in the fetched metadata.
-  // Gating the Wikimedia case on `commonsMeta` also stops a stale previous
-  // record from hijacking the render into the pannellum branch (blank canvas)
-  // while a Commons photo's metadata loads.
-  const pano = isWikimedia ? Boolean(commonsMeta?.pano) : Boolean(image?.pano);
+  const disabledPremium = premiumLocked(image, user);
 
   // The equirectangular image pannellum renders: our own image endpoint, or a
   // width-capped Commons thumbnail (from wikimediaMeta) for a Wikimedia pano.
-  const panoUrl = isWikimedia
-    ? commonsMeta?.panoUrl
+  const panoUrl = liveWikimedia
+    ? liveMeta?.panoUrl
     : `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`;
 
   const p = activeImageId !== null && pano && Boolean(panoUrl);
@@ -419,18 +478,23 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     }
   }, []);
 
+  // Deletes the stored record, so only when it is the one on screen — also
+  // after the prompt, during which the arrow keys still switch photos.
   const handleDelete = useCallback(async () => {
     if (
-      await confirm({
+      image &&
+      image === liveImage &&
+      (await confirm({
         title: gm?.viewer.deleteTitle,
-        message: gm?.viewer.deletePrompt(image?.title),
+        message: gm?.viewer.deletePrompt(image.title),
         confirmLabel: m?.general.delete,
         confirmStyle: 'danger',
-      })
+      })) &&
+      store.getState().gallery.image === image
     ) {
       dispatch(galleryDeletePicture());
     }
-  }, [dispatch, confirm, m, gm, image?.title]);
+  }, [dispatch, confirm, m, gm, image, liveImage, store]);
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
@@ -592,10 +656,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const mainImageSrc =
     activeImageId === null
       ? undefined
-      : isWikimedia
-        ? commonsMeta
+      : liveWikimedia
+        ? liveMeta
           ? wikimediaImageUrl(
-              commonsMeta,
+              liveMeta,
               isFullscreen
                 ? displayPixelWidth()
                 : Math.min(displayPixelWidth(), WINDOWED_MAX_WIDTH),
@@ -636,23 +700,21 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     dispatch(galleryQuickAddTag(tag));
   };
 
-  // Fallback Commons file-page link derived from the active pageId (id =
-  // -pageId), for when the metadata's descriptionUrl hasn't loaded yet (e.g.
-  // first open) — so the link is never empty.
-  const commonsPageUrl =
-    isWikimedia && activeImageId !== null
-      ? `https://commons.wikimedia.org/?curid=${-activeImageId}`
-      : undefined;
+  // Fallback Commons file-page link from the shown photo's id (-pageId), for
+  // when its metadata failed to load — so the link is never empty.
+  const commonsPageUrl = isWikimedia
+    ? `https://commons.wikimedia.org/?curid=${-shownId}`
+    : undefined;
 
   // "Open in external app" points at the Commons file page for Wikimedia photos,
   // and at the raw image for gallery photos.
   const publicUrl = isWikimedia
     ? (commonsMeta?.descriptionUrl ?? commonsPageUrl ?? '')
-    : `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(activeImageId ?? 0)}/image`;
+    : `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(shownId ?? 0)}/image`;
 
   let url = publicUrl;
 
-  if (!isWikimedia && activeImageId === image?.id && image.hmac) {
+  if (!isWikimedia && image?.hmac) {
     url += `?hmac=${encodeURIComponent(image.hmac)}`;
   }
 
@@ -769,7 +831,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                           }
                     }
                   />
-                ) : disabledPremium ? (
+                ) : liveDisabledPremium ? (
                   <Alert variant="warning" className="text-center mb-0">
                     {gm?.viewer.premiumOnly}
 
@@ -890,7 +952,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
           </div>
 
           {image && (
-            <div className={clsx(classes.footer, 'mt-3')}>
+            <div className={clsx(classes.footer, 'mt-3')} inert={detailsStale}>
               {isFullscreen && imageIds && (
                 <>{`${index + 1} / ${imageIds.length}`} ｜ </>
               )}
@@ -1198,6 +1260,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <Button
                   variant="secondary"
                   disabled={!online}
+                  inert={detailsStale}
                   onClick={() => {
                     dispatch(galleryEditPicture());
                   }}
@@ -1218,6 +1281,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 onClick={handleDelete}
                 variant="danger"
                 disabled={!online}
+                inert={detailsStale}
                 {...props}
               >
                 <FaTrash />

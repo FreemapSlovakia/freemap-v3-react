@@ -153,6 +153,10 @@ export const gallerySetImageIds = createAction<number[]>(
 
 export const gallerySetImage = createAction<Picture>('GALLERY_SET_IMAGE');
 
+export const gallerySetImageFetchFailed = createAction(
+  'GALLERY_SET_IMAGE_FETCH_FAILED',
+);
+
 export const galleryClear = createAction('GALLERY_CLEAR');
 
 export const galleryShowOnTheMap = createAction('GALLERY_SHOW_ON_THE_MAP');

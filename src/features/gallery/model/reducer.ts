@@ -29,6 +29,7 @@ import {
   gallerySetEditModel,
   gallerySetFilter,
   gallerySetImage,
+  gallerySetImageFetchFailed,
   gallerySetImageIds,
   gallerySetItemError,
   gallerySetItemForPositionPicking,
@@ -48,6 +49,8 @@ export interface GalleryState {
   imageIds: number[] | null;
   activeImageId: number | null;
   image: Picture | null;
+  // The active photo's record failed to load, rather than being on its way.
+  imageFetchFailed: boolean;
   items: GalleryItem[];
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
@@ -68,6 +71,7 @@ export const galleryInitialState: GalleryState = {
   imageIds: null,
   activeImageId: null,
   image: null,
+  imageFetchFailed: false,
 
   items: [],
   pickingPositionForId: null,
@@ -122,14 +126,19 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       ...state,
       imageIds: null,
       image: null,
+      imageFetchFailed: false,
       activeImageId: null,
       editModel: null,
     }))
     .addCase(gallerySetImage, (state, action) => ({
       ...state,
       image: action.payload,
+      imageFetchFailed: false,
       editModel: null,
     }))
+    .addCase(gallerySetImageFetchFailed, (state) => {
+      state.imageFetchFailed = true;
+    })
     .addCase(galleryRequestImage, (state, action) => {
       const set = (activeImageId: number) => {
         Object.assign(state, {
@@ -137,6 +146,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
           // Another photo's record must not stay on screen if the fetch fails.
           // A re-fetch of the same photo keeps it until the fresh one lands.
           image: activeImageId === state.activeImageId ? state.image : null,
+          imageFetchFailed: false,
           comment: '',
           editModel: null,
         });
@@ -268,6 +278,10 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       }
     })
     .addCase(galleryEditPicture, (state) => {
+      if (!state.editModel && !state.image) {
+        return;
+      }
+
       const position = state.image
         ? { lat: state.image.lat, lon: state.image.lon }
         : null;

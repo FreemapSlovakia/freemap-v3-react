@@ -5,6 +5,7 @@ import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryRequestImage,
   gallerySetImage,
+  gallerySetImageFetchFailed,
   PictureSchema,
 } from '../actions.js';
 
@@ -14,21 +15,34 @@ export const galleryRequestImageProcessor: Processor = {
   async handle({ getState, dispatch, toastError }) {
     const activeImageId = getState().gallery.activeImageId;
 
-    const res = await httpRequest({
-      getState,
-      url: `/gallery/pictures/${pictureIdToPath(activeImageId ?? 0)}`,
-      expectedStatus: 200,
-    }).catch(async (err) => {
-      await toastError(err, loadGalleryMessages, 'pictureFetchingError');
+    let image;
 
-      return null;
-    });
+    try {
+      const res = await httpRequest({
+        getState,
+        url: `/gallery/pictures/${pictureIdToPath(activeImageId ?? 0)}`,
+        expectedStatus: 200,
+      });
 
-    if (!res) {
+      // The user may have moved on to another photo meanwhile.
+      if (getState().gallery.activeImageId !== activeImageId) {
+        return;
+      }
+
+      image = PictureSchema.parse(await res.json());
+    } catch (err) {
+      if (getState().gallery.activeImageId === activeImageId) {
+        dispatch(gallerySetImageFetchFailed());
+
+        await toastError(err, loadGalleryMessages, 'pictureFetchingError');
+      }
+
       return;
     }
 
-    const image = PictureSchema.parse(await res.json());
+    if (getState().gallery.activeImageId !== activeImageId) {
+      return;
+    }
 
     // Wikimedia photos travel through the shared id space as negative ids
     // (`-pageId`); the detail endpoint returns the bare pageId, so re-apply the
