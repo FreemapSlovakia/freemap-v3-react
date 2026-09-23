@@ -10,6 +10,9 @@ const fr: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     addError(getMessages()!, 'Erreur lors de l’exportation de la carte', err),
   cancelExportTitle: 'Annuler l’exportation',
   cancelExportQuestion: 'Voulez-vous vraiment annuler l’exportation en cours ?',
+  discardExportTitle: 'Abandonner l’exportation',
+  discardExportQuestion:
+    'La carte exportée n’a pas encore été enregistrée. Voulez-vous l’abandonner ?',
   area: 'Zone à exporter',
   format: 'Format',
   layersTitle: 'Couches optionnelles',
@@ -35,23 +38,20 @@ const fr: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   northArrowLetter: 'N',
   glow: 'Halo',
   labelTitle: 'Étiquettes',
-  alert: (licence) => (
+  ready: 'La carte est prête',
+  readyCredits:
+    'Lors de la publication ou du partage de la carte, indiquez ces sources :',
+  readyCreditsNone:
+    'Le moteur de rendu n’a pas indiqué les sources qu’il a utilisées.',
+  readyUnknownSources: 'Sources qui n’ont pas pu être nommées :',
+  copyCredits: 'Copier les sources',
+  openInNewTab: 'Ouvrir dans un nouvel onglet',
+  savedCredits: ({ credits }) =>
+    `Carte enregistrée. Lors de sa publication ou de son partage, indiquez : ${credits}`,
+  alert: () => (
     <>
-      Remarques :
-      <ul>
-        <li>
-          La carte exportée sera la carte <i>{outdoorMap}</i>.
-        </li>
-        <li>
-          L’exportation de la carte peut durer plusieurs dizaines de secondes.
-        </li>
-        <li>
-          Avant de partager la carte exportée, accompagnez-la de l’attribution
-          suivante :
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>{' '}
+      La carte <i>{outdoorMap}</i> sera exportée. Cela peut durer plusieurs
+      dizaines de secondes.
     </>
   ),
 };

@@ -9,6 +9,9 @@ const en: MapToDocumentExportMessages = {
     addError(getMessages()!, 'Error exporting map', err),
   cancelExportTitle: 'Cancel export',
   cancelExportQuestion: 'Do you really want to cancel the running export?',
+  discardExportTitle: 'Discard the export',
+  discardExportQuestion:
+    'The exported map has not been saved yet. Do you want to discard it?',
   area: 'Export area',
   format: 'Format',
   layersTitle: 'Optional layers',
@@ -34,21 +37,19 @@ const en: MapToDocumentExportMessages = {
   northArrowLetter: 'N',
   glow: 'Glow',
   labelTitle: 'Labels',
-  alert: (licence) => (
+  ready: 'The map is ready',
+  readyCredits:
+    'When you publish or share this map, accompany it with the following attribution:',
+  readyCreditsNone: 'The renderer did not report which sources it used.',
+  readyUnknownSources: 'Sources that could not be named:',
+  copyCredits: 'Copy attribution',
+  openInNewTab: 'Open in a new tab',
+  savedCredits: ({ credits }) =>
+    `Map saved. When you publish or share it, accompany it with: ${credits}`,
+  alert: () => (
     <>
-      Notes:
-      <ul>
-        <li>
-          Exported will be <i>{outdoorMap}</i> map.
-        </li>
-        <li>Export of the map may last tens of seconds.</li>
-        <li>
-          Before sharing exported map accompain it with the following
-          attribution:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>{' '}
+      The <i>{outdoorMap}</i> map will be exported. This may take tens of
+      seconds.
     </>
   ),
 };

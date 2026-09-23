@@ -541,9 +541,9 @@ Opens a modal to export the map as an image or document. Options:
 - Drawing order: Topmost or Natural
 - Map resolution (DPI)
 
-The modal also displays the attribution that must accompany the exported map when shared.
+While the export runs the modal stays open with its controls disabled and a spinner on the export button; only Cancel stays active (cancelling asks for confirmation and aborts the request).
 
-While the export runs the modal stays open with its controls disabled and a spinner on the export button; only Cancel stays active (cancelling asks for confirmation and aborts the request). When the export finishes the resulting file is downloaded automatically.
+When the export finishes the modal switches to a result view in place of the options, naming the file and its size and listing the credits it must be shown with: Freemap, then whatever the exported features earn (the routers, when a planned route is included), then OpenStreetMap and the datasets the render reports having actually drawn from, the global fallback models last (codes the licence catalog cannot name are listed as they stand). A route routed by OSRM adds FOSSGIS' "report a map error" link, which is shown but not copied — it is a link or it is nothing. The attribution burnt into the image is composed by the renderer from the same list, in the same order, so the two agree. The file is not downloaded by itself: a **Save** split button saves it, with **Open in a new tab** (not for SVG) and **Copy attribution** behind its caret. Saving closes the modal and leaves a toast repeating the credits, so they survive the window they were read in. Closing the result without saving it — Close, <kbd>Esc</kbd> or the backdrop — asks for confirmation first, since the render would be lost; having opened it in a tab counts as having it and skips the question.
 
 ### Map data export
 

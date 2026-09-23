@@ -11,6 +11,9 @@ const de: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   cancelExportTitle: 'Export abbrechen',
   labelTitle: 'Beschriftungen',
   cancelExportQuestion: 'Möchten Sie den laufenden Export wirklich abbrechen?',
+  discardExportTitle: 'Export verwerfen',
+  discardExportQuestion:
+    'Die exportierte Karte wurde noch nicht gespeichert. Möchten Sie sie verwerfen?',
   area: 'Exportbereich',
   format: 'Format',
   layersTitle: 'Optionale Ebenen',
@@ -35,21 +38,20 @@ const de: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   attribution: 'Quellenangabe',
   northArrowLetter: 'N',
   glow: 'Schein',
-  alert: (licence) => (
+  ready: 'Die Karte ist fertig',
+  readyCredits:
+    'Geben Sie beim Veröffentlichen oder Teilen der Karte diese Quellen an:',
+  readyCreditsNone:
+    'Der Renderer hat nicht gemeldet, welche Quellen er verwendet hat.',
+  readyUnknownSources: 'Quellen, die nicht benannt werden konnten:',
+  copyCredits: 'Quellen kopieren',
+  openInNewTab: 'In neuem Tab öffnen',
+  savedCredits: ({ credits }) =>
+    `Karte gespeichert. Geben Sie beim Veröffentlichen oder Teilen an: ${credits}`,
+  alert: () => (
     <>
-      Hinweise:
-      <ul>
-        <li>
-          Exportiert wird die Karte <i>{outdoorMap}</i>.
-        </li>
-        <li>Der Kartenexport kann mehrere Sekunden dauern.</li>
-        <li>
-          Vor der Veröffentlichung der exportierten Karte geben Sie bitte die
-          folgende Lizenz an:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>{' '}
+      Exportiert wird die Karte <i>{outdoorMap}</i>. Das kann mehrere zehn
+      Sekunden dauern.
     </>
   ),
 };

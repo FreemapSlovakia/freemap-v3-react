@@ -1,10 +1,12 @@
-import type { JSX, ReactElement } from 'react';
+import type { JSX } from 'react';
 import type { CustomLayerOrder, ExportableLayer } from '../model/types.js';
 
 export type MapToDocumentExportMessages = {
   exportError: (props: { err: unknown }) => string;
   cancelExportTitle: string;
   cancelExportQuestion: string;
+  discardExportTitle: string;
+  discardExportQuestion: string;
   area: string;
   format: string;
   layersTitle: string;
@@ -20,5 +22,12 @@ export type MapToDocumentExportMessages = {
   northArrowLetter: string;
   glow: string;
   labelTitle: string;
-  alert: (licence?: ReactElement[]) => JSX.Element;
+  alert: () => JSX.Element;
+  ready: string;
+  readyCredits: string;
+  readyCreditsNone: string;
+  readyUnknownSources: string;
+  copyCredits: string;
+  openInNewTab: string;
+  savedCredits: (props: { credits: string }) => string;
 };

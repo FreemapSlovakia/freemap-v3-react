@@ -1,3 +1,4 @@
+import { siteNames, siteOf, siteUrls } from '@shared/sites.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
@@ -70,10 +71,16 @@ export const OSRM_ROUTING_ATTR: AttributionDef = {
   url: 'https://routing.openstreetmap.de/about.html',
 };
 
+/**
+ * The portal serving this build. The same bundle answers on both domains, and
+ * the map is credited to the one the reader is on.
+ */
+const site = typeof location === 'undefined' ? 'sk' : siteOf(location.hostname);
+
 export const FM_ATTR: AttributionDef = {
   type: 'map',
-  name: '©\xa0Freemap Slovakia',
-  url: 'https://www.freemap.sk',
+  name: `©\xa0${siteNames[site]}`,
+  url: siteUrls[site],
 };
 
 const NLC_ATTR: AttributionDef = {

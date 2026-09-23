@@ -10,6 +10,9 @@ const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   cancelExportTitle: 'Zrušit export',
   labelTitle: 'Popisky',
   cancelExportQuestion: 'Opravdu chcete zrušit probíhající export?',
+  discardExportTitle: 'Zahodit export',
+  discardExportQuestion:
+    'Exportovaná mapa ještě nebyla uložena. Chcete ji zahodit?',
   area: 'Exportovat oblast',
   format: 'Formát',
   layersTitle: 'Volitelné vrstvy',
@@ -34,20 +37,17 @@ const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   attribution: 'Uvedení zdroje',
   northArrowLetter: 'S',
   glow: 'Záře',
-  alert: (licence) => (
+  ready: 'Mapa je připravena',
+  readyCredits: 'Při publikování nebo sdílení mapy uveďte tyto zdroje:',
+  readyCreditsNone: 'Renderer neoznámil, které zdroje použil.',
+  readyUnknownSources: 'Zdroje, které se nepodařilo pojmenovat:',
+  copyCredits: 'Kopírovat zdroje',
+  openInNewTab: 'Otevřít na nové kartě',
+  savedCredits: ({ credits }) =>
+    `Mapa je uložena. Při jejím publikování nebo sdílení uveďte: ${credits}`,
+  alert: () => (
     <>
-      Upozornění:
-      <ul>
-        <li>
-          Exportuje se mapa <i>{outdoorMap}</i>.
-        </li>
-        <li>Export mapy může trvat i desítky sekund.</li>
-        <li>
-          Při publikované mapy je do ní nutno uvést její licenci:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>{' '}
+      Exportuje se mapa <i>{outdoorMap}</i>. Může to trvat i desítky sekund.
     </>
   ),
 };

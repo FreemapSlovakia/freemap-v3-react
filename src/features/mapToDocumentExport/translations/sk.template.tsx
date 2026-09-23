@@ -11,6 +11,9 @@ const sk: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   cancelExportTitle: 'Zrušiť export',
   labelTitle: 'Popisy',
   cancelExportQuestion: 'Naozaj chcete zrušiť prebiehajúci export?',
+  discardExportTitle: 'Zahodiť export',
+  discardExportQuestion:
+    'Exportovaná mapa ešte nebola uložená. Chcete ju zahodiť?',
   area: 'Exportovať oblasť',
   format: 'Formát',
   layersTitle: 'Voliteľné vrstvy',
@@ -35,20 +38,17 @@ const sk: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   attribution: 'Uvedenie zdroja',
   northArrowLetter: 'S',
   glow: 'Žiara',
-  alert: (licence) => (
+  ready: 'Mapa je pripravená',
+  readyCredits: 'Pri publikovaní alebo zdieľaní mapy uveďte tieto zdroje:',
+  readyCreditsNone: 'Renderer neoznámil, ktoré zdroje použil.',
+  readyUnknownSources: 'Zdroje, ktoré sa nepodarilo pomenovať:',
+  copyCredits: 'Kopírovať zdroje',
+  openInNewTab: 'Otvoriť na novej karte',
+  savedCredits: ({ credits }) =>
+    `Mapa je uložená. Pri jej publikovaní alebo zdieľaní uveďte: ${credits}`,
+  alert: () => (
     <>
-      Upozornenia:
-      <ul>
-        <li>
-          Exportuje sa mapa <i>{outdoorMap}</i>.
-        </li>
-        <li>Export mapy môže trvať aj desiatky sekúnd.</li>
-        <li>
-          Pri publikovaní mapy je nutné uviesť jej licenciu:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>
+      Exportuje sa mapa <i>{outdoorMap}</i>. Môže to trvať aj desiatky sekúnd.
     </>
   ),
 };

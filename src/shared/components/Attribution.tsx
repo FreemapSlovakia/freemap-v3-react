@@ -258,52 +258,6 @@ function useCategorizedAttribution(
   return { categorized, esriAttribution };
 }
 
-/**
- * Plain-text attribution for the given layers and covered countries, suitable
- * for baking into an exported map. Mirrors {@link useResolvedAttribution} but
- * flattens to a string and skips attributions whose label is not plain text.
- *
- * `creditRouting` is what the caller says about the route: an export that leaves
- * it out must not carry the routers' credit either.
- */
-export function useResolvedAttributionText(
-  layers: string[],
-  countries?: string[],
-  creditRouting = true,
-): string | null {
-  const m = useMessages();
-
-  const { categorized, esriAttribution } = useCategorizedAttribution(
-    layers,
-    countries,
-    creditRouting,
-  );
-
-  if (categorized.length === 0) {
-    return null;
-  }
-
-  const parts = categorized
-    .map(({ type, attributions }) => {
-      const names = attributions
-        .map((a) => a.name ?? (a.nameKey ? m?.mapLayers.attr[a.nameKey] : ''))
-        .filter(
-          (name): name is string => typeof name === 'string' && name !== '',
-        );
-
-      return names.length === 0
-        ? ''
-        : `${m?.mapLayers.type[type] ?? ''} ${names.join(', ')}`.trim();
-    })
-    .filter(Boolean);
-
-  if (esriAttribution?.length) {
-    parts.push(esriAttribution.join(', '));
-  }
-
-  return parts.length === 0 ? null : parts.join('; ');
-}
-
 export function useResolvedAttribution(
   layers: string[],
   countries?: string[],

@@ -11,6 +11,9 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   cancelExportTitle: 'Prekliči izvoz',
   labelTitle: 'Oznake',
   cancelExportQuestion: 'Ali res želite preklicati potekajoči izvoz?',
+  discardExportTitle: 'Zavrzi izvoz',
+  discardExportQuestion:
+    'Izvožen zemljevid še ni bil shranjen. Ali ga želite zavreči?',
   area: 'Izvozi območje',
   format: 'Format',
   layersTitle: 'Izbirni sloji',
@@ -35,20 +38,18 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   attribution: 'Navedba vira',
   northArrowLetter: 'S',
   glow: 'Sij',
-  alert: (licence) => (
+  ready: 'Zemljevid je pripravljen',
+  readyCredits: 'Pri objavi ali deljenju zemljevida navedite te vire:',
+  readyCreditsNone: 'Izrisovalnik ni sporočil, katere vire je uporabil.',
+  readyUnknownSources: 'Viri, ki jih ni bilo mogoče poimenovati:',
+  copyCredits: 'Kopiraj vire',
+  openInNewTab: 'Odpri v novem zavihku',
+  savedCredits: ({ credits }) =>
+    `Zemljevid je shranjen. Pri objavi ali deljenju navedite: ${credits}`,
+  alert: () => (
     <>
-      Opombe:
-      <ul>
-        <li>
-          Izvožen bo zemljevid <i>{outdoorMap}</i>.
-        </li>
-        <li>Izvoz zemljevida lahko traja tudi več deset sekund.</li>
-        <li>
-          Pri objavi zemljevida je treba navesti njegovo licenco:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>
+      Izvožen bo zemljevid <i>{outdoorMap}</i>. To lahko traja tudi več deset
+      sekund.
     </>
   ),
 };

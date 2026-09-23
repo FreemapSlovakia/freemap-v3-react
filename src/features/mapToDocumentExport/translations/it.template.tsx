@@ -11,6 +11,9 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   cancelExportTitle: 'Annulla esportazione',
   labelTitle: 'Etichette',
   cancelExportQuestion: "Vuoi davvero annullare l'esportazione in corso?",
+  discardExportTitle: 'Scarta l’esportazione',
+  discardExportQuestion:
+    'La mappa esportata non è ancora stata salvata. Vuoi scartarla?',
   area: 'Esporta area',
   format: 'Formato',
   layersTitle: 'Livelli opzionali',
@@ -35,21 +38,18 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   attribution: 'Attribuzione',
   northArrowLetter: 'N',
   glow: 'Alone',
-  alert: (licence) => (
+  ready: 'La mappa è pronta',
+  readyCredits: 'Quando pubblichi o condividi la mappa, indica queste fonti:',
+  readyCreditsNone: 'Il renderer non ha indicato quali fonti ha usato.',
+  readyUnknownSources: 'Fonti che non è stato possibile identificare:',
+  copyCredits: 'Copia le fonti',
+  openInNewTab: 'Apri in una nuova scheda',
+  savedCredits: ({ credits }) =>
+    `Mappa salvata. Quando la pubblichi o la condividi, indica: ${credits}`,
+  alert: () => (
     <>
-      Note:
-      <ul>
-        <li>
-          Sarà esportata la mappa <i>{outdoorMap}</i> .
-        </li>
-        <li>L\'esportazione della mappa potrebbe durare diversi secondi.</li>
-        <li>
-          Prima di condividere la mappa esportata, aggiungi la seguente
-          attribuzione:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>{' '}
+      Sarà esportata la mappa <i>{outdoorMap}</i>. L’operazione potrebbe durare
+      decine di secondi.
     </>
   ),
 };

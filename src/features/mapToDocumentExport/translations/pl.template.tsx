@@ -10,6 +10,9 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   cancelExportTitle: 'Anuluj eksport',
   labelTitle: 'Etykiety',
   cancelExportQuestion: 'Czy na pewno chcesz anulować trwający eksport?',
+  discardExportTitle: 'Odrzuć eksport',
+  discardExportQuestion:
+    'Wyeksportowana mapa nie została jeszcze zapisana. Czy chcesz ją odrzucić?',
   area: 'Obszar eksportu',
   format: 'Format',
   layersTitle: 'Opcjonalne warstwy',
@@ -34,20 +37,18 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   attribution: 'Atrybucja',
   northArrowLetter: 'N',
   glow: 'Poświata',
-  alert: (licence) => (
+  ready: 'Mapa jest gotowa',
+  readyCredits: 'Publikując lub udostępniając mapę, podaj następujące źródła:',
+  readyCreditsNone: 'Renderer nie zgłosił, których źródeł użył.',
+  readyUnknownSources: 'Źródła, których nie udało się nazwać:',
+  copyCredits: 'Kopiuj źródła',
+  openInNewTab: 'Otwórz w nowej karcie',
+  savedCredits: ({ credits }) =>
+    `Mapa zapisana. Publikując ją lub udostępniając, podaj: ${credits}`,
+  alert: () => (
     <>
-      Uwagi:
-      <ul>
-        <li>
-          Eksportowana będzie mapa <i>{outdoorMap}</i>.
-        </li>
-        <li>Eksport mapy może potrwać kilkadziesiąt sekund.</li>
-        <li>
-          Udostępniając wyeksportowaną mapę, należy podać następującą licencję:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>
+      Eksportowana będzie mapa <i>{outdoorMap}</i>. Może to potrwać
+      kilkadziesiąt sekund.
     </>
   ),
 };

@@ -11,6 +11,9 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   cancelExportTitle: 'Exportálás megszakítása',
   labelTitle: 'Címkék',
   cancelExportQuestion: 'Biztosan megszakítja a folyamatban lévő exportálást?',
+  discardExportTitle: 'Exportálás elvetése',
+  discardExportQuestion:
+    'Az exportált térkép még nincs elmentve. Biztosan elveti?',
   area: 'Exportálandó terület',
   format: 'Formátum',
   layersTitle: 'Választható rétegek',
@@ -35,21 +38,19 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   attribution: 'Forrásmegjelölés',
   northArrowLetter: 'É',
   glow: 'Ragyogás',
-  alert: (licence) => (
+  ready: 'A térkép elkészült',
+  readyCredits:
+    'A térkép közzétételekor vagy megosztásakor tüntesse fel ezeket a forrásokat:',
+  readyUnknownSources: 'Nem azonosítható források:',
+  readyCreditsNone: 'A renderelő nem jelezte, mely forrásokat használta.',
+  copyCredits: 'Források másolása',
+  openInNewTab: 'Megnyitás új lapon',
+  savedCredits: ({ credits }) =>
+    `A térkép el lett mentve. Közzétételkor vagy megosztáskor tüntesse fel: ${credits}`,
+  alert: () => (
     <>
-      Megjegyzések:
-      <ul>
-        <li>
-          A <i>{outdoorMap}</i> fog exportáltatni.
-        </li>
-        <li>A térkép exportálása több tucat másodpercet is igénybe vehet.</li>
-        <li>
-          Megosztás előtt a térképet lássa el a következő szerzői jogi
-          közleménnyel:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>{' '}
+      A <i>{outdoorMap}</i> térkép kerül exportálásra. Ez több tucat másodpercet
+      is igénybe vehet.
     </>
   ),
 };

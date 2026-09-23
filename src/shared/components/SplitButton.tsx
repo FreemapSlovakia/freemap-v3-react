@@ -19,6 +19,8 @@ type Props = {
   items: SplitButtonItem[];
   variant?: string;
   disabled?: boolean;
+  /** Writes the label beside the icon instead of hiding it in the tooltip. */
+  showLabel?: boolean;
 };
 
 /**
@@ -32,6 +34,7 @@ export function SplitButton({
   items,
   variant = 'secondary',
   disabled,
+  showLabel,
 }: Props): ReactElement {
   return (
     // Keyed by index through the dropdown's own `onSelect`: an item's own
@@ -40,18 +43,24 @@ export function SplitButton({
       as={ButtonGroup}
       onSelect={(key) => items[Number(key)]?.onSelect()}
     >
-      <LongPressTooltip label={label}>
-        {({ props }) => (
-          <Button
-            variant={variant}
-            onClick={onClick}
-            disabled={disabled}
-            {...props}
-          >
-            {icon}
-          </Button>
-        )}
-      </LongPressTooltip>
+      {showLabel ? (
+        <Button variant={variant} onClick={onClick} disabled={disabled}>
+          {icon} {label}
+        </Button>
+      ) : (
+        <LongPressTooltip label={label}>
+          {({ props }) => (
+            <Button
+              variant={variant}
+              onClick={onClick}
+              disabled={disabled}
+              {...props}
+            >
+              {icon}
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
 
       <Dropdown.Toggle split variant={variant} disabled={disabled} />
 
