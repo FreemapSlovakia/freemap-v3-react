@@ -239,6 +239,11 @@ navigator.serviceWorker?.addEventListener('message', ({ data }) => {
   }
 });
 
+// Registering by `addEventListener` leaves the container's message queue
+// disabled — only assigning `onmessage` starts it implicitly — so without this
+// the worker posts into a queue nothing is taken off.
+navigator.serviceWorker?.startMessages();
+
 /**
  * Tiles whose image failed. Leaflet swaps in `errorTileUrl`, which then loads
  * like any other tile and announces itself as one — and that URL carries no
