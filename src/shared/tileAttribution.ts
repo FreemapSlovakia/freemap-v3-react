@@ -277,8 +277,8 @@ export function tileAttributionHandlers(
         }
       },
 
-      // Every visible tile is in, so the view has settled — which is when the
-      // measurements a zoom was animating through are worth taking again.
+      // Tiles that arrived after the view stopped moving, so after the last
+      // `moveend` this layer was measured on.
       load() {
         schedule();
       },
@@ -307,6 +307,13 @@ export function tileAttributionHandlers(
 
   return cached;
 }
+
+/**
+ * Recomputes which painted tiles are on screen, for the map to call as it
+ * settles: panning back over tiles Leaflet kept loads nothing, so no tile event
+ * marks the view that no longer shows them.
+ */
+export const scheduleTileAttribution = schedule;
 
 function subscribe(listener: () => void): () => void {
   observe();

@@ -68,6 +68,11 @@ nobody; `onScreen` intersects each tile's rect with the map container's rather
 than deriving it from the coordinates, which would have to mirror every
 `tileSize`/`zoomOffset` the hi-DPI and feature-scale paths set.
 
+**The map's own `moveend`/`zoomend` is what asks for that measurement**, from
+`Layers`. Tile events cannot: panning back over tiles Leaflet kept fetches
+nothing and so announces nothing, which left the credit showing the view that
+had fetched them until a pan went far enough to load something.
+
 What this cannot narrow is a tile only partly in view: the codes are per tile,
 so one straddling the edge credits everything it drew anywhere. At low zoom that
 is a lot — a z5 tile over central Europe reports ten sources — which is the

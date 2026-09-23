@@ -14,9 +14,13 @@ import {
   type LayerDef,
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
-import { tileAttributionHandlers } from '@shared/tileAttribution.js';
+import {
+  scheduleTileAttribution,
+  tileAttributionHandlers,
+} from '@shared/tileAttribution.js';
 import { wmsBaseUrl } from '@shared/wms.js';
-import type { ReactElement } from 'react';
+import { type ReactElement, useEffect } from 'react';
+import { useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import missingTile from '@/images/missing-tile-256x256.png';
 import { AsyncComponent } from './AsyncComponent.js';
@@ -55,6 +59,16 @@ const viewshedLayerFactory = () =>
   );
 
 export function Layers(): ReactElement | null {
+  const map = useMap();
+
+  useEffect(() => {
+    map.on('moveend zoomend', scheduleTileAttribution);
+
+    return () => {
+      map.off('moveend zoomend', scheduleTileAttribution);
+    };
+  }, [map]);
+
   const layers = useAppSelector((state) => state.map.layers);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
