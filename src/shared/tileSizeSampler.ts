@@ -86,6 +86,9 @@ export async function sampleTilesSize({
               // <img> requests send — providers that authenticate by `Referer`
               // would otherwise answer 403 and skew the estimate
               referrerPolicy: 'strict-origin-when-cross-origin',
+              // keeps the sample out of the browse cache, and off it: an
+              // estimate wants what the server sends, not what is already held
+              cache: 'reload',
             });
 
             return response.ok ? (await response.blob()).size : undefined;

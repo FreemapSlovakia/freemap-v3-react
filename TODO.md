@@ -64,6 +64,24 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
+- [ ] **Mark an offline download with something the worker cannot lose.** What
+      separates it from the map drawing is `cache: 'reload'` on its `fetch`,
+      read back as `event.request.cache` — both ask for the same URL the same
+      way otherwise. A browser that doesn't report `cache` faithfully puts the
+      download into the browse cache, which duplicates it and, in `cache-only`
+      mode, answers 404s that count as tiles fetched. A marker on the URL itself
+      would not depend on the browser reporting an init option.
+
+- [ ] **Credit a downloaded map by what is on screen.** It shows the union over
+      everything it holds, where the live map and the browse cache both narrow
+      to the tiles in view — its layers are built with `cors: false`, so they
+      keep the `<img>` path and nothing reads `X-Attribution` per tile. The flag
+      is there because `crossOrigin` made Chrome's `cache.match` miss the stored
+      entry, which a fetch doesn't do: take the fetch path for a same-origin URL
+      as well, and the stored tiles (which already carry the header) credit
+      per view. The download-time union then stays as the fallback for maps
+      cached before the header existed.
+
 - [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
       `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
       `useMemo` is left. Same method — see

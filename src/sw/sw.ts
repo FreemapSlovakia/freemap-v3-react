@@ -32,6 +32,9 @@ const FALLBACK_LOGO_URL = '/freemap-flower.svg';
 
 const TILE_CACHE_PREFIX = 'tiles-';
 
+/** `…/z/x/y`, with the `@Nx` and the extension a tile may carry. */
+const TILE_PATH = /\/\d+\/-?\d+\/-?\d+(?:@\d+(?:\.\d+)?x)?(?:\.\w+)?$/;
+
 // the scales any layer offers, cheapest lookup first
 const TILE_SCALES = [1, 2, 3, 4];
 
@@ -93,17 +96,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // `destination` keeps the browse cache to tiles a map is actually drawing: an
-  // offline-map download and the size sampler ask for the very same URLs through
-  // `fetch`, and answering those from — or copying them into — that cache would
-  // both duplicate the download and, in `cache-only` mode, hand the downloader
-  // 404s it would record as tiles it had fetched. Only cross-origin images may
-  // wait for settings that haven't been read yet: the app's own assets are never
-  // tiles, and a same-origin tile layer (nothing ships one) would lose only the
-  // first screenful.
-  if (event.request.destination === 'image') {
+  // The browse cache is for tiles a map is drawing. An offline download and the
+  // size sampler ask for the very same URLs, and answering those from — or
+  // copying them into — that cache would both duplicate the download and, in
+  // `cache-only` mode, hand the downloader 404s it would record as tiles it had
+  // fetched. The renderer's own tiles are a `fetch` now, so `destination` no
+  // longer tells the two apart and the download says which it is by demanding
+  // the network.
+  const isImage = event.request.destination === 'image';
+
+  const looksLikeTile = isImage || TILE_PATH.test(url.pathname);
+
+  // A force-reload asks for `reload` on every subresource too, so an `<img>`
+  // layer keeps its cache there — it never had another way of saying it was a
+  // download. Only the renderer's own tiles, which do, go to the network.
+  if (looksLikeTile && (isImage || event.request.cache !== 'reload')) {
     refreshBrowseState();
 
+    // Waiting on settings not read yet is for cross-origin tiles alone: the
+    // app's own assets are never tiles, and anything else held for the full
+    // timeout would be held for nothing.
     const browsed = browseTileResponse(event, !isSameOrigin);
 
     if (browsed) {

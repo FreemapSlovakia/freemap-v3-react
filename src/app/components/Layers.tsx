@@ -12,6 +12,7 @@ import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   integratedLayerDefs,
   type LayerDef,
+  RENDERER_LAYER_TYPES,
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
 import {
@@ -403,6 +404,7 @@ export function Layers(): ReactElement | null {
           tileSize={isHdpi ? 128 : 256 * effFeatureScale}
           zoomOffset={isHdpi ? 1 : -Math.log2(effFeatureScale)}
           cors={layerDef.cors ?? true}
+          reportsAttribution={RENDERER_LAYER_TYPES.includes(type)}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={prm?.premiumOnly}
           onPremiumClick={

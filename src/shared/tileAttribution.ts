@@ -8,9 +8,6 @@ import {
 } from './mapDefinitions.js';
 import { type LicenseDict, loadTileLicenses } from './tileLicenses.js';
 
-/** The `Server-Timing` metric the renderer names its dataset codes in. */
-const METRIC = 'attr';
-
 /** Tiles whose codes are remembered; a dropped one reads back as unknown. */
 const MAX_REMEMBERED = 2048;
 
@@ -170,113 +167,33 @@ function remember(url: string, codes: string[]): void {
   }
 }
 
-let observing = false;
+let licensesLoading = false;
 
-function observe(): void {
-  if (observing || typeof PerformanceObserver === 'undefined') {
-    return;
-  }
+/** Wanted as soon as a tile is drawn, not when something asks for the credit. */
+function loadLicensesOnce(): void {
+  if (!licensesLoading) {
+    licensesLoading = true;
 
-  observing = true;
-
-  // Fetched as soon as a tile is drawn rather than when something asks for the
-  // credit: a session that never opened the panel would otherwise persist no
-  // dictionary, and have none to fall back on next time it is offline.
-  void loadTileLicenses();
-
-  try {
-    new PerformanceObserver((list) => {
-      let changed = false;
-
-      for (const entry of list.getEntries() as PerformanceResourceTiming[]) {
-        if (entry.initiatorType !== 'img') {
-          continue;
-        }
-
-        // The metric's presence is what says the codes are known: an empty
-        // `desc` is a tile that credits nothing, no metric at all is a tile
-        // rendered before the renderer carried attribution.
-        const metric = entry.serverTiming?.find(({ name }) => name === METRIC);
-
-        if (metric) {
-          // spaced, a comma being what separates one metric from the next
-          remember(entry.name, metric.description.split(/\s+/).filter(Boolean));
-
-          changed = true;
-        }
+    void loadTileLicenses().then((dict) => {
+      // A page opened during one offline moment would otherwise go the whole
+      // session with nothing to resolve codes by.
+      if (!dict) {
+        licensesLoading = false;
       }
-
-      if (changed) {
-        schedule();
-      }
-      // `buffered` so tiles that loaded before the first layer mounted count too
-    }).observe({ type: 'resource', buffered: true });
-  } catch {
-    observing = false;
-
-    return;
+    });
   }
-
-  // entries are read as they arrive, so the buffer only has to not grow
-  addEventListener('resourcetimingbufferfull', () => {
-    performance.clearResourceTimings();
-  });
 }
 
-// At module scope, not in `observe()`: the worker posts a tile's codes when its
-// response resolves, which is before the image loads and so before any
-// `tileload` could install this. Undefined inside the worker, where this same
-// module is pulled in by the browse cache.
-navigator.serviceWorker?.addEventListener('message', ({ data }) => {
-  if (
-    data?.type === TILE_ATTRIBUTION_MESSAGE &&
-    typeof data.url === 'string' &&
-    typeof data.codes === 'string'
-  ) {
-    remember(data.url, splitAttributionHeader(data.codes));
+/**
+ * What a tile reported, off the response that delivered it. A `null` header
+ * leaves the tile unknown, which widens its layer's credit.
+ */
+export function noteTileCodes(url: string, header: string | null): void {
+  if (header !== null) {
+    remember(url, splitAttributionHeader(header));
 
     schedule();
   }
-});
-
-// Registering by `addEventListener` leaves the container's message queue
-// disabled — only assigning `onmessage` starts it implicitly — so without this
-// the worker posts into a queue nothing is taken off.
-navigator.serviceWorker?.startMessages();
-
-// TEMPORARY: `?attrdebug` says what the credit was worked out from, for a
-// device with no console to read it in.
-if (typeof alert === 'function' && location.search.includes('attrdebug')) {
-  setTimeout(() => {
-    const tiles = performance
-      .getEntriesByType('resource')
-      .filter((entry) =>
-        entry.name.startsWith(process.env['FM_MAPSERVER_URL'] ?? '\0'),
-      ) as PerformanceResourceTiming[];
-
-    let dict = 'threw';
-
-    try {
-      dict = String(Boolean(localStorage.getItem('fm.tileLicenses')));
-    } catch {
-      // private mode
-    }
-
-    alert(
-      JSON.stringify(
-        {
-          tiles: tiles.length,
-          withTiming: tiles.filter((e) => e.serverTiming?.length).length,
-          first: tiles[0] && [tiles[0].nextHopProtocol, tiles[0].transferSize],
-          controlled: Boolean(navigator.serviceWorker?.controller),
-          dict,
-          codes: snapshot,
-        },
-        null,
-        1,
-      ),
-    );
-  }, 6000);
 }
 
 /**
@@ -307,11 +224,13 @@ export function tileAttributionHandlers(
           return;
         }
 
-        // taken now: Leaflet blanks `src` before it announces the removal
-        const url = tile.currentSrc || tile.src;
+        // What it was fetched from, which `src` no longer says — that is an
+        // object URL. Taken now either way: Leaflet blanks `src` before it
+        // announces the removal.
+        const url = tile.dataset['tileUrl'] || tile.currentSrc || tile.src;
 
         if (url) {
-          observe();
+          loadLicensesOnce();
 
           painted.set(tile, {
             url,
@@ -362,7 +281,7 @@ export function tileAttributionHandlers(
 export const scheduleTileAttribution = schedule;
 
 function subscribe(listener: () => void): () => void {
-  observe();
+  loadLicensesOnce();
 
   // A layer switched off announces no removals — react-leaflet unbinds the
   // handlers first — so its tiles are only pruned the next time this runs.
@@ -387,18 +306,10 @@ export function useTileAttribution(): TileAttribution {
 export const ATTRIBUTION_HEADER = 'X-Attribution';
 
 /**
- * What the service worker posts a tile's codes to the page under. A response it
- * answers with is timing-opaque whatever headers it carries, so the observer
- * never sees the metric for a tile it served.
- */
-export const TILE_ATTRIBUTION_MESSAGE = 'fm-tile-attribution';
-
-/**
  * The codes a tile response reports, or `null` if it reports none — present and
  * empty being a tile that credits nothing, which is an answer. Cross-origin the
  * header must be named in `Access-Control-Expose-Headers` to be readable at
- * all, a different gate from the `Timing-Allow-Origin` the observer goes
- * through, and missing it looks exactly like a tile reporting nothing.
+ * all, and missing it looks exactly like a tile reporting nothing.
  */
 export function readTileCodes(headers: Headers): string[] | null {
   const header = headers.get(ATTRIBUTION_HEADER);
@@ -406,11 +317,7 @@ export function readTileCodes(headers: Headers): string[] | null {
   return header === null ? null : splitAttributionHeader(header);
 }
 
-/**
- * Commas, which is how the header spells the list wherever it appears — a tile's
- * and an export's alike. The `Server-Timing` metric spaces them instead, a comma
- * there being what separates one metric from the next.
- */
+/** Commas, as the header spells the list wherever it appears — a tile's and an export's alike. */
 export function splitAttributionHeader(header: string): string[] {
   return header.split(',').filter(Boolean);
 }
