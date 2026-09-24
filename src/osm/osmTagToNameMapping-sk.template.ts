@@ -572,6 +572,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   'ruins:building': { '*': 'Ruina budovy' },
   ruins: { yes: 'V ruinách' },
+  sac_scale: {
+    hiking: 'T1 turistika',
+    mountain_hiking: 'T2 horská turistika',
+    demanding_mountain_hiking: 'T3 náročná horská turistika',
+    alpine_hiking: 'T4 vysokohorská turistika',
+    demanding_alpine_hiking: 'T5 náročná vysokohorská turistika',
+    difficult_alpine_hiking: 'T6 obtiažna vysokohorská turistika',
+  },
+  smoothness: {
+    excellent: 'Výborný povrch (kolieskové korčule)',
+    good: 'Dobrý povrch (cestný bicykel)',
+    intermediate: 'Priemerný povrch (mestský bicykel)',
+    bad: 'Zlý povrch (trekingový bicykel)',
+    very_bad: 'Veľmi zlý povrch (auto s vyšším podvozkom)',
+    horrible: 'Hrozný povrch (terénne vozidlo)',
+    very_horrible: 'Veľmi hrozný povrch (traktor)',
+    impassable: 'Nezjazdný povrch',
+  },
   building: {
     '*': {
       '*': 'Budova',
@@ -2109,7 +2127,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       information: {
         '*': 'Informácie {}',
         board: 'Informačná tabuľa',
-        guidepost: 'Rázcestník, smerovník',
+        guidepost: {
+          '*': 'Rázcestník, smerovník',
+          hiking: { yes: 'Turistický rázcestník' },
+          bicycle: { yes: 'Cyklorázcestník' },
+          mtb: { yes: 'MTB rázcestník' },
+          ski: { yes: 'Lyžiarsky rázcestník' },
+          horse: { yes: 'Jazdecký rázcestník' },
+        },
         map: 'Mapa',
         office: 'Turistická informačná kancelária',
         route_marker: 'Označenie trasy',

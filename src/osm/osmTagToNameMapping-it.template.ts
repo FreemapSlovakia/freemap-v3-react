@@ -1979,7 +1979,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       information: {
         '*': 'Informazioni {}',
         board: 'Pannello informativo',
-        guidepost: 'Cartello segnavia',
+        guidepost: {
+          '*': 'Cartello segnavia',
+          hiking: { yes: 'Cartello escursionistico' },
+          bicycle: { yes: 'Cartello ciclabile' },
+          mtb: { yes: 'Cartello MTB' },
+          ski: { yes: 'Cartello sciistico' },
+          horse: { yes: 'Cartello ippovia' },
+        },
         map: 'Mappa',
         office: 'Ufficio informazioni',
         route_marker: 'Segnavia',
@@ -2128,6 +2135,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     '*': 'Rovine di edificio',
   },
   ruins: { yes: 'In rovina' },
+  sac_scale: {
+    hiking: 'T1 escursionismo',
+    mountain_hiking: 'T2 escursionismo di montagna',
+    demanding_mountain_hiking: 'T3 escursionismo di montagna impegnativo',
+    alpine_hiking: 'T4 escursionismo alpino',
+    demanding_alpine_hiking: 'T5 escursionismo alpino impegnativo',
+    difficult_alpine_hiking: 'T6 escursionismo alpino difficile',
+  },
+  smoothness: {
+    excellent: 'Fondo eccellente (pattini in linea)',
+    good: 'Fondo buono (bici da corsa)',
+    intermediate: 'Fondo medio (bici da città)',
+    bad: 'Fondo cattivo (bici da trekking)',
+    very_bad: 'Fondo molto cattivo (auto rialzata)',
+    horrible: 'Fondo pessimo (fuoristrada)',
+    very_horrible: 'Fondo molto pessimo (trattore)',
+    impassable: 'Fondo impraticabile',
+  },
 
   attraction: {
     amusement_ride: 'Attrazione meccanica',

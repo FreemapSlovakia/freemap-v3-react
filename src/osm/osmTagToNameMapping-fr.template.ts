@@ -570,6 +570,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   'ruins:building': { '*': 'Ruines d’un bâtiment' },
   ruins: { yes: 'En ruine' },
+  sac_scale: {
+    hiking: 'T1 randonnée',
+    mountain_hiking: 'T2 randonnée en montagne',
+    demanding_mountain_hiking: 'T3 randonnée en montagne exigeante',
+    alpine_hiking: 'T4 randonnée alpine',
+    demanding_alpine_hiking: 'T5 randonnée alpine exigeante',
+    difficult_alpine_hiking: 'T6 randonnée alpine difficile',
+  },
+  smoothness: {
+    excellent: 'Revêtement excellent (rollers)',
+    good: 'Bon revêtement (vélo de route)',
+    intermediate: 'Revêtement moyen (vélo de ville)',
+    bad: 'Mauvais revêtement (VTC)',
+    very_bad: 'Très mauvais revêtement (voiture surélevée)',
+    horrible: 'Revêtement horrible (tout-terrain)',
+    very_horrible: 'Revêtement très horrible (tracteur)',
+    impassable: 'Revêtement impraticable',
+  },
   building: {
     '*': {
       '*': 'Bâtiment',
@@ -2103,7 +2121,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       information: {
         '*': 'Information {}',
         board: 'Panneau d’information',
-        guidepost: 'Poteau indicateur',
+        guidepost: {
+          '*': 'Poteau indicateur',
+          hiking: { yes: 'Poteau indicateur de randonnée' },
+          bicycle: { yes: 'Poteau indicateur cyclable' },
+          mtb: { yes: 'Poteau indicateur VTT' },
+          ski: { yes: 'Poteau indicateur de ski' },
+          horse: { yes: 'Poteau indicateur équestre' },
+        },
         map: 'Carte',
         office: 'Office de tourisme',
         route_marker: 'Balise d’itinéraire',

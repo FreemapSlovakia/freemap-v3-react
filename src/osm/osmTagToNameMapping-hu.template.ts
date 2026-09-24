@@ -1917,7 +1917,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       information: {
         '*': 'Információ {}',
         board: 'Tájékoztató tábla',
-        guidepost: 'Útirányjelző tábla',
+        guidepost: {
+          '*': 'Útirányjelző tábla',
+          hiking: { yes: 'Turista útirányjelző' },
+          bicycle: { yes: 'Kerékpáros útirányjelző' },
+          mtb: { yes: 'MTB útirányjelző' },
+          ski: { yes: 'Sí útirányjelző' },
+          horse: { yes: 'Lovas útirányjelző' },
+        },
         map: 'Térkép',
         office: 'Tourinform iroda',
         route_marker: 'Útvonaljelzés',
@@ -2126,6 +2133,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     '*': 'Épületrom',
   },
   ruins: { yes: 'Romos' },
+  sac_scale: {
+    hiking: 'T1 túrázás',
+    mountain_hiking: 'T2 hegyi túrázás',
+    demanding_mountain_hiking: 'T3 igényes hegyi túrázás',
+    alpine_hiking: 'T4 alpesi túrázás',
+    demanding_alpine_hiking: 'T5 igényes alpesi túrázás',
+    difficult_alpine_hiking: 'T6 nehéz alpesi túrázás',
+  },
+  smoothness: {
+    excellent: 'Kiváló burkolat (görkorcsolya)',
+    good: 'Jó burkolat (országúti kerékpár)',
+    intermediate: 'Közepes burkolat (városi kerékpár)',
+    bad: 'Rossz burkolat (túrakerékpár)',
+    very_bad: 'Nagyon rossz burkolat (magasított autó)',
+    horrible: 'Borzalmas burkolat (terepjáró)',
+    very_horrible: 'Nagyon borzalmas burkolat (traktor)',
+    impassable: 'Járhatatlan burkolat',
+  },
 
   attraction: {
     amusement_ride: 'Vidámparki játék',

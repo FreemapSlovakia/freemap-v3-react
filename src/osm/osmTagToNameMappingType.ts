@@ -590,6 +590,24 @@ export type OsmTagToNameMapping = {
   ruins: {
     yes: string;
   };
+  sac_scale: {
+    hiking: string;
+    mountain_hiking: string;
+    demanding_mountain_hiking: string;
+    alpine_hiking: string;
+    demanding_alpine_hiking: string;
+    difficult_alpine_hiking: string;
+  };
+  smoothness: {
+    excellent: string;
+    good: string;
+    intermediate: string;
+    bad: string;
+    very_bad: string;
+    horrible: string;
+    very_horrible: string;
+    impassable: string;
+  };
   building: {
     '*': {
       '*': string;
@@ -2122,7 +2140,14 @@ export type OsmTagToNameMapping = {
       information: {
         '*': string;
         board: string;
-        guidepost: string;
+        guidepost: {
+          '*': string;
+          hiking: { yes: string };
+          bicycle: { yes: string };
+          mtb: { yes: string };
+          ski: { yes: string };
+          horse: { yes: string };
+        };
         map: string;
         office: string;
         route_marker: string;

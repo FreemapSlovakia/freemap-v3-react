@@ -1980,7 +1980,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       information: {
         '*': 'Informace {}',
         board: 'Informační tabule',
-        guidepost: 'Rozcestník, směrovník',
+        guidepost: {
+          '*': 'Rozcestník, směrovník',
+          hiking: { yes: 'Turistický rozcestník' },
+          bicycle: { yes: 'Cyklorozcestník' },
+          mtb: { yes: 'MTB rozcestník' },
+          ski: { yes: 'Lyžařský rozcestník' },
+          horse: { yes: 'Jezdecký rozcestník' },
+        },
         map: 'Mapa',
         office: 'Informační kancelář',
         route_marker: 'Označení trasy',
@@ -2233,6 +2240,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     '*': 'Ruiny budovy',
   },
   ruins: { yes: 'V ruinách' },
+  sac_scale: {
+    hiking: 'T1 turistika',
+    mountain_hiking: 'T2 horská turistika',
+    demanding_mountain_hiking: 'T3 náročná horská turistika',
+    alpine_hiking: 'T4 vysokohorská turistika',
+    demanding_alpine_hiking: 'T5 náročná vysokohorská turistika',
+    difficult_alpine_hiking: 'T6 obtížná vysokohorská turistika',
+  },
+  smoothness: {
+    excellent: 'Výborný povrch (kolečkové brusle)',
+    good: 'Dobrý povrch (silniční kolo)',
+    intermediate: 'Průměrný povrch (městské kolo)',
+    bad: 'Špatný povrch (trekové kolo)',
+    very_bad: 'Velmi špatný povrch (auto s vyšším podvozkem)',
+    horrible: 'Hrozný povrch (terénní vozidlo)',
+    very_horrible: 'Velmi hrozný povrch (traktor)',
+    impassable: 'Nesjízdný povrch',
+  },
 
   fixme: {
     '*': 'Nesprávně nebo částečně zmapovaný prvek',

@@ -576,6 +576,24 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
   },
   'ruins:building': { '*': 'Ruins of a building' },
   ruins: { yes: 'In ruins' },
+  sac_scale: {
+    hiking: 'T1 hiking',
+    mountain_hiking: 'T2 mountain hiking',
+    demanding_mountain_hiking: 'T3 demanding mountain hiking',
+    alpine_hiking: 'T4 alpine hiking',
+    demanding_alpine_hiking: 'T5 demanding alpine hiking',
+    difficult_alpine_hiking: 'T6 difficult alpine hiking',
+  },
+  smoothness: {
+    excellent: 'Excellent surface (roller skates)',
+    good: 'Good surface (racing bike)',
+    intermediate: 'Intermediate surface (city bike)',
+    bad: 'Bad surface (trekking bike)',
+    very_bad: 'Very bad surface (high-clearance car)',
+    horrible: 'Horrible surface (off-road vehicle)',
+    very_horrible: 'Very horrible surface (tractor)',
+    impassable: 'Impassable surface',
+  },
   building: {
     '*': {
       '*': 'Building',
@@ -2108,7 +2126,14 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
       information: {
         '*': 'Information {}',
         board: 'Information board',
-        guidepost: 'Guidepost',
+        guidepost: {
+          '*': 'Guidepost',
+          hiking: { yes: 'Hiking guidepost' },
+          bicycle: { yes: 'Cycling guidepost' },
+          mtb: { yes: 'MTB guidepost' },
+          ski: { yes: 'Ski guidepost' },
+          horse: { yes: 'Horse-riding guidepost' },
+        },
         map: 'Map',
         office: 'Information office',
         route_marker: 'Route marker',

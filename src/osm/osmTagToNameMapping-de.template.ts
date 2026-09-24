@@ -1894,7 +1894,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       information: {
         '*': 'Information {}',
         board: 'Informationsschild',
-        guidepost: 'Wegweiser',
+        guidepost: {
+          '*': 'Wegweiser',
+          hiking: { yes: 'Wanderwegweiser' },
+          bicycle: { yes: 'Radwegweiser' },
+          mtb: { yes: 'MTB-Wegweiser' },
+          ski: { yes: 'Loipenwegweiser' },
+          horse: { yes: 'Reitwegweiser' },
+        },
         map: 'Karte',
         office: 'Informationsbüro',
         route_marker: 'Routenmarkierung',
@@ -2132,6 +2139,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     '*': 'Ruins of a building',
   },
   ruins: { yes: 'In Ruinen' },
+  sac_scale: {
+    hiking: 'T1 Wandern',
+    mountain_hiking: 'T2 Bergwandern',
+    demanding_mountain_hiking: 'T3 anspruchsvolles Bergwandern',
+    alpine_hiking: 'T4 Alpinwandern',
+    demanding_alpine_hiking: 'T5 anspruchsvolles Alpinwandern',
+    difficult_alpine_hiking: 'T6 schwieriges Alpinwandern',
+  },
+  smoothness: {
+    excellent: 'Ausgezeichnete Oberfläche (Inlineskates)',
+    good: 'Gute Oberfläche (Rennrad)',
+    intermediate: 'Mittlere Oberfläche (Stadtrad)',
+    bad: 'Schlechte Oberfläche (Trekkingrad)',
+    very_bad: 'Sehr schlechte Oberfläche (Auto mit hoher Bodenfreiheit)',
+    horrible: 'Furchtbare Oberfläche (Geländewagen)',
+    very_horrible: 'Sehr furchtbare Oberfläche (Traktor)',
+    impassable: 'Unpassierbare Oberfläche',
+  },
 
   fixme: {
     '*': 'Fehlerhaft oder unvollständig kartiertes Objekt',

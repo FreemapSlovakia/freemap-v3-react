@@ -572,6 +572,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
   },
   'ruins:building': { '*': 'Ruševina stavbe' },
   ruins: { yes: 'V ruševinah' },
+  sac_scale: {
+    hiking: 'T1 pohodništvo',
+    mountain_hiking: 'T2 gorsko pohodništvo',
+    demanding_mountain_hiking: 'T3 zahtevno gorsko pohodništvo',
+    alpine_hiking: 'T4 visokogorsko pohodništvo',
+    demanding_alpine_hiking: 'T5 zahtevno visokogorsko pohodništvo',
+    difficult_alpine_hiking: 'T6 težavno visokogorsko pohodništvo',
+  },
+  smoothness: {
+    excellent: 'Odlična površina (rolerji)',
+    good: 'Dobra površina (cestno kolo)',
+    intermediate: 'Srednja površina (mestno kolo)',
+    bad: 'Slaba površina (treking kolo)',
+    very_bad: 'Zelo slaba površina (avto z višjim podvozjem)',
+    horrible: 'Grozna površina (terensko vozilo)',
+    very_horrible: 'Zelo grozna površina (traktor)',
+    impassable: 'Neprevozna površina',
+  },
   building: {
     '*': {
       '*': 'Stavba',
@@ -2109,7 +2127,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       information: {
         '*': 'Informacije {}',
         board: 'Informacijska tabla',
-        guidepost: 'Smerokaz',
+        guidepost: {
+          '*': 'Smerokaz',
+          hiking: { yes: 'Pohodniški smerokaz' },
+          bicycle: { yes: 'Kolesarski smerokaz' },
+          mtb: { yes: 'MTB smerokaz' },
+          ski: { yes: 'Smučarski smerokaz' },
+          horse: { yes: 'Konjeniški smerokaz' },
+        },
         map: 'Zemljevid',
         office: 'Turistično informacijski center',
         route_marker: 'Oznaka poti',

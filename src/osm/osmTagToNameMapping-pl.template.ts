@@ -1899,7 +1899,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       information: {
         '*': 'Informacja {}',
         board: 'Tablica informacyjna',
-        guidepost: 'Drogowskaz',
+        guidepost: {
+          '*': 'Drogowskaz',
+          hiking: { yes: 'Drogowskaz turystyczny' },
+          bicycle: { yes: 'Drogowskaz rowerowy' },
+          mtb: { yes: 'Drogowskaz MTB' },
+          ski: { yes: 'Drogowskaz narciarski' },
+          horse: { yes: 'Drogowskaz konny' },
+        },
         map: 'Mapa',
         office: 'Biuro informacji',
         route_marker: 'Oznakowanie trasy',
@@ -2124,6 +2131,24 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     '*': 'Ruiny budynku',
   },
   ruins: { yes: 'W ruinie' },
+  sac_scale: {
+    hiking: 'T1 turystyka piesza',
+    mountain_hiking: 'T2 turystyka górska',
+    demanding_mountain_hiking: 'T3 wymagająca turystyka górska',
+    alpine_hiking: 'T4 turystyka wysokogórska',
+    demanding_alpine_hiking: 'T5 wymagająca turystyka wysokogórska',
+    difficult_alpine_hiking: 'T6 trudna turystyka wysokogórska',
+  },
+  smoothness: {
+    excellent: 'Doskonała nawierzchnia (rolki)',
+    good: 'Dobra nawierzchnia (rower szosowy)',
+    intermediate: 'Średnia nawierzchnia (rower miejski)',
+    bad: 'Zła nawierzchnia (rower trekkingowy)',
+    very_bad: 'Bardzo zła nawierzchnia (auto z wyższym prześwitem)',
+    horrible: 'Fatalna nawierzchnia (terenówka)',
+    very_horrible: 'Bardzo fatalna nawierzchnia (traktor)',
+    impassable: 'Nieprzejezdna nawierzchnia',
+  },
 
   attraction: {
     amusement_ride: 'Atrakcja rozrywkowa',
