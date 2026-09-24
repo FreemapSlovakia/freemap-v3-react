@@ -1,0 +1,42 @@
+# MTA-STS policy host for freemap.sk (RFC 8461).
+# Senders fetch the policy over HTTPS only and MUST NOT follow redirects, so the
+# policy lives in its own server block, not behind the apex -> www redirect.
+# Bumping the policy file also needs a new `id=` in the _mta-sts TXT record.
+server {
+
+	server_name mta-sts.freemap.sk;
+
+	root /var/www/mta-sts;
+
+	location = /.well-known/mta-sts.txt {
+		default_type 'text/plain; charset=UTF-8';
+		add_header Cache-Control 'public, max-age=3600';
+	}
+
+	location / {
+		return 404;
+	}
+
+    listen 443 ssl; # managed by Certbot
+    listen [::]:443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/mta-sts.freemap.sk/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/mta-sts.freemap.sk/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+server {
+    if ($host = mta-sts.freemap.sk) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+	listen 80;
+	listen [::]:80;
+
+	server_name mta-sts.freemap.sk;
+    return 404; # managed by Certbot
+
+
+}
