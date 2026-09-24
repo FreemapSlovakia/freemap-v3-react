@@ -2157,6 +2157,16 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     very_horrible: 'Sehr furchtbare Oberfläche (Traktor)',
     impassable: 'Unpassierbare Oberfläche',
   },
+  'mtb:scale': {
+    '*': 'MTB S{}',
+    '0': 'MTB S0 (leicht)',
+    '1': 'MTB S1 (kleine Hindernisse)',
+    '2': 'MTB S2 (größere Hindernisse)',
+    '3': 'MTB S3 (schwierig)',
+    '4': 'MTB S4 (sehr schwierig)',
+    '5': 'MTB S5 (extrem)',
+    '6': 'MTB S6 (nicht fahrbar)',
+  },
 
   fixme: {
     '*': 'Fehlerhaft oder unvollständig kartiertes Objekt',

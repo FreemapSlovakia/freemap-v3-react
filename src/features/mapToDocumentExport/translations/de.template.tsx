@@ -27,6 +27,7 @@ const de: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     skiTrails: 'Skipisten',
     horseTrails: 'Reitwege',
     sacScale: 'Wanderschwierigkeit',
+    mtbScale: 'MTB-Schwierigkeit',
     smoothness: 'Straßenzustand',
     waymarking: 'Wegweiser',
   },

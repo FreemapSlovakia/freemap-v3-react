@@ -27,6 +27,7 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     skiTrails: 'Síútvonalak',
     horseTrails: 'Lovaglóútvonalak',
     sacScale: 'Ösvények nehézsége',
+    mtbScale: 'MTB nehézség',
     smoothness: 'Útburkolat minősége',
     waymarking: 'Útjelző táblák',
   },

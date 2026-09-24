@@ -25,6 +25,7 @@ const en: MapToDocumentExportMessages = {
     skiTrails: 'Ski trails',
     horseTrails: 'Horse trails',
     sacScale: 'Hiking difficulty',
+    mtbScale: 'MTB difficulty',
     smoothness: 'Road smoothness',
     waymarking: 'Guideposts',
   },

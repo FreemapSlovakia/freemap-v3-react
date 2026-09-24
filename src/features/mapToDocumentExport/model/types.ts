@@ -11,6 +11,7 @@ export const EXTRA_LAYERS = [
   'skiTrails',
   'horseTrails',
   'sacScale',
+  'mtbScale',
   'smoothness',
   'waymarking',
 ] as const;
@@ -20,10 +21,14 @@ export const ExtraLayerSchema = z.enum(EXTRA_LAYERS);
 export type ExtraLayer = z.infer<typeof ExtraLayerSchema>;
 
 // What the outdoor map itself shows; the rest is opt-in.
-export const DEFAULT_EXTRA_LAYERS: ExtraLayer[] = EXTRA_LAYERS.filter(
-  (layer) =>
-    layer !== 'sacScale' && layer !== 'smoothness' && layer !== 'waymarking',
-);
+export const DEFAULT_EXTRA_LAYERS: readonly ExtraLayer[] = [
+  'contours',
+  'shading',
+  'hikingTrails',
+  'bicycleTrails',
+  'skiTrails',
+  'horseTrails',
+];
 
 // Base-map layers an export can leave out.
 export const OMITTABLE_LAYERS = ['groundCover', 'buildings'] as const;

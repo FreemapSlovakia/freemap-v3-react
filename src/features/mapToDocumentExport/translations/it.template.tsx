@@ -27,6 +27,7 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     skiTrails: 'Percorsi sciistici',
     horseTrails: 'Percorsi a cavallo',
     sacScale: 'Difficoltà dei sentieri',
+    mtbScale: 'Difficoltà MTB',
     smoothness: 'Stato delle strade',
     waymarking: 'Segnavia e cartelli',
   },

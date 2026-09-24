@@ -588,6 +588,16 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     very_horrible: 'Revêtement très horrible (tracteur)',
     impassable: 'Revêtement impraticable',
   },
+  'mtb:scale': {
+    '*': 'VTT S{}',
+    '0': 'VTT S0 (facile)',
+    '1': 'VTT S1 (petits obstacles)',
+    '2': 'VTT S2 (obstacles plus grands)',
+    '3': 'VTT S3 (difficile)',
+    '4': 'VTT S4 (très difficile)',
+    '5': 'VTT S5 (extrême)',
+    '6': 'VTT S6 (non roulable)',
+  },
   building: {
     '*': {
       '*': 'Bâtiment',

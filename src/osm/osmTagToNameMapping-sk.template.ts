@@ -590,6 +590,16 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     very_horrible: 'Veľmi hrozný povrch (traktor)',
     impassable: 'Nezjazdný povrch',
   },
+  'mtb:scale': {
+    '*': 'MTB S{}',
+    '0': 'MTB S0 (ľahká)',
+    '1': 'MTB S1 (malé prekážky)',
+    '2': 'MTB S2 (väčšie prekážky)',
+    '3': 'MTB S3 (náročná)',
+    '4': 'MTB S4 (veľmi náročná)',
+    '5': 'MTB S5 (extrémna)',
+    '6': 'MTB S6 (nezjazdná)',
+  },
   building: {
     '*': {
       '*': 'Budova',

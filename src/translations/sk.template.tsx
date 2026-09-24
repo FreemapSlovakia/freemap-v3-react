@@ -434,6 +434,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-wka': 'parcely, katastrálna mapa',
         'layer-xs': 'sac, obtiažnosť, chodník, horolezectvo, prekrytie',
         'layer-xq': 'smoothness, stav, cesta, výtlky, hrboľatá, prekrytie',
+        'layer-xm': 'horský bicykel, singletrack, enduro, zjazd, prekrytie',
         'layer-xh':
           'turistika, trasa, značky, smerovníky, rázcestníky, prekrytie',
         'layer-xb': 'cyklo, bicykel, mtb, trasa, prekrytie',
@@ -494,6 +495,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       wka: 'Kataster',
       xs: 'Náročnosť chodníkov',
       xq: 'Kvalita povrchu ciest',
+      xm: 'Náročnosť MTB trás',
       xh: 'Turistické trasy',
       xb: 'Cyklotrasy',
       xl: 'Lyžiarske trasy',

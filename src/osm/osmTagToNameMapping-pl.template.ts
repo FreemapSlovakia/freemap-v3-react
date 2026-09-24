@@ -2149,6 +2149,16 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     very_horrible: 'Bardzo fatalna nawierzchnia (traktor)',
     impassable: 'Nieprzejezdna nawierzchnia',
   },
+  'mtb:scale': {
+    '*': 'MTB S{}',
+    '0': 'MTB S0 (łatwa)',
+    '1': 'MTB S1 (małe przeszkody)',
+    '2': 'MTB S2 (większe przeszkody)',
+    '3': 'MTB S3 (trudna)',
+    '4': 'MTB S4 (bardzo trudna)',
+    '5': 'MTB S5 (ekstremalna)',
+    '6': 'MTB S6 (nieprzejezdna)',
+  },
 
   attraction: {
     amusement_ride: 'Atrakcja rozrywkowa',

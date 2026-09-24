@@ -412,6 +412,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-wka': 'particelle, catasto',
         'layer-xs': 'sac, scala cai, alpinismo, sovrapposizione',
         'layer-xq': 'smoothness, fondo, buche, sconnessa, sovrapposizione',
+        'layer-xm':
+          'mountain bike, singletrack, enduro, discesa, sovrapposizione',
         'layer-xh': 'escursionismo, segnavia, cartelli, sovrapposizione',
         'layer-xb': 'bici, ciclismo, mtb, sovrapposizione',
         'layer-xl': 'sci, sci di fondo, sovrapposizione',
@@ -476,6 +478,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       wka: 'Catasto',
       xs: 'Difficoltà dei sentieri',
       xq: 'Stato delle strade',
+      xm: 'Difficoltà MTB',
       xh: 'Sentieri escursionistici',
       xb: 'Percorsi ciclabili',
       xl: 'Percorsi sciistici',

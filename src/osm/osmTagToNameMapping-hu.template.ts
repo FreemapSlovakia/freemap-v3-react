@@ -2151,6 +2151,16 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     very_horrible: 'Nagyon borzalmas burkolat (traktor)',
     impassable: 'Járhatatlan burkolat',
   },
+  'mtb:scale': {
+    '*': 'MTB S{}',
+    '0': 'MTB S0 (könnyű)',
+    '1': 'MTB S1 (kis akadályok)',
+    '2': 'MTB S2 (nagyobb akadályok)',
+    '3': 'MTB S3 (nehéz)',
+    '4': 'MTB S4 (nagyon nehéz)',
+    '5': 'MTB S5 (extrém)',
+    '6': 'MTB S6 (járhatatlan)',
+  },
 
   attraction: {
     amusement_ride: 'Vidámparki játék',

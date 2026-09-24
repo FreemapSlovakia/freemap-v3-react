@@ -2258,6 +2258,16 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     very_horrible: 'Velmi hrozný povrch (traktor)',
     impassable: 'Nesjízdný povrch',
   },
+  'mtb:scale': {
+    '*': 'MTB S{}',
+    '0': 'MTB S0 (snadná)',
+    '1': 'MTB S1 (malé překážky)',
+    '2': 'MTB S2 (větší překážky)',
+    '3': 'MTB S3 (náročná)',
+    '4': 'MTB S4 (velmi náročná)',
+    '5': 'MTB S5 (extrémní)',
+    '6': 'MTB S6 (nesjízdná)',
+  },
 
   fixme: {
     '*': 'Nesprávně nebo částečně zmapovaný prvek',

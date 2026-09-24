@@ -27,6 +27,7 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     skiTrails: 'Smučarske proge',
     horseTrails: 'Konjeniške poti',
     sacScale: 'Zahtevnost poti',
+    mtbScale: 'Zahtevnost MTB poti',
     smoothness: 'Stanje cestišča',
     waymarking: 'Smerokazi',
   },

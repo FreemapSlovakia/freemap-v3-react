@@ -20,7 +20,12 @@ import {
   FaWater,
   FaWikipediaW,
 } from 'react-icons/fa';
-import { GiHills, GiStonePile, GiTreasureMap } from 'react-icons/gi';
+import {
+  GiHills,
+  GiMountainRoad,
+  GiStonePile,
+  GiTreasureMap,
+} from 'react-icons/gi';
 import { LuLandPlot } from 'react-icons/lu';
 import { SiOpenstreetmap } from 'react-icons/si';
 import z from 'zod';
@@ -169,6 +174,7 @@ const RENDERER_ROUTE_BY_TYPE = {
   XK: '/kst',
   xs: '/o/sac',
   xq: '/o/smoothness',
+  xm: '/o/mtb',
   xh: '/o/hiking',
   xb: '/o/bicycle',
   xl: '/o/ski',
@@ -1102,6 +1108,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       // Stacked aerial map, hiking, the other routes, then the grades on paths.
       ['xs', FaMountain, 12, 7],
       ['xq', FaRoad, 12, 7],
+      ['xm', GiMountainRoad, 12, 7],
       ['xh', FaHiking, 9, 5],
       ['xb', FaBicycle, 9, 6],
       ['xl', FaSkiing, 9, 6],

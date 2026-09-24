@@ -26,6 +26,7 @@ const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     skiTrails: 'Lyžařské trasy',
     horseTrails: 'Jezdecké trasy',
     sacScale: 'Náročnost stezek',
+    mtbScale: 'Obtížnost MTB tras',
     smoothness: 'Kvalita povrchu cest',
     waymarking: 'Rozcestníky',
   },

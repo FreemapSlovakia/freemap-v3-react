@@ -11,7 +11,7 @@ import {
   FaSkiing,
   FaTree,
 } from 'react-icons/fa';
-import { GiHills, GiTreasureMap } from 'react-icons/gi';
+import { GiHills, GiMountainRoad, GiTreasureMap } from 'react-icons/gi';
 import { RxTarget } from 'react-icons/rx';
 import {
   EXTRA_LAYERS,
@@ -29,6 +29,7 @@ const LAYER_ICONS: Record<ExtraLayer | OmittableLayer, ReactElement> = {
   skiTrails: <FaSkiing />,
   horseTrails: <FaHorse />,
   sacScale: <FaMountain />,
+  mtbScale: <GiMountainRoad />,
   smoothness: <FaRoad />,
   waymarking: <FaMapSigns />,
   groundCover: <FaTree />,

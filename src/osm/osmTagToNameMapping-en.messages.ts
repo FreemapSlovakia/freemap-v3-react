@@ -594,6 +594,17 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     very_horrible: 'Very horrible surface (tractor)',
     impassable: 'Impassable surface',
   },
+  'mtb:scale': {
+    // `1+`, `0-` and the like, which OSM uses to split a grade
+    '*': 'MTB S{}',
+    '0': 'MTB S0 (easy)',
+    '1': 'MTB S1 (small obstacles)',
+    '2': 'MTB S2 (larger obstacles)',
+    '3': 'MTB S3 (difficult)',
+    '4': 'MTB S4 (very difficult)',
+    '5': 'MTB S5 (extreme)',
+    '6': 'MTB S6 (not rideable)',
+  },
   building: {
     '*': {
       '*': 'Building',
