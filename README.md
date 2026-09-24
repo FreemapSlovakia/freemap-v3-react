@@ -74,6 +74,7 @@ The production nginx site configs are checked into this repo under [`etc/nginx/s
 
 - [`www.freemap.sk`](./etc/nginx/sites-available/www.freemap.sk) — the main site.
 - [`www.freemap.eu`](./etc/nginx/sites-available/www.freemap.eu) — the `.eu` mirror (additionally allows CORS for the GlitchTip/Sentry origin).
+- [`mta-sts.freemap.sk`](./etc/nginx/sites-available/mta-sts.freemap.sk) — serves the [MTA-STS policy](./etc/mta-sts/.well-known/mta-sts.txt) ([RFC 8461](https://www.rfc-editor.org/rfc/rfc8461)) from `/var/www/mta-sts`. The policy is in `enforce` mode, so **senders refuse to deliver mail to an MX that falls outside its `mx:` patterns or fails TLS hostname validation**. Before changing `freemap.sk`'s MX records, widen the policy first and bump `id=` in the `_mta-sts.freemap.sk` TXT record (senders otherwise keep the cached copy for `max_age`, a week). Failure reports go to the `_smtp._tls` TLS-RPT address.
 
 Both serve the static build from `/home/freemap/www` and share the same **cache-header policy**, which is critical to get right — mismatched headers pin users to stale hashed asset names and break the layout after a deploy:
 
@@ -114,24 +115,6 @@ Server-side scheduled jobs are checked in under [`etc/systemd/system/`](./etc/sy
   ```
 
   A mirror's `latest` can lag the origin by a day or two (fine for the monthly import); the code defaults stay on `dumps.wikimedia.org` (canonical), so this is an opt-in override.
-
-- [`freemap-mta-sts-guard.service`](./etc/systemd/system/freemap-mta-sts-guard.service) / [`freemap-mta-sts-guard.timer`](./etc/systemd/system/freemap-mta-sts-guard.timer) — the **daily MTA-STS policy guard** for `freemap.sk` ([RFC 8461](https://www.rfc-editor.org/rfc/rfc8461)). It runs [`mta-sts-guard`](./etc/mta-sts/mta-sts-guard) as root on `fm6`, which resolves the domain's MX, checks that each one is covered by the published policy's `mx:` patterns and completes STARTTLS with **hostname validation** (`-verify_hostname` — a trusted chain for the wrong name is exactly what MTA-STS rejects), then moves the policy: `testing` → `enforce` after 21 clean days, and back to `testing` after 2 failed days. A DNS lookup failure aborts the run without touching either streak, so an outage can't be mistaken for a TLS fault.
-
-  The revert is the point of the whole thing: in `enforce`, a broken MX cert or an MX moved outside the `mx:` patterns makes senders refuse to deliver. Recovery rides on the policy's **`max_age: 86400`** rather than a DNS edit, because the `_mta-sts` `id` TXT record is at Webhouse and can only be changed by hand — so senders re-fetch daily and pick up a revert within a day. Keep `max_age` short for as long as this runs unattended.
-
-  Install / update on the server:
-
-  ```bash
-  sudo install -m 755 etc/mta-sts/mta-sts-guard /usr/local/bin/mta-sts-guard
-  sudo cp etc/systemd/system/freemap-mta-sts-guard.{service,timer} /etc/systemd/system/
-  sudo systemctl daemon-reload
-  sudo systemctl enable --now freemap-mta-sts-guard.timer
-  sudo systemctl start freemap-mta-sts-guard.service    # run once now
-  journalctl -u freemap-mta-sts-guard.service -n 20     # last result
-  cat /var/lib/mta-sts-guard/state                      # streaks + current mode
-  ```
-
-  The policy itself is served by the [`mta-sts.freemap.sk`](./etc/nginx/sites-available/mta-sts.freemap.sk) vhost from `/var/www/mta-sts/.well-known/mta-sts.txt` ([reference copy](./etc/mta-sts/.well-known/mta-sts.txt)). Editing it by hand also means bumping `id=` in the `_mta-sts.freemap.sk` TXT record, or senders keep the cached copy until `max_age` lapses.
 
 ## Environment variables
 
