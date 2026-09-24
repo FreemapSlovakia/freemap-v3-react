@@ -115,6 +115,24 @@ Server-side scheduled jobs are checked in under [`etc/systemd/system/`](./etc/sy
 
   A mirror's `latest` can lag the origin by a day or two (fine for the monthly import); the code defaults stay on `dumps.wikimedia.org` (canonical), so this is an opt-in override.
 
+- [`freemap-mta-sts-guard.service`](./etc/systemd/system/freemap-mta-sts-guard.service) / [`freemap-mta-sts-guard.timer`](./etc/systemd/system/freemap-mta-sts-guard.timer) — the **daily MTA-STS policy guard** for `freemap.sk` ([RFC 8461](https://www.rfc-editor.org/rfc/rfc8461)). It runs [`mta-sts-guard`](./etc/mta-sts/mta-sts-guard) as root on `fm6`, which resolves the domain's MX, checks that each one is covered by the published policy's `mx:` patterns and completes STARTTLS with **hostname validation** (`-verify_hostname` — a trusted chain for the wrong name is exactly what MTA-STS rejects), then moves the policy: `testing` → `enforce` after 21 clean days, and back to `testing` after 2 failed days. A DNS lookup failure aborts the run without touching either streak, so an outage can't be mistaken for a TLS fault.
+
+  The revert is the point of the whole thing: in `enforce`, a broken MX cert or an MX moved outside the `mx:` patterns makes senders refuse to deliver. Recovery rides on the policy's **`max_age: 86400`** rather than a DNS edit, because the `_mta-sts` `id` TXT record is at Webhouse and can only be changed by hand — so senders re-fetch daily and pick up a revert within a day. Keep `max_age` short for as long as this runs unattended.
+
+  Install / update on the server:
+
+  ```bash
+  sudo install -m 755 etc/mta-sts/mta-sts-guard /usr/local/bin/mta-sts-guard
+  sudo cp etc/systemd/system/freemap-mta-sts-guard.{service,timer} /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now freemap-mta-sts-guard.timer
+  sudo systemctl start freemap-mta-sts-guard.service    # run once now
+  journalctl -u freemap-mta-sts-guard.service -n 20     # last result
+  cat /var/lib/mta-sts-guard/state                      # streaks + current mode
+  ```
+
+  The policy itself is served by the [`mta-sts.freemap.sk`](./etc/nginx/sites-available/mta-sts.freemap.sk) vhost from `/var/www/mta-sts/.well-known/mta-sts.txt` ([reference copy](./etc/mta-sts/.well-known/mta-sts.txt)). Editing it by hand also means bumping `id=` in the `_mta-sts.freemap.sk` TXT record, or senders keep the cached copy until `max_age` lapses.
+
 ## Environment variables
 
 Most deployment-specific values are derived from `DEPLOYMENT` (see above). The remaining overrides:
