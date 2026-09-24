@@ -1,5 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { getLegendLayers } from '@features/legend/legendLayers.js';
+import { hasLegend } from '@features/legend/legendLayers.js';
 import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -8,7 +8,7 @@ import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaFileContract,
@@ -27,12 +27,7 @@ export function CopyrightButton(): ReactElement {
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const legendLayers = useMemo(
-    () => getLegendLayers(customLayers),
-    [customLayers],
-  );
-
-  const showLegendButton = layers.some((type) => legendLayers.has(type));
+  const showLegendButton = hasLegend(layers, customLayers);
 
   const modalLink = useModalLink();
 

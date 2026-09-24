@@ -23,3 +23,21 @@ export function getLegendLayers(customLayers: CustomLayerDef[]): Set<string> {
     ...getWmsLayerDefs(customLayers).map((def) => def.type),
   ]);
 }
+
+/** The shown layers that have a legend, in their own order. */
+export function getActiveLegendLayers(
+  layers: readonly string[],
+  customLayers: CustomLayerDef[],
+): string[] {
+  const legendLayers = getLegendLayers(customLayers);
+
+  return layers.filter((layer) => legendLayers.has(layer));
+}
+
+/** Whether any of the shown layers has a legend to open. */
+export function hasLegend(
+  layers: readonly string[],
+  customLayers: CustomLayerDef[],
+): boolean {
+  return getActiveLegendLayers(layers, customLayers).length > 0;
+}

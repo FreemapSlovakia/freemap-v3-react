@@ -8,7 +8,7 @@ import {
   DocumentSchema,
   documentShow,
 } from '@features/documents/model/actions.js';
-import { getLegendLayers } from '@features/legend/legendLayers.js';
+import { hasLegend } from '@features/legend/legendLayers.js';
 import {
   type LayerSettings,
   mapToggleLayer,
@@ -154,11 +154,7 @@ const modalCommands: ModalCommand[] = [
     requiresOnline: true,
     // The modal describes the layers that are on, so with none of them on it
     // would open empty.
-    available: (ctx) => {
-      const legendLayers = getLegendLayers(ctx.customLayers);
-
-      return ctx.layers.some((layer) => legendLayers.has(layer));
-    },
+    available: (ctx) => hasLegend(ctx.layers, ctx.customLayers),
   },
   {
     id: 'about',

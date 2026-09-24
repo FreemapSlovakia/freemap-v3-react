@@ -1,5 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { getLegendLayers } from '@features/legend/legendLayers.js';
+import { hasLegend } from '@features/legend/legendLayers.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -7,7 +7,7 @@ import {
   documentMenuItemProps,
   modalMenuItemProps,
 } from '@shared/hooks/useMenuHandler.js';
-import { type JSX, useMemo } from 'react';
+import type { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
@@ -27,18 +27,13 @@ export function HelpSubmenu(): JSX.Element {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
-  const legendLayers = useMemo(
-    () => getLegendLayers(customLayers),
-    [customLayers],
-  );
-
   const layers = useAppSelector((state) => state.map.layers);
 
   return (
     <>
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
 
-      {layers.some((layer) => legendLayers.has(layer)) && (
+      {hasLegend(layers, customLayers) && (
         <OnlineOnlyItem {...modalMenuItemProps('legend')}>
           <FaList /> {m?.mainMenu.mapLegend}
         </OnlineOnlyItem>

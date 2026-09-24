@@ -8,7 +8,7 @@ import { type ReactElement, useMemo, useState } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import { FaList, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { getLegendLayers, getWmsLayerDefs } from '../legendLayers.js';
+import { getActiveLegendLayers, getWmsLayerDefs } from '../legendLayers.js';
 import { useLegendMessages } from '../translations/useLegendMessages.js';
 import OutdoorMapLegend from './OutdoorMapLegend.js';
 import { WmsMapLegend } from './WmsMapLegend.js';
@@ -31,14 +31,9 @@ export default function LegendModal({ show }: Props): ReactElement {
     [customLayers],
   );
 
-  const legendLayers = useMemo(
-    () => getLegendLayers(customLayers),
-    [customLayers],
-  );
+  const activeLegendLayers = getActiveLegendLayers(layers, customLayers);
 
-  const activeLegendLayers = layers.filter((layer) => legendLayers.has(layer));
-
-  const [openType, setOpenType] = useState<string | null>(null);
+  const [opened, setOpened] = useState<ReadonlySet<string>>(new Set());
 
   const m = useMessages();
 
@@ -85,10 +80,11 @@ export default function LegendModal({ show }: Props): ReactElement {
           </>
         ) : (
           <Accordion
-            activeKey={openType}
-            onSelect={(key) =>
-              setOpenType(typeof key === 'string' ? key : null)
-            }
+            onSelect={(key) => {
+              if (typeof key === 'string') {
+                setOpened((prev) => new Set(prev).add(key));
+              }
+            }}
           >
             {activeLegendLayers.map((type) => (
               <Accordion.Item key={type} eventKey={type}>
@@ -96,9 +92,10 @@ export default function LegendModal({ show }: Props): ReactElement {
                   <span>{getHeader(type)}</span>
                 </Accordion.Header>
 
-                {/* A collapsed body stays mounted, and each legend fetches. */}
+                {/* A collapsed body stays mounted and each legend fetches, so
+                    one mounts on first opening and stays to animate closed. */}
                 <Accordion.Body>
-                  {openType === type && getSingleLegend(type)}
+                  {opened.has(type) && getSingleLegend(type)}
                 </Accordion.Body>
               </Accordion.Item>
             ))}

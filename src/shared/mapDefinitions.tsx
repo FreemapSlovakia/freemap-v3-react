@@ -159,10 +159,8 @@ export const GEDTM30_ATTR: AttributionDef = {
 };
 
 /**
- * The outdoor renderer's layers whose tiles name the datasets they drew. One of
- * these that reported none is credited from the whole `/licenses` catalogue
- * rather than from {@link OUTDOOR_ATTRIBUTION} alone. Its overlays credit only
- * Freemap and OSM, so they are left out and load as plain images.
+ * The renderer's layers whose tiles name the datasets they drew. Its overlays
+ * credit only Freemap and OSM, so they are left out and load as plain images.
  */
 export const RENDERER_LAYER_TYPES = ['X', 'XK'];
 
@@ -1044,7 +1042,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     icon: <FaCamera />,
     minZoom: 10,
     shortcut: { code: 'KeyF', shift: true },
-    zIndex: 7,
+    zIndex: 8,
     attribution: [
       {
         type: 'photos',
@@ -1067,7 +1065,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     icon: <FaWikipediaW />,
     minZoom: 8,
     shortcut: { code: 'KeyW', shift: true },
-    zIndex: 7,
+    zIndex: 8,
     attribution: [],
   },
   {
@@ -1102,13 +1100,13 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   ...(
     [
       // Stacked aerial map, hiking, the other routes, then the grades on paths.
-      ['xs', FaMountain, 12, 6],
-      ['xq', FaRoad, 12, 6],
-      ['xh', FaHiking, 9, 4],
-      ['xb', FaBicycle, 9, 5],
-      ['xl', FaSkiing, 9, 5],
-      ['xr', FaHorse, 9, 5],
-      ['xa', FaPlane, 5, 3],
+      ['xs', FaMountain, 12, 7],
+      ['xq', FaRoad, 12, 7],
+      ['xh', FaHiking, 9, 5],
+      ['xb', FaBicycle, 9, 6],
+      ['xl', FaSkiing, 9, 6],
+      ['xr', FaHorse, 9, 6],
+      ['xa', FaPlane, 5, 4],
     ] as const
   ).map(
     ([type, Icon, minZoom, zIndex]): IntegratedLayerDef => ({
