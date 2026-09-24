@@ -275,7 +275,25 @@ export async function handle(
   );
 
   if (reverseGeocodingElement) {
-    sr.push(photonToSearchResult(reverseGeocodingElement, 'nominatim-reverse'));
+    const result = photonToSearchResult(
+      reverseGeocodingElement,
+      'nominatim-reverse',
+    );
+
+    // Photon keeps one tag of an element; the same element from the OSM API,
+    // dropped below as a duplicate, has them all — `bicycle=yes` on a guidepost.
+    const osmTags = [...nearbyElements, ...surroundingElements].find(
+      (e) => e.id === reverseOsm,
+    )?.properties;
+
+    if (osmTags && result.geojson.type === 'Feature') {
+      result.geojson = {
+        ...result.geojson,
+        properties: { ...osmTags, ...result.geojson.properties },
+      };
+    }
+
+    sr.push(result);
   }
 
   const elements = [
