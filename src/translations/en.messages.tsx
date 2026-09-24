@@ -350,7 +350,7 @@ const messages: Messages = {
         'modal-map-features-export':
           'export, gpx, geojson, download data, save features',
         'modal-map-to-document-export':
-          'export, print, pdf, png, jpeg, svg, image, poster',
+          'export, print, pdf, png, jpeg, webp, svg, image, poster',
         'modal-offline-map-export':
           'export, offline, download tiles, mbtiles, sd card',
         'modal-embed': 'iframe, website, html code',

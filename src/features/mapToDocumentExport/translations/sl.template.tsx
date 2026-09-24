@@ -18,6 +18,7 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   format: 'Format',
   layersTitle: 'Izbirni sloji',
   mapDataTitle: 'Podatki zemljevida',
+  mapTitle: 'Zemljevid',
   layers: {
     contours: 'Plastnice',
     shading: 'Senčen relief',
@@ -25,7 +26,21 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     bicycleTrails: 'Kolesarske poti',
     skiTrails: 'Smučarske proge',
     horseTrails: 'Konjeniške poti',
+    sacScale: 'Zahtevnost poti',
+    smoothness: 'Stanje cestišča',
+    waymarking: 'Smerokazi',
   },
+  baseMap: 'Osnovni zemljevid',
+  noBaseMapHint: 'Izrišejo se samo izbrane plasti, ostalo je prosojno.',
+  omitTitle: 'Izpusti',
+  omit: {
+    groundCover: 'Pokrovnost tal',
+    buildings: 'Stavbe',
+  },
+  omitHint:
+    'Prosojen tam, kjer je kaj izpuščeno — za prekrivanje letalskega posnetka, ki to pokaže bolje.',
+  webpLossy: 'Stiskanje z izgubami',
+  quality: 'Kakovost',
   mapScale: 'Ločljivost zemljevida',
   customLayerOrder: 'Postavitev podatkov zemljevida',
   orders: {

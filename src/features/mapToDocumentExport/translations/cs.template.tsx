@@ -17,6 +17,7 @@ const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   format: 'Formát',
   layersTitle: 'Volitelné vrstvy',
   mapDataTitle: 'Mapová data',
+  mapTitle: 'Mapa',
   layers: {
     contours: 'Vrstevnice',
     shading: 'Stínovaný reliéf',
@@ -24,7 +25,21 @@ const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     bicycleTrails: 'Cyklotrasy',
     skiTrails: 'Lyžařské trasy',
     horseTrails: 'Jezdecké trasy',
+    sacScale: 'Náročnost stezek',
+    smoothness: 'Kvalita povrchu cest',
+    waymarking: 'Rozcestníky',
   },
+  baseMap: 'Podkladová mapa',
+  noBaseMapHint: 'Vykreslí se jen vybrané vrstvy, zbytek bude průhledný.',
+  omitTitle: 'Vynechat',
+  omit: {
+    groundCover: 'Krajinný pokryv',
+    buildings: 'Budovy',
+  },
+  omitHint:
+    'Na místě vynechaného průhledná — k překrytí letecké snímky, která to ukáže lépe.',
+  webpLossy: 'Ztrátová komprese',
+  quality: 'Kvalita',
   mapScale: 'Rozlišení mapy',
   customLayerOrder: 'Umístění mapových dat',
   orders: {

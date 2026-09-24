@@ -361,7 +361,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-features-export':
           'export, gpx, geojson, stáhnout data, uložit objekty',
         'modal-map-to-document-export':
-          'export, tisk, pdf, png, jpeg, svg, obrázek, plakát',
+          'export, tisk, pdf, png, jpeg, webp, svg, obrázek, plakát',
         'modal-offline-map-export':
           'export, offline, stáhnout dlaždice, mbtiles, sd karta',
         'modal-embed': 'iframe, embed, web, html kód, vložení',

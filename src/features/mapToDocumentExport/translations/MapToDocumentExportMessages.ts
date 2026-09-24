@@ -1,5 +1,9 @@
 import type { JSX } from 'react';
-import type { CustomLayerOrder, ExportableLayer } from '../model/types.js';
+import type {
+  CustomLayerOrder,
+  ExtraLayer,
+  OmittableLayer,
+} from '../model/types.js';
 
 export type MapToDocumentExportMessages = {
   exportError: (props: { err: unknown }) => string;
@@ -11,7 +15,15 @@ export type MapToDocumentExportMessages = {
   format: string;
   layersTitle: string;
   mapDataTitle: string;
-  layers: Record<ExportableLayer, string>;
+  mapTitle: string;
+  layers: Record<ExtraLayer, string>;
+  baseMap: string;
+  noBaseMapHint: string;
+  omitTitle: string;
+  omit: Record<OmittableLayer, string>;
+  omitHint: string;
+  webpLossy: string;
+  quality: string;
   mapScale: string;
   customLayerOrder: string;
   orders: Record<CustomLayerOrder, string>;

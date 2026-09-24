@@ -18,6 +18,7 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   format: 'Formátum',
   layersTitle: 'Választható rétegek',
   mapDataTitle: 'Térképadatok',
+  mapTitle: 'Térkép',
   layers: {
     contours: 'Szintvonalak',
     shading: 'Domborzatárnyékolás',
@@ -25,7 +26,21 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     bicycleTrails: 'Kerékpáros útvonalak',
     skiTrails: 'Síútvonalak',
     horseTrails: 'Lovaglóútvonalak',
+    sacScale: 'Ösvények nehézsége',
+    smoothness: 'Útburkolat minősége',
+    waymarking: 'Útjelző táblák',
   },
+  baseMap: 'Alaptérkép',
+  noBaseMapHint: 'Csak a kijelölt rétegek rajzolódnak ki, a többi átlátszó.',
+  omitTitle: 'Kihagyás',
+  omit: {
+    groundCover: 'Felszínborítás',
+    buildings: 'Épületek',
+  },
+  omitHint:
+    'A kihagyott helyeken átlátszó — légifelvétel fölé helyezéshez, amely ezeket jobban mutatja.',
+  webpLossy: 'Veszteséges tömörítés',
+  quality: 'Minőség',
   mapScale: 'Térkép felbontása',
   customLayerOrder: 'Térképadatok elhelyezése',
   orders: {

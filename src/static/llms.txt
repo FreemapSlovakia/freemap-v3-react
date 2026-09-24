@@ -10,7 +10,7 @@ Key facts:
 - Most of the app is free to use. An optional yearly premium tier (15 €) and prepaid credits unlock extras: high-resolution elevation data, the finer panorama and viewshed renders, most colorize modes, and premium photos.
 - Displays marked hiking, biking, skiing and riding trails, and supports high-resolution (retina) displays.
 - Background and overlay layers include the NLC forest roads, aerial imagery, public transport, Wikipedia, community photos, and an animated weather radar.
-- Tools: search (by name or category), route planning (walking, cycling, stroller, wheelchair, car, skiing, etc.), map annotation (points, lines, polygons), measurement (distance, elevation, area, position), GPX track viewing, personal saved maps, live tracking, and export (GPX, GeoJSON, KML/KMZ, PDF, SVG, PNG, JPG).
+- Tools: search (by name or category), route planning (walking, cycling, stroller, wheelchair, car, skiing, etc.), map annotation (points, lines, polygons), measurement (distance, elevation, area, position), GPX track viewing, personal saved maps, live tracking, and export (GPX, GeoJSON, KML/KMZ, PDF, SVG, PNG, WebP, JPG).
 - Users can generate embed code to place the map on their own websites.
 - The application is a single-page application (SPA) and reflects its state in the URL.
 
@@ -532,14 +532,18 @@ Targets with data in one country only appear when the shared place lies in it:
 Opens a modal to export the map as an image or document. Options:
 
 - Export area: visible area, or a rectangle drawn on the map
-- Format: JPEG, PNG, PDF, or SVG
-- Optional server-rendered overlays: contours, shaded relief, hiking trails, bicycle trails, ski trails, horse trails
+- Format: JPEG, PNG, WebP, PDF, or SVG; JPEG takes a quality (0–100, default 90); WebP is lossless unless **Lossy compression** is checked, which adds a quality of its own (default 80)
+- Map resolution (DPI)
+- Server-rendered layers:
+  - **Base map** toggle button — on, the whole map is drawn; off, only the selected optional layers are, over transparency
+  - **Leave out** (with the base map on) — ground cover (land cover, sea, water, piers, bridges, solar plants, trees) and buildings, each dropped to transparency, for laying the map over an aerial image
+  - **Optional layers** added on top: contours, shaded relief, hiking/bicycle/ski/horse trails, hiking difficulty (SAC scale), road smoothness, guideposts
+  - Anything short of the whole map needs a format with transparency (PNG, WebP or SVG); JPEG and PDF are disabled then
 - Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (always with its start/finish/stop markers), objects (POIs), photos, drawing lines/areas/points, live tracking, imported GPX track, highlighted map feature
 - Glow: optional glow/shadow drawn around all own map-feature markers and lines, with configurable color (incl. opacity) and width
 - Marker size: configurable pixel size of own map-feature point markers
 - Labels: configurable color (no opacity), size, and weight of own map-feature labels
 - Drawing order: Topmost or Natural
-- Map resolution (DPI)
 
 While the export runs the modal stays open with its controls disabled and a spinner on the export button; only Cancel stays active (cancelling asks for confirmation and aborts the request).
 

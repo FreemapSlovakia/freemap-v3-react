@@ -4,9 +4,10 @@ import { useCallback, useState } from 'react';
 import z from 'zod';
 import {
   CustomLayerOrderSchema,
-  EXPORTABLE_LAYERS,
-  ExportableLayerSchema,
+  DEFAULT_EXTRA_LAYERS,
+  ExtraLayerSchema,
   FormatSchema,
+  OmittableLayerSchema,
 } from './types.js';
 
 const STORAGE_KEY = 'fm.exportMap.settings';
@@ -26,7 +27,12 @@ export const ExportSettingsSchema = z.object({
   labelColor: z.string().catch('#8000ff'),
   labelWeight: z.string().catch('700'),
   labelSize: z.string().catch('15'),
-  layers: z.array(ExportableLayerSchema).catch([...EXPORTABLE_LAYERS]),
+  webpLossy: z.boolean().catch(false),
+  webpQuality: z.string().catch('80'),
+  jpegQuality: z.string().catch('90'),
+  baseMap: z.boolean().catch(true),
+  layers: z.array(ExtraLayerSchema).catch(() => [...DEFAULT_EXTRA_LAYERS]),
+  omit: z.array(OmittableLayerSchema).catch([]),
 });
 
 export type ExportSettings = z.infer<typeof ExportSettingsSchema>;

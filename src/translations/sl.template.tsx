@@ -354,7 +354,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-my-maps': 'shranjene karte, shrani karto, deli karto',
         'modal-map-features-export': 'izvoz, gpx, geojson, prenos podatkov',
         'modal-map-to-document-export':
-          'izvoz, tiskanje, pdf, png, jpeg, svg, slika, plakat',
+          'izvoz, tiskanje, pdf, png, jpeg, webp, svg, slika, plakat',
         'modal-offline-map-export':
           'izvoz, brez povezave, prenos ploščic, mbtiles, sd kartica',
         'modal-embed': 'iframe, vgradnja, spletna stran, html koda',

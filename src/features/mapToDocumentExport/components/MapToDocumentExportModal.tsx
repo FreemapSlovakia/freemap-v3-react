@@ -62,9 +62,11 @@ import type { MapToDocumentExportResult } from '../model/exportMapToDocument.js'
 import { exportMapToDocument } from '../model/exportMapToDocument.js';
 import {
   type CustomLayerOrder,
-  type ExportableLayer,
+  type ExtraLayer,
   type Format,
   FormatSchema,
+  type OmittableLayer,
+  OPAQUE_FORMATS,
 } from '../model/types.js';
 import { useExportSettings } from '../model/useExportSettings.js';
 import { loadMapToDocumentExportMessages } from '../translations/loadMapToDocumentExportMessages.js';
@@ -149,8 +151,23 @@ export default function MapToDocumentExportModal({
     labelColor,
     labelWeight,
     labelSize,
+    webpLossy,
+    baseMap,
     layers,
+    omit,
   } = settings;
+
+  const wholeMap = baseMap && omit.length === 0;
+
+  // Each lossy format keeps its own quality, as their defaults differ.
+  const qualityKey =
+    format === 'jpeg'
+      ? 'jpegQuality'
+      : format === 'webp' && webpLossy
+        ? 'webpQuality'
+        : null;
+
+  const quality = qualityKey ? settings[qualityKey] : '';
 
   // Vector feature sources (drawing, route, objects, …) selected via the shared
   // exportables vocabulary; default to whatever currently has data, like the
@@ -186,8 +203,11 @@ export default function MapToDocumentExportModal({
 
   const invalidLabelSize = isInvalidInt(labelSize, true, 1, 100);
 
+  const invalidQuality =
+    qualityKey !== null && isInvalidInt(quality, true, 0, 100);
+
   const toggleLayer = useCallback(
-    (layer: ExportableLayer) => {
+    (layer: ExtraLayer) => {
       updateSettings({
         layers: layers.includes(layer)
           ? layers.filter((l) => l !== layer)
@@ -195,6 +215,54 @@ export default function MapToDocumentExportModal({
       });
     },
     [updateSettings, layers],
+  );
+
+  // Anything short of the whole map is partly transparent, which the renderer
+  // refuses to encode as JPEG, so an opaque format gives way to WebP — lossy
+  // when it replaces JPEG, to keep the compression the user chose.
+  const updateSelection = useCallback(
+    (patch: { baseMap?: boolean; omit?: OmittableLayer[] }) => {
+      const partial =
+        !(patch.baseMap ?? baseMap) || (patch.omit ?? omit).length > 0;
+
+      updateSettings({
+        ...patch,
+        ...(partial && OPAQUE_FORMATS.includes(format)
+          ? {
+              format: 'webp',
+              ...(format === 'jpeg' ? { webpLossy: true } : {}),
+            }
+          : {}),
+      });
+    },
+    [updateSettings, baseMap, omit, format],
+  );
+
+  const toggleOmit = useCallback(
+    (layer: OmittableLayer) => {
+      updateSelection({
+        omit: omit.includes(layer)
+          ? omit.filter((l) => l !== layer)
+          : [...omit, layer],
+      });
+    },
+    [updateSelection, omit],
+  );
+
+  const handleBaseMapChange = useCallback(
+    (value: boolean) => {
+      updateSelection({ baseMap: value });
+    },
+    [updateSelection],
+  );
+
+  const handleQualityChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (qualityKey) {
+        updateSettings({ [qualityKey]: e.currentTarget.value });
+      }
+    },
+    [updateSettings, qualityKey],
   );
 
   const handleScaleChange = useCallback(
@@ -289,8 +357,11 @@ export default function MapToDocumentExportModal({
         signal: ac.signal,
         area,
         format,
+        quality: qualityKey ? parseInt(quality, 10) : null,
         scale: parseInt(scale, 10) / 96,
+        baseMap,
         layers: [...layers],
+        omit: [...omit],
         exportables: exportables.split('|').filter(Boolean) as Exportable[],
         customLayerOrder,
         decorations: {
@@ -340,8 +411,12 @@ export default function MapToDocumentExportModal({
     area,
     exportables,
     format,
+    qualityKey,
+    quality,
     scale,
+    baseMap,
     layers,
+    omit,
     customLayerOrder,
     scaleBar,
     northArrow,
@@ -622,27 +697,83 @@ export default function MapToDocumentExportModal({
                       id={`exportFormat-${fmt}`}
                       value={fmt}
                       variant="outline-primary"
+                      disabled={!wholeMap && OPAQUE_FORMATS.includes(fmt)}
                     >
                       {fmt.toUpperCase()}
                     </ToggleButton>
                   ))}
                 </ToggleButtonGroup>
+
+                {(format === 'webp' || qualityKey) && (
+                  <div className="d-flex flex-wrap align-items-center gap-3 mt-2">
+                    {format === 'webp' && (
+                      <Form.Check
+                        type="checkbox"
+                        id="exportWebpLossy"
+                        label={mtde?.webpLossy}
+                        checked={webpLossy}
+                        onChange={(e) =>
+                          updateSettings({
+                            webpLossy: e.currentTarget.checked,
+                          })
+                        }
+                      />
+                    )}
+
+                    {qualityKey && (
+                      <InputGroup className="w-auto">
+                        <InputGroup.Text>{mtde?.quality}</InputGroup.Text>
+
+                        <Form.Control
+                          type="number"
+                          value={quality}
+                          min={0}
+                          max={100}
+                          step={5}
+                          isInvalid={invalidQuality}
+                          onChange={handleQualityChange}
+                        />
+                      </InputGroup>
+                    )}
+                  </div>
+                )}
               </Form.Group>
 
-              <ExportLayersField value={layers} onToggle={toggleLayer} />
+              <Form.Group controlId="mapScale" className="mt-3">
+                <Form.Label>{mtde?.mapScale}</Form.Label>
+
+                <InputGroup>
+                  <Form.Control
+                    type="number"
+                    value={scale}
+                    min={60}
+                    max={960}
+                    step={10}
+                    isInvalid={invalidScale}
+                    onChange={handleScaleChange}
+                  />
+
+                  <InputGroup.Text>DPI</InputGroup.Text>
+                </InputGroup>
+              </Form.Group>
+
+              <ExportLayersField
+                baseMap={baseMap}
+                onBaseMapChange={handleBaseMapChange}
+                layers={layers}
+                onToggleLayer={toggleLayer}
+                omit={omit}
+                onToggleOmit={toggleOmit}
+              />
 
               <fieldset className="mt-3 border rounded p-3">
-                <Form.Group>
-                  <Form.Label className="d-block">
-                    {mtde?.mapDataTitle}
-                  </Form.Label>
+                <legend>{mtde?.mapDataTitle}</legend>
 
-                  <ExportablesSelector
-                    value={exportables}
-                    available={availableExportables}
-                    onChange={setExportables}
-                  />
-                </Form.Group>
+                <ExportablesSelector
+                  value={exportables}
+                  available={availableExportables}
+                  onChange={setExportables}
+                />
 
                 <DataLayerStyleFields
                   disabled={exportables.length < 2}
@@ -676,24 +807,6 @@ export default function MapToDocumentExportModal({
                 attribution={attributionEnabled}
                 onChange={handleDecorationsChange}
               />
-
-              <Form.Group controlId="mapScale" className="mt-3">
-                <Form.Label>{mtde?.mapScale}</Form.Label>
-
-                <InputGroup>
-                  <Form.Control
-                    type="number"
-                    value={scale}
-                    min={60}
-                    max={960}
-                    step={10}
-                    isInvalid={invalidScale}
-                    onChange={handleScaleChange}
-                  />
-
-                  <InputGroup.Text>DPI</InputGroup.Text>
-                </InputGroup>
-              </Form.Group>
             </fieldset>
           </>
         )}
@@ -731,6 +844,9 @@ export default function MapToDocumentExportModal({
               !online ||
               exporting ||
               invalidScale ||
+              invalidQuality ||
+              (!wholeMap && OPAQUE_FORMATS.includes(format)) ||
+              (!baseMap && layers.length === 0 && !exportables) ||
               invalidGlowWidth ||
               invalidLabelWeight ||
               invalidLabelSize

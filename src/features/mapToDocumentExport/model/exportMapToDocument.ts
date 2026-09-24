@@ -6,7 +6,12 @@ import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import z from 'zod';
 import { type ExportCredits, resolveExportCredits } from './exportCredits.js';
-import type { CustomLayerOrder, ExportableLayer, Format } from './types.js';
+import type {
+  CustomLayerOrder,
+  ExtraLayer,
+  Format,
+  OmittableLayer,
+} from './types.js';
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
@@ -16,10 +21,16 @@ export interface MapToDocumentExportParams {
   signal: AbortSignal;
   area: 'visible' | 'area';
   format: Format;
+  /** Quality (0–100) for JPEG, and for WebP makes it lossy; `null` otherwise. */
+  quality: number | null;
   /** Resolution in CSS pixels per map pixel (DPI / 96). */
   scale: number;
-  /** Server-rendered raster overlays. */
-  layers: ExportableLayer[];
+  /** Whether to draw the map itself, or only `layers` over transparency. */
+  baseMap: boolean;
+  /** Server-rendered layers added on top. */
+  layers: ExtraLayer[];
+  /** Base-map layers left out; only with `baseMap`. */
+  omit: OmittableLayer[];
   /** Own map-feature sources to draw on top. */
   exportables: Exportable[];
   customLayerOrder: CustomLayerOrder;
@@ -62,8 +73,11 @@ export async function exportMapToDocument({
   signal,
   area,
   format,
+  quality,
   scale,
+  baseMap,
   layers,
+  omit,
   exportables,
   customLayerOrder,
   decorations,
@@ -101,7 +115,10 @@ export async function exportMapToDocument({
     },
   });
 
-  trackMatomo(['trackEvent', 'DocumentExport', 'export', format]);
+  const wireFormat =
+    format === 'webp' && quality !== null ? 'webp-lossy' : format;
+
+  trackMatomo(['trackEvent', 'DocumentExport', 'export', wireFormat]);
 
   const res = await fetch(`${fmMapserverUrl}/export`, {
     method: 'POST',
@@ -111,7 +128,8 @@ export async function exportMapToDocument({
       bbox,
       // The renderer picks tiles by this, so it has to name a tile zoom
       zoom: Math.round(getState().map.zoom),
-      format,
+      format: wireFormat,
+      quality: quality ?? undefined,
       scale,
       decorations: {
         scaleBar: decorations.scaleBar, // bottom-left, metric, cos(lat)-corrected
@@ -122,7 +140,9 @@ export async function exportMapToDocument({
         attribution: decorations.attribution || undefined,
       },
       features: {
+        baseMap,
         layers,
+        omit: baseMap && omit.length ? omit : undefined,
         customLayer: fc.features.length
           ? {
               featureCollection: fc,

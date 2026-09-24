@@ -363,7 +363,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-my-maps': 'mappe salvate, salva mappa, condividi mappa',
         'modal-map-features-export': 'esporta, gpx, geojson, scarica dati',
         'modal-map-to-document-export':
-          'esporta, stampa, pdf, png, jpeg, svg, immagine, poster',
+          'esporta, stampa, pdf, png, jpeg, webp, svg, immagine, poster',
         'modal-offline-map-export':
           'esporta, offline, scarica tasselli, mbtiles, scheda sd',
         'modal-embed': 'iframe, incorpora, sito web, codice html',

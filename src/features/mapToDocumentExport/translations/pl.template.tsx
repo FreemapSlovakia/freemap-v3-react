@@ -17,6 +17,7 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   format: 'Format',
   layersTitle: 'Opcjonalne warstwy',
   mapDataTitle: 'Dane mapy',
+  mapTitle: 'Mapa',
   layers: {
     contours: 'Poziomice',
     shading: 'Cieniowanie rzeźby terenu',
@@ -24,7 +25,22 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     bicycleTrails: 'Trasy rowerowe',
     skiTrails: 'Trasy narciarskie',
     horseTrails: 'Szlaki konne',
+    sacScale: 'Trudność szlaków',
+    smoothness: 'Stan nawierzchni dróg',
+    waymarking: 'Drogowskazy',
   },
+  baseMap: 'Mapa podkładowa',
+  noBaseMapHint:
+    'Rysowane są tylko wybrane warstwy, reszta jest przezroczysta.',
+  omitTitle: 'Pomiń',
+  omit: {
+    groundCover: 'Pokrycie terenu',
+    buildings: 'Budynki',
+  },
+  omitHint:
+    'Przezroczysta tam, gdzie coś pominięto — do nałożenia na zdjęcie lotnicze, które pokazuje to lepiej.',
+  webpLossy: 'Kompresja stratna',
+  quality: 'Jakość',
   mapScale: 'Rozdzielczość mapy',
   customLayerOrder: 'Umiejscowienie danych mapy',
   orders: {

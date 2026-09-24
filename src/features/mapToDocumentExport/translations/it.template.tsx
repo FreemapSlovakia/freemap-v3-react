@@ -18,6 +18,7 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   format: 'Formato',
   layersTitle: 'Livelli opzionali',
   mapDataTitle: 'Dati mappa',
+  mapTitle: 'Mappa',
   layers: {
     contours: 'Curve di livello',
     shading: 'Rilievi ombreggiati',
@@ -25,7 +26,22 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     bicycleTrails: 'Percorsi ciclistici',
     skiTrails: 'Percorsi sciistici',
     horseTrails: 'Percorsi a cavallo',
+    sacScale: 'Difficoltà dei sentieri',
+    smoothness: 'Stato delle strade',
+    waymarking: 'Segnavia e cartelli',
   },
+  baseMap: 'Mappa di base',
+  noBaseMapHint:
+    'Vengono disegnati solo i livelli selezionati, il resto è trasparente.',
+  omitTitle: 'Tralascia',
+  omit: {
+    groundCover: 'Copertura del suolo',
+    buildings: 'Edifici',
+  },
+  omitHint:
+    'Trasparente dove qualcosa è tralasciato — da sovrapporre a una foto aerea, che lo mostra meglio.',
+  webpLossy: 'Compressione con perdita',
+  quality: 'Qualità',
   mapScale: 'Risoluzione mappa',
   customLayerOrder: 'Posizionamento dei dati mappa',
   orders: {

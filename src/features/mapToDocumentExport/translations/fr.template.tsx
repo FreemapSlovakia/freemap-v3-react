@@ -17,6 +17,7 @@ const fr: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   format: 'Format',
   layersTitle: 'Couches optionnelles',
   mapDataTitle: 'Données cartographiques',
+  mapTitle: 'Carte',
   layers: {
     contours: 'Courbes de niveau',
     shading: 'Relief ombré',
@@ -24,7 +25,22 @@ const fr: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     bicycleTrails: 'Pistes cyclables',
     skiTrails: 'Pistes de ski',
     horseTrails: 'Sentiers équestres',
+    sacScale: 'Difficulté des sentiers',
+    smoothness: 'État des routes',
+    waymarking: 'Poteaux indicateurs',
   },
+  baseMap: 'Carte de fond',
+  noBaseMapHint:
+    'Seules les couches sélectionnées sont dessinées, le reste est transparent.',
+  omitTitle: 'Omettre',
+  omit: {
+    groundCover: 'Occupation du sol',
+    buildings: 'Bâtiments',
+  },
+  omitHint:
+    'Transparente là où quelque chose est omis — pour superposer une image aérienne, qui le montre mieux.',
+  webpLossy: 'Compression avec perte',
+  quality: 'Qualité',
   mapScale: 'Résolution de la carte',
   customLayerOrder: 'Placement des données cartographiques',
   orders: {

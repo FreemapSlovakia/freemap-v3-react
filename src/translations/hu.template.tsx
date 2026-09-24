@@ -363,7 +363,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-my-maps': 'mentett térképek, térkép mentése, térkép megosztása',
         'modal-map-features-export': 'export, gpx, geojson, adatok letöltése',
         'modal-map-to-document-export':
-          'export, nyomtatás, pdf, png, jpeg, svg, kép, poszter',
+          'export, nyomtatás, pdf, png, jpeg, webp, svg, kép, poszter',
         'modal-offline-map-export':
           'export, offline, csempék letöltése, mbtiles, sd kártya',
         'modal-embed': 'iframe, beágyazás, weboldal, html kód',

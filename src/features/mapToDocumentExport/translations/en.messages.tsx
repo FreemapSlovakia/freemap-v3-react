@@ -16,6 +16,7 @@ const en: MapToDocumentExportMessages = {
   format: 'Format',
   layersTitle: 'Optional layers',
   mapDataTitle: 'Map data',
+  mapTitle: 'Map',
   layers: {
     contours: 'Contours',
     shading: 'Shaded relief',
@@ -23,7 +24,21 @@ const en: MapToDocumentExportMessages = {
     bicycleTrails: 'Bicycle trails',
     skiTrails: 'Ski trails',
     horseTrails: 'Horse trails',
+    sacScale: 'Hiking difficulty',
+    smoothness: 'Road smoothness',
+    waymarking: 'Guideposts',
   },
+  baseMap: 'Base map',
+  noBaseMapHint: 'Only the selected layers are drawn, the rest is transparent.',
+  omitTitle: 'Leave out',
+  omit: {
+    groundCover: 'Ground cover',
+    buildings: 'Buildings',
+  },
+  omitHint:
+    'Transparent where left out — for laying over an aerial image, which shows these better.',
+  webpLossy: 'Lossy compression',
+  quality: 'Quality',
   mapScale: 'Map resolution',
   customLayerOrder: 'Map data placement',
   orders: {
