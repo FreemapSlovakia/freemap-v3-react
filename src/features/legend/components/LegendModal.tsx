@@ -3,7 +3,8 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useMemo } from 'react';
+import { RENDERER_ROUTES } from '@shared/mapDefinitions.js';
+import { type ReactElement, useMemo, useState } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import { FaList, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -37,6 +38,8 @@ export default function LegendModal({ show }: Props): ReactElement {
 
   const activeLegendLayers = layers.filter((layer) => legendLayers.has(layer));
 
+  const [openType, setOpenType] = useState<string | null>(null);
+
   const m = useMessages();
 
   const lm = useLegendMessages();
@@ -44,8 +47,10 @@ export default function LegendModal({ show }: Props): ReactElement {
   useDocumentTitle(show ? m?.mainMenu.mapLegend : undefined);
 
   function getSingleLegend(type: string) {
-    return type === 'X' ? (
-      <OutdoorMapLegend />
+    const variant = RENDERER_ROUTES[type];
+
+    return variant ? (
+      <OutdoorMapLegend key={variant} variant={variant} />
     ) : (
       <WmsMapLegend def={wmsLayerDefs.find((def) => def.type === type)!} />
     );
@@ -79,14 +84,22 @@ export default function LegendModal({ show }: Props): ReactElement {
             {getSingleLegend(activeLegendLayers[0])}
           </>
         ) : (
-          <Accordion>
+          <Accordion
+            activeKey={openType}
+            onSelect={(key) =>
+              setOpenType(typeof key === 'string' ? key : null)
+            }
+          >
             {activeLegendLayers.map((type) => (
               <Accordion.Item key={type} eventKey={type}>
                 <Accordion.Header>
                   <span>{getHeader(type)}</span>
                 </Accordion.Header>
 
-                <Accordion.Body>{getSingleLegend(type)}</Accordion.Body>
+                {/* A collapsed body stays mounted, and each legend fetches. */}
+                <Accordion.Body>
+                  {openType === type && getSingleLegend(type)}
+                </Accordion.Body>
               </Accordion.Item>
             ))}
           </Accordion>

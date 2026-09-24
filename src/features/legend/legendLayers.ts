@@ -3,6 +3,7 @@ import {
   type IsWmsLayerDef,
   integratedLayerDefs,
   type LayerDef,
+  RENDERER_ROUTES,
 } from '@shared/mapDefinitions.js';
 
 /** Every WMS layer, the user's own among them — each one describes itself. */
@@ -18,11 +19,7 @@ export function getWmsLayerDefs(
 /** The layers the legend has something to say about; it shows nothing for the rest. */
 export function getLegendLayers(customLayers: CustomLayerDef[]): Set<string> {
   return new Set([
-    'A',
-    'T',
-    'C',
-    'K',
-    'X',
+    ...Object.keys(RENDERER_ROUTES),
     ...getWmsLayerDefs(customLayers).map((def) => def.type),
   ]);
 }

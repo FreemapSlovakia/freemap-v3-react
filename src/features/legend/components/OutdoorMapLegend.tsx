@@ -49,7 +49,12 @@ const ResSchema = z.array(
   }),
 );
 
-export default function OutdoorMapLegend(): ReactElement {
+type Props = {
+  /** The renderer route the legend is scoped to, as `RENDERER_ROUTES` has it. */
+  variant: string;
+};
+
+export default function OutdoorMapLegend({ variant }: Props): ReactElement {
   // The map renders differently by zoom, so the legend is asked for the zoom
   // the user is currently looking at — rounded, because the renderer styles by
   // whole zoom levels and the endpoint rejects anything else outright.
@@ -72,11 +77,21 @@ export default function OutdoorMapLegend(): ReactElement {
       return;
     }
 
-    fetch(`${fmMapserverUrl}/legend?zoom=${zoom}`)
+    // A zoom change must not be overtaken by the answer for the zoom before it.
+    const ac = new AbortController();
+
+    fetch(
+      `${fmMapserverUrl}/legend?zoom=${zoom}&variant=${encodeURIComponent(variant)}`,
+      { signal: ac.signal },
+    )
       .then((response) =>
         response.status === 200 ? response.json() : undefined,
       )
       .then((data) => {
+        if (ac.signal.aborted) {
+          return;
+        }
+
         const items = ResSchema.parse(data);
 
         const catMap = new Map<string, Item>();
@@ -106,6 +121,10 @@ export default function OutdoorMapLegend(): ReactElement {
         setLegend([...catMap.values()]);
       })
       .catch((err) => {
+        if (ac.signal.aborted) {
+          return;
+        }
+
         dispatch(
           toastsAdd({
             id: 'outdoorLegend',
@@ -115,7 +134,9 @@ export default function OutdoorMapLegend(): ReactElement {
           }),
         );
       });
-  }, [dispatch, osmMapping, zoom]);
+
+    return () => ac.abort();
+  }, [dispatch, osmMapping, zoom, variant]);
 
   const lm = useLegendMessages();
 
@@ -195,7 +216,7 @@ export default function OutdoorMapLegend(): ReactElement {
               <Accordion.Header>{categoryName(c.category)}</Accordion.Header>
 
               <Accordion.Body>
-                <LegendItems items={c.items} zoom={zoom} />
+                <LegendItems items={c.items} zoom={zoom} variant={variant} />
               </Accordion.Body>
             </Accordion.Item>
           ))}
@@ -207,7 +228,7 @@ export default function OutdoorMapLegend(): ReactElement {
           <div key={c.category} className="mb-3">
             <div className="fw-bold mb-2">{categoryName(c.category)}</div>
 
-            <LegendItems items={c.items} zoom={zoom} />
+            <LegendItems items={c.items} zoom={zoom} variant={variant} />
           </div>
         ))
       )}
@@ -218,10 +239,14 @@ export default function OutdoorMapLegend(): ReactElement {
 function LegendItems({
   items,
   zoom,
+  variant,
 }: {
   items: Item['items'];
   zoom: number;
+  variant: string;
 }): ReactElement {
+  const query = `zoom=${zoom}&variant=${encodeURIComponent(variant)}`;
+
   const activeObjects = useAppSelector((s) => s.objects.active);
 
   const dispatch = useDispatch();
@@ -236,11 +261,11 @@ function LegendItems({
           <div>
             <img
               alt={name_w_tags.map(({ name }) => name).join(', ')}
-              src={`${fmMapserverUrl}/legend/${id}?zoom=${zoom}`}
+              src={`${fmMapserverUrl}/legend/${id}?${query}`}
               srcSet={[1, 2, 3]
                 .map(
                   (s) =>
-                    `${fmMapserverUrl}/legend/${id}?zoom=${zoom}&scale=${s}${
+                    `${fmMapserverUrl}/legend/${id}?${query}&scale=${s}${
                       s > 1 ? ` ${s}x` : ''
                     }`,
                 )
