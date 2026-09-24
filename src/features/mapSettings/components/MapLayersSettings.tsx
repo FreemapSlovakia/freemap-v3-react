@@ -7,6 +7,7 @@ import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import {
   type CustomLayerDef,
+  flaggedCountries,
   integratedLayerDefMap,
   integratedLayerDefs,
   resolveLayerOpacity,
@@ -173,10 +174,9 @@ export function MapLayersSettings({
                   </GlyphMarker>
                 )}
 
-                {type !== 'X' &&
-                  def.countries?.map((country) => (
-                    <CountryFlag key={country} country={country} />
-                  ))}
+                {flaggedCountries(def)?.map((country) => (
+                  <CountryFlag key={country} country={country} />
+                ))}
               </td>
 
               <td>

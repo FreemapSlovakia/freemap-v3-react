@@ -3,6 +3,7 @@ import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
+import { flaggedCountries } from '@shared/mapDefinitions.js';
 import type { ReactElement, ReactNode } from 'react';
 import { FaHistory } from 'react-icons/fa';
 import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
@@ -46,10 +47,9 @@ export function MapLayerItem({
 
       {label ?? m?.mapLayers.letters[def.type] ?? def.name ?? def.type}
 
-      {def.type !== 'X' &&
-        def.countries?.map((country) => (
-          <CountryFlag key={country} country={country} />
-        ))}
+      {flaggedCountries(def)?.map((country) => (
+        <CountryFlag key={country} country={country} />
+      ))}
 
       {def.superseededBy && (
         <GlyphMarker hint={m?.mapLayers.legacy}>

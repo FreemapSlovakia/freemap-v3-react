@@ -23,6 +23,7 @@ import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import {
+  flaggedCountries,
   getCountriesBbox,
   getLayerBbox,
   integratedLayerDefs,
@@ -351,9 +352,8 @@ export function MapSwitchButton(): ReactElement {
    */
   function countryFlags(def: (typeof layerDefs)[number]) {
     return (
-      def.type !== 'X' &&
       !def.custom &&
-      def.countries?.map((country) => (
+      flaggedCountries(def)?.map((country) => (
         <CountryFlag key={country} country={country} />
       ))
     );

@@ -2,14 +2,19 @@ import { siteNames, siteOf, siteUrls } from '@shared/sites.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import {
+  FaBicycle,
   FaBinoculars,
   FaBus,
   FaCamera,
   FaCloudShowersHeavy,
   FaHiking,
+  FaHorse,
   FaMap,
+  FaMountain,
   FaPencilAlt,
   FaPlane,
+  FaRoad,
+  FaSkiing,
   FaTractor,
   FaTree,
   FaWater,
@@ -154,11 +159,43 @@ export const GEDTM30_ATTR: AttributionDef = {
 };
 
 /**
- * The layers the outdoor renderer serves, whose tiles name the datasets they
- * drew. One of these that reported none is credited from the whole `/licenses`
- * catalogue rather than from {@link OUTDOOR_ATTRIBUTION} alone.
+ * The outdoor renderer's layers whose tiles name the datasets they drew. One of
+ * these that reported none is credited from the whole `/licenses` catalogue
+ * rather than from {@link OUTDOOR_ATTRIBUTION} alone. Its overlays credit only
+ * Freemap and OSM, so they are left out and load as plain images.
  */
 export const RENDERER_LAYER_TYPES = ['X', 'XK'];
+
+const RENDERER_ROUTE_BY_TYPE = {
+  X: '/',
+  XK: '/kst',
+  xs: '/o/sac',
+  xq: '/o/smoothness',
+  xh: '/o/hiking',
+  xb: '/o/bicycle',
+  xl: '/o/ski',
+  xr: '/o/horse',
+  xa: '/o/aerial',
+} as const;
+
+/**
+ * The renderer's tile route behind each layer it serves, as its legend's
+ * `?variant=` names it.
+ */
+export const RENDERER_ROUTES: Readonly<Record<string, string>> =
+  RENDERER_ROUTE_BY_TYPE;
+
+const rendererTileUrl = (type: keyof typeof RENDERER_ROUTE_BY_TYPE) => {
+  const route = RENDERER_ROUTE_BY_TYPE[type];
+
+  return `${process.env['FM_MAPSERVER_URL']}${route === '/' ? '' : route}/{z}/{x}/{y}`;
+};
+
+// bbox of freemap-outdoor-map/limit-europe-buffered.geojson (the renderer's
+// coverage polygon), rounded — the "zoom to coverage" target
+const OUTDOOR_BBOX: [number, number, number, number] = [
+  -33.22, 28.97, 47.16, 81.17,
+];
 
 /**
  * Where the outdoor renderer draws, and so the universe
@@ -218,6 +255,12 @@ const OUTDOOR_COUNTRIES = [
 export const RENDERER_COUNTRIES: ReadonlySet<string> = new Set(
   OUTDOOR_COUNTRIES,
 );
+
+/** The countries to flag beside a layer's name; none for a Europe-wide one. */
+export const flaggedCountries = (def: {
+  countries?: string[];
+}): string[] | undefined =>
+  def.countries === OUTDOOR_COUNTRIES ? undefined : def.countries;
 
 /**
  * What the outdoor map and its KST-routes variant credit before their tiles are
@@ -625,12 +668,10 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'X',
     defaultInMenu: true,
     defaultInToolbar: true,
-    // bbox of freemap-outdoor-map/limit-europe-buffered.geojson (the renderer's
-    // coverage polygon), rounded — the "zoom to coverage" target
-    bbox: [-33.22, 28.97, 47.16, 81.17],
+    bbox: OUTDOOR_BBOX,
     technology: 'tile',
     icon: <GiTreasureMap />,
-    url: `${process.env['FM_MAPSERVER_URL']}/{z}/{x}/{y}`,
+    url: rendererTileUrl('X'),
     extraScales: [2, 3, 4],
     attribution: OUTDOOR_ATTRIBUTION,
     minZoom: 5,
@@ -645,7 +686,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     type: 'XK',
     technology: 'tile',
     icon: <FaHiking />,
-    url: `${process.env['FM_MAPSERVER_URL']}/kst/{z}/{x}/{y}`,
+    url: rendererTileUrl('XK'),
     extraScales: [2, 3, 4],
     attribution: OUTDOOR_ATTRIBUTION,
     minZoom: 5,
@@ -1003,7 +1044,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     icon: <FaCamera />,
     minZoom: 10,
     shortcut: { code: 'KeyF', shift: true },
-    zIndex: 4,
+    zIndex: 7,
     attribution: [
       {
         type: 'photos',
@@ -1026,7 +1067,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     icon: <FaWikipediaW />,
     minZoom: 8,
     shortcut: { code: 'KeyW', shift: true },
-    zIndex: 4,
+    zIndex: 7,
     attribution: [],
   },
   {
@@ -1058,6 +1099,36 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     // a wide view, so there is nothing left to give away.
     attribution: VIEWSHED_ATTRIBUTION,
   },
+  ...(
+    [
+      // Stacked aerial map, hiking, the other routes, then the grades on paths.
+      ['xs', FaMountain, 12, 6],
+      ['xq', FaRoad, 12, 6],
+      ['xh', FaHiking, 9, 4],
+      ['xb', FaBicycle, 9, 5],
+      ['xl', FaSkiing, 9, 5],
+      ['xr', FaHorse, 9, 5],
+      ['xa', FaPlane, 5, 3],
+    ] as const
+  ).map(
+    ([type, Icon, minZoom, zIndex]): IntegratedLayerDef => ({
+      layer: 'overlay',
+      type,
+      defaultInMenu: true,
+      bbox: OUTDOOR_BBOX,
+      technology: 'tile',
+      icon: <Icon />,
+      url: rendererTileUrl(type),
+      extraScales: [2, 3],
+      attribution: OUTDOOR_ATTRIBUTION,
+      minZoom,
+      maxNativeZoom: 20,
+      premiumFromZoom: 19,
+      zIndex,
+      errorTileUrl: transparent1x1,
+      countries: OUTDOOR_COUNTRIES,
+    }),
+  ),
   {
     layer: 'overlay',
     type: 'h',
