@@ -772,7 +772,7 @@ export default function MapToDocumentExportModal({
               </div>
 
               <Form.Group controlId="mapScale" className="mt-3">
-                <Form.Label>{mtde?.mapScale}</Form.Label>
+                <Form.Label className="d-block">{mtde?.mapScale}</Form.Label>
 
                 <InputGroup className="d-inline-flex w-auto">
                   <Form.Control
