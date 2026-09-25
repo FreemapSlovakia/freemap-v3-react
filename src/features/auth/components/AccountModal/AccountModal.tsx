@@ -12,7 +12,10 @@ import { loadMyMapsMessages } from '@features/myMaps/translations/loadMyMapsMess
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { PurchasesSection } from '@features/purchases/components/PurchasesSection.js';
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -24,7 +27,6 @@ import {
   FaEraser,
   FaShoppingBasket,
   FaSignOutAlt,
-  FaTimes,
   FaUser,
   FaUserCircle,
 } from 'react-icons/fa';
@@ -89,28 +91,25 @@ export default function AccountModal({ show }: Props): ReactElement | null {
     close();
   };
 
-  const handleDeleteClick = () => {
-    dispatch(setActiveModal(null));
+  const handleDeleteClick = async () => {
+    // Awaited rather than shown empty, like the logout warning above: a dialog
+    // that asks for something irreversible has to say what it is asking.
+    const amm = am ?? (await loadAuthMessages(language));
 
-    dispatch(
-      toastsAdd({
-        id: 'account.delete',
-        messageKey: 'account.deleteWarning',
-        messageLoader: loadAuthMessages,
-        style: 'danger',
-        actions: [
-          {
-            nameKey: 'general.delete',
-            variant: 'danger',
-            action: authDeleteAccount(),
-          },
-          {
-            nameKey: 'general.cancel',
-            variant: 'dark',
-          },
-        ],
-      }),
-    );
+    if (
+      !(await confirm({
+        title: amm.account.delete,
+        message: amm.account.deleteWarning,
+        confirmLabel: m?.general.delete,
+        confirmStyle: 'danger',
+      }))
+    ) {
+      return;
+    }
+
+    dispatch(authDeleteAccount());
+
+    close();
   };
 
   useDocumentTitle(show ? m?.mainMenu.account : undefined);
@@ -174,7 +173,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
         </Accordion>
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         {/* Logging out clears what the account left in this browser — offline
             maps, queued saves, the cached app shell — and the server has to
             answer for the session to end at all, so it waits for a connection. */}
@@ -190,10 +189,8 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <FaEraser /> {am?.account.delete}
         </Button>
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }
