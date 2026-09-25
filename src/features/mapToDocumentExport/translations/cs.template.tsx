@@ -3,7 +3,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import { addError } from '@/translations/messagesInterface.js';
 import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
-const outdoorMap = 'Outdoorová';
+const outdoorMap = () => getMessages()?.mapLayers.letters['X'];
 
 const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Chyba exportu mapy', err),
@@ -64,7 +64,7 @@ const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     `Mapa je uložena. Při jejím publikování nebo sdílení uveďte: ${credits}`,
   alert: () => (
     <>
-      Exportuje se <i>{outdoorMap}</i> mapa. Může to trvat i desítky sekund.
+      Exportuje se <i>{outdoorMap()}</i> mapa. Může to trvat i desítky sekund.
     </>
   ),
 };

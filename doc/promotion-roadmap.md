@@ -189,7 +189,7 @@ afterwards. Check copy against this list before posting.
 |---|---|
 | "ad-free", "werbefrei", "senza pubblicità" | The map **carries ads** for non-premium users. They are **self-served — no ad network** — and they disappear for supporters. Say that instead; self-served ads are a better story than silence. |
 | "non-profit", "gemeinnützig", "no-profit" | The association does not profit, but Martin is paid as the developer. Normal and unobjectionable — just don't make the claim. "A project of the Slovak OpenStreetMap community, open source" is true and needs no qualifier. |
-| ski-touring or horse routing profile | Neither exists. The profiles are foot, hiking, easyhike, bike, mtb, gravelbike, racingbike, ebike, stroller, car, carnotoll, car4wd, motorcycle, manual (`src/shared/transportTypeDefs.tsx`). The Outdoor map **draws** ski and riding trails — it has no profile for them. |
+| ski-touring or horse routing profile | Neither exists. The profiles are foot, hiking, easyhike, bike, mtb, gravelbike, racingbike, ebike, stroller, car, carnotoll, car4wd, motorcycle, manual (`src/shared/transportTypeDefs.tsx`). The Outdoor map **draws** ski and riding trails, but the router has no profile for them. |
 
 **Safe to claim:** open source; no user tracking (self-hosted analytics only, no ad
 network, no third-party trackers); national high-resolution terrain wherever the

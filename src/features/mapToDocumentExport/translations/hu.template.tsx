@@ -3,7 +3,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import { addError } from '@/translations/messagesInterface.js';
 import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
-const outdoorMap = 'Outdoor';
+const outdoorMap = () => getMessages()?.mapLayers.letters['X'];
 
 const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) =>
@@ -66,8 +66,8 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     `A térkép el lett mentve. Közzétételkor vagy megosztáskor tüntesse fel: ${credits}`,
   alert: () => (
     <>
-      A <i>{outdoorMap}</i> térkép kerül exportálásra. Ez több tucat másodpercet
-      is igénybe vehet.
+      Az <i>{outdoorMap()}</i>-térkép kerül exportálásra. Ez több tucat
+      másodpercet is igénybe vehet.
     </>
   ),
 };

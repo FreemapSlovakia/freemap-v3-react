@@ -3,7 +3,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import { addError } from '@/translations/messagesInterface.js';
 import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
-const outdoorMap = 'Outdoor';
+const outdoorMap = () => getMessages()?.mapLayers.letters['X'];
 
 const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) =>
@@ -66,8 +66,8 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     `Mappa salvata. Quando la pubblichi o la condividi, indica: ${credits}`,
   alert: () => (
     <>
-      Sarà esportata la mappa <i>{outdoorMap}</i>. L’operazione potrebbe durare
-      decine di secondi.
+      Sarà esportata la mappa <i>{outdoorMap()}</i>. L’operazione potrebbe
+      durare decine di secondi.
     </>
   ),
 };

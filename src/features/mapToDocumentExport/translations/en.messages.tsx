@@ -2,7 +2,8 @@ import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
 import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
-const outdoorMap = 'Outdoor';
+// The map's name as the layer menu shows it.
+const outdoorMap = () => getMessages()?.mapLayers.letters['X'];
 
 const en: MapToDocumentExportMessages = {
   exportError: ({ err }) =>
@@ -65,7 +66,7 @@ const en: MapToDocumentExportMessages = {
     `Map saved. When you publish or share it, accompany it with: ${credits}`,
   alert: () => (
     <>
-      The <i>{outdoorMap}</i> map will be exported. This may take tens of
+      The <i>{outdoorMap()}</i> map will be exported. This may take tens of
       seconds.
     </>
   ),

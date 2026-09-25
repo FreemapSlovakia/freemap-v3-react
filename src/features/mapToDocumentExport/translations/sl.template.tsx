@@ -3,7 +3,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import { addError } from '@/translations/messagesInterface.js';
 import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
-const outdoorMap = 'Outdoor';
+const outdoorMap = () => getMessages()?.mapLayers.letters['X'];
 
 const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) =>
@@ -65,7 +65,7 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     `Zemljevid je shranjen. Pri objavi ali deljenju navedite: ${credits}`,
   alert: () => (
     <>
-      Izvožen bo zemljevid <i>{outdoorMap}</i>. To lahko traja tudi več deset
+      Izvožen bo zemljevid <i>{outdoorMap()}</i>. To lahko traja tudi več deset
       sekund.
     </>
   ),
