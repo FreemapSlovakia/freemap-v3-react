@@ -453,7 +453,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xb: 'Szlaki rowerowe',
       xl: 'Szlaki narciarskie',
       xr: 'Szlaki konne',
-      xa: 'Mapa outdoorowa bez podkładu',
+      xa: 'Outdoorowa mapa bez podkładu',
       WHC: 'Hydrochemiczna',
     },
     type: {

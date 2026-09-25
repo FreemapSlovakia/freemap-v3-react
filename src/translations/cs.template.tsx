@@ -375,7 +375,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-preferences': 'nastavení, volby, průhlednost překrytí',
         'modal-elevation-settings': 'výškový profil, nadmořská výška, graf',
         'clear-map-features': 'vyčistit, smazat vše, vymazat mapu',
-        'layer-X': 'turistika, cyklo, běžky, jízda, freemap',
+        'layer-X': 'turistika, cyklo, běžky, jezdectví, koně, freemap',
         'layer-XK': 'turistické trasy, značky, kst',
         'layer-O': 'osm, mapnik, standardní',
         'layer-S': 'satelitní, ortofoto, snímky',

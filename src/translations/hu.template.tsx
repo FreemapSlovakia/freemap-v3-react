@@ -475,7 +475,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xb: 'Kerékpárutak',
       xl: 'Síútvonalak',
       xr: 'Lovaglóútvonalak',
-      xa: 'Outdoor térkép háttér nélkül',
+      xa: 'Outdoor-térkép háttér nélkül',
       WHC: 'Hidrokémiai',
     },
 

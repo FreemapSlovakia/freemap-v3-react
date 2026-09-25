@@ -65,7 +65,7 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     `Mapa zapisana. Publikując ją lub udostępniając, podaj: ${credits}`,
   alert: () => (
     <>
-      Eksportowana będzie mapa <i>{outdoorMap}</i>. Może to potrwać
+      Eksportowana będzie <i>{outdoorMap}</i> mapa. Może to potrwać
       kilkadziesiąt sekund.
     </>
   ),

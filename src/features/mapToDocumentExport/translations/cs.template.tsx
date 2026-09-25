@@ -64,7 +64,7 @@ const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     `Mapa je uložena. Při jejím publikování nebo sdílení uveďte: ${credits}`,
   alert: () => (
     <>
-      Exportuje se mapa <i>{outdoorMap}</i>. Může to trvat i desítky sekund.
+      Exportuje se <i>{outdoorMap}</i> mapa. Může to trvat i desítky sekund.
     </>
   ),
 };

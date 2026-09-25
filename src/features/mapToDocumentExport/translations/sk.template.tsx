@@ -65,7 +65,7 @@ const sk: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     `Mapa je uložená. Pri jej publikovaní alebo zdieľaní uveďte: ${credits}`,
   alert: () => (
     <>
-      Exportuje sa mapa <i>{outdoorMap}</i>. Môže to trvať aj desiatky sekúnd.
+      Exportuje sa <i>{outdoorMap}</i> mapa. Môže to trvať aj desiatky sekúnd.
     </>
   ),
 };
