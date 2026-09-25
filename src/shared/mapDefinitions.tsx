@@ -10,10 +10,8 @@ import {
   FaHiking,
   FaHorse,
   FaMap,
-  FaMountain,
   FaPencilAlt,
   FaPlane,
-  FaRoad,
   FaSkiing,
   FaTractor,
   FaTree,
@@ -23,6 +21,8 @@ import {
 import {
   GiHills,
   GiMountainRoad,
+  GiPeaks,
+  GiStonePath,
   GiStonePile,
   GiTreasureMap,
 } from 'react-icons/gi';
@@ -1107,8 +1107,8 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   ...(
     [
       // Stacked aerial map, hiking, the other routes, then the grades on paths.
-      ['xs', FaMountain, 12, 7],
-      ['xq', FaRoad, 12, 7],
+      ['xs', GiPeaks, 12, 7],
+      ['xq', GiStonePath, 12, 7],
       ['xm', GiMountainRoad, 12, 7],
       ['xh', FaHiking, 9, 5],
       ['xb', FaBicycle, 9, 6],
