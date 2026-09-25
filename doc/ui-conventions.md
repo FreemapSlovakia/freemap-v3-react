@@ -8,7 +8,8 @@ Covered here: [button variants](#button-variants),
 [tokens](#tokens-come-from-bootstrap), [icon sizes](#icon-sizes),
 [touch targets](#touch-targets-and-the-marker-primitive),
 [where a hint goes](#where-a-hint-goes),
-[spacing](#spacing-the-container-decides), [toolbar outlines](#toolbar-outlines).
+[spacing](#spacing-the-container-decides), [modal footers](#modal-footers),
+[toolbar outlines](#toolbar-outlines).
 
 ## Button variants
 
@@ -59,20 +60,32 @@ many of them can be on, so it follows the selection, never the layout:
   `d-flex flex-wrap gap-2`, each independently rounded (see
   `ExportablesSelector`). The gaps say "each of these on its own".
 
+**Inside an `InputGroup`, use plain `<Button active>`s instead** — the pair that
+precedes the WebP quality, say. A `ToggleButton` renders a hidden `btn-check`
+`<input>` before its label, and the input group's seam rules key off
+`:first-child`, so that hidden input takes the left rounding off the button
+beside it. The input group joins its children itself, so nothing is lost.
+Both take `outline-primary` with `active` doing the work, as a `ToggleButton`
+group does — **not** the lone toggle's `primary`-when-active rule, whose
+`--bs-btn-active-bg` is a step darker and reads as a second kind of "selected"
+beside the group next to it.
+
 ### When a joined group doesn't fit
 
-`.btn-group` is `flex-wrap: nowrap` with no shrink, so a group too wide for its
-container pushes the whole surface wider instead of adapting — on a phone that
-means a modal wider than the viewport, with the last options cut off. Two ways
-out, and the label lengths decide which:
+`.btn-group` is `flex-wrap: nowrap`, so a group too wide for its container makes
+each button wrap its own label instead — two ragged lines of text inside a box
+sized for one. Two ways out, and the label lengths decide which:
 
-- **A few options** → keep it joined and stack it: `<ButtonGroup vertical={!sm}>`
-  with `sm` from `useBreakpointMatches`. `.btn-group-vertical` carries its own
-  seam rules, so the joining, the corner rounding and the collapsed borders all
-  stay right, and every option stays visible. Don't reach for the `flex-column`
-  utilities instead — they flip the axis but leave `.btn-group`'s horizontal
-  seam rules in place, which staggers the buttons by a pixel and rounds the
-  wrong corners.
+- **A few options** → keep it joined and stack it: spread `useButtonGroupFit()`
+  onto the group. It measures what one row would need against what the line
+  offers, so a group stacks exactly when it has to — which a breakpoint cannot
+  tell, since the label lengths change with the language and the room with the
+  surface. The group has to be alone on its line and its parent a block.
+  `.btn-group-vertical` carries its own seam rules, so the joining, the corner
+  rounding and the collapsed borders all stay right, and every option stays
+  visible. Don't reach for the `flex-column` utilities instead — they flip the
+  axis but leave `.btn-group`'s horizontal seam rules in place, which staggers
+  the buttons by a pixel and rounds the wrong corners.
 - **Many or long options** → it was the wrong control. Use a `Form.Select`
   (a bare `<option value="" />` for "none"), which is a single-choice idiom too,
   so the rule above still holds.
@@ -88,11 +101,72 @@ or options that differ only near the end, it stops being readable.
 
 A joined group is `inline-flex`, so it takes its content's width and no more —
 which is what a group of short options (`1×`, `2×`, `4×`) should do. Don't add
-`d-flex` to stretch one across the surface: `.btn-group > .btn` is
+`d-flex` to stretch one across the surface by hand: `.btn-group > .btn` is
 `flex: 1 1 auto`, so that stretches every option too, and a two-character label
-in a full-width button reads as a mistake. A `<Form.Label>` above it then needs
-`d-block` of its own, since `label` is `inline-block` and the group no longer
-forces the break.
+in a full-width button reads as a mistake. A `<Form.Label>` above a group needs
+`d-block` of its own, since `label` is `inline-block` and the group doesn't
+force the break.
+
+### Nearly filling the line is worse than filling it
+
+Between "fits" and "doesn't fit" there is a band where a group leaves a sliver
+of its line empty, and that sliver reads as a misalignment against the
+full-width fields above and below rather than as a deliberate width. So
+`useButtonGroupFit` gives a group **the whole line once it wants 85% of it**,
+and every option widens alike. Three outcomes, all from one measurement per
+render: room to spare → its own width; nearly filling → `d-flex`; no longer
+fitting → stacked, and `d-flex` too, since `.btn-group-vertical > .btn` is
+already `width: 100%`.
+
+Neither reading depends on the outcome — the measuring classes force
+`max-content` and `width: auto` — so a group can't chase itself across the
+threshold. The 85% is what separates a group that nearly fills its modal from
+one of two short options, which lands nowhere near it.
+
+**This is about joined groups, not about controls in general.** A number input's
+content is bounded, so its natural width is a width it can actually justify:
+give it `calc(<digits>ch + 3rem)` — the digits in the control's own font, plus
+the padding, border and spinner — and never `size`, which the HTML spec defines
+only for the text-ish input types and which browsers ignore on `type="number"`.
+Inside an `.input-group` that needs `flex-grow-0` beside it (the group grows its
+control) and `min-width: 0` (`index.css` floors one at 100px), and the group
+itself needs `d-inline-flex w-auto` or it stays a block-level flex box filling
+the line.
+
+Two short fields side by side are the other case where filling wins: with
+natural widths, unequal label lengths leave a gap after the shorter field. Give
+them a `<Row className="align-items-end gx-*">` of `<Col xs={12} sm={6}>`
+instead — equal halves, stacking on a phone, and end-aligned because the longer
+label wraps to two lines (see `CustomMapForm`'s zoom fields,
+`BrowseCacheSettings`). The `gx-*` is not optional: a `Row`'s own gutter is
+`1.5rem`, wider than any `gap-*` the rest of the form is spaced by, so it has to
+be set to whichever step its neighbours use.
+
+## Modal footers
+
+A footer's buttons sit in a `flex-wrap: wrap` row, so on a phone — and in a
+confirm dialog, which is narrow whatever the screen — the last one drops to a
+line of its own and sits there right-aligned, reading as a bug rather than as a
+layout. `FmModalFooter` measures the row and tells the footer when it no longer
+fits; `FmDismissButton` is the one button that answers, keeping only its ✕.
+
+Nothing else in a footer collapses. A toolbar's icons are a handful the user
+meets daily and its actions are cheap to undo, which is why ~20 of them drop
+their labels through `LongPressTooltip`'s `breakpoint`. A footer is where the
+user commits, so a bare glyph there is a misclick with nothing behind it, and a
+long-press tooltip is the weakest affordance on exactly the device this is for —
+finding out what a button does means holding it, which is also how you press it.
+The dismiss button is the exception because `dark` + `<FaTimes />` + last
+position already name it; the word is what's redundant. Where a footer needs
+room and isn't the dismiss button, drop the **icon** and keep the label.
+
+The measuring row shows every collapsible label, so what it reads never depends
+on what it decides. The `kbd` chips cost nothing to leave in: they are already
+hidden outside `(hover: hover) and (pointer: fine)` (`bootstrap-override.css`).
+
+Where a footer still doesn't fit with the dismiss button collapsed — the
+account modal's `Log out` + `Delete account` + ✕ on a 360px phone is 10px over —
+the row wraps as Bootstrap wraps it.
 
 ## Tokens come from Bootstrap
 

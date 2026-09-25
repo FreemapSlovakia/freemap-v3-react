@@ -55,6 +55,11 @@ type Props = {
    */
   hint?: ReactNode;
   /**
+   * Overrides `breakpoint` where the room is measured rather than assumed —
+   * see `FmModalFooter`.
+   */
+  hideLabel?: boolean;
+  /**
    * Opens on a plain click or tap as well. Only for a mark that does nothing
    * else — on a control the same tap would activate it.
    */
@@ -73,6 +78,7 @@ export function LongPressTooltip({
   hint,
   delay = 500,
   breakpoint,
+  hideLabel,
   toggleOnClick,
   children,
 }: Props) {
@@ -100,7 +106,8 @@ export function LongPressTooltip({
   // matches may be a panel's own width rather than the viewport's, so the class
   // is decided here rather than by a `d-{bp}-inline` utility.
   const labelHidden =
-    breakpoint === undefined || (breakpoint !== 'xs' && !matches[breakpoint]);
+    hideLabel ??
+    (breakpoint === undefined || (breakpoint !== 'xs' && !matches[breakpoint]));
 
   const handleStart = useCallback(
     (e: PointerEvent) => {

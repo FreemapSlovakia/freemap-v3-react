@@ -1,0 +1,11 @@
+/* Measuring state: added and removed within one task, so it never paints. Every
+   collapsible label is shown for it, so the reading can't depend on what it
+   decides. The doubled class outweighs `.d-none`, which is `!important` too. */
+.measure {
+  flex-wrap: nowrap !important;
+  width: max-content !important;
+}
+
+.measure .label.label {
+  display: inline !important;
+}
