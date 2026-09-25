@@ -26,6 +26,7 @@ import {
   GiStonePile,
   GiTreasureMap,
 } from 'react-icons/gi';
+import { IoAirplaneOutline } from 'react-icons/io5';
 import { LuLandPlot } from 'react-icons/lu';
 import { SiOpenstreetmap } from 'react-icons/si';
 import z from 'zod';
@@ -1113,7 +1114,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       ['xb', FaBicycle, 9, 6],
       ['xl', FaSkiing, 9, 6],
       ['xr', FaHorse, 9, 6],
-      ['xa', FaPlane, 5, 4],
+      ['xa', IoAirplaneOutline, 5, 4],
     ] as const
   ).map(
     ([type, Icon, minZoom, zIndex]): IntegratedLayerDef => ({
