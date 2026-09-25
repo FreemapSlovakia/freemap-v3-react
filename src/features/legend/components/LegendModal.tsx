@@ -6,9 +6,13 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { RENDERER_ROUTES } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo, useState } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
-import { FaList, FaTimes } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaList, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { getActiveLegendLayers, getWmsLayerDefs } from '../legendLayers.js';
+import {
+  EXTERNAL_LEGENDS,
+  getActiveLegendLayers,
+  getWmsLayerDefs,
+} from '../legendLayers.js';
 import { useLegendMessages } from '../translations/useLegendMessages.js';
 import OutdoorMapLegend from './OutdoorMapLegend.js';
 import { WmsMapLegend } from './WmsMapLegend.js';
@@ -44,7 +48,13 @@ export default function LegendModal({ show }: Props): ReactElement {
   function getSingleLegend(type: string) {
     const variant = RENDERER_ROUTES[type];
 
-    return variant ? (
+    const externalUrl = EXTERNAL_LEGENDS[type];
+
+    return externalUrl ? (
+      <a href={externalUrl} target="_blank" rel="noopener noreferrer">
+        <FaExternalLinkAlt /> {lm?.external}
+      </a>
+    ) : variant ? (
       <OutdoorMapLegend key={variant} variant={variant} />
     ) : (
       <WmsMapLegend def={wmsLayerDefs.find((def) => def.type === type)!} />

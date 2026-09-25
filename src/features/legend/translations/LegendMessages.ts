@@ -3,6 +3,7 @@ import type { JSX } from 'react';
 export type LegendMessages = {
   body: (props: { name: string }) => JSX.Element;
   filter: string;
+  external: string;
   outdoorMap: {
     'roads-and-paths': string;
     railway: string;

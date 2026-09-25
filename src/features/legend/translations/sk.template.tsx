@@ -10,6 +10,8 @@ const sk: DeepPartialWithRequiredObjects<LegendMessages> = {
 
   filter: 'Hľadať v legende',
 
+  external: 'Otvoriť legendu na OpenStreetMap Wiki',
+
   outdoorMap: {
     'roads-and-paths': 'Cesty a chodníky',
     railway: 'Železnice',

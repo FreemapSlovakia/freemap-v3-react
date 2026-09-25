@@ -10,6 +10,8 @@ const hu: DeepPartialWithRequiredObjects<LegendMessages> = {
 
   filter: 'Keresés a jelmagyarázatban',
 
+  external: 'Jelmagyarázat megnyitása az OpenStreetMap Wikin',
+
   outdoorMap: {
     'roads-and-paths': 'Utak és ösvények',
     railway: 'Vasút',

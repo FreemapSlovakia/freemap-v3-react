@@ -54,7 +54,9 @@ type Props = {
   variant: string;
 };
 
-export default function OutdoorMapLegend({ variant }: Props): ReactElement {
+export default function OutdoorMapLegend({
+  variant,
+}: Props): ReactElement | null {
   // The map renders differently by zoom, so the legend is asked for the zoom
   // the user is currently looking at — rounded, because the renderer styles by
   // whole zoom levels and the endpoint rejects anything else outright.
@@ -193,6 +195,18 @@ export default function OutdoorMapLegend({ variant }: Props): ReactElement {
       })
       .filter((c) => c !== null);
   }, [lm, orderedLegend, query]);
+
+  // A lone category (most overlays) is too short to need search or folding;
+  // nothing is shown while loading, so an overlay's search box doesn't flash.
+  if (orderedLegend.length < 2) {
+    return orderedLegend.length === 0 ? null : (
+      <LegendItems
+        items={orderedLegend[0].items}
+        zoom={zoom}
+        variant={variant}
+      />
+    );
+  }
 
   return (
     <>

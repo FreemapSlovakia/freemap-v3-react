@@ -10,6 +10,8 @@ const fr: DeepPartialWithRequiredObjects<LegendMessages> = {
 
   filter: 'Rechercher dans la légende',
 
+  external: 'Ouvrir la légende sur le wiki OpenStreetMap',
+
   outdoorMap: {
     'roads-and-paths': 'Routes et chemins',
     railway: 'Chemins de fer',

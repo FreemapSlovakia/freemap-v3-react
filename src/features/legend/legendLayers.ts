@@ -16,10 +16,16 @@ export function getWmsLayerDefs(
   );
 }
 
+/** Layers whose legend lives on an external page. */
+export const EXTERNAL_LEGENDS: Record<string, string> = {
+  O: 'https://wiki.openstreetmap.org/wiki/Standard_tile_layer/Key',
+};
+
 /** The layers the legend has something to say about; it shows nothing for the rest. */
 export function getLegendLayers(customLayers: CustomLayerDef[]): Set<string> {
   return new Set([
     ...Object.keys(RENDERER_ROUTES),
+    ...Object.keys(EXTERNAL_LEGENDS),
     ...getWmsLayerDefs(customLayers).map((def) => def.type),
   ]);
 }

@@ -9,6 +9,8 @@ const en: LegendMessages = {
 
   filter: 'Search the legend',
 
+  external: 'Open the legend on the OpenStreetMap Wiki',
+
   outdoorMap: {
     'roads-and-paths': 'Roads and paths',
     railway: 'Railways',

@@ -10,6 +10,8 @@ const de: DeepPartialWithRequiredObjects<LegendMessages> = {
 
   filter: 'Legende durchsuchen',
 
+  external: 'Legende im OpenStreetMap-Wiki öffnen',
+
   outdoorMap: {
     'roads-and-paths': 'Straßen und Wege',
     railway: 'Eisenbahnen',

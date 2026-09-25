@@ -10,6 +10,8 @@ const sl: DeepPartialWithRequiredObjects<LegendMessages> = {
 
   filter: 'Iskanje po legendi',
 
+  external: 'Odpri legendo na wikiju OpenStreetMap',
+
   outdoorMap: {
     'roads-and-paths': 'Ceste in poti',
     railway: 'Železnice',
