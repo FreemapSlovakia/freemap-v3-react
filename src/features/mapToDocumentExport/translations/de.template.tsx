@@ -41,7 +41,8 @@ const de: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   },
   omitHint:
     'Wo etwas weggelassen ist, transparent — zum Überlagern eines Luftbilds, das es besser zeigt.',
-  webpLossy: 'Verlustbehaftete Kompression',
+  lossless: 'Verlustfrei',
+  lossy: 'Verlustbehaftet',
   quality: 'Qualität',
   mapScale: 'Kartenauflösung',
   customLayerOrder: 'Platzierung der Kartendaten',

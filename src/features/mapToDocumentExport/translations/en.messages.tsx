@@ -38,7 +38,8 @@ const en: MapToDocumentExportMessages = {
   },
   omitHint:
     'Transparent where left out — for laying over an aerial image, which shows these better.',
-  webpLossy: 'Lossy compression',
+  lossless: 'Lossless',
+  lossy: 'Lossy',
   quality: 'Quality',
   mapScale: 'Map resolution',
   customLayerOrder: 'Map data placement',

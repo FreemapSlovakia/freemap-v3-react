@@ -532,13 +532,13 @@ Targets with data in one country only appear when the shared place lies in it:
 Opens a modal to export the map as an image or document. Options:
 
 - Export area: visible area, or a rectangle drawn on the map
-- Format: JPEG, PNG, WebP, PDF, or SVG; JPEG takes a quality (0–100, default 90); WebP is lossless unless **Lossy compression** is checked, which adds a quality of its own (default 80)
+- Format: JPEG, PNG, WebP, PDF, or SVG. JPEG and WebP take a quality (0–100), each remembering its own (JPEG 90, WebP 80); WebP's quality field is preceded by a joined **Lossless** / **Lossy** pair, defaulting to Lossless, which is a different codec and takes the number away — on a map render it is both exact and usually smaller than lossy at any quality
 - Map resolution (DPI)
 - Server-rendered layers:
   - **Base map** toggle button — on, the whole map is drawn; off, only the selected optional layers are, over transparency
   - **Leave out** (with the base map on) — ground cover (land cover, sea, water, piers, bridges, solar plants, trees) and buildings, each dropped to transparency, for laying the map over an aerial image
   - **Optional layers** added on top: contours, shaded relief, hiking/bicycle/ski/horse trails, hiking difficulty (SAC scale), MTB difficulty (S0–S6), road smoothness, guideposts
-  - Anything short of the whole map needs a format with transparency (PNG, WebP or SVG); JPEG and PDF are disabled then
+  - Anything short of the whole map needs a format with transparency (PNG, WebP or SVG); JPEG and PDF are disabled then, and a chosen one gives way to WebP — switched to lossy when it replaces JPEG, so the compression the user picked is kept
 - Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (always with its start/finish/stop markers), objects (POIs), photos, drawing lines/areas/points, live tracking, imported GPX track, highlighted map feature
 - Glow: optional glow/shadow drawn around all own map-feature markers and lines, with configurable color (incl. opacity) and width
 - Marker size: configurable pixel size of own map-feature point markers

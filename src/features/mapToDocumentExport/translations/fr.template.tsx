@@ -40,7 +40,8 @@ const fr: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   },
   omitHint:
     'Transparente là où quelque chose est omis — pour superposer une image aérienne, qui le montre mieux.',
-  webpLossy: 'Compression avec perte',
+  lossless: 'Sans perte',
+  lossy: 'Avec perte',
   quality: 'Qualité',
   mapScale: 'Résolution de la carte',
   customLayerOrder: 'Placement des données cartographiques',

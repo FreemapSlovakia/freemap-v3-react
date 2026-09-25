@@ -159,11 +159,15 @@ export default function MapToDocumentExportModal({
 
   const wholeMap = baseMap && omit.length === 0;
 
+  const webp = format === 'webp';
+
+  const lossless = webp && !webpLossy;
+
   // Each lossy format keeps its own quality, as their defaults differ.
   const qualityKey =
     format === 'jpeg'
       ? 'jpegQuality'
-      : format === 'webp' && webpLossy
+      : webp && webpLossy
         ? 'webpQuality'
         : null;
 
@@ -255,6 +259,14 @@ export default function MapToDocumentExportModal({
     },
     [updateSelection],
   );
+
+  const handleLosslessClick = useCallback(() => {
+    updateSettings({ webpLossy: false });
+  }, [updateSettings]);
+
+  const handleLossyClick = useCallback(() => {
+    updateSettings({ webpLossy: true });
+  }, [updateSettings]);
 
   const handleQualityChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -605,6 +617,7 @@ export default function MapToDocumentExportModal({
 
   return (
     <Modal
+      size="lg"
       show={show}
       onHide={exporting ? handleCancel : handleClose}
       backdrop={exporting ? 'static' : undefined}
@@ -680,75 +693,96 @@ export default function MapToDocumentExportModal({
                 />
               </Form.Group>
 
-              <Form.Group className="mt-3">
-                <Form.Label className="d-block"> {mtde?.format}</Form.Label>
+              <div className="d-flex flex-wrap align-items-end gap-2">
+                <Form.Group className="mt-3">
+                  <Form.Label className="d-block"> {mtde?.format}</Form.Label>
 
-                <ToggleButtonGroup
-                  type="radio"
-                  name="exportFormat"
-                  value={format}
-                  onChange={(value: Format) =>
-                    updateSettings({ format: value })
-                  }
-                >
-                  {FormatSchema.options.map((fmt) => (
-                    <ToggleButton
-                      key={fmt}
-                      id={`exportFormat-${fmt}`}
-                      value={fmt}
-                      variant="outline-primary"
-                      disabled={!wholeMap && OPAQUE_FORMATS.includes(fmt)}
-                    >
-                      {fmt.toUpperCase()}
-                    </ToggleButton>
-                  ))}
-                </ToggleButtonGroup>
+                  <ToggleButtonGroup
+                    type="radio"
+                    name="exportFormat"
+                    value={format}
+                    onChange={(value: Format) =>
+                      updateSettings({ format: value })
+                    }
+                  >
+                    {FormatSchema.options.map((fmt) => (
+                      <ToggleButton
+                        key={fmt}
+                        id={`exportFormat-${fmt}`}
+                        value={fmt}
+                        variant="outline-primary"
+                        disabled={!wholeMap && OPAQUE_FORMATS.includes(fmt)}
+                      >
+                        {fmt.toUpperCase()}
+                      </ToggleButton>
+                    ))}
+                  </ToggleButtonGroup>
+                </Form.Group>
 
-                {(format === 'webp' || qualityKey) && (
-                  <div className="d-flex flex-wrap align-items-center gap-3 mt-2">
-                    {format === 'webp' && (
-                      <Form.Check
-                        type="checkbox"
-                        id="exportWebpLossy"
-                        label={mtde?.webpLossy}
-                        checked={webpLossy}
-                        onChange={(e) =>
-                          updateSettings({
-                            webpLossy: e.currentTarget.checked,
-                          })
-                        }
-                      />
-                    )}
+                {(webp || qualityKey) && (
+                  <Form.Group className="w-auto mt-2">
+                    <Form.Label>{mtde?.quality}</Form.Label>
 
-                    {qualityKey && (
-                      <InputGroup className="w-auto">
-                        <InputGroup.Text>{mtde?.quality}</InputGroup.Text>
+                    <InputGroup>
+                      {/* Plain buttons rather than a nested `ToggleButtonGroup`:
+                          a `btn-check` input would take the input group's
+                          `:first-child` seam rules off the button beside it. */}
+                      {webp && (
+                        <>
+                          <Button
+                            variant="outline-primary"
+                            active={lossless}
+                            aria-pressed={lossless}
+                            onClick={handleLosslessClick}
+                          >
+                            {mtde?.lossless}
+                          </Button>
 
+                          <Button
+                            variant="outline-primary"
+                            active={!lossless}
+                            aria-pressed={!lossless}
+                            onClick={handleLossyClick}
+                          >
+                            {mtde?.lossy}
+                          </Button>
+                        </>
+                      )}
+
+                      {qualityKey && (
                         <Form.Control
                           type="number"
                           value={quality}
                           min={0}
                           max={100}
                           step={5}
+                          // Three digits plus the control's own chrome —
+                          // padding, border, spinner. Both overrides are
+                          // needed: an input group grows its control, and
+                          // `index.css` floors one at 100px.
+                          className="flex-grow-0"
+                          style={{ width: 'calc(3ch + 3rem)', minWidth: 0 }}
                           isInvalid={invalidQuality}
                           onChange={handleQualityChange}
                         />
-                      </InputGroup>
-                    )}
-                  </div>
+                      )}
+                    </InputGroup>
+                  </Form.Group>
                 )}
-              </Form.Group>
+              </div>
 
               <Form.Group controlId="mapScale" className="mt-3">
                 <Form.Label>{mtde?.mapScale}</Form.Label>
 
-                <InputGroup>
+                <InputGroup className="d-inline-flex w-auto">
                   <Form.Control
                     type="number"
                     value={scale}
                     min={60}
                     max={960}
                     step={10}
+                    className="flex-grow-0"
+                    style={{ width: 'calc(3ch + 3rem)', minWidth: 0 }}
                     isInvalid={invalidScale}
                     onChange={handleScaleChange}
                   />

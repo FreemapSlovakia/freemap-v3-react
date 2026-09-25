@@ -40,7 +40,8 @@ const sk: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   },
   omitHint:
     'Na mieste vynechaného priehľadná — na prekrytie leteckej snímky, ktorá to ukáže lepšie.',
-  webpLossy: 'Stratová kompresia',
+  lossless: 'Bezstratová',
+  lossy: 'Stratová',
   quality: 'Kvalita',
   mapScale: 'Rozlíšenie mapy',
   customLayerOrder: 'Umiestnenie mapových dát',

@@ -40,7 +40,8 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   },
   omitHint:
     'Przezroczysta tam, gdzie coś pominięto — do nałożenia na zdjęcie lotnicze, które pokazuje to lepiej.',
-  webpLossy: 'Kompresja stratna',
+  lossless: 'Bezstratna',
+  lossy: 'Stratna',
   quality: 'Jakość',
   mapScale: 'Rozdzielczość mapy',
   customLayerOrder: 'Umiejscowienie danych mapy',

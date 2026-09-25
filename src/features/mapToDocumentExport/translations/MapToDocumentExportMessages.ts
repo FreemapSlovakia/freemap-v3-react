@@ -22,7 +22,8 @@ export type MapToDocumentExportMessages = {
   omitTitle: string;
   omit: Record<OmittableLayer, string>;
   omitHint: string;
-  webpLossy: string;
+  lossless: string;
+  lossy: string;
   quality: string;
   mapScale: string;
   customLayerOrder: string;

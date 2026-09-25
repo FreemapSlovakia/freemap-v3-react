@@ -41,7 +41,8 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   },
   omitHint:
     'Trasparente dove qualcosa è tralasciato — da sovrapporre a una foto aerea, che lo mostra meglio.',
-  webpLossy: 'Compressione con perdita',
+  lossless: 'Senza perdita',
+  lossy: 'Con perdita',
   quality: 'Qualità',
   mapScale: 'Risoluzione mappa',
   customLayerOrder: 'Posizionamento dei dati mappa',

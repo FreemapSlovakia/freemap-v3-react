@@ -115,6 +115,8 @@ export async function exportMapToDocument({
     },
   });
 
+  // WebP's two are separate codecs rather than one with a knob, and the
+  // renderer names them apart.
   const wireFormat =
     format === 'webp' && quality !== null ? 'webp-lossy' : format;
 

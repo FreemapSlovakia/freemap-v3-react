@@ -40,7 +40,8 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   },
   omitHint:
     'Prosojen tam, kjer je kaj izpuščeno — za prekrivanje letalskega posnetka, ki to pokaže bolje.',
-  webpLossy: 'Stiskanje z izgubami',
+  lossless: 'Brez izgub',
+  lossy: 'Z izgubami',
   quality: 'Kakovost',
   mapScale: 'Ločljivost zemljevida',
   customLayerOrder: 'Postavitev podatkov zemljevida',

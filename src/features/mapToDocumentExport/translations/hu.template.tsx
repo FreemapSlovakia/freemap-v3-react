@@ -40,7 +40,8 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   },
   omitHint:
     'A kihagyott helyeken átlátszó — légifelvétel fölé helyezéshez, amely ezeket jobban mutatja.',
-  webpLossy: 'Veszteséges tömörítés',
+  lossless: 'Veszteségmentes',
+  lossy: 'Veszteséges',
   quality: 'Minőség',
   mapScale: 'Térkép felbontása',
   customLayerOrder: 'Térképadatok elhelyezése',
