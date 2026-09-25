@@ -1,8 +1,8 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useButtonGroupFit } from '@shared/hooks/useButtonGroupFit.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   type ChangeEvent,
@@ -42,9 +42,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
   const gm = useGalleryMessages();
 
-  // "Wikimedia Commons" makes the joined source group too wide for a phone, so
-  // below `sm` it stacks instead of widening the modal.
-  const { sm } = useBreakpointMatches();
+  // "Wikimedia Commons" often makes the joined source group too wide, and then
+  // it stacks rather than wrapping inside the buttons.
+  const sourceGroupProps = useButtonGroupFit();
 
   const filter = useAppSelector((state) => state.gallery.filter);
 
@@ -502,7 +502,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
             <ToggleButtonGroup
               type="radio"
               name="filt-source"
-              vertical={!sm}
+              {...sourceGroupProps}
               // Exactly one is always selected — 'all' means no restriction.
               value={
                 sources.length < GALLERY_SOURCES.length ? sources[0] : 'all'

@@ -1,0 +1,19 @@
+/* Measuring states: added and removed within one task, so neither ever paints. */
+
+/* The width the line offers — block-level, so the group fills it. */
+.measure-available {
+  display: flex !important;
+  width: auto !important;
+}
+
+/* The width one row wants, with every button at its natural width. The axis is
+   forced here too, so the reading never depends on which way the group renders. */
+.measure-required {
+  flex-direction: row !important;
+  width: max-content !important;
+}
+
+.measure-required > :global(.btn) {
+  width: auto !important;
+  white-space: nowrap;
+}

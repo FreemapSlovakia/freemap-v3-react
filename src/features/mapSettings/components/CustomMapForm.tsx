@@ -1,8 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useButtonGroupFit } from '@shared/hooks/useButtonGroupFit.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
@@ -20,9 +20,11 @@ import {
   Alert,
   Button,
   ButtonGroup,
+  Col,
   Form,
   ListGroup,
   ListGroupItem,
+  Row,
   Spinner,
   ToggleButton,
 } from 'react-bootstrap';
@@ -301,9 +303,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   const m = useMessages();
 
-  // The technology labels are long enough that their joined group can't fit a
-  // phone, so below `sm` it stacks instead of widening the form.
-  const { sm } = useBreakpointMatches();
+  // The technology labels are long enough that their joined group often can't
+  // fit the form, and then it stacks rather than wrapping inside the buttons.
+  const techGroupProps = useButtonGroupFit();
 
   const [wmsLayersFetchError, setWmsLayersFetchError] = useState<string>();
 
@@ -508,7 +510,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       <Form.Group className="mt-3">
         <Form.Label className="d-block">{m?.mapLayers.technology}</Form.Label>
 
-        <ButtonGroup vertical={!sm}>
+        <ButtonGroup {...techGroupProps}>
           {(['tile', 'maplibre', 'wms'] as const).map((technology) => (
             <ToggleButton
               key={technology}
@@ -581,27 +583,36 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       {/* Min/Max zoom */}
       {model.technology !== 'parametricShading' && (
         <>
-          <Form.Group controlId="minZoom" className="mt-3">
-            <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
+          {/* Halves rather than two natural widths: the labels differ in
+              length, so natural ones leave a gap after the shorter field.
+              End-aligned, since the longer label wraps to two lines. */}
+          <Row className="align-items-end gx-2">
+            <Col xs={12} sm={6}>
+              <Form.Group controlId="minZoom" className="mt-3">
+                <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
 
-            <Form.Control
-              type="number"
-              min={0}
-              value={model.minZoom}
-              onChange={handleMinZoomChange}
-            />
-          </Form.Group>
+                <Form.Control
+                  type="number"
+                  min={0}
+                  value={model.minZoom}
+                  onChange={handleMinZoomChange}
+                />
+              </Form.Group>
+            </Col>
 
-          <Form.Group controlId="maxNativeZoom" className="mt-3">
-            <Form.Label>{m?.mapLayers.maxNativeZoom}</Form.Label>
+            <Col xs={12} sm={6}>
+              <Form.Group controlId="maxNativeZoom" className="mt-3">
+                <Form.Label>{m?.mapLayers.maxNativeZoom}</Form.Label>
 
-            <Form.Control
-              type="number"
-              min={0}
-              value={model.maxNativeZoom}
-              onChange={handlers.maxNativeZoom}
-            />
-          </Form.Group>
+                <Form.Control
+                  type="number"
+                  min={0}
+                  value={model.maxNativeZoom}
+                  onChange={handlers.maxNativeZoom}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
           {/* Extra scales + checkbox */}
           {model.technology === 'tile' && (

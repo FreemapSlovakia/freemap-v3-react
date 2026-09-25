@@ -2,11 +2,11 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useButtonGroupFit } from '@shared/hooks/useButtonGroupFit.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import type { Position } from 'geojson';
@@ -100,9 +100,11 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
   const confirm = useConfirm();
 
-  // Joined single-choice groups with long labels can't shrink, so below `sm`
-  // they stack instead of pushing the modal wider than the viewport.
-  const { sm } = useBreakpointMatches();
+  // Joined single-choice groups with long labels can't shrink, so they stack
+  // once a row no longer fits rather than wrapping inside the buttons.
+  const targetGroupProps = useButtonGroupFit();
+
+  const eleGroupProps = useButtonGroupFit();
 
   // Seeded from what the map holds, never from the connection: folding that in
   // would re-seed the checkboxes — losing the user's picks — the moment it
@@ -397,7 +399,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               <Form.Label>{em?.target}</Form.Label>
 
               <div>
-                <ButtonGroup vertical={!sm}>
+                <ButtonGroup {...targetGroupProps}>
                   {ExportTargetSchema.options
                     .filter(
                       (exportTarget) => exportTarget !== 'share' || shareable,
@@ -630,7 +632,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 <Form.Label>{em?.elevation.label}</Form.Label>
 
                 <div>
-                  <ButtonGroup vertical={!sm}>
+                  <ButtonGroup {...eleGroupProps}>
                     {ExportElevationSchema.options.map((option) => (
                       <ToggleButton
                         id={`ele-${option}`}

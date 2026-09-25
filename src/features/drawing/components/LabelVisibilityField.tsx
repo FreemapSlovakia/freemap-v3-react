@@ -1,4 +1,4 @@
-import { useBreakpointMatches } from '@shared/breakpoints.js';
+import { useButtonGroupFit } from '@shared/hooks/useButtonGroupFit.js';
 import {
   type LabelVisibility,
   LabelVisibilitySchema,
@@ -15,13 +15,13 @@ type Props = {
 export function LabelVisibilityField({ value, onChange }: Props): ReactElement {
   const dm = useDrawingMessages();
 
-  const { sm } = useBreakpointMatches();
+  const groupProps = useButtonGroupFit();
 
   return (
     <Form.Group className="mt-3">
       <Form.Label className="d-block">{dm?.edit.showLabel}</Form.Label>
 
-      <ButtonGroup vertical={!sm}>
+      <ButtonGroup {...groupProps}>
         {LabelVisibilitySchema.options.map((option) => (
           <ToggleButton
             key={option}
