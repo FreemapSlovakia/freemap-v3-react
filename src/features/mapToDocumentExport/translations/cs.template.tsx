@@ -3,7 +3,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import { addError } from '@/translations/messagesInterface.js';
 import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
-const outdoorMap = 'Turistika, Cyklo, Běžky, Jízda';
+const outdoorMap = 'Outdoorová';
 
 const cs: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Chyba exportu mapy', err),

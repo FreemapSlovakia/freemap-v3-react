@@ -24,7 +24,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Napaka aplikacije</h1>
   Hvala.
 </p>`;
 
-const outdoorMap = 'Pohodništvo, Kolesarjenje, Smučanje, Jahanje';
+const outdoorMap = 'Outdoor';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -370,7 +370,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'nastavitve, možnosti, prosojnost prekrivnih slojev',
         'modal-elevation-settings': 'višinski profil, nadmorska višina, graf',
         'clear-map-features': 'odstrani vse, izbriši, ponastavi karto',
-        'layer-X': 'outdoor, pohodništvo, kolesarjenje, freemap',
+        'layer-X': 'pohodništvo, kolesarjenje, smučanje, jahanje, freemap',
         'layer-XK': 'planinske poti, markacije, kst',
         'layer-O': 'osm, mapnik, standardna',
         'layer-S': 'satelitska, ortofoto, letalski posnetki',
@@ -407,7 +407,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xb': 'kolo, kolesarjenje, mtb, prekrivanje',
         'layer-xl': 'smučanje, tek na smučeh, prekrivanje',
         'layer-xr': 'jahanje, konji, prekrivanje',
-        'layer-xa': 'hibrid, satelit, ortofoto, napisi, plastnice, prekrivanje',
+        'layer-xa': 'hibrid, letalski, satelit, ortofoto, napisi, prekrivanje',
         'layer-WHC': 'kemija vode, hidrologija',
       },
     },
@@ -466,7 +466,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xb: 'Kolesarske poti',
       xl: 'Smučarske poti',
       xr: 'Konjeniške poti',
-      xa: 'Pohodniški zemljevid za letalski posnetek',
+      xa: 'Outdoor zemljevid brez podlage',
       WHC: 'Hidrokemična',
     },
     customBase: 'Zemljevid po meri',

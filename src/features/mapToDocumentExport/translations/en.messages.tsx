@@ -2,7 +2,7 @@ import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
 import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
-const outdoorMap = 'Hiking, Bicycle, Ski, Riding';
+const outdoorMap = 'Outdoor';
 
 const en: MapToDocumentExportMessages = {
   exportError: ({ err }) =>

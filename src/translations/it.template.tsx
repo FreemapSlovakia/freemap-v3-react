@@ -23,7 +23,7 @@ const getErrorMarkup = (ticketId?: string) => `
   Grazie.
 </p>`;
 
-const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
+const outdoorMap = 'Outdoor';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -379,7 +379,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'impostazioni, opzioni, opacità delle sovrapposizioni',
         'modal-elevation-settings': 'profilo altimetrico, quota, grafico',
         'clear-map-features': 'rimuovi tutto, cancella, azzera mappa',
-        'layer-X': 'outdoor, escursionismo, ciclismo, freemap',
+        'layer-X': 'escursionismo, ciclismo, sci, cavallo, freemap',
         'layer-XK': 'sentieri segnalati, segnavia, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellite, ortofoto, immagini aeree',
@@ -419,7 +419,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xl': 'sci, sci di fondo, sovrapposizione',
         'layer-xr': 'equitazione, cavallo, ippovia, sovrapposizione',
         'layer-xa':
-          'ibrida, satellite, ortofoto, etichette, curve di livello, sovrapposizione',
+          'ibrida, aerea, satellite, ortofoto, etichette, sovrapposizione',
         'layer-WHC': 'chimica delle acque, idrologia',
       },
     },
@@ -483,7 +483,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xb: 'Percorsi ciclabili',
       xl: 'Percorsi sciistici',
       xr: 'Percorsi a cavallo',
-      xa: 'Mappa outdoor per foto aeree',
+      xa: 'Mappa Outdoor senza sfondo',
       WHC: 'Idrochimica',
     },
     customBase: 'Mappa personalizzata',

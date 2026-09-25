@@ -23,7 +23,7 @@ const getErrorMarkup = (ticketId?: string) => `
   Köszönjük!
 </p>`;
 
-const outdoorMap = 'Túrázás, Kerékpár, Síelés, Lovaglás';
+const outdoorMap = 'Outdoor';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -379,7 +379,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-elevation-settings':
           'magassági profil, tengerszint feletti magasság, diagram',
         'clear-map-features': 'összes törlése, törlés, térkép visszaállítása',
-        'layer-X': 'outdoor, túrázás, kerékpározás, freemap',
+        'layer-X': 'túrázás, kerékpározás, síelés, lovaglás, freemap',
         'layer-XK': 'turistautak, jelzések, kst',
         'layer-O': 'osm, mapnik, alap',
         'layer-S': 'műhold, ortofotó, légifotó',
@@ -416,8 +416,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xb': 'kerékpár, bicikli, mtb, útvonal, fedvény',
         'layer-xl': 'sí, sífutás, útvonal, fedvény',
         'layer-xr': 'lovaglás, ló, útvonal, fedvény',
-        'layer-xa':
-          'hibrid, műhold, légifotó, ortofotó, feliratok, szintvonalak, fedvény',
+        'layer-xa': 'hibrid, műhold, légifotó, ortofotó, feliratok, fedvény',
         'layer-WHC': 'vízkémia, hidrológia',
       },
     },
@@ -476,7 +475,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xb: 'Kerékpárutak',
       xl: 'Síútvonalak',
       xr: 'Lovaglóútvonalak',
-      xa: 'Túratérkép légifelvételhez',
+      xa: 'Outdoor térkép háttér nélkül',
       WHC: 'Hidrokémiai',
     },
 

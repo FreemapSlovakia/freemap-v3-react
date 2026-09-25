@@ -22,7 +22,7 @@ const getErrorMarkup = (ticketId?: string) => `
   Thank you.
 </p>`;
 
-const outdoorMap = 'Hiking, Bicycle, Ski, Riding';
+const outdoorMap = 'Outdoor';
 
 const messages: Messages = {
   general: {
@@ -364,7 +364,7 @@ const messages: Messages = {
         'modal-map-preferences': 'settings, options, overlay opacity',
         'modal-elevation-settings': 'altitude, profile, chart settings',
         'clear-map-features': 'remove all, erase, reset map',
-        'layer-X': 'outdoor, hiking, cycling, freemap',
+        'layer-X': 'hiking, cycling, skiing, riding, freemap',
         'layer-XK': 'hiking trails, markers, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellite, orthophoto, imagery',
@@ -401,7 +401,7 @@ const messages: Messages = {
         'layer-xb': 'cycling, bike, mtb, routes, overlay',
         'layer-xl': 'skiing, cross-country, routes, overlay',
         'layer-xr': 'riding, equestrian, bridleway, routes, overlay',
-        'layer-xa': 'hybrid, satellite, orthophoto, labels, contours, overlay',
+        'layer-xa': 'hybrid, aerial, satellite, orthophoto, labels, overlay',
         'layer-WHC': 'water chemistry, hydrology',
       },
     },
@@ -461,7 +461,7 @@ const messages: Messages = {
       xb: 'Bicycle trails',
       xl: 'Ski trails',
       xr: 'Horse trails',
-      xa: 'Outdoor map for aerial',
+      xa: 'Outdoor map without base',
     },
     customBase: 'Custom map',
     type: {

@@ -23,7 +23,7 @@ const getErrorMarkup = (ticketId?: string) => `
   Merci.
 </p>`;
 
-const outdoorMap = 'Randonnée, Vélo, Ski, Équitation';
+const outdoorMap = 'Outdoor';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -364,7 +364,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-preferences': 'paramètres, options, opacité des calques',
         'modal-elevation-settings': 'profil altimétrique, altitude, graphique',
         'clear-map-features': 'tout effacer, supprimer, réinitialiser la carte',
-        'layer-X': 'plein air, randonnée, vélo, freemap',
+        'layer-X': 'plein air, randonnée, vélo, ski, équitation, freemap',
         'layer-XK': 'sentiers balisés, balisage, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellite, orthophoto, imagerie aérienne',
@@ -403,7 +403,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xl': 'ski, ski de fond, itinéraires, calque',
         'layer-xr': 'équitation, cheval, itinéraires, calque',
         'layer-xa':
-          'hybride, satellite, orthophoto, étiquettes, courbes de niveau, calque',
+          'hybride, aérienne, satellite, orthophoto, étiquettes, calque',
         'layer-WHC': "chimie de l'eau, hydrologie",
       },
     },
@@ -458,7 +458,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xb: 'Itinéraires cyclables',
       xl: 'Pistes de ski',
       xr: 'Sentiers équestres',
-      xa: 'Carte outdoor pour image aérienne',
+      xa: 'Carte Outdoor sans fond',
       WHC: 'Hydrochimique',
     },
     type: {

@@ -24,7 +24,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Anwendungsfehler</h1>
   Vielen Dank.
 </p>`;
 
-const outdoorMap = 'Wandern, Radfahren, Langlauf, Reiten';
+const outdoorMap = 'Outdoor';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -379,7 +379,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'einstellungen, optionen, deckkraft der überlagerung',
         'modal-elevation-settings': 'höhenprofil, höhe, diagramm',
         'clear-map-features': 'alles entfernen, löschen, karte zurücksetzen',
-        'layer-X': 'outdoor, wandern, radfahren, freemap',
+        'layer-X': 'wandern, radfahren, langlauf, reiten, freemap',
         'layer-XK': 'wanderwege, markierungen, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellit, orthofoto, luftbild',
@@ -418,7 +418,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xl': 'ski, langlauf, loipe, routen, overlay',
         'layer-xr': 'reiten, pferd, routen, overlay',
         'layer-xa':
-          'hybrid, satellit, luftbild, orthofoto, beschriftung, höhenlinien, overlay',
+          'hybrid, satellit, luftbild, orthofoto, beschriftung, overlay',
         'layer-WHC': 'wasserchemie, hydrologie',
       },
     },
@@ -469,7 +469,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xb: 'Radwege',
       xl: 'Skirouten',
       xr: 'Reitwege',
-      xa: 'Outdoorkarte für Luftbilder',
+      xa: 'Outdoor-Karte ohne Hintergrund',
       WHC: 'Hydrochemisch',
     },
 

@@ -25,7 +25,7 @@ const getErrorMarkup = (ticketId?: string) => `
   Dziękujemy.
 </p>`;
 
-const outdoorMap = 'Turystyka, Rower, Biegówki, Jazda konna';
+const outdoorMap = 'Outdoorowa';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -364,7 +364,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-preferences': 'ustawienia, opcje, przezroczystość nakładek',
         'modal-elevation-settings': 'profil wysokościowy, wysokość, wykres',
         'clear-map-features': 'usuń wszystko, wyczyść, zresetuj mapę',
-        'layer-X': 'outdoor, turystyka, rower, freemap',
+        'layer-X': 'turystyka, rower, biegówki, jazda konna, freemap',
         'layer-XK': 'szlaki turystyczne, znaki, kst',
         'layer-O': 'osm, mapnik, standardowa',
         'layer-S': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
@@ -402,7 +402,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xl': 'narty, biegówki, nakładka',
         'layer-xr': 'jeździectwo, konie, nakładka',
         'layer-xa':
-          'hybryda, satelita, ortofotomapa, podpisy, poziomice, nakładka',
+          'hybryda, lotnicza, satelita, ortofotomapa, podpisy, nakładka',
         'layer-WHC': 'chemia wody, hydrologia',
       },
     },
@@ -453,7 +453,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xb: 'Szlaki rowerowe',
       xl: 'Szlaki narciarskie',
       xr: 'Szlaki konne',
-      xa: 'Mapa turystyczna na zdjęcie lotnicze',
+      xa: 'Mapa outdoorowa bez podkładu',
       WHC: 'Hydrochemiczna',
     },
     type: {

@@ -25,7 +25,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
 </p>
 `;
 
-const outdoorMap = 'Turistika, Cyklo, Běžky, Jízda';
+const outdoorMap = 'Outdoorová';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -375,7 +375,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-preferences': 'nastavení, volby, průhlednost překrytí',
         'modal-elevation-settings': 'výškový profil, nadmořská výška, graf',
         'clear-map-features': 'vyčistit, smazat vše, vymazat mapu',
-        'layer-X': 'outdoor, turistika, cyklo, freemap',
+        'layer-X': 'turistika, cyklo, běžky, jízda, freemap',
         'layer-XK': 'turistické trasy, značky, kst',
         'layer-O': 'osm, mapnik, standardní',
         'layer-S': 'satelitní, ortofoto, snímky',
@@ -412,8 +412,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xb': 'cyklo, kolo, mtb, trasa, překryv',
         'layer-xl': 'lyže, běžky, trasa, překryv',
         'layer-xr': 'jezdectví, koně, trasa, překryv',
-        'layer-xa':
-          'hybrid, letecká, ortofoto, satelit, popisky, vrstevnice, překryv',
+        'layer-xa': 'hybrid, letecká, ortofoto, satelit, popisky, překryv',
         'layer-WHC': 'chemie vody, hydrologie',
       },
     },
@@ -475,7 +474,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xb: 'Cyklotrasy',
       xl: 'Lyžařské trasy',
       xr: 'Jezdecké trasy',
-      xa: 'Turistická mapa na leteckou snímku',
+      xa: 'Outdoorová mapa bez podkladu',
       WHC: 'Hydrochemická',
     },
     customBase: 'Vlastní mapa',
