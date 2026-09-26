@@ -1,3 +1,4 @@
+import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
@@ -49,6 +50,90 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
     );
 
     expect(next.layers).toEqual(['X']);
+  });
+});
+
+describe('mapReducer — mapToggleLayer (combinations)', () => {
+  const withBase = {
+    id: 'c1',
+    name: 'C',
+    base: 'X',
+    overlays: [{ type: 'w' }, { type: 'I' }],
+  };
+
+  const overlayOnly = {
+    id: 'c2',
+    name: 'D',
+    overlays: [{ type: 'I' }, { type: 'xh' }],
+  };
+
+  const combined = {
+    ...mapInitialState,
+    layers: ['X', 'w', 'I', '_c1'],
+    mapCombinations: [withBase, overlayOnly],
+  };
+
+  it("another base map takes the combination's overlays off, keeping added ones", () => {
+    const withAdded = mapReducer(combined, mapToggleLayer({ type: 'i' }));
+
+    expect(withAdded.layers).toEqual(['X', 'w', 'I', '_c1', 'i']);
+
+    expect(mapReducer(withAdded, mapToggleLayer({ type: 'O' })).layers).toEqual(
+      ['O', 'i'],
+    );
+  });
+
+  it('its own base map leaves it too', () => {
+    const next = mapReducer(combined, mapToggleLayer({ type: 'X' }));
+
+    expect(next.layers).toEqual(['X']);
+  });
+
+  it('stays active while its own overlays are switched off', () => {
+    const next = mapReducer(combined, mapToggleLayer({ type: 'w' }));
+
+    expect(next.layers).toEqual(['X', 'I', '_c1']);
+  });
+
+  it('keeps an overlay-only combination through a base map change', () => {
+    const next = mapReducer(
+      { ...combined, layers: ['S', 'I', 'xh', '_c2'] },
+      mapToggleLayer({ type: 'O' }),
+    );
+
+    expect(next.layers).toEqual(['O', 'I', 'xh', '_c2']);
+  });
+
+  it('keeps an overlay the leaving one shares with an overlay-only one', () => {
+    const next = mapReducer(
+      { ...combined, layers: ['X', 'w', 'I', '_c1', 'xh', '_c2'] },
+      mapToggleLayer({ type: 'O' }),
+    );
+
+    expect(next.layers).toEqual(['O', 'I', 'xh', '_c2']);
+  });
+
+  it('picking the base map already on leaves the layers untouched', () => {
+    const state = { ...mapInitialState, layers: ['X', 'w'] };
+
+    expect(mapReducer(state, mapToggleLayer({ type: 'X' })).layers).toBe(
+      state.layers,
+    );
+  });
+
+  it('"make sure its base is on" keeps it', () => {
+    const next = mapReducer(
+      combined,
+      mapToggleLayer({ type: 'X', enable: true }),
+    );
+
+    expect(next.layers).toBe(combined.layers);
+  });
+
+  it('a move of the map keeps it', () => {
+    const next = mapReducer(combined, mapRefocus({ lat: 49, lon: 20 }));
+
+    expect(next.layers).toEqual(combined.layers);
   });
 });
 
@@ -104,6 +189,52 @@ describe('mapReducer — mapReplaceLayer', () => {
     const next = mapReducer(state, mapReplaceLayer({ from: 'Z', to: 'O' }));
 
     expect(next.layers).toEqual(['X']);
+  });
+});
+
+describe('mapReducer — combinations across sign-in', () => {
+  const mine = { id: 'm', name: 'M', base: 'X', overlays: [] };
+
+  const theirs = { id: 't', name: 'T', base: 'O', overlays: [] };
+
+  const local = { ...mapInitialState, mapCombinations: [mine] };
+
+  // The map slice only reads `payload.settings`; a minimal cast user is enough.
+  const signIn = (settings: object) => authSetUser({ settings } as never);
+
+  it("takes the account's list once it has one, even empty", () => {
+    expect(
+      mapReducer(local, signIn({ mapCombinations: [theirs] })).mapCombinations,
+    ).toEqual([theirs]);
+
+    expect(
+      mapReducer(local, signIn({ mapCombinations: [] })).mapCombinations,
+    ).toEqual([]);
+  });
+
+  it('keeps the signed-out ones for an account that never had any', () => {
+    expect(mapReducer(local, signIn({})).mapCombinations).toEqual([mine]);
+  });
+
+  it("resets the account's settings on sign-out and on a session found to be over", () => {
+    const signedIn = {
+      ...local,
+      customLayers: [
+        { type: 'c', layer: 'base', technology: 'tile', url: 'u' },
+      ],
+      layersSettings: { X: { showInToolbar: false } },
+      maxZoom: 16,
+    } as typeof local;
+
+    for (const next of [
+      mapReducer(signedIn, authLogout()),
+      mapReducer(signedIn, authSetUser(null)),
+    ]) {
+      expect(next.mapCombinations).toEqual([]);
+      expect(next.customLayers).toEqual([]);
+      expect(next.layersSettings).toEqual({});
+      expect(next.maxZoom).toBe(mapInitialState.maxZoom);
+    }
   });
 });
 

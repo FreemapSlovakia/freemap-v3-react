@@ -2,7 +2,6 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useButtonGroupFit } from '@shared/hooks/useButtonGroupFit.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
@@ -31,11 +30,25 @@ import {
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import classes from './CustomMapForm.module.css';
+import {
+  type CustomMapTechnology,
+  CustomMapTypeField,
+} from './CustomMapTypeField.js';
+
+/** What carries over when the Type switches between a layer and a combination. */
+export type CustomMapStart = {
+  name: string;
+  iconSpec?: string;
+  technology?: CustomMapTechnology;
+};
 
 type Props = {
   type: string;
   value?: CustomLayerDef;
+  /** A new map's starting point; ignored when `value` is given. */
+  start?: CustomMapStart;
   onChange: (value?: CustomLayerDef) => void;
+  onPickCombination: (start: CustomMapStart) => void;
 };
 
 type Model = {
@@ -157,8 +170,18 @@ function valueToModel(value?: CustomLayerDef) {
   };
 }
 
-export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
-  const [model, setModel] = useState<Model>(() => valueToModel(value));
+export function CustomMapForm({
+  type,
+  value,
+  start,
+  onChange,
+  onPickCombination,
+}: Props): ReactElement {
+  const [model, setModel] = useState<Model>(() => ({
+    ...valueToModel(value),
+    ...(!value && start && { name: start.name, iconSpec: start.iconSpec }),
+    ...(!value && start?.technology && { technology: start.technology }),
+  }));
 
   const localVersion = useRef(0);
 
@@ -302,10 +325,6 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   }, [type, model, onChange]);
 
   const m = useMessages();
-
-  // The technology labels are long enough that their joined group often can't
-  // fit the form, and then it stacks rather than wrapping inside the buttons.
-  const techGroupProps = useButtonGroupFit();
 
   const [wmsLayersFetchError, setWmsLayersFetchError] = useState<string>();
 
@@ -507,26 +526,17 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         </Form.Group>
       </div>
 
-      <Form.Group className="mt-3">
-        <Form.Label className="d-block">{m?.mapLayers.technology}</Form.Label>
-
-        <ButtonGroup {...techGroupProps}>
-          {(['tile', 'maplibre', 'wms'] as const).map((technology) => (
-            <ToggleButton
-              key={technology}
-              id={`tech-${technology}`}
-              type="radio"
-              name="technology"
-              variant="outline-primary"
-              value={technology}
-              checked={model.technology === technology}
-              onChange={handlers.technology}
-            >
-              {m?.mapLayers.technologies[technology]}
-            </ToggleButton>
-          ))}
-        </ButtonGroup>
-      </Form.Group>
+      <CustomMapTypeField
+        value={model.technology}
+        editing={Boolean(value)}
+        onChange={(kind) => {
+          if (kind === 'combination') {
+            onPickCombination({ name: model.name, iconSpec: model.iconSpec });
+          } else {
+            setModelWithVersion((model) => ({ ...model, technology: kind }));
+          }
+        }}
+      />
 
       {/* URL */}
       {model.technology !== 'parametricShading' && (

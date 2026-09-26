@@ -5,6 +5,7 @@ import {
   mapRefocus,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
+import { withoutMarkers } from '@features/map/model/mapCombination.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import z from 'zod';
 import { defineTool } from '../tool.js';
@@ -89,7 +90,7 @@ export const mapTools = [
           east: map.bounds[2],
           north: map.bounds[3],
         },
-        layers: map.layers,
+        layers: withoutMarkers(map.layers),
         countries: map.countries,
         url: window.location.href,
       };
@@ -195,7 +196,7 @@ export const mapTools = [
         }
       }
 
-      return { layers: store.getState().map.layers };
+      return { layers: withoutMarkers(store.getState().map.layers) };
     },
   }),
 ];

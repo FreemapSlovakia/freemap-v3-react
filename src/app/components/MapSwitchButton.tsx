@@ -1,10 +1,13 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
+  mapApplyCombination,
   mapFitBbox,
   mapRefocus,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
+import { combinationLayers } from '@features/map/model/mapCombination.js';
+import { activeCombinationsSelector } from '@features/map/model/selectors.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -55,6 +58,7 @@ import {
   FaSearchPlus,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
+import { TbStack2 } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { setActiveModal } from '../store/actions.js';
@@ -260,6 +264,21 @@ export function MapSwitchButton(): ReactElement {
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
+  const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
+
+  const activeCombinations = useAppSelector(activeCombinationsSelector);
+
+  const activeIds = new Set(activeCombinations.map((c) => c.id));
+
+  const baseCombinationActive = activeCombinations.some(
+    (c) => c.base !== undefined,
+  );
+
+  // An active combination's button stands for these in the toolbar.
+  const inActiveCombination = new Set(
+    activeCombinations.flatMap(combinationLayers),
+  );
+
   const language = useAppSelector((state) => state.l10n.language);
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
@@ -303,6 +322,15 @@ export function MapSwitchButton(): ReactElement {
       setExpand('all');
     } else if (eventKey === 'show-more') {
       setExpand('more');
+    } else if (eventKey.startsWith('combination-')) {
+      const id = eventKey.slice(12);
+
+      // As for layers: one with a base map ends the choice, an overlay stacks.
+      if (mapCombinations.find((c) => c.id === id)?.base !== undefined) {
+        closeMenu();
+      }
+
+      dispatch(mapApplyCombination({ id, toggle: true }));
     } else if (eventKey.startsWith('layer-')) {
       const type = eventKey.slice(6);
 
@@ -463,6 +491,26 @@ export function MapSwitchButton(): ReactElement {
     );
   }
 
+  /** A layer's check; under an active combination with a base map, that one's radio is checked instead. */
+  const isLayerOn = (def: { type: string; layer: 'base' | 'overlay' }) =>
+    (def.type === 'i') !== activeLayers.includes(def.type) &&
+    !(def.layer === 'base' && baseCombinationActive);
+
+  /** Whether a layer or combination is listed at the menu's filter and expand level. */
+  const isListed = (
+    name: string,
+    on: boolean,
+    {
+      showInMenu,
+      showInToolbar,
+    }: { showInMenu: boolean; showInToolbar: boolean },
+  ) =>
+    normalizedFilter
+      ? removeAccents(name.toLowerCase()).includes(normalizedFilter)
+      : expand === 'all' ||
+        on ||
+        (expand === false && !isWide ? showInToolbar : showInMenu);
+
   function layersMemuItems(layer: 'base' | 'overlay') {
     return layerDefs
       .filter((def) => def.layer === layer)
@@ -485,21 +533,16 @@ export function MapSwitchButton(): ReactElement {
           ? def.name || `${m?.mapLayers.customBase ?? ''} ${type}`
           : (m?.mapLayers.letters[type] ?? '');
 
-        if (normalizedFilter) {
-          if (
-            !removeAccents(layerName.toLowerCase()).includes(normalizedFilter)
-          ) {
-            return null;
-          }
-        } else if (
-          expand !== 'all' &&
-          !activeLayers.includes(type) &&
-          !(expand === false && !isWide ? showInToolbar : showInMenu)
+        if (
+          !isListed(layerName, activeLayers.includes(type), {
+            showInMenu,
+            showInToolbar,
+          })
         ) {
           return null;
         }
 
-        const active = (type === 'i') !== activeLayers.includes(type);
+        const active = isLayerOn(def);
 
         return (
           <Dropdown.Item
@@ -539,11 +582,61 @@ export function MapSwitchButton(): ReactElement {
       });
   }
 
-  const baseItems = layersMemuItems('base');
+  const sortedCombinations = [...mapCombinations].sort((a, b) =>
+    byName(a.name, b.name),
+  );
+
+  const combinationItems = (layer: 'base' | 'overlay') =>
+    sortedCombinations.map((combination) => {
+      const { id, name } = combination;
+
+      if ((combination.base === undefined) !== (layer === 'overlay')) {
+        return null;
+      }
+
+      const active = activeIds.has(id);
+
+      if (
+        !isListed(name, active, {
+          showInMenu: layersSettings[id]?.showInMenu ?? true,
+          showInToolbar: Boolean(layersSettings[id]?.showInToolbar),
+        })
+      ) {
+        return null;
+      }
+
+      return (
+        <Dropdown.Item
+          key={`combination-${id}`}
+          as="button"
+          eventKey={`combination-${id}`}
+          active={active}
+        >
+          {layer === 'base' ? (
+            <Radio value={active} />
+          ) : (
+            <Checkbox value={active} />
+          )}
+
+          <IconSpecGlyph spec={combination.iconSpec} fallback={<TbStack2 />} />
+
+          <span>{name}</span>
+
+          <MenuGutter>
+            {getKbdShortcut(layersSettings[id]?.shortcut)}
+          </MenuGutter>
+        </Dropdown.Item>
+      );
+    });
+
+  const baseItems = [...layersMemuItems('base'), ...combinationItems('base')];
 
   const baseHasItems = baseItems.some(Boolean);
 
-  const overlayItems = layersMemuItems('overlay');
+  const overlayItems = [
+    ...layersMemuItems('overlay'),
+    ...combinationItems('overlay'),
+  ];
 
   const overlayHasItems = overlayItems.some(Boolean);
 
@@ -561,11 +654,11 @@ export function MapSwitchButton(): ReactElement {
             layersSettings[def.type]?.showInToolbar ??
             (!def.custom && Boolean(def.defaultInToolbar));
 
-          // Being below a layer's `minZoom` does not hide it, the way being
-          // away from its coverage does not: both are offered as something to
-          // fix, through the accessories below.
+          // Out of `minZoom` or coverage doesn't hide it: the accessories below
+          // offer the fix.
           if (
-            !activeLayers.includes(def.type) &&
+            (!activeLayers.includes(def.type) ||
+              inActiveCombination.has(type)) &&
             (!showInToolbar ||
               (type === 'S' &&
                 showsOfm &&
@@ -580,7 +673,7 @@ export function MapSwitchButton(): ReactElement {
             showsOfm = true;
           }
 
-          const active = (type === 'i') !== activeLayers.includes(type);
+          const active = isLayerOn(def);
 
           // Accessories are buttons joined to the layer button, each with its
           // own fix-up action, so clicking the layer button itself only toggles
@@ -715,6 +808,45 @@ export function MapSwitchButton(): ReactElement {
                 </LongPressTooltip>
               ))}
             </Fragment>
+          );
+        })}
+
+        {(isWide ? sortedCombinations : []).map((combination) => {
+          const { id } = combination;
+
+          const active = activeIds.has(id);
+
+          if (!active && !layersSettings[id]?.showInToolbar) {
+            return null;
+          }
+
+          return (
+            <LongPressTooltip
+              key={`combination-${id}`}
+              label={
+                <span className="d-inline-flex flex-wrap align-items-center gap-1">
+                  {combination.name}
+
+                  {getKbdShortcut(layersSettings[id]?.shortcut)}
+                </span>
+              }
+            >
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  active={active}
+                  onClick={() =>
+                    dispatch(mapApplyCombination({ id, toggle: true }))
+                  }
+                  {...props}
+                >
+                  <IconSpecGlyph
+                    spec={combination.iconSpec}
+                    fallback={<TbStack2 />}
+                  />
+                </Button>
+              )}
+            </LongPressTooltip>
           );
         })}
 

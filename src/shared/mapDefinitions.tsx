@@ -417,6 +417,19 @@ export const resolveLayerOpacity = (
     ? def.defaultOpacity
     : 1);
 
+/** Whether any layer on the map draws with the shared `map.shading`. */
+export const hasShadingLayer = (
+  layers: readonly string[],
+  customLayers: readonly CustomLayerDef[],
+): boolean =>
+  layers.some(
+    (type) =>
+      (
+        integratedLayerDefMap[type] ??
+        customLayers.find((def) => def.type === type)
+      )?.technology === 'parametricShading',
+  );
+
 export const getLayerBbox = (
   def: object,
 ): [number, number, number, number] | undefined => {

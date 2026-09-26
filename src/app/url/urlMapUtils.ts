@@ -1,4 +1,5 @@
 import type { MapViewState } from '@features/map/model/actions.js';
+import { isCombinationMarker } from '@features/map/model/mapCombination.js';
 import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 
 const LAYERS_RE = new RegExp(
@@ -72,7 +73,9 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
     }
   }
 
-  layers = layers?.filter((layer) => layer in integratedLayerDefMap);
+  layers = layers?.filter(
+    (layer) => layer in integratedLayerDefMap || isCombinationMarker(layer),
+  );
 
   if (
     layers &&

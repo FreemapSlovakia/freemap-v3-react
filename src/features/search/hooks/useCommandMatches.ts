@@ -52,6 +52,8 @@ export function useCommandMatches(query: string): CommandMatch[] {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
+  const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
+
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
@@ -68,6 +70,7 @@ export function useCommandMatches(query: string): CommandMatch[] {
             canSaveSettings,
             layers,
             customLayers,
+            mapCombinations,
             layersSettings,
             embedFeatures,
           })
@@ -81,6 +84,7 @@ export function useCommandMatches(query: string): CommandMatch[] {
       canSaveSettings,
       layers,
       customLayers,
+      mapCombinations,
       layersSettings,
       embedFeatures,
     ],

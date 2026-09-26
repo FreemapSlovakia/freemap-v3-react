@@ -1,3 +1,4 @@
+import { isCombinationMarker } from '@features/map/model/mapCombination.js';
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
 import { isFullTurn } from '@features/panorama/model/settingsReducer.js';
 import {
@@ -13,7 +14,10 @@ import { grantedRadiusKm } from '@features/viewshed/request.js';
 import { serializeViewshed } from '@features/viewshed/viewshedUrl.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
-import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import {
+  hasShadingLayer,
+  integratedLayerDefMap,
+} from '@shared/mapDefinitions.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
 import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
@@ -329,7 +333,11 @@ function updateUrl(state: RootState, forced: boolean): void {
   previousView = view;
 
   const layers = map.layers
-    .filter((type) => type !== 'i' && integratedLayerDefMap[type])
+    .filter(
+      (type) =>
+        type !== 'i' &&
+        (integratedLayerDefMap[type] || isCombinationMarker(type)),
+    )
     .join('~');
 
   const queryParts: QueryPart[] = [
@@ -343,12 +351,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['layers', layers]);
   }
 
-  if (
-    map.layers.some(
-      (layer) =>
-        integratedLayerDefMap[layer]?.technology === 'parametricShading',
-    )
-  ) {
+  if (hasShadingLayer(map.layers, map.customLayers)) {
     queryParts.push(['shading', serializeShading(map.shading)]);
   }
 

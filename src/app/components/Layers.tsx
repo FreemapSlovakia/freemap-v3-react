@@ -3,6 +3,10 @@ import { getCachedTileScale } from '@features/cachedMaps/cachedTileMaps.js';
 import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
 import { sourceLayerEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  activeCombinationsSelector,
+  opacitySetting,
+} from '@features/map/model/selectors.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
@@ -74,6 +78,8 @@ export function Layers(): ReactElement | null {
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
+  const activeCombinations = useAppSelector(activeCombinationsSelector);
+
   const shading = useAppSelector((state) => state.map.shading);
 
   const galleryFilter = useAppSelector((state) => state.gallery.filter);
@@ -122,7 +128,7 @@ export function Layers(): ReactElement | null {
 
     const opacity = resolveLayerOpacity(
       layerDef,
-      layersSettings[type]?.opacity,
+      opacitySetting(activeCombinations, layersSettings, type),
     );
 
     if (layerDef.technology === 'gallery') {

@@ -1,5 +1,9 @@
 import { LayerSettingsSchema } from '@features/map/model/actions.js';
 import {
+  MapCombinationArrayCompatSchema,
+  MapCombinationSchema,
+} from '@features/map/model/mapCombination.js';
+import {
   CustomLayerDefArrayCompatSchema,
   CustomLayerDefSchema,
 } from '@shared/mapDefinitions.js';
@@ -87,6 +91,7 @@ export type PurchasesResponse = z.infer<typeof PurchasesResponseSchema>;
 export const UserSettingsSchema = z.object({
   layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
   customLayers: z.array(CustomLayerDefSchema).optional(),
+  mapCombinations: z.array(MapCombinationSchema).optional(),
   maxZoom: z.number().optional(),
 });
 
@@ -98,6 +103,7 @@ export type UserSettings = z.infer<typeof UserSettingsSchema>;
 export const UserSettingsCompatSchema = z.object({
   ...UserSettingsSchema.shape,
   customLayers: CustomLayerDefArrayCompatSchema.optional(),
+  mapCombinations: MapCombinationArrayCompatSchema.optional(),
 });
 
 export const UserSchema = z.object({

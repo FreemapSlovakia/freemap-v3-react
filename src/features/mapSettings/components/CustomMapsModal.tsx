@@ -1,7 +1,22 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { mapToggleLayer } from '@features/map/model/actions.js';
+import {
+  mapApplyCombination,
+  mapRefocus,
+  mapToggleLayer,
+} from '@features/map/model/actions.js';
+import {
+  combinationShading,
+  isWorthSaving,
+  type MapCombination,
+  withoutCombinations,
+} from '@features/map/model/mapCombination.js';
+import {
+  activeCombinationsSelector,
+  captureCombination,
+} from '@features/map/model/selectors.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
@@ -19,6 +34,7 @@ import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ListGroup, Modal } from 'react-bootstrap';
 import {
+  FaCamera,
   FaCheck,
   FaEye,
   FaPencilAlt,
@@ -27,16 +43,24 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
-import { useDispatch } from 'react-redux';
-import { CustomMapForm } from './CustomMapForm.js';
+import { TbStack2 } from 'react-icons/tb';
+import { useDispatch, useStore } from 'react-redux';
+import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
+import { CustomMapForm, type CustomMapStart } from './CustomMapForm.js';
 import { LayerVisibilityFields } from './LayerVisibilityFields.js';
+import { MapCombinationForm } from './MapCombinationForm.js';
 
 type Props = { show: boolean };
 
 type View =
   | { mode: 'list' }
-  | { mode: 'add'; draftType: string }
-  | { mode: 'edit'; type: string };
+  | { mode: 'add'; draftType: string; start?: CustomMapStart }
+  | { mode: 'edit'; type: string }
+  | { mode: 'combination' };
+
+type ListItem =
+  | { kind: 'layer'; key: string; name: string; def: CustomLayerDef }
+  | { kind: 'combination'; key: string; name: string; def: MapCombination };
 
 function makeType() {
   return Math.random().toString(36).slice(-6);
@@ -44,6 +68,8 @@ function makeType() {
 
 export default function CustomMapsModal({ show }: Props): ReactElement {
   const m = useMessages();
+
+  const msm = useMapSettingsMessages();
 
   // A custom map is nothing but an entry in the account's settings, so offline
   // a signed-in user can neither add, change nor remove one.
@@ -57,7 +83,13 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
   const confirm = useConfirm();
 
+  const store = useStore<RootState>();
+
   const customLayers = useAppSelector((state) => state.map.customLayers);
+
+  const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
+
+  const activeCombinations = useAppSelector(activeCombinationsSelector);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
@@ -65,15 +97,34 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
+  const addCombinationRequested = useAppSelector(
+    (state) =>
+      state.main.activeModal?.type === 'custom-maps' &&
+      Boolean(state.main.activeModal.addCombination),
+  );
+
   const byName = makeLabelComparator(language);
 
-  const sortedLayers = [...customLayers].sort((a, b) =>
-    byName(a.name || undefined, b.name || undefined),
-  );
+  const sortedItems: ListItem[] = [
+    ...customLayers.map((def) => ({
+      kind: 'layer' as const,
+      key: def.type,
+      name: def.name || `{${def.type}}`,
+      def,
+    })),
+    ...mapCombinations.map((def) => ({
+      kind: 'combination' as const,
+      key: def.id,
+      name: def.name,
+      def,
+    })),
+  ].sort((a, b) => byName(a.name, b.name));
 
   const [view, setView] = useState<View>({ mode: 'list' });
 
   const [draft, setDraft] = useState<CustomLayerDef | undefined>(undefined);
+
+  const [combinationDraft, setCombinationDraft] = useState<MapCombination>();
 
   const [showInMenu, setShowInMenu] = useState(true);
 
@@ -88,13 +139,45 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
   const goToList = useCallback(() => {
     setDraft(undefined);
 
+    setCombinationDraft(undefined);
+
     setView({ mode: 'list' });
   }, []);
 
-  const handleAddClick = () => {
+  const captureCurrentMap = useCallback(
+    (withBase: boolean) => captureCombination(store.getState(), withBase),
+    [store],
+  );
+
+  const addCombination = useCallback(
+    (start?: CustomMapStart) => {
+      const id = makeType();
+
+      setCombinationDraft({
+        id,
+        name: start?.name ?? '',
+        iconSpec: start?.iconSpec,
+        ...captureCurrentMap(true),
+      });
+
+      setView({ mode: 'combination' });
+    },
+    [captureCurrentMap],
+  );
+
+  // Asked for from outside the modal: straight to a form filled from the map.
+  useEffect(() => {
+    if (show && addCombinationRequested) {
+      addCombination();
+    }
+  }, [show, addCombinationRequested, addCombination]);
+
+  const handleAddClick = (start?: CustomMapStart) => {
     setDraft(undefined);
 
-    setView({ mode: 'add', draftType: makeType() });
+    setCombinationDraft(undefined);
+
+    setView({ mode: 'add', draftType: makeType(), start });
   };
 
   const handleEditClick = (type: string) => {
@@ -103,17 +186,16 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     setView({ mode: 'edit', type });
   };
 
-  const handleDeleteClick = async (def: CustomLayerDef) => {
-    const name = def.name || `{${def.type}}`;
+  const confirmDelete = (name: string) =>
+    confirm({
+      title: mm?.deleteTitle,
+      message: mm?.deleteConfirm(name),
+      confirmLabel: m?.general.delete,
+      confirmStyle: 'danger',
+    });
 
-    if (
-      !(await confirm({
-        title: mm?.deleteTitle,
-        message: mm?.deleteConfirm(name),
-        confirmLabel: m?.general.delete,
-        confirmStyle: 'danger',
-      }))
-    ) {
+  const handleDeleteClick = async (def: CustomLayerDef) => {
+    if (!(await confirmDelete(def.name || `{${def.type}}`))) {
       return;
     }
 
@@ -163,6 +245,133 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     goToList();
   };
 
+  const handleEditCombinationClick = (combination: MapCombination) => {
+    setCombinationDraft(combination);
+
+    setView({ mode: 'combination' });
+  };
+
+  /** Saves it in place of any of the same id; with its menu and toolbar flags from the form. */
+  const saveCombination = (
+    combination: MapCombination,
+    withVisibility: boolean,
+  ) => {
+    const isEdit = mapCombinations.some((c) => c.id === combination.id);
+
+    trackMatomo([
+      'trackEvent',
+      'MapSettings',
+      isEdit ? 'update' : 'create',
+      'combination',
+    ]);
+
+    dispatch(
+      saveSettings({
+        settings: {
+          mapCombinations: [
+            ...mapCombinations.filter((c) => c.id !== combination.id),
+            combination,
+          ],
+          ...(withVisibility && {
+            layersSettings: {
+              ...layersSettings,
+              [combination.id]: {
+                ...(layersSettings[combination.id] ?? {}),
+                showInMenu,
+                showInToolbar,
+              },
+            },
+          }),
+        },
+        keepOpen: true,
+        activateCombination: combination.id,
+      }),
+    );
+  };
+
+  const handleUpdateFromMapClick = (combination: MapCombination) => {
+    const updated = {
+      ...combination,
+      ...captureCurrentMap(combination.base !== undefined),
+    };
+
+    // Too little on the map to save as is: the form says why.
+    if (!isWorthSaving(updated, customLayers)) {
+      handleEditCombinationClick(updated);
+
+      return;
+    }
+
+    saveCombination(updated, false);
+  };
+
+  const handleDeleteCombinationClick = async (combination: MapCombination) => {
+    if (!(await confirmDelete(combination.name))) {
+      return;
+    }
+
+    trackMatomo(['trackEvent', 'MapSettings', 'delete', 'combination']);
+
+    const state = store.getState();
+
+    const active = activeCombinationsSelector(state);
+
+    const shown = active.find((c) => c.id === combination.id);
+
+    // Its layers go with it, as unticking it would take them off.
+    if (shown) {
+      dispatch(
+        mapRefocus({
+          layers: withoutCombinations(state.map.layers, [shown], active),
+        }),
+      );
+    }
+
+    const restLayersSettings = Object.fromEntries(
+      Object.entries(layersSettings).filter(
+        ([type]) => type !== combination.id,
+      ),
+    );
+
+    dispatch(
+      saveSettings({
+        settings: {
+          mapCombinations: mapCombinations.filter(
+            (c) => c.id !== combination.id,
+          ),
+          layersSettings: restLayersSettings,
+        },
+        keepOpen: true,
+      }),
+    );
+  };
+
+  const canSaveCombination = Boolean(
+    combinationDraft?.name.trim() &&
+      isWorthSaving(combinationDraft, customLayers),
+  );
+
+  const handleSaveCombination = () => {
+    if (!combinationDraft || !canSaveCombination) {
+      return;
+    }
+
+    saveCombination(
+      {
+        ...combinationDraft,
+        name: combinationDraft.name.trim(),
+        shading: combinationShading(
+          combinationDraft,
+          customLayers,
+          store.getState().map.shading,
+        ),
+      },
+      true,
+    );
+
+    goToList();
+  };
+
   const editingValue =
     view.mode === 'edit'
       ? customLayers.find((d) => d.type === view.type)
@@ -175,9 +384,14 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
         ? view.type
         : '';
 
+  const combinationDraftId = combinationDraft?.id;
+
   useEffect(() => {
-    if (view.mode === 'edit') {
-      const s = layersSettings[view.type];
+    if (view.mode === 'edit' || view.mode === 'combination') {
+      const s =
+        layersSettings[
+          view.mode === 'edit' ? view.type : (combinationDraftId ?? '')
+        ];
 
       setShowInMenu(s?.showInMenu ?? true);
 
@@ -187,7 +401,158 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
       setShowInToolbar(false);
     }
-  }, [view, layersSettings]);
+  }, [view, layersSettings, combinationDraftId]);
+
+  const layerName = (type: string) =>
+    m?.mapLayers.letters[type] ??
+    customLayers.find((d) => d.type === type)?.name ??
+    type;
+
+  const renderItem = (item: ListItem) => {
+    const combination = item.kind === 'combination' ? item.def : undefined;
+
+    const layer = item.kind === 'layer' ? item.def : undefined;
+
+    return (
+      <ListGroup.Item
+        key={item.key}
+        className="d-flex align-items-center gap-2"
+      >
+        <IconSpecGlyph
+          spec={item.def.iconSpec}
+          fallback={combination ? <TbStack2 /> : <MdDashboardCustomize />}
+        />
+
+        <div className="flex-grow-1 me-2 min-w-0">
+          <div>{item.name}</div>
+
+          <small className="text-muted">
+            {combination ? (
+              <>
+                <span className="text-nowrap">{msm?.combination}</span>
+                {' · '}
+                <span className="text-nowrap">
+                  {combination.base === undefined
+                    ? m?.mapLayers.layer.overlay
+                    : layerName(combination.base)}
+                  {combination.overlays.length > 0 &&
+                    ` + ${combination.overlays.length}`}
+                </span>
+              </>
+            ) : (
+              layer && (
+                <>
+                  <span className="text-nowrap">
+                    {m?.mapLayers.technologies[layer.technology] ??
+                      layer.technology}
+                  </span>
+                  {' · '}
+                  <span className="text-nowrap">
+                    {m?.mapLayers.layer[layer.layer]}
+                  </span>
+                </>
+              )
+            )}
+          </small>
+        </div>
+
+        <div className="flex-shrink-0">
+          <ResponsiveActions
+            size="sm"
+            align="end"
+            toggleLabel={m?.general.actions}
+          >
+            <Action
+              icon={<FaEye />}
+              label={m?.mapLayers.activate}
+              variant="outline-primary"
+              active={
+                combination
+                  ? activeCombinations.some((c) => c.id === combination.id)
+                  : activeLayers.includes(item.key)
+              }
+              onClick={() =>
+                dispatch(
+                  combination
+                    ? mapApplyCombination({ id: combination.id, toggle: true })
+                    : mapToggleLayer({ type: item.key }),
+                )
+              }
+              showFrom="sm"
+            />
+
+            {combination && (
+              <Action
+                icon={<FaCamera />}
+                label={msm?.updateFromCurrentMap}
+                requiresOnline={signedIn}
+                onClick={() => handleUpdateFromMapClick(combination)}
+              />
+            )}
+
+            <Action
+              icon={<FaPencilAlt />}
+              label={m?.general.modify}
+              requiresOnline={signedIn}
+              onClick={() =>
+                combination
+                  ? handleEditCombinationClick(combination)
+                  : handleEditClick(item.key)
+              }
+              showFrom="sm"
+            />
+
+            <ActionDivider />
+
+            <Action
+              icon={<FaTrash />}
+              label={m?.general.delete}
+              variant="danger"
+              requiresOnline={signedIn}
+              onClick={() =>
+                combination
+                  ? handleDeleteCombinationClick(combination)
+                  : layer && handleDeleteClick(layer)
+              }
+              showFrom="sm"
+            />
+          </ResponsiveActions>
+        </div>
+      </ListGroup.Item>
+    );
+  };
+
+  const visibilityFields = (
+    <div className="mt-3">
+      <LayerVisibilityFields
+        disabled={!canSaveSettings}
+        showInMenu={showInMenu}
+        showInToolbar={showInToolbar}
+        onChange={(v) => {
+          setShowInMenu(v.showInMenu);
+          setShowInToolbar(v.showInToolbar);
+        }}
+      />
+    </div>
+  );
+
+  const formFooter = (onSave: () => void, canSave: boolean) => (
+    <Modal.Footer>
+      <Button
+        variant="primary"
+        onClick={onSave}
+        disabled={!canSave || !canSaveSettings}
+      >
+        <FaCheck /> {m?.general.save}
+      </Button>
+
+      <OfflineBadge offline={!canSaveSettings} />
+
+      <Button variant="dark" onClick={goToList}>
+        <FaTimes /> {m?.general.cancel}
+      </Button>
+    </Modal.Footer>
+  );
 
   return (
     <Modal
@@ -209,77 +574,12 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
       {view.mode === 'list' ? (
         <>
           <Modal.Body>
-            {customLayers.length === 0 ? (
+            {sortedItems.length === 0 ? (
               <p className="text-muted mb-0">
                 {m?.mapLayers.customMapsEmptyMessage}
               </p>
             ) : (
-              <ListGroup>
-                {sortedLayers.map((def) => (
-                  <ListGroup.Item
-                    key={def.type}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <IconSpecGlyph
-                      spec={def.iconSpec}
-                      fallback={<MdDashboardCustomize />}
-                    />
-
-                    <div className="flex-grow-1 me-2 min-w-0">
-                      <div>{def.name || `{${def.type}}`}</div>
-
-                      <small className="text-muted">
-                        <span className="text-nowrap">
-                          {m?.mapLayers.technologies[def.technology] ??
-                            def.technology}
-                        </span>
-                        {' · '}
-                        <span className="text-nowrap">
-                          {m?.mapLayers.layer[def.layer]}
-                        </span>
-                      </small>
-                    </div>
-
-                    <div className="flex-shrink-0">
-                      <ResponsiveActions
-                        size="sm"
-                        align="end"
-                        toggleLabel={m?.general.actions}
-                      >
-                        <Action
-                          icon={<FaEye />}
-                          label={m?.mapLayers.activate}
-                          variant="outline-primary"
-                          active={activeLayers.includes(def.type)}
-                          onClick={() =>
-                            dispatch(mapToggleLayer({ type: def.type }))
-                          }
-                          showFrom="sm"
-                        />
-
-                        <Action
-                          icon={<FaPencilAlt />}
-                          label={m?.general.modify}
-                          requiresOnline={signedIn}
-                          onClick={() => handleEditClick(def.type)}
-                          showFrom="sm"
-                        />
-
-                        <ActionDivider />
-
-                        <Action
-                          icon={<FaTrash />}
-                          label={m?.general.delete}
-                          variant="danger"
-                          requiresOnline={signedIn}
-                          onClick={() => handleDeleteClick(def)}
-                          showFrom="sm"
-                        />
-                      </ResponsiveActions>
-                    </div>
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
+              <ListGroup>{sortedItems.map(renderItem)}</ListGroup>
             )}
           </Modal.Body>
 
@@ -287,7 +587,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
             <Button
               variant="primary"
               disabled={!canSaveSettings}
-              onClick={handleAddClick}
+              onClick={() => handleAddClick()}
             >
               <FaPlus /> {m?.mapLayers.addCustomMap}
             </Button>
@@ -299,6 +599,25 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
             </Button>
           </Modal.Footer>
         </>
+      ) : view.mode === 'combination' ? (
+        <>
+          <Modal.Body>
+            {combinationDraft && (
+              <MapCombinationForm
+                value={combinationDraft}
+                editing={mapCombinations.some(
+                  (c) => c.id === combinationDraft.id,
+                )}
+                onChange={setCombinationDraft}
+                onPickTechnology={handleAddClick}
+              />
+            )}
+
+            {visibilityFields}
+          </Modal.Body>
+
+          {formFooter(handleSaveCombination, canSaveCombination)}
+        </>
       ) : (
         <>
           <Modal.Body>
@@ -306,37 +625,15 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
               key={draftType}
               type={draftType}
               value={editingValue}
+              start={view.mode === 'add' ? view.start : undefined}
               onChange={setDraft}
+              onPickCombination={addCombination}
             />
 
-            <div className="mt-3">
-              <LayerVisibilityFields
-                disabled={!canSaveSettings}
-                showInMenu={showInMenu}
-                showInToolbar={showInToolbar}
-                onChange={(v) => {
-                  setShowInMenu(v.showInMenu);
-                  setShowInToolbar(v.showInToolbar);
-                }}
-              />
-            </div>
+            {visibilityFields}
           </Modal.Body>
 
-          <Modal.Footer>
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              disabled={!draft || !canSaveSettings}
-            >
-              <FaCheck /> {m?.general.save}
-            </Button>
-
-            <OfflineBadge offline={!canSaveSettings} />
-
-            <Button variant="dark" onClick={goToList}>
-              <FaTimes /> {m?.general.cancel}
-            </Button>
-          </Modal.Footer>
+          {formFooter(handleSave, Boolean(draft))}
         </>
       )}
     </Modal>

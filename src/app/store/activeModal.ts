@@ -93,8 +93,10 @@ export type ModalId = z.infer<typeof ModalIdSchema>;
  * at a time. `null` means no modal.
  */
 export type ActiveModal =
-  | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps'> }
+  | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps' | 'custom-maps'> }
   | { type: 'my-maps'; add?: boolean }
+  /** `addCombination` opens the form filled from the map as it is. */
+  | { type: 'custom-maps'; addCombination?: boolean }
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
@@ -188,17 +190,16 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
  * few call sites that open a modal chosen at runtime.
  *
  * Each branch returns a literal that TypeScript checks against `ActiveModal`,
- * so the value is always a valid member (no cast). The `my-maps` and
- * `tracking-watched` branches narrow those two ids off — their members carry an
- * optional field — leaving the default's `modalId` matching the catch-all
- * member exactly. A `ModalId` that gained a *required* field would then fail to
- * type-check here, forcing it to be handled rather than silently producing an
- * incomplete modal.
+ * so the value is always a valid member (no cast). The first branch narrows off
+ * the ids whose members carry an optional field, leaving the default's
+ * `modalId` matching the catch-all member exactly. A `ModalId` that gained a
+ * *required* field would then fail to type-check here, forcing it to be handled
+ * rather than silently producing an incomplete modal.
  */
 export function modalOf(modalId: ModalId): ActiveModal {
   switch (modalId) {
     case 'my-maps':
-      return { type: modalId };
+    case 'custom-maps':
     case 'tracking-watched':
       return { type: modalId };
     default:

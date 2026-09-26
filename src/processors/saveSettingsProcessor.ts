@@ -5,10 +5,16 @@ import {
   setActiveModal,
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootAction } from '@app/store/rootAction.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { bumpPictureCacheBust } from '@features/auth/pictureCacheBust.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
-import { mapToggleLayer } from '@features/map/model/actions.js';
+import {
+  mapApplyCombination,
+  mapToggleLayer,
+} from '@features/map/model/actions.js';
+import { accountSettingsOf } from '@features/map/model/reducer.js';
+import { activeCombinationsSelector } from '@features/map/model/selectors.js';
 import { loadMapSettingsMessages } from '@features/mapSettings/translations/loadMapSettingsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -17,7 +23,19 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,
   handle: async ({ dispatch, getState, action, toastError }) => {
     try {
-      const { settings, user, keepOpen, activateLayerType } = action.payload;
+      const {
+        settings,
+        user,
+        keepOpen,
+        activateLayerType,
+        activateCombination,
+      } = action.payload;
+
+      // The API replaces settings whole, so a save sends all of them.
+      const mergedSettings = settings && {
+        ...accountSettingsOf(getState().map),
+        ...settings,
+      };
 
       if (getState().auth.user) {
         await httpRequest({
@@ -28,7 +46,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
           cancelActions: [setActiveModal, saveSettings],
           data: {
             ...user,
-            settings,
+            settings: mergedSettings,
           },
         });
 
@@ -64,32 +82,56 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
         }
       }
 
+      // After the request, which the map may have changed under, and before
+      // the saved version replaces the combination being saved.
+      const previous = activeCombinationsSelector(getState()).find(
+        (c) => c.id === activateCombination,
+      );
+
       if (settings) {
         dispatch(applySettings(settings));
       }
 
       trackMatomo(['trackEvent', 'Settings', 'save']);
 
-      const offerActivate =
-        activateLayerType !== undefined &&
-        !getState().map.layers.includes(activateLayerType);
+      // An active one is re-applied, so the map shows what was just saved.
+      if (previous) {
+        dispatch(mapApplyCombination({ id: previous.id, replaces: previous }));
+      }
+
+      let messageKey = 'saveSuccess';
+
+      let activateAction: RootAction | undefined;
+
+      if (activateLayerType !== undefined) {
+        messageKey = 'customMapSaved';
+
+        if (!getState().map.layers.includes(activateLayerType)) {
+          activateAction = mapToggleLayer({
+            type: activateLayerType,
+            enable: true,
+          });
+        }
+      } else if (activateCombination !== undefined) {
+        messageKey = 'combinationSaved';
+
+        if (!previous) {
+          activateAction = mapApplyCombination({ id: activateCombination });
+        }
+      }
 
       dispatch(
         toastsAdd({
           id: 'settings.saved',
-          messageKey:
-            activateLayerType !== undefined ? 'customMapSaved' : 'saveSuccess',
+          messageKey,
           messageLoader: loadMapSettingsMessages,
           style: 'info',
-          timeout: offerActivate ? 10_000 : 5000,
-          actions: offerActivate
+          timeout: activateAction ? 10_000 : 5000,
+          actions: activateAction
             ? [
                 {
                   name: getMessages()?.mapLayers.activate ?? '',
-                  action: mapToggleLayer({
-                    type: activateLayerType,
-                    enable: true,
-                  }),
+                  action: activateAction,
                 },
               ]
             : undefined,

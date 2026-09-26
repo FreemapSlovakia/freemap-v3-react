@@ -42,7 +42,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOpenOrder } from '@shared/hooks/useOpenOrder.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
-import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import { hasShadingLayer } from '@shared/mapDefinitions.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogoEu from '@/images/freemap-logo-eu.svg';
 import fmLogoSk from '@/images/freemap-logo-sk.svg';
@@ -605,6 +605,10 @@ export function Main(): ReactElement {
 
   const layers = useAppSelector((state) => state.map.layers);
 
+  const showShadingControl = useAppSelector((state) =>
+    hasShadingLayer(state.map.layers, state.map.customLayers),
+  );
+
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
   const dataViewerElevationPrompt = useAppSelector(
@@ -1097,11 +1101,7 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={adFactory} />
               )}
 
-              {layers.some(
-                (layer) =>
-                  integratedLayerDefMap[layer]?.technology ===
-                  'parametricShading',
-              ) && (
+              {showShadingControl && (
                 <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
                   <AsyncComponent factory={shadingControlFactory} />
                 </div>

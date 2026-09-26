@@ -76,7 +76,9 @@ import {
   locateOnceProcessor,
 } from '@features/location/model/locateOnceProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
+import { combinationMarkerProcessor } from '@features/map/model/processors/combinationMarkerProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
+import { mapApplyCombinationProcessor } from '@features/map/model/processors/mapApplyCombinationProcessor.js';
 import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
@@ -203,6 +205,8 @@ export const processors = [
   objectsLookupProcessor,
   osmLoadProcessor,
   mapTypeGaProcessor,
+  mapApplyCombinationProcessor,
+  combinationMarkerProcessor,
   toastsAddProcessor,
   toastsRemoveProcessor,
   toastsRestartTimeoutProcessor,

@@ -18,7 +18,11 @@ import {
   galleryShowOnTheMap,
 } from '@features/gallery/model/actions.js';
 import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
-import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
+import {
+  mapApplyCombination,
+  mapRefocus,
+  mapToggleLayer,
+} from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
@@ -26,6 +30,7 @@ import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js'
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
+import type { Shortcut } from '@shared/types/common.js';
 import {
   clearMapFeatures,
   closeTool,
@@ -208,22 +213,19 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     (!showingModal || suspendedModal) &&
     (!window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'))
   ) {
+    const pressed = (shortcut: Shortcut | null | undefined) =>
+      shortcut &&
+      shortcut.code === event.code &&
+      Boolean(shortcut.shift) === event.shiftKey &&
+      Boolean(shortcut.ctrl) === event.ctrlKey &&
+      Boolean(shortcut.alt) === event.altKey &&
+      Boolean(shortcut.meta) === event.metaKey;
+
     const layerDef = [...state.map.customLayers, ...integratedLayerDefs].find(
       (def) => {
-        let shortcut = state.map.layersSettings[def.type]?.shortcut;
+        const shortcut = state.map.layersSettings[def.type]?.shortcut;
 
-        if (shortcut === undefined) {
-          shortcut = def.shortcut;
-        }
-
-        return (
-          shortcut &&
-          shortcut.code === event.code &&
-          Boolean(shortcut.shift) === event.shiftKey &&
-          Boolean(shortcut.ctrl) === event.ctrlKey &&
-          Boolean(shortcut.alt) === event.altKey &&
-          Boolean(shortcut.meta) === event.metaKey
-        );
+        return pressed(shortcut === undefined ? def.shortcut : shortcut);
       },
     );
 
@@ -237,6 +239,14 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
 
     if (layerType) {
       return mapToggleLayer({ type: layerType });
+    }
+
+    const combination = state.map.mapCombinations.find(({ id }) =>
+      pressed(state.map.layersSettings[id]?.shortcut),
+    );
+
+    if (combination) {
+      return mapApplyCombination({ id: combination.id, toggle: true });
     }
   }
 

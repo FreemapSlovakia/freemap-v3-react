@@ -39,6 +39,8 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
+  const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
+
   useDocumentTitle(show ? m?.mapLayers.layersConfiguration : undefined);
 
   const handleSubmit = (e: SubmitEvent) => {
@@ -62,6 +64,7 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
             setLayersSettings={setLayersSettings}
             customLayers={customLayerDefs}
             cachedMaps={cachedMaps}
+            mapCombinations={mapCombinations}
           />
         </Modal.Body>
 

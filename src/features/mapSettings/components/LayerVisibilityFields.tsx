@@ -25,24 +25,6 @@ export function LayerVisibilityFields({
   return (
     <div className="d-flex flex-wrap gap-3">
       <Form.Check
-        id="layer-show-in-menu"
-        label={
-          <>
-            {msm?.showInMenu}
-            <OfflineBadge offline={disabled} />
-          </>
-        }
-        disabled={disabled}
-        checked={showInMenu}
-        onChange={(e) =>
-          onChange({
-            showInMenu: e.currentTarget.checked,
-            showInToolbar,
-          })
-        }
-      />
-
-      <Form.Check
         id="layer-show-in-toolbar"
         label={
           <>
@@ -56,6 +38,24 @@ export function LayerVisibilityFields({
           onChange({
             showInMenu,
             showInToolbar: e.currentTarget.checked,
+          })
+        }
+      />
+
+      <Form.Check
+        id="layer-show-in-menu"
+        label={
+          <>
+            {msm?.showInMenu}
+            <OfflineBadge offline={disabled} />
+          </>
+        }
+        disabled={disabled}
+        checked={showInMenu}
+        onChange={(e) =>
+          onChange({
+            showInMenu: e.currentTarget.checked,
+            showInToolbar,
           })
         }
       />

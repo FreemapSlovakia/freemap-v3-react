@@ -11,8 +11,10 @@ import {
 import { hasLegend } from '@features/legend/legendLayers.js';
 import {
   type LayerSettings,
+  mapApplyCombination,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
+import type { MapCombination } from '@features/map/model/mapCombination.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { Chord } from '@shared/components/Chord.js';
 import type { MapLayerItemDef } from '@shared/components/MapLayerItem.js';
@@ -36,6 +38,7 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
+import { TbStack2 } from 'react-icons/tb';
 import { getDocuments } from '@/documents/index.js';
 import type { Messages } from '../translations/messagesInterface.js';
 import { type CustomLayerDef, integratedLayerDefs } from './mapDefinitions.js';
@@ -81,6 +84,7 @@ export type CommandContext = {
   /** The layers that are on. */
   layers: string[];
   customLayers: CustomLayerDef[];
+  mapCombinations: MapCombination[];
   layersSettings: Record<string, LayerSettings>;
   embedFeatures: string[];
 };
@@ -322,6 +326,22 @@ export function getCommands(ctx: CommandContext): Command[] {
         layerDef: def,
         label: def.name,
         action: mapToggleLayer({ type: def.type, enable: true }),
+      });
+    }
+
+    for (const combination of ctx.mapCombinations) {
+      add({
+        id: `combination-${combination.id}`,
+        kind: 'map',
+        layerDef: {
+          type: combination.id,
+          layer: combination.base === undefined ? 'overlay' : 'base',
+          name: combination.name,
+          iconSpec: combination.iconSpec,
+          icon: combination.iconSpec ? undefined : <TbStack2 />,
+        },
+        label: combination.name,
+        action: mapApplyCombination({ id: combination.id }),
       });
     }
   }

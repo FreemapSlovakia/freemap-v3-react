@@ -524,6 +524,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Vlastné mapy',
     addCustomMap: 'Pridať vlastnú mapu',
     activate: 'Aktivovať',
+    saveAsCombination: 'Uložiť ako kombináciu máp…',
     customMapsEmptyMessage:
       'Zatiaľ nie sú definované žiadne vlastné mapy. Pridajte jednu na zobrazenie vlastného zdroja máp.',
     base: 'Základné vrstvy',

@@ -24,6 +24,7 @@ import {
   locationSettingsInitialState,
 } from '@features/location/model/settingsReducer.js';
 import { LayerSettingsSchema } from '@features/map/model/actions.js';
+import { MapCombinationArrayCompatSchema } from '@features/map/model/mapCombination.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
@@ -97,6 +98,7 @@ export const PersistedMapSchema = z
     layers: z.array(z.string()),
     layersSettings: z.record(z.string(), LayerSettingsSchema),
     customLayers: CustomLayerDefArrayCompatSchema,
+    mapCombinations: MapCombinationArrayCompatSchema,
     legacyMapWarningSuppressions: z.array(z.string()),
     shading: ShadingSchema,
     maxZoom: z.number(),
@@ -441,6 +443,7 @@ const PERSIST: PersistEntry[] = [
       zoom: m.zoom,
       layers: m.layers,
       customLayers: m.customLayers,
+      mapCombinations: m.mapCombinations,
       legacyMapWarningSuppressions: m.legacyMapWarningSuppressions,
       shading: m.shading,
       maxZoom: m.maxZoom,

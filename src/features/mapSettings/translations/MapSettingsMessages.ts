@@ -5,5 +5,17 @@ export type MapSettingsMessages = {
   keyboardShortcut: string;
   saveSuccess: string;
   customMapSaved: string;
+  combination: string;
+  combinationSaved: string;
+  combinationHint: string;
+  updateFromCurrentMap: string;
+  baseMap: string;
+  noBaseMap: string;
+  overlays: string;
+  addOverlay: string;
+  noOverlays: string;
+  combinationTooSmall: string;
+  shading: string;
+  shadingHint: string;
   savingError: (props: { err: unknown }) => string;
 };

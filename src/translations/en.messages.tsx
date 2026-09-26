@@ -485,6 +485,7 @@ const messages: Messages = {
     customMaps: 'Custom maps',
     addCustomMap: 'Add custom map',
     activate: 'Activate',
+    saveAsCombination: 'Save as map combination…',
     customMapsEmptyMessage:
       'No custom maps defined yet. Add one to display your own map source.',
     base: 'Base layers',

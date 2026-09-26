@@ -1,10 +1,16 @@
 import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
+import {
+  combinationOpacity,
+  type MapCombination,
+} from '@features/map/model/mapCombination.js';
+import { activeCombinationsSelector } from '@features/map/model/selectors.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   type CustomLayerDef,
   flaggedCountries,
@@ -24,6 +30,7 @@ import {
   FaRegListAlt,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
+import { TbStack2 } from 'react-icons/tb';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './MapLayersSettings.module.css';
 
@@ -32,6 +39,7 @@ type Props = {
   setLayersSettings: (s: Record<string, LayerSettings>) => void;
   customLayers: CustomLayerDef[];
   cachedMaps: CachedTileMapDef[];
+  mapCombinations: MapCombination[];
 };
 
 export function MapLayersSettings({
@@ -39,10 +47,13 @@ export function MapLayersSettings({
   setLayersSettings,
   customLayers,
   cachedMaps,
+  mapCombinations,
 }: Props): ReactElement {
   const m = useMessages();
 
   const msm = useMapSettingsMessages();
+
+  const activeCombinations = useAppSelector(activeCombinationsSelector);
 
   function getName(def: { type: string; custom: boolean; name?: string }) {
     const { type } = def;
@@ -114,6 +125,25 @@ export function MapLayersSettings({
         superseededBy: undefined,
         custom: true,
       })),
+    ...mapCombinations.map((combination) => ({
+      type: combination.id,
+      layer:
+        combination.base === undefined
+          ? ('overlay' as const)
+          : ('base' as const),
+      // It keeps its opacities per layer, so has none of its own.
+      combination: true,
+      name: combination.name,
+      countries: [] as string[],
+      icon: (
+        <IconSpecGlyph spec={combination.iconSpec} fallback={<TbStack2 />} />
+      ),
+      defaultInToolbar: false,
+      // As the layer menu has it.
+      defaultInMenu: true,
+      superseededBy: undefined,
+      custom: true,
+    })),
   ];
 
   return (
@@ -160,6 +190,12 @@ export function MapLayersSettings({
       <tbody>
         {layerDefs.map((def) => {
           const { type } = def;
+
+          // Not while an active combination sets it instead.
+          const opacityEditable =
+            def.layer === 'overlay' &&
+            !('combination' in def) &&
+            combinationOpacity(activeCombinations, type) === undefined;
 
           return (
             <tr key={type}>
@@ -216,7 +252,7 @@ export function MapLayersSettings({
               </td>
 
               <td>
-                {def.layer === 'overlay' && (
+                {opacityEditable && (
                   <div>
                     <OverlayTrigger
                       trigger="click"

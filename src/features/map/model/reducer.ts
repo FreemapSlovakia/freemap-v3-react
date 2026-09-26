@@ -1,5 +1,5 @@
 import { applySettings } from '@app/store/actions.js';
-import { authSetUser } from '@features/auth/model/actions.js';
+import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import {
   cachedMapDeleted,
   cachedMapEdited,
@@ -12,7 +12,6 @@ import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import {
   type MapStateBase,
   mapRefocus,
@@ -26,6 +25,13 @@ import {
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
 } from './actions.js';
+import {
+  activeCombinations,
+  layerKinds,
+  type MapCombination,
+  withoutCombinations,
+} from './mapCombination.js';
+import { allLayerDefs } from './selectors.js';
 
 export interface MapState extends MapStateBase {
   removeGalleryOverlayOnGalleryToolQuit: boolean;
@@ -38,6 +44,7 @@ export interface MapState extends MapStateBase {
   featureScale: number;
   zoomSnap: number;
   shading: Shading;
+  mapCombinations: MapCombination[];
 }
 
 const LAT = 48.70714112;
@@ -75,6 +82,7 @@ export const mapInitialState: MapState = {
       },
     ],
   },
+  mapCombinations: [],
   // undefined = not yet fetched (unknown coverage); [] would wrongly mean
   // "covers no country" and flash out-of-coverage warnings during initial load
   countries: undefined,
@@ -97,6 +105,48 @@ function acceptZoom(state: MapState, zoom: number): number {
   return zoomSnap ? Math.round(zoom / zoomSnap) * zoomSnap : zoom;
 }
 
+type AccountSettings = Pick<
+  MapState,
+  'layersSettings' | 'customLayers' | 'mapCombinations' | 'maxZoom'
+>;
+
+/**
+ * The account's settings, of which this slice is the only copy: a save sends
+ * them all, the API storing them whole.
+ */
+export const accountSettingsOf = (map: MapState): AccountSettings => ({
+  layersSettings: map.layersSettings,
+  customLayers: map.customLayers,
+  mapCombinations: map.mapCombinations,
+  maxZoom: map.maxZoom,
+});
+
+/** Each key given replaces the slice's, even when empty. */
+function assignAccountSettings(
+  state: MapState,
+  settings: Partial<AccountSettings>,
+) {
+  if (settings.layersSettings) {
+    state.layersSettings = settings.layersSettings;
+  }
+
+  if (settings.customLayers) {
+    state.customLayers = settings.customLayers;
+  }
+
+  if (settings.mapCombinations) {
+    state.mapCombinations = settings.mapCombinations;
+  }
+
+  if (settings.maxZoom !== undefined) {
+    state.maxZoom = settings.maxZoom;
+  }
+}
+
+// Not passed to whoever signs in next.
+const resetAccountSettings = (state: MapState) =>
+  assignAccountSettings(state, accountSettingsOf(mapInitialState));
+
 export const mapReducer = createReducer(mapInitialState, (builder) =>
   builder
     .addCase(mapSuppressLegacyMapWarning, (state, action) => {
@@ -107,17 +157,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       ].push(action.payload.type);
     })
     .addCase(applySettings, (state, { payload }) => {
-      if (payload.layersSettings) {
-        state.layersSettings = payload.layersSettings;
-      }
-
-      if (payload.customLayers) {
-        state.customLayers = payload.customLayers;
-      }
-
-      if (payload.maxZoom !== undefined) {
-        state.maxZoom = payload.maxZoom;
-      }
+      assignAccountSettings(state, payload);
     })
     .addCase(gallerySetFilter, (state) => {
       if (!state.layers.includes('I')) {
@@ -133,26 +173,45 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     })
     .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
       // TODO can cache (use selector?)
-      const baseTypes = new Set(
-        [...integratedLayerDefs, ...state.customLayers, ...state.cachedMaps]
-          .filter((def) => def.layer === 'base')
-          .map((def) => def.type),
+      const kinds = layerKinds(
+        allLayerDefs(state.customLayers, state.cachedMaps),
       );
 
-      const layersSet = new Set(state.layers);
+      if (kinds.get(type) === 'base' && enable !== false) {
+        // "Make sure it's on" (the zoom-to-coverage buttons): no pick, so a
+        // combination on it stays.
+        if (enable === true && state.layers.includes(type)) {
+          return;
+        }
 
-      if (baseTypes.has(type) && enable !== false) {
-        if (layersSet.has(type)) {
+        const active = activeCombinations(
+          state.mapCombinations,
+          state.layers,
+          kinds,
+        );
+
+        // Picking a plain base map, even the combination's own, leaves a
+        // combination that has one and takes its overlays off; overlay-only
+        // ones stay.
+        const left = active.filter((c) => c.base !== undefined);
+
+        if (left.length) {
+          state.layers = withoutCombinations(state.layers, left, active);
+        }
+
+        if (state.layers.includes(type)) {
           return;
         }
 
         state.layers = [
           type,
-          ...state.layers.filter((layer) => !baseTypes.has(layer)),
+          ...state.layers.filter((layer) => kinds.get(layer) !== 'base'),
         ];
       }
       // overlay
       else {
+        const layersSet = new Set(state.layers);
+
         if (layersSet.has(type)) {
           if (enable !== true) {
             layersSet.delete(type);
@@ -196,18 +255,20 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       },
     )
     .addCase(authSetUser, (state, action) => {
-      const settings = action.payload?.settings;
+      // A session that turned out to be over, as signing out.
+      if (!action.payload) {
+        resetAccountSettings(state);
 
-      if (!settings) {
         return;
       }
 
-      state.layersSettings = settings.layersSettings ?? state.layersSettings;
-
-      state.customLayers = settings.customLayers?.length
-        ? settings.customLayers
-        : state.customLayers;
+      // Each key the account has wins, even empty, so a deletion elsewhere
+      // holds; one it lacks keeps what was set signed out.
+      if (action.payload.settings) {
+        assignAccountSettings(state, action.payload.settings);
+      }
     })
+    .addCase(authLogout, resetAccountSettings)
     .addCase(
       mapsLoaded,
       (

@@ -1,3 +1,4 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { mapSetShading } from '@features/map/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -157,6 +158,17 @@ export default function ShadingControl() {
               canRemove={id !== undefined}
               onAdd={handleAdd}
               onRemove={handleRemove}
+              onSaveAsCombination={
+                window.fmEmbedded
+                  ? undefined
+                  : () =>
+                      dispatch(
+                        setActiveModal({
+                          type: 'custom-maps',
+                          addCombination: true,
+                        }),
+                      )
+              }
             />
 
             <ShadingComponentList

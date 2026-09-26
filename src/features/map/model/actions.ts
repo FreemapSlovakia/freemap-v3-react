@@ -4,6 +4,7 @@ import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import z from 'zod';
+import type { MapCombination } from './mapCombination.js';
 
 export interface MapViewState {
   lat: number;
@@ -69,6 +70,17 @@ export const mapSetEsriAttribution = createAction<string[]>(
 );
 
 export const mapSetShading = createAction<Shading>('MAP_SET_SHADING');
+
+/**
+ * Puts a map combination's layers and shading on the map. `toggle` takes an
+ * active overlay-only one off instead, as its checkbox does; `replaces` is its
+ * previous version, whose layers go first.
+ */
+export const mapApplyCombination = createAction<{
+  id: string;
+  toggle?: boolean;
+  replaces?: MapCombination;
+}>('MAP_APPLY_COMBINATION');
 
 export const mapSetLocalPrefs = createAction<{
   resolutionScale?: number | null;

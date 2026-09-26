@@ -305,6 +305,7 @@ export type Messages = {
     customMaps: string;
     addCustomMap: string;
     activate: string;
+    saveAsCombination: string;
     customMapsEmptyMessage: string;
     base: string;
     overlay: string;
