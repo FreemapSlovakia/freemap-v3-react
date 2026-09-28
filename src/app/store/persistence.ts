@@ -69,7 +69,11 @@ import {
 } from '@shared/colorizers/modes/steepness.js';
 import { LabelVisibilitySchema } from '@shared/labelVisibility.js';
 import { LanguageSchema } from '@shared/langUtils.js';
-import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
+import {
+  CustomLayerDefArrayCompatSchema,
+  resolveLayerAliases,
+  resolveLayersSettingsAliases,
+} from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import { LatLonSchema } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
@@ -101,6 +105,7 @@ export const PersistedMapSchema = z
     mapCombinations: MapCombinationArrayCompatSchema,
     legacyMapWarningSuppressions: z.array(z.string()),
     shading: ShadingSchema,
+    shadingOnServer: z.boolean(),
     maxZoom: z.number(),
     resolutionScale: z.number().nullable(),
     featureScale: z.number(),
@@ -431,6 +436,8 @@ const PERSIST: PersistEntry[] = [
 
       return {
         ...merged,
+        layers: resolveLayerAliases(merged.layers),
+        layersSettings: resolveLayersSettingsAliases(merged.layersSettings),
         zoom: merged.zoomSnap
           ? Math.round(merged.zoom / merged.zoomSnap) * merged.zoomSnap
           : merged.zoom,
@@ -446,6 +453,7 @@ const PERSIST: PersistEntry[] = [
       mapCombinations: m.mapCombinations,
       legacyMapWarningSuppressions: m.legacyMapWarningSuppressions,
       shading: m.shading,
+      shadingOnServer: m.shadingOnServer,
       maxZoom: m.maxZoom,
       resolutionScale: m.resolutionScale,
       featureScale: m.featureScale,

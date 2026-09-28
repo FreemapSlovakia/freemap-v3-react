@@ -69,7 +69,21 @@ export const mapSetEsriAttribution = createAction<string[]>(
   'MAP_SET_ESRI_ATTRIBUTION',
 );
 
+/** The shared shading; ends its draft. */
 export const mapSetShading = createAction<Shading>('MAP_SET_SHADING');
+
+/**
+ * An edit of the shared shading the server does not render until applied;
+ * `undefined` drops it.
+ */
+export const mapSetSharedShadingDraft = createAction<Shading | undefined>(
+  'MAP_SET_SHARED_SHADING_DRAFT',
+);
+
+/** Whether shading layers are rendered on the server rather than in the browser. */
+export const mapSetShadingOnServer = createAction<boolean>(
+  'MAP_SET_SHADING_ON_SERVER',
+);
 
 /** An unsaved edit of a custom map's own shading; `undefined` drops it. */
 export const mapSetShadingDraft = createAction<{

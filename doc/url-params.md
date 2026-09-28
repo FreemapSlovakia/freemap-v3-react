@@ -22,7 +22,7 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | `map` | Viewport | r/w | `zoom/lat/lon` |
 | `geo` | Viewport via RFC 5870 geo URI | read-only | `geo:lat,lon[,ele][?z=zoom]` |
 | `layers` | Active base + overlay layers | r/w | `~`-separated layer codes (e.g. `X~I~w`) |
-| `shading` | Parametric shading | r/w | `bgColor!comp_params!…` |
+| `shading` | Parametric shading settings shared by the shading layers | r/w | `bgColor!comp_params!…`; a component's type may carry `~contrast~brightness` |
 | `custom-layers` | Custom WMS/TMS/MapLibre defs | r/w | JSON array |
 | `id` | Loaded saved-map id | r/w | map UUID |
 | `embed` | Embedded-mode feature flags | r/w | `,`-separated: `search`, `noMapSwitch`, `noLocateMe` |

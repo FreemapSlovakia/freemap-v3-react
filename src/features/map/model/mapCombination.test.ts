@@ -15,6 +15,7 @@ const known: LayerKinds = new Map([
   ['w', 'overlay'],
   ['I', 'overlay'],
   ['i', 'overlay'],
+  ['h', 'overlay'],
 ]);
 
 const a: MapCombination = {
@@ -56,6 +57,32 @@ describe('resolveCombination', () => {
         known,
       )?.overlays,
     ).toEqual([{ type: 'w' }]);
+  });
+
+  it('replaces removed layers, a base map by a base and an overlay', () => {
+    expect(
+      resolveCombination(
+        {
+          id: 'c',
+          name: 'C',
+          base: '5',
+          overlays: [{ type: 'y', opacity: 0.5 }, { type: 'w' }],
+        },
+        known,
+      ),
+    ).toEqual({
+      id: 'c',
+      name: 'C',
+      base: 'X',
+      overlays: [{ type: 'h', opacity: 0.5 }, { type: 'w' }],
+    });
+
+    expect(
+      resolveCombination(
+        { id: 'c', name: 'C', base: '8', overlays: [{ type: 'w' }] },
+        known,
+      )?.overlays,
+    ).toEqual([{ type: 'w' }, { type: 'h' }]);
   });
 
   it('drops a layer no longer of its kind', () => {

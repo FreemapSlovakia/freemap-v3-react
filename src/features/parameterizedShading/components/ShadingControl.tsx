@@ -3,21 +3,37 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   mapSetShading,
   mapSetShadingDraft,
+  mapSetShadingOnServer,
+  mapSetSharedShadingDraft,
 } from '@features/map/model/actions.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
+import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import {
   type CustomLayerDef,
   hasSharedShadingLayer,
   integratedLayerDefMap,
-  shadingSourceOf,
+  SHADING_SOURCE,
 } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { produce } from 'immer';
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Card, Form } from 'react-bootstrap';
-import { FaCheck, FaUndo } from 'react-icons/fa';
+import {
+  Button,
+  Card,
+  Dropdown,
+  Form,
+  ToggleButton,
+  ToggleButtonGroup,
+} from 'react-bootstrap';
+import { FaAngleDown, FaAngleUp, FaCheck, FaUndo } from 'react-icons/fa';
+import { GiHills } from 'react-icons/gi';
 import { useDispatch } from 'react-redux';
 import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
 import { createDefaultShadingComponent } from '../model/createShadingComponent.js';
@@ -46,6 +62,11 @@ import { ShadingToolbar } from './ShadingToolbar.js';
 // Out of the component, where the compiler takes it for a call during render.
 const newComponentId = () => Math.random();
 
+/** The shared shading's key in the picker, whose own target is ''. */
+const SHARED = '#shared';
+
+const hasWebGpu = 'gpu' in navigator;
+
 export default function ShadingControl() {
   const m = useMessages();
 
@@ -59,6 +80,10 @@ export default function ShadingControl() {
 
   const drafts = useAppSelector((state) => state.map.shadingDrafts);
 
+  const sharedDraft = useAppSelector((state) => state.map.sharedShadingDraft);
+
+  const onServer = useAppSelector((state) => state.map.shadingOnServer);
+
   const canSaveSettings = useCanSaveSettings();
 
   // Custom shading maps on the map that have shading of their own; the rest
@@ -71,11 +96,6 @@ export default function ShadingControl() {
   );
 
   const shared = hasSharedShadingLayer(layers, customLayers);
-
-  // The built-in layers the shared shading is drawn on, custom maps' sources included.
-  const sharedSources = layers
-    .filter((type) => !ownShadingMaps.some((def) => def.type === type))
-    .map((type) => shadingSourceOf(type, customLayers));
 
   // '' stands for the shared shading.
   const [pickedTarget, setPickedTarget] = useState('');
@@ -93,19 +113,17 @@ export default function ShadingControl() {
 
   const draft = targetDef && drafts[targetDef.type];
 
-  // The built-in shading layers are all overlays.
   const isBase = targetDef?.layer === 'base';
 
   const shading = targetDef
     ? effectiveShading(targetDef, drafts, sharedShading)
-    : sharedShading;
+    : (sharedDraft ?? sharedShading);
 
   // A base map always has one; an overlay's is optional.
   const showsBackground = isBase || hasBackground(shading);
 
-  const colorReliefMax = colorReliefMaxElevation(
-    targetDef ? [shadingSourceOf(targetDef.type, customLayers)] : sharedSources,
-  );
+  // Every shading layer draws the terrain of the one built-in source.
+  const colorReliefMax = colorReliefMaxElevation([SHADING_SOURCE]);
 
   const dispatch = useDispatch();
 
@@ -113,7 +131,9 @@ export default function ShadingControl() {
     dispatch(
       targetDef
         ? mapSetShadingDraft({ type: targetDef.type, shading: next })
-        : mapSetShading(next),
+        : onServer
+          ? mapSetSharedShadingDraft(next)
+          : mapSetShading(next),
     );
   }
 
@@ -134,12 +154,6 @@ export default function ShadingControl() {
     );
   }
 
-  // The built-in layer the shared shading is shown on, for a map saved from it.
-  const sharedSource =
-    sharedSources.find(
-      (type) => integratedLayerDefMap[type]?.technology === 'parametricShading',
-    ) ?? 'h';
-
   const [pickedId, setId] = useState<number>();
 
   // Only while the shading being edited has it: the target can switch, and a
@@ -151,6 +165,10 @@ export default function ShadingControl() {
   const id = selectedComponent?.id;
 
   const [modalKind, setModalKind] = useState<ParameterizedKind | null>(null);
+
+  const [collapsed, setCollapsed] = usePersistentBoolean(
+    'fm.shadingControl.collapsed',
+  );
 
   const sc = useScrollClasses('vertical');
 
@@ -258,6 +276,59 @@ export default function ShadingControl() {
     setModalKind(null);
   }
 
+  // What the panel is, and its collapse toggle; all that shows when collapsed.
+  const header = (
+    <div className="d-flex align-items-center gap-2">
+      <GiHills />
+
+      <span className="flex-grow-1 text-nowrap">
+        {m?.mapLayers.letters[SHADING_SOURCE]}
+      </span>
+
+      <LongPressTooltip
+        label={collapsed ? m?.general.expand : m?.general.collapse}
+      >
+        {({ props }) => (
+          <Button
+            variant="dark"
+            onClick={() => setCollapsed((collapsed) => !collapsed)}
+            {...props}
+          >
+            {collapsed ? <FaAngleDown /> : <FaAngleUp />}
+          </Button>
+        )}
+      </LongPressTooltip>
+    </div>
+  );
+
+  const targetDefOf = (t: string) =>
+    t === ''
+      ? integratedLayerDefMap[SHADING_SOURCE]
+      : ownShadingMaps.find((def) => def.type === t);
+
+  /** A target in the open menu, as its layer: icon, name and marks. */
+  function targetItem(t: string) {
+    const def = targetDefOf(t);
+
+    return def ? <MapLayerItem def={def} /> : null;
+  }
+
+  /** A target's bare name, which the closed picker can cut short. */
+  function targetName(t: string) {
+    const def = targetDefOf(t);
+
+    return def && 'name' in def && def.name
+      ? def.name
+      : m?.mapLayers.letters[def?.type ?? ''];
+  }
+
+  // The shared shading's edits wait for Apply while the server renders them.
+  const applies = !targetDef && onServer;
+
+  // Shading whose edits wait for a commit. Its buttons stay, disabled while
+  // there is nothing to commit, so editing never shifts the layout.
+  const committable = applies || Boolean(targetDef);
+
   return (
     <>
       <Card body className={`${classes.shadingControl} mt-2 ms-2`}>
@@ -270,104 +341,209 @@ export default function ShadingControl() {
             onSubmit={(e) => e.preventDefault()}
             style={{ width: 'fit-content' }}
           >
-            {targets.length > 1 && (
-              <Form.Select
-                className="mb-2"
-                size="sm"
-                value={target}
-                onChange={(e) => setPickedTarget(e.currentTarget.value)}
-              >
-                {shared && <option value="">{sm?.sharedShading}</option>}
+            {header}
 
-                {ownShadingMaps.map((def) => (
-                  <option key={def.type} value={def.type}>
-                    {def.name ?? def.type}
-                  </option>
-                ))}
-              </Form.Select>
-            )}
-
-            <ShadingToolbar
-              canRemove={id !== undefined || (!isBase && showsBackground)}
-              canAddBackground={!showsBackground}
-              onAdd={handleAdd}
-              onRemove={handleRemove}
-              onSaveAsMap={
-                window.fmEmbedded || targetDef
-                  ? undefined
-                  : () =>
-                      dispatch(
-                        setActiveModal({
-                          type: 'custom-maps',
-                          addShadingMap: {
-                            source: sharedSource,
-                            shading: sharedShading,
-                          },
-                        }),
-                      )
-              }
-            />
-
-            {draft && (
-              <div className="d-flex gap-1 mt-2">
-                <Button
-                  size="sm"
-                  variant="primary"
-                  disabled={!canSaveSettings}
-                  onClick={handleSave}
+            {!collapsed && (
+              <>
+                {/* As wide as the rest of the panel, never wider. */}
+                <ToggleButtonGroup
+                  type="radio"
+                  name="shading-renderer"
+                  className="mt-2 d-flex"
+                  style={{ width: 0, minWidth: '100%' }}
+                  value={onServer ? 'server' : 'browser'}
+                  onChange={(value) =>
+                    dispatch(mapSetShadingOnServer(value === 'server'))
+                  }
                 >
-                  <FaCheck /> {m?.general.save}
-                </Button>
+                  <ToggleButton
+                    id="shading-renderer-browser"
+                    value="browser"
+                    variant="outline-primary"
+                    className="flex-grow-1 text-nowrap"
+                    disabled={!hasWebGpu}
+                  >
+                    {sm?.inBrowser}
+                  </ToggleButton>
 
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => dispatch(mapSetShadingDraft({ type: target }))}
-                >
-                  <FaUndo /> {sm?.revert}
-                </Button>
-              </div>
-            )}
+                  <ToggleButton
+                    id="shading-renderer-server"
+                    value="server"
+                    variant="outline-primary"
+                    className="flex-grow-1 text-nowrap"
+                  >
+                    {sm?.onServer}
+                  </ToggleButton>
+                </ToggleButtonGroup>
 
-            <ShadingComponentList
-              shading={shading}
-              showBackground={showsBackground}
-              selectedId={id}
-              onSelect={setId}
-            />
+                {targets.length > 1 && (
+                  // As wide as the rest of the panel, never wider; a long
+                  // name ends in an ellipsis instead.
+                  <Dropdown
+                    className="mt-2"
+                    style={{ width: 0, minWidth: '100%' }}
+                    onSelect={(key) =>
+                      key !== null && setPickedTarget(key === SHARED ? '' : key)
+                    }
+                  >
+                    <Dropdown.Toggle as={SelectToggle} className="w-100">
+                      <span className="d-block text-truncate">
+                        {targetName(target)}
+                      </span>
+                    </Dropdown.Toggle>
 
-            <hr />
+                    {/* As wide as the longest name: the narrow panel would
+                        otherwise wrap it. */}
+                    <FmDropdownMenu
+                      popperConfig={sameMinWidthPopperConfig}
+                      style={{ width: 'max-content' }}
+                    >
+                      {targets.map((t) => (
+                        <Dropdown.Item
+                          className="text-nowrap"
+                          as="button"
+                          type="button"
+                          key={t || SHARED}
+                          eventKey={t || SHARED}
+                          active={t === target}
+                        >
+                          {targetItem(t)}
+                        </Dropdown.Item>
+                      ))}
+                    </FmDropdownMenu>
+                  </Dropdown>
+                )}
 
-            {shading.components.some(
-              (component) => MANAGEABLE_TYPES[component.type],
-            ) && (
-              <ShadingComponentControl
-                components={shading.components}
-                onChange={(components) =>
-                  setShading({ ...shading, components })
-                }
-                selectedId={id}
-                onSelect={setId}
-              />
-            )}
+                {committable && (
+                  <>
+                    {/* As wide as the rest of the panel, never wider: the
+                        buttons wrap instead of stretching it. */}
+                    <div
+                      className="d-flex flex-wrap gap-1 mt-2"
+                      style={{ width: 0, minWidth: '100%' }}
+                    >
+                      {applies && (
+                        <>
+                          <Button
+                            variant="primary"
+                            disabled={!sharedDraft}
+                            onClick={() =>
+                              sharedDraft &&
+                              dispatch(mapSetShading(sharedDraft))
+                            }
+                          >
+                            <FaCheck /> {sm?.apply}
+                          </Button>
 
-            {selectedComponent && (
-              <ShadingComponentParams
-                shading={shading}
-                component={selectedComponent}
-                onChange={setShading}
-              />
-            )}
+                          <LongPressTooltip label={sm?.revert}>
+                            {({ props }) => (
+                              <Button
+                                variant="secondary"
+                                disabled={!sharedDraft}
+                                onClick={() =>
+                                  dispatch(mapSetSharedShadingDraft(undefined))
+                                }
+                                {...props}
+                              >
+                                <FaUndo />
+                              </Button>
+                            )}
+                          </LongPressTooltip>
+                        </>
+                      )}
 
-            {(selectedComponent || showsBackground) && (
-              <ShadingColorPicker
-                shading={shading}
-                selectedId={id}
-                component={selectedComponent}
-                colorReliefMax={colorReliefMax}
-                opaqueBackground={isBase}
-                onChange={setShading}
-              />
+                      {targetDef && (
+                        <>
+                          <Button
+                            variant="primary"
+                            disabled={!draft || !canSaveSettings}
+                            onClick={handleSave}
+                          >
+                            <FaCheck /> {m?.general.save}
+                          </Button>
+
+                          <LongPressTooltip label={sm?.revert}>
+                            {({ props }) => (
+                              <Button
+                                variant="secondary"
+                                disabled={!draft}
+                                onClick={() =>
+                                  dispatch(mapSetShadingDraft({ type: target }))
+                                }
+                                {...props}
+                              >
+                                <FaUndo />
+                              </Button>
+                            )}
+                          </LongPressTooltip>
+                        </>
+                      )}
+                    </div>
+
+                    <hr />
+                  </>
+                )}
+
+                <ShadingToolbar
+                  canRemove={id !== undefined || (!isBase && showsBackground)}
+                  canAddBackground={!showsBackground}
+                  onAdd={handleAdd}
+                  onRemove={handleRemove}
+                  onSaveAsMap={
+                    window.fmEmbedded || targetDef
+                      ? undefined
+                      : () =>
+                          dispatch(
+                            setActiveModal({
+                              type: 'custom-maps',
+                              // What is being edited, unapplied changes included.
+                              addShadingMap: { shading },
+                            }),
+                          )
+                  }
+                />
+
+                <ShadingComponentList
+                  shading={shading}
+                  showBackground={showsBackground}
+                  selectedId={id}
+                  onSelect={setId}
+                />
+
+                <hr />
+
+                {shading.components.some(
+                  (component) => MANAGEABLE_TYPES[component.type],
+                ) && (
+                  <ShadingComponentControl
+                    components={shading.components}
+                    onChange={(components) =>
+                      setShading({ ...shading, components })
+                    }
+                    selectedId={id}
+                    onSelect={setId}
+                  />
+                )}
+
+                {selectedComponent && (
+                  <ShadingComponentParams
+                    shading={shading}
+                    component={selectedComponent}
+                    onChange={setShading}
+                  />
+                )}
+
+                {(selectedComponent || showsBackground) && (
+                  <ShadingColorPicker
+                    shading={shading}
+                    selectedId={id}
+                    component={selectedComponent}
+                    colorReliefMax={colorReliefMax}
+                    opaqueBackground={isBase}
+                    onChange={setShading}
+                  />
+                )}
+              </>
             )}
           </Form>
         </div>

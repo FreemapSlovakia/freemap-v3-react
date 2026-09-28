@@ -127,11 +127,21 @@ export function effectiveShading(
 export const hasBackground = (shading: Shading) =>
   shading.backgroundColor[3] > 0;
 
+/**
+ * `bg!type_params!…`, as the URL and the terrain-tiles server read it. Contrast
+ * and brightness ride on the type as `type~contrast~brightness`, only when not
+ * the defaults, so links from before them still read.
+ */
 export function serializeShading(shading: Shading) {
   const parts = [Color(shading.backgroundColor).hexa().slice(1)];
 
   for (const component of shading.components) {
-    const sub: string[] = [component.type];
+    const levels =
+      component.contrast !== 1 || component.brightness !== 0
+        ? `~${component.contrast.toFixed(2)}~${component.brightness.toFixed(2)}`
+        : '';
+
+    const sub: string[] = [component.type + levels];
 
     switch (component.type) {
       case 'hillshade-classic':
@@ -167,4 +177,99 @@ export function serializeShading(shading: Shading) {
   }
 
   return parts.join('!');
+}
+
+function parseColor(color = '00000000'): Color {
+  try {
+    const bands = Color(`#${color}`).array();
+
+    if (bands.length === 3) {
+      bands.push(1);
+    }
+
+    return bands as Color;
+  } catch {
+    console.error(`error parsing color: ${color}`);
+
+    return [0, 0, 0, 1];
+  }
+}
+
+/** The inverse of `serializeShading`; an unknown component is skipped. */
+export function parseShading(serialized: string): Shading {
+  const [bg, ...comps] = serialized.split('!');
+
+  const components = comps
+    .map((component): ShadingComponent | undefined => {
+      const [typeAndLevels, ...params] = component.split('_');
+
+      const [type, contrast, brightness] = typeAndLevels.split('~');
+
+      let colorStops: ColorStop[];
+
+      switch (type) {
+        case 'hillshade-classic':
+        case 'hillshade-igor':
+        case 'slope-classic':
+        case 'slope-igor':
+          colorStops = [{ value: 0, color: parseColor(params.pop()) }];
+
+          break;
+        case 'aspect':
+        case 'color-relief':
+          colorStops = [];
+
+          for (let i = 0; i < params.length; i += 2) {
+            colorStops.push({
+              value: Number(params[i]),
+              color: parseColor(params[i + 1]),
+            });
+          }
+
+          break;
+        default:
+          return undefined;
+      }
+
+      const base = {
+        id: Math.random(),
+        contrast: contrast === undefined ? 1 : Number(contrast),
+        brightness: brightness === undefined ? 0 : Number(brightness),
+        colorStops,
+      };
+
+      const angle = () => Number(params.shift()) * (Math.PI / 180);
+
+      switch (type) {
+        case 'hillshade-classic':
+          return {
+            ...base,
+            type,
+            azimuth: angle(),
+            elevation: angle(),
+            exaggeration: Number(params.shift()),
+          };
+        case 'hillshade-igor':
+          return {
+            ...base,
+            type,
+            azimuth: angle(),
+            exaggeration: Number(params.shift()),
+          };
+        case 'slope-classic':
+          return {
+            ...base,
+            type,
+            elevation: angle(),
+            exaggeration: Number(params.shift()),
+          };
+        case 'slope-igor':
+          return { ...base, type, exaggeration: Number(params.shift()) };
+        default:
+          return { ...base, type };
+      }
+    })
+    .filter((component) => component !== undefined);
+
+  return { backgroundColor: parseColor(bg), components };
 }

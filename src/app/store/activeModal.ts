@@ -99,7 +99,7 @@ export type ActiveModal =
   /** `addShadingMap` opens the form for a shading map with these settings. */
   | {
       type: 'custom-maps';
-      addShadingMap?: { source: string; shading: Shading };
+      addShadingMap?: { shading: Shading };
     }
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }

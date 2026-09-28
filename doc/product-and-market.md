@@ -68,10 +68,10 @@ Balkans, and the German states outside the five above. Do not use the terrain ho
 those markets. Germany is now a regional case rather than a blank: Bavaria is covered,
 which is where the German terrain claim is strongest.
 
-Country-specific extras are **Slovakia-heavy**: detailed shading (`7`), terrain/surface
-shading (`5`,`6`), cadastre, forest types, tree composition, geology, hydrochemistry,
-NLC forest tracks — all `sk`. Czechia gets detailed shading (`8`) and parametric
-shading (`z`). Aerial `Z` is `sk`+`cz`; aerial `S` (Esri) is worldwide.
+Country-specific extras are **Slovakia-heavy**: detailed shading (`7`), surface
+shading (`6`), cadastre, forest types, tree composition, geology, hydrochemistry,
+NLC forest tracks — all `sk`. Parametric shading (`h`) covers SK, CZ, AT and CH.
+Aerial `Z` is `sk`+`cz`; aerial `S` (Esri) is worldwide.
 
 **Objects/POI API and the Photon geocoder: Europe only.**
 

@@ -81,9 +81,7 @@ import {
   serializePanoramaViewpoint,
 } from '@features/panorama/panoramaUrl.js';
 import {
-  type ColorStop,
-  type Color as ColorType,
-  type ShadingComponent,
+  parseShading,
   serializeShading,
 } from '@features/parameterizedShading/model/Shading.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -150,7 +148,6 @@ import {
   serializeDrawingLine,
   serializeDrawingPoint,
 } from '@shared/urlSerialization.js';
-import Color from 'color';
 import type { Dispatch } from 'redux';
 import {
   closeTool,
@@ -688,112 +685,7 @@ export function handleLocationChange(store: MyStore): void {
     hasSharedShadingLayer(map.layers, map.customLayers) &&
     shading !== serializeShading(map.shading)
   ) {
-    function toColor(color = '00000000') {
-      try {
-        const bands = Color(`#${color}`).array();
-
-        if (bands.length === 3) {
-          bands.push(1);
-        }
-
-        return bands as ColorType;
-      } catch {
-        console.error(`error parsing color: ${color}`);
-
-        return [0, 0, 0, 1] as ColorType;
-      }
-    }
-
-    const [bg, ...comps] = shading.split('!');
-
-    const components: ShadingComponent[] = comps
-      .map((component) => {
-        const [type, ...params] = component.split('_');
-
-        let colorStops: ColorStop[];
-
-        switch (type) {
-          case 'hillshade-classic':
-          case 'hillshade-igor':
-          case 'slope-classic':
-          case 'slope-igor':
-            colorStops = [
-              {
-                value: 0,
-                color: toColor(params.pop()),
-              },
-            ];
-
-            break;
-          case 'aspect':
-          case 'color-relief':
-            colorStops = [];
-
-            for (let i = 0; i < params.length; i += 2) {
-              colorStops.push({
-                value: Number(params[i]),
-                color: toColor(params[i + 1]),
-              });
-            }
-            break;
-          default:
-            return undefined;
-        }
-
-        const base = {
-          id: Math.random(),
-          brightness: 0,
-          contrast: 1,
-          colorStops,
-        };
-
-        switch (type) {
-          case 'hillshade-classic':
-            return {
-              ...base,
-              type,
-              azimuth: Number(params.shift()) * (Math.PI / 180),
-              elevation: Number(params.shift()) * (Math.PI / 180),
-              exaggeration: Number(params.shift()),
-            };
-          case 'hillshade-igor':
-            return {
-              ...base,
-              type,
-              azimuth: Number(params.shift()) * (Math.PI / 180),
-              exaggeration: Number(params.shift()),
-            };
-          case 'slope-classic':
-            return {
-              ...base,
-              type,
-              elevation: Number(params.shift()) * (Math.PI / 180),
-              exaggeration: Number(params.shift()),
-            };
-          case 'slope-igor':
-            return {
-              ...base,
-              type,
-              exaggeration: Number(params.shift()),
-            };
-          case 'aspect':
-          case 'color-relief':
-            return {
-              ...base,
-              type,
-            };
-          default:
-            return undefined;
-        }
-      })
-      .filter((a): a is ShadingComponent => Boolean(a));
-
-    dispatch(
-      mapSetShading({
-        backgroundColor: toColor(bg),
-        components,
-      }),
-    );
+    dispatch(mapSetShading(parseShading(shading)));
   }
 
   {

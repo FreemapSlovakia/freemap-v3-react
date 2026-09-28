@@ -3,6 +3,10 @@ import type { ShadingMessages } from './ShadingMessages.js';
 
 const de: DeepPartialWithRequiredObjects<ShadingMessages> = {
   add: 'Hinzufügen',
+  apply: 'Anwenden',
+  inBrowser: 'Im Browser',
+  onServer: 'Auf dem Server',
+  revert: 'Änderungen verwerfen',
   background: 'Hintergrund',
   contour: 'Höhenlinie',
   fogInversion: 'Nebel / Inversion',

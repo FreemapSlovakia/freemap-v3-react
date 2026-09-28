@@ -403,7 +403,8 @@ class LShadingLayer extends LGridLayer {
 
       dw.u32(shading.components.length);
       dw.u32(zoom);
-      dw.pad32(2);
+      dw.u32(y);
+      dw.pad32(1);
 
       writeColor(shading.backgroundColor);
 

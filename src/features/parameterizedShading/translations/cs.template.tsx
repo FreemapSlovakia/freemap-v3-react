@@ -3,7 +3,9 @@ import type { ShadingMessages } from './ShadingMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<ShadingMessages> = {
   add: 'Přidat',
-  sharedShading: 'Vestavěné vrstvy stínování',
+  apply: 'Použít',
+  inBrowser: 'V prohlížeči',
+  onServer: 'Na serveru',
   revert: 'Vrátit změny',
   background: 'Pozadí',
   contour: 'Vrstevnice',

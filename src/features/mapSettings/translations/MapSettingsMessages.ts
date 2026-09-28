@@ -9,7 +9,6 @@ export type MapSettingsMessages = {
   combinationSaved: string;
   updateFromCurrentMap: string;
   baseMap: string;
-  shadingSource: string;
   shadingMapHint: string;
   overlays: string;
   addOverlay: string;

@@ -24,6 +24,7 @@ import {
   OSM_DATA_ATTR,
   OSRM_ROUTING_ATTR,
   RENDERER_LAYER_TYPES,
+  SHADING_SOURCE,
 } from '../mapDefinitions.js';
 
 type Props = { unknown: string };
@@ -210,14 +211,12 @@ function useCategorizedAttribution(
     }
   }
 
-  // A custom shading map draws its built-in source's data.
+  // A custom shading map draws the shading source's data.
   for (const def of customLayers) {
-    if (
-      layers.includes(def.type) &&
-      def.technology === 'parametricShading' &&
-      def.source
-    ) {
-      guessed.push(...(integratedLayerDefMap[def.source]?.attribution ?? []));
+    if (layers.includes(def.type) && def.technology === 'parametricShading') {
+      guessed.push(
+        ...(integratedLayerDefMap[SHADING_SOURCE]?.attribution ?? []),
+      );
     }
   }
 

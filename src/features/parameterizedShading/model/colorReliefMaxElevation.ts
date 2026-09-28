@@ -1,8 +1,6 @@
-/** Rounded-up highest elevation (in metres) covered by each parametric-shading overlay. */
+/** Rounded-up highest elevation (in metres) covered by each parametric-shading layer. */
 const OVERLAY_MAX_ELEVATION: Partial<Record<string, number>> = {
-  h: 5650, // Europe (GEDTM30) — Mt Elbrus 5642 m
-  y: 2660, // Slovakia — Gerlachovský štít 2655 m
-  z: 1610, // Czechia — Sněžka 1603 m
+  h: 5650, // GEDTM30 reaches the Caucasus — Elbrus 5642 m
 };
 
 /** Highest elevation any active parametric-shading overlay can show; 4900 m when none is active. */

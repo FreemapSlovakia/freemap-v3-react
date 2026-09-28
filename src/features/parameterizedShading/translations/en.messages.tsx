@@ -2,7 +2,9 @@ import type { ShadingMessages } from './ShadingMessages.js';
 
 const en: ShadingMessages = {
   add: 'Add',
-  sharedShading: 'Built-in shading layers',
+  apply: 'Apply',
+  inBrowser: 'In browser',
+  onServer: 'On server',
   revert: 'Revert',
   background: 'Background',
   contour: 'Contour',

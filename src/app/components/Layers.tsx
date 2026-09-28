@@ -23,15 +23,18 @@ import {
   type LayerDef,
   RENDERER_LAYER_TYPES,
   resolveLayerOpacity,
+  serverShadingUrl,
 } from '@shared/mapDefinitions.js';
 import {
   scheduleTileAttribution,
   tileAttributionHandlers,
 } from '@shared/tileAttribution.js';
 import { wmsBaseUrl } from '@shared/wms.js';
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import transparent1x1 from '@/images/1x1-transparent.png';
+import white1x1 from '@/images/1x1-white.png';
 import missingTile from '@/images/missing-tile-256x256.png';
 import { AsyncComponent } from './AsyncComponent.js';
 import { ColorLayer } from './ColorLayer.js';
@@ -90,6 +93,8 @@ export function Layers(): ReactElement | null {
 
   const shadingDrafts = useAppSelector((state) => state.map.shadingDrafts);
 
+  const shadingOnServer = useAppSelector((state) => state.map.shadingOnServer);
+
   const galleryFilter = useAppSelector((state) => state.gallery.filter);
 
   const galleryColorizeBy = useAppSelector(
@@ -131,7 +136,31 @@ export function Layers(): ReactElement | null {
   // `fixedScale` pins a tile layer to one `@Nx` variant — a cached map holds
   // exactly one, so the screen's DPI and the resolution/feature-scale
   // preferences must not be allowed to ask for another.
-  function getLayer(layerDef: LayerDef, fixedScale?: number) {
+  // `densityOnly`: the tiles follow the display's density alone, never the
+  // feature-scale preference, as shading drawn in the browser does.
+  function getLayer(
+    layerDef: LayerDef,
+    fixedScale?: number,
+    densityOnly = false,
+  ): ReactNode {
+    // Rendered on the server, a shading layer is plain tiles of its applied or
+    // saved shading; drafts are not drawn.
+    if (layerDef.technology === 'parametricShading' && shadingOnServer) {
+      const { source: _, shading: own, ...rest } = layerDef;
+
+      return getLayer(
+        {
+          ...rest,
+          technology: 'tile',
+          url: serverShadingUrl(own ?? shading, layerDef.layer),
+          errorTileUrl:
+            layerDef.layer === 'overlay' ? transparent1x1 : white1x1,
+        } as LayerDef,
+        fixedScale,
+        true,
+      );
+    }
+
     const { type, minZoom } = layerDef;
 
     const opacity = resolveLayerOpacity(
@@ -382,7 +411,7 @@ export function Layers(): ReactElement | null {
     }
 
     if (layerDef.technology === 'tile') {
-      const effFeatureScale = isHdpi ? 1 : featureScale;
+      const effFeatureScale = isHdpi || densityOnly ? 1 : featureScale;
 
       const autoTileScale = (window.devicePixelRatio || 1) * effFeatureScale;
 

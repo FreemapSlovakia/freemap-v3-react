@@ -641,6 +641,11 @@ const config: Configuration = {
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
+      // terrain-tiles: elevation for parametric shading, and shading rendered
+      // on the server.
+      FM_TERRAIN_TILES_URL:
+        process.env['FM_TERRAIN_TILES_URL'] ||
+        'https://terrain.tiles.freemap.sk',
       // Own osm2pgsql-backed API (freemap-osm-api): the objects layer and map
       // details. Europe only.
       FM_OSM_API_URL: process.env['FM_OSM_API_URL'] || 'https://osm.freemap.sk',

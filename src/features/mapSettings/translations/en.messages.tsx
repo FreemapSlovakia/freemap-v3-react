@@ -13,7 +13,6 @@ const en: MapSettingsMessages = {
   combinationSaved: 'Map combination has been saved.',
   updateFromCurrentMap: 'Update from current map',
   baseMap: 'Base map',
-  shadingSource: 'Terrain source',
   shadingMapHint:
     'The shading parameters are set and saved in the panel that appears once this map is activated.',
   overlays: 'Overlays',

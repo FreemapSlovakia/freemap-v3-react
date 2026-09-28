@@ -14,7 +14,6 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   combinationSaved: 'Kombinácia máp bola uložená.',
   updateFromCurrentMap: 'Aktualizovať z aktuálnej mapy',
   baseMap: 'Podkladová mapa',
-  shadingSource: 'Zdroj terénu',
   shadingMapHint:
     'Parametre tieňovania sa nastavujú a ukladajú v paneli, ktorý sa zobrazí po aktivácii tejto mapy.',
   overlays: 'Prekryvné vrstvy',

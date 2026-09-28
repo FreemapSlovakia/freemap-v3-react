@@ -5,19 +5,15 @@ import {
   hexaToColor,
   type Shading,
 } from '@features/parameterizedShading/model/Shading.js';
-import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
-import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
-import { SelectToggle } from '@shared/components/SelectToggle.js';
-import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
 import {
   type CustomLayerDef,
   integratedLayerDefMap,
-  integratedLayerDefs,
+  SHADING_SOURCE,
 } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
 import clsx from 'clsx';
@@ -35,7 +31,6 @@ import {
   Button,
   ButtonGroup,
   Col,
-  Dropdown,
   Form,
   ListGroup,
   ListGroupItem,
@@ -60,7 +55,6 @@ export type CustomMapStart = {
   name: string;
   iconSpec?: string;
   technology?: CustomMapTechnology;
-  source?: string;
   shading?: Shading;
 };
 
@@ -88,8 +82,6 @@ type Model = {
   tiled: boolean;
   /** Read from the capabilities rather than typed, so it has no field. */
   bbox?: [number, number, number, number];
-  /** A shading map's built-in source; empty for one given by URL alone. */
-  source: string;
   /** A shading map's own, edited in the shading panel rather than here. */
   shading?: Shading;
   color: Color;
@@ -97,10 +89,9 @@ type Model = {
 
 const WHITE: Color = [255, 255, 255, 1];
 
-/** A colour has none, and a shading map from a source takes the source's. */
+/** A colour has none, and a shading map takes the shading source's. */
 const usesUrl = (model: Model) =>
-  model.technology !== 'color' &&
-  !(model.technology === 'parametricShading' && model.source);
+  model.technology !== 'color' && model.technology !== 'parametricShading';
 
 /** Ground resolution of zoom 0 at the equator, in metres per pixel. */
 const ZOOM_0_RESOLUTION = 156543.03392804097;
@@ -177,8 +168,6 @@ function bboxForSelection(
 function valueToModel(value?: CustomLayerDef): Model {
   return {
     url: value && 'url' in value ? value.url : '',
-    source:
-      value?.technology === 'parametricShading' ? (value.source ?? '') : 'h',
     shading:
       value?.technology === 'parametricShading' ? value.shading : undefined,
     color: value?.technology === 'color' ? value.color : WHITE,
@@ -232,8 +221,7 @@ export function CustomMapForm({
       name: start.name,
       iconSpec: start.iconSpec,
       technology,
-      source: start.source ?? model.source,
-      // An overlay, as the shared shading it starts from has no background.
+      // An overlay, like the shared shading it starts from.
       ...(technology === 'parametricShading' && {
         shading: start.shading ?? sharedShading,
         layer: 'overlay' as const,
@@ -282,7 +270,6 @@ export function CustomMapForm({
         model.tiled !== newModel.tiled ||
         model.bbox?.join(',') !== newModel.bbox?.join(',') ||
         model.layer !== newModel.layer ||
-        model.source !== newModel.source ||
         model.color.join(',') !== newModel.color.join(',');
 
       if (changed) {
@@ -371,19 +358,14 @@ export function CustomMapForm({
 
         break;
       case 'parametricShading': {
-        const source = integratedLayerDefMap[model.source];
+        const source = integratedLayerDefMap[SHADING_SOURCE];
 
         onChange({
           ...common,
           technology: 'parametricShading',
           shading: model.shading,
-          ...(source?.technology === 'parametricShading'
-            ? { source: model.source, url: source.url }
-            : {
-                url: model.url,
-                minZoom,
-                maxNativeZoom,
-              }),
+          source: SHADING_SOURCE,
+          url: source && 'url' in source ? source.url : '',
         });
 
         break;
@@ -402,12 +384,6 @@ export function CustomMapForm({
   const m = useMessages();
 
   const msm = useMapSettingsMessages();
-
-  const shadingSources = integratedLayerDefs.filter(
-    (def) => def.technology === 'parametricShading',
-  );
-
-  const sourceDef = shadingSources.find((def) => def.type === model.source);
 
   const [wmsLayersFetchError, setWmsLayersFetchError] = useState<string>();
 
@@ -676,39 +652,7 @@ export function CustomMapForm({
       />
 
       {model.technology === 'parametricShading' && (
-        <Form.Group className="mt-3">
-          <Form.Label>{msm?.shadingSource}</Form.Label>
-
-          <Dropdown
-            onSelect={(source) =>
-              source !== null &&
-              setModelWithVersion((model) => ({ ...model, source }))
-            }
-          >
-            <Dropdown.Toggle as={SelectToggle} className="w-100">
-              {sourceDef ? <MapLayerItem def={sourceDef} /> : m?.mapLayers.url}
-            </Dropdown.Toggle>
-
-            <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
-              {shadingSources.map((def) => (
-                <Dropdown.Item
-                  as="button"
-                  type="button"
-                  key={def.type}
-                  eventKey={def.type}
-                >
-                  <MapLayerItem def={def} />
-                </Dropdown.Item>
-              ))}
-
-              <Dropdown.Item as="button" type="button" eventKey="">
-                {m?.mapLayers.url}
-              </Dropdown.Item>
-            </FmDropdownMenu>
-          </Dropdown>
-
-          <Form.Text>{msm?.shadingMapHint}</Form.Text>
-        </Form.Group>
+        <Form.Text className="d-block mt-3">{msm?.shadingMapHint}</Form.Text>
       )}
 
       {/* First for a colour, as it decides whether the colour takes alpha. */}

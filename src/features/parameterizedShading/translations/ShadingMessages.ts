@@ -1,6 +1,8 @@
 export type ShadingMessages = {
   add: string;
-  sharedShading: string;
+  apply: string;
+  inBrowser: string;
+  onServer: string;
   revert: string;
   background: string;
   contour: string;

@@ -3,6 +3,10 @@ import type { ShadingMessages } from './ShadingMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
   add: 'Hozzáadás',
+  apply: 'Alkalmaz',
+  inBrowser: 'A böngészőben',
+  onServer: 'A szerveren',
+  revert: 'Változások elvetése',
   background: 'Háttér',
   contour: 'Szintvonal',
   fogInversion: 'Köd / inverzió',

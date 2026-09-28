@@ -13,8 +13,8 @@ Read [`product-and-market.md`](./product-and-market.md) before writing copy.
 ## Why Czechia
 
 - **National high-resolution terrain exists** — DMR 5G (ČÚZK), so the terrain hook is
-  honest here, unlike Germany. Czechia also has its own detailed shading layer (`8`)
-  and parametric shading (`z`), and aerial `Z` covers `cz` alongside `sk`.
+  honest here, unlike Germany. Parametric shading (`h`) covers Czechia from the
+  lidar DTM, and aerial `Z` covers `cz` alongside `sk`.
 - **Czech UI shipped**, high Matomo engagement already.
 - Martin reads and writes Czech, so copy needs no translation round trip.
 

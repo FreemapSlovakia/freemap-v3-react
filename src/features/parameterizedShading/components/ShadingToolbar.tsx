@@ -33,7 +33,7 @@ export function ShadingToolbar({
   const sm = useShadingMessages();
 
   return (
-    <ButtonToolbar>
+    <ButtonToolbar className="mt-2">
       <DropdownButton
         id="add-shading-button"
         title={sm?.add}
@@ -81,12 +81,7 @@ export function ShadingToolbar({
       {onSaveAsMap && (
         <LongPressTooltip label={m?.mapLayers.saveAsShadingMap}>
           {({ props }) => (
-            <Button
-              variant="secondary"
-              className="ms-1"
-              onClick={onSaveAsMap}
-              {...props}
-            >
+            <Button variant="secondary" onClick={onSaveAsMap} {...props}>
               <MdDashboardCustomize />
             </Button>
           )}

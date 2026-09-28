@@ -10,7 +10,10 @@ import {
 } from '@features/routePlanner/model/actions.js';
 import { SavedSearchResultSchema } from '@features/search/model/actions.js';
 import { TrackedDeviceSchema } from '@features/tracking/model/types.js';
-import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
+import {
+  CustomLayerDefArrayCompatSchema,
+  resolveLayerAliases,
+} from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import z from 'zod';
 import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
@@ -98,7 +101,7 @@ const MapMapDataCompatSchema = z.preprocess(
     lat: z.number().optional(),
     lon: z.number().optional(),
     zoom: z.number().optional(),
-    layers: z.array(z.string()).optional(),
+    layers: z.array(z.string()).transform(resolveLayerAliases).optional(),
     customLayers: CustomLayerDefArrayCompatSchema.optional(),
     shading: ShadingSchema.optional(),
   }),

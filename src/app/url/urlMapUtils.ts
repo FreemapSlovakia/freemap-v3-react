@@ -1,10 +1,12 @@
 import type { MapViewState } from '@features/map/model/actions.js';
 import { isCombinationMarker } from '@features/map/model/mapCombination.js';
-import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import {
+  integratedLayerDefMap,
+  knownLayerIds,
+  resolveLayerAliases,
+} from '@shared/mapDefinitions.js';
 
-const LAYERS_RE = new RegExp(
-  `^(${Object.keys(integratedLayerDefMap).join('|')})|[.:]\\d`,
-);
+const LAYERS_RE = new RegExp(`^(${knownLayerIds().join('|')})|[.:]\\d`);
 
 // How precisely `map=` carries the zoom. Two decimals put roughly 140 steps
 // between the widest and the closest view — finer than any gesture can be
@@ -54,7 +56,7 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
     // nothing
   } else if (layersStr.includes('~')) {
     layers = layersStr.split('~');
-  } else if (layersStr in integratedLayerDefMap) {
+  } else if (knownLayerIds().includes(layersStr)) {
     layers = [layersStr];
   } else {
     // backward compatibility
@@ -72,6 +74,8 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
       layersStr = layersStr.slice(m[1].length);
     }
   }
+
+  layers = layers && resolveLayerAliases(layers);
 
   layers = layers?.filter(
     (layer) => layer in integratedLayerDefMap || isCombinationMarker(layer),

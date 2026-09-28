@@ -801,3 +801,13 @@ Colorize, path details and track matching are issues under `area: routing` and
       well, since both grew a categorical variant. Lift `LegendShell` and a
       swatch item into `src/shared/components/`, parameterized by icons and
       label, and render both through them.
+
+## Terrain shading (`terrain.tiles.freemap.sk`)
+
+- [ ] **Delete the tilesets the shading layers no longer read**, once this all is
+      deployed: `dem-sk.mbtiles` and `dem-cz.mbtiles` (the old `y`/`z` sources,
+      ~1.2 TB), `dmr5-shading.mbtiles` (`5`) and `cz-shading.mbtiles` (`8`) in
+      `/fm/storage1/tilesets` on fm6, plus the `parametric-shading`,
+      `dmr5-shading` and `cz-hires-shading` vhosts and their
+      `/fm/storage-offsite/tilesets` copies. `sk-dmr-hires.mbtiles` (`7`)
+      stays until the lidar-rendered Slovak source replaces it.

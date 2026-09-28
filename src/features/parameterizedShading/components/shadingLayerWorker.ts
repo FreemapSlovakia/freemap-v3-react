@@ -9,13 +9,65 @@ const initPromise = Promise.all([
   }),
 ]);
 
+const LERC_MAGIC = 'Lerc2 ';
+
+function isLerc(data: Uint8Array) {
+  for (let i = 0; i < LERC_MAGIC.length; i++) {
+    if (data[i] !== LERC_MAGIC.charCodeAt(i)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * The terrain-tiles format: `f32` step in metres, `u32` side, then side² `i32`
+ * heights in steps, each row delta-coded from 0; `i32::MIN` is no data.
+ */
+function decodeSteps(data: Uint8Array) {
+  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+
+  const step = view.getFloat32(0, true);
+
+  const side = view.getUint32(4, true);
+
+  const out = new Float32Array(side * side);
+
+  let off = 8;
+
+  for (let y = 0; y < side; y++) {
+    let q = 0;
+
+    for (let x = 0; x < side; x++) {
+      q = (q + view.getInt32(off, true)) | 0;
+
+      off += 4;
+
+      out[y * side + x] = q === -0x80000000 ? NaN : q * step;
+    }
+  }
+
+  return out;
+}
+
 self.onmessage = async (evt) => {
   const id = evt.data.id;
 
   try {
     await initPromise;
 
-    const pixelBlock = Lerc.decode(decompress(evt.data.payload));
+    const data = decompress(evt.data.payload);
+
+    if (!isLerc(data)) {
+      const payload = decodeSteps(data);
+
+      self.postMessage({ id, payload }, [payload.buffer]);
+
+      return;
+    }
+
+    const pixelBlock = Lerc.decode(data);
 
     if (pixelBlock.mask) {
       let off = 0;
@@ -46,14 +98,6 @@ self.onmessage = async (evt) => {
     }
 
     const payload = flat;
-
-    // const flat = decompress(evt.data.payload);
-
-    // const payload = new Float32Array(
-    //   flat.buffer,
-    //   flat.byteOffset,
-    //   flat.byteLength / 4,
-    // );
 
     self.postMessage({ id, payload }, [payload.buffer]);
   } catch (err) {

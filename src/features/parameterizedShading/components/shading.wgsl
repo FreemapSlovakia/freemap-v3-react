@@ -4,15 +4,15 @@ const PI = radians(180.0);
 
 const TAU = radians(360.0);
 
-// zoom 0 tile - meter per pixel
-const METER_PER_PIXEL_Z0: f32 = (TAU * 6378137.0 * cos(radians(49.0))) / 256.0;
+const EQUATOR_M: f32 = TAU * 6378137.0;
 
 const NUM_STOPS = 16u;
 
 struct Shading {
     component_count: u32,
     zoom: u32,
-    _pad: vec2<f32>,
+    tile_y: u32,
+    _pad: f32,
     background_color: vec4<f32>,
     components: array<ShadingComponent, 8>,
 };
@@ -80,7 +80,17 @@ fn get_normal(pos: vec2<i32>, exaggeration: f32) -> vec3<f32> {
 
     let dzdy = -nn - 2.0 * zn - pn + np + 2.0 * zp + pp;
 
-    let meter_per_pixel = METER_PER_PIXEL_Z0 / f32(1 << shading.zoom) * 8 / exaggeration;
+    // Ground size of a pixel shrinks with cos(latitude); the row's latitude comes
+    // from the tile's Web Mercator y. The texture is the tile plus a 2 px buffer.
+    let tiles = f32(1u << shading.zoom);
+
+    let rows = f32(textureDimensions(elev, 0).y - 4u);
+
+    let merc_y = PI * (1.0 - 2.0 * (f32(shading.tile_y) + (f32(pos.y - 2) + 0.5) / rows) / tiles);
+
+    let lat = atan(sinh(merc_y));
+
+    let meter_per_pixel = EQUATOR_M * cos(lat) / rows / tiles * 8 / exaggeration;
 
     let normal = normalize(vec3(-dzdx / meter_per_pixel, -dzdy / meter_per_pixel, 1.0));
 

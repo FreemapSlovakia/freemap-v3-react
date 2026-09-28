@@ -16,7 +16,6 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   combinationSaved: 'Kombinace map byla uložena.',
   updateFromCurrentMap: 'Aktualizovat z aktuální mapy',
   baseMap: 'Podkladová mapa',
-  shadingSource: 'Zdroj terénu',
   shadingMapHint:
     'Parametry stínování se nastavují a ukládají v panelu, který se zobrazí po aktivaci této mapy.',
   overlays: 'Překryvné vrstvy',

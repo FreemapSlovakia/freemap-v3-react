@@ -23,6 +23,8 @@ import {
   mapSetLocalPrefs,
   mapSetShading,
   mapSetShadingDraft,
+  mapSetShadingOnServer,
+  mapSetSharedShadingDraft,
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
 } from './actions.js';
@@ -47,6 +49,9 @@ export interface MapState extends MapStateBase {
   shading: Shading;
   /** Unsaved edits of custom maps' own shading, by layer type. */
   shadingDrafts: Record<string, Shading>;
+  /** Unapplied edits of `shading`, while it is rendered on the server. */
+  sharedShadingDraft?: Shading;
+  shadingOnServer: boolean;
   mapCombinations: MapCombination[];
 }
 
@@ -86,6 +91,7 @@ export const mapInitialState: MapState = {
     ],
   },
   shadingDrafts: {},
+  shadingOnServer: true,
   mapCombinations: [],
   // undefined = not yet fetched (unknown coverage); [] would wrongly mean
   // "covers no country" and flash out-of-coverage warnings during initial load
@@ -307,6 +313,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         // Drafts belong to the replaced custom maps, whose types may be reused.
         shadingDrafts: map?.customLayers ? {} : state.shadingDrafts,
         shading: map?.shading ?? state.shading,
+        sharedShadingDraft: map?.shading ? undefined : state.sharedShadingDraft,
       }),
     )
     .addCase(mapSetCustomLayers, (state, action) => {
@@ -330,6 +337,21 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     })
     .addCase(mapSetShading, (state, action) => {
       state.shading = action.payload;
+
+      state.sharedShadingDraft = undefined;
+    })
+    .addCase(mapSetSharedShadingDraft, (state, action) => {
+      state.sharedShadingDraft = action.payload;
+    })
+    .addCase(mapSetShadingOnServer, (state, action) => {
+      state.shadingOnServer = action.payload;
+
+      // The browser draws every edit as it is made, so the draft is simply taken.
+      if (!action.payload && state.sharedShadingDraft) {
+        state.shading = state.sharedShadingDraft;
+
+        state.sharedShadingDraft = undefined;
+      }
     })
     .addCase(mapSetLocalPrefs, (state, { payload }) => {
       if (payload.resolutionScale !== undefined) {

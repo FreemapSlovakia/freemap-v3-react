@@ -3,6 +3,8 @@ import {
   type Shading,
   type Color as ShadingColor,
   ShadingSchema,
+  serializeShading,
+  withOpaqueBackground,
 } from '@features/parameterizedShading/model/Shading.js';
 import { siteNames, siteOf, siteUrls } from '@shared/sites.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
@@ -169,6 +171,35 @@ export const GEDTM30_ATTR: AttributionDef = {
   name: 'GEDTM30',
   url: GEDTM30_URL,
 };
+
+const TERRAIN_TILES_URL = process.env['FM_TERRAIN_TILES_URL'];
+
+const TERRAIN_TILES_ATTRIBUTION: AttributionDef[] = [
+  FM_ATTR,
+  { type: 'data', name: 'DMR 5.0: ©\xa0ÚGKK SR', url: LLS_URL, country: 'sk' },
+  CUZK_ATTR,
+  {
+    type: 'data',
+    name: 'ALS DTM: Geoland.at',
+    url: 'https://www.data.gv.at/katalog/dataset/d88a1246-9684-480b-a480-ff63286b35b7',
+    country: 'at',
+  },
+  {
+    type: 'data',
+    name: 'swissALTI3D: ©\xa0swisstopo',
+    url: 'https://www.swisstopo.admin.ch/en/height-models/swissalti3d.html',
+    country: 'ch',
+  },
+  GEDTM30_ATTR,
+];
+
+/** Tiles of `shading` rendered on the server; a base map's background is opaque. */
+export const serverShadingUrl = (shading: Shading, layer: 'base' | 'overlay') =>
+  `${TERRAIN_TILES_URL}/hillshade/{z}/{x}/{y}?format=webp&shading=${encodeURIComponent(
+    serializeShading(
+      layer === 'base' ? withOpaqueBackground(shading) : shading,
+    ),
+  )}`;
 
 /**
  * The renderer's layers whose tiles name the datasets they drew. Its overlays
@@ -444,7 +475,7 @@ const shadingLayerDefOf = (
   return def?.technology === 'parametricShading' ? def : undefined;
 };
 
-/** Whether any layer on the map is a parametric shading one. */
+/** Whether any layer on the map is shaded by parameters. */
 export const hasShadingLayer = (
   layers: readonly string[],
   customLayers: readonly CustomLayerDef[],
@@ -464,26 +495,20 @@ export const hasSharedShadingLayer = (
     return def && !def.shading;
   });
 
-/** The built-in shading layer a shading layer draws: itself, or a custom map's source. */
-export const shadingSourceOf = (
-  type: string,
-  customLayers: readonly CustomLayerDef[],
-): string => {
-  const def = customLayers.find((def) => def.type === type);
-
-  return (def?.technology === 'parametricShading' && def.source) || type;
-};
+/** The one built-in shading layer, whose terrain every custom shading map draws. */
+export const SHADING_SOURCE = 'h';
 
 /**
- * A custom shading map as drawn: its built-in source's tiles, zooms and
- * premium limit, with its own kind, name, icon and shading.
+ * A custom shading map as drawn: the shading source's tiles, zooms and premium
+ * limit, with its own kind, name, icon and shading. A stored URL or source is
+ * ignored.
  */
 export function withShadingSource<T extends CustomLayerDef>(def: T): T {
-  if (def.technology !== 'parametricShading' || !def.source) {
+  if (def.technology !== 'parametricShading') {
     return def;
   }
 
-  const source = integratedLayerDefMap[def.source];
+  const source = integratedLayerDefMap[SHADING_SOURCE];
 
   if (source?.technology !== 'parametricShading') {
     return def;
@@ -491,6 +516,7 @@ export function withShadingSource<T extends CustomLayerDef>(def: T): T {
 
   return {
     ...def,
+    source: SHADING_SOURCE,
     url: source.url,
     maxNativeZoom: source.maxNativeZoom,
     scaleWithDpi: source.scaleWithDpi,
@@ -938,41 +964,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   },
   {
     layer: 'base',
-    type: '8',
-    technology: 'tile',
-    url: 'https://cz-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minZoom: 0,
-    maxNativeZoom: 18,
-    icon: <GiHills />,
-    attribution: [FM_ATTR, CUZK_ATTR],
-    errorTileUrl: white1x1,
-    scaleWithDpi: true,
-    premiumFromZoom: 16,
-    countries: ['cz'],
-  },
-  {
-    layer: 'base',
-    type: '5',
-    technology: 'tile',
-    url: 'https://dmr5-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minZoom: 0,
-    maxNativeZoom: 18,
-    icon: <GiHills />,
-    attribution: [
-      FM_ATTR,
-      {
-        type: 'data',
-        name: 'DMR 5.0: ©\xa0ÚGKK SR',
-        url: LLS_URL,
-      },
-    ],
-    errorTileUrl: black1x1,
-    scaleWithDpi: true,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
-  },
-  {
-    layer: 'base',
     type: '6',
     technology: 'tile',
     url: 'https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
@@ -1232,50 +1223,14 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     layer: 'overlay',
     type: 'h',
     technology: 'parametricShading',
-    url: 'https://parametric-shading.tiles.freemap.sk/europe/{z}/{x}/{y}',
+    url: `${TERRAIN_TILES_URL}/elevation/{z}/{x}/{y}`,
     icon: <GiHills />,
     shortcut: { code: 'KeyH', shift: true },
     scaleWithDpi: true,
-    maxNativeZoom: 13,
-    attribution: [FM_ATTR, GEDTM30_ATTR],
-    experimental: true,
-    zIndex: 2,
-  },
-  {
-    layer: 'overlay',
-    type: 'y',
-    technology: 'parametricShading',
-    url: 'https://parametric-shading.tiles.freemap.sk/sk/{z}/{x}/{y}',
-    icon: <GiHills />,
-    shortcut: { code: 'KeyY', shift: true },
-    scaleWithDpi: true,
-    maxNativeZoom: 19,
-    attribution: [
-      FM_ATTR,
-      {
-        type: 'data',
-        name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: LLS_URL,
-      },
-    ],
-    experimental: true,
-    premiumFromZoom: 13,
-    zIndex: 2,
-    countries: ['sk'],
-  },
-  {
-    layer: 'overlay',
-    type: 'z',
-    technology: 'parametricShading',
-    url: 'https://parametric-shading.tiles.freemap.sk/cz/{z}/{x}/{y}',
-    icon: <GiHills />,
-    scaleWithDpi: true,
     maxNativeZoom: 18,
-    attribution: [FM_ATTR, CUZK_ATTR],
-    experimental: true,
+    attribution: TERRAIN_TILES_ATTRIBUTION,
     premiumFromZoom: 13,
     zIndex: 2,
-    countries: ['cz'],
   },
   {
     layer: 'overlay',
@@ -1353,6 +1308,55 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
 function maptiler(style: string) {
   return `https://api.maptiler.com/maps/${style}/style.json?key=KgKDGG75zYDIyCCTAG6L`;
 }
+
+/**
+ * Removed layers and the ones that replaced them, for ids still arriving from
+ * old links and stored state.
+ */
+const LAYER_ALIASES: Readonly<Record<string, readonly string[]>> = {
+  y: ['h'],
+  z: ['h'],
+  // Base maps, so a base goes in with the overlay.
+  '5': ['X', 'h'],
+  '8': ['X', 'h'],
+};
+
+/** A layer id, or the ids of the layers that replaced a removed one. */
+export const resolveLayerAlias = (layer: string): readonly string[] =>
+  LAYER_ALIASES[layer] ?? [layer];
+
+/** Layer ids with removed ones mapped to their replacements, deduplicated. */
+export const resolveLayerAliases = (layers: readonly string[]): string[] => [
+  ...new Set(layers.flatMap(resolveLayerAlias)),
+];
+
+/**
+ * Per-layer settings with a removed layer's moved to the overlay that replaced
+ * it (the alias's last id), unless that one has its own.
+ */
+export function resolveLayersSettingsAliases<T>(
+  settings: Readonly<Record<string, T>>,
+): Record<string, T> {
+  const out = { ...settings };
+
+  for (const [from, to] of Object.entries(LAYER_ALIASES)) {
+    const setting = out[from];
+
+    if (setting !== undefined) {
+      delete out[from];
+
+      out[to[to.length - 1]] ??= setting;
+    }
+  }
+
+  return out;
+}
+
+/** Every id a stored layer list may name: the current ones and the aliases. */
+export const knownLayerIds = (): string[] => [
+  ...Object.keys(integratedLayerDefMap),
+  ...Object.keys(LAYER_ALIASES),
+];
 
 export const integratedLayerDefMap = Object.fromEntries(
   integratedLayerDefs.map((def) => [def.type, def]),

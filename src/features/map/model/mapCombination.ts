@@ -1,4 +1,7 @@
-import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import {
+  integratedLayerDefMap,
+  resolveLayerAlias,
+} from '@shared/mapDefinitions.js';
 import z from 'zod';
 
 export const MapCombinationOverlaySchema = z.object({
@@ -60,8 +63,9 @@ export const layerKinds = (
 
 /**
  * The combination as it can be shown now: retired layers swapped for their
- * successors, unknown ones and ones no longer of their kind (a custom map can
- * be edited from base to overlay) dropped. `undefined` when its base is.
+ * successors (a removed base map's may bring an overlay), unknown ones and ones
+ * no longer of their kind (a custom map can be edited from base to overlay)
+ * dropped. `undefined` when its base is.
  */
 export function resolveCombination(
   combination: MapCombination,
@@ -73,23 +77,46 @@ export function resolveCombination(
     return kinds.get(to) === kind && isCombinable(to) ? to : undefined;
   };
 
-  const base =
-    combination.base === undefined
-      ? undefined
-      : resolve(combination.base, 'base');
-
-  if (combination.base !== undefined && base === undefined) {
-    return undefined;
-  }
-
   const overlays: MapCombinationOverlay[] = [];
 
-  for (const overlay of combination.overlays) {
+  const addOverlay = (overlay: MapCombinationOverlay) => {
     const type = resolve(overlay.type, 'overlay');
 
     if (type && !overlays.some((o) => o.type === type)) {
       overlays.push({ ...overlay, type });
     }
+  };
+
+  let base: string | undefined;
+
+  // What replaced a removed base map beside a base; after the saved overlays,
+  // whose opacities win.
+  const extras: string[] = [];
+
+  if (combination.base !== undefined) {
+    for (const type of resolveLayerAlias(combination.base)) {
+      const asBase = base === undefined ? resolve(type, 'base') : undefined;
+
+      if (asBase) {
+        base = asBase;
+      } else {
+        extras.push(type);
+      }
+    }
+
+    if (base === undefined) {
+      return undefined;
+    }
+  }
+
+  for (const overlay of combination.overlays) {
+    for (const type of resolveLayerAlias(overlay.type)) {
+      addOverlay({ ...overlay, type });
+    }
+  }
+
+  for (const type of extras) {
+    addOverlay({ type });
   }
 
   return { ...combination, base, overlays };
