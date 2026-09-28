@@ -6,6 +6,7 @@ import {
   mapSetShadingOnServer,
   mapSetSharedShadingDraft,
 } from '@features/map/model/actions.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
@@ -363,22 +364,22 @@ export default function ShadingControl() {
                   }
                 >
                   <ToggleButton
-                    id="shading-renderer-browser"
-                    value="browser"
-                    variant="outline-primary"
-                    className="flex-grow-1 text-nowrap"
-                    disabled={!hasWebGpu}
-                  >
-                    {sm?.inBrowser}
-                  </ToggleButton>
-
-                  <ToggleButton
                     id="shading-renderer-server"
                     value="server"
                     variant="outline-primary"
                     className="flex-grow-1 text-nowrap"
                   >
                     {sm?.onServer}
+                  </ToggleButton>
+
+                  <ToggleButton
+                    id="shading-renderer-browser"
+                    value="browser"
+                    variant="outline-primary"
+                    className="flex-grow-1 text-nowrap"
+                    disabled={!hasWebGpu}
+                  >
+                    {sm?.inBrowser} <ExperimentalFunction />
                   </ToggleButton>
                 </ToggleButtonGroup>
 

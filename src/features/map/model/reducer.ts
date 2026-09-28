@@ -75,8 +75,9 @@ export const mapInitialState: MapState = {
   resolutionScale: null,
   featureScale: 1,
   zoomSnap: 1,
+  // As `gdaldem hillshade` draws it: 315°, 45°, z 1, grey over black.
   shading: {
-    backgroundColor: [0x00, 0x00, 0x00, 0x00],
+    backgroundColor: [0x00, 0x00, 0x00, 1],
     components: [
       {
         id: 1,
