@@ -29,6 +29,7 @@ import {
   scheduleTileAttribution,
   tileAttributionHandlers,
 } from '@shared/tileAttribution.js';
+import { loadTerrainLicenses, loadTileLicenses } from '@shared/tileLicenses.js';
 import { wmsBaseUrl } from '@shared/wms.js';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
@@ -136,12 +137,13 @@ export function Layers(): ReactElement | null {
   // `fixedScale` pins a tile layer to one `@Nx` variant — a cached map holds
   // exactly one, so the screen's DPI and the resolution/feature-scale
   // preferences must not be allowed to ask for another.
-  // `densityOnly`: the tiles follow the display's density alone, never the
-  // feature-scale preference, as shading drawn in the browser does.
+  // `serverShading`: shading tiles from terrain-tiles, which follow the
+  // display's density alone, as shading drawn in the browser does, and name
+  // their datasets by its dictionary.
   function getLayer(
     layerDef: LayerDef,
     fixedScale?: number,
-    densityOnly = false,
+    serverShading = false,
   ): ReactNode {
     // Rendered on the server, a shading layer is plain tiles of its applied or
     // saved shading; drafts are not drawn.
@@ -384,6 +386,7 @@ export function Layers(): ReactElement | null {
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }
           gpuMessages={m?.gpu}
+          eventHandlers={tileAttributionHandlers(type, loadTerrainLicenses)}
         />
       );
     }
@@ -411,7 +414,7 @@ export function Layers(): ReactElement | null {
     }
 
     if (layerDef.technology === 'tile') {
-      const effFeatureScale = isHdpi || densityOnly ? 1 : featureScale;
+      const effFeatureScale = isHdpi || serverShading ? 1 : featureScale;
 
       const autoTileScale = (window.devicePixelRatio || 1) * effFeatureScale;
 
@@ -472,7 +475,9 @@ export function Layers(): ReactElement | null {
           tileSize={isHdpi ? 128 : 256 * effFeatureScale}
           zoomOffset={isHdpi ? 1 : -Math.log2(effFeatureScale)}
           cors={layerDef.cors ?? true}
-          reportsAttribution={RENDERER_LAYER_TYPES.includes(type)}
+          reportsAttribution={
+            serverShading || RENDERER_LAYER_TYPES.includes(type)
+          }
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={prm?.premiumOnly}
           onPremiumClick={
@@ -480,7 +485,10 @@ export function Layers(): ReactElement | null {
           }
           // Every tile layer is counted; only the ones whose server reports its
           // datasets ever resolve to anything, the rest stay on their own list.
-          eventHandlers={tileAttributionHandlers(type)}
+          eventHandlers={tileAttributionHandlers(
+            type,
+            serverShading ? loadTerrainLicenses : loadTileLicenses,
+          )}
           className={`fm-${layerDef.layer}`}
         />
       );

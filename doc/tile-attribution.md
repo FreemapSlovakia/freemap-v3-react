@@ -60,8 +60,8 @@ carries. Both are why the codes come off the response instead.
 **The worker tells a download from the map by `fm-draw` on the URL.** All three
 ask for the same tile with `fetch` now, so `destination` no longer separates
 them, and a request's cache mode is an init option the browser may spell its own
-way. Only the renderer's layers are fetched, so the marker never reaches another
-provider, and the renderer ignores it.
+way. Only the renderer's layers and server-rendered shading are fetched, so the
+marker reaches no other provider, and both servers ignore it.
 
 **Nothing a cache keys by carries it.** `unmarkDrawnTile` strips it first, or a
 tile browsed and the same tile downloaded would be two entries — and everything
@@ -182,3 +182,24 @@ offline there is nobody to ask. The rules that keep it honest:
 An export's credit is still resolved before the export runs, from the countries
 in the chosen area. `GET /export` answers with the codes on `X-Attribution`,
 naming exactly what was drawn — see `TODO.md`.
+
+## Terrain shading
+
+The shading layers (`h` and custom shading maps) are credited the same way from
+terrain-tiles, which names the sources behind each tile as `s<key>` on
+`X-Attribution` and resolves them at its own `/licenses`, keyed `shading:<key>`
+like the renderer's. Its keys are the `name`s of the
+[elevation-sources](https://github.com/FreemapSlovakia/elevation-sources)
+datasets, whose credits it serves — the same the elevation API is credited by.
+
+- **A second dictionary.** `tileLicenses.ts` keeps one per server;
+  `tileAttributionHandlers` is told which to load, and `Attribution.tsx` reads a
+  shading layer's codes by terrain-tiles' and floors them with Freemap alone,
+  there being no OSM in a shading tile.
+- **Unresolved, it credits the catalogue.** Unlike the renderer's layers, a
+  shading layer whose codes do not resolve credits every source in
+  terrain-tiles' dictionary, narrowed by the countries in view: its floor names
+  no terrain at all, and the terrain is all it draws.
+- **Both renderings report.** Rendered on the server, the tiles go through
+  `ScaledTileLayer`'s fetch like the renderer's; drawn in the browser, the
+  canvas tile takes the codes off the elevation tile it was drawn from.

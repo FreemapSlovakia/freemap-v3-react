@@ -1,5 +1,9 @@
 import { init } from '@bokuweb/zstd-wasm';
-import { createTileLayerComponent } from '@react-leaflet/core';
+import {
+  createTileLayerComponent,
+  type EventedProps,
+} from '@react-leaflet/core';
+import { noteTileCodes } from '@shared/tileAttribution.js';
 import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
   type Coords,
@@ -289,8 +293,6 @@ class LShadingLayer extends LGridLayer {
 
     const url = Util.template(this._options.url, { x, y, z: zoom });
 
-    canvas.dataset['url'] = url;
-
     const controller = new AbortController();
 
     this.acm.set(key, controller);
@@ -319,6 +321,11 @@ class LShadingLayer extends LGridLayer {
     if (res.status !== 200) {
       throw new Error(`unexpected status ${res.status}`);
     }
+
+    // The datasets it was drawn from, for the attribution.
+    canvas.dataset['tileUrl'] = url;
+
+    noteTileCodes(url, res.headers);
 
     canvas.style.display = '';
 
@@ -464,9 +471,12 @@ class LShadingLayer extends LGridLayer {
 
   createTile(coords: Coords, done: DoneCallback) {
     if (this.errorDiv) {
-      done(new Error('already errored'));
+      const div = document.createElement('div');
 
-      return document.createElement('div');
+      // With the element: `tileerror` hands it to its listeners.
+      done(new Error('already errored'), div);
+
+      return div;
     }
 
     const isOnPremiumZoom =
@@ -522,7 +532,7 @@ class LShadingLayer extends LGridLayer {
           this.showError(err);
         }
 
-        done(err);
+        done(err, canvas);
       },
     );
 
@@ -576,7 +586,7 @@ class LShadingLayer extends LGridLayer {
   }
 }
 
-type Props = ShadingLayerOptions;
+type Props = ShadingLayerOptions & EventedProps;
 
 export default createTileLayerComponent<LShadingLayer, Props>(
   (props, context) => ({

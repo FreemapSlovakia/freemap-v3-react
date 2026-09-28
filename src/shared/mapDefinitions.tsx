@@ -159,39 +159,7 @@ const LLS_URL =
 const OFM_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#ortofoto';
 
-const GEDTM30_URL = 'https://codeberg.org/openlandmap/GEDTM30';
-
-/**
- * The global terrain model everything without a national one falls back to —
- * both for the outdoor renderer's shading and for the elevation API (see
- * `elevationSources.ts`).
- */
-export const GEDTM30_ATTR: AttributionDef = {
-  type: 'data',
-  name: 'GEDTM30',
-  url: GEDTM30_URL,
-};
-
 const TERRAIN_TILES_URL = process.env['FM_TERRAIN_TILES_URL'];
-
-const TERRAIN_TILES_ATTRIBUTION: AttributionDef[] = [
-  FM_ATTR,
-  { type: 'data', name: 'DMR 5.0: ©\xa0ÚGKK SR', url: LLS_URL, country: 'sk' },
-  CUZK_ATTR,
-  {
-    type: 'data',
-    name: 'ALS DTM: Geoland.at',
-    url: 'https://www.data.gv.at/katalog/dataset/d88a1246-9684-480b-a480-ff63286b35b7',
-    country: 'at',
-  },
-  {
-    type: 'data',
-    name: 'swissALTI3D: ©\xa0swisstopo',
-    url: 'https://www.swisstopo.admin.ch/en/height-models/swissalti3d.html',
-    country: 'ch',
-  },
-  GEDTM30_ATTR,
-];
 
 /** Tiles of `shading` rendered on the server; a base map's background is opaque. */
 export const serverShadingUrl = (shading: Shading, layer: 'base' | 'overlay') =>
@@ -1222,13 +1190,16 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'overlay',
     type: 'h',
+    defaultInMenu: true,
     technology: 'parametricShading',
     url: `${TERRAIN_TILES_URL}/elevation/{z}/{x}/{y}`,
     icon: <GiHills />,
     shortcut: { code: 'KeyH', shift: true },
     scaleWithDpi: true,
     maxNativeZoom: 18,
-    attribution: TERRAIN_TILES_ATTRIBUTION,
+    // The terrain is credited from terrain-tiles' own dictionary, by what the
+    // tiles on screen report (`tileAttribution.ts`).
+    attribution: [FM_ATTR],
     premiumFromZoom: 13,
     zIndex: 2,
   },

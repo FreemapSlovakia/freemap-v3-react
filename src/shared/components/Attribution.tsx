@@ -12,7 +12,7 @@ import {
   resolveTileCodes,
   useTileAttribution,
 } from '@shared/tileAttribution.js';
-import { useTileLicenses } from '@shared/tileLicenses.js';
+import { useTerrainLicenses, useTileLicenses } from '@shared/tileLicenses.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, type ReactElement, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
@@ -178,14 +178,40 @@ function useCategorizedAttribution(
 
   const licenses = useTileLicenses();
 
+  const terrainLicenses = useTerrainLicenses();
+
   // A layer whose tiles reported their datasets is credited from those and
   // skips the country filter — the codes are the exact answer it approximates.
   const exact: AttributionDef[] = [];
 
   const guessed: AttributionDef[] = [];
 
+  // A shading layer's tiles name terrain-tiles' datasets, read by its own
+  // dictionary. Where they can't be read it credits every source it could have
+  // drawn on, narrowed by the countries in view: its floor alone names none.
+  const creditShading = (type: string, floor: AttributionDef[]) => {
+    const resolved = fromPaintedTiles
+      ? resolveTileCodes(tileAttribution[type], terrainLicenses, floor)
+      : null;
+
+    if (resolved) {
+      exact.push(...resolved);
+    } else {
+      guessed.push(
+        ...floor,
+        ...(terrainLicenses ? licenseAttributions(terrainLicenses) : []),
+      );
+    }
+  };
+
   for (const def of integratedLayerDefs) {
     if (!layers.includes(def.type)) {
+      continue;
+    }
+
+    if (def.technology === 'parametricShading') {
+      creditShading(def.type, def.attribution);
+
       continue;
     }
 
@@ -214,8 +240,9 @@ function useCategorizedAttribution(
   // A custom shading map draws the shading source's data.
   for (const def of customLayers) {
     if (layers.includes(def.type) && def.technology === 'parametricShading') {
-      guessed.push(
-        ...(integratedLayerDefMap[SHADING_SOURCE]?.attribution ?? []),
+      creditShading(
+        def.type,
+        integratedLayerDefMap[SHADING_SOURCE]?.attribution ?? [],
       );
     }
   }

@@ -192,22 +192,37 @@ const errored = new WeakSet<Element>();
 
 const handlers = new Map<string, LeafletEventHandlerFnMap>();
 
+/** Per layer type, the latest caller's: a custom map can change its kind. */
+const licenseLoaders = new Map<string, () => unknown>();
+
 /**
  * Leaflet handlers keeping a layer's painted tiles counted. Cached per layer
  * type because react-leaflet rebinds whenever the object's identity changes.
+ * `loadLicenses` fetches the dictionary its codes are read by.
  */
 export function tileAttributionHandlers(
   type: string,
+  loadLicenses: () => unknown = loadTileLicenses,
 ): LeafletEventHandlerFnMap {
+  licenseLoaders.set(type, loadLicenses);
+
   let cached = handlers.get(type);
 
   if (!cached) {
     cached = {
       tileload(event) {
-        const { tile } = event as TileEvent;
+        // Typed as an image, which a grid layer's tile needn't be.
+        const tile: HTMLElement = (event as TileEvent).tile;
 
-        // a premium placeholder is a `div`, and paints nothing to credit
-        if (errored.has(tile) || !(tile instanceof HTMLImageElement)) {
+        // A premium placeholder is a `div`, and paints nothing to credit; a
+        // shading layer drawn in the browser paints canvases.
+        if (
+          errored.has(tile) ||
+          !(
+            tile instanceof HTMLImageElement ||
+            tile instanceof HTMLCanvasElement
+          )
+        ) {
           return;
         }
 
@@ -217,7 +232,7 @@ export function tileAttributionHandlers(
 
         if (url) {
           // wanted as soon as a tile is drawn, not when the credit is asked for
-          void loadTileLicenses();
+          void licenseLoaders.get(type)?.();
 
           painted.set(tile, {
             url,
@@ -239,6 +254,11 @@ export function tileAttributionHandlers(
       // the element marked by the time that arrives.
       tileerror(event) {
         const { tile } = event as TileEvent;
+
+        // a grid layer may fail a tile without handing its element over
+        if (!tile) {
+          return;
+        }
 
         errored.add(tile);
 
@@ -374,21 +394,23 @@ export function licenseAttributions(licenses: LicenseDict): AttributionDef[] {
 /**
  * The sources a tile's codes stand for, or `null` if any of them is unresolved:
  * the credit then has to widen back to the layer's whole list rather than
- * silently drop a source. The renderer is what says which sources those are —
- * `licenses` is its dictionary, and without it nothing resolves.
+ * silently drop a source. The server is what says which sources those are —
+ * `licenses` is its dictionary, and without it nothing resolves. `floor` is
+ * credited whatever the codes say.
  */
 export function resolveTileCodes(
   codes: string[] | null | undefined,
   licenses: LicenseDict | null | undefined,
+  // The renderer's default. Neither has a code of its own: the renderer is ours
+  // to credit whatever a tile drew, and the map is an OSM-derived work even
+  // where a tile — open sea, an empty quarter — put none of it on screen.
+  floor: AttributionDef[] = [FM_ATTR, OSM_DATA_ATTR],
 ): AttributionDef[] | null {
   if (!codes || !licenses) {
     return null;
   }
 
-  // Neither has a code of its own: the renderer is ours to credit whatever a
-  // tile drew, and the map is an OSM-derived work even where a tile — open sea,
-  // an empty quarter — put none of it on screen.
-  const resolved: AttributionDef[] = [FM_ATTR, OSM_DATA_ATTR];
+  const resolved: AttributionDef[] = [...floor];
 
   for (const code of codes) {
     const expanded = expandCode(code);
