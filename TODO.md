@@ -827,3 +827,12 @@ Colorize, path details and track matching are issues under `area: routing` and
       `dmr5-shading` and `cz-hires-shading` vhosts and their
       `/fm/storage-offsite/tilesets` copies. `sk-dmr-hires.mbtiles` (`7`)
       stays until the lidar-rendered Slovak source replaces it.
+- [ ] **Rebuild `at.tif` at z17 if fm6 runs short of space.** It is 1 m data
+      at z18 (~600 GB); z17 is about a quarter of that and only slightly less
+      sharp. `pl.tif` is z17 for space alone and could go to z18 once there is
+      room (~2.5 TB).
+- [ ] **Finer Austrian Länder as their own sources.** `at` is the nationwide
+      1 m ALS DTM; Tirol (statewide 0.5 m GeoTIFF mosaic, tiris) and
+      Oberösterreich (0.5 m) publish finer ones, Vorarlberg a laserscan model
+      of unconfirmed resolution. Each would go in at z18 ranked above `at`, as
+      `ch` is, with its credit added to elevation-sources.
