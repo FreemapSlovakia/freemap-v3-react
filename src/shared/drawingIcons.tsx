@@ -3,7 +3,7 @@ import { resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { poiIcons } from '@osm/poiIcons.js';
 import type { IconSvg } from '@shared/components/RichMarker.js';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 
 // The `icon` field on a drawing point is one of these forms.
 export type IconSpec =
@@ -594,13 +594,37 @@ export function loadAllIcons(): Promise<IconDefinition[]> {
         iconCache.set(def.iconName, def);
       }
 
+      iconsLoaded = true;
+
+      for (const listener of iconsLoadedListeners) {
+        listener();
+      }
+
       return [...byName.values()]
         .filter((def) => pickerAllowlist.has(def.iconName))
         .sort((a, b) => a.iconName.localeCompare(b.iconName));
     },
+    (err) => {
+      // Forgotten, so the next caller retries rather than getting this failure.
+      allIconsPromise = undefined;
+
+      throw err;
+    },
   );
 
   return allIconsPromise;
+}
+
+let iconsLoaded = false;
+
+const iconsLoadedListeners = new Set<() => void>();
+
+function subscribeIconsLoaded(listener: () => void) {
+  iconsLoadedListeners.add(listener);
+
+  return () => {
+    iconsLoadedListeners.delete(listener);
+  };
 }
 
 /**
@@ -630,27 +654,23 @@ export async function getFaIcon(
 export function useFaIcon(
   name: string | undefined,
 ): IconDefinition | undefined {
-  const [, force] = useState(0);
-
-  const cached = name ? iconCache.get(name) : undefined;
+  // Subscribed rather than read off `iconCache`, which the React Compiler would
+  // memoize on `name` alone and so never see fill.
+  const loaded = useSyncExternalStore(
+    subscribeIconsLoaded,
+    () => iconsLoaded,
+    () => iconsLoaded,
+  );
 
   useEffect(() => {
-    if (name && !cached) {
-      let cancelled = false;
-
-      loadAllIcons().then(() => {
-        if (!cancelled) {
-          force((n) => n + 1);
-        }
+    if (name && !loaded) {
+      loadAllIcons().catch((err) => {
+        console.warn('Error loading icons:', err);
       });
-
-      return () => {
-        cancelled = true;
-      };
     }
-  }, [name, cached]);
+  }, [name, loaded]);
 
-  return cached;
+  return name && loaded ? iconCache.get(name) : undefined;
 }
 
 /**
