@@ -22,6 +22,22 @@ the surrounding context.
       [reilem/zod-geojson#37](https://github.com/reilem/zod-geojson/issues/37)
       tracks memoising their factories, which would make us immune regardless.
 
+## Waiting on evidence
+
+- [ ] **Stale restored map content can silently overwrite a newer save.** A tab
+      restored from an older history entry (Chrome session restore, reopened
+      tab, Memory Saver reload) keeps its older `sq` content, but
+      `mapsRestoreProcessor` adopts the newest `modifiedAt` from the shared
+      working copy or the backend, so the content reads as unsaved and Save's
+      `If-Unmodified-Since` passes — no 412, no conflict. Suspected in a user
+      report of lost My Maps points (2026-09-28), not confirmed. Fix shape: keep
+      the edit base (`mt` in `history.state`, carried forward like `tr`, and
+      through `sessionStash`) in its own `myMaps` field that `mapsSaveProcessor`
+      and the outbox send as `If-Unmodified-Since` and a save/load clears.
+      Don't forge `activeMap.modifiedAt`: `mergeMeta` never lowers it, the
+      working copy shares it across tabs, and `mt` goes stale when a save lands
+      without a content change.
+
 ## Committed work
 
 - [~] **Add automated tests.** Vitest + jsdom now configured (`vitest.config.ts`,
