@@ -742,11 +742,11 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - type (technology): Image tiles (TMS, XYZ), Vector (MapLibre), WMS, Parametric shading, or Color
 - URL (tile template for TMS/XYZ, server URL for WMS, or style URL for MapLibre)
 - for Parametric shading: the terrain source — one of the built-in parametric shading layers (Europe, Slovakia, Czechia), whose tiles, zoom range, premium limit and credits it takes. The map keeps shading settings of its own, set live in the shading panel on the map and saved there; the built-in shading layers share one set, which is what `shading=` in the URL carries. So a shading map can be a base map, whose background colour is always opaque — white where it has none — (as an overlay the background is optional: **Remove** takes it off while it is selected, and **Add** puts it back), and two shading maps can show at once with different settings
-- for Color: one colour all over — a blank base map to lay overlays on (always opaque), or a tint as an overlay (with alpha); it needs no network
+- for Color: one colour all over — a blank base map to lay overlays on (always opaque), or a tint as an overlay (with alpha); it needs no network. Its layer field comes before the colour, and switching to base drops the colour's alpha
 - min zoom / max native zoom (for a WMS the latter caps the requested image resolution instead of the zoom drawn at)
-- extra resolutions and "scale with DPI" (not for WMS, which always matches the display density)
+- extra resolutions and "scale with DPI" (not for WMS or Parametric shading, which always match the display density)
 - for WMS: "load in tiles" — off by default, since a WMS is asked for one GetMap covering the whole view per pan/zoom; switch it on for a server that limits image size or caches tiles (premium-gated zooms use tiles either way)
-- layer: base or overlay
+- layer: base or overlay, with the z-index beside it for an overlay (an overlay is always drawn above the base map, whatever its z-index)
 - show in toolbar / show in menu
 
 When several shading layers are on, the shading panel has a picker for which one it edits: the shared settings of the built-in layers, or a custom shading map's own. Edits to a custom map's shading show at once but are kept only when **Save** in the panel is pressed; **Revert** drops them. For the shared settings the panel instead offers **Save as custom map…**, opening the form for a new shading map from that source and those settings.

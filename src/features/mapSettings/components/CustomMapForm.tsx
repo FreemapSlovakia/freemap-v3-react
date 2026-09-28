@@ -383,7 +383,6 @@ export function CustomMapForm({
                 url: model.url,
                 minZoom,
                 maxNativeZoom,
-                scaleWithDpi: model.scaleWithDpi,
               }),
         });
 
@@ -393,11 +392,7 @@ export function CustomMapForm({
         onChange({
           ...common,
           technology: 'color',
-          // A base map is opaque, whatever alpha an overlay's colour had.
-          color:
-            model.layer === 'base'
-              ? [model.color[0], model.color[1], model.color[2], 1]
-              : model.color,
+          color: model.color,
         });
 
         break;
@@ -582,6 +577,54 @@ export function CustomMapForm({
     });
   }
 
+  const layerField = (
+    <div className="d-flex gap-3 mt-3">
+      <Form.Group>
+        <Form.Label className="d-block">{m?.mapLayers.layer.layer}</Form.Label>
+
+        <ButtonGroup>
+          {(['base', 'overlay'] as const).map((layer) => (
+            <ToggleButton
+              key={layer}
+              id={`layer-${layer}`}
+              type="radio"
+              name="layer"
+              variant="outline-primary"
+              value={layer}
+              checked={model.layer === layer}
+              onChange={() =>
+                setModelWithVersion((model) => ({
+                  ...model,
+                  layer,
+                  // Nothing is beneath a base map to show through its colour.
+                  color:
+                    layer === 'base'
+                      ? [model.color[0], model.color[1], model.color[2], 1]
+                      : model.color,
+                }))
+              }
+            >
+              {m?.mapLayers.layer[layer]}
+            </ToggleButton>
+          ))}
+        </ButtonGroup>
+      </Form.Group>
+
+      {model.layer === 'overlay' && (
+        <Form.Group controlId="zIndex" style={{ width: '6rem' }}>
+          <Form.Label>{m?.mapLayers.zIndex}</Form.Label>
+
+          <Form.Control
+            type="number"
+            min={1}
+            value={model.zIndex}
+            onChange={handlers.zIndex}
+          />
+        </Form.Group>
+      )}
+    </div>
+  );
+
   return (
     <div>
       <div className="d-flex gap-3 align-items-end">
@@ -668,13 +711,15 @@ export function CustomMapForm({
         </Form.Group>
       )}
 
+      {/* First for a colour, as it decides whether the colour takes alpha. */}
+      {model.technology === 'color' && layerField}
+
       {model.technology === 'color' && (
         <Form.Group className="mt-3">
           <Form.Label className="d-block">
             {m?.mapLayers.technologies.color}
           </Form.Label>
 
-          {/* Nothing is beneath a base map to show through it. */}
           <RgbaColorPicker
             alpha={model.layer === 'overlay'}
             value={colorToHexa(model.color)}
@@ -745,7 +790,7 @@ export function CustomMapForm({
           {/* Halves rather than two natural widths: the labels differ in
               length, so natural ones leave a gap after the shorter field.
               End-aligned, since the longer label wraps to two lines. */}
-          <Row className="align-items-end gx-2">
+          <Row className="align-items-end gx-3">
             <Col xs={12} sm={6}>
               <Form.Group controlId="minZoom" className="mt-3">
                 <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
@@ -802,16 +847,18 @@ export function CustomMapForm({
             </div>
           )}
 
-          {/* A WMS is always asked for the display's own density. */}
-          {model.technology !== 'wms' && (
-            <Form.Check
-              className="mt-3"
-              id="chk-scale-dpi"
-              label={m?.mapLayers.scaleWithDpi}
-              checked={model.scaleWithDpi}
-              onChange={handlers.scaleWithDpi}
-            />
-          )}
+          {/* A WMS is always asked for the display's own density, and shading
+              always follows it. */}
+          {model.technology !== 'wms' &&
+            model.technology !== 'parametricShading' && (
+              <Form.Check
+                className="mt-3"
+                id="chk-scale-dpi"
+                label={m?.mapLayers.scaleWithDpi}
+                checked={model.scaleWithDpi}
+                onChange={handlers.scaleWithDpi}
+              />
+            )}
 
           {model.technology === 'wms' && (
             <div className="mt-3 d-flex">
@@ -828,40 +875,7 @@ export function CustomMapForm({
         </>
       )}
 
-      <Form.Group className="mt-3">
-        <Form.Label className="d-block">{m?.mapLayers.layer.layer}</Form.Label>
-
-        <ButtonGroup>
-          {(['base', 'overlay'] as const).map((layer) => (
-            <ToggleButton
-              key={layer}
-              id={`layer-${layer}`}
-              type="radio"
-              name="layer"
-              variant="outline-primary"
-              value={layer}
-              checked={model.layer === layer}
-              onChange={handlers.layer}
-            >
-              {m?.mapLayers.layer[layer]}
-            </ToggleButton>
-          ))}
-        </ButtonGroup>
-      </Form.Group>
-
-      {model.layer === 'overlay' && (
-        <Form.Group controlId="zIndex" className="mt-3">
-          <Form.Label>{m?.mapLayers.zIndex}</Form.Label>
-
-          <Form.Control
-            className={model.layer === 'overlay' ? 'visible' : 'invisible'}
-            type="number"
-            min={0}
-            value={model.zIndex}
-            onChange={handlers.zIndex}
-          />
-        </Form.Group>
-      )}
+      {model.technology !== 'color' && layerField}
     </div>
   );
 }

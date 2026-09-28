@@ -1,7 +1,9 @@
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
+import { FaRegListAlt } from 'react-icons/fa';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
+import { ToolbarIcon } from './ToolbarIcon.js';
 
 type Props = {
   showInMenu: boolean;
@@ -28,7 +30,7 @@ export function LayerVisibilityFields({
         id="layer-show-in-toolbar"
         label={
           <>
-            {msm?.showInToolbar}
+            <ToolbarIcon /> {msm?.showInToolbar}
             <OfflineBadge offline={disabled} />
           </>
         }
@@ -46,7 +48,7 @@ export function LayerVisibilityFields({
         id="layer-show-in-menu"
         label={
           <>
-            {msm?.showInMenu}
+            <FaRegListAlt /> {msm?.showInMenu}
             <OfflineBadge offline={disabled} />
           </>
         }

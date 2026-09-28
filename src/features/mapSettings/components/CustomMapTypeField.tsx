@@ -1,7 +1,13 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useButtonGroupFit } from '@shared/hooks/useButtonGroupFit.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import type { ReactElement } from 'react';
-import { ButtonGroup, Form, ToggleButton } from 'react-bootstrap';
+import { Dropdown, Form } from 'react-bootstrap';
+import { FaDrawPolygon, FaServer, FaTh } from 'react-icons/fa';
+import { GiHills } from 'react-icons/gi';
+import { MdFormatColorFill } from 'react-icons/md';
+import { TbStack2 } from 'react-icons/tb';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 
 export type CustomMapTechnology =
@@ -13,14 +19,22 @@ export type CustomMapTechnology =
 
 export type CustomMapKind = CustomMapTechnology | 'combination';
 
-const KINDS: CustomMapKind[] = [
+const TECHNOLOGIES: CustomMapTechnology[] = [
   'tile',
   'maplibre',
   'wms',
   'parametricShading',
   'color',
-  'combination',
 ];
+
+const ICONS: Record<CustomMapKind, ReactElement> = {
+  tile: <FaTh />,
+  maplibre: <FaDrawPolygon />,
+  wms: <FaServer />,
+  parametricShading: <GiHills />,
+  color: <MdFormatColorFill />,
+  combination: <TbStack2 />,
+};
 
 type Props = {
   value: CustomMapKind;
@@ -38,35 +52,53 @@ export function CustomMapTypeField({
 
   const msm = useMapSettingsMessages();
 
-  // The labels are long enough that their joined group often can't fit the
-  // form, and then it stacks rather than wrapping inside the buttons.
-  const groupProps = useButtonGroupFit();
-
   const isCombination = value === 'combination';
+
+  const label = (kind: CustomMapKind) => (
+    <>
+      {ICONS[kind]}{' '}
+      {kind === 'combination'
+        ? msm?.combination
+        : m?.mapLayers.technologies[kind]}
+    </>
+  );
 
   return (
     <Form.Group className="mt-3">
-      <Form.Label className="d-block">{m?.mapLayers.technology}</Form.Label>
+      <Form.Label>{m?.mapLayers.technology}</Form.Label>
 
-      <ButtonGroup {...groupProps}>
-        {KINDS.map((kind) => (
-          <ToggleButton
-            key={kind}
-            id={`tech-${kind}`}
-            type="radio"
-            name="technology"
-            variant="outline-primary"
-            value={kind}
-            checked={value === kind}
-            disabled={editing && (kind === 'combination') !== isCombination}
-            onChange={() => onChange(kind)}
+      <Dropdown onSelect={(kind) => kind && onChange(kind as CustomMapKind)}>
+        <Dropdown.Toggle as={SelectToggle} className="w-100">
+          {label(value)}
+        </Dropdown.Toggle>
+
+        <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
+          {TECHNOLOGIES.map((kind) => (
+            <Dropdown.Item
+              as="button"
+              type="button"
+              key={kind}
+              eventKey={kind}
+              active={value === kind}
+              disabled={editing && isCombination}
+            >
+              {label(kind)}
+            </Dropdown.Item>
+          ))}
+
+          <Dropdown.Divider />
+
+          <Dropdown.Item
+            as="button"
+            type="button"
+            eventKey="combination"
+            active={isCombination}
+            disabled={editing && !isCombination}
           >
-            {kind === 'combination'
-              ? msm?.combination
-              : m?.mapLayers.technologies[kind]}
-          </ToggleButton>
-        ))}
-      </ButtonGroup>
+            {label('combination')}
+          </Dropdown.Item>
+        </FmDropdownMenu>
+      </Dropdown>
     </Form.Group>
   );
 }

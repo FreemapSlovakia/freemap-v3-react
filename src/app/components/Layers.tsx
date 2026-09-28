@@ -139,6 +139,11 @@ export function Layers(): ReactElement | null {
       opacitySetting(activeCombinations, layersSettings, type),
     );
 
+    // Layers of equal z-index stack by insertion, so a base map switched in
+    // later would cover an overlay; bases are kept below every overlay instead.
+    const zIndex =
+      layerDef.layer === 'base' ? 0 : Math.max(layerDef.zIndex ?? 1, 1);
+
     if (layerDef.technology === 'gallery') {
       return (
         <AsyncComponent
@@ -147,7 +152,7 @@ export function Layers(): ReactElement | null {
           filter={galleryFilter}
           colorizeBy={galleryColorizeBy}
           opacity={opacity}
-          zIndex={layerDef.zIndex ?? 1}
+          zIndex={zIndex}
           minZoom={minZoom}
           myUserId={user?.id}
           authToken={user?.authToken}
@@ -168,7 +173,7 @@ export function Layers(): ReactElement | null {
           // takes a remount.
           key={`${type}-${maxZoom}`}
           opacity={opacity}
-          zIndex={layerDef.zIndex ?? 1}
+          zIndex={zIndex}
           maxZoom={maxZoom}
         />
       );
@@ -182,12 +187,15 @@ export function Layers(): ReactElement | null {
           factory={viewshedLayerFactory}
           key={type}
           opacity={opacity}
-          zIndex={layerDef.zIndex ?? 1}
+          zIndex={zIndex}
         />
       );
     }
 
-    const scaleWithDpi = 'scaleWithDpi' in layerDef && layerDef.scaleWithDpi;
+    // Shading is drawn here, so it always follows the display's density.
+    const scaleWithDpi =
+      layerDef.technology === 'parametricShading' ||
+      ('scaleWithDpi' in layerDef && Boolean(layerDef.scaleWithDpi));
 
     const isHdpi = scaleWithDpi && effectiveDpr > 1.4;
 
@@ -233,7 +241,7 @@ export function Layers(): ReactElement | null {
             transparent={layerDef.layer === 'overlay'}
             format={layerDef.layer === 'overlay' ? 'image/png' : 'image/jpeg'}
             opacity={opacity}
-            zIndex={layerDef.zIndex}
+            zIndex={zIndex}
             minZoom={layerDef.minZoom}
             maxNativeZoom={layerDef.maxNativeZoom}
             dpiScale={wmsHdpi ? 2 : 1}
@@ -295,7 +303,7 @@ export function Layers(): ReactElement | null {
           onPremiumClick={
             effPremiumFromZoom === undefined ? undefined : handlePremiumClick
           }
-          zIndex={layerDef.zIndex ?? 1}
+          zIndex={zIndex}
         />
       );
     }
@@ -306,7 +314,7 @@ export function Layers(): ReactElement | null {
           key={type}
           color={colorToHexa(layerDef.color)}
           opacity={opacity}
-          zIndex={layerDef.zIndex ?? 1}
+          zIndex={zIndex}
           minZoom={minZoom}
           maxZoom={maxZoom}
         />
@@ -328,7 +336,7 @@ export function Layers(): ReactElement | null {
           url={layerDef.url}
           factory={shadingLayerFactory}
           opacity={opacity}
-          zIndex={layerDef?.zIndex}
+          zIndex={zIndex}
           tileSize={isHdpi ? 128 : 256}
           minZoom={minZoom}
           maxZoom={maxZoom}
@@ -364,6 +372,7 @@ export function Layers(): ReactElement | null {
           factory={maplibreLayerFactory}
           key={`${type}-${effectiveDpr}`}
           style={layerDef.url}
+          zIndex={zIndex}
           maxZoom={maxZoom}
           minZoom={minZoom}
           language={language}
@@ -426,7 +435,7 @@ export function Layers(): ReactElement | null {
                 : layerDef.maxNativeZoom
           }
           opacity={opacity}
-          zIndex={layerDef.zIndex ?? 1}
+          zIndex={zIndex}
           subdomains={layerDef.subdomains ?? 'abc'}
           errorTileUrl={layerDef.errorTileUrl ?? missingTile}
           extraScales={layerDef.extraScales}

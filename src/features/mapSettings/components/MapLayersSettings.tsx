@@ -19,20 +19,16 @@ import {
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
-import { type ReactElement, useState } from 'react';
-import { Form, OverlayTrigger, Popover, Table } from 'react-bootstrap';
+import type { ReactElement } from 'react';
+import { Form, Table } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
-import {
-  FaEllipsisH,
-  FaEye,
-  FaHistory,
-  FaKeyboard,
-  FaRegListAlt,
-} from 'react-icons/fa';
+import { FaEye, FaHistory, FaKeyboard, FaRegListAlt } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { TbStack2 } from 'react-icons/tb';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './MapLayersSettings.module.css';
+import { OpacityButton } from './OpacityButton.js';
+import { ToolbarIcon } from './ToolbarIcon.js';
 
 type Props = {
   layersSettings: Record<string, LayerSettings>;
@@ -62,36 +58,6 @@ export function MapLayersSettings({
       ? def.name || `${m?.mapLayers.customBase} ${type}`
       : (m?.mapLayers.letters[type] ?? '…');
   }
-
-  const [activeType, setActiveType] = useState('');
-
-  const popover = (
-    <Popover id="popover-basic">
-      <Popover.Header as="h3">{msm?.overlayOpacity}</Popover.Header>
-
-      <Popover.Body>
-        <Form.Range
-          min={0}
-          max={100}
-          value={
-            resolveLayerOpacity(
-              integratedLayerDefMap[activeType],
-              layersSettings[activeType]?.opacity,
-            ) * 100
-          }
-          onChange={(e) =>
-            setLayersSettings({
-              ...layersSettings,
-              [activeType]: {
-                ...(layersSettings[activeType] ?? {}),
-                opacity: Number(e.currentTarget.value) / 100,
-              },
-            })
-          }
-        />
-      </Popover.Body>
-    </Popover>
-  );
 
   const layerDefs = [
     ...integratedLayerDefs.map((def) => ({
@@ -163,7 +129,7 @@ export function MapLayersSettings({
               color={null}
               className="ms-n1"
             >
-              <FaEllipsisH />
+              <ToolbarIcon />
             </GlyphMarker>
           </th>
 
@@ -253,29 +219,18 @@ export function MapLayersSettings({
 
               <td>
                 {opacityEditable && (
-                  <div>
-                    <OverlayTrigger
-                      trigger="click"
-                      placement="left"
-                      overlay={popover}
-                      rootClose
-                    >
-                      <div className={classes.opacityButton}>
-                        <button
-                          type="button"
-                          style={{
-                            opacity: `${
-                              resolveLayerOpacity(
-                                integratedLayerDefMap[type],
-                                layersSettings[type]?.opacity,
-                              ) * 100
-                            }%`,
-                          }}
-                          onClick={() => setActiveType(type)}
-                        />
-                      </div>
-                    </OverlayTrigger>
-                  </div>
+                  <OpacityButton
+                    value={resolveLayerOpacity(
+                      integratedLayerDefMap[type],
+                      layersSettings[type]?.opacity,
+                    )}
+                    onChange={(opacity) =>
+                      setLayersSettings({
+                        ...layersSettings,
+                        [type]: { ...(layersSettings[type] ?? {}), opacity },
+                      })
+                    }
+                  />
                 )}
               </td>
 

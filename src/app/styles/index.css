@@ -406,8 +406,7 @@ button#freemap-logo {
   }
 }
 
-/* hack to show NLC vector overlay above TODO fix */
+/* Positioned, so the z-index `MaplibreLayer` sets applies. */
 .leaflet-gl-layer.maplibregl-map {
   position: relative;
-  z-index: 3;
 }

@@ -34,6 +34,7 @@ import { TbStack2 } from 'react-icons/tb';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import type { CustomMapStart } from './CustomMapForm.js';
 import { CustomMapTypeField } from './CustomMapTypeField.js';
+import { OpacityButton } from './OpacityButton.js';
 
 type Props = {
   value: MapCombination;
@@ -227,30 +228,17 @@ export function MapCombinationForm({
                     <MapLayerItem def={defOf(overlay.type, 'overlay')} />
                   </div>
 
-                  <Form.Range
-                    className="w-auto flex-grow-1"
-                    style={{ maxWidth: '10rem' }}
-                    min={0}
-                    max={100}
-                    value={Math.round(opacity * 100)}
-                    onChange={(e) =>
+                  <OpacityButton
+                    value={opacity}
+                    onChange={(opacity) =>
                       onChange({
                         ...value,
                         overlays: value.overlays.map((o) =>
-                          o.type === overlay.type
-                            ? {
-                                ...o,
-                                opacity: Number(e.currentTarget.value) / 100,
-                              }
-                            : o,
+                          o.type === overlay.type ? { ...o, opacity } : o,
                         ),
                       })
                     }
                   />
-
-                  <span className="text-nowrap" style={{ minWidth: '3em' }}>
-                    {Math.round(opacity * 100)}&nbsp;%
-                  </span>
 
                   <Button
                     size="sm"

@@ -18,10 +18,14 @@ class MaplibreWithLang extends L.MaplibreGL {
 
   _loaded = false;
 
+  _zIndex?: number;
+
   constructor(options: MaplibreLayerProps) {
     super(options);
 
     this._language = options.language;
+
+    this._zIndex = options.zIndex;
   }
 
   setLanguage(lang: string) {
@@ -34,8 +38,20 @@ class MaplibreWithLang extends L.MaplibreGL {
     ).setLanguage(lang);
   }
 
+  setZIndex(zIndex: number | undefined) {
+    this._zIndex = zIndex;
+
+    const container = this.getContainer();
+
+    if (container) {
+      container.style.zIndex = zIndex === undefined ? '' : String(zIndex);
+    }
+  }
+
   onAdd(map: L.Map) {
     L.MaplibreGL.prototype.onAdd.call(this, map);
+
+    this.setZIndex(this._zIndex);
 
     if (this._language) {
       this.setLanguage(this._language);
@@ -77,6 +93,7 @@ class MaplibreWithLang extends L.MaplibreGL {
 type MaplibreLayerProps = LayerProps &
   L.LeafletMaplibreGLOptions & {
     language?: string | null;
+    zIndex?: number;
   };
 
 export default createTileLayerComponent<MaplibreWithLang, MaplibreLayerProps>(
@@ -94,6 +111,10 @@ export default createTileLayerComponent<MaplibreWithLang, MaplibreLayerProps>(
   (instance, props, prevProps) => {
     if (props.language !== prevProps.language) {
       instance.setLanguage(props.language ?? 'native');
+    }
+
+    if (props.zIndex !== prevProps.zIndex) {
+      instance.setZIndex(props.zIndex);
     }
   },
 );
