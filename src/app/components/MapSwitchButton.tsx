@@ -46,6 +46,7 @@ import {
   type SyntheticEvent,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap';
@@ -142,10 +143,15 @@ export function MapSwitchButton(): ReactElement {
 
   const [filter, setFilter] = useState('');
 
+  const filterRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (!menuShown) {
       setExpand(false);
       setFilter('');
+    } else if (window.matchMedia('(pointer: fine)').matches) {
+      // Not on touch: the keyboard would cover the menu it was opened to use.
+      filterRef.current?.focus({ preventScroll: true });
     }
   }, [menuShown]);
 
@@ -904,6 +910,7 @@ export function MapSwitchButton(): ReactElement {
 
             <div className="px-2 pb-1">
               <Form.Control
+                ref={filterRef}
                 type="search"
                 size="sm"
                 placeholder={m?.mapLayers.filterMaps}

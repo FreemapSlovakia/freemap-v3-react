@@ -352,6 +352,12 @@ button#freemap-logo {
   flex-shrink: 0;
 }
 
+/* On a highlighted item a green mark would sink into the highlight; it takes
+   the item's text colour like its other icons. An offer keeps its gold. */
+.dropdown-item:is(.active, :active) .fm-marker.text-success {
+  color: inherit !important;
+}
+
 /* The mark's hit area. Padding rather than an overlay, so two marks side by side
    tile instead of one swallowing the other's taps; the block step is given back
    as margin so nothing moves. */
