@@ -71,6 +71,12 @@ export const mapSetEsriAttribution = createAction<string[]>(
 
 export const mapSetShading = createAction<Shading>('MAP_SET_SHADING');
 
+/** An unsaved edit of a custom map's own shading; `undefined` drops it. */
+export const mapSetShadingDraft = createAction<{
+  type: string;
+  shading?: Shading;
+}>('MAP_SET_SHADING_DRAFT');
+
 /**
  * Puts a map combination's layers and shading on the map. `toggle` takes an
  * active overlay-only one off instead, as its checkbox does; `replaces` is its

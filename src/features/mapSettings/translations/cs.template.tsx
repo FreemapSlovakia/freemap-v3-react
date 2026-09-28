@@ -14,19 +14,15 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   customMapSaved: 'Vlastní mapa byla uložena.',
   combination: 'Kombinace map',
   combinationSaved: 'Kombinace map byla uložena.',
-  combinationHint:
-    'S podkladovou mapou se chová jako podkladová mapa a zůstává aktivní, dokud nevyberete jinou; bez ní je překryvnou vrstvou, kterou zapnete nad jakoukoli podkladovou mapu. Její průhlednosti platí, dokud je aktivní.',
   updateFromCurrentMap: 'Aktualizovat z aktuální mapy',
   baseMap: 'Podkladová mapa',
-  noBaseMap: 'Žádná — mapa bude fungovat jako překryvná vrstva',
+  shadingSource: 'Zdroj terénu',
+  shadingMapHint:
+    'Parametry stínování se nastavují a ukládají v panelu, který se zobrazí po aktivaci této mapy.',
   overlays: 'Překryvné vrstvy',
   addOverlay: 'Přidat překryvnou vrstvu…',
   noOverlays: 'Žádné překryvné vrstvy.',
-  combinationTooSmall:
-    'Kombinace potřebuje alespoň dvě vrstvy nebo jednu vrstvu parametrického stínování.',
-  shading: 'Stínování',
-  shadingHint:
-    'Stínování změníte naživo v jeho panelu na mapě a poté v seznamu přes Aktualizovat z aktuální mapy.',
+  combinationTooSmall: 'Vyžadují se minimálně dvě vrstvy.',
 };
 
 export default cs;

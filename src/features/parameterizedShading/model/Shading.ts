@@ -19,6 +19,22 @@ export const ColorSchema = z.tuple([
 
 export type Color = z.infer<typeof ColorSchema>;
 
+/** Parse an `#rrggbb`/`#rrggbbaa` string into a `[r, g, b, a]` shading color. */
+export function hexaToColor(hexa: string): Color {
+  const c = Color(hexa);
+
+  return [
+    Math.round(c.red()),
+    Math.round(c.green()),
+    Math.round(c.blue()),
+    c.alpha(),
+  ];
+}
+
+/** The inverse of `hexaToColor`. */
+export const colorToHexa = ([r, g, b, a]: Color) =>
+  Color.rgb(r, g, b).alpha(a).hexa();
+
 export const ColorStopSchema = z.object({
   value: z.number(),
   color: ColorSchema,
@@ -80,6 +96,36 @@ export const ShadingSchema = z.object({
 });
 
 export type Shading = z.infer<typeof ShadingSchema>;
+
+/**
+ * A background with no alpha: nothing is under a base map to show through it.
+ * No background at all (an overlay's) becomes white.
+ */
+export function withOpaqueBackground(shading: Shading): Shading {
+  const [r, g, b, a] = shading.backgroundColor;
+
+  return a === 1
+    ? shading
+    : {
+        ...shading,
+        backgroundColor: a === 0 ? [255, 255, 255, 1] : [r, g, b, 1],
+      };
+}
+
+/** A shading layer's shading as drawn: its draft, its own, else the shared one. */
+export function effectiveShading(
+  def: { type: string; layer: 'base' | 'overlay'; shading?: Shading },
+  drafts: Record<string, Shading>,
+  shared: Shading,
+): Shading {
+  const shading = drafts[def.type] ?? def.shading ?? shared;
+
+  return def.layer === 'base' ? withOpaqueBackground(shading) : shading;
+}
+
+/** An overlay's background is optional; a transparent one stands for none. */
+export const hasBackground = (shading: Shading) =>
+  shading.backgroundColor[3] > 0;
 
 export function serializeShading(shading: Shading) {
   const parts = [Color(shading.backgroundColor).hexa().slice(1)];

@@ -7,23 +7,26 @@ import {
   Dropdown,
   DropdownButton,
 } from 'react-bootstrap';
-import { TbStack2 } from 'react-icons/tb';
+import { MdDashboardCustomize } from 'react-icons/md';
 import { SHADING_COMPONENT_TYPES } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 
 type Props = {
   canRemove: boolean;
+  /** An overlay without a background can have one added. */
+  canAddBackground: boolean;
   onAdd: (type: string | null) => void;
   onRemove: () => void;
-  /** Absent where the map's combinations can't be managed. */
-  onSaveAsCombination?: () => void;
+  /** Absent where custom maps can't be managed, or for one that already is. */
+  onSaveAsMap?: () => void;
 };
 
 export function ShadingToolbar({
   canRemove,
+  canAddBackground,
   onAdd,
   onRemove,
-  onSaveAsCombination,
+  onSaveAsMap,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -55,22 +58,36 @@ export function ShadingToolbar({
         <Dropdown.Item as="button" eventKey="fog" className="text-nowrap">
           {sm?.fogInversion}
         </Dropdown.Item>
+
+        {canAddBackground && (
+          <>
+            <Dropdown.Divider />
+
+            <Dropdown.Item
+              as="button"
+              eventKey="background"
+              className="text-nowrap"
+            >
+              {sm?.background}
+            </Dropdown.Item>
+          </>
+        )}
       </DropdownButton>
 
       <Button disabled={!canRemove} variant="danger" onClick={onRemove}>
         {m?.general.remove}
       </Button>
 
-      {onSaveAsCombination && (
-        <LongPressTooltip label={m?.mapLayers.saveAsCombination}>
+      {onSaveAsMap && (
+        <LongPressTooltip label={m?.mapLayers.saveAsShadingMap}>
           {({ props }) => (
             <Button
               variant="secondary"
               className="ms-1"
-              onClick={onSaveAsCombination}
+              onClick={onSaveAsMap}
               {...props}
             >
-              <TbStack2 />
+              <MdDashboardCustomize />
             </Button>
           )}
         </LongPressTooltip>

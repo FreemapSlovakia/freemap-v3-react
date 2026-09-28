@@ -2,6 +2,8 @@ import type { ShadingMessages } from './ShadingMessages.js';
 
 const en: ShadingMessages = {
   add: 'Add',
+  sharedShading: 'Built-in shading layers',
+  revert: 'Revert',
   background: 'Background',
   contour: 'Contour',
   fogInversion: 'Fog / inversion',

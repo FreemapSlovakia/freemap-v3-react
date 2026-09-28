@@ -305,7 +305,7 @@ export type Messages = {
     customMaps: string;
     addCustomMap: string;
     activate: string;
-    saveAsCombination: string;
+    saveAsShadingMap: string;
     customMapsEmptyMessage: string;
     base: string;
     overlay: string;
@@ -315,6 +315,7 @@ export type Messages = {
       maplibre: string;
       wms: string;
       parametricShading: string;
+      color: string;
     };
     url: string;
     minZoom: string;

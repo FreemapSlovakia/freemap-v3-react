@@ -19,6 +19,7 @@ import { useDispatch } from 'react-redux';
 import {
   type AttributionDef,
   FIXTHEMAP_ATTR,
+  integratedLayerDefMap,
   integratedLayerDefs,
   OSM_DATA_ATTR,
   OSRM_ROUTING_ATTR,
@@ -164,6 +165,8 @@ function useCategorizedAttribution(
 ) {
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
+  const customLayers = useAppSelector((state) => state.map.customLayers);
+
   const routingAttrs = useRoutingAttributions();
 
   const viewshedCredits = useAppSelector(
@@ -204,6 +207,17 @@ function useCategorizedAttribution(
       ) {
         guessed.push(...licenseAttributions(licenses));
       }
+    }
+  }
+
+  // A custom shading map draws its built-in source's data.
+  for (const def of customLayers) {
+    if (
+      layers.includes(def.type) &&
+      def.technology === 'parametricShading' &&
+      def.source
+    ) {
+      guessed.push(...(integratedLayerDefMap[def.source]?.attribution ?? []));
     }
   }
 

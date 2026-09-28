@@ -33,8 +33,9 @@ export function MapManageButton(): ReactElement {
 
   const canSaveSettings = useCanSaveSettings();
 
+  // Everything the Custom maps modal lists: layers and combinations alike.
   const customLayerCount = useAppSelector(
-    (state) => state.map.customLayers.length,
+    (state) => state.map.customLayers.length + state.map.mapCombinations.length,
   );
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);

@@ -12,6 +12,9 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   savingError: ({ err }) =>
     addError(getMessages()!, 'Błąd zapisu ustawień', err),
   customMapSaved: 'Mapa niestandardowa została zapisana.',
+  combinationTooSmall: 'Wymagane są co najmniej dwie warstwy.',
+  shadingMapHint:
+    'Parametry cieniowania ustawia się i zapisuje w panelu, który pojawia się po włączeniu tej mapy.',
 };
 
 export default pl;

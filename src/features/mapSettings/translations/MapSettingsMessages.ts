@@ -7,15 +7,13 @@ export type MapSettingsMessages = {
   customMapSaved: string;
   combination: string;
   combinationSaved: string;
-  combinationHint: string;
   updateFromCurrentMap: string;
   baseMap: string;
-  noBaseMap: string;
+  shadingSource: string;
+  shadingMapHint: string;
   overlays: string;
   addOverlay: string;
   noOverlays: string;
   combinationTooSmall: string;
-  shading: string;
-  shadingHint: string;
   savingError: (props: { err: unknown }) => string;
 };

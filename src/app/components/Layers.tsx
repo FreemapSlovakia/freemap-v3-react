@@ -6,7 +6,12 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   activeCombinationsSelector,
   opacitySetting,
+  resolvedCustomLayersSelector,
 } from '@features/map/model/selectors.js';
+import {
+  colorToHexa,
+  effectiveShading,
+} from '@features/parameterizedShading/model/Shading.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
@@ -29,6 +34,7 @@ import { useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import missingTile from '@/images/missing-tile-256x256.png';
 import { AsyncComponent } from './AsyncComponent.js';
+import { ColorLayer } from './ColorLayer.js';
 import { ScaledTileLayer } from './ScaledTileLayer.js';
 import { WmsImageLayer } from './WmsImageLayer.js';
 import { WmsTileLayer } from './WmsTileLayer.js';
@@ -81,6 +87,8 @@ export function Layers(): ReactElement | null {
   const activeCombinations = useAppSelector(activeCombinationsSelector);
 
   const shading = useAppSelector((state) => state.map.shading);
+
+  const shadingDrafts = useAppSelector((state) => state.map.shadingDrafts);
 
   const galleryFilter = useAppSelector((state) => state.gallery.filter);
 
@@ -292,11 +300,27 @@ export function Layers(): ReactElement | null {
       );
     }
 
+    if (layerDef.technology === 'color') {
+      return (
+        <ColorLayer
+          key={type}
+          color={colorToHexa(layerDef.color)}
+          opacity={opacity}
+          zIndex={layerDef.zIndex ?? 1}
+          minZoom={minZoom}
+          maxZoom={maxZoom}
+        />
+      );
+    }
+
     if (layerDef.technology === 'parametricShading') {
       return (
         <AsyncComponent
+          // The url too: a custom shading map's source can change under it,
+          // and the layer doesn't take a new one in place.
           key={[
             type,
+            layerDef.url,
             opacity,
             effPremiumFromZoom ?? 99,
             effPremiumFromZoom ? prm?.premiumOnly : '',
@@ -316,7 +340,7 @@ export function Layers(): ReactElement | null {
                 : layerDef.maxNativeZoom
           }
           zoomOffset={isHdpi ? 1 : 0}
-          shading={shading}
+          shading={effectiveShading(layerDef, shadingDrafts, shading)}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={prm?.premiumOnly}
           onPremiumClick={
@@ -427,7 +451,7 @@ export function Layers(): ReactElement | null {
     return null;
   }
 
-  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
+  const customLayerDefs = useAppSelector(resolvedCustomLayersSelector);
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 

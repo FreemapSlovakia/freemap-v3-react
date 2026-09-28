@@ -1,12 +1,11 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
-  combinationLayers,
   isCombinable,
   isWorthSaving,
   type MapCombination,
 } from '@features/map/model/mapCombination.js';
-import { useShadingMessages } from '@features/parameterizedShading/translations/useShadingMessages.js';
+import { layerKindsSelector } from '@features/map/model/selectors.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import {
@@ -17,13 +16,19 @@ import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
-  hasShadingLayer,
   integratedLayerDefMap,
   integratedLayerDefs,
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
-import type { ReactElement, ReactNode } from 'react';
-import { Button, Dropdown, Form, ListGroup } from 'react-bootstrap';
+import { type ReactElement, type ReactNode, useState } from 'react';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  Form,
+  ListGroup,
+  ToggleButton,
+} from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { TbStack2 } from 'react-icons/tb';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
@@ -37,36 +42,22 @@ type Props = {
   onPickTechnology: (start: CustomMapStart) => void;
 };
 
-/** The event key of the picker's "no layer" item. */
-const NONE = '-';
-
 function LayerPicker({
   defs,
-  noneLabel,
   onSelect,
   children,
 }: {
   defs: MapLayerItemDef[];
-  /** Offers "no layer" first, which selects `undefined`. */
-  noneLabel?: ReactNode;
-  onSelect: (type: string | undefined) => void;
+  onSelect: (type: string) => void;
   children: ReactNode;
 }): ReactElement {
   return (
-    <Dropdown
-      onSelect={(type) => type && onSelect(type === NONE ? undefined : type)}
-    >
+    <Dropdown onSelect={(type) => type && onSelect(type)}>
       <Dropdown.Toggle as={SelectToggle} className="w-100">
         {children}
       </Dropdown.Toggle>
 
       <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
-        {noneLabel && (
-          <Dropdown.Item as="button" type="button" eventKey={NONE}>
-            {noneLabel}
-          </Dropdown.Item>
-        )}
-
         {defs.map((def) => (
           <Dropdown.Item
             as="button"
@@ -92,8 +83,6 @@ export function MapCombinationForm({
 
   const msm = useMapSettingsMessages();
 
-  const sm = useShadingMessages();
-
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
@@ -113,14 +102,21 @@ export function MapCombinationForm({
   const defOf = (type: string, layer: 'base' | 'overlay'): MapLayerItemDef =>
     defs.find((def) => def.type === type) ?? { type, layer };
 
+  const mapBase = useAppSelector((state) => {
+    const kinds = layerKindsSelector(state);
+
+    return state.map.layers.find((type) => kinds.get(type) === 'base') ?? 'X';
+  });
+
+  // Restored when Base is picked again after Overlay.
+  const [lastBase, setLastBase] = useState(() => value.base ?? mapBase);
+
   const addableOverlays = defs.filter(
     (def) =>
       def.layer === 'overlay' &&
       isCombinable(def.type) &&
       !value.overlays.some((overlay) => overlay.type === def.type),
   );
-
-  const showsShading = hasShadingLayer(combinationLayers(value), customLayers);
 
   return (
     <div>
@@ -165,23 +161,49 @@ export function MapCombinationForm({
         }}
       />
 
-      <p className="form-text">{msm?.combinationHint}</p>
-
       <Form.Group className="mt-3">
-        <Form.Label>{msm?.baseMap}</Form.Label>
+        <Form.Label className="d-block">{m?.mapLayers.layer.layer}</Form.Label>
 
-        <LayerPicker
-          defs={defs.filter((def) => def.layer === 'base')}
-          noneLabel={msm?.noBaseMap}
-          onSelect={(base) => onChange({ ...value, base })}
-        >
-          {value.base === undefined ? (
-            msm?.noBaseMap
-          ) : (
-            <MapLayerItem def={defOf(value.base, 'base')} />
-          )}
-        </LayerPicker>
+        <ButtonGroup>
+          {(['base', 'overlay'] as const).map((layer) => (
+            <ToggleButton
+              key={layer}
+              id={`combination-layer-${layer}`}
+              type="radio"
+              name="combination-layer"
+              variant="outline-primary"
+              value={layer}
+              checked={(value.base === undefined) === (layer === 'overlay')}
+              onChange={() => {
+                if (layer === 'overlay') {
+                  if (value.base !== undefined) {
+                    setLastBase(value.base);
+                  }
+
+                  onChange({ ...value, base: undefined });
+                } else {
+                  onChange({ ...value, base: value.base ?? lastBase });
+                }
+              }}
+            >
+              {m?.mapLayers.layer[layer]}
+            </ToggleButton>
+          ))}
+        </ButtonGroup>
       </Form.Group>
+
+      {value.base !== undefined && (
+        <Form.Group className="mt-3">
+          <Form.Label>{msm?.baseMap}</Form.Label>
+
+          <LayerPicker
+            defs={defs.filter((def) => def.layer === 'base')}
+            onSelect={(base) => onChange({ ...value, base })}
+          >
+            <MapLayerItem def={defOf(value.base, 'base')} />
+          </LayerPicker>
+        </Form.Group>
+      )}
 
       <Form.Group className="mt-3">
         <Form.Label>{msm?.overlays}</Form.Label>
@@ -199,7 +221,7 @@ export function MapCombinationForm({
               return (
                 <ListGroup.Item
                   key={overlay.type}
-                  className="d-flex flex-wrap align-items-center gap-2"
+                  className="d-flex flex-wrap align-items-center gap-2 pe-2"
                 >
                   <div className="flex-grow-1 min-w-0">
                     <MapLayerItem def={defOf(overlay.type, 'overlay')} />
@@ -275,28 +297,12 @@ export function MapCombinationForm({
           </LayerPicker>
         )}
 
-        {!isWorthSaving(value, customLayers) && (
+        {!isWorthSaving(value) && (
           <Form.Text className="d-block text-warning">
             {msm?.combinationTooSmall}
           </Form.Text>
         )}
       </Form.Group>
-
-      {showsShading && (
-        <Form.Group className="mt-3">
-          <Form.Label className="d-block">{msm?.shading}</Form.Label>
-
-          {value.shading && (
-            <div className="mb-1">
-              {value.shading.components
-                .map((c) => sm?.types[c.type] ?? c.type)
-                .join(', ') || '—'}
-            </div>
-          )}
-
-          <Form.Text>{msm?.shadingHint}</Form.Text>
-        </Form.Group>
-      )}
     </div>
   );
 }

@@ -1,12 +1,4 @@
-import {
-  type Shading,
-  ShadingSchema,
-} from '@features/parameterizedShading/model/Shading.js';
-import {
-  type CustomLayerDef,
-  hasShadingLayer,
-  integratedLayerDefMap,
-} from '@shared/mapDefinitions.js';
+import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
 import z from 'zod';
 
 export const MapCombinationOverlaySchema = z.object({
@@ -19,6 +11,7 @@ export type MapCombinationOverlay = z.infer<typeof MapCombinationOverlaySchema>;
 /**
  * A saved set of layers, acting as a base map when it has one (active until
  * another is picked) and as an overlay otherwise; its opacities apply while active.
+ * A former `shading` field is dropped unmigrated: it was in production for about a day.
  */
 export const MapCombinationSchema = z.object({
   id: z.string(),
@@ -26,7 +19,6 @@ export const MapCombinationSchema = z.object({
   iconSpec: z.string().optional(),
   base: z.string().optional(),
   overlays: z.array(MapCombinationOverlaySchema),
-  shading: ShadingSchema.optional(),
 });
 
 export type MapCombination = z.infer<typeof MapCombinationSchema>;
@@ -111,31 +103,9 @@ export const combinationLayers = (
   ...combination.overlays.map((o) => o.type),
 ];
 
-/**
- * Whether it combines anything: two layers at least, or a single parametric
- * shading one, which carries its shading settings.
- */
-export const isWorthSaving = (
-  combination: MapCombination,
-  customLayers: readonly CustomLayerDef[],
-): boolean => {
-  const layers = combinationLayers(combination);
-
-  return (
-    layers.length > 1 ||
-    (layers.length === 1 && hasShadingLayer(layers, customLayers))
-  );
-};
-
-/** Carried only with a shading layer; `current` is the map's own when none was taken yet. */
-export const combinationShading = (
-  combination: Pick<MapCombination, 'base' | 'overlays' | 'shading'>,
-  customLayers: readonly CustomLayerDef[],
-  current: Shading,
-): Shading | undefined =>
-  hasShadingLayer(combinationLayers(combination), customLayers)
-    ? (combination.shading ?? current)
-    : undefined;
+/** Whether it combines anything: two layers at least. */
+export const isWorthSaving = (combination: MapCombination): boolean =>
+  combinationLayers(combination).length > 1;
 
 // Shared, so a selector's result keeps its identity in the common case.
 const NONE: MapCombination[] = [];
@@ -231,10 +201,6 @@ export function applyCombinationToLayers(
 
   const others = active.filter((c) => c.id !== combination.id);
 
-  // The map has one shading, so a combination carrying one takes off any
-  // other active combination that does.
-  const rivals = combination.shading ? others.filter((c) => c.shading) : [];
-
   if (combination.base === undefined) {
     // Overlay-only: toggled like any overlay.
     if (toggle && current.includes(marker)) {
@@ -244,12 +210,10 @@ export function applyCombinationToLayers(
       };
     }
 
-    const rest = withoutCombinations(current, rivals, active);
-
     return {
       layers: [
-        ...rest.filter((type) => type !== marker),
-        ...own.filter((type) => !rest.includes(type)),
+        ...current.filter((type) => type !== marker),
+        ...own.filter((type) => !current.includes(type)),
         marker,
       ],
       off: false,
@@ -259,9 +223,7 @@ export function applyCombinationToLayers(
   // Replaces the overlays on the map, except those of the overlay-only
   // combinations that are on and the user's own `i`; picked again, it
   // restores its own set.
-  const keptCombinations = others.filter(
-    (c) => c.base === undefined && !rivals.includes(c),
-  );
+  const keptCombinations = others.filter((c) => c.base === undefined);
 
   const kept = current.filter(
     (type) =>

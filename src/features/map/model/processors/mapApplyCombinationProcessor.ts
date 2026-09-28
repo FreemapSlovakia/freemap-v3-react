@@ -1,6 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { mapApplyCombination, mapRefocus, mapSetShading } from '../actions.js';
+import { mapApplyCombination, mapRefocus } from '../actions.js';
 import {
   applyCombinationToLayers,
   resolveCombination,
@@ -37,11 +37,6 @@ export const mapApplyCombinationProcessor: Processor<
 
     if (!off) {
       trackMatomo(['trackEvent', 'Map', 'applyCombination']);
-
-      // Before the layers, so what reacts to them sees the final state once.
-      if (resolved.shading) {
-        dispatch(mapSetShading(resolved.shading));
-      }
     }
 
     // Through `mapRefocus`, as a link's layers are, so what reacts to a layer

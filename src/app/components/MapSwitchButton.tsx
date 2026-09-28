@@ -7,7 +7,10 @@ import {
   mapToggleLayer,
 } from '@features/map/model/actions.js';
 import { combinationLayers } from '@features/map/model/mapCombination.js';
-import { activeCombinationsSelector } from '@features/map/model/selectors.js';
+import {
+  activeCombinationsSelector,
+  resolvedCustomLayersSelector,
+} from '@features/map/model/selectors.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -262,7 +265,7 @@ export function MapSwitchButton(): ReactElement {
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
-  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
+  const customLayerDefs = useAppSelector(resolvedCustomLayersSelector);
 
   const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
 
@@ -478,13 +481,12 @@ export function MapSwitchButton(): ReactElement {
               : layersSettings[def.type].shortcut,
           )}
 
-        {/* Everything but a downloaded map draws nothing while offline. The
-            toolbar says it through the button's own tooltip, as premium does.
-            Outermost: `OnlineOnlyItem` appends its own badge there, and a
-            transient state must not shift the shortcut's column. */}
+        {/* All but a downloaded map or a colour draw nothing offline.
+            Outermost, so a transient badge doesn't shift the shortcut's column. */}
         {place !== 'toolbar' &&
           !def.cached &&
-          def.technology !== 'interactive' && (
+          def.technology !== 'interactive' &&
+          def.technology !== 'color' && (
             <OfflineBadge hint={m?.mapLayers.offlineWarning} />
           )}
       </>

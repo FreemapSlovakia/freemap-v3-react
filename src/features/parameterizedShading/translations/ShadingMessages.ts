@@ -1,5 +1,7 @@
 export type ShadingMessages = {
   add: string;
+  sharedShading: string;
+  revert: string;
   background: string;
   contour: string;
   fogInversion: string;

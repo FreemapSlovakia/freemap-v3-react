@@ -12,19 +12,15 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   customMapSaved: 'Vlastná mapa bola uložená.',
   combination: 'Kombinácia máp',
   combinationSaved: 'Kombinácia máp bola uložená.',
-  combinationHint:
-    'S podkladovou mapou sa správa ako podkladová mapa a ostáva aktívna, kým nevyberiete inú; bez nej je prekryvnou vrstvou, ktorú zapnete nad akúkoľvek podkladovú mapu. Jej priehľadnosti platia, kým je aktívna.',
   updateFromCurrentMap: 'Aktualizovať z aktuálnej mapy',
   baseMap: 'Podkladová mapa',
-  noBaseMap: 'Žiadna — mapa bude fungovať ako prekryvná vrstva',
+  shadingSource: 'Zdroj terénu',
+  shadingMapHint:
+    'Parametre tieňovania sa nastavujú a ukladajú v paneli, ktorý sa zobrazí po aktivácii tejto mapy.',
   overlays: 'Prekryvné vrstvy',
   addOverlay: 'Pridať prekryvnú vrstvu…',
   noOverlays: 'Žiadne prekryvné vrstvy.',
-  combinationTooSmall:
-    'Kombinácia potrebuje aspoň dve vrstvy alebo jednu vrstvu parametrického tieňovania.',
-  shading: 'Tieňovanie',
-  shadingHint:
-    'Tieňovanie zmeníte naživo v jeho paneli na mape a potom v zozname cez Aktualizovať z aktuálnej mapy.',
+  combinationTooSmall: 'Vyžadujú sa minimálne dve vrstvy.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri ukladaní nastavení', err),
 };

@@ -3,6 +3,8 @@ import type { ShadingMessages } from './ShadingMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<ShadingMessages> = {
   add: 'Pridať',
+  sharedShading: 'Vstavané vrstvy tieňovania',
+  revert: 'Vrátiť zmeny',
   background: 'Pozadie',
   contour: 'Vrstevnica',
   fogInversion: 'Hmla / inverzia',

@@ -8,7 +8,6 @@ import {
   mapToggleLayer,
 } from '@features/map/model/actions.js';
 import {
-  combinationShading,
   isWorthSaving,
   type MapCombination,
   withoutCombinations,
@@ -97,10 +96,10 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const addCombinationRequested = useAppSelector(
-    (state) =>
-      state.main.activeModal?.type === 'custom-maps' &&
-      Boolean(state.main.activeModal.addCombination),
+  const addShadingMap = useAppSelector((state) =>
+    state.main.activeModal?.type === 'custom-maps'
+      ? state.main.activeModal.addShadingMap
+      : undefined,
   );
 
   const byName = makeLabelComparator(language);
@@ -144,33 +143,34 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     setView({ mode: 'list' });
   }, []);
 
-  const captureCurrentMap = useCallback(
-    (withBase: boolean) => captureCombination(store.getState(), withBase),
-    [store],
-  );
+  const captureCurrentMap = (withBase: boolean) =>
+    captureCombination(store.getState(), withBase);
 
-  const addCombination = useCallback(
-    (start?: CustomMapStart) => {
-      const id = makeType();
+  const addCombination = (start?: CustomMapStart) => {
+    setCombinationDraft({
+      id: makeType(),
+      name: start?.name ?? '',
+      iconSpec: start?.iconSpec,
+      ...captureCurrentMap(true),
+    });
 
-      setCombinationDraft({
-        id,
-        name: start?.name ?? '',
-        iconSpec: start?.iconSpec,
-        ...captureCurrentMap(true),
-      });
+    setView({ mode: 'combination' });
+  };
 
-      setView({ mode: 'combination' });
-    },
-    [captureCurrentMap],
-  );
-
-  // Asked for from outside the modal: straight to a form filled from the map.
+  // Asked for from the shading panel: straight to a new shading map's form.
   useEffect(() => {
-    if (show && addCombinationRequested) {
-      addCombination();
+    if (show && addShadingMap) {
+      setDraft(undefined);
+
+      setCombinationDraft(undefined);
+
+      setView({
+        mode: 'add',
+        draftType: makeType(),
+        start: { name: '', technology: 'parametricShading', ...addShadingMap },
+      });
     }
-  }, [show, addCombinationRequested, addCombination]);
+  }, [show, addShadingMap]);
 
   const handleAddClick = (start?: CustomMapStart) => {
     setDraft(undefined);
@@ -296,7 +296,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     };
 
     // Too little on the map to save as is: the form says why.
-    if (!isWorthSaving(updated, customLayers)) {
+    if (!isWorthSaving(updated)) {
       handleEditCombinationClick(updated);
 
       return;
@@ -347,8 +347,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
   };
 
   const canSaveCombination = Boolean(
-    combinationDraft?.name.trim() &&
-      isWorthSaving(combinationDraft, customLayers),
+    combinationDraft?.name.trim() && isWorthSaving(combinationDraft),
   );
 
   const handleSaveCombination = () => {
@@ -357,15 +356,7 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     }
 
     saveCombination(
-      {
-        ...combinationDraft,
-        name: combinationDraft.name.trim(),
-        shading: combinationShading(
-          combinationDraft,
-          customLayers,
-          store.getState().map.shading,
-        ),
-      },
+      { ...combinationDraft, name: combinationDraft.name.trim() },
       true,
     );
 

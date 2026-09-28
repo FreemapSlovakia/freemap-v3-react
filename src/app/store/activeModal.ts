@@ -2,6 +2,7 @@ import {
   type Document,
   DocumentSchema,
 } from '@features/documents/model/actions.js';
+import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import z from 'zod';
 
 const URL_MODAL_IDS = [
@@ -95,8 +96,11 @@ export type ModalId = z.infer<typeof ModalIdSchema>;
 export type ActiveModal =
   | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps' | 'custom-maps'> }
   | { type: 'my-maps'; add?: boolean }
-  /** `addCombination` opens the form filled from the map as it is. */
-  | { type: 'custom-maps'; addCombination?: boolean }
+  /** `addShadingMap` opens the form for a shading map with these settings. */
+  | {
+      type: 'custom-maps';
+      addShadingMap?: { source: string; shading: Shading };
+    }
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }

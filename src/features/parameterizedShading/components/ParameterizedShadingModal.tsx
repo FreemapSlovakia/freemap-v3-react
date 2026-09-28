@@ -2,25 +2,16 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
-import Color from 'color';
 import type { ReactElement } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import type { Color as ColorType, ShadingComponent } from '../model/Shading.js';
+import {
+  type Color as ColorType,
+  hexaToColor,
+  type ShadingComponent,
+} from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 
 export type ParameterizedKind = 'contour' | 'fog';
-
-/** Parse an `#rrggbb`/`#rrggbbaa` string into a `[r, g, b, a]` shading color. */
-function hexaToColor(hexa: string): ColorType {
-  const c = Color(hexa);
-
-  return [
-    Math.round(c.red()),
-    Math.round(c.green()),
-    Math.round(c.blue()),
-    c.alpha(),
-  ];
-}
 
 const deElevation = (value: string | null) => value ?? '';
 

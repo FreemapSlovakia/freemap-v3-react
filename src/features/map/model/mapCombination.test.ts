@@ -1,4 +1,3 @@
-import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { describe, expect, it } from 'vitest';
 import {
   activeCombinations,
@@ -92,8 +91,6 @@ describe('withoutCombinations', () => {
 });
 
 describe('applyCombinationToLayers', () => {
-  const shading: Shading = { backgroundColor: [0, 0, 0, 0], components: [] };
-
   it('replaces the overlays with a base map one, keeping `i` and overlay-only ones', () => {
     expect(
       applyCombinationToLayers(['O', 'I', 'i', 'w', '_b'], a, [b]).layers,
@@ -108,16 +105,6 @@ describe('applyCombinationToLayers', () => {
     expect(
       applyCombinationToLayers(on.layers, b, [b], { toggle: true }),
     ).toEqual({ layers: ['X'], off: true });
-  });
-
-  it('takes off another one carrying shading', () => {
-    const s1 = { ...b, id: 's1', shading };
-
-    const s2 = { id: 's2', name: 'S2', overlays: [{ type: 'I' }], shading };
-
-    expect(
-      applyCombinationToLayers(['X', 'w', 'I', '_s1'], s2, [s1]).layers,
-    ).toEqual(['X', 'I', '_s2']);
   });
 
   it('first takes off the version it replaces', () => {

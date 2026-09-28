@@ -524,7 +524,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Vlastné mapy',
     addCustomMap: 'Pridať vlastnú mapu',
     activate: 'Aktivovať',
-    saveAsCombination: 'Uložiť ako kombináciu máp…',
+    saveAsShadingMap: 'Uložiť ako vlastnú mapu…',
     customMapsEmptyMessage:
       'Zatiaľ nie sú definované žiadne vlastné mapy. Pridajte jednu na zobrazenie vlastného zdroja máp.',
     base: 'Základné vrstvy',
@@ -535,6 +535,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Vektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Parametrické tieňovanie',
+      color: 'Farba',
     },
     url: 'URL',
     minZoom: 'Minimálne priblíženie',

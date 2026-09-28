@@ -1,3 +1,9 @@
+import {
+  ColorSchema,
+  type Shading,
+  type Color as ShadingColor,
+  ShadingSchema,
+} from '@features/parameterizedShading/model/Shading.js';
 import { siteNames, siteOf, siteUrls } from '@shared/sites.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
@@ -330,7 +336,17 @@ type IsParametricShadingLayerDef = HasUrl &
   HasZIndex &
   HasScaleWithDpi & {
     technology: 'parametricShading';
+    /** A custom map's built-in shading layer, whose tiles, limits and credits it takes. */
+    source?: string;
+    /** A custom map's own shading; the shared one otherwise. */
+    shading?: Shading;
   };
+
+/** One colour all over: a blank base map, or a tint as an overlay. */
+type IsColorLayerDef = HasZIndex & {
+  technology: 'color';
+  color: ShadingColor;
+};
 
 type IsGalleryLayerDef = HasZIndex & {
   technology: 'gallery';
@@ -417,18 +433,72 @@ export const resolveLayerOpacity = (
     ? def.defaultOpacity
     : 1);
 
-/** Whether any layer on the map draws with the shared `map.shading`. */
+const shadingLayerDefOf = (
+  type: string,
+  customLayers: readonly CustomLayerDef[],
+) => {
+  const def =
+    integratedLayerDefMap[type] ??
+    customLayers.find((def) => def.type === type);
+
+  return def?.technology === 'parametricShading' ? def : undefined;
+};
+
+/** Whether any layer on the map is a parametric shading one. */
 export const hasShadingLayer = (
   layers: readonly string[],
   customLayers: readonly CustomLayerDef[],
+): boolean => layers.some((type) => shadingLayerDefOf(type, customLayers));
+
+/**
+ * Whether any layer on the map draws with the shared `map.shading` rather than
+ * its own: a built-in shading layer, or a custom one that has none.
+ */
+export const hasSharedShadingLayer = (
+  layers: readonly string[],
+  customLayers: readonly CustomLayerDef[],
 ): boolean =>
-  layers.some(
-    (type) =>
-      (
-        integratedLayerDefMap[type] ??
-        customLayers.find((def) => def.type === type)
-      )?.technology === 'parametricShading',
-  );
+  layers.some((type) => {
+    const def = shadingLayerDefOf(type, customLayers);
+
+    return def && !def.shading;
+  });
+
+/** The built-in shading layer a shading layer draws: itself, or a custom map's source. */
+export const shadingSourceOf = (
+  type: string,
+  customLayers: readonly CustomLayerDef[],
+): string => {
+  const def = customLayers.find((def) => def.type === type);
+
+  return (def?.technology === 'parametricShading' && def.source) || type;
+};
+
+/**
+ * A custom shading map as drawn: its built-in source's tiles, zooms and
+ * premium limit, with its own kind, name, icon and shading.
+ */
+export function withShadingSource<T extends CustomLayerDef>(def: T): T {
+  if (def.technology !== 'parametricShading' || !def.source) {
+    return def;
+  }
+
+  const source = integratedLayerDefMap[def.source];
+
+  if (source?.technology !== 'parametricShading') {
+    return def;
+  }
+
+  return {
+    ...def,
+    url: source.url,
+    maxNativeZoom: source.maxNativeZoom,
+    scaleWithDpi: source.scaleWithDpi,
+    minZoom: source.minZoom,
+    premiumFromZoom: source.premiumFromZoom,
+    zIndex: def.zIndex ?? (def.layer === 'overlay' ? source.zIndex : undefined),
+  };
+}
 
 export const getLayerBbox = (
   def: object,
@@ -514,7 +584,8 @@ export type IsCustomLayerTechnologiesDef =
   | IsTileLayerDef
   | IsWmsLayerDef
   | IsMapLibreLayerDef
-  | IsParametricShadingLayerDef;
+  | IsParametricShadingLayerDef
+  | IsColorLayerDef;
 
 export type CustomBaseLayerDef<
   T extends IsCustomLayerTechnologiesDef = IsCustomLayerTechnologiesDef,
@@ -573,6 +644,14 @@ export const IsParametricShadingLayerDefSchema = z.object({
   maxNativeZoom: z.number().optional(),
   zIndex: z.number().optional(),
   scaleWithDpi: z.boolean().optional(),
+  source: z.string().optional(),
+  shading: ShadingSchema.optional(),
+});
+
+export const IsColorLayerDefSchema = z.object({
+  technology: z.literal('color'),
+  color: ColorSchema,
+  zIndex: z.number().optional(),
 });
 
 export const IsCustomLayerTechnologiesDefSchema = z.discriminatedUnion(
@@ -582,6 +661,7 @@ export const IsCustomLayerTechnologiesDefSchema = z.discriminatedUnion(
     IsWmsLayerDefSchema,
     IsMapLibreLayerDefSchema,
     IsParametricShadingLayerDefSchema,
+    IsColorLayerDefSchema,
   ],
 );
 

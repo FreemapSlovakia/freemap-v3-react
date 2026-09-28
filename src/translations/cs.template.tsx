@@ -499,7 +499,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Vlastní mapy',
     addCustomMap: 'Přidat vlastní mapu',
     activate: 'Aktivovat',
-    saveAsCombination: 'Uložit jako kombinaci map…',
+    saveAsShadingMap: 'Uložit jako vlastní mapu…',
     customMapsEmptyMessage:
       'Zatím nejsou definovány žádné vlastní mapy. Přidejte jednu pro zobrazení vlastního zdroje map.',
     base: 'Základní vrstvy',
@@ -539,6 +539,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Vektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Parametrické stínování',
+      color: 'Barva',
     },
     loadWmsLayers: 'Načíst vrstvy',
     serverNotResponding: ({ name }) => (

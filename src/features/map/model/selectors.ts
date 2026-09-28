@@ -3,12 +3,12 @@ import {
   integratedLayerDefMap,
   integratedLayerDefs,
   resolveLayerOpacity,
+  withShadingSource,
 } from '@shared/mapDefinitions.js';
 import { createSelector } from 'reselect';
 import {
   activeCombinations,
   combinationOpacity,
-  combinationShading,
   isCombinable,
   layerKinds,
   type MapCombination,
@@ -20,6 +20,12 @@ export const allLayerDefs = (
   customLayers: RootState['map']['customLayers'],
   cachedMaps: RootState['map']['cachedMaps'],
 ) => [...integratedLayerDefs, ...customLayers, ...cachedMaps];
+
+/** Custom layers as drawn: a shading map with its source's zooms and limits. */
+export const resolvedCustomLayersSelector = createSelector(
+  (state: RootState) => state.map.customLayers,
+  (customLayers) => customLayers.map(withShadingSource),
+);
 
 const layerDefsSelector = createSelector(
   (state: RootState) => state.map.customLayers,
@@ -53,14 +59,14 @@ export const layerOpacitySetting = (state: RootState, type: string) =>
   );
 
 /**
- * What is on the map now, as a combination's layers and shading; `withBase`
+ * What is on the map now, as a combination's layers; `withBase`
  * false leaves the base map out, for a combination laid over any base map.
  */
 export function captureCombination(
   state: RootState,
   withBase: boolean,
-): Pick<MapCombination, 'base' | 'overlays' | 'shading'> {
-  const { layers, customLayers, shading } = state.map;
+): Pick<MapCombination, 'base' | 'overlays'> {
+  const { layers } = state.map;
 
   const kinds = layerKindsSelector(state);
 
@@ -79,9 +85,5 @@ export function captureCombination(
       ),
     }));
 
-  return {
-    base,
-    overlays,
-    shading: combinationShading({ base, overlays }, customLayers, shading),
-  };
+  return { base, overlays };
 }

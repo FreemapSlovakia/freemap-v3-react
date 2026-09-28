@@ -129,7 +129,7 @@ import {
 import { isLanguage } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
-  hasShadingLayer,
+  hasSharedShadingLayer,
 } from '@shared/mapDefinitions.js';
 import {
   isMapClickTool,
@@ -685,7 +685,7 @@ export function handleLocationChange(store: MyStore): void {
   if (
     shading &&
     !Array.isArray(shading) &&
-    hasShadingLayer(map.layers, map.customLayers) &&
+    hasSharedShadingLayer(map.layers, map.customLayers) &&
     shading !== serializeShading(map.shading)
   ) {
     function toColor(color = '00000000') {

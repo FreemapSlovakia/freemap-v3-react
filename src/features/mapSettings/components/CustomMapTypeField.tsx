@@ -4,15 +4,26 @@ import type { ReactElement } from 'react';
 import { ButtonGroup, Form, ToggleButton } from 'react-bootstrap';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 
-export type CustomMapTechnology = 'tile' | 'maplibre' | 'wms';
+export type CustomMapTechnology =
+  | 'tile'
+  | 'maplibre'
+  | 'wms'
+  | 'parametricShading'
+  | 'color';
 
 export type CustomMapKind = CustomMapTechnology | 'combination';
 
-const KINDS: CustomMapKind[] = ['tile', 'maplibre', 'wms', 'combination'];
+const KINDS: CustomMapKind[] = [
+  'tile',
+  'maplibre',
+  'wms',
+  'parametricShading',
+  'color',
+  'combination',
+];
 
 type Props = {
-  /** Any other value, such as a URL-only `parametricShading`, checks nothing. */
-  value: string;
+  value: CustomMapKind;
   onChange: (kind: CustomMapKind) => void;
   /** An existing map can't turn into a combination or back: they're stored apart. */
   editing: boolean;

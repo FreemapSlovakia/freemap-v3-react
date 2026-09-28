@@ -6,6 +6,7 @@ import {
   mapToggleLayer,
 } from '@features/map/model/actions.js';
 import { withoutMarkers } from '@features/map/model/mapCombination.js';
+import { resolvedCustomLayersSelector } from '@features/map/model/selectors.js';
 import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import z from 'zod';
 import { defineTool } from '../tool.js';
@@ -28,7 +29,7 @@ function layerCatalog(state: RootState) {
       countries: def.countries,
       experimental: def.experimental,
     })),
-    ...state.map.customLayers.map((def) => ({
+    ...resolvedCustomLayersSelector(state).map((def) => ({
       code: def.type,
       name: def.name ?? def.type,
       kind: def.layer,

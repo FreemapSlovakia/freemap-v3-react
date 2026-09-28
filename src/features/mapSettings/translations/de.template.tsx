@@ -12,6 +12,8 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   savingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Speichern der Einstellungen', err),
   customMapSaved: 'Die benutzerdefinierte Karte wurde gespeichert.',
+  shadingMapHint:
+    'Die Schattierungsparameter werden in dem Bedienfeld eingestellt und gespeichert, das nach dem Aktivieren dieser Karte erscheint.',
 };
 
 export default de;

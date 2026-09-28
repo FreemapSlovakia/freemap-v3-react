@@ -15,7 +15,7 @@ import { serializeViewshed } from '@features/viewshed/viewshedUrl.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import {
-  hasShadingLayer,
+  hasSharedShadingLayer,
   integratedLayerDefMap,
 } from '@shared/mapDefinitions.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
@@ -351,7 +351,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['layers', layers]);
   }
 
-  if (hasShadingLayer(map.layers, map.customLayers)) {
+  if (hasSharedShadingLayer(map.layers, map.customLayers)) {
     queryParts.push(['shading', serializeShading(map.shading)]);
   }
 

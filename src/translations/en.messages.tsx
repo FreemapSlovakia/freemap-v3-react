@@ -485,7 +485,7 @@ const messages: Messages = {
     customMaps: 'Custom maps',
     addCustomMap: 'Add custom map',
     activate: 'Activate',
-    saveAsCombination: 'Save as map combination…',
+    saveAsShadingMap: 'Save as custom map…',
     customMapsEmptyMessage:
       'No custom maps defined yet. Add one to display your own map source.',
     base: 'Base layers',
@@ -496,6 +496,7 @@ const messages: Messages = {
       maplibre: 'Vector (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Parametric shading',
+      color: 'Color',
     },
     url: 'URL',
     minZoom: 'Min Zoom',

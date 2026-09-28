@@ -12,6 +12,8 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   savingError: ({ err }) =>
     addError(getMessages()!, 'Errore nel salvataggio delle impostazioni:', err),
   customMapSaved: 'La mappa personalizzata è stata salvata.',
+  shadingMapHint:
+    "I parametri dell'ombreggiatura si impostano e si salvano nel pannello che compare dopo aver attivato questa mappa.",
 };
 
 export default it;

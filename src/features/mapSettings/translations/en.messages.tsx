@@ -11,19 +11,15 @@ const en: MapSettingsMessages = {
   customMapSaved: 'Custom map has been saved.',
   combination: 'Map combination',
   combinationSaved: 'Map combination has been saved.',
-  combinationHint:
-    'With a base map it acts as a base map and stays active until another one is picked; without one it is an overlay, ticked over any base map. Its opacities apply while it is active.',
   updateFromCurrentMap: 'Update from current map',
   baseMap: 'Base map',
-  noBaseMap: 'None — the map works as an overlay',
+  shadingSource: 'Terrain source',
+  shadingMapHint:
+    'The shading parameters are set and saved in the panel that appears once this map is activated.',
   overlays: 'Overlays',
   addOverlay: 'Add overlay…',
   noOverlays: 'No overlays.',
-  combinationTooSmall:
-    'A combination needs at least two layers, or a single parametric shading layer.',
-  shading: 'Shading',
-  shadingHint:
-    'To change the shading, adjust it live in its panel on the map, then use Update from current map in the list.',
+  combinationTooSmall: 'At least two layers are required.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Error saving settings', err),
 };

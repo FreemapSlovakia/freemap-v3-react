@@ -10,6 +10,9 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   keyboardShortcut: 'Bližnjica na tipkovnici',
   saveSuccess: 'Nastavitve so bile shranjene.',
   customMapSaved: 'Zemljevid po meri je bil shranjen.',
+  combinationTooSmall: 'Zahtevani sta vsaj dve plasti.',
+  shadingMapHint:
+    'Parametri senčenja se nastavijo in shranijo v plošči, ki se prikaže, ko vklopite ta zemljevid.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri shranjevanju nastavitev', err),
 };

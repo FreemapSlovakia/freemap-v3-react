@@ -22,6 +22,7 @@ import {
   mapSetEsriAttribution,
   mapSetLocalPrefs,
   mapSetShading,
+  mapSetShadingDraft,
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
 } from './actions.js';
@@ -44,6 +45,8 @@ export interface MapState extends MapStateBase {
   featureScale: number;
   zoomSnap: number;
   shading: Shading;
+  /** Unsaved edits of custom maps' own shading, by layer type. */
+  shadingDrafts: Record<string, Shading>;
   mapCombinations: MapCombination[];
 }
 
@@ -82,6 +85,7 @@ export const mapInitialState: MapState = {
       },
     ],
   },
+  shadingDrafts: {},
   mapCombinations: [],
   // undefined = not yet fetched (unknown coverage); [] would wrongly mean
   // "covers no country" and flash out-of-coverage warnings during initial load
@@ -132,6 +136,19 @@ function assignAccountSettings(
 
   if (settings.customLayers) {
     state.customLayers = settings.customLayers;
+
+    // A draft ends once saved, or with its map.
+    for (const [type, draft] of Object.entries(state.shadingDrafts)) {
+      const def = settings.customLayers.find((def) => def.type === type);
+
+      if (
+        !def ||
+        (def.technology === 'parametricShading' &&
+          JSON.stringify(def.shading) === JSON.stringify(draft))
+      ) {
+        delete state.shadingDrafts[type];
+      }
+    }
   }
 
   if (settings.mapCombinations) {
@@ -287,6 +304,8 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
           map?.zoom === undefined ? state.zoom : acceptZoom(state, map.zoom),
         layers: map?.layers ?? state.layers,
         customLayers: map?.customLayers ?? state.customLayers,
+        // Drafts belong to the replaced custom maps, whose types may be reused.
+        shadingDrafts: map?.customLayers ? {} : state.shadingDrafts,
         shading: map?.shading ?? state.shading,
       }),
     )
@@ -301,6 +320,13 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     })
     .addCase(mapSetCountries, (state, action) => {
       state.countries = action.payload;
+    })
+    .addCase(mapSetShadingDraft, (state, { payload: { type, shading } }) => {
+      if (shading) {
+        state.shadingDrafts[type] = shading;
+      } else {
+        delete state.shadingDrafts[type];
+      }
     })
     .addCase(mapSetShading, (state, action) => {
       state.shading = action.payload;

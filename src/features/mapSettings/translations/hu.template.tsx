@@ -12,6 +12,8 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   savingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a beállítások mentésénél', err),
   customMapSaved: 'Az egyéni térkép mentve.',
+  shadingMapHint:
+    'Az árnyékolás paramétereit a térkép bekapcsolása után megjelenő panelen lehet beállítani és menteni.',
 };
 
 export default hu;

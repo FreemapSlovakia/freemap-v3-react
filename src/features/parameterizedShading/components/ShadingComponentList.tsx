@@ -7,12 +7,15 @@ import classes from './ShadingControl.module.css';
 
 type Props = {
   shading: Shading;
+  /** An overlay's background is optional and not listed while there is none. */
+  showBackground: boolean;
   selectedId?: number;
   onSelect: (id?: number) => void;
 };
 
 export function ShadingComponentList({
   shading,
+  showBackground,
   selectedId,
   onSelect,
 }: Props): ReactElement {
@@ -24,13 +27,15 @@ export function ShadingComponentList({
       activeKey={selectedId ?? ''}
       onSelect={(e) => onSelect(e ? Number(e) : undefined)}
     >
-      <ListGroup.Item action eventKey="">
-        <span
-          className={`rounded border ${classes.shadingColor}`}
-          style={{ backgroundColor: Color(shading.backgroundColor).hexa() }}
-        />
-        <span>{sm?.background}</span>
-      </ListGroup.Item>
+      {showBackground && (
+        <ListGroup.Item action eventKey="">
+          <span
+            className={`rounded border ${classes.shadingColor}`}
+            style={{ backgroundColor: Color(shading.backgroundColor).hexa() }}
+          />
+          <span>{sm?.background}</span>
+        </ListGroup.Item>
+      )}
 
       {shading.components.map((component) => (
         <ListGroup.Item action key={component.id} eventKey={component.id}>

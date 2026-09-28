@@ -16,6 +16,8 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   keyboardShortcut: 'Raccourci clavier',
   saveSuccess: 'Les paramètres ont été enregistrés.',
   customMapSaved: 'La carte personnalisée a été enregistrée.',
+  shadingMapHint:
+    "Les paramètres de l'ombrage se règlent et s'enregistrent dans le panneau qui apparaît une fois cette carte activée.",
 };
 
 export default fr;
