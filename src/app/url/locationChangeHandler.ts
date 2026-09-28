@@ -53,6 +53,7 @@ import {
   mapSetCustomLayers,
   mapSetShading,
 } from '@features/map/model/actions.js';
+import { layerKindsSelector } from '@features/map/model/selectors.js';
 import {
   type MapRestore,
   mapsRestore,
@@ -630,12 +631,11 @@ export function handleLocationChange(store: MyStore): void {
 
   const { customLayers } = getState().map;
 
-  if (
-    typeof customLayerDefsStr === 'string' &&
-    JSON.stringify(getState().map.customLayers) !== customLayerDefsStr
-  ) {
-    const existingCustomLayersDefStrings = getState().map.customLayers.map(
-      (cl) => JSON.stringify(cl),
+  const customTypes: string[] = [];
+
+  if (typeof customLayerDefsStr === 'string') {
+    const existingCustomLayersDefStrings = customLayers.map((cl) =>
+      JSON.stringify(cl),
     );
 
     try {
@@ -643,9 +643,7 @@ export function handleLocationChange(store: MyStore): void {
         JSON.parse(customLayerDefsStr),
       );
 
-      mapStateFromUrl.layers ??= [];
-
-      mapStateFromUrl.layers.push(...customLayerDefs.map((def) => def.type));
+      customTypes.push(...customLayerDefs.map((def) => def.type));
 
       const newCustomLayerDefs = customLayerDefs.filter(
         (cl) => !existingCustomLayersDefStrings.includes(JSON.stringify(cl)),
@@ -663,6 +661,21 @@ export function handleLocationChange(store: MyStore): void {
     } catch {
       // ignore
     }
+  }
+
+  if (mapStateFromUrl.layers || customTypes.length) {
+    const layers = mapStateFromUrl.layers ?? [];
+
+    const kinds = layerKindsSelector(getState());
+
+    // `layers=` never names custom layers, so a custom base map counts too.
+    // X goes before them: the URL written back reads it there, and any other
+    // order diffs as a layer change.
+    if (![...layers, ...customTypes].some((t) => kinds.get(t) === 'base')) {
+      layers.push('X');
+    }
+
+    mapStateFromUrl.layers = [...layers, ...customTypes];
   }
 
   const diff = getMapStateDiffFromUrl(mapStateFromUrl, getState().map);

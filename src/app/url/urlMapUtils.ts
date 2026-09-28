@@ -81,13 +81,6 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
     (layer) => layer in integratedLayerDefMap || isCombinationMarker(layer),
   );
 
-  if (
-    layers &&
-    !layers.some((layer) => integratedLayerDefMap[layer]?.layer === 'base')
-  ) {
-    layers.push('X'); // fallback
-  }
-
   return {
     lat,
     lon,
