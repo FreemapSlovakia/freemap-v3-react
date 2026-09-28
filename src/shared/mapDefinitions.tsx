@@ -926,7 +926,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     shortcut: { code: 'KeyH' },
     errorTileUrl: white1x1,
     scaleWithDpi: true,
-    premiumFromZoom: 17,
+    premiumFromZoom: 15,
     creditsPerMTile: 1000,
     countries: ['sk'],
   },
@@ -1200,7 +1200,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     // The terrain is credited from terrain-tiles' own dictionary, by what the
     // tiles on screen report (`tileAttribution.ts`).
     attribution: [FM_ATTR],
-    premiumFromZoom: 13,
+    premiumFromZoom: 15,
     zIndex: 2,
   },
   {
