@@ -13,6 +13,12 @@
     left: 0.25rem;
   }
 
+  /* Block content inside the inline span is sized without the floated ×, so the
+     toast comes out too narrow and it wraps; a new BFC is sized beside the float. */
+  .message:has(> :is(div, ul, ol, p)) {
+    display: flow-root;
+  }
+
   /* The button makes this row far taller than the 2px bar it carries, so it
      sits back in the alert's own bottom padding rather than adding to it. */
   .countdown {

@@ -124,7 +124,7 @@ export function Toast({
         </LongPressTooltip>
       )}
 
-      <span>{message}</span>
+      <span className={classes.message}>{message}</span>
 
       {/* `gap` rather than a margin per button: the toolbar wraps, and a margin
           would indent whichever button starts the second row and leave the rows
