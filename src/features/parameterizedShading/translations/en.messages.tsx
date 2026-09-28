@@ -14,7 +14,9 @@ const en: ShadingMessages = {
   color: 'Color',
   belowColor: 'Below color',
   aboveColor: 'Above color',
-  exaggeration: 'Exaggeration',
+  exaggeration: 'Height exaggeration',
+  exaggerationHint:
+    'Heights are multiplied by it before shading: above 1 the relief looks steeper, below 1 flatter.',
   azimuth: 'Azimuth',
   lightElevation: 'Elevation',
   types: {

@@ -16,6 +16,8 @@ const pl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   belowColor: 'Kolor poniżej',
   aboveColor: 'Kolor powyżej',
   exaggeration: 'Przewyższenie',
+  exaggerationHint:
+    'Wysokości są przez nie mnożone przed cieniowaniem: powyżej 1 rzeźba wydaje się bardziej stroma, poniżej 1 bardziej płaska.',
   azimuth: 'Azymut',
   lightElevation: 'Wysokość',
   types: {

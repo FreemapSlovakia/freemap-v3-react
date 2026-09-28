@@ -16,6 +16,8 @@ const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
   belowColor: 'Alsó szín',
   aboveColor: 'Felső szín',
   exaggeration: 'Túlzás',
+  exaggerationHint:
+    'Árnyékolás előtt ezzel szorozzuk a magasságokat: 1 fölött meredekebbnek, 1 alatt laposabbnak látszik a domborzat.',
   azimuth: 'Azimut',
   lightElevation: 'Magassági szög',
   types: {

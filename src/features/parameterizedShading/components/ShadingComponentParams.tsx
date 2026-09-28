@@ -1,8 +1,15 @@
+import { HintMark } from '@shared/components/HintMark.js';
 import { produce } from 'immer';
 import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
 import type { Shading, ShadingComponent } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
+
+// A label may wrap onto a second line, so the input keeps to the bottom.
+const FIELD = 'd-flex flex-column justify-content-end';
+
+// An equal share, but never narrower than a value such as 315.5 needs.
+const FIELD_STYLE = { flex: '1 1 5.5rem', minWidth: '5.5rem' };
 
 type Props = {
   shading: Shading;
@@ -31,11 +38,22 @@ export function ShadingComponentParams({
     );
   }
 
+  const hasAzimuth =
+    component.type === 'hillshade-igor' ||
+    component.type === 'hillshade-classic';
+
+  const hasElevation =
+    component.type === 'hillshade-classic' ||
+    component.type === 'slope-classic';
+
   return (
     <>
       {'exaggeration' in component && (
         <Form.Group controlId="exaggeration" className="mt-3">
-          <Form.Label>{sm?.exaggeration}</Form.Label>
+          <Form.Label>
+            {sm?.exaggeration}
+            <HintMark hint={sm?.exaggerationHint} />
+          </Form.Label>
 
           <Form.Control
             type="number"
@@ -50,42 +68,63 @@ export function ShadingComponentParams({
         </Form.Group>
       )}
 
-      {(component.type === 'hillshade-igor' ||
-        component.type === 'hillshade-classic') && (
-        <Form.Group controlId="azimuth" className="mt-3">
-          <Form.Label>{sm?.azimuth}</Form.Label>
+      {(hasAzimuth || hasElevation) && (
+        // The light's direction, side by side, as wide as the rest of the panel
+        // and never wider; a field too narrow for its value moves to the next
+        // line instead.
+        <div
+          className="d-flex flex-wrap gap-2 mt-3"
+          style={{ width: 0, minWidth: '100%' }}
+        >
+          {(component.type === 'hillshade-igor' ||
+            component.type === 'hillshade-classic') && (
+            <Form.Group
+              controlId="azimuth"
+              className={FIELD}
+              style={FIELD_STYLE}
+            >
+              <Form.Label>{sm?.azimuth}</Form.Label>
 
-          <Form.Control
-            type="number"
-            min={0}
-            max={360}
-            step={5}
-            value={((component.azimuth / Math.PI) * 180).toFixed(1)}
-            onChange={(e) =>
-              patch('azimuth', (Number(e.currentTarget.value) / 180) * Math.PI)
-            }
-          />
-        </Form.Group>
-      )}
+              <Form.Control
+                type="number"
+                min={0}
+                max={360}
+                step={5}
+                value={((component.azimuth / Math.PI) * 180).toFixed(1)}
+                onChange={(e) =>
+                  patch(
+                    'azimuth',
+                    (Number(e.currentTarget.value) / 180) * Math.PI,
+                  )
+                }
+              />
+            </Form.Group>
+          )}
 
-      {(component.type === 'hillshade-classic' ||
-        component.type === 'slope-classic') && (
-        <Form.Group controlId="elevation" className="mt-3">
-          <Form.Label>{sm?.lightElevation}</Form.Label>
+          {(component.type === 'hillshade-classic' ||
+            component.type === 'slope-classic') && (
+            <Form.Group
+              controlId="elevation"
+              className={FIELD}
+              style={FIELD_STYLE}
+            >
+              <Form.Label>{sm?.lightElevation}</Form.Label>
 
-          <Form.Control
-            type="number"
-            min={0}
-            max={90}
-            value={((component.elevation / Math.PI) * 180).toFixed(1)}
-            onChange={(e) =>
-              patch(
-                'elevation',
-                (Number(e.currentTarget.value) / 180) * Math.PI,
-              )
-            }
-          />
-        </Form.Group>
+              <Form.Control
+                type="number"
+                min={0}
+                max={90}
+                value={((component.elevation / Math.PI) * 180).toFixed(1)}
+                onChange={(e) =>
+                  patch(
+                    'elevation',
+                    (Number(e.currentTarget.value) / 180) * Math.PI,
+                  )
+                }
+              />
+            </Form.Group>
+          )}
+        </div>
       )}
     </>
   );

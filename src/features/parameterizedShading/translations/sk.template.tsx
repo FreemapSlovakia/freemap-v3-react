@@ -15,7 +15,9 @@ const sk: DeepPartialWithRequiredObjects<ShadingMessages> = {
   color: 'Farba',
   belowColor: 'Farba pod',
   aboveColor: 'Farba nad',
-  exaggeration: 'Zvýraznenie',
+  exaggeration: 'Zvýraznenie výšok',
+  exaggerationHint:
+    'Výšky sa ním pred tieňovaním násobia: nad 1 vyzerá reliéf strmší, pod 1 plochší.',
   azimuth: 'Azimut',
   lightElevation: 'Výška',
   types: {

@@ -13,6 +13,7 @@ export type ShadingMessages = {
   belowColor: string;
   aboveColor: string;
   exaggeration: string;
+  exaggerationHint: string;
   azimuth: string;
   lightElevation: string;
   types: {

@@ -15,7 +15,9 @@ const sl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   color: 'Barva',
   belowColor: 'Barva pod',
   aboveColor: 'Barva nad',
-  exaggeration: 'Poudarjenost',
+  exaggeration: 'Povečanje višin',
+  exaggerationHint:
+    'Višine se pred senčenjem pomnožijo s tem številom: nad 1 je relief videti strmejši, pod 1 bolj položen.',
   azimuth: 'Azimut',
   lightElevation: 'Višina',
   types: {

@@ -7,6 +7,7 @@ import {
   Dropdown,
   DropdownButton,
 } from 'react-bootstrap';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { SHADING_COMPONENT_TYPES } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
@@ -36,7 +37,11 @@ export function ShadingToolbar({
     <ButtonToolbar className="mt-2">
       <DropdownButton
         id="add-shading-button"
-        title={sm?.add}
+        title={
+          <>
+            <FaPlus /> {sm?.add}
+          </>
+        }
         variant="success"
         onSelect={onAdd}
       >
@@ -75,7 +80,7 @@ export function ShadingToolbar({
       </DropdownButton>
 
       <Button disabled={!canRemove} variant="danger" onClick={onRemove}>
-        {m?.general.remove}
+        <FaTrash /> {m?.general.remove}
       </Button>
 
       {onSaveAsMap && (

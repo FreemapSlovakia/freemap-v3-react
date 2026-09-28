@@ -16,6 +16,8 @@ const it: DeepPartialWithRequiredObjects<ShadingMessages> = {
   belowColor: 'Colore inferiore',
   aboveColor: 'Colore superiore',
   exaggeration: 'Esagerazione',
+  exaggerationHint:
+    'Le quote vengono moltiplicate per questo valore prima dell’ombreggiatura: sopra 1 il rilievo appare più ripido, sotto 1 più piatto.',
   azimuth: 'Azimut',
   lightElevation: 'Elevazione',
   types: {

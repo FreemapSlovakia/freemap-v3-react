@@ -278,10 +278,15 @@ export default function ShadingControl() {
 
   // What the panel is, and its collapse toggle; all that shows when collapsed.
   const header = (
-    <div className="d-flex align-items-center gap-2">
-      <GiHills />
+    // Expanded, as wide as the rest of the panel and never wider, the name cut
+    // short; collapsed it is all there is, so it sets the width itself.
+    <div
+      className="d-flex align-items-center gap-2"
+      style={collapsed ? undefined : { width: 0, minWidth: '100%' }}
+    >
+      <GiHills className="flex-shrink-0" />
 
-      <span className="flex-grow-1 text-nowrap">
+      <span className="flex-grow-1 text-truncate">
         {m?.mapLayers.letters[SHADING_SOURCE]}
       </span>
 
@@ -291,6 +296,7 @@ export default function ShadingControl() {
         {({ props }) => (
           <Button
             variant="dark"
+            className="flex-shrink-0"
             onClick={() => setCollapsed((collapsed) => !collapsed)}
             {...props}
           >

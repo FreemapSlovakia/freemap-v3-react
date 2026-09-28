@@ -16,6 +16,8 @@ const de: DeepPartialWithRequiredObjects<ShadingMessages> = {
   belowColor: 'Farbe darunter',
   aboveColor: 'Farbe darüber',
   exaggeration: 'Überhöhung',
+  exaggerationHint:
+    'Die Höhen werden vor der Schattierung damit multipliziert: über 1 wirkt das Relief steiler, unter 1 flacher.',
   azimuth: 'Azimut',
   lightElevation: 'Höhenwinkel',
   types: {

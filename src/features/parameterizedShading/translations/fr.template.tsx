@@ -16,6 +16,8 @@ const fr: DeepPartialWithRequiredObjects<ShadingMessages> = {
   belowColor: 'Couleur en dessous',
   aboveColor: 'Couleur au-dessus',
   exaggeration: 'Exagération',
+  exaggerationHint:
+    'Les altitudes sont multipliées par cette valeur avant l’ombrage : au-dessus de 1 le relief paraît plus raide, en dessous plus plat.',
   azimuth: 'Azimut',
   lightElevation: 'Hauteur',
   types: {
