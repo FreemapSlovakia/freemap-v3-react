@@ -1,3 +1,8 @@
+/* Wraps within the menu's width instead of setting it. */
+.row {
+  contain: inline-size;
+}
+
 .mastodon-icon {
   color: #6364ff;
 }

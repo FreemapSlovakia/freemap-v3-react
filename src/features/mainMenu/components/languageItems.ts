@@ -35,10 +35,10 @@ function toFlag(language: Language): string {
 // `languages` keeps any newly added language in the menu automatically.
 // Each endonym is in its own language, so the order is collated with a fixed
 // locale — everyone sees the same menu regardless of the UI or browser language.
+const isHomeSite = window.location.hostname.endsWith('freemap.sk');
+
 function getLanguageItems() {
-  const pinned: Language[] = window.location.hostname.endsWith('freemap.sk')
-    ? ['sk', 'en']
-    : ['en'];
+  const pinned: Language[] = isHomeSite ? ['sk', 'en'] : ['en'];
 
   const byName = makeLabelComparator('en');
 
@@ -54,3 +54,26 @@ function getLanguageItems() {
 }
 
 export const languageItems = getLanguageItems();
+
+// By Matomo actions per browser language (2026-07 – 2026-09).
+const usageRank: Record<Language, number> = {
+  sk: 0,
+  en: 1,
+  it: 2,
+  cs: 3,
+  hu: 4,
+  pl: 5,
+  de: 6,
+  fr: 7,
+  sl: 8,
+};
+
+// English leads off freemap.sk, as in the submenu.
+function rankOf(code: Language) {
+  return code === 'en' && !isHomeSite ? -1 : usageRank[code];
+}
+
+/** The flags beside the menu's Language item, most used first. */
+export const flagItems = [...languageItems].sort(
+  (a, b) => rankOf(a.code) - rankOf(b.code),
+);

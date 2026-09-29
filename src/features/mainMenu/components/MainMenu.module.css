@@ -1,0 +1,14 @@
+/* Fills the row's leftover width without widening the menu; `text-overflow`
+   drops whole flags (atomic inlines) for the ellipsis. */
+.flags {
+  flex: 1 1 0;
+  min-width: 0;
+  contain: inline-size;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  & > :not(:last-child) img {
+    margin-inline-end: var(--fm-space-1);
+  }
+}

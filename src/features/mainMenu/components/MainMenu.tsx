@@ -40,7 +40,8 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { IoLanguage } from 'react-icons/io5';
-import { languageItems } from './languageItems.js';
+import { flagItems } from './languageItems.js';
+import classes from './MainMenu.module.css';
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
@@ -64,12 +65,14 @@ export function MainMenu(): ReactElement {
   return (
     <>
       <Dropdown.Item as="button" eventKey="submenu-language">
-        <IoLanguage /> {m?.mainMenu.language}{' '}
-        {languageItems.map(({ code, name, flag }) => (
-          <span key={code} title={name}>
-            <Emoji>{flag}</Emoji>{' '}
-          </span>
-        ))}
+        <IoLanguage /> {m?.mainMenu.language}
+        <span className={classes.flags}>
+          {flagItems.map(({ code, name, flag }) => (
+            <span key={code} title={name}>
+              <Emoji>{flag}</Emoji>
+            </span>
+          ))}
+        </span>
         <MenuGutter>
           <FaChevronRight />
         </MenuGutter>
