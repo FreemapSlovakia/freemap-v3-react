@@ -16,6 +16,9 @@
   flex: 1 1 auto;
   min-height: 0;
   transform: translate(0, 0);
+  /* The transform makes this a stacking context; its menus must still paint
+     over the footer that follows. */
+  z-index: 1;
 
   & > :global(.fm-menu-scroller) {
     /* The panel's height, set in `ShadingControl`, is the cap. */
