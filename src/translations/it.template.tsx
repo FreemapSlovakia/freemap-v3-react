@@ -310,7 +310,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    showMore: 'Mostra altro…',
+    showMore: 'Mostra altro',
     offlineHint:
       'Senza una connessione a internet è possibile trovare solo coordinate, un riquadro di delimitazione, numeri di tassello (z/x/y) o GeoJSON incollato.',
     inProgress: 'Ricerca in corso…',

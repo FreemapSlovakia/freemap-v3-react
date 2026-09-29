@@ -300,7 +300,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     copyright: 'Droits d’auteur',
   },
   search: {
-    showMore: 'Afficher plus…',
+    showMore: 'Afficher plus',
     offlineHint:
       'Sans connexion Internet, seules les coordonnées, un cadre de délimitation, des numéros de tuile (z/x/y) ou du GeoJSON collé peuvent être trouvés.',
     fetchingError: ({ err }) => addError(messages, 'Erreur de recherche', err),

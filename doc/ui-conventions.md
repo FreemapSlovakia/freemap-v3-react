@@ -9,6 +9,7 @@ Covered here: [button variants](#button-variants),
 [touch targets](#touch-targets-and-the-marker-primitive),
 [where a hint goes](#where-a-hint-goes),
 [spacing](#spacing-the-container-decides), [modal footers](#modal-footers),
+[ellipsis in labels](#ellipsis-in-labels),
 [toolbar outlines](#toolbar-outlines).
 
 ## Button variants
@@ -167,6 +168,14 @@ hidden outside `(hover: hover) and (pointer: fine)` (`bootstrap-override.css`).
 Where a footer still doesn't fit with the dismiss button collapsed — the
 account modal's `Log out` + `Delete account` + ✕ on a 360px phone is 10px over —
 the row wraps as Bootstrap wraps it.
+
+## Ellipsis in labels
+
+A label ends in `…` only when the choice that follows completes it: "Open in…"
+(which app), "Add overlay…" (which layer), "Choose icon…" (which icon). Opening
+a dialog is not such a choice — "Save as custom map", like the main-menu items
+that open modals, takes none. Progress messages ("Loading…") are a separate use
+and keep it.
 
 ## Tokens come from Bootstrap
 
@@ -424,7 +433,7 @@ what it is, not merely that it is there. Two exist, both 2px with
   `secondary`. The toggle pattern is `isSelected ? 'secondary' : 'outline-secondary'`
   (see `IconPicker`) or `outline-primary` on `ToggleButton` groups.
 - **Avoid `success` / `info` / `light` for buttons.** They exist as a couple of
-  deliberate one-offs (e.g. the green "add shading" `DropdownButton`, the
+  deliberate one-offs (e.g. the green "add shading" dropdown, the
   input-like key field in `ShortcutRecorder`); don't reach for them for ordinary
   actions. `success` / `info` are fine on `<Alert>`.
 - A `dark` button is occasionally used for a non-dismiss navigation that visually

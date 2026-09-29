@@ -308,7 +308,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    showMore: 'Mehr anzeigen…',
+    showMore: 'Mehr anzeigen',
     offlineHint:
       'Ohne Internetverbindung können nur Koordinaten, ein Begrenzungsrahmen, Kachelnummern (z/x/y) oder eingefügtes GeoJSON gefunden werden.',
     inProgress: 'Suche…',

@@ -307,7 +307,7 @@ const messages: Messages = {
     buttonTitle: 'Search',
     placeholder: 'Search places and functions',
     result: 'Lookup',
-    showMore: 'Show more…',
+    showMore: 'Show more',
     keepOnMap: 'Keep on the map',
     offlineHint:
       'Without an internet connection only coordinates, a bounding box, tile numbers (z/x/y) or pasted GeoJSON can be found.',

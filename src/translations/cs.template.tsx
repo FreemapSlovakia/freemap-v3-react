@@ -303,7 +303,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    showMore: 'Zobrazit více…',
+    showMore: 'Zobrazit více',
     inProgress: 'Hledám…',
     noResults: 'Nebyly nalezeny žádné výsledky',
     prompt: 'Zadejte lokalitu',
