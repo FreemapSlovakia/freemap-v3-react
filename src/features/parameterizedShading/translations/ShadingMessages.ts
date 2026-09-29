@@ -16,6 +16,9 @@ export type ShadingMessages = {
   exaggerationHint: string;
   azimuth: string;
   lightElevation: string;
+  parameters: string;
+  contrast: string;
+  brightness: string;
   types: {
     'hillshade-igor': string;
     'hillshade-classic': string;

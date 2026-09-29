@@ -20,6 +20,9 @@ const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
     'Árnyékolás előtt ezzel szorozzuk a magasságokat: 1 fölött meredekebbnek, 1 alatt laposabbnak látszik a domborzat.',
   azimuth: 'Azimut',
   lightElevation: 'Magassági szög',
+  parameters: 'Paraméterek',
+  contrast: 'Kontraszt',
+  brightness: 'Fényerő',
   types: {
     'hillshade-igor': 'Domborzatárnyékolás (Igor)',
     'hillshade-classic': 'Domborzatárnyékolás (klasszikus)',

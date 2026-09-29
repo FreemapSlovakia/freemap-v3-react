@@ -20,6 +20,9 @@ const pl: DeepPartialWithRequiredObjects<ShadingMessages> = {
     'Wysokości są przez nie mnożone przed cieniowaniem: powyżej 1 rzeźba wydaje się bardziej stroma, poniżej 1 bardziej płaska.',
   azimuth: 'Azymut',
   lightElevation: 'Wysokość',
+  parameters: 'Parametry',
+  contrast: 'Kontrast',
+  brightness: 'Jasność',
   types: {
     'hillshade-igor': 'Cieniowanie (Igor)',
     'hillshade-classic': 'Cieniowanie (klasyczne)',

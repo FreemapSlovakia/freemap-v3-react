@@ -20,6 +20,9 @@ const de: DeepPartialWithRequiredObjects<ShadingMessages> = {
     'Die Höhen werden vor der Schattierung damit multipliziert: über 1 wirkt das Relief steiler, unter 1 flacher.',
   azimuth: 'Azimut',
   lightElevation: 'Höhenwinkel',
+  parameters: 'Parameter',
+  contrast: 'Kontrast',
+  brightness: 'Helligkeit',
   types: {
     'hillshade-igor': 'Schummerung (Igor)',
     'hillshade-classic': 'Schummerung (klassisch)',

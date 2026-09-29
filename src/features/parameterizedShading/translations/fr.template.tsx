@@ -20,6 +20,9 @@ const fr: DeepPartialWithRequiredObjects<ShadingMessages> = {
     'Les altitudes sont multipliées par cette valeur avant l’ombrage : au-dessus de 1 le relief paraît plus raide, en dessous plus plat.',
   azimuth: 'Azimut',
   lightElevation: 'Hauteur',
+  parameters: 'Paramètres',
+  contrast: 'Contraste',
+  brightness: 'Luminosité',
   types: {
     'hillshade-igor': 'Ombrage (Igor)',
     'hillshade-classic': 'Ombrage (classique)',

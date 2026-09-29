@@ -20,6 +20,9 @@ const cs: DeepPartialWithRequiredObjects<ShadingMessages> = {
     'Výšky se jím před stínováním násobí: nad 1 vypadá reliéf strměji, pod 1 plošeji.',
   azimuth: 'Azimut',
   lightElevation: 'Výška',
+  parameters: 'Parametry',
+  contrast: 'Kontrast',
+  brightness: 'Jas',
   types: {
     'hillshade-igor': 'Stínování reliéfu (Igor)',
     'hillshade-classic': 'Stínování reliéfu (klasické)',

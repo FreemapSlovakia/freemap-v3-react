@@ -20,6 +20,9 @@ const it: DeepPartialWithRequiredObjects<ShadingMessages> = {
     'Le quote vengono moltiplicate per questo valore prima dell’ombreggiatura: sopra 1 il rilievo appare più ripido, sotto 1 più piatto.',
   azimuth: 'Azimut',
   lightElevation: 'Elevazione',
+  parameters: 'Parametri',
+  contrast: 'Contrasto',
+  brightness: 'Luminosità',
   types: {
     'hillshade-igor': 'Ombreggiatura (Igor)',
     'hillshade-classic': 'Ombreggiatura (classica)',

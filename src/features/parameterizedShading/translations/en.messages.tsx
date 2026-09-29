@@ -19,6 +19,9 @@ const en: ShadingMessages = {
     'Heights are multiplied by it before shading: above 1 the relief looks steeper, below 1 flatter.',
   azimuth: 'Azimuth',
   lightElevation: 'Elevation',
+  parameters: 'Parameters',
+  contrast: 'Contrast',
+  brightness: 'Brightness',
   types: {
     'hillshade-igor': 'Hillshade (Igor)',
     'hillshade-classic': 'Hillshade (classic)',
