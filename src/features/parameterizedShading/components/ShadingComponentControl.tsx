@@ -1,6 +1,10 @@
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { produce } from 'immer';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useRef,
+} from 'react';
 import type {
   ShadingComponent,
   ShadingComponentType,
@@ -20,6 +24,9 @@ export const MANAGEABLE_TYPES: Partial<Record<ShadingComponentType, true>> = {
   'hillshade-igor': true,
 };
 
+// How far from a handle's centre a press still grabs it (finger-sized).
+const HIT_RADIUS = 16;
+
 export function ShadingComponentControl({
   components: shadings,
   diameter = 220,
@@ -29,10 +36,9 @@ export function ShadingComponentControl({
 }: Props) {
   const radius = diameter / 2;
 
-  const gid = useRef(Math.random().toString(32).slice(2));
-
-  const [dragging, setDragging] = useState<{
+  const dragRef = useRef<{
     id: number;
+    pointerId: number;
     dx: number;
     dy: number;
   } | null>(null);
@@ -49,7 +55,7 @@ export function ShadingComponentControl({
 
   const domPoint = useRef<DOMPoint | null>(null);
 
-  const getCoordinates = useCallback((e: MouseEvent) => {
+  function getCoordinates(e: ReactPointerEvent) {
     const pt = domPoint.current;
 
     if (!pt || !svg.current) {
@@ -63,104 +69,113 @@ export function ShadingComponentControl({
     const { x, y } = pt.matrixTransform(svg.current.getScreenCTM()?.inverse());
 
     return { x, y };
-  }, []);
+  }
 
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      if (!dragging) {
-        return;
+  function handlePointerDown(e: ReactPointerEvent<SVGSVGElement>) {
+    if (!e.isPrimary || e.button !== 0 || dragRef.current) {
+      return;
+    }
+
+    const mouse = getCoordinates(e);
+
+    if (!mouse) {
+      return;
+    }
+
+    // The nearest handle within reach, so a finger-sized area never hides a
+    // neighbouring handle.
+    let nearest: (typeof handles)[number] | undefined;
+
+    let nearestDistance = HIT_RADIUS;
+
+    for (const handle of handles) {
+      const distance = Math.hypot(mouse.x - handle.cx, mouse.y - handle.cy);
+
+      if (distance <= nearestDistance) {
+        nearest = handle;
+
+        nearestDistance = distance;
+      }
+    }
+
+    if (!nearest) {
+      return;
+    }
+
+    e.preventDefault();
+
+    e.currentTarget.setPointerCapture(e.pointerId);
+
+    dragRef.current = {
+      id: nearest.shading.id,
+      pointerId: e.pointerId,
+      dx: mouse.x - nearest.cx,
+      dy: mouse.y - nearest.cy,
+    };
+
+    onSelect(nearest.shading.id);
+  }
+
+  function handlePointerMove(e: ReactPointerEvent) {
+    const dragging = dragRef.current;
+
+    if (!dragging || e.pointerId !== dragging.pointerId) {
+      return;
+    }
+
+    const mouse = getCoordinates(e);
+
+    if (!mouse) {
+      return;
+    }
+
+    const x = mouse.x - dragging.dx;
+
+    const y = mouse.y - dragging.dy;
+
+    const hypot = Math.hypot(x, y);
+
+    const azimuth = Math.PI - Math.atan2(x, y);
+
+    const elevation = (1 - Math.min(1, hypot / radius)) * (Math.PI / 2);
+
+    const next = produce(shadings, (draft) => {
+      const shading = draft.find((shading) => shading.id === dragging.id);
+
+      if (
+        shading?.type === 'hillshade-classic' ||
+        shading?.type === 'slope-classic'
+      ) {
+        shading.elevation = elevation;
       }
 
-      const mouse = getCoordinates(e);
-
-      if (!mouse) {
-        return;
+      if (
+        shading?.type === 'hillshade-classic' ||
+        shading?.type === 'hillshade-igor'
+      ) {
+        shading.azimuth = azimuth;
       }
+    });
 
-      const x = mouse.x - dragging.dx;
+    if (!suspendedRef.current) {
+      suspendedRef.current = true;
 
-      const y = mouse.y - dragging.dy;
+      setUrlUpdatingEnabled(false);
+    }
 
-      const hypot = Math.hypot(x, y);
+    latestComponentsRef.current = next;
 
-      const azimuth = Math.PI - Math.atan2(x, y);
+    onChange(next);
+  }
 
-      const elevation = (1 - Math.min(1, hypot / radius)) * (Math.PI / 2);
+  // Fires after pointerup and pointercancel alike, as both release capture.
+  function handleLostPointerCapture(e: ReactPointerEvent) {
+    if (dragRef.current?.pointerId !== e.pointerId) {
+      return;
+    }
 
-      const dragged = dragging;
+    dragRef.current = null;
 
-      const next = produce(shadings, (draft) => {
-        const shading = draft.find((shading) => shading.id === dragged.id);
-
-        if (
-          shading?.type === 'hillshade-classic' ||
-          shading?.type === 'slope-classic'
-        ) {
-          shading.elevation = elevation;
-        }
-
-        if (
-          shading?.type === 'hillshade-classic' ||
-          shading?.type === 'hillshade-igor'
-        ) {
-          shading.azimuth = azimuth;
-        }
-      });
-
-      if (!suspendedRef.current) {
-        suspendedRef.current = true;
-
-        setUrlUpdatingEnabled(false);
-      }
-
-      latestComponentsRef.current = next;
-
-      onChange(next);
-    },
-    [radius, dragging, onChange, shadings, getCoordinates],
-  );
-
-  const handleMouseDown = useCallback(
-    (e: MouseEvent) => {
-      if (!(e.target instanceof SVGCircleElement)) {
-        return undefined;
-      }
-
-      e.preventDefault();
-
-      const id = Number(e.target.dataset[`sc_${gid.current}`]);
-
-      const mouse = getCoordinates(e);
-
-      if (!mouse) {
-        return;
-      }
-
-      const shading = shadings.find((shading) => shading.id === id);
-
-      if (!shading) {
-        return;
-      }
-
-      const ele =
-        shading.type === 'hillshade-classic' || shading.type === 'slope-classic'
-          ? 1 - shading.elevation / (Math.PI / 2)
-          : 1;
-
-      const azimuth = 'azimuth' in shading ? shading.azimuth : 0;
-
-      setDragging({
-        id: shading.id,
-        dx: mouse.x - radius * ele * Math.sin(Math.PI - azimuth),
-        dy: mouse.y - radius * ele * Math.cos(Math.PI - azimuth),
-      });
-
-      onSelect(shading.id);
-    },
-    [shadings, radius, onSelect, getCoordinates],
-  );
-
-  const handleMouseUp = useCallback(() => {
     if (suspendedRef.current) {
       suspendedRef.current = false;
 
@@ -169,35 +184,36 @@ export function ShadingComponentControl({
 
       if (latestComponentsRef.current) {
         onChange(latestComponentsRef.current);
-
-        latestComponentsRef.current = null;
       }
     }
 
-    setDragging(null);
-  }, [onChange]);
+    latestComponentsRef.current = null;
+  }
 
+  // Otherwise a handle drag scrolls the panel, cancelling the pointer.
+  // pointerdown precedes touchstart, so the drag is known here; React's
+  // onTouchStart is passive and can't prevent.
   useEffect(() => {
-    const body = document.body;
+    const element = svg.current;
 
-    body.addEventListener('mousedown', handleMouseDown);
+    if (!element) {
+      return;
+    }
 
-    body.addEventListener('mouseup', handleMouseUp);
+    const handleTouchStart = (e: TouchEvent) => {
+      if (dragRef.current) {
+        e.preventDefault();
+      }
+    };
 
-    body.addEventListener('mousemove', handleMouseMove);
-
-    body.addEventListener('mouseleave', handleMouseUp);
+    element.addEventListener('touchstart', handleTouchStart, {
+      passive: false,
+    });
 
     return () => {
-      body.removeEventListener('mousedown', handleMouseDown);
-
-      body.removeEventListener('mouseup', handleMouseUp);
-
-      body.removeEventListener('mousemove', handleMouseMove);
-
-      body.removeEventListener('mouseleave', handleMouseUp);
+      element.removeEventListener('touchstart', handleTouchStart);
     };
-  }, [handleMouseDown, handleMouseUp, handleMouseMove]);
+  }, []);
 
   useEffect(
     () => () => {
@@ -225,40 +241,42 @@ export function ShadingComponentControl({
     const azimuth = 'azimuth' in shading ? shading.azimuth : 0;
 
     return {
-      ...shading,
+      shading,
       cx: radius * ele * Math.sin(Math.PI - azimuth),
       cy: radius * ele * Math.cos(Math.PI - azimuth),
     };
   });
 
+  const handles = items.filter(({ shading }) => MANAGEABLE_TYPES[shading.type]);
+
+  const size = diameter + 16;
+
   return (
     <svg
-      width={diameter + 16}
-      height={diameter + 16}
-      viewBox={[
-        -diameter / 2 - 8,
-        -diameter / 2 - 8,
-        diameter + 16,
-        diameter + 16,
-      ].join(' ')}
+      width={size}
+      height={size}
+      viewBox={[-size / 2, -size / 2, size, size].join(' ')}
       ref={setSvg}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onLostPointerCapture={handleLostPointerCapture}
     >
       <circle
         cx={0}
         cy={0}
-        r={diameter / 2}
+        r={radius}
         style={{ fill: 'none', strokeWidth: '1px', stroke: 'black' }}
       />
 
       {items
-        .filter((shading) => shading.type.startsWith('hillshade-'))
-        .map((shading) => (
+        .filter(({ shading }) => shading.type.startsWith('hillshade-'))
+        .map(({ shading, cx, cy }) => (
           <line
             key={shading.id}
             x1={0}
             y1={0}
-            x2={shading.cx}
-            y2={shading.cy}
+            x2={cx}
+            y2={cy}
             stroke="silver"
             strokeDasharray="4 2"
           />
@@ -266,37 +284,33 @@ export function ShadingComponentControl({
 
       <circle cx={0} cy={0} r={3} style={{ fill: 'silver' }} />
 
-      {items
-        .filter((shading) => MANAGEABLE_TYPES[shading.type])
-        .map((shading) => (
-          <circle
-            key={shading.id}
-            cx={shading.cx}
-            cy={shading.cy}
-            r={7}
-            style={{
-              fill: `rgba(${shading.colorStops[0].color.join(',')})`,
-              stroke: 'silver',
-            }}
-            {...{ [`data-sc_${gid.current}`]: shading.id }}
-          />
-        ))}
+      {handles.map(({ shading, cx, cy }) => (
+        <circle
+          key={shading.id}
+          cx={cx}
+          cy={cy}
+          r={7}
+          style={{
+            fill: `rgba(${shading.colorStops[0].color.join(',')})`,
+            stroke: 'silver',
+            cursor: 'move',
+          }}
+        />
+      ))}
 
-      {items
-        .filter((shading) => MANAGEABLE_TYPES[shading.type])
-        .filter((shading) => selectedId === shading.id)
-        .map((shading) => (
+      {handles
+        .filter(({ shading }) => selectedId === shading.id)
+        .map(({ shading, cx, cy }) => (
           <circle
             key={shading.id}
             r={8}
-            cx={shading.cx}
-            cy={shading.cy}
+            cx={cx}
+            cy={cy}
             style={{
               fill: 'none',
               strokeWidth: 1,
               stroke: 'blue',
               strokeDasharray: '2 2',
-              pointerEvents: 'none',
             }}
           />
         ))}
