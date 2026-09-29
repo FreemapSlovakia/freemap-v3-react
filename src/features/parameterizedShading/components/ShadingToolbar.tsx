@@ -1,10 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import type { ReactElement } from 'react';
 import { Button, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import { FaPlus, FaTrash } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
 import { SHADING_COMPONENT_TYPES } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 
@@ -14,8 +12,6 @@ type Props = {
   canAddBackground: boolean;
   onAdd: (type: string | null) => void;
   onRemove: () => void;
-  /** Absent where custom maps can't be managed, or for one that already is. */
-  onSaveAsMap?: () => void;
 };
 
 export function ShadingToolbar({
@@ -23,7 +19,6 @@ export function ShadingToolbar({
   canAddBackground,
   onAdd,
   onRemove,
-  onSaveAsMap,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -76,16 +71,6 @@ export function ShadingToolbar({
       <Button disabled={!canRemove} variant="danger" onClick={onRemove}>
         <FaTrash /> {m?.general.remove}
       </Button>
-
-      {onSaveAsMap && (
-        <LongPressTooltip label={m?.mapLayers.saveAsShadingMap}>
-          {({ props }) => (
-            <Button variant="secondary" onClick={onSaveAsMap} {...props}>
-              <MdDashboardCustomize />
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
     </ButtonToolbar>
   );
 }

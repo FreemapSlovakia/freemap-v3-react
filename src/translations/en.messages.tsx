@@ -478,7 +478,7 @@ const messages: Messages = {
     customMaps: 'Custom maps',
     addCustomMap: 'Add custom map',
     activate: 'Activate',
-    saveAsShadingMap: 'Save as custom map…',
+    saveAsShadingMap: 'Save as custom map',
     customMapsEmptyMessage:
       'No custom maps defined yet. Add one to display your own map source.',
     base: 'Base layers',

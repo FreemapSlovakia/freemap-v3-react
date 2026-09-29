@@ -749,7 +749,7 @@ Manage user-defined map layers — a list with edit/delete actions and an **Add 
 - layer: base or overlay, with the z-index beside it for an overlay (an overlay is always drawn above the base map, whatever its z-index)
 - show in toolbar / show in menu
 
-When several shading layers are on, the shading panel has a picker for which one it edits: the shared settings of the built-in layers, or a custom shading map's own. Edits to a custom map's shading show at once but are kept only when **Save** in the panel is pressed; **Revert** drops them. For the shared settings the panel instead offers **Save as custom map…**, opening the form for a new shading map with those settings.
+When several shading layers are on, the shading panel has a picker for which one it edits: the shared settings of the built-in layers, or a custom shading map's own. Edits to a custom map's shading show at once but are kept only when **Save** in the panel is pressed; **Revert** drops them. For the shared settings the panel instead offers **Save as custom map**, opening the form for a new shading map with those settings.
 
 The panel is headed **Parametric terrain shading** and collapses to that heading. Below the heading, **On server** / **In browser** chooses where every shading layer is rendered; the choice is remembered, and **On server** is the default. In the browser (experimental; WebGPU, disabled without it) edits show as they are made. On the server tiles arrive as finished WebP images: edits to the shared settings show only after **Apply**, and **Revert** drops them — both stay in place, disabled while there is nothing to apply — and a custom map shows only its saved shading.
 

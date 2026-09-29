@@ -1,16 +1,30 @@
 .shading-control {
   width: fit-content;
 
-  & :global(.fm-menu-scroller)::before,
-  & :global(.fm-menu-scroller) > div:first-child::before {
-    margin-top: 0;
-  }
-
   & :global(.card-body) {
     pointer-events: auto;
     margin: 0;
     padding: 0;
-    transform: translate(0, 0);
+  }
+}
+
+/* The scroller's fading edges are `position: fixed`; the transform pins them
+   to this box rather than the whole card, whose header and footer don't scroll. */
+.scroll-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  transform: translate(0, 0);
+
+  & > :global(.fm-menu-scroller) {
+    /* The panel's height, set in `ShadingControl`, is the cap. */
+    max-height: none;
+  }
+
+  & > :global(.fm-menu-scroller)::before,
+  & > :global(.fm-menu-scroller) > div:first-child::before {
+    margin-top: 0;
   }
 }
 

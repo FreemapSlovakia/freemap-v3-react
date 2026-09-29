@@ -35,6 +35,7 @@ import {
 } from 'react-bootstrap';
 import { FaAngleDown, FaAngleUp, FaCheck, FaUndo } from 'react-icons/fa';
 import { GiHills } from 'react-icons/gi';
+import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
 import { createDefaultShadingComponent } from '../model/createShadingComponent.js';
@@ -173,19 +174,26 @@ export default function ShadingControl() {
 
   const sc = useScrollClasses('vertical');
 
-  const [card, setCard] = useState<HTMLDivElement | null>(null);
+  const [panel, setPanel] = useState<HTMLFormElement | null>(null);
 
   const rf = useCallback(() => {
-    if (!card) {
+    if (!panel) {
       return;
     }
 
-    const { top } = card.getBoundingClientRect();
+    const { top } = panel.getBoundingClientRect();
+
+    // The floor leaves the scrolling middle usable beside the pinned header
+    // and footer, e.g. while an on-screen keyboard shrinks the viewport.
+    const pinned =
+      panel.offsetHeight -
+      (panel.querySelector<HTMLElement>(`.${classes.scrollArea}`)
+        ?.offsetHeight ?? 0);
 
     window.requestAnimationFrame(() => {
-      card.style.maxHeight = `${Math.max(window.innerHeight - top - 57, 100)}px`;
+      panel.style.maxHeight = `${Math.max(window.innerHeight - top - 57, pinned + 100)}px`;
     });
-  }, [card]);
+  }, [panel]);
 
   useEffect(() => {
     window.addEventListener('resize', rf);
@@ -196,9 +204,7 @@ export default function ShadingControl() {
   }, [rf]);
 
   useEffect(() => {
-    sc(card);
-
-    if (!card) {
+    if (!panel) {
       return;
     }
 
@@ -206,12 +212,12 @@ export default function ShadingControl() {
       rf();
     });
 
-    ro.observe(card);
+    ro.observe(panel);
 
     return () => {
       ro.disconnect();
     };
-  }, [card, sc, rf]);
+  }, [panel, rf]);
 
   function handleAdd(type0: string | null) {
     trackMatomo(['trackEvent', 'MapShading', 'add', type0 ?? undefined]);
@@ -336,224 +342,250 @@ export default function ShadingControl() {
   // there is nothing to commit, so editing never shifts the layout.
   const committable = applies || Boolean(targetDef);
 
+  const canSaveAsMap = !window.fmEmbedded && !targetDef;
+
+  const saveAsMap = () =>
+    dispatch(
+      setActiveModal({
+        type: 'custom-maps',
+        // What is being edited, unapplied changes included.
+        addShadingMap: { shading },
+      }),
+    );
+
   return (
     <>
       <Card body className={`${classes.shadingControl} mt-2 ms-2`}>
-        <div className="fm-menu-scroller" ref={setCard}>
-          <div />
+        {/* Header and footer stay put; only the middle scrolls. */}
+        <Form
+          noValidate
+          ref={setPanel}
+          className="d-flex flex-column"
+          onSubmit={(e) => e.preventDefault()}
+          style={{ width: 'fit-content' }}
+        >
+          <div className={collapsed ? 'p-2' : 'px-2 pt-2'}>{header}</div>
 
-          <Form
-            noValidate
-            className="p-2 overflow-hidden"
-            onSubmit={(e) => e.preventDefault()}
-            style={{ width: 'fit-content' }}
-          >
-            {header}
+          {!collapsed && (
+            <>
+              <div className={classes.scrollArea}>
+                <div className="fm-menu-scroller" ref={sc}>
+                  <div />
 
-            {!collapsed && (
-              <>
-                {/* As wide as the rest of the panel, never wider. */}
-                <ToggleButtonGroup
-                  type="radio"
-                  name="shading-renderer"
-                  className="mt-2 d-flex"
-                  style={{ width: 0, minWidth: '100%' }}
-                  value={onServer ? 'server' : 'browser'}
-                  onChange={(value) =>
-                    dispatch(mapSetShadingOnServer(value === 'server'))
-                  }
-                >
-                  <ToggleButton
-                    id="shading-renderer-server"
-                    value="server"
-                    variant="outline-primary"
-                    className="flex-grow-1 text-nowrap"
-                  >
-                    {sm?.onServer}
-                  </ToggleButton>
-
-                  <ToggleButton
-                    id="shading-renderer-browser"
-                    value="browser"
-                    variant="outline-primary"
-                    className="flex-grow-1 text-nowrap"
-                    disabled={!hasWebGpu}
-                  >
-                    {sm?.inBrowser} <ExperimentalFunction />
-                  </ToggleButton>
-                </ToggleButtonGroup>
-
-                {targets.length > 1 && (
-                  // As wide as the rest of the panel, never wider; a long
-                  // name ends in an ellipsis instead.
-                  <Dropdown
-                    className="mt-2"
-                    style={{ width: 0, minWidth: '100%' }}
-                    onSelect={(key) =>
-                      key !== null && setPickedTarget(key === SHARED ? '' : key)
-                    }
-                  >
-                    <Dropdown.Toggle as={SelectToggle} className="w-100">
-                      <span className="d-block text-truncate">
-                        {targetName(target)}
-                      </span>
-                    </Dropdown.Toggle>
-
-                    {/* As wide as the longest name: the narrow panel would
-                        otherwise wrap it. */}
-                    <FmDropdownMenu
-                      popperConfig={sameMinWidthPopperConfig}
-                      style={{ width: 'max-content' }}
-                    >
-                      {targets.map((t) => (
-                        <Dropdown.Item
-                          className="text-nowrap"
-                          as="button"
-                          type="button"
-                          key={t || SHARED}
-                          eventKey={t || SHARED}
-                          active={t === target}
-                        >
-                          {targetItem(t)}
-                        </Dropdown.Item>
-                      ))}
-                    </FmDropdownMenu>
-                  </Dropdown>
-                )}
-
-                {committable && (
-                  <>
-                    {/* As wide as the rest of the panel, never wider: the
-                        buttons wrap instead of stretching it. */}
-                    <div
-                      className="d-flex flex-wrap gap-1 mt-2"
+                  <div className="px-2 pb-2 overflow-hidden">
+                    {/* As wide as the rest of the panel, never wider. */}
+                    <ToggleButtonGroup
+                      type="radio"
+                      name="shading-renderer"
+                      className="mt-2 d-flex"
                       style={{ width: 0, minWidth: '100%' }}
+                      value={onServer ? 'server' : 'browser'}
+                      onChange={(value) =>
+                        dispatch(mapSetShadingOnServer(value === 'server'))
+                      }
                     >
-                      {applies && (
-                        <>
-                          <Button
-                            variant="primary"
-                            disabled={!sharedDraft}
-                            onClick={() =>
-                              sharedDraft &&
-                              dispatch(mapSetShading(sharedDraft))
-                            }
-                          >
-                            <FaCheck /> {sm?.apply}
-                          </Button>
+                      <ToggleButton
+                        id="shading-renderer-server"
+                        value="server"
+                        variant="outline-primary"
+                        className="flex-grow-1 text-nowrap"
+                      >
+                        {sm?.onServer}
+                      </ToggleButton>
 
-                          <LongPressTooltip label={sm?.revert}>
-                            {({ props }) => (
-                              <Button
-                                variant="secondary"
-                                disabled={!sharedDraft}
-                                onClick={() =>
-                                  dispatch(mapSetSharedShadingDraft(undefined))
-                                }
-                                {...props}
-                              >
-                                <FaUndo />
-                              </Button>
-                            )}
-                          </LongPressTooltip>
-                        </>
-                      )}
+                      <ToggleButton
+                        id="shading-renderer-browser"
+                        value="browser"
+                        variant="outline-primary"
+                        className="flex-grow-1 text-nowrap"
+                        disabled={!hasWebGpu}
+                      >
+                        {sm?.inBrowser} <ExperimentalFunction />
+                      </ToggleButton>
+                    </ToggleButtonGroup>
 
-                      {targetDef && (
-                        <>
-                          <Button
-                            variant="primary"
-                            disabled={!draft || !canSaveSettings}
-                            onClick={handleSave}
-                          >
-                            <FaCheck /> {m?.general.save}
-                          </Button>
+                    {targets.length > 1 && (
+                      // As wide as the rest of the panel, never wider; a long
+                      // name ends in an ellipsis instead.
+                      <Dropdown
+                        className="mt-2"
+                        style={{ width: 0, minWidth: '100%' }}
+                        onSelect={(key) =>
+                          key !== null &&
+                          setPickedTarget(key === SHARED ? '' : key)
+                        }
+                      >
+                        <Dropdown.Toggle as={SelectToggle} className="w-100">
+                          <span className="d-block text-truncate">
+                            {targetName(target)}
+                          </span>
+                        </Dropdown.Toggle>
 
-                          <LongPressTooltip label={sm?.revert}>
-                            {({ props }) => (
-                              <Button
-                                variant="secondary"
-                                disabled={!draft}
-                                onClick={() =>
-                                  dispatch(mapSetShadingDraft({ type: target }))
-                                }
-                                {...props}
-                              >
-                                <FaUndo />
-                              </Button>
-                            )}
-                          </LongPressTooltip>
-                        </>
-                      )}
-                    </div>
+                        {/* As wide as the longest name: the narrow panel would
+                        otherwise wrap it. */}
+                        <FmDropdownMenu
+                          popperConfig={sameMinWidthPopperConfig}
+                          style={{ width: 'max-content' }}
+                        >
+                          {targets.map((t) => (
+                            <Dropdown.Item
+                              className="text-nowrap"
+                              as="button"
+                              type="button"
+                              key={t || SHARED}
+                              eventKey={t || SHARED}
+                              active={t === target}
+                            >
+                              {targetItem(t)}
+                            </Dropdown.Item>
+                          ))}
+                        </FmDropdownMenu>
+                      </Dropdown>
+                    )}
 
                     <hr />
-                  </>
-                )}
 
-                <ShadingToolbar
-                  canRemove={id !== undefined || (!isBase && showsBackground)}
-                  canAddBackground={!showsBackground}
-                  onAdd={handleAdd}
-                  onRemove={handleRemove}
-                  onSaveAsMap={
-                    window.fmEmbedded || targetDef
-                      ? undefined
-                      : () =>
-                          dispatch(
-                            setActiveModal({
-                              type: 'custom-maps',
-                              // What is being edited, unapplied changes included.
-                              addShadingMap: { shading },
-                            }),
-                          )
-                  }
-                />
+                    <ShadingComponentList
+                      shading={shading}
+                      showBackground={showsBackground}
+                      selectedId={id}
+                      onSelect={setId}
+                    />
 
-                <ShadingComponentList
-                  shading={shading}
-                  showBackground={showsBackground}
-                  selectedId={id}
-                  onSelect={setId}
-                />
+                    <ShadingToolbar
+                      canRemove={
+                        id !== undefined || (!isBase && showsBackground)
+                      }
+                      canAddBackground={!showsBackground}
+                      onAdd={handleAdd}
+                      onRemove={handleRemove}
+                    />
 
-                <hr />
+                    <hr />
 
-                {shading.components.some(
-                  (component) => MANAGEABLE_TYPES[component.type],
-                ) && (
-                  <ShadingComponentControl
-                    components={shading.components}
-                    onChange={(components) =>
-                      setShading({ ...shading, components })
-                    }
-                    selectedId={id}
-                    onSelect={setId}
-                  />
-                )}
+                    {shading.components.some(
+                      (component) => MANAGEABLE_TYPES[component.type],
+                    ) && (
+                      <ShadingComponentControl
+                        components={shading.components}
+                        onChange={(components) =>
+                          setShading({ ...shading, components })
+                        }
+                        selectedId={id}
+                        onSelect={setId}
+                      />
+                    )}
 
-                {selectedComponent && (
-                  <ShadingComponentParams
-                    shading={shading}
-                    component={selectedComponent}
-                    onChange={setShading}
-                  />
-                )}
+                    {selectedComponent && (
+                      <ShadingComponentParams
+                        shading={shading}
+                        component={selectedComponent}
+                        onChange={setShading}
+                      />
+                    )}
 
-                {(selectedComponent || showsBackground) && (
-                  <ShadingColorPicker
-                    shading={shading}
-                    selectedId={id}
-                    component={selectedComponent}
-                    colorReliefMax={colorReliefMax}
-                    opaqueBackground={isBase}
-                    onChange={setShading}
-                  />
-                )}
-              </>
-            )}
-          </Form>
-        </div>
+                    {(selectedComponent || showsBackground) && (
+                      <ShadingColorPicker
+                        shading={shading}
+                        selectedId={id}
+                        component={selectedComponent}
+                        colorReliefMax={colorReliefMax}
+                        opaqueBackground={isBase}
+                        onChange={setShading}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {(committable || canSaveAsMap) && (
+                // As wide as the rest of the panel, never wider: the buttons
+                // wrap instead of stretching it.
+                <div
+                  className="d-flex flex-wrap gap-1 p-2 border-top"
+                  style={{ width: 0, minWidth: '100%' }}
+                >
+                  {applies && (
+                    <>
+                      <Button
+                        variant="primary"
+                        disabled={!sharedDraft}
+                        onClick={() =>
+                          sharedDraft && dispatch(mapSetShading(sharedDraft))
+                        }
+                      >
+                        <FaCheck /> {sm?.apply}
+                      </Button>
+
+                      <LongPressTooltip label={sm?.revert}>
+                        {({ props }) => (
+                          <Button
+                            variant="secondary"
+                            disabled={!sharedDraft}
+                            onClick={() =>
+                              dispatch(mapSetSharedShadingDraft(undefined))
+                            }
+                            {...props}
+                          >
+                            <FaUndo />
+                          </Button>
+                        )}
+                      </LongPressTooltip>
+                    </>
+                  )}
+
+                  {targetDef && (
+                    <>
+                      <Button
+                        variant="primary"
+                        disabled={!draft || !canSaveSettings}
+                        onClick={handleSave}
+                      >
+                        <FaCheck /> {m?.general.save}
+                      </Button>
+
+                      <LongPressTooltip label={sm?.revert}>
+                        {({ props }) => (
+                          <Button
+                            variant="secondary"
+                            disabled={!draft}
+                            onClick={() =>
+                              dispatch(mapSetShadingDraft({ type: target }))
+                            }
+                            {...props}
+                          >
+                            <FaUndo />
+                          </Button>
+                        )}
+                      </LongPressTooltip>
+                    </>
+                  )}
+
+                  {/* Named in full when it is the only button. */}
+                  {canSaveAsMap &&
+                    (committable ? (
+                      <LongPressTooltip label={m?.mapLayers.saveAsShadingMap}>
+                        {({ props }) => (
+                          <Button
+                            variant="secondary"
+                            className="ms-auto"
+                            onClick={saveAsMap}
+                            {...props}
+                          >
+                            <MdDashboardCustomize />
+                          </Button>
+                        )}
+                      </LongPressTooltip>
+                    ) : (
+                      <Button variant="secondary" onClick={saveAsMap}>
+                        <MdDashboardCustomize /> {m?.mapLayers.saveAsShadingMap}
+                      </Button>
+                    ))}
+                </div>
+              )}
+            </>
+          )}
+        </Form>
       </Card>
 
       <ParameterizedShadingModal
