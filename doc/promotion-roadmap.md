@@ -15,6 +15,7 @@ Real engaged foreign markets, best first:
 Italy · Poland · Hungary · Austria · Czechia · Germany · Slovenia.
 
 Distinctive positioning hooks (lead with these, not "another OSM map"):
+
 1. Free, open source, no user tracking. **Not** "ad-free": the map carries our own
    self-served ads (no ad network) that disappear for supporters — never claim otherwise.
 2. Hi-res LiDAR terrain + shaded relief + contours ("see every gully and old road").
@@ -22,15 +23,15 @@ Distinctive positioning hooks (lead with these, not "another OSM map"):
 4. Multi-profile route planning with elevation profiles. The real profiles, from
    `src/shared/transportTypeDefs.tsx`: foot, hiking, easyhike, bike, mtb, gravelbike,
    racingbike, ebike, stroller, car, carnotoll, car4wd, motorcycle, manual.
-   **There is no ski-touring and no horse profile** — the Outdoor map *draws* ski and
+   **There is no ski-touring and no horse profile** — the Outdoor map _draws_ ski and
    riding trails, but no router follows them. Do not confuse them.
-Hooks 2–4 are also the premium hooks — users drawn by them convert best.
+   Hooks 2–4 are also the premium hooks — users drawn by them convert best.
 
 ---
 
 ## Current state — 2026-09-07
 
-**Goal restated:** attract users to the *whole application* (planner, offline maps,
+**Goal restated:** attract users to the _whole application_ (planner, offline maps,
 exports, panorama, viewshed, tracking, drawing, custom layers), not only to the
 outdoor map. Everything posted so far sold "a map", which is why all the feedback
 came back about rendering. Correcting that is the point of the next phase.
@@ -41,14 +42,14 @@ for this reason.
 
 ### Accounts
 
-| Venue | Account | State |
-|---|---|---|
-| hikr.org | `MartinFreemap` (shown as `MartinFree`) | active, 2 posts, joined comms `talk` + `italiano` |
-| avventurosamente.it | `MartinFreemap` | active, staff-approved 2026-09-04 |
-| gipfeltreffen.at | `MartinFreemap` | active, admin-approved 2026-09-06 |
-| alpinforum.com | `MartinFreemap` | registered but **unused — wrong audience** (ski resorts/cable cars) |
-| mtb-forum.it | none | **registration broken on their side** (invalid reCAPTCHA key, dead Meta app) |
-| tourentipp.com, fuorivia.com | none | candidates, never registered |
+| Venue                        | Account                                 | State                                                                        |
+| ---------------------------- | --------------------------------------- | ---------------------------------------------------------------------------- |
+| hikr.org                     | `MartinFreemap` (shown as `MartinFree`) | active, 2 posts, joined comms `talk` + `italiano`                            |
+| avventurosamente.it          | `MartinFreemap`                         | active, staff-approved 2026-09-04                                            |
+| gipfeltreffen.at             | `MartinFreemap`                         | active, admin-approved 2026-09-06                                            |
+| alpinforum.com               | `MartinFreemap`                         | registered but **unused — wrong audience** (ski resorts/cable cars)          |
+| mtb-forum.it                 | none                                    | **registration broken on their side** (invalid reCAPTCHA key, dead Meta app) |
+| tourentipp.com, fuorivia.com | none                                    | candidates, never registered                                                 |
 
 ### Posted (details in the Outreach log below)
 
@@ -79,21 +80,21 @@ server itself verified working.
 Hiking forums pit you against komoot, Mapy.cz, OutdoorActive and swisstopo. Communities
 organised around **a need only Freemap serves for free** have no incumbent. Ranked:
 
-| Vertical | Hook with no free equivalent | Europe fit |
-|---|---|---|
-| **Geocaching (CZ, AT, SK; DE later)** | coordinate entry in many formats, offline area download, GPX + Garmin/Locus export, drawing/measurement, custom WMS/TMS overlays | DE and CZ are the two densest geocaching countries in the world — exactly where the national high-res terrain is |
-| Paragliding / free flight (Alps) | 360° panorama with named peaks, viewshed, hi-res relief, custom airspace WMS | Alps = AT/CH/IT/SI/FR, all with national DTM |
-| Ham radio, drone (VLOS), hunting | **viewshed** — line of sight from a point | EU-wide; drone VLOS is an EASA legal requirement |
-| Gravel / bikepacking | multi-profile routing + surface / steepness / track-grade colorize | DE/AT strong, but komoot is entrenched |
-| GIS / developers / hobby cartographers | custom WMS/TMS, embedding, WebMCP agent tools | EU-wide, small but influential |
-| Ski touring | terrain + steepness colorize | **seasonal — revisit in November**, pointless in September |
+| Vertical                               | Hook with no free equivalent                                                                                                     | Europe fit                                                                                                       |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Geocaching (CZ, AT, SK; DE later)**  | coordinate entry in many formats, offline area download, GPX + Garmin/Locus export, drawing/measurement, custom WMS/TMS overlays | DE and CZ are the two densest geocaching countries in the world — exactly where the national high-res terrain is |
+| Paragliding / free flight (Alps)       | 360° panorama with named peaks, viewshed, hi-res relief, custom airspace WMS                                                     | Alps = AT/CH/IT/SI/FR, all with national DTM                                                                     |
+| Ham radio, drone (VLOS), hunting       | **viewshed** — line of sight from a point                                                                                        | EU-wide; drone VLOS is an EASA legal requirement                                                                 |
+| Gravel / bikepacking                   | multi-profile routing + surface / steepness / track-grade colorize                                                               | DE/AT strong, but komoot is entrenched                                                                           |
+| GIS / developers / hobby cartographers | custom WMS/TMS, embedding, WebMCP agent tools                                                                                    | EU-wide, small but influential                                                                                   |
+| Ski touring                            | terrain + steepness colorize                                                                                                     | **seasonal — revisit in November**, pointless in September                                                       |
 
 ### Geocaching: warm channel already found
 
 `geocaching.cz` runs a long-lived thread **"Mapové zdroje pro Geocaching Map
 Enhancements"** (28+ pages) in which **freemap.sk tiles are already listed as a map
 source** (Outdoor LowDPI / HiDPI / UltraDPI) for the GME userscript, described there as
-*"a great map application above OSM data and the map key is very well readable"*. There
+_"a great map application above OSM data and the map key is very well readable"_. There
 is also `geocaching.cz/wiki/Free_mapy_(garmin)`.
 
 So Czech geocachers already consume the **tiles** and most likely do not know the
@@ -110,7 +111,7 @@ geoclub.de at all.
 ### Revised order (2026-09-07, after Martin's steer)
 
 Martin's direction: **stay with hiking/bicycle forums and add Facebook groups** — those
-are proven here — but change the *message* to the whole application rather than the
+are proven here — but change the _message_ to the whole application rather than the
 cartography. Germany is postponed (see Phase 3). Facebook division of labour: **agent
 drafts, Martin posts** (Facebook fights automation, and the Polish group post that
 worked went out from his own account).
@@ -154,7 +155,7 @@ avventurosamente.it (IT). All claims in them are corrected and accurate.
    **Check the registration path before writing copy** — the mtb-forum.it lesson.
 3. **Lead with the whole application, not the cartography.** Everything posted so far
    sold the map, which is why every reply came back about rendering. The app is a map
-   *workbench* — planner, offline, exports to Garmin/Locus/OsmAnd, drawing, embedding,
+   _workbench_ — planner, offline, exports to Garmin/Locus/OsmAnd, drawing, embedding,
    panorama, viewshed — and there is a **native Flutter app for iOS and Android with
    on-device offline routing** that almost nobody outside Slovakia knows about.
 4. **Facebook groups:** agent drafts, **Martin posts**. Facebook fights automation and
@@ -165,8 +166,9 @@ avventurosamente.it (IT). All claims in them are corrected and accurate.
 
 **Parked deliberately:**
 
-- **Germany** — until hi-res shading and contours cover it (Martin's call). Venues
-  researched and waiting in Phase 3.
+- **Germany** — parked until hi-res shading and contours covered it (Martin's call).
+  They cover all 16 states since 2026-09-29, so the parking condition is met; whether
+  to start is Martin's call. Venues researched and waiting in Phase 3.
 - **Ski touring** — seasonal, revisit in November. There is no ski-touring routing
   profile, so do not promise one.
 - Draft 3 (avventurosamente "what changed since 2023" — wait a few days, ≤2 links),
@@ -185,16 +187,16 @@ Details in the private document.
 Three false claims went out in live posts on 2026-09-04/06 and had to be edited
 afterwards. Check copy against this list before posting.
 
-| Do not write | Reality |
-|---|---|
-| "ad-free", "werbefrei", "senza pubblicità" | The map **carries ads** for non-premium users. They are **self-served — no ad network** — and they disappear for supporters. Say that instead; self-served ads are a better story than silence. |
-| "non-profit", "gemeinnützig", "no-profit" | The association does not profit, but Martin is paid as the developer. Normal and unobjectionable — just don't make the claim. "A project of the Slovak OpenStreetMap community, open source" is true and needs no qualifier. |
-| ski-touring or horse routing profile | Neither exists. The profiles are foot, hiking, easyhike, bike, mtb, gravelbike, racingbike, ebike, stroller, car, carnotoll, car4wd, motorcycle, manual (`src/shared/transportTypeDefs.tsx`). The Outdoor map **draws** ski and riding trails, but the router has no profile for them. |
+| Do not write                               | Reality                                                                                                                                                                                                                                                                                |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "ad-free", "werbefrei", "senza pubblicità" | The map **carries ads** for non-premium users. They are **self-served — no ad network** — and they disappear for supporters. Say that instead; self-served ads are a better story than silence.                                                                                        |
+| "non-profit", "gemeinnützig", "no-profit"  | The association does not profit, but Martin is paid as the developer. Normal and unobjectionable — just don't make the claim. "A project of the Slovak OpenStreetMap community, open source" is true and needs no qualifier.                                                           |
+| ski-touring or horse routing profile       | Neither exists. The profiles are foot, hiking, easyhike, bike, mtb, gravelbike, racingbike, ebike, stroller, car, carnotoll, car4wd, motorcycle, manual (`src/shared/transportTypeDefs.tsx`). The Outdoor map **draws** ski and riding trails, but the router has no profile for them. |
 
 **Safe to claim:** open source; no user tracking (self-hosted analytics only, no ad
 network, no third-party trackers); national high-resolution terrain wherever the
 renderer serves a `shading:` dataset — `curl https://outdoor.tiles.freemap.sk/licenses`,
-which is per territory and includes five German states but not all of Germany;
+which is per territory and includes all 16 German states;
 trails drawn from
 `osmc:symbol` with `ref`/`name` labels; offline download; Garmin/Locus/OsmAnd exports.
 
@@ -246,10 +248,7 @@ touching Italy — it carries which venues already know Freemap (and so must nev
 
 - [ ] Partnership/embed pitch (EN + IT) to the Italian trail sites already linking in;
       offer the embed-map widget + attribution. (Draft 5 written.)
-- [ ] Post in Italian hiking/MTB communities (CAI-adjacent forums, FB groups, subreddits).
-      - avventurosamente.it — account registered, **awaiting admin approval**; Drafts 1–3.
-      - mtb-forum.it — reachable, **not registered**; Drafts 6 (track-merge answer) and 4/7.
-      - fuorivia.com, hikr.org (IT) — not started.
+- [ ] Post in Italian hiking/MTB communities (CAI-adjacent forums, FB groups, subreddits). - avventurosamente.it — account registered, **awaiting admin approval**; Drafts 1–3. - mtb-forum.it — reachable, **not registered**; Drafts 6 (track-merge answer) and 4/7. - fuorivia.com, hikr.org (IT) — not started.
 - [ ] Lead with hi-res terrain (Dolomites) + offline maps + free/OSS.
       Correction from the research: on avventurosamente the strongest hook is **CAI trail
       numbering** (`osmc:symbol` colours + `ref` labels), which their forum has asked for
@@ -264,8 +263,9 @@ touching Italy — it carries which venues already know Freemap (and so must nev
 
 - [ ] **Germany is POSTPONED (decided 2026-09-07)** until hi-res shading + contours cover
       it. Martin's call, and the right one: entering the biggest market with the weakest
-      terrain spends the one first impression on a weaker product. Revisit when the German
-      high-resolution data ships. German venues researched and parked meanwhile:
+      terrain spends the one first impression on a weaker product. **The German
+      high-resolution data shipped 2026-09-29 (all 16 states), so the revisit is due.**
+      German venues researched and parked meanwhile:
       **mtb-news.de** (largest DE MTB forum, XenForo, registration has a question-captcha),
       **wanderforum.de** (already has a thread "Online-Wanderkarten für Tschechien und die
       Slowakei" mentioning Freemap — warm), **rennrad-news.de**, **trekkingguide.de**.
@@ -274,11 +274,9 @@ touching Italy — it carries which venues already know Freemap (and so must nev
       ("Komoot wird immer unbrauchbarer", "Navigation Apps - Alternativen zu Komoot").
       Displaced-user moment in exactly this category — but it is a slow grumble, not a
       stampede, so do not overestimate it.
-- [ ] Germany — biggest untapped ceiling, and the terrain hook now works in **five
-      states**: Bavaria, Lower Saxony, NRW, Saxony and Thuringia (`shading:de_by`,
-      `de_ni`, `de_nw`, `de_sn`, `de_th`). Elsewhere it falls back to 30 m GEDTM30, so
-      target those states — Bavaria above all, being the Alps and the Bavarian Forest —
-      and lead with tools/offline/OSS for the rest.
+- [ ] Germany — biggest untapped ceiling, and the terrain hook now works in **all 16
+      states** (`shading:de_*`), each from its own DGM1. Bavaria remains the strongest
+      showcase, being the Alps and the Bavarian Forest.
       German outdoor forums, Wander/MTB subreddits, Fediverse. (talk-de intro done once.)
 - [ ] Austria — Alpine, ALS DTM (Geoland.at), 13 actions/visit; **warm channel found**:
       gipfeltreffen.at (ÖAV-affiliated) already carries a 2023 organic mention from two
@@ -300,7 +298,7 @@ already posted under several local communities and observed exactly this.
 
 - [x] Slovenia — posted 2026-07-09 (see Outreach log).
 - [ ] ~~Italy, Poland, Hungary, Austria, Czechia OSM community intro posts.~~ Dropped.
-      Post there only when there is genuinely country-specific *news* (e.g. a national
+      Post there only when there is genuinely country-specific _news_ (e.g. a national
       terrain model going live), not to introduce the project again.
 - Note: OSM forums reach mappers, not end-users anyway — the paying outdoor users are
   on the hiking/MTB forums and in regional FB groups (Phase 2/3).
@@ -316,10 +314,12 @@ already posted under several local communities and observed exactly this.
 ---
 
 ## Current UI languages
+
 Slovak, Czech, Hungarian, English, Polish, German, Italian, French, Slovenian.
 Missing but relevant: **Ukrainian**.
 
 ## Existing promotion channels
+
 groups.google.com/g/osm_sk · en.osm.town/@FreemapSlovakia (Mastodon) · facebook.com/FreemapSlovakia
 
 ## Outreach log
@@ -329,21 +329,21 @@ Add a row per post; keep `—` where the date is unknown rather than guessing.
 "Here is what's new" feature announcements go in
 [`announcement-log.md`](./announcement-log.md) instead.
 
-| Date | Market | Channel | Lang | Status | Link |
-|------|--------|---------|------|--------|------|
-| 2026-01 | 🇩🇪 Germany | talk-de mailing list | EN | posted | https://lists.openstreetmap.org/pipermail/talk-de/2026-January/118507.html |
-| — | 🇫🇷 France | forum.openstreetmap.fr (template source) | FR | posted | https://forum.openstreetmap.fr/t/freemap-eu-carte-outdoor-et-outils-bases-sur-osm-open-source-par-la-communaute-osm-slovaque/40396 |
-| — | 🇫🇮 Finland | community.openstreetmap.org | EN | posted | https://community.openstreetmap.org/t/freemap-eu-open-source-osm-based-outdoor-map-tools-by-the-slovak-osm-community-introduction/139943 |
-| — | 🇳🇴 Norway | community.openstreetmap.org | EN | posted | https://community.openstreetmap.org/t/freemap-eu-open-source-osm-based-outdoor-map-tools-by-the-slovak-osm-community/139942 |
-| — | 🇸🇰 Slovakia | mtbiker.sk forum | SK | posted | https://www.mtbiker.sk/forum/cyklotrasy-navigacia/freemap-sk-openstreetmap-org--35970 |
-| 2026-07-09 | 🇸🇮 Slovenia | community.openstreetmap.org (Slovenija) | SL | posted | https://community.openstreetmap.org/t/freemap-eu-odprtokodna-zunanja-karta-in-orodja-na-osnovah-osm-ki-jih-razvija-slovaska-skupnost-osm/145198 |
-| 2026-07-09 | 🇸🇮🇮🇹🇩🇪 SI+IT+DE | hribi.net / hike.uno network (auto-translated) | SL | posted | https://www.hribi.net/trenutne_razmere/slo/freemapeu_-_brezplacna_pohodniska_karta_z_lidar_reliefom_zdaj_v_slovenscini/10001/10088 |
-| 2026-07-09 | 🇵🇱 Poland | Mastodon (@FreemapSlovakia) — hi-res shading + contours deployed | EN | posted | https://en.osm.town/@FreemapSlovakia/116889810164287525 |
-| 2026-07-09 | 🇵🇱 Poland | community.openstreetmap.org (Polska) | PL | posted | https://community.openstreetmap.org/t/freemap-eu-otwartozrodlowa-mapa-i-narzedzia-outdoor-oparte-na-osm-tworzone-przez-slowacka-spolecznosc-osm/145278 |
-| 2026-07-09 | 🇵🇱 Poland | Facebook (Polish hiking group) | PL | posted | https://www.facebook.com/groups/478222752225355/posts/27531908469763417 |
-| — | 🇸🇮🇫🇷 SL + FR | Mastodon new-languages announcement (@FreemapSlovakia) | EN | posted | https://en.osm.town/@FreemapSlovakia |
-| 2026-09-04 | 🇦🇹🇨🇭🇩🇪 AT+CH+DE | hikr.org — Small Talk forum ("sagt mir, wo sie danebenliegt") | DE | posted | https://www.hikr.org/post203834.html |
-| 2026-09-04 | 🇮🇹 Italy | avventurosamente.it — Orientamento/cartografia ("Mappe offline senza MOBAC") | IT | posted | https://www.avventurosamente.it/xf/threads/mappe-offline-senza-mobac-%E2%80%94-scaricare-larea-direttamente-dal-browser.65728/ |
-| 2026-09-06 | 🇦🇹 Austria | gipfeltreffen.at — pinned "Digitale Karten im Netz – Übersicht" | DE | posted | https://www.gipfeltreffen.at/forum/gipfeltreffen/literatur-navigation-und-technik/hard-software-mit-bergbezug/67800-digitale-karten-im-netz-%C3%BCbersicht/page6 |
-| 2026-09-06 | 🇮🇹🇨🇭 IT + CH | hikr.org — "Hikr in italiano" community (419 members) | IT | posted | https://www.hikr.org/post203897.html |
-| 2026-09-16 | 🇨🇿 Czechia | nakole.cz — new topic, rubric Cestování na kole | CS | posted | https://www.nakole.cz/diskuse/31509-outdoorova-mapa-a-planovac-teren-z-narodnich-vyskovych-modelu.html |
+| Date       | Market          | Channel                                                                      | Lang | Status | Link                                                                                                                                                             |
+| ---------- | --------------- | ---------------------------------------------------------------------------- | ---- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-01    | 🇩🇪 Germany      | talk-de mailing list                                                         | EN   | posted | https://lists.openstreetmap.org/pipermail/talk-de/2026-January/118507.html                                                                                       |
+| —          | 🇫🇷 France       | forum.openstreetmap.fr (template source)                                     | FR   | posted | https://forum.openstreetmap.fr/t/freemap-eu-carte-outdoor-et-outils-bases-sur-osm-open-source-par-la-communaute-osm-slovaque/40396                               |
+| —          | 🇫🇮 Finland      | community.openstreetmap.org                                                  | EN   | posted | https://community.openstreetmap.org/t/freemap-eu-open-source-osm-based-outdoor-map-tools-by-the-slovak-osm-community-introduction/139943                         |
+| —          | 🇳🇴 Norway       | community.openstreetmap.org                                                  | EN   | posted | https://community.openstreetmap.org/t/freemap-eu-open-source-osm-based-outdoor-map-tools-by-the-slovak-osm-community/139942                                      |
+| —          | 🇸🇰 Slovakia     | mtbiker.sk forum                                                             | SK   | posted | https://www.mtbiker.sk/forum/cyklotrasy-navigacia/freemap-sk-openstreetmap-org--35970                                                                            |
+| 2026-07-09 | 🇸🇮 Slovenia     | community.openstreetmap.org (Slovenija)                                      | SL   | posted | https://community.openstreetmap.org/t/freemap-eu-odprtokodna-zunanja-karta-in-orodja-na-osnovah-osm-ki-jih-razvija-slovaska-skupnost-osm/145198                  |
+| 2026-07-09 | 🇸🇮🇮🇹🇩🇪 SI+IT+DE | hribi.net / hike.uno network (auto-translated)                               | SL   | posted | https://www.hribi.net/trenutne_razmere/slo/freemapeu_-_brezplacna_pohodniska_karta_z_lidar_reliefom_zdaj_v_slovenscini/10001/10088                               |
+| 2026-07-09 | 🇵🇱 Poland       | Mastodon (@FreemapSlovakia) — hi-res shading + contours deployed             | EN   | posted | https://en.osm.town/@FreemapSlovakia/116889810164287525                                                                                                          |
+| 2026-07-09 | 🇵🇱 Poland       | community.openstreetmap.org (Polska)                                         | PL   | posted | https://community.openstreetmap.org/t/freemap-eu-otwartozrodlowa-mapa-i-narzedzia-outdoor-oparte-na-osm-tworzone-przez-slowacka-spolecznosc-osm/145278           |
+| 2026-07-09 | 🇵🇱 Poland       | Facebook (Polish hiking group)                                               | PL   | posted | https://www.facebook.com/groups/478222752225355/posts/27531908469763417                                                                                          |
+| —          | 🇸🇮🇫🇷 SL + FR    | Mastodon new-languages announcement (@FreemapSlovakia)                       | EN   | posted | https://en.osm.town/@FreemapSlovakia                                                                                                                             |
+| 2026-09-04 | 🇦🇹🇨🇭🇩🇪 AT+CH+DE | hikr.org — Small Talk forum ("sagt mir, wo sie danebenliegt")                | DE   | posted | https://www.hikr.org/post203834.html                                                                                                                             |
+| 2026-09-04 | 🇮🇹 Italy        | avventurosamente.it — Orientamento/cartografia ("Mappe offline senza MOBAC") | IT   | posted | https://www.avventurosamente.it/xf/threads/mappe-offline-senza-mobac-%E2%80%94-scaricare-larea-direttamente-dal-browser.65728/                                   |
+| 2026-09-06 | 🇦🇹 Austria      | gipfeltreffen.at — pinned "Digitale Karten im Netz – Übersicht"              | DE   | posted | https://www.gipfeltreffen.at/forum/gipfeltreffen/literatur-navigation-und-technik/hard-software-mit-bergbezug/67800-digitale-karten-im-netz-%C3%BCbersicht/page6 |
+| 2026-09-06 | 🇮🇹🇨🇭 IT + CH    | hikr.org — "Hikr in italiano" community (419 members)                        | IT   | posted | https://www.hikr.org/post203897.html                                                                                                                             |
+| 2026-09-16 | 🇨🇿 Czechia      | nakole.cz — new topic, rubric Cestování na kole                              | CS   | posted | https://www.nakole.cz/diskuse/31509-outdoorova-mapa-a-planovac-teren-z-narodnich-vyskovych-modelu.html                                                           |

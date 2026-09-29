@@ -37,36 +37,35 @@ md me mk nl no pl pt ro rs se si sk sm tr ua uk va xk
 
 Zoom 5–20; **premium from zoom 19**.
 
-**National high-resolution terrain — 22 datasets** (the renderer's `shading:`
+**National high-resolution terrain — 33 datasets** (the renderer's `shading:`
 entries; `curl https://outdoor.tiles.freemap.sk/licenses` is the live list and the
 only one worth quoting from). This is the single strongest differentiator, and it
 decides which markets are worth entering:
 
-| Country                | Model                                       |
-| ---------------------- | ------------------------------------------- |
-| Austria                | ALS DTM, Geoland.at                         |
-| Belgium                | MNT 1 m (Wallonia) + DHMV II 1 m (Flanders) |
-| Croatia                | DMR, Državna geodetska uprava               |
-| Czechia                | DMR 5G, ČÚZK                                |
-| England only (partial) | LIDAR Composite DTM 1 m, Environment Agency |
-| Germany — 5 states     | DGM1 for BY, NI, NW, SN, TH                 |
-| Finland                | Korkeusmalli 2 m, Maanmittauslaitos         |
-| France                 | RGE ALTI, IGN                               |
-| Italy                  | HR-DTM 5 m, CNR-IRPI                        |
-| Luxembourg             | MNT LiDAR 2024 (CC0)                        |
-| Norway                 | DTM, Kartverket                             |
-| Poland                 | NMT, GUGiK                                  |
-| Slovakia               | DMR 5.0, ÚGKK SR                            |
-| Slovenia               | DMR, Ministrstvo za okolje in prostor       |
-| Netherlands            | AHN                                         |
-| Spain                  | MDT05, IGN/CNIG                             |
-| Sweden                 | Markhöjdmodell, Lantmäteriet                |
-| Switzerland            | swissALTI3D, swisstopo                      |
+| Country                 | Model                                       |
+| ----------------------- | ------------------------------------------- |
+| Austria                 | ALS DTM, Geoland.at                         |
+| Belgium                 | MNT 1 m (Wallonia) + DHMV II 1 m (Flanders) |
+| Croatia                 | DMR, Državna geodetska uprava               |
+| Czechia                 | DMR 5G, ČÚZK                                |
+| England only (partial)  | LIDAR Composite DTM 1 m, Environment Agency |
+| Germany — all 16 states | Each state's DGM1                           |
+| Finland                 | Korkeusmalli 2 m, Maanmittauslaitos         |
+| France                  | RGE ALTI, IGN                               |
+| Italy                   | HR-DTM 5 m, CNR-IRPI                        |
+| Luxembourg              | MNT LiDAR 2024 (CC0)                        |
+| Norway                  | DTM, Kartverket                             |
+| Poland                  | NMT, GUGiK                                  |
+| Slovakia                | DMR 5.0, ÚGKK SR                            |
+| Slovenia                | DMR, Ministrstvo za okolje in prostor       |
+| Netherlands             | AHN                                         |
+| Spain                   | MDT05, IGN/CNIG                             |
+| Sweden                  | Markhöjdmodell, Lantmäteriet                |
+| Switzerland             | swissALTI3D, swisstopo                      |
 
 **Everywhere else falls back to global 30 m GEDTM30** — **Hungary**, **Ireland**, the
-Balkans, and the German states outside the five above. Do not use the terrain hook in
-those markets. Germany is now a regional case rather than a blank: Bavaria is covered,
-which is where the German terrain claim is strongest.
+Balkans, and the UK outside England. Do not use the terrain hook in those markets.
+Germany is covered state by state, so the terrain claim holds nationwide there.
 
 Country-specific extras are **Slovakia-heavy**: detailed shading (`7`), surface
 shading (`6`), cadastre, forest types, tree composition, geology, hydrochemistry,
@@ -176,8 +175,8 @@ geotagged Wikimedia Commons; deep-linkable URL state for everything.
    though Slovakia is by far the best covered) but not route descriptions or reviews.
    Casual "where shall I walk on Sunday" users mostly want that. Don't compete there.
 3. **No turn-by-turn voice navigation.**
-4. **Germany, Netherlands, Hungary, Ireland and the Balkans get 30 m terrain** — the
-   headline differentiator is unavailable in the largest European market.
+4. **Hungary, Ireland, the Balkans and the UK outside England get 30 m terrain** — the
+   headline differentiator is unavailable there.
 5. **Discoverability** — no app store, no route SEO corpus. Growth has to come from
    communities and word of mouth, which is exactly why forum outreach works.
 6. **Two-domain brand confusion** — `freemap.sk` says "Slovakia" to a foreigner.
@@ -222,7 +221,7 @@ the middle of it.
 
 **Structural read:** Freemap cannot win "inspiration" or a curated tour library. It can
 win **planning, precision and tooling** — and it wins decisively on price and on terrain
-in the 16 countries that have a national model. Note the mobile app means the
+in the 18 countries that have a national model (England alone for the UK). Note the mobile app means the
 in-the-field moment is _not_ conceded: on-device offline routing is something most paid
 competitors cannot do.
 

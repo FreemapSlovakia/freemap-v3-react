@@ -4,7 +4,7 @@ Live working state for the Austrian push. Post outcomes go to the Outreach log i
 [`promotion-roadmap.md`](./promotion-roadmap.md). Same conventions as
 [`promotion-italy.md`](./promotion-italy.md): attract, never sell — never a price,
 never a pitch, and premium named only where a post headlines a gated feature (see
-*Decided — how premium is mentioned* below); disclose affiliation in every post;
+_Decided — how premium is mentioned_ below); disclose affiliation in every post;
 never re-introduce Freemap where it is already known.
 
 ### Thread-age rule
@@ -15,7 +15,7 @@ archive for a place to put a link.
 
 **One exception: pinned index/collection threads** that exist to be added to
 indefinitely and are still being appended to (gipfeltreffen's "Digitale Karten im
-Netz – Übersicht" — pinned, opened with *"Mit der Bitte um Ergänzungen"*, last
+Netz – Übersicht" — pinned, opened with _"Mit der Bitte um Ergänzungen"_, last
 appended April 2025). Adding an entry there is using the thread as intended, not
 reviving it.
 
@@ -28,13 +28,11 @@ Austria has **ALS DTM (Geoland.at)** over the whole country, 13 actions/visit (t
 best engagement figure in the roadmap), Alpine and ski-touring culture, and German
 copy that is reusable for Germany and Switzerland later.
 
-**Germany is now partly covered too**, which is a change of premise rather than a
-detail: the renderer carries `shading:de_by`, `de_ni`, `de_nw`, `de_sn` and
-`de_th` — Bavaria, Lower Saxony, North Rhine-Westphalia, Saxony and Thuringia.
-Bavaria in particular is the German Alps and the Bavarian Forest, where the
-terrain claim is at its strongest. The rest of Germany still falls back to global
-30 m GEDTM30, so the hook is a regional one there, not a national one. Check what
-is covered before writing German copy:
+**Germany is fully covered too**, which is a change of premise rather than a
+detail: the renderer carries a `shading:de_*` dataset for every one of the 16
+states, each from its own DGM1, so the terrain hook is a national one there as in
+Austria. Bavaria is the German Alps and the Bavarian Forest, where the claim is at
+its strongest. Check what is covered before writing German copy:
 `curl https://outdoor.tiles.freemap.sk/licenses`.
 
 ## The warm channel: gipfeltreffen.at
@@ -45,9 +43,9 @@ a tour-report thread:
 
 - **manfred1110** (20 083 posts) offered it as a map worth adding, alongside "die
   Tschechenmap": `https://www.freemap.sk/#map=15/47.87…&layers=X`
-- **Rudolf_48** (16 847 posts) answered: *"Die Slowaken haben eine nette
+- **Rudolf_48** (16 847 posts) answered: _"Die Slowaken haben eine nette
   Geländedarstellung und viele Beschriftungen. Dafür finde ich keine
-  Orthofotodarstellung von der Gegend."*
+  Orthofotodarstellung von der Gegend."_
 
 Source: https://www.gipfeltreffen.at/forum/gipfeltreffen/toureninfo-verh%C3%A4ltnisse/wanderungen-und-bergtouren/wien-n%C3%B6-burgenland-af/2528321-vordere-mandling-von-s%C3%BCdwesten-22-3-2023 (posts #13–14)
 
@@ -66,8 +64,8 @@ Source: https://www.gipfeltreffen.at/forum/gipfeltreffen/toureninfo-verh%C3%A4lt
 (`/forum/gipfeltreffen/literatur-navigation-und-technik/hard-software-mit-bergbezug`).
 
 **Registration** (2026-09-04): registered as `MartinFreemap`, email confirmed, and
-**awaiting manual administrator approval** — *"Dein Benutzerkonto muss noch von einem
-Administrator freigeschalten werden."* Until then the account can browse and change
+**awaiting manual administrator approval** — _"Dein Benutzerkonto muss noch von einem
+Administrator freigeschalten werden."_ Until then the account can browse and change
 settings but has no reply control and no new-thread button anywhere.
 
 No reCAPTCHA (vBulletin `humanverify` only) and a real email address is required
@@ -77,19 +75,19 @@ string in the page source and was wrong.
 
 ## Other Austrian venues
 
-| Venue | Notes |
-|---|---|
-| ~~`alpinforum.com`~~ | **Checked and rejected.** Despite the name it is a ski-resort and cable-car forum — its board list is Skigebiete, Aktuelle Schneesituation, Infrastrukturelle Neuigkeiten, Seilbahntechnik, Lift-World, Skiliftforum, Remontées Mécaniques, Funiforum. The audience rides lifts on marked pistes; it has little use for LiDAR terrain, OSM waymark rendering or path routing, and no Freemap mention exists there. Low fit — skip. |
-| `tourentipp.com` forum (Gipfelkonferenz) | Austria board; tour-conditions focused. |
-| `bergsteigen.com` | Editorial site with community; closer to a partnership than a forum post. |
-| `hikr.org` | **Registered 2026-09-04** as `MartinFreemap` (shown truncated as `MartinFree`), logged in, no approval queue — it works immediately. Forums are per-community; there is no top-level forum. Use **Small Talk** (`/comm/talk/forum/`) for German and **Hikr in italiano** (`/comm/italiano/forum/`) for Italian. Swiss-majority audience, so swissALTI3D applies as well as the Austrian ALS DTM. |
-| `wanderforum.de`, `wander-community.de` | German hiking forums — for the DE leg later, where the terrain hook does not apply. |
-| `community.openstreetmap.org/c/communities/at/59` | OSM Austria. Mappers, not end users — supplementary, do last. |
+| Venue                                             | Notes                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~`alpinforum.com`~~                              | **Checked and rejected.** Despite the name it is a ski-resort and cable-car forum — its board list is Skigebiete, Aktuelle Schneesituation, Infrastrukturelle Neuigkeiten, Seilbahntechnik, Lift-World, Skiliftforum, Remontées Mécaniques, Funiforum. The audience rides lifts on marked pistes; it has little use for LiDAR terrain, OSM waymark rendering or path routing, and no Freemap mention exists there. Low fit — skip. |
+| `tourentipp.com` forum (Gipfelkonferenz)          | Austria board; tour-conditions focused.                                                                                                                                                                                                                                                                                                                                                                                            |
+| `bergsteigen.com`                                 | Editorial site with community; closer to a partnership than a forum post.                                                                                                                                                                                                                                                                                                                                                          |
+| `hikr.org`                                        | **Registered 2026-09-04** as `MartinFreemap` (shown truncated as `MartinFree`), logged in, no approval queue — it works immediately. Forums are per-community; there is no top-level forum. Use **Small Talk** (`/comm/talk/forum/`) for German and **Hikr in italiano** (`/comm/italiano/forum/`) for Italian. Swiss-majority audience, so swissALTI3D applies as well as the Austrian ALS DTM.                                   |
+| `wanderforum.de`, `wander-community.de`           | German hiking forums — for the DE leg later; the terrain hook applies there now.                                                                                                                                                                                                                                                                                                                                                   |
+| `community.openstreetmap.org/c/communities/at/59` | OSM Austria. Mappers, not end users — supplementary, do last.                                                                                                                                                                                                                                                                                                                                                                      |
 
 ## The real entry point: the pinned "Digitale Karten im Netz – Übersicht"
 
 `/hard-software-mit-bergbezug/67800-digitale-karten-im-netz-übersicht` — pinned,
-started 2012 by **cyberpezzi** with the words *"Mit der Bitte um Ergänzungen"*, 86
+started 2012 by **cyberpezzi** with the words _"Mit der Bitte um Ergänzungen"_, 86
 replies, **28 641 hits**, last active April 2025. A community-curated list of free
 online maps, entered by country (`Frankreich: geoportail…`, `Schweiz: map.geo.admin.ch`,
 `Bayern: bayernatlas.de`, `Österreich: austrianmap.at`). **Freemap is not in it.**
@@ -99,8 +97,8 @@ contributions by design. Post **Draft A0** there first; it is a contribution to 
 list, not an advert. Draft A (own thread) only later, and only if A0 draws interest.
 
 **Willingness to pay, in their own words** (posts #76–78, Jan 2021): tauernfuchs —
-*"trotzdem zahle ich die 7.- Euro pro Jahr gerne"* for bergfex-pro; chfrey — *"Wenn
-das alles gratis wäre, wovon sollen dann die Programmierer leben?"* This audience
+_"trotzdem zahle ich die 7.- Euro pro Jahr gerne"_ for bergfex-pro; chfrey — _"Wenn
+das alles gratis wäre, wovon sollen dann die Programmierer leben?"_ This audience
 argues openly for paying for good cartography, so the "funded by its users" sentence
 is an asset here rather than a risk.
 
@@ -112,7 +110,7 @@ registering). Posted the same evening, no moderation queue.
 **Adapted on the spot**: `Exilfranke` (Felix, 13 807 posts) had posted 11 hours
 earlier in the same thread wishing for a Swiss-Topo-style map with trail closures
 and transit stops overlaid. The post now opens by answering him — custom WMS/TMS
-overlays and the ÖPNV layer exist, so published closure data *could* be overlaid,
+overlays and the ÖPNV layer exist, so published closure data _could_ be overlaid,
 but we do not hold that data and his real point (nobody maintains Austrian closures
 consistently) stands. Conceding that before making any claim is what earns the rest
 of the post a reading. Watch for his reply; he is active daily.
@@ -157,7 +155,7 @@ boxes are something else; do not use them for a thread reply.
 > Was neu dazukommt, zeigen wir mit Bildern hier: https://en.osm.town/@FreemapSlovakia
 > Quellcode: https://github.com/FreemapSlovakia
 
-## Draft A — gipfeltreffen.at, own thread in *Hard & Software mit Bergbezug*
+## Draft A — gipfeltreffen.at, own thread in _Hard & Software mit Bergbezug_
 
 Only after A0, and only if it draws interest.
 
@@ -193,14 +191,14 @@ Only after A0, and only if it draws interest.
 >
 > **Was sonst noch drin steckt**, alles im Browser, ohne Installation:
 > · Tourenplaner mit eigenen Profilen (Wandern, einfaches Wandern, Rad, MTB, Gravel, Rennrad, E-Bike, Kinderwagen/Rollstuhl, Auto und Motorrad)
->   samt Höhenprofil; die Route lässt sich nach Steigung, Untergrund, Wegart und
->   Schwierigkeit (SAC bzw. MTB) einfärben — man sieht also vorher, wo es heikel wird
+> samt Höhenprofil; die Route lässt sich nach Steigung, Untergrund, Wegart und
+> Schwierigkeit (SAC bzw. MTB) einfärben — man sieht also vorher, wo es heikel wird
 > · GPX/KML/TCX öffnen, bearbeiten und exportieren; Export passend für Garmin,
->   Locus und OsmAnd aufbereitet
+> Locus und OsmAnd aufbereitet
 > · Offline: Ausschnitt und Zoombereich wählen, herunterladen, ohne Verbindung nutzen
 > · Karte als PDF/SVG/PNG exportieren zum Ausdrucken
 > · 360°-Panorama aus dem Geländemodell und eine Sichtbarkeitsanalyse von einem
->   gewählten Punkt aus
+> gewählten Punkt aus
 > · Niederschlagsradar, Live-Tracking, eigene Kartenebenen (WMS/TMS)
 >
 > Oberfläche auf Deutsch, kein Konto nötig zum Schauen.
@@ -265,12 +263,12 @@ there) or Draft 5.
 Two precedents set the tone, and both say disclosed self-promotion is fine here when
 the post asks something of the community:
 
-- **`/comm/italiano/forum/`, 28 Aug 2026** — `Fkeru`: *"Quanto è bagnato il terreno
-  adesso? Ho fatto una mappa della Svizzera — ditemi dove sbaglia"*, presenting his own
+- **`/comm/italiano/forum/`, 28 Aug 2026** — `Fkeru`: _"Quanto è bagnato il terreno
+  adesso? Ho fatto una mappa della Svizzera — ditemi dove sbaglia"_, presenting his own
   project (thetrail.guide, trail wetness over 137 800 km of Swiss paths) and asking
   for corrections. A map author posting his own map, one week ago.
-- **`/comm/talk/forum/`** — `budget5`: *"Ich erlaube mir an dieser Stelle etwas Werbung
-  für unseren neuen Podcast zu machen"*. Explicit ad, four replies, no backlash.
+- **`/comm/talk/forum/`** — `budget5`: _"Ich erlaube mir an dieser Stelle etwas Werbung
+  für unseren neuen Podcast zu machen"_. Explicit ad, four replies, no backlash.
 
 Also: hikr rates every tour on the **SAC T-scale**, so colorizing a route by SAC
 difficulty is unusually on-topic here — lead with it, unlike anywhere else.
@@ -353,8 +351,9 @@ Live at https://www.hikr.org/post203834.html . Joined the Small Talk community f
 Worth acting on, in order:
 
 1. **Contours are drawn over open sea** (confirmed at Helgoland — the `0 m` contour
-   runs across the water, so the cliff appears to lie in the sea). Germany has no
-   national DTM, so GEDTM30 answers there and returns values offshore.
+   runs across the water, so the cliff appears to lie in the sea). GEDTM30 answered
+   there and returned values offshore. **Fixed in the renderer in September 2026**
+   (shading and contours masked to dry land from z12) — tell Bergmax.
    **Decision: clip contour lines against the water polygon** — the cheap version,
    since masking the DEM is a bigger job. At a coastline the cut is hidden by the
    drawn coastline, so there are no ugly stubs. Do **not** simply drop the 0 m
@@ -398,7 +397,7 @@ resolution premium-only, and what happens offline. Answered 2026-09-08 under `c5
 ("Antworten zu swissALTI3D und Offline"):
 
 - **swissALTI3D shading and contours are free for everyone.** Premium unlocks z19–20 and
-  switches the *elevation values* (profile, colorize, readout) from SRTM to the national
+  switches the _elevation values_ (profile, colorize, readout) from SRTM to the national
   model. Worth repeating: people keep assuming the good terrain is paywalled. It is not.
 - **Offline keeps the full shading** — it is baked into the tiles; only downloading
   z19–20 needs premium, since cached tiles are permanent. The native iOS/Android app with
@@ -411,7 +410,7 @@ resolution premium-only, and what happens offline. Answered 2026-09-08 under `c5
 - This is not a symmetrical argument. An anonymous member versus the project author
   posting under a product name: bystanders side with the member whoever is right. The
   reply is for the silent readers, not the critic.
-- **Never quote an insult back.** Restate positively what the design is *for* — the
+- **Never quote an insult back.** Restate positively what the design is _for_ — the
   waymark colours mirror the signs standing on the ground, so map and signage agree.
   Same point, none of the heat.
 - **Do not answer questions that were not asked.** A draft refused a terrain-only layer
@@ -425,23 +424,23 @@ resolution premium-only, and what happens offline. Answered 2026-09-08 under `c5
 
 The opening of the German and Italian posts used a rhetorical disclaimer:
 
-> *"Ich stelle sie nicht vor, damit ihr sie benutzt, sondern weil ihr genau die Leute
-> seid, die mir sagen können, wo sie falsch liegt."*
-> (IT: *"Non la porto qui perché la usiate, ma perché siete esattamente le persone in
-> grado di dirmi dove sbaglia."*)
+> _"Ich stelle sie nicht vor, damit ihr sie benutzt, sondern weil ihr genau die Leute
+> seid, die mir sagen können, wo sie falsch liegt."_
+> (IT: _"Non la porto qui perché la usiate, ma perché siete esattamente le persone in
+> grado di dirmi dove sbaglia."_)
 
 It did its job — disclaiming the sales motive is what stopped the post reading as an
 advert, and it produced four substantive conversations. **But it overshoots into
 something untrue** (of course we want people to use it), and `georgb` duly quoted it
-back on 2026-09-09: *"Wer soll sie dann benutzen?"*
+back on 2026-09-09: _"Wer soll sie dann benutzen?"_
 
-**Rule:** disclaim the *motive*, never the *outcome*, and ask plainly for what you want.
+**Rule:** disclaim the _motive_, never the _outcome_, and ask plainly for what you want.
 
 - ✗ "I'm not presenting it so that you use it…"
 - ✓ "I'm not here to advertise. **Please try it** — and tell me where it's wrong for
   your area."
-- DE: *"Probiert sie aus — und sagt mir dann, wo sie für eure Gegend danebenliegt."*
-- IT: *"Provatela e ditemi dove sbaglia sulle vostre montagne."*
+- DE: _"Probiert sie aus — und sagt mir dann, wo sie für eure Gegend danebenliegt."_
+- IT: _"Provatela e ditemi dove sbaglia sulle vostre montagne."_
 
 Keep the "tell me where it's wrong" invitation: it is what produced every piece of
 useful feedback so far. Just pair it with a straightforward request to use the thing.
