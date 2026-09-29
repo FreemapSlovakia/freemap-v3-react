@@ -17,7 +17,7 @@ import {
   captureCombination,
 } from '@features/map/model/selectors.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
-import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
+import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
@@ -42,7 +42,6 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
-import { TbStack2 } from 'react-icons/tb';
 import { useDispatch, useStore } from 'react-redux';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import { CustomMapForm, type CustomMapStart } from './CustomMapForm.js';
@@ -409,9 +408,9 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
         key={item.key}
         className="d-flex align-items-center gap-2"
       >
-        <IconSpecGlyph
+        <CustomMapGlyph
           spec={item.def.iconSpec}
-          fallback={combination ? <TbStack2 /> : <MdDashboardCustomize />}
+          kind={combination ? 'combination' : layer?.technology}
         />
 
         <div className="flex-grow-1 me-2 min-w-0">

@@ -2,7 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
-import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
+import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
@@ -109,10 +109,7 @@ export function CachedMapsList(): ReactElement {
                     }
                     className="d-flex align-items-center gap-2"
                   >
-                    <IconSpecGlyph
-                      spec={cm.iconSpec}
-                      fallback={<BiWifiOff />}
-                    />
+                    <CustomMapGlyph spec={cm.iconSpec} kind="cached" />
 
                     <div className="flex-grow-1 me-2 min-w-0">
                       <div>{cm.name}</div>

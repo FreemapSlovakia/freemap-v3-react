@@ -5,6 +5,7 @@ import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
@@ -51,7 +52,6 @@ import {
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaChevronLeft, FaSave } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   type CachedTileMapDef,
@@ -579,7 +579,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
             <IconPicker
               id="cachedMapIcon"
               selected={iconSpec}
-              placeholder={<MdDashboardCustomize />}
+              placeholder={<CustomMapGlyph kind="cached" />}
               onSelect={(spec) => {
                 iconChanged.current = true;
 

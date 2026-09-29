@@ -1,23 +1,17 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  CUSTOM_MAP_ICONS,
+  type CustomMapKind,
+} from '@shared/components/CustomMapGlyph.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
+import type { IsCustomLayerTechnologiesDef } from '@shared/mapDefinitions.js';
 import type { ReactElement } from 'react';
 import { Dropdown, Form } from 'react-bootstrap';
-import { FaDrawPolygon, FaServer, FaTh } from 'react-icons/fa';
-import { GiHills } from 'react-icons/gi';
-import { MdFormatColorFill } from 'react-icons/md';
-import { TbStack2 } from 'react-icons/tb';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 
-export type CustomMapTechnology =
-  | 'tile'
-  | 'maplibre'
-  | 'wms'
-  | 'parametricShading'
-  | 'color';
-
-export type CustomMapKind = CustomMapTechnology | 'combination';
+export type CustomMapTechnology = IsCustomLayerTechnologiesDef['technology'];
 
 const TECHNOLOGIES: CustomMapTechnology[] = [
   'tile',
@@ -26,15 +20,6 @@ const TECHNOLOGIES: CustomMapTechnology[] = [
   'parametricShading',
   'color',
 ];
-
-const ICONS: Record<CustomMapKind, ReactElement> = {
-  tile: <FaTh />,
-  maplibre: <FaDrawPolygon />,
-  wms: <FaServer />,
-  parametricShading: <GiHills />,
-  color: <MdFormatColorFill />,
-  combination: <TbStack2 />,
-};
 
 type Props = {
   value: CustomMapKind;
@@ -56,7 +41,7 @@ export function CustomMapTypeField({
 
   const label = (kind: CustomMapKind) => (
     <>
-      {ICONS[kind]}{' '}
+      {CUSTOM_MAP_ICONS[kind]}{' '}
       {kind === 'combination'
         ? msm?.combination
         : m?.mapLayers.technologies[kind]}

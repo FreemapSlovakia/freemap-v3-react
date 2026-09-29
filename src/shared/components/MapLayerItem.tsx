@@ -1,8 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
+import {
+  CustomMapGlyph,
+  customMapKind,
+} from '@shared/components/CustomMapGlyph.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
-import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { flaggedCountries } from '@shared/mapDefinitions.js';
 import type { ReactElement, ReactNode } from 'react';
 import { FaHistory } from 'react-icons/fa';
@@ -14,6 +17,10 @@ export type MapLayerItemDef = {
   icon?: ReactElement;
   /** A custom layer's picked icon, used when there is no built-in `icon`. */
   iconSpec?: string;
+  /** Without a picked icon, a custom map shows its technology's. */
+  technology?: string;
+  /** Only a cached map has one. */
+  sourceType?: string;
   name?: string;
   countries?: string[];
   superseededBy?: string;
@@ -43,7 +50,9 @@ export function MapLayerItem({
         <TbLayersSelectedBottom className="opacity-50" />
       )}
 
-      {def.icon ?? <IconSpecGlyph spec={def.iconSpec} />}
+      {def.icon ?? (
+        <CustomMapGlyph spec={def.iconSpec} kind={customMapKind(def)} />
+      )}
 
       {label ?? m?.mapLayers.letters[def.type] ?? def.name ?? def.type}
 

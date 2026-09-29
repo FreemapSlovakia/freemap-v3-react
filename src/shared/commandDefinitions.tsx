@@ -17,6 +17,7 @@ import {
 import type { MapCombination } from '@features/map/model/mapCombination.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { Chord } from '@shared/components/Chord.js';
+import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import type { MapLayerItemDef } from '@shared/components/MapLayerItem.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import type { ReactElement, ReactNode } from 'react';
@@ -38,7 +39,6 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
-import { TbStack2 } from 'react-icons/tb';
 import { getDocuments } from '@/documents/index.js';
 import type { Messages } from '../translations/messagesInterface.js';
 import { type CustomLayerDef, integratedLayerDefs } from './mapDefinitions.js';
@@ -337,8 +337,9 @@ export function getCommands(ctx: CommandContext): Command[] {
           type: combination.id,
           layer: combination.base === undefined ? 'overlay' : 'base',
           name: combination.name,
-          iconSpec: combination.iconSpec,
-          icon: combination.iconSpec ? undefined : <TbStack2 />,
+          icon: (
+            <CustomMapGlyph spec={combination.iconSpec} kind="combination" />
+          ),
         },
         label: combination.name,
         action: mapApplyCombination({ id: combination.id }),

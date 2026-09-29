@@ -569,7 +569,7 @@ export type IsCustomLayer = {
   /**
    * The layer's icon as a `drawingIcons` spec (`fa:<name>` / `poi:<name>`).
    * A string rather than the integrated registry's `ReactElement` so it can be
-   * persisted; missing means the generic custom-map glyph.
+   * persisted; missing means its type's icon (`CustomMapGlyph`).
    */
   iconSpec?: string;
 };

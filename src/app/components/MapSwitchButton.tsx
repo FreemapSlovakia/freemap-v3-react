@@ -17,10 +17,13 @@ import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
+import {
+  CustomMapGlyph,
+  customMapKind,
+} from '@shared/components/CustomMapGlyph.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
-import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
@@ -61,8 +64,6 @@ import {
   FaSearchLocation,
   FaSearchPlus,
 } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
-import { TbStack2 } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { setActiveModal } from '../store/actions.js';
@@ -568,10 +569,7 @@ export function MapSwitchButton(): ReactElement {
             )}
 
             {def.custom ? (
-              <IconSpecGlyph
-                spec={def.iconSpec}
-                fallback={<MdDashboardCustomize />}
-              />
+              <CustomMapGlyph spec={def.iconSpec} kind={customMapKind(def)} />
             ) : (
               def.icon
             )}
@@ -626,7 +624,7 @@ export function MapSwitchButton(): ReactElement {
             <Checkbox value={active} />
           )}
 
-          <IconSpecGlyph spec={combination.iconSpec} fallback={<TbStack2 />} />
+          <CustomMapGlyph spec={combination.iconSpec} kind="combination" />
 
           <span>{name}</span>
 
@@ -782,9 +780,9 @@ export function MapSwitchButton(): ReactElement {
                     }
                   >
                     {def.custom ? (
-                      <IconSpecGlyph
+                      <CustomMapGlyph
                         spec={def.iconSpec}
-                        fallback={<MdDashboardCustomize />}
+                        kind={customMapKind(def)}
                       />
                     ) : (
                       def.icon
@@ -848,9 +846,9 @@ export function MapSwitchButton(): ReactElement {
                   }
                   {...props}
                 >
-                  <IconSpecGlyph
+                  <CustomMapGlyph
                     spec={combination.iconSpec}
-                    fallback={<TbStack2 />}
+                    kind="combination"
                   />
                 </Button>
               )}

@@ -6,6 +6,7 @@ import {
   type MapCombination,
 } from '@features/map/model/mapCombination.js';
 import { layerKindsSelector } from '@features/map/model/selectors.js';
+import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import {
@@ -30,7 +31,6 @@ import {
   ToggleButton,
 } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
-import { TbStack2 } from 'react-icons/tb';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import type { CustomMapStart } from './CustomMapForm.js';
 import { CustomMapTypeField } from './CustomMapTypeField.js';
@@ -143,7 +143,7 @@ export function MapCombinationForm({
             id="combinationIcon"
             selected={value.iconSpec}
             onSelect={(iconSpec) => onChange({ ...value, iconSpec })}
-            placeholder={<TbStack2 />}
+            placeholder={CUSTOM_MAP_ICONS.combination}
           />
         </Form.Group>
       </div>

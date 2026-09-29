@@ -5,6 +5,7 @@ import {
   hexaToColor,
   type Shading,
 } from '@features/parameterizedShading/model/Shading.js';
+import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
@@ -39,7 +40,6 @@ import {
   ToggleButton,
 } from 'react-bootstrap';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './CustomMapForm.module.css';
 import {
@@ -628,7 +628,7 @@ export function CustomMapForm({
             id="customMapIcon"
             selected={model.iconSpec}
             onSelect={handleIconSelect}
-            placeholder={<MdDashboardCustomize />}
+            placeholder={CUSTOM_MAP_ICONS[model.technology]}
           />
         </Form.Group>
       </div>

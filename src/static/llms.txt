@@ -458,7 +458,7 @@ The "Cache map for offline use" form heads itself with a notice that the map is 
 - the map (layer) to cache — tile layers only; WMS layers cannot be cached
 - the area: current visible area, or a rectangle drawn on the map
 - a name
-- an icon, picked from the same icon set the drawing points use (Font Awesome and the OSM POI icons). Caching a custom map starts from that map's own icon; the built-in layers have none to pass on. A map left without one keeps the generic glyph of wherever it is listed — the offline symbol in the offline-map lists and in Configure layers, the custom-map symbol in the layer menu and toolbar
+- an icon, picked from the same icon set the drawing points use (Font Awesome and the OSM POI icons). Caching a custom map starts from that map's own icon; the built-in layers have none to pass on. A map left without one shows the offline-map symbol (a pin with a check mark) wherever it is listed
 - the zoom range. For a layer whose deepest zooms are premium, a non-premium user's range stops just short of them and a gem beside the field says why: cached tiles are kept for good and are shown with no connection, where no checkerboard applies, so downloading those levels needs premium access. Browsing them online is unaffected — the cached map shows the same checkerboard there as the source layer does.
 - the scale (1×, 2×, … — only for layers that offer hi-DPI tiles; defaults to what the current screen displays). A cached map holds exactly one scale and is always drawn at it, regardless of the screen and of the resolution/feature-size preferences.
 - whether missing tiles may be fetched from the internet (see above)
@@ -738,7 +738,7 @@ A table of every map — built-in, custom and cached alike. For each layer the u
 Manage user-defined map layers — a list with edit/delete actions and an **Add custom map** button. Each custom map has:
 
 - name
-- icon, picked from the same icon set the drawing points use (Font Awesome and the OSM POI icons); the generic custom-map glyph is used when none is picked
+- icon, picked from the same icon set the drawing points use (Font Awesome and the OSM POI icons); the map type's icon is used when none is picked
 - type (technology): Image tiles (TMS, XYZ), Vector (MapLibre), WMS, Parametric shading, or Color
 - URL (tile template for TMS/XYZ, server URL for WMS, or style URL for MapLibre; a Parametric shading map has none)
 - for Parametric shading: the terrain comes from the built-in Parametric terrain shading layer (`h`), whose tiles, zoom range, premium limit and credits it takes, and it is rendered wherever the shading panel says (in the browser or on the server). The map keeps shading settings of its own, set live in the shading panel on the map and saved there; the built-in shading layer and custom shading maps without their own share one set, which is what `shading=` in the URL carries. So a shading map can be a base map, whose background colour is always opaque — white where it has none — (as an overlay the background is optional: **Remove** takes it off while it is selected, and **Add** puts it back), and two shading maps can show at once with different settings

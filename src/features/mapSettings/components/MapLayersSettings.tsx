@@ -7,8 +7,8 @@ import {
 } from '@features/map/model/mapCombination.js';
 import { activeCombinationsSelector } from '@features/map/model/selectors.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
+import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
-import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
@@ -21,10 +21,7 @@ import {
 import clsx from 'clsx';
 import type { ReactElement } from 'react';
 import { Form, Table } from 'react-bootstrap';
-import { BiWifiOff } from 'react-icons/bi';
 import { FaEye, FaHistory, FaKeyboard, FaRegListAlt } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
-import { TbStack2 } from 'react-icons/tb';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './MapLayersSettings.module.css';
 import { OpacityButton } from './OpacityButton.js';
@@ -69,12 +66,7 @@ export function MapLayersSettings({
       ...def,
       countries: [],
       layerPreview: false,
-      icon: (
-        <IconSpecGlyph
-          spec={def.iconSpec}
-          fallback={<MdDashboardCustomize />}
-        />
-      ),
+      icon: <CustomMapGlyph spec={def.iconSpec} kind={def.technology} />,
       defaultInToolbar: false,
       defaultInMenu: false,
       superseededBy: undefined,
@@ -85,7 +77,7 @@ export function MapLayersSettings({
       .map((cm) => ({
         ...cm,
         countries: [] as string[],
-        icon: <IconSpecGlyph spec={cm.iconSpec} fallback={<BiWifiOff />} />,
+        icon: <CustomMapGlyph spec={cm.iconSpec} kind="cached" />,
         defaultInToolbar: false,
         defaultInMenu: false,
         superseededBy: undefined,
@@ -101,9 +93,7 @@ export function MapLayersSettings({
       combination: true,
       name: combination.name,
       countries: [] as string[],
-      icon: (
-        <IconSpecGlyph spec={combination.iconSpec} fallback={<TbStack2 />} />
-      ),
+      icon: <CustomMapGlyph spec={combination.iconSpec} kind="combination" />,
       defaultInToolbar: false,
       // As the layer menu has it.
       defaultInMenu: true,
