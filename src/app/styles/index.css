@@ -5,11 +5,31 @@
 [data-bs-theme="light"] {
   --scroller-from: rgba(224, 224, 224, 0);
   --scroller-to: rgb(180, 180, 180);
+  --fm-frosted-bg: rgba(255, 255, 255, 0.7);
 }
 
 [data-bs-theme="dark"] {
   --scroller-from: rgba(40, 40, 40, 0);
   --scroller-to: rgb(160, 160, 160);
+  --fm-frosted-bg: rgba(0, 0, 0, 0.7);
+}
+
+/* A panel over the map, translucent over a blurred backdrop so the map reads
+   behind it without making its text unreadable. On a pseudo-element:
+   `backdrop-filter` on the box would make it the containing block of the
+   fixed-strategy dropdowns inside. */
+.fm-frosted {
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    backdrop-filter: blur(6px);
+    background-color: var(--fm-frosted-bg);
+  }
 }
 
 body {

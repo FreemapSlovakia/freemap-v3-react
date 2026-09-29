@@ -612,6 +612,7 @@ export function useFloatingWindow({
       ref: setRef,
       className: clsx(
         windowClasses.window,
+        'fm-frosted',
         // The column the content/footer split depends on, so it is the hook's
         // to impose rather than each panel's to remember.
         'd-flex flex-column',

@@ -1,4 +1,5 @@
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
+import { useBsTheme } from '@shared/hooks/useBsTheme.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
 import Color from 'color';
 import { produce } from 'immer';
@@ -9,6 +10,15 @@ import type {
   Shading,
   ShadingComponent,
 } from '../model/Shading.js';
+
+// The panel is translucent: the picker's own white box and lavender button
+// strip would sit on it as solid patches.
+const PICKER_STYLE = {
+  body: { background: 'transparent' },
+  rbgcpControlBtnWrapper: {
+    background: 'rgba(var(--bs-body-color-rgb), 0.08)',
+  },
+};
 
 type Props = {
   shading: Shading;
@@ -28,6 +38,8 @@ export function ShadingColorPicker({
   opaqueBackground,
   onChange,
 }: Props): ReactElement {
+  const dark = useBsTheme() === 'dark';
+
   const [color, setColor] = useState('');
 
   const [activeStopIndex, setActiveStopIndex] = useState<number>();
@@ -50,6 +62,10 @@ export function ShadingColorPicker({
   return (
     <ColorPicker
       className="mt-3"
+      style={PICKER_STYLE}
+      // It follows the OS scheme otherwise, not the app's.
+      disableDarkMode={dark ? undefined : true}
+      disableLightMode={dark ? true : undefined}
       {...(isGradientComponent
         ? {
             stopMin: 0,

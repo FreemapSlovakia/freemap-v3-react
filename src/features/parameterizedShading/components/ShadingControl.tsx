@@ -23,6 +23,7 @@ import {
   SHADING_SOURCE,
 } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import clsx from 'clsx';
 import { produce } from 'immer';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -288,7 +289,7 @@ export default function ShadingControl() {
     // Expanded, as wide as the rest of the panel and never wider, the name cut
     // short; collapsed it is all there is, so it sets the width itself.
     <div
-      className="d-flex align-items-center gap-2"
+      className="d-flex align-items-center gap-2 ps-1"
       style={collapsed ? undefined : { width: 0, minWidth: '100%' }}
     >
       <GiHills className="flex-shrink-0" />
@@ -355,7 +356,15 @@ export default function ShadingControl() {
 
   return (
     <>
-      <Card body className={`${classes.shadingControl} mt-2 ms-2`}>
+      <Card
+        body
+        className={clsx(
+          classes.shadingControl,
+          'fm-frosted',
+          collapsed && classes.collapsed,
+          'mt-2 ms-2',
+        )}
+      >
         {/* Header and footer stay put; only the middle scrolls. */}
         <Form
           noValidate
@@ -364,7 +373,8 @@ export default function ShadingControl() {
           onSubmit={(e) => e.preventDefault()}
           style={{ width: 'fit-content' }}
         >
-          <div className={collapsed ? 'p-2' : 'px-2 pt-2'}>{header}</div>
+          {/* Its right edge lines up with the content's while expanded. */}
+          <div className={collapsed ? 'p-1' : 'p-1 pe-2'}>{header}</div>
 
           {!collapsed && (
             <>
@@ -468,6 +478,9 @@ export default function ShadingControl() {
                     ) && (
                       <ShadingComponentControl
                         components={shading.components}
+                        background={
+                          showsBackground ? shading.backgroundColor : undefined
+                        }
                         onChange={(components) =>
                           setShading({ ...shading, components })
                         }
@@ -502,7 +515,7 @@ export default function ShadingControl() {
                 // As wide as the rest of the panel, never wider: the buttons
                 // wrap instead of stretching it.
                 <div
-                  className="d-flex flex-wrap gap-1 p-2 border-top"
+                  className={`d-flex flex-wrap gap-1 p-2 ${classes.footer}`}
                   style={{ width: 0, minWidth: '100%' }}
                 >
                   {applies && (

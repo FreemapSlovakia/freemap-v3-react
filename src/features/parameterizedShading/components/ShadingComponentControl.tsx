@@ -1,4 +1,5 @@
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
+import ColorLib from 'color';
 import { produce } from 'immer';
 import {
   type PointerEvent as ReactPointerEvent,
@@ -6,6 +7,7 @@ import {
   useRef,
 } from 'react';
 import type {
+  Color,
   ShadingComponent,
   ShadingComponentType,
 } from '../model/Shading.js';
@@ -13,6 +15,8 @@ import type {
 export type Props = {
   diameter?: number;
   components: ShadingComponent[];
+  /** Fills the dial, so each handle shows against what its colour lies on. */
+  background?: Color;
   onChange: (components: ShadingComponent[]) => void;
   selectedId?: number;
   onSelect: (id: number) => void;
@@ -29,12 +33,32 @@ const HIT_RADIUS = 16;
 
 export function ShadingComponentControl({
   components: shadings,
+  background,
   diameter = 220,
   onChange,
   selectedId,
   onSelect,
 }: Props) {
   const radius = diameter / 2;
+
+  // Guides and handle outlines contrast with the fill; silver where the panel
+  // shows through. Opaque, or the dot shows the line crossing it.
+  const fill = background && ColorLib.rgb(background.slice(0, 3));
+
+  const opaque = fill && background[3] >= 0.5;
+
+  const guide = opaque
+    ? fill
+        .mix(ColorLib.rgb(fill.isLight() ? [0, 0, 0] : [255, 255, 255]), 0.5)
+        .string()
+    : 'silver';
+
+  // The rim is elevation 0, so it must show whatever lies inside or behind it.
+  const edge = opaque
+    ? fill.isLight()
+      ? 'black'
+      : 'white'
+    : 'var(--bs-body-color)';
 
   const dragRef = useRef<{
     id: number;
@@ -265,7 +289,11 @@ export function ShadingComponentControl({
         cx={0}
         cy={0}
         r={radius}
-        style={{ fill: 'none', strokeWidth: '1px', stroke: 'black' }}
+        style={{
+          fill: background ? `rgba(${background.join(',')})` : 'none',
+          strokeWidth: '1px',
+          stroke: edge,
+        }}
       />
 
       {items
@@ -277,12 +305,12 @@ export function ShadingComponentControl({
             y1={0}
             x2={cx}
             y2={cy}
-            stroke="silver"
+            stroke={guide}
             strokeDasharray="4 2"
           />
         ))}
 
-      <circle cx={0} cy={0} r={3} style={{ fill: 'silver' }} />
+      <circle cx={0} cy={0} r={3} style={{ fill: guide }} />
 
       {handles.map(({ shading, cx, cy }) => (
         <circle
@@ -292,7 +320,7 @@ export function ShadingComponentControl({
           r={7}
           style={{
             fill: `rgba(${shading.colorStops[0].color.join(',')})`,
-            stroke: 'silver',
+            stroke: guide,
             cursor: 'move',
           }}
         />
@@ -301,18 +329,18 @@ export function ShadingComponentControl({
       {handles
         .filter(({ shading }) => selectedId === shading.id)
         .map(({ shading, cx, cy }) => (
-          <circle
-            key={shading.id}
-            r={8}
-            cx={cx}
-            cy={cy}
-            style={{
-              fill: 'none',
-              strokeWidth: 1,
-              stroke: 'blue',
-              strokeDasharray: '2 2',
-            }}
-          />
+          // Black dashes over white, so some of it shows on any fill.
+          <g key={shading.id} style={{ fill: 'none', strokeWidth: 1 }}>
+            <circle r={9} cx={cx} cy={cy} stroke="white" />
+
+            <circle
+              r={9}
+              cx={cx}
+              cy={cy}
+              stroke="black"
+              strokeDasharray="2 2"
+            />
+          </g>
         ))}
     </svg>
   );

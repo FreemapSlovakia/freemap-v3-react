@@ -33,6 +33,20 @@ export function ShadingToolbar({
 
         {/* Fixed, so the panel's own scroller doesn't clip it. */}
         <FmDropdownMenu>
+          {canAddBackground && (
+            <>
+              <Dropdown.Item
+                as="button"
+                eventKey="background"
+                className="text-nowrap"
+              >
+                {sm?.background}
+              </Dropdown.Item>
+
+              <Dropdown.Divider />
+            </>
+          )}
+
           {SHADING_COMPONENT_TYPES.map((st) => (
             <Dropdown.Item
               as="button"
@@ -51,20 +65,6 @@ export function ShadingToolbar({
           <Dropdown.Item as="button" eventKey="fog" className="text-nowrap">
             {sm?.fogInversion}
           </Dropdown.Item>
-
-          {canAddBackground && (
-            <>
-              <Dropdown.Divider />
-
-              <Dropdown.Item
-                as="button"
-                eventKey="background"
-                className="text-nowrap"
-              >
-                {sm?.background}
-              </Dropdown.Item>
-            </>
-          )}
         </FmDropdownMenu>
       </Dropdown>
 
