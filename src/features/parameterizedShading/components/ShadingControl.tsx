@@ -10,6 +10,7 @@ import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -46,7 +47,14 @@ import {
   type Shading,
   type ShadingComponent,
   type ShadingComponentType,
+  serializeShading,
+  withOpaqueBackground,
 } from '../model/Shading.js';
+import {
+  SHADING_PRESETS,
+  type ShadingPreset,
+  shadingPreset,
+} from '../model/shadingPresets.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 import {
   type ParameterizedKind,
@@ -272,6 +280,46 @@ export default function ShadingControl() {
     setId(undefined);
   }
 
+  const confirm = useConfirm();
+
+  async function handlePreset(preset: ShadingPreset) {
+    trackMatomo(['trackEvent', 'MapShading', 'preset', preset]);
+
+    // As drawn, so a base map's forced background compares equal; ids are not
+    // serialized.
+    const asDrawn = (s: Shading) =>
+      serializeShading(isBase ? withOpaqueBackground(s) : s);
+
+    const current = asDrawn(shading);
+
+    // Only a hand-made shading is worth asking about; a preset is one click back.
+    const isPreset = SHADING_PRESETS.some(
+      (p) => asDrawn(shadingPreset(p, () => 0)) === current,
+    );
+
+    if (
+      shading.components.length > 0 &&
+      !isPreset &&
+      !(await confirm({
+        title: sm?.presetReplaceTitle,
+        message: sm?.presetReplaceConfirm,
+      }))
+    ) {
+      return;
+    }
+
+    const next = shadingPreset(preset, newComponentId);
+
+    // Applied at once, even where edits otherwise wait for Apply.
+    if (targetDef) {
+      setShading(next);
+    } else {
+      dispatch(mapSetShading(next));
+    }
+
+    setId(undefined);
+  }
+
   function handleAddParameterized(component: ShadingComponent) {
     setShading(
       produce(shading, (draft) => {
@@ -469,6 +517,7 @@ export default function ShadingControl() {
                       canAddBackground={!showsBackground}
                       onAdd={handleAdd}
                       onRemove={handleRemove}
+                      onPreset={handlePreset}
                     />
 
                     <hr />

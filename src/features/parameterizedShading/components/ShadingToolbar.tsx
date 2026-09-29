@@ -1,9 +1,15 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import type { ReactElement } from 'react';
 import { Button, ButtonToolbar, Dropdown } from 'react-bootstrap';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaSwatchbook, FaTrash } from 'react-icons/fa';
 import { SHADING_COMPONENT_TYPES } from '../model/Shading.js';
+import {
+  ARTISTIC_PRESETS,
+  MAP_PRESETS,
+  type ShadingPreset,
+} from '../model/shadingPresets.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 
 type Props = {
@@ -12,6 +18,7 @@ type Props = {
   canAddBackground: boolean;
   onAdd: (type: string | null) => void;
   onRemove: () => void;
+  onPreset: (preset: ShadingPreset) => void;
 };
 
 export function ShadingToolbar({
@@ -19,10 +26,22 @@ export function ShadingToolbar({
   canAddBackground,
   onAdd,
   onRemove,
+  onPreset,
 }: Props): ReactElement {
   const m = useMessages();
 
   const sm = useShadingMessages();
+
+  const presetItem = (preset: ShadingPreset) => (
+    <Dropdown.Item
+      as="button"
+      key={preset}
+      eventKey={preset}
+      className="text-nowrap"
+    >
+      {sm?.presetNames[preset]}
+    </Dropdown.Item>
+  );
 
   return (
     <ButtonToolbar className="mt-2">
@@ -47,6 +66,8 @@ export function ShadingToolbar({
             </>
           )}
 
+          <Dropdown.Header>{sm?.componentHeader}</Dropdown.Header>
+
           {SHADING_COMPONENT_TYPES.map((st) => (
             <Dropdown.Item
               as="button"
@@ -59,6 +80,9 @@ export function ShadingToolbar({
           ))}
 
           <Dropdown.Divider />
+
+          <Dropdown.Header>{sm?.templateHeader}</Dropdown.Header>
+
           <Dropdown.Item as="button" eventKey="contour" className="text-nowrap">
             {sm?.contour}
           </Dropdown.Item>
@@ -71,6 +95,31 @@ export function ShadingToolbar({
       <Button disabled={!canRemove} variant="danger" onClick={onRemove}>
         <FaTrash /> {m?.general.remove}
       </Button>
+
+      <Dropdown
+        className="ms-auto"
+        onSelect={(key) => key !== null && onPreset(key as ShadingPreset)}
+      >
+        <LongPressTooltip label={sm?.presets}>
+          {({ props }) => (
+            <Dropdown.Toggle variant="secondary" {...props}>
+              <FaSwatchbook />
+            </Dropdown.Toggle>
+          )}
+        </LongPressTooltip>
+
+        <FmDropdownMenu>
+          <Dropdown.Header>{sm?.mapPresetsHeader}</Dropdown.Header>
+
+          {MAP_PRESETS.map(presetItem)}
+
+          <Dropdown.Divider />
+
+          <Dropdown.Header>{sm?.artisticPresetsHeader}</Dropdown.Header>
+
+          {ARTISTIC_PRESETS.map(presetItem)}
+        </FmDropdownMenu>
+      </Dropdown>
     </ButtonToolbar>
   );
 }

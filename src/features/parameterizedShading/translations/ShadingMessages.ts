@@ -19,6 +19,36 @@ export type ShadingMessages = {
   parameters: string;
   contrast: string;
   brightness: string;
+  componentHeader: string;
+  templateHeader: string;
+  presets: string;
+  presetReplaceTitle: string;
+  presetReplaceConfirm: string;
+  mapPresetsHeader: string;
+  artisticPresetsHeader: string;
+  presetNames: {
+    classic: string;
+    outdoor: string;
+    multidirectional: string;
+    swiss: string;
+    hypsometric: string;
+    shadow: string;
+    plastic: string;
+    sepia: string;
+    night: string;
+    slope: string;
+    lowland: string;
+    moonlight: string;
+    golden: string;
+    glacier: string;
+    mars: string;
+    ink: string;
+    blueprint: string;
+    neon: string;
+    watercolor: string;
+    autumn: string;
+    aspect: string;
+  };
   types: {
     'hillshade-igor': string;
     'hillshade-classic': string;
