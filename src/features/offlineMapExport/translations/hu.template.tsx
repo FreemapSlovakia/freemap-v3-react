@@ -5,8 +5,6 @@ const hu: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   format: 'Formátum',
   map: 'Térkép',
   unknownMapType: 'Ismeretlen térkép',
-  countriesOnly: (countries) =>
-    `Csak ezek az országok exportálhatók: ${countries}. A terület többi része üres marad.`,
   downloadArea: 'Exportálni',
   name: 'Név',
   zoomRange: 'Nagyítási tartomány',

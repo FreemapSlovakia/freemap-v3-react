@@ -4,7 +4,6 @@ export type OfflineMapExportMessages = {
   format: string;
   map: string;
   unknownMapType: string;
-  countriesOnly: (countries: string) => string;
   downloadArea: string;
   name: string;
   zoomRange: string;

@@ -5,8 +5,6 @@ const cs: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   format: 'Formát',
   map: 'Mapa',
   unknownMapType: 'Neznámá mapa',
-  countriesOnly: (countries) =>
-    `Exportovat lze jen ${countries}, zbytek oblasti zůstane prázdný.`,
   downloadArea: 'Exportovat',
   name: 'Název',
   zoomRange: 'Rozsah přiblížení',

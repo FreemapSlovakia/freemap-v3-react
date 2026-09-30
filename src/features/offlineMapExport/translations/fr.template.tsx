@@ -5,8 +5,6 @@ const fr: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   format: 'Format',
   map: 'Carte',
   unknownMapType: 'Carte inconnue',
-  countriesOnly: (countries) =>
-    `Seuls ces pays sont exportés : ${countries}. Le reste de la zone reste vide.`,
   downloadArea: 'Exporter',
   name: 'Nom',
   zoomRange: 'Plage de zoom',

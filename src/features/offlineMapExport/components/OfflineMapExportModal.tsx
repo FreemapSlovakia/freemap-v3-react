@@ -15,7 +15,6 @@ import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
-import { useRegionNames } from '@shared/hooks/useRegionNames.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
 import {
   type IntegratedLayerDef,
@@ -33,7 +32,6 @@ import {
   useState,
 } from 'react';
 import {
-  Alert,
   Button,
   ButtonGroup,
   Dropdown,
@@ -62,10 +60,6 @@ export default function OfflineMapExportModal({
   const online = useOnline();
 
   const ome = useOfflineMapExportMessages();
-
-  const language = useAppSelector((state) => state.l10n.language);
-
-  const regionNames = useRegionNames();
 
   const dispatch = useDispatch();
 
@@ -101,13 +95,12 @@ export default function OfflineMapExportModal({
         }
 
         // A layer exported as something else takes that one's tiles, price and
-        // countries; `exportCountries` marks the export as limited to them.
+        // countries, whose flags then say what the export covers.
         const exported = layer.offlineExport
           ? {
               ...layer,
               ...layer.offlineExport,
               exportType: layer.offlineExport.type,
-              exportCountries: layer.offlineExport.countries,
             }
           : layer.creditsPerMTile === undefined
             ? undefined
@@ -115,7 +108,6 @@ export default function OfflineMapExportModal({
                 ...layer,
                 creditsPerMTile: layer.creditsPerMTile,
                 exportType: layer.type,
-                exportCountries: undefined,
               };
 
         return exported
@@ -439,19 +431,6 @@ export default function OfflineMapExportModal({
                 ))}
               </FmDropdownMenu>
             </Dropdown>
-
-            {mapDef?.exportCountries && (
-              <Alert variant="warning">
-                {ome?.countriesOnly(
-                  new Intl.ListFormat(language, { type: 'conjunction' }).format(
-                    mapDef.exportCountries.map(
-                      (country) =>
-                        regionNames.of(country.toUpperCase()) ?? country,
-                    ),
-                  ),
-                )}
-              </Alert>
-            )}
           </Form.Group>
 
           <Form.Group controlId="downloadArea">

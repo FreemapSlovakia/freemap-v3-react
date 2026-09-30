@@ -5,8 +5,6 @@ const sl: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   format: 'Format',
   map: 'Zemljevid',
   unknownMapType: 'Neznan zemljevid',
-  countriesOnly: (countries) =>
-    `Izvoziti je mogoče le te države: ${countries}. Preostanek območja ostane prazen.`,
   downloadArea: 'Izvozi',
   name: 'Ime',
   zoomRange: 'Razpon povečave',
