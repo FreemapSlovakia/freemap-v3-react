@@ -15,10 +15,10 @@ import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { useRegionNames } from '@shared/hooks/useRegionNames.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
 import {
   type IntegratedLayerDef,
-  type IsTileLayerDef,
   integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -33,6 +33,7 @@ import {
   useState,
 } from 'react';
 import {
+  Alert,
   Button,
   ButtonGroup,
   Dropdown,
@@ -62,6 +63,10 @@ export default function OfflineMapExportModal({
 
   const ome = useOfflineMapExportMessages();
 
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const regionNames = useRegionNames();
+
   const dispatch = useDispatch();
 
   const close = () => {
@@ -90,21 +95,42 @@ export default function OfflineMapExportModal({
 
   const mapDefs = useMemo(
     () =>
-      integratedLayerDefs
-        .filter(
-          (
-            def,
-          ): def is IntegratedLayerDef<
-            IsTileLayerDef & {
-              creditsPerMTile: number;
+      integratedLayerDefs.flatMap((layer) => {
+        if (layer.technology !== 'tile') {
+          return [];
+        }
+
+        // A layer exported as something else takes that one's tiles, price and
+        // countries; `exportCountries` marks the export as limited to them.
+        const exported = layer.offlineExport
+          ? {
+              ...layer,
+              ...layer.offlineExport,
+              exportType: layer.offlineExport.type,
+              exportCountries: layer.offlineExport.countries,
             }
-          > => def.technology === 'tile' && def.creditsPerMTile !== undefined,
-        )
-        .map((layer) => ({
-          ...layer,
-          overlay: layer.layer === 'overlay', // TODO make server understand `layer` property
-          url: layer.url.startsWith('//') ? `http:${layer.url}` : layer.url,
-        })),
+          : layer.creditsPerMTile === undefined
+            ? undefined
+            : {
+                ...layer,
+                creditsPerMTile: layer.creditsPerMTile,
+                exportType: layer.type,
+                exportCountries: undefined,
+              };
+
+        return exported
+          ? [
+              {
+                ...exported,
+                type: layer.type,
+                overlay: layer.layer === 'overlay', // TODO make server understand `layer` property
+                url: exported.url.startsWith('//')
+                  ? `http:${exported.url}`
+                  : exported.url,
+              },
+            ]
+          : [];
+      }),
     [],
   );
 
@@ -227,7 +253,7 @@ export default function OfflineMapExportModal({
       downloadMap({
         email,
         name,
-        map: mapType,
+        map: mapDef?.exportType ?? mapType,
         format,
         maxZoom: parseInt(maxZoom, 10),
         minZoom: parseInt(minZoom, 10),
@@ -413,6 +439,19 @@ export default function OfflineMapExportModal({
                 ))}
               </FmDropdownMenu>
             </Dropdown>
+
+            {mapDef?.exportCountries && (
+              <Alert variant="warning">
+                {ome?.countriesOnly(
+                  new Intl.ListFormat(language, { type: 'conjunction' }).format(
+                    mapDef.exportCountries.map(
+                      (country) =>
+                        regionNames.of(country.toUpperCase()) ?? country,
+                    ),
+                  ),
+                )}
+              </Alert>
+            )}
           </Form.Group>
 
           <Form.Group controlId="downloadArea">

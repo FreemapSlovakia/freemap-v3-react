@@ -368,7 +368,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-XK': 'szlaki turystyczne, znaki, kst',
         'layer-O': 'osm, mapnik, standardowa',
         'layer-S': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
-        'layer-Z': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
         'layer-J1': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
         'layer-J2': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
         'layer-d': 'komunikacja miejska, autobusy, pociągi, rozkłady',
@@ -412,7 +411,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Przywrócić wszystkie ustawienia aplikacji do wartości domyślnych i ponownie załadować stronę? Nastąpi wylogowanie.',
     letters: {
       S: 'Lotnicza',
-      Z: 'Lotnicza',
       J1: 'Lotnicza (2017-2019)',
       J2: 'Lotnicza (2020-2022)',
       O: 'OpenStreetMap',

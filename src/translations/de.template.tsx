@@ -383,7 +383,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-XK': 'wanderwege, markierungen, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellit, orthofoto, luftbild',
-        'layer-Z': 'satellit, orthofoto, luftbild',
         'layer-J1': 'satellit, orthofoto, luftbild',
         'layer-J2': 'satellit, orthofoto, luftbild',
         'layer-d': 'öpnv, nahverkehr, busse, züge, fahrpläne',
@@ -428,7 +427,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Alle Anwendungseinstellungen auf die Standardwerte zurücksetzen und die Seite neu laden? Sie werden abgemeldet.',
     letters: {
       S: 'Luftbild',
-      Z: 'Luftbild',
       J1: 'Luftbild (2017-2019)',
       J2: 'Luftbild (2020-2022)',
       O: 'OpenStreetMap',

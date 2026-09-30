@@ -70,7 +70,7 @@ Germany is covered state by state, so the terrain claim holds nationwide there.
 Country-specific extras are **Slovakia-heavy**: detailed shading (`7`), surface
 shading (`6`), cadastre, forest types, tree composition, geology, hydrochemistry,
 NLC forest tracks — all `sk`. Parametric shading (`h`) covers SK, CZ, AT and CH.
-Aerial `Z` is `sk`+`cz`; aerial `S` (Esri) is worldwide.
+Aerial `S` is worldwide (Esri), with the national orthophoto over it in `sk`+`cz`.
 
 **Objects/POI API and the Photon geocoder: Europe only.**
 

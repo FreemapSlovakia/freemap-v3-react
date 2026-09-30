@@ -3,6 +3,7 @@ import { isPremium } from '@features/premium/premium.js';
 import {
   type CustomLayerDef,
   integratedLayerDefs,
+  RETIRED_SOURCE_LAYERS,
 } from '@shared/mapDefinitions.js';
 
 /** What a cached map takes from the layer it was made from while online. */
@@ -18,7 +19,8 @@ function findSourceLayerDef(
 ) {
   return (
     integratedLayerDefs.find((def) => def.type === sourceType) ??
-    customLayers.find((def) => def.type === sourceType)
+    customLayers.find((def) => def.type === sourceType) ??
+    RETIRED_SOURCE_LAYERS[sourceType]
   );
 }
 
@@ -66,7 +68,9 @@ export function premiumZoomLimit(
     return undefined;
   }
 
-  const def = integratedLayerDefs.find((def) => def.type === sourceType);
+  const def =
+    integratedLayerDefs.find((def) => def.type === sourceType) ??
+    RETIRED_SOURCE_LAYERS[sourceType];
 
   if (!def?.premiumFromZoom) {
     return undefined;

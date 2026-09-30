@@ -1,6 +1,9 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import {
+  integratedLayerDefMap,
+  resolveLayerAlias,
+} from '@shared/mapDefinitions.js';
 import { createSelector } from 'reselect';
 import { mapRefocus } from '../actions.js';
 import { combinationMarker, isCombinationMarker } from '../mapCombination.js';
@@ -36,10 +39,12 @@ const prunedLayersSelector = createSelector(
       // One with a base map is left once that base map is off, however it went.
       const { base } = combination;
 
+      // as `resolveCombination` put it on: a retired base by its successor
       return layers.some(
         (layer) =>
           layer === base ||
-          layer === integratedLayerDefMap[base]?.superseededBy,
+          layer === integratedLayerDefMap[base]?.superseededBy ||
+          resolveLayerAlias(base).includes(layer),
       );
     });
 

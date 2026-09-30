@@ -383,7 +383,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-XK': 'turistautak, jelzések, kst',
         'layer-O': 'osm, mapnik, alap',
         'layer-S': 'műhold, ortofotó, légifotó',
-        'layer-Z': 'műhold, ortofotó, légifotó',
         'layer-J1': 'műhold, ortofotó, légifotó',
         'layer-J2': 'műhold, ortofotó, légifotó',
         'layer-d': 'tömegközlekedés, buszok, vonatok, menetrendek',
@@ -432,7 +431,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
     letters: {
       S: 'Légifelvétel',
-      Z: 'Légifelvétel',
       J1: 'Légifelvétel (2017-2019)',
       J2: 'Légifelvétel (2020-2022)',
       O: 'OpenStreetMap',

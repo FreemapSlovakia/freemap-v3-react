@@ -383,7 +383,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-XK': 'sentieri segnalati, segnavia, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellite, ortofoto, immagini aeree',
-        'layer-Z': 'satellite, ortofoto, immagini aeree',
         'layer-J1': 'satellite, ortofoto, immagini aeree',
         'layer-J2': 'satellite, ortofoto, immagini aeree',
         'layer-d': 'trasporto pubblico, autobus, treni, orari',
@@ -440,7 +439,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineWarning: 'Questa mappa non è salvata per l’uso offline',
     letters: {
       S: 'Aereo',
-      Z: 'Aereo',
       J1: 'Aereo (2017-2019)',
       J2: 'Aereo (2020-2022)',
       O: 'OpenStreetMap',

@@ -27,6 +27,7 @@ import {
   OSM_DATA_ATTR,
   OSRM_ROUTING_ATTR,
   RENDERER_LAYER_TYPES,
+  RETIRED_SOURCE_LAYERS,
   SHADING_SOURCE,
   type TileDetailDef,
 } from '../mapDefinitions.js';
@@ -344,8 +345,10 @@ function useCategorizedAttribution(
       exact.push(...resolved);
     } else {
       guessed.push(
-        ...(integratedLayerDefs.find(({ type }) => type === cm.sourceType)
-          ?.attribution ?? []),
+        ...((
+          integratedLayerDefMap[cm.sourceType] ??
+          RETIRED_SOURCE_LAYERS[cm.sourceType]
+        )?.attribution ?? []),
       );
 
       // As for a layer on screen: a map that couldn't say what it drew credits

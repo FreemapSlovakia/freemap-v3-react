@@ -19,6 +19,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   integratedLayerDefMap,
   integratedLayerDefs,
+  resolveLayerAlias,
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
 import { type ReactElement, type ReactNode, useState } from 'react';
@@ -100,8 +101,13 @@ export function MapCombinationForm({
     ...cachedMaps.filter((cm) => cm.downloadedCount === cm.tileCount),
   ];
 
+  // a retired layer shown as its successor, which applying it gives
   const defOf = (type: string, layer: 'base' | 'overlay'): MapLayerItemDef =>
-    defs.find((def) => def.type === type) ?? { type, layer };
+    defs.find((def) => def.type === type) ??
+    defs.find((def) => def.type === resolveLayerAlias(type)[0]) ?? {
+      type,
+      layer,
+    };
 
   const mapBase = useAppSelector((state) => {
     const kinds = layerKindsSelector(state);

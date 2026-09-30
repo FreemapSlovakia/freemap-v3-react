@@ -406,7 +406,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-XK': 'turistické trasy, značky, kst',
         'layer-O': 'osm, mapnik, štandardná',
         'layer-S': 'satelitná, ortofoto, snímky',
-        'layer-Z': 'satelitná, ortofoto, snímky',
         'layer-J1': 'satelitná, ortofoto, snímky',
         'layer-J2': 'satelitná, ortofoto, snímky',
         'layer-d': 'mhd, autobusy, vlaky, cestovné poriadky',
@@ -458,7 +457,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineWarning: 'Táto mapa nie je uložená pre offline použitie',
     letters: {
       S: 'Letecká',
-      Z: 'Letecká',
       J1: 'Letecká (2017-2019)',
       J2: 'Letecká (2020-2022)',
       O: 'OpenStreetMap',

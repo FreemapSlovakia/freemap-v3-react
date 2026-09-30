@@ -368,7 +368,6 @@ const messages: Messages = {
         'layer-XK': 'hiking trails, markers, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellite, orthophoto, imagery',
-        'layer-Z': 'satellite, orthophoto, imagery',
         'layer-J1': 'satellite, orthophoto, imagery',
         'layer-J2': 'satellite, orthophoto, imagery',
         'layer-d': 'transit, buses, trains, timetables',
@@ -419,7 +418,6 @@ const messages: Messages = {
     offlineWarning: 'This map is not saved for offline use',
     letters: {
       S: 'Aerial',
-      Z: 'Aerial',
       J1: 'Aerial (2017-2019)',
       J2: 'Aerial (2020-2022)',
       O: 'OpenStreetMap',

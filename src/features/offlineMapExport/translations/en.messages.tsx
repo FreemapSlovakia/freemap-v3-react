@@ -4,6 +4,8 @@ const en: OfflineMapExportMessages = {
   format: 'Format',
   map: 'Map',
   unknownMapType: 'Unknown map',
+  countriesOnly: (countries) =>
+    `Only ${countries} can be exported: the rest of the area comes out empty.`,
   downloadArea: 'Export',
   name: 'Name',
   zoomRange: 'Zoom range',

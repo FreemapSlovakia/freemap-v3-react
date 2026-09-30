@@ -429,6 +429,19 @@ export type TileDetailDef = {
   attribution: AttributionDef[];
 };
 
+/**
+ * What the offline export renders for a layer that isn't exported as itself:
+ * the API's map `type`, covering only `countries`.
+ */
+export type OfflineExportDef = {
+  type: string;
+  url: string;
+  minZoom: number;
+  maxNativeZoom: number;
+  creditsPerMTile: number;
+  countries: string[];
+};
+
 export type IsBaseLayerDef = {
   layer: 'base';
 };
@@ -576,6 +589,7 @@ export type IsAllTechnologiesLayerDef =
   | (IsTileLayerDef & {
       creditsPerMTile?: number;
       detail?: TileDetailDef;
+      offlineExport?: OfflineExportDef;
     })
   | IsWmsLayerDef
   | IsMapLibreLayerDef
@@ -822,22 +836,6 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   },
   {
     layer: 'base',
-    type: 'Z',
-    technology: 'tile',
-    url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minZoom: 0,
-    maxNativeZoom: 20,
-    scaleWithDpi: true,
-    icon: <FaPlane />,
-    attribution: [OFM_ATTR, CUZK_ATTR],
-    errorTileUrl: white1x1,
-    premiumFromZoom: 20,
-    creditsPerMTile: 1000,
-    countries: ['sk', 'cz'],
-    superseededBy: 'S',
-  },
-  {
-    layer: 'base',
     type: 'S',
     defaultInToolbar: true,
     defaultInMenu: true,
@@ -850,6 +848,15 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
       maxNativeZoom: 20,
       premiumFromZoom: 20,
       attribution: [OFM_ATTR, CUZK_ATTR],
+    },
+    // only the orthophoto is exported; Esri's tiles aren't ours to hand out
+    offlineExport: {
+      type: 'Z',
+      url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+      minZoom: 0,
+      maxNativeZoom: 20,
+      creditsPerMTile: 1000,
+      countries: ['sk', 'cz'],
     },
     icon: <FaPlane />,
     minZoom: 0,
@@ -1306,9 +1313,36 @@ function maptiler(style: string) {
 const LAYER_ALIASES: Readonly<Record<string, readonly string[]>> = {
   y: ['h'],
   z: ['h'],
+  // `S` draws the same orthophoto where it has data.
+  Z: ['S'],
   // Base maps, so a base goes in with the overlay.
   '5': ['X', 'h'],
   '8': ['X', 'h'],
+};
+
+/**
+ * Removed layers a cached map may still name as its source: what it takes from
+ * the source layer, which the registry no longer has.
+ */
+export const RETIRED_SOURCE_LAYERS: Readonly<
+  Record<
+    string,
+    {
+      minZoom: number;
+      maxNativeZoom: number;
+      premiumFromZoom?: number;
+      scaleWithDpi?: boolean;
+      attribution: AttributionDef[];
+    }
+  >
+> = {
+  Z: {
+    minZoom: 0,
+    maxNativeZoom: 20,
+    premiumFromZoom: 20,
+    scaleWithDpi: true,
+    attribution: [OFM_ATTR, CUZK_ATTR],
+  },
 };
 
 /** A layer id, or the ids of the layers that replaced a removed one. */

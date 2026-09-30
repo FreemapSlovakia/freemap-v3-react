@@ -27,7 +27,10 @@ import {
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
-import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import {
+  type CustomLayerDef,
+  resolveLayerAlias,
+} from '@shared/mapDefinitions.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
@@ -393,8 +396,9 @@ export default function CustomMapsModal({ show }: Props): ReactElement {
     }
   }, [view, layersSettings, combinationDraftId]);
 
+  // a retired layer by its successor's name, as applying the combination does
   const layerName = (type: string) =>
-    m?.mapLayers.letters[type] ??
+    m?.mapLayers.letters[resolveLayerAlias(type)[0] ?? type] ??
     customLayers.find((d) => d.type === type)?.name ??
     type;
 

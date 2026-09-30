@@ -815,8 +815,7 @@ Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set
 | Outdoor                      | X   | tile              |    5 |         20 |           19 |            5000 |              | x        | Europe (~46) | © Freemap, OSM; multi-source national elevation/relief, GEDTM30 elsewhere |
 | KST Hiking Trails            | XK  | tile              |    5 |         20 |              |                 |              |          | sk           | Outdoor map showing only official KST hiking routes; © Freemap, OSM; multi-source national elevation/relief |
 | OpenStreetMap                | O   | tile              |    0 |         19 |              |                 |              | o        |              | © OpenStreetMap                                        |
-| Aerial                       | S   | tile              |    0 |      19/20 |           20 |                 |              | s        |              | © Esri worldwide; in SK and CZ the sharper national orthophoto (to zoom 20, © GKÚ, NLC; © ČÚZK) is drawn over it; premium applies to the orthophoto only |
-| Aerial                       | Z   | tile              |    0 |         20 |           20 |            1000 | S            |          | sk, cz       | © GKÚ, NLC; © ČÚZK (the national orthophoto alone)     |
+| Aerial                       | S   | tile              |    0 |      19/20 |           20 |            1000 |              | s        |              | © Esri worldwide; in SK and CZ the sharper national orthophoto (to zoom 20, © GKÚ, NLC; © ČÚZK) is drawn over it; premium applies to the orthophoto only, and the offline export exports only the orthophoto, so SK and CZ |
 | Aerial (2017–2019)           | J1  | tile              |    0 |         19 |              |            1000 | S            |          | sk           | © GKÚ, NLC (legacy mosaic)                              |
 | Aerial (2020–2022)           | J2  | tile              |    0 |         19 |              |            1000 | S            |          | sk           | © GKÚ, NLC (legacy mosaic)                              |
 | Public transport (ÖPNV)      | d   | tile              |    0 |         18 |              |                 |              | q        |              | © MeMoMaps, OSM                                        |
@@ -863,7 +862,7 @@ Notes:
 
 ##### Internal layer codes
 
-The id values above are used in deep links via the `layers=` URL param: one base-layer code, optionally followed by `~` and the concatenated overlay codes (e.g. `layers=X~I` = Outdoor base + Photos overlay). Links with the removed ids `y` and `z` open `h` instead, and the removed base maps `5` and `8` open `X` with `h`. They are **advisory** for interpreting links and do **not** grant permission to scrape tiles or data; respect each layer's attribution and license.
+The id values above are used in deep links via the `layers=` URL param: one base-layer code, optionally followed by `~` and the concatenated overlay codes (e.g. `layers=X~I` = Outdoor base + Photos overlay). Links with the removed ids `y` and `z` open `h` instead, the removed base maps `5` and `8` open `X` with `h`, and `Z` opens `S`. They are **advisory** for interpreting links and do **not** grant permission to scrape tiles or data; respect each layer's attribution and license.
 
 Clicking a marker on the Wikipedia overlay opens a preview modal, addressable via the unified `show=` param: `/#show=wiki/<lang>:<title>`. Wikimedia Commons photos are part of the Photos layer and open in the gallery viewer like any other photo (legacy `/#show=wmc/<pageId>` and `/#wmc=<pageId>` links still resolve there).
 

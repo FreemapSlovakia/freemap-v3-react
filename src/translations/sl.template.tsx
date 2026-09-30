@@ -374,7 +374,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-XK': 'planinske poti, markacije, kst',
         'layer-O': 'osm, mapnik, standardna',
         'layer-S': 'satelitska, ortofoto, letalski posnetki',
-        'layer-Z': 'satelitska, ortofoto, letalski posnetki',
         'layer-J1': 'satelitska, ortofoto, letalski posnetki',
         'layer-J2': 'satelitska, ortofoto, letalski posnetki',
         'layer-d': 'javni prevoz, avtobusi, vlaki, vozni redi',
@@ -425,7 +424,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineWarning: 'Ta zemljevid ni shranjen za uporabo brez povezave',
     letters: {
       S: 'Letalska',
-      Z: 'Letalska',
       J1: 'Letalska (2017-2019)',
       J2: 'Letalska (2020-2022)',
       O: 'OpenStreetMap',
