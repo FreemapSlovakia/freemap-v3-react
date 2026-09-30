@@ -13,7 +13,7 @@ import {
   effectiveShading,
 } from '@features/parameterizedShading/model/Shading.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
-import { isPremium } from '@features/premium/premium.js';
+import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -30,6 +30,11 @@ import {
   tileAttributionHandlers,
 } from '@shared/tileAttribution.js';
 import { loadTerrainLicenses, loadTileLicenses } from '@shared/tileLicenses.js';
+import {
+  buildTileUrl,
+  pickSubdomain,
+  tileZoomOffset,
+} from '@shared/tileUrl.js';
 import { wmsBaseUrl } from '@shared/wms.js';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
@@ -39,6 +44,7 @@ import white1x1 from '@/images/1x1-white.png';
 import missingTile from '@/images/missing-tile-256x256.png';
 import { AsyncComponent } from './AsyncComponent.js';
 import { ColorLayer } from './ColorLayer.js';
+import { CoveragePane } from './CoveragePane.js';
 import { ScaledTileLayer } from './ScaledTileLayer.js';
 import { WmsImageLayer } from './WmsImageLayer.js';
 import { WmsTileLayer } from './WmsTileLayer.js';
@@ -230,14 +236,19 @@ export function Layers(): ReactElement | null {
 
     const isHdpi = scaleWithDpi && effectiveDpr > 1.4;
 
-    let effPremiumFromZoom =
-      !('premiumFromZoom' in layerDef) || isPremium(user)
-        ? undefined
-        : layerDef.premiumFromZoom;
+    // a dense screen's half-size tiles are one zoom deeper in the URL
+    const toNativeZoom = (zoom: number | undefined) =>
+      zoom === undefined ? undefined : isHdpi ? zoom - 1 : zoom;
 
-    if (effPremiumFromZoom && scaleWithDpi) {
-      effPremiumFromZoom--;
-    }
+    // the map zoom a premium limit starts at for this user, if it applies
+    const toEffPremium = (fromZoom: number | undefined) =>
+      fromZoom === undefined || isPremium(user)
+        ? undefined
+        : premiumMapZoom(fromZoom, scaleWithDpi);
+
+    const effPremiumFromZoom = toEffPremium(
+      'premiumFromZoom' in layerDef ? layerDef.premiumFromZoom : undefined,
+    );
 
     if (layerDef.technology === 'wms') {
       // A WMS renders whatever pixel count it is asked for and is told to scale
@@ -371,13 +382,7 @@ export function Layers(): ReactElement | null {
           tileSize={isHdpi ? 128 : 256}
           minZoom={minZoom}
           maxZoom={maxZoom}
-          maxNativeZoom={
-            layerDef.maxNativeZoom === undefined
-              ? undefined
-              : isHdpi
-                ? layerDef.maxNativeZoom - 1
-                : layerDef.maxNativeZoom
-          }
+          maxNativeZoom={toNativeZoom(layerDef.maxNativeZoom)}
           zoomOffset={isHdpi ? 1 : 0}
           shading={effectiveShading(layerDef, shadingDrafts, shading)}
           premiumFromZoom={effPremiumFromZoom}
@@ -438,58 +443,134 @@ export function Layers(): ReactElement | null {
         }
       }
 
+      const key = [
+        type,
+        opacity,
+        effPremiumFromZoom ?? 99,
+        effPremiumFromZoom ? prm?.premiumOnly : '',
+        resolutionScale ?? 'auto',
+        effForcedScale ?? 'auto',
+        effFeatureScale,
+        layerDef.url,
+        // a grid layer takes its zoom bounds at construction, so anything
+        // that moves them — an edit, or a cached map losing the connection
+        // it was borrowing its source layer's range from — needs a remount
+        minZoom ?? 'auto',
+        layerDef.maxNativeZoom ?? 'auto',
+      ].join('-');
+
+      const commonProps = {
+        forcedScale: effForcedScale,
+        minZoom,
+        maxZoom,
+        extraScales: layerDef.extraScales,
+        tms: layerDef.tms,
+        tileSize: isHdpi ? 128 : 256 * effFeatureScale,
+        zoomOffset: tileZoomOffset(scaleWithDpi, effectiveDpr, effFeatureScale),
+        cors: layerDef.cors ?? true,
+        reportsAttribution:
+          serverShading || RENDERER_LAYER_TYPES.includes(type),
+        // Every tile layer is counted; only the ones whose server reports its
+        // datasets ever resolve to anything, the rest stay on their own list.
+        eventHandlers: tileAttributionHandlers(
+          type,
+          serverShading ? loadTerrainLicenses : loadTileLicenses,
+        ),
+        className: `fm-${layerDef.layer}`,
+      };
+
+      const premiumProps = {
+        premiumFromZoom: effPremiumFromZoom,
+        premiumOnlyText: prm?.premiumOnly,
+        onPremiumClick:
+          effPremiumFromZoom === undefined ? undefined : handlePremiumClick,
+      };
+
+      const detail = 'detail' in layerDef ? layerDef.detail : undefined;
+
+      // The detail is drawn over the layer's own tiles, each skipping where the
+      // other one covers the tile whole.
+      if (detail) {
+        const detailPremiumFromZoom = toEffPremium(detail.premiumFromZoom);
+
+        const baseMaxZoom = layerDef.maxNativeZoom ?? Infinity;
+
+        const detailTileZoomCap =
+          toNativeZoom(detail.maxNativeZoom) ?? Infinity;
+
+        // Past the detail's premium limit its placeholders are see-through, so
+        // the free base stays drawn under them. Judged by the detail's own tile
+        // zoom: the base's is capped lower.
+        const detailGated = () =>
+          detailPremiumFromZoom !== undefined &&
+          Math.min(Math.round(map.getZoom()), detailTileZoomCap) >=
+            detailPremiumFromZoom;
+
+        return (
+          <CoveragePane
+            key={`${key}-${detailPremiumFromZoom ?? 99}`}
+            coverageUrl={detail.coverageUrl}
+            opacity={opacity}
+            zIndex={zIndex}
+          >
+            {(coverage) => (
+              <>
+                <ScaledTileLayer
+                  {...commonProps}
+                  {...premiumProps}
+                  url={layerDef.url}
+                  maxNativeZoom={toNativeZoom(layerDef.maxNativeZoom)}
+                  subdomains={layerDef.subdomains ?? 'abc'}
+                  errorTileUrl={layerDef.errorTileUrl ?? missingTile}
+                  zIndex={0}
+                  skipTile={(z, x, y) =>
+                    coverage(z, x, y) === 'full' && !detailGated()
+                  }
+                />
+                <ScaledTileLayer
+                  {...commonProps}
+                  premiumFromZoom={detailPremiumFromZoom}
+                  premiumOnlyText={prm?.premiumOnly}
+                  onPremiumClick={
+                    detailPremiumFromZoom === undefined
+                      ? undefined
+                      : handlePremiumClick
+                  }
+                  url={detail.url}
+                  maxNativeZoom={toNativeZoom(detail.maxNativeZoom)}
+                  errorTileUrl={transparent1x1}
+                  // where the base was skipped, a failed tile shows it instead
+                  fallbackUrl={(z, x, y) =>
+                    coverage(z, x, y) === 'full' && z <= baseMaxZoom
+                      ? buildTileUrl(
+                          layerDef.url,
+                          x,
+                          y,
+                          z,
+                          pickSubdomain(layerDef.subdomains),
+                        )
+                      : undefined
+                  }
+                  zIndex={1}
+                  skipTile={(z, x, y) => coverage(z, x, y) === 'none'}
+                />
+              </>
+            )}
+          </CoveragePane>
+        );
+      }
+
       return (
         <ScaledTileLayer
-          forcedScale={effForcedScale}
-          key={[
-            type,
-            opacity,
-            effPremiumFromZoom ?? 99,
-            effPremiumFromZoom ? prm?.premiumOnly : '',
-            resolutionScale ?? 'auto',
-            effForcedScale ?? 'auto',
-            effFeatureScale,
-            layerDef.url,
-            // a grid layer takes its zoom bounds at construction, so anything
-            // that moves them — an edit, or a cached map losing the connection
-            // it was borrowing its source layer's range from — needs a remount
-            minZoom ?? 'auto',
-            layerDef.maxNativeZoom ?? 'auto',
-          ].join('-')}
+          {...commonProps}
+          {...premiumProps}
+          key={key}
           url={layerDef.url}
-          minZoom={minZoom}
-          maxZoom={maxZoom}
-          maxNativeZoom={
-            layerDef.maxNativeZoom === undefined
-              ? undefined
-              : isHdpi
-                ? layerDef.maxNativeZoom - 1
-                : layerDef.maxNativeZoom
-          }
+          maxNativeZoom={toNativeZoom(layerDef.maxNativeZoom)}
           opacity={opacity}
           zIndex={zIndex}
           subdomains={layerDef.subdomains ?? 'abc'}
           errorTileUrl={layerDef.errorTileUrl ?? missingTile}
-          extraScales={layerDef.extraScales}
-          tms={layerDef.tms}
-          tileSize={isHdpi ? 128 : 256 * effFeatureScale}
-          zoomOffset={isHdpi ? 1 : -Math.log2(effFeatureScale)}
-          cors={layerDef.cors ?? true}
-          reportsAttribution={
-            serverShading || RENDERER_LAYER_TYPES.includes(type)
-          }
-          premiumFromZoom={effPremiumFromZoom}
-          premiumOnlyText={prm?.premiumOnly}
-          onPremiumClick={
-            effPremiumFromZoom === undefined ? undefined : handlePremiumClick
-          }
-          // Every tile layer is counted; only the ones whose server reports its
-          // datasets ever resolve to anything, the rest stay on their own list.
-          eventHandlers={tileAttributionHandlers(
-            type,
-            serverShading ? loadTerrainLicenses : loadTileLicenses,
-          )}
-          className={`fm-${layerDef.layer}`}
         />
       );
     }

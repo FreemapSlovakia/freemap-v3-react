@@ -19,6 +19,18 @@ export function pickSubdomain(
   return tileSubdomains(subdomains)[0];
 }
 
+/**
+ * How many zooms deeper than the view a tile layer fetches: one for a
+ * `scaleWithDpi` layer on a dense screen, fewer for an enlarged feature scale.
+ */
+export function tileZoomOffset(
+  scaleWithDpi: boolean,
+  dpr: number,
+  featureScale: number,
+): number {
+  return scaleWithDpi && dpr > 1.4 ? 1 : -Math.log2(featureScale);
+}
+
 export function buildTileUrl(
   urlTemplate: string,
   x: number,

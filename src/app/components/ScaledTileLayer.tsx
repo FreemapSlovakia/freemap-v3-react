@@ -23,6 +23,13 @@ type Props = TileLayerProps & {
   premiumFromZoom?: number;
   premiumOnlyText?: string;
   onPremiumClick?: () => void;
+  /** Leaves the tile at (URL zoom, x, y) empty, without a request. */
+  skipTile?: (z: number, x: number, y: number) => boolean;
+  /**
+   * A URL to load in place of the tile at (URL zoom, x, y) if it fails; not
+   * with `reportsAttribution`, whose fetch handles its own errors.
+   */
+  fallbackUrl?: (z: number, x: number, y: number) => string | undefined;
 };
 
 /** What one tile's load owns, and how far it has got. */
@@ -39,6 +46,9 @@ type TileLoad = {
 };
 
 const loads = new WeakMap<HTMLImageElement, TileLoad>();
+
+/** Per tile, the `fallbackUrl` not tried yet. */
+const fallbacks = new WeakMap<HTMLElement, string>();
 
 function loading(img: HTMLImageElement): boolean {
   const load = loads.get(img);
@@ -75,6 +85,8 @@ class LScaledTileLayer extends TileLayer {
   private premiumFromZoom;
   private premiumOnlyText;
   private onPremiumClick;
+  private skipTile;
+  private fallbackUrl;
 
   constructor(
     urlTemplate: string,
@@ -85,6 +97,8 @@ class LScaledTileLayer extends TileLayer {
     premiumFromZoom?: number,
     premiumOnlyText?: string,
     onPremiumClick?: () => void,
+    skipTile?: (z: number, x: number, y: number) => boolean,
+    fallbackUrl?: (z: number, x: number, y: number) => string | undefined,
     options?: TileLayerOptions,
   ) {
     super(urlTemplate, options);
@@ -102,6 +116,10 @@ class LScaledTileLayer extends TileLayer {
     this.premiumOnlyText = premiumOnlyText;
 
     this.onPremiumClick = onPremiumClick;
+
+    this.skipTile = skipTile;
+
+    this.fallbackUrl = fallbackUrl;
 
     this.handlePremiumClick = this.handlePremiumClick.bind(this);
 
@@ -257,7 +275,35 @@ class LScaledTileLayer extends TileLayer {
     attempt(scale);
   }
 
+  // Leaflet's own error handler, bound per tile in `createTile`; a tile with a
+  // fallback loads that instead, and `_tileOnLoad` then reports it.
+  _tileOnError(done: DoneCallback, tile: HTMLImageElement, e: Error) {
+    const fallback = fallbacks.get(tile);
+
+    if (fallback) {
+      fallbacks.delete(tile);
+
+      tile.dataset['tileUrl'] = fallback;
+
+      tile.src = fallback;
+
+      return;
+    }
+
+    super._tileOnError(done, tile, e);
+  }
+
   createTile(coords: Coords, done: DoneCallback) {
+    const urlZoom = coords.z + (this.options.zoomOffset ?? 0);
+
+    if (this.skipTile?.(urlZoom, coords.x, coords.y)) {
+      const div = document.createElement('div');
+
+      setTimeout(() => done(undefined, div));
+
+      return div;
+    }
+
     const isOnPremiumZoom =
       this.premiumFromZoom !== undefined && coords.z >= this.premiumFromZoom;
 
@@ -309,6 +355,12 @@ class LScaledTileLayer extends TileLayer {
 
     const img = super.createTile(coords, done) as HTMLImageElement;
 
+    const fallback = this.fallbackUrl?.(urlZoom, coords.x, coords.y);
+
+    if (fallback) {
+      fallbacks.set(img, fallback);
+    }
+
     img.classList.toggle('fm-demo-tile', isOnPremiumZoom);
 
     if (this.cors) {
@@ -351,6 +403,8 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
       premiumFromZoom,
       premiumOnlyText,
       onPremiumClick,
+      skipTile,
+      fallbackUrl,
       // strict-origin-when-cross-origin (the modern browser default) so tile
       // providers that require a Referer header — e.g. OSM's usage policy —
       // aren't blocked even if a stricter document-level policy is in effect.
@@ -368,6 +422,8 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
         premiumFromZoom,
         premiumOnlyText,
         onPremiumClick,
+        skipTile,
+        fallbackUrl,
         { ...rest, referrerPolicy },
       ),
       context,

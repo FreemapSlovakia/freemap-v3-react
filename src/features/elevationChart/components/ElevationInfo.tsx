@@ -10,7 +10,8 @@ import {
   integratedLayerDefs,
   isTileLayerDef,
 } from '@shared/mapDefinitions.js';
-import { pickSubdomain } from '@shared/tileUrl.js';
+import { useTileCoverages } from '@shared/tileCoverage.js';
+import { buildTileUrl, pickSubdomain } from '@shared/tileUrl.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useMemo } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
@@ -51,6 +52,15 @@ export function ElevationInfo({
 
   const [x, y] = pointToTile(point.lon, point.lat, zoom);
 
+  // at the view's zoom, as the `z/x/y` shown beside the links
+  function tileAt(maxNativeZoom = Infinity) {
+    const z = Math.min(zoom, maxNativeZoom);
+
+    const [x, y] = pointToTile(point.lon, point.lat, z);
+
+    return [z, x, y] as const;
+  }
+
   function substitute({
     url,
     maxNativeZoom,
@@ -61,19 +71,10 @@ export function ElevationInfo({
       .map((scale) => [scale, Math.abs(devicePixelRatio - scale)] as const)
       .reduce((min, val) => (val[1] < min[1] ? val : min));
 
-    const z =
-      maxNativeZoom === undefined || maxNativeZoom >= zoom
-        ? zoom
-        : maxNativeZoom;
-
-    const [x, y] = pointToTile(point.lon, point.lat, z);
+    const [z, x, y] = tileAt(maxNativeZoom);
 
     return (
-      url
-        .replace('{x}', String(x))
-        .replace('{y}', String(y))
-        .replace('{z}', String(z))
-        .replace('{s}', pickSubdomain(subdomains)) +
+      buildTileUrl(url, x, y, z, pickSubdomain(subdomains)) +
       (scale !== 1 ? `@${scale}x` : '')
     );
   }
@@ -88,14 +89,37 @@ export function ElevationInfo({
     isTileLayerDef,
   );
 
-  const tileUrls = layers
+  const shownDefs = layers
     .map((type) => tileLayerDefs.find((def) => def.type === type))
     .filter((def): def is (typeof tileLayerDefs)[0] => Boolean(def))
-    .filter((def) => def.minZoom !== undefined && def.minZoom <= zoom) // TODO consider scale?
-    .map((def) => ({
+    .filter((def) => def.minZoom !== undefined && def.minZoom <= zoom); // TODO consider scale?
+
+  const coverages = useTileCoverages(
+    shownDefs.flatMap((def) =>
+      'detail' in def && def.detail ? [def.detail.coverageUrl] : [],
+    ),
+  );
+
+  // A layer with a detail links the detail's tile where it has data there.
+  const tileUrls = shownDefs.map((def) => {
+    const detail = 'detail' in def ? def.detail : undefined;
+
+    const coverage = detail && coverages.get(detail.coverageUrl);
+
+    const useDetail =
+      detail &&
+      coverage &&
+      coverage(...tileAt(detail.maxNativeZoom)) !== 'none';
+
+    return {
       ...def,
-      tileUrl: substitute(def),
-    }));
+      tileUrl: substitute(
+        useDetail
+          ? { ...def, url: detail.url, maxNativeZoom: detail.maxNativeZoom }
+          : def,
+      ),
+    };
+  });
 
   const [format, setFormat] = usePersistentState<number>(
     'fm.ele.gpsFormat',

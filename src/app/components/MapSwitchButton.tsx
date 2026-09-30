@@ -13,7 +13,7 @@ import {
 } from '@features/map/model/selectors.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
-import { isPremium } from '@features/premium/premium.js';
+import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
@@ -404,7 +404,7 @@ export function MapSwitchButton(): ReactElement {
     const premiumHere =
       !def.custom &&
       def.premiumFromZoom !== undefined &&
-      zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0);
+      zoom >= premiumMapZoom(def.premiumFromZoom, def.scaleWithDpi);
 
     return (
       <>
@@ -646,8 +646,6 @@ export function MapSwitchButton(): ReactElement {
 
   const overlayHasItems = overlayItems.some(Boolean);
 
-  let showsOfm = false;
-
   return (
     <>
       <div className="px-1 d-none d-sm-block">{m?.mapLayers.switch}</div>
@@ -665,18 +663,9 @@ export function MapSwitchButton(): ReactElement {
           if (
             (!activeLayers.includes(def.type) ||
               inActiveCombination.has(type)) &&
-            (!showInToolbar ||
-              (type === 'S' &&
-                showsOfm &&
-                countries?.every(
-                  (country) => country === 'sk' || country === 'cz',
-                )))
+            !showInToolbar
           ) {
             return null;
-          }
-
-          if (type === 'Z') {
-            showsOfm = true;
           }
 
           const active = isLayerOn(def);
@@ -737,7 +726,7 @@ export function MapSwitchButton(): ReactElement {
             becomePremium &&
             !def.custom &&
             def.premiumFromZoom !== undefined &&
-            zoom >= def.premiumFromZoom - (def.scaleWithDpi ? 1 : 0)
+            zoom >= premiumMapZoom(def.premiumFromZoom, def.scaleWithDpi)
           ) {
             accessories.push({
               key: 'premium',

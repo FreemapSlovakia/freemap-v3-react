@@ -439,6 +439,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         experimental: _e,
         layerPreview: _lp,
         premiumFromZoom: _p,
+        detail: _detail,
         bbox: _bbox,
         ...rest
       } = mapDef as Record<string, unknown> & typeof mapDef;

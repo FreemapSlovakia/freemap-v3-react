@@ -4,6 +4,7 @@ import {
   documentShow,
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { SONNY_ATTR } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -16,16 +17,20 @@ import { useTerrainLicenses, useTileLicenses } from '@shared/tileLicenses.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, type ReactElement, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import { useTileZoom } from '../hooks/useTileZoom.js';
 import {
   type AttributionDef,
   FIXTHEMAP_ATTR,
+  type IsTileLayerDef,
   integratedLayerDefMap,
   integratedLayerDefs,
   OSM_DATA_ATTR,
   OSRM_ROUTING_ATTR,
   RENDERER_LAYER_TYPES,
   SHADING_SOURCE,
+  type TileDetailDef,
 } from '../mapDefinitions.js';
+import { coversInBounds, useTileCoverages } from '../tileCoverage.js';
 
 type Props = { unknown: string };
 
@@ -180,6 +185,71 @@ function useCategorizedAttribution(
 
   const terrainLicenses = useTerrainLicenses();
 
+  const bounds = useAppSelector((state) => state.map.bounds);
+
+  const zoom = useAppSelector((state) => Math.round(state.map.zoom));
+
+  const tileZoom = useTileZoom();
+
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
+
+  const coverages = useTileCoverages(
+    integratedLayerDefs.flatMap((def) =>
+      layers.includes(def.type) && 'detail' in def && def.detail
+        ? [def.detail.coverageUrl]
+        : [],
+    ),
+  );
+
+  // Layers with a detail whose own tiles are all covered by it on screen.
+  const coveredLayers = new Set<string>();
+
+  // A layer with a detail credits each of its two sources only where its tiles
+  // are on screen; an export, or a coverage not known yet, credits both.
+  const creditDetail = (
+    def: IsTileLayerDef & { type: string },
+    detail: TileDetailDef,
+  ) => {
+    const coverage = coverages.get(detail.coverageUrl);
+
+    // each source judged at the zoom it draws at
+    const coversAt = (maxNativeZoom: number | undefined) =>
+      fromPaintedTiles && coverage && bounds
+        ? coversInBounds(
+            coverage,
+            bounds,
+            tileZoom(def.scaleWithDpi, maxNativeZoom),
+          )
+        : undefined;
+
+    const detailCovers = coversAt(detail.maxNativeZoom);
+
+    if (
+      !detailCovers?.size ||
+      detailCovers.has('partial') ||
+      detailCovers.has('full')
+    ) {
+      guessed.push(...detail.attribution);
+    }
+
+    const baseCovers = coversAt(def.maxNativeZoom);
+
+    // past the detail's premium limit the base is drawn under its placeholders
+    const gated =
+      !premium &&
+      detail.premiumFromZoom !== undefined &&
+      zoom >= premiumMapZoom(detail.premiumFromZoom, def.scaleWithDpi);
+
+    if (
+      !gated &&
+      baseCovers?.size &&
+      !baseCovers.has('partial') &&
+      !baseCovers.has('none')
+    ) {
+      coveredLayers.add(def.type);
+    }
+  };
+
   // A layer whose tiles reported their datasets is credited from those and
   // skips the country filter — the codes are the exact answer it approximates.
   const exact: AttributionDef[] = [];
@@ -213,6 +283,14 @@ function useCategorizedAttribution(
       creditShading(def.type, def.attribution);
 
       continue;
+    }
+
+    if ('detail' in def && def.detail) {
+      creditDetail(def, def.detail);
+
+      if (coveredLayers.has(def.type)) {
+        continue;
+      }
     }
 
     const resolved = fromPaintedTiles
@@ -295,7 +373,12 @@ function useCategorizedAttribution(
     ...(linked && defs.includes(OSRM_ROUTING_ATTR) ? [FIXTHEMAP_ATTR] : []),
   ]);
 
-  const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
+  const allEsriAttribution = useAppSelector(
+    (state) => state.map.esriAttribution,
+  );
+
+  // Esri's contributors are its `S` tiles', which the detail may cover whole.
+  const esriAttribution = coveredLayers.has('S') ? [] : allEsriAttribution;
 
   return { categorized, esriAttribution };
 }

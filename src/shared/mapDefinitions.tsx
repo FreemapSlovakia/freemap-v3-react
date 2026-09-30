@@ -159,6 +159,13 @@ const LLS_URL =
 const OFM_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#ortofoto';
 
+const OFM_ATTR: AttributionDef = {
+  type: 'map',
+  name: '©\xa0GKÚ, NLC',
+  url: OFM_URL,
+  country: 'sk',
+};
+
 const TERRAIN_TILES_URL = process.env['FM_TERRAIN_TILES_URL'];
 
 /** Tiles of `shading` rendered on the server; a base map's background is opaque. */
@@ -408,6 +415,20 @@ export type IsTileLayerDef = HasUrl &
     cors?: boolean;
   };
 
+/**
+ * Sharper tiles drawn over the layer's own where `coverageUrl` says they have
+ * data; a partially covered tile must be transparent where it has none.
+ */
+export type TileDetailDef = {
+  url: string;
+  coverageUrl: string;
+  maxNativeZoom: number;
+  /** Premium applies to the detail only; the layer's own tiles stay free. */
+  premiumFromZoom?: number;
+  /** The layer's own `attribution` credits only its own tiles. */
+  attribution: AttributionDef[];
+};
+
 export type IsBaseLayerDef = {
   layer: 'base';
 };
@@ -554,6 +575,7 @@ export const isBaseLayerDef = <T extends { layer: string }>(
 export type IsAllTechnologiesLayerDef =
   | (IsTileLayerDef & {
       creditsPerMTile?: number;
+      detail?: TileDetailDef;
     })
   | IsWmsLayerDef
   | IsMapLibreLayerDef
@@ -801,28 +823,18 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
   {
     layer: 'base',
     type: 'Z',
-    defaultInToolbar: true,
-    defaultInMenu: true,
     technology: 'tile',
     url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minZoom: 0,
     maxNativeZoom: 20,
     scaleWithDpi: true,
     icon: <FaPlane />,
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0GKÚ, NLC',
-        url: OFM_URL,
-        country: 'sk',
-      },
-      CUZK_ATTR,
-    ],
-    shortcut: { code: 'KeyZ' },
+    attribution: [OFM_ATTR, CUZK_ATTR],
     errorTileUrl: white1x1,
     premiumFromZoom: 20,
     creditsPerMTile: 1000,
     countries: ['sk', 'cz'],
+    superseededBy: 'S',
   },
   {
     layer: 'base',
@@ -832,6 +844,13 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     technology: 'tile',
     url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     subdomains: ['server', 'services'],
+    detail: {
+      url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg?alpha',
+      coverageUrl: 'https://ortofoto.tiles.freemap.sk/coverage.bin',
+      maxNativeZoom: 20,
+      premiumFromZoom: 20,
+      attribution: [OFM_ATTR, CUZK_ATTR],
+    },
     icon: <FaPlane />,
     minZoom: 0,
     maxNativeZoom: 19,
@@ -864,7 +883,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     errorTileUrl: white1x1,
     creditsPerMTile: 1000,
     countries: ['sk'],
-    superseededBy: 'Z',
+    superseededBy: 'S',
   },
   {
     layer: 'base',
@@ -885,7 +904,7 @@ export const integratedLayerDefs: IntegratedLayerDef[] = [
     errorTileUrl: white1x1,
     creditsPerMTile: 1000,
     countries: ['sk'],
-    superseededBy: 'Z',
+    superseededBy: 'S',
   },
   {
     layer: 'base',

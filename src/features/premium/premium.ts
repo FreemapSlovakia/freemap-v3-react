@@ -6,6 +6,17 @@ export function isPremium(
   return user?.premiumExpiration != null && user.premiumExpiration > new Date();
 }
 
+/**
+ * The map zoom a layer's `premiumFromZoom` starts at: one lower for a
+ * `scaleWithDpi` layer, whose dense-screen tiles come from one zoom deeper.
+ */
+export function premiumMapZoom(
+  premiumFromZoom: number,
+  scaleWithDpi: boolean | undefined,
+): number {
+  return premiumFromZoom - (scaleWithDpi ? 1 : 0);
+}
+
 /** Any live Polar subscription, whether or not it's set to auto-renew. */
 export function hasSubscription(
   user: Pick<User, 'premiumSubscriptionStatus'> | null,
