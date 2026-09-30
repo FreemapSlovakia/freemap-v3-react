@@ -836,3 +836,30 @@ Colorize, path details and track matching are issues under `area: routing` and
       Oberösterreich (0.5 m) publish finer ones, Vorarlberg a laserscan model
       of unconfirmed resolution. Each would go in at z18 ranked above `at`, as
       `ch` is, with its credit added to elevation-sources.
+- [ ] **Italian regional DTMs as their own sources, ranked above `it`.** `it` is
+      the IRPI-CNR HR-DTM at z15, de-blocked and de-rippled. Its Alps are
+      pixel-doubled TINITALY 10 m, because the full-coverage regional sets
+      were never used (inputs: Table 1 of EarthArXiv preprint 12152). By gain
+      for effort:
+      1. Trentino: 0.5 m lidar, CC BY 4.0, a plain directory listing
+         (`siatservices.provincia.tn.it/stemdata/2014_lidar_dtm_asc/`, ~194 GB ASCII).
+      2. South Tyrol: 2.5 m province-wide, CC0, WCS (`geoservices9.civis.bz.it`).
+      3. Piedmont: ICE 2009–11 5 m lidar, CC BY 4.0, WCS on `geomap.reteunitaria.piemonte.it`.
+      4. Friuli-VG: RAFVG 2017–20 0.5 m, CC BY 4.0, Eagle.fvg downloads.
+      5. Emilia-Romagna: RER 0.5 m, WCS, ~64% of the region so far.
+      6. Aosta (lidar, per-tile app) and Veneto (5 m lidar, per municipality).
+
+      Also watch the MASE PNRR 0.25 m national reflight: it would cover
+      Lombardy, the Apennines, Sardinia and the South, which have no usable
+      regional lidar. Unverified: Aosta's resolution, Veneto's CRS, which
+      parts of E-R are covered, and some licences.
+- [ ] **Slovakia from lidar points at z18**, replacing `sk.tif` and then `7`:
+      `laz2geotiff xyz` (ground only, relative gap rule), the two-pass membrane
+      `fill` with `--reach`, clipped by an official ÚGKK border (not OSM), the
+      way Czechia was built.
+- [ ] **The other 13 German states**, one source each (`de_<state>`, keyed by
+      their elevation-sources directory) at z17, ~650 GB. Their 1 m DGM1 is
+      already in `/fm/storage2/dtm` on fm6; Bavaria, Baden-Württemberg and
+      Hessen went first by Matomo visits.
+- [ ] **Hungary**: the most engaged audience without terrain (Matomo), but no
+      open national DTM is known. Look for one.
