@@ -49,10 +49,9 @@ export function useAttributionInfo() {
 
   const routingAttrs = useRoutingAttributions();
 
-  // Map layers, Esri contributors, routing credits — what the toast has already
-  // said this session, so each source raises it once.
+  // Map layers, routing credits — what the toast has already said this session,
+  // so each raises it once.
   const licenceShownForRef = useRef([
-    new Set<string>(),
     new Set<string>(),
     new Set<string>(),
   ] as const);
@@ -216,16 +215,16 @@ export function useAttributionInfo() {
       return;
     }
 
-    const [mapLayers, esriAttributions, routingSources] =
-      licenceShownForRef.current;
+    const [mapLayers, routingSources] = licenceShownForRef.current;
 
     // A route is content from a source the layers never named, so the first one
     // a router answers raises the toast the way a new layer does.
     const routingKeys = routingAttrs.map((a) => a.name ?? a.nameKey ?? '');
 
+    // Only a newly shown map raises it: credits that follow the view (Esri's
+    // contributors, the aerial map's sources) would raise it while panning.
     if (
       layers.every((o) => mapLayers.has(o)) &&
-      esriAttribution.every((a) => esriAttributions.has(a)) &&
       routingKeys.every((a) => routingSources.has(a)) &&
       prevNonceRef.current === nonce
     ) {
@@ -238,23 +237,12 @@ export function useAttributionInfo() {
       mapLayers.add(o);
     }
 
-    for (const a of esriAttribution) {
-      esriAttributions.add(a);
-    }
-
     for (const a of routingKeys) {
       routingSources.add(a);
     }
 
     showAttributionToast(askingCookieConsent ? undefined : 5000);
-  }, [
-    layers,
-    nonce,
-    esriAttribution,
-    routingAttrs,
-    askingCookieConsent,
-    showAttributionToast,
-  ]);
+  }, [layers, nonce, routingAttrs, askingCookieConsent, showAttributionToast]);
 
   return useCallback(() => {
     setNonce((n) => n + 1);
