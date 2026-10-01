@@ -495,17 +495,6 @@ export function Layers(): ReactElement | null {
 
         const baseMaxZoom = layerDef.maxNativeZoom ?? Infinity;
 
-        const detailTileZoomCap =
-          toNativeZoom(detail.maxNativeZoom) ?? Infinity;
-
-        // Past the detail's premium limit its placeholders are see-through, so
-        // the free base stays drawn under them. Judged by the detail's own tile
-        // zoom: the base's is capped lower.
-        const detailGated = () =>
-          detailPremiumFromZoom !== undefined &&
-          Math.min(Math.round(map.getZoom()), detailTileZoomCap) >=
-            detailPremiumFromZoom;
-
         return (
           <CoveragePane
             key={`${key}-${detailPremiumFromZoom ?? 99}`}
@@ -523,9 +512,9 @@ export function Layers(): ReactElement | null {
                   subdomains={layerDef.subdomains ?? 'abc'}
                   errorTileUrl={layerDef.errorTileUrl ?? missingTile}
                   zIndex={0}
-                  skipTile={(z, x, y) =>
-                    coverage(z, x, y) === 'full' && !detailGated()
-                  }
+                  // the detail's premium placeholders included: the base under
+                  // them would mix older imagery into the watermarked view
+                  skipTile={(z, x, y) => coverage(z, x, y) === 'full'}
                 />
                 <ScaledTileLayer
                   {...commonProps}

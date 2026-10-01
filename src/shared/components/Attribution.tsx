@@ -4,7 +4,6 @@ import {
   documentShow,
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { SONNY_ATTR } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -188,11 +187,7 @@ function useCategorizedAttribution(
 
   const bounds = useAppSelector((state) => state.map.bounds);
 
-  const zoom = useAppSelector((state) => Math.round(state.map.zoom));
-
   const tileZoom = useTileZoom();
-
-  const premium = useAppSelector((state) => isPremium(state.auth.user));
 
   const coverages = useTileCoverages(
     integratedLayerDefs.flatMap((def) =>
@@ -235,14 +230,7 @@ function useCategorizedAttribution(
 
     const baseCovers = coversAt(def.maxNativeZoom);
 
-    // past the detail's premium limit the base is drawn under its placeholders
-    const gated =
-      !premium &&
-      detail.premiumFromZoom !== undefined &&
-      zoom >= premiumMapZoom(detail.premiumFromZoom, def.scaleWithDpi);
-
     if (
-      !gated &&
       baseCovers?.size &&
       !baseCovers.has('partial') &&
       !baseCovers.has('none')
