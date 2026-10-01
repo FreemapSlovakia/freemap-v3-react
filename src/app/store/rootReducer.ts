@@ -22,6 +22,7 @@ import { locationSettingsReducer } from '@features/location/model/settingsReduce
 import { mapReducer } from '@features/map/model/reducer.js';
 import { mapAreaReducer } from '@features/mapArea/model/reducer.js';
 import { mapDetailsReducer } from '@features/mapDetails/model/reducer.js';
+import { mapLibraryReducer } from '@features/mapLibrary/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
 import { objectsReducer } from '@features/objects/model/reducer.js';
 import { objectsSettingsReducer } from '@features/objects/model/settingsReducer.js';
@@ -70,6 +71,7 @@ export const reducers = {
   mapDetails: mapDetailsReducer,
   mapArea: mapAreaReducer,
   map: mapReducer,
+  mapLibrary: mapLibraryReducer,
   objects: objectsReducer,
   objectsSettings: objectsSettingsReducer,
   panorama: panoramaReducer,

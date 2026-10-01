@@ -6,6 +6,7 @@ import {
   type MapCombination,
 } from '@features/map/model/mapCombination.js';
 import { layerKindsSelector } from '@features/map/model/selectors.js';
+import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
 import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
@@ -17,11 +18,11 @@ import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
-  integratedLayerDefMap,
-  integratedLayerDefs,
   resolveLayerAlias,
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
+import { isLayerOffered } from '@shared/mapLibrary/installed.js';
+import { mapIndex, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import { type ReactElement, type ReactNode, useState } from 'react';
 import {
   Button,
@@ -93,10 +94,14 @@ export function MapCombinationForm({
     hasRole(state.auth.user, 'layerPreview'),
   );
 
+  const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
+
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
+
+  const layers = useAppSelector((state) => state.map.layers);
+
   const defs: MapLayerItemDef[] = [
-    ...integratedLayerDefs.filter(
-      (def) => canPreviewLayers || !def.layerPreview,
-    ),
+    ...mapIndex.filter((def) => canPreviewLayers || !def.layerPreview),
     ...customLayers,
     ...cachedMaps.filter((cm) => cm.downloadedCount === cm.tileCount),
   ];
@@ -118,7 +123,15 @@ export function MapCombinationForm({
   // Restored when Base is picked again after Overlay.
   const [lastBase, setLastBase] = useState(() => value.base ?? mapBase);
 
-  const addableOverlays = defs.filter(
+  // The pickers offer an uninstalled library map only as the base already in it.
+  const pickable = defs.filter(
+    (def) =>
+      !(def.type in mapIndexById) ||
+      def.type === value.base ||
+      isLayerOffered(layersSettings, layers, def.type),
+  );
+
+  const addableOverlays = pickable.filter(
     (def) =>
       def.layer === 'overlay' &&
       isCombinable(def.type) &&
@@ -204,7 +217,7 @@ export function MapCombinationForm({
           <Form.Label>{msm?.baseMap}</Form.Label>
 
           <LayerPicker
-            defs={defs.filter((def) => def.layer === 'base')}
+            defs={pickable.filter((def) => def.layer === 'base')}
             onSelect={(base) => onChange({ ...value, base })}
           >
             <MapLayerItem def={defOf(value.base, 'base')} />

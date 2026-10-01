@@ -1,8 +1,8 @@
 import { saveSettings } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { isLayerOffered } from '@features/map/model/selectors.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
+import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
 import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
@@ -20,11 +20,11 @@ import { useFreeStorage } from '@shared/hooks/useFreeStorage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
-import {
-  type IntegratedLayerDef,
-  type IsTileLayerDef,
-  integratedLayerDefs,
+import type {
+  IntegratedLayerDef,
+  IsTileLayerDef,
 } from '@shared/mapDefinitions.js';
+import { isLayerOffered } from '@shared/mapLibrary/installed.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   countCachedOf,
@@ -106,10 +106,13 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
+  const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
+
   const layers = useAppSelector((state) => state.map.layers);
 
   const mapDefs = useMemo(() => {
-    const integrated = integratedLayerDefs
+    // Its own source stays pickable when editing, offered or not.
+    const integrated = Object.values(integratedLayerDefMap)
       .filter(
         (def): def is CacheableLayerDef =>
           def.technology === 'tile' &&
@@ -138,14 +141,23 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       }));
 
     return [...integrated, ...custom];
-  }, [customLayers, layersSettings, layers, editing?.sourceType]);
+  }, [
+    integratedLayerDefMap,
+    customLayers,
+    layersSettings,
+    layers,
+    editing?.sourceType,
+  ]);
 
-  const [mapType, setMapType] = useState(
+  const [pickedType, setMapType] = useState<string>();
+
+  // Derived until picked: the maps on the map may still be loading.
+  const mapType =
+    pickedType ??
     editing?.sourceType ??
-      mapDefs.find((def) => layers.includes(def.type))?.type ??
-      mapDefs[0]?.type ??
-      '',
-  );
+    mapDefs.find((def) => layers.includes(def.type))?.type ??
+    mapDefs[0]?.type ??
+    '';
 
   const mapDef = useMemo(
     () => mapDefs.find((def) => def.type === mapType),
@@ -163,7 +175,13 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
   const user = useAppSelector((state) => state.auth.user);
 
-  const premiumLimit = premiumZoomLimit(editing?.sourceType ?? mapType, user);
+  const sourceType = editing?.sourceType ?? mapType;
+
+  const premiumLimit = premiumZoomLimit(
+    sourceType,
+    user,
+    integratedLayerDefMap[sourceType],
+  );
 
   // The field keeps the range a map was given while premium: capping it below
   // what is already downloaded would make even a rename delete tiles. Growing it

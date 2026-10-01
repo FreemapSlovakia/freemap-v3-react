@@ -126,10 +126,8 @@ import {
   ColorizingModeSchema,
 } from '@shared/colorizers/index.js';
 import { isLanguage } from '@shared/langUtils.js';
-import {
-  CustomLayerDefArrayCompatSchema,
-  hasSharedShadingLayer,
-} from '@shared/mapDefinitions.js';
+import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
+import { hasSharedShadingLayer } from '@shared/mapLibrary/shadingLayers.js';
 import {
   isMapClickTool,
   isToolAvailable,

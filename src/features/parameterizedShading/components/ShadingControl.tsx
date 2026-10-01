@@ -6,6 +6,7 @@ import {
   mapSetShadingOnServer,
   mapSetSharedShadingDraft,
 } from '@features/map/model/actions.js';
+import { shadingSourceSelector } from '@features/mapLibrary/model/selectors.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -17,12 +18,8 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import {
-  type CustomLayerDef,
-  hasSharedShadingLayer,
-  integratedLayerDefMap,
-  SHADING_SOURCE,
-} from '@shared/mapDefinitions.js';
+import { type CustomLayerDef, SHADING_SOURCE } from '@shared/mapDefinitions.js';
+import { hasSharedShadingLayer } from '@shared/mapLibrary/shadingLayers.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import clsx from 'clsx';
 import { produce } from 'immer';
@@ -86,6 +83,8 @@ export default function ShadingControl() {
   const layers = useAppSelector((state) => state.map.layers);
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
+
+  const shadingSource = useAppSelector(shadingSourceSelector);
 
   const sharedShading = useAppSelector((state) => state.map.shading);
 
@@ -364,9 +363,7 @@ export default function ShadingControl() {
   );
 
   const targetDefOf = (t: string) =>
-    t === ''
-      ? integratedLayerDefMap[SHADING_SOURCE]
-      : ownShadingMaps.find((def) => def.type === t);
+    t === '' ? shadingSource : ownShadingMaps.find((def) => def.type === t);
 
   /** A target in the open menu, as its layer: icon, name and marks. */
   function targetItem(t: string) {

@@ -1,19 +1,33 @@
 import {
   type CustomLayerDef,
+  type IntegratedLayerDef,
   type IsWmsLayerDef,
-  integratedLayerDefs,
   type LayerDef,
   RENDERER_ROUTES,
 } from '@shared/mapDefinitions.js';
+import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 
-/** Every WMS layer, the user's own among them — each one describes itself. */
+/** The ids of every WMS layer, the user's own among them, loaded or not. */
+const wmsLayerTypes = (customLayers: CustomLayerDef[]): string[] =>
+  [...mapIndex, ...customLayers]
+    .filter((def) => def.technology === 'wms')
+    .map((def) => def.type);
+
+/**
+ * Every WMS layer, the user's own among them — each one describes itself. A
+ * library map is left out until its body is in `loaded`.
+ */
 export function getWmsLayerDefs(
   customLayers: CustomLayerDef[],
+  loaded: Readonly<Record<string, IntegratedLayerDef>>,
 ): LayerDef<IsWmsLayerDef, IsWmsLayerDef>[] {
-  return [...customLayers, ...integratedLayerDefs].filter(
-    (def): def is LayerDef<IsWmsLayerDef, IsWmsLayerDef> =>
-      def.technology === 'wms',
-  );
+  return wmsLayerTypes(customLayers).flatMap((type) => {
+    const def = loaded[type] ?? customLayers.find((d) => d.type === type);
+
+    return def?.technology === 'wms'
+      ? [def as LayerDef<IsWmsLayerDef, IsWmsLayerDef>]
+      : [];
+  });
 }
 
 /** Layers whose legend lives on an external page. */
@@ -26,7 +40,7 @@ export function getLegendLayers(customLayers: CustomLayerDef[]): Set<string> {
   return new Set([
     ...Object.keys(RENDERER_ROUTES),
     ...Object.keys(EXTERNAL_LEGENDS),
-    ...getWmsLayerDefs(customLayers).map((def) => def.type),
+    ...wmsLayerTypes(customLayers),
   ]);
 }
 

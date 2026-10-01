@@ -1,10 +1,11 @@
 import type { RootState } from '@app/store/store.js';
 import {
-  integratedLayerDefMap,
-  integratedLayerDefs,
-  resolveLayerOpacity,
-  withShadingSource,
-} from '@shared/mapDefinitions.js';
+  integratedLayerDefMapSelector,
+  shadingSourceSelector,
+} from '@features/mapLibrary/model/selectors.js';
+import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
+import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
+import { withShadingSource } from '@shared/mapLibrary/shadingLayers.js';
 import { createSelector } from 'reselect';
 import {
   activeCombinations,
@@ -15,35 +16,24 @@ import {
   type MapCombinationOverlay,
 } from './mapCombination.js';
 
-/** Every layer definition: integrated, custom and cached alike. */
-export const allLayerDefs = (
+/** Every layer, enough to tell its kind: library, custom and cached alike. */
+export const allLayerEntries = (
   customLayers: RootState['map']['customLayers'],
   cachedMaps: RootState['map']['cachedMaps'],
-) => [...integratedLayerDefs, ...customLayers, ...cachedMaps];
-
-/** Whether the user keeps a library map; uninstalling hides it but its links still work. */
-export const isLayerInstalled = (
-  layersSettings: RootState['map']['layersSettings'],
-  type: string,
-): boolean => layersSettings[type]?.installed ?? true;
-
-/** Whether a list should offer a library map: installed, or on the map anyway. */
-export const isLayerOffered = (
-  layersSettings: RootState['map']['layersSettings'],
-  layers: readonly string[],
-  type: string,
-): boolean => isLayerInstalled(layersSettings, type) || layers.includes(type);
+) => [...mapIndex, ...customLayers, ...cachedMaps];
 
 /** Custom layers as drawn: a shading map with its source's zooms and limits. */
 export const resolvedCustomLayersSelector = createSelector(
   (state: RootState) => state.map.customLayers,
-  (customLayers) => customLayers.map(withShadingSource),
+  shadingSourceSelector,
+  (customLayers, source) =>
+    customLayers.map((def) => withShadingSource(def, source)),
 );
 
 const layerDefsSelector = createSelector(
   (state: RootState) => state.map.customLayers,
   (state: RootState) => state.map.cachedMaps,
-  allLayerDefs,
+  allLayerEntries,
 );
 
 export const layerKindsSelector = createSelector(layerDefsSelector, layerKinds);
@@ -93,7 +83,7 @@ export function captureCombination(
     .map((type) => ({
       type,
       opacity: resolveLayerOpacity(
-        integratedLayerDefMap[type],
+        integratedLayerDefMapSelector(state)[type],
         layerOpacitySetting(state, type),
       ),
     }));

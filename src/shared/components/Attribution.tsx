@@ -4,6 +4,11 @@ import {
   documentShow,
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  integratedLayerDefMapSelector,
+  integratedLayerDefsSelector,
+  shadingSourceSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { SONNY_ATTR } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -21,13 +26,10 @@ import {
   type AttributionDef,
   FIXTHEMAP_ATTR,
   type IsTileLayerDef,
-  integratedLayerDefMap,
-  integratedLayerDefs,
   OSM_DATA_ATTR,
   OSRM_ROUTING_ATTR,
   RENDERER_LAYER_TYPES,
   RETIRED_SOURCE_LAYERS,
-  SHADING_SOURCE,
   type TileDetailDef,
 } from '../mapDefinitions.js';
 import { coversInBounds, useTileCoverages } from '../tileCoverage.js';
@@ -173,6 +175,12 @@ function useCategorizedAttribution(
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
+  const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
+
+  const shadingSource = useAppSelector(shadingSourceSelector);
+
+  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
+
   const routingAttrs = useRoutingAttributions();
 
   const viewshedCredits = useAppSelector(
@@ -307,10 +315,7 @@ function useCategorizedAttribution(
   // A custom shading map draws the shading source's data.
   for (const def of customLayers) {
     if (layers.includes(def.type) && def.technology === 'parametricShading') {
-      creditShading(
-        def.type,
-        integratedLayerDefMap[SHADING_SOURCE]?.attribution ?? [],
-      );
+      creditShading(def.type, shadingSource?.attribution ?? []);
     }
   }
 

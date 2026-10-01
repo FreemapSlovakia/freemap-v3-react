@@ -23,13 +23,13 @@ import {
   mapRefocus,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
-import { isLayerInstalled } from '@features/map/model/selectors.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
+import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import type { Shortcut } from '@shared/types/common.js';
 import {
@@ -224,7 +224,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
 
     const layerDef = [
       ...state.map.customLayers,
-      ...integratedLayerDefs.filter((def) =>
+      ...mapIndex.filter((def) =>
         isLayerInstalled(state.map.layersSettings, def.type),
       ),
     ].find((def) => {

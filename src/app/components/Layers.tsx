@@ -9,6 +9,10 @@ import {
   resolvedCustomLayersSelector,
 } from '@features/map/model/selectors.js';
 import {
+  integratedLayerDefMapSelector,
+  integratedLayerDefsSelector,
+} from '@features/mapLibrary/model/selectors.js';
+import {
   colorToHexa,
   effectiveShading,
 } from '@features/parameterizedShading/model/Shading.js';
@@ -19,7 +23,6 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import {
-  integratedLayerDefs,
   type LayerDef,
   RENDERER_LAYER_TYPES,
   resolveLayerOpacity,
@@ -81,6 +84,10 @@ const viewshedLayerFactory = () =>
 
 export function Layers(): ReactElement | null {
   const map = useMap();
+
+  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
+
+  const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
 
   useEffect(() => {
     map.on('moveend zoomend', scheduleTileAttribution);
@@ -595,7 +602,11 @@ export function Layers(): ReactElement | null {
           // range, upscaled past the deepest zoom it holds rather than left blank.
           const envelope =
             online && cm.networkFallback !== false
-              ? sourceLayerEnvelope(cm.sourceType, customLayerDefs)
+              ? sourceLayerEnvelope(
+                  cm.sourceType,
+                  customLayerDefs,
+                  integratedLayerDefMap,
+                )
               : undefined;
 
           // cors: false — cached tiles are served same-origin by the service

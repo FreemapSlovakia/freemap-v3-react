@@ -15,12 +15,12 @@ import {
   mapToggleLayer,
 } from '@features/map/model/actions.js';
 import type { MapCombination } from '@features/map/model/mapCombination.js';
-import { isLayerInstalled } from '@features/map/model/selectors.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { Chord } from '@shared/components/Chord.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import type { MapLayerItemDef } from '@shared/components/MapLayerItem.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
+import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
 import type { ReactElement, ReactNode } from 'react';
 import { BiWifiOff } from 'react-icons/bi';
 import {
@@ -42,7 +42,8 @@ import {
 import { MdDashboardCustomize } from 'react-icons/md';
 import { getDocuments } from '@/documents/index.js';
 import type { Messages } from '../translations/messagesInterface.js';
-import { type CustomLayerDef, integratedLayerDefs } from './mapDefinitions.js';
+import type { CustomLayerDef } from './mapDefinitions.js';
+import { mapIndex } from './mapLibrary/mapIndex.js';
 import { isToolAvailable, toolDefinitions } from './toolDefinitions.js';
 
 /**
@@ -285,7 +286,7 @@ export function getCommands(ctx: CommandContext): Command[] {
   }
 
   if (!embedded || !ctx.embedFeatures.includes('noMapSwitch')) {
-    for (const def of integratedLayerDefs) {
+    for (const def of mapIndex) {
       const label = m.mapLayers.letters[def.type];
 
       // `i` is the one layer that hides rather than shows what it names, so

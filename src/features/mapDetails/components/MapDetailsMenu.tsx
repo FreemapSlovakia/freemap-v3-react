@@ -1,10 +1,10 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 import { type ReactElement, type ReactNode, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaDatabase } from 'react-icons/fa';
@@ -19,6 +19,8 @@ export function MapDetailsMenu(): ReactElement | null {
   const [sourcesOpen, setSourcesOpen] = useState(false);
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
+
+  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
   const layers = useAppSelector((state) => state.map.layers);
 

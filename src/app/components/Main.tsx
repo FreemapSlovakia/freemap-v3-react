@@ -42,7 +42,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOpenOrder } from '@shared/hooks/useOpenOrder.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
-import { hasShadingLayer } from '@shared/mapDefinitions.js';
+import { hasShadingLayer } from '@shared/mapLibrary/shadingLayers.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogoEu from '@/images/freemap-logo-eu.svg';
 import fmLogoSk from '@/images/freemap-logo-sk.svg';

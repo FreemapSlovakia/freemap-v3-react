@@ -14,10 +14,8 @@ import { grantedRadiusKm } from '@features/viewshed/request.js';
 import { serializeViewshed } from '@features/viewshed/viewshedUrl.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
-import {
-  hasSharedShadingLayer,
-  integratedLayerDefMap,
-} from '@shared/mapDefinitions.js';
+import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
+import { hasSharedShadingLayer } from '@shared/mapLibrary/shadingLayers.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
 import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
@@ -335,8 +333,7 @@ function updateUrl(state: RootState, forced: boolean): void {
   const layers = map.layers
     .filter(
       (type) =>
-        type !== 'i' &&
-        (integratedLayerDefMap[type] || isCombinationMarker(type)),
+        type !== 'i' && (mapIndexById[type] || isCombinationMarker(type)),
     )
     .join('~');
 

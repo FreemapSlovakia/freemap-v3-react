@@ -10,13 +10,13 @@ import {
   toastsAdd,
   toastsRemove,
 } from '@features/toasts/model/actions.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 
 const TOAST_PREFIX = 'myMaps.legacyWarning.';
 
 export const legacyMapWarningProcessor: Processor = {
   stateChangePredicate: (state) =>
-    integratedLayerDefs
+    mapIndex
       .filter((def) => state.map.layers.includes(def.type) && def.superseededBy)
       .map((def) => def.type)
       .join(','),
@@ -35,7 +35,7 @@ export const legacyMapWarningProcessor: Processor = {
         .map((toast) => toast.id.slice(TOAST_PREFIX.length)),
     );
 
-    for (const def of integratedLayerDefs) {
+    for (const def of mapIndex) {
       if (
         !layers.includes(def.type) ||
         !def.superseededBy ||

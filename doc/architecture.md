@@ -21,7 +21,7 @@ src/
     hooks/
   features/<name>/   one self-contained feature per folder (see "Feature anatomy")
   shared/         cross-feature utilities, components, hooks, and the three registries
-                  (mapDefinitions.tsx = layers, toolDefinitions.tsx = tools,
+                  (mapLibrary/ = layers, toolDefinitions.tsx = tools,
                    commandDefinitions.tsx = what the search box can do)
   translations/   global i18n master (en.messages.tsx) + per-language files + Messages type
   processors/     a handful of cross-cutting processors not owned by one feature
@@ -87,7 +87,7 @@ Wiring a feature into the app is **explicit**, via three central registries:
    `src/app/store/persistence.ts` (see "State persistence").
 2. **`src/app/store/processors.ts`** — push every processor into the ordered
    `processors` array. **Order matters** (see processor middleware).
-3. **`src/shared/mapDefinitions.tsx`** (layers) / **`src/shared/toolDefinitions.tsx`**
+3. **`src/shared/mapLibrary/`** (layers) / **`src/shared/toolDefinitions.tsx`**
    (tools) and **`src/app/components/Main.tsx`** (lazy modal/menu factories), as
    applicable.
 
@@ -245,10 +245,22 @@ Gotcha: toast`messageKey`s referenced from processors must resolve against the
 
 ## The three registries to keep honest
 
-- `src/shared/mapDefinitions.tsx` — the layer registry (ids, zoom ranges, premium
-  thresholds, credits, keyboard shortcuts, countries, base/overlay). The most
-  drift-prone file; mirrored in `src/static/llms.txt` and (for POI icons) shared
-  by filename with the `freemap-outdoor-map` renderer.
+- `src/shared/mapLibrary/` — the layer registry, split so a map's definition
+  loads only when wanted. `mapIndex.tsx` holds what every map needs up front (id,
+  base/overlay, technology, icon, shortcut, countries, menu defaults) and a
+  `load()` into `defs/<name>.ts`, which holds the rest (URL, zooms, premium,
+  credits). File names are readable rather than ids, since ids differ only by
+  case (`WKA`/`wka`). The types and shared credits stay in
+  `src/shared/mapDefinitions.tsx`. The most drift-prone area; mirrored in
+  `src/static/llms.txt` and (for POI icons) shared by filename with the
+  `freemap-outdoor-map` renderer.
+
+  Bodies live in the `mapLibrary` slice: `mapLibraryLoadProcessor` loads those of
+  installed maps, maps on the map, offline maps' sources and the shading source.
+  Read them through `integratedLayerDefsSelector` / `integratedLayerDefMapSelector`,
+  which list only loaded maps; code that must know every map (ids, kinds, links,
+  shortcuts) reads `mapIndex`. A map the user uninstalled (`layersSettings[id].installed`)
+  is offered nowhere but still renders from a link.
 - `src/shared/toolDefinitions.tsx` — the tool list (id, icon, message key, keyboard
   shortcut, whether it's a drawing tool) and `MAP_CLICK_TOOLS`, which decides
   which slot a tool opens into (see "Open tools"). `Tool` itself is a Zod enum in

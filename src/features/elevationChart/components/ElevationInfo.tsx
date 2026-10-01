@@ -1,15 +1,12 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { pointToTile } from '@mapbox/tilebelt';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import {
-  type IsTileLayerDef,
-  integratedLayerDefs,
-  isTileLayerDef,
-} from '@shared/mapDefinitions.js';
+import { type IsTileLayerDef, isTileLayerDef } from '@shared/mapDefinitions.js';
 import { useTileCoverages } from '@shared/tileCoverage.js';
 import { buildTileUrl, pickSubdomain } from '@shared/tileUrl.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -82,6 +79,8 @@ export function ElevationInfo({
   const m = useMessages();
 
   const layers = useAppSelector((state) => state.map.layers);
+
+  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 

@@ -1,9 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import {
-  integratedLayerDefMap,
-  resolveLayerAlias,
-} from '@shared/mapDefinitions.js';
+import { resolveLayerAlias } from '@shared/mapDefinitions.js';
+import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
 import { mapRefocus } from '../actions.js';
 import { combinationMarker, isCombinationMarker } from '../mapCombination.js';
@@ -43,7 +41,7 @@ const prunedLayersSelector = createSelector(
       return layers.some(
         (layer) =>
           layer === base ||
-          layer === integratedLayerDefMap[base]?.superseededBy ||
+          layer === mapIndexById[base]?.superseededBy ||
           resolveLayerAlias(base).includes(layer),
       );
     });

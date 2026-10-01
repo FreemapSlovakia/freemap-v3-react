@@ -7,6 +7,7 @@ import {
 import type { RootState } from '@app/store/store.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
 import {
   type SearchResult,
   searchSetQuery,
@@ -16,7 +17,6 @@ import { photonToSearchResult } from '@features/search/model/resultUtils.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   type IsWmsLayerDef,
-  integratedLayerDefs,
   isWmsLayerDef,
   type LayerDef,
 } from '@shared/mapDefinitions.js';
@@ -99,7 +99,7 @@ export async function handle(
   trackMatomo(['trackEvent', 'MapDetails', 'search']);
 
   const wmsLayerDefs = [
-    ...integratedLayerDefs,
+    ...integratedLayerDefsSelector(getState()),
     ...getState().map.customLayers,
   ].filter(isWmsLayerDef);
 

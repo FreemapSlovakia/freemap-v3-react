@@ -106,7 +106,7 @@ getCachedTileMaps()
 // The service worker takes the browse-cache policy from IndexedDB, which only
 // the processors write — so hand it the rehydrated settings once at startup, or
 // storage cleared behind the app's back would leave it working from stale ones.
-syncBrowseCache(store.getState()).catch((err) => {
+syncBrowseCache(store.getState).catch((err) => {
   console.warn('Publishing the browse-cache settings failed:', err);
 });
 

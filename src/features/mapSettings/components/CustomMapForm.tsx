@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { shadingSourceSelector } from '@features/mapLibrary/model/selectors.js';
 import {
   type Color,
   colorToHexa,
@@ -11,11 +12,7 @@ import { IconPicker } from '@shared/components/IconPicker.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
-import {
-  type CustomLayerDef,
-  integratedLayerDefMap,
-  SHADING_SOURCE,
-} from '@shared/mapDefinitions.js';
+import { type CustomLayerDef, SHADING_SOURCE } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
 import clsx from 'clsx';
 import {
@@ -207,6 +204,8 @@ export function CustomMapForm({
 }: Props): ReactElement {
   const sharedShading = useAppSelector((state) => state.map.shading);
 
+  const shadingSource = useAppSelector(shadingSourceSelector);
+
   const [model, setModel] = useState<Model>(() => {
     const model = valueToModel(value);
 
@@ -358,14 +357,12 @@ export function CustomMapForm({
 
         break;
       case 'parametricShading': {
-        const source = integratedLayerDefMap[SHADING_SOURCE];
-
         onChange({
           ...common,
           technology: 'parametricShading',
           shading: model.shading,
           source: SHADING_SOURCE,
-          url: source && 'url' in source ? source.url : '',
+          url: shadingSource && 'url' in shadingSource ? shadingSource.url : '',
         });
 
         break;
@@ -379,7 +376,7 @@ export function CustomMapForm({
 
         break;
     }
-  }, [type, model, onChange]);
+  }, [type, model, onChange, shadingSource]);
 
   const m = useMessages();
 

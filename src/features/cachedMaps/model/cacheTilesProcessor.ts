@@ -4,6 +4,7 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { RENDERER_LAYER_TYPES } from '@shared/mapDefinitions.js';
+import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
 import {
   ATTRIBUTION_HEADER,
@@ -280,8 +281,14 @@ async function downloadTiles(
   // here: a map carries the range it was given while the premium access lasted,
   // and a resume or an edit of it answers to the form's cap no more than a
   // hand-edited database entry would. A map gated this way stays incomplete —
-  // it is missing tiles, and saying otherwise would be a lie.
-  const premiumLimit = premiumZoomLimit(def.sourceType, user) ?? Infinity;
+  // it is missing tiles, and saying otherwise would be a lie. The source is
+  // loaded here, as one not in the store yet would gate nothing.
+  const premiumLimit =
+    premiumZoomLimit(
+      def.sourceType,
+      user,
+      await loadIntegratedLayerDef(def.sourceType),
+    ) ?? Infinity;
 
   const gatedMaxZoom = Math.min(maxZoom, premiumLimit);
 

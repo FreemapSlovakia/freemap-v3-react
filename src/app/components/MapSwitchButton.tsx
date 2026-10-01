@@ -9,9 +9,9 @@ import {
 import { combinationLayers } from '@features/map/model/mapCombination.js';
 import {
   activeCombinationsSelector,
-  isLayerOffered,
   resolvedCustomLayersSelector,
 } from '@features/map/model/selectors.js';
+import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
@@ -36,7 +36,6 @@ import {
   flaggedCountries,
   getCountriesBbox,
   getLayerBbox,
-  integratedLayerDefs,
 } from '@shared/mapDefinitions.js';
 import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import type { Shortcut } from '@shared/types/common.js';
@@ -273,6 +272,8 @@ export function MapSwitchButton(): ReactElement {
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
+  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
+
   const customLayerDefs = useAppSelector(resolvedCustomLayersSelector);
 
   const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
@@ -305,13 +306,12 @@ export function MapSwitchButton(): ReactElement {
   const byName = makeLabelComparator(language);
 
   const layerDefs = [
-    ...integratedLayerDefs
-      .filter((def) => isLayerOffered(layersSettings, activeLayers, def.type))
-      .map((def) => ({
-        ...def,
-        custom: false as const,
-        cached: false,
-      })),
+    // Installed or on, and listed once its body has loaded.
+    ...integratedLayerDefs.map((def) => ({
+      ...def,
+      custom: false as const,
+      cached: false,
+    })),
     ...[...customLayerDefs]
       .sort((a, b) => byName(a.name || undefined, b.name || undefined))
       .map((def) => ({ ...def, custom: true as const, cached: false })),

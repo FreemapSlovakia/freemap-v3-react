@@ -34,7 +34,7 @@ import {
   type MapCombination,
   withoutCombinations,
 } from './mapCombination.js';
-import { allLayerDefs } from './selectors.js';
+import { allLayerEntries } from './selectors.js';
 
 export interface MapState extends MapStateBase {
   removeGalleryOverlayOnGalleryToolQuit: boolean;
@@ -198,7 +198,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
       // TODO can cache (use selector?)
       const kinds = layerKinds(
-        allLayerDefs(state.customLayers, state.cachedMaps),
+        allLayerEntries(state.customLayers, state.cachedMaps),
       );
 
       if (kinds.get(type) === 'base' && enable !== false) {

@@ -141,6 +141,6 @@ Each entry document links its own manifest, which is what makes the install prom
 
 ## Keeping it in sync
 
-`hubs.ts` copy is hand-maintained and distilled from `src/static/llms.txt` and the layer registry (`src/shared/mapDefinitions.tsx`). **When layers or tools change, update `hubs.ts` in the same change set** — a new hub needs all 9 languages, since every language is rendered — the same drift discipline that applies to `llms.txt` itself (see [CLAUDE.md](../CLAUDE.md)).
+`hubs.ts` copy is hand-maintained and distilled from `src/static/llms.txt` and the layer registry (`src/shared/mapLibrary/`). **When layers or tools change, update `hubs.ts` in the same change set** — a new hub needs all 9 languages, since every language is rendered — the same drift discipline that applies to `llms.txt` itself (see [CLAUDE.md](../CLAUDE.md)).
 
 **Adding a UI language** also means an `entryDocs` row in `rspack.config.ts` — the bootstrap copy for the no-JS / error / loading states, plus the manifest's `appDescription` and shortcut labels. Miss it and that language falls back to the domain's default entry document with no error anywhere; `rspack.config.ts` is outside `tsconfig.json`, so `tsc` cannot help. A build-time guard against `translation-manager/templates.json` covers it, which is how `sl` and `fr` stopped being missing. nginx needs no change — its language map is generic.

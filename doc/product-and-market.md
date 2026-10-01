@@ -5,7 +5,7 @@ Purpose: so outreach describes the product **as it is**. Three false claims reac
 live posts before this existed (see the roadmap's _Claims that must stay accurate_).
 
 **Verify against the code, not against this file, whenever a claim carries weight.**
-Sources of truth: `src/shared/mapDefinitions.tsx` (layers, coverage, premium gates),
+Sources of truth: `src/shared/mapLibrary/` (layers, coverage, premium gates),
 `src/shared/transportTypeDefs.tsx` (routing profiles), `src/static/llms.txt`
 (hand-maintained functional description), `src/shared/langUtils.ts` (UI languages).
 
@@ -31,7 +31,7 @@ Two portals, same app: `freemap.sk` renders as "Freemap Slovakia", `freemap.eu` 
 
 ## 2. Coverage — precise
 
-**Outdoor map (`X`), 46 countries** (`mapDefinitions.tsx:723`):
+**Outdoor map (`X`), 46 countries** (`OUTDOOR_COUNTRIES` in `mapDefinitions.tsx`):
 ad al at ba be bg by ch cs cy cz de dk ee es fi fo fr gb gr hr hu ie is it lt lu lv
 md me mk nl no pl pt ro rs se si sk sm tr ua uk va xk
 

@@ -83,6 +83,7 @@ import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxPr
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
 import { exportMapFeaturesProcessor } from '@features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.js';
+import { mapLibraryLoadProcessor } from '@features/mapLibrary/model/processors/mapLibraryLoadProcessor.js';
 import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
@@ -168,6 +169,7 @@ export const processors = [
   errorProcessor,
   toastsCancelTypeProcessor,
   cancelProcessor,
+  mapLibraryLoadProcessor,
   openToolProcessor,
   deleteProcessor,
   geoipProcessor,

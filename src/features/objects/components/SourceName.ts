@@ -1,7 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
 
 type Props = {
   result: SearchResult;
@@ -13,6 +13,8 @@ export function SourceName({ result }: Props) {
   const isWms = result.source.startsWith('wms:');
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
+
+  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
   const wmsLayerDefs = !isWms
     ? undefined

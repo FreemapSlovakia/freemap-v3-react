@@ -9,38 +9,7 @@ import {
 import { siteNames, siteOf, siteUrls } from '@shared/sites.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
-import {
-  FaBicycle,
-  FaBinoculars,
-  FaBus,
-  FaCamera,
-  FaCloudShowersHeavy,
-  FaHiking,
-  FaHorse,
-  FaMap,
-  FaPencilAlt,
-  FaPlane,
-  FaSkiing,
-  FaTractor,
-  FaTree,
-  FaWater,
-  FaWikipediaW,
-} from 'react-icons/fa';
-import {
-  GiHills,
-  GiMountainRoad,
-  GiPeaks,
-  GiStonePath,
-  GiStonePile,
-  GiTreasureMap,
-} from 'react-icons/gi';
-import { IoAirplaneOutline } from 'react-icons/io5';
-import { LuLandPlot } from 'react-icons/lu';
-import { SiOpenstreetmap } from 'react-icons/si';
 import z from 'zod';
-import black1x1 from '@/images/1x1-black.png';
-import transparent1x1 from '@/images/1x1-transparent.png';
-import white1x1 from '@/images/1x1-white.png';
 
 export interface AttributionDef {
   type: 'map' | 'data' | 'photos' | 'routing';
@@ -57,7 +26,7 @@ export interface AttributionDef {
   country?: string;
 }
 
-const OSM_MAP_ATTR: AttributionDef = {
+export const OSM_MAP_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0OpenStreetMap',
   url: 'https://osm.org/',
@@ -102,28 +71,28 @@ export const FM_ATTR: AttributionDef = {
   url: siteUrls[site],
 };
 
-const NLC_ATTR: AttributionDef = {
+export const NLC_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0NLC Zvolen',
   url: 'http://www.nlcsk.org/',
   country: 'sk',
 };
 
-const GKU_ATTR: AttributionDef = {
+export const GKU_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0GKÚ',
   url: 'https://www.gku.sk/',
   country: 'sk',
 };
 
-const GEOLOGY_ATTR: AttributionDef = {
+export const GEOLOGY_ATTR: AttributionDef = {
   type: 'map',
   name: '© Štátny geologický ústav Dionýza Štúra',
   country: 'sk',
   url: 'http://www.geology.sk',
 };
 
-const CUZK_ATTR: AttributionDef = {
+export const CUZK_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0ČÚZK',
   url: 'https://geoportal.cuzk.cz/',
@@ -135,7 +104,7 @@ const CUZK_ATTR: AttributionDef = {
  * services that feed it — SHMÚ among them — are credited through the programme
  * they contribute the data to.
  */
-const OPERA_ATTR: AttributionDef = {
+export const OPERA_ATTR: AttributionDef = {
   type: 'data',
   name: 'EUMETNET OPERA',
   url: 'https://www.eumetnet.eu/observations/weather-radar-network/',
@@ -146,27 +115,27 @@ const OPERA_ATTR: AttributionDef = {
  * composite is CC-BY-SA-4.0 and asks to be credited by this name — so it is
  * credited on its own, only where a tile can carry it.
  */
-const DPC_RADAR_ATTR: AttributionDef = {
+export const DPC_RADAR_ATTR: AttributionDef = {
   type: 'data',
   name: 'Radar-DPC (CC\xa0BY-SA\xa04.0)',
   url: 'https://www.protezionecivile.gov.it/',
   country: 'it',
 };
 
-const LLS_URL =
+export const LLS_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#lls';
 
-const OFM_URL =
+export const OFM_URL =
   'https://www.skgeodesy.sk/gku/produkty-sluzby/na-stiahnutie/zbgis.html#ortofoto';
 
-const OFM_ATTR: AttributionDef = {
+export const OFM_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0GKÚ, NLC',
   url: OFM_URL,
   country: 'sk',
 };
 
-const TERRAIN_TILES_URL = process.env['FM_TERRAIN_TILES_URL'];
+export const TERRAIN_TILES_URL = process.env['FM_TERRAIN_TILES_URL'];
 
 /** Tiles of `shading` rendered on the server; a base map's background is opaque. */
 export const serverShadingUrl = (shading: Shading, layer: 'base' | 'overlay') =>
@@ -202,7 +171,7 @@ const RENDERER_ROUTE_BY_TYPE = {
 export const RENDERER_ROUTES: Readonly<Record<string, string>> =
   RENDERER_ROUTE_BY_TYPE;
 
-const rendererTileUrl = (type: keyof typeof RENDERER_ROUTE_BY_TYPE) => {
+export const rendererTileUrl = (type: keyof typeof RENDERER_ROUTE_BY_TYPE) => {
   const route = RENDERER_ROUTE_BY_TYPE[type];
 
   return `${process.env['FM_MAPSERVER_URL']}${route === '/' ? '' : route}/{z}/{x}/{y}`;
@@ -210,7 +179,7 @@ const rendererTileUrl = (type: keyof typeof RENDERER_ROUTE_BY_TYPE) => {
 
 // bbox of freemap-outdoor-map/limit-europe-buffered.geojson (the renderer's
 // coverage polygon), rounded — the "zoom to coverage" target
-const OUTDOOR_BBOX: [number, number, number, number] = [
+export const OUTDOOR_BBOX: [number, number, number, number] = [
   -33.22, 28.97, 47.16, 81.17,
 ];
 
@@ -220,7 +189,7 @@ const OUTDOOR_BBOX: [number, number, number, number] = [
  * `en`, which is not a country code — cannot be matched against what is in
  * view, and is credited everywhere rather than nowhere.
  */
-const OUTDOOR_COUNTRIES = [
+export const OUTDOOR_COUNTRIES = [
   'ad',
   'al',
   'at',
@@ -285,12 +254,12 @@ export const flaggedCountries = (def: {
  * that stand even when it cannot be reached at all. Every terrain source comes
  * from the renderer itself — see `tileAttribution.ts`.
  */
-const OUTDOOR_ATTRIBUTION: AttributionDef[] = [FM_ATTR, OSM_DATA_ATTR];
+export const OUTDOOR_ATTRIBUTION: AttributionDef[] = [FM_ATTR, OSM_DATA_ATTR];
 
 // The terrain models behind a viewshed are not here: the service names the ones
 // its render was answered from, and `Attribution` adds those. A render reaches
 // 300 km, so the countries in view cannot stand in for them.
-const VIEWSHED_ATTRIBUTION: AttributionDef[] = [FM_ATTR];
+export const VIEWSHED_ATTRIBUTION: AttributionDef[] = [FM_ATTR];
 
 export type HasUrl = {
   url: string;
@@ -466,67 +435,8 @@ export const resolveLayerOpacity = (
     ? def.defaultOpacity
     : 1);
 
-const shadingLayerDefOf = (
-  type: string,
-  customLayers: readonly CustomLayerDef[],
-) => {
-  const def =
-    integratedLayerDefMap[type] ??
-    customLayers.find((def) => def.type === type);
-
-  return def?.technology === 'parametricShading' ? def : undefined;
-};
-
-/** Whether any layer on the map is shaded by parameters. */
-export const hasShadingLayer = (
-  layers: readonly string[],
-  customLayers: readonly CustomLayerDef[],
-): boolean => layers.some((type) => shadingLayerDefOf(type, customLayers));
-
-/**
- * Whether any layer on the map draws with the shared `map.shading` rather than
- * its own: a built-in shading layer, or a custom one that has none.
- */
-export const hasSharedShadingLayer = (
-  layers: readonly string[],
-  customLayers: readonly CustomLayerDef[],
-): boolean =>
-  layers.some((type) => {
-    const def = shadingLayerDefOf(type, customLayers);
-
-    return def && !def.shading;
-  });
-
 /** The one built-in shading layer, whose terrain every custom shading map draws. */
 export const SHADING_SOURCE = 'h';
-
-/**
- * A custom shading map as drawn: the shading source's tiles, zooms and premium
- * limit, with its own kind, name, icon and shading. A stored URL or source is
- * ignored.
- */
-export function withShadingSource<T extends CustomLayerDef>(def: T): T {
-  if (def.technology !== 'parametricShading') {
-    return def;
-  }
-
-  const source = integratedLayerDefMap[SHADING_SOURCE];
-
-  if (source?.technology !== 'parametricShading') {
-    return def;
-  }
-
-  return {
-    ...def,
-    source: SHADING_SOURCE,
-    url: source.url,
-    maxNativeZoom: source.maxNativeZoom,
-    scaleWithDpi: source.scaleWithDpi,
-    minZoom: source.minZoom,
-    premiumFromZoom: source.premiumFromZoom,
-    zIndex: def.zIndex ?? (def.layer === 'overlay' ? source.zIndex : undefined),
-  };
-}
 
 export const getLayerBbox = (
   def: object,
@@ -790,527 +700,11 @@ export const CustomLayerDefArrayCompatSchema = z
     }),
   );
 
-export const integratedLayerDefs: IntegratedLayerDef[] = [
-  {
-    layer: 'base',
-    type: 'X',
-    defaultInMenu: true,
-    defaultInToolbar: true,
-    bbox: OUTDOOR_BBOX,
-    technology: 'tile',
-    icon: <GiTreasureMap />,
-    url: rendererTileUrl('X'),
-    extraScales: [2, 3, 4],
-    attribution: OUTDOOR_ATTRIBUTION,
-    minZoom: 5,
-    maxNativeZoom: 20,
-    shortcut: { code: 'KeyX' },
-    premiumFromZoom: 19,
-    creditsPerMTile: 5000,
-    countries: OUTDOOR_COUNTRIES,
-  },
-  {
-    layer: 'base',
-    type: 'XK',
-    technology: 'tile',
-    icon: <FaHiking />,
-    url: rendererTileUrl('XK'),
-    extraScales: [2, 3, 4],
-    attribution: OUTDOOR_ATTRIBUTION,
-    minZoom: 5,
-    maxNativeZoom: 20,
-    countries: ['sk'],
-  },
-  {
-    layer: 'base',
-    type: 'O',
-    defaultInToolbar: true,
-    defaultInMenu: true,
-    technology: 'tile',
-    icon: <SiOpenstreetmap />,
-    url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    minZoom: 0,
-    maxNativeZoom: 19,
-    attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
-    shortcut: { code: 'KeyO' },
-  },
-  {
-    layer: 'base',
-    type: 'S',
-    defaultInToolbar: true,
-    defaultInMenu: true,
-    technology: 'tile',
-    url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    subdomains: ['server', 'services'],
-    detail: {
-      url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg?alpha',
-      coverageUrl: 'https://ortofoto.tiles.freemap.sk/coverage.bin',
-      maxNativeZoom: 20,
-      premiumFromZoom: 20,
-      attribution: [OFM_ATTR, CUZK_ATTR],
-    },
-    // only the orthophoto is exported; Esri's tiles aren't ours to hand out
-    offlineExport: {
-      type: 'Z',
-      url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-      minZoom: 0,
-      maxNativeZoom: 20,
-      creditsPerMTile: 1000,
-      countries: ['sk', 'cz'],
-    },
-    icon: <FaPlane />,
-    minZoom: 0,
-    maxNativeZoom: 19,
-    scaleWithDpi: true,
-    shortcut: { code: 'KeyS' },
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0Esri', // TODO others, see https://github.com/esri/esri-leaflet#terms
-        url: 'https://www.esri.com/',
-      },
-    ],
-  },
-  {
-    layer: 'base',
-    type: 'J1',
-    technology: 'tile',
-    url: 'https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minZoom: 0,
-    maxNativeZoom: 19,
-    scaleWithDpi: true,
-    icon: <FaPlane />,
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0GKÚ, NLC',
-        url: OFM_URL,
-      },
-    ],
-    errorTileUrl: white1x1,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
-    superseededBy: 'S',
-  },
-  {
-    layer: 'base',
-    type: 'J2',
-    technology: 'tile',
-    url: 'https://ofmozaika2c.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minZoom: 0,
-    maxNativeZoom: 19,
-    scaleWithDpi: true,
-    icon: <FaPlane />,
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0GKÚ, NLC',
-        url: OFM_URL,
-      },
-    ],
-    errorTileUrl: white1x1,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
-    superseededBy: 'S',
-  },
-  {
-    layer: 'base',
-    type: 'd',
-    defaultInMenu: true,
-    technology: 'tile',
-    url: '//tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
-    minZoom: 0,
-    maxNativeZoom: 18,
-    icon: <FaBus />,
-    cors: false,
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0MeMoMaps',
-        url: 'https://memomaps.de/en/',
-      },
-      OSM_DATA_ATTR,
-    ],
-    shortcut: { code: 'KeyQ' },
-  },
-  {
-    layer: 'base',
-    type: '7',
-    technology: 'tile',
-    url: 'https://sk-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minZoom: 0,
-    maxNativeZoom: 20,
-    icon: <GiHills />,
-    attribution: [
-      FM_ATTR,
-      {
-        type: 'data',
-        name: 'LLS DMR: ©\xa0ÚGKK SR',
-        url: LLS_URL,
-      },
-    ],
-    shortcut: { code: 'KeyH' },
-    errorTileUrl: white1x1,
-    scaleWithDpi: true,
-    premiumFromZoom: 15,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
-  },
-  {
-    layer: 'base',
-    type: '6',
-    technology: 'tile',
-    url: 'https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    minZoom: 0,
-    maxNativeZoom: 18,
-    icon: <GiHills />,
-    attribution: [
-      FM_ATTR,
-      {
-        type: 'data',
-        name: 'DMP 1.0: ©\xa0ÚGKK SR',
-        url: LLS_URL,
-      },
-    ],
-    errorTileUrl: black1x1,
-    scaleWithDpi: true,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
-  },
-  {
-    layer: 'base',
-    type: 'VO',
-    technology: 'maplibre',
-    url: maptiler('openstreetmap'),
-    icon: <FaMap />,
-    attribution: [
-      OSM_DATA_ATTR,
-      {
-        type: 'map',
-        nameKey: 'maptiler',
-      },
-    ],
-  },
-  {
-    layer: 'base',
-    type: 'VS',
-    defaultInMenu: true,
-    technology: 'maplibre',
-    url: maptiler('streets-v2'),
-    icon: <FaMap />,
-    attribution: [
-      OSM_DATA_ATTR,
-      {
-        type: 'map',
-        nameKey: 'maptiler',
-      },
-    ],
-  },
-  {
-    layer: 'base',
-    type: 'VD',
-    technology: 'maplibre',
-    url: maptiler('dataviz-dark'),
-    icon: <FaMap />,
-    attribution: [
-      OSM_DATA_ATTR,
-      {
-        type: 'map',
-        nameKey: 'maptiler',
-      },
-    ],
-  },
-  {
-    layer: 'base',
-    type: 'VT',
-    defaultInMenu: true,
-    technology: 'maplibre',
-    url: maptiler('outdoor-v2'),
-    icon: <FaMap />,
-    attribution: [
-      OSM_DATA_ATTR,
-      {
-        type: 'map',
-        nameKey: 'maptiler',
-      },
-    ],
-  },
-  {
-    layer: 'base',
-    type: 'WKA',
-    technology: 'wms',
-    url: 'https://kataster.skgeodesy.sk/eskn/services/NR/kn_wms_norm/MapServer/WMSServer',
-    layers: [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '10',
-      '11',
-      '12',
-      '13',
-      '14',
-      '15',
-    ],
-    icon: <LuLandPlot />,
-    attribution: [GKU_ATTR],
-    countries: ['sk'],
-    shortcut: { code: 'KeyK' },
-    premiumFromZoom: 15,
-  },
-  {
-    layer: 'base',
-    type: 'WDZ',
-    technology: 'wms',
-    url: 'https://gis.nlcsk.org/arcgis/services/Inspire/DrevinoveZlozenie/MapServer/WMSServer',
-    layers: ['0'],
-    icon: <FaTree />,
-    attribution: [NLC_ATTR],
-    countries: ['sk'],
-    minZoom: 13,
-    premiumFromZoom: 15,
-  },
-  {
-    layer: 'base',
-    type: 'WLT',
-    technology: 'wms',
-    url: 'https://www.nlcsk.org/mgs/services/Inspire/LesneTypy/MapServer/WMSServer',
-    layers: ['LC.LandCoverSurfaces'],
-    icon: <FaTree />,
-    attribution: [NLC_ATTR],
-    countries: ['sk'],
-    minZoom: 12,
-    premiumFromZoom: 15,
-  },
-  {
-    layer: 'base',
-    type: 'WGE',
-    technology: 'wms',
-    url: 'https://ags.geology.sk/arcgis/services/WebServices/GM50/MapServer/WMSServer',
-    layers: ['0', '1', '2'],
-    icon: <GiStonePile />,
-    shortcut: { code: 'KeyL' },
-    attribution: [GEOLOGY_ATTR],
-    countries: ['sk'],
-    premiumFromZoom: 15,
-  },
-  {
-    layer: 'base',
-    type: 'WHC',
-    technology: 'wms',
-    url: 'https://ags.geology.sk/arcgis/services/WebServices/HGCH50/MapServer/WMSServer',
-    layers: ['1', '2', '3', '4'],
-    icon: <FaWater />,
-    shortcut: { code: 'KeyW' },
-    attribution: [GEOLOGY_ATTR],
-    countries: ['sk'],
-    premiumFromZoom: 15,
-  },
-  {
-    layer: 'overlay',
-    type: 'i',
-    technology: 'interactive',
-    icon: <FaPencilAlt />,
-    shortcut: { code: 'KeyD', shift: true },
-    attribution: [],
-  },
-  {
-    layer: 'overlay',
-    type: 'I',
-    defaultInToolbar: true,
-    defaultInMenu: true,
-    technology: 'gallery',
-    icon: <FaCamera />,
-    minZoom: 10,
-    shortcut: { code: 'KeyF', shift: true },
-    zIndex: 8,
-    attribution: [
-      {
-        type: 'photos',
-        nameKey: 'photosCc',
-        url: 'https://creativecommons.org/',
-      },
-      {
-        type: 'photos',
-        name: 'Wikimedia Commons',
-        url: 'https://commons.wikimedia.org/',
-      },
-    ],
-  },
-  {
-    layer: 'overlay',
-    type: 'w',
-    defaultInMenu: true,
-    defaultInToolbar: true,
-    technology: 'wikipedia',
-    icon: <FaWikipediaW />,
-    minZoom: 8,
-    shortcut: { code: 'KeyW', shift: true },
-    zIndex: 8,
-    attribution: [],
-  },
-  {
-    layer: 'overlay',
-    type: 'R',
-    defaultInMenu: true,
-    technology: 'radar',
-    icon: <FaCloudShowersHeavy />,
-    shortcut: { code: 'KeyR', shift: true },
-    // The measured feed's ceiling. Each feed's real band comes from its own
-    // status document — the forecast is served over a narrower one — so this is
-    // only what the registry advertises (offline export, the layer table).
-    maxNativeZoom: 9,
-    zIndex: 3,
-    // Precipitation is read against the map it falls on, so it starts
-    // translucent rather than hiding the ground.
-    defaultOpacity: 2 / 3,
-    attribution: [OPERA_ATTR, DPC_RADAR_ATTR],
-  },
-  {
-    layer: 'overlay',
-    type: 'v',
-    defaultInMenu: true,
-    technology: 'viewshed',
-    icon: <FaBinoculars />,
-    shortcut: { code: 'KeyV', shift: true },
-    zIndex: 3,
-    // No `defaultOpacity`: the image's own alpha is already faint over most of
-    // a wide view, so there is nothing left to give away.
-    attribution: VIEWSHED_ATTRIBUTION,
-  },
-  ...(
-    [
-      // Stacked aerial map, hiking, the other routes, then the grades on paths.
-      ['xs', GiPeaks, 12, 7],
-      ['xq', GiStonePath, 12, 7],
-      ['xm', GiMountainRoad, 12, 7],
-      ['xh', FaHiking, 9, 5],
-      ['xb', FaBicycle, 9, 6],
-      ['xl', FaSkiing, 9, 6],
-      ['xr', FaHorse, 9, 6],
-      ['xa', IoAirplaneOutline, 5, 4],
-    ] as const
-  ).map(
-    ([type, Icon, minZoom, zIndex]): IntegratedLayerDef => ({
-      layer: 'overlay',
-      type,
-      defaultInMenu: true,
-      bbox: OUTDOOR_BBOX,
-      technology: 'tile',
-      icon: <Icon />,
-      url: rendererTileUrl(type),
-      extraScales: [2, 3],
-      attribution: OUTDOOR_ATTRIBUTION,
-      minZoom,
-      maxNativeZoom: 20,
-      premiumFromZoom: 19,
-      zIndex,
-      errorTileUrl: transparent1x1,
-      countries: OUTDOOR_COUNTRIES,
-    }),
-  ),
-  {
-    layer: 'overlay',
-    type: 'h',
-    defaultInMenu: true,
-    technology: 'parametricShading',
-    url: `${TERRAIN_TILES_URL}/elevation/{z}/{x}/{y}`,
-    icon: <GiHills />,
-    shortcut: { code: 'KeyH', shift: true },
-    scaleWithDpi: true,
-    maxNativeZoom: 18,
-    // The terrain is credited from terrain-tiles' own dictionary, by what the
-    // tiles on screen report (`tileAttribution.ts`).
-    attribution: [FM_ATTR],
-    premiumFromZoom: 15,
-    zIndex: 2,
-  },
-  {
-    layer: 'overlay',
-    type: 'l1',
-    defaultInMenu: false,
-    technology: 'tile',
-    icon: <FaTractor />,
-    url: 'https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png',
-    attribution: [NLC_ATTR],
-    minZoom: 11,
-    maxNativeZoom: 15,
-    zIndex: 3,
-    errorTileUrl: transparent1x1,
-    creditsPerMTile: 1000,
-    countries: ['sk'],
-    superseededBy: 'l2',
-  },
-  {
-    layer: 'overlay',
-    type: 'l2',
-    defaultInMenu: true,
-    technology: 'maplibre',
-    icon: <FaTractor />,
-    url: 'https://nlc-v2.tiles.freemap.sk/styles/lesne/style.json',
-    attribution: [NLC_ATTR],
-    zIndex: 3,
-    // leaflet minZoom; the source data starts at zoom 8 and maplibre-gl-leaflet
-    // runs one zoom level behind (see MaplibreLayer), so it appears at leaflet 9
-    minZoom: 9,
-    shortcut: { code: 'KeyN', shift: true },
-    countries: ['sk'],
-  },
-  // {
-  //   layer: 'overlay',
-  //   type: 'm',
-  //   technology: 'wms',
-  //   icon: <FaTractor />,
-  //   url: 'https://www.nlcsk.org/mgs/services/Inspire/LesneCesty/MapServer/WMSServer',
-  //   layers: ['1', '2', '4', '5', '6'],
-  //   attribution: [NLC_ATTR],
-  //   shortcut: { code: 'KeyM', shift: true },
-  //   zIndex: 4,
-  //   countries: ['sk'],
-  // },
-  {
-    layer: 'overlay',
-    type: 'wka',
-    technology: 'wms',
-    url: 'https://kataster.skgeodesy.sk/eskn/services/NR/kn_wms_orto/MapServer/WMSServer',
-    layers: [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '10',
-      '11',
-      '12',
-      '13',
-      '14',
-      '15',
-    ],
-    icon: <LuLandPlot />,
-    attribution: [GKU_ATTR],
-    countries: ['sk'],
-    shortcut: { code: 'KeyK', shift: true },
-    zIndex: 3,
-    premiumFromZoom: 15,
-  },
-];
-
-function maptiler(style: string) {
-  return `https://api.maptiler.com/maps/${style}/style.json?key=KgKDGG75zYDIyCCTAG6L`;
-}
-
 /**
  * Removed layers and the ones that replaced them, for ids still arriving from
  * old links and stored state.
  */
-const LAYER_ALIASES: Readonly<Record<string, readonly string[]>> = {
+export const LAYER_ALIASES: Readonly<Record<string, readonly string[]>> = {
   y: ['h'],
   z: ['h'],
   // `S` draws the same orthophoto where it has data.
@@ -1376,12 +770,41 @@ export function resolveLayersSettingsAliases<T>(
   return out;
 }
 
-/** Every id a stored layer list may name: the current ones and the aliases. */
-export const knownLayerIds = (): string[] => [
-  ...Object.keys(integratedLayerDefMap),
-  ...Object.keys(LAYER_ALIASES),
-];
+/** The fields the library index carries for every map; the rest is loaded per map. */
+type MapIndexField =
+  | 'type'
+  | 'layer'
+  | 'technology'
+  | 'icon'
+  | 'countries'
+  | 'bbox'
+  | 'shortcut'
+  | 'defaultInMenu'
+  | 'defaultInToolbar'
+  | 'superseededBy'
+  | 'experimental'
+  | 'layerPreview';
 
-export const integratedLayerDefMap = Object.fromEntries(
-  integratedLayerDefs.map((def) => [def.type, def]),
-);
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;
+
+export type LayerTechnology = IntegratedLayerDef['technology'];
+
+/** A library map's own file: what the index doesn't carry. */
+export type MapBody<T extends LayerTechnology = LayerTechnology> =
+  DistributiveOmit<
+    Extract<IntegratedLayerDef, { technology: T }>,
+    MapIndexField
+  >;
+
+/** A library map as the index knows it, before its body is loaded. */
+export type MapIndexEntry<T extends LayerTechnology = LayerTechnology> = Pick<
+  IntegratedLayerDef,
+  Exclude<MapIndexField, 'technology'>
+> & {
+  technology: T;
+  load: () => Promise<MapBody<T>>;
+  /** The body, for a map in the main bundle: there from the first render. */
+  bundled?: MapBody<T>;
+};

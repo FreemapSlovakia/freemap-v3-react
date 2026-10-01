@@ -1,7 +1,5 @@
-import {
-  integratedLayerDefMap,
-  resolveLayerAlias,
-} from '@shared/mapDefinitions.js';
+import { resolveLayerAlias } from '@shared/mapDefinitions.js';
+import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import z from 'zod';
 
 export const MapCombinationOverlaySchema = z.object({
@@ -72,7 +70,7 @@ export function resolveCombination(
   kinds: LayerKinds,
 ): MapCombination | undefined {
   const resolve = (type: string, kind: 'base' | 'overlay') => {
-    const to = integratedLayerDefMap[type]?.superseededBy ?? type;
+    const to = mapIndexById[type]?.superseededBy ?? type;
 
     return kinds.get(to) === kind && isCombinable(to) ? to : undefined;
   };

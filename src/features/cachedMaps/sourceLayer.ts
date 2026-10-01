@@ -2,9 +2,12 @@ import type { User } from '@features/auth/model/types.js';
 import { isPremium } from '@features/premium/premium.js';
 import {
   type CustomLayerDef,
-  integratedLayerDefs,
+  type IntegratedLayerDef,
   RETIRED_SOURCE_LAYERS,
 } from '@shared/mapDefinitions.js';
+
+/** The loaded library maps by id; see `integratedLayerDefMapSelector`. */
+type SourceDefs = Readonly<Record<string, IntegratedLayerDef>>;
 
 /** What a cached map takes from the layer it was made from while online. */
 export type SourceLayerEnvelope = {
@@ -16,9 +19,10 @@ export type SourceLayerEnvelope = {
 function findSourceLayerDef(
   sourceType: string,
   customLayers: CustomLayerDef[],
+  sourceDefs: SourceDefs,
 ) {
   return (
-    integratedLayerDefs.find((def) => def.type === sourceType) ??
+    sourceDefs[sourceType] ??
     customLayers.find((def) => def.type === sourceType) ??
     RETIRED_SOURCE_LAYERS[sourceType]
   );
@@ -38,8 +42,9 @@ function findSourceLayerDef(
 export function sourceLayerEnvelope(
   sourceType: string,
   customLayers: CustomLayerDef[],
+  sourceDefs: SourceDefs,
 ): SourceLayerEnvelope | undefined {
-  const def = findSourceLayerDef(sourceType, customLayers);
+  const def = findSourceLayerDef(sourceType, customLayers, sourceDefs);
 
   if (!def) {
     return undefined;
@@ -63,14 +68,13 @@ export function sourceLayerEnvelope(
 export function premiumZoomLimit(
   sourceType: string,
   user: Pick<User, 'premiumExpiration'> | null,
+  sourceDef: IntegratedLayerDef | undefined,
 ): number | undefined {
   if (isPremium(user)) {
     return undefined;
   }
 
-  const def =
-    integratedLayerDefs.find((def) => def.type === sourceType) ??
-    RETIRED_SOURCE_LAYERS[sourceType];
+  const def = sourceDef ?? RETIRED_SOURCE_LAYERS[sourceType];
 
   if (!def?.premiumFromZoom) {
     return undefined;

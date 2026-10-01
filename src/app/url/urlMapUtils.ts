@@ -1,10 +1,7 @@
 import type { MapViewState } from '@features/map/model/actions.js';
 import { isCombinationMarker } from '@features/map/model/mapCombination.js';
-import {
-  integratedLayerDefMap,
-  knownLayerIds,
-  resolveLayerAliases,
-} from '@shared/mapDefinitions.js';
+import { resolveLayerAliases } from '@shared/mapDefinitions.js';
+import { knownLayerIds, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 
 const LAYERS_RE = new RegExp(`^(${knownLayerIds().join('|')})|[.:]\\d`);
 
@@ -78,7 +75,7 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
   layers = layers && resolveLayerAliases(layers);
 
   layers = layers?.filter(
-    (layer) => layer in integratedLayerDefMap || isCombinationMarker(layer),
+    (layer) => layer in mapIndexById || isCombinationMarker(layer),
   );
 
   return {

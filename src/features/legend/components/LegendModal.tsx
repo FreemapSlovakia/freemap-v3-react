@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { RENDERER_ROUTES } from '@shared/mapDefinitions.js';
@@ -30,9 +31,11 @@ export default function LegendModal({ show }: Props): ReactElement {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
+  const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
+
   const wmsLayerDefs = useMemo(
-    () => getWmsLayerDefs(customLayers),
-    [customLayers],
+    () => getWmsLayerDefs(customLayers, integratedLayerDefMap),
+    [customLayers, integratedLayerDefMap],
   );
 
   const activeLegendLayers = getActiveLegendLayers(layers, customLayers);

@@ -1,7 +1,8 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
+import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
 import { osmLoad } from '@features/osm/model/osmActions.js';
-import { integratedLayerDefs, isBaseLayerDef } from '@shared/mapDefinitions.js';
+import { isBaseLayerDef } from '@shared/mapDefinitions.js';
 import {
   featureIdsEqual,
   OsmFeatureIdSchema,
@@ -93,7 +94,7 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           {
             maxZoom: Math.min(
               action.payload.result.zoom ?? 18,
-              integratedLayerDefs
+              integratedLayerDefsSelector(getState())
                 .filter(isBaseLayerDef)
                 .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
             ),

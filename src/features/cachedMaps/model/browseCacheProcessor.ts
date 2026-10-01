@@ -1,7 +1,8 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
+import { createSelector } from 'reselect';
 import {
   clearBrowseCache,
   readBrowseCacheStats,
@@ -16,32 +17,53 @@ import { browseCacheCleared, browseCacheStatsLoaded } from './actions.js';
  * layers: a WMS asks for a rendered extent rather than a tile of a fixed grid,
  * and the downloaded offline maps have their own cache and their own path.
  */
-function tileTemplates(state: RootState): string[] {
-  return [...integratedLayerDefs, ...state.map.customLayers]
-    .filter((def) => def.technology === 'tile')
-    .map((def) => def.url);
-}
+const tileTemplatesSelector = createSelector(
+  integratedLayerDefsSelector,
+  (state: RootState) => state.map.customLayers,
+  (integrated, customLayers): string[] =>
+    [...integrated, ...customLayers]
+      .filter((def) => def.technology === 'tile')
+      .map((def) => def.url),
+);
 
-/** Hands the service worker the settings and the layer set it works from. */
-export async function syncBrowseCache(state: RootState): Promise<void> {
-  await writeBrowseCacheConfig(state.cachedMapsSettings);
+const tileTemplatesKey = createSelector(tileTemplatesSelector, (templates) =>
+  templates.join('\n'),
+);
 
-  await writeBrowseTileTemplates(tileTemplates(state));
+let syncing = Promise.resolve();
 
-  notifyServiceWorker('browse-cache-changed');
+/**
+ * Hands the service worker the settings and the layer set it works from. Calls
+ * are queued and each reads the state at its turn, so the last write is the latest.
+ */
+export function syncBrowseCache(getState: () => RootState): Promise<void> {
+  syncing = syncing
+    .catch(() => undefined)
+    .then(async () => {
+      const state = getState();
+
+      await writeBrowseCacheConfig(state.cachedMapsSettings);
+
+      await writeBrowseTileTemplates(tileTemplatesSelector(state));
+
+      notifyServiceWorker('browse-cache-changed');
+    });
+
+  return syncing;
 }
 
 export const browseCacheSettingsProcessor: Processor = {
   stateChangePredicate: (state) => state.cachedMapsSettings,
   handle: async ({ getState }) => {
-    await syncBrowseCache(getState());
+    await syncBrowseCache(getState);
   },
 };
 
 export const browseCacheLayersProcessor: Processor = {
-  stateChangePredicate: (state) => state.map.customLayers,
+  // Library maps join as their bodies load.
+  stateChangePredicate: tileTemplatesKey,
   handle: async ({ getState }) => {
-    await syncBrowseCache(getState());
+    await syncBrowseCache(getState);
   },
 };
 

@@ -5,10 +5,8 @@ import {
   combinationOpacity,
   type MapCombination,
 } from '@features/map/model/mapCombination.js';
-import {
-  activeCombinationsSelector,
-  isLayerInstalled,
-} from '@features/map/model/selectors.js';
+import { activeCombinationsSelector } from '@features/map/model/selectors.js';
+import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
@@ -17,10 +15,10 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   type CustomLayerDef,
   flaggedCountries,
-  integratedLayerDefMap,
-  integratedLayerDefs,
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
+import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
+import { mapIndex, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import clsx from 'clsx';
 import type { ReactElement } from 'react';
 import { Form, Table } from 'react-bootstrap';
@@ -57,6 +55,8 @@ export function MapLayersSettings({
 
   const activeCombinations = useAppSelector(activeCombinationsSelector);
 
+  const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
+
   function getName(def: { type: string; custom: boolean; name?: string }) {
     const { type } = def;
 
@@ -66,7 +66,7 @@ export function MapLayersSettings({
   }
 
   const layerDefs = [
-    ...integratedLayerDefs.map((def) => ({
+    ...mapIndex.map(({ load: _, ...def }) => ({
       ...def,
       custom: false,
       name: undefined,
@@ -273,7 +273,7 @@ export function MapLayersSettings({
                   <ShortcutRecorder
                     value={
                       layersSettings[type]?.shortcut === undefined
-                        ? integratedLayerDefMap[type]?.shortcut
+                        ? mapIndexById[type]?.shortcut
                         : layersSettings[type]?.shortcut
                     }
                     onChange={(shortcut) =>

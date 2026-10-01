@@ -7,7 +7,12 @@ import {
 } from '@features/map/model/actions.js';
 import { withoutMarkers } from '@features/map/model/mapCombination.js';
 import { resolvedCustomLayersSelector } from '@features/map/model/selectors.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
+import type { IntegratedLayerDef } from '@shared/mapDefinitions.js';
+import {
+  loadIntegratedLayerDef,
+  mapIndex,
+} from '@shared/mapLibrary/mapIndex.js';
 import z from 'zod';
 import { defineTool } from '../tool.js';
 
@@ -15,17 +20,25 @@ const LatSchema = z.number().min(-90).max(90).describe('WGS-84 latitude');
 
 const LonSchema = z.number().min(-180).max(180).describe('WGS-84 longitude');
 
-/** Every layer code the map knows about, integrated and user-added alike. */
-function layerCatalog(state: RootState) {
+/**
+ * Every layer code the map knows about, integrated and user-added alike; zooms
+ * come from `loaded`, so only for library maps whose bodies are in it.
+ */
+function layerCatalog(
+  state: RootState,
+  loaded: Readonly<
+    Record<string, IntegratedLayerDef>
+  > = integratedLayerDefMapSelector(state),
+) {
   const m = getMessages();
 
   return [
-    ...integratedLayerDefs.map((def) => ({
+    ...mapIndex.map((def) => ({
       code: def.type,
       name: m?.mapLayers.letters[def.type] ?? def.type,
       kind: def.layer,
-      minZoom: def.minZoom,
-      premiumFromZoom: def.premiumFromZoom,
+      minZoom: loaded[def.type]?.minZoom,
+      premiumFromZoom: loaded[def.type]?.premiumFromZoom,
       countries: def.countries,
       experimental: def.experimental,
     })),
@@ -144,8 +157,17 @@ export const mapTools = [
     description:
       'Lists the map layers this app offers, with the one-letter code each is switched on by. A "base" layer is the map itself (only one at a time); an "overlay" is drawn on top of it (any number). premiumFromZoom marks a layer that needs a paid account past that zoom.',
     input: z.object({}),
-    execute(_args, { store }) {
-      return layerCatalog(store.getState());
+    async execute(_args, { store }) {
+      const defs = await Promise.all(
+        mapIndex.map(({ type }) => loadIntegratedLayerDef(type)),
+      );
+
+      return layerCatalog(
+        store.getState(),
+        Object.fromEntries(
+          defs.flatMap((def) => (def ? [[def.type, def]] : [])),
+        ),
+      );
     },
   }),
 

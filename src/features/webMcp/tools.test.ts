@@ -168,6 +168,7 @@ describe('map tools', () => {
       customLayers: [],
       cachedMaps: [],
     },
+    mapLibrary: { bodies: {} },
   };
 
   it('reports the view', async () => {
@@ -598,6 +599,7 @@ describe('set-map-layers', () => {
   it('refuses a base map named as an overlay', async () => {
     const { store } = fakeStore({
       map: { layers: ['X'], customLayers: [], cachedMaps: [] },
+      mapLibrary: { bodies: {} },
     });
 
     const tool = mapTools.find((t) => t.name === 'set-map-layers')!;
