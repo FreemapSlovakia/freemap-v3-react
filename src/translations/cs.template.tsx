@@ -318,7 +318,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Hledat',
     placeholder: 'Hledat místa a funkce',
     result: 'Nález',
-    settings: 'Předvolby nálezu',
     keepOnMap: 'Ponechat v mapě',
     offlineHint:
       'Bez připojení k internetu lze najít pouze souřadnice, ohraničující box, čísla dlaždic (z/x/y) nebo vložený GeoJSON.',

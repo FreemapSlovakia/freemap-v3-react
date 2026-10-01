@@ -314,7 +314,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Išči',
     placeholder: 'Iskanje krajev in funkcij',
     result: 'Zadetek',
-    settings: 'Nastavitve zadetka',
     keepOnMap: 'Ohrani na zemljevidu',
     sources: {
       bbox: 'Omejevalni okvir',

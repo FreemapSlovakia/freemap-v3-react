@@ -264,7 +264,6 @@ export type Messages = {
     buttonTitle: string;
     placeholder: string;
     result: string;
-    settings: string;
     showMore: string;
     keepOnMap: string;
     offlineHint: string;

@@ -974,7 +974,7 @@ export function Main(): ReactElement {
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
                 <div />
 
-                <Toolbar className="mt-2">
+                <Toolbar className="mt-2 fm-toolbar-fit">
                   <button
                     type="button"
                     id="freemap-logo"

@@ -1,5 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { objectsSetFilter } from '@features/objects/model/actions.js';
+import { ObjectFilterChip } from '@features/objects/components/ObjectFilterChip.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   getGenericNameFromOsmElementSync,
@@ -10,7 +10,6 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { fuzzyMatch } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
-import clsx from 'clsx';
 import {
   Fragment,
   type ReactElement,
@@ -261,10 +260,6 @@ function LegendItems({
 }): ReactElement {
   const query = `zoom=${zoom}&variant=${encodeURIComponent(variant)}`;
 
-  const activeObjects = useAppSelector((s) => s.objects.active);
-
-  const dispatch = useDispatch();
-
   return (
     <div
       className="d-grid align-items-center row-gap-2 column-gap-3"
@@ -291,15 +286,6 @@ function LegendItems({
             {name_w_tags.map(({ name, tags }, i) => {
               const ts = Object.entries(tags).map(([k, v]) => `${k}=${v}`);
 
-              const activeIndex = activeObjects.findIndex((ao) => {
-                const aos = ao.split(',');
-
-                return (
-                  aos.every((t) => ts.includes(t)) &&
-                  ts.every((t) => aos.includes(t))
-                );
-              });
-
               return (
                 <LongPressTooltip
                   key={i}
@@ -325,32 +311,11 @@ function LegendItems({
                     </Table>
                   }
                 >
-                  {({ props }) => {
-                    const next =
-                      activeIndex > -1
-                        ? activeObjects.toSpliced(activeIndex, 1)
-                        : [...activeObjects, ts.join(',')];
-
-                    return (
-                      <a
-                        className={clsx(
-                          'px-2 rounded',
-                          activeIndex > -1
-                            ? 'bg-primary text-light'
-                            : 'bg-body-secondary',
-                        )}
-                        href={`/#objects=${encodeURIComponent(next.join(';'))}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-
-                          dispatch(objectsSetFilter(next));
-                        }}
-                        {...props}
-                      >
-                        {strippedName(name) || '???'}
-                      </a>
-                    );
-                  }}
+                  {({ props }) => (
+                    <ObjectFilterChip filterKey={ts.join(',')} {...props}>
+                      {strippedName(name) || '???'}
+                    </ObjectFilterChip>
+                  )}
                 </LongPressTooltip>
               );
             })}

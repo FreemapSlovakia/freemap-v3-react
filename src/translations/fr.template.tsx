@@ -411,7 +411,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Rechercher',
     placeholder: 'Rechercher lieux et fonctions',
     result: 'Résultat',
-    settings: 'Préférences du résultat',
   },
   mapLayers: {
     minZoomWarning: (minZoom) => `Accessible à partir du zoom ${minZoom}`,

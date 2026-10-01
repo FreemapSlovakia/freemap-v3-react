@@ -4,13 +4,20 @@
   }
 }
 
+/* The toolbar's only elastic child: the row is capped at the screen
+   (`fm-toolbar-fit`) and the buttons hold their size, so the box gives up the
+   difference. */
 .search-input {
   min-width: 160px !important;
+
+  /* On the input, not on `::placeholder`, which takes only `::first-line`
+     properties — set here it ellipsizes the placeholder and the value alike. */
+  text-overflow: ellipsis;
 }
 
 .search-dropdown {
   @media (min-width: 768px) {
-    max-width: calc(100dvw - 160px);
+    max-width: min(calc(100dvw - 160px), 32rem);
   }
 
   @media (max-width: 767px) {

@@ -68,6 +68,9 @@ button#freemap-logo {
   background-repeat: no-repeat;
   height: 34px;
   width: 134px;
+  /* Its box is empty, so a capped toolbar would shrink it to nothing and
+     clip the wordmark; every other child has content to hold its width. */
+  flex-shrink: 0;
   transition: 0.1s ease-in-out;
 
   &.in-progress {
@@ -165,6 +168,13 @@ button#freemap-logo {
       white-space: normal;
     }
   }
+}
+
+/* Fits the screen instead of scrolling off it; only for a toolbar with an
+   elastic child to give up the room. The subtraction is the toolbar's own
+   margins, which `max-width` does not count. */
+.fm-toolbar-fit {
+  max-width: calc(100% - 2 * var(--fm-space-2));
 }
 
 /* A selection toolbar, outlined to set the selected feature apart from the

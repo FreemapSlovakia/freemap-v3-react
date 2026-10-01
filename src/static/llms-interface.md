@@ -4,7 +4,7 @@
 
 - Access: the search box at the top of the page ("Search places and functions")
 
-A ⚙ dropdown beside the box holds the box's own standing preferences; it opens the **Lookup style** modal (see [OSM data](/llms-osm.md)). It is not shown in an embedded map.
+The box's dropdown ends with a **Lookup style** row opening the modal of that name (see [OSM data](/llms-osm.md)); while the box is empty, its ▾ caret opens the dropdown with that row alone. It is not shown in an embedded map.
 
 The box also finds the app's own functions, so a tool, a dialog, a help document or a map layer can be reached by name instead of through the menus: from the second character on, the matching ones are listed above the places, under a **Functions** caption and a **Maps** one, with the matched letters in bold. Typing "weather" offers the weather-radar layer, "export" the three export dialogs, "shading" the shading layers. Matching ignores case and accents and accepts gaps (as in a code editor's command palette), and each function carries synonyms of its own, so it is found by words its label doesn't use. Picking one does what its menu item does; the functions an embedded map has no menus for are not offered there.
 

@@ -4,18 +4,23 @@ import { isLocalSearchQuery } from '@features/search/localQuery.js';
 import {
   getOsmAddress,
   getOsmName,
+  joinGenericNameParts,
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
+import { useGenericNameParts } from '@osm/useGenericNameResolver.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  LongPressTooltip,
+  type TooltipTargetProps,
+} from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -50,6 +55,7 @@ import {
   FaCaretDown,
   FaCaretUp,
   FaDrawPolygon,
+  FaPaintBrush,
   FaSearch,
 } from 'react-icons/fa';
 import { GoDotFill } from 'react-icons/go';
@@ -71,7 +77,6 @@ import {
   searchUnsetHover,
 } from '../model/actions.js';
 import classes from './SearchMenu.module.css';
-import { SearchSettingsMenu } from './SearchSettingsMenu.js';
 
 type Props = {
   hidden?: boolean;
@@ -141,6 +146,8 @@ HideArrow.displayName = 'HideArrow';
 
 export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const m = useMessages();
+
+  const modalLink = useModalLink();
 
   const online = useOnline();
 
@@ -466,7 +473,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const handleInputFocus = useCallback(() => {
     setInputFocused(true);
 
-    setOpen(results.length > 0 || commands.length > 0);
+    // Only ever opens. The caret opens the list and then focuses the input, so
+    // closing here would shut an empty box's list again on the way in.
+    setOpen((open) => open || results.length > 0 || commands.length > 0);
   }, [results, commands]);
 
   const handleInputBlur = useCallback(() => {
@@ -513,9 +522,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   return (
     <Form
       onSubmit={handleSearch}
-      // The gear sits beside the box rather than inside its input group: a
-      // second dropdown within `Dropdown.Toggle` would share the toggle's
-      // `aria-expanded` and its root-close handling with the result list.
       // Hiding is a class, not an inline style — bootstrap's display utilities
       // are `!important`, which an inline `display: none` loses to.
       className={clsx('gap-1 align-items-center', hidden ? 'd-none' : 'd-flex')}
@@ -542,7 +548,11 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               autoComplete="off"
             />
 
-            {results.length || commands.length ? (
+            {/* An empty box has nothing to submit, so the caret takes the
+                button's place: it opens the list's own settings row. */}
+            {results.length ||
+            commands.length ||
+            (!value && !window.fmEmbedded) ? (
               <Button variant="secondary" onClick={handleCaretClick}>
                 {open ? <FaCaretUp /> : <FaCaretDown />}
               </Button>
@@ -694,10 +704,20 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               )}
             </Dropdown.Item>
           )}
+
+          {!window.fmEmbedded && (
+            <>
+              {(results.length > 0 || commands.length > 0) && (
+                <Dropdown.Divider />
+              )}
+
+              <Dropdown.Item {...modalLink({ type: 'search-result-style' })}>
+                <FaPaintBrush /> {m?.mapLayers.lookupStyle}
+              </Dropdown.Item>
+            </>
+          )}
         </FmDropdownMenu>
       </Dropdown>
-
-      {!window.fmEmbedded && <SearchSettingsMenu />}
     </Form>
   );
 }
@@ -780,7 +800,9 @@ function Result({ value }: { value: SearchResult }) {
 
   const tags = value.geojson.properties ?? {};
 
-  const genericName = useGenericNameResolver(value);
+  const kinds = useGenericNameParts(value);
+
+  const genericName = joinGenericNameParts(kinds);
 
   const language = useEffectiveChosenLanguage();
 
@@ -796,8 +818,39 @@ function Result({ value }: { value: SearchResult }) {
 
   const img = resolveGenericName(osmTagToIconMapping, tags);
 
-  return (
-    <div className={clsx('d-flex flex-column mx-n2', classes.result)}>
+  const nameRef = useRef<HTMLDivElement>(null);
+
+  const addressRef = useRef<HTMLElement>(null);
+
+  const [truncated, setTruncated] = useState(false);
+
+  // Measured ahead of the hover: the tooltip decides on its first pointerenter.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: new text can overflow without a resize
+  useEffect(() => {
+    const els = [nameRef.current, addressRef.current].filter(
+      (el): el is HTMLElement => el !== null,
+    );
+
+    const measure = () => {
+      setTruncated(els.some((el) => el.scrollWidth > el.clientWidth));
+    };
+
+    measure();
+
+    const ro = new ResizeObserver(measure);
+
+    for (const el of els) {
+      ro.observe(el);
+    }
+
+    return () => ro.disconnect();
+  }, [name, genericName, address]);
+
+  const row = (props?: TooltipTargetProps) => (
+    <div
+      {...props}
+      className={clsx('d-flex flex-column mx-n2', classes.result)}
+    >
       <div className="d-flex gap-2 align-items-center">
         {img.length > 0 ? (
           <IconGlyph poi={img[0]} />
@@ -817,7 +870,7 @@ function Result({ value }: { value: SearchResult }) {
         {/* The name carries the emphasis, so the kind of thing reads the same
             whether it follows one or stands as the whole row — a list of
             unnamed features would otherwise be muted from top to bottom. */}
-        <div className="flex-grow-1 text-truncate">
+        <div className="flex-grow-1 text-truncate" ref={nameRef}>
           {name && <span className="fw-semibold">{name}</span>}
 
           {genericName ? (
@@ -836,7 +889,38 @@ function Result({ value }: { value: SearchResult }) {
         </div>
       </div>
 
-      {address && <small className="ms-4 text-truncate">{address}</small>}
+      {address && (
+        <small className="ms-4 text-truncate" ref={addressRef}>
+          {address}
+        </small>
+      )}
     </div>
+  );
+
+  // Always wrapped, so the row is never re-created under the observer above;
+  // the props reach it only when something is cut, since they capture the
+  // context menu and would cost a link row its "Open link in new tab".
+  return (
+    <LongPressTooltip
+      label={
+        <>
+          {name && <div className="fw-semibold">{name}</div>}
+
+          {kinds.length > 1 ? (
+            <ul className="mb-0 ps-3">
+              {kinds.map((kind) => (
+                <li key={kind.text}>{kind.text}</li>
+              ))}
+            </ul>
+          ) : (
+            kinds[0] && <div>{kinds[0].text}</div>
+          )}
+
+          {address && <div>{address}</div>}
+        </>
+      }
+    >
+      {({ props }) => row(truncated ? props : undefined)}
+    </LongPressTooltip>
   );
 }

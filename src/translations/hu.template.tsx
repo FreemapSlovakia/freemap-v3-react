@@ -321,7 +321,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Keresés',
     placeholder: 'Helyek és funkciók keresése',
     result: 'Találat',
-    settings: 'Találat beállításai',
     keepOnMap: 'Megtartás a térképen',
     sources: {
       'nominatim-reverse': 'Fordított geokódolás',

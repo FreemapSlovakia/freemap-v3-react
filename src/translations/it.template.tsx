@@ -322,7 +322,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Cerca',
     placeholder: 'Cerca luoghi e funzioni',
     result: 'Risultato',
-    settings: 'Preferenze del risultato',
     keepOnMap: 'Mantieni sulla mappa',
     sources: {
       'nominatim-reverse': 'Geocodifica inversa',

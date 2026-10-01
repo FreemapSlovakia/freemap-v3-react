@@ -239,3 +239,7 @@ legend {
 .tooltip {
   --bs-tooltip-max-width: min(24rem, calc(100vw - 2rem));
 }
+
+.tooltip-inner {
+  text-align: start;
+}

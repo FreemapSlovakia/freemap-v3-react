@@ -9,7 +9,7 @@ import {
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
+import { useGenericNameParts } from '@osm/useGenericNameResolver.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -17,6 +17,7 @@ import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import { Fragment, type ReactElement } from 'react';
 import { Table } from 'react-bootstrap';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
+import { GenericNameToggles } from './GenericNameToggles.js';
 import { SourceName } from './SourceName.js';
 
 type Props = {
@@ -27,7 +28,7 @@ type Props = {
 export function ObjectDetails({ result, elevation }: Props): ReactElement {
   const { id, geojson } = result;
 
-  const genericName = useGenericNameResolver(result);
+  const genericNameParts = useGenericNameParts(result);
 
   const imgs = resolveGenericName(
     osmTagToIconMapping,
@@ -55,8 +56,8 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
         ))}
         {/* Named first, kind of thing second — as the search list reads. */}
         {displayName && <span className="fw-semibold">{displayName}</span>}
-        {displayName && genericName && ' '}
-        {genericName}
+        {displayName && genericNameParts.length > 0 && ' '}
+        <GenericNameToggles parts={genericNameParts} />
       </p>
 
       <ElevationValue {...elevation} label={om?.elevation} className="mb-3" />
