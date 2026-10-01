@@ -518,6 +518,7 @@ export function Layers(): ReactElement | null {
                 />
                 <ScaledTileLayer
                   {...commonProps}
+                  className={`${commonProps.className} fm-detail`}
                   premiumFromZoom={detailPremiumFromZoom}
                   premiumOnlyText={prm?.premiumOnly}
                   onPremiumClick={

@@ -138,6 +138,11 @@ a.leaflet-control-layers-toggle {
   }
 }
 
+/* The base under a detail layer must not show through: as `#aaa8` on `#ddd`. */
+.fm-detail .fm-nonpremium-tile {
+  background-color: #c2c2c2;
+}
+
 /*
  * A WMS asked for one image per view shows nothing at all while it renders, so
  * a request still running after a few seconds makes the area it covers breathe.
