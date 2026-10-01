@@ -31,6 +31,9 @@ export const ToolSchema = z.enum([
   'gps-recorder',
   'import-file',
   'map-details',
+  // Opens nothing — the objects toolbar follows the category filter rather
+  // than a tool. Kept so a `#tools=objects` in an older shared link still
+  // parses instead of being refused.
   'objects',
   'panorama',
   'route-planner',

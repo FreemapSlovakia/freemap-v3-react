@@ -54,18 +54,33 @@ function normalize(value: string): { text: string; origin: number[] } {
   return { text, origin };
 }
 
+/** A target normalized once, for a caller matching the same ones repeatedly. */
+export type FuzzyTarget = ReturnType<typeof normalize>;
+
+export function prepareFuzzyTarget(target: string): FuzzyTarget {
+  return normalize(target);
+}
+
 /**
  * Scores `query` against `target`, or answers `null` when the query's
  * characters don't all appear in order. An empty query matches nothing.
+ *
+ * Normalizing the target is the bulk of the cost, so a caller running this
+ * over the same long list on every keystroke passes a {@link FuzzyTarget}
+ * prepared once instead of the string.
  */
-export function fuzzyMatch(query: string, target: string): FuzzyMatch | null {
+export function fuzzyMatch(
+  query: string,
+  target: string | FuzzyTarget,
+): FuzzyMatch | null {
   const q = normalize(query).text.replace(/\s+/g, ' ').trim();
 
   if (!q) {
     return null;
   }
 
-  const { text: t, origin } = normalize(target);
+  const { text: t, origin } =
+    typeof target === 'string' ? normalize(target) : target;
 
   const ql = q.length;
 

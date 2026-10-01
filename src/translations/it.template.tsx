@@ -86,6 +86,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Aggiungi nuovo',
     clear: 'Pulisci',
     convertToDrawing: 'Converti in disegno',
+    toggleObjectType:
+      'Clicca per mostrare o nascondere gli oggetti di questo tipo',
+    hideObjectType: ({ name }) => <>Nascondi il tipo «{name}»</>,
     copyToDrawing: 'Copia nel disegno',
     copyTo: ({ tool }) => <>Copia in {tool}</>,
     convertTo: ({ tool }) => <>Converti in {tool}</>,
@@ -345,7 +348,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'navigazione, itinerario, pianificatore di percorso, gita, bici',
-        'tool-objects': 'punti di interesse, poi, luoghi, servizi',
         'tool-draw-points': 'disegno, segnaposto, spillo, nota',
         'tool-draw-lines': 'disegno, misura distanza, lunghezza, righello',
         'tool-draw-polygons': 'disegno, misura area, regione',

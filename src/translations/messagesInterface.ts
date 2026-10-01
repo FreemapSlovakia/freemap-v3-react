@@ -67,6 +67,8 @@ export type Messages = {
     add: string;
     clear: string;
     convertToDrawing: string;
+    toggleObjectType: string;
+    hideObjectType: (props: { name: ReactNode }) => JSX.Element;
     copyToDrawing: string;
     copyTo: (props: { tool: ReactNode }) => JSX.Element;
     convertTo: (props: { tool: ReactNode }) => JSX.Element;

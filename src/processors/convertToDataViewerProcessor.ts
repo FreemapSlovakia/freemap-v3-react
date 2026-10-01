@@ -271,12 +271,11 @@ export const convertToDataViewerProcessor: Processor<
 
       case 'objects':
         // Left set, the predicate would fetch them again on the next pan and
-        // draw them over what they became. Both wait for the build to succeed:
-        // a failed one must leave the filter and its toolbar as they were.
+        // draw them over what they became — and it is what holds the toolbar
+        // up. Waits for the build to succeed: a failed one must leave the
+        // filter as it was.
         if (!source.id) {
           dispatch(objectsSetFilter([]));
-
-          dispatch(closeTool('objects'));
         }
 
         break;

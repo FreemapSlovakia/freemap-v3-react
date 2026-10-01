@@ -15,7 +15,6 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   showDetails: 'Részletek',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (előzmények)',
-  type: 'Típus',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a ${minZoom}. szintre kell nagyítani.`,

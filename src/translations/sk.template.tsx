@@ -84,6 +84,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Pridať nové',
     clear: 'Vyčistiť',
     convertToDrawing: 'Skonvertovať na kreslenie',
+    toggleObjectType: 'Kliknutím zobrazíte alebo skryjete objekty tohto typu',
+    hideObjectType: ({ name }) => <>Skryť typ „{name}“</>,
     copyToDrawing: 'Kopírovať do kreslenia',
     copyTo: ({ tool }) => <>Kopírovať do {tool}</>,
     convertTo: ({ tool }) => <>Skonvertovať do {tool}</>,
@@ -369,7 +371,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'plánovač trás, trasa, navigácia, itinerár, cyklo, výlet',
-        'tool-objects': 'body záujmu, poi, miesta, vybavenosť',
         'tool-draw-points': 'kreslenie, značka, špendlík, poznámka',
         'tool-draw-lines': 'kreslenie, meranie vzdialenosti, dĺžka, pravítko',
         'tool-draw-polygons': 'kreslenie, meranie plochy, oblasť',

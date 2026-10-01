@@ -84,6 +84,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Dodaj novo',
     clear: 'Počisti',
     convertToDrawing: 'Pretvori v risbo',
+    toggleObjectType: 'Kliknite za prikaz ali skritje objektov te vrste',
+    hideObjectType: ({ name }) => <>Skrij vrsto »{name}«</>,
     copyToDrawing: 'Kopiraj v risbo',
     copyTo: ({ tool }) => <>Kopiraj v {tool}</>,
     convertTo: ({ tool }) => <>Pretvori v {tool}</>,
@@ -336,7 +338,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       caption: 'Funkcije',
       keywords: {
         'tool-route-planner': 'navigacija, načrtovalnik poti, pot, izlet, kolo',
-        'tool-objects': 'zanimive točke, poi, kraji, storitve',
         'tool-draw-points': 'risanje, oznaka, bucika, opomba',
         'tool-draw-lines': 'risanje, merjenje razdalje, dolžina, ravnilo',
         'tool-draw-polygons': 'risanje, merjenje površine, območje',

@@ -15,7 +15,6 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   showDetails: 'Dettagli',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (storia)',
-  type: 'Tipo',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Per vedere gli oggetti in base al loro tipo, devi ingrandire almeno al livello ${minZoom}.`,

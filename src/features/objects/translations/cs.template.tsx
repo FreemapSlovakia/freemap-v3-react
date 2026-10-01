@@ -15,7 +15,6 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   showDetails: 'Podrobnosti',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historie)',
-  type: 'Typ',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Vyhledávání míst je možné až od přiblížení úrovně ${minZoom}.`,

@@ -1,34 +1,29 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { HideArrow } from '@features/search/components/SearchMenu.js';
-import { getOsmMapping, resolveGenericName } from '@osm/osmNameResolver.js';
-import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import type { OsmMapping } from '@osm/types.js';
-import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
-import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
-import { useOnline } from '@shared/hooks/useOnline.js';
-import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
+import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
-  type ChangeEvent,
-  type KeyboardEvent,
-  type ReactElement,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { Button, Dropdown, type DropdownProps, Form } from 'react-bootstrap';
-import { FaPaintBrush, FaTrash } from 'react-icons/fa';
+  Action,
+  ActionDivider,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
+import { Toolbar } from '@shared/components/Toolbar.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import type { ReactElement } from 'react';
+import { Button, ButtonToolbar } from 'react-bootstrap';
+import { FaPaintBrush, FaTimes } from 'react-icons/fa';
+import { TbMapPins } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { objectsSetFilter } from '../model/actions.js';
-import { objectCategories } from '../objectCategories.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { ObjectsConvertMenu } from './ObjectsConvertMenu.js';
 
+/**
+ * The status of a category filter that is on, not a tool that is open: the
+ * categories are found in the search box, and clearing them is what takes this
+ * strip off the screen.
+ */
 export default function ObjectsMenu(): ReactElement {
   const m = useMessages();
 
@@ -36,220 +31,79 @@ export default function ObjectsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const online = useOnline();
-
-  const [filter, setFilter] = useState('');
-
-  const [dropdownOpened, setDropdownOpened] = useState(false);
-
-  const handleFilterSet = (e: ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.currentTarget.value);
-  };
-
-  const lang = useEffectiveChosenLanguage();
-
-  const [osmMapping, setOsmMapping] = useState<OsmMapping>();
-
-  const items = useMemo(
-    () => osmMapping && objectCategories(osmMapping),
-    [osmMapping],
-  );
-
-  const active = useAppSelector((state) => state.objects.active);
-
-  useEffect(() => {
-    getOsmMapping(lang).then(setOsmMapping);
-  }, [lang]);
-
-  const handleSelect = (tags: string | null) => {
-    if (tags) {
-      dispatch(
-        objectsSetFilter(
-          active.includes(tags)
-            ? active.filter((item) => item !== tags)
-            : [...active, tags],
-        ),
-      );
-    }
-  };
-
-  // ugly hack not to close dropdown on open
-  const justOpenedRef = useRef(false);
-
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleToggle: DropdownProps['onToggle'] = (nextShow, metadata) => {
-    if (justOpenedRef.current) {
-      justOpenedRef.current = false;
-
-      return;
-    }
-
-    if (nextShow || metadata.source === 'select') {
-      return;
-    }
-
-    const target = metadata.originalEvent?.target;
-
-    if (
-      metadata.source === 'rootClose' &&
-      target instanceof Node &&
-      inputRef.current?.contains(target)
-    ) {
-      return;
-    }
-
-    setDropdownOpened(false);
-    setFilter('');
-
-    metadata.originalEvent?.preventDefault();
-
-    metadata.originalEvent?.stopPropagation();
-
-    inputRef.current?.blur();
-  };
-
-  // The dropdown ignores Escape coming from a `search` input, and the global
-  // shortcut handler steps aside while a menu is expanded — so Escape closes
-  // this one here, and only then leaves the input to the app's own handling.
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.code === 'Escape' && dropdownOpened) {
-      setDropdownOpened(false);
-      setFilter('');
-
-      inputRef.current?.blur();
-
-      e.preventDefault();
-    }
-  };
-
-  const normalizedFilter = removeAccents(filter.trim().toLowerCase());
-
-  const byName = makeLabelComparator(lang);
-
-  const activeSnapshot = useMemo(() => active, [active]);
-
-  function makeItems(snapshot?: boolean) {
-    if (!items) {
-      return null;
-    }
-
-    return items
-      .filter(
-        (item) =>
-          item.name &&
-          (!snapshot || activeSnapshot.includes(item.key)) &&
-          (snapshot ||
-            !normalizedFilter ||
-            removeAccents(item.name.toLowerCase()).includes(normalizedFilter)),
-      )
-      .sort((a, b) => byName(a.name, b.name))
-      .map(({ key, name, tags }) => {
-        const img = resolveGenericName(
-          osmTagToIconMapping,
-          Object.fromEntries(tags.map(({ key, value }) => [key, value ?? '*'])),
-        );
-
-        return (
-          <Dropdown.Item
-            as="button"
-            key={key}
-            eventKey={key}
-            active={active.includes(key)}
-            // Every change to the set re-runs the search — dropping
-            // one category included — so offline the list only shows what is
-            // active; the trash button clears the lot without asking anyone.
-            disabled={!online}
-          >
-            {img.length > 0 ? (
-              <IconGlyph poi={img[0]} />
-            ) : (
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: '1em',
-                  height: '1em',
-                }}
-              />
-            )}
-            &emsp;
-            {name}
-          </Dropdown.Item>
-        );
-      });
-  }
-
-  const activeItems = makeItems(true);
+  const sc = useScrollClasses('horizontal');
 
   const hasObjects = useAppSelector(
     (state) => state.objects.objects.length > 0,
   );
 
+  const styleAction = [
+    <ActionDivider key="style-divider" />,
+
+    <Action
+      key="style"
+      icon={<FaPaintBrush />}
+      label={om?.style.button}
+      onClick={() => {
+        dispatch(setActiveModal({ type: 'objects-style' }));
+      }}
+      showFrom="never"
+    />,
+  ];
+
   return (
-    <ToolMenu tool="objects">
-      <Dropdown
-        id="objectsMenuDropdown"
-        show={dropdownOpened}
-        onSelect={handleSelect}
-        onToggle={handleToggle}
-      >
-        <Dropdown.Toggle as={HideArrow}>
-          <Form.Control
-            type="search"
-            style={{ width: '8em' }}
-            placeholder={om?.type}
-            onChange={handleFilterSet}
-            value={filter}
-            onFocus={() => {
-              justOpenedRef.current = true;
+    <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
+      <div />
 
-              setDropdownOpened(true);
-            }}
-            onKeyDown={handleKeyDown}
-            ref={inputRef}
-          />
-        </Dropdown.Toggle>
+      <Toolbar className="mt-2">
+        <ButtonToolbar>
+          <LongPressTooltip label={m?.tools.objects} breakpoint="sm">
+            {({ props, label, labelClassName }) => (
+              <span
+                className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
+                {...props}
+              >
+                <TbMapPins />
 
-        <FmDropdownMenu>
-          {activeItems}
+                <span className={labelClassName}>{label}</span>
+              </span>
+            )}
+          </LongPressTooltip>
 
-          {activeItems?.length ? <Dropdown.Divider /> : null}
+          {/* The objects are fetched, so offline the filter shows only what it
+              already holds and no type can be added to it. */}
+          <OfflineBadge hint={m?.general.offlineToolUnavailable} />
 
-          {makeItems()}
-        </FmDropdownMenu>
-      </Dropdown>
-
-      <LongPressTooltip label={om?.style.button}>
-        {({ props }) => (
-          <Button
-            variant="secondary"
-            onClick={() => {
-              dispatch(setActiveModal({ type: 'objects-style' }));
-            }}
-            {...props}
-          >
-            <FaPaintBrush />
-          </Button>
-        )}
-      </LongPressTooltip>
-
-      {hasObjects && <ObjectsConvertMenu />}
-
-      {active.length > 0 && (
-        <LongPressTooltip label={m?.general.delete} kbd="Del">
-          {({ props }) => (
-            <Button
-              variant="danger"
-              onClick={() => {
-                dispatch(objectsSetFilter([]));
-              }}
-              {...props}
-            >
-              {active.length} <FaTrash />
-            </Button>
+          {/* The style is of the markers as a whole, so it belongs beside what
+              can be made of them rather than in a button of its own. Without
+              objects there is nothing to convert, but still something to
+              restyle. */}
+          {hasObjects ? (
+            <ObjectsConvertMenu>{styleAction}</ObjectsConvertMenu>
+          ) : (
+            <ResponsiveActions toggleLabel={m?.general.actions}>
+              {styleAction}
+            </ResponsiveActions>
           )}
-        </LongPressTooltip>
-      )}
-    </ToolMenu>
+
+          {/* The × of every other toolbar, and `dark` like every other one:
+              clearing the categories is what takes this toolbar off the
+              screen, so dismissing it and emptying it are one act. */}
+          <LongPressTooltip label={m?.general.delete} kbd="Del">
+            {({ props }) => (
+              <Button
+                variant="dark"
+                onClick={() => {
+                  dispatch(objectsSetFilter([]));
+                }}
+                {...props}
+              >
+                <FaTimes />
+              </Button>
+            )}
+          </LongPressTooltip>
+        </ButtonToolbar>
+      </Toolbar>
+    </div>
   );
 }

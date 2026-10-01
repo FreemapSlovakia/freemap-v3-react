@@ -6,7 +6,6 @@ import {
   getOsmMapping,
 } from '@osm/osmNameResolver.js';
 import type { OsmMapping } from '@osm/types.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { fuzzyMatch } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
@@ -287,9 +286,10 @@ function LegendItems({
               const ts = Object.entries(tags).map(([k, v]) => `${k}=${v}`);
 
               return (
-                <LongPressTooltip
+                <ObjectFilterChip
                   key={i}
-                  label={
+                  filterKey={ts.join(',')}
+                  tooltip={
                     <Table
                       className="text-left mb-0"
                       bordered
@@ -311,12 +311,8 @@ function LegendItems({
                     </Table>
                   }
                 >
-                  {({ props }) => (
-                    <ObjectFilterChip filterKey={ts.join(',')} {...props}>
-                      {strippedName(name) || '???'}
-                    </ObjectFilterChip>
-                  )}
-                </LongPressTooltip>
+                  {strippedName(name) || '???'}
+                </ObjectFilterChip>
               );
             })}
           </div>

@@ -32,7 +32,6 @@ const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   showDetails: 'Détails',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historique)',
-  type: 'Type',
   markerShape: 'Forme du marqueur',
   tooManyForLookup: ({ count, limit }) =>
     `Trop d'objets à afficher comme résultats (${count}, au maximum ${limit}). Zoomez ou restreignez le filtre.`,

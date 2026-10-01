@@ -14,7 +14,7 @@ import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
-import { Fragment, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Table } from 'react-bootstrap';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { GenericNameToggles } from './GenericNameToggles.js';
@@ -47,17 +47,21 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
 
   return (
     <>
-      <p className="lead">
+      {/* One wrapping row rather than running text: an inline-flex box of chips
+          is atomic, so it would drop whole to the next line the moment it no
+          longer fitted beside the icon. */}
+      <p className="lead d-flex flex-wrap gap-2 align-items-baseline">
         {imgs.map((img) => (
-          <Fragment key={img}>
-            <IconGlyph poi={img} />
-            &ensp;
-          </Fragment>
+          <IconGlyph key={img} poi={img} />
         ))}
+
         {/* Named first, kind of thing second — as the search list reads. */}
         {displayName && <span className="fw-semibold">{displayName}</span>}
-        {displayName && genericNameParts.length > 0 && ' '}
-        <GenericNameToggles parts={genericNameParts} />
+
+        <GenericNameToggles
+          parts={genericNameParts}
+          tags={geojson.properties ?? undefined}
+        />
       </p>
 
       <ElevationValue {...elevation} label={om?.elevation} className="mb-3" />

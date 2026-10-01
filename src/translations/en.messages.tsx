@@ -82,6 +82,8 @@ const messages: Messages = {
     add: 'Add new',
     clear: 'Clear',
     convertToDrawing: 'Convert to drawing',
+    toggleObjectType: 'Click to show or hide objects of this type',
+    hideObjectType: ({ name }) => <>Hide type “{name}”</>,
     copyToDrawing: 'Copy to drawing',
     copyTo: ({ tool }) => <>Copy to {tool}</>,
     convertTo: ({ tool }) => <>Convert to {tool}</>,
@@ -333,7 +335,6 @@ const messages: Messages = {
       keywords: {
         'tool-route-planner':
           'navigation, directions, itinerary, trip, plan a route',
-        'tool-objects': 'points of interest, poi, places, amenities',
         'tool-draw-points': 'drawing, marker, pin, annotate, note',
         'tool-draw-lines': 'drawing, measure distance, length, ruler, path',
         'tool-draw-polygons': 'drawing, measure area, region',

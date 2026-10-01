@@ -1,6 +1,11 @@
 import z from 'zod';
 
-export const LabelVisibilitySchema = z.enum(['always', 'hover', 'selected']);
+export const LabelVisibilitySchema = z.enum([
+  'always',
+  'hover',
+  'selected',
+  'hover-selected',
+]);
 
 export type LabelVisibility = z.infer<typeof LabelVisibilitySchema>;
 
@@ -14,9 +19,11 @@ export function labelTooltipMode(
   visibility: LabelVisibility,
   selected: boolean,
 ): LabelTooltipMode | undefined {
-  return visibility === 'hover'
+  if (visibility === 'always' || (selected && visibility !== 'hover')) {
+    return 'permanent';
+  }
+
+  return visibility === 'hover' || visibility === 'hover-selected'
     ? 'hover'
-    : visibility === 'always' || selected
-      ? 'permanent'
-      : undefined;
+    : undefined;
 }
