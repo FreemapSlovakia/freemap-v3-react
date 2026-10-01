@@ -71,6 +71,7 @@ import {
   searchUnsetHover,
 } from '../model/actions.js';
 import classes from './SearchMenu.module.css';
+import { SearchSettingsMenu } from './SearchSettingsMenu.js';
 
 type Props = {
   hidden?: boolean;
@@ -510,7 +511,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   let prevSource: SearchSource | undefined;
 
   return (
-    <Form onSubmit={handleSearch} style={{ display: hidden ? 'none' : '' }}>
+    <Form
+      onSubmit={handleSearch}
+      // The gear sits beside the box rather than inside its input group: a
+      // second dropdown within `Dropdown.Toggle` would share the toggle's
+      // `aria-expanded` and its root-close handling with the result list.
+      // Hiding is a class, not an inline style — bootstrap's display utilities
+      // are `!important`, which an inline `display: none` loses to.
+      className={clsx('gap-1 align-items-center', hidden ? 'd-none' : 'd-flex')}
+    >
       <Dropdown
         as={ButtonGroup}
         show={open}
@@ -687,6 +696,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           )}
         </FmDropdownMenu>
       </Dropdown>
+
+      {!window.fmEmbedded && <SearchSettingsMenu />}
     </Form>
   );
 }

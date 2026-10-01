@@ -1,4 +1,4 @@
-import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
+import { convertToDrawing } from '@app/store/actions.js';
 import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DetailsToggle } from '@features/objects/components/DetailsToggle.js';
@@ -19,12 +19,7 @@ import { convertibleLines } from '@shared/simplifyTolerance.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
-import {
-  FaPaintBrush,
-  FaPencilAlt,
-  FaSearch,
-  FaThumbtack,
-} from 'react-icons/fa';
+import { FaPencilAlt, FaSearch, FaThumbtack } from 'react-icons/fa';
 import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { searchKeepResult } from '../model/actions.js';
@@ -60,12 +55,27 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
     !selectedResult.loading &&
     !window.fmEmbedded &&
     !hidden ? (
-    // One button says what can be done about the result being on the map, and
-    // which one it is says what it is doing there: a result being looked at can
-    // be kept, and a kept one can be taken off. They share the slot the delete
-    // button holds on every other selection toolbar, right before the ×.
+    // The pin and the delete are exclusive: a result being looked at can be
+    // kept, a kept one taken off — the latter through `deletable`, before the ×.
     <Selection icon={<FaSearch />} label={m?.search.result} deletable={kept}>
       <DetailsToggle />
+
+      {!kept && (
+        <LongPressTooltip breakpoint="sm" label={m?.search.keepOnMap}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(searchKeepResult(selectedResult.id));
+              }}
+              {...props}
+            >
+              <FaThumbtack />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
 
       <ResponsiveActions
         gap={1}
@@ -109,34 +119,8 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
           showFrom="never"
         />
 
-        <Action
-          icon={<FaPaintBrush />}
-          label={m?.mapLayers.lookupStyle}
-          onClick={() => {
-            dispatch(setActiveModal({ type: 'search-result-style' }));
-          }}
-          showFrom="never"
-        />
-
         {actions}
       </ResponsiveActions>
-
-      {!kept && (
-        <LongPressTooltip breakpoint="sm" label={m?.search.keepOnMap}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(searchKeepResult(selectedResult.id));
-              }}
-              {...props}
-            >
-              <FaThumbtack />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
     </Selection>
   ) : null;
 }

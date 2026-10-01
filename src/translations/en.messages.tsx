@@ -307,6 +307,7 @@ const messages: Messages = {
     buttonTitle: 'Search',
     placeholder: 'Search places and functions',
     result: 'Lookup',
+    settings: 'Lookup settings',
     showMore: 'Show more',
     keepOnMap: 'Keep on the map',
     offlineHint:

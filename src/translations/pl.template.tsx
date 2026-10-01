@@ -309,6 +309,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Szukaj',
     placeholder: 'Szukaj miejsc i funkcji',
     result: 'Wynik',
+    settings: 'Preferencje wyniku',
     keepOnMap: 'Zachowaj na mapie',
     sources: {
       'nominatim-reverse': 'Odwrotne geokodowanie',
