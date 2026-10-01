@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { objectsSetShowDetails, objectsSetStyle } from './actions.js';
+import { objectsSetStyle } from './actions.js';
 import {
   objectsSettingsInitialState,
   objectsSettingsReducer,
@@ -15,19 +15,5 @@ describe('objectsSettingsReducer', () => {
 
     expect(next.selectedIcon).toBe('square');
     expect(next.color).toBe('#00ff00');
-  });
-
-  it('shows the details of a selected feature by default', () => {
-    expect(objectsSettingsInitialState.showDetails).toBe(true);
-  });
-
-  it('objectsSetShowDetails stores the details preference', () => {
-    const next = objectsSettingsReducer(
-      objectsSettingsInitialState,
-      objectsSetShowDetails(false),
-    );
-
-    expect(next.showDetails).toBe(false);
-    expect(next.selectedIcon).toBe(objectsSettingsInitialState.selectedIcon);
   });
 });

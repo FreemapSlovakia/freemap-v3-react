@@ -1,7 +1,7 @@
 import { convertToDrawing } from '@app/store/actions.js';
 import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { DetailsToggle } from '@features/objects/components/DetailsToggle.js';
+import { DetailsButton } from '@features/objects/components/DetailsButton.js';
 import { useObjectActions } from '@features/objects/components/useObjectActions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
@@ -58,7 +58,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
     // The pin and the delete are exclusive: a result being looked at can be
     // kept, a kept one taken off — the latter through `deletable`, before the ×.
     <Selection icon={<FaSearch />} label={m?.search.result} deletable={kept}>
-      <DetailsToggle />
+      <DetailsButton />
 
       {!kept && (
         <LongPressTooltip breakpoint="sm" label={m?.search.keepOnMap}>

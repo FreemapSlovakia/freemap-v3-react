@@ -4,31 +4,38 @@ import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaInfoCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { objectsSetShowDetails } from '../model/actions.js';
+import { objectsSetDetailsOverride } from '../model/actions.js';
+import {
+  defaultShowsDetails,
+  detailsTarget,
+} from '../model/objectDetailsProcessor.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
 /**
- * Shows or hides the details of whatever is selected. Shared by the selection
- * toolbars of every feature kind that has details, so the toast is reachable
- * from the selection it belongs to instead of only from a click on the map.
+ * Asks for the details of the one kind of selection that comes without them —
+ * a hit from searching by name, merely looked at. Everything else answers with
+ * its details unasked, and clicking it again brings them back after the ×, so
+ * there is nothing there for this to offer.
  */
-export function DetailsToggle(): ReactElement {
+export function DetailsButton(): ReactElement | null {
   const om = useObjectsMessages();
 
   const dispatch = useDispatch();
 
-  const showDetails = useAppSelector(
-    (state) => state.objectsSettings.showDetails,
-  );
+  const key = useAppSelector((state) => detailsTarget(state)?.key);
+
+  const offByDefault = useAppSelector((state) => !defaultShowsDetails(state));
+
+  if (key === undefined || !offByDefault) {
+    return null;
+  }
 
   return (
     <LongPressTooltip breakpoint="sm" label={om?.showDetails}>
       {({ label, labelClassName, props }) => (
         <Button
           variant="secondary"
-          active={showDetails}
-          aria-pressed={showDetails}
-          onClick={() => dispatch(objectsSetShowDetails(!showDetails))}
+          onClick={() => dispatch(objectsSetDetailsOverride(true))}
           {...props}
         >
           <FaInfoCircle />

@@ -1,12 +1,19 @@
+import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
-import type { SearchResult } from '@features/search/model/actions.js';
+import {
+  type SearchResult,
+  searchSelectResult,
+} from '@features/search/model/actions.js';
 import {
   resultCoords,
   resultExtentM,
 } from '@features/search/model/resultUtils.js';
-import { activeSearchResultSelector } from '@features/search/model/selectors.js';
+import {
+  activeSearchResultKeptSelector,
+  activeSearchResultSelector,
+} from '@features/search/model/selectors.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import {
   creditedAttributions,
@@ -19,7 +26,7 @@ import {
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
-import { objectsSetShowDetails } from './actions.js';
+import { objectsSetDetailsOverride } from './actions.js';
 import { objectToSearchResult } from './objectToSearchResult.js';
 
 const TOAST_ID = 'mapDetails.tags';
@@ -43,7 +50,7 @@ type DetailsTarget = {
 };
 
 /** What the details toast is about, or `null` if the selection has no details. */
-function detailsTarget(state: RootState): DetailsTarget | null {
+export function detailsTarget(state: RootState): DetailsTarget | null {
   const { selection } = state.main;
 
   if (selection?.type === 'search') {
@@ -76,17 +83,71 @@ function detailsTarget(state: RootState): DetailsTarget | null {
   return null;
 }
 
-/** The subject the toast should be showing, `null` for none. */
+/**
+ * The subject the toast should be showing, `null` for none.
+ *
+ * {@link defaultShowsDetails} decides, and {@link objectsSetDetailsOverride}
+ * has the last word for as long as the feature stays selected.
+ */
 export function wantedTarget(state: RootState): DetailsTarget | null {
-  return state.objectsSettings.showDetails ? detailsTarget(state) : null;
+  const target = detailsTarget(state);
+
+  if (!target) {
+    return null;
+  }
+
+  return (state.objects.detailsOverride ?? defaultShowsDetails(state))
+    ? target
+    : null;
 }
 
 /**
- * Keeps the details toast a view of the selection and the `showDetails`
- * preference, instead of something each place that selects a feature has to
- * push. It therefore follows the selection the way a selection toolbar does,
- * and the toast's × turns the preference off (through `onClose`) rather than
- * dropping a panel nothing can bring back.
+ * Whether the selected feature answers with its details unasked. Everything
+ * does but one case: a hit from searching by name that is only being looked
+ * at. Picking that is navigation — the map goes there, and the details would
+ * be talking over it — while an object, a map-details hit, an element asked
+ * for by id and a lookup that is kept are each a question about a feature.
+ */
+export function defaultShowsDetails(state: RootState): boolean {
+  if (state.main.selection?.type !== 'search') {
+    return true;
+  }
+
+  return (
+    activeSearchResultSelector(state)?.source !== 'nominatim-forward' ||
+    activeSearchResultKeptSelector(state)
+  );
+}
+
+/**
+ * Drops a dismissal when the selection moves on. It belongs to the spell of
+ * having that feature selected, not to the feature: closing one object's
+ * details and clicking back to it later asks the question again. Keyed on the
+ * selection rather than on the subject, so the incomplete → loaded upgrade of
+ * one search result — which changes the subject's key — keeps it.
+ */
+export const detailsOverrideResetProcessor: Processor = {
+  // On the act of selecting, not on the selection changing: clicking the
+  // feature that is already selected dispatches the same payload and changes
+  // no state, and that is how the details are asked for again after the ×.
+  actionCreator: [selectFeature, searchSelectResult],
+  // `osmLoadProcessor` re-dispatches the result behind a selection when its
+  // element lands, selecting nothing; wiping the override there would take
+  // away the toast the user had just asked for.
+  actionPredicate: (action) =>
+    !searchSelectResult.match(action) || action.payload?.select !== false,
+  handle: ({ getState, dispatch }) => {
+    if (getState().objects.detailsOverride !== null) {
+      dispatch(objectsSetDetailsOverride(null));
+    }
+  },
+};
+
+/**
+ * Keeps the details toast a view of the selection, instead of something each
+ * place that selects a feature has to push. It therefore follows the selection
+ * the way a selection toolbar does, and the toast's × dismisses it for as long
+ * as that feature stays selected (through `onClose`).
  */
 export const objectDetailsProcessor: Processor = {
   // Edge-triggered: only a changed subject opens the toast. Re-opening it
@@ -113,9 +174,9 @@ export const objectDetailsProcessor: Processor = {
           messageKey: 'detail',
           messageLoader: loadObjectsMessages,
           messageParams: { result: target.result, elevation },
-          // An embed has no selection toolbar, so nothing there could switch the
-          // preference back on — its × dismisses the toast and no more.
-          onClose: window.fmEmbedded ? undefined : objectsSetShowDetails(false),
+          // Only while this feature stays selected: selecting anything, the
+          // same feature included, puts the default back.
+          onClose: objectsSetDetailsOverride(false),
           style: 'info',
         }),
       );
