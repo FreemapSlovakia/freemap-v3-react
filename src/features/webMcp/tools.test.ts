@@ -568,11 +568,11 @@ describe('show-objects', () => {
     );
 
     // the categories are checked first, so the dispatches land a tick later
-    await vi.waitFor(() => expect(dispatched).toHaveLength(3));
+    await vi.waitFor(() => expect(dispatched).toHaveLength(2));
 
-    // the filter is dropped and set again, so the fetch is edge-triggered anew
+    // the filter is dropped and set again, so the fetch is edge-triggered anew.
+    // No tool is opened: the objects toolbar follows the filter.
     expect(dispatched.map((a) => (a as { type: string }).type)).toEqual([
-      'OPEN_TOOL',
       'OBJECTS_SET_FILTER',
       'OBJECTS_SET_FILTER',
     ]);

@@ -83,6 +83,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Új hozzáadása',
     clear: 'Törlés',
     convertToDrawing: 'Átalakítás rajzzá',
+    toggleObjectType:
+      'Kattintson az ilyen típusú objektumok megjelenítéséhez vagy elrejtéséhez',
+    hideObjectType: ({ name }) => <>„{name}” típus elrejtése</>,
     copyToDrawing: 'Másolás a rajzba',
     copyTo: ({ tool }) => <>Másolás ide: {tool}</>,
     convertTo: ({ tool }) => <>Átalakítás ide: {tool}</>,
@@ -344,7 +347,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'navigáció, útvonaltervező, útvonal, túra, kerékpár',
-        'tool-objects': 'érdekes helyek, poi, helyek, szolgáltatások',
         'tool-draw-points': 'rajzolás, jelölő, gombostű, jegyzet',
         'tool-draw-lines': 'rajzolás, távolság mérése, hossz, vonalzó',
         'tool-draw-polygons': 'rajzolás, terület mérése, régió',

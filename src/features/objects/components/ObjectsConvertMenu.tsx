@@ -24,6 +24,8 @@ type Props = {
   object?: ObjectsResult;
   /** Further `Action`s for the same menu — what the one object can do. */
   children?: ReactNode;
+  /** `Action`s above the menu's own, for what is done oftenest. */
+  leading?: ReactNode;
   onSelect?: SelectCallback;
 };
 
@@ -42,6 +44,7 @@ type Props = {
 export function ObjectsConvertMenu({
   object,
   children,
+  leading,
   onSelect,
 }: Props): ReactElement {
   const m = useMessages();
@@ -113,6 +116,8 @@ export function ObjectsConvertMenu({
 
   return (
     <ResponsiveActions onSelect={onSelect} toggleLabel={m?.general.actions}>
+      {leading}
+
       <Action
         icon={<FaPencilAlt />}
         label={drawingLabel}
@@ -134,7 +139,7 @@ export function ObjectsConvertMenu({
 
       <Action
         icon={<FaSearch />}
-        label={om?.showAsLookup}
+        label={object ? om?.showAsLookup : om?.showAllAsLookup}
         onClick={() => {
           dispatch(objectsShowAsLookup({ id }));
         }}

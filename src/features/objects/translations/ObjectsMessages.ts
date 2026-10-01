@@ -12,7 +12,6 @@ export type ObjectsMessages = {
   showDetails: string;
   openInOsm: string;
   osmHistory: string;
-  type: string;
   lowZoomAlert: {
     message: (props: { minZoom: number }) => string;
     zoom: string;
@@ -26,6 +25,7 @@ export type ObjectsMessages = {
     square: string;
   };
   showAsLookup: string;
+  showAllAsLookup: string;
   tooManyForLookup: (props: { count: number; limit: number }) => string;
   style: {
     button: string;

@@ -41,6 +41,7 @@ const en: DrawingMessages = {
       always: 'Always',
       hover: 'On hover',
       selected: 'When selected',
+      'hover-selected': 'On hover or selected',
     },
   },
   continue: 'Continue',

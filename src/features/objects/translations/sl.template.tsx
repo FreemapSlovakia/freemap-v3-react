@@ -11,7 +11,6 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   showDetails: 'Podrobnosti',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (zgodovina)',
-  type: 'Tip',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Za prikaz objektov po njihovem tipu morate povečati vsaj na raven ${minZoom}.`,

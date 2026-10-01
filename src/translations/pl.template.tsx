@@ -85,6 +85,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Dodaj nowy',
     clear: 'Wyczyść',
     convertToDrawing: 'Przekształć na rysunek',
+    toggleObjectType: 'Kliknij, aby pokazać lub ukryć obiekty tego typu',
+    hideObjectType: ({ name }) => <>Ukryj typ „{name}”</>,
     copyToDrawing: 'Kopiuj do rysunku',
     copyTo: ({ tool }) => <>Kopiuj do {tool}</>,
     convertTo: ({ tool }) => <>Przekształć do {tool}</>,
@@ -331,7 +333,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       caption: 'Funkcje',
       keywords: {
         'tool-route-planner': 'nawigacja, planer tras, trasa, wycieczka, rower',
-        'tool-objects': 'punkty zainteresowania, poi, miejsca, udogodnienia',
         'tool-draw-points': 'rysowanie, znacznik, pinezka, notatka',
         'tool-draw-lines': 'rysowanie, pomiar odległości, długość, linijka',
         'tool-draw-polygons': 'rysowanie, pomiar powierzchni, obszar',

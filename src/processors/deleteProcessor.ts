@@ -71,11 +71,13 @@ export const deleteProcessor: Processor = {
         dispatch(routePlannerDelete());
       } else if (isToolOpen(state, 'import-file')) {
         dispatch(dataViewerDelete());
-      } else if (isToolOpen(state, 'objects')) {
+      } else if (!window.fmEmbedded && state.objects.active.length > 0) {
         // Taking the predicate away is what takes the objects off the map —
-        // they are fetched for as long as it is set. Last of the tools, so no
-        // other toolbar's Del changes meaning for having this one open beside
-        // it.
+        // they are fetched for as long as it is set. Keyed off the predicate
+        // rather than a toolbar, objects having none to open; last of the
+        // lot, so no other toolbar's Del changes meaning for objects showing
+        // beside it. Not in an embed, where the filter is the host's and the
+        // toolbar that would otherwise clear it is withheld for that reason.
         dispatch(objectsSetFilter([]));
       }
     }

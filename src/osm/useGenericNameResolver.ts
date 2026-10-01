@@ -24,8 +24,17 @@ import {
 export type GenericNameLabel = Partial<GenericNamePart> &
   Pick<GenericNamePart, 'text'>;
 
-/** The kinds the result is, resolved from its OSM tags where it has them. */
-export function useGenericNameParts(result: SearchResult): GenericNameLabel[] {
+/** One identity, so a caller memoizing on it doesn't rerun on every render. */
+const EMPTY: GenericNameLabel[] = [];
+
+/**
+ * The kinds the result is, resolved from its OSM tags where it has them.
+ * `null` is a result that isn't there — a selection toolbar still calls this
+ * on the render where its feature has gone.
+ */
+export function useGenericNameParts(
+  result: SearchResult | null,
+): GenericNameLabel[] {
   // Stored with what it was resolved for, so a kind is never shown against the
   // element that follows it — an answer that arrives late simply stops matching.
   const [resolved, setResolved] = useState<{
@@ -37,9 +46,13 @@ export function useGenericNameParts(result: SearchResult): GenericNameLabel[] {
 
   const dispatch = useDispatch();
 
-  const key = `${stringifyFeatureId(result.id)}\n${language}`;
+  const key = result && `${stringifyFeatureId(result.id)}\n${language}`;
 
   useEffect(() => {
+    if (!result || !key) {
+      return;
+    }
+
     const parsed = OsmFeatureIdSchema.safeParse(result.id);
 
     if (!parsed.success || result.genericName) {
@@ -81,6 +94,10 @@ export function useGenericNameParts(result: SearchResult): GenericNameLabel[] {
 
   const m = useMessages();
 
+  if (!result) {
+    return EMPTY;
+  }
+
   const sourceName = (
     ['bbox', 'coords', 'tile', 'geojson'] as SearchSource[]
   ).includes(result.source)
@@ -93,5 +110,5 @@ export function useGenericNameParts(result: SearchResult): GenericNameLabel[] {
     ? [{ text: sourceName }]
     : resolved?.key === key
       ? resolved.parts
-      : [];
+      : EMPTY;
 }

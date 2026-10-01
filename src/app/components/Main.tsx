@@ -570,9 +570,6 @@ function selectionMenu(type: Selection['type']): ReactNode {
  */
 function toolMenu(tool: Tool): ReactNode {
   switch (tool) {
-    case 'objects':
-      return <AsyncComponent factory={objectsMenuFactory} />;
-
     case 'route-planner':
       return <AsyncComponent factory={routePlannerMenuFactory} />;
 
@@ -618,6 +615,10 @@ export function Main(): ReactElement {
   const openTools = useAppSelector(openToolsSelector);
 
   const gpsRecorderAvailable = useAppSelector(gpsRecorderAvailableSelector);
+
+  const objectsFiltered = useAppSelector(
+    (state) => state.objects.active.length > 0,
+  );
 
   const gpsRecorderRecording = useAppSelector(
     (state) => state.gpsRecorder.status?.recording ?? false,
@@ -901,6 +902,16 @@ export function Main(): ReactElement {
         open: gpsRecorderWanted,
         hidden: inMode,
         node: <AsyncComponent factory={gpsRecorderMenuFactory} />,
+      },
+      // Up exactly while a category filter is on, as the markers themselves
+      // are: nothing about it is opened or closed.
+      {
+        id: 'objects',
+        // Not in an embed: its ⋮ converts and its × clears, neither of which
+        // belongs to a visitor of the host's configured map.
+        open: objectsFiltered && !window.fmEmbedded,
+        hidden: inMode,
+        node: <AsyncComponent factory={objectsMenuFactory} />,
       },
       // The three draw-* tools share one menu, so they share one id too: keying
       // them apart would unmount and re-mount it on every switch between them,

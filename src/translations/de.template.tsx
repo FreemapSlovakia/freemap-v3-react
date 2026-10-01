@@ -85,6 +85,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Neu hinzufügen',
     clear: 'Löschen',
     convertToDrawing: 'In Zeichnung umwandeln',
+    toggleObjectType: 'Klicken, um Objekte dieses Typs ein- oder auszublenden',
+    hideObjectType: ({ name }) => <>Typ „{name}“ ausblenden</>,
     copyToDrawing: 'In die Zeichnung kopieren',
     copyTo: ({ tool }) => <>Nach {tool} kopieren</>,
     convertTo: ({ tool }) => <>Nach {tool} umwandeln</>,
@@ -343,7 +345,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'navigation, routenplaner, wegbeschreibung, tour, radtour',
-        'tool-objects': 'sehenswürdigkeiten, poi, orte, einrichtungen',
         'tool-draw-points': 'zeichnen, markierung, stecknadel, notiz',
         'tool-draw-lines':
           'zeichnen, entfernung messen, länge, lineal, strecke',

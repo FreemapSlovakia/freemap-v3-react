@@ -10,7 +10,6 @@ const en: ObjectsMessages = {
   showDetails: 'Details',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (history)',
-  type: 'Type',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `To see objects by their type, you need to zoom in to at least level ${minZoom}.`,
@@ -28,6 +27,7 @@ const en: ObjectsMessages = {
   tooManyForLookup: ({ count, limit }) =>
     `Too many objects to show as lookups (${count}, at most ${limit}). Zoom in or narrow the filter.`,
   showAsLookup: 'Show as Lookup',
+  showAllAsLookup: 'Show all as Lookup',
   style: {
     button: 'Marker style',
     title: 'Object marker style',

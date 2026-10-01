@@ -1,5 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
+import { objectsSetFilter } from '@features/objects/model/actions.js';
+import type { ObjectCategory } from '@features/objects/objectCategories.js';
+import { sameFilter } from '@features/objects/useMatchedCategories.js';
+import { usePoiMatches } from '@features/objects/usePoiMatches.js';
 import { isLocalSearchQuery } from '@features/search/localQuery.js';
 import {
   getOsmAddress,
@@ -9,6 +13,7 @@ import {
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameParts } from '@osm/useGenericNameResolver.js';
+import { Checkbox } from '@shared/components/Checkbox.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
@@ -149,6 +154,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const modalLink = useModalLink();
 
+  const styleLink = modalLink({ type: 'search-result-style' });
+
   const online = useOnline();
 
   const dispatch = useDispatch();
@@ -213,6 +220,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   );
 
   const mapMatches = commands.filter(({ command }) => command.kind === 'map');
+
+  const objectsActive = useAppSelector((state) => state.objects.active);
+
+  // The POI categories the query names, which switch what the map shows rather
+  // than going somewhere. Offline they are left out: the objects are fetched.
+  const poiMatches = usePoiMatches(
+    !online || isLocalSearchQuery(value) ? '' : value,
+  );
+
+  const activeIndexOf = (key: string) =>
+    objectsActive.findIndex((item) => sameFilter(item, key));
 
   // Offline the box still finds what the query itself carries; anything else
   // has to be asked of the geocoder, and only that goes dead.
@@ -312,6 +330,26 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         return;
       }
 
+      // A category is a checkbox, not a destination: the query stays, the list
+      // stays up (`autoClose="outside"`), and only the tick changes.
+      if (eventKey.startsWith('poi-')) {
+        const key = eventKey.slice(4);
+
+        trackMatomo(['trackEvent', 'Search', 'poi', key]);
+
+        const index = objectsActive.findIndex((item) => sameFilter(item, key));
+
+        dispatch(
+          objectsSetFilter(
+            index > -1
+              ? objectsActive.toSpliced(index, 1)
+              : [...objectsActive, key],
+          ),
+        );
+
+        return;
+      }
+
       if (eventKey.startsWith('cmd-')) {
         const id = eventKey.slice(4);
 
@@ -359,7 +397,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
       setOpen(false);
     },
-    [commands, query, results, dispatch],
+    [commands, query, results, objectsActive, dispatch],
   );
 
   const showMore = useCallback(() => {
@@ -379,36 +417,49 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const shownCommandsRef = useRef('');
 
+  const shownPoiRef = useRef('');
+
   useEffect(() => {
     const commandKey = commands.map(({ command }) => command.id).join();
 
+    const poiKey = poiMatches.map(({ category }) => category.key).join();
+
     if (
       results === shownResultsRef.current &&
-      commandKey === shownCommandsRef.current
+      commandKey === shownCommandsRef.current &&
+      poiKey === shownPoiRef.current
     ) {
       return;
     }
 
+    const newResults = results !== shownResultsRef.current;
+
     shownResultsRef.current = results;
 
     shownCommandsRef.current = commandKey;
+
+    shownPoiRef.current = poiKey;
 
     if (results.length) {
       const active = document.activeElement;
 
       if (!inputRef.current || active === inputRef.current) {
         setOpen(true);
-      } else if (!holdsFocus(active)) {
-        // Nothing is being typed into — the map, a button, or nothing at all
-        // has the focus — so take it back and show what arrived. The map
-        // counts: Leaflet's container is focusable, so map-details results
-        // arrive with it holding the focus.
+      } else if (newResults && !holdsFocus(active)) {
+        // Only for results that have just arrived. The categories land a chunk
+        // fetch later, and a row of the open list holds the focus without
+        // `holdsFocus` counting it — so taking the caret back for them would
+        // pull the user out of the list they are arrowing through.
+        // Otherwise nothing is being typed into — the map, a button, or
+        // nothing at all has the focus — so take it back and show what
+        // arrived. The map counts: Leaflet's container is focusable, so
+        // map-details results arrive with it holding the focus.
         inputRef.current.focus();
       }
       // Otherwise the user has moved on to something of their own. Suggestions
       // land a keystroke's delay plus a round trip later, so taking the caret
       // back here would pull it out of whatever they are filling in now.
-    } else if (commands.length) {
+    } else if (commands.length || poiMatches.length) {
       // Answered from here rather than fetched, so the caret is in the box
       // already — unless the list was rebuilt by something else entirely
       // (signing in, a layer going), which is no reason to take the focus.
@@ -419,7 +470,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, commands]);
+  }, [results, commands, poiMatches]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {
@@ -475,8 +526,14 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
     // Only ever opens. The caret opens the list and then focuses the input, so
     // closing here would shut an empty box's list again on the way in.
-    setOpen((open) => open || results.length > 0 || commands.length > 0);
-  }, [results, commands]);
+    setOpen(
+      (open) =>
+        open ||
+        results.length > 0 ||
+        commands.length > 0 ||
+        poiMatches.length > 0,
+    );
+  }, [results, commands, poiMatches]);
 
   const handleInputBlur = useCallback(() => {
     setInputFocused(false);
@@ -526,9 +583,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       // are `!important`, which an inline `display: none` loses to.
       className={clsx('gap-1 align-items-center', hidden ? 'd-none' : 'd-flex')}
     >
+      {/* Closing is explicit in `handleSelect`, so that a category row — which
+          is a checkbox — can decline to. */}
       <Dropdown
         as={ButtonGroup}
         show={open}
+        autoClose="outside"
         onSelect={handleSelect}
         onToggle={handleToggle}
       >
@@ -552,6 +612,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 button's place: it opens the list's own settings row. */}
             {results.length ||
             commands.length ||
+            poiMatches.length ||
             (!value && !window.fmEmbedded) ? (
               <Button variant="secondary" onClick={handleCaretClick}>
                 {open ? <FaCaretUp /> : <FaCaretDown />}
@@ -608,6 +669,19 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             <CommandItem key={match.command.id} match={match} />
           ))}
 
+          {poiMatches.length > 0 && (
+            <div className="dropdown-caption-divider">{m?.tools.objects}</div>
+          )}
+
+          {poiMatches.map(({ category, positions }) => (
+            <PoiItem
+              key={category.key}
+              category={category}
+              positions={positions}
+              active={activeIndexOf(category.key) > -1}
+            />
+          ))}
+
           {results.map((result) => {
             const id = stringifyFeatureId(result.id);
 
@@ -617,6 +691,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             // what the caption above announced.
             const divider =
               (commands.length > 0 ||
+                poiMatches.length > 0 ||
                 !(
                   [
                     'nominatim-forward',
@@ -707,11 +782,20 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
           {!window.fmEmbedded && (
             <>
-              {(results.length > 0 || commands.length > 0) && (
-                <Dropdown.Divider />
-              )}
+              {(results.length > 0 ||
+                commands.length > 0 ||
+                poiMatches.length > 0) && <Dropdown.Divider />}
 
-              <Dropdown.Item {...modalLink({ type: 'search-result-style' })}>
+              <Dropdown.Item
+                {...styleLink}
+                // A modal of its own follows, which the list must not stay up
+                // behind now that selecting no longer closes it.
+                onClick={(e) => {
+                  styleLink.onClick(e);
+
+                  setOpen(false);
+                }}
+              >
                 <FaPaintBrush /> {m?.mapLayers.lookupStyle}
               </Dropdown.Item>
             </>
@@ -719,6 +803,54 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         </FmDropdownMenu>
       </Dropdown>
     </Form>
+  );
+}
+
+/** A POI category the query named: a checkbox that switches it on the map. */
+function PoiItem({
+  category,
+  positions,
+  active,
+}: {
+  category: ObjectCategory;
+  positions: number[];
+  active: boolean;
+}) {
+  const img = resolveGenericName(
+    osmTagToIconMapping,
+    Object.fromEntries(
+      category.tags.map(({ key, value }) => [key, value ?? '*']),
+    ),
+  );
+
+  return (
+    <Dropdown.Item
+      as="button"
+      type="button"
+      eventKey={`poi-${category.key}`}
+      active={active}
+    >
+      {/* Laid out as a result row is, so one icon column and one mark column
+          run down the whole list. */}
+      <div className={clsx('d-flex gap-2 align-items-center', classes.result)}>
+        {img.length > 0 ? (
+          <IconGlyph poi={img[0]} />
+        ) : (
+          <span
+            className="flex-shrink-0"
+            style={{ width: '1em', height: '1em' }}
+          />
+        )}
+
+        <div className="flex-grow-1 text-truncate">
+          <Highlight text={category.name} at={positions} />
+        </div>
+
+        <div className="flex-shrink-0">
+          <Checkbox value={active} />
+        </div>
+      </div>
+    </Dropdown.Item>
   );
 }
 
@@ -847,10 +979,7 @@ function Result({ value }: { value: SearchResult }) {
   }, [name, genericName, address]);
 
   const row = (props?: TooltipTargetProps) => (
-    <div
-      {...props}
-      className={clsx('d-flex flex-column mx-n2', classes.result)}
-    >
+    <div {...props} className={clsx('d-flex flex-column', classes.result)}>
       <div className="d-flex gap-2 align-items-center">
         {img.length > 0 ? (
           <IconGlyph poi={img[0]} />

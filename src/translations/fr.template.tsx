@@ -99,6 +99,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Ajouter',
     clear: 'Effacer',
     convertToDrawing: 'Convertir en dessin',
+    toggleObjectType: 'Cliquez pour afficher ou masquer les objets de ce type',
+    hideObjectType: ({ name }) => <>Masquer le type « {name} »</>,
     copyToDrawing: 'Copier vers le dessin',
     copyTo: ({ tool }) => <>Copier vers {tool}</>,
     convertTo: ({ tool }) => <>Convertir vers {tool}</>,
@@ -327,7 +329,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'navigation, itinéraire, calcul de trajet, randonnée, vélo',
-        'tool-objects': "points d'intérêt, poi, lieux, commodités",
         'tool-draw-points': 'dessin, repère, marqueur, note',
         'tool-draw-lines':
           'dessin, mesurer la distance, longueur, règle, tracé',

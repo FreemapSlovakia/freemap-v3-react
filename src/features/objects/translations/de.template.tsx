@@ -28,7 +28,6 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   showDetails: 'Details',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (Verlauf)',
-  type: 'Typ',
   tooManyPoints: ({ limit }) =>
     `Das Ergebnis wurde auf ${limit} Objekte begrenzt.`,
   fetchingError: ({ err }) =>
