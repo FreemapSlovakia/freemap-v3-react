@@ -7,6 +7,7 @@ import {
   get,
   getMany,
   set,
+  setMany,
   type UseStore,
 } from 'idb-keyval';
 
@@ -23,6 +24,9 @@ export const BROWSE_CACHE_NAME = 'tiles-browse';
 const CONFIG_KEY = 'browseTileCacheConfig';
 
 const TEMPLATES_KEY = 'browseTileCacheTemplates';
+
+// the app's own: what each map's template was, for maps still loading
+const TEMPLATES_BY_TYPE_KEY = 'browseTileCacheTemplatesByType';
 
 const STATS_KEY = 'browseTileCacheStats';
 
@@ -113,9 +117,18 @@ export async function writeBrowseCacheConfig(
 }
 
 export async function writeBrowseTileTemplates(
-  templates: string[],
+  byType: Record<string, string>,
 ): Promise<void> {
-  await set(TEMPLATES_KEY, templates);
+  await setMany([
+    [TEMPLATES_KEY, [...new Set(Object.values(byType))]],
+    [TEMPLATES_BY_TYPE_KEY, byType],
+  ]);
+}
+
+export async function readBrowseTileTemplatesByType(): Promise<
+  Record<string, string>
+> {
+  return (await get<Record<string, string>>(TEMPLATES_BY_TYPE_KEY)) ?? {};
 }
 
 export async function readBrowseCacheStats(): Promise<BrowseCacheStats> {

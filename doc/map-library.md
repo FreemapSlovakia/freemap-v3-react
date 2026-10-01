@@ -43,7 +43,7 @@ menu filter, country flags and coverage hints. Instead:
 
 ## What is built
 
-### Step 1 — the install flag (commit `4d86eaf8`)
+### The install flag
 
 - `LayerSettings.installed?: boolean` in `src/features/map/model/actions.ts`;
   missing means installed. Synced to the account with the rest of
@@ -60,7 +60,7 @@ menu filter, country flags and coverage hints. Instead:
 - The agent tool `list-map-layers` still lists uninstalled maps (an agent acts
   like a link).
 
-### Step 2 — the registry split
+### The registry
 
 - **`src/shared/mapLibrary/mapIndex.tsx`** — one row per map with what must be
   known without loading it: `type`, `layer`, `technology`, `icon`, `countries`,
@@ -82,13 +82,16 @@ menu filter, country flags and coverage hints. Instead:
   `src/shared/mapDefinitions.tsx`, which keeps the shared types, credits
   (`FM_ATTR`, `NLC_ATTR`, …), `OUTDOOR_COUNTRIES`/`OUTDOOR_BBOX`,
   `rendererTileUrl`, `LAYER_ALIASES`, `SHADING_SOURCE`. Shading helpers
-  (`hasShadingLayer`, `hasSharedShadingLayer`, `withShadingSource`) moved to
-  `src/shared/mapLibrary/shadingLayers.ts` to avoid an import cycle.
+  (`hasShadingLayer`, `hasSharedShadingLayer`, `withShadingSource`) live in
+  `src/shared/mapLibrary/shadingLayers.ts`; in `mapDefinitions.tsx` they would
+  form an import cycle with `mapIndex`.
 - **Store** — `src/features/mapLibrary/model/`: the `mapLibrary` slice holds
   `bodies` (seeded with `bundledBodies`), and `mapLibraryLoadProcessor` loads
   the bodies of installed maps, maps on the map, offline maps' sources and the
-  shading source. A failed load retries with backoff (2 s → 60 s) and on the
-  `online` event; a failure for a map on screen toasts `general.loadError`.
+  shading source. Every map is installed by default, so all bodies load at
+  startup — one small chunk each, which HTTP/3 multiplexes cheaply. A failed
+  load retries with backoff (2 s → 60 s) and on the `online` event; a failure
+  for a map on screen toasts `general.loadError`.
 - **Selectors** (`src/features/mapLibrary/model/selectors.ts`):
   - `integratedLayerDefMapSelector` — every **loaded** map by id, offered or
     not. Use for lookups by id (sources of offline maps, opacity, shading).
@@ -99,37 +102,29 @@ menu filter, country flags and coverage hints. Instead:
     overlay, links, shortcuts, legacy warnings, combinations) reads `mapIndex`.
 - **Premium gate** — `downloadTiles` awaits `loadIntegratedLayerDef(sourceType)`
   rather than reading the store, so an unloaded source can't skip the gate.
+- **Offline map on its source** — online with the network fallback on, a cached
+  map whose library source has not loaded is not rendered: without the source's
+  envelope the service worker would fetch past the premium gate. A failed load
+  of that source toasts like one of a map on screen.
 - **Browse cache** — `syncBrowseCache(getState)` queues writes and reads the
   state at each turn, so the last write is the latest; its change key is a
-  memoized selector.
-- **Download forms** derive their default map until the user picks one, since
-  the maps on the map may still be loading.
-
-### Verification done
-
-- A throwaway test merged every index row with its body and compared it with
-  the pre-split `integratedLayerDefs` from `4d86eaf8`: all 35 identical field
-  for field (icons excluded).
-- Tests: `mapIndex.test.ts` (unique ids, every body loads, bundled set,
+  memoized selector. Templates are also stored by map id, so an offered tile
+  map whose body is still loading keeps its last template and a cache-only
+  start doesn't lose it.
+- **Download forms** derive their default map until the user picks one; the
+  default zooms and scale apply once per map (and, for offline maps, per
+  premium limit), since `mapDef` is rebuilt on every body load and layer toggle.
+- **Legend** shows "loading" for a WMS map whose body is not in yet.
+- **Tests:** `mapIndex.test.ts` (unique ids, every body loads, bundled set,
   `loadIntegratedLayerDef`), `selectors.test.ts` (offered rule),
-  `mapLibraryLoadProcessor.test.ts` (retry + toast). 1380 tests pass; `tsc`,
-  Biome and `scripts/react-compiler-check.mjs rewrites` are clean.
-- A code review found 10 issues, all fixed (retry, premium gate, form defaults,
-  browse-cache race, offered rule for lists, startup cost via bundling, agent
-  catalog zooms, memoized predicates, one WMS-legend helper, one shading-source
-  selector). **A second review is still due** — the retry and premium-gate
-  fixes change behaviour.
-- Not tried in a browser yet.
+  `mapLibraryLoadProcessor.test.ts` (retry + toast).
 
 ## Open questions
 
 - **The API and `installed`.** Unverified whether `freemap-v3-api` keeps an
   unknown key in `layersSettings`; if it validates strictly the flag is lost on
-  save. Check before shipping step 1. Older clients parse settings with a
+  save. Check before shipping. Older clients parse settings with a
   non-strict `z.object`, which also strips the key when they save back.
-- **Startup requests.** The 26 non-bundled maps are installed by default, so a
-  first visit still fetches 26 small chunks after the first paint. If that
-  shows, group default-installed bodies into one chunk (`webpackChunkName`).
 - `list-map-layers` loads every body to report zooms; fine at 35 maps, needs
   rethinking (index-level zoom/premium fields) at thousands.
 

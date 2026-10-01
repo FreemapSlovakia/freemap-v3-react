@@ -2,10 +2,13 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
+import { isLayerOffered } from '@shared/mapLibrary/installed.js';
+import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
 import {
   clearBrowseCache,
   readBrowseCacheStats,
+  readBrowseTileTemplatesByType,
   writeBrowseCacheConfig,
   writeBrowseTileTemplates,
 } from '../browseCache.js';
@@ -20,17 +23,43 @@ import { browseCacheCleared, browseCacheStatsLoaded } from './actions.js';
 const tileTemplatesSelector = createSelector(
   integratedLayerDefsSelector,
   (state: RootState) => state.map.customLayers,
-  (integrated, customLayers): string[] =>
-    [...integrated, ...customLayers]
-      .filter((def) => def.technology === 'tile')
-      .map((def) => def.url),
+  (state: RootState) => state.mapLibrary.bodies,
+  (state: RootState) => state.map.layersSettings,
+  (state: RootState) => state.map.layers,
+  (
+    integrated,
+    customLayers,
+    bodies,
+    layersSettings,
+    layers,
+  ): Record<string, string | null> => ({
+    // `null`: an offered map still loading, which keeps its stored template
+    ...Object.fromEntries(
+      mapIndex
+        .filter(
+          ({ type, technology }) =>
+            technology === 'tile' &&
+            !bodies[type] &&
+            isLayerOffered(layersSettings, layers, type),
+        )
+        .map(({ type }) => [type, null]),
+    ),
+    ...Object.fromEntries(
+      [...integrated, ...customLayers]
+        .filter((def) => def.technology === 'tile')
+        .map((def) => [def.type, def.url]),
+    ),
+  }),
 );
 
 const tileTemplatesKey = createSelector(tileTemplatesSelector, (templates) =>
-  templates.join('\n'),
+  JSON.stringify(templates),
 );
 
 let syncing = Promise.resolve();
+
+/** What the last sync wrote; read from storage once, for a start with maps loading. */
+let written: Record<string, string> | undefined;
 
 /**
  * Hands the service worker the settings and the layer set it works from. Calls
@@ -44,7 +73,25 @@ export function syncBrowseCache(getState: () => RootState): Promise<void> {
 
       await writeBrowseCacheConfig(state.cachedMapsSettings);
 
-      await writeBrowseTileTemplates(tileTemplatesSelector(state));
+      const templates = tileTemplatesSelector(state);
+
+      // A map still loading keeps its stored template, or a cache-only start
+      // would miss it until its body arrives.
+      if (!written && Object.values(templates).includes(null)) {
+        written = await readBrowseTileTemplatesByType();
+      }
+
+      const resolved = Object.fromEntries(
+        Object.entries(templates).flatMap(([type, url]) => {
+          const template = url ?? written?.[type];
+
+          return template ? [[type, template]] : [];
+        }),
+      );
+
+      await writeBrowseTileTemplates(resolved);
+
+      written = resolved;
 
       notifyServiceWorker('browse-cache-changed');
     });

@@ -27,6 +27,7 @@ import {
   type SubmitEvent,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -171,10 +172,16 @@ export default function OfflineMapExportModal({
     [mapType, mapDefs],
   );
 
+  // `mapDef` is rebuilt on every body load and layer toggle; defaults apply
+  // once per map so they don't overwrite what the user typed.
+  const defaultsFor = useRef<string>(undefined);
+
   useEffect(() => {
-    if (!mapDef) {
+    if (!mapDef || defaultsFor.current === mapDef.type) {
       return;
     }
+
+    defaultsFor.current = mapDef.type;
 
     // scales are per-layer; keeping the previous one would ask for `@3x` tiles
     // the new layer doesn't serve

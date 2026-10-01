@@ -53,14 +53,19 @@ export default function LegendModal({ show }: Props): ReactElement {
 
     const externalUrl = EXTERNAL_LEGENDS[type];
 
+    // A library map's body may still be loading.
+    const wmsDef = wmsLayerDefs.find((def) => def.type === type);
+
     return externalUrl ? (
       <a href={externalUrl} target="_blank" rel="noopener noreferrer">
         <FaExternalLinkAlt /> {lm?.external}
       </a>
     ) : variant ? (
       <OutdoorMapLegend key={variant} variant={variant} />
+    ) : wmsDef ? (
+      <WmsMapLegend def={wmsDef} />
     ) : (
-      <WmsMapLegend def={wmsLayerDefs.find((def) => def.type === type)!} />
+      m?.general.loading
     );
   }
 

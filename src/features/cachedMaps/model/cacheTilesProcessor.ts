@@ -277,12 +277,9 @@ async function downloadTiles(
 
   const { bounds, minZoom, maxZoom } = coverageOf(def);
 
-  // The one place premium zooms are kept out of the cache, whichever path got
-  // here: a map carries the range it was given while the premium access lasted,
-  // and a resume or an edit of it answers to the form's cap no more than a
-  // hand-edited database entry would. A map gated this way stays incomplete —
-  // it is missing tiles, and saying otherwise would be a lie. The source is
-  // loaded here, as one not in the store yet would gate nothing.
+  // The one place premium zooms are kept out of the cache, whatever range a
+  // resume or edit carries; a map gated this way stays incomplete. The source
+  // is loaded rather than read from the store, where it may be missing.
   const premiumLimit =
     premiumZoomLimit(
       def.sourceType,

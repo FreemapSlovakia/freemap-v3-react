@@ -28,6 +28,7 @@ import {
   resolveLayerOpacity,
   serverShadingUrl,
 } from '@shared/mapDefinitions.js';
+import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import {
   scheduleTileAttribution,
   tileAttributionHandlers,
@@ -593,6 +594,18 @@ export function Layers(): ReactElement | null {
       {cachedMaps
         .filter(({ type }) => layers.includes(type))
         .map((cm) => {
+          const fetchesMissing = online && cm.networkFallback !== false;
+
+          // Without its source's envelope the network fallback would skip the
+          // premium gate, so wait for a library source still loading.
+          if (
+            fetchesMissing &&
+            mapIndexById[cm.sourceType] &&
+            !integratedLayerDefMap[cm.sourceType]
+          ) {
+            return null;
+          }
+
           const url = toCachedLayerUrl(cm.url, cm.type);
 
           // Online the map wears its source layer's zoom range and premium gate:
@@ -600,14 +613,13 @@ export function Layers(): ReactElement | null {
           // as the layer itself would, checkerboard included. Offline — or with
           // the network fallback off — it is only what was downloaded: its own
           // range, upscaled past the deepest zoom it holds rather than left blank.
-          const envelope =
-            online && cm.networkFallback !== false
-              ? sourceLayerEnvelope(
-                  cm.sourceType,
-                  customLayerDefs,
-                  integratedLayerDefMap,
-                )
-              : undefined;
+          const envelope = fetchesMissing
+            ? sourceLayerEnvelope(
+                cm.sourceType,
+                customLayerDefs,
+                integratedLayerDefMap,
+              )
+            : undefined;
 
           // cors: false — cached tiles are served same-origin by the service
           // worker, so `crossOrigin` buys nothing, and the CORS-mode request it

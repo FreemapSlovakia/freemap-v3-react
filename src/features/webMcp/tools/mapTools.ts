@@ -158,8 +158,11 @@ export const mapTools = [
       'Lists the map layers this app offers, with the one-letter code each is switched on by. A "base" layer is the map itself (only one at a time); an "overlay" is drawn on top of it (any number). premiumFromZoom marks a layer that needs a paid account past that zoom.',
     input: z.object({}),
     async execute(_args, { store }) {
+      // A map that fails to load is still listed, only without its zooms.
       const defs = await Promise.all(
-        mapIndex.map(({ type }) => loadIntegratedLayerDef(type)),
+        mapIndex.map(({ type }) =>
+          loadIntegratedLayerDef(type).catch(() => undefined),
+        ),
       );
 
       return layerCatalog(

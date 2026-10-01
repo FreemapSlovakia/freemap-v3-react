@@ -90,12 +90,18 @@ export const mapLibraryLoadProcessor: Processor = {
 
       console.warn('Loading maps failed:', failed);
 
-      // Only a map on screen is worth telling about; the rest are menu entries.
-      if (
-        types.some(
-          (type) => !bodies[type] && getState().map.layers.includes(type),
-        )
-      ) {
+      // Only a map on screen is worth telling about, an offline map's source
+      // included (`Layers` holds that map back); the rest are menu entries.
+      const { layers, cachedMaps } = getState().map;
+
+      const onScreen = new Set([
+        ...layers,
+        ...cachedMaps
+          .filter((cm) => layers.includes(cm.type))
+          .map((cm) => cm.sourceType),
+      ]);
+
+      if (types.some((type) => !bodies[type] && onScreen.has(type))) {
         dispatch(
           toastsAdd({
             id: 'mapLibrary.loadError',

@@ -239,10 +239,18 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
   // about a cached map — its name, icon, area, zoom range — is the browser's own.
   const initialVisibility = useRef({ showInMenu, showInToolbar }).current;
 
+  // `mapDef` is rebuilt on every body load and layer toggle; defaults apply
+  // once per map and limit so they don't overwrite what the user typed.
+  const defaultsFor = useRef<string>(undefined);
+
   useEffect(() => {
-    if (editing || !mapDef) {
+    const key = `${mapDef?.type}:${limitMaxZoom}`;
+
+    if (editing || !mapDef || defaultsFor.current === key) {
       return;
     }
+
+    defaultsFor.current = key;
 
     // scales are per-layer; default to what this screen would display
     setScale(String(pickTileScale(mapDef.extraScales)));

@@ -25,7 +25,8 @@ describe('mapIndex', () => {
 
       expect(body, entry.type).not.toHaveProperty('technology');
     }
-  });
+    // transforming every body module takes seconds under a full parallel run
+  }, 30_000);
 
   it('knows the retired ids too', () => {
     expect(knownLayerIds()).toEqual(
