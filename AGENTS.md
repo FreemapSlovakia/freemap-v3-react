@@ -28,13 +28,21 @@ Deeper format/architecture references live in [`doc/`](./doc/). Consult them bef
 
 ## Keeping `llms.txt` in sync
 
-[`src/static/llms.txt`](./src/static/llms.txt) is a hand-maintained, user-facing description of the app for AI assistants. It is **not** generated, so it drifts unless updated deliberately. When a change touches user-visible behavior, update the matching part of `llms.txt` in the same change set:
+[`src/static/llms.txt`](./src/static/llms.txt) is a hand-maintained, user-facing description of the app for AI assistants. It is **not** generated, so it drifts unless updated deliberately. When a change touches user-visible behavior, update the matching part in the same change set:
 
-- **Map layers** (`src/shared/mapDefinitions.tsx`) — the "Layer registry" tables (ids, zoom levels, premium-from-zoom, credits, shortcuts, countries, base/overlay). This is the most drift-prone area.
-- **Agent tools** (`src/features/webMcp/tools/`) — the "In-page agent tools (WebMCP)" table; it is also what the `get-app-guide` tool serves back.
-- **Menu / tools / modals** — added, removed, or renamed main-menu items, tools, toolbars, keyboard shortcuts, URL hash params (`#show=…`, `#tool=…`, `layers=…`), or login/export providers. Cross-check labels against `src/translations/en.messages.tsx`.
+- **Map layers** (`src/shared/mapDefinitions.tsx`) — the "Layer registry" tables in `llms-layers.md` (ids, zoom levels, premium-from-zoom, credits, shortcuts, countries, base/overlay). This is the most drift-prone area.
+- **Agent tools** (`src/features/webMcp/tools/`) — the table in `llms-agent-tools.md`; it is also what the `get-app-guide` tool serves back.
+- **Menu / tools / modals** (whichever `llms-*.md` covers the function) — added, removed, or renamed main-menu items, tools, toolbars, keyboard shortcuts, URL hash params (`#show=…`, `#tool=…`, `layers=…`), or login/export providers. Cross-check labels against `src/translations/en.messages.tsx`.
 
-If a change makes `llms.txt` wrong but you can't fully fix it, say so explicitly rather than leaving it silently stale.
+If a change makes it wrong but you can't fully fix it, say so explicitly rather than leaving it silently stale.
+
+### How it is split
+
+`llms.txt` itself holds only the summary, the deep-link reference and a listing that links the rest; the sections live in sibling `src/static/llms-*.md` files, served from the site root. The split exists because the whole text is ~165 KB — more than agents' fetch tools will read in one response — so no part may grow past roughly 30 KB.
+
+- **The parts are fragments, not standalone documents** — each starts at `##` and continues the index's heading levels, so concatenating the index and the parts reproduces one document. Don't add an `# H1`.
+- **A new part needs a row in the index listing** (`- [Title](/llms-<topic>.md): …`): `get-app-guide` finds the parts by matching those rows, and nginx serves `/llms-*.md` from a vhost block that fixes the content type (`etc/nginx/sites-available/www.freemap.{sk,eu}`).
+- **Keep cross-references by section name**, and link the file where the target is in another part — "see below" is wrong across a file boundary.
 
 ## Workflow
 

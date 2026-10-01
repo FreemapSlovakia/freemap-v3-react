@@ -74,6 +74,15 @@ if ($blocked_country) {
 		add_header Alt-Svc 'h3=":443"; ma=86400';
 	}
 
+	# The reference files llms.txt links. nginx has no MIME type for `.md`, and
+	# `types { }` clears the map so default_type always applies; text/plain keeps
+	# them readable in a browser and acceptable to every agent's fetcher.
+	location ~ "^/llms-[\w-]+\.md$" {
+		types { }
+		default_type 'text/plain; charset=UTF-8';
+		add_header Alt-Svc 'h3=":443"; ma=86400' always;
+	}
+
 	# Content-hashed assets (16-hex-char [chunk|content]hash — keep in sync with
 	# rspack's hashDigestLength) are immutable: the URL changes when the content
 	# does, so cache them forever without revalidation.

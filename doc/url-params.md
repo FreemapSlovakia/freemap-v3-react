@@ -7,7 +7,7 @@ Freemap syncs most application state through the **URL hash** (`#name=value&name
 
 Params are read from `document.location.hash || document.location.search` (so `?name=…` works as a fallback to `#name=…`).
 
-> Keep this file in sync when adding, renaming, or removing a URL param, and cross-update the hash-param mentions in [`src/static/llms.txt`](../src/static/llms.txt).
+> Keep this file in sync when adding, renaming, or removing a URL param, and cross-update the hash-param mentions in [`src/static/llms.txt`](../src/static/llms.txt) and its `llms-*.md` reference files.
 
 ## Conventions
 

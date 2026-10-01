@@ -265,30 +265,37 @@ describe('search-places', () => {
 });
 
 describe('get-app-guide', () => {
-  const llms = readFileSync('src/static/llms.txt', 'utf8');
-
   const tool = guideTools[0];
 
-  it('lists the sections of the real llms.txt', async () => {
-    vi.stubGlobal('fetch', async () => new Response(llms));
+  // The real llms.txt and the reference files it lists, served off disk.
+  const serveStatic = () =>
+    vi.stubGlobal(
+      'fetch',
+      async (url: URL) =>
+        new Response(readFileSync(`src/static${url.pathname}`, 'utf8')),
+    );
+
+  it('lists the sections of the real llms.txt and its reference files', async () => {
+    serveStatic();
 
     const listing = JSON.parse(
       text(await tool.execute({}, ctx({} as MyStore))),
     );
 
     expect(listing.sections).toContain('In-page agent tools (WebMCP)');
+    expect(listing.sections).toContain('Panorama');
     expect(listing.summary).toContain('Freemap.sk');
   });
 
   it('returns one section with its subsections', async () => {
-    vi.stubGlobal('fetch', async () => new Response(llms));
+    serveStatic();
 
     const body = text(
-      await tool.execute({ section: 'Deep links' }, ctx({} as MyStore)),
+      await tool.execute({ section: 'Map Layers' }, ctx({} as MyStore)),
     );
 
-    expect(body).toContain('## Deep links (building map URLs)');
-    expect(body).not.toContain('## Map Layers');
+    expect(body).toContain('### Layer registry');
+    expect(body).not.toContain('## In-page agent tools');
   });
 });
 
