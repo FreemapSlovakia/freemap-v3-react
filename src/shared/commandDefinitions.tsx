@@ -15,6 +15,7 @@ import {
   mapToggleLayer,
 } from '@features/map/model/actions.js';
 import type { MapCombination } from '@features/map/model/mapCombination.js';
+import { isLayerInstalled } from '@features/map/model/selectors.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { Chord } from '@shared/components/Chord.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
@@ -292,7 +293,8 @@ export function getCommands(ctx: CommandContext): Command[] {
       if (
         !label ||
         def.type === 'i' ||
-        (def.layerPreview && !ctx.canPreviewLayers)
+        (def.layerPreview && !ctx.canPreviewLayers) ||
+        !isLayerInstalled(ctx.layersSettings, def.type)
       ) {
         continue;
       }

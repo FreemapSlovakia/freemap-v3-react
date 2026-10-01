@@ -39,7 +39,7 @@ A menu of six items, each opening its own modal, in three groups: **Layers confi
 - Keyboard shortcut: <kbd>m</kbd> <kbd>y</kbd>
 - URL path: `/#show=map-layers-config` (legacy `/#show=map-settings` still works)
 
-A table of every map — built-in, custom and cached alike. For each layer the user can toggle: show in toolbar, show in menu, overlay opacity (overlays only, and hidden while an active map combination sets it), and a keyboard shortcut (a 🚫 marker indicates that no shortcut can be assigned).
+A table of every map — built-in, custom and cached alike. A built-in map can be uninstalled (the plug column): it is then left out of the toolbar, the menu (even under **Show all**), its keyboard shortcut, the search box and the offline-map and export pickers, while a link naming it in `layers=` still shows it and the menu lists it for as long as it is on. For each layer the user can toggle: show in toolbar, show in menu, overlay opacity (overlays only, and hidden while an active map combination sets it), and a keyboard shortcut (a 🚫 marker indicates that no shortcut can be assigned).
 
 #### Custom maps
 

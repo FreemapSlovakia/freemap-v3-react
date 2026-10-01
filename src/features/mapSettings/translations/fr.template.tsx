@@ -10,6 +10,8 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       'Erreur lors de l’enregistrement des paramètres',
       err,
     ),
+  installed:
+    'Installée — une carte désinstallée n’est proposée nulle part, mais un lien l’affiche toujours',
   overlayOpacity: 'Opacité',
   showInMenu: 'Afficher dans le menu',
   showInToolbar: 'Afficher dans la barre d’outils',

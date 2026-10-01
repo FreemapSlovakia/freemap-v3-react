@@ -23,6 +23,7 @@ import {
   mapRefocus,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
+import { isLayerInstalled } from '@features/map/model/selectors.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
@@ -221,13 +222,16 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       Boolean(shortcut.alt) === event.altKey &&
       Boolean(shortcut.meta) === event.metaKey;
 
-    const layerDef = [...state.map.customLayers, ...integratedLayerDefs].find(
-      (def) => {
-        const shortcut = state.map.layersSettings[def.type]?.shortcut;
+    const layerDef = [
+      ...state.map.customLayers,
+      ...integratedLayerDefs.filter((def) =>
+        isLayerInstalled(state.map.layersSettings, def.type),
+      ),
+    ].find((def) => {
+      const shortcut = state.map.layersSettings[def.type]?.shortcut;
 
-        return pressed(shortcut === undefined ? def.shortcut : shortcut);
-      },
-    );
+      return pressed(shortcut === undefined ? def.shortcut : shortcut);
+    });
 
     const layerType =
       layerDef &&

@@ -1,4 +1,5 @@
 export type MapSettingsMessages = {
+  installed: string;
   overlayOpacity: string;
   showInMenu: string;
   showInToolbar: string;

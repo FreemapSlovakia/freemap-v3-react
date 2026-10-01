@@ -4,6 +4,8 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
+  installed:
+    'Telepítve — az eltávolított térképet sehol nem kínálja fel, de egy hivatkozás továbbra is megjeleníti',
   overlayOpacity: 'Átlátszóság',
   showInMenu: 'Megjelenítés a menüben',
   showInToolbar: 'Megjelenítés az eszköztáron',

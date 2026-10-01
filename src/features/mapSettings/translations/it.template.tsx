@@ -4,6 +4,8 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
+  installed:
+    'Installata — una mappa disinstallata non viene proposta da nessuna parte, ma un link la mostra comunque',
   overlayOpacity: 'Opacità',
   showInMenu: 'Mostra nel menu',
   showInToolbar: 'Mostra nella barra degli strumenti',

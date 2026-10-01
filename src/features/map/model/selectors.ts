@@ -21,6 +21,19 @@ export const allLayerDefs = (
   cachedMaps: RootState['map']['cachedMaps'],
 ) => [...integratedLayerDefs, ...customLayers, ...cachedMaps];
 
+/** Whether the user keeps a library map; uninstalling hides it but its links still work. */
+export const isLayerInstalled = (
+  layersSettings: RootState['map']['layersSettings'],
+  type: string,
+): boolean => layersSettings[type]?.installed ?? true;
+
+/** Whether a list should offer a library map: installed, or on the map anyway. */
+export const isLayerOffered = (
+  layersSettings: RootState['map']['layersSettings'],
+  layers: readonly string[],
+  type: string,
+): boolean => isLayerInstalled(layersSettings, type) || layers.includes(type);
+
 /** Custom layers as drawn: a shading map with its source's zooms and limits. */
 export const resolvedCustomLayersSelector = createSelector(
   (state: RootState) => state.map.customLayers,

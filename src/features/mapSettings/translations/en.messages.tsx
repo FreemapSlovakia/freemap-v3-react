@@ -3,6 +3,8 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const en: MapSettingsMessages = {
+  installed:
+    'Installed — an uninstalled map is offered nowhere, though a link still shows it',
   overlayOpacity: 'Opacity',
   showInMenu: 'Show in menu',
   showInToolbar: 'Show in toolbar',

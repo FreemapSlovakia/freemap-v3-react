@@ -1,5 +1,6 @@
 import { saveSettings } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { isLayerOffered } from '@features/map/model/selectors.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
@@ -105,9 +106,16 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
+  const layers = useAppSelector((state) => state.map.layers);
+
   const mapDefs = useMemo(() => {
     const integrated = integratedLayerDefs
-      .filter((def): def is CacheableLayerDef => def.technology === 'tile')
+      .filter(
+        (def): def is CacheableLayerDef =>
+          def.technology === 'tile' &&
+          (def.type === editing?.sourceType ||
+            isLayerOffered(layersSettings, layers, def.type)),
+      )
       .map((layer) => {
         const url = layer.url.startsWith('//')
           ? `https:${layer.url}`
@@ -130,9 +138,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       }));
 
     return [...integrated, ...custom];
-  }, [customLayers]);
-
-  const layers = useAppSelector((state) => state.map.layers);
+  }, [customLayers, layersSettings, layers, editing?.sourceType]);
 
   const [mapType, setMapType] = useState(
     editing?.sourceType ??

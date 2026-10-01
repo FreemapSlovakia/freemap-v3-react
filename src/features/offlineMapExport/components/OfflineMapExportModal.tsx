@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { isLayerOffered } from '@features/map/model/selectors.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
@@ -87,10 +88,17 @@ export default function OfflineMapExportModal({
     startSelecting,
   } = useMapAreaSelection();
 
+  const layers = useAppSelector((state) => state.map.layers);
+
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
+
   const mapDefs = useMemo(
     () =>
       integratedLayerDefs.flatMap((layer) => {
-        if (layer.technology !== 'tile') {
+        if (
+          layer.technology !== 'tile' ||
+          !isLayerOffered(layersSettings, layers, layer.type)
+        ) {
           return [];
         }
 
@@ -123,7 +131,7 @@ export default function OfflineMapExportModal({
             ]
           : [];
       }),
-    [],
+    [layersSettings, layers],
   );
 
   // for server: src/downloadableMaps.ts
@@ -149,12 +157,12 @@ export default function OfflineMapExportModal({
   //   ),
   // );
 
-  const layers = useAppSelector((state) => state.map.layers);
-
   const [mapType, setMapType] = useState(
     mapDefs.find(
       (mapDef) => mapDef.creditsPerMTile && layers.includes(mapDef.type),
-    )?.type ?? 'X',
+    )?.type ??
+      mapDefs[0]?.type ??
+      'X',
   );
 
   const [format, setFormat] = useState('mbtiles');

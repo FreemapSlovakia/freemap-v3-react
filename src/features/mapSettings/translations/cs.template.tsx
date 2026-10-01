@@ -4,6 +4,8 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
+  installed:
+    'Nainstalovaná — odinstalovaná mapa se nikde nenabízí, odkaz ji však stále zobrazí',
   overlayOpacity: 'Viditelnost',
   showInMenu: 'Zobrazit v menu',
   showInToolbar: 'Zobrazit v liště',

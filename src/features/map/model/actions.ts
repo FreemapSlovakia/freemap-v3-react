@@ -18,6 +18,7 @@ export interface MapViewState {
 }
 
 export const LayerSettingsSchema = z.object({
+  installed: z.boolean().optional(),
   opacity: z.number().optional(),
   showInMenu: z.boolean().optional(),
   showInToolbar: z.boolean().optional(),
@@ -25,6 +26,8 @@ export const LayerSettingsSchema = z.object({
 });
 
 export type LayerSettings = {
+  /** False takes a library map out of every list, shortcut and the finder; links still show it. */
+  installed?: boolean;
   opacity?: number;
   showInMenu?: boolean;
   showInToolbar?: boolean;

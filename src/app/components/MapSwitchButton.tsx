@@ -9,6 +9,7 @@ import {
 import { combinationLayers } from '@features/map/model/mapCombination.js';
 import {
   activeCombinationsSelector,
+  isLayerOffered,
   resolvedCustomLayersSelector,
 } from '@features/map/model/selectors.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
@@ -304,11 +305,13 @@ export function MapSwitchButton(): ReactElement {
   const byName = makeLabelComparator(language);
 
   const layerDefs = [
-    ...integratedLayerDefs.map((def) => ({
-      ...def,
-      custom: false as const,
-      cached: false,
-    })),
+    ...integratedLayerDefs
+      .filter((def) => isLayerOffered(layersSettings, activeLayers, def.type))
+      .map((def) => ({
+        ...def,
+        custom: false as const,
+        cached: false,
+      })),
     ...[...customLayerDefs]
       .sort((a, b) => byName(a.name || undefined, b.name || undefined))
       .map((def) => ({ ...def, custom: true as const, cached: false })),

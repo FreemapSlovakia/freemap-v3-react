@@ -4,6 +4,8 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
+  installed:
+    'Nameščeno — odstranjena karta ni nikjer ponujena, povezava pa jo še vedno prikaže',
   overlayOpacity: 'Vidnost',
   showInMenu: 'Prikaži v meniju',
   showInToolbar: 'Prikaži v orodni vrstici',
