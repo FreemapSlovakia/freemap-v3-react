@@ -12,6 +12,7 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Nobena karta ni nameščena. Poiščite jih v knjižnici in jih dodajte.',
   searchLibrary: ({ count }) => `Išči med ${count} kartami`,
   moreResults: ({ count }) => `Še ${count} — natančneje opredelite iskanje`,
+  catalogCredit: 'Seznam kart knjižnice temelji na',
   preview: 'Predogled na karti',
   installMap: 'Namesti',
   keepOnMap: 'Obdrži na karti',

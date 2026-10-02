@@ -5,6 +5,8 @@ export type MapSettingsMessages = {
   noInstalledMaps: string;
   searchLibrary: (props: { count: number }) => string;
   moreResults: (props: { count: number }) => string;
+  /** Followed by the name of the catalog source. */
+  catalogCredit: string;
   preview: string;
   installMap: string;
   keepOnMap: string;

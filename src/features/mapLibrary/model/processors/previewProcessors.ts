@@ -7,6 +7,7 @@ import {
   mapToggleLayer,
 } from '@features/map/model/actions.js';
 import { getCountriesBbox } from '@shared/mapDefinitions.js';
+import { coverageCountries } from '@shared/mapLibrary/coverage.js';
 import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { mapLibraryPreviewEnd, mapLibraryPreviewStart } from '../actions.js';
 import {
@@ -51,11 +52,11 @@ export const mapLibraryPreviewStartProcessor: Processor<
 
     const box = entry.bbox ?? getCountriesBbox(entry.countries);
 
-    // As the map menu tells it: by the countries in view where the map names
-    // its own, else by its rectangle.
-    const away = entry.countries
-      ? inView != null &&
-        !entry.countries.some((country) => inView.includes(country))
+    // As the map menu tells it: by the countries in view, else by its box.
+    const countries = coverageCountries(entry);
+
+    const away = countries
+      ? inView != null && !countries.some((country) => inView.includes(country))
       : box !== undefined &&
         (lon < box[0] || lon > box[2] || lat < box[1] || lat > box[3]);
 

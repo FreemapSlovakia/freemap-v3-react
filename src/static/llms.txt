@@ -64,7 +64,8 @@ Each is a Markdown fragment of this document, continuing its heading levels. Tog
 - [Toposcope and panorama](/llms-views.md): the printable direction dial of surrounding summits, and the 360° terrain render with its peak names, distances and quality steps.
 - [Offline use](/llms-offline.md): what works without a connection and where settings are kept, downloaded offline maps, and caching tiles while browsing.
 - [Sharing and export](/llms-export.md): sharing a link or opening the place in another app, exporting the map as an image or document, exporting map data, maps for GPS devices, exporting an offline map, and the embed code.
-- [Map Layers](/llms-layers.md): the map toolbar, managing and configuring maps, custom maps, map and elevation preferences, and the full layer registry with each layer's id code, zoom range, coverage and credits.
+- [Map Layers](/llms-layers.md): the map toolbar and the full layer registry with each layer's id code, zoom range, coverage and credits.
+- [Manage maps](/llms-manage-maps.md): Layers configuration, the map library (searching, previewing and installing maps), custom maps and combinations, map and elevation preferences.
 - [In-page agent tools (WebMCP)](/llms-agent-tools.md): the tools the app registers on `document.modelContext` for an AI agent running in the user's browser.
 
 ## Links

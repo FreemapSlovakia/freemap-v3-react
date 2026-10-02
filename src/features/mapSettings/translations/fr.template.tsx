@@ -18,6 +18,7 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Aucune carte installée. Cherchez dans la bibliothèque pour en ajouter.',
   searchLibrary: ({ count }) => `Rechercher parmi ${count} cartes`,
   moreResults: ({ count }) => `${count} de plus — affinez la recherche`,
+  catalogCredit: 'La liste des cartes de la bibliothèque s’appuie sur',
   preview: 'Aperçu sur la carte',
   installMap: 'Installer',
   keepOnMap: 'Garder sur la carte',

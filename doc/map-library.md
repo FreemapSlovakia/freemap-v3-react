@@ -67,10 +67,9 @@ and in the search box). Built for a catalog of thousands:
 
 - **Catalog** — `src/features/mapLibrary/catalog.ts`: `loadLibraryCatalog()`
   loads it on first opening. A `CatalogEntry` carries what search and the row
-  need, and either a built-in map's `index` row or a catalog map (`map`).
-  Development builds add ~3,200 placeholder catalog maps (`devCatalog.ts`, ids
-  `Z0000`…; bases draw OpenStreetMap, overlays OpenRailwayMap) to exercise the
-  whole path at scale.
+  need, and either a built-in map's `index` row or a catalog map (`map`). The
+  catalog maps come from `eli/eliCatalog.json` (see **Harvesting**), a chunk of
+  its own (`eli-catalog`). The modal credits ELI under its CC BY-SA 3.0.
 - **Search** — `librarySearch.ts`: the search box's fuzzy match over the name,
   then (ranked lower) each keyword, country code and name and category on its
   own; targets are normalized once per catalog and language. At most 50
@@ -132,6 +131,43 @@ A catalog map is not in `mapIndex`; it works once the map slice knows it.
   still turn out a base.
 - **Names** — `layerName(def, m)` (`src/shared/layerName.ts`): a custom or
   catalog map's own name, else the translation.
+- **Icons** — `catalogIcon(category)`, one per ELI category.
+- **Coverage** — ELI's `country_code` says where the imagery lies, not what it
+  covers (a city orthophoto names its country), so a preview tells a catalog
+  map's distance by its `bbox`.
+
+### Harvesting
+
+`node scripts/harvest-eli.mjs [imagery.geojson] [--reuse-probe]` turns the OSM
+Editor Layer Index into `src/features/mapLibrary/eli/`:
+
+- **`ids.json`** — the committed id table, ELI id → catalog id (a SHA-256 of
+  the ELI id mod 36⁵, rehashed while it has no letter or is taken). An entry
+  keeps its id for good; one that leaves moves to `retired` and gets it back
+  if it returns. Ids never go to anything else.
+- **`eliCatalog.json`** — `{ source, licence, maps: CatalogMap[] }`, sorted by
+  id; derived from ELI, so CC BY-SA 3.0 and credited.
+- **`probe.json`** — one tile per map fetched as the app would (no referrer,
+  an `Origin`), a failed fetch tried once more: status, whether CORS lets both
+  www.freemap.sk and www.freemap.eu read it (`*`, or each origin named back),
+  and the `@Nx` scales. `--reuse-probe` keeps answers (2xx or 404) of the
+  current `PROBE_VERSION`; failures are always asked again.
+
+Kept: `tms` entries only (WMS needs a `wms` body), https, no key, placeholders
+Leaflet fills (`{zoom}`, `{-y}` → `tms`, `{switch:…}` → `subdomains`). Dropped:
+OSMF-hosted (`*.openstreetmap.org`, editing only by its usage policy),
+`*.freemap.sk` (built in), scraped commercial sources (Google, Bing, Yandex,
+2GIS, HERE, Mapbox, Apple, Maxar, Esri basemaps — matched on the ELI id and
+host only, as agency maps credit Esri), non-commercial licences, entries
+without a `license_url` (ELI's permissions are for tracing, not display — they
+wait for a review), and maps whose probe got no answer or anything but 2xx or
+404. A 404 stays: the probed spot may just lie outside a ragged coverage. A
+map CORS doesn't open to both origins gets `cors: false`. The probe also asks for the
+tile with the app's `@2x` suffix (then `@3x`, `@4x`) and takes each one whose
+image is that many times wider as `extraScales`; without them, imagery and
+elevation (`photo`, `historicphoto`, `elevation`) get `scaleWithDpi`, as the
+built-in aerials do, and maps with labels neither. `eliCatalog.test.ts` checks
+the ids and templates.
 
 ### The registry
 
@@ -200,14 +236,17 @@ A catalog map is not in `mapIndex`; it works once the map slice knows it.
   non-strict `z.object`, which also strips the key when they save back.
 - `list-map-layers` loads every body to report zooms; fine at 35 maps, needs
   rethinking (index-level zoom/premium fields) at thousands.
+- **Startup with an installed catalog map** loads the whole catalog chunk
+  (~53 KB gzipped) to resolve one id. Splitting an id → map lookup from the
+  list the library searches would fix it once the catalog grows.
 
 ## Next steps
 
-1. **Real catalog maps.** Replace the dev placeholders with catalog maps from
-   the harvesting pipeline (step 5) or a handful of curated ones: e.g. national
-   topo maps of CZ (ČÚZK), AT (basemap.at), PL (Geoportal), HU; OpenTopoMap;
-   CyclOSM; a historic military survey. Only free, https, EPSG:3857; check each
-   one's terms. WMS catalog maps need `CatalogMap` to take a `wms` body.
+1. **More catalog maps.** Review the entries held for a missing licence URL
+   and the services with usage policies of their own (OpenTopoMap, CyclOSM,
+   Waymarked Trails, Wikimedia); add WMS (a `wms` body in `CatalogMap`, 812 of
+   ELI's 861 offer EPSG:3857); a committed overrides file the script applies,
+   by id, for a better name or icon or to hide an entry.
 2. **Coverage as a union.** `{ countries } | { bbox } | { polygon }` (simplified
    polygon, its bbox derived). Keep the zoom-to target separate: `X` has both
    `countries` and a `bbox`. Countries keep using the server's covered-countries
@@ -221,11 +260,8 @@ A catalog map is not in `mapIndex`; it works once the map slice knows it.
    install it.
 4. **Library metadata** on index rows as needed: category, start/end dates,
    licence URL, source — an optional `HasCatalogMeta` group.
-5. **Harvesting pipeline** (later, server side or a script emitting `defs/` +
-   index rows): ingest, normalise JOSM-style URL placeholders (`{zoom}`, `{-y}`,
-   `{switch:a,b}`) to Leaflet's, filter, probe liveness, allocate ids via the
-   committed id table. At thousands of rows the index itself should become a
-   lazily loaded chunk, with icons as specs/URLs rather than React components.
+5. **Other sources** for the harvest (JOSM's WMTS, national catalogs), into
+   the same id table.
 
 ## Catalog research (checked 2026-10-01)
 

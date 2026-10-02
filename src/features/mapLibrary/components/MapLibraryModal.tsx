@@ -12,17 +12,11 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { layerName } from '@shared/layerName.js';
 import { flaggedCountries } from '@shared/mapDefinitions.js';
+import { catalogIcon } from '@shared/mapLibrary/catalogMap.js';
 import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Form, Modal, Table } from 'react-bootstrap';
-import {
-  FaEye,
-  FaHistory,
-  FaPlus,
-  FaRegMap,
-  FaTimes,
-  FaTrash,
-} from 'react-icons/fa';
+import { FaEye, FaHistory, FaPlus, FaTimes, FaTrash } from 'react-icons/fa';
 import { MdLibraryAdd } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import type { Messages } from '@/translations/messagesInterface.js';
@@ -73,7 +67,7 @@ function LibraryRow({
 
   return (
     <tr>
-      <td>{index ? index.icon : <FaRegMap />}</td>
+      <td>{index ? index.icon : catalogIcon(entry.category)}</td>
 
       <td className="w-100">
         {name}
@@ -311,6 +305,27 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
             )}
           </>
         )}
+
+        {/* The catalog is derived from ELI, whose licence asks for this. */}
+        <div className="text-muted small mt-3">
+          {msm?.catalogCredit}{' '}
+          <a
+            href="https://github.com/osmlab/editor-layer-index"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            OSM Editor Layer Index
+          </a>{' '}
+          (
+          <a
+            href="https://creativecommons.org/licenses/by-sa/3.0/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            CC BY-SA 3.0
+          </a>
+          )
+        </div>
       </Modal.Body>
 
       <Modal.Footer>

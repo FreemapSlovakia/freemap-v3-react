@@ -12,6 +12,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Nincs telepített térkép. Keressen a térképtárban, és adjon hozzá néhányat.',
   searchLibrary: ({ count }) => `Keresés ${count} térkép között`,
   moreResults: ({ count }) => `További ${count} — pontosítsa a keresést`,
+  catalogCredit: 'A térképtár listájának forrása:',
   preview: 'Előnézet a térképen',
   installMap: 'Telepítés',
   keepOnMap: 'Maradjon a térképen',

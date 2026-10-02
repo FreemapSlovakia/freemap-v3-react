@@ -38,6 +38,7 @@ import {
   getCountriesBbox,
   getLayerBbox,
 } from '@shared/mapDefinitions.js';
+import { coverageCountries } from '@shared/mapLibrary/coverage.js';
 import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import type { Shortcut } from '@shared/types/common.js';
 import clsx from 'clsx';
@@ -326,8 +327,7 @@ export function MapSwitchButton(): ReactElement {
     countryOk:
       !countriesSet ||
       def.custom ||
-      !def.countries ||
-      def.countries.some((c) => countriesSet.has(c)),
+      (coverageCountries(def)?.some((c) => countriesSet.has(c)) ?? true),
     zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
   }));
 
@@ -363,14 +363,13 @@ export function MapSwitchButton(): ReactElement {
   };
 
   // The extent to zoom to when a layer's tiles aren't in the current view, or
-  // undefined when they are. Country-limited integrated layers use the
-  // border-accurate `countryOk` (target: their bbox or per-country boxes);
-  // layers with an explicit rectangular extent (cached maps' `bounds`, or a
-  // declared `bbox`) test whether the map centre sits outside that extent.
+  // undefined when they are. Layers whose countries tell their coverage use
+  // the border-accurate `countryOk`; the rest (cached maps' `bounds`, a catalog
+  // map's `bbox`) test whether the map centre sits outside their extent.
   const getOutOfCoverageBbox = (
     def: (typeof layerDefs)[number],
   ): [number, number, number, number] | undefined => {
-    if (!def.custom) {
+    if (!def.custom && coverageCountries(def)) {
       return def.countryOk
         ? undefined
         : (def.bbox ?? getCountriesBbox(def.countries));

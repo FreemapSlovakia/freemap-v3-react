@@ -12,6 +12,7 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Nessuna mappa installata. Cerca nella libreria per aggiungerne.',
   searchLibrary: ({ count }) => `Cerca tra ${count} mappe`,
   moreResults: ({ count }) => `Altre ${count} — affina la ricerca`,
+  catalogCredit: 'L’elenco delle mappe della libreria attinge da',
   preview: 'Anteprima sulla mappa',
   installMap: 'Installa',
   keepOnMap: 'Tieni sulla mappa',

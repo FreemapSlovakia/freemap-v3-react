@@ -12,6 +12,7 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Keine Karten installiert. Durchsuchen Sie die Bibliothek, um welche hinzuzufügen.',
   searchLibrary: ({ count }) => `${count} Karten durchsuchen`,
   moreResults: ({ count }) => `${count} weitere — Suche verfeinern`,
+  catalogCredit: 'Die Kartenliste der Bibliothek stützt sich auf den',
   preview: 'Vorschau auf der Karte',
   installMap: 'Installieren',
   keepOnMap: 'Auf der Karte lassen',

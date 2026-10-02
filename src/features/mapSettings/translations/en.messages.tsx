@@ -10,6 +10,7 @@ const en: MapSettingsMessages = {
   noInstalledMaps: 'No maps are installed. Search the library to add some.',
   searchLibrary: ({ count }) => `Search ${count} maps`,
   moreResults: ({ count }) => `${count} more — refine the search`,
+  catalogCredit: 'The library’s map list draws on the',
   preview: 'Preview on the map',
   installMap: 'Install',
   keepOnMap: 'Keep on map',

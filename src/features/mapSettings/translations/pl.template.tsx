@@ -12,6 +12,7 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Brak zainstalowanych map. Wyszukaj w bibliotece, aby jakieś dodać.',
   searchLibrary: ({ count }) => `Szukaj wśród ${count} map`,
   moreResults: ({ count }) => `Jeszcze ${count} — zawęź wyszukiwanie`,
+  catalogCredit: 'Lista map biblioteki korzysta z',
   preview: 'Podgląd na mapie',
   installMap: 'Zainstaluj',
   keepOnMap: 'Zostaw na mapie',

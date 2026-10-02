@@ -12,6 +12,7 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Nejsou nainstalovány žádné mapy. Přidejte si je vyhledáním v knihovně.',
   searchLibrary: ({ count }) => `Hledat v ${count} mapách`,
   moreResults: ({ count }) => `Dalších ${count} — upřesněte hledání`,
+  catalogCredit: 'Seznam map knihovny čerpá z',
   preview: 'Náhled na mapě',
   installMap: 'Nainstalovat',
   keepOnMap: 'Ponechat na mapě',
