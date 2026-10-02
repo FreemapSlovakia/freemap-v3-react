@@ -373,11 +373,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'dona, sostieni, contribuisci, denaro',
         'modal-legend': 'simboli, legenda della mappa',
         'modal-about': 'contatti, e-mail, feedback',
-        'modal-map-layers-config': 'livelli, gestisci mappe, ordine, opacità',
         'modal-map-library':
-          'catalogo, installa, disinstalla, aggiungi mappe, altre mappe',
-        'modal-custom-maps':
-          'mappa personalizzata, wms, tms, aggiungi sorgente',
+          'catalogo, installa, disinstalla, aggiungi mappe, altre mappe, configurazione dei livelli, livelli, gestisci mappe, opacità, scorciatoia, mappe personalizzate, mappa personalizzata, wms, tms, aggiungi sorgente',
         'modal-offline-maps': 'mappe scaricate, archiviazione',
         'modal-browse-cache': 'cache, tasselli in cache, archiviazione',
         'modal-map-preferences':
@@ -503,8 +500,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Mappe personalizzate',
     addCustomMap: 'Aggiungi mappa personalizzata',
     activate: 'Attiva',
-    customMapsEmptyMessage:
-      'Nessuna mappa personalizzata definita. Aggiungine una per visualizzare la tua sorgente mappa.',
     base: 'Livelli di base',
     overlay: 'Livelli sovrapposti',
     url: 'Modello URL',
@@ -536,7 +531,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Sovrapposto',
     },
     showMore: 'Mostra più mappe',
-    layersConfiguration: 'Configurazione dei livelli',
     mapLibrary: 'Libreria di mappe',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',

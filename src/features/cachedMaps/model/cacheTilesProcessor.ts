@@ -33,6 +33,7 @@ import {
 import {
   type CachedTileMapDef,
   getCachedTileScale,
+  isCachedMapComplete,
   sameCoverage,
 } from '../cachedTileMaps.js';
 import { toCachedLayerUrl } from '../cachedTileUrl.js';
@@ -514,9 +515,7 @@ async function downloadTiles(
     // auto-cache static assets on first completed map
     const allMaps = await getCachedTileMaps();
 
-    const completedCount = allMaps.filter(
-      (m) => m.downloadedCount === m.tileCount,
-    ).length;
+    const completedCount = allMaps.filter(isCachedMapComplete).length;
 
     if (completedCount === 1) {
       try {

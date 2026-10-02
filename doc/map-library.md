@@ -36,7 +36,7 @@ menu filter, country flags and coverage hints. Instead:
   (a URL fix would change it), not the source's own id (ELI renames ids, and
   one service can sit in several catalogs). It must not be able to collide with
   a custom map id: those are 6 random lowercase base-36 chars (`makeType()` in
-  `CustomMapsModal.tsx`), so e.g. `[0-9A-Z]{5}` with at least one letter is
+  `CustomMapEditor.tsx`), so e.g. `[0-9A-Z]{5}` with at least one letter is
   safe. Links join ids with `~`, so any id works in `layers=`.
 - **Definitions stay in TypeScript** (types validate them; icons, `process.env`
   URLs and translated names keep working) and load **per map, lazily**.
@@ -53,17 +53,17 @@ menu filter, country flags and coverage hints. Instead:
 - Honoured by `MapSwitchButton`, `keyboardHandler`, `commandDefinitions` (search
   box), `CacheTilesForm` (an edited offline map keeps its own source),
   `OfflineMapExportModal` and `MapCombinationForm`'s pickers.
-- **Layers configuration** (`MapLayersSettings.tsx`) lists only installed
-  library maps, and its Reset keeps the `installed` flags. Custom, cached and
-  combination maps are deleted rather than uninstalled.
+- Custom, cached and combination maps are deleted rather than uninstalled.
 - The agent tool `list-map-layers` still lists uninstalled maps (an agent acts
   like a link).
 
 ### The library modal
 
 `src/features/mapLibrary/components/MapLibraryModal.tsx`, modal id
-`map-library` (chord <kbd>m</kbd> <kbd>i</kbd>, a row in the Manage maps menu
-and in the search box). Built for a catalog of thousands:
+`map-library` (chords <kbd>m</kbd> <kbd>i</kbd> and <kbd>m</kbd> <kbd>y</kbd>, a
+row in the Manage maps menu and in the search box; `map-layers-config` and the
+older ids are renamed to it). It is also where each map the user has is
+configured. Built for a catalog of thousands:
 
 - **Catalog** — `src/features/mapLibrary/catalog.ts`: `loadLibraryCatalog()`
   loads it on first opening. A `CatalogEntry` carries what search and the row
@@ -72,16 +72,66 @@ and in the search box). Built for a catalog of thousands:
   its own (`eli-catalog`). The modal credits ELI under its CC BY-SA 3.0.
 - **Search** — `librarySearch.ts`: the search box's fuzzy match over the name,
   then (ranked lower) each keyword, country code and name and category on its
-  own; targets are normalized once per catalog and language. At most 50
-  results, with the count of the rest.
-- **Empty query** shows the installed maps, not the catalog.
+  own; targets are normalized once per catalog and language. With no query,
+  the filtered catalog with the maps that `coversView` first, each part by
+  name (`Intl.Collator`). Either way base maps go before overlays, and an
+  `IntersectionObserver` at the list's end adds 50 rows at a time. Paging
+  restarts only on a new query or filter, not when an install or the view
+  changes the list.
+- **Tabs and filters** — the modal has two tabs, `YourMapsTab` and
+  `LibraryTab`, each with its box and `FilterChips`; the modal keeps both
+  filter objects, so they outlast the custom map form; `filters.ts` holds the rules
+  (`passes`: a group of chips lets all through until one is on, then any
+  match). Your maps filters by category, kind, `coversView` (an offline map by its
+  downloaded bounds), where a map is shown (toolbar, menu,
+  shortcut, or hidden: neither toolbar nor menu) and technology group (tile,
+  maplibre, wms, parametricShading, color, special — everything else);
+  Library, which holds only maps
+  not installed, by layer, category,
+  technology group and `coversView` (countries for maps whose countries tell
+  their coverage, else the box against `map.bounds`). Each tab shows its count.
+  Category is the ELI one; built-in maps carry theirs in their index row, a
+  custom map the one its form sets (`category` on `CustomLayerDef`), an
+  offline map its source map's, and combinations count as Other.
+  The two tables of Your maps have fixed widths for the small columns, base
+  maps an empty opacity cell, so they line up.
+- **Your maps** — `YourMapsList`: the installed library maps (from
+  `installedLibraryIndexSelector`, so no catalog is needed; the tab's count is
+  `yourMapsCountSelector`) and the custom, offline and
+  combined maps, with columns for every map's settings (toolbar, menu,
+  opacity, shortcut), so they read as one overview.
+  A row's actions sit in a ⋮ menu (`ResponsiveActions`, all `showFrom="never"`):
+  preview for all but a combination (an offline map's fits to its downloaded
+  area), update from the map for a combination, modify for the user's own (an
+  offline map's form in Offline maps via `cachedMapsSetView({ edit })`), and
+  uninstall for a library map or delete for a custom map or combination
+  (`useCustomMapActions`, after a confirm). Base maps have no opacity column.
+- **The custom map form** (`CustomMapEditor`) replaces the list in the library's
+  modal while its state carries a request: `setActiveModal({ type:
+  'map-library', customMap: { edit?, draft?, addShadingMap? } })` — a map or a
+  combination (with an unsaved `draft`, from a too-thin update) to edit, a new
+  shading map from the shading panel, or a new map. Save and Cancel go back to
+  the list (its search kept), or to the map for the shading panel's new map.
+  The form has no `show=`; `show=custom-maps` and <kbd>m</kbd> <kbd>c</kbd> open
+  the library.
 - Both lists are split into base maps and overlays, keeping rank order.
-- **+ / trash** dispatch `mapLibraryInstall`: the map reducer flips `installed` at
-  once, and `mapLibraryInstallProcessor` saves the whole account settings
-  through `queueSettingsSave` (`src/app/store/settingsSaveQueue.ts`), the queue
-  `saveSettingsProcessor` uses too — the API replaces settings whole, so saves
-  must land in order. Each sends the state at its turn and none is cancelled by
-  closing the modal. A failure toasts `savingError` and keeps the local state.
+- **Every change applies at once.** `mapLayerSettingsChange` (installing
+  included), `mapLayersSettingsReset` (keeps `installed`; asks first), and
+  `mapCustomLayerSave`/`Delete` and `mapCombinationSave`/`Delete` (each with
+  the map's own settings) change the store; `mapSettingsSaveProcessor` then
+  sends the whole account settings — at once, or 500 ms after the last change
+  for an opacity drag, a pending immediate save never being postponed —
+  through `queueSettingsSave` (`src/app/store/settingsSaveQueue.ts`), the
+  queue `saveSettingsProcessor` uses too: the API replaces settings whole, so
+  saves must land in order. Each sends the state at its turn, so none is
+  cancelled (`saveSettings` neither), no list goes from a stale copy, and a
+  save still waiting in the queue carries later changes. `saveSettings` takes
+  only `maxZoom`, and closes only the modal it came from. The saved toasts
+  (with Activate, decided when shown) and ending a saved shading draft wait
+  for success; a failure toasts
+  `savingError` and keeps the local state, which the server's replaces at the
+  next sign-in. A change made during the startup auth check can be overwritten
+  by its older copy (issue #1072).
 - **Eye** previews: `mapLibraryPreviewStart({ type })` puts
   `mapLibrary.preview`, which hides the modal (`d-none`, as area selection
   does, with its Escape and focus trap off) and mounts `MapLibraryPreviewMenu`.
@@ -119,7 +169,7 @@ A catalog map is not in `mapIndex`; it works once the map slice knows it.
   unrendered.
 - **`libraryIndexSelector`** — `mapIndex` plus the known catalog maps. The
   definition selectors, `allLayerEntries` (so the reducer's base/overlay
-  decision), Layers configuration, the combination pickers, keyboard shortcuts,
+  decision), `YourMapsList`, the combination pickers, keyboard shortcuts,
   the search box and `list-map-layers` read it. Names read `def.name` before
   `mapLayers.letters`.
 - **Links** — `layers=` keeps a catalog id unchecked (the catalog loads after
@@ -255,10 +305,10 @@ the ids and templates.
 3. **The library modal, further:** filters (category, "covers this view",
    best), rows with a live thumbnail tile, dates, credits and licence link;
    Install with the existing `LayerVisibilityFields`; Copy as custom map. Entry
-   points: "Add maps…" in the map menu and in Layers configuration, a search-box
+   points: "Add maps…" in the map menu, a search-box
    row "Search the map library for '…'". A link to an uninstalled map offers to
    install it.
-4. **Library metadata** on index rows as needed: category, start/end dates,
+4. **Library metadata** on index rows as needed: start/end dates,
    licence URL, source — an optional `HasCatalogMeta` group.
 5. **Other sources** for the harvest (JOSM's WMTS, national catalogs), into
    the same id table.

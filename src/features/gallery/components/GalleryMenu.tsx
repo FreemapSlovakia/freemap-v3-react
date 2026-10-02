@@ -200,6 +200,8 @@ export default function GalleryMenu() {
           user: {
             sendGalleryEmails: !sendGalleryEmails,
           },
+          // Not from a modal, so none to close.
+          keepOpen: true,
         }),
       );
     } else if (eventKey === 'direction') {

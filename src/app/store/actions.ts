@@ -87,7 +87,8 @@ type Settings = {
 };
 
 export const saveSettings = createAction<{
-  settings?: Settings;
+  /** Only what `accountSettingsOf` sends too, or the next map save drops it. */
+  settings?: Pick<Settings, 'maxZoom'>;
   user?: {
     name?: string;
     email?: string | null;
@@ -96,13 +97,6 @@ export const saveSettings = createAction<{
     picture?: string | null;
   };
   keepOpen?: boolean;
-  /**
-   * When set, the success toast offers an action to activate (display) the
-   * layer of this type, unless it is already active.
-   */
-  activateLayerType?: string;
-  /** Likewise for a map combination, by its id. */
-  activateCombination?: string;
 }>('SAVE_SETTINGS');
 
 export const applySettings = createAction<

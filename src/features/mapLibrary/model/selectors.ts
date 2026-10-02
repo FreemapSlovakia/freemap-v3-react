@@ -1,11 +1,16 @@
 import type { RootState } from '@app/store/store.js';
+import { hasRole } from '@features/auth/model/types.js';
+import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import {
   type IntegratedLayerDef,
   type MapIndexEntry,
   SHADING_SOURCE,
 } from '@shared/mapDefinitions.js';
 import { catalogIndexEntry } from '@shared/mapLibrary/catalogMap.js';
-import { isLayerOffered } from '@shared/mapLibrary/installed.js';
+import {
+  isLayerInstalled,
+  isLayerOffered,
+} from '@shared/mapLibrary/installed.js';
 import { mapIndex, withBody } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
 
@@ -23,6 +28,26 @@ export const libraryIndexByIdSelector = createSelector(
   (index): Readonly<Record<string, MapIndexEntry>> =>
     Object.fromEntries(index.map((entry) => [entry.type, entry])),
 );
+
+/** The installed library maps, as Your maps lists them. */
+export const installedLibraryIndexSelector = createSelector(
+  libraryIndexSelector,
+  (state: RootState) => state.map.layersSettings,
+  (state: RootState) => hasRole(state.auth.user, 'layerPreview'),
+  (index, layersSettings, canPreview) =>
+    index.filter(
+      (def) =>
+        isLayerInstalled(layersSettings, def.type) &&
+        (canPreview || !def.layerPreview),
+    ),
+);
+
+/** How many maps Your maps lists: installed ones and the user's own. */
+export const yourMapsCountSelector = (state: RootState): number =>
+  installedLibraryIndexSelector(state).length +
+  state.map.customLayers.length +
+  state.map.cachedMaps.filter(isCachedMapComplete).length +
+  state.map.mapCombinations.length;
 
 /** Every library map whose body is loaded, by id, offered or not. */
 export const integratedLayerDefMapSelector = createSelector(

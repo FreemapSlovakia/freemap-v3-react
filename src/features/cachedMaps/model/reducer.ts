@@ -28,6 +28,8 @@ export interface CachedMapsState {
   view: 'list' | 'add' | 'edit';
   /** The map the `edit` view is showing. */
   editId: string | null;
+  /** The source map the `add` view starts with. */
+  addSource: string | null;
   /** What the browse cache holds; `null` until it has been read. */
   browseStats: BrowseCacheStats | null;
 }
@@ -36,6 +38,7 @@ export const cachedMapsInitialState: CachedMapsState = {
   activeDownloads: {},
   view: 'list',
   editId: null,
+  addSource: null,
   browseStats: null,
 };
 
@@ -87,6 +90,7 @@ export const cachedMapsReducer = createReducer(
 
         state.view = 'list';
         state.editId = null;
+        state.addSource = null;
       })
       .addCase(cacheTilesComplete, (state, { payload }) => {
         delete state.activeDownloads[payload.id];
@@ -115,15 +119,22 @@ export const cachedMapsReducer = createReducer(
         if (payload?.type === 'offline-maps') {
           state.view = 'list';
           state.editId = null;
+          state.addSource = null;
         }
       })
       .addCase(cachedMapsSetView, (state, { payload }) => {
         if (typeof payload === 'string') {
           state.view = payload;
           state.editId = null;
+          state.addSource = null;
+        } else if ('add' in payload) {
+          state.view = 'add';
+          state.editId = null;
+          state.addSource = payload.add;
         } else {
           state.view = 'edit';
           state.editId = payload.edit;
+          state.addSource = null;
         }
       }),
 );

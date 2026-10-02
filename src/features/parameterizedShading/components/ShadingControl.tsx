@@ -1,6 +1,7 @@
-import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
+  mapCustomLayerSave,
   mapSetShading,
   mapSetShadingDraft,
   mapSetShadingOnServer,
@@ -152,16 +153,7 @@ export default function ShadingControl() {
       return;
     }
 
-    dispatch(
-      saveSettings({
-        settings: {
-          customLayers: customLayers.map((def) =>
-            def.type === targetDef.type ? { ...def, shading: draft } : def,
-          ),
-        },
-        keepOpen: true,
-      }),
-    );
+    dispatch(mapCustomLayerSave({ def: { ...targetDef, shading: draft } }));
   }
 
   const [pickedId, setId] = useState<number>();
@@ -393,9 +385,9 @@ export default function ShadingControl() {
   const saveAsMap = () =>
     dispatch(
       setActiveModal({
-        type: 'custom-maps',
+        type: 'map-library',
         // What is being edited, unapplied changes included.
-        addShadingMap: { shading },
+        customMap: { addShadingMap: { shading } },
       }),
     );
 

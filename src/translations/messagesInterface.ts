@@ -303,13 +303,11 @@ export type Messages = {
       routing: string;
     };
     attr: Record<string, ReactNode>;
-    layersConfiguration: string;
     mapLibrary: string;
     customMaps: string;
     addCustomMap: string;
     activate: string;
     saveAsShadingMap: string;
-    customMapsEmptyMessage: string;
     base: string;
     overlay: string;
     technology: string;

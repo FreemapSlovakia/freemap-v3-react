@@ -13,6 +13,8 @@ export default function CachedMapsModal({ show }: Props): ReactElement {
 
   const view = useAppSelector((state) => state.cachedMaps.view);
 
+  const addSource = useAppSelector((state) => state.cachedMaps.addSource);
+
   const editing = useAppSelector((state) =>
     state.cachedMaps.editId === null
       ? undefined
@@ -40,7 +42,11 @@ export default function CachedMapsModal({ show }: Props): ReactElement {
       // would take focus away from its search field.
       enforceFocus={false}
     >
-      {list ? <CachedMapsList /> : <CacheTilesForm editing={editing} />}
+      {list ? (
+        <CachedMapsList />
+      ) : (
+        <CacheTilesForm editing={editing} source={addSource ?? undefined} />
+      )}
     </Modal>
   );
 }

@@ -2,6 +2,7 @@ import {
   type Document,
   DocumentSchema,
 } from '@features/documents/model/actions.js';
+import type { MapCombination } from '@features/map/model/mapCombination.js';
 import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import z from 'zod';
 
@@ -10,7 +11,6 @@ const URL_MODAL_IDS = [
   'account',
   'browse-cache',
   'credits-purchase',
-  'custom-maps',
   'drawing-properties',
   'elevation-settings',
   'embed',
@@ -22,7 +22,6 @@ const URL_MODAL_IDS = [
   'legend',
   'login',
   'map-features-export',
-  'map-layers-config',
   'map-library',
   'map-preferences',
   'map-to-document-export',
@@ -53,8 +52,10 @@ const MODAL_RENAMES: Record<string, string> = {
   'export-pdf': 'map-to-document-export',
   'download-map': 'offline-map-export',
   supportUs: 'support-us',
-  mapSettings: 'map-layers-config',
-  'map-settings': 'map-layers-config',
+  mapSettings: 'map-library',
+  'map-settings': 'map-library',
+  'map-layers-config': 'map-library',
+  'custom-maps': 'map-library',
   'remove-ads': 'premium',
   'upload-track': 'file-import',
   'buy-credits': 'credits-purchase',
@@ -71,9 +72,7 @@ const MODAL_RENAMES: Record<string, string> = {
  */
 const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
   'browse-cache',
-  'custom-maps',
   'elevation-settings',
-  'map-layers-config',
   'map-library',
   'map-preferences',
   'offline-maps',
@@ -90,19 +89,26 @@ export const ModalIdSchema = z.enum([
 
 export type ModalId = z.infer<typeof ModalIdSchema>;
 
+/** Which custom map's form the library shows; a new map's without `edit`. */
+export type CustomMapRequest = {
+  /** The custom map or combination to edit. */
+  edit?: string;
+  /** A combination's unsaved state to edit in place of its saved one. */
+  draft?: MapCombination;
+  /** A new shading map with these settings, asked for by the shading panel. */
+  addShadingMap?: { shading: Shading };
+};
+
 /**
  * The open modal/overlay. A discriminated union so a modal can carry an
  * argument (e.g. the document key or watched-device token). At most one is open
  * at a time. `null` means no modal.
  */
 export type ActiveModal =
-  | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps' | 'custom-maps'> }
+  | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps' | 'map-library'> }
   | { type: 'my-maps'; add?: boolean }
-  /** `addShadingMap` opens the form for a shading map with these settings. */
-  | {
-      type: 'custom-maps';
-      addShadingMap?: { shading: Shading };
-    }
+  /** With `customMap` the library shows the form for one; see `CustomMapRequest`. */
+  | { type: 'map-library'; customMap?: CustomMapRequest }
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
@@ -205,7 +211,7 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
 export function modalOf(modalId: ModalId): ActiveModal {
   switch (modalId) {
     case 'my-maps':
-    case 'custom-maps':
+    case 'map-library':
     case 'tracking-watched':
       return { type: modalId };
     default:

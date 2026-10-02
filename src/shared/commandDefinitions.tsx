@@ -30,7 +30,6 @@ import {
   FaEraser,
   FaFileExport,
   FaHeart,
-  FaLayerGroup,
   FaList,
   FaPrint,
   FaRegAddressCard,
@@ -39,7 +38,7 @@ import {
   FaSlidersH,
   FaUser,
 } from 'react-icons/fa';
-import { MdDashboardCustomize, MdLibraryAdd } from 'react-icons/md';
+import { MdLibraryAdd } from 'react-icons/md';
 import { getDocuments } from '@/documents/index.js';
 import type { Messages } from '../translations/messagesInterface.js';
 import { layerName } from './layerName.js';
@@ -169,23 +168,11 @@ const modalCommands: ModalCommand[] = [
     icon: <FaRegAddressCard />,
     label: (m) => m.mainMenu.contacts,
   },
-  // Both write the settings, which a signed-in account keeps on the server.
-  {
-    id: 'map-layers-config',
-    icon: <FaLayerGroup />,
-    label: (m) => m.mapLayers.layersConfiguration,
-    offline: (ctx) => !ctx.canSaveSettings,
-  },
+  // Writes the settings, which a signed-in account keeps on the server.
   {
     id: 'map-library',
     icon: <MdLibraryAdd />,
     label: (m) => m.mapLayers.mapLibrary,
-    offline: (ctx) => !ctx.canSaveSettings,
-  },
-  {
-    id: 'custom-maps',
-    icon: <MdDashboardCustomize />,
-    label: (m) => m.mapLayers.customMaps,
     offline: (ctx) => !ctx.canSaveSettings,
   },
   {

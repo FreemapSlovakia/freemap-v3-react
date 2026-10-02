@@ -358,11 +358,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'faire un don, soutenir, contribuer, argent',
         'modal-legend': 'symboles, légende de la carte',
         'modal-about': 'contact, e-mail, avis',
-        'modal-map-layers-config': 'couches, gérer les cartes, ordre, opacité',
         'modal-map-library':
-          'catalogue, installer, désinstaller, ajouter des cartes, plus de cartes',
-        'modal-custom-maps':
-          'carte personnalisée, wms, tms, ajouter une source',
+          'catalogue, installer, désinstaller, ajouter des cartes, plus de cartes, configuration des couches, couches, gérer les cartes, opacité, raccourci, cartes personnalisées, carte personnalisée, wms, tms, ajouter une source',
         'modal-offline-maps': 'cartes téléchargées, stockage',
         'modal-browse-cache': 'cache, tuiles en cache, stockage',
         'modal-map-preferences': 'paramètres, options, opacité des calques',
@@ -505,13 +502,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineWarning:
       'Cette carte n’est pas enregistrée pour une utilisation hors ligne',
     customBase: 'Carte personnalisée',
-    layersConfiguration: 'Configuration des couches',
     mapLibrary: 'Bibliothèque de cartes',
     customMaps: 'Cartes personnalisées',
     addCustomMap: 'Ajouter une carte personnalisée',
     activate: 'Activer',
-    customMapsEmptyMessage:
-      'Aucune carte personnalisée définie pour le moment. Ajoutez-en une pour afficher votre propre source de carte.',
     base: 'Couches de base',
     overlay: 'Couches de superposition',
     technology: 'Type',

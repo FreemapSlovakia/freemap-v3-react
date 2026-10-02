@@ -373,11 +373,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'adományozás, támogatás, pénz',
         'modal-legend': 'jelmagyarázat, jelek, szimbólumok',
         'modal-about': 'kapcsolat, e-mail, visszajelzés',
-        'modal-map-layers-config':
-          'rétegek, térképek kezelése, sorrend, átlátszóság',
         'modal-map-library':
-          'könyvtár, katalógus, telepítés, eltávolítás, térképek hozzáadása, további térképek',
-        'modal-custom-maps': 'saját térkép, wms, tms, térképforrás hozzáadása',
+          'könyvtár, katalógus, telepítés, eltávolítás, térképek hozzáadása, további térképek, rétegek beállítása, rétegek, térképek kezelése, átlátszóság, gyorsbillentyű, egyéni térképek, saját térkép, wms, tms, térképforrás hozzáadása',
         'modal-offline-maps': 'letöltött térképek, tárhely',
         'modal-browse-cache': 'gyorsítótár, csempék, tárhely',
         'modal-map-preferences': 'beállítások, opciók, fedvény átlátszósága',
@@ -503,8 +500,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Egyéni térképek',
     addCustomMap: 'Egyéni térkép hozzáadása',
     activate: 'Aktiválás',
-    customMapsEmptyMessage:
-      'Még nincsenek egyéni térképek megadva. Adjon hozzá egyet a saját térképforrás megjelenítéséhez.',
     base: 'Alaprétegek',
     overlay: 'Fedőrétegek',
     url: 'URL sablon',
@@ -536,7 +531,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Átfedő',
     },
     showMore: 'További térképek megjelenítése',
-    layersConfiguration: 'Rétegek beállítása',
     mapLibrary: 'Térképtár',
     technologies: {
       tile: 'Képcsempék (TMS, XYZ)',

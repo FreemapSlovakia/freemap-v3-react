@@ -120,7 +120,7 @@ from both the old and new identities.
 | `MyMaps` | `create` / `update` / `copy` | — | `MyMaps`/`save` (variant was in name) *(added 2026-06)* | [`mapsSaveProcessor.ts`](../src/features/myMaps/model/processors/mapsSaveProcessor.ts) |
 | `MyMaps` | `load` | `replace` or `merge` (only user-initiated, not auth re-validation reloads) | *(added 2026-06)* | [`mapsLoadProcessor.ts`](../src/features/myMaps/model/processors/mapsLoadProcessor.ts) |
 | `MyMaps` | `delete` | — | *(added 2026-06)* | [`mapsDeleteProcessor.ts`](../src/features/myMaps/model/processors/mapsDeleteProcessor.ts) |
-| `MapSettings` | `create` / `update` / `delete` | `customMap` | `CustomMap`/`create`,`edit`,`delete` *(added 2026-06)* | [`CustomMapsModal.tsx`](../src/features/mapSettings/components/CustomMapsModal.tsx) |
+| `MapSettings` | `create` / `update` / `delete` | `customMap` | `CustomMap`/`create`,`edit`,`delete` *(added 2026-06)* | [`CustomMapEditor.tsx`](../src/features/mapSettings/components/CustomMapEditor.tsx), [`useCustomMapActions.ts`](../src/features/mapSettings/useCustomMapActions.ts) |
 | `Purchase` | `start` / `success` | name = `premium-subscription` / `premium-once` / `premium-chrons` / `credits`; **value** = credit amount | `Purchase`/`purchaseStart`, `purchaseSuccess` — *was JSON payload*; name was a bare `premium` until 2026-08, so premium totals spanning that date must sum all three variants plus `premium` | [`purchaseProcessor.ts`](../src/features/purchases/model/processors/purchaseProcessor.ts) |
 | `Purchase` | `confirmPayOnce` | `shown` / `subscribed` / `continued` | no longer emitted — the pay-once confirmation existed only for the price-lock window (2026-08 to 2026-09-01); the data is still in Matomo | — |
 
@@ -204,8 +204,8 @@ Standardize on this so the scheme doesn't drift again:
   track (`*GaProcessor.ts`); others push an event as a side effect of work they
   already do. A few events are tracked in **components** instead, because the
   distinction or the user gesture only exists at the call site and isn't carried
-  by a dedicated action: `MapSettings`/`customMap` (funnels through generic
-  `saveSettings`), `Tracking`/`watchedDevice`, `HomeLocation`/`save`,
+  by a dedicated action: `MapSettings`/`customMap` (whether it is a create or an
+  update is known only to the form), `Tracking`/`watchedDevice`, `HomeLocation`/`save`,
   `MapShading`/`add`, `Purchase`/`confirmPayOnce` (the dialog and which button
   ended it exist only in the modal — the `purchase` action carries no trace of
   it), and `Ad`/`impression`+`click` (the rendered ad id and the

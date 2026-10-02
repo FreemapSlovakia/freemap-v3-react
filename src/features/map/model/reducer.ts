@@ -9,16 +9,21 @@ import {
 } from '@features/cachedMaps/model/actions.js';
 import { gallerySetFilter } from '@features/gallery/model/actions.js';
 import { processGeoipResult } from '@features/geoip/model/actions.js';
-import {
-  mapLibraryCatalogMapsLoaded,
-  mapLibraryInstall,
-} from '@features/mapLibrary/model/actions.js';
+import { mapLibraryCatalogMapsLoaded } from '@features/mapLibrary/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
+import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
 import {
+  type LayerSettings,
   type MapStateBase,
+  mapCombinationDelete,
+  mapCombinationSave,
+  mapCustomLayerDelete,
+  mapCustomLayerSave,
+  mapLayerSettingsChange,
+  mapLayersSettingsReset,
   mapRefocus,
   mapReplaceLayer,
   mapSetBounds,
@@ -140,6 +145,46 @@ export const accountSettingsOf = (map: MapState): AccountSettings => ({
   maxZoom: map.maxZoom,
 });
 
+/** Whether this map's shading draft is what it has saved. */
+export const isShadingDraftSaved = (
+  def: CustomLayerDef,
+  draft: Shading | undefined,
+): boolean =>
+  def.technology === 'parametricShading' &&
+  JSON.stringify(def.shading) === JSON.stringify(draft);
+
+/** A draft ends once saved, or with its map. */
+function endSavedShadingDrafts(state: MapState) {
+  for (const [type, draft] of Object.entries(state.shadingDrafts)) {
+    const def = state.customLayers.find((def) => def.type === type);
+
+    if (!def || isShadingDraftSaved(def, draft)) {
+      delete state.shadingDrafts[type];
+    }
+  }
+}
+
+/** Replaces the item with the same key in place, or appends it. */
+function upsert<T>(items: T[], item: T, same: (a: T) => boolean) {
+  const i = items.findIndex(same);
+
+  if (i === -1) {
+    items.push(item);
+  } else {
+    items[i] = item;
+  }
+}
+
+function mergeLayerSettings(
+  state: MapState,
+  type: string,
+  settings: LayerSettings | undefined,
+) {
+  if (settings) {
+    state.layersSettings[type] = { ...state.layersSettings[type], ...settings };
+  }
+}
+
 /** Each key given replaces the slice's, even when empty. */
 function assignAccountSettings(
   state: MapState,
@@ -152,18 +197,7 @@ function assignAccountSettings(
   if (settings.customLayers) {
     state.customLayers = settings.customLayers;
 
-    // A draft ends once saved, or with its map.
-    for (const [type, draft] of Object.entries(state.shadingDrafts)) {
-      const def = settings.customLayers.find((def) => def.type === type);
-
-      if (
-        !def ||
-        (def.technology === 'parametricShading' &&
-          JSON.stringify(def.shading) === JSON.stringify(draft))
-      ) {
-        delete state.shadingDrafts[type];
-      }
-    }
+    endSavedShadingDrafts(state);
   }
 
   if (settings.mapCombinations) {
@@ -198,11 +232,44 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         }
       }
     })
-    .addCase(mapLibraryInstall, (state, { payload }) => {
-      state.layersSettings[payload.type] = {
-        ...state.layersSettings[payload.type],
-        installed: payload.installed,
-      };
+    .addCase(mapLayerSettingsChange, (state, { payload }) => {
+      mergeLayerSettings(state, payload.type, payload.settings);
+    })
+    .addCase(mapCustomLayerSave, (state, { payload: { def, settings } }) => {
+      upsert(state.customLayers, def, (d) => d.type === def.type);
+
+      mergeLayerSettings(state, def.type, settings);
+    })
+    .addCase(mapCustomLayerDelete, (state, { payload: { type } }) => {
+      state.customLayers = state.customLayers.filter((d) => d.type !== type);
+
+      delete state.layersSettings[type];
+
+      endSavedShadingDrafts(state);
+    })
+    .addCase(
+      mapCombinationSave,
+      (state, { payload: { combination, settings } }) => {
+        upsert(
+          state.mapCombinations,
+          combination,
+          (c) => c.id === combination.id,
+        );
+
+        mergeLayerSettings(state, combination.id, settings);
+      },
+    )
+    .addCase(mapCombinationDelete, (state, { payload: { id } }) => {
+      state.mapCombinations = state.mapCombinations.filter((c) => c.id !== id);
+
+      delete state.layersSettings[id];
+    })
+    .addCase(mapLayersSettingsReset, (state) => {
+      state.layersSettings = Object.fromEntries(
+        Object.entries(state.layersSettings).flatMap(([type, { installed }]) =>
+          installed === undefined ? [] : [[type, { installed }]],
+        ),
+      );
     })
     .addCase(gallerySetFilter, (state) => {
       if (!state.layers.includes('I')) {

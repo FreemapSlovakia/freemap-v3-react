@@ -358,11 +358,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'wesprzyj, darowizna, wsparcie, pieniądze',
         'modal-legend': 'symbole, legenda mapy',
         'modal-about': 'kontakt, e-mail, opinie',
-        'modal-map-layers-config':
-          'warstwy, zarządzanie mapami, kolejność, przezroczystość',
         'modal-map-library':
-          'katalog, zainstaluj, odinstaluj, dodaj mapy, więcej map',
-        'modal-custom-maps': 'własna mapa, wms, tms, dodaj źródło mapy',
+          'katalog, zainstaluj, odinstaluj, dodaj mapy, więcej map, konfiguracja warstw, warstwy, zarządzanie mapami, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',
         'modal-offline-maps': 'pobrane mapy, pamięć',
         'modal-browse-cache': 'pamięć podręczna, kafelki, cache',
         'modal-map-preferences': 'ustawienia, opcje, przezroczystość nakładek',
@@ -483,8 +480,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Mapy własne',
     addCustomMap: 'Dodaj własną mapę',
     activate: 'Aktywuj',
-    customMapsEmptyMessage:
-      'Nie zdefiniowano jeszcze żadnych własnych map. Dodaj jedną, aby wyświetlić własne źródło mapy.',
     base: 'Warstwy podstawowe',
     overlay: 'Warstwy nakładkowe',
     url: 'Szablon URL',
@@ -516,7 +511,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Nakładka',
     },
     showMore: 'Pokaż więcej map',
-    layersConfiguration: 'Konfiguracja warstw',
     mapLibrary: 'Biblioteka map',
     technologies: {
       tile: 'Płytki obrazów (TMS, XYZ)',

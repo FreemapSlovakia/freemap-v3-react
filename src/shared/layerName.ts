@@ -8,3 +8,10 @@ export const layerName = (
   def: { type: string; name?: string },
   m: Messages | undefined,
 ): string | undefined => def.name || m?.mapLayers.letters[def.type];
+
+/** {@link layerName}, or "Custom map X" for a map that has none. */
+export const layerLabel = (
+  def: { type: string; name?: string },
+  m: Messages | undefined,
+): string =>
+  layerName(def, m) ?? `${m?.mapLayers.customBase ?? ''} ${def.type}`;

@@ -363,11 +363,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'donacija, podpri, prispevaj, denar',
         'modal-legend': 'simboli, legenda karte',
         'modal-about': 'kontakt, e-pošta, povratne informacije',
-        'modal-map-layers-config':
-          'sloji, upravljanje kart, vrstni red, prosojnost',
         'modal-map-library':
-          'knjižnica, katalog, namesti, odstrani, dodaj karte, več kart, zemljevid',
-        'modal-custom-maps': 'lastna karta, wms, tms, dodaj vir karte',
+          'knjižnica, katalog, namesti, odstrani, dodaj karte, več kart, zemljevid, nastavitev slojev, sloji, upravljanje kart, prosojnost, bližnjica, karte po meri, lastna karta, wms, tms, dodaj vir karte',
         'modal-offline-maps': 'prenesene karte, shramba',
         'modal-browse-cache': 'predpomnilnik, ploščice, shramba',
         'modal-map-preferences':
@@ -482,13 +479,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'različne licence Creative Commons',
     },
-    layersConfiguration: 'Nastavitev slojev',
     mapLibrary: 'Knjižnica kart',
     customMaps: 'Zemljevidi po meri',
     addCustomMap: 'Dodaj zemljevid po meri',
     activate: 'Aktiviraj',
-    customMapsEmptyMessage:
-      'Zaenkrat ni določenih zemljevidov po meri. Dodajte enega za prikaz lastnega vira zemljevida.',
     base: 'Osnovni sloji',
     overlay: 'Prekrivni sloji',
     technology: 'Tip',

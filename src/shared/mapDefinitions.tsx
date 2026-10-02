@@ -276,6 +276,8 @@ type HasZIndex = {
 export type IsIntegratedLayerDef = {
   /** A catalog map's own name; a built-in map's is translated. */
   name?: string;
+  /** An Editor Layer Index category (`photo`, `historicmap`, …), as the library filters by. */
+  category?: string;
   layerPreview?: boolean;
   /**
    * Opacity this overlay is drawn at until the user sets one of their own.
@@ -514,6 +516,8 @@ export type IsAllTechnologiesLayerDef =
 
 export type IsCustomLayer = {
   name?: string;
+  /** As the library filters by; see `categoryGroup`. */
+  category?: string;
   /**
    * The layer's icon as a `drawingIcons` spec (`fa:<name>` / `poi:<name>`).
    * A string rather than the integrated registry's `ReactElement` so it can be
@@ -550,6 +554,7 @@ const IsCommonLayerDefSchema = z.object({
 
 const IsCustomLayerSchema = z.object({
   name: z.string().optional(),
+  category: z.string().optional(),
   iconSpec: z.string().optional(),
 });
 
@@ -776,6 +781,7 @@ export function resolveLayersSettingsAliases<T>(
 type MapIndexField =
   | 'type'
   | 'name'
+  | 'category'
   | 'layer'
   | 'technology'
   | 'icon'

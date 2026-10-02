@@ -45,6 +45,10 @@ export type CachedTileMapDef = CustomLayerDef<
  * Whether two versions of a map cover the same tiles — an edit that changed
  * only the name has nothing to download or prune.
  */
+/** Whether every one of its tiles has been downloaded. */
+export const isCachedMapComplete = (cm: CachedTileMapDef): boolean =>
+  cm.downloadedCount === cm.tileCount;
+
 export function sameCoverage(
   a: CachedTileMapDef,
   b: CachedTileMapDef,

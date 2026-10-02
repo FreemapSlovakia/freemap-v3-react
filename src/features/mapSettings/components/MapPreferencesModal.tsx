@@ -164,8 +164,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     }
 
     if (Object.keys(settings).length > 0) {
-      // saveSettingsProcessor closes the modal on success;
-      // dispatching setActiveModal(null) here would cancel its PATCH.
+      // saveSettingsProcessor closes the modal on success.
       dispatch(saveSettings({ settings }));
     } else {
       close();

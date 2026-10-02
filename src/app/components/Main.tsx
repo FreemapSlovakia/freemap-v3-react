@@ -366,22 +366,10 @@ const browseCacheModalFactory = () =>
     '@features/cachedMaps/components/BrowseCacheModal.js'
   );
 
-const mapLayersConfigModalFactory = () =>
-  import(
-    /* webpackChunkName: "map-layers-config-modal" */
-    '@features/mapSettings/components/MapLayersConfigModal.js'
-  );
-
 const mapLibraryModalFactory = () =>
   import(
     /* webpackChunkName: "map-library-modal" */
     '@features/mapLibrary/components/MapLibraryModal.js'
-  );
-
-const customMapsModalFactory = () =>
-  import(
-    /* webpackChunkName: "custom-maps-modal" */
-    '@features/mapSettings/components/CustomMapsModal.js'
   );
 
 const mapPreferencesModalFactory = () =>
@@ -1261,18 +1249,8 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal?.type === 'map-layers-config'}
-        factory={mapLayersConfigModalFactory}
-      />
-
-      <AsyncModal
         show={activeModal?.type === 'map-library'}
         factory={mapLibraryModalFactory}
-      />
-
-      <AsyncModal
-        show={activeModal?.type === 'custom-maps'}
-        factory={customMapsModalFactory}
       />
 
       <AsyncModal

@@ -34,6 +34,42 @@ export type LayerSettings = {
   shortcut?: Shortcut | null;
 };
 
+/** Changes one map's settings at once; the account catches up in the background. */
+export const mapLayerSettingsChange = createAction<{
+  type: string;
+  settings: LayerSettings;
+}>('MAP_LAYER_SETTINGS_CHANGE');
+
+/** Puts every map's settings back to the defaults, keeping what is installed. */
+export const mapLayersSettingsReset = createAction('MAP_LAYERS_SETTINGS_RESET');
+
+/**
+ * Adds or replaces a custom map, with its own settings when given. Like the
+ * actions below it changes the store at once and the account catches up.
+ */
+export const mapCustomLayerSave = createAction<{
+  def: CustomLayerDef;
+  settings?: LayerSettings;
+  /** The saved toast offers to switch the map on. */
+  offerActivate?: boolean;
+}>('MAP_CUSTOM_LAYER_SAVE');
+
+/** Removes a custom map and its settings. */
+export const mapCustomLayerDelete = createAction<{ type: string }>(
+  'MAP_CUSTOM_LAYER_DELETE',
+);
+
+/** Adds or replaces a map combination, with its own settings when given. */
+export const mapCombinationSave = createAction<{
+  combination: MapCombination;
+  settings?: LayerSettings;
+}>('MAP_COMBINATION_SAVE');
+
+/** Removes a map combination and its settings. */
+export const mapCombinationDelete = createAction<{ id: string }>(
+  'MAP_COMBINATION_DELETE',
+);
+
 export interface MapStateBase extends MapViewState {
   layersSettings: Record<string, LayerSettings>;
   customLayers: CustomLayerDef[];

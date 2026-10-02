@@ -1,11 +1,14 @@
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { processGeoipResult } from '@features/geoip/model/actions.js';
-import {
-  mapLibraryCatalogMapsLoaded,
-  mapLibraryInstall,
-} from '@features/mapLibrary/model/actions.js';
+import { mapLibraryCatalogMapsLoaded } from '@features/mapLibrary/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
+  mapCombinationDelete,
+  mapCombinationSave,
+  mapCustomLayerDelete,
+  mapCustomLayerSave,
+  mapLayerSettingsChange,
+  mapLayersSettingsReset,
   mapRefocus,
   mapReplaceLayer,
   mapSetCountries,
@@ -54,16 +57,83 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
     expect(next.layers).toEqual(['Z0001', 'i']);
   });
 
-  it('installing flips only the installed flag', () => {
+  it('changes only the settings named', () => {
     const next = mapReducer(
       { ...mapInitialState, layersSettings: { Z0001: { showInMenu: false } } },
-      mapLibraryInstall({ type: 'Z0001', installed: true }),
+      mapLayerSettingsChange({ type: 'Z0001', settings: { installed: true } }),
     );
 
     expect(next.layersSettings['Z0001']).toEqual({
       showInMenu: false,
       installed: true,
     });
+  });
+
+  it('saves a custom map with its settings, and deletes both', () => {
+    const def = {
+      type: '.1',
+      layer: 'base' as const,
+      technology: 'tile' as const,
+      url: 'https://example.com/{z}/{x}/{y}.png',
+    };
+
+    const saved = mapReducer(
+      { ...mapInitialState, layersSettings: { '.1': { opacity: 0.5 } } },
+      mapCustomLayerSave({ def, settings: { showInMenu: false } }),
+    );
+
+    expect(saved.customLayers).toEqual([def]);
+
+    expect(saved.layersSettings['.1']).toEqual({
+      opacity: 0.5,
+      showInMenu: false,
+    });
+
+    const deleted = mapReducer(saved, mapCustomLayerDelete({ type: '.1' }));
+
+    expect(deleted.customLayers).toEqual([]);
+
+    expect(deleted.layersSettings['.1']).toBeUndefined();
+  });
+
+  it('replaces a combination in place, and deletes it with its settings', () => {
+    const a = { id: 'a', name: 'A', overlays: [] };
+
+    const b = { id: 'b', name: 'B', overlays: [] };
+
+    const state = {
+      ...mapInitialState,
+      mapCombinations: [a, b],
+      layersSettings: { a: { showInToolbar: true } },
+    };
+
+    const renamed = mapReducer(
+      state,
+      mapCombinationSave({ combination: { ...a, name: 'A2' } }),
+    );
+
+    expect(renamed.mapCombinations.map((c) => c.name)).toEqual(['A2', 'B']);
+
+    const deleted = mapReducer(state, mapCombinationDelete({ id: 'a' }));
+
+    expect(deleted.mapCombinations).toEqual([b]);
+
+    expect(deleted.layersSettings['a']).toBeUndefined();
+  });
+
+  it('resets every map but what is installed', () => {
+    const next = mapReducer(
+      {
+        ...mapInitialState,
+        layersSettings: {
+          X: { showInMenu: false, opacity: 0.5 },
+          O: { installed: false, showInToolbar: true },
+        },
+      },
+      mapLayersSettingsReset(),
+    );
+
+    expect(next.layersSettings).toEqual({ O: { installed: false } });
   });
 
   it('toggling the already-active base layer is a no-op', () => {

@@ -6,7 +6,7 @@ import {
   mapRefocus,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
-import { getCountriesBbox } from '@shared/mapDefinitions.js';
+import { getCountriesBbox, getLayerBbox } from '@shared/mapDefinitions.js';
 import { coverageCountries } from '@shared/mapLibrary/coverage.js';
 import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { mapLibraryPreviewEnd, mapLibraryPreviewStart } from '../actions.js';
@@ -37,23 +37,31 @@ export const mapLibraryPreviewStartProcessor: Processor<
 
     const entry = libraryIndexByIdSelector(state)[type];
 
-    if (!entry) {
+    // The user's own: an offline map has its downloaded area, a custom one none.
+    const own =
+      state.map.cachedMaps.find((cm) => cm.type === type) ??
+      state.map.customLayers.find((def) => def.type === type);
+
+    if (!entry && !own) {
       return;
     }
 
     // An uninstalled built-in map's body loads only once it is on.
-    const def =
-      integratedLayerDefMapSelector(state)[type] ??
-      (await loadIntegratedLayerDef(type).catch(() => undefined));
+    const def = entry
+      ? (integratedLayerDefMapSelector(state)[type] ??
+        (await loadIntegratedLayerDef(type).catch(() => undefined)))
+      : own;
 
     const minZoom = def?.minZoom;
 
     const { lat, lon, zoom, countries: inView } = getState().map;
 
-    const box = entry.bbox ?? getCountriesBbox(entry.countries);
+    const box = entry
+      ? (entry.bbox ?? getCountriesBbox(entry.countries))
+      : own && getLayerBbox(own);
 
     // As the map menu tells it: by the countries in view, else by its box.
-    const countries = coverageCountries(entry);
+    const countries = entry && coverageCountries(entry);
 
     const away = countries
       ? inView != null && !countries.some((country) => inView.includes(country))

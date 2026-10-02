@@ -1,4 +1,5 @@
 import { hasRole } from '@features/auth/model/types.js';
+import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   mapApplyCombination,
@@ -32,7 +33,7 @@ import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
-import { layerName } from '@shared/layerName.js';
+import { layerLabel, layerName } from '@shared/layerName.js';
 import {
   flaggedCountries,
   getCountriesBbox,
@@ -318,7 +319,7 @@ export function MapSwitchButton(): ReactElement {
       .sort((a, b) => byName(a.name || undefined, b.name || undefined))
       .map((def) => ({ ...def, custom: true as const, cached: false })),
     ...cachedMaps
-      .filter((cm) => cm.downloadedCount === cm.tileCount)
+      .filter(isCachedMapComplete)
       .sort((a, b) => byName(a.name || undefined, b.name || undefined))
       .map((cm) => ({ ...cm, custom: true as const, cached: true })),
   ].map((def) => ({
@@ -523,9 +524,9 @@ export function MapSwitchButton(): ReactElement {
         on ||
         (expand === false && !isWide ? showInToolbar : showInMenu);
 
+  // A built-in map has a name once the messages are in.
   const nameOf = (def: { type: string; name?: string; custom: boolean }) =>
-    layerName(def, m) ??
-    (def.custom ? `${m?.mapLayers.customBase ?? ''} ${def.type}` : '…');
+    def.custom ? layerLabel(def, m) : (layerName(def, m) ?? '…');
 
   function layersMemuItems(layer: 'base' | 'overlay') {
     return layerDefs

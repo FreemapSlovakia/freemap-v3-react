@@ -25,6 +25,7 @@ export function loadLibraryCatalog(): Promise<CatalogEntry[]> {
         type: index.type,
         layer: index.layer,
         countries: index.countries,
+        category: index.category,
         index,
       }),
     );

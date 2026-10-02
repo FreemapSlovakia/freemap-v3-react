@@ -1,4 +1,5 @@
 import { hasRole } from '@features/auth/model/types.js';
+import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   isCombinable,
@@ -110,7 +111,7 @@ export function MapCombinationForm({
   const defs: MapLayerItemDef[] = [
     ...libraryIndex.filter((def) => canPreviewLayers || !def.layerPreview),
     ...customLayers,
-    ...cachedMaps.filter((cm) => cm.downloadedCount === cm.tileCount),
+    ...cachedMaps.filter(isCachedMapComplete),
   ];
 
   // a retired layer shown as its successor, which applying it gives

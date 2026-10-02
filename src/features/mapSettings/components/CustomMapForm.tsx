@@ -1,4 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  CATEGORY_GROUPS,
+  type CategoryGroup,
+  categoryGroup,
+} from '@features/mapLibrary/filters.js';
 import { shadingSourceSelector } from '@features/mapLibrary/model/selectors.js';
 import {
   type Color,
@@ -66,6 +71,7 @@ type Props = {
 
 type Model = {
   name: string;
+  category: CategoryGroup;
   iconSpec?: string;
   url: string;
   minZoom: string;
@@ -169,6 +175,7 @@ function valueToModel(value?: CustomLayerDef): Model {
       value?.technology === 'parametricShading' ? value.shading : undefined,
     color: value?.technology === 'color' ? value.color : WHITE,
     name: value?.name ?? '',
+    category: categoryGroup(value?.category),
     iconSpec: value?.iconSpec,
     minZoom: value?.minZoom === undefined ? '' : value.minZoom.toString(),
     maxNativeZoom:
@@ -224,6 +231,7 @@ export function CustomMapForm({
       ...(technology === 'parametricShading' && {
         shading: start.shading ?? sharedShading,
         layer: 'overlay' as const,
+        category: 'elevation' as const,
       }),
     };
   });
@@ -258,6 +266,7 @@ export function CustomMapForm({
     setModel((model) => {
       const changed =
         model.name !== newModel.name ||
+        model.category !== newModel.category ||
         model.iconSpec !== newModel.iconSpec ||
         model.url !== newModel.url ||
         model.minZoom !== newModel.minZoom ||
@@ -311,6 +320,7 @@ export function CustomMapForm({
     const common = {
       type,
       name: model.name,
+      category: model.category === 'other' ? undefined : model.category,
       iconSpec: model.iconSpec,
       layer: model.layer,
       zIndex,
@@ -642,6 +652,8 @@ export function CustomMapForm({
               technology: kind,
               ...(kind === 'parametricShading' && {
                 shading: model.shading ?? sharedShading,
+                category:
+                  model.category === 'other' ? 'elevation' : model.category,
               }),
             }));
           }
@@ -651,6 +663,26 @@ export function CustomMapForm({
       {model.technology === 'parametricShading' && (
         <Form.Text className="d-block mt-3">{msm?.shadingMapHint}</Form.Text>
       )}
+
+      <Form.Group controlId="category" className="mt-3">
+        <Form.Label>{msm?.filters.category}</Form.Label>
+
+        <Form.Select
+          value={model.category}
+          onChange={(e) =>
+            setModelWithVersion((model) => ({
+              ...model,
+              category: e.currentTarget.value as CategoryGroup,
+            }))
+          }
+        >
+          {CATEGORY_GROUPS.map((category) => (
+            <option key={category} value={category}>
+              {msm?.filters[category]}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
 
       {/* First for a colour, as it decides whether the colour takes alpha. */}
       {model.technology === 'color' && layerField}

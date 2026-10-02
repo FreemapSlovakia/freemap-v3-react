@@ -1,17 +1,19 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
+import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
-import { layerName } from '@shared/layerName.js';
+import { layerLabel } from '@shared/layerName.js';
 import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaArrowLeft, FaCheck, FaPlus, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { mapLibraryInstall, mapLibraryPreviewEnd } from '../model/actions.js';
+import { mapLibraryPreviewEnd } from '../model/actions.js';
 import { libraryIndexByIdSelector } from '../model/selectors.js';
 
 /** The map previewed from the library, with what to do with it. */
@@ -28,16 +30,37 @@ export default function MapLibraryPreviewMenu(): ReactElement | null {
     (state) => type && libraryIndexByIdSelector(state)[type],
   );
 
+  // A custom or offline map is previewed from Your maps.
+  const own = useAppSelector((state) =>
+    type === undefined
+      ? undefined
+      : (state.map.customLayers.find((def) => def.type === type) ??
+        state.map.cachedMaps.find((cm) => cm.type === type)),
+  );
+
+  // The user's own maps are never uninstalled.
   const installed = useAppSelector(
     (state) =>
-      type !== undefined && isLayerInstalled(state.map.layersSettings, type),
+      !entry ||
+      (type !== undefined && isLayerInstalled(state.map.layersSettings, type)),
   );
 
   const canSaveSettings = useCanSaveSettings();
 
-  if (!type || !entry) {
+  if (!type || (!entry && !own)) {
     return null;
   }
+
+  const icon = entry ? (
+    entry.icon
+  ) : (
+    <CustomMapGlyph
+      spec={own?.iconSpec}
+      kind={own && 'downloadedCount' in own ? 'cached' : own?.technology}
+    />
+  );
+
+  const name = layerLabel(entry || own || { type }, m);
 
   // Ending keeps the map on and closes the library.
   const keep = () => {
@@ -50,7 +73,7 @@ export default function MapLibraryPreviewMenu(): ReactElement | null {
     <div>
       <Toolbar className="mt-2">
         <div className="px-1 text-nowrap">
-          {entry.icon} {layerName(entry, m)}
+          {icon} {name}
         </div>
 
         {!installed && (
@@ -60,7 +83,12 @@ export default function MapLibraryPreviewMenu(): ReactElement | null {
                 variant="primary"
                 disabled={!canSaveSettings}
                 onClick={() => {
-                  dispatch(mapLibraryInstall({ type, installed: true }));
+                  dispatch(
+                    mapLayerSettingsChange({
+                      type,
+                      settings: { installed: true },
+                    }),
+                  );
 
                   keep();
                 }}

@@ -1,14 +1,41 @@
 export type MapSettingsMessages = {
   install: string;
-  uninstall: string;
-  installedMaps: string;
+  yourMaps: string;
   noInstalledMaps: string;
   searchLibrary: (props: { count: number }) => string;
-  moreResults: (props: { count: number }) => string;
   /** Followed by the name of the catalog source. */
   catalogCredit: string;
+  /** The map library's tabs and filter chips. */
+  filters: {
+    library: string;
+    filterYourMaps: string;
+    kind: string;
+    builtIn: string;
+    fromLibrary: string;
+    custom: string;
+    offline: string;
+    combinations: string;
+    shownIn: string;
+    toolbar: string;
+    menu: string;
+    shortcut: string;
+    hidden: string;
+    technology: string;
+    special: string;
+    category: string;
+    photo: string;
+    historicphoto: string;
+    historicmap: string;
+    map: string;
+    elevation: string;
+    other: string;
+    coversView: string;
+  };
   preview: string;
   installMap: string;
+  uninstallMap: string;
+  resetConfirm: string;
+  downloadOffline: string;
   keepOnMap: string;
   backToLibrary: string;
   overlayOpacity: string;

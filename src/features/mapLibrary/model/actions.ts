@@ -6,12 +6,6 @@ export const mapLibraryBodiesLoaded = createAction<Record<string, MapBody>>(
   'MAP_LIBRARY_BODIES_LOADED',
 );
 
-/** Installs or uninstalls a map at once; the account catches up in the background. */
-export const mapLibraryInstall = createAction<{
-  type: string;
-  installed: boolean;
-}>('MAP_LIBRARY_INSTALL');
-
 /** Catalog maps that became wanted; the ones already known are left alone. */
 export const mapLibraryCatalogMapsLoaded = createAction<CatalogMap[]>(
   'MAP_LIBRARY_CATALOG_MAPS_LOADED',

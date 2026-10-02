@@ -1,5 +1,5 @@
-import { saveSettings } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
@@ -92,9 +92,11 @@ const LARGE_DOWNLOAD_SECONDS = 5 * 60;
 type Props = {
   /** The map being modified; absent when a new one is being added. */
   editing?: CachedTileMapDef;
+  /** A new map's preselected source. */
+  source?: string;
 };
 
-export function CacheTilesForm({ editing }: Props): ReactElement {
+export function CacheTilesForm({ editing, source }: Props): ReactElement {
   const m = useMessages();
 
   const ome = useOfflineMapExportMessages();
@@ -156,6 +158,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
   const mapType =
     pickedType ??
     editing?.sourceType ??
+    mapDefs.find((def) => def.type === source)?.type ??
     mapDefs.find((def) => layers.includes(def.type))?.type ??
     mapDefs[0]?.type ??
     '';
@@ -509,18 +512,9 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       showInToolbar !== initialVisibility.showInToolbar
     ) {
       dispatch(
-        saveSettings({
-          settings: {
-            layersSettings: {
-              ...layersSettings,
-              [type]: {
-                ...(layersSettings[type] ?? {}),
-                showInMenu,
-                showInToolbar,
-              },
-            },
-          },
-          keepOpen: true,
+        mapLayerSettingsChange({
+          type,
+          settings: { showInMenu, showInToolbar },
         }),
       );
     }

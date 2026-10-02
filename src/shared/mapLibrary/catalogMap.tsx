@@ -42,6 +42,7 @@ export const catalogIndexEntry = (map: CatalogMap): MapIndexEntry<'tile'> => ({
   name: map.name,
   countries: map.countries,
   bbox: map.bbox,
+  category: map.category,
   technology: 'tile',
   icon: catalogIcon(map.category),
   defaultInMenu: true,

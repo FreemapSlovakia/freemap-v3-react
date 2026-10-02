@@ -38,9 +38,10 @@ export const chordDefinitions: ChordDefinition[] = [
   { codes: ['KeyM', 'KeyP'], modal: 'map-preferences' },
   { codes: ['KeyM', 'KeyO'], modal: 'offline-maps' },
   { codes: ['KeyM', 'KeyB'], modal: 'browse-cache' },
-  { codes: ['KeyM', 'KeyY'], modal: 'map-layers-config' },
   { codes: ['KeyM', 'KeyI'], modal: 'map-library' },
-  { codes: ['KeyM', 'KeyC'], modal: 'custom-maps' },
+  // Also open it; menus show the first.
+  { codes: ['KeyM', 'KeyY'], modal: 'map-library' },
+  { codes: ['KeyM', 'KeyC'], modal: 'map-library' },
   { codes: ['KeyM', 'KeyL'], modal: 'legend' },
   { codes: ['KeyM', 'KeyE'], modal: 'elevation-settings' },
 

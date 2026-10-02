@@ -372,11 +372,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'spenden, unterstützen, sponsor, geld',
         'modal-legend': 'zeichenerklärung, symbole, kartenlegende',
         'modal-about': 'kontakt, e-mail, feedback',
-        'modal-map-layers-config':
-          'ebenen, karten verwalten, reihenfolge, deckkraft',
         'modal-map-library':
-          'bibliothek, katalog, installieren, deinstallieren, karten hinzufügen, weitere karten',
-        'modal-custom-maps': 'eigene karte, wms, tms, kartenquelle hinzufügen',
+          'bibliothek, katalog, installieren, deinstallieren, karten hinzufügen, weitere karten, ebenenkonfiguration, ebenen, karten verwalten, deckkraft, tastenkürzel, benutzerdefinierte karten, eigene karte, wms, tms, kartenquelle hinzufügen',
         'modal-offline-maps': 'heruntergeladene karten, speicher',
         'modal-browse-cache': 'zwischenspeicher, cache, kacheln, speicher',
         'modal-map-preferences':
@@ -503,8 +500,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     customMaps: 'Benutzerdefinierte Karten',
     addCustomMap: 'Benutzerdefinierte Karte hinzufügen',
     activate: 'Aktivieren',
-    customMapsEmptyMessage:
-      'Noch keine benutzerdefinierten Karten definiert. Fügen Sie eine hinzu, um Ihre eigene Kartenquelle anzuzeigen.',
     base: 'Grundlegende Ebenen',
     overlay: 'Überlagerungsebenen',
     url: 'URL-Vorlage',
@@ -536,7 +531,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Overlay',
     },
     showMore: 'Mehr Karten anzeigen',
-    layersConfiguration: 'Ebenenkonfiguration',
     mapLibrary: 'Kartenbibliothek',
     technologies: {
       tile: 'Bildkacheln (TMS, XYZ)',

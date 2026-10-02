@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
@@ -93,7 +94,7 @@ export function CachedMapsList(): ReactElement {
               {sortedMaps.map((cm) => {
                 const dl = activeDownloads[cm.type];
 
-                const isComplete = cm.downloadedCount === cm.tileCount;
+                const isComplete = isCachedMapComplete(cm);
 
                 const pct = dl
                   ? Math.round((dl.downloaded / dl.total) * 100)

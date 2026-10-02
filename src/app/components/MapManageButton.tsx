@@ -14,14 +14,8 @@ import {
 import type { ReactElement } from 'react';
 import { ButtonGroup, Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
-import {
-  FaChartArea,
-  FaCog,
-  FaDatabase,
-  FaLayerGroup,
-  FaSlidersH,
-} from 'react-icons/fa';
-import { MdDashboardCustomize, MdLibraryAdd } from 'react-icons/md';
+import { FaChartArea, FaCog, FaDatabase, FaSlidersH } from 'react-icons/fa';
+import { MdLibraryAdd } from 'react-icons/md';
 
 /**
  * Everything about the maps other than which one is shown: the layer and
@@ -32,11 +26,6 @@ export function MapManageButton(): ReactElement {
   const m = useMessages();
 
   const canSaveSettings = useCanSaveSettings();
-
-  // Everything the Custom maps modal lists: layers and combinations alike.
-  const customLayerCount = useAppSelector(
-    (state) => state.map.customLayers.length + state.map.mapCombinations.length,
-  );
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
@@ -71,16 +60,6 @@ export function MapManageButton(): ReactElement {
       <FmDropdownMenu>
         <OnlineOnlyItem
           offline={!canSaveSettings}
-          {...modalMenuItemProps('map-layers-config')}
-        >
-          <FaLayerGroup /> {m?.mapLayers.layersConfiguration}
-          <MenuGutter>
-            <Chord modal="map-layers-config" />
-          </MenuGutter>
-        </OnlineOnlyItem>
-
-        <OnlineOnlyItem
-          offline={!canSaveSettings}
           {...modalMenuItemProps('map-library')}
         >
           <MdLibraryAdd /> {m?.mapLayers.mapLibrary}
@@ -90,20 +69,6 @@ export function MapManageButton(): ReactElement {
         </OnlineOnlyItem>
 
         <Dropdown.Divider />
-
-        {/* A custom map lives only in the account's settings, so offline there
-            is nothing here to add, change or remove — unless the settings are
-            the browser's own. */}
-        <OnlineOnlyItem
-          offline={!canSaveSettings}
-          {...modalMenuItemProps('custom-maps')}
-        >
-          <MdDashboardCustomize /> {m?.mapLayers.customMaps}
-          {customLayerCount > 0 && ` · ${customLayerCount}`}
-          <MenuGutter>
-            <Chord modal="custom-maps" />
-          </MenuGutter>
-        </OnlineOnlyItem>
 
         <Dropdown.Item {...modalMenuItemProps('offline-maps')}>
           <BiWifiOff /> {m?.mapLayers.offlineMaps}
