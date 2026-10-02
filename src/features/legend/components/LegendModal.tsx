@@ -1,7 +1,10 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  integratedLayerDefMapSelector,
+  libraryIndexSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerName } from '@shared/layerName.js';
@@ -34,12 +37,18 @@ export default function LegendModal({ show }: Props): ReactElement {
 
   const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
 
+  const libraryIndex = useAppSelector(libraryIndexSelector);
+
   const wmsLayerDefs = useMemo(
-    () => getWmsLayerDefs(customLayers, integratedLayerDefMap),
-    [customLayers, integratedLayerDefMap],
+    () => getWmsLayerDefs(libraryIndex, customLayers, integratedLayerDefMap),
+    [libraryIndex, customLayers, integratedLayerDefMap],
   );
 
-  const activeLegendLayers = getActiveLegendLayers(layers, customLayers);
+  const activeLegendLayers = getActiveLegendLayers(
+    layers,
+    libraryIndex,
+    customLayers,
+  );
 
   const [opened, setOpened] = useState<ReadonlySet<string>>(new Set());
 

@@ -9,7 +9,7 @@ A menu of seven items in three groups: **Installed maps**, where each map the us
 - Keyboard shortcut: <kbd>m</kbd> <kbd>i</kbd> (Installed maps), <kbd>m</kbd> <kbd>a</kbd> (Available maps)
 - URL path: `/#show=installed-maps` and `/#show=available-maps` (the older `/#show=map-library`, `/#show=map-layers-config` and `/#show=map-settings` open Installed maps)
 
-The maps on offer are the built-in ones and about 600 more — orthophotos, historic imagery and maps, elevation and other tile maps from around the world — taken from the OSM Editor Layer Index (credited at the bottom of Available maps, CC BY-SA 3.0). Those are not installed until the user adds them; a link to one (`layers=<5-character id>~`) shows it all the same.
+The maps on offer are the built-in ones and about 600 more — orthophotos, historic imagery and maps, elevation and other tile maps from around the world — taken from the OSM Editor Layer Index (credited at the bottom of Available maps, CC BY-SA 3.0), plus hand-picked Slovak maps and overlays named in Slovak: the base map series and administrative map (GKÚ), the forest stand map (NLC), the water management map (VÚVH), landslides (ŠGÚDŠ), protected areas and Natura 2000 (ŠOP SR), the Q100 flood hazard (SVP), heritage areas (PÚ SR) and the railway network (ŽSR). Those are not installed until the user adds them; a link to one (`layers=<5-character id>~`) shows it all the same.
 
 The modal's two tabs, **Installed maps (N)** and **Available maps (N)**, switch between the two, each with its own box and filter chips; a group of chips lets everything through until one of its chips is on, and then shows what matches any of them.
 

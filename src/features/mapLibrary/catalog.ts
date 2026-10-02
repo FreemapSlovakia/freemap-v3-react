@@ -38,7 +38,18 @@ export function loadLibraryCatalog(): Promise<CatalogEntry[]> {
       )
     ).default as unknown as { maps: CatalogMap[] };
 
-    return [...builtIn, ...maps.map((map): CatalogEntry => ({ ...map, map }))];
+    // Hand-picked maps ELI lacks, with ids of their own; see doc/map-library.md.
+    const curated = (
+      await import(
+        /* webpackChunkName: "curated-catalog" */
+        './curated/curatedCatalog.json'
+      )
+    ).default.maps as unknown as CatalogMap[];
+
+    return [
+      ...builtIn,
+      ...[...curated, ...maps].map((map): CatalogEntry => ({ ...map, map })),
+    ];
   })().catch((err: unknown) => {
     // A failed chunk load is tried again on the next call, not kept.
     catalog = undefined;

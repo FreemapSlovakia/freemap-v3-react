@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { hasLegend } from '@features/legend/legendLayers.js';
+import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
 import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -27,7 +28,9 @@ export function CopyrightButton(): ReactElement {
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const showLegendButton = hasLegend(layers, customLayers);
+  const libraryIndex = useAppSelector(libraryIndexSelector);
+
+  const showLegendButton = hasLegend(layers, libraryIndex, customLayers);
 
   const modalLink = useModalLink();
 

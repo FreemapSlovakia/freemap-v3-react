@@ -71,7 +71,11 @@ row in the Manage maps menu and in the search box, and switching tabs changes
   loads it on first opening. A `CatalogEntry` carries what search and the row
   need, and either a built-in map's `index` row or a catalog map (`map`). The
   catalog maps come from `eli/eliCatalog.json` (see **Harvesting**), a chunk of
-  its own (`eli-catalog`). The modal credits ELI under its CC BY-SA 3.0.
+  its own (`eli-catalog`), and from `curated/curatedCatalog.json`: hand-picked
+  maps ELI lacks (Slovak WMS and tile services so far), written by hand with
+  ids of their own (`FSK..`; a test keeps them clear of ELI's). A catalog map
+  is image tiles or, with `technology: 'wms'`, a WMS. The modal credits ELI
+  under its CC BY-SA 3.0.
 - **Search** — `librarySearch.ts`: the search box's fuzzy match over the name,
   then (ranked lower) each keyword, country code and name and category on its
   own; targets are normalized once per catalog and language. With no query,

@@ -187,7 +187,10 @@ function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
         ))}
 
         <div className="small text-muted">
-          {mapDetail(entry.category, entry.index?.technology ?? 'tile')}
+          {mapDetail(
+            entry.category,
+            entry.index?.technology ?? entry.map?.technology ?? 'tile',
+          )}
         </div>
       </td>
 
@@ -322,7 +325,9 @@ export function LibraryTab({
         passes(filters.categories, categoryGroup(entry.category)) &&
         passes(
           filters.technologies,
-          technologyGroup(entry.index?.technology ?? 'tile'),
+          technologyGroup(
+            entry.index?.technology ?? entry.map?.technology ?? 'tile',
+          ),
         ) &&
         passesCountry(entry.countries, filters) &&
         (!filters.coversView || coversView(entry, view))

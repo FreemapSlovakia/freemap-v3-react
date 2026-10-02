@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
 import { EXTERNAL_LEGENDS, getActiveLegendLayers } from '../legendLayers.js';
 
 export const legendProcessor: Processor<typeof setActiveModal> = {
@@ -9,9 +10,13 @@ export const legendProcessor: Processor<typeof setActiveModal> = {
       return action;
     }
 
-    const { layers, customLayers } = getState().map;
+    const state = getState();
 
-    const legendLayers = getActiveLegendLayers(layers, customLayers);
+    const legendLayers = getActiveLegendLayers(
+      state.map.layers,
+      libraryIndexSelector(state),
+      state.map.customLayers,
+    );
 
     // A lone external legend opens directly; beside others the modal links it.
     const url =

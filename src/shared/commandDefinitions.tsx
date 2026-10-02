@@ -162,7 +162,8 @@ const modalCommands: ModalCommand[] = [
     requiresOnline: true,
     // The modal describes the layers that are on, so with none of them on it
     // would open empty.
-    available: (ctx) => hasLegend(ctx.layers, ctx.customLayers),
+    available: (ctx) =>
+      hasLegend(ctx.layers, ctx.libraryIndex, ctx.customLayers),
   },
   {
     id: 'about',

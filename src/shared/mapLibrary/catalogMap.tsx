@@ -32,20 +32,35 @@ export type CatalogMap = {
   /** Where it covers, as [west, south, east, north]: what a preview fits to. */
   bbox?: [number, number, number, number];
   category?: string;
-  body: MapBody<'tile'>;
-};
+} & (
+  | { technology?: 'tile'; body: MapBody<'tile'> }
+  | { technology: 'wms'; body: MapBody<'wms'> }
+);
 
 /** A catalog map as an index row, its body bundled since it came along. */
-export const catalogIndexEntry = (map: CatalogMap): MapIndexEntry<'tile'> => ({
-  type: map.type,
-  layer: map.layer,
-  name: map.name,
-  countries: map.countries,
-  bbox: map.bbox,
-  category: map.category,
-  technology: 'tile',
-  icon: catalogIcon(map.category),
-  defaultInMenu: true,
-  load: () => Promise.resolve(map.body),
-  bundled: map.body,
-});
+export const catalogIndexEntry = (map: CatalogMap): MapIndexEntry => {
+  const row = {
+    type: map.type,
+    layer: map.layer,
+    name: map.name,
+    countries: map.countries,
+    bbox: map.bbox,
+    category: map.category,
+    icon: catalogIcon(map.category),
+    defaultInMenu: true,
+  };
+
+  return map.technology === 'wms'
+    ? {
+        ...row,
+        technology: 'wms',
+        load: () => Promise.resolve(map.body),
+        bundled: map.body,
+      }
+    : {
+        ...row,
+        technology: 'tile',
+        load: () => Promise.resolve(map.body),
+        bundled: map.body,
+      };
+};

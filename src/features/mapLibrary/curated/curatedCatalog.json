@@ -1,0 +1,258 @@
+{
+  "maps": [
+    {
+      "type": "FSK01",
+      "layer": "base",
+      "name": "Základná mapa SR",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://zbgisws.skgeodesy.sk/zmsr_wms/service.svc/get",
+        "layers": ["1", "5", "9", "13", "17", "21"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GKÚ / ÚGKK SR (CC BY 4.0)",
+            "country": "sk",
+            "url": "https://www.geoportal.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK02",
+      "layer": "base",
+      "name": "Administratívna mapa SR",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://zbgisws.skgeodesy.sk/amsr_wms/service.svc/get",
+        "layers": ["1"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GKÚ / ÚGKK SR (CC BY 4.0)",
+            "country": "sk",
+            "url": "https://www.geoportal.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK03",
+      "layer": "base",
+      "name": "Porastová mapa",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "map",
+      "body": {
+        "url": "https://gis.nlcsk.org/arcgis/rest/services/BackgroundMaps/Porastova_mapa_web/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© NLC Zvolen",
+            "country": "sk",
+            "url": "https://www.nlcsk.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK04",
+      "layer": "base",
+      "name": "Vodohospodárska mapa 1:50 000",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "map",
+      "body": {
+        "url": "https://geoserver.vuvh.sk/arcgis/rest/services/BaseMap/VHM/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© VÚVH, GKÚ",
+            "country": "sk",
+            "url": "https://www.vuvh.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK05",
+      "layer": "overlay",
+      "name": "Svahové deformácie",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.geology.sk/arcgis/services/WebServices/SD/MapServer/WMSServer",
+        "layers": ["0"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Štátny geologický ústav Dionýza Štúra",
+            "country": "sk",
+            "url": "https://www.geology.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK06",
+      "layer": "overlay",
+      "name": "Veľkoplošné chránené územia",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.sopsr.sk/geoserver/chranene_objekty/ows",
+        "layers": ["chranene_uzemia_vchu"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ŠOP SR",
+            "country": "sk",
+            "url": "https://www.sopsr.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK07",
+      "layer": "overlay",
+      "name": "Maloplošné chránené územia",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.sopsr.sk/geoserver/chranene_objekty/ows",
+        "layers": ["chranene_uzemia_mchu"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ŠOP SR",
+            "country": "sk",
+            "url": "https://www.sopsr.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK08",
+      "layer": "overlay",
+      "name": "Územia európskeho významu (Natura 2000)",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.sopsr.sk/geoserver/chranene_objekty/ows",
+        "layers": ["chranene_uzemia_uev"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ŠOP SR",
+            "country": "sk",
+            "url": "https://www.sopsr.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK09",
+      "layer": "overlay",
+      "name": "Chránené vtáčie územia (Natura 2000)",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.sopsr.sk/geoserver/chranene_objekty/ows",
+        "layers": ["chranene_uzemia_chvu"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ŠOP SR",
+            "country": "sk",
+            "url": "https://www.sopsr.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK10",
+      "layer": "overlay",
+      "name": "Povodňové ohrozenie Q100",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mpt.svp.sk/gisserver/services/OP_MPOMPR_II/MPO/MapServer/WMSServer",
+        "layers": ["78", "81"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Slovenský vodohospodársky podnik",
+            "country": "sk",
+            "url": "https://www.svp.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK11",
+      "layer": "overlay",
+      "name": "Pamiatkové územia",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.pamiatky.sk/project/f11bc94e12c291e6794b04d66ec0613c/",
+        "layers": [
+          "pamis_pamiatkove_rezervacie",
+          "pamis_pamiatkove_zony",
+          "pamis_svetove_kulturne_dedicstvo"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Pamiatkový úrad SR",
+            "country": "sk",
+            "url": "https://www.pamiatky.sk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSK12",
+      "layer": "overlay",
+      "name": "Železničná sieť",
+      "countries": ["sk"],
+      "bbox": [16.83, 47.73, 22.57, 49.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gisgeo.zsr.sk/geoserver/public/wms",
+        "layers": ["JZM_VECTOR_PUBLIC"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Železnice SR",
+            "country": "sk",
+            "url": "https://www.zsr.sk/"
+          }
+        ]
+      }
+    }
+  ]
+}
