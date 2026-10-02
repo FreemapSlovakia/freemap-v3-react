@@ -23,6 +23,7 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     square: 'Kwadrat',
   },
   showDetails: 'Szczegóły',
+  moreGeneralTypes: 'Bardziej ogólne typy',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historia)',
   tooManyPoints: ({ limit }) =>
@@ -33,6 +34,7 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     `Zbyt wiele obiektów, aby pokazać je jako wyniki (${count}, najwyżej ${limit}). Przybliż mapę lub zawęź filtr.`,
   showAsLookup: 'Pokaż jako Wynik',
   markerShape: 'Kształt znacznika',
+  showAllAsLookup: 'Pokaż wszystko jako Wynik',
 };
 
 export default pl;

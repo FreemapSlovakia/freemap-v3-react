@@ -396,6 +396,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     abandoned: 'Elhagyott épület',
     disused: 'Használaton kívüli épület',
     stadium: 'Stadionépület',
+    no: '',
   },
 
   changing_table: {
@@ -416,6 +417,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     social: 'Társasági klub',
     sport: 'Sportklub',
     veterans: 'Veteránklub',
+    no: '',
   },
   genus: {
     Abies: 'Jegenyefenyő',
@@ -609,6 +611,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     psychotherapist: 'Pszichoterapeuta',
     rehabilitation: 'Rehabilitációs központ',
     speech_therapist: 'Logopédus',
+    no: '',
   },
   fitness_station: {
     air_walker: 'Air walker',
@@ -777,6 +780,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intersection: 'Útkereszteződés',
     jughandle: 'Jughandle',
     roundabout: 'Körforgalom',
+    no: '',
   },
   landuse: {
     '*': '{}',
@@ -958,6 +962,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   lock: {
     '*': 'Hajózsilip',
+    no: '',
   },
   man_made: {
     breakwater: 'Hullámtörő',
@@ -1127,6 +1132,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
       water_characteristic: {
         '*': 'Ásványforrás',
+        sulfuric: 'Kénes forrás',
+        sulfurous: 'Kénes forrás',
+        chalybeate: 'Vasas forrás',
+        ferruginous: 'Vasas forrás',
+        fresh: '',
+        freshwater: '',
+        intermittent: '',
+        resurgence: '',
       },
     },
     strait: 'Tengerszoros',
@@ -1262,6 +1275,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     travel_agent: 'Utazási iroda',
     union: 'Szakszervezet',
     water_utility: 'Vízművek',
+    no: '',
   },
   place: {
     '*': 'Hely {}',

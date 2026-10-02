@@ -13,6 +13,7 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmořská výška',
   showDetails: 'Podrobnosti',
+  moreGeneralTypes: 'Obecnější typy',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historie)',
   lowZoomAlert: {
@@ -32,6 +33,7 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     `Příliš mnoho objektů pro zobrazení jako nálezy (${count}, nejvýše ${limit}). Přibližte mapu nebo zužte filtr.`,
   showAsLookup: 'Zobrazit jako Nález',
   markerShape: 'Tvar značky',
+  showAllAsLookup: 'Zobrazit vše jako Nález',
 };
 
 export default cs;

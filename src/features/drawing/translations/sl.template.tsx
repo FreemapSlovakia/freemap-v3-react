@@ -23,6 +23,7 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
       always: 'Vedno',
       hover: 'Ob prehodu miške',
       selected: 'Ko je izbrano',
+      'hover-selected': 'Ob prehodu miške ali ko je izbrano',
     },
     title: 'Lastnosti',
     color: 'Barva',

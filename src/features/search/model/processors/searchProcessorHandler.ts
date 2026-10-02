@@ -33,6 +33,7 @@ import {
   searchSetResults,
 } from '../actions.js';
 import { loadingResult, photonToSearchResult } from '../resultUtils.js';
+import { pickShowsDetailsSelector } from '../selectors.js';
 
 export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   dispatch,
@@ -265,7 +266,12 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   dispatch(searchSetResults(results, more));
 
   if (fromUrl && results[0]) {
-    dispatch(searchSelectResult({ result: results[0] }));
+    dispatch(
+      searchSelectResult({
+        result: results[0],
+        details: pickShowsDetailsSelector(getState(), results[0]),
+      }),
+    );
   }
 };
 

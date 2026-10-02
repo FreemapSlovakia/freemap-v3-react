@@ -33,7 +33,13 @@ export function objectCategories(osmMapping: OsmMapping): ObjectCategory[] {
   function rec(n: Node, tags: ObjectCategory['tags'], key?: string) {
     for (const [tagKeyOrValue, nodeOrName] of Object.entries(n)) {
       if (typeof nodeOrName === 'string') {
+        // `key` with any value: a category only under another tag, as on its own
+        // it is too broad to filter by, and a `{}` names the value, not a kind.
         if (key && tagKeyOrValue === '*') {
+          if (tags.length > 0 && !nodeOrName.includes('{}')) {
+            push(nodeOrName.trim(), [...tags, { key }]);
+          }
+
           continue;
         }
 

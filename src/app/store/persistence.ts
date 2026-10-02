@@ -158,7 +158,6 @@ export const PersistedObjectsSettingsSchema = z
     selectedIcon: MarkerTypeSchema,
     color: z.string(),
     labelVisibility: LabelVisibilitySchema,
-    showDetails: z.boolean(),
   })
   .partial();
 
@@ -529,7 +528,6 @@ const PERSIST: PersistEntry[] = [
       selectedIcon: o.selectedIcon,
       color: o.color,
       labelVisibility: o.labelVisibility,
-      showDetails: o.showDetails,
     }),
   }),
   defineEntry({

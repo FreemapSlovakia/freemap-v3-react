@@ -16,6 +16,14 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   customMapSaved: 'Az egyéni térkép mentve.',
   shadingMapHint:
     'Az árnyékolás paramétereit a térkép bekapcsolása után megjelenő panelen lehet beállítani és menteni.',
+  combination: 'Térképkombináció',
+  combinationSaved: 'A térképkombináció mentve.',
+  updateFromCurrentMap: 'Frissítés az aktuális térképből',
+  baseMap: 'Alaptérkép',
+  overlays: 'Fedőrétegek',
+  addOverlay: 'Fedőréteg hozzáadása…',
+  noOverlays: 'Nincsenek fedőrétegek.',
+  combinationTooSmall: 'Legalább két réteg szükséges.',
 };
 
 export default hu;

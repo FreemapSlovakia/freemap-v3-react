@@ -23,6 +23,7 @@ const sk: DeepPartialWithRequiredObjects<DrawingMessages> = {
       always: 'Vždy',
       hover: 'Pri prejdení myšou',
       selected: 'Keď je vybraný',
+      'hover-selected': 'Pri prejdení myšou alebo keď je vybraný',
     },
     title: 'Vlastnosti',
     color: 'Farba',

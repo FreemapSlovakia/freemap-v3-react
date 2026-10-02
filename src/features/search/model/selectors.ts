@@ -50,3 +50,22 @@ export function activeSearchResultKeptSelector(state: RootState): boolean {
     !(previewId && featureIdsEqual(previewId, selection.id))
   );
 }
+
+/**
+ * Whether picking `result` from the search box shows its details: all but a
+ * name-search hit not kept. An embed has no ⓘ to ask for them, so there all do.
+ */
+export function pickShowsDetailsSelector(
+  state: RootState,
+  result: SearchResult,
+): boolean {
+  const { previewId, selectedResults } = state.search;
+
+  const kept =
+    selectedResults.some((r) => featureIdsEqual(r.id, result.id)) &&
+    !(previewId && featureIdsEqual(previewId, result.id));
+
+  return (
+    Boolean(window.fmEmbedded) || result.source !== 'nominatim-forward' || kept
+  );
+}

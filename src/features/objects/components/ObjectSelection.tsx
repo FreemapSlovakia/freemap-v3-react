@@ -11,7 +11,6 @@ import { useDispatch } from 'react-redux';
 import { objectsSetFilter } from '../model/actions.js';
 import { objectToSearchResult } from '../model/objectToSearchResult.js';
 import { sameFilter, useMatchedCategories } from '../useMatchedCategories.js';
-import { DetailsToggle } from './DetailsToggle.js';
 import { ObjectsConvertMenu } from './ObjectsConvertMenu.js';
 import { useObjectActions } from './useObjectActions.js';
 
@@ -60,8 +59,6 @@ export default function ObjectSelection(): ReactElement | null {
     // No control to reopen a tool with: the objects toolbar is up whenever a
     // category is on, which a selected object guarantees.
     <Selection icon={<FaMapMarkerAlt />} label={m?.selections.objects}>
-      <DetailsToggle />
-
       <ObjectsConvertMenu
         object={object}
         onSelect={onSelect}

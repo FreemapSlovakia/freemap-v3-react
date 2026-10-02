@@ -403,6 +403,31 @@ describe('objectCategories', () => {
     ]);
   });
 
+  it('takes a key with any value as a category only under another tag', () => {
+    expect(
+      objectCategories({
+        osmTagToNameMapping: {
+          natural: {
+            spring: {
+              water_characteristic: { '*': 'Mineral spring' },
+              information: { '*': 'Spring {}' },
+            },
+          },
+          office: { '*': 'Office' },
+        },
+      } as never),
+    ).toEqual([
+      {
+        name: 'Mineral spring',
+        key: 'natural=spring,water_characteristic',
+        tags: [
+          { key: 'natural', value: 'spring' },
+          { key: 'water_characteristic' },
+        ],
+      },
+    ]);
+  });
+
   it('leaves out a value the mapping deliberately silences', () => {
     expect(
       objectCategories({

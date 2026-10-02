@@ -327,6 +327,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     social: 'Club social',
     sport: 'Club sportif',
     veterans: "Club d'anciens combattants",
+    no: '',
   },
   'disused:building': { '*': 'Bâtiment désaffecté' },
   genus: {
@@ -521,6 +522,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     psychotherapist: 'Psychothérapeute',
     rehabilitation: 'Centre de rééducation',
     speech_therapist: 'Orthophoniste',
+    no: '',
   },
   junction: {
     '*': 'Carrefour',
@@ -528,9 +530,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intersection: 'Intersection',
     jughandle: 'Jughandle',
     roundabout: 'Rond-point',
+    no: '',
   },
   lock: {
     '*': 'Écluse',
+    no: '',
   },
   office: {
     '*': 'Bureau',
@@ -567,6 +571,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     travel_agent: 'Agence de voyage',
     union: 'Bureau syndical',
     water_utility: 'Régie des eaux',
+    no: '',
   },
   'ruins:building': { '*': 'Ruines d’un bâtiment' },
   ruins: { yes: 'En ruine' },
@@ -690,6 +695,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     university: 'Bâtiment universitaire',
     warehouse: 'Entrepôt',
     yes: 'Bâtiment indéterminé',
+    no: '',
   },
   fixme: {
     '*': 'Élément mal ou partiellement cartographié',
@@ -1356,6 +1362,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
       water_characteristic: {
         '*': 'Source minérale',
+        sulfuric: 'Source sulfureuse',
+        sulfurous: 'Source sulfureuse',
+        chalybeate: 'Source ferrugineuse',
+        ferruginous: 'Source ferrugineuse',
+        fresh: '',
+        freshwater: '',
+        intermittent: '',
+        resurgence: '',
       },
     },
     stone: 'Pierre',

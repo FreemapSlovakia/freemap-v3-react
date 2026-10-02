@@ -175,6 +175,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: 'Přidat %value%',
     deleteButtonText: 'Odebrat %value% ze seznamu',
     accept: 'Přijmout',
+    externalService: 'Cizí služba s omezeními použití',
   },
 
   generic: {

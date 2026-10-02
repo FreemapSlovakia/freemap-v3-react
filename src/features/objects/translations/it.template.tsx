@@ -13,6 +13,7 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Elevazione',
   showDetails: 'Dettagli',
+  moreGeneralTypes: 'Tipi più generici',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (storia)',
   lowZoomAlert: {
@@ -32,6 +33,7 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     `Troppi oggetti da mostrare come risultati (${count}, al massimo ${limit}). Ingrandisci o restringi il filtro.`,
   showAsLookup: 'Mostra come Risultato',
   markerShape: 'Forma del marcatore',
+  showAllAsLookup: 'Mostra tutti come Risultato',
 };
 
 export default it;

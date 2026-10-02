@@ -8,6 +8,7 @@ const en: ObjectsMessages = {
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Elevation',
   showDetails: 'Details',
+  moreGeneralTypes: 'More general types',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (history)',
   lowZoomAlert: {

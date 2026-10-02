@@ -9,6 +9,7 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmorská výška',
   showDetails: 'Podrobnosti',
+  moreGeneralTypes: 'Všeobecnejšie typy',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (história)',
   lowZoomAlert: {
@@ -32,6 +33,7 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     button: 'Štýl značky',
     title: 'Štýl značky objektu',
   },
+  showAllAsLookup: 'Zobraziť všetko ako Nález',
 };
 
 export default sk;

@@ -30,12 +30,14 @@ const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   },
   source: 'Source',
   showDetails: 'Détails',
+  moreGeneralTypes: 'Types plus généraux',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historique)',
   markerShape: 'Forme du marqueur',
   tooManyForLookup: ({ count, limit }) =>
     `Trop d'objets à afficher comme résultats (${count}, au maximum ${limit}). Zoomez ou restreignez le filtre.`,
   showAsLookup: 'Afficher comme Résultat',
+  showAllAsLookup: 'Afficher tout comme Résultat',
 };
 
 export default fr;

@@ -43,11 +43,5 @@ export const objectsShowAsLookup = createAction<{ id?: OsmFeatureId }>(
   'OBJECTS_SHOW_AS_LOOKUP',
 );
 
-/**
- * Whether the details toast accompanies the selected feature. The toast is a
- * view of this preference and the current selection, so this is what both the
- * selection toolbars' details toggle and the toast's own × switch.
- */
-export const objectsSetShowDetails = createAction<boolean>(
-  'OBJECTS_SET_SHOW_DETAILS',
-);
+/** Shows or hides the selected feature's details toast, until the next selecting. */
+export const setDetailsShown = createAction<boolean>('SET_DETAILS_SHOWN');

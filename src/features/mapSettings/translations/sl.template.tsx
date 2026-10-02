@@ -17,6 +17,13 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Parametri senčenja se nastavijo in shranijo v plošči, ki se prikaže, ko vklopite ta zemljevid.',
   savingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri shranjevanju nastavitev', err),
+  combination: 'Kombinacija zemljevidov',
+  combinationSaved: 'Kombinacija zemljevidov je bila shranjena.',
+  updateFromCurrentMap: 'Posodobi iz trenutnega zemljevida',
+  baseMap: 'Osnovni zemljevid',
+  overlays: 'Prekrivni sloji',
+  addOverlay: 'Dodaj prekrivni sloj…',
+  noOverlays: 'Ni prekrivnih slojev.',
 };
 
 export default sl;

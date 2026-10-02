@@ -14,6 +14,7 @@ type Props = ComponentPropsWithRef<'a'> & {
   inactiveClassName?: string;
   /** What the tooltip says above the hint — the legend shows the tags there. */
   tooltip?: ReactNode;
+  onToggle?: () => void;
 };
 
 /**
@@ -26,6 +27,7 @@ export function ObjectFilterChip({
   className,
   children,
   tooltip,
+  onToggle,
   ...props
 }: Props): ReactElement {
   const m = useMessages();
@@ -59,6 +61,8 @@ export function ObjectFilterChip({
             e.preventDefault();
 
             dispatch(objectsSetFilter(next));
+
+            onToggle?.();
           }}
         >
           {children}

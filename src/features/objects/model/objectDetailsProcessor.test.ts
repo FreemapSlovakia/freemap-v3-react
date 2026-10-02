@@ -5,10 +5,8 @@ import { fetchElevations } from '@shared/elevation.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import { lineString, point } from '@turf/helpers';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  objectDetailsProcessor,
-  wantedTarget,
-} from './objectDetailsProcessor.js';
+import { objectDetailsProcessor } from './objectDetailsProcessor.js';
+import { wantedTarget } from './selectors.js';
 
 vi.mock('@shared/elevation.js', () => ({
   fetchElevations: vi.fn(),
@@ -24,12 +22,8 @@ beforeEach(() => {
   fetchElevationsMock.mockReset().mockResolvedValue([null]);
 });
 
-/**
- * The details toast is derived from the selection and the `showDetails`
- * preference. `wantedTarget` names its subject; the processor turns a *change*
- * of subject into an add or a remove. Both read a handful of slices, so a
- * minimal cast state is enough.
- */
+// `wantedTarget` names the toast's subject; the processor turns a change of
+// subject into an add or a remove. A minimal cast state is enough for both.
 
 const anObject = (
   id: number,
@@ -44,20 +38,19 @@ const state = ({
   selection,
   objects = [],
   selectedResults = [],
-  showDetails = true,
+  detailsShown = true,
   toasted = false,
 }: {
   selection?: { type: string; id?: unknown };
   objects?: ReturnType<typeof anObject>[];
   selectedResults?: SearchResult[];
-  showDetails?: boolean;
+  detailsShown?: boolean;
   toasted?: boolean;
 }): RootState =>
   ({
-    main: { selection },
+    main: { selection, detailsShown },
     objects: { objects },
     search: { selectedResults },
-    objectsSettings: { showDetails },
     toasts: { toasts: toasted ? { 'mapDetails.tags': {} } : {} },
   }) as unknown as RootState;
 
@@ -141,12 +134,12 @@ describe('wantedTarget', () => {
     ).toBeNull();
   });
 
-  it('wants nothing while the preference is off, or with no selection', () => {
+  it('wants nothing while the details are hidden, or with no selection', () => {
     const selection = { type: 'objects', id: anObject(1).id };
 
     expect(
       wantedTarget(
-        state({ selection, objects: [anObject(1)], showDetails: false }),
+        state({ selection, objects: [anObject(1)], detailsShown: false }),
       ),
     ).toBeNull();
 
@@ -197,13 +190,13 @@ describe('objectDetailsProcessor', () => {
     expect(run(before, after).dispatch).not.toHaveBeenCalled();
   });
 
-  it('closes the toast when the preference goes off', () => {
+  it('closes the toast when the subject is dismissed', () => {
     const { dispatch } = run(
       state({ selection, objects: [anObject(1)], toasted: true }),
       state({
         selection,
         objects: [anObject(1)],
-        showDetails: false,
+        detailsShown: false,
         toasted: true,
       }),
     );

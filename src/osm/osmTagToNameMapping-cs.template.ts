@@ -388,6 +388,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     abandoned: 'Trvale opuštěná budova',
     disused: 'Nepoužívaná budova',
     stadium: 'Budova stadionu',
+    no: '',
   },
 
   changing_table: {
@@ -408,6 +409,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     social: 'Společenský klub',
     sport: 'Sportovní klub',
     veterans: 'Klub veteránů',
+    no: '',
   },
   genus: {
     Abies: 'Jedle',
@@ -601,6 +603,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     psychotherapist: 'Psychoterapeut',
     rehabilitation: 'Rehabilitační centrum',
     speech_therapist: 'Logoped',
+    no: '',
   },
   fitness_station: {
     air_walker: 'Air walker',
@@ -770,6 +773,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intersection: 'Křižovatka silnic',
     jughandle: 'Odbočovací větev',
     roundabout: 'Kruhový objezd',
+    no: '',
   },
   landuse: {
     '*': '{}',
@@ -951,6 +955,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   lock: {
     '*': 'Plavební komora',
+    no: '',
   },
   man_made: {
     '*': '{}',
@@ -1152,6 +1157,14 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
       water_characteristic: {
         '*': 'Minerální pramen',
+        sulfuric: 'Sirný pramen',
+        sulfurous: 'Sirný pramen',
+        chalybeate: 'Železitý pramen',
+        ferruginous: 'Železitý pramen',
+        fresh: '',
+        freshwater: '',
+        intermittent: '',
+        resurgence: '',
       },
     },
     stone: 'Balvan',
@@ -1259,6 +1272,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     travel_agent: 'Cestovní kancelář',
     union: 'Odborová organizace',
     water_utility: 'Vodárenská společnost',
+    no: '',
   },
   place: {
     '*': 'Místo {}',

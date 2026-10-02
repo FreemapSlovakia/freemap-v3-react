@@ -20,6 +20,14 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   customMapSaved: 'La carte personnalisée a été enregistrée.',
   shadingMapHint:
     "Les paramètres de l'ombrage se règlent et s'enregistrent dans le panneau qui apparaît une fois cette carte activée.",
+  combination: 'Combinaison de cartes',
+  combinationSaved: 'La combinaison de cartes a été enregistrée.',
+  updateFromCurrentMap: 'Mettre à jour depuis la carte actuelle',
+  baseMap: 'Carte de base',
+  overlays: 'Couches de superposition',
+  addOverlay: 'Ajouter une couche de superposition…',
+  noOverlays: 'Aucune couche de superposition.',
+  combinationTooSmall: 'Au moins deux couches sont requises.',
 };
 
 export default fr;
