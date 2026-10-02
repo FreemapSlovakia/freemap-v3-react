@@ -365,6 +365,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-about': 'kontakt, e-pošta, povratne informacije',
         'modal-map-layers-config':
           'sloji, upravljanje kart, vrstni red, prosojnost',
+        'modal-map-library':
+          'knjižnica, katalog, namesti, odstrani, dodaj karte, več kart, zemljevid',
         'modal-custom-maps': 'lastna karta, wms, tms, dodaj vir karte',
         'modal-offline-maps': 'prenesene karte, shramba',
         'modal-browse-cache': 'predpomnilnik, ploščice, shramba',
@@ -481,6 +483,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       photosCc: 'različne licence Creative Commons',
     },
     layersConfiguration: 'Nastavitev slojev',
+    mapLibrary: 'Knjižnica kart',
     customMaps: 'Zemljevidi po meri',
     addCustomMap: 'Dodaj zemljevid po meri',
     activate: 'Aktiviraj',

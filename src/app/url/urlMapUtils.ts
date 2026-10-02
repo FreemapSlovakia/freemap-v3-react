@@ -1,6 +1,7 @@
 import type { MapViewState } from '@features/map/model/actions.js';
 import { isCombinationMarker } from '@features/map/model/mapCombination.js';
 import { resolveLayerAliases } from '@shared/mapDefinitions.js';
+import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { knownLayerIds, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 
 const LAYERS_RE = new RegExp(`^(${knownLayerIds().join('|')})|[.:]\\d`);
@@ -45,7 +46,7 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
 
   const zoom = undefineNaN(parseFloat(zoomFrag ?? ''));
 
-  let layersStr = query.get('layers');
+  const layersStr = query.get('layers');
 
   let layers: string[] | undefined;
 
@@ -59,8 +60,10 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
     // backward compatibility
     layers = [];
 
-    while (layersStr.length) {
-      const m = LAYERS_RE.exec(layersStr);
+    let rest = layersStr;
+
+    while (rest.length) {
+      const m = LAYERS_RE.exec(rest);
 
       if (!m?.[1]) {
         break;
@@ -68,14 +71,22 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
 
       layers.push(m[1]);
 
-      layersStr = layersStr.slice(m[1].length);
+      rest = rest.slice(m[1].length);
+    }
+
+    // What the legacy parse can't read whole may be one catalog id; it would
+    // otherwise take `Z0003` for the alias `Z`.
+    if (rest && isCatalogId(layersStr)) {
+      layers = [layersStr];
     }
   }
 
   layers = layers && resolveLayerAliases(layers);
 
+  // A catalog id is kept unchecked: the catalog loads after the link is read.
   layers = layers?.filter(
-    (layer) => layer in mapIndexById || isCombinationMarker(layer),
+    (layer) =>
+      layer in mapIndexById || isCatalogId(layer) || isCombinationMarker(layer),
   );
 
   return {

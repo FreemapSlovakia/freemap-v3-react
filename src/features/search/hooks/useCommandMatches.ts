@@ -1,5 +1,6 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
 import { type Command, getCommands } from '@shared/commandDefinitions.js';
 import { fuzzyMatch } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -58,6 +59,8 @@ export function useCommandMatches(query: string): CommandMatch[] {
 
   const embedFeatures = useAppSelector((state) => state.main.embedFeatures);
 
+  const libraryIndex = useAppSelector(libraryIndexSelector);
+
   const commands = useMemo(
     () =>
       m
@@ -72,6 +75,7 @@ export function useCommandMatches(query: string): CommandMatch[] {
             customLayers,
             mapCombinations,
             layersSettings,
+            libraryIndex,
             embedFeatures,
           })
         : [],
@@ -86,6 +90,7 @@ export function useCommandMatches(query: string): CommandMatch[] {
       customLayers,
       mapCombinations,
       layersSettings,
+      libraryIndex,
       embedFeatures,
     ],
   );

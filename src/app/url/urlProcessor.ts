@@ -14,6 +14,7 @@ import { grantedRadiusKm } from '@features/viewshed/request.js';
 import { serializeViewshed } from '@features/viewshed/viewshedUrl.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
+import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import { hasSharedShadingLayer } from '@shared/mapLibrary/shadingLayers.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
@@ -330,12 +331,17 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   previousView = view;
 
-  const layers = map.layers
+  const joined = map.layers
     .filter(
       (type) =>
-        type !== 'i' && (mapIndexById[type] || isCombinationMarker(type)),
+        type !== 'i' &&
+        (mapIndexById[type] || isCatalogId(type) || isCombinationMarker(type)),
     )
     .join('~');
+
+  // A lone catalog id could read as legacy concatenated layers (`XSOR7`); the
+  // `~` keeps it whole.
+  const layers = isCatalogId(joined) ? `${joined}~` : joined;
 
   const queryParts: QueryPart[] = [
     [

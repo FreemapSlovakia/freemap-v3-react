@@ -359,6 +359,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'symboles, légende de la carte',
         'modal-about': 'contact, e-mail, avis',
         'modal-map-layers-config': 'couches, gérer les cartes, ordre, opacité',
+        'modal-map-library':
+          'catalogue, installer, désinstaller, ajouter des cartes, plus de cartes',
         'modal-custom-maps':
           'carte personnalisée, wms, tms, ajouter une source',
         'modal-offline-maps': 'cartes téléchargées, stockage',
@@ -504,6 +506,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Cette carte n’est pas enregistrée pour une utilisation hors ligne',
     customBase: 'Carte personnalisée',
     layersConfiguration: 'Configuration des couches',
+    mapLibrary: 'Bibliothèque de cartes',
     customMaps: 'Cartes personnalisées',
     addCustomMap: 'Ajouter une carte personnalisée',
     activate: 'Activer',

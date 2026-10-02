@@ -54,6 +54,7 @@ import {
   mapSetShading,
 } from '@features/map/model/actions.js';
 import { layerKindsSelector } from '@features/map/model/selectors.js';
+import { isUnresolvedCatalogId } from '@features/mapLibrary/catalogResolution.js';
 import {
   type MapRestore,
   mapsRestore,
@@ -669,7 +670,13 @@ export function handleLocationChange(store: MyStore): void {
     // `layers=` never names custom layers, so a custom base map counts too.
     // X goes before them: the URL written back reads it there, and any other
     // order diffs as a layer change.
-    if (![...layers, ...customTypes].some((t) => kinds.get(t) === 'base')) {
+    // A catalog map not loaded yet may be the base; `catalogBaseProcessor`
+    // adds X if it isn't.
+    if (
+      ![...layers, ...customTypes].some(
+        (t) => kinds.get(t) === 'base' || isUnresolvedCatalogId(t, kinds),
+      )
+    ) {
       layers.push('X');
     }
 

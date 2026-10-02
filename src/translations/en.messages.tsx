@@ -359,6 +359,8 @@ const messages: Messages = {
         'modal-legend': 'symbols, map key',
         'modal-about': 'contact, e-mail, feedback',
         'modal-map-layers-config': 'layers, manage maps, order, opacity',
+        'modal-map-library':
+          'catalog, catalogue, install, uninstall, add maps, more maps',
         'modal-custom-maps': 'own map, wms, tms, add map source',
         'modal-offline-maps': 'downloaded maps, storage',
         'modal-browse-cache': 'cached tiles, storage',
@@ -474,6 +476,7 @@ const messages: Messages = {
       photosCc: 'various Creative Commons licenses',
     },
     layersConfiguration: 'Layers configuration',
+    mapLibrary: 'Map library',
     customMaps: 'Custom maps',
     addCustomMap: 'Add custom map',
     activate: 'Activate',

@@ -32,14 +32,21 @@ There is also a button with three vertical dots that opens a menu listing additi
 
 - Access: Manage maps button (the gear in the map toolbar)
 
-A menu of six items, each opening its own modal, in three groups: **Layers configuration**, which lists every map — built-in, custom and cached alike; then the three that add maps or keep copies of them, **Custom maps** (suffixed with the number of custom maps and map combinations), **Offline maps** (suffixed with the total cache size) and **Cache while browsing**; then **Map preferences** and **Elevation preferences**.
+A menu of seven items, each opening its own modal, in three groups: **Layers configuration**, which lists the installed maps — built-in, custom and cached alike — and **Map library**, where built-in maps are installed; then the three that add maps or keep copies of them, **Custom maps** (suffixed with the number of custom maps and map combinations), **Offline maps** (suffixed with the total cache size) and **Cache while browsing**; then **Map preferences** and **Elevation preferences**.
 
 #### Layers configuration
 
 - Keyboard shortcut: <kbd>m</kbd> <kbd>y</kbd>
 - URL path: `/#show=map-layers-config` (legacy `/#show=map-settings` still works)
 
-A table of every map — built-in, custom and cached alike. A built-in map can be uninstalled (the plug column): it is then left out of the toolbar, the menu (even under **Show all**), its keyboard shortcut, the search box and the offline-map and export pickers, while a link naming it in `layers=` still shows it and the menu lists it for as long as it is on. For each layer the user can toggle: show in toolbar, show in menu, overlay opacity (overlays only, and hidden while an active map combination sets it), and a keyboard shortcut (a 🚫 marker indicates that no shortcut can be assigned).
+A table of the installed built-in maps (see **Map library**) and of every custom and cached map. For each layer the user can toggle: show in toolbar, show in menu, overlay opacity (overlays only, and hidden while an active map combination sets it), and a keyboard shortcut (a 🚫 marker indicates that no shortcut can be assigned). **Reset to default** leaves what is installed alone.
+
+#### Map library
+
+- Keyboard shortcut: <kbd>m</kbd> <kbd>i</kbd>
+- URL path: `/#show=map-library`
+
+Opens on the installed maps under a search box ("Search N maps"). Typing searches the whole library — by name, by country (code or name) and by the same keywords the search box knows — and lists the best 50 matches, with a count of the rest to refine the query by. Either list is split into **Base maps** and **Overlays**. Each row has a **+** (install) or red trash-can (uninstall) button, which takes effect at once, and an eye button that previews the map: the library steps aside, the map is switched on and, if the view is away from it, the view moves to it. The map can be panned and zoomed, but the rest of the interface is put away as while picking a place, and maps can't be switched. A toolbar then offers **Install** (for a map not installed), **Keep on map** (leaves it on and closes the library — a map can be used this way without installing it), **Back to library** (<kbd>Esc</kbd>) and **×**; the last two put back the layers that were on before. An uninstalled map is left out of the toolbar, the menu (even under **Show all**), its keyboard shortcut, the search box, Layers configuration and the offline-map and export pickers, while a link naming it in `layers=` still shows it and the menu lists it for as long as it is on. All built-in maps are installed by default.
 
 #### Custom maps
 

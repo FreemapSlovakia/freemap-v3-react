@@ -4,6 +4,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { layerName } from '@shared/layerName.js';
 import { RENDERER_ROUTES } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo, useState } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
@@ -71,9 +72,11 @@ export default function LegendModal({ show }: Props): ReactElement {
 
   function getHeader(type: string) {
     return (
-      m?.mapLayers.letters[type] ??
-      customLayers.find((def) => def.type === type)?.name ??
-      '…'
+      layerName(
+        customLayers.find((def) => def.type === type) ??
+          integratedLayerDefMap[type] ?? { type },
+        m,
+      ) ?? '…'
     );
   }
 

@@ -4,8 +4,18 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
-  installed:
-    'Telepítve — az eltávolított térképet sehol nem kínálja fel, de egy hivatkozás továbbra is megjeleníti',
+  install: 'Telepítés — a térkép megjelenik a térképmenükben',
+  uninstall:
+    'Eltávolítás — a térképet sehol nem kínálja fel, de egy hivatkozás továbbra is megjeleníti',
+  installedMaps: 'Telepített térképek',
+  noInstalledMaps:
+    'Nincs telepített térkép. Keressen a térképtárban, és adjon hozzá néhányat.',
+  searchLibrary: ({ count }) => `Keresés ${count} térkép között`,
+  moreResults: ({ count }) => `További ${count} — pontosítsa a keresést`,
+  preview: 'Előnézet a térképen',
+  installMap: 'Telepítés',
+  keepOnMap: 'Maradjon a térképen',
+  backToLibrary: 'Vissza a térképtárba',
   overlayOpacity: 'Átlátszóság',
   showInMenu: 'Megjelenítés a menüben',
   showInToolbar: 'Megjelenítés az eszköztáron',
@@ -20,6 +30,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   combinationSaved: 'A térképkombináció mentve.',
   updateFromCurrentMap: 'Frissítés az aktuális térképből',
   baseMap: 'Alaptérkép',
+  baseMaps: 'Alaptérképek',
   overlays: 'Fedőrétegek',
   addOverlay: 'Fedőréteg hozzáadása…',
   noOverlays: 'Nincsenek fedőrétegek.',

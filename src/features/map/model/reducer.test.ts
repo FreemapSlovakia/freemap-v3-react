@@ -1,5 +1,9 @@
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { processGeoipResult } from '@features/geoip/model/actions.js';
+import {
+  mapLibraryCatalogMapsLoaded,
+  mapLibraryInstall,
+} from '@features/mapLibrary/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
   mapRefocus,
@@ -30,6 +34,36 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
 
     // New base goes first; overlay survives; old base dropped.
     expect(next.layers).toEqual(['O', 'i']);
+  });
+
+  it('a known catalog base map replaces the base too', () => {
+    const state = mapReducer(
+      { ...mapInitialState, layers: ['X', 'i'] },
+      mapLibraryCatalogMapsLoaded([
+        {
+          type: 'Z0001',
+          layer: 'base',
+          name: 'Test',
+          body: { url: 'https://example.com/{z}/{x}/{y}.png', attribution: [] },
+        },
+      ]),
+    );
+
+    const next = mapReducer(state, mapToggleLayer({ type: 'Z0001' }));
+
+    expect(next.layers).toEqual(['Z0001', 'i']);
+  });
+
+  it('installing flips only the installed flag', () => {
+    const next = mapReducer(
+      { ...mapInitialState, layersSettings: { Z0001: { showInMenu: false } } },
+      mapLibraryInstall({ type: 'Z0001', installed: true }),
+    );
+
+    expect(next.layersSettings['Z0001']).toEqual({
+      showInMenu: false,
+      installed: true,
+    });
   });
 
   it('toggling the already-active base layer is a no-op', () => {

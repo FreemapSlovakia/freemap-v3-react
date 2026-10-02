@@ -1,5 +1,14 @@
 export type MapSettingsMessages = {
-  installed: string;
+  install: string;
+  uninstall: string;
+  installedMaps: string;
+  noInstalledMaps: string;
+  searchLibrary: (props: { count: number }) => string;
+  moreResults: (props: { count: number }) => string;
+  preview: string;
+  installMap: string;
+  keepOnMap: string;
+  backToLibrary: string;
   overlayOpacity: string;
   showInMenu: string;
   showInToolbar: string;
@@ -10,6 +19,7 @@ export type MapSettingsMessages = {
   combinationSaved: string;
   updateFromCurrentMap: string;
   baseMap: string;
+  baseMaps: string;
   shadingMapHint: string;
   overlays: string;
   addOverlay: string;

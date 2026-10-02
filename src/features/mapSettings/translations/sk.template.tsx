@@ -4,8 +4,18 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
-  installed:
-    'Nainštalovaná — odinštalovaná mapa sa nikde neponúka, odkaz ju však stále zobrazí',
+  install: 'Nainštalovať — ponúkať túto mapu v menu máp',
+  uninstall:
+    'Odinštalovať — mapa sa nikde neponúka, odkaz ju však stále zobrazí',
+  installedMaps: 'Nainštalované mapy',
+  noInstalledMaps:
+    'Nie sú nainštalované žiadne mapy. Pridajte si ich vyhľadaním v knižnici.',
+  searchLibrary: ({ count }) => `Hľadať v ${count} mapách`,
+  moreResults: ({ count }) => `Ďalších ${count} — spresnite hľadanie`,
+  preview: 'Ukážka na mape',
+  installMap: 'Nainštalovať',
+  keepOnMap: 'Ponechať na mape',
+  backToLibrary: 'Späť do knižnice',
   overlayOpacity: 'Viditeľnosť',
   showInMenu: 'Zobraziť v menu',
   showInToolbar: 'Zobraziť v lište',
@@ -16,6 +26,7 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   combinationSaved: 'Kombinácia máp bola uložená.',
   updateFromCurrentMap: 'Aktualizovať z aktuálnej mapy',
   baseMap: 'Podkladová mapa',
+  baseMaps: 'Podkladové mapy',
   shadingMapHint:
     'Parametre tieňovania sa nastavujú a ukladajú v paneli, ktorý sa zobrazí po aktivácii tejto mapy.',
   overlays: 'Prekryvné vrstvy',

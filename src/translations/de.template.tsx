@@ -374,6 +374,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-about': 'kontakt, e-mail, feedback',
         'modal-map-layers-config':
           'ebenen, karten verwalten, reihenfolge, deckkraft',
+        'modal-map-library':
+          'bibliothek, katalog, installieren, deinstallieren, karten hinzufügen, weitere karten',
         'modal-custom-maps': 'eigene karte, wms, tms, kartenquelle hinzufügen',
         'modal-offline-maps': 'heruntergeladene karten, speicher',
         'modal-browse-cache': 'zwischenspeicher, cache, kacheln, speicher',
@@ -535,6 +537,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     showMore: 'Mehr Karten anzeigen',
     layersConfiguration: 'Ebenenkonfiguration',
+    mapLibrary: 'Kartenbibliothek',
     technologies: {
       tile: 'Bildkacheln (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',

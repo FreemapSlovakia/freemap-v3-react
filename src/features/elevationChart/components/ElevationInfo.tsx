@@ -6,6 +6,7 @@ import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { layerName } from '@shared/layerName.js';
 import { type IsTileLayerDef, isTileLayerDef } from '@shared/mapDefinitions.js';
 import { useTileCoverages } from '@shared/tileCoverage.js';
 import { buildTileUrl, pickSubdomain } from '@shared/tileUrl.js';
@@ -185,9 +186,7 @@ export function ElevationInfo({
                 <Fragment key={def.type}>
                   {i > 0 ? ', ' : null}
                   <a href={def.tileUrl} target="_blank" rel="noopener">
-                    {'name' in def
-                      ? (def.name ?? def.type)
-                      : (m?.mapLayers.letters[def.type] ?? def.type)}
+                    {layerName(def, m) ?? def.type}
                   </a>
                 </Fragment>
               ))}

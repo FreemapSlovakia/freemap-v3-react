@@ -20,6 +20,7 @@ import { useFreeStorage } from '@shared/hooks/useFreeStorage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
+import { layerName } from '@shared/layerName.js';
 import type {
   IntegratedLayerDef,
   IsTileLayerDef,
@@ -275,17 +276,19 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     }
   }, [mapDef]);
 
+  const mapDefName = mapDef?.name;
+
   useEffect(() => {
     setName((prev) => {
       if (prev && nameChanged) {
         return prev;
       }
 
-      const layerName = m?.mapLayers.letters[mapType] ?? mapType;
+      const name = layerName({ type: mapType, name: mapDefName }, m) ?? mapType;
 
-      return cm?.namePrefix ? `${cm.namePrefix} ${layerName}` : layerName;
+      return cm?.namePrefix ? `${cm.namePrefix} ${name}` : name;
     });
-  }, [m, cm, mapType, nameChanged]);
+  }, [m, cm, mapType, mapDefName, nameChanged]);
 
   const tileCount = useMemo(() => {
     if (!bbox) {

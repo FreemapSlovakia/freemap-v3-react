@@ -4,8 +4,18 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
-  installed:
-    'Zainstalowana — odinstalowana mapa nie jest nigdzie oferowana, ale link nadal ją pokaże',
+  install: 'Zainstaluj — oferuj tę mapę w menu map',
+  uninstall:
+    'Odinstaluj — mapa nie jest nigdzie oferowana, ale link nadal ją pokaże',
+  installedMaps: 'Zainstalowane mapy',
+  noInstalledMaps:
+    'Brak zainstalowanych map. Wyszukaj w bibliotece, aby jakieś dodać.',
+  searchLibrary: ({ count }) => `Szukaj wśród ${count} map`,
+  moreResults: ({ count }) => `Jeszcze ${count} — zawęź wyszukiwanie`,
+  preview: 'Podgląd na mapie',
+  installMap: 'Zainstaluj',
+  keepOnMap: 'Zostaw na mapie',
+  backToLibrary: 'Wróć do biblioteki',
   overlayOpacity: 'Przezroczystość',
   showInMenu: 'Pokaż w menu',
   showInToolbar: 'Pokaż na pasku narzędzi',
@@ -21,6 +31,7 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   combinationSaved: 'Kombinacja map została zapisana.',
   updateFromCurrentMap: 'Aktualizuj z bieżącej mapy',
   baseMap: 'Mapa podkładowa',
+  baseMaps: 'Mapy podkładowe',
   overlays: 'Warstwy nakładkowe',
   addOverlay: 'Dodaj warstwę nakładkową…',
   noOverlays: 'Brak warstw nakładkowych.',

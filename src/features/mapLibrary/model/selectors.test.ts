@@ -11,7 +11,7 @@ const stateWith = (
   layersSettings: Record<string, { installed?: boolean }>,
 ) =>
   ({
-    map: { layers, layersSettings },
+    map: { layers, layersSettings, catalogMaps: [] },
     mapLibrary: mapLibraryInitialState,
   }) as unknown as RootState;
 
@@ -37,6 +37,31 @@ describe('integratedLayerDefsSelector', () => {
     expect(types(['X'])).not.toContain('O');
 
     expect(types(['O'])).toContain('O');
+  });
+
+  it('lists a known catalog map once installed', () => {
+    const state = {
+      map: {
+        layers: ['X'],
+        layersSettings: { Z0001: { installed: true } },
+        catalogMaps: [
+          {
+            type: 'Z0001',
+            layer: 'overlay',
+            name: 'Test',
+            body: {
+              url: 'https://example.com/{z}/{x}/{y}.png',
+              attribution: [],
+            },
+          },
+        ],
+      },
+      mapLibrary: mapLibraryInitialState,
+    } as unknown as RootState;
+
+    expect(
+      integratedLayerDefsSelector(state).find((def) => def.type === 'Z0001'),
+    ).toMatchObject({ name: 'Test', technology: 'tile' });
   });
 
   it('still looks an uninstalled map up by id', () => {

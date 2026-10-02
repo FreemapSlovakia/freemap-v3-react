@@ -1,7 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { mapInitialState } from '@features/map/model/reducer.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -31,9 +30,20 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
+  // What is installed belongs to the map library, so a reset keeps it.
   const handleReset = () => {
-    setLayersSettings(mapInitialState.layersSettings);
+    setLayersSettings(
+      Object.fromEntries(
+        Object.entries(layersSettings).flatMap(([type, { installed }]) =>
+          installed === undefined ? [] : [[type, { installed }]],
+        ),
+      ),
+    );
   };
+
+  const isDefault = Object.values(layersSettings).every((s) =>
+    Object.keys(s).every((key) => key === 'installed'),
+  );
 
   const customLayerDefs = useAppSelector((state) => state.map.customLayers);
 
@@ -79,10 +89,7 @@ export default function MapLayersConfigModal({ show }: Props): ReactElement {
 
           <OfflineBadge offline={!canSaveSettings} />
 
-          <ResetToDefaultsButton
-            onClick={handleReset}
-            disabled={Object.keys(layersSettings).length === 0}
-          />
+          <ResetToDefaultsButton onClick={handleReset} disabled={isDefault} />
 
           <Button variant="dark" onClick={close}>
             <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>

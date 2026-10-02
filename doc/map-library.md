@@ -53,12 +53,85 @@ menu filter, country flags and coverage hints. Instead:
 - Honoured by `MapSwitchButton`, `keyboardHandler`, `commandDefinitions` (search
   box), `CacheTilesForm` (an edited offline map keeps its own source),
   `OfflineMapExportModal` and `MapCombinationForm`'s pickers.
-- **Layers configuration** (`MapLayersSettings.tsx`) has an installed column
-  (plug icon) for library maps; an uninstalled row has its toolbar/menu boxes
-  disabled and its opacity/shortcut controls hidden. Custom, cached and
-  combination rows have no box — they are deleted instead.
+- **Layers configuration** (`MapLayersSettings.tsx`) lists only installed
+  library maps, and its Reset keeps the `installed` flags. Custom, cached and
+  combination maps are deleted rather than uninstalled.
 - The agent tool `list-map-layers` still lists uninstalled maps (an agent acts
   like a link).
+
+### The library modal
+
+`src/features/mapLibrary/components/MapLibraryModal.tsx`, modal id
+`map-library` (chord <kbd>m</kbd> <kbd>i</kbd>, a row in the Manage maps menu
+and in the search box). Built for a catalog of thousands:
+
+- **Catalog** — `src/features/mapLibrary/catalog.ts`: `loadLibraryCatalog()`
+  loads it on first opening. A `CatalogEntry` carries what search and the row
+  need, and either a built-in map's `index` row or a catalog map (`map`).
+  Development builds add ~3,200 placeholder catalog maps (`devCatalog.ts`, ids
+  `Z0000`…; bases draw OpenStreetMap, overlays OpenRailwayMap) to exercise the
+  whole path at scale.
+- **Search** — `librarySearch.ts`: the search box's fuzzy match over the name,
+  then (ranked lower) each keyword, country code and name and category on its
+  own; targets are normalized once per catalog and language. At most 50
+  results, with the count of the rest.
+- **Empty query** shows the installed maps, not the catalog.
+- Both lists are split into base maps and overlays, keeping rank order.
+- **+ / trash** dispatch `mapLibraryInstall`: the map reducer flips `installed` at
+  once, and `mapLibraryInstallProcessor` saves the whole account settings
+  through `queueSettingsSave` (`src/app/store/settingsSaveQueue.ts`), the queue
+  `saveSettingsProcessor` uses too — the API replaces settings whole, so saves
+  must land in order. Each sends the state at its turn and none is cancelled by
+  closing the modal. A failure toasts `savingError` and keeps the local state.
+- **Eye** previews: `mapLibraryPreviewStart({ type })` puts
+  `mapLibrary.preview`, which hides the modal (`d-none`, as area selection
+  does, with its Escape and focus trap off) and mounts `MapLibraryPreviewMenu`.
+  The start processor's `transform` snapshots the layers as `restore`; its
+  handler switches the map on (loading an uninstalled built-in body first) and
+  fits the view to it when away — by the countries in view where the map names
+  countries, else by its `bbox`; the target is `bbox`, else `getCountriesBbox`.
+  Install and Keep end it with `keep: true`; Back (<kbd>Esc</kbd>) and × end it
+  with `keep: false`, whose processor puts `restore` back. Another modal ends it
+  the same way. The browser's Back, which takes the previewed map off itself,
+  ends it with the library shown again. A reload doesn't restore. It is
+  a picking mode (`mapLibraryPreviewingSelector` in `pickingModeSelector`), and
+  unlike the others it also hides the map switcher and the manage button and
+  turns off the layer shortcuts: a switch would be undone by `restore`.
+- Both buttons hand a catalog map to the store first
+  (`mapLibraryCatalogMapsLoaded`), so the reducer knows its kind when it is
+  toggled.
+
+### Catalog maps
+
+A catalog map is not in `mapIndex`; it works once the map slice knows it.
+
+- **Ids** — `isCatalogId` (`src/shared/mapLibrary/catalogId.ts`): five
+  uppercase letters or digits with a letter. No built-in id has five characters
+  and custom and offline maps' ids are lowercase, so the id alone tells a
+  catalog map apart. `isLayerInstalled` defaults a catalog id to not installed.
+- **`CatalogMap`** (`src/shared/mapLibrary/catalogMap.tsx`) — plain data with
+  its own `name`, a `bbox` (a preview's target: `COUNTRY_BBOXES` knows only
+  SK and CZ) and a `tile` body; `catalogIndexEntry` makes an index row of it,
+  its body bundled.
+- **`map.catalogMaps`** — the catalog maps known so far, never persisted.
+  `catalogMapsLoadProcessor` loads the ones wanted — installed, on the map, or
+  an offline map's source — from the catalog on start and whenever that set
+  grows; an id the catalog lacks is asked for once and left in `layers`
+  unrendered.
+- **`libraryIndexSelector`** — `mapIndex` plus the known catalog maps. The
+  definition selectors, `allLayerEntries` (so the reducer's base/overlay
+  decision), Layers configuration, the combination pickers, keyboard shortcuts,
+  the search box and `list-map-layers` read it. Names read `def.name` before
+  `mapLayers.letters`.
+- **Links** — `layers=` keeps a catalog id unchecked (the catalog loads after
+  the link is read) and writes it back; a lone one is written with a trailing
+  `~` (`layers=XSOR7~`), as legacy concatenated links (`XSJ17` = X, S, J1, 7)
+  share its alphabet. A link whose only candidate base is an unresolved catalog
+  id gets no `X` (`isUnresolvedCatalogId` in `catalogResolution.ts`; ids the
+  catalog lacked are resolved); `catalogBaseProcessor` adds `X` once none can
+  still turn out a base.
+- **Names** — `layerName(def, m)` (`src/shared/layerName.ts`): a custom or
+  catalog map's own name, else the translation.
 
 ### The registry
 
@@ -130,24 +203,22 @@ menu filter, country flags and coverage hints. Instead:
 
 ## Next steps
 
-1. **More maps, not installed by default.** Add a `defaultInstalled` index field
-   (today every map defaults to installed via `isLayerInstalled`'s `?? true`),
-   then add a handful of curated maps: e.g. national topo maps of CZ (ČÚZK), AT
-   (basemap.at), PL (Geoportal), HU; OpenTopoMap; CyclOSM; a historic military
-   survey. Only free, https, EPSG:3857; check each one's terms.
+1. **Real catalog maps.** Replace the dev placeholders with catalog maps from
+   the harvesting pipeline (step 5) or a handful of curated ones: e.g. national
+   topo maps of CZ (ČÚZK), AT (basemap.at), PL (Geoportal), HU; OpenTopoMap;
+   CyclOSM; a historic military survey. Only free, https, EPSG:3857; check each
+   one's terms. WMS catalog maps need `CatalogMap` to take a `wms` body.
 2. **Coverage as a union.** `{ countries } | { bbox } | { polygon }` (simplified
    polygon, its bbox derived). Keep the zoom-to target separate: `X` has both
    `countries` and a `bbox`. Countries keep using the server's covered-countries
    check; polygons are tested in the browser. Most catalog polygons are country
    outlines — convert those to `countries` in the pipeline.
-3. **The library modal** (its own modal, not Layers configuration or Custom
-   maps): search, filters (category, "covers this view", best), rows with a live
-   thumbnail tile, coverage, dates, credits and licence link; actions Preview
-   (show without installing), Install (with the existing `LayerVisibilityFields`),
-   Copy as custom map. Entry points: "Add maps…" in the map menu and in Layers
-   configuration, a search-box row "Search the map library for '…'" (needs a
-   `commandDefinitions` row + `search.commands.keywords`). A link to an
-   uninstalled map offers to install it.
+3. **The library modal, further:** filters (category, "covers this view",
+   best), rows with a live thumbnail tile, dates, credits and licence link;
+   Install with the existing `LayerVisibilityFields`; Copy as custom map. Entry
+   points: "Add maps…" in the map menu and in Layers configuration, a search-box
+   row "Search the map library for '…'". A link to an uninstalled map offers to
+   install it.
 4. **Library metadata** on index rows as needed: category, start/end dates,
    licence URL, source — an optional `HasCatalogMeta` group.
 5. **Harvesting pipeline** (later, server side or a script emitting `defs/` +

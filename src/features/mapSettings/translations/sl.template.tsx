@@ -4,8 +4,18 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
-  installed:
-    'Nameščeno — odstranjena karta ni nikjer ponujena, povezava pa jo še vedno prikaže',
+  install: 'Namesti — ponujaj to karto v menijih kart',
+  uninstall:
+    'Odstrani — karta ni nikjer ponujena, povezava pa jo še vedno prikaže',
+  installedMaps: 'Nameščene karte',
+  noInstalledMaps:
+    'Nobena karta ni nameščena. Poiščite jih v knjižnici in jih dodajte.',
+  searchLibrary: ({ count }) => `Išči med ${count} kartami`,
+  moreResults: ({ count }) => `Še ${count} — natančneje opredelite iskanje`,
+  preview: 'Predogled na karti',
+  installMap: 'Namesti',
+  keepOnMap: 'Obdrži na karti',
+  backToLibrary: 'Nazaj v knjižnico',
   overlayOpacity: 'Vidnost',
   showInMenu: 'Prikaži v meniju',
   showInToolbar: 'Prikaži v orodni vrstici',
@@ -21,6 +31,7 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   combinationSaved: 'Kombinacija zemljevidov je bila shranjena.',
   updateFromCurrentMap: 'Posodobi iz trenutnega zemljevida',
   baseMap: 'Osnovni zemljevid',
+  baseMaps: 'Osnovni zemljevidi',
   overlays: 'Prekrivni sloji',
   addOverlay: 'Dodaj prekrivni sloj…',
   noOverlays: 'Ni prekrivnih slojev.',

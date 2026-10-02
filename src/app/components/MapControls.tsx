@@ -13,6 +13,7 @@ import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { toggleLocate } from '../store/actions.js';
+import { mapLibraryPreviewingSelector } from '../store/selectors.js';
 import { MapManageButton } from './MapManageButton.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
 
@@ -50,6 +51,9 @@ export function MapControls(): ReactElement | null {
       state.gallery.pickingPositionForId !== null ||
       state.mapArea.selecting !== null,
   );
+
+  // A preview puts the earlier layers back when it ends, so it allows no switch.
+  const previewing = useAppSelector(mapLibraryPreviewingSelector);
 
   const handleLocateClick = useCallback(() => {
     // Locating on but not following — the user panned away from the position.
@@ -124,9 +128,10 @@ export function MapControls(): ReactElement | null {
 
   return !map ? null : (
     <Toolbar className="m-2">
-      {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
-        <MapSwitchButton />
-      )}
+      {!previewing &&
+        (!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
+          <MapSwitchButton />
+        )}
 
       <ButtonGroup>
         <LongPressTooltip label={m?.main.zoomIn}>
@@ -199,7 +204,9 @@ export function MapControls(): ReactElement | null {
           acting on it. Never in an embed: the layer table, the custom maps and
           the caches behind it belong to the visitor's own account and browser,
           not to the page the map is embedded in. */}
-      {!window.fmEmbedded && !restrictToMapSwitching && <MapManageButton />}
+      {!window.fmEmbedded && !restrictToMapSwitching && !previewing && (
+        <MapManageButton />
+      )}
     </Toolbar>
   );
 }

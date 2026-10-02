@@ -375,6 +375,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-about': 'kapcsolat, e-mail, visszajelzés',
         'modal-map-layers-config':
           'rétegek, térképek kezelése, sorrend, átlátszóság',
+        'modal-map-library':
+          'könyvtár, katalógus, telepítés, eltávolítás, térképek hozzáadása, további térképek',
         'modal-custom-maps': 'saját térkép, wms, tms, térképforrás hozzáadása',
         'modal-offline-maps': 'letöltött térképek, tárhely',
         'modal-browse-cache': 'gyorsítótár, csempék, tárhely',
@@ -535,6 +537,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     showMore: 'További térképek megjelenítése',
     layersConfiguration: 'Rétegek beállítása',
+    mapLibrary: 'Térképtár',
     technologies: {
       tile: 'Képcsempék (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',

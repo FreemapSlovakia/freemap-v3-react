@@ -3,8 +3,17 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const en: MapSettingsMessages = {
-  installed:
-    'Installed — an uninstalled map is offered nowhere, though a link still shows it',
+  install: 'Install — offer this map in the map menus',
+  uninstall:
+    'Uninstall — the map is offered nowhere, though a link still shows it',
+  installedMaps: 'Installed maps',
+  noInstalledMaps: 'No maps are installed. Search the library to add some.',
+  searchLibrary: ({ count }) => `Search ${count} maps`,
+  moreResults: ({ count }) => `${count} more — refine the search`,
+  preview: 'Preview on the map',
+  installMap: 'Install',
+  keepOnMap: 'Keep on map',
+  backToLibrary: 'Back to library',
   overlayOpacity: 'Opacity',
   showInMenu: 'Show in menu',
   showInToolbar: 'Show in toolbar',
@@ -15,6 +24,7 @@ const en: MapSettingsMessages = {
   combinationSaved: 'Map combination has been saved.',
   updateFromCurrentMap: 'Update from current map',
   baseMap: 'Base map',
+  baseMaps: 'Base maps',
   shadingMapHint:
     'The shading parameters are set and saved in the panel that appears once this map is activated.',
   overlays: 'Overlays',

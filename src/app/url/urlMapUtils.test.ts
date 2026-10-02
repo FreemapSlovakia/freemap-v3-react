@@ -1,6 +1,10 @@
 import type { MapViewState } from '@features/map/model/actions.js';
 import { describe, expect, it } from 'vitest';
-import { getMapStateDiffFromUrl, serializeZoom } from './urlMapUtils.js';
+import {
+  getMapStateDiffFromUrl,
+  getMapStateFromUrl,
+  serializeZoom,
+} from './urlMapUtils.js';
 
 describe('serializeZoom', () => {
   it('writes a whole level as a bare integer', () => {
@@ -36,5 +40,25 @@ describe('getMapStateDiffFromUrl — zoom', () => {
     expect(getMapStateDiffFromUrl({ zoom: 13.5 }, state)).toEqual({
       zoom: 13.5,
     });
+  });
+});
+
+describe('getMapStateFromUrl — layers', () => {
+  const layersOf = (layers: string) => {
+    location.hash = `#map=12/48.2/16.37&layers=${layers}`;
+
+    return getMapStateFromUrl().layers;
+  };
+
+  it('reads a lone catalog id as itself, not as a legacy alias', () => {
+    expect(layersOf('Z0003')).toEqual(['Z0003']);
+  });
+
+  it('reads a lone catalog id written with its `~` whole', () => {
+    expect(layersOf('XSJ17~')).toEqual(['XSJ17']);
+  });
+
+  it('keeps reading legacy concatenated layers', () => {
+    expect(layersOf('XSJ17')).toEqual(['X', 'S', 'J1', '7']);
   });
 });

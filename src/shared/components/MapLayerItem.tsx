@@ -10,6 +10,7 @@ import { flaggedCountries } from '@shared/mapDefinitions.js';
 import type { ReactElement, ReactNode } from 'react';
 import { FaHistory } from 'react-icons/fa';
 import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
+import { layerName } from '../layerName.js';
 
 export type MapLayerItemDef = {
   type: string;
@@ -54,7 +55,7 @@ export function MapLayerItem({
         <CustomMapGlyph spec={def.iconSpec} kind={customMapKind(def)} />
       )}
 
-      {label ?? m?.mapLayers.letters[def.type] ?? def.name ?? def.type}
+      {label ?? layerName(def, m) ?? def.type}
 
       {flaggedCountries(def)?.map((country) => (
         <CountryFlag key={country} country={country} />

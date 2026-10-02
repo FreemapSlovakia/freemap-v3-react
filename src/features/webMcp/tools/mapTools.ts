@@ -7,7 +7,11 @@ import {
 } from '@features/map/model/actions.js';
 import { withoutMarkers } from '@features/map/model/mapCombination.js';
 import { resolvedCustomLayersSelector } from '@features/map/model/selectors.js';
-import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  integratedLayerDefMapSelector,
+  libraryIndexSelector,
+} from '@features/mapLibrary/model/selectors.js';
+import { layerName } from '@shared/layerName.js';
 import type { IntegratedLayerDef } from '@shared/mapDefinitions.js';
 import {
   loadIntegratedLayerDef,
@@ -33,9 +37,9 @@ function layerCatalog(
   const m = getMessages();
 
   return [
-    ...mapIndex.map((def) => ({
+    ...libraryIndexSelector(state).map((def) => ({
       code: def.type,
-      name: m?.mapLayers.letters[def.type] ?? def.type,
+      name: layerName(def, m) ?? def.type,
       kind: def.layer,
       minZoom: loaded[def.type]?.minZoom,
       premiumFromZoom: loaded[def.type]?.premiumFromZoom,
@@ -165,12 +169,14 @@ export const mapTools = [
         ),
       );
 
-      return layerCatalog(
-        store.getState(),
-        Object.fromEntries(
+      const state = store.getState();
+
+      return layerCatalog(state, {
+        ...integratedLayerDefMapSelector(state),
+        ...Object.fromEntries(
           defs.flatMap((def) => (def ? [[def.type, def]] : [])),
         ),
-      );
+      });
     },
   }),
 

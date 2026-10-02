@@ -39,11 +39,11 @@ import {
   FaSlidersH,
   FaUser,
 } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
+import { MdDashboardCustomize, MdLibraryAdd } from 'react-icons/md';
 import { getDocuments } from '@/documents/index.js';
 import type { Messages } from '../translations/messagesInterface.js';
-import type { CustomLayerDef } from './mapDefinitions.js';
-import { mapIndex } from './mapLibrary/mapIndex.js';
+import { layerName } from './layerName.js';
+import type { CustomLayerDef, MapIndexEntry } from './mapDefinitions.js';
 import { isToolAvailable, toolDefinitions } from './toolDefinitions.js';
 
 /**
@@ -88,6 +88,8 @@ export type CommandContext = {
   customLayers: CustomLayerDef[];
   mapCombinations: MapCombination[];
   layersSettings: Record<string, LayerSettings>;
+  /** `libraryIndexSelector`'s answer: built-in maps and the catalog maps known. */
+  libraryIndex: MapIndexEntry[];
   embedFeatures: string[];
 };
 
@@ -172,6 +174,12 @@ const modalCommands: ModalCommand[] = [
     id: 'map-layers-config',
     icon: <FaLayerGroup />,
     label: (m) => m.mapLayers.layersConfiguration,
+    offline: (ctx) => !ctx.canSaveSettings,
+  },
+  {
+    id: 'map-library',
+    icon: <MdLibraryAdd />,
+    label: (m) => m.mapLayers.mapLibrary,
     offline: (ctx) => !ctx.canSaveSettings,
   },
   {
@@ -286,8 +294,8 @@ export function getCommands(ctx: CommandContext): Command[] {
   }
 
   if (!embedded || !ctx.embedFeatures.includes('noMapSwitch')) {
-    for (const def of mapIndex) {
-      const label = m.mapLayers.letters[def.type];
+    for (const def of ctx.libraryIndex) {
+      const label = layerName(def, m);
 
       // `i` is the one layer that hides rather than shows what it names, so
       // switching it on here would read as the opposite of what it does.

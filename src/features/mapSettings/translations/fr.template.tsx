@@ -10,8 +10,18 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       'Erreur lors de l’enregistrement des paramètres',
       err,
     ),
-  installed:
-    'Installée — une carte désinstallée n’est proposée nulle part, mais un lien l’affiche toujours',
+  install: 'Installer — proposer cette carte dans les menus des cartes',
+  uninstall:
+    'Désinstaller — la carte n’est proposée nulle part, mais un lien l’affiche toujours',
+  installedMaps: 'Cartes installées',
+  noInstalledMaps:
+    'Aucune carte installée. Cherchez dans la bibliothèque pour en ajouter.',
+  searchLibrary: ({ count }) => `Rechercher parmi ${count} cartes`,
+  moreResults: ({ count }) => `${count} de plus — affinez la recherche`,
+  preview: 'Aperçu sur la carte',
+  installMap: 'Installer',
+  keepOnMap: 'Garder sur la carte',
+  backToLibrary: 'Retour à la bibliothèque',
   overlayOpacity: 'Opacité',
   showInMenu: 'Afficher dans le menu',
   showInToolbar: 'Afficher dans la barre d’outils',
@@ -24,6 +34,7 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   combinationSaved: 'La combinaison de cartes a été enregistrée.',
   updateFromCurrentMap: 'Mettre à jour depuis la carte actuelle',
   baseMap: 'Carte de base',
+  baseMaps: 'Cartes de base',
   overlays: 'Couches de superposition',
   addOverlay: 'Ajouter une couche de superposition…',
   noOverlays: 'Aucune couche de superposition.',

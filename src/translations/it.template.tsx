@@ -374,6 +374,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'simboli, legenda della mappa',
         'modal-about': 'contatti, e-mail, feedback',
         'modal-map-layers-config': 'livelli, gestisci mappe, ordine, opacità',
+        'modal-map-library':
+          'catalogo, installa, disinstalla, aggiungi mappe, altre mappe',
         'modal-custom-maps':
           'mappa personalizzata, wms, tms, aggiungi sorgente',
         'modal-offline-maps': 'mappe scaricate, archiviazione',
@@ -535,6 +537,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     showMore: 'Mostra più mappe',
     layersConfiguration: 'Configurazione dei livelli',
+    mapLibrary: 'Libreria di mappe',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',
       maplibre: 'Vettore (MapLibre)',

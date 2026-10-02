@@ -21,7 +21,7 @@ import {
   FaLayerGroup,
   FaSlidersH,
 } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
+import { MdDashboardCustomize, MdLibraryAdd } from 'react-icons/md';
 
 /**
  * Everything about the maps other than which one is shown: the layer and
@@ -76,6 +76,16 @@ export function MapManageButton(): ReactElement {
           <FaLayerGroup /> {m?.mapLayers.layersConfiguration}
           <MenuGutter>
             <Chord modal="map-layers-config" />
+          </MenuGutter>
+        </OnlineOnlyItem>
+
+        <OnlineOnlyItem
+          offline={!canSaveSettings}
+          {...modalMenuItemProps('map-library')}
+        >
+          <MdLibraryAdd /> {m?.mapLayers.mapLibrary}
+          <MenuGutter>
+            <Chord modal="map-library" />
           </MenuGutter>
         </OnlineOnlyItem>
 

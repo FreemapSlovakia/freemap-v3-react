@@ -6,29 +6,27 @@ import {
   type MapCombination,
 } from '@features/map/model/mapCombination.js';
 import { activeCombinationsSelector } from '@features/map/model/selectors.js';
-import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  integratedLayerDefMapSelector,
+  libraryIndexByIdSelector,
+  libraryIndexSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { layerName } from '@shared/layerName.js';
 import {
   type CustomLayerDef,
   flaggedCountries,
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
 import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
-import { mapIndex, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import clsx from 'clsx';
 import type { ReactElement } from 'react';
 import { Form, Table } from 'react-bootstrap';
-import {
-  FaEye,
-  FaHistory,
-  FaKeyboard,
-  FaPlug,
-  FaRegListAlt,
-} from 'react-icons/fa';
+import { FaEye, FaHistory, FaKeyboard, FaRegListAlt } from 'react-icons/fa';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './MapLayersSettings.module.css';
 import { OpacityButton } from './OpacityButton.js';
@@ -57,20 +55,22 @@ export function MapLayersSettings({
 
   const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
 
-  function getName(def: { type: string; custom: boolean; name?: string }) {
-    const { type } = def;
+  const libraryIndex = useAppSelector(libraryIndexSelector);
 
-    return def.custom
-      ? def.name || `${m?.mapLayers.customBase} ${type}`
-      : (m?.mapLayers.letters[type] ?? '…');
-  }
+  const libraryIndexById = useAppSelector(libraryIndexByIdSelector);
 
+  const getName = (def: { type: string; custom: boolean; name?: string }) =>
+    layerName(def, m) ??
+    (def.custom ? `${m?.mapLayers.customBase} ${def.type}` : '…');
+
+  // Maps are installed and uninstalled in the map library.
   const layerDefs = [
-    ...mapIndex.map(({ load: _, ...def }) => ({
-      ...def,
-      custom: false,
-      name: undefined,
-    })),
+    ...libraryIndex
+      .filter(({ type }) => isLayerInstalled(layersSettings, type))
+      .map(({ load: _, bundled: __, ...def }) => ({
+        ...def,
+        custom: false,
+      })),
     ...customLayers.map((def) => ({
       ...def,
       countries: [],
@@ -119,12 +119,6 @@ export function MapLayersSettings({
 
           <th />
 
-          <th>
-            <GlyphMarker hint={msm?.installed} color={null} className="ms-n1">
-              <FaPlug />
-            </GlyphMarker>
-          </th>
-
           {/* `ms-n1`: the cell's own padding already puts the glyph over the
               checkbox below, so the mark reaches back over its leading step
               rather than adding a second one and sliding off it. */}
@@ -168,15 +162,11 @@ export function MapLayersSettings({
             !('combination' in def) &&
             combinationOpacity(activeCombinations, type) === undefined;
 
-          // The user's own maps are deleted rather than uninstalled.
-          const installed =
-            def.custom || isLayerInstalled(layersSettings, type);
-
           return (
             <tr key={type}>
               <td>{def.icon}</td>
 
-              <td className={clsx(!installed && 'text-muted')}>
+              <td>
                 {getName(def)}
 
                 {def.superseededBy && (
@@ -191,25 +181,7 @@ export function MapLayersSettings({
               </td>
 
               <td>
-                {!def.custom && (
-                  <Form.Check
-                    checked={installed}
-                    onChange={(e) =>
-                      setLayersSettings({
-                        ...layersSettings,
-                        [type]: {
-                          ...(layersSettings[type] ?? {}),
-                          installed: e.currentTarget.checked,
-                        },
-                      })
-                    }
-                  />
-                )}
-              </td>
-
-              <td>
                 <Form.Check
-                  disabled={!installed}
                   checked={
                     layersSettings[type]?.showInToolbar ??
                     Boolean(def.defaultInToolbar)
@@ -228,7 +200,6 @@ export function MapLayersSettings({
 
               <td>
                 <Form.Check
-                  disabled={!installed}
                   checked={
                     layersSettings[type]?.showInMenu ??
                     Boolean(def.defaultInMenu)
@@ -246,7 +217,7 @@ export function MapLayersSettings({
               </td>
 
               <td>
-                {opacityEditable && installed && (
+                {opacityEditable && (
                   <OpacityButton
                     value={resolveLayerOpacity(
                       integratedLayerDefMap[type],
@@ -269,24 +240,22 @@ export function MapLayersSettings({
                   'fm-should-have-keyboard',
                 )}
               >
-                {installed && (
-                  <ShortcutRecorder
-                    value={
-                      layersSettings[type]?.shortcut === undefined
-                        ? mapIndexById[type]?.shortcut
-                        : layersSettings[type]?.shortcut
-                    }
-                    onChange={(shortcut) =>
-                      setLayersSettings({
-                        ...layersSettings,
-                        [type]: {
-                          ...(layersSettings[type] ?? {}),
-                          shortcut,
-                        },
-                      })
-                    }
-                  />
-                )}
+                <ShortcutRecorder
+                  value={
+                    layersSettings[type]?.shortcut === undefined
+                      ? libraryIndexById[type]?.shortcut
+                      : layersSettings[type]?.shortcut
+                  }
+                  onChange={(shortcut) =>
+                    setLayersSettings({
+                      ...layersSettings,
+                      [type]: {
+                        ...(layersSettings[type] ?? {}),
+                        shortcut,
+                      },
+                    })
+                  }
+                />
               </td>
             </tr>
           );

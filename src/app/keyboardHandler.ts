@@ -25,11 +25,12 @@ import {
 } from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
+import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
+import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
 import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
-import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import type { Shortcut } from '@shared/types/common.js';
 import {
@@ -60,6 +61,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     state.gallery.pickingPositionForId ||
     state.gallery.showPosition ||
     state.mapArea.selecting ||
+    state.mapLibrary.preview ||
     state.toposcope.pickingCenter;
 
   // Overlays that own their open-state outside main.activeModal: the gallery
@@ -120,6 +122,10 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
 
     if (state.mapArea.selecting) {
       return mapAreaSelectCancel();
+    }
+
+    if (state.mapLibrary.preview) {
+      return mapLibraryPreviewEnd({ keep: false });
     }
 
     if (state.homeLocation.selectingHomeLocation !== false) {
@@ -212,6 +218,8 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
   if (
     !keyTimer &&
     (!showingModal || suspendedModal) &&
+    // A preview puts the earlier layers back, so it takes no map switch.
+    !state.mapLibrary.preview &&
     (!window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'))
   ) {
     const pressed = (shortcut: Shortcut | null | undefined) =>
@@ -224,7 +232,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
 
     const layerDef = [
       ...state.map.customLayers,
-      ...mapIndex.filter((def) =>
+      ...libraryIndexSelector(state).filter((def) =>
         isLayerInstalled(state.map.layersSettings, def.type),
       ),
     ].find((def) => {
@@ -405,7 +413,8 @@ export function handleMapKey(event: KeyboardEvent, state: RootState) {
     state.homeLocation.selectingHomeLocation !== false ||
     state.gallery.pickingPositionForId ||
     state.gallery.showPosition ||
-    state.mapArea.selecting;
+    state.mapArea.selecting ||
+    state.mapLibrary.preview;
 
   const showingModal =
     Boolean(state.main.activeModal) ||

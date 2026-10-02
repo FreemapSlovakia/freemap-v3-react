@@ -20,7 +20,8 @@ import {
 export const allLayerEntries = (
   customLayers: RootState['map']['customLayers'],
   cachedMaps: RootState['map']['cachedMaps'],
-) => [...mapIndex, ...customLayers, ...cachedMaps];
+  catalogMaps: RootState['map']['catalogMaps'],
+) => [...mapIndex, ...catalogMaps, ...customLayers, ...cachedMaps];
 
 /** Custom layers as drawn: a shading map with its source's zooms and limits. */
 export const resolvedCustomLayersSelector = createSelector(
@@ -33,6 +34,7 @@ export const resolvedCustomLayersSelector = createSelector(
 const layerDefsSelector = createSelector(
   (state: RootState) => state.map.customLayers,
   (state: RootState) => state.map.cachedMaps,
+  (state: RootState) => state.map.catalogMaps,
   allLayerEntries,
 );
 

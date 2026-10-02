@@ -274,6 +274,8 @@ type HasZIndex = {
 };
 
 export type IsIntegratedLayerDef = {
+  /** A catalog map's own name; a built-in map's is translated. */
+  name?: string;
   layerPreview?: boolean;
   /**
    * Opacity this overlay is drawn at until the user sets one of their own.
@@ -773,6 +775,7 @@ export function resolveLayersSettingsAliases<T>(
 /** The fields the library index carries for every map; the rest is loaded per map. */
 type MapIndexField =
   | 'type'
+  | 'name'
   | 'layer'
   | 'technology'
   | 'icon'

@@ -9,9 +9,14 @@ import {
 } from '@features/cachedMaps/model/actions.js';
 import { gallerySetFilter } from '@features/gallery/model/actions.js';
 import { processGeoipResult } from '@features/geoip/model/actions.js';
+import {
+  mapLibraryCatalogMapsLoaded,
+  mapLibraryInstall,
+} from '@features/mapLibrary/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
+import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
 import {
   type MapStateBase,
   mapRefocus,
@@ -53,6 +58,8 @@ export interface MapState extends MapStateBase {
   sharedShadingDraft?: Shading;
   shadingOnServer: boolean;
   mapCombinations: MapCombination[];
+  /** The catalog maps wanted so far: installed, on the map or an offline map's source. */
+  catalogMaps: CatalogMap[];
 }
 
 const LAT = 48.70714112;
@@ -94,6 +101,7 @@ export const mapInitialState: MapState = {
   shadingDrafts: {},
   shadingOnServer: true,
   mapCombinations: [],
+  catalogMaps: [],
   // undefined = not yet fetched (unknown coverage); [] would wrongly mean
   // "covers no country" and flash out-of-coverage warnings during initial load
   countries: undefined,
@@ -183,6 +191,19 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(applySettings, (state, { payload }) => {
       assignAccountSettings(state, payload);
     })
+    .addCase(mapLibraryCatalogMapsLoaded, (state, { payload }) => {
+      for (const map of payload) {
+        if (!state.catalogMaps.some((known) => known.type === map.type)) {
+          state.catalogMaps.push(map);
+        }
+      }
+    })
+    .addCase(mapLibraryInstall, (state, { payload }) => {
+      state.layersSettings[payload.type] = {
+        ...state.layersSettings[payload.type],
+        installed: payload.installed,
+      };
+    })
     .addCase(gallerySetFilter, (state) => {
       if (!state.layers.includes('I')) {
         state.layers.push('I');
@@ -198,7 +219,11 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
       // TODO can cache (use selector?)
       const kinds = layerKinds(
-        allLayerEntries(state.customLayers, state.cachedMaps),
+        allLayerEntries(
+          state.customLayers,
+          state.cachedMaps,
+          state.catalogMaps,
+        ),
       );
 
       if (kinds.get(type) === 'base' && enable !== false) {

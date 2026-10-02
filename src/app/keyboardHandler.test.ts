@@ -3,6 +3,7 @@ import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.j
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
+import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import {
@@ -56,6 +57,7 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     wiki: { preview: null, loading: false },
     homeLocation: { selectingHomeLocation: false },
     mapArea: { selecting: null },
+    mapLibrary: { preview: null },
     toposcope: { pickingCenter: false },
     panorama: { picking: null },
     elevationChart: { target: null },
@@ -299,6 +301,18 @@ describe('handleEvent — Escape', () => {
         }),
       ),
     ).toEqual(mapAreaSelectCancel());
+  });
+
+  it('ends a library preview, back to the library it hides', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          main: { activeModal: { type: 'map-library' } },
+          mapLibrary: { preview: { type: 'Z0001', restore: ['X'] } },
+        }),
+      ),
+    ).toEqual(mapLibraryPreviewEnd({ keep: false }));
   });
 
   it('cancels home-location picking before closing the chart', () => {

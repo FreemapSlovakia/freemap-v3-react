@@ -225,6 +225,12 @@ const mapAreaSelectionMenuFactory = () =>
     '@features/mapArea/components/MapAreaSelectionMenu.js'
   );
 
+const mapLibraryPreviewMenuFactory = () =>
+  import(
+    /* webpackChunkName: "map-library-preview-menu" */
+    '@features/mapLibrary/components/MapLibraryPreviewMenu.js'
+  );
+
 const galleryMenuFactory = () =>
   import(
     /* webpackChunkName: "gallery-menu" */
@@ -364,6 +370,12 @@ const mapLayersConfigModalFactory = () =>
   import(
     /* webpackChunkName: "map-layers-config-modal" */
     '@features/mapSettings/components/MapLayersConfigModal.js'
+  );
+
+const mapLibraryModalFactory = () =>
+  import(
+    /* webpackChunkName: "map-library-modal" */
+    '@features/mapLibrary/components/MapLibraryModal.js'
   );
 
 const customMapsModalFactory = () =>
@@ -700,6 +712,10 @@ export function Main(): ReactElement {
 
   const tracksFound = useAppSelector((state) =>
     Boolean(state.tracking.tracks.length),
+  );
+
+  const previewingLibraryMap = useAppSelector(
+    (state) => state.mapLibrary.preview !== null,
   );
 
   const selectingMapArea = useAppSelector(
@@ -1108,6 +1124,10 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={mapAreaSelectionMenuFactory} />
               )}
 
+              {previewingLibraryMap && (
+                <AsyncComponent factory={mapLibraryPreviewMenuFactory} />
+              )}
+
               {showAds && !askingCookieConsent && !showElevationChart && (
                 <AsyncComponent factory={adFactory} />
               )}
@@ -1243,6 +1263,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'map-layers-config'}
         factory={mapLayersConfigModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'map-library'}
+        factory={mapLibraryModalFactory}
       />
 
       <AsyncModal

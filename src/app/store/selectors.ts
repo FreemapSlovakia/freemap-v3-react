@@ -58,6 +58,10 @@ export const mapAreaSelectingSelector = (state: RootState): boolean =>
 export const toposcopePickingCenterSelector = (state: RootState): boolean =>
   state.toposcope.pickingCenter;
 
+/** A library map is previewed; unlike the picks, it switches no other map. */
+export const mapLibraryPreviewingSelector = (state: RootState): boolean =>
+  state.mapLibrary.preview !== null;
+
 export const panoramaPickingSelector = (state: RootState): boolean =>
   state.panorama.picking !== null;
 
@@ -77,7 +81,8 @@ export const pickingModeSelector = (state: RootState): boolean =>
   viewshedPickingViewpointSelector(state) ||
   galleryPickingPositionForIdSelector(state) !== null ||
   galleryShowPositionSelector(state) ||
-  mapAreaSelectingSelector(state);
+  mapAreaSelectingSelector(state) ||
+  mapLibraryPreviewingSelector(state);
 
 /**
  * True while the map is given over to a click on a *feature* — joining two

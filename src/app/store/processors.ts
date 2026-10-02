@@ -83,7 +83,18 @@ import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxPr
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
 import { exportMapFeaturesProcessor } from '@features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.js';
+import {
+  catalogBaseProcessor,
+  catalogMapsLoadProcessor,
+} from '@features/mapLibrary/model/processors/catalogMapsLoadProcessor.js';
+import { mapLibraryInstallProcessor } from '@features/mapLibrary/model/processors/mapLibraryInstallProcessor.js';
 import { mapLibraryLoadProcessor } from '@features/mapLibrary/model/processors/mapLibraryLoadProcessor.js';
+import {
+  mapLibraryPreviewEndProcessor,
+  mapLibraryPreviewGoneProcessor,
+  mapLibraryPreviewModalProcessor,
+  mapLibraryPreviewStartProcessor,
+} from '@features/mapLibrary/model/processors/previewProcessors.js';
 import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
@@ -170,6 +181,13 @@ export const processors = [
   toastsCancelTypeProcessor,
   cancelProcessor,
   mapLibraryLoadProcessor,
+  catalogMapsLoadProcessor,
+  catalogBaseProcessor,
+  mapLibraryInstallProcessor,
+  mapLibraryPreviewStartProcessor,
+  mapLibraryPreviewEndProcessor,
+  mapLibraryPreviewModalProcessor,
+  mapLibraryPreviewGoneProcessor,
   openToolProcessor,
   deleteProcessor,
   geoipProcessor,

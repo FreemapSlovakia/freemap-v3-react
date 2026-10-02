@@ -45,6 +45,7 @@ function makeState(o: Overrides = {}): RootState {
     },
     drawingLines: { drawing: false, joinWith: undefined, ...o.drawingLines },
     mapArea: { selecting: null, ...o.mapArea },
+    mapLibrary: { preview: null, ...o.mapLibrary },
     toposcope: { pickingCenter: false, ...o.toposcope },
     panorama: { picking: null, ...o.panorama },
     viewshed: { pickingViewpoint: false, ...o.viewshed },
@@ -92,6 +93,14 @@ describe('pickingModeSelector', () => {
 
   it('is true while selecting a map area', () => {
     const state = makeState({ mapArea: { selecting: 'export' } });
+
+    expect(pickingModeSelector(state)).toBe(true);
+  });
+
+  it('is true while previewing a library map', () => {
+    const state = makeState({
+      mapLibrary: { preview: { type: 'Z0003', restore: ['X'] } },
+    });
 
     expect(pickingModeSelector(state)).toBe(true);
   });

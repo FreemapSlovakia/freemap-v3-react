@@ -32,6 +32,7 @@ import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
+import { layerName } from '@shared/layerName.js';
 import {
   flaggedCountries,
   getCountriesBbox,
@@ -523,6 +524,10 @@ export function MapSwitchButton(): ReactElement {
         on ||
         (expand === false && !isWide ? showInToolbar : showInMenu);
 
+  const nameOf = (def: { type: string; name?: string; custom: boolean }) =>
+    layerName(def, m) ??
+    (def.custom ? `${m?.mapLayers.customBase ?? ''} ${def.type}` : '…');
+
   function layersMemuItems(layer: 'base' | 'overlay') {
     return layerDefs
       .filter((def) => def.layer === layer)
@@ -541,12 +546,10 @@ export function MapSwitchButton(): ReactElement {
           layersSettings[type]?.showInToolbar ??
           (!def.custom && Boolean(def.defaultInToolbar));
 
-        const layerName = def.custom
-          ? def.name || `${m?.mapLayers.customBase ?? ''} ${type}`
-          : (m?.mapLayers.letters[type] ?? '');
+        const name = nameOf(def);
 
         if (
-          !isListed(layerName, activeLayers.includes(type), {
+          !isListed(name, activeLayers.includes(type), {
             showInMenu,
             showInToolbar,
           })
@@ -577,11 +580,7 @@ export function MapSwitchButton(): ReactElement {
               def.icon
             )}
 
-            <span>
-              {def.custom
-                ? def.name || `${m?.mapLayers.customBase} ${type}`
-                : (m?.mapLayers.letters[type] ?? '…')}
-            </span>
+            <span>{nameOf(def)}</span>
 
             {countryFlags(def)}
 
@@ -750,9 +749,7 @@ export function MapSwitchButton(): ReactElement {
               <LongPressTooltip
                 label={
                   <span className="d-inline-flex flex-wrap align-items-center gap-1">
-                    {def.custom
-                      ? def.name || `${m?.mapLayers.customBase} ${type}`
-                      : (m?.mapLayers.letters[type] ?? '…')}
+                    {nameOf(def)}
 
                     {countryFlags(def)}
 

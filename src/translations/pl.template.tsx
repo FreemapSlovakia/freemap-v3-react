@@ -360,6 +360,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-about': 'kontakt, e-mail, opinie',
         'modal-map-layers-config':
           'warstwy, zarządzanie mapami, kolejność, przezroczystość',
+        'modal-map-library':
+          'katalog, zainstaluj, odinstaluj, dodaj mapy, więcej map',
         'modal-custom-maps': 'własna mapa, wms, tms, dodaj źródło mapy',
         'modal-offline-maps': 'pobrane mapy, pamięć',
         'modal-browse-cache': 'pamięć podręczna, kafelki, cache',
@@ -515,6 +517,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     },
     showMore: 'Pokaż więcej map',
     layersConfiguration: 'Konfiguracja warstw',
+    mapLibrary: 'Biblioteka map',
     technologies: {
       tile: 'Płytki obrazów (TMS, XYZ)',
       maplibre: 'Wektor (MapLibre)',

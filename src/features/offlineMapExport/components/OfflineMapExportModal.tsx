@@ -17,6 +17,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
+import { layerName } from '@shared/layerName.js';
 import type { IntegratedLayerDef } from '@shared/mapDefinitions.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { countTilesInBbox } from '@shared/tileEnumeration.js';
@@ -283,11 +284,15 @@ export default function OfflineMapExportModal({
 
   const invalidEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  const mapDefName = mapDef?.name;
+
   useEffect(() => {
     setName((name) =>
-      name && nameChanged ? name : (m?.mapLayers.letters[mapType] ?? ''),
+      name && nameChanged
+        ? name
+        : (layerName({ type: mapType, name: mapDefName }, m) ?? ''),
     );
-  }, [m, mapType, nameChanged]);
+  }, [m, mapType, mapDefName, nameChanged]);
 
   function getItem(def: IntegratedLayerDef) {
     return <MapLayerItem def={def} />;

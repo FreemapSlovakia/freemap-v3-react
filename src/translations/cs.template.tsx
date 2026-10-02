@@ -371,6 +371,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'značky, symboly, vysvětlivky',
         'modal-about': 'kontakt, e-mail, zpětná vazba',
         'modal-map-layers-config': 'vrstvy, správa map, pořadí, průhlednost',
+        'modal-map-library':
+          'knihovna, katalog, instalovat, odinstalovat, přidat mapy, další mapy',
         'modal-custom-maps': 'vlastní mapa, wms, tms, přidat mapu',
         'modal-offline-maps': 'stažené mapy, úložiště',
         'modal-browse-cache': 'mezipaměť, dlaždice, úložiště',
@@ -489,6 +491,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       photosCc: 'různé licence Creative Commons',
     },
     layersConfiguration: 'Nastavení vrstev',
+    mapLibrary: 'Knihovna map',
     customMaps: 'Vlastní mapy',
     addCustomMap: 'Přidat vlastní mapu',
     activate: 'Aktivovat',

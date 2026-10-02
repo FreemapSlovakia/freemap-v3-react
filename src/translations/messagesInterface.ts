@@ -304,6 +304,7 @@ export type Messages = {
     };
     attr: Record<string, ReactNode>;
     layersConfiguration: string;
+    mapLibrary: string;
     customMaps: string;
     addCustomMap: string;
     activate: string;

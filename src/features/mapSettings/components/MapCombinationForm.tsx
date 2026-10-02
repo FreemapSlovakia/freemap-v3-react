@@ -6,7 +6,11 @@ import {
   type MapCombination,
 } from '@features/map/model/mapCombination.js';
 import { layerKindsSelector } from '@features/map/model/selectors.js';
-import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  integratedLayerDefMapSelector,
+  libraryIndexByIdSelector,
+  libraryIndexSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
@@ -22,7 +26,6 @@ import {
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
 import { isLayerOffered } from '@shared/mapLibrary/installed.js';
-import { mapIndex, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import { type ReactElement, type ReactNode, useState } from 'react';
 import {
   Button,
@@ -100,8 +103,12 @@ export function MapCombinationForm({
 
   const layers = useAppSelector((state) => state.map.layers);
 
+  const libraryIndex = useAppSelector(libraryIndexSelector);
+
+  const libraryIndexById = useAppSelector(libraryIndexByIdSelector);
+
   const defs: MapLayerItemDef[] = [
-    ...mapIndex.filter((def) => canPreviewLayers || !def.layerPreview),
+    ...libraryIndex.filter((def) => canPreviewLayers || !def.layerPreview),
     ...customLayers,
     ...cachedMaps.filter((cm) => cm.downloadedCount === cm.tileCount),
   ];
@@ -126,7 +133,7 @@ export function MapCombinationForm({
   // The pickers offer an uninstalled library map only as the base already in it.
   const pickable = defs.filter(
     (def) =>
-      !(def.type in mapIndexById) ||
+      !(def.type in libraryIndexById) ||
       def.type === value.base ||
       isLayerOffered(layersSettings, layers, def.type),
   );
