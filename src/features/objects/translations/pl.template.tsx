@@ -23,6 +23,7 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     square: 'Kwadrat',
   },
   showDetails: 'Szczegóły',
+  moreGeneralTypes: 'Bardziej ogólne typy',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historia)',
   tooManyPoints: ({ limit }) =>

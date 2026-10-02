@@ -26,6 +26,7 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     `Zu viele Objekte, um sie als Funde anzuzeigen (${count}, höchstens ${limit}). Zoomen Sie hinein oder schränken Sie den Filter ein.`,
   showAsLookup: 'Als Fund anzeigen',
   showDetails: 'Details',
+  moreGeneralTypes: 'Allgemeinere Typen',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (Verlauf)',
   tooManyPoints: ({ limit }) =>

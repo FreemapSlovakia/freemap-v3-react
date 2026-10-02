@@ -9,6 +9,7 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmorska višina',
   showDetails: 'Podrobnosti',
+  moreGeneralTypes: 'Splošnejše vrste',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (zgodovina)',
   lowZoomAlert: {

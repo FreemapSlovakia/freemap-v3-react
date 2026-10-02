@@ -13,6 +13,7 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Elevazione',
   showDetails: 'Dettagli',
+  moreGeneralTypes: 'Tipi più generici',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (storia)',
   lowZoomAlert: {

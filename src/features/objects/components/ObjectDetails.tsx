@@ -13,7 +13,10 @@ import { useGenericNameParts } from '@osm/useGenericNameResolver.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
+import {
+  OsmFeatureIdSchema,
+  stringifyFeatureId,
+} from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
 import { Table } from 'react-bootstrap';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
@@ -59,6 +62,8 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
         {displayName && <span className="fw-semibold">{displayName}</span>}
 
         <GenericNameToggles
+          // Whether its other categories are expanded is per object.
+          key={stringifyFeatureId(id)}
           parts={genericNameParts}
           tags={geojson.properties ?? undefined}
         />

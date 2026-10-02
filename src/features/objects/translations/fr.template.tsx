@@ -30,6 +30,7 @@ const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   },
   source: 'Source',
   showDetails: 'Détails',
+  moreGeneralTypes: 'Types plus généraux',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historique)',
   markerShape: 'Forme du marqueur',

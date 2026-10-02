@@ -10,6 +10,7 @@ export type ObjectsMessages = {
   }) => JSX.Element;
   elevation: string;
   showDetails: string;
+  moreGeneralTypes: string;
   openInOsm: string;
   osmHistory: string;
   lowZoomAlert: {

@@ -13,6 +13,7 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Magasság',
   showDetails: 'Részletek',
+  moreGeneralTypes: 'Általánosabb típusok',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (előzmények)',
   lowZoomAlert: {

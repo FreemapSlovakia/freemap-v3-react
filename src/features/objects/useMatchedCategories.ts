@@ -1,5 +1,4 @@
 import type { GenericNameLabel } from '@osm/useGenericNameResolver.js';
-import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMemo } from 'react';
 import type { ObjectCategory } from './objectCategories.js';
 import { useObjectCategories } from './useObjectCategories.js';
@@ -35,6 +34,8 @@ export type MatchedCategory = GenericNameLabel & {
   category?: ObjectCategory;
   /** Unique within the list; two categories can share a localized name. */
   key: string;
+  /** A category the object is in that names no kind of it. */
+  extra?: boolean;
 };
 
 /** Whether an object carrying `tags` is one the filter `key` asks for. */
@@ -61,22 +62,19 @@ export function sameFilter(a: string, b: string): boolean {
 
 /**
  * The kinds of an object paired with the objects filter each one stands for,
- * plus any active filter that shows the object without naming a kind of it.
+ * then, marked `extra`, every other category its tags match — the broader ones
+ * the resolver drops as more generic, and active filters naming no kind of it.
  * Shared, so the chips in the details popup and the toolbar's own menu can
  * never disagree about which filter a kind belongs to.
  */
 export function useMatchedCategories(
   parts: GenericNameLabel[],
-  /** The object's own tags, which say which active filters are showing it. */
+  /** The object's own tags, which say which other categories it is in. */
   tags?: Record<string, string>,
 ): MatchedCategory[] {
-  const active = useAppSelector((state) => state.objects.active);
-
-  // Nothing here is switchable without a kind resolved from OSM tags or an
-  // active filter to name, and without either the mapping is never fetched.
+  // Without OSM tags, from a kind or the object, the mapping is never fetched.
   const categories = useObjectCategories(
-    parts.some((part) => part.tags) ||
-      (tags !== undefined && active.length > 0),
+    parts.some((part) => part.tags) || tags !== undefined,
   );
 
   return useMemo(() => {
@@ -94,24 +92,28 @@ export function useMatchedCategories(
 
     // `eliminateMoreGenericNames` drops the broad kind in favour of the narrow
     // one, so an object the resolver calls a "Refitted spring" names nothing
-    // that the `natural=spring` filter showing it could be switched off by.
-    const extra = active.flatMap((key) => {
+    // that the `natural=spring` filter showing it could be switched by.
+    const seen = new Set<string>();
+
+    const extra = categories.flatMap((category) => {
       if (
-        !matchesTags(key, tags) ||
+        seen.has(category.key) ||
+        !matchesTags(category.key, tags) ||
         kinds.some(
-          (kind) => kind.category && sameFilter(kind.category.key, key),
+          (kind) =>
+            kind.category && sameFilter(kind.category.key, category.key),
         )
       ) {
         return [];
       }
 
-      const category = categories.find((item) => sameFilter(item.key, key));
+      seen.add(category.key);
 
-      return category
-        ? [{ text: category.name, category, key: category.key }]
-        : [];
+      return [
+        { text: category.name, category, key: category.key, extra: true },
+      ];
     });
 
     return [...kinds, ...extra];
-  }, [parts, categories, tags, active]);
+  }, [parts, categories, tags]);
 }
