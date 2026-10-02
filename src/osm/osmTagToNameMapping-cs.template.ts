@@ -1152,6 +1152,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
       water_characteristic: {
         '*': 'Minerální pramen',
+        sulfuric: 'Sirný pramen',
+        sulfurous: 'Sirný pramen',
+        chalybeate: 'Železitý pramen',
+        ferruginous: 'Železitý pramen',
       },
     },
     stone: 'Balvan',

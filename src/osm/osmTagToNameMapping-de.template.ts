@@ -1105,6 +1105,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
       water_characteristic: {
         '*': 'Mineralquelle',
+        sulfuric: 'Schwefelquelle',
+        sulfurous: 'Schwefelquelle',
+        chalybeate: 'Eisenquelle',
+        ferruginous: 'Eisenquelle',
       },
     },
     strait: 'Meerenge',

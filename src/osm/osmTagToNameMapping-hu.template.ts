@@ -1127,6 +1127,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
       water_characteristic: {
         '*': 'Ásványforrás',
+        sulfuric: 'Kénes forrás',
+        sulfurous: 'Kénes forrás',
+        chalybeate: 'Vasas forrás',
+        ferruginous: 'Vasas forrás',
       },
     },
     strait: 'Tengerszoros',

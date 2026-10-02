@@ -80,6 +80,43 @@ describe('places of worship', () => {
   });
 });
 
+describe('springs', () => {
+  it('a mineral spring is that alone, whatever else it is', () => {
+    for (const tags of [
+      {} as Record<string, string>,
+      { drinking_water: 'yes' },
+      { drinking_water: 'no' },
+      { refitted: 'yes' },
+      { refitted: 'yes', drinking_water: 'yes' },
+      { drinking_water: 'yes', refitted: 'yes' },
+    ]) {
+      expect(
+        icon({ natural: 'spring', water_characteristic: 'mineral', ...tags }),
+        JSON.stringify(tags),
+      ).toEqual(['mineral-spring']);
+    }
+  });
+
+  it('a spring without it keeps its own icon', () => {
+    expect(
+      icon({ natural: 'spring', refitted: 'yes', drinking_water: 'yes' }),
+    ).toEqual(['refitted_drinking_spring']);
+
+    expect(icon({ natural: 'spring', drinking_water: 'no' })).toEqual([
+      'not_drinking_spring',
+    ]);
+
+    // A value saying the water is not mineral.
+    expect(
+      icon({
+        natural: 'spring',
+        drinking_water: 'yes',
+        water_characteristic: 'fresh',
+      }),
+    ).toEqual(['drinking_spring']);
+  });
+});
+
 describe('shops', () => {
   it('finds a hardware store under either spelling', () => {
     expect(icon({ shop: 'doityourself' })[0]).toBe('doityourself');

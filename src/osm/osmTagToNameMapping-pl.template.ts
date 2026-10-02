@@ -1108,6 +1108,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
       water_characteristic: {
         '*': 'Źródło mineralne',
+        sulfuric: 'Źródło siarczkowe',
+        sulfurous: 'Źródło siarczkowe',
+        chalybeate: 'Źródło żelaziste',
+        ferruginous: 'Źródło żelaziste',
       },
     },
     strait: 'Cieśnina',

@@ -1364,6 +1364,15 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
       },
       water_characteristic: {
         '*': 'Mineral spring',
+        sulfuric: 'Sulphur spring',
+        sulfurous: 'Sulphur spring',
+        chalybeate: 'Iron spring',
+        ferruginous: 'Iron spring',
+        // Values that say the water is not mineral.
+        fresh: '',
+        freshwater: '',
+        intermittent: '',
+        resurgence: '',
       },
     },
     stone: 'Stone',

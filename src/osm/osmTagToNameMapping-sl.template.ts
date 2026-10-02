@@ -1358,6 +1358,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
       },
       water_characteristic: {
         '*': 'Mineralni izvir',
+        sulfuric: 'Žvepleni izvir',
+        sulfurous: 'Žvepleni izvir',
+        chalybeate: 'Železov izvir',
+        ferruginous: 'Železov izvir',
       },
     },
     stone: 'Balvan',

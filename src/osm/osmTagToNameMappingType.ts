@@ -1377,6 +1377,14 @@ export type OsmTagToNameMapping = {
       };
       water_characteristic: {
         '*': string;
+        sulfuric: string;
+        sulfurous: string;
+        chalybeate: string;
+        ferruginous: string;
+        fresh: string;
+        freshwater: string;
+        intermittent: string;
+        resurgence: string;
       };
     };
     stone: string;

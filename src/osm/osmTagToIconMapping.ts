@@ -19,6 +19,15 @@ const worshipBuildingMapping: IconNode = {
   synagogue: 'synagogue',
 };
 
+// The values that say the water is not mineral are silenced.
+const mineralSpring: IconNode = {
+  '*': 'mineral-spring',
+  fresh: '',
+  freshwater: '',
+  intermittent: '',
+  resurgence: '',
+};
+
 // hack to have only single icon for churches...
 // Also read under `tourism=zoo`: a zoo carrying a `zoo` sub-tag has to resolve
 // from the pair, or the generic zoo icon wins on tag order alone.
@@ -800,18 +809,28 @@ export const osmTagToIconMapping: IconNode = {
     rock: 'rock',
     saddle: 'saddle',
     sinkhole: 'sinkhole',
+    // Mineral wins over the rest, as in the outdoor map: under every reading,
+    // so the one carrying it also carries all the tags of the others.
     spring: {
       '*': 'spring',
+      water_characteristic: mineralSpring,
       drinking_water: {
-        no: 'not_drinking_spring',
-        yes: 'drinking_spring',
+        no: { '*': 'not_drinking_spring', water_characteristic: mineralSpring },
+        yes: { '*': 'drinking_spring', water_characteristic: mineralSpring },
       },
       refitted: {
         yes: {
           '*': 'refitted_spring',
+          water_characteristic: mineralSpring,
           drinking_water: {
-            no: 'refitted_not_drinking_spring',
-            yes: 'refitted_drinking_spring',
+            no: {
+              '*': 'refitted_not_drinking_spring',
+              water_characteristic: mineralSpring,
+            },
+            yes: {
+              '*': 'refitted_drinking_spring',
+              water_characteristic: mineralSpring,
+            },
           },
         },
       },

@@ -1157,6 +1157,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
       water_characteristic: {
         '*': 'Sorgente minerale',
+        sulfuric: 'Sorgente solforosa',
+        sulfurous: 'Sorgente solforosa',
+        chalybeate: 'Sorgente ferruginosa',
+        ferruginous: 'Sorgente ferruginosa',
       },
     },
     stone: 'Pietra',
