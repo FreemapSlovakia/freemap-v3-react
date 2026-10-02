@@ -72,6 +72,9 @@ export function snapToDevicePixels(map: LeafletMap): () => void {
 
   map.on('layeradd', snapSoon);
 
+  // The first layers are added before this runs, as child effects go first.
+  snapSoon();
+
   return () => {
     map.off('move zoomend viewreset resize', snap);
 
