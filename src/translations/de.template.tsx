@@ -179,6 +179,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: '%value% hinzufügen',
     deleteButtonText: '%value% aus der Liste entfernen',
     accept: 'Akzeptieren',
+    externalService: 'Fremder Dienst mit Nutzungsbeschränkungen',
   },
 
   generic: {
@@ -539,6 +540,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Vektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Parametrische Schattierung',
+      color: 'Farbe',
     },
     technology: 'Typ',
     loadWmsLayers: 'Layer laden',
@@ -556,6 +558,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         veraltet. Zur modernen <b>{messages.mapLayers.letters[to]}</b>wechseln?
       </>
     ),
+    saveAsShadingMap: 'Als benutzerdefinierte Karte speichern',
   },
 
   elevationChart: {

@@ -329,6 +329,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     social: 'Družabni klub',
     sport: 'Športni klub',
     veterans: 'Klub veteranov',
+    no: '',
   },
   'disused:building': { '*': 'Neuporabljana stavba' },
   genus: {
@@ -523,6 +524,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     psychotherapist: 'Psihoterapevt',
     rehabilitation: 'Rehabilitacijski center',
     speech_therapist: 'Logoped',
+    no: '',
   },
   junction: {
     '*': 'Križišče',
@@ -530,9 +532,11 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intersection: 'Cestno križišče',
     jughandle: 'Jughandle',
     roundabout: 'Krožišče',
+    no: '',
   },
   lock: {
     '*': 'Zapornica',
+    no: '',
   },
   office: {
     '*': 'Pisarna',
@@ -569,6 +573,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     travel_agent: 'Potovalna agencija',
     union: 'Sindikat',
     water_utility: 'Vodovodno podjetje',
+    no: '',
   },
   'ruins:building': { '*': 'Ruševina stavbe' },
   ruins: { yes: 'V ruševinah' },
@@ -692,6 +697,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     university: 'Univerzitetna stavba',
     warehouse: 'Skladišče',
     yes: 'Nedoločena stavba',
+    no: '',
   },
   fixme: {
     '*': 'Napačno ali delno vrisan objekt',
@@ -1362,6 +1368,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         sulfurous: 'Žvepleni izvir',
         chalybeate: 'Železov izvir',
         ferruginous: 'Železov izvir',
+        fresh: '',
+        freshwater: '',
+        intermittent: '',
+        resurgence: '',
       },
     },
     stone: 'Balvan',

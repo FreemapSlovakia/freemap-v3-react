@@ -14,6 +14,14 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   customMapSaved: 'La mappa personalizzata è stata salvata.',
   shadingMapHint:
     "I parametri dell'ombreggiatura si impostano e si salvano nel pannello che compare dopo aver attivato questa mappa.",
+  combination: 'Combinazione di mappe',
+  combinationSaved: 'La combinazione di mappe è stata salvata.',
+  updateFromCurrentMap: 'Aggiorna dalla mappa attuale',
+  baseMap: 'Mappa di base',
+  overlays: 'Livelli sovrapposti',
+  addOverlay: 'Aggiungi livello sovrapposto…',
+  noOverlays: 'Nessun livello sovrapposto.',
+  combinationTooSmall: 'Sono necessari almeno due livelli.',
 };
 
 export default it;

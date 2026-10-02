@@ -33,6 +33,7 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     `Příliš mnoho objektů pro zobrazení jako nálezy (${count}, nejvýše ${limit}). Přibližte mapu nebo zužte filtr.`,
   showAsLookup: 'Zobrazit jako Nález',
   markerShape: 'Tvar značky',
+  showAllAsLookup: 'Zobrazit vše jako Nález',
 };
 
 export default cs;

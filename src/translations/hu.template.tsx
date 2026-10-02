@@ -176,6 +176,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: '%value% hozzáadása',
     deleteButtonText: '%value% eltávolítása a listáról',
     accept: 'Elfogadod',
+    externalService: 'Külső szolgáltatás, használati korlátozásokkal',
   },
 
   generic: {
@@ -539,6 +540,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Vektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Paraméteres árnyékolás',
+      color: 'Szín',
     },
     technology: 'Típus',
     loadWmsLayers: 'Rétegek betöltése',
@@ -556,6 +558,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         elavult. Átváltasz a modern <b>{messages.mapLayers.letters[to]}</b>?
       </>
     ),
+    saveAsShadingMap: 'Mentés egyéni térképként',
   },
 
   elevationChart: {

@@ -15,6 +15,13 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   combinationTooSmall: 'Wymagane są co najmniej dwie warstwy.',
   shadingMapHint:
     'Parametry cieniowania ustawia się i zapisuje w panelu, który pojawia się po włączeniu tej mapy.',
+  combination: 'Kombinacja map',
+  combinationSaved: 'Kombinacja map została zapisana.',
+  updateFromCurrentMap: 'Aktualizuj z bieżącej mapy',
+  baseMap: 'Mapa podkładowa',
+  overlays: 'Warstwy nakładkowe',
+  addOverlay: 'Dodaj warstwę nakładkową…',
+  noOverlays: 'Brak warstw nakładkowych.',
 };
 
 export default pl;

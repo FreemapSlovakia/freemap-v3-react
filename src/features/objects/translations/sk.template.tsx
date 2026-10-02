@@ -33,6 +33,7 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     button: 'Štýl značky',
     title: 'Štýl značky objektu',
   },
+  showAllAsLookup: 'Zobraziť všetko ako Nález',
 };
 
 export default sk;

@@ -38,6 +38,7 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyPoints: ({ limit }) =>
     `Az eredmény ${limit} objektumra lett korlátozva.`,
   markerShape: 'Jelölő alakja',
+  showAllAsLookup: 'Összes megjelenítése találatként',
 };
 
 export default hu;

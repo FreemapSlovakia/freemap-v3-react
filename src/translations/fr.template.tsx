@@ -178,6 +178,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: 'Ajouter %value%',
     deleteButtonText: 'Retirer %value% de la liste',
     accept: 'Accepter',
+    externalService: 'Service tiers, soumis à des restrictions d’utilisation',
   },
   generic: {
     color: 'Couleur',
@@ -475,6 +476,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Vectoriel (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Ombrage paramétrique',
+      color: 'Couleur',
     },
     layer: {
       layer: 'Couche',
@@ -546,6 +548,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineMaps: 'Cartes hors ligne',
     browseCache: 'Mise en cache pendant la navigation',
     legacy: 'obsolète',
+    saveAsShadingMap: 'Enregistrer comme carte personnalisée',
   },
   elevationChart: {
     ele: `Altitude [${masl}]`,

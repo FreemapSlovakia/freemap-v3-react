@@ -174,6 +174,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: 'Dodaj %value%',
     deleteButtonText: 'Usuń %value% z listy',
     accept: 'Zaakceptować',
+    externalService: 'Usługa zewnętrzna z ograniczeniami użytkowania',
   },
   generic: {
     color: 'Kolor',
@@ -519,6 +520,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Wektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Cieniowanie parametryczne',
+      color: 'Kolor',
     },
     technology: 'Typ',
     loadWmsLayers: 'Wczytaj warstwy',
@@ -537,6 +539,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         <b>{messages.mapLayers.letters[to]}</b>?
       </>
     ),
+    saveAsShadingMap: 'Zapisz jako mapę niestandardową',
   },
 
   elevationChart: {

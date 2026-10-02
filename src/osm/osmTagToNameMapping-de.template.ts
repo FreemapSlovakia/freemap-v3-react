@@ -374,6 +374,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     abandoned: 'Aufgegebenes Gebäude',
     disused: 'Stillgelegtes Gebäude',
     stadium: 'Stadiongebäude',
+    no: '',
   },
 
   changing_table: {
@@ -394,6 +395,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     social: 'Geselligkeitsverein',
     sport: 'Sportverein',
     veterans: 'Veteranenverein',
+    no: '',
   },
   genus: {
     Abies: 'Tanne',
@@ -587,6 +589,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     psychotherapist: 'Psychotherapeut',
     rehabilitation: 'Rehabilitationszentrum',
     speech_therapist: 'Logopäde',
+    no: '',
   },
   fitness_station: {
     air_walker: 'Air Walker',
@@ -755,6 +758,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intersection: 'Straßenkreuzung',
     jughandle: 'Jughandle',
     roundabout: 'Kreisverkehr',
+    no: '',
   },
   landuse: {
     '*': '{}',
@@ -936,6 +940,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
 
   lock: {
     '*': 'Schleuse',
+    no: '',
   },
   man_made: {
     breakwater: 'Wellenbrecher',
@@ -1109,6 +1114,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
         sulfurous: 'Schwefelquelle',
         chalybeate: 'Eisenquelle',
         ferruginous: 'Eisenquelle',
+        fresh: '',
+        freshwater: '',
+        intermittent: '',
+        resurgence: '',
       },
     },
     strait: 'Meerenge',
@@ -1244,6 +1253,7 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     travel_agent: 'Reisebüro',
     union: 'Gewerkschaftsbüro',
     water_utility: 'Wasserwerk-Verwaltung',
+    no: '',
   },
   place: {
     '*': 'Ort {}',

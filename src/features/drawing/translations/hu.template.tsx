@@ -23,6 +23,7 @@ const hu: DeepPartialWithRequiredObjects<DrawingMessages> = {
       always: 'Mindig',
       hover: 'Rámutatáskor',
       selected: 'Kijelöléskor',
+      'hover-selected': 'Rámutatáskor vagy kijelöléskor',
     },
     title: 'Tulajdonságok',
     color: 'Szín',

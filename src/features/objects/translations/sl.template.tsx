@@ -33,6 +33,7 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     button: 'Slog oznake',
     title: 'Slog oznake objekta',
   },
+  showAllAsLookup: 'Prikaži vse kot Najdbe',
 };
 
 export default sl;

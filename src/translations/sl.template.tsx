@@ -174,6 +174,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: 'Dodaj %value%',
     deleteButtonText: 'Odstrani %value% s seznama',
     accept: 'Sprejmi',
+    externalService: 'Storitev tretje osebe z omejitvami uporabe',
   },
 
   generic: {
@@ -493,6 +494,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Vektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Parametrično senčenje',
+      color: 'Barva',
     },
     url: 'URL',
     minZoom: 'Najmanjša povečava',
@@ -542,6 +544,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         ?
       </>
     ),
+    saveAsShadingMap: 'Shrani kot zemljevid po meri',
   },
 
   elevationChart: {

@@ -14,6 +14,14 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   customMapSaved: 'Die benutzerdefinierte Karte wurde gespeichert.',
   shadingMapHint:
     'Die Schattierungsparameter werden in dem Bedienfeld eingestellt und gespeichert, das nach dem Aktivieren dieser Karte erscheint.',
+  combination: 'Kartenkombination',
+  combinationSaved: 'Die Kartenkombination wurde gespeichert.',
+  updateFromCurrentMap: 'Aus der aktuellen Karte aktualisieren',
+  baseMap: 'Grundkarte',
+  overlays: 'Überlagerungsebenen',
+  addOverlay: 'Überlagerungsebene hinzufügen…',
+  noOverlays: 'Keine Überlagerungsebenen.',
+  combinationTooSmall: 'Es sind mindestens zwei Ebenen erforderlich.',
 };
 
 export default de;

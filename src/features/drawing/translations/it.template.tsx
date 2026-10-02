@@ -23,6 +23,7 @@ const it: DeepPartialWithRequiredObjects<DrawingMessages> = {
       always: 'Sempre',
       hover: 'Al passaggio del mouse',
       selected: 'Se selezionato',
+      'hover-selected': 'Al passaggio del mouse o se selezionato',
     },
     title: 'Proprietà',
     color: 'Colore',

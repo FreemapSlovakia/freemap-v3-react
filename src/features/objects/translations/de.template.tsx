@@ -34,6 +34,7 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Objekte (POIs)', err),
   markerShape: 'Markerform',
+  showAllAsLookup: 'Alle als Funde anzeigen',
 };
 
 export default de;
