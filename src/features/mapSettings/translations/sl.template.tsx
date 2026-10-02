@@ -36,6 +36,12 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Predogled na karti',
   installMap: 'Namesti',
   uninstallMap: 'Odstrani',
+  suggestMap: (
+    <>
+      Poznate zemljevid, ki ga nimamo? Pišite nam na{' '}
+      <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
+    </>
+  ),
   modifyCustomMapTitle: (name) => (
     <>
       Uredi zemljevid po meri <i>{name}</i>

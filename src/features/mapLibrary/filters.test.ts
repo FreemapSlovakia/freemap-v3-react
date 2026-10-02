@@ -40,7 +40,7 @@ describe('library filters', () => {
     expect(nameMatches('Ortofotomapa Česko', 'cesko')).toBe(true);
   });
 
-  it('tells a catalog map by its box, a built-in one by its countries', () => {
+  it('tells a catalog map by its box and countries, a built-in one by its countries', () => {
     const view = {
       bounds: [16.3, 48.1, 16.5, 48.3] as [number, number, number, number],
       countries: ['at'],
@@ -48,10 +48,18 @@ describe('library filters', () => {
 
     expect(
       coversView(
-        { type: 'ABCDE', countries: ['us'], bbox: [9, 46, 17, 49] },
+        { type: 'ABCDE', countries: ['at'], bbox: [9, 46, 17, 49] },
         view,
       ),
     ).toBe(true);
+
+    // A box spanning the globe, as overseas territories give France's maps.
+    expect(
+      coversView(
+        { type: 'ABCDE', countries: ['fr'], bbox: [-178, -23, 169, 51] },
+        view,
+      ),
+    ).toBe(false);
 
     expect(coversView({ type: 'ABCDE', bbox: [-80, 25, -79, 26] }, view)).toBe(
       false,
@@ -60,5 +68,30 @@ describe('library filters', () => {
     expect(coversView({ type: 'X', countries: ['sk'] }, view)).toBe(false);
 
     expect(coversView({ type: 'O' }, view)).toBe(true);
+  });
+
+  it('needs a catalog map’s box even where its country is in view', () => {
+    expect(
+      coversView(
+        { type: 'ABCDE', countries: ['at'], bbox: [9, 46, 10, 47] },
+        { bounds: [16.3, 48.1, 16.5, 48.3], countries: ['at'] },
+      ),
+    ).toBe(false);
+  });
+
+  it('goes by the box alone where no country is known for the view', () => {
+    // Outside Europe the countries service names none.
+    expect(
+      coversView(
+        { type: 'ABCDE', countries: ['us'], bbox: [-109, 37, -102, 41] },
+        { bounds: [-105.1, 39.6, -104.9, 39.8], countries: [] },
+      ),
+    ).toBe(true);
+  });
+
+  it('treats a built-in map with no countries as covering nowhere', () => {
+    expect(
+      coversView({ type: 'X', countries: [] }, { countries: ['sk'] }),
+    ).toBe(false);
   });
 });

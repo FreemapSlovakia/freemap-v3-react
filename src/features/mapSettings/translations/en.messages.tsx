@@ -34,6 +34,12 @@ const en: MapSettingsMessages = {
   preview: 'Preview on the map',
   installMap: 'Install',
   uninstallMap: 'Uninstall',
+  suggestMap: (
+    <>
+      Do you know about a map we don't have? Please contact us at{' '}
+      <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
+    </>
+  ),
   modifyCustomMapTitle: (name) => (
     <>
       Modify custom map <i>{name}</i>

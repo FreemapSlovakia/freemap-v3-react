@@ -90,8 +90,13 @@ row in the Manage maps menu and in the search box, and switching tabs changes
   maplibre, wms, parametricShading, color, data — the layers the app draws);
   Available maps, which holds only maps
   not installed, by layer, category,
-  technology group and `coversView` (countries for maps whose countries tell
-  their coverage, else the box against `map.bounds`). Each tab shows its count.
+  technology group and `coversView`: one of a map's countries must be in
+  `map.countries`, and for a catalog map, whose countries don't tell its
+  coverage, its box must also meet `map.bounds` — a country's box alone can
+  span the globe (France's overseas territories) or reach into a neighbour.
+  The covered-countries service answers only within Europe (issue #1073), so
+  where it names no country (elsewhere, at sea) a catalog map's box alone
+  decides. Each tab shows its count.
   Category is the ELI one; built-in maps carry theirs in their index row, a
   custom map the one its form sets (`category` on `CustomLayerDef`), an
   offline map its source map's, and combinations count as Other.

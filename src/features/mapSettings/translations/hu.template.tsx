@@ -36,6 +36,12 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Előnézet a térképen',
   installMap: 'Telepítés',
   uninstallMap: 'Eltávolítás',
+  suggestMap: (
+    <>
+      Tud olyan térképről, amely nálunk hiányzik? Írjon nekünk a(z){' '}
+      <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a> címre.
+    </>
+  ),
   modifyCustomMapTitle: (name) => (
     <>
       Egyéni térkép módosítása <i>{name}</i>

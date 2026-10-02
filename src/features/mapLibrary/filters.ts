@@ -63,20 +63,21 @@ export const nameMatches = (name: string, query: string): boolean =>
   );
 
 /**
- * Whether a map draws where the view is: by the countries in view where its
- * countries tell its coverage, else by its box. A map with neither covers
- * everywhere, and an unknown view answers yes.
+ * Whether a map draws where the view is: one of its countries is in view, and
+ * a catalog map's box (see `coverageCountries`) meets it too. With no country
+ * known for the view (outside Europe, at sea) the box alone decides.
  */
 export function coversView(
   def: { type: string; countries?: string[]; bbox?: Bbox },
   view: { bounds?: Bbox; countries?: string[] | null },
 ): boolean {
+  const inView = (countries: string[]) =>
+    countries.some((c) => view.countries?.includes(c));
+
   const countries = coverageCountries(def);
 
   if (countries) {
-    return (
-      !view.countries || countries.some((c) => view.countries?.includes(c))
-    );
+    return !view.countries || inView(countries);
   }
 
   const { bbox } = def;
@@ -84,11 +85,12 @@ export function coversView(
   const { bounds } = view;
 
   return (
-    !bbox ||
-    !bounds ||
-    (bbox[0] <= bounds[2] &&
-      bbox[2] >= bounds[0] &&
-      bbox[1] <= bounds[3] &&
-      bbox[3] >= bounds[1])
+    (!def.countries || !view.countries?.length || inView(def.countries)) &&
+    (!bbox ||
+      !bounds ||
+      (bbox[0] <= bounds[2] &&
+        bbox[2] >= bounds[0] &&
+        bbox[1] <= bounds[3] &&
+        bbox[3] >= bounds[1]))
   );
 }

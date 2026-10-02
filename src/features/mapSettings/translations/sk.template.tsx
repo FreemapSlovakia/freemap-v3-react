@@ -36,6 +36,12 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Ukážka na mape',
   installMap: 'Nainštalovať',
   uninstallMap: 'Odinštalovať',
+  suggestMap: (
+    <>
+      Poznáte mapu, ktorú nemáme? Napíšte nám na{' '}
+      <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
+    </>
+  ),
   modifyCustomMapTitle: (name) => (
     <>
       Upraviť vlastnú mapu <i>{name}</i>

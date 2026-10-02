@@ -42,6 +42,12 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Aperçu sur la carte',
   installMap: 'Installer',
   uninstallMap: 'Désinstaller',
+  suggestMap: (
+    <>
+      Vous connaissez une carte que nous n’avons pas ? Écrivez-nous à{' '}
+      <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
+    </>
+  ),
   modifyCustomMapTitle: (name) => (
     <>
       Modifier la carte personnalisée <i>{name}</i>

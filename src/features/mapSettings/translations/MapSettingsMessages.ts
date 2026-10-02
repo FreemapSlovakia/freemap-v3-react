@@ -34,6 +34,7 @@ export type MapSettingsMessages = {
   preview: string;
   installMap: string;
   uninstallMap: string;
+  suggestMap: JSX.Element;
   modifyCustomMapTitle: (name: string) => JSX.Element;
   modifyCombinationTitle: (name: string) => JSX.Element;
   resetConfirm: string;

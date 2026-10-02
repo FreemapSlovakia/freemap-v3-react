@@ -183,6 +183,14 @@ export function YourMapsTab({
         />
 
         <FilterChips
+          name="your-technology"
+          label={msm?.filters.technology}
+          options={technologyOptions}
+          selected={filters.technologies}
+          onChange={(technologies) => onChange({ ...filters, technologies })}
+        />
+
+        <FilterChips
           name="kind"
           label={msm?.filters.kind}
           options={[
@@ -207,14 +215,6 @@ export function YourMapsTab({
           ]}
           selected={filters.shown}
           onChange={(shown) => onChange({ ...filters, shown })}
-        />
-
-        <FilterChips
-          name="your-technology"
-          label={msm?.filters.technology}
-          options={technologyOptions}
-          selected={filters.technologies}
-          onChange={(technologies) => onChange({ ...filters, technologies })}
         />
 
         <FilterToggle

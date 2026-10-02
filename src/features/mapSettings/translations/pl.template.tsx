@@ -35,6 +35,12 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Podgląd na mapie',
   installMap: 'Zainstaluj',
   uninstallMap: 'Odinstaluj',
+  suggestMap: (
+    <>
+      Znasz mapę, której nie mamy? Napisz do nas na{' '}
+      <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
+    </>
+  ),
   modifyCustomMapTitle: (name) => (
     <>
       Edytuj własną mapę <i>{name}</i>

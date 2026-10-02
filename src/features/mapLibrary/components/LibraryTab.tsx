@@ -19,7 +19,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Button, Form, Table } from 'react-bootstrap';
+import { Alert, Button, Form, Table } from 'react-bootstrap';
 import { FaEye, FaHistory, FaPlus } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { type CatalogEntry, loadLibraryCatalog } from '../catalog.js';
@@ -352,6 +352,20 @@ export function LibraryTab({
     ];
   }, [entries, filters, prepared, viewBounds, viewCountries, language]);
 
+  // A search that matches nothing at all, installed maps included, may name a
+  // map we lack; one emptied by the filters or an install doesn't.
+  const unknownMap = useMemo(() => {
+    if (!query.trim() || !catalog) {
+      return false;
+    }
+
+    const targets = catalog.flatMap(
+      (entry) => prepared.get(entry.type)?.target ?? [],
+    );
+
+    return searchLibrary(targets, targets, query, 1).total === 0;
+  }, [query, catalog, prepared]);
+
   // Back to the first page on a new search or filter, but not when an install
   // or a preview changes the list under the user's scroll position.
   const pagingKey = JSON.stringify(filters, (_, value) =>
@@ -369,18 +383,9 @@ export function LibraryTab({
         className="mb-2"
       />
 
+      {/* Category and Technology first, then this tab's own rows, as in
+          Installed maps; Covers this view last in both. */}
       <FilterPanel>
-        <FilterChips
-          name="library-layer"
-          label={m?.mapLayers.layer.layer}
-          options={[
-            { value: 'base', label: msm?.baseMaps },
-            { value: 'overlay', label: msm?.overlays },
-          ]}
-          selected={filters.layers}
-          onChange={(layers) => onChange({ ...filters, layers })}
-        />
-
         <FilterChips
           name="category"
           label={msm?.filters.category}
@@ -397,6 +402,17 @@ export function LibraryTab({
           onChange={(technologies) => onChange({ ...filters, technologies })}
         />
 
+        <FilterChips
+          name="library-layer"
+          label={m?.mapLayers.layer.layer}
+          options={[
+            { value: 'base', label: msm?.baseMaps },
+            { value: 'overlay', label: msm?.overlays },
+          ]}
+          selected={filters.layers}
+          onChange={(layers) => onChange({ ...filters, layers })}
+        />
+
         <FilterToggle
           name="library-covers-view"
           label={msm?.filters.coversView}
@@ -408,7 +424,11 @@ export function LibraryTab({
       {!catalog ? (
         <p className="text-muted text-center">{m?.general.loading}</p>
       ) : ranked.length === 0 ? (
-        <p className="text-muted text-center">{m?.mapLayers.noMapsFound}</p>
+        <>
+          <p className="text-muted text-center">{m?.mapLayers.noMapsFound}</p>
+
+          {unknownMap && <Alert variant="info">{msm?.suggestMap}</Alert>}
+        </>
       ) : (
         <LibraryResults
           key={pagingKey}
