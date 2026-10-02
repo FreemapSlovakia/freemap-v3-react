@@ -14,8 +14,14 @@ import {
 import type { ReactElement } from 'react';
 import { ButtonGroup, Dropdown } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
-import { FaChartArea, FaCog, FaDatabase, FaSlidersH } from 'react-icons/fa';
-import { MdLibraryAdd } from 'react-icons/md';
+import {
+  FaChartArea,
+  FaCog,
+  FaDatabase,
+  FaLayerGroup,
+  FaSlidersH,
+} from 'react-icons/fa';
+import { MdDashboardCustomize, MdLibraryAdd } from 'react-icons/md';
 
 /**
  * Everything about the maps other than which one is shown: the layer and
@@ -60,12 +66,27 @@ export function MapManageButton(): ReactElement {
       <FmDropdownMenu>
         <OnlineOnlyItem
           offline={!canSaveSettings}
-          {...modalMenuItemProps('map-library')}
+          {...modalMenuItemProps('installed-maps')}
         >
-          <MdLibraryAdd /> {m?.mapLayers.mapLibrary}
+          <FaLayerGroup /> {m?.mapLayers.installedMaps}
           <MenuGutter>
-            <Chord modal="map-library" />
+            <Chord modal="installed-maps" />
           </MenuGutter>
+        </OnlineOnlyItem>
+
+        <OnlineOnlyItem
+          offline={!canSaveSettings}
+          {...modalMenuItemProps('available-maps')}
+        >
+          <MdLibraryAdd /> {m?.mapLayers.availableMaps}
+          <MenuGutter>
+            <Chord modal="available-maps" />
+          </MenuGutter>
+        </OnlineOnlyItem>
+
+        {/* Neither list's name says that one's own map is added there. */}
+        <OnlineOnlyItem offline={!canSaveSettings} eventKey="new-custom-map">
+          <MdDashboardCustomize /> {m?.mapLayers.newCustomMap}
         </OnlineOnlyItem>
 
         <Dropdown.Divider />

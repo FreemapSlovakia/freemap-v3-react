@@ -25,7 +25,7 @@ const sl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Sledi napravi <i>{name}</i>
+        Nova sledena naprava <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,7 +58,7 @@ const sl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Dodaj žeton za sledenje za <i>{deviceName}</i>
+        Nov žeton za sledenje za <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
@@ -81,7 +81,7 @@ const sl: DeepPartialWithRequiredObjects<TrackingMessages> = {
   devices: {
     button: 'Moje naprave',
     modalTitle: 'Moje naprave',
-    createTitle: 'Dodaj napravo',
+    createTitle: 'Nova naprava',
     watchTokens: 'Žetoni za sledenje',
     traccarQrCode: 'Traccar QR koda',
     watchPrivately: 'Sledi zasebno',

@@ -25,7 +25,7 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Obserwuj urządzenie <i>{name}</i>
+        Nowe obserwowane urządzenie <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,12 +58,12 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Dodaj token śledzenia dla <i>{deviceName}</i>
+        Nowy token śledzenia dla <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
       <>
-        Zmień token śledzenia <i>{token}</i> dla <i>{deviceName}</i>
+        Edytuj token śledzenia <i>{token}</i> dla <i>{deviceName}</i>
       </>
     ),
   },
@@ -82,7 +82,7 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     traccarQrCode: 'Kod QR Traccar',
     button: 'Moje urządzenia',
     modalTitle: 'Moje śledzone urządzenia',
-    createTitle: 'Utwórz urządzenie śledzące',
+    createTitle: 'Nowe urządzenie śledzące',
     watchTokens: 'Tokeny śledzenia',
     watchPrivately: 'Śledź prywatnie',
     watch: 'Śledź',

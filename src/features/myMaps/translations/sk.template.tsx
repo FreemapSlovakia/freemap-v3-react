@@ -21,6 +21,12 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Vymazanie mapy',
+  newMapTitle: 'Nová mapa',
+  modifyMapTitle: (name) => (
+    <>
+      Upraviť mapu <i>{name}</i>
+    </>
+  ),
   mapCreated: ({ name }) => (
     <>
       Mapa <i>{name}</i> bola uložená medzi vaše mapy.

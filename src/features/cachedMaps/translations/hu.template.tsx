@@ -2,14 +2,19 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
-  cacheOfflineMap: 'Térkép mentése offline használatra',
-  modifyOfflineMap: 'Offline térkép módosítása',
+  newOfflineMap: 'Új offline térkép',
+  modifyOfflineMap: (name) => (
+    <>
+      Offline térkép módosítása <i>{name}</i>
+    </>
+  ),
   deviceOnly:
     'Az offline térkép csak ebben a böngészőben, ezen az eszközön tárolódik.',
   deviceOnlyHint:
     'Ahhoz, hogy másik böngészőben vagy másik eszközön is elérhető legyen, ott kell létrehozni az offline térképet.',
   toDownload: 'Letöltendő',
   addOfflineMap: 'Offline térkép hozzáadása',
+  showInInstalledMaps: 'Megjelenítés a telepített térképek között',
   emptyMessage:
     'Még nincsenek offline térképek mentve. Adj hozzá egyet, hogy internetkapcsolat nélkül is használhasd a térképeket.',
   zoom: 'Nagyítás',

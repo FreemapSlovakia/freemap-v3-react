@@ -308,7 +308,7 @@ describe('handleEvent — Escape', () => {
       handleEvent(
         esc(),
         makeState({
-          main: { activeModal: { type: 'map-library' } },
+          main: { activeModal: { type: 'installed-maps' } },
           mapLibrary: { preview: { type: 'Z0001', restore: ['X'] } },
         }),
       ),

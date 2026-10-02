@@ -2,7 +2,11 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
 import type { ReactElement, ReactNode } from 'react';
 import { ToggleButton } from 'react-bootstrap';
-import { CATEGORY_GROUPS, TECHNOLOGY_GROUPS } from '../filters.js';
+import {
+  CATEGORY_GROUPS,
+  categoryGroup,
+  TECHNOLOGY_GROUPS,
+} from '../filters.js';
 
 type Props<T extends string> = {
   /** Tells the group's ids apart from another group's. */
@@ -145,9 +149,39 @@ export function useSharedFilterOptions() {
     technologyOptions: TECHNOLOGY_GROUPS.map((value) => ({
       value,
       label:
-        value === 'special'
-          ? msm?.filters.special
+        value === 'data'
+          ? msm?.filters.dataLayers
           : m?.mapLayers.technologies[value],
     })),
+  };
+}
+
+/**
+ * A map's second line in the lists, in the chips' words: its category and
+ * technology, but not Other or Data layers, which say nothing the name doesn't,
+ * and any extras after them.
+ */
+export function useMapDetail() {
+  const m = useMessages();
+
+  const msm = useMapSettingsMessages();
+
+  return (
+    category: string | undefined,
+    technology: string | undefined,
+    ...extras: (string | undefined)[]
+  ): string => {
+    const group = categoryGroup(category);
+
+    const technologies: Partial<Record<string, string>> | undefined =
+      m?.mapLayers.technologies;
+
+    return [
+      group === 'other' ? undefined : msm?.filters[group],
+      technology === undefined ? undefined : technologies?.[technology],
+      ...extras,
+    ]
+      .filter(Boolean)
+      .join(' · ');
   };
 }

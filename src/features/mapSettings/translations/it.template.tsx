@@ -5,14 +5,12 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Installa — proponi questa mappa nei menu delle mappe',
-  yourMaps: 'Le tue mappe',
   noInstalledMaps:
-    'Nessuna mappa installata. Cerca nella libreria per aggiungerne.',
+    'Nessuna mappa installata. Aggiungine dalle mappe disponibili.',
   searchLibrary: ({ count }) => `Cerca tra ${count} mappe`,
   catalogCredit: 'L’elenco delle mappe della libreria attinge da',
   filters: {
-    library: 'Libreria',
-    filterYourMaps: 'Filtra le tue mappe',
+    filterYourMaps: 'Filtra le mappe installate',
     kind: 'Tipo',
     builtIn: 'Integrate',
     fromLibrary: 'Dalla libreria',
@@ -25,7 +23,7 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     shortcut: 'Con scorciatoia',
     hidden: 'Nascoste',
     technology: 'Tecnologia',
-    special: 'Speciali',
+    dataLayers: 'Livelli di dati',
     category: 'Categoria',
     photo: 'Ortofoto',
     historicphoto: 'Immagini storiche',
@@ -38,6 +36,16 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Anteprima sulla mappa',
   installMap: 'Installa',
   uninstallMap: 'Disinstalla',
+  modifyCustomMapTitle: (name) => (
+    <>
+      Modifica mappa personalizzata <i>{name}</i>
+    </>
+  ),
+  modifyCombinationTitle: (name) => (
+    <>
+      Modifica combinazione di mappe <i>{name}</i>
+    </>
+  ),
   resetConfirm:
     'Ripristinare le impostazioni di barra degli strumenti, menu, opacità e scorciatoie di tutte le mappe? Le mappe installate restano installate.',
   downloadOffline: 'Scarica per l’uso offline',

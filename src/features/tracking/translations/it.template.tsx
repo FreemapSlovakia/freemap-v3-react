@@ -20,12 +20,12 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     desc: 'Gestisci i dispositivi viti per vedere la posizione dei tuoi amici.',
     modifyTitle: (name) => (
       <>
-        Modifica nome dispositivo <i>{name}</i>
+        Modifica dispositivo osservato <i>{name}</i>
       </>
     ),
     createTitle: (name) => (
       <>
-        Vedi dispositivo <i>{name}</i>
+        Nuovo dispositivo osservato <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,12 +58,12 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Aggiungi Watch Token per <i>{deviceName}</i>
+        Nuovo token di osservazione per <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
       <>
-        Modifica Watch Token <i>{token}</i> per <i>{deviceName}</i>
+        Modifica token di osservazione <i>{token}</i> per <i>{deviceName}</i>
       </>
     ),
   },
@@ -82,7 +82,7 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     traccarQrCode: 'Codice QR Traccar',
     button: 'Miei dispositivi',
     modalTitle: 'Miei dispositivi tracciati',
-    createTitle: 'Crea dispositivo di tracciamento',
+    createTitle: 'Nuovo dispositivo di tracciamento',
     watchTokens: 'Watch token',
     watchPrivately: 'Guarda privatamente',
     watch: 'Guarda',

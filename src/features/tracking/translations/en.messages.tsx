@@ -19,12 +19,12 @@ const en: TrackingMessages = {
     desc: 'Manage watched devices to see the position of your friends.',
     modifyTitle: (name) => (
       <>
-        Modify Watched Device <i>{name}</i>
+        Modify watched device <i>{name}</i>
       </>
     ),
     createTitle: (name) => (
       <>
-        Watch Device <i>{name}</i>
+        New watched device <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -57,12 +57,12 @@ const en: TrackingMessages = {
     ),
     createTitle: (deviceName) => (
       <>
-        Add Watch Token for <i>{deviceName}</i>
+        New watch token for <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
       <>
-        Modify Watch Token <i>{token}</i> for <i>{deviceName}</i>
+        Modify watch token <i>{token}</i> for <i>{deviceName}</i>
       </>
     ),
   },
@@ -80,7 +80,7 @@ const en: TrackingMessages = {
   devices: {
     button: 'My Devices',
     modalTitle: 'My tracked devices',
-    createTitle: 'Create Tracking Device',
+    createTitle: 'New tracking device',
     watchTokens: 'Watch tokens',
     traccarQrCode: 'Traccar QR Code',
     watchPrivately: 'Watch privately',
@@ -93,7 +93,7 @@ const en: TrackingMessages = {
     deleteTitle: 'Device deletion',
     modifyTitle: ({ name }) => (
       <>
-        Modify Tracking Device <i>{name}</i>
+        Modify tracking device <i>{name}</i>
       </>
     ),
     desc: () => (

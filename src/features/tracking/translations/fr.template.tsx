@@ -25,7 +25,7 @@ const fr: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Suivre l’appareil <i>{name}</i>
+        Nouvel appareil suivi <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,7 +58,7 @@ const fr: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Ajouter un jeton de suivi pour <i>{deviceName}</i>
+        Nouveau jeton de suivi pour <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
@@ -82,7 +82,7 @@ const fr: DeepPartialWithRequiredObjects<TrackingMessages> = {
     traccarQrCode: 'Code QR Traccar',
     button: 'Mes appareils',
     modalTitle: 'Mes appareils suivis',
-    createTitle: 'Créer un appareil de suivi',
+    createTitle: 'Nouvel appareil de suivi',
     watchTokens: 'Jetons de suivi',
     watchPrivately: 'Suivre en privé',
     watch: 'Suivre',

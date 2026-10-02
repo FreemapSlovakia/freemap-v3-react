@@ -22,6 +22,12 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Usunięcie mapy',
+  newMapTitle: 'Nowa mapa',
+  modifyMapTitle: (name) => (
+    <>
+      Edytuj mapę <i>{name}</i>
+    </>
+  ),
   mapCreated: ({ name }) => (
     <>
       Mapa <i>{name}</i> została zapisana w Twoich mapach.

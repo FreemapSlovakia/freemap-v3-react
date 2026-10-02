@@ -5,14 +5,12 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Nainstalovat — nabízet tuto mapu v menu map',
-  yourMaps: 'Vaše mapy',
   noInstalledMaps:
-    'Nejsou nainstalovány žádné mapy. Přidejte si je vyhledáním v knihovně.',
+    'Nejsou nainstalovány žádné mapy. Přidejte si je z dostupných map.',
   searchLibrary: ({ count }) => `Hledat v ${count} mapách`,
   catalogCredit: 'Seznam map knihovny čerpá z',
   filters: {
-    library: 'Knihovna',
-    filterYourMaps: 'Filtrovat vaše mapy',
+    filterYourMaps: 'Filtrovat nainstalované mapy',
     kind: 'Druh',
     builtIn: 'Vestavěné',
     fromLibrary: 'Z knihovny',
@@ -25,7 +23,7 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     shortcut: 'Se zkratkou',
     hidden: 'Skryté',
     technology: 'Technologie',
-    special: 'Speciální',
+    dataLayers: 'Datové vrstvy',
     category: 'Kategorie',
     photo: 'Ortofota',
     historicphoto: 'Historické snímky',
@@ -38,6 +36,16 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Náhled na mapě',
   installMap: 'Nainstalovat',
   uninstallMap: 'Odinstalovat',
+  modifyCustomMapTitle: (name) => (
+    <>
+      Upravit vlastní mapu <i>{name}</i>
+    </>
+  ),
+  modifyCombinationTitle: (name) => (
+    <>
+      Upravit kombinaci map <i>{name}</i>
+    </>
+  ),
   resetConfirm:
     'Vrátit nastavení panelu nástrojů, nabídky, průhlednosti a klávesových zkratek všech map na výchozí? Nainstalované mapy zůstanou nainstalované.',
   downloadOffline: 'Stáhnout pro použití offline',

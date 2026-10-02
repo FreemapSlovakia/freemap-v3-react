@@ -358,8 +358,10 @@ const messages: Messages = {
         'modal-support-us': 'donate, contribute, sponsor, money',
         'modal-legend': 'symbols, map key',
         'modal-about': 'contact, e-mail, feedback',
-        'modal-map-library':
-          'catalog, catalogue, install, uninstall, add maps, more maps, layers configuration, layers, manage maps, opacity, shortcut, custom maps, own map, wms, tms, add map source',
+        'modal-installed-maps':
+          'map library, uninstall, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',
+        'modal-available-maps':
+          'map library, catalog, catalogue, install, add maps, more maps',
         'modal-offline-maps': 'downloaded maps, storage',
         'modal-browse-cache': 'cached tiles, storage',
         'modal-map-preferences': 'settings, options, overlay opacity',
@@ -473,9 +475,9 @@ const messages: Messages = {
       ),
       photosCc: 'various Creative Commons licenses',
     },
-    mapLibrary: 'Map library',
-    customMaps: 'Custom maps',
-    addCustomMap: 'Add custom map',
+    installedMaps: 'Installed maps',
+    availableMaps: 'Available maps',
+    newCustomMap: 'New custom map',
     activate: 'Activate',
     saveAsShadingMap: 'Save as custom map',
     base: 'Base layers',
@@ -527,7 +529,7 @@ const messages: Messages = {
       </>
     ),
     offlineMaps: 'Offline maps',
-    browseCache: 'Cache while browsing',
+    browseCache: 'Caching while browsing',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (
       <>

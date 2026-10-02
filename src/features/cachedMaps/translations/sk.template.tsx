@@ -2,14 +2,19 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
-  cacheOfflineMap: 'Uložiť mapu pre offline použitie',
-  modifyOfflineMap: 'Upraviť offline mapu',
+  newOfflineMap: 'Nová offline mapa',
+  modifyOfflineMap: (name) => (
+    <>
+      Upraviť offline mapu <i>{name}</i>
+    </>
+  ),
   deviceOnly:
     'Offline mapa sa uloží len v tomto prehliadači na tomto zariadení.',
   deviceOnlyHint:
     'Aby bola mapa dostupná v inom prehliadači alebo na inom zariadení, treba offline mapu vytvoriť tam.',
   toDownload: 'Na stiahnutie',
   addOfflineMap: 'Pridať offline mapu',
+  showInInstalledMaps: 'Zobraziť v nainštalovaných mapách',
   emptyMessage:
     'Zatiaľ nie sú uložené žiadne offline mapy. Pridajte si jednu na používanie máp bez pripojenia k internetu.',
   zoom: 'Priblíženie',

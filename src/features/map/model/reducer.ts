@@ -15,6 +15,7 @@ import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
+import { isUninstalledByDefault } from '@shared/mapLibrary/installed.js';
 import {
   type LayerSettings,
   type MapStateBase,
@@ -265,9 +266,14 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       delete state.layersSettings[id];
     })
     .addCase(mapLayersSettingsReset, (state) => {
+      // A map installed only by having settings stays installed without them.
       state.layersSettings = Object.fromEntries(
         Object.entries(state.layersSettings).flatMap(([type, { installed }]) =>
-          installed === undefined ? [] : [[type, { installed }]],
+          installed !== undefined
+            ? [[type, { installed }]]
+            : isUninstalledByDefault(type)
+              ? [[type, { installed: true }]]
+              : [],
         ),
       );
     })

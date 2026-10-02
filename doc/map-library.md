@@ -59,11 +59,13 @@ menu filter, country flags and coverage hints. Instead:
 
 ### The library modal
 
-`src/features/mapLibrary/components/MapLibraryModal.tsx`, modal id
-`map-library` (chords <kbd>m</kbd> <kbd>i</kbd> and <kbd>m</kbd> <kbd>y</kbd>, a
-row in the Manage maps menu and in the search box; `map-layers-config` and the
-older ids are renamed to it). It is also where each map the user has is
-configured. Built for a catalog of thousands:
+`src/features/mapLibrary/components/MapLibraryModal.tsx`, one modal under two
+ids that are its tabs: `installed-maps` (**Installed maps**, chord <kbd>m</kbd>
+<kbd>i</kbd>, where each map the user has is configured) and `available-maps`
+(**Available maps**, <kbd>m</kbd> <kbd>a</kbd>, the catalog); each has its own
+row in the Manage maps menu and in the search box, and switching tabs changes
+`show=`. `map-library`, `map-layers-config` and the older ids are renamed to
+`installed-maps`. Built for a catalog of thousands:
 
 - **Catalog** — `src/features/mapLibrary/catalog.ts`: `loadLibraryCatalog()`
   loads it on first opening. A `CatalogEntry` carries what search and the row
@@ -82,20 +84,20 @@ configured. Built for a catalog of thousands:
   `LibraryTab`, each with its box and `FilterChips`; the modal keeps both
   filter objects, so they outlast the custom map form; `filters.ts` holds the rules
   (`passes`: a group of chips lets all through until one is on, then any
-  match). Your maps filters by category, kind, `coversView` (an offline map by its
+  match). Installed maps filters by category, kind, `coversView` (an offline map by its
   downloaded bounds), where a map is shown (toolbar, menu,
   shortcut, or hidden: neither toolbar nor menu) and technology group (tile,
-  maplibre, wms, parametricShading, color, special — everything else);
-  Library, which holds only maps
+  maplibre, wms, parametricShading, color, data — the layers the app draws);
+  Available maps, which holds only maps
   not installed, by layer, category,
   technology group and `coversView` (countries for maps whose countries tell
   their coverage, else the box against `map.bounds`). Each tab shows its count.
   Category is the ELI one; built-in maps carry theirs in their index row, a
   custom map the one its form sets (`category` on `CustomLayerDef`), an
   offline map its source map's, and combinations count as Other.
-  The two tables of Your maps have fixed widths for the small columns, base
+  The two tables of Installed maps have fixed widths for the small columns, base
   maps an empty opacity cell, so they line up.
-- **Your maps** — `YourMapsList`: the installed library maps (from
+- **Installed maps** — `YourMapsList`: the installed library maps (from
   `installedLibraryIndexSelector`, so no catalog is needed; the tab's count is
   `yourMapsCountSelector`) and the custom, offline and
   combined maps, with columns for every map's settings (toolbar, menu,
@@ -106,13 +108,19 @@ configured. Built for a catalog of thousands:
   offline map's form in Offline maps via `cachedMapsSetView({ edit })`), and
   uninstall for a library map or delete for a custom map or combination
   (`useCustomMapActions`, after a confirm). Base maps have no opacity column.
-- **The custom map form** (`CustomMapEditor`) replaces the list in the library's
+- **The custom map form** (`CustomMapEditor`) replaces the list in the
   modal while its state carries a request: `setActiveModal({ type:
-  'map-library', customMap: { edit?, draft?, addShadingMap? } })` — a map or a
+  'installed-maps', customMap: { edit?, draft?, addShadingMap? } })` — a map or a
   combination (with an unsaved `draft`, from a too-thin update) to edit, a new
-  shading map from the shading panel, or a new map. Save and Cancel go back to
-  the list (its search kept), or to the map for the shading panel's new map.
-  The form has no `show=`; `show=custom-maps` and <kbd>m</kbd> <kbd>c</kbd> open
+  shading map from the shading panel, or a new map. Cancel goes where
+  `returnTo` says (a tab, or `null` to close, as from the menu's New custom
+  map), the shading panel's new map back to the map;
+  Save passes `highlight`, which scrolls Installed maps to that row (it passes
+  the filters whatever they are) and
+  flashes it (`fm-flash`), as Offline maps' Show in Installed maps does.
+  The forms set how a map is reached (toolbar, menu, shortcut:
+  `LayerVisibilityFields`); opacity is only in the table. Offline maps keeps a
+  `highlight` of its own for the map just saved. The form has no `show=`; `show=custom-maps` and <kbd>m</kbd> <kbd>c</kbd> open
   the library.
 - Both lists are split into base maps and overlays, keeping rank order.
 - **Every change applies at once.** `mapLayerSettingsChange` (installing
@@ -247,8 +255,10 @@ the ids and templates.
 - **Store** — `src/features/mapLibrary/model/`: the `mapLibrary` slice holds
   `bodies` (seeded with `bundledBodies`), and `mapLibraryLoadProcessor` loads
   the bodies of installed maps, maps on the map, offline maps' sources and the
-  shading source. Every map is installed by default, so all bodies load at
-  startup — one small chunk each, which HTTP/3 multiplexes cheaply. A failed
+  shading source. Built-in maps are installed by default, but for those whose
+  index row has `defaultInstalled: false` and, on freemap.eu, those of
+  Slovakia alone (`uninstalledByDefault` in `installed.ts`, until the user sets
+  anything for one), so their bodies load at startup — one small chunk each, which HTTP/3 multiplexes cheaply. A failed
   load retries with backoff (2 s → 60 s) and on the `online` event; a failure
   for a map on screen toasts `general.loadError`.
 - **Selectors** (`src/features/mapLibrary/model/selectors.ts`):

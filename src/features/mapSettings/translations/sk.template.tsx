@@ -5,14 +5,12 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Nainštalovať — ponúkať túto mapu v menu máp',
-  yourMaps: 'Vaše mapy',
   noInstalledMaps:
-    'Nie sú nainštalované žiadne mapy. Pridajte si ich vyhľadaním v knižnici.',
+    'Nie sú nainštalované žiadne mapy. Pridajte si ich z dostupných máp.',
   searchLibrary: ({ count }) => `Hľadať v ${count} mapách`,
   catalogCredit: 'Zoznam máp knižnice čerpá z',
   filters: {
-    library: 'Knižnica',
-    filterYourMaps: 'Filtrovať vaše mapy',
+    filterYourMaps: 'Filtrovať nainštalované mapy',
     kind: 'Druh',
     builtIn: 'Vstavané',
     fromLibrary: 'Z knižnice',
@@ -25,7 +23,7 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     shortcut: 'So skratkou',
     hidden: 'Skryté',
     technology: 'Technológia',
-    special: 'Špeciálne',
+    dataLayers: 'Dátové vrstvy',
     category: 'Kategória',
     photo: 'Ortofotá',
     historicphoto: 'Historické snímky',
@@ -38,6 +36,16 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Ukážka na mape',
   installMap: 'Nainštalovať',
   uninstallMap: 'Odinštalovať',
+  modifyCustomMapTitle: (name) => (
+    <>
+      Upraviť vlastnú mapu <i>{name}</i>
+    </>
+  ),
+  modifyCombinationTitle: (name) => (
+    <>
+      Upraviť kombináciu máp <i>{name}</i>
+    </>
+  ),
   resetConfirm:
     'Vrátiť nastavenia panela nástrojov, menu, priehľadnosti a klávesových skratiek všetkých máp na predvolené? Nainštalované mapy zostanú nainštalované.',
   downloadOffline: 'Stiahnuť na použitie offline',

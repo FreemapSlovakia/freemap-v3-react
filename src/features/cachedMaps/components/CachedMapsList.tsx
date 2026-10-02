@@ -13,9 +13,12 @@ import {
 import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
+import clsx from 'clsx';
 import type { ReactElement } from 'react';
 import { Button, ListGroup, Modal, ProgressBar } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
@@ -23,6 +26,7 @@ import {
   FaCrosshairs,
   FaDatabase,
   FaEye,
+  FaLayerGroup,
   FaPencilAlt,
   FaPlay,
   FaPlus,
@@ -55,6 +59,10 @@ export function CachedMapsList(): ReactElement {
   const confirm = useConfirm();
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
+
+  const highlight = useAppSelector((state) => state.cachedMaps.highlight);
+
+  const canSaveSettings = useCanSaveSettings();
 
   const activeDownloads = useAppSelector(
     (state) => state.cachedMaps.activeDownloads,
@@ -105,10 +113,14 @@ export function CachedMapsList(): ReactElement {
                 return (
                   <ListGroup.Item
                     key={cm.type}
+                    ref={cm.type === highlight ? scrollIntoCenter : undefined}
                     variant={
                       activeLayers.includes(cm.type) ? 'primary' : undefined
                     }
-                    className="d-flex align-items-center gap-2"
+                    className={clsx(
+                      'd-flex align-items-center gap-2',
+                      cm.type === highlight && 'fm-flash',
+                    )}
                   >
                     <CustomMapGlyph spec={cm.iconSpec} kind="cached" />
 
@@ -254,6 +266,24 @@ export function CachedMapsList(): ReactElement {
                           />
                         )}
 
+                        {/* Where its toolbar, menu, shortcut and opacity are set. */}
+                        {isComplete && (
+                          <Action
+                            icon={<FaLayerGroup />}
+                            label={cmm?.showInInstalledMaps}
+                            disabled={!canSaveSettings}
+                            onClick={() =>
+                              dispatch(
+                                setActiveModal({
+                                  type: 'installed-maps',
+                                  highlight: cm.type,
+                                }),
+                              )
+                            }
+                            showFrom="never"
+                          />
+                        )}
+
                         <Action
                           icon={<FaTrash />}
                           label={m?.general.delete}
@@ -293,6 +323,15 @@ export function CachedMapsList(): ReactElement {
             that address a modal; the click itself is handled here */}
         <Button variant="link" {...modalLink({ type: 'browse-cache' })}>
           <FaDatabase /> {m?.mapLayers.browseCache}
+        </Button>
+
+        {/* Gated as the menu's item is: offline its settings can't be saved. */}
+        <Button
+          variant="link"
+          disabled={!canSaveSettings}
+          {...modalLink({ type: 'installed-maps' })}
+        >
+          <FaLayerGroup /> {m?.mapLayers.installedMaps}
         </Button>
 
         <Button

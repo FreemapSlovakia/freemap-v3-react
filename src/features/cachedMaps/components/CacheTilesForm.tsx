@@ -3,7 +3,10 @@ import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
-import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
+import {
+  type LayerVisibility,
+  LayerVisibilityFields,
+} from '@features/mapSettings/components/LayerVisibilityFields.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
@@ -20,7 +23,7 @@ import { useFreeStorage } from '@shared/hooks/useFreeStorage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
-import { layerName } from '@shared/layerName.js';
+import { layerLabel, layerName } from '@shared/layerName.js';
 import type {
   IntegratedLayerDef,
   IsTileLayerDef,
@@ -230,18 +233,20 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
     editing?.networkFallback !== false,
   );
 
-  const [showInMenu, setShowInMenu] = useState(
-    editing ? (layersSettings[editing.type]?.showInMenu ?? true) : true,
-  );
+  const [visibility, setVisibility] = useState<LayerVisibility>(() => {
+    const s = editing ? layersSettings[editing.type] : undefined;
 
-  const [showInToolbar, setShowInToolbar] = useState(
-    editing ? (layersSettings[editing.type]?.showInToolbar ?? false) : false,
-  );
+    return {
+      showInMenu: s?.showInMenu ?? true,
+      showInToolbar: s?.showInToolbar ?? false,
+      shortcut: s?.shortcut ?? null,
+    };
+  });
 
-  // Where the two toggles started, so a save can tell whether they were touched:
-  // they are the only part of this form kept on the server, and everything else
-  // about a cached map — its name, icon, area, zoom range — is the browser's own.
-  const initialVisibility = useRef({ showInMenu, showInToolbar }).current;
+  // Where they started, so a save can tell whether they were touched: they are
+  // the only part of this form kept on the server, and everything else about a
+  // cached map — its name, icon, area, zoom range — is the browser's own.
+  const initialVisibility = useRef(visibility).current;
 
   // `mapDef` is rebuilt on every body load and layer toggle; defaults apply
   // once per map and limit so they don't overwrite what the user typed.
@@ -504,19 +509,13 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
     }
 
     // A new map has no entry yet, so it always writes one; an edit writes only
-    // when the toggles moved. Without this an offline rename would fail on a
+    // when the fields moved. Without this an offline rename would fail on a
     // settings request it never needed.
     if (
       !editing ||
-      showInMenu !== initialVisibility.showInMenu ||
-      showInToolbar !== initialVisibility.showInToolbar
+      JSON.stringify(visibility) !== JSON.stringify(initialVisibility)
     ) {
-      dispatch(
-        mapLayerSettingsChange({
-          type,
-          settings: { showInMenu, showInToolbar },
-        }),
-      );
+      dispatch(mapLayerSettingsChange({ type, settings: visibility }));
     }
   };
 
@@ -528,7 +527,10 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
     <form onSubmit={handleSubmit} className="d-contents">
       <Modal.Header closeButton>
         <Modal.Title>
-          <BiWifiOff /> {editing ? cm?.modifyOfflineMap : cm?.cacheOfflineMap}
+          <BiWifiOff />{' '}
+          {editing
+            ? cm?.modifyOfflineMap(layerLabel(editing, m))
+            : cm?.newOfflineMap}
         </Modal.Title>
       </Modal.Header>
 
@@ -704,12 +706,8 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
         <Form.Group>
           <LayerVisibilityFields
             disabled={!canSaveSettings}
-            showInMenu={showInMenu}
-            showInToolbar={showInToolbar}
-            onChange={(v) => {
-              setShowInMenu(v.showInMenu);
-              setShowInToolbar(v.showInToolbar);
-            }}
+            value={visibility}
+            onChange={setVisibility}
           />
         </Form.Group>
 

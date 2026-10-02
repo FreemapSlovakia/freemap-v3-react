@@ -1,13 +1,18 @@
 import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const en: CachedMapsMessages = {
-  cacheOfflineMap: 'Cache map for offline use',
-  modifyOfflineMap: 'Modify offline map',
+  newOfflineMap: 'New offline map',
+  modifyOfflineMap: (name) => (
+    <>
+      Modify offline map <i>{name}</i>
+    </>
+  ),
   deviceOnly: 'The offline map is stored in this browser on this device only.',
   deviceOnlyHint:
     'To have it in another browser or on another device, create the offline map there.',
   toDownload: 'To download',
   addOfflineMap: 'Add offline map',
+  showInInstalledMaps: 'Show in Installed maps',
   emptyMessage:
     'No offline maps cached yet. Add one to use maps without internet connection.',
   zoom: 'Zoom',

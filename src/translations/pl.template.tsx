@@ -358,8 +358,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'wesprzyj, darowizna, wsparcie, pieniądze',
         'modal-legend': 'symbole, legenda mapy',
         'modal-about': 'kontakt, e-mail, opinie',
-        'modal-map-library':
-          'katalog, zainstaluj, odinstaluj, dodaj mapy, więcej map, konfiguracja warstw, warstwy, zarządzanie mapami, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',
+        'modal-installed-maps':
+          'biblioteka map, odinstaluj, konfiguracja warstw, warstwy, zarządzanie mapami, pasek narzędzi, menu, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',
+        'modal-available-maps':
+          'biblioteka map, katalog, zainstaluj, dodaj mapy, więcej map',
         'modal-offline-maps': 'pobrane mapy, pamięć',
         'modal-browse-cache': 'pamięć podręczna, kafelki, cache',
         'modal-map-preferences': 'ustawienia, opcje, przezroczystość nakładek',
@@ -477,8 +479,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     outsideViewWarning: 'Bieżący widok znajduje się poza tą mapą',
     offlineWarning: 'Ta mapa nie jest zapisana do użytku offline',
     customBase: 'Własna mapa',
-    customMaps: 'Mapy własne',
-    addCustomMap: 'Dodaj własną mapę',
+    newCustomMap: 'Nowa własna mapa',
     activate: 'Aktywuj',
     base: 'Warstwy podstawowe',
     overlay: 'Warstwy nakładkowe',
@@ -511,7 +512,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Nakładka',
     },
     showMore: 'Pokaż więcej map',
-    mapLibrary: 'Biblioteka map',
+    installedMaps: 'Zainstalowane mapy',
+    availableMaps: 'Dostępne mapy',
     technologies: {
       tile: 'Płytki obrazów (TMS, XYZ)',
       maplibre: 'Wektor (MapLibre)',

@@ -5,14 +5,11 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Zainstaluj — oferuj tę mapę w menu map',
-  yourMaps: 'Twoje mapy',
-  noInstalledMaps:
-    'Brak zainstalowanych map. Wyszukaj w bibliotece, aby jakieś dodać.',
+  noInstalledMaps: 'Brak zainstalowanych map. Dodaj jakieś z dostępnych map.',
   searchLibrary: ({ count }) => `Szukaj wśród ${count} map`,
   catalogCredit: 'Lista map biblioteki korzysta z',
   filters: {
-    library: 'Biblioteka',
-    filterYourMaps: 'Filtruj swoje mapy',
+    filterYourMaps: 'Filtruj zainstalowane mapy',
     kind: 'Rodzaj',
     builtIn: 'Wbudowane',
     fromLibrary: 'Z biblioteki',
@@ -25,7 +22,7 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     shortcut: 'Ze skrótem',
     hidden: 'Ukryte',
     technology: 'Technologia',
-    special: 'Specjalne',
+    dataLayers: 'Warstwy danych',
     category: 'Kategoria',
     photo: 'Ortofotomapy',
     historicphoto: 'Zdjęcia historyczne',
@@ -38,6 +35,16 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Podgląd na mapie',
   installMap: 'Zainstaluj',
   uninstallMap: 'Odinstaluj',
+  modifyCustomMapTitle: (name) => (
+    <>
+      Edytuj własną mapę <i>{name}</i>
+    </>
+  ),
+  modifyCombinationTitle: (name) => (
+    <>
+      Edytuj kombinację map <i>{name}</i>
+    </>
+  ),
   resetConfirm:
     'Przywrócić domyślne ustawienia paska narzędzi, menu, przezroczystości i skrótów wszystkich map? Zainstalowane mapy pozostaną zainstalowane.',
   downloadOffline: 'Pobierz do użytku offline',

@@ -23,6 +23,12 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Térkép törlése',
+  newMapTitle: 'Új térkép',
+  modifyMapTitle: (name) => (
+    <>
+      Térkép módosítása <i>{name}</i>
+    </>
+  ),
   mapCreated: ({ name }) => (
     <>
       A(z) <i>{name}</i> térkép mentve lett a térképei közé.

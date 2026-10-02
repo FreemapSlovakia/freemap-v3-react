@@ -25,7 +25,7 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Sleduj zařízení <i>{name}</i>
+        Nové sledované zařízení <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,12 +58,12 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Přidej sledovací token pro <i>{deviceName}</i>
+        Nový sledovací token pro <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
       <>
-        Uprav sledovací token <i>{token}</i> pro <i>{deviceName}</i>
+        Upravit sledovací token <i>{token}</i> pro <i>{deviceName}</i>
       </>
     ),
   },
@@ -94,7 +94,7 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
     deleteTitle: 'Smazání zařízení',
     modifyTitle: ({ name }) => (
       <>
-        Úprava zařízení <i>{name}</i>
+        Upravit zařízení <i>{name}</i>
       </>
     ),
     desc: () => (

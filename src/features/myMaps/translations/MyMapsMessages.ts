@@ -13,6 +13,8 @@ export type MyMapsMessages = {
   disconnectAndClear: string;
   deleteConfirm: (name: string) => JSX.Element;
   deleteTitle: string;
+  newMapTitle: string;
+  modifyMapTitle: (name: string) => JSX.Element;
   mapCreated: (props: { name: string }) => JSX.Element;
   mapUpdated: (props: { name: string }) => JSX.Element;
   mapDeleted: (props: { name: string }) => JSX.Element;

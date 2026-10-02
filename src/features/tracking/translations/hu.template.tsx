@@ -20,12 +20,12 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
     desc: 'Figyelt eszközök kezelése ismerősei pozíciójának megismeréséhez.',
     modifyTitle: (name) => (
       <>
-        Figyelt eszköz módosításaí <i>{name}</i>
+        Figyelt eszköz módosítása <i>{name}</i>
       </>
     ),
     createTitle: (name) => (
       <>
-        <i>{name}</i> készülék figyelése
+        Új figyelt eszköz <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,7 +58,7 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Figyelőkód hozzáadása a(z) <i>{deviceName}</i> készülékhez
+        Új figyelőkód a(z) <i>{deviceName}</i> készülékhez
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
@@ -83,7 +83,7 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
     traccarQrCode: 'Traccar QR-kód',
     button: 'Készülékeim',
     modalTitle: 'Követett készülékeim',
-    createTitle: 'Követendő készülék létrehozása',
+    createTitle: 'Új követett készülék',
     watchTokens: 'Kódok megtekintése',
     watchPrivately: 'Privát figyelés',
     watch: 'Figyelés',

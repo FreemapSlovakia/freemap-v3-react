@@ -5,14 +5,12 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Telepítés — a térkép megjelenik a térképmenükben',
-  yourMaps: 'Az Ön térképei',
   noInstalledMaps:
-    'Nincs telepített térkép. Keressen a térképtárban, és adjon hozzá néhányat.',
+    'Nincs telepített térkép. Adjon hozzá néhányat az elérhető térképek közül.',
   searchLibrary: ({ count }) => `Keresés ${count} térkép között`,
   catalogCredit: 'A térképtár listájának forrása:',
   filters: {
-    library: 'Térképtár',
-    filterYourMaps: 'Térképei szűrése',
+    filterYourMaps: 'Telepített térképek szűrése',
     kind: 'Fajta',
     builtIn: 'Beépített',
     fromLibrary: 'A térképtárból',
@@ -25,7 +23,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     shortcut: 'Gyorsbillentyűvel',
     hidden: 'Rejtett',
     technology: 'Technológia',
-    special: 'Különleges',
+    dataLayers: 'Adatrétegek',
     category: 'Kategória',
     photo: 'Ortofotók',
     historicphoto: 'Történelmi légifotók',
@@ -38,6 +36,16 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Előnézet a térképen',
   installMap: 'Telepítés',
   uninstallMap: 'Eltávolítás',
+  modifyCustomMapTitle: (name) => (
+    <>
+      Egyéni térkép módosítása <i>{name}</i>
+    </>
+  ),
+  modifyCombinationTitle: (name) => (
+    <>
+      Térképkombináció módosítása <i>{name}</i>
+    </>
+  ),
   resetConfirm:
     'Visszaállítja az összes térkép eszköztár-, menü-, átlátszóság- és billentyűparancs-beállítását az alapértékekre? A telepített térképek telepítve maradnak.',
   downloadOffline: 'Letöltés offline használatra',

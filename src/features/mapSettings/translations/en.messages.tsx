@@ -4,13 +4,11 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const en: MapSettingsMessages = {
   install: 'Install — offer this map in the map menus',
-  yourMaps: 'Your maps',
-  noInstalledMaps: 'No maps are installed. Search the library to add some.',
+  noInstalledMaps: 'No maps are installed. Add some from Available maps.',
   searchLibrary: ({ count }) => `Search ${count} maps`,
   catalogCredit: 'The library’s map list draws on the',
   filters: {
-    library: 'Library',
-    filterYourMaps: 'Filter your maps',
+    filterYourMaps: 'Filter installed maps',
     kind: 'Kind',
     builtIn: 'Built-in',
     fromLibrary: 'From the library',
@@ -23,7 +21,7 @@ const en: MapSettingsMessages = {
     shortcut: 'With shortcut',
     hidden: 'Hidden',
     technology: 'Technology',
-    special: 'Special',
+    dataLayers: 'Data layers',
     category: 'Category',
     photo: 'Orthophotos',
     historicphoto: 'Historic imagery',
@@ -36,6 +34,16 @@ const en: MapSettingsMessages = {
   preview: 'Preview on the map',
   installMap: 'Install',
   uninstallMap: 'Uninstall',
+  modifyCustomMapTitle: (name) => (
+    <>
+      Modify custom map <i>{name}</i>
+    </>
+  ),
+  modifyCombinationTitle: (name) => (
+    <>
+      Modify map combination <i>{name}</i>
+    </>
+  ),
   resetConfirm:
     'Put every map’s toolbar, menu, opacity and shortcut settings back to their defaults? Installed maps stay installed.',
   downloadOffline: 'Download for offline use',

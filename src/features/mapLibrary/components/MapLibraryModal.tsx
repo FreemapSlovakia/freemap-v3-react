@@ -13,9 +13,10 @@ import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
+import { layerLabel } from '@shared/layerName.js';
 import { type ReactElement, useRef, useState } from 'react';
 import { Button, ButtonGroup, Modal, ToggleButton } from 'react-bootstrap';
-import { FaPlus } from 'react-icons/fa';
+import { FaLayerGroup, FaPlus } from 'react-icons/fa';
 import { MdDashboardCustomize, MdLibraryAdd } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { yourMapsCountSelector } from '../model/selectors.js';
@@ -47,17 +48,21 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
     (state) => state.mapLibrary.preview !== null,
   );
 
+  // The tab is the modal's id, so each has its own menu item, chord and link.
+  const activeModal = useAppSelector((state) => state.main.activeModal);
+
+  const tab =
+    activeModal?.type === 'available-maps' ? 'available' : 'installed';
+
   // A custom map's form takes the list's place; the tabs' filters live here so
   // they outlast it.
-  const customMapRequest = useAppSelector((state) =>
-    state.main.activeModal?.type === 'map-library'
-      ? state.main.activeModal.customMap
-      : undefined,
-  );
+  const customMapRequest =
+    activeModal?.type === 'installed-maps' ? activeModal.customMap : undefined;
+
+  const highlight =
+    activeModal?.type === 'installed-maps' ? activeModal.highlight : undefined;
 
   const canSaveSettings = useCanSaveSettings();
-
-  const [tab, setTab] = useState<'yours' | 'library'>('yours');
 
   const [yourFilters, setYourFilters] = useState<YourMapsFilters>(
     initialYourMapsFilters,
@@ -80,11 +85,38 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
 
   const searchRef = useRef<HTMLInputElement>(null);
 
+  const tabTitle =
+    tab === 'available'
+      ? m?.mapLayers.availableMaps
+      : m?.mapLayers.installedMaps;
+
+  // The form is headed by the map it edits, or as a new one.
+  const editedType = customMapRequest?.edit;
+
+  const editedCustomName = useAppSelector((state) => {
+    const def = state.map.customLayers.find((d) => d.type === editedType);
+
+    return def && layerLabel(def, m);
+  });
+
+  const editedCombinationName = useAppSelector(
+    (state) => state.map.mapCombinations.find((c) => c.id === editedType)?.name,
+  );
+
+  const formTitle =
+    editedCombinationName !== undefined
+      ? msm?.modifyCombinationTitle(editedCombinationName)
+      : editedCustomName !== undefined
+        ? msm?.modifyCustomMapTitle(editedCustomName)
+        : m?.mapLayers.newCustomMap;
+
   useDocumentTitle(
     show
       ? customMapRequest
-        ? m?.mapLayers.customMaps
-        : m?.mapLayers.mapLibrary
+        ? (editedCombinationName ??
+          editedCustomName ??
+          m?.mapLayers.newCustomMap)
+        : tabTitle
       : undefined,
   );
 
@@ -105,17 +137,19 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
       keyboard={!previewing}
       enforceFocus={!previewing && !customMapRequest}
       // The dialog takes the focus once shown, so `autoFocus` alone loses it.
-      onEntered={() => searchRef.current?.focus()}
+      // Without scrolling, which would undo the scroll to a highlighted row.
+      onEntered={() => searchRef.current?.focus({ preventScroll: true })}
     >
       <Modal.Header closeButton>
         <Modal.Title>
           {customMapRequest ? (
             <>
-              <MdDashboardCustomize /> {m?.mapLayers.customMaps}
+              <MdDashboardCustomize /> {formTitle}
             </>
           ) : (
             <>
-              <MdLibraryAdd /> {m?.mapLayers.mapLibrary}
+              {tab === 'available' ? <MdLibraryAdd /> : <FaLayerGroup />}{' '}
+              {tabTitle}
             </>
           )}
         </Modal.Title>
@@ -128,36 +162,41 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
           <Modal.Body>
             <ButtonGroup className="mb-3">
               <ToggleButton
-                id="map-library-tab-yours"
+                id="map-library-tab-installed"
                 type="radio"
                 name="map-library-tab"
                 variant="outline-primary"
-                value="yours"
-                checked={tab === 'yours'}
-                onChange={() => setTab('yours')}
+                value="installed"
+                checked={tab === 'installed'}
+                onChange={() =>
+                  dispatch(setActiveModal({ type: 'installed-maps' }))
+                }
               >
-                {msm?.yourMaps} ({yourMapsCount})
+                {m?.mapLayers.installedMaps} ({yourMapsCount})
               </ToggleButton>
 
               <ToggleButton
-                id="map-library-tab-library"
+                id="map-library-tab-available"
                 type="radio"
                 name="map-library-tab"
                 variant="outline-primary"
-                value="library"
-                checked={tab === 'library'}
-                onChange={() => setTab('library')}
+                value="available"
+                checked={tab === 'available'}
+                onChange={() =>
+                  dispatch(setActiveModal({ type: 'available-maps' }))
+                }
               >
-                {msm?.filters.library}
+                {m?.mapLayers.availableMaps}
                 {catalog && ` (${entries.length})`}
               </ToggleButton>
             </ButtonGroup>
 
-            {tab === 'yours' ? (
+            {tab === 'installed' ? (
               <YourMapsTab
                 filters={yourFilters}
                 onChange={setYourFilters}
                 canSave={canSaveSettings}
+                highlight={highlight}
                 searchRef={searchRef}
               />
             ) : (
@@ -177,10 +216,18 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
               variant="secondary"
               disabled={!canSaveSettings}
               onClick={() =>
-                dispatch(setActiveModal({ type: 'map-library', customMap: {} }))
+                dispatch(
+                  setActiveModal({
+                    type: 'installed-maps',
+                    customMap: {
+                      returnTo:
+                        tab === 'available' ? 'available-maps' : undefined,
+                    },
+                  }),
+                )
               }
             >
-              <FaPlus /> {m?.mapLayers.addCustomMap}
+              <FaPlus /> {m?.mapLayers.newCustomMap}
             </Button>
 
             <OfflineBadge offline={!canSaveSettings} />

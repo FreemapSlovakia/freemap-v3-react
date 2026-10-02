@@ -373,8 +373,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'adományozás, támogatás, pénz',
         'modal-legend': 'jelmagyarázat, jelek, szimbólumok',
         'modal-about': 'kapcsolat, e-mail, visszajelzés',
-        'modal-map-library':
-          'könyvtár, katalógus, telepítés, eltávolítás, térképek hozzáadása, további térképek, rétegek beállítása, rétegek, térképek kezelése, átlátszóság, gyorsbillentyű, egyéni térképek, saját térkép, wms, tms, térképforrás hozzáadása',
+        'modal-installed-maps':
+          'térképtár, eltávolítás, rétegek beállítása, rétegek, térképek kezelése, eszköztár, menü, átlátszóság, gyorsbillentyű, egyéni térképek, saját térkép, wms, tms, térképforrás hozzáadása',
+        'modal-available-maps':
+          'térképtár, katalógus, telepítés, térképek hozzáadása, további térképek',
         'modal-offline-maps': 'letöltött térképek, tárhely',
         'modal-browse-cache': 'gyorsítótár, csempék, tárhely',
         'modal-map-preferences': 'beállítások, opciók, fedvény átlátszósága',
@@ -497,8 +499,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     switch: 'Térképek',
     interactiveLayerWarning: 'Az adatréteg rejtve van',
     customBase: 'Egyéni térkép',
-    customMaps: 'Egyéni térképek',
-    addCustomMap: 'Egyéni térkép hozzáadása',
+    newCustomMap: 'Új egyéni térkép',
     activate: 'Aktiválás',
     base: 'Alaprétegek',
     overlay: 'Fedőrétegek',
@@ -531,7 +532,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Átfedő',
     },
     showMore: 'További térképek megjelenítése',
-    mapLibrary: 'Térképtár',
+    installedMaps: 'Telepített térképek',
+    availableMaps: 'Elérhető térképek',
     technologies: {
       tile: 'Képcsempék (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',

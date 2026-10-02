@@ -5,14 +5,12 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Namesti — ponujaj to karto v menijih kart',
-  yourMaps: 'Vaše karte',
   noInstalledMaps:
-    'Nobena karta ni nameščena. Poiščite jih v knjižnici in jih dodajte.',
+    'Nobena karta ni nameščena. Dodajte jih iz razpoložljivih kart.',
   searchLibrary: ({ count }) => `Išči med ${count} kartami`,
   catalogCredit: 'Seznam kart knjižnice temelji na',
   filters: {
-    library: 'Knjižnica',
-    filterYourMaps: 'Filtriraj svoje karte',
+    filterYourMaps: 'Filtriraj nameščene karte',
     kind: 'Vrsta',
     builtIn: 'Vgrajene',
     fromLibrary: 'Iz knjižnice',
@@ -25,7 +23,7 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     shortcut: 'Z bližnjico',
     hidden: 'Skrite',
     technology: 'Tehnologija',
-    special: 'Posebne',
+    dataLayers: 'Podatkovni sloji',
     category: 'Kategorija',
     photo: 'Ortofoto',
     historicphoto: 'Zgodovinski posnetki',
@@ -38,6 +36,16 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Predogled na karti',
   installMap: 'Namesti',
   uninstallMap: 'Odstrani',
+  modifyCustomMapTitle: (name) => (
+    <>
+      Uredi zemljevid po meri <i>{name}</i>
+    </>
+  ),
+  modifyCombinationTitle: (name) => (
+    <>
+      Uredi kombinacijo zemljevidov <i>{name}</i>
+    </>
+  ),
   resetConfirm:
     'Ponastaviti nastavitve orodne vrstice, menija, prosojnosti in bližnjic vseh zemljevidov na privzete? Nameščeni zemljevidi ostanejo nameščeni.',
   downloadOffline: 'Prenesi za uporabo brez povezave',

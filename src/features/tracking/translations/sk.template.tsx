@@ -25,7 +25,7 @@ const sk: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Sledovať zariadenie <i>{name}</i>
+        Nové sledované zariadenie <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,7 +58,7 @@ const sk: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Pridať token sledovania pre <i>{deviceName}</i>
+        Nový token sledovania pre <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
@@ -82,7 +82,7 @@ const sk: DeepPartialWithRequiredObjects<TrackingMessages> = {
     traccarQrCode: 'Traccar QR kód',
     button: 'Moje zariadenia',
     modalTitle: 'Moje zariadenia',
-    createTitle: 'Pridať zariadenie',
+    createTitle: 'Nové zariadenie',
     watchTokens: 'Sledovacie tokeny',
     watchPrivately: 'Sledovať privátne',
     watch: 'Sledovať',

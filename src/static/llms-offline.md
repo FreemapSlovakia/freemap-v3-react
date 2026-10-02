@@ -14,9 +14,9 @@ Caches selected map areas (tiles) in the browser for offline use. (This is diffe
 
 A cached map is not limited to what it holds. While there is a connection it behaves as the layer it was made from: it takes that layer's zoom range and its premium gate, and any tile it doesn't have — outside its area, deeper than it was downloaded, or not downloaded yet — is fetched from that layer's own server. Such tiles are only displayed, never added to the cached map. Without a connection the map falls back to being just what was downloaded: its own area and zoom range, with the deepest cached level scaled up beyond it. The form's **Fetch missing tiles from the internet** checkbox (on by default) governs this: unticked, the map is a sealed artifact that shows what was downloaded and nothing else, connection or not. With it ticked and no connection, a tile the map lacks is looked for in the browse cache below — the same tile may have been kept while browsing the source layer — before the map gives up on it.
 
-The manager modal lists already-cached offline maps with their zoom range, tile count, scale, size and status (Ready, or incomplete with a percentage), and has buttons to modify, delete, and **Add offline map**. A ready map has an **Activate** button that switches the map layer on and zooms to its area; a map that is still downloading offers **Zoom to area** instead. A running download can be **Stop**ped, which halts it and keeps whatever has been cached so far; an incomplete map then offers **Resume**, which fetches only the tiles it is missing. **Delete** discards the map altogether, asking for confirmation first, and is available whether or not it is downloading.
+The manager modal lists already-cached offline maps with their zoom range, tile count, scale, size and status (Ready, or incomplete with a percentage), and has buttons to modify, delete, and **Add offline map**. A ready map's actions also offer **Show in Installed maps**, which opens **Installed maps** with that map highlighted, where its opacity and other settings are; the footer links to **Installed maps** and to **Caching while browsing**. A ready map has an **Activate** button that switches the map layer on and zooms to its area; a map that is still downloading offers **Zoom to area** instead. A running download can be **Stop**ped, which halts it and keeps whatever has been cached so far; an incomplete map then offers **Resume**, which fetches only the tiles it is missing. **Delete** discards the map altogether, asking for confirmation first, and is available whether or not it is downloading.
 
-The "Cache map for offline use" form heads itself with a notice that the map is stored in this browser on this device only, and lets the user choose:
+The **New offline map** form heads itself with a notice that the map is stored in this browser on this device only, and lets the user choose:
 
 - the map (layer) to cache — tile layers only; WMS layers cannot be cached
 - the area: current visible area, or a rectangle drawn on the map
@@ -25,17 +25,17 @@ The "Cache map for offline use" form heads itself with a notice that the map is 
 - the zoom range. For a layer whose deepest zooms are premium, a non-premium user's range stops just short of them and a gem beside the field says why: cached tiles are kept for good and are shown with no connection, where no checkerboard applies, so downloading those levels needs premium access. Browsing them online is unaffected — the cached map shows the same checkerboard there as the source layer does.
 - the scale (1×, 2×, … — only for layers that offer hi-DPI tiles; defaults to what the current screen displays). A cached map holds exactly one scale and is always drawn at it, regardless of the screen and of the resolution/feature-size preferences.
 - whether missing tiles may be fetched from the internet (see above)
-- whether to show the cached map in the menu and/or toolbar
+- whether to show the cached map in the menu and/or toolbar, and a keyboard shortcut (on devices with a keyboard)
 
 It shows the estimated tile count and size before caching starts; the size is estimated by fetching a few real tiles of the selected layer, area, zoom range and scale. It warns about very large downloads and about downloads that would not fit in the browser's free storage.
 
-**Modify** opens the same form seeded from an existing offline map, to change its name, icon, area, zoom range and menu/toolbar visibility. The map (layer) and the scale are fixed, since changing either would invalidate every stored tile. Widening the area or the zoom range downloads only the tiles that are missing; narrowing it deletes the tiles that fall outside. The form then shows both the map's total tile count and how many of them still have to be downloaded. Changing only the name touches no tiles.
+**Modify** opens the same form seeded from an existing offline map, to change its name, icon, area, zoom range, menu/toolbar visibility and shortcut. After either form is saved, the list scrolls to the map and briefly highlights it. The map (layer) and the scale are fixed, since changing either would invalidate every stored tile. Widening the area or the zoom range downloads only the tiles that are missing; narrowing it deletes the tiles that fall outside. The form then shows both the map's total tile count and how many of them still have to be downloaded. Changing only the name touches no tiles.
 
 Picking the rectangle option (in this form and in the map/document exports) hides the modal and lets the user drag the rectangle's corner, edge, and center handles on the map, confirming with **OK** or discarding with **Cancel** (<kbd>Esc</kbd>). The confirmed rectangle is remembered for the other export/cache forms until the page is reloaded; if it lies outside the current view, the map jumps to it.
 
-### Cache while browsing
+### Caching while browsing
 
-- Access: Manage maps button > Cache while browsing (also linked from the Offline maps list)
+- Access: Manage maps button > Caching while browsing (also linked from the Offline maps list)
 - Keyboard shortcut: <kbd>m</kbd> <kbd>b</kbd>
 - URL path: `/#show=browse-cache`
 

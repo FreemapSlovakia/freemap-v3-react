@@ -23,6 +23,12 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Löschen der Karte',
+  newMapTitle: 'Neue Karte',
+  modifyMapTitle: (name) => (
+    <>
+      Karte <i>{name}</i> bearbeiten
+    </>
+  ),
   mapCreated: ({ name }) => (
     <>
       Die Karte <i>{name}</i> wurde in Ihren Karten gespeichert.

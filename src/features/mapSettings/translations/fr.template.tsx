@@ -11,14 +11,12 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       err,
     ),
   install: 'Installer — proposer cette carte dans les menus des cartes',
-  yourMaps: 'Vos cartes',
   noInstalledMaps:
-    'Aucune carte installée. Cherchez dans la bibliothèque pour en ajouter.',
+    'Aucune carte installée. Ajoutez-en depuis les cartes disponibles.',
   searchLibrary: ({ count }) => `Rechercher parmi ${count} cartes`,
   catalogCredit: 'La liste des cartes de la bibliothèque s’appuie sur',
   filters: {
-    library: 'Bibliothèque',
-    filterYourMaps: 'Filtrer vos cartes',
+    filterYourMaps: 'Filtrer les cartes installées',
     kind: 'Type',
     builtIn: 'Intégrées',
     fromLibrary: 'De la bibliothèque',
@@ -31,7 +29,7 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     shortcut: 'Avec raccourci',
     hidden: 'Masquées',
     technology: 'Technologie',
-    special: 'Spéciales',
+    dataLayers: 'Couches de données',
     category: 'Catégorie',
     photo: 'Orthophotos',
     historicphoto: 'Images historiques',
@@ -44,6 +42,16 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Aperçu sur la carte',
   installMap: 'Installer',
   uninstallMap: 'Désinstaller',
+  modifyCustomMapTitle: (name) => (
+    <>
+      Modifier la carte personnalisée <i>{name}</i>
+    </>
+  ),
+  modifyCombinationTitle: (name) => (
+    <>
+      Modifier la combinaison de cartes <i>{name}</i>
+    </>
+  ),
   resetConfirm:
     'Rétablir les réglages par défaut de barre d’outils, de menu, d’opacité et de raccourcis de toutes les cartes ? Les cartes installées restent installées.',
   downloadOffline: 'Télécharger pour une utilisation hors ligne',

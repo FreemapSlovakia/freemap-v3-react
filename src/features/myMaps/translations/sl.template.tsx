@@ -22,6 +22,12 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Brisanje zemljevida',
+  newMapTitle: 'Nov zemljevid',
+  modifyMapTitle: (name) => (
+    <>
+      Uredi zemljevid <i>{name}</i>
+    </>
+  ),
   mapCreated: ({ name }) => (
     <>
       Zemljevid <i>{name}</i> je bil shranjen med vaše zemljevide.

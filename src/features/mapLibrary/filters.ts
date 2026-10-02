@@ -3,14 +3,14 @@ import { removeAccents } from '@shared/stringUtils.js';
 
 type Bbox = [number, number, number, number];
 
-/** The technologies a filter tells apart; the rest are feature layers and such. */
+/** The technologies a filter tells apart; the rest are data layers the app draws. */
 export const TECHNOLOGY_GROUPS = [
   'tile',
   'maplibre',
   'wms',
   'parametricShading',
   'color',
-  'special',
+  'data',
 ] as const;
 
 export type TechnologyGroup = (typeof TECHNOLOGY_GROUPS)[number];
@@ -22,14 +22,17 @@ export const technologyGroup = (
     ? undefined
     : (TECHNOLOGY_GROUPS as readonly string[]).includes(technology)
       ? (technology as TechnologyGroup)
-      : 'special';
+      : 'data';
 
-/** Editor Layer Index categories as the library offers them. */
+/**
+ * Editor Layer Index categories as the library offers them, in the order the
+ * chips show: the most wanted first, each beside its historic counterpart.
+ */
 export const CATEGORY_GROUPS = [
+  'map',
+  'historicmap',
   'photo',
   'historicphoto',
-  'historicmap',
-  'map',
   'elevation',
   'other',
 ] as const;

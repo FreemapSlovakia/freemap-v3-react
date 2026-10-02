@@ -90,7 +90,7 @@ export function useCustomMapActions() {
     if (!isWorthSaving(updated)) {
       dispatch(
         setActiveModal({
-          type: 'map-library',
+          type: 'installed-maps',
           customMap: { edit: combination.id, draft: updated },
         }),
       );

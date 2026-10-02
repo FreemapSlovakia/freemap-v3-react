@@ -303,9 +303,9 @@ export type Messages = {
       routing: string;
     };
     attr: Record<string, ReactNode>;
-    mapLibrary: string;
-    customMaps: string;
-    addCustomMap: string;
+    installedMaps: string;
+    availableMaps: string;
+    newCustomMap: string;
     activate: string;
     saveAsShadingMap: string;
     base: string;

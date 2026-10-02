@@ -31,6 +31,7 @@ import {
   resolveLayerOpacity,
 } from '@shared/mapDefinitions.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
+import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import type { Shortcut } from '@shared/types/common.js';
 import type { ReactElement, ReactNode, RefObject } from 'react';
 import { Form, Table } from 'react-bootstrap';
@@ -65,6 +66,7 @@ import {
   FilterChips,
   FilterPanel,
   FilterToggle,
+  useMapDetail,
   useSharedFilterOptions,
 } from './FilterChips.js';
 
@@ -73,7 +75,7 @@ type YourMap = {
   type: string;
   layer: 'base' | 'overlay';
   name: string;
-  /** A second line: a custom map's technology, a combination's layers. */
+  /** A second line: category and technology, or what a combination holds. */
   detail?: string;
   icon: ReactNode;
   countries?: string[];
@@ -144,6 +146,7 @@ type TabProps = {
   filters: YourMapsFilters;
   onChange: (filters: YourMapsFilters) => void;
   canSave: boolean;
+  highlight?: string;
   searchRef: RefObject<HTMLInputElement | null>;
 };
 
@@ -152,6 +155,7 @@ export function YourMapsTab({
   filters,
   onChange,
   canSave,
+  highlight,
   searchRef,
 }: TabProps): ReactElement {
   const msm = useMapSettingsMessages();
@@ -221,15 +225,24 @@ export function YourMapsTab({
         />
       </FilterPanel>
 
-      <YourMapsList canSave={canSave} filters={filters} />
+      <YourMapsList canSave={canSave} filters={filters} highlight={highlight} />
     </>
   );
 }
 
-type Props = { canSave: boolean; filters: YourMapsFilters };
+type Props = {
+  canSave: boolean;
+  filters: YourMapsFilters;
+  /** A map to scroll to and flash, as just saved or asked for. */
+  highlight?: string;
+};
 
 /** The maps the user has, by kind, each with its settings in columns. */
-export function YourMapsList({ canSave, filters }: Props): ReactElement {
+export function YourMapsList({
+  canSave,
+  filters,
+  highlight,
+}: Props): ReactElement {
   const m = useMessages();
 
   const msm = useMapSettingsMessages();
@@ -254,6 +267,8 @@ export function YourMapsList({ canSave, filters }: Props): ReactElement {
   const viewCountries = useAppSelector((state) =>
     filters.coversView ? state.map.countries : undefined,
   );
+
+  const mapDetail = useMapDetail();
 
   const nameOr = (def: { type: string; name?: string }) => layerLabel(def, m);
 
@@ -283,6 +298,7 @@ export function YourMapsList({ canSave, filters }: Props): ReactElement {
         icon: def.icon,
         countries: flaggedCountries(def),
         coverage: { countries: def.countries, bbox: def.bbox },
+        detail: mapDetail(def.category, def.technology),
         legacy: Boolean(def.superseededBy),
         kind: 'library',
         defaultInMenu: Boolean(def.defaultInMenu),
@@ -297,7 +313,7 @@ export function YourMapsList({ canSave, filters }: Props): ReactElement {
         type: def.type,
         layer: def.layer,
         name: nameOr(def),
-        detail: m?.mapLayers.technologies[def.technology] ?? def.technology,
+        detail: mapDetail(def.category, def.technology),
         icon: <CustomMapGlyph spec={def.iconSpec} kind={def.technology} />,
         legacy: false,
         coverage: { bbox: def.bbox },
@@ -315,7 +331,12 @@ export function YourMapsList({ canSave, filters }: Props): ReactElement {
         layer: cm.layer,
         name: nameOr(cm),
         // The map it was downloaded from, whose category it takes.
-        detail: [msm?.filters.offline, baseName(cm.sourceType)].join(' · '),
+        detail: mapDetail(
+          defOf(cm.sourceType).category,
+          undefined,
+          msm?.filters.offline,
+          baseName(cm.sourceType),
+        ),
         category: defOf(cm.sourceType).category,
         icon: <CustomMapGlyph spec={cm.iconSpec} kind="cached" />,
         legacy: false,
@@ -372,18 +393,20 @@ export function YourMapsList({ canSave, filters }: Props): ReactElement {
     ];
   };
 
+  // The highlighted map shows whatever the filters, or the save looks lost.
   const visible = maps.filter(
     (map) =>
-      (!filters.query.trim() || nameMatches(map.name, filters.query)) &&
-      passes(filters.kinds, kindOf(map)) &&
-      passes(filters.shown, shownOf(map)) &&
-      passes(filters.technologies, technologyGroup(map.technology)) &&
-      passes(filters.categories, categoryGroup(map.category)) &&
-      (!filters.coversView ||
-        coversView(
-          { type: map.type, ...map.coverage },
-          { bounds: viewBounds, countries: viewCountries },
-        )),
+      map.type === highlight ||
+      ((!filters.query.trim() || nameMatches(map.name, filters.query)) &&
+        passes(filters.kinds, kindOf(map)) &&
+        passes(filters.shown, shownOf(map)) &&
+        passes(filters.technologies, technologyGroup(map.technology)) &&
+        passes(filters.categories, categoryGroup(map.category)) &&
+        (!filters.coversView ||
+          coversView(
+            { type: map.type, ...map.coverage },
+            { bounds: viewBounds, countries: viewCountries },
+          ))),
   );
 
   if (maps.length === 0) {
@@ -401,17 +424,26 @@ export function YourMapsList({ canSave, filters }: Props): ReactElement {
 
         return (
           rows.length > 0 && (
-            <section key={layer}>
-              <h6 className="mt-2">
-                {layer === 'base' ? msm?.baseMaps : msm?.overlays}
-              </h6>
-
+            <section
+              key={layer}
+              // Set off from the base maps above it.
+              className={
+                layer === 'overlay' && visible.some((m) => m.layer === 'base')
+                  ? 'border-top mt-3 pt-2'
+                  : undefined
+              }
+            >
               <Table striped borderless size="sm" className="align-middle">
+                <colgroup>
+                  <col style={{ width: COLUMN_WIDTHS.icon }} />
+                </colgroup>
+
                 <thead>
                   <tr>
-                    <th style={{ width: COLUMN_WIDTHS.icon }} />
-
-                    <th />
+                    {/* The section's name, on the row of the column glyphs. */}
+                    <th colSpan={2}>
+                      {layer === 'base' ? msm?.baseMaps : msm?.overlays}
+                    </th>
 
                     {/* `ms-n1`: the cell's padding already puts the glyph over
                         the checkbox below. */}
@@ -466,6 +498,7 @@ export function YourMapsList({ canSave, filters }: Props): ReactElement {
                     <YourMapRow
                       key={map.type}
                       map={map}
+                      highlighted={map.type === highlight}
                       settings={layersSettings[map.type]}
                       canSave={canSave}
                     />
@@ -482,11 +515,17 @@ export function YourMapsList({ canSave, filters }: Props): ReactElement {
 
 type RowProps = {
   map: YourMap;
+  highlighted: boolean;
   settings: LayerSettings | undefined;
   canSave: boolean;
 };
 
-function YourMapRow({ map, settings, canSave }: RowProps): ReactElement {
+function YourMapRow({
+  map,
+  highlighted,
+  settings,
+  canSave,
+}: RowProps): ReactElement {
   const m = useMessages();
 
   const msm = useMapSettingsMessages();
@@ -514,7 +553,10 @@ function YourMapRow({ map, settings, canSave }: RowProps): ReactElement {
     combinationOpacity(activeCombinations, type) === undefined;
 
   return (
-    <tr>
+    <tr
+      ref={highlighted ? scrollIntoCenter : undefined}
+      className={highlighted ? 'fm-flash' : undefined}
+    >
       <td>{map.icon}</td>
 
       <td className="w-100">
@@ -610,7 +652,7 @@ function YourMapRow({ map, settings, canSave }: RowProps): ReactElement {
                 } else {
                   dispatch(
                     setActiveModal({
-                      type: 'map-library',
+                      type: 'installed-maps',
                       customMap: { edit: type },
                     }),
                   );

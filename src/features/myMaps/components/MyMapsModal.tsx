@@ -7,6 +7,7 @@ import { Modal } from 'react-bootstrap';
 import { FaRegMap } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { MapMeta } from '../model/actions.js';
+import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 import { MyMapsModalForm } from './MyMapsModalForm.js';
 import { MyMapsModalList } from './MyMapsModalList.js';
 
@@ -20,6 +21,8 @@ export default function MyMapsModal({ show }: Props): ReactElement {
   };
 
   const m = useMessages();
+
+  const mm = useMyMapsMessages();
 
   // Opened with `add` (e.g. "Save to my maps" on a track) jumps straight to the
   // new-map form instead of the list.
@@ -52,7 +55,12 @@ export default function MyMapsModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaRegMap /> {m?.tools.myMaps}
+          <FaRegMap />{' '}
+          {editTarget === 'new'
+            ? mm?.newMapTitle
+            : editTarget
+              ? mm?.modifyMapTitle(editTarget.name)
+              : m?.tools.myMaps}
         </Modal.Title>
       </Modal.Header>
 

@@ -6,7 +6,7 @@ import {
   serializeShading,
   withOpaqueBackground,
 } from '@features/parameterizedShading/model/Shading.js';
-import { siteNames, siteOf, siteUrls } from '@shared/sites.js';
+import { currentSite, siteNames, siteUrls } from '@shared/sites.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import z from 'zod';
@@ -63,7 +63,7 @@ export const OSRM_ROUTING_ATTR: AttributionDef = {
  * The portal serving this build. The same bundle answers on both domains, and
  * the map is credited to the one the reader is on.
  */
-const site = typeof location === 'undefined' ? 'sk' : siteOf(location.hostname);
+const site = currentSite;
 
 export const FM_ATTR: AttributionDef = {
   type: 'map',
@@ -278,6 +278,8 @@ export type IsIntegratedLayerDef = {
   name?: string;
   /** An Editor Layer Index category (`photo`, `historicmap`, …), as the library filters by. */
   category?: string;
+  /** False for a map offered in the library but not installed until asked for. */
+  defaultInstalled?: boolean;
   layerPreview?: boolean;
   /**
    * Opacity this overlay is drawn at until the user sets one of their own.
@@ -782,6 +784,7 @@ type MapIndexField =
   | 'type'
   | 'name'
   | 'category'
+  | 'defaultInstalled'
   | 'layer'
   | 'technology'
   | 'icon'

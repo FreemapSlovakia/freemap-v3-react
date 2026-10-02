@@ -21,7 +21,10 @@ import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { CustomMapForm, type CustomMapStart } from './CustomMapForm.js';
-import { LayerVisibilityFields } from './LayerVisibilityFields.js';
+import {
+  type LayerVisibility,
+  LayerVisibilityFields,
+} from './LayerVisibilityFields.js';
 import { MapCombinationForm } from './MapCombinationForm.js';
 
 type Props = { request: CustomMapRequest };
@@ -62,12 +65,21 @@ export function CustomMapEditor({ request }: Props): ReactElement {
   ): {
     view: View;
     combinationDraft?: MapCombination;
-    visibility: { showInMenu: boolean; showInToolbar: boolean };
+    visibility: LayerVisibility;
   } => {
-    const visibilityOf = (type: string) => ({
-      showInMenu: layersSettings[type]?.showInMenu ?? true,
-      showInToolbar: layersSettings[type]?.showInToolbar ?? false,
-    });
+    const visibilityOf = (type: string): LayerVisibility => {
+      const settings = layersSettings[type];
+
+      return {
+        showInMenu: settings?.showInMenu ?? true,
+        showInToolbar: settings?.showInToolbar ?? false,
+        // Unset, the map's own shortcut holds, as the keyboard has it.
+        shortcut:
+          settings?.shortcut === undefined
+            ? (customLayers.find((def) => def.type === type)?.shortcut ?? null)
+            : settings.shortcut,
+      };
+    };
 
     const combination =
       request.draft ?? mapCombinations.find((c) => c.id === request.edit);
@@ -100,7 +112,7 @@ export function CustomMapEditor({ request }: Props): ReactElement {
           ...request.addShadingMap,
         },
       },
-      visibility: { showInMenu: true, showInToolbar: false },
+      visibility: { showInMenu: true, showInToolbar: false, shortcut: null },
     };
   };
 
@@ -114,13 +126,9 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     initial.combinationDraft,
   );
 
-  const [showInMenu, setShowInMenu] = useState(initial.visibility.showInMenu);
+  const [visibility, setVisibility] = useState(initial.visibility);
 
-  const [showInToolbar, setShowInToolbar] = useState(
-    initial.visibility.showInToolbar,
-  );
-
-  // Only a new request starts the form over; the ticks are the user's after.
+  // Only a new request starts the form over; the fields are the user's after.
   const [shownRequest, setShownRequest] = useState(request);
 
   // Remounts the map form even when the new request names the same map.
@@ -139,16 +147,22 @@ export function CustomMapEditor({ request }: Props): ReactElement {
 
     setCombinationDraft(start.combinationDraft);
 
-    setShowInMenu(start.visibility.showInMenu);
-
-    setShowInToolbar(start.visibility.showInToolbar);
+    setVisibility(start.visibility);
   }
 
-  // Back where it was opened from: the library's list, or the map for the
-  // shading panel's new map.
-  const done = () => {
+  // A save shows its map in Installed maps (the shading panel's goes back to
+  // the map); Cancel goes back where the form was opened from.
+  const done = (saved?: string) => {
+    const back = saved === undefined ? request.returnTo : undefined;
+
     dispatch(
-      setActiveModal(request.addShadingMap ? null : { type: 'map-library' }),
+      setActiveModal(
+        request.addShadingMap || back === null
+          ? null
+          : back === 'available-maps'
+            ? { type: 'available-maps' }
+            : { type: 'installed-maps', highlight: saved },
+      ),
     );
   };
 
@@ -191,12 +205,12 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     dispatch(
       mapCustomLayerSave({
         def: draft,
-        settings: { showInMenu, showInToolbar },
+        settings: visibility,
         offerActivate: true,
       }),
     );
 
-    done();
+    done(draft.type);
   };
 
   const canSaveCombination = Boolean(
@@ -225,11 +239,11 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     dispatch(
       mapCombinationSave({
         combination,
-        settings: { showInMenu, showInToolbar },
+        settings: visibility,
       }),
     );
 
-    done();
+    done(combination.id);
   };
 
   const editingValue =
@@ -248,12 +262,8 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     <div className="mt-3">
       <LayerVisibilityFields
         disabled={!canSaveSettings}
-        showInMenu={showInMenu}
-        showInToolbar={showInToolbar}
-        onChange={(v) => {
-          setShowInMenu(v.showInMenu);
-          setShowInToolbar(v.showInToolbar);
-        }}
+        value={visibility}
+        onChange={setVisibility}
       />
     </div>
   );
@@ -270,7 +280,7 @@ export function CustomMapEditor({ request }: Props): ReactElement {
 
       <OfflineBadge offline={!canSaveSettings} />
 
-      <Button variant="dark" onClick={done}>
+      <Button variant="dark" onClick={() => done()}>
         <FaTimes /> {m?.general.cancel}
       </Button>
     </Modal.Footer>

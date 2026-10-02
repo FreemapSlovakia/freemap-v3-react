@@ -30,6 +30,7 @@ import {
   FaEraser,
   FaFileExport,
   FaHeart,
+  FaLayerGroup,
   FaList,
   FaPrint,
   FaRegAddressCard,
@@ -168,11 +169,17 @@ const modalCommands: ModalCommand[] = [
     icon: <FaRegAddressCard />,
     label: (m) => m.mainMenu.contacts,
   },
-  // Writes the settings, which a signed-in account keeps on the server.
+  // These write the settings, which a signed-in account keeps on the server.
   {
-    id: 'map-library',
+    id: 'installed-maps',
+    icon: <FaLayerGroup />,
+    label: (m) => m.mapLayers.installedMaps,
+    offline: (ctx) => !ctx.canSaveSettings,
+  },
+  {
+    id: 'available-maps',
     icon: <MdLibraryAdd />,
-    label: (m) => m.mapLayers.mapLibrary,
+    label: (m) => m.mapLayers.availableMaps,
     offline: (ctx) => !ctx.canSaveSettings,
   },
   {

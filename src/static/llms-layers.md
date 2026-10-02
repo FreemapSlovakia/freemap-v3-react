@@ -48,7 +48,7 @@ Pre-defined map layers.
 
 #### Layer registry
 
-Mirrors `src/shared/mapDefinitions.tsx`. A blank cell means the field is not set in the definition (worldwide / default / not applicable). ⇧ denotes Shift.
+Mirrors `src/shared/mapLibrary/mapIndex.tsx`. A blank cell means the field is not set in the definition (worldwide / default / not applicable). ⇧ denotes Shift. Public transport (ÖPNV) and the four Vector maps start uninstalled, as do on freemap.eu the maps whose only country is sk; they are added from **Available maps** (see [Manage maps](/llms-manage-maps.md)).
 
 **Base layers**
 

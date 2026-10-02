@@ -20,6 +20,12 @@ const en: MyMapsMessages = {
     </>
   ),
   deleteTitle: 'Map deletion',
+  newMapTitle: 'New map',
+  modifyMapTitle: (name) => (
+    <>
+      Modify map <i>{name}</i>
+    </>
+  ),
   mapCreated: ({ name }) => (
     <>
       Map <i>{name}</i> has been saved to your maps.

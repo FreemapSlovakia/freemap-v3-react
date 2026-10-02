@@ -9,6 +9,7 @@ import z from 'zod';
 const URL_MODAL_IDS = [
   'about',
   'account',
+  'available-maps',
   'browse-cache',
   'credits-purchase',
   'drawing-properties',
@@ -19,10 +20,10 @@ const URL_MODAL_IDS = [
   'gallery-leaderboard',
   'gallery-upload',
   'gps-recorder-settings',
+  'installed-maps',
   'legend',
   'login',
   'map-features-export',
-  'map-library',
   'map-preferences',
   'map-to-document-export',
   'my-maps',
@@ -52,10 +53,11 @@ const MODAL_RENAMES: Record<string, string> = {
   'export-pdf': 'map-to-document-export',
   'download-map': 'offline-map-export',
   supportUs: 'support-us',
-  mapSettings: 'map-library',
-  'map-settings': 'map-library',
-  'map-layers-config': 'map-library',
-  'custom-maps': 'map-library',
+  mapSettings: 'installed-maps',
+  'map-settings': 'installed-maps',
+  'map-layers-config': 'installed-maps',
+  'custom-maps': 'installed-maps',
+  'map-library': 'installed-maps',
   'remove-ads': 'premium',
   'upload-track': 'file-import',
   'buy-credits': 'credits-purchase',
@@ -71,9 +73,10 @@ const MODAL_RENAMES: Record<string, string> = {
  * way in; premium reaches its modal by opening the portal in a tab of its own.
  */
 const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
+  'available-maps',
   'browse-cache',
   'elevation-settings',
-  'map-library',
+  'installed-maps',
   'map-preferences',
   'offline-maps',
   'premium',
@@ -97,6 +100,8 @@ export type CustomMapRequest = {
   draft?: MapCombination;
   /** A new shading map with these settings, asked for by the shading panel. */
   addShadingMap?: { shading: Shading };
+  /** Where Cancel goes: that tab, or `null` to close; Installed maps if unset. */
+  returnTo?: 'installed-maps' | 'available-maps' | null;
 };
 
 /**
@@ -105,10 +110,20 @@ export type CustomMapRequest = {
  * at a time. `null` means no modal.
  */
 export type ActiveModal =
-  | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps' | 'map-library'> }
+  | {
+      type: Exclude<ModalId, 'tracking-watched' | 'my-maps' | 'installed-maps'>;
+    }
   | { type: 'my-maps'; add?: boolean }
-  /** With `customMap` the library shows the form for one; see `CustomMapRequest`. */
-  | { type: 'map-library'; customMap?: CustomMapRequest }
+  /**
+   * The map library on its Installed maps tab (`available-maps` is the other).
+   * With `customMap` it shows the form for one; see `CustomMapRequest`.
+   * `highlight` picks out that map in the list.
+   */
+  | {
+      type: 'installed-maps';
+      customMap?: CustomMapRequest;
+      highlight?: string;
+    }
   | { type: 'tracking-watched'; token?: string }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
@@ -211,7 +226,7 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
 export function modalOf(modalId: ModalId): ActiveModal {
   switch (modalId) {
     case 'my-maps':
-    case 'map-library':
+    case 'installed-maps':
     case 'tracking-watched':
       return { type: modalId };
     default:

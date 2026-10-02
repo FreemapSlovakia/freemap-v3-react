@@ -373,8 +373,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'dona, sostieni, contribuisci, denaro',
         'modal-legend': 'simboli, legenda della mappa',
         'modal-about': 'contatti, e-mail, feedback',
-        'modal-map-library':
-          'catalogo, installa, disinstalla, aggiungi mappe, altre mappe, configurazione dei livelli, livelli, gestisci mappe, opacità, scorciatoia, mappe personalizzate, mappa personalizzata, wms, tms, aggiungi sorgente',
+        'modal-installed-maps':
+          'libreria di mappe, disinstalla, configurazione dei livelli, livelli, gestisci mappe, barra degli strumenti, menu, opacità, scorciatoia, mappe personalizzate, mappa personalizzata, wms, tms, aggiungi sorgente',
+        'modal-available-maps':
+          'libreria di mappe, catalogo, installa, aggiungi mappe, altre mappe',
         'modal-offline-maps': 'mappe scaricate, archiviazione',
         'modal-browse-cache': 'cache, tasselli in cache, archiviazione',
         'modal-map-preferences':
@@ -497,8 +499,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'varie licenze Creative Commons',
     },
-    customMaps: 'Mappe personalizzate',
-    addCustomMap: 'Aggiungi mappa personalizzata',
+    newCustomMap: 'Nuova mappa personalizzata',
     activate: 'Attiva',
     base: 'Livelli di base',
     overlay: 'Livelli sovrapposti',
@@ -531,7 +532,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Sovrapposto',
     },
     showMore: 'Mostra più mappe',
-    mapLibrary: 'Libreria di mappe',
+    installedMaps: 'Mappe installate',
+    availableMaps: 'Mappe disponibili',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',
       maplibre: 'Vettore (MapLibre)',
@@ -547,7 +549,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     offlineMaps: 'Mappe offline',
-    browseCache: 'Memorizza durante la navigazione',
+    browseCache: 'Memorizzazione durante la navigazione',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (
       <>

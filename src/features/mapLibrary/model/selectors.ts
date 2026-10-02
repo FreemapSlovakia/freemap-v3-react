@@ -29,7 +29,7 @@ export const libraryIndexByIdSelector = createSelector(
     Object.fromEntries(index.map((entry) => [entry.type, entry])),
 );
 
-/** The installed library maps, as Your maps lists them. */
+/** The installed library maps, as Installed maps lists them. */
 export const installedLibraryIndexSelector = createSelector(
   libraryIndexSelector,
   (state: RootState) => state.map.layersSettings,
@@ -42,7 +42,7 @@ export const installedLibraryIndexSelector = createSelector(
     ),
 );
 
-/** How many maps Your maps lists: installed ones and the user's own. */
+/** How many maps Installed maps lists: installed ones and the user's own. */
 export const yourMapsCountSelector = (state: RootState): number =>
   installedLibraryIndexSelector(state).length +
   state.map.customLayers.length +

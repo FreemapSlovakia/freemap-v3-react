@@ -30,7 +30,7 @@ export default function MapLibraryPreviewMenu(): ReactElement | null {
     (state) => type && libraryIndexByIdSelector(state)[type],
   );
 
-  // A custom or offline map is previewed from Your maps.
+  // A custom or offline map is previewed from Installed maps.
   const own = useAppSelector((state) =>
     type === undefined
       ? undefined

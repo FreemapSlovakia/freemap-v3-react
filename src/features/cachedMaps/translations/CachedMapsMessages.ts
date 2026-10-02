@@ -1,12 +1,13 @@
 import type { JSX, ReactNode } from 'react';
 
 export type CachedMapsMessages = {
-  cacheOfflineMap: string;
-  modifyOfflineMap: string;
+  newOfflineMap: string;
+  modifyOfflineMap: (name: ReactNode) => JSX.Element;
   deviceOnly: string;
   deviceOnlyHint: string;
   toDownload: string;
   addOfflineMap: string;
+  showInInstalledMaps: string;
   emptyMessage: string;
   zoom: string;
   tiles: string;

@@ -385,7 +385,7 @@ export default function ShadingControl() {
   const saveAsMap = () =>
     dispatch(
       setActiveModal({
-        type: 'map-library',
+        type: 'installed-maps',
         // What is being edited, unapplied changes included.
         customMap: { addShadingMap: { shading } },
       }),

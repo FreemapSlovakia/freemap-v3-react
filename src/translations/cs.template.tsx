@@ -370,8 +370,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'darovat, přispět, podpora, peníze',
         'modal-legend': 'značky, symboly, vysvětlivky',
         'modal-about': 'kontakt, e-mail, zpětná vazba',
-        'modal-map-library':
-          'knihovna, katalog, instalovat, odinstalovat, přidat mapy, další mapy, nastavení vrstev, vrstvy, správa map, průhlednost, zkratka, vlastní mapy, vlastní mapa, wms, tms, přidat mapu',
+        'modal-installed-maps':
+          'knihovna map, odinstalovat, nastavení vrstev, vrstvy, správa map, panel nástrojů, nabídka, průhlednost, zkratka, vlastní mapy, vlastní mapa, wms, tms, přidat mapu',
+        'modal-available-maps':
+          'knihovna map, katalog, instalovat, přidat mapy, další mapy',
         'modal-offline-maps': 'stažené mapy, úložiště',
         'modal-browse-cache': 'mezipaměť, dlaždice, úložiště',
         'modal-map-preferences': 'nastavení, volby, průhlednost překrytí',
@@ -488,9 +490,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'různé licence Creative Commons',
     },
-    mapLibrary: 'Knihovna map',
-    customMaps: 'Vlastní mapy',
-    addCustomMap: 'Přidat vlastní mapu',
+    installedMaps: 'Nainstalované mapy',
+    availableMaps: 'Dostupné mapy',
+    newCustomMap: 'Nová vlastní mapa',
     activate: 'Aktivovat',
     saveAsShadingMap: 'Uložit jako vlastní mapu',
     base: 'Základní vrstvy',

@@ -5,14 +5,12 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Installieren — diese Karte in den Kartenmenüs anbieten',
-  yourMaps: 'Ihre Karten',
   noInstalledMaps:
-    'Keine Karten installiert. Durchsuchen Sie die Bibliothek, um welche hinzuzufügen.',
+    'Keine Karten installiert. Fügen Sie welche aus den verfügbaren Karten hinzu.',
   searchLibrary: ({ count }) => `${count} Karten durchsuchen`,
   catalogCredit: 'Die Kartenliste der Bibliothek stützt sich auf den',
   filters: {
-    library: 'Bibliothek',
-    filterYourMaps: 'Ihre Karten filtern',
+    filterYourMaps: 'Installierte Karten filtern',
     kind: 'Art',
     builtIn: 'Eingebaut',
     fromLibrary: 'Aus der Bibliothek',
@@ -25,7 +23,7 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     shortcut: 'Mit Tastenkürzel',
     hidden: 'Verborgen',
     technology: 'Technologie',
-    special: 'Spezial',
+    dataLayers: 'Datenebenen',
     category: 'Kategorie',
     photo: 'Orthofotos',
     historicphoto: 'Historische Luftbilder',
@@ -38,6 +36,16 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   preview: 'Vorschau auf der Karte',
   installMap: 'Installieren',
   uninstallMap: 'Deinstallieren',
+  modifyCustomMapTitle: (name) => (
+    <>
+      Benutzerdefinierte Karte <i>{name}</i> bearbeiten
+    </>
+  ),
+  modifyCombinationTitle: (name) => (
+    <>
+      Kartenkombination <i>{name}</i> bearbeiten
+    </>
+  ),
   resetConfirm:
     'Symbolleisten-, Menü-, Deckkraft- und Tastenkürzel-Einstellungen aller Karten auf die Standardwerte zurücksetzen? Installierte Karten bleiben installiert.',
   downloadOffline: 'Für die Offline-Nutzung herunterladen',

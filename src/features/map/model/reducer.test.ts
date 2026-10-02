@@ -136,6 +136,16 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
     expect(next.layersSettings).toEqual({ O: { installed: false } });
   });
 
+  it('keeps installed a map that was installed only by its settings', () => {
+    // VT starts uninstalled; its toolbar setting is what installed it.
+    const next = mapReducer(
+      { ...mapInitialState, layersSettings: { VT: { showInToolbar: true } } },
+      mapLayersSettingsReset(),
+    );
+
+    expect(next.layersSettings).toEqual({ VT: { installed: true } });
+  });
+
   it('toggling the already-active base layer is a no-op', () => {
     const state = { ...mapInitialState, layers: ['X', 'i'] };
 

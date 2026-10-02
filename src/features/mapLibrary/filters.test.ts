@@ -8,14 +8,14 @@ import {
 } from './filters.js';
 
 describe('library filters', () => {
-  it('groups the feature-layer technologies as special', () => {
+  it('groups the layers the app draws as data layers', () => {
     expect(technologyGroup('tile')).toBe('tile');
 
     expect(technologyGroup('color')).toBe('color');
 
     expect(technologyGroup('parametricShading')).toBe('parametricShading');
 
-    expect(technologyGroup('gallery')).toBe('special');
+    expect(technologyGroup('gallery')).toBe('data');
 
     expect(technologyGroup(undefined)).toBeUndefined();
   });

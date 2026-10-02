@@ -1,13 +1,13 @@
+import type { JSX } from 'react';
+
 export type MapSettingsMessages = {
   install: string;
-  yourMaps: string;
   noInstalledMaps: string;
   searchLibrary: (props: { count: number }) => string;
   /** Followed by the name of the catalog source. */
   catalogCredit: string;
   /** The map library's tabs and filter chips. */
   filters: {
-    library: string;
     filterYourMaps: string;
     kind: string;
     builtIn: string;
@@ -21,7 +21,7 @@ export type MapSettingsMessages = {
     shortcut: string;
     hidden: string;
     technology: string;
-    special: string;
+    dataLayers: string;
     category: string;
     photo: string;
     historicphoto: string;
@@ -34,6 +34,8 @@ export type MapSettingsMessages = {
   preview: string;
   installMap: string;
   uninstallMap: string;
+  modifyCustomMapTitle: (name: string) => JSX.Element;
+  modifyCombinationTitle: (name: string) => JSX.Element;
   resetConfirm: string;
   downloadOffline: string;
   keepOnMap: string;

@@ -26,6 +26,10 @@ export function siteOf(hostname: string): Site {
     : 'sk';
 }
 
+/** The site the running app is served as; the Slovak one outside a browser. */
+export const currentSite: Site =
+  typeof location === 'undefined' ? 'sk' : siteOf(location.hostname);
+
 /** Substitutes the `{site}` placeholder the SEO title strings are written with. */
 export function expandSite(text: string, site: Site): string {
   return text.replace(/\{site\}/g, siteNames[site]);

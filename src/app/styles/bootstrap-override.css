@@ -243,3 +243,16 @@ legend {
 .tooltip-inner {
   text-align: start;
 }
+
+/* A list row just saved or asked for, picked out for a moment. */
+@keyframes fm-flash {
+  0%,
+  40% {
+    background-color: var(--bs-warning-bg-subtle);
+  }
+}
+
+tr.fm-flash > td,
+.list-group-item.fm-flash {
+  animation: fm-flash 6s ease-out;
+}

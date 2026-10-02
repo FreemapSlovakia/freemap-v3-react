@@ -1,31 +1,38 @@
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
+import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
+import type { Shortcut } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
-import { FaRegListAlt } from 'react-icons/fa';
+import { FaKeyboard, FaRegListAlt } from 'react-icons/fa';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import { ToolbarIcon } from './ToolbarIcon.js';
 
-type Props = {
+/** How a map is reached: decided when it is made, changed in Installed maps. */
+export type LayerVisibility = {
   showInMenu: boolean;
   showInToolbar: boolean;
+  shortcut: Shortcut | null;
+};
+
+type Props = {
+  value: LayerVisibility;
   /**
-   * Both are settings, so a form that can't write them switches them off — and
+   * They are settings, so a form that can't write them switches them off — and
    * each says why, the connection being the only thing that stops them.
    */
   disabled?: boolean;
-  onChange: (next: { showInMenu: boolean; showInToolbar: boolean }) => void;
+  onChange: (next: LayerVisibility) => void;
 };
 
 export function LayerVisibilityFields({
-  showInMenu,
-  showInToolbar,
+  value,
   disabled,
   onChange,
 }: Props): ReactElement {
   const msm = useMapSettingsMessages();
 
   return (
-    <div className="d-flex flex-wrap gap-3">
+    <div className="d-flex flex-wrap align-items-center gap-3">
       <Form.Check
         id="layer-show-in-toolbar"
         label={
@@ -35,12 +42,9 @@ export function LayerVisibilityFields({
           </>
         }
         disabled={disabled}
-        checked={showInToolbar}
+        checked={value.showInToolbar}
         onChange={(e) =>
-          onChange({
-            showInMenu,
-            showInToolbar: e.currentTarget.checked,
-          })
+          onChange({ ...value, showInToolbar: e.currentTarget.checked })
         }
       />
 
@@ -53,14 +57,23 @@ export function LayerVisibilityFields({
           </>
         }
         disabled={disabled}
-        checked={showInMenu}
+        checked={value.showInMenu}
         onChange={(e) =>
-          onChange({
-            showInMenu: e.currentTarget.checked,
-            showInToolbar,
-          })
+          onChange({ ...value, showInMenu: e.currentTarget.checked })
         }
       />
+
+      {!disabled && (
+        <span className="d-inline-flex align-items-center gap-2 fm-should-have-keyboard">
+          <FaKeyboard /> {msm?.keyboardShortcut}
+          <ShortcutRecorder
+            value={value.shortcut}
+            onChange={(shortcut) =>
+              onChange({ ...value, shortcut: shortcut ?? null })
+            }
+          />
+        </span>
+      )}
     </div>
   );
 }

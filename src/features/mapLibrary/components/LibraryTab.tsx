@@ -44,6 +44,7 @@ import {
   FilterChips,
   FilterPanel,
   FilterToggle,
+  useMapDetail,
   useSharedFilterOptions,
 } from './FilterChips.js';
 
@@ -68,7 +69,7 @@ export const initialLibraryFilters: LibraryFilters = {
 
 /**
  * The catalog, once loaded, and what of it can still be added; what is
- * installed is under Your maps.
+ * installed is under Installed maps.
  */
 export function useLibraryEntries(): {
   catalog: CatalogEntry[] | undefined;
@@ -108,33 +109,29 @@ export function useLibraryEntries(): {
     hasRole(state.auth.user, 'layerPreview'),
   );
 
-  // Only the install state, so an opacity or a tick doesn't refilter the catalog.
-  const installs = useAppSelector(
+  // The maps whose settings make them differ from their default install state,
+  // so an opacity or a tick doesn't refilter the catalog.
+  const overridden = useAppSelector(
     (state) =>
-      Object.fromEntries(
-        Object.entries(state.map.layersSettings).flatMap(([type, s]) =>
-          s.installed === undefined ? [] : [[type, s.installed]],
-        ),
-      ) as Record<string, boolean>,
+      Object.keys(state.map.layersSettings).filter(
+        (type) =>
+          isLayerInstalled(state.map.layersSettings, type) !==
+          isLayerInstalled({}, type),
+      ),
     shallowEqual,
   );
 
   const entries = useMemo(() => {
-    const settings = Object.fromEntries(
-      Object.entries(installs).map(([type, installed]) => [
-        type,
-        { installed },
-      ]),
-    );
+    const flipped = new Set(overridden);
 
     return (
       catalog?.filter(
         (entry) =>
-          !isLayerInstalled(settings, entry.type) &&
+          isLayerInstalled({}, entry.type) === flipped.has(entry.type) &&
           (canPreviewLayers || !entry.index?.layerPreview),
       ) ?? []
     );
-  }, [catalog, canPreviewLayers, installs]);
+  }, [catalog, canPreviewLayers, overridden]);
 
   return { catalog, entries };
 }
@@ -149,6 +146,8 @@ function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
   const m = useMessages();
 
   const msm = useMapSettingsMessages();
+
+  const mapDetail = useMapDetail();
 
   const dispatch = useDispatch();
 
@@ -178,6 +177,10 @@ function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
         {flaggedCountries(entry)?.map((country) => (
           <CountryFlag key={country} country={country} />
         ))}
+
+        <div className="small text-muted">
+          {mapDetail(entry.category, entry.index?.technology ?? 'tile')}
+        </div>
       </td>
 
       <td>
@@ -487,7 +490,15 @@ function LibraryResults({
 
         return (
           rows.length > 0 && (
-            <section key={layer}>
+            <section
+              key={layer}
+              // Set off from the base maps above it.
+              className={
+                layer === 'overlay' && matches.some((e) => e.layer === 'base')
+                  ? 'border-top mt-3 pt-2'
+                  : undefined
+              }
+            >
               <h6 className="mt-2">
                 {layer === 'base' ? msm?.baseMaps : msm?.overlays}
               </h6>

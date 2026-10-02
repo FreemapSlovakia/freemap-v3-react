@@ -60,6 +60,12 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   disconnect: 'Déconnecter',
   disconnectAndClear: 'Déconnecter et vider',
   deleteTitle: 'Suppression de la carte',
+  newMapTitle: 'Nouvelle carte',
+  modifyMapTitle: (name) => (
+    <>
+      Modifier la carte <i>{name}</i>
+    </>
+  ),
   loadMergeModal: {
     title: 'La carte n’est pas vide',
     message:

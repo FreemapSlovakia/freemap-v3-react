@@ -30,7 +30,7 @@ Each location sent by a device may carry properties such as altitude, speed, bea
 
 Manage devices you follow to see your friends' positions. Note: the watched-devices list is only reflected in the page URL — to persist it, save it via **My maps**.
 
-Each watched device is added with a **Watch Device** form: Watch Token (required), Label, Color, line Width (px), Since (date/time), Max Age (minutes), Max Count, Split Distance (meters), and Split Duration (minutes). Watched tracks render on the map; selecting one shows a small toolbar to delete or close it.
+Each watched device is added with a **New watched device** form: Watch Token (required), Label, Color, line Width (px), Since (date/time), Max Age (minutes), Max Count, Split Distance (meters), and Split Duration (minutes). Watched tracks render on the map; selecting one shows a small toolbar to delete or close it.
 
 ### GPS recorder
 
