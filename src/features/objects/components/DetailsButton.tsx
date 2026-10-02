@@ -4,29 +4,20 @@ import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaInfoCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { objectsSetDetailsOverride } from '../model/actions.js';
-import {
-  defaultShowsDetails,
-  detailsTarget,
-} from '../model/objectDetailsProcessor.js';
+import { setDetailsShown } from '../model/actions.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
-/**
- * Asks for the details of the one kind of selection that comes without them —
- * a hit from searching by name, merely looked at. Everything else answers with
- * its details unasked, and clicking it again brings them back after the ×, so
- * there is nothing there for this to offer.
- */
+/** Toggles the details of a selection that came without them. */
 export function DetailsButton(): ReactElement | null {
   const om = useObjectsMessages();
 
   const dispatch = useDispatch();
 
-  const key = useAppSelector((state) => detailsTarget(state)?.key);
+  const offered = useAppSelector((state) => state.main.detailsOnRequest);
 
-  const offByDefault = useAppSelector((state) => !defaultShowsDetails(state));
+  const shown = useAppSelector((state) => state.main.detailsShown);
 
-  if (key === undefined || !offByDefault) {
+  if (!offered) {
     return null;
   }
 
@@ -35,7 +26,8 @@ export function DetailsButton(): ReactElement | null {
       {({ label, labelClassName, props }) => (
         <Button
           variant="secondary"
-          onClick={() => dispatch(objectsSetDetailsOverride(true))}
+          active={shown}
+          onClick={() => dispatch(setDetailsShown(!shown))}
           {...props}
         >
           <FaInfoCircle />

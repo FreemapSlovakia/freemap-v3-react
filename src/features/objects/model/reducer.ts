@@ -4,7 +4,6 @@ import { upgradeObjectFilter } from '@osm/taxon.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type ObjectsResult,
-  objectsSetDetailsOverride,
   objectsSetFilter,
   objectsSetResult,
 } from './actions.js';
@@ -12,14 +11,11 @@ import {
 export interface ObjectsState {
   objects: ObjectsResult[];
   active: string[];
-  /** See {@link objectsSetDetailsOverride}; transient by design. */
-  detailsOverride: boolean | null;
 }
 
 export const objectInitialState: ObjectsState = {
   objects: [],
   active: [],
-  detailsOverride: null,
 };
 
 export const objectsReducer = createReducer(objectInitialState, (builder) =>
@@ -30,9 +26,6 @@ export const objectsReducer = createReducer(objectInitialState, (builder) =>
     })
     .addCase(objectsSetResult, (state, action) => {
       state.objects = action.payload;
-    })
-    .addCase(objectsSetDetailsOverride, (state, action) => {
-      state.detailsOverride = action.payload;
     })
     .addCase(mapsLoaded, (state, { payload: { merge, data } }) => {
       const loaded = (data.objectsV2?.active ?? []).map(upgradeObjectFilter);

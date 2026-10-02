@@ -6,9 +6,13 @@ import {
 } from '@app/store/actions.js';
 import { dataViewerSetData } from '@features/dataViewer/model/actions.js';
 import { drawingLineStopDrawing } from '@features/drawing/model/actions/drawingLineActions.js';
-import { objectsSetResult } from '@features/objects/model/actions.js';
+import {
+  objectsSetResult,
+  setDetailsShown,
+} from '@features/objects/model/actions.js';
 import {
   type SearchResult,
+  searchKeepResult,
   searchSelectResult,
   searchUnselectResult,
 } from '@features/search/model/actions.js';
@@ -217,6 +221,94 @@ describe('selecting a feature', () => {
     );
 
     expect(s.selection).toEqual({ type: 'search', id: aResult.id });
+  });
+});
+
+describe('detailsShown', () => {
+  const quietPick = searchSelectResult({ result: aResult, details: false });
+
+  it('a pick shows its details unless it says not to', () => {
+    expect(run(searchSelectResult({ result: aResult }))).toMatchObject({
+      detailsShown: true,
+      detailsOnRequest: false,
+    });
+
+    expect(run(quietPick)).toMatchObject({
+      detailsShown: false,
+      detailsOnRequest: true,
+    });
+  });
+
+  it('a pick without details keeps its toggle while it stays selected', () => {
+    // Asking for them.
+    expect(run(quietPick, setDetailsShown(true))).toMatchObject({
+      detailsShown: true,
+      detailsOnRequest: true,
+    });
+
+    // Clicking it on the map, which shows them.
+    expect(
+      run(quietPick, searchSelectResult({ result: aResult, tier: 'keep' })),
+    ).toMatchObject({ detailsShown: true, detailsOnRequest: true });
+
+    // Keeping it, which changes neither.
+    expect(run(quietPick, searchKeepResult(aResult.id))).toMatchObject({
+      detailsShown: false,
+      detailsOnRequest: true,
+    });
+
+    // Another result is a new selection.
+    expect(
+      run(quietPick, searchSelectResult({ result: anotherResult })),
+    ).toMatchObject({ detailsShown: true, detailsOnRequest: false });
+  });
+
+  it('picking it again never closes details asked for', () => {
+    expect(run(quietPick, setDetailsShown(true), quietPick)).toMatchObject({
+      detailsShown: true,
+      detailsOnRequest: true,
+    });
+  });
+
+  it('an element landing for the selection leaves it alone', () => {
+    expect(
+      run(quietPick, searchSelectResult({ result: aResult, select: false }))
+        .detailsShown,
+    ).toBe(false);
+  });
+
+  it('selecting again brings back details dismissed with ×', () => {
+    const selection = {
+      type: 'objects',
+      id: { type: 'osm', elementType: 'node', id: 1 },
+    } as const;
+
+    expect(
+      run(selectFeature(selection), setDetailsShown(false)).detailsShown,
+    ).toBe(false);
+
+    expect(
+      run(
+        selectFeature(selection),
+        setDetailsShown(false),
+        selectFeature(selection),
+      ),
+    ).toMatchObject({ detailsShown: true, detailsOnRequest: false });
+  });
+
+  it('a selection an embed ignores leaves it alone', () => {
+    window.fmEmbedded = true;
+
+    expect(
+      run(
+        searchSelectResult({ result: aResult }),
+        setDetailsShown(false),
+        selectFeature({
+          type: 'objects',
+          id: { type: 'osm', elementType: 'node', id: 1 },
+        }),
+      ).detailsShown,
+    ).toBe(false);
   });
 });
 

@@ -1,3 +1,4 @@
+import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
@@ -5,6 +6,7 @@ import type { ObjectCategory } from '@features/objects/objectCategories.js';
 import { sameFilter } from '@features/objects/useMatchedCategories.js';
 import { usePoiMatches } from '@features/objects/usePoiMatches.js';
 import { isLocalSearchQuery } from '@features/search/localQuery.js';
+import { pickShowsDetailsSelector } from '@features/search/model/selectors.js';
 import {
   getOsmAddress,
   getOsmName,
@@ -65,7 +67,7 @@ import {
 } from 'react-icons/fa';
 import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import {
   type CommandMatch,
   useCommandMatches,
@@ -159,6 +161,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const online = useOnline();
 
   const dispatch = useDispatch();
+
+  const store = useStore<RootState>();
 
   const results = useAppSelector((state) => state.search.results);
 
@@ -392,12 +396,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         // Enter is the rarity, so counting one would count almost nothing.
         trackMatomo(['trackEvent', 'Search', 'pick', result.source]);
 
-        dispatch(searchSelectResult({ result }));
+        dispatch(
+          searchSelectResult({
+            result,
+            details: pickShowsDetailsSelector(store.getState(), result),
+          }),
+        );
       }
 
       setOpen(false);
     },
-    [commands, query, results, objectsActive, dispatch],
+    [commands, query, results, objectsActive, dispatch, store],
   );
 
   const showMore = useCallback(() => {

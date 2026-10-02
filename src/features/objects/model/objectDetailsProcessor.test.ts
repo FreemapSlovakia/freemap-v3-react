@@ -1,18 +1,12 @@
-import { selectFeature } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import type { SearchResult } from '@features/search/model/actions.js';
-import { searchSelectResult } from '@features/search/model/actions.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { fetchElevations } from '@shared/elevation.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import { lineString, point } from '@turf/helpers';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { objectsSetDetailsOverride } from './actions.js';
-import {
-  detailsOverrideResetProcessor,
-  objectDetailsProcessor,
-  wantedTarget,
-} from './objectDetailsProcessor.js';
+import { objectDetailsProcessor } from './objectDetailsProcessor.js';
+import { wantedTarget } from './selectors.js';
 
 vi.mock('@shared/elevation.js', () => ({
   fetchElevations: vi.fn(),
@@ -28,12 +22,8 @@ beforeEach(() => {
   fetchElevationsMock.mockReset().mockResolvedValue([null]);
 });
 
-/**
- * The details toast is derived from the selection — its kind decides the
- * default, and a per-subject override has the last word. `wantedTarget` names
- * its subject; the processor turns a *change* of subject into an add or a
- * remove. Both read a handful of slices, so a minimal cast state is enough.
- */
+// `wantedTarget` names the toast's subject; the processor turns a change of
+// subject into an add or a remove. A minimal cast state is enough for both.
 
 const anObject = (
   id: number,
@@ -48,35 +38,21 @@ const state = ({
   selection,
   objects = [],
   selectedResults = [],
-  previewId,
-  detailsOverride = null,
-  show,
+  detailsShown = true,
   toasted = false,
 }: {
   selection?: { type: string; id?: unknown };
   objects?: ReturnType<typeof anObject>[];
   selectedResults?: SearchResult[];
-  /** The one result that is merely being looked at; the rest are kept. */
-  previewId?: unknown;
-  detailsOverride?: boolean | null;
-  /** Overrides whatever the selection would imply of itself. */
-  show?: boolean;
+  detailsShown?: boolean;
   toasted?: boolean;
-}): RootState => {
-  const base = {
-    main: { selection },
-    objects: { objects, detailsOverride },
-    search: { selectedResults, previewId },
+}): RootState =>
+  ({
+    main: { selection, detailsShown },
+    objects: { objects },
+    search: { selectedResults },
     toasts: { toasts: toasted ? { 'mapDetails.tags': {} } : {} },
-  } as unknown as RootState;
-
-  return show === undefined
-    ? base
-    : ({
-        ...base,
-        objects: { ...base.objects, detailsOverride: show },
-      } as unknown as RootState);
-};
+  }) as unknown as RootState;
 
 describe('wantedTarget', () => {
   it('keys an object by its feature id, not by the instance in the store', () => {
@@ -121,12 +97,9 @@ describe('wantedTarget', () => {
     } as unknown as SearchResult;
 
     expect(
-      wantedTarget(
-        state({ selection, selectedResults: [incomplete], show: true }),
-      )?.key,
+      wantedTarget(state({ selection, selectedResults: [incomplete] }))?.key,
     ).not.toBe(
-      wantedTarget(state({ selection, selectedResults: [loaded], show: true }))
-        ?.key,
+      wantedTarget(state({ selection, selectedResults: [loaded] }))?.key,
     );
   });
 
@@ -161,67 +134,16 @@ describe('wantedTarget', () => {
     ).toBeNull();
   });
 
-  it('wants nothing where the override says so, or with no selection', () => {
+  it('wants nothing while the details are hidden, or with no selection', () => {
     const selection = { type: 'objects', id: anObject(1).id };
 
     expect(
       wantedTarget(
-        state({ selection, objects: [anObject(1)], detailsOverride: false }),
+        state({ selection, objects: [anObject(1)], detailsShown: false }),
       ),
     ).toBeNull();
 
     expect(wantedTarget(state({}))).toBeNull();
-  });
-
-  it('only a previewed name search comes without details', () => {
-    const selection = { type: 'search', id: { type: 'other' } };
-
-    const named = (source: string) =>
-      ({
-        id: { type: 'other' },
-        source,
-        geojson: point([17, 48]),
-      }) as unknown as SearchResult;
-
-    // Picked from the box by name and nothing more — the map goes there, and
-    // the details would be talking over it.
-    expect(
-      wantedTarget(
-        state({
-          selection,
-          selectedResults: [named('nominatim-forward')],
-          previewId: { type: 'other' },
-        }),
-      ),
-    ).toBeNull();
-
-    // Kept — pinned, or handed over by "Show all as Lookup".
-    expect(
-      wantedTarget(
-        state({ selection, selectedResults: [named('nominatim-forward')] }),
-      ),
-    ).not.toBeNull();
-
-    // A map-details hit is a question about a feature however it is held, and
-    // that toast is the whole of what the tool answers with.
-    for (const source of [
-      'overpass-nearby',
-      'overpass-surrounding',
-      'nominatim-reverse',
-      'wms:x',
-      'osm',
-    ]) {
-      expect(
-        wantedTarget(
-          state({
-            selection,
-            selectedResults: [named(source)],
-            previewId: { type: 'other' },
-          }),
-        ),
-        source,
-      ).not.toBeNull();
-    }
   });
 });
 
@@ -274,7 +196,7 @@ describe('objectDetailsProcessor', () => {
       state({
         selection,
         objects: [anObject(1)],
-        detailsOverride: false,
+        detailsShown: false,
         toasted: true,
       }),
     );
@@ -424,7 +346,6 @@ describe('objectDetailsProcessor', () => {
       state({}),
       state({
         selection: { type: 'search', id: { type: 'other' } },
-        show: true,
         selectedResults: [selectedResult],
         toasted: true,
       }),
@@ -459,7 +380,6 @@ describe('objectDetailsProcessor', () => {
       state({}),
       state({
         selection: { type: 'search', id: { type: 'other' } },
-        show: true,
         selectedResults: [selectedResult],
         toasted: true,
       }),
@@ -490,7 +410,6 @@ describe('objectDetailsProcessor', () => {
       state({}),
       state({
         selection: { type: 'search', id: { type: 'other' } },
-        show: true,
         selectedResults: [selectedResult],
         toasted: true,
       }),
@@ -508,62 +427,5 @@ describe('objectDetailsProcessor', () => {
       sources: [],
       attributions: [],
     });
-  });
-});
-
-describe('detailsOverrideResetProcessor', () => {
-  // Mirrors the middleware's AND path: the action must match and the predicate
-  // must pass.
-  const run = (action: { type: string; payload?: unknown }) => {
-    const dispatch = vi.fn();
-
-    const { actionCreator, actionPredicate, handle } =
-      detailsOverrideResetProcessor;
-
-    const creators = Array.isArray(actionCreator)
-      ? actionCreator
-      : actionCreator
-        ? [actionCreator]
-        : [];
-
-    if (
-      creators.some((ac) => ac.match(action)) &&
-      (!actionPredicate || actionPredicate(action as never))
-    ) {
-      handle?.({
-        prevState: state({}),
-        getState: () => state({ detailsOverride: false }),
-        dispatch,
-        action: action as never,
-        toastError: async () => {},
-      });
-    }
-
-    return dispatch;
-  };
-
-  it('drops a dismissal whenever something is selected', () => {
-    // Including the feature that is already selected: that is the gesture that
-    // asks for the details again after the toast's ×.
-    const dispatch = run(
-      selectFeature({ type: 'objects', id: anObject(1).id }),
-    );
-
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch.mock.calls[0][0]).toEqual(objectsSetDetailsOverride(null));
-  });
-
-  it('ignores the re-dispatch that follows a loaded element', () => {
-    // `osmLoadProcessor` hands the fetched element back with `select: false`;
-    // wiping the override there would take away a toast just asked for.
-    expect(
-      run(
-        searchSelectResult({
-          result: { source: 'osm' } as never,
-          tier: 'keep',
-          select: false,
-        }),
-      ),
-    ).not.toHaveBeenCalled();
   });
 });

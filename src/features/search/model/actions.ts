@@ -198,6 +198,8 @@ export const searchSelectResult = createAction<{
    * was asked for.
    */
   select?: boolean;
+  /** Whether its details toast opens; defaults to true. */
+  details?: boolean;
 } | null>('SEARCH_SELECT_RESULT');
 
 /** Takes one result off the map, leaving the rest of them shown. */

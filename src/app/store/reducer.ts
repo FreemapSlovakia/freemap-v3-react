@@ -18,7 +18,10 @@ import {
   drawingLineSetLines,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
-import { objectsSetResult } from '@features/objects/model/actions.js';
+import {
+  objectsSetResult,
+  setDetailsShown,
+} from '@features/objects/model/actions.js';
 import {
   routePlannerAddPoint,
   routePlannerDelete,
@@ -63,6 +66,10 @@ export interface MainState {
   errorTicketId: string | undefined;
   embedFeatures: string[];
   selection: Selection | null;
+  /** Whether the selected feature's details toast is wanted; set anew by every selecting. */
+  detailsShown: boolean;
+  /** The selection came without its details, so its toolbar offers them. */
+  detailsOnRequest: boolean;
   hiddenInfoBars: Record<string, number>;
   shownInfoBars: Record<string, number>;
 }
@@ -74,6 +81,8 @@ export const mainInitialState: MainState = {
   errorTicketId: undefined,
   embedFeatures: [],
   selection: null,
+  detailsShown: true,
+  detailsOnRequest: false,
   hiddenInfoBars: {},
   shownInfoBars: {},
 };
@@ -194,10 +203,22 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       const { payload } = action;
 
       if (payload && (payload.select ?? true)) {
+        const same =
+          state.selection?.type === 'search' &&
+          featureIdsEqual(state.selection.id, payload.result.id);
+
         state.selection = {
           type: 'search',
           id: payload.result.id,
         };
+
+        // Re-picking the selected feature opens its details, never closes them,
+        // and keeps its toggle.
+        const shows = payload.details ?? true;
+
+        state.detailsOnRequest = (same && state.detailsOnRequest) || !shows;
+
+        state.detailsShown = (same && state.detailsShown) || shows;
       }
     })
     // The other shown results stay, but nothing is acted upon until one of them
@@ -220,6 +241,14 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       }
 
       state.selection = action.payload;
+
+      // Re-selecting the selected feature is how its details come back after ×.
+      state.detailsShown = true;
+
+      state.detailsOnRequest = false;
+    })
+    .addCase(setDetailsShown, (state, action) => {
+      state.detailsShown = action.payload;
     })
     .addCase(convertToDrawing, (state, action) => {
       const { payload } = action;

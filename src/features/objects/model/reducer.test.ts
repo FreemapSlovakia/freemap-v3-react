@@ -1,11 +1,7 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { describe, expect, it } from 'vitest';
-import {
-  objectsSetDetailsOverride,
-  objectsSetFilter,
-  objectsSetResult,
-} from './actions.js';
+import { objectsSetFilter, objectsSetResult } from './actions.js';
 import { objectInitialState, objectsReducer } from './reducer.js';
 
 /** Pure reducer tests for the objects (POI) slice. */
@@ -66,25 +62,5 @@ describe('objectsReducer', () => {
 
       expect(next.active).toEqual(['a']);
     });
-  });
-
-  it('objectsSetDetailsOverride stores the override', () => {
-    const next = objectsReducer(
-      objectInitialState,
-      objectsSetDetailsOverride(false),
-    );
-
-    expect(next.detailsOverride).toBe(false);
-  });
-
-  it('clearMapFeatures drops the details override', () => {
-    const withOverride = objectsReducer(
-      objectInitialState,
-      objectsSetDetailsOverride(true),
-    );
-
-    expect(
-      objectsReducer(withOverride, clearMapFeatures()).detailsOverride,
-    ).toBe(null);
   });
 });

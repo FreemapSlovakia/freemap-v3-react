@@ -43,13 +43,5 @@ export const objectsShowAsLookup = createAction<{ id?: OsmFeatureId }>(
   'OBJECTS_SHOW_AS_LOOKUP',
 );
 
-/**
- * Overrides whether the details toast accompanies the selected feature. Both
- * the selection toolbars' details toggle and the toast's own × write it, and
- * it belongs to this spell of having the feature selected: selecting anything
- * — the same feature included — drops it, so coming back asks the question
- * again. `null` restores the default.
- */
-export const objectsSetDetailsOverride = createAction<boolean | null>(
-  'OBJECTS_SET_DETAILS_OVERRIDE',
-);
+/** Shows or hides the selected feature's details toast, until the next selecting. */
+export const setDetailsShown = createAction<boolean>('SET_DETAILS_SHOWN');

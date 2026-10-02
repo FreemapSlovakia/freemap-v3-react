@@ -99,10 +99,7 @@ import {
 import { mapsRestoreProcessor } from '@features/myMaps/model/processors/mapsRestoreProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
 import { mapsWorkingCopyProcessor } from '@features/myMaps/model/processors/mapsWorkingCopyProcessor.js';
-import {
-  detailsOverrideResetProcessor,
-  objectDetailsProcessor,
-} from '@features/objects/model/objectDetailsProcessor.js';
+import { objectDetailsProcessor } from '@features/objects/model/objectDetailsProcessor.js';
 import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
@@ -205,7 +202,6 @@ export const processors = [
   objectsFetchProcessor,
   objectsChangePredicateProcessor,
   objectDetailsProcessor,
-  detailsOverrideResetProcessor,
   objectsLookupProcessor,
   osmLoadProcessor,
   mapTypeGaProcessor,
