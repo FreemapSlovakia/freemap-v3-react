@@ -104,11 +104,13 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
               .filter(([k]) => k !== 'display_name')
               .map(([k, v]) => (
                 <tr key={k}>
-                  <th>
+                  <th className="text-nowrap">
                     <OsmTagKey tag={k} osm={parsedId.success} />
                   </th>
 
-                  <td>
+                  {/* Breaking mid-word only where a value has no separator to
+                      wrap at, or it would widen the toast. */}
+                  <td className="text-break">
                     <OsmTagValue tag={k} value={v} osm={parsedId.success} />
                   </td>
                 </tr>
