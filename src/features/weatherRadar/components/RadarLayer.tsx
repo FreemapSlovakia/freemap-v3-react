@@ -119,6 +119,10 @@ export default function RadarLayer({ opacity, zIndex, maxZoom }: Props) {
 
   opacityRef.current = opacity;
 
+  const zIndexRef = useRef(zIndex);
+
+  zIndexRef.current = zIndex;
+
   function reveal(frameTime: number) {
     const layers = layersRef.current;
 
@@ -157,7 +161,7 @@ export default function RadarLayer({ opacity, zIndex, maxZoom }: Props) {
       radarTileUrl(frame, feed, frame.forecast ? feed.updatedAt : undefined),
       {
         opacity: 0,
-        zIndex,
+        zIndex: zIndexRef.current,
         // The feed's own band, not the layer registry's: the two feeds cover
         // different zooms, and asking outside one is a 404 rather than an
         // upscale. Below and above, Leaflet scales the nearest level it has.
@@ -410,6 +414,13 @@ export default function RadarLayer({ opacity, zIndex, maxZoom }: Props) {
       layersRef.current.get(shownRef.current)?.layer.setOpacity(opacity);
     }
   }, [opacity]);
+
+  // Every pooled frame, or playback would jump between two stack places.
+  useEffect(() => {
+    for (const { layer } of layersRef.current.values()) {
+      layer.setZIndex(zIndex);
+    }
+  }, [zIndex]);
 
   useEffect(() => {
     function onMoveEnd() {

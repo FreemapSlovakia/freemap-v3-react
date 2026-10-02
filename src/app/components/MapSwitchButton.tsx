@@ -12,7 +12,10 @@ import {
   activeCombinationsSelector,
   resolvedCustomLayersSelector,
 } from '@features/map/model/selectors.js';
-import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  integratedLayerDefsSelector,
+  overlayZIndexSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
@@ -277,6 +280,8 @@ export function MapSwitchButton(): ReactElement {
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
+  const overlayZIndex = useAppSelector(overlayZIndexSelector);
+
   const customLayerDefs = useAppSelector(resolvedCustomLayersSelector);
 
   const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
@@ -302,11 +307,14 @@ export function MapSwitchButton(): ReactElement {
 
   const countriesSet = countries && new Set(countries);
 
-  // The built-in layers keep the order the registry gives them, which is a
-  // considered one; the user's own are sorted, each kind among itself. Merging
-  // the two kinds would put an offline copy beside the layer it was made from,
-  // told apart only by a badge, and would move one kind about as the other grows.
+  // Base maps: the built-in ones in the registry's order, the user's own by
+  // name, each kind among itself. Overlays: as they stack, top first.
   const byName = makeLabelComparator(language);
+
+  const stackPlace = (def: { type: string; layer: 'base' | 'overlay' }) =>
+    def.layer === 'base'
+      ? Number.NEGATIVE_INFINITY
+      : -(overlayZIndex[def.type] ?? 0);
 
   const layerDefs = [
     // Installed or on, and listed once its body has loaded.
@@ -322,15 +330,18 @@ export function MapSwitchButton(): ReactElement {
       .filter(isCachedMapComplete)
       .sort((a, b) => byName(a.name || undefined, b.name || undefined))
       .map((cm) => ({ ...cm, custom: true as const, cached: true })),
-  ].map((def) => ({
-    scaleWithDpi: false,
-    ...def,
-    countryOk:
-      !countriesSet ||
-      def.custom ||
-      (coverageCountries(def)?.some((c) => countriesSet.has(c)) ?? true),
-    zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
-  }));
+  ]
+    // Stable: base maps keep their order above, ahead of the overlays.
+    .sort((a, b) => stackPlace(a) - stackPlace(b))
+    .map((def) => ({
+      scaleWithDpi: false,
+      ...def,
+      countryOk:
+        !countriesSet ||
+        def.custom ||
+        (coverageCountries(def)?.some((c) => countriesSet.has(c)) ?? true),
+      zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
+    }));
 
   extraHandler.current = (eventKey: string) => {
     if (eventKey === 'show-all') {

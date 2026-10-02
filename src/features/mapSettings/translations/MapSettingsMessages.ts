@@ -23,6 +23,9 @@ export type MapSettingsMessages = {
     technology: string;
     dataLayers: string;
     category: string;
+    country: string;
+    anyCountry: string;
+    includeWorldwide: string;
     photo: string;
     historicphoto: string;
     historicmap: string;

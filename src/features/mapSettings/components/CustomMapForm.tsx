@@ -77,7 +77,8 @@ type Model = {
   minZoom: string;
   maxNativeZoom: string;
   layer: 'base' | 'overlay';
-  zIndex: string;
+  /** Kept as stored, not edited: the map's default place in the stack. */
+  zIndex?: number;
   scaleWithDpi: boolean;
   extraScales: string[];
   technology: CustomMapTechnology;
@@ -183,10 +184,7 @@ function valueToModel(value?: CustomLayerDef): Model {
         ? value.maxNativeZoom.toString()
         : '',
     layer: value?.layer ?? 'base',
-    zIndex:
-      value && 'zIndex' in value && value.zIndex !== undefined
-        ? value.zIndex.toString()
-        : '',
+    zIndex: value && 'zIndex' in value ? value.zIndex : undefined,
     scaleWithDpi:
       value && 'scaleWithDpi' in value && value.scaleWithDpi
         ? value.scaleWithDpi
@@ -305,12 +303,6 @@ export function CustomMapForm({
       return;
     }
 
-    const zIndex = model.zIndex ? parseInt(model.zIndex, 10) : undefined;
-
-    if (zIndex !== undefined && Number.isNaN(zIndex)) {
-      return;
-    }
-
     if (usesUrl(model) && !model.url) {
       onChange(undefined);
 
@@ -323,7 +315,7 @@ export function CustomMapForm({
       category: model.category === 'other' ? undefined : model.category,
       iconSpec: model.iconSpec,
       layer: model.layer,
-      zIndex,
+      zIndex: model.zIndex,
     };
 
     switch (model.technology) {
@@ -592,19 +584,6 @@ export function CustomMapForm({
           ))}
         </ButtonGroup>
       </Form.Group>
-
-      {model.layer === 'overlay' && (
-        <Form.Group controlId="zIndex" style={{ width: '6rem' }}>
-          <Form.Label>{m?.mapLayers.zIndex}</Form.Label>
-
-          <Form.Control
-            type="number"
-            min={1}
-            value={model.zIndex}
-            onChange={handlers.zIndex}
-          />
-        </Form.Group>
-      )}
     </div>
   );
 

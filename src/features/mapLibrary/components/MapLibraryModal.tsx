@@ -76,11 +76,14 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
 
   const yourMapsCount = useAppSelector(yourMapsCountSelector);
 
-  // Nothing to reset while every map has only its install state.
-  const isDefault = useAppSelector((state) =>
-    Object.values(state.map.layersSettings).every((s) =>
-      Object.keys(s).every((key) => key === 'installed'),
-    ),
+  // Nothing to reset while no overlay was dragged and every map has only its
+  // install state.
+  const isDefault = useAppSelector(
+    (state) =>
+      state.map.overlayOrder.length === 0 &&
+      Object.values(state.map.layersSettings).every((s) =>
+        Object.keys(s).every((key) => key === 'installed'),
+      ),
   );
 
   const searchRef = useRef<HTMLInputElement>(null);

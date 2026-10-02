@@ -511,7 +511,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiled: 'Betöltés csempékben',
     tiledHelp:
       'A WMS alapértelmezés szerint a teljes nézetről egyetlen képként töltődik be: egy kérés több tucat helyett, és a feliratokat nem vágja el a csempék határa. A csempéket olyan kiszolgálóhoz kapcsolja be, amely korlátozza a kép méretét vagy gyorsítótárazza a csempéket — cserébe nézetenként sok kérés indul.',
-    zIndex: 'Z-index',
     preferences: 'Térkép beállításai',
     maxZoom: 'Maximális nagyítás',
     zoomSnap: 'Nagyítási lépték',

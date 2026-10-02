@@ -113,6 +113,24 @@ row in the Manage maps menu and in the search box, and switching tabs changes
   offline map's form in Offline maps via `cachedMapsSetView({ edit })`), and
   uninstall for a library map or delete for a custom map or combination
   (`useCustomMapActions`, after a confirm). Base maps have no opacity column.
+- **Overlay stack** — `map.overlayOrder` (account settings, top first, alias-
+  resolved on load) is written when a row is dragged (`@dnd-kit/sortable`,
+  handle column, only with no search or chip on; the library's screen-reader
+  text is turned off) and pruned when a custom map is deleted or a map
+  uninstalled. `overlayStackSelector` takes the overlays a list may name
+  (installed or on, the user's own; a custom shading map with its source's
+  `zIndex`) and says which may move: not the pinned ones, nor offline maps,
+  which exist on one device while the order is the account's, so they stack
+  by default `zIndex` only. It and
+  `overlayStack` (`map/model/overlayStack.ts`) puts pinned ones
+  (`isPinnedOverlay`: photos, Wikipedia, the data layer, which draw partly in
+  panes above every tile overlay) on top, then the order, then any overlay it
+  doesn't name by its default `zIndex` (a custom map's, if set), the later one
+  above on a tie. `overlayZIndexSelector` gives each its z-index in
+  `Layers.tsx`; tile, WMS-tile and gallery layers apply a changed one through
+  `updateGridLayer` (browser-drawn shading too), the radar on every pooled
+  frame. The map menu, toolbar and the table list overlays in the same order.
+  Reset to default clears it, and is enabled by a dragged order alone.
 - **The custom map form** (`CustomMapEditor`) replaces the list in the
   modal while its state carries a request: `setActiveModal({ type:
   'installed-maps', customMap: { edit?, draft?, addShadingMap? } })` — a map or a

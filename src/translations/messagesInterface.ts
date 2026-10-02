@@ -330,7 +330,6 @@ export type Messages = {
       base: string;
       overlay: string;
     };
-    zIndex: string;
     preferences: string;
     maxZoom: string;
     zoomSnap: string;

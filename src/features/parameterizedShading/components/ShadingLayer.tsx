@@ -2,6 +2,7 @@ import { init } from '@bokuweb/zstd-wasm';
 import {
   createTileLayerComponent,
   type EventedProps,
+  updateGridLayer,
 } from '@react-leaflet/core';
 import { noteTileCodes } from '@shared/tileAttribution.js';
 import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
@@ -595,6 +596,9 @@ export default createTileLayerComponent<LShadingLayer, Props>(
   }),
 
   (instance, props, prevProps) => {
+    // The stack order moves a mounted layer's z-index.
+    updateGridLayer(instance, props, prevProps);
+
     if (JSON.stringify(props.shading) !== JSON.stringify(prevProps.shading)) {
       instance.setShading(props.shading);
     } else if (

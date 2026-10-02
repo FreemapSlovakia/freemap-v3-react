@@ -15,6 +15,7 @@ import {
   mapCustomLayerSave,
   mapLayerSettingsChange,
   mapLayersSettingsReset,
+  mapOverlayOrderSet,
   mapSetShadingDraft,
   mapToggleLayer,
 } from '../actions.js';
@@ -62,6 +63,7 @@ const savedToast = (
 export const mapSettingsSaveProcessor: Processor<
   | typeof mapLayerSettingsChange
   | typeof mapLayersSettingsReset
+  | typeof mapOverlayOrderSet
   | typeof mapCustomLayerSave
   | typeof mapCustomLayerDelete
   | typeof mapCombinationSave
@@ -70,6 +72,7 @@ export const mapSettingsSaveProcessor: Processor<
   actionCreator: [
     mapLayerSettingsChange,
     mapLayersSettingsReset,
+    mapOverlayOrderSet,
     mapCustomLayerSave,
     mapCustomLayerDelete,
     mapCombinationSave,

@@ -43,6 +43,11 @@ export const mapLayerSettingsChange = createAction<{
 /** Puts every map's settings back to the defaults, keeping what is installed. */
 export const mapLayersSettingsReset = createAction('MAP_LAYERS_SETTINGS_RESET');
 
+/** The overlays' stacking order, top first, as dragged in Installed maps. */
+export const mapOverlayOrderSet = createAction<string[]>(
+  'MAP_OVERLAY_ORDER_SET',
+);
+
 /**
  * Adds or replaces a custom map, with its own settings when given. Like the
  * actions below it changes the store at once and the account catches up.

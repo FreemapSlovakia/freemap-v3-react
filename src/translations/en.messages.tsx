@@ -503,7 +503,6 @@ const messages: Messages = {
       base: 'Base',
       overlay: 'Overlay',
     },
-    zIndex: 'Z-Index',
     preferences: 'Map preferences',
     maxZoom: 'Max zoom',
     zoomSnap: 'Zoom step',

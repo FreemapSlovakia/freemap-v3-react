@@ -1,10 +1,28 @@
 import { setActiveModal } from '@app/store/actions.js';
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   type LayerSettings,
   mapLayerSettingsChange,
+  mapOverlayOrderSet,
 } from '@features/map/model/actions.js';
 import type { MapCombination } from '@features/map/model/mapCombination.js';
 import { combinationOpacity } from '@features/map/model/mapCombination.js';
@@ -33,7 +51,13 @@ import {
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import type { Shortcut } from '@shared/types/common.js';
-import type { ReactElement, ReactNode, RefObject } from 'react';
+import type {
+  CSSProperties,
+  HTMLAttributes,
+  ReactElement,
+  ReactNode,
+  RefObject,
+} from 'react';
 import { Form, Table } from 'react-bootstrap';
 import {
   FaAdjust,
@@ -46,6 +70,7 @@ import {
   FaRegListAlt,
   FaTrash,
 } from 'react-icons/fa';
+import { MdDragIndicator } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   type CategoryGroup,
@@ -61,11 +86,15 @@ import {
   installedLibraryIndexSelector,
   integratedLayerDefMapSelector,
   libraryIndexByIdSelector,
+  overlayStackSelector,
+  overlayZIndexSelector,
 } from '../model/selectors.js';
 import {
   FilterChips,
+  FilterCountry,
   FilterPanel,
   FilterToggle,
+  passesCountry,
   useMapDetail,
   useSharedFilterOptions,
 } from './FilterChips.js';
@@ -95,8 +124,20 @@ type YourMap = {
   category?: string;
 };
 
+// The project adds no screen-reader-only text; dnd-kit would.
+const NO_SCREEN_READER_TEXT = {
+  screenReaderInstructions: { draggable: '' },
+  announcements: {
+    onDragStart: () => undefined,
+    onDragOver: () => undefined,
+    onDragEnd: () => undefined,
+    onDragCancel: () => undefined,
+  },
+};
+
 // Fixed, so the base-map and overlay tables line up column for column.
 const COLUMN_WIDTHS = {
+  handle: '1.5rem',
   icon: '2rem',
   check: '2.5rem',
   opacity: '3rem',
@@ -119,6 +160,10 @@ export type YourMapsFilters = {
   shown: ReadonlySet<YourMapShown>;
   technologies: ReadonlySet<TechnologyGroup>;
   categories: ReadonlySet<CategoryGroup>;
+  /** A country code, or empty for all. */
+  country: string;
+  /** With a country picked, keep the maps that name none. */
+  worldwide: boolean;
   coversView: boolean;
 };
 
@@ -139,6 +184,8 @@ export const initialYourMapsFilters: YourMapsFilters = {
   shown: new Set(),
   technologies: new Set(),
   categories: new Set(),
+  country: '',
+  worldwide: true,
   coversView: false,
 };
 
@@ -161,6 +208,9 @@ export function YourMapsTab({
   const msm = useMapSettingsMessages();
 
   const { categoryOptions, technologyOptions } = useSharedFilterOptions();
+
+  // The user's own maps name no country, so the installed library maps'.
+  const installedIndex = useAppSelector(installedLibraryIndexSelector);
 
   return (
     <>
@@ -188,6 +238,18 @@ export function YourMapsTab({
           options={technologyOptions}
           selected={filters.technologies}
           onChange={(technologies) => onChange({ ...filters, technologies })}
+        />
+
+        <FilterCountry
+          label={msm?.filters.country}
+          anyLabel={msm?.filters.anyCountry}
+          value={filters.country}
+          countryLists={installedIndex.map((def) => def.countries)}
+          onChange={(country) => onChange({ ...filters, country })}
+          name="your-country"
+          worldwide={filters.worldwide}
+          worldwideLabel={msm?.filters.includeWorldwide}
+          onWorldwideChange={(worldwide) => onChange({ ...filters, worldwide })}
         />
 
         <FilterChips
@@ -258,6 +320,12 @@ export function YourMapsList({
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
   const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
+
+  const { stack, movable } = useAppSelector(overlayStackSelector);
+
+  const overlayZIndex = useAppSelector(overlayZIndexSelector);
+
+  const dispatch = useDispatch();
 
   // Only while filtering by it, or every pan would rebuild the list.
   const viewBounds = useAppSelector((state) =>
@@ -402,12 +470,50 @@ export function YourMapsList({
         passes(filters.shown, shownOf(map)) &&
         passes(filters.technologies, technologyGroup(map.technology)) &&
         passes(filters.categories, categoryGroup(map.category)) &&
+        passesCountry(map.coverage?.countries, filters) &&
         (!filters.coversView ||
           coversView(
             { type: map.type, ...map.coverage },
             { bounds: viewBounds, countries: viewCountries },
           ))),
   );
+
+  // A drag reorders the whole stack, so only with every overlay in view.
+  const sortable =
+    canSave &&
+    !filters.query.trim() &&
+    !filters.kinds.size &&
+    !filters.shown.size &&
+    !filters.technologies.size &&
+    !filters.country &&
+    !filters.categories.size &&
+    !filters.coversView;
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    // Only what may move: the rest keep their place by themselves.
+    const order = stack.filter((type) => movable.has(type));
+
+    dispatch(
+      mapOverlayOrderSet(
+        arrayMove(
+          order,
+          order.indexOf(String(active.id)),
+          order.indexOf(String(over.id)),
+        ),
+      ),
+    );
+  };
 
   if (maps.length === 0) {
     return <p className="text-muted text-center">{msm?.noInstalledMaps}</p>;
@@ -422,6 +528,37 @@ export function YourMapsList({
       {(['base', 'overlay'] as const).map((layer) => {
         const rows = visible.filter((map) => map.layer === layer);
 
+        // Overlays as they stack, top first; combinations, which don't, after.
+        if (layer === 'overlay') {
+          rows.sort(
+            (a, b) =>
+              (overlayZIndex[b.type] ?? 0) - (overlayZIndex[a.type] ?? 0),
+          );
+        }
+
+        // Pinned and offline overlays, combinations and a map still loading,
+        // not yet in the stack, stay put.
+        const draggable = (map: YourMap) =>
+          sortable && layer === 'overlay' && movable.has(map.type);
+
+        const sortableTypes = rows.filter(draggable).map((map) => map.type);
+
+        // Only the overlays can be dragged; outside the table, as it renders
+        // elements of its own.
+        const withDrag = (table: ReactElement) =>
+          layer === 'overlay' ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+              accessibility={NO_SCREEN_READER_TEXT}
+            >
+              {table}
+            </DndContext>
+          ) : (
+            table
+          );
+
         return (
           rows.length > 0 && (
             <section
@@ -433,78 +570,96 @@ export function YourMapsList({
                   : undefined
               }
             >
-              <Table striped borderless size="sm" className="align-middle">
-                <colgroup>
-                  <col style={{ width: COLUMN_WIDTHS.icon }} />
-                </colgroup>
+              {withDrag(
+                <Table striped borderless size="sm" className="align-middle">
+                  <colgroup>
+                    <col style={{ width: COLUMN_WIDTHS.handle }} />
+                    <col style={{ width: COLUMN_WIDTHS.icon }} />
+                  </colgroup>
 
-                <thead>
-                  <tr>
-                    {/* The section's name, on the row of the column glyphs. */}
-                    <th colSpan={2}>
-                      {layer === 'base' ? msm?.baseMaps : msm?.overlays}
-                    </th>
+                  <thead>
+                    <tr>
+                      {/* The section's name, on the row of the column glyphs. */}
+                      <th colSpan={3}>
+                        {layer === 'base' ? msm?.baseMaps : msm?.overlays}
+                      </th>
 
-                    {/* `ms-n1`: the cell's padding already puts the glyph over
+                      {/* `ms-n1`: the cell's padding already puts the glyph over
                         the checkbox below. */}
-                    <th style={{ width: COLUMN_WIDTHS.check }}>
-                      <GlyphMarker
-                        hint={msm?.showInToolbar}
-                        color={null}
-                        className="ms-n1"
-                      >
-                        <ToolbarIcon />
-                      </GlyphMarker>
-                    </th>
-
-                    <th style={{ width: COLUMN_WIDTHS.check }}>
-                      <GlyphMarker
-                        hint={msm?.showInMenu}
-                        color={null}
-                        className="ms-n1"
-                      >
-                        <FaRegListAlt />
-                      </GlyphMarker>
-                    </th>
-
-                    {/* Base maps are opaque: their column stays, empty, so the
-                        two tables line up. */}
-                    <th
-                      className="text-center"
-                      style={{ width: COLUMN_WIDTHS.opacity }}
-                    >
-                      {layer === 'overlay' && (
-                        <GlyphMarker hint={msm?.overlayOpacity} color={null}>
-                          <FaAdjust />
+                      <th style={{ width: COLUMN_WIDTHS.check }}>
+                        <GlyphMarker
+                          hint={msm?.showInToolbar}
+                          color={null}
+                          className="ms-n1"
+                        >
+                          <ToolbarIcon />
                         </GlyphMarker>
+                      </th>
+
+                      <th style={{ width: COLUMN_WIDTHS.check }}>
+                        <GlyphMarker
+                          hint={msm?.showInMenu}
+                          color={null}
+                          className="ms-n1"
+                        >
+                          <FaRegListAlt />
+                        </GlyphMarker>
+                      </th>
+
+                      {/* Base maps are opaque: their column stays, empty, so the
+                        two tables line up. */}
+                      <th
+                        className="text-center"
+                        style={{ width: COLUMN_WIDTHS.opacity }}
+                      >
+                        {layer === 'overlay' && (
+                          <GlyphMarker hint={msm?.overlayOpacity} color={null}>
+                            <FaAdjust />
+                          </GlyphMarker>
+                        )}
+                      </th>
+
+                      <th
+                        className="text-center fm-should-have-keyboard"
+                        style={{ width: COLUMN_WIDTHS.shortcut }}
+                      >
+                        <GlyphMarker hint={msm?.keyboardShortcut} color={null}>
+                          <FaKeyboard />
+                        </GlyphMarker>
+                      </th>
+
+                      <th style={{ width: COLUMN_WIDTHS.actions }} />
+                    </tr>
+                  </thead>
+
+                  <SortableContext
+                    items={sortableTypes}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <tbody>
+                      {rows.map((map) =>
+                        draggable(map) ? (
+                          <SortableYourMapRow
+                            key={map.type}
+                            map={map}
+                            highlighted={map.type === highlight}
+                            settings={layersSettings[map.type]}
+                            canSave={canSave}
+                          />
+                        ) : (
+                          <YourMapRow
+                            key={map.type}
+                            map={map}
+                            highlighted={map.type === highlight}
+                            settings={layersSettings[map.type]}
+                            canSave={canSave}
+                          />
+                        ),
                       )}
-                    </th>
-
-                    <th
-                      className="text-center fm-should-have-keyboard"
-                      style={{ width: COLUMN_WIDTHS.shortcut }}
-                    >
-                      <GlyphMarker hint={msm?.keyboardShortcut} color={null}>
-                        <FaKeyboard />
-                      </GlyphMarker>
-                    </th>
-
-                    <th style={{ width: COLUMN_WIDTHS.actions }} />
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {rows.map((map) => (
-                    <YourMapRow
-                      key={map.type}
-                      map={map}
-                      highlighted={map.type === highlight}
-                      settings={layersSettings[map.type]}
-                      canSave={canSave}
-                    />
-                  ))}
-                </tbody>
-              </Table>
+                    </tbody>
+                  </SortableContext>
+                </Table>,
+              )}
             </section>
           )
         );
@@ -518,13 +673,49 @@ type RowProps = {
   highlighted: boolean;
   settings: LayerSettings | undefined;
   canSave: boolean;
+  /** For a row that can be dragged to another place in the stack. */
+  drag?: {
+    setNodeRef: (el: HTMLElement | null) => void;
+    style: CSSProperties;
+    handle: HTMLAttributes<HTMLElement>;
+  };
 };
+
+function SortableYourMapRow(props: Omit<RowProps, 'drag'>): ReactElement {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: props.map.type });
+
+  return (
+    <YourMapRow
+      {...props}
+      drag={{
+        setNodeRef,
+        style: {
+          transform: CSS.Translate.toString(transform),
+          transition,
+          // Above its neighbours while carried.
+          position: isDragging ? 'relative' : undefined,
+          zIndex: isDragging ? 1 : undefined,
+        },
+        // Focusable for the keyboard sensor; no screen-reader attributes.
+        handle: { tabIndex: attributes.tabIndex, ...listeners },
+      }}
+    />
+  );
+}
 
 function YourMapRow({
   map,
   highlighted,
   settings,
   canSave,
+  drag,
 }: RowProps): ReactElement {
   const m = useMessages();
 
@@ -554,9 +745,24 @@ function YourMapRow({
 
   return (
     <tr
-      ref={highlighted ? scrollIntoCenter : undefined}
+      ref={drag?.setNodeRef}
+      style={drag?.style}
       className={highlighted ? 'fm-flash' : undefined}
     >
+      {/* The scroll on a ref of its own, stable, so it runs once per mount. */}
+      <td ref={highlighted ? scrollIntoCenter : undefined}>
+        {drag && (
+          <span
+            className="d-inline-flex text-muted"
+            // The handle alone starts a drag; on touch it mustn't scroll.
+            style={{ cursor: 'grab', touchAction: 'none' }}
+            {...drag.handle}
+          >
+            <MdDragIndicator />
+          </span>
+        )}
+      </td>
+
       <td>{map.icon}</td>
 
       <td className="w-100">

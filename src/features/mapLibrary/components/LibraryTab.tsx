@@ -42,8 +42,10 @@ import {
 } from '../model/actions.js';
 import {
   FilterChips,
+  FilterCountry,
   FilterPanel,
   FilterToggle,
+  passesCountry,
   useMapDetail,
   useSharedFilterOptions,
 } from './FilterChips.js';
@@ -56,6 +58,10 @@ export type LibraryFilters = {
   layers: ReadonlySet<'base' | 'overlay'>;
   categories: ReadonlySet<CategoryGroup>;
   technologies: ReadonlySet<TechnologyGroup>;
+  /** A country code, or empty for all. */
+  country: string;
+  /** With a country picked, keep the maps that name none. */
+  worldwide: boolean;
   coversView: boolean;
 };
 
@@ -64,6 +70,8 @@ export const initialLibraryFilters: LibraryFilters = {
   layers: new Set(),
   categories: new Set(),
   technologies: new Set(),
+  country: '',
+  worldwide: true,
   coversView: false,
 };
 
@@ -316,6 +324,7 @@ export function LibraryTab({
           filters.technologies,
           technologyGroup(entry.index?.technology ?? 'tile'),
         ) &&
+        passesCountry(entry.countries, filters) &&
         (!filters.coversView || coversView(entry, view))
         ? [{ entry, ...prep }]
         : [];
@@ -400,6 +409,18 @@ export function LibraryTab({
           options={technologyOptions}
           selected={filters.technologies}
           onChange={(technologies) => onChange({ ...filters, technologies })}
+        />
+
+        <FilterCountry
+          label={msm?.filters.country}
+          anyLabel={msm?.filters.anyCountry}
+          value={filters.country}
+          countryLists={entries.map((entry) => entry.countries)}
+          onChange={(country) => onChange({ ...filters, country })}
+          name="library-country"
+          worldwide={filters.worldwide}
+          worldwideLabel={msm?.filters.includeWorldwide}
+          onWorldwideChange={(worldwide) => onChange({ ...filters, worldwide })}
         />
 
         <FilterChips

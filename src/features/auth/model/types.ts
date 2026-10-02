@@ -92,6 +92,7 @@ export const UserSettingsSchema = z.object({
   layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
   customLayers: z.array(CustomLayerDefSchema).optional(),
   mapCombinations: z.array(MapCombinationSchema).optional(),
+  overlayOrder: z.array(z.string()).optional(),
   maxZoom: z.number().optional(),
 });
 

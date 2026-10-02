@@ -511,7 +511,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiled: 'In Kacheln laden',
     tiledHelp:
       'Ein WMS wird standardmäßig als ein einziges Bild des gesamten Ausschnitts angefordert: eine Anfrage statt Dutzender, und Beschriftungen werden nicht an Kachelrändern abgeschnitten. Kacheln lohnen sich für einen Server, der die Bildgröße begrenzt oder Kacheln zwischenspeichert — um den Preis vieler Anfragen pro Ansicht.',
-    zIndex: 'Z-Index',
     preferences: 'Karteneinstellungen',
     maxZoom: 'Maximale Zoomstufe',
     zoomSnap: 'Zoomschritt',

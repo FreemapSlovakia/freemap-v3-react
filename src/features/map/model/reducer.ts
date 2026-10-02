@@ -13,7 +13,10 @@ import { mapLibraryCatalogMapsLoaded } from '@features/mapLibrary/model/actions.
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
-import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import {
+  type CustomLayerDef,
+  resolveLayerAliases,
+} from '@shared/mapDefinitions.js';
 import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
 import { isUninstalledByDefault } from '@shared/mapLibrary/installed.js';
 import {
@@ -25,6 +28,7 @@ import {
   mapCustomLayerSave,
   mapLayerSettingsChange,
   mapLayersSettingsReset,
+  mapOverlayOrderSet,
   mapRefocus,
   mapReplaceLayer,
   mapSetBounds,
@@ -64,6 +68,8 @@ export interface MapState extends MapStateBase {
   sharedShadingDraft?: Shading;
   shadingOnServer: boolean;
   mapCombinations: MapCombination[];
+  /** The overlays' order, top first, once dragged; see `overlayStack`. */
+  overlayOrder: string[];
   /** The catalog maps wanted so far: installed, on the map or an offline map's source. */
   catalogMaps: CatalogMap[];
 }
@@ -107,6 +113,7 @@ export const mapInitialState: MapState = {
   shadingDrafts: {},
   shadingOnServer: true,
   mapCombinations: [],
+  overlayOrder: [],
   catalogMaps: [],
   // undefined = not yet fetched (unknown coverage); [] would wrongly mean
   // "covers no country" and flash out-of-coverage warnings during initial load
@@ -132,7 +139,11 @@ function acceptZoom(state: MapState, zoom: number): number {
 
 type AccountSettings = Pick<
   MapState,
-  'layersSettings' | 'customLayers' | 'mapCombinations' | 'maxZoom'
+  | 'layersSettings'
+  | 'customLayers'
+  | 'mapCombinations'
+  | 'overlayOrder'
+  | 'maxZoom'
 >;
 
 /**
@@ -143,6 +154,7 @@ export const accountSettingsOf = (map: MapState): AccountSettings => ({
   layersSettings: map.layersSettings,
   customLayers: map.customLayers,
   mapCombinations: map.mapCombinations,
+  overlayOrder: map.overlayOrder,
   maxZoom: map.maxZoom,
 });
 
@@ -176,6 +188,11 @@ function upsert<T>(items: T[], item: T, same: (a: T) => boolean) {
   }
 }
 
+/** A map gone from the lists leaves the stored stack order too. */
+function dropFromOverlayOrder(state: MapState, type: string) {
+  state.overlayOrder = state.overlayOrder.filter((t) => t !== type);
+}
+
 function mergeLayerSettings(
   state: MapState,
   type: string,
@@ -203,6 +220,11 @@ function assignAccountSettings(
 
   if (settings.mapCombinations) {
     state.mapCombinations = settings.mapCombinations;
+  }
+
+  if (settings.overlayOrder) {
+    // A retired layer keeps its place under its successor's id.
+    state.overlayOrder = resolveLayerAliases(settings.overlayOrder);
   }
 
   if (settings.maxZoom !== undefined) {
@@ -235,6 +257,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     })
     .addCase(mapLayerSettingsChange, (state, { payload }) => {
       mergeLayerSettings(state, payload.type, payload.settings);
+
+      if (payload.settings.installed === false) {
+        dropFromOverlayOrder(state, payload.type);
+      }
     })
     .addCase(mapCustomLayerSave, (state, { payload: { def, settings } }) => {
       upsert(state.customLayers, def, (d) => d.type === def.type);
@@ -245,6 +271,8 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       state.customLayers = state.customLayers.filter((d) => d.type !== type);
 
       delete state.layersSettings[type];
+
+      dropFromOverlayOrder(state, type);
 
       endSavedShadingDrafts(state);
     })
@@ -276,6 +304,11 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
               : [],
         ),
       );
+
+      state.overlayOrder = [];
+    })
+    .addCase(mapOverlayOrderSet, (state, { payload }) => {
+      state.overlayOrder = payload;
     })
     .addCase(gallerySetFilter, (state) => {
       if (!state.layers.includes('I')) {

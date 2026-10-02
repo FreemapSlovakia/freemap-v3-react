@@ -1,4 +1,4 @@
-import { createTileLayerComponent } from '@react-leaflet/core';
+import { createTileLayerComponent, updateGridLayer } from '@react-leaflet/core';
 import {
   type Coords,
   type DoneCallback,
@@ -89,6 +89,9 @@ export const WmsTileLayer = createTileLayerComponent<TileLayer, Props>(
   },
 
   (instance, props, prevProps) => {
+    // The stack order moves a mounted layer's z-index.
+    updateGridLayer(instance, props, prevProps);
+
     if (
       (['url', 'premiumFromZoom', 'premiumOnlyText'] as const).some(
         (p) => JSON.stringify(props[p]) !== JSON.stringify(prevProps[p]),

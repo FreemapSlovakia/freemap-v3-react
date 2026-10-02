@@ -103,6 +103,7 @@ export const PersistedMapSchema = z
     layersSettings: z.record(z.string(), LayerSettingsSchema),
     customLayers: CustomLayerDefArrayCompatSchema,
     mapCombinations: MapCombinationArrayCompatSchema,
+    overlayOrder: z.array(z.string()),
     legacyMapWarningSuppressions: z.array(z.string()),
     shading: ShadingSchema,
     shadingOnServer: z.boolean(),
@@ -437,6 +438,7 @@ const PERSIST: PersistEntry[] = [
         ...merged,
         layers: resolveLayerAliases(merged.layers),
         layersSettings: resolveLayersSettingsAliases(merged.layersSettings),
+        overlayOrder: resolveLayerAliases(merged.overlayOrder),
         zoom: merged.zoomSnap
           ? Math.round(merged.zoom / merged.zoomSnap) * merged.zoomSnap
           : merged.zoom,
@@ -450,6 +452,7 @@ const PERSIST: PersistEntry[] = [
       layers: m.layers,
       customLayers: m.customLayers,
       mapCombinations: m.mapCombinations,
+      overlayOrder: m.overlayOrder,
       legacyMapWarningSuppressions: m.legacyMapWarningSuppressions,
       shading: m.shading,
       shadingOnServer: m.shadingOnServer,

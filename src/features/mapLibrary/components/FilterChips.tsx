@@ -1,7 +1,12 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
+import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useRegionNames } from '@shared/hooks/useRegionNames.js';
 import type { ReactElement, ReactNode } from 'react';
-import { ToggleButton } from 'react-bootstrap';
+import { Dropdown, Form, ToggleButton } from 'react-bootstrap';
 import {
   CATEGORY_GROUPS,
   categoryGroup,
@@ -185,3 +190,99 @@ export function useMapDetail() {
       .join(' · ');
   };
 }
+
+/**
+ * A row picking one of the countries these maps name, each with its flag
+ * (an image, so a dropdown rather than a native select); empty `value` is all.
+ */
+export function FilterCountry({
+  label,
+  value,
+  anyLabel,
+  countryLists,
+  onChange,
+  name,
+  worldwide,
+  worldwideLabel,
+  onWorldwideChange,
+}: {
+  label: ReactNode;
+  value: string;
+  anyLabel: string | undefined;
+  countryLists: readonly (readonly string[] | undefined)[];
+  onChange: (value: string) => void;
+  /** Tells the checkbox's id apart from the other tab's. */
+  name: string;
+  /** Whether maps naming no country stay in while a country is picked. */
+  worldwide: boolean;
+  worldwideLabel: ReactNode;
+  onWorldwideChange: (worldwide: boolean) => void;
+}): ReactElement {
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const regionNames = useRegionNames();
+
+  const nameOf = (code: string) => {
+    try {
+      return regionNames.of(code.toUpperCase()) ?? code;
+    } catch {
+      return code;
+    }
+  };
+
+  const countries = [...new Set(countryLists.flatMap((list) => list ?? []))]
+    .map((code) => ({ code, name: nameOf(code) }))
+    .sort((a, b) => a.name.localeCompare(b.name, language));
+
+  const flagged = (code: string) => (
+    <>
+      <Emoji className="me-1">{countryCodeToFlag(code)}</Emoji>
+      {nameOf(code)}
+    </>
+  );
+
+  return (
+    <FilterRow label={label}>
+      <Dropdown onSelect={(code) => onChange(code ?? '')}>
+        <Dropdown.Toggle as={SelectToggle} className="form-select-sm w-auto">
+          {value ? flagged(value) : anyLabel}
+        </Dropdown.Toggle>
+
+        <FmDropdownMenu>
+          <Dropdown.Item as="button" type="button" eventKey="" active={!value}>
+            {anyLabel}
+          </Dropdown.Item>
+
+          {countries.map(({ code }) => (
+            <Dropdown.Item
+              as="button"
+              type="button"
+              key={code}
+              eventKey={code}
+              active={value === code}
+            >
+              {flagged(code)}
+            </Dropdown.Item>
+          ))}
+        </FmDropdownMenu>
+      </Dropdown>
+
+      <Form.Check
+        id={`library-filter-${name}-worldwide`}
+        className="mb-0"
+        label={worldwideLabel}
+        disabled={!value}
+        checked={worldwide}
+        onChange={(e) => onWorldwideChange(e.currentTarget.checked)}
+      />
+    </FilterRow>
+  );
+}
+
+/** Whether a map passes the country filter. */
+export const passesCountry = (
+  countries: readonly string[] | undefined,
+  filters: { country: string; worldwide: boolean },
+): boolean =>
+  !filters.country ||
+  (countries?.length ? countries.includes(filters.country) : filters.worldwide);

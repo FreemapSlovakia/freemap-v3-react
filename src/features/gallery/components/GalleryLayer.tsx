@@ -1,4 +1,4 @@
-import { createTileLayerComponent } from '@react-leaflet/core';
+import { createTileLayerComponent, updateGridLayer } from '@react-leaflet/core';
 import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
   type Coords,
@@ -309,6 +309,9 @@ export default createTileLayerComponent<LGalleryLayer, Props>(
   }),
 
   (instance, props, prevProps) => {
+    // The stack order moves a mounted layer's z-index.
+    updateGridLayer(instance, props, prevProps);
+
     if (
       (
         [

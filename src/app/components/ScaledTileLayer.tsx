@@ -1,4 +1,4 @@
-import { createTileLayerComponent } from '@react-leaflet/core';
+import { createTileLayerComponent, updateGridLayer } from '@react-leaflet/core';
 import { noteTileCodes } from '@shared/tileAttribution.js';
 import {
   markDrawnTile,
@@ -431,6 +431,9 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
   },
 
   (instance, props, prevProps) => {
+    // The stack order moves a mounted layer's z-index.
+    updateGridLayer(instance, props, prevProps);
+
     if (
       (
         [

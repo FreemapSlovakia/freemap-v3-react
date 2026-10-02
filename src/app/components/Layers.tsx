@@ -11,6 +11,7 @@ import {
 import {
   integratedLayerDefMapSelector,
   integratedLayerDefsSelector,
+  overlayZIndexSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import {
   colorToHexa,
@@ -104,6 +105,8 @@ export function Layers(): ReactElement | null {
 
   const activeCombinations = useAppSelector(activeCombinationsSelector);
 
+  const overlayZIndex = useAppSelector(overlayZIndexSelector);
+
   const shading = useAppSelector((state) => state.map.shading);
 
   const shadingDrafts = useAppSelector((state) => state.map.shadingDrafts);
@@ -184,10 +187,9 @@ export function Layers(): ReactElement | null {
       opacitySetting(activeCombinations, layersSettings, type),
     );
 
-    // Layers of equal z-index stack by insertion, so a base map switched in
-    // later would cover an overlay; bases are kept below every overlay instead.
-    const zIndex =
-      layerDef.layer === 'base' ? 0 : Math.max(layerDef.zIndex ?? 1, 1);
+    // Bases below every overlay; overlays by their place in the stack, each
+    // its own z-index, as equal ones would stack by insertion.
+    const zIndex = layerDef.layer === 'base' ? 0 : (overlayZIndex[type] ?? 1);
 
     if (layerDef.technology === 'gallery') {
       return (

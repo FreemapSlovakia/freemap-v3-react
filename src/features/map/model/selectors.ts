@@ -1,11 +1,7 @@
 import type { RootState } from '@app/store/store.js';
-import {
-  integratedLayerDefMapSelector,
-  shadingSourceSelector,
-} from '@features/mapLibrary/model/selectors.js';
+import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
 import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
 import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
-import { withShadingSource } from '@shared/mapLibrary/shadingLayers.js';
 import { createSelector } from 'reselect';
 import {
   activeCombinations,
@@ -23,13 +19,8 @@ export const allLayerEntries = (
   catalogMaps: RootState['map']['catalogMaps'],
 ) => [...mapIndex, ...catalogMaps, ...customLayers, ...cachedMaps];
 
-/** Custom layers as drawn: a shading map with its source's zooms and limits. */
-export const resolvedCustomLayersSelector = createSelector(
-  (state: RootState) => state.map.customLayers,
-  shadingSourceSelector,
-  (customLayers, source) =>
-    customLayers.map((def) => withShadingSource(def, source)),
-);
+// Beside the shading source it needs, which keeps the stack free of a cycle.
+export { resolvedCustomLayersSelector } from '@features/mapLibrary/model/selectors.js';
 
 const layerDefsSelector = createSelector(
   (state: RootState) => state.map.customLayers,
