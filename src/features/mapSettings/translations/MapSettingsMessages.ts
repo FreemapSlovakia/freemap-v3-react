@@ -60,5 +60,18 @@ export type MapSettingsMessages = {
   addOverlay: string;
   noOverlays: string;
   combinationTooSmall: string;
+  useAsBaseMap: string;
+  useAsOverlay: string;
+  /** Labels the library map a linked WMS map takes all but its layers from. */
+  basedOn: string;
+  /** The panel picking a WMS map's layers. */
+  wmsLayers: {
+    title: string;
+    reset: string;
+    saveAsCustomMap: string;
+    search: string;
+    selectAll: string;
+    deselectAll: string;
+  };
   savingError: (props: { err: unknown }) => string;
 };

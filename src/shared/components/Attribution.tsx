@@ -312,10 +312,17 @@ function useCategorizedAttribution(
     }
   }
 
-  // A custom shading map draws the shading source's data.
+  // A custom shading map draws the shading source's data, a linked WMS map its
+  // library map's.
   for (const def of customLayers) {
-    if (layers.includes(def.type) && def.technology === 'parametricShading') {
+    if (!layers.includes(def.type)) {
+      continue;
+    }
+
+    if (def.technology === 'parametricShading') {
       creditShading(def.type, shadingSource?.attribution ?? []);
+    } else if (def.technology === 'wms' && def.source) {
+      guessed.push(...(integratedLayerDefMap[def.source]?.attribution ?? []));
     }
   }
 

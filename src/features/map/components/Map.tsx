@@ -45,6 +45,15 @@ export function TheMap({ children }: Props): ReactElement {
       .classList.toggle('fm-features-noninteractive', featuresNonInteractive);
   }, [map, featuresNonInteractive]);
 
+  const backgroundColor = useAppSelector((state) => state.map.backgroundColor);
+
+  // Whatever no layer covers: no base map, or a transparent one.
+  useEffect(() => {
+    if (map) {
+      map.getContainer().style.backgroundColor = backgroundColor;
+    }
+  }, [map, backgroundColor]);
+
   // Leaflet consults `zoomSnap` on each gesture rather than at construction, so
   // the live map can be retuned in place. Only react-leaflet's own props are
   // fixed at creation, and remounting to change one would refetch every tile and

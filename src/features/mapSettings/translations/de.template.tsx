@@ -65,6 +65,17 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'In der Werkzeugleiste anzeigen',
   keyboardShortcut: 'Tastenkürzel',
   saveSuccess: 'Einstellungen wurden gespeichert.',
+  useAsBaseMap: 'Als Basiskarte verwenden',
+  useAsOverlay: 'Als Overlay verwenden',
+  basedOn: 'Basiert auf',
+  wmsLayers: {
+    title: 'Kartenebenen',
+    reset: 'Standardebenen',
+    saveAsCustomMap: 'Als eigene Karte speichern',
+    search: 'Ebenen suchen',
+    selectAll: 'Alle auswählen',
+    deselectAll: 'Alle abwählen',
+  },
   savingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Speichern der Einstellungen', err),
   customMapSaved: 'Die benutzerdefinierte Karte wurde gespeichert.',

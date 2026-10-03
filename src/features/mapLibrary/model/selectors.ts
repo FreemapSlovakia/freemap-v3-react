@@ -1,9 +1,16 @@
 import type { RootState } from '@app/store/store.js';
 import { hasRole } from '@features/auth/model/types.js';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
+import {
+  kindOverrides,
+  type LayerKind,
+  withKind,
+} from '@features/map/model/layerKind.js';
 import { overlayStack } from '@features/map/model/overlayStack.js';
 import {
   type IntegratedLayerDef,
+  type IsWmsLayerDef,
+  type LayerDef,
   type MapIndexEntry,
   SHADING_SOURCE,
 } from '@shared/mapDefinitions.js';
@@ -12,17 +19,33 @@ import {
   isLayerInstalled,
   isLayerOffered,
 } from '@shared/mapLibrary/installed.js';
+import { withWmsSource } from '@shared/mapLibrary/linkedWms.js';
 import { mapIndex, withBody } from '@shared/mapLibrary/mapIndex.js';
 import { withShadingSource } from '@shared/mapLibrary/shadingLayers.js';
 import { createSelector } from 'reselect';
 
+// As a string, so other settings changing (an opacity drag) leave it equal.
+const kindOverridesKeySelector = createSelector(
+  (state: RootState) => state.map.layersSettings,
+  (state: RootState) => state.map.linkKinds,
+  (layersSettings, linkKinds) =>
+    JSON.stringify(kindOverrides(layersSettings, linkKinds)),
+);
+
+/** The maps switched between base map and overlay, by a link or the user. */
+export const kindOverridesSelector = createSelector(
+  kindOverridesKeySelector,
+  (key): Readonly<Record<string, LayerKind>> => JSON.parse(key),
+);
+
 /** The built-in maps, then the catalog maps wanted so far, as index rows. */
 export const libraryIndexSelector = createSelector(
   (state: RootState) => state.map.catalogMaps,
-  (catalogMaps): MapIndexEntry[] => [
-    ...mapIndex,
-    ...catalogMaps.map(catalogIndexEntry),
-  ],
+  kindOverridesSelector,
+  (catalogMaps, overrides): MapIndexEntry[] =>
+    [...mapIndex, ...catalogMaps.map(catalogIndexEntry)].map((entry) =>
+      withKind(entry, overrides),
+    ),
 );
 
 export const libraryIndexByIdSelector = createSelector(
@@ -95,12 +118,31 @@ const PINNED_TECHNOLOGIES = new Set(['gallery', 'wikipedia', 'interactive']);
 export const isPinnedOverlay = (technology: string | undefined): boolean =>
   technology !== undefined && PINNED_TECHNOLOGIES.has(technology);
 
-/** Custom layers as drawn: a shading map with its source's zooms and limits. */
+/** Custom layers as drawn: shading and linked WMS maps with their sources' settings. */
 export const resolvedCustomLayersSelector = createSelector(
   (state: RootState) => state.map.customLayers,
   shadingSourceSelector,
-  (customLayers, source) =>
-    customLayers.map((def) => withShadingSource(def, source)),
+  integratedLayerDefMapSelector,
+  (customLayers, source, defs) =>
+    customLayers.map((def) =>
+      withWmsSource(withShadingSource(def, source), defs),
+    ),
+);
+
+export type WmsLayerDef = LayerDef<IsWmsLayerDef, IsWmsLayerDef>;
+
+/** The WMS maps on the map, library and custom (as drawn), in the map's order. */
+export const activeWmsMapsSelector = createSelector(
+  integratedLayerDefMapSelector,
+  resolvedCustomLayersSelector,
+  (state: RootState) => state.map.layers,
+  (defs, customLayers, layers): WmsLayerDef[] =>
+    layers.flatMap((type) => {
+      const def: LayerDef | undefined =
+        defs[type] ?? customLayers.find((def) => def.type === type);
+
+      return def?.technology === 'wms' ? [def as WmsLayerDef] : [];
+    }),
 );
 
 /**

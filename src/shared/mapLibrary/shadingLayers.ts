@@ -1,7 +1,6 @@
-import {
-  type CustomLayerDef,
-  type IntegratedLayerDef,
-  SHADING_SOURCE,
+import type {
+  CustomLayerDef,
+  IntegratedLayerDef,
 } from '@shared/mapDefinitions.js';
 import { mapIndexById } from './mapIndex.js';
 
@@ -37,8 +36,8 @@ export const hasSharedShadingLayer = (
 
 /**
  * A custom shading map as drawn: the shading source's tiles, zooms and premium
- * limit, with its own kind, name, icon and shading. A stored URL or source is
- * ignored; until the source is loaded the map is left as stored.
+ * limit, with its own kind, name, icon and shading. A stored URL is ignored;
+ * until the source is loaded the map is left as stored.
  */
 export function withShadingSource<T extends CustomLayerDef>(
   def: T,
@@ -53,7 +52,6 @@ export function withShadingSource<T extends CustomLayerDef>(
 
   return {
     ...def,
-    source: SHADING_SOURCE,
     url: source.url,
     maxNativeZoom: source.maxNativeZoom,
     scaleWithDpi: source.scaleWithDpi,

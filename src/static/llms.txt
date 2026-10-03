@@ -26,6 +26,7 @@ The highest-value parameters for building links:
 
 - `map=zoom/lat/lon` — viewport, e.g. `map=13/48.7483/19.1480` (coordinates to 6 decimals). With a fractional **Zoom step**, the zoom can be fractional too, to 2 decimals (`map=13.75/…`).
 - `layers=codes` — base layer + overlays by their id code (see the layer registry in [Map Layers](/llms-layers.md)), e.g. `layers=X` (Outdoor) or `layers=X~I` (Outdoor + Photos).
+- `as-overlay=codes`, `as-base=codes` — WMS, shading or raster tile maps shown as the other kind than their own (e.g. `layers=X~WKA&as-overlay=WKA` lays the cadastre over Outdoor); written only for a map switched in Installed maps or its panel.
 - **`point=lat/lon` — put a marker on the map. This is the parameter for "a map with points / markers". It is repeatable: add one `point=` per marker.**
 - `line=lat/lon,lat/lon,…` and `polygon=lat/lon,lat/lon,…` — draw a line or a filled area (each repeatable).
 - `points=[transport/]lat/lon,…` together with `transport=…` — a **planned route** through waypoints. This is routing, not standalone markers — do not confuse the plural `points=` with the marker parameter `point=`.

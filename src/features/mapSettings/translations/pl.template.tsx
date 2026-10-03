@@ -64,6 +64,17 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'Pokaż na pasku narzędzi',
   keyboardShortcut: 'Skrót klawiszowy',
   saveSuccess: 'Ustawienia zostały zapisane.',
+  useAsBaseMap: 'Użyj jako mapy bazowej',
+  useAsOverlay: 'Użyj jako nakładki',
+  basedOn: 'Na podstawie',
+  wmsLayers: {
+    title: 'Warstwy mapy',
+    reset: 'Domyślne warstwy',
+    saveAsCustomMap: 'Zapisz jako własną mapę',
+    search: 'Szukaj warstw',
+    selectAll: 'Zaznacz wszystkie',
+    deselectAll: 'Odznacz wszystkie',
+  },
   savingError: ({ err }) =>
     addError(getMessages()!, 'Błąd zapisu ustawień', err),
   customMapSaved: 'Mapa niestandardowa została zapisana.',

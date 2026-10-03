@@ -51,10 +51,13 @@ import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import {
   mapRefocus,
   mapSetCustomLayers,
+  mapSetLinkKinds,
   mapSetShading,
 } from '@features/map/model/actions.js';
+import type { LayerKind } from '@features/map/model/layerKind.js';
 import { layerKindsSelector } from '@features/map/model/selectors.js';
 import { isUnresolvedCatalogId } from '@features/mapLibrary/catalogResolution.js';
+import { kindOverridesSelector } from '@features/mapLibrary/model/selectors.js';
 import {
   type MapRestore,
   mapsRestore,
@@ -662,6 +665,33 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
+  // Before the layers, whose base map check reads the kinds. Only what differs
+  // from the account's own: a link this browser wrote must not pin the
+  // account's choice past a reset or a change made elsewhere.
+  {
+    const linkKinds: Record<string, LayerKind> = {};
+
+    const { layersSettings } = getState().map;
+
+    for (const kind of ['base', 'overlay'] as const) {
+      const value = query[`as-${kind}`];
+
+      if (typeof value === 'string') {
+        for (const type of value.split('~')) {
+          if (layersSettings[type]?.layer !== kind) {
+            linkKinds[type] = kind;
+          }
+        }
+      }
+    }
+
+    if (
+      JSON.stringify(linkKinds) !== JSON.stringify(getState().map.linkKinds)
+    ) {
+      dispatch(mapSetLinkKinds(linkKinds));
+    }
+  }
+
   if (mapStateFromUrl.layers || customTypes.length) {
     const layers = mapStateFromUrl.layers ?? [];
 
@@ -671,10 +701,15 @@ export function handleLocationChange(store: MyStore): void {
     // X goes before them: the URL written back reads it there, and any other
     // order diffs as a layer change.
     // A catalog map not loaded yet may be the base; `catalogBaseProcessor`
-    // adds X if it isn't.
+    // adds X if it isn't. A map switched to an overlay leaves none on purpose.
+    const overrides = kindOverridesSelector(getState());
+
     if (
       ![...layers, ...customTypes].some(
-        (t) => kinds.get(t) === 'base' || isUnresolvedCatalogId(t, kinds),
+        (t) =>
+          kinds.get(t) === 'base' ||
+          isUnresolvedCatalogId(t, kinds) ||
+          overrides[t] === 'overlay',
       )
     ) {
       layers.push('X');

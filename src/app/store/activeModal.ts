@@ -4,6 +4,7 @@ import {
 } from '@features/documents/model/actions.js';
 import type { MapCombination } from '@features/map/model/mapCombination.js';
 import type { Shading } from '@features/parameterizedShading/model/Shading.js';
+import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import z from 'zod';
 
 const URL_MODAL_IDS = [
@@ -100,6 +101,8 @@ export type CustomMapRequest = {
   draft?: MapCombination;
   /** A new shading map with these settings, asked for by the shading panel. */
   addShadingMap?: { shading: Shading };
+  /** A new map starting as a copy of this one, asked for by the WMS layers panel. */
+  addCopyOf?: CustomLayerDef;
   /** Where Cancel goes: that tab, or `null` to close; Installed maps if unset. */
   returnTo?: 'installed-maps' | 'available-maps' | null;
 };

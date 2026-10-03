@@ -522,6 +522,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Velikost elementov',
     featureScaleHelp:
       'Poveča izrisane oznake in črte. Ne vpliva na satelitske, senčene, WMS ali vektorske (MapLibre) sloje.',
+    background: 'Ozadje zemljevida',
+    backgroundHelp:
+      'Vidi se povsod, kjer noben sloj ne riše: brez osnovnega zemljevida, ob osnovnem zemljevidu, ki pokriva le del sveta ali je prosojen, in kjer se ploščice še nalagajo.',
     lookupStyle: 'Slog zadetka',
     resetApp: 'Ponastavi aplikacijo',
     resetAppConfirm:

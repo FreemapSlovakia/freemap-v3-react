@@ -168,6 +168,8 @@ describe('map tools', () => {
       customLayers: [],
       cachedMaps: [],
       catalogMaps: [],
+      layersSettings: {},
+      linkKinds: {},
     },
     mapLibrary: { bodies: {} },
   };
@@ -624,7 +626,14 @@ describe('show-objects', () => {
 describe('set-map-layers', () => {
   it('refuses a base map named as an overlay', async () => {
     const { store } = fakeStore({
-      map: { layers: ['X'], customLayers: [], cachedMaps: [], catalogMaps: [] },
+      map: {
+        layers: ['X'],
+        customLayers: [],
+        cachedMaps: [],
+        catalogMaps: [],
+        layersSettings: {},
+        linkKinds: {},
+      },
       mapLibrary: { bodies: {} },
     });
 

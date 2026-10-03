@@ -65,6 +65,17 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'Zobrazit v liště',
   keyboardShortcut: 'Klávesová zkratka',
   saveSuccess: 'Změny byly uloženy.',
+  useAsBaseMap: 'Použít jako podkladovou mapu',
+  useAsOverlay: 'Použít jako překryvnou vrstvu',
+  basedOn: 'Založená na',
+  wmsLayers: {
+    title: 'Vrstvy mapy',
+    reset: 'Výchozí vrstvy',
+    saveAsCustomMap: 'Uložit jako vlastní mapu',
+    search: 'Hledat vrstvy',
+    selectAll: 'Vybrat vše',
+    deselectAll: 'Zrušit výběr všech',
+  },
   savingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při ukládání nastavení', err),
   customMapSaved: 'Vlastní mapa byla uložena.',

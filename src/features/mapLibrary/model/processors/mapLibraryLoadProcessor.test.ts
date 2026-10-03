@@ -30,7 +30,12 @@ describe('mapLibraryLoadProcessor', () => {
     );
 
     const state = {
-      map: { layers: ['WKA'], layersSettings, cachedMaps: [] },
+      map: {
+        layers: ['WKA'],
+        layersSettings,
+        cachedMaps: [],
+        customLayers: [],
+      },
       mapLibrary: mapLibraryInitialState,
     } as unknown as RootState;
 

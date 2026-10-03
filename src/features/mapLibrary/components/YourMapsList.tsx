@@ -23,7 +23,9 @@ import {
   type LayerSettings,
   mapLayerSettingsChange,
   mapOverlayOrderSet,
+  mapSetLayerKind,
 } from '@features/map/model/actions.js';
+import { canSwitchKind } from '@features/map/model/layerKind.js';
 import type { MapCombination } from '@features/map/model/mapCombination.js';
 import { combinationOpacity } from '@features/map/model/mapCombination.js';
 import { activeCombinationsSelector } from '@features/map/model/selectors.js';
@@ -71,6 +73,7 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { MdDragIndicator } from 'react-icons/md';
+import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import {
   type CategoryGroup,
@@ -864,6 +867,32 @@ function YourMapRow({
                   );
                 }
               }}
+              showFrom="never"
+            />
+          )}
+
+          {map.kind === 'library' && canSwitchKind(map.technology) && (
+            <Action
+              // The kind it switches to, as `MapLayerItem` marks it.
+              icon={
+                map.layer === 'base' ? (
+                  <TbLayersSelectedBottom />
+                ) : (
+                  <TbLayersSelected />
+                )
+              }
+              label={
+                map.layer === 'base' ? msm?.useAsOverlay : msm?.useAsBaseMap
+              }
+              disabled={!canSave}
+              onClick={() =>
+                dispatch(
+                  mapSetLayerKind({
+                    type,
+                    kind: map.layer === 'base' ? 'overlay' : 'base',
+                  }),
+                )
+              }
               showFrom="never"
             />
           )}

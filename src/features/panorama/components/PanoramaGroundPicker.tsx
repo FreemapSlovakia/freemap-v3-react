@@ -159,17 +159,22 @@ export function PanoramaGroundPicker({
     >
       <button
         type="button"
-        className="form-control p-0"
+        className="form-control"
         style={{
           cursor: 'pointer',
           height: 'calc(1.5em + 0.75rem + 2px)',
+          padding: '0.375rem',
         }}
       >
         {/* The picker's own value doubles as the swatch: CSS reads the active
-            stop's upper-cased `RGBA` the same as any other. */}
+            stop's upper-cased `RGBA` the same as any other. Framed as
+            `RgbaColorPicker` is. */}
         <div
           className="w-100 h-100"
-          style={{ background: css, borderRadius: 'inherit' }}
+          style={{
+            background: css,
+            borderRadius: 'var(--bs-border-radius-sm)',
+          }}
         />
       </button>
     </OverlayTrigger>

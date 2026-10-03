@@ -533,6 +533,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Taille des éléments',
     featureScaleHelp:
       'Agrandit les étiquettes et les lignes affichées. N’a aucun effet sur les couches satellite, d’ombrage, WMS ou vectorielles (MapLibre).',
+    background: 'Fond de carte',
+    backgroundHelp:
+      'Apparaît partout où aucune couche ne dessine : sans carte de base, à côté d’une carte de base qui ne couvre qu’une partie du monde ou est transparente, et là où des tuiles se chargent encore.',
     lookupStyle: 'Style du résultat',
     resetApp: 'Réinitialiser l’application',
     resetAppConfirm:

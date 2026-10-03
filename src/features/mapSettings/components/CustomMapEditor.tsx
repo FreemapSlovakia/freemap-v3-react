@@ -106,11 +106,16 @@ export function CustomMapEditor({ request }: Props): ReactElement {
       view: {
         mode: 'add',
         draftType: makeType(),
-        start: request.addShadingMap && {
-          name: '',
-          technology: 'parametricShading',
-          ...request.addShadingMap,
-        },
+        start: request.addShadingMap
+          ? {
+              name: '',
+              technology: 'parametricShading',
+              ...request.addShadingMap,
+            }
+          : request.addCopyOf && {
+              name: request.addCopyOf.name ?? '',
+              copyOf: request.addCopyOf,
+            },
       },
       visibility: { showInMenu: true, showInToolbar: false, shortcut: null },
     };
@@ -150,14 +155,14 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     setVisibility(start.visibility);
   }
 
-  // A save shows its map in Installed maps (the shading panel's goes back to
-  // the map); Cancel goes back where the form was opened from.
+  // A save shows its map in Installed maps (a panel's goes back to the map);
+  // Cancel goes back where the form was opened from.
   const done = (saved?: string) => {
     const back = saved === undefined ? request.returnTo : undefined;
 
     dispatch(
       setActiveModal(
-        request.addShadingMap || back === null
+        request.addShadingMap || request.addCopyOf || back === null
           ? null
           : back === 'available-maps'
             ? { type: 'available-maps' }

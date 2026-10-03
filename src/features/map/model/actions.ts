@@ -4,6 +4,7 @@ import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import z from 'zod';
+import type { LayerKind } from './layerKind.js';
 import type { MapCombination } from './mapCombination.js';
 
 export interface MapViewState {
@@ -23,6 +24,8 @@ export const LayerSettingsSchema = z.object({
   showInMenu: z.boolean().optional(),
   showInToolbar: z.boolean().optional(),
   shortcut: ShortcutSchema.nullish(),
+  wmsLayers: z.array(z.string()).optional(),
+  layer: z.enum(['base', 'overlay']).optional(),
 });
 
 export type LayerSettings = {
@@ -32,7 +35,20 @@ export type LayerSettings = {
   showInMenu?: boolean;
   showInToolbar?: boolean;
   shortcut?: Shortcut | null;
+  /** A WMS map's layers as picked in the layers panel, in place of its own. */
+  wmsLayers?: string[];
+  /** A library map switched between base map and overlay; see `canSwitchKind`. */
+  layer?: LayerKind;
 };
+
+/** Switches a library map between base map and overlay, for the account. */
+export const mapSetLayerKind = createAction<{ type: string; kind: LayerKind }>(
+  'MAP_SET_LAYER_KIND',
+);
+
+/** The kinds a link switched maps to; they win over the user's own. */
+export const mapSetLinkKinds =
+  createAction<Record<string, LayerKind>>('MAP_SET_LINK_KINDS');
 
 /** Changes one map's settings at once; the account catches up in the background. */
 export const mapLayerSettingsChange = createAction<{
@@ -150,6 +166,7 @@ export const mapSetLocalPrefs = createAction<{
   resolutionScale?: number | null;
   featureScale?: number;
   zoomSnap?: number;
+  backgroundColor?: string;
 }>('MAP_SET_LOCAL_PREFS');
 
 export const mapSetBounds =

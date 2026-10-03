@@ -517,6 +517,9 @@ const messages: Messages = {
     featureScale: 'Feature size',
     featureScaleHelp:
       'Enlarges rendered labels and lines. Has no effect on satellite, shading, WMS, or vector (MapLibre) layers.',
+    background: 'Map background',
+    backgroundHelp:
+      'Shows wherever no layer draws: with no base map on, beside a base map that covers only part of the world or is transparent, and where tiles are still loading.',
     lookupStyle: 'Lookup style',
     resetApp: 'Reset application',
     resetAppConfirm:

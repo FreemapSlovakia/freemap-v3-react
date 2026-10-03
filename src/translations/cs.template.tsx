@@ -519,6 +519,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Velikost prvků',
     featureScaleHelp:
       'Zvětšuje vykreslené popisky a čáry. Nemá vliv na satelitní, stínované, WMS ani vektorové (MapLibre) vrstvy.',
+    background: 'Pozadí mapy',
+    backgroundHelp:
+      'Zobrazí se všude, kde žádná vrstva nekreslí: bez podkladové mapy, vedle podkladové mapy, která pokrývá jen část světa nebo je průhledná, a tam, kde se dlaždice ještě načítají.',
     layer: {
       layer: 'Vrstva',
       base: 'Základní',

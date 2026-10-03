@@ -75,6 +75,17 @@ const en: MapSettingsMessages = {
   addOverlay: 'Add overlay…',
   noOverlays: 'No overlays.',
   combinationTooSmall: 'At least two layers are required.',
+  useAsBaseMap: 'Use as base map',
+  useAsOverlay: 'Use as overlay',
+  basedOn: 'Based on',
+  wmsLayers: {
+    title: 'Map layers',
+    reset: 'Default layers',
+    saveAsCustomMap: 'Save as custom map',
+    search: 'Search layers',
+    selectAll: 'Select all',
+    deselectAll: 'Deselect all',
+  },
   savingError: ({ err }) =>
     addError(getMessages()!, 'Error saving settings', err),
 };

@@ -1,6 +1,7 @@
 import { selectFeature, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DateTime } from '@shared/components/DateTime.js';
+import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
@@ -53,7 +54,7 @@ export function TrackedDeviceForm(): ReactElement {
 
   const [label, setLabel] = useTextInputState(device?.label ?? '');
 
-  const [color, setColor] = useTextInputState(device?.color ?? '#7239a8');
+  const [color, setColor] = useState(device?.color ?? '#7239a8');
 
   const [width, setWidth] = useTextInputState(device?.width?.toString() ?? '');
 
@@ -150,11 +151,9 @@ export function TrackedDeviceForm(): ReactElement {
           <Form.Control value={label} onChange={setLabel} />
         </Form.Group>
 
-        <Form.Group controlId="color" className="mb-3">
+        <Form.Group className="mb-3">
           <Form.Label>{tm?.trackedDevice.color}</Form.Label>
-          <InputGroup>
-            <Form.Control type="color" value={color} onChange={setColor} />
-          </InputGroup>
+          <RgbaColorPicker alpha={false} value={color} onChange={setColor} />
         </Form.Group>
 
         <Form.Group controlId="width" className="mb-3">

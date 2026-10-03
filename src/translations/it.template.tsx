@@ -525,6 +525,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Dimensione degli elementi',
     featureScaleHelp:
       'Ingrandisce etichette e linee renderizzate. Non ha effetto sui livelli satellitari, di ombreggiatura, WMS o vettoriali (MapLibre).',
+    background: 'Sfondo della mappa',
+    backgroundHelp:
+      'Si vede ovunque nessun livello disegni: senza mappa di base, accanto a una mappa di base che copre solo parte del mondo o è trasparente, e dove le tessere stanno ancora caricando.',
     layer: {
       layer: 'Livello',
       base: 'Base',

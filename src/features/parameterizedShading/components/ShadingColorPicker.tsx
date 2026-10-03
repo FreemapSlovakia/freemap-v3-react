@@ -25,8 +25,6 @@ type Props = {
   selectedId?: number;
   component?: ShadingComponent;
   colorReliefMax: number;
-  /** A base map's background, which takes no alpha. */
-  opaqueBackground: boolean;
   onChange: (shading: Shading) => void;
 };
 
@@ -35,7 +33,6 @@ export function ShadingColorPicker({
   selectedId,
   component,
   colorReliefMax,
-  opaqueBackground,
   onChange,
 }: Props): ReactElement {
   const dark = useBsTheme() === 'dark';
@@ -75,7 +72,6 @@ export function ShadingColorPicker({
         : {})}
       height={120}
       width={236}
-      hideOpacity={opaqueBackground && !component}
       hideGradientAngle
       hideGradientType
       hideColorTypeBtns
@@ -161,9 +157,7 @@ export function ShadingColorPicker({
 
         const next = produce(shading, (draft) => {
           if (selectedId === undefined) {
-            const [r, g, b, a] = colorStops[0].color;
-
-            draft.backgroundColor = [r, g, b, opaqueBackground ? 1 : a];
+            draft.backgroundColor = colorStops[0].color;
           } else {
             const c = draft.components.find((c) => c.id === selectedId);
 

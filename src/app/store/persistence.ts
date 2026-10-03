@@ -111,6 +111,7 @@ export const PersistedMapSchema = z
     resolutionScale: z.number().nullable(),
     featureScale: z.number(),
     zoomSnap: z.number(),
+    backgroundColor: z.string(),
   })
   .partial();
 
@@ -460,6 +461,7 @@ const PERSIST: PersistEntry[] = [
       resolutionScale: m.resolutionScale,
       featureScale: m.featureScale,
       zoomSnap: m.zoomSnap,
+      backgroundColor: m.backgroundColor,
     }),
   }),
   defineEntry({

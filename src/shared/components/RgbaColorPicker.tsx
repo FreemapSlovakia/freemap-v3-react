@@ -92,21 +92,24 @@ export function RgbaColorPicker({
         </Popover>
       }
     >
+      {/* Framed like Bootstrap's own colour input, so a pale colour still
+          stands apart from the field. */}
       <button
         type="button"
-        className={`form-control p-0${className ? ` ${className}` : ''}`}
+        className={`form-control${className ? ` ${className}` : ''}`}
         style={{
           cursor: 'pointer',
           height: 'calc(1.5em + 0.75rem + 2px)',
-          ...checkerBg,
+          padding: '0.375rem',
           ...style,
         }}
-        aria-label="Pick color"
       >
         <div
-          className="w-100 h-100"
-          style={{ background: value, borderRadius: 'inherit' }}
-        />
+          className="w-100 h-100 overflow-hidden"
+          style={{ ...checkerBg, borderRadius: 'var(--bs-border-radius-sm)' }}
+        >
+          <div className="w-100 h-100" style={{ background: value }} />
+        </div>
       </button>
     </OverlayTrigger>
   );

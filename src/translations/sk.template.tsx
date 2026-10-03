@@ -551,6 +551,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Veľkosť prvkov',
     featureScaleHelp:
       'Zväčšuje vykreslené popisy a čiary. Nemá vplyv na satelitné, tieňované, WMS ani vektorové (MapLibre) vrstvy.',
+    background: 'Pozadie mapy',
+    backgroundHelp:
+      'Zobrazí sa všade, kde žiadna vrstva nekreslí: bez podkladovej mapy, vedľa podkladovej mapy, ktorá pokrýva len časť sveta alebo je priehľadná, a tam, kde sa dlaždice ešte načítavajú.',
     lookupStyle: 'Štýl nálezu',
     resetApp: 'Obnoviť aplikáciu',
     resetAppConfirm:

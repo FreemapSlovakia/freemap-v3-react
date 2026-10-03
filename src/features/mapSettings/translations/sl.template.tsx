@@ -69,6 +69,17 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   combinationTooSmall: 'Zahtevani sta vsaj dve plasti.',
   shadingMapHint:
     'Parametri senčenja se nastavijo in shranijo v plošči, ki se prikaže, ko vklopite ta zemljevid.',
+  useAsBaseMap: 'Uporabi kot osnovni zemljevid',
+  useAsOverlay: 'Uporabi kot prekrivni sloj',
+  basedOn: 'Temelji na',
+  wmsLayers: {
+    title: 'Sloji zemljevida',
+    reset: 'Privzeti sloji',
+    saveAsCustomMap: 'Shrani kot lasten zemljevid',
+    search: 'Iskanje slojev',
+    selectAll: 'Izberi vse',
+    deselectAll: 'Počisti izbiro',
+  },
   savingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri shranjevanju nastavitev', err),
   combination: 'Kombinacija zemljevidov',

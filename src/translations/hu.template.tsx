@@ -525,6 +525,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Elemek mérete',
     featureScaleHelp:
       'Megnöveli a megjelenített feliratokat és vonalakat. Nincs hatással a műholdas, árnyékolt, WMS és vektoros (MapLibre) rétegekre.',
+    background: 'Térkép háttere',
+    backgroundHelp:
+      'Ott látszik, ahol egyik réteg sem rajzol: alaptérkép nélkül, olyan alaptérkép mellett, amely csak a világ egy részét fedi le vagy átlátszó, és ahol a csempék még töltődnek.',
     layer: {
       layer: 'Réteg',
       base: 'Alap',

@@ -1,4 +1,5 @@
 import { isCombinationMarker } from '@features/map/model/mapCombination.js';
+import { kindOverridesSelector } from '@features/mapLibrary/model/selectors.js';
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
 import { isFullTurn } from '@features/panorama/model/settingsReducer.js';
 import {
@@ -250,6 +251,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     main.embedFeatures,
     main.selection,
     map.layers,
+    kindOverridesSelector(state),
     map.customLayers,
     map.shading,
     routePlanner,
@@ -352,6 +354,27 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   if (layers) {
     queryParts.push(['layers', layers]);
+  }
+
+  // A map switched from its own kind; a catalog map whose own is not known yet
+  // is named anyway, as a kind it has already does nothing.
+  const overrides = kindOverridesSelector(state);
+
+  for (const kind of ['base', 'overlay'] as const) {
+    const switched = map.layers.filter((type) => {
+      const native =
+        mapIndexById[type] ??
+        map.catalogMaps.find((catalogMap) => catalogMap.type === type);
+
+      return (
+        overrides[type] === kind &&
+        (native ? native.layer !== kind : isCatalogId(type))
+      );
+    });
+
+    if (switched.length) {
+      queryParts.push([`as-${kind}`, switched.join('~')]);
+    }
   }
 
   if (hasSharedShadingLayer(map.layers, map.customLayers)) {

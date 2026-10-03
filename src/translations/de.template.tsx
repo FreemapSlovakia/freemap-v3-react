@@ -525,6 +525,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Objektgröße',
     featureScaleHelp:
       'Vergrößert gerenderte Beschriftungen und Linien. Hat keine Auswirkung auf Satelliten-, Schattierungs-, WMS- oder Vektor-Ebenen (MapLibre).',
+    background: 'Kartenhintergrund',
+    backgroundHelp:
+      'Erscheint überall, wo keine Ebene zeichnet: ohne Basiskarte, neben einer Basiskarte, die nur einen Teil der Welt abdeckt oder transparent ist, und wo Kacheln noch laden.',
     layer: {
       layer: 'Ebene',
       base: 'Basis',

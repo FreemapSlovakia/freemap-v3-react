@@ -77,6 +77,17 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addOverlay: 'Pridať prekryvnú vrstvu…',
   noOverlays: 'Žiadne prekryvné vrstvy.',
   combinationTooSmall: 'Vyžadujú sa minimálne dve vrstvy.',
+  useAsBaseMap: 'Použiť ako podkladovú mapu',
+  useAsOverlay: 'Použiť ako prekryvnú vrstvu',
+  basedOn: 'Založená na',
+  wmsLayers: {
+    title: 'Vrstvy mapy',
+    reset: 'Predvolené vrstvy',
+    saveAsCustomMap: 'Uložiť ako vlastnú mapu',
+    search: 'Hľadať vrstvy',
+    selectAll: 'Vybrať všetky',
+    deselectAll: 'Zrušiť výber všetkých',
+  },
   savingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri ukladaní nastavení', err),
 };

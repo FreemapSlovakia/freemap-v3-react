@@ -6,6 +6,7 @@ import { layerKindsSelector } from '@features/map/model/selectors.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { Dispatch } from '@reduxjs/toolkit';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
+import { wmsSources } from '@shared/mapLibrary/linkedWms.js';
 import { createSelector } from 'reselect';
 import { loadCatalogMaps } from '../../catalog.js';
 import {
@@ -13,14 +14,19 @@ import {
   lackedCatalogIds,
 } from '../../catalogResolution.js';
 import { mapLibraryCatalogMapsLoaded } from '../actions.js';
+import { kindOverridesSelector } from '../selectors.js';
 
-/** Catalog ids wanted but not known, comma-joined: installed, on the map, or an offline map's source. */
+/**
+ * Catalog ids wanted but not known, comma-joined: installed, on the map, or an
+ * offline map's or linked WMS map's source.
+ */
 const missingCatalogIdsSelector = createSelector(
   (state: RootState) => state.map.layersSettings,
   (state: RootState) => state.map.layers,
   (state: RootState) => state.map.cachedMaps,
+  (state: RootState) => state.map.customLayers,
   (state: RootState) => state.map.catalogMaps,
-  (layersSettings, layers, cachedMaps, catalogMaps) =>
+  (layersSettings, layers, cachedMaps, customLayers, catalogMaps) =>
     [
       ...new Set([
         ...Object.keys(layersSettings).filter(
@@ -28,6 +34,7 @@ const missingCatalogIdsSelector = createSelector(
         ),
         ...layers,
         ...cachedMaps.map((cm) => cm.sourceType),
+        ...wmsSources(customLayers),
       ]),
     ]
       .filter(
@@ -44,17 +51,22 @@ const asked = new Set<string>();
 /**
  * A link naming only catalog maps gets no base map while their kinds are
  * unknown; once none can still turn out a base, the default one goes under.
+ * A map switched to an overlay leaves none on purpose.
  */
 function ensureBase(getState: () => RootState, dispatch: Dispatch) {
   const { layers } = getState().map;
 
   const kinds = layerKindsSelector(getState());
 
+  const overrides = kindOverridesSelector(getState());
+
   if (
     layers.some(isCatalogId) &&
     !layers.some(
       (type) =>
-        kinds.get(type) === 'base' || isUnresolvedCatalogId(type, kinds),
+        kinds.get(type) === 'base' ||
+        isUnresolvedCatalogId(type, kinds) ||
+        overrides[type] === 'overlay',
     )
   ) {
     dispatch(mapToggleLayer({ type: 'X', enable: true }));

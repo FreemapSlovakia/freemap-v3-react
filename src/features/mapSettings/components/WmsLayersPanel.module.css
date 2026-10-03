@@ -1,0 +1,48 @@
+/* The backdrop is the global `.fm-frosted`. */
+.panel {
+  width: 20rem;
+  max-width: calc(100vw - 1rem);
+  border: 0;
+  background-color: transparent;
+  box-shadow: var(--fm-shadow-1);
+
+  & :global(.card-body) {
+    pointer-events: auto;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Collapsed: `.fm-toolbar`'s height and background, as wide as its header. */
+.panel.collapsed {
+  width: fit-content;
+  min-height: 3rem;
+
+  & :global(.card-body) {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.panel.collapsed::before {
+  backdrop-filter: none;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Not nested: `&` in a `::before` rule resolves through `:is()`, which rejects
+   pseudo-elements. */
+:global([data-bs-theme="dark"]) .panel.collapsed::before {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Between the header and the buttons, sharing the height `useFillToBottom` caps. */
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.tree {
+  flex: 1 1 auto;
+}

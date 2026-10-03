@@ -35,6 +35,8 @@ import {
   mapSetCountries,
   mapSetCustomLayers,
   mapSetEsriAttribution,
+  mapSetLayerKind,
+  mapSetLinkKinds,
   mapSetLocalPrefs,
   mapSetShading,
   mapSetShadingDraft,
@@ -43,6 +45,7 @@ import {
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
 } from './actions.js';
+import { kindOverrides, type LayerKind } from './layerKind.js';
 import {
   activeCombinations,
   layerKinds,
@@ -61,6 +64,10 @@ export interface MapState extends MapStateBase {
   resolutionScale: number | null;
   featureScale: number;
   zoomSnap: number;
+  /** Behind every layer, showing wherever none draws. */
+  backgroundColor: string;
+  /** Kinds a link switched maps to, winning over the account's; see `kindOverrides`. */
+  linkKinds: Record<string, LayerKind>;
   shading: Shading;
   /** Unsaved edits of custom maps' own shading, by layer type. */
   shadingDrafts: Record<string, Shading>;
@@ -94,6 +101,9 @@ export const mapInitialState: MapState = {
   resolutionScale: null,
   featureScale: 1,
   zoomSnap: 1,
+  // Leaflet's own.
+  backgroundColor: '#dddddd',
+  linkKinds: {},
   // As `gdaldem hillshade` draws it: 315°, 45°, z 1, grey over black.
   shading: {
     backgroundColor: [0x00, 0x00, 0x00, 1],
@@ -193,6 +203,41 @@ function dropFromOverlayOrder(state: MapState, type: string) {
   state.overlayOrder = state.overlayOrder.filter((t) => t !== type);
 }
 
+/** Each layer's kind, as switched by the user or a link. */
+const kindsOf = (state: MapState) =>
+  layerKinds(
+    allLayerEntries(
+      state.customLayers,
+      state.cachedMaps,
+      state.catalogMaps,
+      kindOverrides(state.layersSettings, state.linkKinds),
+    ),
+  );
+
+/** Puts a base map first and takes any other off, as picking one does. */
+function makeSoleBase(state: MapState, type: string) {
+  const kinds = kindsOf(state);
+
+  state.layers = [
+    type,
+    ...state.layers.filter((t) => t !== type && kinds.get(t) !== 'base'),
+  ];
+}
+
+/**
+ * Turns off all base maps but the first, once settings switching kinds back
+ * (a reset, another device's) may have made an overlay on the map a base.
+ */
+function keepOneBase(state: MapState) {
+  const kinds = kindsOf(state);
+
+  const [, ...extra] = state.layers.filter((t) => kinds.get(t) === 'base');
+
+  if (extra.length) {
+    state.layers = state.layers.filter((t) => !extra.includes(t));
+  }
+}
+
 function mergeLayerSettings(
   state: MapState,
   type: string,
@@ -210,6 +255,8 @@ function assignAccountSettings(
 ) {
   if (settings.layersSettings) {
     state.layersSettings = settings.layersSettings;
+
+    keepOneBase(state);
   }
 
   if (settings.customLayers) {
@@ -262,8 +309,25 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         dropFromOverlayOrder(state, payload.type);
       }
     })
+    .addCase(mapSetLayerKind, (state, { payload: { type, kind } }) => {
+      mergeLayerSettings(state, type, { layer: kind });
+
+      // The user's own choice now; a link's is spent.
+      delete state.linkKinds[type];
+
+      // On as a base map, it takes the place of the one there.
+      if (kind === 'base' && state.layers.includes(type)) {
+        makeSoleBase(state, type);
+      }
+    })
+    .addCase(mapSetLinkKinds, (state, { payload }) => {
+      state.linkKinds = payload;
+    })
     .addCase(mapCustomLayerSave, (state, { payload: { def, settings } }) => {
       upsert(state.customLayers, def, (d) => d.type === def.type);
+
+      // The layers saved with the map replace any picked in the layers panel.
+      delete state.layersSettings[def.type]?.wmsLayers;
 
       mergeLayerSettings(state, def.type, settings);
     })
@@ -306,6 +370,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       );
 
       state.overlayOrder = [];
+
+      state.linkKinds = {};
+
+      keepOneBase(state);
     })
     .addCase(mapOverlayOrderSet, (state, { payload }) => {
       state.overlayOrder = payload;
@@ -324,13 +392,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     })
     .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
       // TODO can cache (use selector?)
-      const kinds = layerKinds(
-        allLayerEntries(
-          state.customLayers,
-          state.cachedMaps,
-          state.catalogMaps,
-        ),
-      );
+      const kinds = kindsOf(state);
 
       if (kinds.get(type) === 'base' && enable !== false) {
         // "Make sure it's on" (the zoom-to-coverage buttons): no pick, so a
@@ -500,6 +562,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         // A coarser grid leaves the map between two of its levels, which the
         // store may no longer hold.
         state.zoom = acceptZoom(state, state.zoom);
+      }
+
+      if (payload.backgroundColor !== undefined) {
+        state.backgroundColor = payload.backgroundColor;
       }
     })
     .addCase(processGeoipResult, (state, { payload }) => {

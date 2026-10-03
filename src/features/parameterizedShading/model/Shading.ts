@@ -97,33 +97,16 @@ export const ShadingSchema = z.object({
 
 export type Shading = z.infer<typeof ShadingSchema>;
 
-/**
- * A background with no alpha: nothing is under a base map to show through it.
- * No background at all (an overlay's) becomes white.
- */
-export function withOpaqueBackground(shading: Shading): Shading {
-  const [r, g, b, a] = shading.backgroundColor;
-
-  return a === 1
-    ? shading
-    : {
-        ...shading,
-        backgroundColor: a === 0 ? [255, 255, 255, 1] : [r, g, b, 1],
-      };
-}
-
 /** A shading layer's shading as drawn: its draft, its own, else the shared one. */
 export function effectiveShading(
-  def: { type: string; layer: 'base' | 'overlay'; shading?: Shading },
+  def: { type: string; shading?: Shading },
   drafts: Record<string, Shading>,
   shared: Shading,
 ): Shading {
-  const shading = drafts[def.type] ?? def.shading ?? shared;
-
-  return def.layer === 'base' ? withOpaqueBackground(shading) : shading;
+  return drafts[def.type] ?? def.shading ?? shared;
 }
 
-/** An overlay's background is optional; a transparent one stands for none. */
+/** A background is optional; a transparent one stands for none. */
 export const hasBackground = (shading: Shading) =>
   shading.backgroundColor[3] > 0;
 

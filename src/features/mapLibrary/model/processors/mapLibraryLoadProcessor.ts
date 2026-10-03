@@ -5,31 +5,38 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { Dispatch } from '@reduxjs/toolkit';
 import { type MapBody, SHADING_SOURCE } from '@shared/mapDefinitions.js';
 import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
+import { wmsSources } from '@shared/mapLibrary/linkedWms.js';
 import { mapIndex, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
 import { mapLibraryBodiesLoaded, mapLibraryLoadRetry } from '../actions.js';
 
 /**
  * The maps whose bodies are wanted but not loaded, comma-joined: installed
- * ones, ones on the map, sources of offline maps, and the shading source.
+ * ones, ones on the map, sources of offline maps and linked WMS maps, and the
+ * shading source.
  */
 const missingTypesSelector = createSelector(
   (state: RootState) => state.mapLibrary.bodies,
   (state: RootState) => state.map.layersSettings,
   (state: RootState) => state.map.layers,
   (state: RootState) => state.map.cachedMaps,
-  (bodies, layersSettings, layers, cachedMaps) =>
-    mapIndex
+  (state: RootState) => state.map.customLayers,
+  (bodies, layersSettings, layers, cachedMaps, customLayers) => {
+    const linked = wmsSources(customLayers);
+
+    return mapIndex
       .filter(
         ({ type }) =>
           !bodies[type] &&
           (isLayerInstalled(layersSettings, type) ||
             layers.includes(type) ||
             type === SHADING_SOURCE ||
-            cachedMaps.some((cm) => cm.sourceType === type)),
+            cachedMaps.some((cm) => cm.sourceType === type) ||
+            linked.includes(type)),
       )
       .map(({ type }) => type)
-      .join(','),
+      .join(',');
+  },
 );
 
 const loading = new Set<string>();

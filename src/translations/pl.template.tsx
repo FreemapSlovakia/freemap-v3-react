@@ -505,6 +505,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     featureScale: 'Rozmiar elementów',
     featureScaleHelp:
       'Powiększa renderowane etykiety i linie. Nie ma wpływu na warstwy satelitarne, cieniowania, WMS ani wektorowe (MapLibre).',
+    background: 'Tło mapy',
+    backgroundHelp:
+      'Widoczne wszędzie, gdzie żadna warstwa nie rysuje: bez mapy bazowej, obok mapy bazowej pokrywającej tylko część świata lub przezroczystej oraz tam, gdzie kafelki jeszcze się wczytują.',
     layer: {
       layer: 'Warstwa',
       base: 'Podstawowa',

@@ -7,7 +7,10 @@ import {
 import type { RootState } from '@app/store/store.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
-import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  integratedLayerDefsSelector,
+  resolvedCustomLayersSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import {
   type SearchResult,
   searchSetQuery,
@@ -20,6 +23,7 @@ import {
   isWmsLayerDef,
   type LayerDef,
 } from '@shared/mapDefinitions.js';
+import { withPickedLayers } from '@shared/mapLibrary/linkedWms.js';
 import {
   fetchFeaturesAt,
   type OsmApiFeature,
@@ -100,8 +104,14 @@ export async function handle(
 
   const wmsLayerDefs = [
     ...integratedLayerDefsSelector(getState()),
-    ...getState().map.customLayers,
-  ].filter(isWmsLayerDef);
+    ...resolvedCustomLayersSelector(getState()),
+  ]
+    .filter(isWmsLayerDef)
+    // Nothing picked is drawn, and is nothing to ask about either.
+    .filter(
+      (def) => getState().map.layersSettings[def.type]?.wmsLayers?.length !== 0,
+    )
+    .map((def) => withPickedLayers(def, getState().map.layersSettings));
 
   const wmsLayerTypes = wmsLayerDefs.map((def) => def.type);
 

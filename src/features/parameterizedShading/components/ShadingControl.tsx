@@ -7,7 +7,12 @@ import {
   mapSetShadingOnServer,
   mapSetSharedShadingDraft,
 } from '@features/map/model/actions.js';
-import { shadingSourceSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  libraryIndexByIdSelector,
+  shadingSourceSelector,
+} from '@features/mapLibrary/model/selectors.js';
+import { LayerKindSwitch } from '@features/mapSettings/components/LayerKindSwitch.js';
+import { LayerOpacitySlider } from '@features/mapSettings/components/LayerOpacitySlider.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -17,14 +22,15 @@ import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
-import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
+import { useFillToBottom } from '@shared/hooks/useFillToBottom.js';
+import { useMapPanelCollapsed } from '@shared/hooks/useMapPanelCollapsed.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { type CustomLayerDef, SHADING_SOURCE } from '@shared/mapDefinitions.js';
 import { hasSharedShadingLayer } from '@shared/mapLibrary/shadingLayers.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import clsx from 'clsx';
 import { produce } from 'immer';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Button,
   Card,
@@ -46,7 +52,6 @@ import {
   type ShadingComponent,
   type ShadingComponentType,
   serializeShading,
-  withOpaqueBackground,
 } from '../model/Shading.js';
 import {
   SHADING_PRESETS,
@@ -124,14 +129,21 @@ export default function ShadingControl() {
 
   const draft = targetDef && drafts[targetDef.type];
 
-  const isBase = targetDef?.layer === 'base';
+  const libraryIndex = useAppSelector(libraryIndexByIdSelector);
+
+  // The library shading layer the shared shading is on, which may be switched
+  // between base map and overlay; a custom map's kind is its form's.
+  const libraryShading = targetDef
+    ? undefined
+    : layers.find(
+        (type) => libraryIndex[type]?.technology === 'parametricShading',
+      );
 
   const shading = targetDef
     ? effectiveShading(targetDef, drafts, sharedShading)
     : (sharedDraft ?? sharedShading);
 
-  // A base map always has one; an overlay's is optional.
-  const showsBackground = isBase || hasBackground(shading);
+  const showsBackground = hasBackground(shading);
 
   // Every shading layer draws the terrain of the one built-in source.
   const colorReliefMax = colorReliefMaxElevation([SHADING_SOURCE]);
@@ -168,56 +180,13 @@ export default function ShadingControl() {
 
   const [modalKind, setModalKind] = useState<ParameterizedKind | null>(null);
 
-  const [collapsed, setCollapsed] = usePersistentBoolean(
-    'fm.shadingControl.collapsed',
-  );
+  const [collapsed, setCollapsed] = useMapPanelCollapsed('shading');
 
   const sc = useScrollClasses('vertical');
 
   const [panel, setPanel] = useState<HTMLFormElement | null>(null);
 
-  const rf = useCallback(() => {
-    if (!panel) {
-      return;
-    }
-
-    const { top } = panel.getBoundingClientRect();
-
-    // The floor leaves the scrolling middle usable beside the pinned header
-    // and footer, e.g. while an on-screen keyboard shrinks the viewport.
-    const pinned =
-      panel.offsetHeight -
-      (panel.querySelector<HTMLElement>(`.${classes.scrollArea}`)
-        ?.offsetHeight ?? 0);
-
-    window.requestAnimationFrame(() => {
-      panel.style.maxHeight = `${Math.max(window.innerHeight - top - 57, pinned + 100)}px`;
-    });
-  }, [panel]);
-
-  useEffect(() => {
-    window.addEventListener('resize', rf);
-
-    return () => {
-      window.removeEventListener('resize', rf);
-    };
-  }, [rf]);
-
-  useEffect(() => {
-    if (!panel) {
-      return;
-    }
-
-    const ro = new ResizeObserver(() => {
-      rf();
-    });
-
-    ro.observe(panel);
-
-    return () => {
-      ro.disconnect();
-    };
-  }, [panel, rf]);
+  useFillToBottom(panel, classes.scrollArea);
 
   function handleAdd(type0: string | null) {
     trackMatomo(['trackEvent', 'MapShading', 'add', type0 ?? undefined]);
@@ -276,10 +245,8 @@ export default function ShadingControl() {
   async function handlePreset(preset: ShadingPreset) {
     trackMatomo(['trackEvent', 'MapShading', 'preset', preset]);
 
-    // As drawn, so a base map's forced background compares equal; ids are not
-    // serialized.
-    const asDrawn = (s: Shading) =>
-      serializeShading(isBase ? withOpaqueBackground(s) : s);
+    // Ids are not serialized.
+    const asDrawn = (s: Shading) => serializeShading(s);
 
     const current = asDrawn(shading);
 
@@ -490,6 +457,24 @@ export default function ShadingControl() {
                       </Dropdown>
                     )}
 
+                    {libraryShading && (
+                      <LayerKindSwitch
+                        type={libraryShading}
+                        className="mt-2 d-flex"
+                        style={{ width: 0, minWidth: '100%' }}
+                      />
+                    )}
+
+                    {/* The edited map's; for the shared shading, the library
+                        layer drawing it. */}
+                    {(targetDef?.type ?? libraryShading) && (
+                      <LayerOpacitySlider
+                        type={targetDef?.type ?? libraryShading ?? ''}
+                        className="mt-2"
+                        style={{ width: 0, minWidth: '100%' }}
+                      />
+                    )}
+
                     <hr />
 
                     <ShadingComponentList
@@ -500,9 +485,7 @@ export default function ShadingControl() {
                     />
 
                     <ShadingToolbar
-                      canRemove={
-                        id !== undefined || (!isBase && showsBackground)
-                      }
+                      canRemove={id !== undefined || showsBackground}
                       canAddBackground={!showsBackground}
                       onAdd={handleAdd}
                       onRemove={handleRemove}
@@ -541,7 +524,6 @@ export default function ShadingControl() {
                         selectedId={id}
                         component={selectedComponent}
                         colorReliefMax={colorReliefMax}
-                        opaqueBackground={isBase}
                         onChange={setShading}
                       />
                     )}

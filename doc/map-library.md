@@ -135,13 +135,47 @@ row in the Manage maps menu and in the search box, and switching tabs changes
   `updateGridLayer` (browser-drawn shading too), the radar on every pooled
   frame. The map menu, toolbar and the table list overlays in the same order.
   Reset to default clears it, and is enabled by a dragged order alone.
+- **The WMS layers panel** (`mapSettings/components/WmsLayersPanel.tsx`)
+  shows while `activeWmsMapsSelector` finds a WMS map on the map, below the
+  shading panel; `useMapPanelCollapsed` keeps one of those on screen expanded
+  (the last expanded), since both stacked would push the lower one off
+  screen. An empty pick draws nothing and is left out of feature info. It reads the
+  service's capabilities (cached per URL for the page's life) into
+  `WmsLayerTree`, shared with the custom map form, and stores the pick as
+  `layersSettings[type].wmsLayers`, which `Layers.tsx` draws in place of the
+  def's `layers` — for custom maps too, so a toggle is a settings save rather
+  than a map save; `mapCustomLayerSave` clears it. The legend and the map
+  details' feature info ask for the same layers (`withPickedLayers`).
+- **Switched kind** — a library WMS, shading or raster tile map
+  (`canSwitchKind`; a raster base map as an overlay starts at 50% opacity) may
+  be used as the other kind: `layersSettings[type].layer` for the account,
+  `map.linkKinds` from a link's `as-base=` / `as-overlay=` (which wins; only
+  kinds differing from the account's are kept, so a link this browser wrote
+  never outlives a reset; the URL writer emits them for a switched map on
+  screen). `withKind` applies them in `libraryIndexSelector` and in
+  `allLayerEntries`, the two roots every kind is read from, including the
+  toggle reducer. A map switched to an overlay leaves no base map on purpose:
+  neither the URL check nor `ensureBase` adds X then, while a reset or an
+  account sync that makes two maps bases keeps the first (`keepOneBase`). A
+  base map draws opaque whatever opacity it kept. The library browse view keeps
+  the catalog's kind; offline maps keep the kind they were saved with. Wherever no layer draws, `map.backgroundColor`
+  (a local pref, Leaflet's grey by default) shows.
+- **Linked WMS maps** — Save as custom map from the panel copies a library
+  map as a custom WMS map with `source` set to its id. `withWmsSource`
+  (`shared/mapLibrary/linkedWms.ts`, applied by `resolvedCustomLayersSelector`)
+  takes the server, zooms, tiling and coverage from the source, and
+  `Attribution` its credits; the stored copies of those are the fallback while
+  the source loads, and both load processors fetch sources like offline maps'.
+  The form edits only its name, icon and layers. A hand-made custom WMS map has
+  no `source` and keeps every field.
 - **The custom map form** (`CustomMapEditor`) replaces the list in the
   modal while its state carries a request: `setActiveModal({ type:
-  'installed-maps', customMap: { edit?, draft?, addShadingMap? } })` — a map or a
-  combination (with an unsaved `draft`, from a too-thin update) to edit, a new
-  shading map from the shading panel, or a new map. Cancel goes where
-  `returnTo` says (a tab, or `null` to close, as from the menu's New custom
-  map), the shading panel's new map back to the map;
+  'installed-maps', customMap: { edit?, draft?, addShadingMap?, addCopyOf? } })`
+  — a map or a combination (with an unsaved `draft`, from a too-thin update) to
+  edit, a new shading map from the shading panel, a copy of a WMS map from the
+  WMS layers panel, or a new map. Cancel goes where `returnTo` says (a tab, or
+  `null` to close, as from the menu's New custom map), a panel's new map back
+  to the map;
   Save passes `highlight`, which scrolls Installed maps to that row (it passes
   the filters whatever they are) and
   flashes it (`fm-flash`), as Offline maps' Show in Installed maps does.

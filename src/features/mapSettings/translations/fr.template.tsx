@@ -4,6 +4,17 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
+  useAsBaseMap: 'Utiliser comme carte de base',
+  useAsOverlay: 'Utiliser comme surcouche',
+  basedOn: 'Basée sur',
+  wmsLayers: {
+    title: 'Couches de la carte',
+    reset: 'Couches par défaut',
+    saveAsCustomMap: 'Enregistrer comme carte personnalisée',
+    search: 'Rechercher des couches',
+    selectAll: 'Tout sélectionner',
+    deselectAll: 'Tout désélectionner',
+  },
   savingError: ({ err }) =>
     addError(
       getMessages()!,

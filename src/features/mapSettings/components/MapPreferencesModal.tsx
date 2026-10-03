@@ -14,6 +14,7 @@ import { mapInitialState } from '@features/map/model/reducer.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
+import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -76,6 +77,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
   const [zoomSnap, setZoomSnap] = useState(initialZoomSnap);
 
+  const initialBackground = useAppSelector(
+    (state) => state.map.backgroundColor,
+  );
+
+  const [background, setBackground] = useState(initialBackground);
+
   const initialHeadingSource = useAppSelector(
     (state) => state.locationSettings.headingSource,
   );
@@ -117,6 +124,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
     setZoomSnap(String(mapInitialState.zoomSnap));
 
+    setBackground(mapInitialState.backgroundColor);
+
     setHeadingSource(locationSettingsInitialState.headingSource);
 
     setShowBearingLine(locationSettingsInitialState.showBearingLine);
@@ -136,7 +145,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     if (
       resolutionScale !== initialResolutionScale ||
       featureScale !== initialFeatureScale ||
-      zoomSnap !== initialZoomSnap
+      zoomSnap !== initialZoomSnap ||
+      background !== initialBackground
     ) {
       dispatch(
         mapSetLocalPrefs({
@@ -144,6 +154,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
             resolutionScale === '' ? null : Number(resolutionScale),
           featureScale: Number(featureScale),
           zoomSnap: Number(zoomSnap),
+          backgroundColor: background,
         }),
       );
     }
@@ -190,6 +201,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     resolutionScale !== initialResolutionScale ||
     featureScale !== initialFeatureScale ||
     zoomSnap !== initialZoomSnap ||
+    background !== initialBackground ||
     headingSource !== initialHeadingSource ||
     showBearingLine !== initialShowBearingLine;
 
@@ -203,6 +215,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
         : String(mapInitialState.resolutionScale)) &&
     featureScale === String(mapInitialState.featureScale) &&
     zoomSnap === String(mapInitialState.zoomSnap) &&
+    background === mapInitialState.backgroundColor &&
     headingSource === locationSettingsInitialState.headingSource &&
     showBearingLine === locationSettingsInitialState.showBearingLine;
 
@@ -317,6 +330,19 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
+          </Form.Group>
+
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
+              {m?.mapLayers.background}
+              <HintMark hint={m?.mapLayers.backgroundHelp} />
+            </Form.Label>
+
+            <RgbaColorPicker
+              alpha={false}
+              value={background}
+              onChange={setBackground}
+            />
           </Form.Group>
 
           <Form.Group className="mt-3">

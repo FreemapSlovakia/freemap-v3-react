@@ -4,11 +4,13 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   integratedLayerDefMapSelector,
   libraryIndexSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerName } from '@shared/layerName.js';
 import { RENDERER_ROUTES } from '@shared/mapDefinitions.js';
+import { withPickedLayers } from '@shared/mapLibrary/linkedWms.js';
 import { type ReactElement, useMemo, useState } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import { FaExternalLinkAlt, FaList, FaTimes } from 'react-icons/fa';
@@ -39,9 +41,18 @@ export default function LegendModal({ show }: Props): ReactElement {
 
   const libraryIndex = useAppSelector(libraryIndexSelector);
 
+  const resolvedCustomLayers = useAppSelector(resolvedCustomLayersSelector);
+
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
+
   const wmsLayerDefs = useMemo(
-    () => getWmsLayerDefs(libraryIndex, customLayers, integratedLayerDefMap),
-    [libraryIndex, customLayers, integratedLayerDefMap],
+    () =>
+      getWmsLayerDefs(
+        libraryIndex,
+        resolvedCustomLayers,
+        integratedLayerDefMap,
+      ).map((def) => withPickedLayers(def, layersSettings)),
+    [libraryIndex, resolvedCustomLayers, integratedLayerDefMap, layersSettings],
   );
 
   const activeLegendLayers = getActiveLegendLayers(

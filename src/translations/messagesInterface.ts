@@ -341,6 +341,8 @@ export type Messages = {
     resolutionScaleHelp: string;
     featureScale: string;
     featureScaleHelp: string;
+    background: string;
+    backgroundHelp: string;
     lookupStyle: string;
     resetApp: string;
     resetAppConfirm: string;

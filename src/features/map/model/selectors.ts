@@ -1,8 +1,12 @@
 import type { RootState } from '@app/store/store.js';
-import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  integratedLayerDefMapSelector,
+  kindOverridesSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
 import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
+import { type LayerKind, withKind } from './layerKind.js';
 import {
   activeCombinations,
   combinationOpacity,
@@ -12,12 +16,21 @@ import {
   type MapCombinationOverlay,
 } from './mapCombination.js';
 
-/** Every layer, enough to tell its kind: library, custom and cached alike. */
+/**
+ * Every layer, enough to tell its kind: library (as switched), custom and
+ * cached alike.
+ */
 export const allLayerEntries = (
   customLayers: RootState['map']['customLayers'],
   cachedMaps: RootState['map']['cachedMaps'],
   catalogMaps: RootState['map']['catalogMaps'],
-) => [...mapIndex, ...catalogMaps, ...customLayers, ...cachedMaps];
+  overrides: Readonly<Record<string, LayerKind>>,
+) => [
+  ...mapIndex.map((entry) => withKind(entry, overrides)),
+  ...catalogMaps.map((map) => withKind(map, overrides)),
+  ...customLayers,
+  ...cachedMaps,
+];
 
 // Beside the shading source it needs, which keeps the stack free of a cycle.
 export { resolvedCustomLayersSelector } from '@features/mapLibrary/model/selectors.js';
@@ -26,6 +39,7 @@ const layerDefsSelector = createSelector(
   (state: RootState) => state.map.customLayers,
   (state: RootState) => state.map.cachedMaps,
   (state: RootState) => state.map.catalogMaps,
+  kindOverridesSelector,
   allLayerEntries,
 );
 

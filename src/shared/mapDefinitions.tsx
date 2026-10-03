@@ -4,7 +4,6 @@ import {
   type Color as ShadingColor,
   ShadingSchema,
   serializeShading,
-  withOpaqueBackground,
 } from '@features/parameterizedShading/model/Shading.js';
 import { currentSite, siteNames, siteUrls } from '@shared/sites.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
@@ -137,12 +136,10 @@ export const OFM_ATTR: AttributionDef = {
 
 export const TERRAIN_TILES_URL = process.env['FM_TERRAIN_TILES_URL'];
 
-/** Tiles of `shading` rendered on the server; a base map's background is opaque. */
-export const serverShadingUrl = (shading: Shading, layer: 'base' | 'overlay') =>
+/** Tiles of `shading` rendered on the server. */
+export const serverShadingUrl = (shading: Shading) =>
   `${TERRAIN_TILES_URL}/hillshade/{z}/{x}/{y}?format=webp&shading=${encodeURIComponent(
-    serializeShading(
-      layer === 'base' ? withOpaqueBackground(shading) : shading,
-    ),
+    serializeShading(shading),
   )}`;
 
 /**
@@ -317,8 +314,6 @@ type IsParametricShadingLayerDef = HasUrl &
   HasZIndex &
   HasScaleWithDpi & {
     technology: 'parametricShading';
-    /** A custom map's built-in shading layer, whose tiles, limits and credits it takes. */
-    source?: string;
     /** A custom map's own shading; the shared one otherwise. */
     shading?: Shading;
   };
@@ -365,6 +360,8 @@ export type IsWmsLayerDef = HasUrl &
   HasMaxNativeZoom & {
     technology: 'wms';
     layers: string[];
+    /** A custom map's library WMS map, whose server, zooms and credits it takes. */
+    source?: string;
     /**
      * Go back to a grid of tiles instead of one image per settled view. Needed
      * for a server that caps the image size below what a viewport asks for, or
@@ -580,6 +577,7 @@ export const IsWmsLayerDefSchema = z.object({
   maxNativeZoom: z.number().optional(),
   zIndex: z.number().optional(),
   tiled: z.boolean().optional(),
+  source: z.string().optional(),
 });
 
 export const IsMapLibreLayerDefSchema = z.object({
@@ -593,7 +591,6 @@ export const IsParametricShadingLayerDefSchema = z.object({
   maxNativeZoom: z.number().optional(),
   zIndex: z.number().optional(),
   scaleWithDpi: z.boolean().optional(),
-  source: z.string().optional(),
   shading: ShadingSchema.optional(),
 });
 

@@ -65,6 +65,17 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'Mostra nella barra degli strumenti',
   keyboardShortcut: 'Scorciatoia da tastiera',
   saveSuccess: 'Impostazioni salvate.',
+  useAsBaseMap: 'Usa come mappa di base',
+  useAsOverlay: 'Usa come livello sovrapposto',
+  basedOn: 'Basata su',
+  wmsLayers: {
+    title: 'Livelli della mappa',
+    reset: 'Livelli predefiniti',
+    saveAsCustomMap: 'Salva come mappa personalizzata',
+    search: 'Cerca livelli',
+    selectAll: 'Seleziona tutti',
+    deselectAll: 'Deseleziona tutti',
+  },
   savingError: ({ err }) =>
     addError(getMessages()!, 'Errore nel salvataggio delle impostazioni:', err),
   customMapSaved: 'La mappa personalizzata è stata salvata.',

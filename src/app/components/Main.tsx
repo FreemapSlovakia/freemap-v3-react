@@ -23,6 +23,7 @@ import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { MapAreaSelectionResult } from '@features/mapArea/components/MapAreaSelectionResult.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
+import { activeWmsMapsSelector } from '@features/mapLibrary/model/selectors.js';
 import { MyMapsMenu } from '@features/myMaps/components/MyMapsMenu.js';
 import { isPremium } from '@features/premium/premium.js';
 import RouteLegSelection from '@features/routePlanner/components/RouteLegSelection.js';
@@ -271,6 +272,12 @@ const shadingControlFactory = () =>
   import(
     /* webpackChunkName: "shading-control" */
     '@features/parameterizedShading/components/ShadingControl.js'
+  );
+
+const wmsLayersPanelFactory = () =>
+  import(
+    /* webpackChunkName: "wms-layers-panel" */
+    '@features/mapSettings/components/WmsLayersPanel.js'
   );
 
 const elevationChartFactory = () =>
@@ -604,6 +611,10 @@ export function Main(): ReactElement {
 
   const showShadingControl = useAppSelector((state) =>
     hasShadingLayer(state.map.layers, state.map.customLayers),
+  );
+
+  const showWmsLayersPanel = useAppSelector(
+    (state) => activeWmsMapsSelector(state).length > 0,
   );
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
@@ -1123,6 +1134,12 @@ export function Main(): ReactElement {
               {showShadingControl && (
                 <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
                   <AsyncComponent factory={shadingControlFactory} />
+                </div>
+              )}
+
+              {showWmsLayersPanel && (
+                <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
+                  <AsyncComponent factory={wmsLayersPanelFactory} />
                 </div>
               )}
             </div>

@@ -45,7 +45,6 @@ import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import transparent1x1 from '@/images/1x1-transparent.png';
-import white1x1 from '@/images/1x1-white.png';
 import missingTile from '@/images/missing-tile-256x256.png';
 import { AsyncComponent } from './AsyncComponent.js';
 import { ColorLayer } from './ColorLayer.js';
@@ -165,15 +164,14 @@ export function Layers(): ReactElement | null {
     // Rendered on the server, a shading layer is plain tiles of its applied or
     // saved shading; drafts are not drawn.
     if (layerDef.technology === 'parametricShading' && shadingOnServer) {
-      const { source: _, shading: own, ...rest } = layerDef;
+      const { shading: own, ...rest } = layerDef;
 
       return getLayer(
         {
           ...rest,
           technology: 'tile',
-          url: serverShadingUrl(own ?? shading, layerDef.layer),
-          errorTileUrl:
-            layerDef.layer === 'overlay' ? transparent1x1 : white1x1,
+          url: serverShadingUrl(own ?? shading),
+          errorTileUrl: transparent1x1,
         } as LayerDef,
         fixedScale,
         true,
@@ -182,10 +180,15 @@ export function Layers(): ReactElement | null {
 
     const { type, minZoom } = layerDef;
 
-    const opacity = resolveLayerOpacity(
-      layerDef,
-      opacitySetting(activeCombinations, layersSettings, type),
-    );
+    // Only an overlay's is set anywhere; one kept from a map used as an
+    // overlay before has no control on a base map.
+    const opacity =
+      layerDef.layer === 'base'
+        ? 1
+        : resolveLayerOpacity(
+            layerDef,
+            opacitySetting(activeCombinations, layersSettings, type),
+          );
 
     // Bases below every overlay; overlays by their place in the stack, each
     // its own z-index, as equal ones would stack by insertion.
@@ -261,6 +264,17 @@ export function Layers(): ReactElement | null {
     );
 
     if (layerDef.technology === 'wms') {
+      // As picked in the layers panel, else the map's own.
+      const picked = layersSettings[type]?.wmsLayers;
+
+      // Nothing picked draws nothing. Asked for, the server refuses, and the
+      // image layer takes that for a size limit it then keeps to.
+      if (picked?.length === 0) {
+        return null;
+      }
+
+      const wmsLayers = picked ?? layerDef.layers;
+
       // A WMS renders whatever pixel count it is asked for and is told to scale
       // its symbology to match, so density needs no per-layer opt-in the way a
       // tile layer's deeper-zoom trick does. `maxNativeZoom` is what bounds it
@@ -282,13 +296,11 @@ export function Layers(): ReactElement | null {
       ) {
         return (
           <WmsImageLayer
-            key={[
-              type,
-              layerDef.layers.join(','),
-              wmsHdpi ? 'hdpi' : 'ldpi',
-            ].join('-')}
+            key={[type, wmsLayers.join(','), wmsHdpi ? 'hdpi' : 'ldpi'].join(
+              '-',
+            )}
             url={layerDef.url}
-            layers={layerDef.layers.join(',')}
+            layers={wmsLayers.join(',')}
             version="1.3.0"
             transparent={layerDef.layer === 'overlay'}
             format={layerDef.layer === 'overlay' ? 'image/png' : 'image/jpeg'}
@@ -328,17 +340,14 @@ export function Layers(): ReactElement | null {
             opacity,
             effPremiumFromZoom ?? 99,
             effPremiumFromZoom ? prm?.premiumOnly : '',
-            layerDef.layers.join(','),
+            wmsLayers.join(','),
             wmsHdpi ? 'hdpi' : 'ldpi',
           ].join('-')}
           // Leaflet appends its own parameters, so a `REQUEST` the stored URL
           // already carries would end up beside the tile's own. Its `LAYERS`
           // stays when no layers were picked, since nothing else names them.
-          url={wmsBaseUrl(
-            layerDef.url,
-            layerDef.layers.length ? ['layers'] : [],
-          )}
-          layers={layerDef.layers.join(',')}
+          url={wmsBaseUrl(layerDef.url, wmsLayers.length ? ['layers'] : [])}
+          layers={wmsLayers.join(',')}
           maxNativeZoom={layerDef.maxNativeZoom}
           // `detectRetina` makes Leaflet drop a zoom off `maxZoom`, and a grid
           // layer whose `maxZoom` the view passes stops drawing entirely — so

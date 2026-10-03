@@ -65,6 +65,17 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'Megjelenítés az eszköztáron',
   keyboardShortcut: 'Gyorsbillentyű',
   saveSuccess: 'A beállítások el lettek mentve.',
+  useAsBaseMap: 'Használat alaptérképként',
+  useAsOverlay: 'Használat fedvényként',
+  basedOn: 'Alapja',
+  wmsLayers: {
+    title: 'Térképrétegek',
+    reset: 'Alapértelmezett rétegek',
+    saveAsCustomMap: 'Mentés saját térképként',
+    search: 'Rétegek keresése',
+    selectAll: 'Összes kijelölése',
+    deselectAll: 'Kijelölés megszüntetése',
+  },
   savingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a beállítások mentésénél', err),
   customMapSaved: 'Az egyéni térkép mentve.',
