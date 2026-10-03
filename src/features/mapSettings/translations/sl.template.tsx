@@ -72,8 +72,8 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   useAsBaseMap: 'Uporabi kot osnovni zemljevid',
   useAsOverlay: 'Uporabi kot prekrivni sloj',
   basedOn: 'Temelji na',
+  turnOff: 'Izklopi',
   wmsLayers: {
-    title: 'Sloji zemljevida',
     reset: 'Privzeti sloji',
     saveAsCustomMap: 'Shrani kot lasten zemljevid',
     search: 'Iskanje slojev',

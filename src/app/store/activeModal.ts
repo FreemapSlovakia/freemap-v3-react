@@ -99,9 +99,9 @@ export type CustomMapRequest = {
   edit?: string;
   /** A combination's unsaved state to edit in place of its saved one. */
   draft?: MapCombination;
-  /** A new shading map with these settings, asked for by the shading panel. */
+  /** A new shading map with these settings, asked for by a shading row of the Map layers panel. */
   addShadingMap?: { shading: Shading };
-  /** A new map starting as a copy of this one, asked for by the WMS layers panel. */
+  /** A new map starting as a copy of this one, asked for by a WMS row of the Map layers panel. */
   addCopyOf?: CustomLayerDef;
   /** Where Cancel goes: that tab, or `null` to close; Installed maps if unset. */
   returnTo?: 'installed-maps' | 'available-maps' | null;

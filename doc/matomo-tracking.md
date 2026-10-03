@@ -90,7 +90,7 @@ from both the old and new identities.
 | `Language` | `set` | language code, or `auto` | *(added 2026-06)* | [`l10n/model/processor.ts`](../src/features/l10n/model/processor.ts) |
 | `Location` | `locate` | — *(GPS follow enabled)* | *(added 2026-06)* | [`locateProcessor.ts`](../src/features/location/model/locateProcessor.ts) |
 | `Modal` | `open` | modal id (incl. `embed`, `account`, `legend`, `support-us`, `map-preferences`, …) | *(added 2026-06)* | [`setActiveModalProcessor.ts`](../src/processors/setActiveModalProcessor.ts) |
-| `MapShading` | `add` | shading component type (`hillshade-*`/`slope-*`/`color-relief`/`aspect`/`contour`) | *(added 2026-06)* | [`ShadingControl.tsx`](../src/features/parameterizedShading/components/ShadingControl.tsx) |
+| `MapShading` | `add` | shading component type (`hillshade-*`/`slope-*`/`color-relief`/`aspect`/`contour`) | *(added 2026-06)* | [`ShadingSection.tsx`](../src/features/parameterizedShading/components/ShadingSection.tsx) |
 | `HomeLocation` | `save` | — | *(added 2026-06)* | [`HomeLocationPickingMenu.tsx`](../src/features/homeLocation/components/HomeLocationPickingMenu.tsx) |
 | `Osm` | `view` | `node` / `way` / `relation`, with how many of that type the load names as the event value | *(added 2026-06)* | [`osmLoadProcessor.ts`](../src/features/osm/model/processors/osmLoadProcessor.ts) |
 | `Tool` | `set` | tool id | `Main`/`openTool` | [`openToolProcessor.ts`](../src/processors/openToolProcessor.ts) |

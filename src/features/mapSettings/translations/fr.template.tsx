@@ -7,8 +7,8 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   useAsBaseMap: 'Utiliser comme carte de base',
   useAsOverlay: 'Utiliser comme surcouche',
   basedOn: 'Basée sur',
+  turnOff: 'Désactiver',
   wmsLayers: {
-    title: 'Couches de la carte',
     reset: 'Couches par défaut',
     saveAsCustomMap: 'Enregistrer comme carte personnalisée',
     search: 'Rechercher des couches',

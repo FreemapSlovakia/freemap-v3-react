@@ -495,6 +495,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newCustomMap: 'Nová vlastní mapa',
     activate: 'Aktivovat',
     saveAsShadingMap: 'Uložit jako vlastní mapu',
+    layersPanel: 'Vrstvy mapy',
     base: 'Základní vrstvy',
     overlay: 'Překryvné vrstvy',
     url: 'Šablona URL',

@@ -68,8 +68,8 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   useAsBaseMap: 'Usa come mappa di base',
   useAsOverlay: 'Usa come livello sovrapposto',
   basedOn: 'Basata su',
+  turnOff: 'Disattiva',
   wmsLayers: {
-    title: 'Livelli della mappa',
     reset: 'Livelli predefiniti',
     saveAsCustomMap: 'Salva come mappa personalizzata',
     search: 'Cerca livelli',

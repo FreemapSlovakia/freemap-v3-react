@@ -480,6 +480,7 @@ const messages: Messages = {
     newCustomMap: 'New custom map',
     activate: 'Activate',
     saveAsShadingMap: 'Save as custom map',
+    layersPanel: 'Map layers',
     base: 'Base layers',
     overlay: 'Overlay layers',
     technology: 'Type',

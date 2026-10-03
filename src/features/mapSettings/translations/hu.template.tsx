@@ -68,8 +68,8 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   useAsBaseMap: 'Használat alaptérképként',
   useAsOverlay: 'Használat fedvényként',
   basedOn: 'Alapja',
+  turnOff: 'Kikapcsolás',
   wmsLayers: {
-    title: 'Térképrétegek',
     reset: 'Alapértelmezett rétegek',
     saveAsCustomMap: 'Mentés saját térképként',
     search: 'Rétegek keresése',

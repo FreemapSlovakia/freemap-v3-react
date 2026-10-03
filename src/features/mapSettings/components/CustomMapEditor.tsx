@@ -57,7 +57,7 @@ export function CustomMapEditor({ request }: Props): ReactElement {
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
   // The form the request names: a map or combination to edit, a new shading
-  // map from the shading panel, or a new custom map.
+  // map from the Map layers panel, or a new custom map.
   // A map that is gone by now opens as a new one rather than as an empty edit
   // that would save under its id.
   const startFor = (

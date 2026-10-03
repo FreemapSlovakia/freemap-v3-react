@@ -80,8 +80,8 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   useAsBaseMap: 'Použiť ako podkladovú mapu',
   useAsOverlay: 'Použiť ako prekryvnú vrstvu',
   basedOn: 'Založená na',
+  turnOff: 'Vypnúť',
   wmsLayers: {
-    title: 'Vrstvy mapy',
     reset: 'Predvolené vrstvy',
     saveAsCustomMap: 'Uložiť ako vlastnú mapu',
     search: 'Hľadať vrstvy',

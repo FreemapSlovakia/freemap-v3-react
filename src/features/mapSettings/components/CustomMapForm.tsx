@@ -52,7 +52,7 @@ import { WmsLayerTree } from './WmsLayerTree.js';
 
 /**
  * A new map's starting point: what carries over when the Type switches between
- * a layer and a combination, or a shading map saved from the shading panel.
+ * a layer and a combination, or a shading map saved from the Map layers panel.
  */
 export type CustomMapStart = {
   name: string;
@@ -91,7 +91,7 @@ type Model = {
   tiled: boolean;
   /** Read from the capabilities rather than typed, so it has no field. */
   bbox?: [number, number, number, number];
-  /** A shading map's own, edited in the shading panel rather than here. */
+  /** A shading map's own, edited in the Map layers panel rather than here. */
   shading?: Shading;
   color: Color;
 };

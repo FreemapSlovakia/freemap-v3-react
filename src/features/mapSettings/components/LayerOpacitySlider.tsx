@@ -34,7 +34,8 @@ export function LayerOpacitySlider({
   const def = useAppSelector(
     (state) =>
       integratedLayerDefMapSelector(state)[type] ??
-      resolvedCustomLayersSelector(state).find((def) => def.type === type),
+      resolvedCustomLayersSelector(state).find((def) => def.type === type) ??
+      state.map.cachedMaps.find((def) => def.type === type),
   );
 
   const fromCombination = useAppSelector(

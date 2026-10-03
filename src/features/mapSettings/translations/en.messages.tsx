@@ -78,8 +78,8 @@ const en: MapSettingsMessages = {
   useAsBaseMap: 'Use as base map',
   useAsOverlay: 'Use as overlay',
   basedOn: 'Based on',
+  turnOff: 'Turn off',
   wmsLayers: {
-    title: 'Map layers',
     reset: 'Default layers',
     saveAsCustomMap: 'Save as custom map',
     search: 'Search layers',

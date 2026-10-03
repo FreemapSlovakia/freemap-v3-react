@@ -23,7 +23,10 @@ import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { MapAreaSelectionResult } from '@features/mapArea/components/MapAreaSelectionResult.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
-import { activeWmsMapsSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  useMapLayersPanel,
+  useRevealEditableMaps,
+} from '@features/mapSettings/mapLayersPanelStore.js';
 import { MyMapsMenu } from '@features/myMaps/components/MyMapsMenu.js';
 import { isPremium } from '@features/premium/premium.js';
 import RouteLegSelection from '@features/routePlanner/components/RouteLegSelection.js';
@@ -43,7 +46,6 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOpenOrder } from '@shared/hooks/useOpenOrder.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
-import { hasShadingLayer } from '@shared/mapLibrary/shadingLayers.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogoEu from '@/images/freemap-logo-eu.svg';
 import fmLogoSk from '@/images/freemap-logo-sk.svg';
@@ -268,16 +270,10 @@ const adFactory = () =>
     '@features/ad/components/Ad.js'
   );
 
-const shadingControlFactory = () =>
+const mapLayersPanelFactory = () =>
   import(
-    /* webpackChunkName: "shading-control" */
-    '@features/parameterizedShading/components/ShadingControl.js'
-  );
-
-const wmsLayersPanelFactory = () =>
-  import(
-    /* webpackChunkName: "wms-layers-panel" */
-    '@features/mapSettings/components/WmsLayersPanel.js'
+    /* webpackChunkName: "map-layers-panel" */
+    '@features/mapSettings/components/MapLayersPanel.js'
   );
 
 const elevationChartFactory = () =>
@@ -609,13 +605,17 @@ export function Main(): ReactElement {
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const showShadingControl = useAppSelector((state) =>
-    hasShadingLayer(state.map.layers, state.map.customLayers),
+  // Where the embedder hides the map switcher, its button and panel go too.
+  const layersPanelAllowed = useAppSelector(
+    (state) =>
+      !window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'),
   );
 
-  const showWmsLayersPanel = useAppSelector(
-    (state) => activeWmsMapsSelector(state).length > 0,
-  );
+  const { open: layersPanelOpen } = useMapLayersPanel();
+
+  const showMapLayersPanel = layersPanelAllowed && layersPanelOpen;
+
+  useRevealEditableMaps(layersPanelAllowed);
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
@@ -1131,15 +1131,9 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={adFactory} />
               )}
 
-              {showShadingControl && (
+              {showMapLayersPanel && (
                 <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
-                  <AsyncComponent factory={shadingControlFactory} />
-                </div>
-              )}
-
-              {showWmsLayersPanel && (
-                <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
-                  <AsyncComponent factory={wmsLayersPanelFactory} />
+                  <AsyncComponent factory={mapLayersPanelFactory} />
                 </div>
               )}
             </div>

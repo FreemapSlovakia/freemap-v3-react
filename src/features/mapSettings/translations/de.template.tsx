@@ -68,8 +68,8 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   useAsBaseMap: 'Als Basiskarte verwenden',
   useAsOverlay: 'Als Overlay verwenden',
   basedOn: 'Basiert auf',
+  turnOff: 'Ausblenden',
   wmsLayers: {
-    title: 'Kartenebenen',
     reset: 'Standardebenen',
     saveAsCustomMap: 'Als eigene Karte speichern',
     search: 'Ebenen suchen',

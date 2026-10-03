@@ -6,7 +6,7 @@ import {
   useTileCoverages,
 } from '@shared/tileCoverage.js';
 import { Fragment, type ReactNode, useEffect, useId, useState } from 'react';
-import { Pane } from 'react-leaflet';
+import { Pane, useMap } from 'react-leaflet';
 
 const RETRY_MS = 60_000;
 
@@ -19,7 +19,7 @@ type Props = {
 
 /**
  * Its own stacking context, so the layers inside keep their order and share the
- * opacity. The style is set only at creation: changing it takes a remount.
+ * opacity.
  */
 export function CoveragePane({
   coverageUrl,
@@ -61,6 +61,19 @@ export function CoveragePane({
       window.clearTimeout(timer);
     };
   }, [coverageUrl, loaded]);
+
+  const map = useMap();
+
+  // `Pane` takes its style at creation only; a remount would reload every tile.
+  useEffect(() => {
+    const pane = map.getPane(name);
+
+    if (pane) {
+      pane.style.opacity = String(opacity);
+
+      pane.style.zIndex = String(zIndex);
+    }
+  }, [map, name, opacity, zIndex]);
 
   const coverage = loaded ?? (failed ? unknownCoverage : undefined);
 

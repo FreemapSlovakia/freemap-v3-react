@@ -198,7 +198,7 @@ export function Layers(): ReactElement | null {
       return (
         <AsyncComponent
           factory={galleryLayerFactory}
-          key={`I-${opacity}`}
+          key="I"
           filter={galleryFilter}
           colorizeBy={galleryColorizeBy}
           opacity={opacity}
@@ -337,7 +337,6 @@ export function Layers(): ReactElement | null {
         <WmsTileLayer
           key={[
             type,
-            opacity,
             effPremiumFromZoom ?? 99,
             effPremiumFromZoom ? prm?.premiumOnly : '',
             wmsLayers.join(','),
@@ -390,7 +389,6 @@ export function Layers(): ReactElement | null {
           key={[
             type,
             layerDef.url,
-            opacity,
             effPremiumFromZoom ?? 99,
             effPremiumFromZoom ? prm?.premiumOnly : '',
           ].join('-')}
@@ -462,9 +460,10 @@ export function Layers(): ReactElement | null {
         }
       }
 
+      // Opacity and z-index are applied in place (`updateGridLayer`), never by
+      // a remount, which would blank the layer while its tiles reload.
       const key = [
         type,
-        opacity,
         effPremiumFromZoom ?? 99,
         effPremiumFromZoom ? prm?.premiumOnly : '',
         resolutionScale ?? 'auto',

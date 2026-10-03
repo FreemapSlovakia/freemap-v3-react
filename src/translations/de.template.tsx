@@ -560,6 +560,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     saveAsShadingMap: 'Als benutzerdefinierte Karte speichern',
+    layersPanel: 'Kartenebenen',
   },
 
   elevationChart: {

@@ -541,6 +541,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     saveAsShadingMap: 'Zapisz jako mapę niestandardową',
+    layersPanel: 'Warstwy mapy',
   },
 
   elevationChart: {

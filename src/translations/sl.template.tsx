@@ -546,6 +546,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     saveAsShadingMap: 'Shrani kot zemljevid po meri',
+    layersPanel: 'Sloji zemljevida',
   },
 
   elevationChart: {

@@ -14,12 +14,6 @@ const shadingLayerDefOf = (
   return def?.technology === 'parametricShading' ? def : undefined;
 };
 
-/** Whether any layer on the map is shaded by parameters. */
-export const hasShadingLayer = (
-  layers: readonly string[],
-  customLayers: readonly CustomLayerDef[],
-): boolean => layers.some((type) => shadingLayerDefOf(type, customLayers));
-
 /**
  * Whether any layer on the map draws with the shared `map.shading` rather than
  * its own: a built-in shading layer, or a custom one that has none.

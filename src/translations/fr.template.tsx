@@ -550,6 +550,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     browseCache: 'Mise en cache pendant la navigation',
     legacy: 'obsolète',
     saveAsShadingMap: 'Enregistrer comme carte personnalisée',
+    layersPanel: 'Couches de la carte',
   },
   elevationChart: {
     ele: `Altitude [${masl}]`,

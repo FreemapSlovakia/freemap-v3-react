@@ -560,6 +560,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     saveAsShadingMap: 'Mentés egyéni térképként',
+    layersPanel: 'Térképrétegek',
   },
 
   elevationChart: {

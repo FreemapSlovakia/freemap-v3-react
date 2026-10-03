@@ -67,8 +67,8 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   useAsBaseMap: 'Użyj jako mapy bazowej',
   useAsOverlay: 'Użyj jako nakładki',
   basedOn: 'Na podstawie',
+  turnOff: 'Wyłącz',
   wmsLayers: {
-    title: 'Warstwy mapy',
     reset: 'Domyślne warstwy',
     saveAsCustomMap: 'Zapisz jako własną mapę',
     search: 'Szukaj warstw',

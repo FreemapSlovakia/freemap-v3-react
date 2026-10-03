@@ -135,12 +135,16 @@ row in the Manage maps menu and in the search box, and switching tabs changes
   `updateGridLayer` (browser-drawn shading too), the radar on every pooled
   frame. The map menu, toolbar and the table list overlays in the same order.
   Reset to default clears it, and is enabled by a dragged order alone.
-- **The WMS layers panel** (`mapSettings/components/WmsLayersPanel.tsx`)
-  shows while `activeWmsMapsSelector` finds a WMS map on the map, below the
-  shading panel; `useMapPanelCollapsed` keeps one of those on screen expanded
-  (the last expanded), since both stacked would push the lower one off
-  screen. An empty pick draws nothing and is left out of feature info. It reads the
-  service's capabilities (cached per URL for the page's life) into
+- **The Map layers panel** (`mapSettings/components/MapLayersPanel.tsx`),
+  opened by the toolbar button beside the map switcher, lists what is on the
+  map: overlays in `overlayStackSelector` order (dragged as in Installed maps),
+  then the base map. Its open state and expanded row live in
+  `mapLayersPanelStore.ts`, outside Redux, so the toolbar button and
+  `useRevealEditableMaps` (opening it on a WMS or shading map just turned on)
+  share them. A row holds the kind switch, the overlay opacity, the WMS
+  section and the shading editor (`ShadingSection`, its own chunk).
+- **The WMS section** (`WmsSection.tsx`). An empty pick draws nothing and is
+  left out of feature info. It reads the service's capabilities (cached per URL for the page's life) into
   `WmsLayerTree`, shared with the custom map form, and stores the pick as
   `layersSettings[type].wmsLayers`, which `Layers.tsx` draws in place of the
   def's `layers` — for custom maps too, so a toggle is a settings save rather
@@ -174,8 +178,8 @@ row in the Manage maps menu and in the search box, and switching tabs changes
   modal while its state carries a request: `setActiveModal({ type:
   'installed-maps', customMap: { edit?, draft?, addShadingMap?, addCopyOf? } })`
   — a map or a combination (with an unsaved `draft`, from a too-thin update) to
-  edit, a new shading map from the shading panel, a copy of a WMS map from the
-  WMS layers panel, or a new map. Cancel goes where `returnTo` says (a tab, or
+  edit, a new shading map or a copy of a WMS map from the Map layers panel, or
+  a new map. Cancel goes where `returnTo` says (a tab, or
   `null` to close, as from the menu's New custom map), a panel's new map back
   to the map;
   Save passes `highlight`, which scrolls Installed maps to that row (it passes
@@ -312,7 +316,7 @@ the ids and templates.
   `src/shared/mapDefinitions.tsx`, which keeps the shared types, credits
   (`FM_ATTR`, `NLC_ATTR`, …), `OUTDOOR_COUNTRIES`/`OUTDOOR_BBOX`,
   `rendererTileUrl`, `LAYER_ALIASES`, `SHADING_SOURCE`. Shading helpers
-  (`hasShadingLayer`, `hasSharedShadingLayer`, `withShadingSource`) live in
+  (`hasSharedShadingLayer`, `withShadingSource`) live in
   `src/shared/mapLibrary/shadingLayers.ts`; in `mapDefinitions.tsx` they would
   form an import cycle with `mapIndex`.
 - **Store** — `src/features/mapLibrary/model/`: the `mapLibrary` slice holds

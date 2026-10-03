@@ -3,12 +3,13 @@ import { ensureCompassPermission } from '@features/location/ensureCompassPermiss
 import { useMap } from '@features/map/hooks/useMap.js';
 import { type MapViewState, mapRefocus } from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
+import { useMapLayersPanel } from '@features/mapSettings/mapLayersPanelStore.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
-import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
+import { FaLayerGroup, FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
@@ -96,6 +97,8 @@ export function MapControls(): ReactElement | null {
 
   const map = useMap();
 
+  const layersPanel = useMapLayersPanel();
+
   const handleFullscreenClick = useCallback(() => {
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
@@ -130,7 +133,22 @@ export function MapControls(): ReactElement | null {
     <Toolbar className="m-2">
       {!previewing &&
         (!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
-          <MapSwitchButton />
+          <>
+            <MapSwitchButton />
+
+            <LongPressTooltip label={m?.mapLayers.layersPanel}>
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  active={layersPanel.open}
+                  onClick={() => layersPanel.setOpen(!layersPanel.open)}
+                  {...props}
+                >
+                  <FaLayerGroup />
+                </Button>
+              )}
+            </LongPressTooltip>
+          </>
         )}
 
       <ButtonGroup>

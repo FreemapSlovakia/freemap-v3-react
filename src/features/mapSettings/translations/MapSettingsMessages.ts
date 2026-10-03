@@ -64,9 +64,10 @@ export type MapSettingsMessages = {
   useAsOverlay: string;
   /** Labels the library map a linked WMS map takes all but its layers from. */
   basedOn: string;
-  /** The panel picking a WMS map's layers. */
+  /** Takes an overlay off the map, in the Map layers panel. */
+  turnOff: string;
+  /** A WMS map's layers, in the Map layers panel. */
   wmsLayers: {
-    title: string;
     reset: string;
     saveAsCustomMap: string;
     search: string;

@@ -308,6 +308,8 @@ export type Messages = {
     newCustomMap: string;
     activate: string;
     saveAsShadingMap: string;
+    /** The panel listing what is on the map, and its toolbar button. */
+    layersPanel: string;
     base: string;
     overlay: string;
     technology: string;

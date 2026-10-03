@@ -560,6 +560,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     saveAsShadingMap: 'Salva come mappa personalizzata',
+    layersPanel: 'Livelli della mappa',
   },
 
   elevationChart: {
