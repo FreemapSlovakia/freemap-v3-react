@@ -13,6 +13,7 @@ import {
   mapReplaceLayer,
   mapSetCountries,
   mapSetEsriAttribution,
+  mapSetLayerKind,
   mapSetLocalPrefs,
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
@@ -489,5 +490,40 @@ describe('mapReducer — misc setters', () => {
     expect(mapReducer(state, mapSetLocalPrefs({ zoomSnap: 0 })).zoom).toBe(
       13.75,
     );
+  });
+});
+
+describe('mapReducer — switched kind', () => {
+  it('a map switched to base takes the place of the base on', () => {
+    const next = mapReducer(
+      { ...mapInitialState, layers: ['X', 'h'] },
+      mapSetLayerKind({ type: 'h', kind: 'base' }),
+    );
+
+    expect(next.layers).toEqual(['h']);
+
+    expect(next.layersSettings['h']?.layer).toBe('base');
+  });
+
+  it('switching a map back to its own kind drops the setting', () => {
+    const next = mapReducer(
+      { ...mapInitialState, layersSettings: { h: { layer: 'base' } } },
+      mapSetLayerKind({ type: 'h', kind: 'overlay' }),
+    );
+
+    expect(next.layersSettings['h']?.layer).toBeUndefined();
+  });
+
+  it('a reset leaving no base puts the default one under', () => {
+    const next = mapReducer(
+      {
+        ...mapInitialState,
+        layers: ['h'],
+        layersSettings: { h: { layer: 'base' } },
+      },
+      mapLayersSettingsReset(),
+    );
+
+    expect(next.layers).toEqual(['X', 'h']);
   });
 });

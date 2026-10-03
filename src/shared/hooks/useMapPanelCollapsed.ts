@@ -1,6 +1,6 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import storage from 'local-storage-fallback';
-import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useLayoutEffect, useSyncExternalStore } from 'react';
 
 /** The panels stacked on the map, each under its own storage key; on a tie the first stays open. */
 const PANELS = {
@@ -73,7 +73,8 @@ export function useMapPanelCollapsed(
 ): [boolean, (update: (collapsed: boolean) => boolean) => void] {
   const collapsed = useSyncExternalStore(subscribe, () => isCollapsed(panel));
 
-  useEffect(() => {
+  // Before paint, so two panels stored expanded never show both for a frame.
+  useLayoutEffect(() => {
     shown.add(panel);
 
     notify();

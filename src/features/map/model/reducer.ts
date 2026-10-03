@@ -224,17 +224,36 @@ function makeSoleBase(state: MapState, type: string) {
   ];
 }
 
+/** A layer's own kind, before any switch. */
+const nativeKindOf = (state: MapState, type: string) =>
+  layerKinds(
+    allLayerEntries(
+      state.customLayers,
+      state.cachedMaps,
+      state.catalogMaps,
+      {},
+    ),
+  ).get(type);
+
 /**
- * Turns off all base maps but the first, once settings switching kinds back
- * (a reset, another device's) may have made an overlay on the map a base.
+ * Leaves one base map on once settings switching kinds back (a reset, another
+ * device's) may have made an overlay a base or a base an overlay: the first of
+ * several, or Outdoor where none is left and no switch to overlay explains it.
  */
-function keepOneBase(state: MapState) {
+function settleBase(state: MapState) {
   const kinds = kindsOf(state);
 
-  const [, ...extra] = state.layers.filter((t) => kinds.get(t) === 'base');
+  const overrides = kindOverrides(state.layersSettings, state.linkKinds);
+
+  const [first, ...extra] = state.layers.filter((t) => kinds.get(t) === 'base');
 
   if (extra.length) {
     state.layers = state.layers.filter((t) => !extra.includes(t));
+  } else if (
+    first === undefined &&
+    !state.layers.some((t) => overrides[t] === 'overlay')
+  ) {
+    state.layers.unshift('X');
   }
 }
 
@@ -255,14 +274,17 @@ function assignAccountSettings(
 ) {
   if (settings.layersSettings) {
     state.layersSettings = settings.layersSettings;
-
-    keepOneBase(state);
   }
 
   if (settings.customLayers) {
     state.customLayers = settings.customLayers;
 
     endSavedShadingDrafts(state);
+  }
+
+  // With both in, as either decides a kind.
+  if (settings.layersSettings || settings.customLayers) {
+    settleBase(state);
   }
 
   if (settings.mapCombinations) {
@@ -310,7 +332,12 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       }
     })
     .addCase(mapSetLayerKind, (state, { payload: { type, kind } }) => {
-      mergeLayerSettings(state, type, { layer: kind });
+      // Its own kind is no switch, and kept as one it would read as a choice.
+      if (kind === nativeKindOf(state, type)) {
+        delete state.layersSettings[type]?.layer;
+      } else {
+        mergeLayerSettings(state, type, { layer: kind });
+      }
 
       // The user's own choice now; a link's is spent.
       delete state.linkKinds[type];
@@ -373,7 +400,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
       state.linkKinds = {};
 
-      keepOneBase(state);
+      settleBase(state);
     })
     .addCase(mapOverlayOrderSet, (state, { payload }) => {
       state.overlayOrder = payload;

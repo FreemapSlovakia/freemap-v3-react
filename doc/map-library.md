@@ -156,7 +156,9 @@ row in the Manage maps menu and in the search box, and switching tabs changes
   `allLayerEntries`, the two roots every kind is read from, including the
   toggle reducer. A map switched to an overlay leaves no base map on purpose:
   neither the URL check nor `ensureBase` adds X then, while a reset or an
-  account sync that makes two maps bases keeps the first (`keepOneBase`). A
+  account sync that switches kinds back keeps one base: the first of several,
+  or X where none is left (`settleBase`). Switching a map to its own kind
+  drops the setting rather than storing it. A
   base map draws opaque whatever opacity it kept. The library browse view keeps
   the catalog's kind; offline maps keep the kind they were saved with. Wherever no layer draws, `map.backgroundColor`
   (a local pref, Leaflet's grey by default) shows.

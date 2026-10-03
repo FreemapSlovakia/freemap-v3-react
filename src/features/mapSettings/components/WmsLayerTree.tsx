@@ -100,16 +100,16 @@ export function WmsLayerTree({
   // A WMS draws the first layer asked for at the bottom; servers list theirs
   // bottom first too, so an added layer goes before the first picked one the
   // service lists after it rather than on top. The rest keep their order.
-  const order = named(layers ?? []);
+  const order = new Map(named(layers ?? []).map((name, i) => [name, i]));
 
   const add = (names: string[]) => {
     const next = [...selected];
 
     for (const name of names) {
       if (!next.includes(name)) {
-        const after = next.findIndex(
-          (n) => order.indexOf(n) > order.indexOf(name),
-        );
+        const at = order.get(name) ?? -1;
+
+        const after = next.findIndex((n) => (order.get(n) ?? -1) > at);
 
         next.splice(after === -1 ? next.length : after, 0, name);
       }
