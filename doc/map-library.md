@@ -142,11 +142,6 @@ for each tab, and switching tabs changes
   (`dropMap`), and `mapReplaceLayer` (the legacy-map warning) replaces it in
   presets as on the map. Code asking which maps are drawn reads
   `drawnTypesSelector`, not `map.layers`.
-- **Older saved settings** — account and local alike go through
-  `upgradeLegacyMapSettings` (`legacySettings.ts`): an opacity in
-  `layersSettings` moves to the map's setup, and a custom shading or colour
-  map becomes a preset of `h` or `c` under its own id, so its toolbar, menu
-  and shortcut settings carry over. Map combinations are not converted.
 - **Links and documents carry presets inline** — `inlinePresets` numbers them
   (`@<n>` in `layers=`, `p.<n>…` params, `layerSetupUrl.ts`); on reading,
   `adoptPresets` maps one alike to one of the account's back to it (compared

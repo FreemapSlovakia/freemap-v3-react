@@ -28,7 +28,6 @@ import {
 } from '@features/location/model/settingsReducer.js';
 import { LayersSettingsCompatSchema } from '@features/map/model/actions.js';
 import { LayerSetupsCompatSchema } from '@features/map/model/layerSetup.js';
-import { upgradeLegacyMapSettings } from '@features/map/model/legacySettings.js';
 import {
   MapPresetArrayCompatSchema,
   presetIdOf,
@@ -141,13 +140,8 @@ const PreSetupsMapSchema = z.object({
 
 // Accepts the legacy `{ mapType, overlays }` shape, mapping it to `{ layers }`,
 // and a map from before setups: overlay opacities and the shading moved into
-// the setups of their maps; then see `upgradeLegacyMapSettings`.
-const PersistedMapCompatSchema = z.preprocess(
-  (raw) => upgradeLegacyMapSettings(withSetups(raw)),
-  PersistedMapSchema,
-);
-
-function withSetups(raw: unknown): unknown {
+// the setups of their maps.
+const PersistedMapCompatSchema = z.preprocess((raw) => {
   if (!raw || typeof raw !== 'object') {
     return raw;
   }
@@ -178,7 +172,7 @@ function withSetups(raw: unknown): unknown {
   }
 
   return { ...withLayers, layerSetups };
-}
+}, PersistedMapSchema);
 
 export const PersistedL10nSchema = z
   .object({
