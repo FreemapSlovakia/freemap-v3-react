@@ -941,3 +941,13 @@ Colorize, path details and track matching are issues under `area: routing` and
       Hessen went first by Matomo visits.
 - [ ] **Hungary**: the most engaged audience without terrain (Matomo), but no
       open national DTM is known. Look for one.
+- [ ] **France from IGN LiDAR HD**, mountains first. RGE ALTI (on fm6) is
+      only ~5 m in the mountains; the 0.5 m LiDAR HD MNT is published for all
+      of the Alps, Pyrenees, Corsica and the Vosges (Etalab 2.0). No bulk
+      download: the WFS index `IGNF_LIDAR-HD_METADONNEE:metadata` on
+      `data.geopf.fr` gives each 1 km tile's `url_mnt` (2000×2000 Float32
+      GeoTIFF, EPSG:2154), ~40 req/s. Alps + Pyrenees ≈ 76k tiles, ~1.2 TB raw;
+      recompress as they arrive. Corsica is IGN78, lakes and military zones
+      are nodata. Sample z17 vs z18 first. The rest of France can come from
+      RGE ALTI at z15 below it, re-interpolated with a cubic spline where its
+      5 m lattice shows (bilinear facets otherwise shade as squares).

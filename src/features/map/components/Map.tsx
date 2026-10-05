@@ -2,6 +2,7 @@ import { useMouseCursor } from '@app/hooks/useMouseCursor.js';
 import { pickingModeSelector } from '@app/store/selectors.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { useMap } from '@features/map/hooks/useMap.js';
+import { snapToDevicePixels } from '@features/map/snapToDevicePixels.js';
 import { initialWheelPxPerZoomLevel } from '@features/map/wheelZoomCalibration.js';
 import { HALO_OPACITY, HALO_PANE, HALO_PANE_Z } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -63,6 +64,8 @@ export function TheMap({ children }: Props): ReactElement {
       map.options.zoomSnap = zoomSnap;
     }
   }, [map, zoomSnap]);
+
+  useEffect(() => (map ? snapToDevicePixels(map) : undefined), [map]);
 
   return (
     <MapContainer
