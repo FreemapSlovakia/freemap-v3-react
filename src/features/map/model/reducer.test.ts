@@ -136,8 +136,8 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
       mapCustomLayerDelete({ type: '.1' }),
     );
 
-    // The only base went, so the default one comes under.
-    expect(deleted.layers).toEqual(['X', 'i']);
+    // The only base went, and none takes its place.
+    expect(deleted.layers).toEqual(['i']);
 
     expect(deleted.presets[0]?.layers).toEqual([{ type: 'w', setup: {} }]);
   });
@@ -402,7 +402,7 @@ describe('mapReducer — presets', () => {
 
     expect(deleted.layersSettings['p1']).toBeUndefined();
 
-    expect(deleted.layers).toEqual(['X', 'xb']);
+    expect(deleted.layers).toEqual(['xb']);
   });
 });
 
@@ -613,6 +613,42 @@ describe('mapReducer — presets across sign-in', () => {
       expect(next.maxZoom).toBe(mapInitialState.maxZoom);
     }
   });
+
+  it('puts the default base under where signing out took the only one', () => {
+    const signedIn = {
+      ...local,
+      layers: ['.1', 'i'],
+      customLayers: [
+        { type: '.1', layer: 'base', technology: 'tile', url: 'u' },
+      ],
+    } as typeof local;
+
+    for (const next of [
+      mapReducer(signedIn, authLogout()),
+      mapReducer(signedIn, authSetUser(null)),
+    ]) {
+      expect(next.layers[0]).toBe('X');
+    }
+  });
+
+  it("puts the default base under where the account's presets took the only one", () => {
+    const base = { id: 'b', name: 'B', layers: [{ type: 'O', setup: {} }] };
+
+    const next = mapReducer(
+      { ...local, presets: [base], layers: ['@b', 'i'] },
+      signIn({ presets: [] }),
+    );
+
+    expect(next.layers).toEqual(['X', 'i']);
+
+    // Not where the account has it as an overlay.
+    expect(
+      mapReducer(
+        { ...local, presets: [base], layers: ['@b', 'i'] },
+        signIn({ presets: [], layerSetups: { X: { kind: 'overlay' } } }),
+      ).layers,
+    ).toEqual(['i']);
+  });
 });
 
 describe('mapReducer — mapRefocus', () => {
@@ -776,7 +812,7 @@ describe('mapReducer — switched kind', () => {
     expect(next.layerSetups['h']).toBeUndefined();
   });
 
-  it('a reset leaving no base puts the default one under', () => {
+  it('a reset leaving no base puts none under', () => {
     const next = mapReducer(
       {
         ...mapInitialState,
@@ -786,7 +822,27 @@ describe('mapReducer — switched kind', () => {
       mapLayerSetupReset({ type: 'h' }),
     );
 
-    expect(next.layers).toEqual(['X', 'h']);
+    expect(next.layers).toEqual(['h']);
+  });
+
+  it('resetting every setting puts the default base under the one it took', () => {
+    const switched = {
+      ...mapInitialState,
+      layerSetups: { h: { kind: 'base' as const } },
+    };
+
+    expect(
+      mapReducer({ ...switched, layers: ['h'] }, mapLayersSettingsReset())
+        .layers,
+    ).toEqual(['X', 'h']);
+
+    // None before, none after.
+    expect(
+      mapReducer(
+        { ...mapInitialState, layers: ['h'] },
+        mapLayersSettingsReset(),
+      ).layers,
+    ).toEqual(['h']);
   });
 
   it('a reset back to a base map makes it the only base', () => {

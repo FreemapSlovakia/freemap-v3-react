@@ -184,11 +184,13 @@ for each tab, and switching tabs changes
   its setup's `kind`; a custom map's form sets its default kind, and saving it
   drops the switch. `withKind` applies it in `libraryIndexSelector`,
   `resolvedCustomLayersSelector` and `allLayerEntries`; a preset's copy goes
-  by its own setup. A switch on the map may leave no base map, on purpose;
-  `settleBase` puts X under only when a reset, a sync or a deletion took the
-  only one away. A base map has an opacity too, opaque by default (never an
-  overlay's `defaultOpacity`, `resolveLayerOpacity`), the map background
-  showing through it. The library browse view keeps the catalog's
+  by its own setup. A switch, a deletion or a map's own reset that takes the
+  only base away leaves none, and `settleBase` only keeps one at most, first.
+  Signing in or out and resetting every setting are not the user's act on the
+  map, so `keepingBase` puts X under where they took the only one (unless X
+  itself is switched to overlay). A base map has an opacity too, opaque by
+  default (never an overlay's `defaultOpacity`, `resolveLayerOpacity`), the
+  map background showing through it. The library browse view keeps the catalog's
   kind; offline maps keep the kind they were saved with. Wherever no layer
   draws, `map.backgroundColor` (a local pref, `#dddddd` by default) shows.
 - **The custom map form** (`CustomMapEditor`) replaces the list in the

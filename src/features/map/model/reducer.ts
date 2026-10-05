@@ -230,9 +230,11 @@ function itemKindsOf(state: MapState) {
 }
 
 /** Puts a base item first and takes any other off, as picking one does. */
-function makeSoleBase(state: MapState, item: string) {
-  const kindOf = itemKindsOf(state);
-
+function makeSoleBase(
+  state: MapState,
+  item: string,
+  kindOf = itemKindsOf(state),
+) {
   setLayers(state, [
     item,
     ...state.layers.filter((t) => t !== item && kindOf(t) !== 'base'),
@@ -263,36 +265,41 @@ function toggleItem(
   }
 }
 
-/** Whether a base item is on. */
-const hasBase = (state: MapState) => {
+/**
+ * Runs a change the user didn't make on the map (signing in or out, a reset of
+ * every setting); where it took the only base away, Outdoor goes under.
+ */
+function keepingBase(state: MapState, change: () => void) {
+  const hasBase = (kindOf: ReturnType<typeof itemKindsOf>) =>
+    state.layers.some((t) => kindOf(t) === 'base');
+
+  const hadBase = hasBase(itemKindsOf(state));
+
+  change();
+
   const kindOf = itemKindsOf(state);
 
-  return state.layers.some((t) => kindOf(t) === 'base');
-};
+  // Not where the account switched Outdoor itself to overlay.
+  if (
+    hadBase &&
+    !hasBase(kindOf) &&
+    state.layerSetups['X']?.kind !== 'overlay'
+  ) {
+    makeSoleBase(state, 'X', kindOf);
+  }
+}
 
 /**
- * After a change not made on the map itself (a reset, a sync, a deletion):
- * one base item, first, or Outdoor where `hadBase` says the change took the
- * only one away — unless a map was switched to overlay on purpose.
+ * After a change that may switch kinds off the map (a reset, a sync, a
+ * replace): at most one base item, first. One that took the base away leaves none.
  */
-function settleBase(state: MapState, hadBase: boolean) {
+function settleBase(state: MapState) {
   const kindOf = itemKindsOf(state);
 
-  const overrides = kindOverrides(state.layerSetups);
-
-  const [first, ...extra] = state.layers.filter((t) => kindOf(t) === 'base');
+  const first = state.layers.find((t) => kindOf(t) === 'base');
 
   if (first !== undefined) {
-    setLayers(state, [
-      first,
-      ...state.layers.filter((t) => t !== first && !extra.includes(t)),
-    ]);
-  } else if (
-    hadBase &&
-    !state.layers.includes('X') &&
-    !state.layers.some((t) => overrides[t] === 'overlay')
-  ) {
-    state.layers.unshift('X');
+    makeSoleBase(state, first, kindOf);
   }
 }
 
@@ -400,12 +407,9 @@ function targetSetup(state: MapState, { type, preset }: SetupTarget) {
 
 /**
  * Takes a map that is going away off the map and out of every preset, its
- * drafts with it; Outdoor goes under where it was the only base. Call before
- * removing its def, which decides its kind.
+ * drafts with it.
  */
 function dropMap(state: MapState, type: string) {
-  const hadBase = hasBase(state);
-
   state.layers = state.layers.filter((t) => t !== type);
 
   for (const preset of [...state.presets, ...state.linkPresets]) {
@@ -415,8 +419,6 @@ function dropMap(state: MapState, type: string) {
   }
 
   delete state.shadingDrafts[type];
-
-  settleBase(state, hadBase);
 }
 
 /** Moves `item` to where `to` is in `items`. */
@@ -447,8 +449,6 @@ function assignAccountSettings(
   state: MapState,
   settings: Partial<AccountSettings>,
 ) {
-  const hadBase = hasBase(state);
-
   if (settings.layersSettings) {
     state.layersSettings = settings.layersSettings;
   }
@@ -475,7 +475,7 @@ function assignAccountSettings(
 
   // With all in, as each decides a kind.
   if (settings.layerSetups || settings.customLayers || settings.presets) {
-    settleBase(state, hadBase);
+    settleBase(state);
   }
 
   if (settings.maxZoom !== undefined) {
@@ -485,7 +485,9 @@ function assignAccountSettings(
 
 // Not passed to whoever signs in next.
 const resetAccountSettings = (state: MapState) =>
-  assignAccountSettings(state, accountSettingsOf(mapInitialState));
+  keepingBase(state, () =>
+    assignAccountSettings(state, accountSettingsOf(mapInitialState)),
+  );
 
 export const mapReducer = createReducer(mapInitialState, (builder) =>
   builder
@@ -530,8 +532,6 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(mapLayerSetupReset, (state, { payload }) => {
       delete state.shadingDrafts[setupKey(payload)];
 
-      const hadBase = hasBase(state);
-
       if (payload.preset === undefined) {
         delete state.layerSetups[payload.type];
 
@@ -541,13 +541,9 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
           kindsOf(state).get(payload.type) === 'base'
         ) {
           makeSoleBase(state, payload.type);
-        } else {
-          settleBase(state, hadBase);
         }
       } else {
         setPresetSetup(state, payload.preset, payload.type, {});
-
-        settleBase(state, hadBase);
       }
     })
     .addCase(mapOverlayMove, (state, { payload: { type, to, preset } }) => {
@@ -616,8 +612,6 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
             (p) => p.id !== replacing,
           );
         } else if (onMap) {
-          const hadBase = hasBase(state);
-
           // It is a copy of every layer a preset can hold; the rest stay.
           state.layers = [
             item,
@@ -628,20 +622,16 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
             ),
           ];
 
-          settleBase(state, hadBase);
+          settleBase(state);
         }
       },
     )
     .addCase(mapPresetDelete, (state, { payload: { id } }) => {
-      const hadBase = hasBase(state);
-
       state.presets = state.presets.filter((p) => p.id !== id);
 
       delete state.layersSettings[id];
 
       state.layers = state.layers.filter((t) => t !== presetItem(id));
-
-      settleBase(state, hadBase);
     })
     .addCase(mapPresetToggle, (state, { payload: { id, enable } }) => {
       const preset = findPreset(state, id);
@@ -691,31 +681,31 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         return;
       }
 
-      // Taking its base map out leaves the map without one, as above.
       preset.layers = preset.layers.filter((l) => l.type !== type);
 
       delete state.shadingDrafts[setupKey({ type, preset: id })];
     })
-    .addCase(mapLayersSettingsReset, (state) => {
-      const hadBase = hasBase(state);
+    .addCase(mapLayersSettingsReset, (state) =>
+      keepingBase(state, () => {
+        // A map installed only by having settings stays installed without them.
+        state.layersSettings = Object.fromEntries(
+          Object.entries(state.layersSettings).flatMap(
+            ([type, { installed }]) =>
+              installed !== undefined
+                ? [[type, { installed }]]
+                : isUninstalledByDefault(type)
+                  ? [[type, { installed: true }]]
+                  : [],
+          ),
+        );
 
-      // A map installed only by having settings stays installed without them.
-      state.layersSettings = Object.fromEntries(
-        Object.entries(state.layersSettings).flatMap(([type, { installed }]) =>
-          installed !== undefined
-            ? [[type, { installed }]]
-            : isUninstalledByDefault(type)
-              ? [[type, { installed: true }]]
-              : [],
-        ),
-      );
+        state.layerSetups = {};
 
-      state.layerSetups = {};
+        state.shadingDrafts = {};
 
-      state.shadingDrafts = {};
-
-      settleBase(state, hadBase);
-    })
+        settleBase(state);
+      }),
+    )
     .addCase(gallerySetFilter, (state) => {
       if (!state.layers.includes('I')) {
         state.layers.push('I');
@@ -725,8 +715,6 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       state.layers = state.layers.filter((t) => t !== item);
     })
     .addCase(mapReplaceLayer, (state, { payload: { from, to } }) => {
-      const hadBase = hasBase(state);
-
       // Only the opacity and kind carry over: other setup fields are the old map's.
       const carried = ({ opacity, kind }: LayerSetup): LayerSetup => ({
         opacity,
@@ -768,7 +756,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         }
       }
 
-      settleBase(state, hadBase);
+      settleBase(state);
     })
     .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
       toggleItem(state, type, kindsOf(state).get(type) === 'base', enable);
@@ -827,8 +815,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
       // Each key the account has wins, even empty, so a deletion elsewhere
       // holds; one it lacks keeps what was set signed out.
-      if (action.payload.settings) {
-        assignAccountSettings(state, action.payload.settings);
+      const { settings } = action.payload;
+
+      if (settings) {
+        keepingBase(state, () => assignAccountSettings(state, settings));
       }
     })
     .addCase(authLogout, resetAccountSettings)

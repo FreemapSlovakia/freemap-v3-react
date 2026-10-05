@@ -645,23 +645,20 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       places: `withKind` in `allLayerEntries`, `libraryIndexSelector` and
       `resolvedCustomLayersSelector` hand out defs already switched by the map's
       own setup, so a preset's copy has to switch back (`withMemberKind` in
-      `Layers`, `capturePreset`, `useTargetDef`); the reducer's `itemKindsOf`,
-      the panel's `Stack.kindOf` and the switcher's `kindOf` each build their own
-      item → kind lookup. Instead: def selectors stay native,
-      `layerInstancesSelector` sets every instance's kind (a map on its own from
-      its setup, a preset's copy from the copy's), and `withKind` runs once where
-      `Layers` draws; one exported item-kind function for the stack. Medium to
-      large — many readers expect `def.layer` switched.
-- [ ] **One base-map rule after the reducer.** `settleBase` / `makeSoleBase` are
-      hand-placed in a dozen cases, each capturing `hadBase` first, and
-      `settleBase` guesses "left without a base on purpose" from any item having
-      `kind: 'overlay'` in its setup — so deleting a custom base map while an
-      unrelated map is switched to overlay leaves no base and no Outdoor. Enforce
-      "at most one base, first" once in a wrapper that sees the previous and next
-      state: a newly on (or newly base) item wins, Outdoor goes under only when
-      the previous base left `layers` altogether, and the actions that may leave
-      no base on purpose (a link, a document, a switch to overlay, removing a
-      preset's base map) opt out. `reducer.test.ts` covers the area.
+      `Layers`, `capturePreset`, `useTargetDef`); the reducer's `itemKindsOf`
+      and the panel's `Stack.kindOf` each build their own item → kind lookup,
+      and the reducer's `kindsOf`/`nativeKindsOf` rebuild what
+      `layerKindsSelector`/`nativeKindsSelector` hold, since it sees only
+      `MapState`. Instead: def selectors stay native, `layerInstancesSelector`
+      sets every instance's kind (a map on its own from its setup, a preset's
+      copy from the copy's), and `withKind` runs where `Layers` draws. Lists of
+      maps not on the map — the switcher, `overlayStackSelector`, the library —
+      have no instance, so they read `layerKindsSelector` instead of
+      `def.layer`. One exported item-kind function over `MapState`-level
+      inputs, for the reducer and the stack alike. Clarity only, no known bug:
+      the `defaultOpacity` a switch-back leaves on a base copy is ignored by
+      `resolveLayerOpacity`. Medium to large — many readers expect `def.layer`
+      switched.
 - [ ] **Take `i` out of `map.layers`.** It is a per-device "hide the tools'
       features" flag stored as an inverted layer, special-cased in the switcher,
       `Main`, the panel's `makesNew`, `canPreview`, the link writer (dropped) and
