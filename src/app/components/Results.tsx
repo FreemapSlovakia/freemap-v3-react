@@ -11,7 +11,6 @@ import { TrackingResult } from '@features/tracking/components/TrackingResult.js'
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
 import { AsyncComponent } from './AsyncComponent.js';
-import { LocationResult } from './LocationResult.js';
 
 // Module scope so each keeps one identity: `useLazy` re-runs its effect when
 // the factory changes, and an inline `import()` also stops the React Compiler
@@ -106,8 +105,6 @@ export function Results(): ReactElement {
       <DrawingLinesResult />
 
       <DrawingPointsResult />
-
-      <LocationResult />
 
       {trackGeojson && (
         <AsyncComponent

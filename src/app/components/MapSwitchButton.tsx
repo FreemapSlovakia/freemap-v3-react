@@ -824,6 +824,9 @@ export function MapSwitchButton(): ReactElement {
                     onClick={handleLayerButtonClick}
                     {...props}
                     className={clsx(
+                      // A crowded toolbar shrinks its buttons; the badge would
+                      // then wrap under the icon.
+                      'text-nowrap',
                       joined && 'pe-1 border-end-0 fm-btn-joined',
                       def.layer === 'overlay' && 'fm-overlay-corner',
                     )}
@@ -877,10 +880,18 @@ export function MapSwitchButton(): ReactElement {
           <Dropdown.Toggle
             title={m?.mapLayers.layers}
             bsPrefix="fm-dropdown-toggle-nocaret"
+            className="text-nowrap"
             variant={isWide ? 'secondary' : 'primary'}
           >
             <FaEllipsisV className="d-none d-sm-block" />
             <FaRegMap className="d-sm-none" />
+
+            {/* Narrow screens have no toolbar button to carry it. */}
+            {!isWide && activeLayers.includes('i') && (
+              <Badge label={m?.mapLayers.interactiveLayerWarning}>
+                <FaEyeSlash />
+              </Badge>
+            )}
           </Dropdown.Toggle>
 
           <FmDropdownMenu>

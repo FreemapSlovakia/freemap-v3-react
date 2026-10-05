@@ -92,6 +92,7 @@ import { Layers } from './Layers.js';
 // `SingleCopyCssPlugin` in `rspack.config.ts` fails the build for any shared
 // stylesheet that lacks an importer here.
 import '@shared/components/FloatingWindow.module.css';
+import { LocationResult } from './LocationResult.js';
 import classes from './Main.module.css';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapControls } from './MapControls.js';
@@ -1201,6 +1202,9 @@ export function Main(): ReactElement {
                 export/cache area) they stay visible but non-interactive — see
                 pickingModeSelector / Map.tsx / leaflet.css. */}
             {showResults && <Results />}
+
+            {/* Own position stays on screen with the data layer hidden. */}
+            <LocationResult />
 
             <WikiLayer />
 
