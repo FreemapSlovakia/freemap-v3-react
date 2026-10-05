@@ -39,10 +39,10 @@ export function buildTileUrl(
   subdomain = 'a',
 ): string {
   return urlTemplate
-    .replace('{x}', String(x))
-    .replace('{y}', String(y))
-    .replace('{z}', String(z))
-    .replace('{s}', subdomain);
+    .replaceAll('{x}', String(x))
+    .replaceAll('{y}', String(y))
+    .replaceAll('{z}', String(z))
+    .replaceAll('{s}', subdomain);
 }
 
 /**

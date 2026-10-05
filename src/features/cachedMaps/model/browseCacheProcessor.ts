@@ -9,6 +9,7 @@ import { isLayerOffered } from '@shared/mapLibrary/installed.js';
 import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
 import {
+  type BrowseTileTemplate,
   clearBrowseCache,
   readBrowseCacheStats,
   readBrowseTileTemplatesByType,
@@ -35,7 +36,7 @@ const tileTemplatesSelector = createSelector(
     bodies,
     layersSettings,
     layers,
-  ): Record<string, string | null> => ({
+  ): Record<string, BrowseTileTemplate | null> => ({
     // `null`: an offered map still loading, which keeps its stored template
     ...Object.fromEntries(
       mapIndex
@@ -50,7 +51,10 @@ const tileTemplatesSelector = createSelector(
     ...Object.fromEntries(
       [...integrated, ...customLayers]
         .filter((def) => def.technology === 'tile')
-        .map((def) => [def.type, def.url]),
+        .map((def) => [
+          def.type,
+          { url: def.url, subdomains: def.subdomains, tms: def.tms },
+        ]),
     ),
   }),
 );
@@ -62,7 +66,7 @@ const tileTemplatesKey = createSelector(tileTemplatesSelector, (templates) =>
 let syncing = Promise.resolve();
 
 /** What the last sync wrote; read from storage once, for a start with maps loading. */
-let written: Record<string, string> | undefined;
+let written: Record<string, BrowseTileTemplate> | undefined;
 
 /**
  * Hands the service worker the settings and the layer set it works from. Calls
@@ -85,8 +89,8 @@ export function syncBrowseCache(getState: () => RootState): Promise<void> {
       }
 
       const resolved = Object.fromEntries(
-        Object.entries(templates).flatMap(([type, url]) => {
-          const template = url ?? written?.[type];
+        Object.entries(templates).flatMap(([type, stored]) => {
+          const template = stored ?? written?.[type];
 
           return template ? [[type, template]] : [];
         }),

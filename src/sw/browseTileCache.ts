@@ -18,12 +18,19 @@ import {
   putTileResponse,
   readBrowseCacheState,
   readBrowseIndex,
+  type TileAncestor,
+  type TileGrid,
+  tileAncestors,
   tileTemplateToRegExp,
   writeBrowseCacheStats,
   writeBrowseIndex,
 } from '@features/cachedMaps/browseCache.js';
 import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
-import { unmarkDrawnTile } from '@shared/tileUrl.js';
+import {
+  stripTileScale,
+  tileSubdomains,
+  unmarkDrawnTile,
+} from '@shared/tileUrl.js';
 import { fetchTile } from './fetchTile.js';
 
 // how soon the settings and the layer templates may be re-read
@@ -42,6 +49,9 @@ const TOUCH_MS = 3600_000;
 // eviction goes this far below the cap, so it doesn't run again on the next tile
 const EVICT_RATIO = 0.9;
 
+// how many zooms up a missing tile looks for one to enlarge; past 32× it's mush
+const MAX_UPSCALE_LEVELS = 5;
+
 const DAY_MS = 86_400_000;
 
 // ---------------------------------------------------------------------------
@@ -50,7 +60,7 @@ const DAY_MS = 86_400_000;
 
 let config: BrowseCacheConfig | null = null;
 
-let matchers: RegExp[] = [];
+let grids: TileGrid[] = [];
 
 let readAt = 0;
 
@@ -89,9 +99,16 @@ async function readState(): Promise<void> {
 
     config = state.config;
 
-    matchers = state.templates.flatMap((template) => {
+    grids = state.templates.flatMap(({ url, subdomains, tms }) => {
       try {
-        return [tileTemplateToRegExp(template)];
+        return [
+          {
+            template: url,
+            re: tileTemplateToRegExp(url),
+            subdomains: tileSubdomains(subdomains),
+            tms: tms ?? false,
+          },
+        ];
       } catch {
         return [];
       }
@@ -134,12 +151,10 @@ export function refreshBrowseState(): void {
 // sitting in front of the first screenful of tiles.
 void loadState();
 
-/** The settings under which this URL is ours to answer, if it is. */
-function configFor(url: string): BrowseCacheConfig | undefined {
-  return config &&
-    browseCacheActive(config) &&
-    matchers.some((re) => re.test(url))
-    ? config
+/** The layer grid that makes this URL ours to answer, if it is. */
+function gridFor(url: string): TileGrid | undefined {
+  return config && browseCacheActive(config)
+    ? grids.find(({ re }) => re.test(url))
     : undefined;
 }
 
@@ -158,9 +173,9 @@ export function browseTileResponse(
     return mayWait ? serveWhenReady(event) : undefined;
   }
 
-  const settings = configFor(unmarkDrawnTile(event.request.url));
+  const grid = gridFor(unmarkDrawnTile(event.request.url));
 
-  return settings && serveBrowseTile(event, settings);
+  return grid && serveBrowseTile(event, config, grid);
 }
 
 async function serveWhenReady(event: FetchEvent): Promise<Response> {
@@ -178,9 +193,9 @@ async function serveWhenReady(event: FetchEvent): Promise<Response> {
   // lands.
   config ??= browseCacheDefaults;
 
-  const settings = configFor(unmarkDrawnTile(event.request.url));
+  const grid = gridFor(unmarkDrawnTile(event.request.url));
 
-  return settings ? serveBrowseTile(event, settings) : fetch(event.request);
+  return grid ? serveBrowseTile(event, config, grid) : fetch(event.request);
 }
 
 // ---------------------------------------------------------------------------
@@ -557,9 +572,109 @@ export async function browseCachedTile(
   return stored;
 }
 
+function encodeOptions(contentType: string): ImageEncodeOptions {
+  return /^image\/jpe?g\b/i.test(contentType)
+    ? { type: 'image/jpeg', quality: 0.9 }
+    : /^image\/webp\b/i.test(contentType)
+      ? { type: 'image/webp', quality: 0.9 }
+      : { type: 'image/png' };
+}
+
+/**
+ * A missing tile cut from the nearest cached ancestor and enlarged, for when
+ * there is no network to ask. Not stored: it is no copy of the real tile.
+ */
+async function upscaledTile(
+  event: FetchEvent,
+  held: BrowseIndex,
+  url: string,
+  grid: TileGrid,
+): Promise<Response | undefined> {
+  // An aborted request is a tile nobody will show. A missing `@Nx` tile must
+  // fail, so the layer retries it at scale 1, which may be held as it is.
+  if (
+    typeof OffscreenCanvas === 'undefined' ||
+    event.request.signal.aborted ||
+    stripTileScale(url) !== url
+  ) {
+    return undefined;
+  }
+
+  for (const ancestor of tileAncestors(url, grid, MAX_UPSCALE_LEVELS)) {
+    if (!held.entries.has(ancestor.url)) {
+      continue;
+    }
+
+    const stored = await (await openCache()).match(ancestor.url, {
+      ignoreVary: true,
+    });
+
+    const enlarged = stored && (await enlarge(stored, ancestor));
+
+    if (enlarged) {
+      // evicted meanwhile: the enlarged body is no measure of the ancestor's
+      if (held.entries.has(ancestor.url)) {
+        touchTile(event, held, ancestor.url, enlarged);
+      }
+
+      return enlarged;
+    }
+  }
+
+  return undefined;
+}
+
+async function enlarge(
+  stored: Response,
+  { scale, col, row }: TileAncestor,
+): Promise<Response | undefined> {
+  let bitmap: ImageBitmap | undefined;
+
+  try {
+    // rejects for anything but a raster image — a vector tile, say
+    bitmap = await createImageBitmap(await stored.blob());
+
+    const { width, height } = bitmap;
+
+    const canvas = new OffscreenCanvas(width, height);
+
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      return undefined;
+    }
+
+    ctx.imageSmoothingQuality = 'high';
+
+    const w = width / scale;
+
+    const h = height / scale;
+
+    ctx.drawImage(bitmap, col * w, row * h, w, h, 0, 0, width, height);
+
+    const blob = await canvas.convertToBlob(
+      encodeOptions(stored.headers.get('content-type') ?? ''),
+    );
+
+    const attribution = stored.headers.get(ATTRIBUTION_HEADER);
+
+    return new Response(blob, {
+      headers: {
+        'Content-Type': blob.type,
+        ...(attribution !== null && { [ATTRIBUTION_HEADER]: attribution }),
+      },
+    });
+  } catch {
+    return undefined;
+  } finally {
+    bitmap?.close();
+  }
+}
+
 async function serveBrowseTile(
   event: FetchEvent,
   settings: BrowseCacheConfig,
+  grid: TileGrid,
 ): Promise<Response> {
   // What the tile is, not how it was asked for: a download stores and a draw
   // looks up under one key.
@@ -614,7 +729,10 @@ async function serveBrowseTile(
   }
 
   if (settings.mode === 'cache-only') {
-    return new Response(null, { status: 404 });
+    return (
+      (await upscaledTile(event, held, url, grid)) ??
+      new Response(null, { status: 404 })
+    );
   }
 
   try {
@@ -652,6 +770,18 @@ async function serveBrowseTile(
       touchTile(event, held, url, cached);
 
       return cached;
+    }
+
+    // Online, the rejection is the server's answer: a CORS-less error rejects
+    // the same way.
+    if (settings.mode === 'network-only' || navigator.onLine) {
+      throw err;
+    }
+
+    const upscaled = await upscaledTile(event, held, url, grid);
+
+    if (upscaled) {
+      return upscaled;
     }
 
     throw err;
