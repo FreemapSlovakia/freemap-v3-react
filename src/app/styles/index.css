@@ -393,6 +393,10 @@ button#freemap-logo {
   width: 5px;
   padding: 0;
   pointer-events: none;
+  background-color: var(--bs-btn-hover-bg);
+  border-color: var(--bs-btn-hover-border-color);
+  /* Above Bootstrap's raised (hovered/active) buttons, which overlap its border. */
+  z-index: 2;
 }
 
 /* A logotype drawn as an icon (the Garmin wordmark) needs the width of a word,
