@@ -648,6 +648,64 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       drawing a second; and it stays pinned above the maps, outside the preset's
       pane, so the preset's place and opacity don't apply to it.
 
+## Map layers and presets (`src/features/map/`, see [`doc/map-library.md`](./doc/map-library.md))
+
+- [ ] **A catalog map's kind before the catalog loads.** `kindsOf` /
+      `nativeKindsOf` / `presetKind` learn a catalog map's kind only from
+      `map.catalogMaps`, which isn't persisted and arrives after start (or never,
+      if the fetch fails). Until then a catalog base map on the map, or a preset
+      whose base member is one, counts as no base: toggling another base map in
+      that window leaves two. Persist the kind of the catalog maps in use (on the
+      map, installed, in a preset, an offline map's source), or settle the base
+      once `mapLibraryCatalogMapsLoaded` arrives.
+- [ ] **Decide a map's kind once, per drawing.** It is worked out in about eight
+      places: `withKind` in `allLayerEntries`, `libraryIndexSelector` and
+      `resolvedCustomLayersSelector` hand out defs already switched by the map's
+      own setup, so a preset's copy has to switch back (`withMemberKind` in
+      `Layers`, `capturePreset`, `useTargetDef`); the reducer's `itemKindsOf`,
+      the panel's `Stack.kindOf` and the switcher's `kindOf` each build their own
+      item → kind lookup. Instead: def selectors stay native,
+      `layerInstancesSelector` sets every instance's kind (a map on its own from
+      its setup, a preset's copy from the copy's), and `withKind` runs once where
+      `Layers` draws; one exported item-kind function for the stack. Medium to
+      large — many readers expect `def.layer` switched.
+- [ ] **One base-map rule after the reducer.** `settleBase` / `makeSoleBase` are
+      hand-placed in a dozen cases, each capturing `hadBase` first, and
+      `settleBase` guesses "left without a base on purpose" from any item having
+      `kind: 'overlay'` in its setup — so deleting a custom base map while an
+      unrelated map is switched to overlay leaves no base and no Outdoor. Enforce
+      "at most one base, first" once in a wrapper that sees the previous and next
+      state: a newly on (or newly base) item wins, Outdoor goes under only when
+      the previous base left `layers` altogether, and the actions that may leave
+      no base on purpose (a link, a document, a switch to overlay, removing a
+      preset's base map) opt out. `reducer.test.ts` covers the area.
+- [ ] **Take `i` out of `map.layers`.** It is a per-device "hide the tools'
+      features" flag stored as an inverted layer, special-cased in the switcher,
+      `Main`, the panel's `makesNew`, `canPreview`, the link writer (dropped) and
+      `getMapStateDiffFromUrl` (re-added). A boolean in the map slice, migrated
+      in `persistence.ts` from `layers.includes('i')`, with the menu row and the
+      shortcut toggling it, removes those cases.
+- [ ] **One lookup of a map by id.** Library, custom and offline defs are looked
+      up ad hoc in about nine places (`useOrigin`, `isEditable`, `useTargetDef`,
+      `YourMapsList`, `SourceName`, `MapLibraryPreviewMenu`, `previewProcessors`,
+      `capturePreset`, `Layers.drawInstance`), each with its own precedence and
+      linear `find`s. A selector of `{ def, origin }` by id serves them, and
+      gives the panel's `switchable` its origin.
+- [ ] **Helpers for a map's effective settings.** The shortcut
+      (`settings.shortcut === undefined ? def.shortcut : …`) and the
+      menu/toolbar defaults are recomputed inline in `YourMapsList`,
+      `CustomMapEditor`, `MapSwitchButton`, `commandDefinitions`,
+      `keyboardHandler` and `CacheTilesForm`: put them beside
+      `isLayerInstalled` in `installed.ts`, the default passed in. Likewise
+      `layerName(def, m) ?? def.type`, hand-written at six sites.
+- [ ] **Smaller known issues:** a My Map whose custom map has a legacy id
+      (`.1`, `:1`) that one of the reader's own maps also has draws the reader's
+      (`mapsLoaded` adds only missing types); two identical own presets can swap
+      on reload, `adoptPresets` taking the first alike; a link's preset isn't in
+      the map switcher; **Duplicate** inside a preset returns to the top of the
+      panel rather than opening the copy; an installed catalog map the catalog
+      later drops can't be uninstalled (listed in neither tab).
+
 ## Offline maps (`src/features/cachedMaps/`)
 
 - [ ] **Make the shrink prune resumable.** Narrowing a cached map's area or zoom
