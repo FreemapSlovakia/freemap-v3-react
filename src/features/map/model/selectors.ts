@@ -1,7 +1,7 @@
 import type { RootState } from '@app/store/store.js';
 import {
-  integratedLayerDefMapSelector,
   kindOverridesSelector,
+  mapByIdSelector,
   nativeKindsSelector,
   presetByIdSelector,
 } from '@features/mapLibrary/model/selectors.js';
@@ -109,14 +109,11 @@ export const drawnSetupsSelector = createSelector(
 export function capturePreset(state: RootState): PresetLayer[] {
   const nativeKinds = nativeKindsSelector(state);
 
-  const defs = integratedLayerDefMapSelector(state);
-
-  const customLayers = state.map.customLayers;
+  const mapById = mapByIdSelector(state);
 
   const presetById = presetByIdSelector(state);
 
-  const defOf = (type: string) =>
-    defs[type] ?? customLayers.find((d) => d.type === type);
+  const defOf = (type: string) => mapById[type]?.def;
 
   return mergeLayers(
     layerInstancesSelector(state)

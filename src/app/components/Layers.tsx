@@ -16,7 +16,7 @@ import {
 } from '@features/map/model/selectors.js';
 import {
   integratedLayerDefMapSelector,
-  integratedLayerDefsSelector,
+  mapByIdSelector,
   nativeKindsSelector,
   overlayZIndexSelector,
   presetByIdSelector,
@@ -35,7 +35,6 @@ import {
   resolveLayerOpacity,
   serverShadingUrl,
 } from '@shared/mapDefinitions.js';
-import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import {
   scheduleTileAttribution,
   tileAttributionHandlers,
@@ -93,7 +92,7 @@ const viewshedLayerFactory = () =>
 export function Layers(): ReactNode {
   const map = useMap();
 
-  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
+  const mapById = useAppSelector(mapByIdSelector);
 
   const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
 
@@ -598,8 +597,6 @@ export function Layers(): ReactNode {
 
   const customLayerDefs = useAppSelector(resolvedCustomLayersSelector);
 
-  const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
-
   // A preset's layer is of the kind its own setup says, not the map's.
   const ofKind = <T extends LayerDef>(def: T, inst: LayerInstance): T =>
     withMemberKind(def, inst.kind, nativeKinds.get(def.type));
@@ -607,35 +604,33 @@ export function Layers(): ReactNode {
   function drawInstance(inst: LayerInstance, zIndex: number): ReactNode {
     const at = { key: inst.key, setup: inst.setup, zIndex };
 
-    const integrated = integratedLayerDefs.find((d) => d.type === inst.type);
+    const ref = mapById[inst.type];
 
-    if (integrated) {
-      return integrated.layerPreview && !hasRole(user, 'layerPreview')
+    if (ref?.origin === 'library') {
+      // A body still loading is drawn once it arrives.
+      return !ref.def ||
+        (ref.def.layerPreview && !hasRole(user, 'layerPreview'))
         ? null
-        : getLayer(ofKind(integrated, inst), at);
+        : getLayer(ofKind(ref.def, inst), at);
     }
 
-    const custom = customLayerDefs.find((d) => d.type === inst.type);
-
-    if (custom) {
-      return getLayer(ofKind(custom, inst), at);
+    if (ref?.origin === 'custom') {
+      return getLayer(ofKind(ref.def, inst), at);
     }
 
-    const cm = cachedMaps.find((d) => d.type === inst.type);
-
-    if (!cm) {
+    if (!ref) {
       return null;
     }
+
+    const cm = ref.def;
 
     const fetchesMissing = online && cm.networkFallback !== false;
 
     // Without its source's envelope the network fallback would skip the
     // premium gate, so wait for a library source still loading.
-    if (
-      fetchesMissing &&
-      mapIndexById[cm.sourceType] &&
-      !integratedLayerDefMap[cm.sourceType]
-    ) {
+    const source = mapById[cm.sourceType];
+
+    if (fetchesMissing && source?.origin === 'library' && !source.def) {
       return null;
     }
 

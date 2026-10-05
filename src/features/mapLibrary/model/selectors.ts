@@ -1,6 +1,9 @@
 import type { RootState } from '@app/store/store.js';
 import { hasRole } from '@features/auth/model/types.js';
-import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
+import {
+  type CachedTileMapDef,
+  isCachedMapComplete,
+} from '@features/cachedMaps/cachedTileMaps.js';
 import {
   kindOverrides,
   type LayerKind,
@@ -15,6 +18,7 @@ import {
 } from '@features/map/model/mapPreset.js';
 import { overlayStack } from '@features/map/model/overlayStack.js';
 import type {
+  CustomLayerDef,
   IntegratedLayerDef,
   IsWmsLayerDef,
   LayerDef,
@@ -106,12 +110,6 @@ export const libraryIndexSelector = createSelector(
     ),
 );
 
-export const libraryIndexByIdSelector = createSelector(
-  libraryIndexSelector,
-  (index): Readonly<Record<string, MapIndexEntry>> =>
-    Object.fromEntries(index.map((entry) => [entry.type, entry])),
-);
-
 /** The installed library maps, as Installed maps lists them. */
 export const installedLibraryIndexSelector = createSelector(
   libraryIndexSelector,
@@ -178,6 +176,50 @@ export const resolvedCustomLayersSelector = createSelector(
   (customLayers, overrides) =>
     customLayers.map((def) => withKind(def, overrides)),
 );
+
+/** A map found by id, with what its origin carries. */
+export type MapRef =
+  | {
+      origin: 'library';
+      entry: MapIndexEntry;
+      /** Once its body loads. */
+      def: IntegratedLayerDef | undefined;
+    }
+  | { origin: 'custom'; def: CustomLayerDef }
+  | { origin: 'cached'; def: CachedTileMapDef };
+
+/**
+ * Every map by id — a library map first, then a custom one, then an offline
+ * one — library and custom maps of the kind their setups switch them to.
+ */
+export const mapByIdSelector = createSelector(
+  libraryIndexSelector,
+  integratedLayerDefMapSelector,
+  resolvedCustomLayersSelector,
+  (state: RootState) => state.map.cachedMaps,
+  (index, defs, customLayers, cachedMaps): Readonly<Record<string, MapRef>> => {
+    const byId: Record<string, MapRef> = {};
+
+    // Lowest precedence first, so a later origin overwrites.
+    for (const def of cachedMaps) {
+      byId[def.type] = { origin: 'cached', def };
+    }
+
+    for (const def of customLayers) {
+      byId[def.type] = { origin: 'custom', def };
+    }
+
+    for (const entry of index) {
+      byId[entry.type] = { origin: 'library', entry, def: defs[entry.type] };
+    }
+
+    return byId;
+  },
+);
+
+/** What a list names and describes a map by, a library map's body or not. */
+export const mapEntryOf = (ref: MapRef | undefined) =>
+  ref?.origin === 'library' ? ref.entry : ref?.def;
 
 export type WmsLayerDef = LayerDef<IsWmsLayerDef, IsWmsLayerDef>;
 

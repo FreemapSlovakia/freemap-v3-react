@@ -1,5 +1,8 @@
 import type { RootState } from '@app/store/store.js';
-import { libraryIndexByIdSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  mapByIdSelector,
+  mapEntryOf,
+} from '@features/mapLibrary/model/selectors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
@@ -83,12 +86,14 @@ export function useMapLayersPanel() {
 // The kinds of map whose settings are what turning one on is usually for.
 const EDITABLE = new Set(['wms', 'parametricShading']);
 
-const isEditable = (state: RootState, type: string) =>
-  EDITABLE.has(
-    libraryIndexByIdSelector(state)[type]?.technology ??
-      state.map.customLayers.find((def) => def.type === type)?.technology ??
-      '',
+const isEditable = (state: RootState, type: string) => {
+  const ref = mapByIdSelector(state)[type];
+
+  // An offline map's tiles are downloaded already.
+  return (
+    ref?.origin !== 'cached' && EDITABLE.has(mapEntryOf(ref)?.technology ?? '')
   );
+};
 
 /**
  * Opens the panel on a WMS or shading map just turned on. Judged by what joins

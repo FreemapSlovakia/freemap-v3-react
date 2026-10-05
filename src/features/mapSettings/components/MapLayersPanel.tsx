@@ -42,7 +42,7 @@ import {
 import { layerKindsSelector } from '@features/map/model/selectors.js';
 import {
   installedLibraryIndexSelector,
-  libraryIndexByIdSelector,
+  mapByIdSelector,
   nativeKindsSelector,
   overlayStackSelector,
   presetByIdSelector,
@@ -467,22 +467,6 @@ function Row({
   );
 }
 
-type Origin = 'library' | 'custom' | 'cached';
-
-/** Where a map comes from: an offline map keeps the kind it was saved with. */
-function useOrigin(type: string): Origin {
-  return useAppSelector((state) =>
-    type in libraryIndexByIdSelector(state)
-      ? 'library'
-      : state.map.customLayers.some((def) => def.type === type)
-        ? 'custom'
-        : 'cached',
-  );
-}
-
-const switchable = (origin: Origin, technology: string | undefined) =>
-  origin !== 'cached' && canSwitchKind(technology);
-
 /** A map's row, on its own on the map or as a preset's layer. */
 function MapRow({
   target,
@@ -827,7 +811,9 @@ function LayerSettings({
 
   const setup = useTargetSetup(target);
 
-  const origin = useOrigin(target.type);
+  const mapOrigin = useAppSelector(
+    (state) => mapByIdSelector(state)[target.type]?.origin,
+  );
 
   const canSave = useCanSaveSettings();
 
@@ -839,7 +825,8 @@ function LayerSettings({
 
   return (
     <div className="pt-1">
-      {switchable(origin, technology) && (
+      {/* An offline map keeps the kind it was saved with. */}
+      {mapOrigin !== 'cached' && canSwitchKind(technology) && (
         <LayerKindSwitch target={target} className="mb-2 d-flex" />
       )}
 
@@ -851,7 +838,7 @@ function LayerSettings({
         }
       />
 
-      {technology === 'wms' && (
+      {technology === 'wms' && mapOrigin !== 'cached' && (
         <WmsSection def={def as WmsLayerDef} target={target} />
       )}
 
@@ -869,7 +856,7 @@ function LayerSettings({
 
       <div className="d-flex gap-2 mt-2 justify-content-end flex-wrap">
         {/* Its server, zooms and default kind are the map's own, in its form. */}
-        {origin === 'custom' && !window.fmEmbedded && (
+        {mapOrigin === 'custom' && !window.fmEmbedded && (
           <Button
             variant="secondary"
             size="sm"

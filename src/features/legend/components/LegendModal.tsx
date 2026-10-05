@@ -7,6 +7,8 @@ import {
   drawnTypesSelector,
   integratedLayerDefMapSelector,
   libraryIndexSelector,
+  mapByIdSelector,
+  mapEntryOf,
   resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
@@ -42,6 +44,8 @@ export default function LegendModal({ show }: Props): ReactElement {
   const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
 
   const libraryIndex = useAppSelector(libraryIndexSelector);
+
+  const mapById = useAppSelector(mapByIdSelector);
 
   const resolvedCustomLayers = useAppSelector(resolvedCustomLayersSelector);
 
@@ -93,13 +97,7 @@ export default function LegendModal({ show }: Props): ReactElement {
   }
 
   function getHeader(type: string) {
-    return (
-      layerName(
-        customLayers.find((def) => def.type === type) ??
-          integratedLayerDefMap[type] ?? { type },
-        m,
-      ) ?? '…'
-    );
+    return layerName(mapEntryOf(mapById[type]) ?? { type }, m) ?? '…';
   }
 
   return (

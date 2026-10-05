@@ -10,10 +10,7 @@ import { getCountriesBbox, getLayerBbox } from '@shared/mapDefinitions.js';
 import { coverageCountries } from '@shared/mapLibrary/coverage.js';
 import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { mapLibraryPreviewEnd, mapLibraryPreviewStart } from '../actions.js';
-import {
-  integratedLayerDefMapSelector,
-  libraryIndexByIdSelector,
-} from '../selectors.js';
+import { mapByIdSelector } from '../selectors.js';
 
 /**
  * Switches the previewed map on and brings the view to it if it is away. The
@@ -33,35 +30,32 @@ export const mapLibraryPreviewStartProcessor: Processor<
 
     dispatch(mapToggleLayer({ type, enable: true }));
 
-    const state = getState();
+    const ref = mapByIdSelector(getState())[type];
 
-    const entry = libraryIndexByIdSelector(state)[type];
-
-    // The user's own: an offline map has its downloaded area, a custom one none.
-    const own =
-      state.map.cachedMaps.find((cm) => cm.type === type) ??
-      state.map.customLayers.find((def) => def.type === type);
-
-    if (!entry && !own) {
+    if (!ref) {
       return;
     }
 
     // An uninstalled built-in map's body loads only once it is on.
-    const def = entry
-      ? (integratedLayerDefMapSelector(state)[type] ??
-        (await loadIntegratedLayerDef(type).catch(() => undefined)))
-      : own;
+    const def =
+      ref.def ??
+      (ref.origin === 'library'
+        ? await loadIntegratedLayerDef(type).catch(() => undefined)
+        : undefined);
 
     const minZoom = def?.minZoom;
 
     const { lat, lon, zoom, countries: inView } = getState().map;
 
-    const box = entry
-      ? (entry.bbox ?? getCountriesBbox(entry.countries))
-      : own && getLayerBbox(own);
+    // The user's own: an offline map has its downloaded area, a custom one none.
+    const box =
+      ref.origin === 'library'
+        ? (ref.entry.bbox ?? getCountriesBbox(ref.entry.countries))
+        : getLayerBbox(ref.def);
 
     // As the map menu tells it: by the countries in view, else by its box.
-    const countries = entry && coverageCountries(entry);
+    const countries =
+      ref.origin === 'library' ? coverageCountries(ref.entry) : undefined;
 
     const away = countries
       ? inView != null && !countries.some((country) => inView.includes(country))

@@ -668,12 +668,6 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       `getMapStateDiffFromUrl` (re-added). A boolean in the map slice, migrated
       in `persistence.ts` from `layers.includes('i')`, with the menu row and the
       shortcut toggling it, removes those cases.
-- [ ] **One lookup of a map by id.** Library, custom and offline defs are looked
-      up ad hoc in about nine places (`useOrigin`, `isEditable`, `useTargetDef`,
-      `YourMapsList`, `SourceName`, `MapLibraryPreviewMenu`, `previewProcessors`,
-      `capturePreset`, `Layers.drawInstance`), each with its own precedence and
-      linear `find`s. A selector of `{ def, origin }` by id serves them, and
-      gives the panel's `switchable` its origin.
 - [ ] **Helpers for a map's effective settings.** The shortcut
       (`settings.shortcut === undefined ? def.shortcut : …`) and the
       menu/toolbar defaults are recomputed inline in `YourMapsList`,

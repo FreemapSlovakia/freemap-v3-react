@@ -4,6 +4,8 @@ import { mapLibraryInitialState } from './reducer.js';
 import {
   integratedLayerDefMapSelector,
   integratedLayerDefsSelector,
+  mapByIdSelector,
+  mapEntryOf,
 } from './selectors.js';
 
 const stateWith = (
@@ -80,5 +82,49 @@ describe('integratedLayerDefsSelector', () => {
         'O'
       ],
     ).toMatchObject({ technology: 'tile' });
+  });
+});
+
+describe('mapByIdSelector', () => {
+  const tile = (type: string, layer: 'base' | 'overlay') => ({
+    type,
+    layer,
+    technology: 'tile',
+    url: 'https://example.com/{z}/{x}/{y}.png',
+  });
+
+  const state = {
+    ...stateWith([], {}),
+    map: {
+      ...stateWith([], {}).map,
+      layerSetups: { '.1': { kind: 'overlay' } },
+      customLayers: [tile('.1', 'base'), tile('.2', 'base')],
+      cachedMaps: [tile('.2', 'overlay'), tile('~1', 'overlay')],
+    },
+  } as unknown as RootState;
+
+  const byId = mapByIdSelector(state);
+
+  it('tells each map by its origin', () => {
+    expect(byId['X']?.origin).toBe('library');
+
+    expect(byId['.1']?.origin).toBe('custom');
+
+    expect(byId['~1']?.origin).toBe('cached');
+  });
+
+  it('prefers a custom map to an offline one of the same id', () => {
+    expect(byId['.2']).toMatchObject({
+      origin: 'custom',
+      def: { layer: 'base' },
+    });
+  });
+
+  it('gives a custom map the kind its setup switches it to', () => {
+    expect(byId['.1']?.def?.layer).toBe('overlay');
+  });
+
+  it('names a library map by its entry', () => {
+    expect(mapEntryOf(byId['X'])?.type).toBe('X');
   });
 });

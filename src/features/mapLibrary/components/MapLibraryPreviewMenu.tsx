@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
@@ -14,7 +15,7 @@ import { Button } from 'react-bootstrap';
 import { FaArrowLeft, FaCheck, FaPlus, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { mapLibraryPreviewEnd } from '../model/actions.js';
-import { libraryIndexByIdSelector } from '../model/selectors.js';
+import { mapByIdSelector } from '../model/selectors.js';
 
 /** The map previewed from the library, with what to do with it. */
 export default function MapLibraryPreviewMenu(): ReactElement | null {
@@ -26,17 +27,24 @@ export default function MapLibraryPreviewMenu(): ReactElement | null {
 
   const type = useAppSelector((state) => state.mapLibrary.preview?.type);
 
-  const entry = useAppSelector(
-    (state) => type && libraryIndexByIdSelector(state)[type],
-  );
+  // Its parts, not the ref, which every recompute rebuilds.
+  const refOf = (state: RootState) =>
+    type === undefined ? undefined : mapByIdSelector(state)[type];
+
+  const mapOrigin = useAppSelector((state) => refOf(state)?.origin);
+
+  const entry = useAppSelector((state) => {
+    const ref = refOf(state);
+
+    return ref?.origin === 'library' ? ref.entry : undefined;
+  });
 
   // A custom or offline map is previewed from Installed maps.
-  const own = useAppSelector((state) =>
-    type === undefined
-      ? undefined
-      : (state.map.customLayers.find((def) => def.type === type) ??
-        state.map.cachedMaps.find((cm) => cm.type === type)),
-  );
+  const own = useAppSelector((state) => {
+    const ref = refOf(state);
+
+    return ref?.origin === 'library' ? undefined : ref?.def;
+  });
 
   // The user's own maps are never uninstalled.
   const installed = useAppSelector(
@@ -56,7 +64,7 @@ export default function MapLibraryPreviewMenu(): ReactElement | null {
   ) : (
     <CustomMapGlyph
       spec={own?.iconSpec}
-      kind={own && 'downloadedCount' in own ? 'cached' : own?.technology}
+      kind={mapOrigin === 'cached' ? 'cached' : own?.technology}
     />
   );
 

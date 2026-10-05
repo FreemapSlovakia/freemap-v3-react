@@ -62,8 +62,8 @@ import {
 import { canPreview, mapLibraryPreviewStart } from '../model/actions.js';
 import {
   installedLibraryIndexSelector,
-  integratedLayerDefMapSelector,
-  libraryIndexByIdSelector,
+  mapByIdSelector,
+  mapEntryOf,
   overlayZIndexSelector,
   presetKindsSelector,
   resolvedCustomLayersSelector,
@@ -295,7 +295,7 @@ export function YourMapsList({
 
   const installedIndex = useAppSelector(installedLibraryIndexSelector);
 
-  const libraryIndexById = useAppSelector(libraryIndexByIdSelector);
+  const mapById = useAppSelector(mapByIdSelector);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
@@ -328,11 +328,7 @@ export function YourMapsList({
     const resolved = resolveLayerAlias(type)[0] ?? type;
 
     return (
-      libraryIndexById[resolved] ??
-      customLayers.find((def) => def.type === resolved) ?? {
-        type: resolved,
-        category: undefined,
-      }
+      mapEntryOf(mapById[resolved]) ?? { type: resolved, category: undefined }
     );
   };
 
@@ -566,14 +562,11 @@ function YourMapRow({
   const dispatch = useDispatch();
 
   // The index entry until the body loads; both carry a switched kind's default.
-  const def = useAppSelector(
-    (state) =>
-      integratedLayerDefMapSelector(state)[map.type] ??
-      libraryIndexByIdSelector(state)[map.type] ??
-      resolvedCustomLayersSelector(state).find(
-        (custom) => custom.type === map.type,
-      ),
-  );
+  const def = useAppSelector((state) => {
+    const ref = mapByIdSelector(state)[map.type];
+
+    return ref?.def ?? mapEntryOf(ref);
+  });
 
   const ownOpacity = useAppSelector(
     (state) => state.map.layerSetups[map.type]?.opacity,

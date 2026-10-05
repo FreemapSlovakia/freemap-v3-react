@@ -350,6 +350,9 @@ the ids and templates.
     not. Use for lookups by id (sources of offline maps, opacity, shading).
   - `integratedLayerDefsSelector` — loaded maps that are **offered** (installed
     or on), in index order. Use for lists.
+  - `mapByIdSelector` — any map by id, library before custom before offline,
+    with its origin; `mapEntryOf` gives what to name it by before its body
+    loads. Use when an id may name a map of any origin.
   - Code that must know **every** map regardless of loading (ids, base vs
     overlay, links, shortcuts, legacy warnings, presets) reads `mapIndex`.
 - **Premium gate** — `downloadTiles` awaits `loadIntegratedLayerDef(sourceType)`

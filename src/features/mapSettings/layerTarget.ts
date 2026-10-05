@@ -2,10 +2,9 @@ import type { SetupTarget } from '@features/map/model/actions.js';
 import { withMemberKind } from '@features/map/model/layerKind.js';
 import type { LayerSetup } from '@features/map/model/layerSetup.js';
 import {
-  integratedLayerDefMapSelector,
+  mapByIdSelector,
   nativeKindsSelector,
   presetByIdSelector,
-  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LayerDef } from '@shared/mapDefinitions.js';
@@ -24,10 +23,7 @@ export function useTargetSetup(target: SetupTarget): LayerSetup | undefined {
 /** The map a target names, of the kind it is drawn as there. */
 export function useTargetDef(target: SetupTarget): LayerDef | undefined {
   const def = useAppSelector(
-    (state): LayerDef | undefined =>
-      integratedLayerDefMapSelector(state)[target.type] ??
-      resolvedCustomLayersSelector(state).find((d) => d.type === target.type) ??
-      state.map.cachedMaps.find((d) => d.type === target.type),
+    (state): LayerDef | undefined => mapByIdSelector(state)[target.type]?.def,
   );
 
   const setup = useTargetSetup(target);
