@@ -95,6 +95,14 @@ const isContentPart =
 // nothing produces them at viewport speed.
 const REPLACE_MIN_INTERVAL_MS = 500;
 
+// A change to the same layer setups (`l.<id>`, a preset's `p.<n>.o` and
+// `p.<n>.l.<id>`) this soon after the last write replaces it, so an opacity
+// drag is one Back press.
+const SETUP_COALESCE_GAP_MS = 3000;
+
+const isSetupPart = ([key]: QueryPart) =>
+  key.startsWith(SETUP_PARAM_PREFIX) || /^p\.[^.]+\.(?:o|l\..+)$/.test(key);
+
 let previousRest: unknown[] = [];
 
 let previousView: [number, number, number] | null = null;
@@ -110,6 +118,14 @@ let lastViewWriteTs = 0;
 let lastWriteTs = 0;
 
 let lastWrittenRest: string | null = null;
+
+// For the setup runs below: the URL but its setups, its setups, and which of
+// them the last write changed.
+let lastWrittenOther: string | null = null;
+
+let lastWrittenSetups: Record<string, string> = {};
+
+let lastChangedSetups = '';
 
 let rerunTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -641,10 +657,38 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   const now = Date.now();
 
+  const setups: Record<string, string> = Object.fromEntries(
+    [...queryParts, ...(mapId ? historyParts : [])]
+      .filter(isSetupPart)
+      .map(([key, value]) => [key, String(value)]),
+  );
+
+  const changedSetups = [
+    ...new Set([...Object.keys(setups), ...Object.keys(lastWrittenSetups)]),
+  ]
+    .filter((key) => setups[key] !== lastWrittenSetups[key])
+    .sort()
+    .join('\n');
+
+  const otherSignature = serializeQuery(
+    [...queryParts, ...(mapId ? historyParts : [])].filter(
+      (part) => contentPart(part) && !isSetupPart(part),
+    ),
+  );
+
+  // A slider dragged or boxes ticked on one layer: one entry for the run.
+  const setupRun =
+    !viewOnly &&
+    changedSetups !== '' &&
+    changedSetups === lastChangedSetups &&
+    otherSignature === lastWrittenOther &&
+    now - lastWriteTs < SETUP_COALESCE_GAP_MS;
+
   const method =
-    viewOnly &&
-    (!viewChanged ||
-      (lastWriteWasViewOnly && now - lastViewWriteTs < VIEW_COALESCE_GAP_MS))
+    setupRun ||
+    (viewOnly &&
+      (!viewChanged ||
+        (lastWriteWasViewOnly && now - lastViewWriteTs < VIEW_COALESCE_GAP_MS)))
       ? 'replaceState'
       : 'pushState';
 
@@ -698,6 +742,12 @@ function updateUrl(state: RootState, forced: boolean): void {
   lastWriteTs = now;
 
   lastWrittenRest = restSignature;
+
+  lastWrittenOther = otherSignature;
+
+  lastWrittenSetups = setups;
+
+  lastChangedSetups = viewOnly ? '' : changedSetups;
 
   lastWriteWasViewOnly = viewOnly;
 

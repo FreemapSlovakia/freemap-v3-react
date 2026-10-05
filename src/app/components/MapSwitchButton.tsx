@@ -7,7 +7,7 @@ import {
   mapRefocus,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
-import { presetItem } from '@features/map/model/mapPreset.js';
+import { type MapPreset, presetItem } from '@features/map/model/mapPreset.js';
 import { resolvedCustomLayersSelector } from '@features/map/model/selectors.js';
 import {
   integratedLayerDefsSelector,
@@ -330,6 +330,45 @@ export function MapSwitchButton(): ReactElement {
       zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
     }));
 
+  type Entry =
+    | { def: (typeof layerDefs)[number]; preset?: undefined }
+    | { preset: MapPreset; layer: 'base' | 'overlay' };
+
+  const kindOf = (entry: Entry) =>
+    entry.preset ? entry.layer : entry.def.layer;
+
+  // Built-in base maps, then the user's own maps and presets by name, then
+  // offline maps; overlays as they stack.
+  const rank = (entry: Entry) =>
+    entry.preset ? 1 : !entry.def.custom ? 0 : entry.def.cached ? 2 : 1;
+
+  const entries: Entry[] = [
+    ...layerDefs.map((def): Entry => ({ def })),
+    ...presets.map(
+      (preset): Entry => ({
+        preset,
+        layer: presetKinds[preset.id] ?? 'overlay',
+      }),
+    ),
+  ].sort((a, b) => {
+    const place = (entry: Entry) =>
+      entry.preset
+        ? stackPlace({ type: presetItem(entry.preset.id), layer: entry.layer })
+        : stackPlace(entry.def);
+
+    if (kindOf(a) === 'overlay' || kindOf(b) === 'overlay') {
+      return place(a) - place(b);
+    }
+
+    const ownName = (entry: Entry) =>
+      (entry.preset ? entry.preset.name : layerLabel(entry.def, m)) ||
+      undefined;
+
+    return (
+      rank(a) - rank(b) || (rank(a) === 1 ? byName(ownName(a), ownName(b)) : 0)
+    );
+  });
+
   extraHandler.current = (eventKey: string) => {
     if (eventKey === 'show-all') {
       setExpand('all');
@@ -526,9 +565,15 @@ export function MapSwitchButton(): ReactElement {
     def.custom ? layerLabel(def, m) : (layerName(def, m) ?? '…');
 
   function layersMemuItems(layer: 'base' | 'overlay') {
-    return layerDefs
-      .filter((def) => def.layer === layer)
-      .map((def) => {
+    return entries
+      .filter((entry) => kindOf(entry) === layer)
+      .map((entry) => {
+        if (entry.preset) {
+          return presetMenuItem(entry.preset, layer);
+        }
+
+        const { def } = entry;
+
         if (!canPreviewLayers && !def.custom && def.layerPreview) {
           return null;
         }
@@ -587,9 +632,10 @@ export function MapSwitchButton(): ReactElement {
       });
   }
 
-  const sortedPresets = [...presets].sort((a, b) => byName(a.name, b.name));
-
-  const presetItems = sortedPresets.map(({ id, name, iconSpec }) => {
+  function presetMenuItem(
+    { id, name, iconSpec }: MapPreset,
+    layer: 'base' | 'overlay',
+  ) {
     const active = activeLayers.includes(presetItem(id));
 
     return isListed(name, active, {
@@ -602,7 +648,7 @@ export function MapSwitchButton(): ReactElement {
         eventKey={`preset-${id}`}
         active={active}
       >
-        {presetKinds[id] === 'base' ? (
+        {layer === 'base' ? (
           <Radio value={active} />
         ) : (
           <Checkbox value={active} />
@@ -615,7 +661,42 @@ export function MapSwitchButton(): ReactElement {
         <MenuGutter>{getKbdShortcut(layersSettings[id]?.shortcut)}</MenuGutter>
       </Dropdown.Item>
     ) : null;
-  });
+  }
+
+  function presetButton(preset: MapPreset, layer: 'base' | 'overlay') {
+    const { id } = preset;
+
+    const active = activeLayers.includes(presetItem(id));
+
+    if (!active && !layersSettings[id]?.showInToolbar) {
+      return null;
+    }
+
+    return (
+      <LongPressTooltip
+        key={`preset-${id}`}
+        label={
+          <span className="d-inline-flex flex-wrap align-items-center gap-1">
+            {preset.name}
+
+            {getKbdShortcut(layersSettings[id]?.shortcut)}
+          </span>
+        }
+      >
+        {({ props }) => (
+          <Button
+            variant="secondary"
+            active={active}
+            onClick={() => dispatch(mapPresetToggle({ id }))}
+            {...props}
+            className={clsx(layer === 'overlay' && 'fm-overlay-corner')}
+          >
+            <CustomMapGlyph spec={preset.iconSpec} kind="preset" />
+          </Button>
+        )}
+      </LongPressTooltip>
+    );
+  }
 
   const baseItems = layersMemuItems('base');
 
@@ -625,14 +706,18 @@ export function MapSwitchButton(): ReactElement {
 
   const overlayHasItems = overlayItems.some(Boolean);
 
-  const presetHasItems = presetItems.some(Boolean);
-
   return (
     <>
       <div className="px-1 d-none d-sm-block">{m?.mapLayers.switch}</div>
 
       <ButtonGroup>
-        {(isWide ? layerDefs : []).map((def) => {
+        {(isWide ? entries : []).map((entry) => {
+          if (entry.preset) {
+            return presetButton(entry.preset, entry.layer);
+          }
+
+          const { def } = entry;
+
           const { type } = def;
 
           const showInToolbar =
@@ -739,9 +824,10 @@ export function MapSwitchButton(): ReactElement {
                     active={active}
                     onClick={handleLayerButtonClick}
                     {...props}
-                    className={
-                      joined ? 'pe-1 border-end-0 fm-btn-joined' : undefined
-                    }
+                    className={clsx(
+                      joined && 'pe-1 border-end-0 fm-btn-joined',
+                      def.layer === 'overlay' && 'fm-overlay-corner',
+                    )}
                   >
                     {def.custom ? (
                       <CustomMapGlyph
@@ -781,40 +867,6 @@ export function MapSwitchButton(): ReactElement {
           );
         })}
 
-        {(isWide ? sortedPresets : []).map((preset) => {
-          const { id } = preset;
-
-          const active = activeLayers.includes(presetItem(id));
-
-          if (!active && !layersSettings[id]?.showInToolbar) {
-            return null;
-          }
-
-          return (
-            <LongPressTooltip
-              key={`preset-${id}`}
-              label={
-                <span className="d-inline-flex flex-wrap align-items-center gap-1">
-                  {preset.name}
-
-                  {getKbdShortcut(layersSettings[id]?.shortcut)}
-                </span>
-              }
-            >
-              {({ props }) => (
-                <Button
-                  variant="secondary"
-                  active={active}
-                  onClick={() => dispatch(mapPresetToggle({ id }))}
-                  {...props}
-                >
-                  <CustomMapGlyph spec={preset.iconSpec} kind="preset" />
-                </Button>
-              )}
-            </LongPressTooltip>
-          );
-        })}
-
         <Dropdown
           show={menuShown}
           drop="up-centered"
@@ -841,20 +893,11 @@ export function MapSwitchButton(): ReactElement {
 
             {overlayItems}
 
-            {presetHasItems && (baseHasItems || overlayHasItems) && (
-              <Dropdown.Divider />
+            {normalizedFilter && !baseHasItems && !overlayHasItems && (
+              <Dropdown.ItemText className="text-muted text-center">
+                {m?.mapLayers.noMapsFound}
+              </Dropdown.ItemText>
             )}
-
-            {presetItems}
-
-            {normalizedFilter &&
-              !baseHasItems &&
-              !overlayHasItems &&
-              !presetHasItems && (
-                <Dropdown.ItemText className="text-muted text-center">
-                  {m?.mapLayers.noMapsFound}
-                </Dropdown.ItemText>
-              )}
 
             <Dropdown.Divider />
 

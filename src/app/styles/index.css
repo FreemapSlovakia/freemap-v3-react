@@ -359,6 +359,21 @@ button#freemap-logo {
   cursor: pointer;
 }
 
+/* An overlay's toolbar button: a corner set off from the base maps'. */
+.fm-overlay-corner {
+  position: relative;
+}
+
+.fm-overlay-corner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top: 0.5rem solid var(--bs-info);
+  border-right: 0.5rem solid transparent;
+  pointer-events: none;
+}
+
 /* A logotype drawn as an icon (the Garmin wordmark) needs the width of a word,
    so it sits off the scale on purpose: a square 24×24 viewBox needs the scale-up
    to read at all. The negative block margin — in the scaled em, so it tracks the

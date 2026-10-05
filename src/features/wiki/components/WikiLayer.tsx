@@ -26,7 +26,7 @@ class WikiIcon extends Icon {
     (this as any)._setIconStyles(div, 'icon');
 
     if (WikiIcon.template) {
-      div.appendChild(WikiIcon.template.cloneNode());
+      div.appendChild(WikiIcon.template.cloneNode(true));
     } else {
       const root = createRoot(div);
 
@@ -66,6 +66,15 @@ export function WikiLayer(): ReactElement {
   );
 
   const dispatch = useDispatch();
+
+  // `Pane` reads its style once; set anew, it would remount every marker.
+  const [pane, setPane] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (pane) {
+      pane.style.opacity = String(opacity);
+    }
+  }, [pane, opacity]);
 
   const [memPreview, setMemPreview] = useState<WikiPreview>();
 
@@ -142,7 +151,7 @@ export function WikiLayer(): ReactElement {
         </Modal.Footer>
       </Modal>
 
-      <Pane name="wiki" style={{ opacity }} key={opacity}>
+      <Pane name="wiki" ref={setPane}>
         {points.map(({ id, lat, lon, name, wikipedia }) => (
           <Marker
             key={id}
