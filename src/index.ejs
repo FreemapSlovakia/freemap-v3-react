@@ -379,86 +379,58 @@
       _fm_showError();
     </script>
 
-    <% if (process.env['SENTRY_DSN']) { %>
-    <script
-      src="https://browser.sentry-cdn.com/10.15.0/bundle.min.js"
-      crossorigin
-    ></script>
-
-    <script type="module">
-      if (
-        typeof Sentry !== 'undefined' &&
-        typeof Object.hasOwn !== 'undefined'
-      ) {
-        Sentry.init({
-          dsn: '<%= process.env["SENTRY_DSN"] %>',
-          integrations: [],
-          tracesSampleRate: 0,
-          ignoreErrors: [
-            // deliberate request cancellations (e.g. a new search supersedes a pending one)
-            /AbortError/,
-            // injected crypto-wallet / browser-extension JSON-RPC providers
-            /Internal JSON-RPC error/,
-            /promise rejection with keys: code, message/,
-            // Background Sync API quirks across browsers
-            /Attempted to register a sync event/,
-            // JS bridges injected by third-party in-app browsers (iOS WKWebView
-            // and Android WebView), which break when their host view goes away
-            /window\.webkit\.messageHandlers/,
-            /Java object is gone/,
-            // ubiquitous browser noise
-            /ResizeObserver loop/,
-            'Non-Error promise rejection captured',
-          ],
-          denyUrls: [
-            /^chrome-extension:\/\//,
-            /^moz-extension:\/\//,
-            /^safari-web-extension:\/\//,
-          ],
-        });
-      }
-    </script>
-    <% } %>
-
     <script type="module">
       (() => {
-        function validateStartup(ev) {
-          if (
-            ev instanceof ErrorEvent &&
-            ev.filename &&
-            !ev.filename.startsWith(location.origin)
-          ) {
-            return; // ignore off-origin errors
-          }
+        // `main` sets `fmStarted` once it has handed the app to React; after
+        // that, errors are the app's to handle.
+        let failed = false;
 
-          const app = document.getElementById('app');
+        function fail() {
+          failed = true;
 
-          const first = app && app.firstElementChild;
+          window.removeEventListener('error', onError);
 
-          if (!first || first.id === 'init-loader') {
+          _fm_showError();
+        }
+
+        const mainUrl = new URL(
+          <%= JSON.stringify(htmlWebpackPlugin.files.js.find((src) => src.startsWith('main.')) ?? '') %>,
+          location.href,
+        ).href;
+
+        function onError(ev) {
+          // Only `main`'s own error: any other script's, including one Sentry
+          // rethrows from its wrappers, can't stop it; the `load` check catches
+          // what this misses.
+          if (!window.fmStarted && ev.filename === mainUrl) {
             console.error('Startup error.', ev);
 
-            _fm_showError();
+            fail(); // Sentry's own handler reports the error
           }
         }
 
-        window.addEventListener('error', validateStartup);
+        window.addEventListener('error', onError);
 
+        // Deferred scripts all run before `load`, so `main` failed to load or run.
         window.addEventListener('load', () => {
-          console.log('Page loaded.');
+          window.removeEventListener('error', onError);
 
-          setTimeout(() => {
-            window.removeEventListener('error', validateStartup);
+          if (!window.fmStarted && !failed) {
+            console.error('Startup error: main did not run.');
 
-            validateStartup();
-          }, 2000);
+            if (window.Sentry) {
+              window.Sentry.captureMessage('Startup failed: main did not run', 'error');
+            }
+
+            fail();
+          }
         });
       })();
     </script>
 
-    <%= htmlWebpackPlugin.files.js.filter((src) =>
-    src.startsWith('main.')).map((src) => `
+    <%= ['reporting.', 'main.'].map((prefix) =>
+    htmlWebpackPlugin.files.js.find((src) => src.startsWith(prefix))).filter(Boolean).map((src) => `
     <script src="${src}" defer></script>
-    `) %>
+    `).join('') %>
   </body>
 </html>

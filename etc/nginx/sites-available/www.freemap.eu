@@ -124,6 +124,23 @@ if ($blocked_country) {
 		}
 	}
 
+	# Sentry tunnel (`tunnel` in src/app/sentry.ts): blockers drop requests to
+	# Sentry's own URLs. The project key travels in the envelope header.
+	location = /api/fm-report {
+		limit_except POST {
+			deny all;
+		}
+
+		client_max_body_size 1m;
+
+		proxy_pass http://127.0.0.1:9000/api/2/envelope/;
+		proxy_set_header Host sentry.freemap.sk;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+
+		add_header Alt-Svc 'h3=":443"; ma=86400';
+	}
+
 	location /tiles/parametric-shading {
 		proxy_set_header Host $host;
 	        proxy_set_header X-Real-IP $remote_addr;

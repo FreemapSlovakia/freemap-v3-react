@@ -207,6 +207,9 @@ createRoot(rootElement).render(
   </Provider>,
 );
 
+// Tells the startup check in index.ejs that `main` ran.
+window.fmStarted = true;
+
 if (process.env['NODE_ENV'] === 'production') {
   await window.navigator.serviceWorker
     ?.register('/sw.js')

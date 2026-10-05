@@ -406,6 +406,10 @@ const config: Configuration = {
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: './app/index.tsx',
+    // Production only: there is no DSN in development, and a second entry on
+    // the page would get its own HMR client and React Refresh runtime.
+    // Not named `sentry`, which filter lists block.
+    ...(prod ? { reporting: './app/sentry.ts' } : {}),
     sw: './sw/sw.ts',
     'upload-sw': './sw/upload-sw.ts',
   },
