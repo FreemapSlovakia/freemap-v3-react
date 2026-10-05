@@ -688,6 +688,9 @@ export function MapSwitchButton(): ReactElement {
             active={active}
             onClick={() => dispatch(mapPresetToggle({ id }))}
             {...props}
+            className={clsx(
+              !layersSettings[id]?.showInToolbar && 'fm-only-while-on',
+            )}
           >
             <CustomMapGlyph spec={preset.iconSpec} kind="preset" />
           </Button>
@@ -821,6 +824,7 @@ export function MapSwitchButton(): ReactElement {
                 // then wrap under the icon.
                 'text-nowrap',
                 joined && 'pe-1 border-end-0 fm-btn-joined',
+                !showInToolbar && 'fm-only-while-on',
               )}
             >
               {def.custom ? (

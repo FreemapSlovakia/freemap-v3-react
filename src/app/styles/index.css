@@ -371,6 +371,22 @@ button#freemap-logo {
   flex-shrink: 0;
 }
 
+/* A map switch button shown only because its layer is on: it goes when the
+   layer does. */
+.fm-only-while-on {
+  position: relative;
+}
+
+.fm-only-while-on::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top: 0.5rem solid var(--bs-gray-400);
+  border-right: 0.5rem solid transparent;
+  pointer-events: none;
+}
+
 /* A sliver of a `.btn-secondary` between groups of buttons in a `.btn-group`. */
 .btn-group > .fm-seam {
   flex: 0 0 auto;
