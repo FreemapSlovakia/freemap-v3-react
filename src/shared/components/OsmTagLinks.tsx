@@ -27,8 +27,9 @@ export function OsmTagKey({ tag, osm }: Props): ReactNode {
  * long one wraps there rather than mid-word. Not inside `//`.
  */
 function breakable(value: string): ReactNode {
-  return value
-    .split(/(?<=[,;&?=_]|\/(?!\/))/)
+  // No lookbehind split: Safari < 16.4 fails to parse it, breaking the bundle.
+  return (value.match(/[^,;&?=_/]*(?:[,;&?=_]|\/+|$)/g) ?? [])
+    .filter(Boolean)
     .flatMap((part, i) => (i ? [<wbr key={i} />, part] : [part]));
 }
 
