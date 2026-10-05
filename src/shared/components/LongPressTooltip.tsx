@@ -15,6 +15,9 @@ import { Overlay, Tooltip } from 'react-bootstrap';
 
 const InTooltip = createContext(false);
 
+// Lets a nested tooltip's target (a badge on a button) hide the enclosing one.
+const SuppressParent = createContext<((active: boolean) => void) | null>(null);
+
 /**
  * Whether this is a tooltip's own body. A mark rendered there is already being
  * explained, so it drops to its glyph rather than offering a tooltip of its own
@@ -84,6 +87,10 @@ export function LongPressTooltip({
 }: Props) {
   const [show, setShow] = useState(false);
 
+  const suppressParent = useContext(SuppressParent);
+
+  const [childActive, setChildActive] = useState(false);
+
   const [target, setTarget] = useState<HTMLElement | null>(null);
 
   // Stable, or React detaches and re-attaches the ref on every render.
@@ -117,6 +124,8 @@ export function LongPressTooltip({
 
       setCoarse(isCoarse);
 
+      suppressParent?.(true);
+
       if (
         (!labelHidden && name == null && hint == null) ||
         timeoutRef.current
@@ -128,10 +137,12 @@ export function LongPressTooltip({
         setShow(true);
       }, delay);
     },
-    [delay, hint, labelHidden, name],
+    [delay, hint, labelHidden, name, suppressParent],
   );
 
   const handleClear = useCallback(() => {
+    suppressParent?.(false);
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -143,7 +154,7 @@ export function LongPressTooltip({
     if (!(toggleOnClick && coarseRef.current)) {
       setShow(false);
     }
-  }, [toggleOnClick]);
+  }, [toggleOnClick, suppressParent]);
 
   const handleClickCapture = useCallback(
     (e: MouseEvent) => {
@@ -214,28 +225,30 @@ export function LongPressTooltip({
 
   return (
     <>
-      {children({
-        props: {
-          ref: attachTarget,
-          onPointerEnter: handleStart,
-          onPointerLeave: handleClear,
-          onClickCapture: handleClickCapture,
-          onContextMenuCapture: handleContextMenuCapture,
-        },
-        label: kbd ? (
-          <>
-            {label} {kbdEl}
-          </>
-        ) : (
-          label
-        ),
-        labelClassName: labelHidden ? 'd-none' : 'd-inline',
-      })}
+      <SuppressParent value={setChildActive}>
+        {children({
+          props: {
+            ref: attachTarget,
+            onPointerEnter: handleStart,
+            onPointerLeave: handleClear,
+            onClickCapture: handleClickCapture,
+            onContextMenuCapture: handleContextMenuCapture,
+          },
+          label: kbd ? (
+            <>
+              {label} {kbdEl}
+            </>
+          ) : (
+            label
+          ),
+          labelClassName: labelHidden ? 'd-none' : 'd-inline',
+        })}
+      </SuppressParent>
 
       {target && (labelHidden || name != null || hint != null) && (
         <Overlay
           target={target}
-          show={show}
+          show={show && !childActive}
           placement="top"
           flip
           offset={offset}
