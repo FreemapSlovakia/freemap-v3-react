@@ -20,6 +20,9 @@ export const mapLibraryPreviewStart = createAction<{
   restore?: string[];
 }>('MAP_LIBRARY_PREVIEW_START');
 
+/** Not the data layer `i`, which is on unless listed. */
+export const canPreview = (type: string) => type !== 'i';
+
 /** Ends a preview, keeping the map on or putting the earlier layers back. */
 export const mapLibraryPreviewEnd = createAction<{ keep: boolean }>(
   'MAP_LIBRARY_PREVIEW_END',

@@ -95,6 +95,11 @@ export function getMapStateFromUrl(
       /^@\d+$/.test(layer),
   );
 
+  // Nothing it names is known here: rather the map as it is than an empty one.
+  if (layers?.length === 0) {
+    layers = undefined;
+  }
+
   return {
     lat,
     lon,

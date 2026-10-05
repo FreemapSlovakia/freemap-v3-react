@@ -15,6 +15,7 @@ import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
 import { isUninstalledByDefault } from '@shared/mapLibrary/installed.js';
+import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import {
   type LayerSettings,
   type MapStateBase,
@@ -45,7 +46,7 @@ import {
   mapToggleLayer,
   type SetupTarget,
 } from './actions.js';
-import { kindOverrides } from './layerKind.js';
+import { kindOverrides, type LayerKind } from './layerKind.js';
 import {
   isEmptySetup,
   type LayerSetup,
@@ -54,7 +55,8 @@ import {
 } from './layerSetup.js';
 import {
   adoptPresets,
-  isPresettable,
+  canJoinPreset,
+  type LayerKinds,
   layerKinds,
   type MapPreset,
   memberKind,
@@ -186,6 +188,23 @@ const nativeKindsOf = (state: MapState) =>
     ),
   );
 
+/** One layer's own kind, without building every layer's. */
+const nativeKindOf = (state: MapState, type: string): LayerKind | undefined =>
+  mapIndexById[type]?.layer ??
+  [...state.catalogMaps, ...state.customLayers, ...state.cachedMaps].find(
+    (def) => def.type === type,
+  )?.layer;
+
+// A new array only for a new order: every slider tick in a base preset ends here.
+function setLayers(state: MapState, layers: string[]) {
+  if (
+    layers.length !== state.layers.length ||
+    layers.some((item, i) => item !== state.layers[i])
+  ) {
+    state.layers = layers;
+  }
+}
+
 /** One of the account's presets, or one a link brought. */
 const findPreset = (state: MapState, id: string) =>
   state.presets.find((p) => p.id === id) ??
@@ -214,10 +233,34 @@ function itemKindsOf(state: MapState) {
 function makeSoleBase(state: MapState, item: string) {
   const kindOf = itemKindsOf(state);
 
-  state.layers = [
+  setLayers(state, [
     item,
     ...state.layers.filter((t) => t !== item && kindOf(t) !== 'base'),
-  ];
+  ]);
+}
+
+/**
+ * Turns a map or preset on or off, or `enable` says which. A base item is
+ * replaced rather than turned off; an overlay goes on top, where
+ * `overlayPlacementProcessor` moves a map to its own place.
+ */
+function toggleItem(
+  state: MapState,
+  item: string,
+  isBase: boolean,
+  enable: boolean | undefined,
+) {
+  if (isBase && enable !== false) {
+    if (!state.layers.includes(item)) {
+      makeSoleBase(state, item);
+    }
+  } else if (state.layers.includes(item)) {
+    if (enable !== true) {
+      state.layers = state.layers.filter((t) => t !== item);
+    }
+  } else if (enable !== false) {
+    state.layers.push(item);
+  }
 }
 
 /** Whether a base item is on. */
@@ -228,11 +271,9 @@ const hasBase = (state: MapState) => {
 };
 
 /**
- * Leaves one base item on, first, once a change not made on the map itself (a
- * reset, another device's settings, a deletion) may have made an overlay a
- * base or a base an overlay: the first of several, or Outdoor where `hadBase`
- * says that change took the only one away. A map left without one on purpose
- * (a switch to overlay) stays so.
+ * After a change not made on the map itself (a reset, a sync, a deletion):
+ * one base item, first, or Outdoor where `hadBase` says the change took the
+ * only one away — unless a map was switched to overlay on purpose.
  */
 function settleBase(state: MapState, hadBase: boolean) {
   const kindOf = itemKindsOf(state);
@@ -242,10 +283,10 @@ function settleBase(state: MapState, hadBase: boolean) {
   const [first, ...extra] = state.layers.filter((t) => kindOf(t) === 'base');
 
   if (first !== undefined) {
-    state.layers = [
+    setLayers(state, [
       first,
       ...state.layers.filter((t) => t !== first && !extra.includes(t)),
-    ];
+    ]);
   } else if (
     hadBase &&
     !state.layers.includes('X') &&
@@ -275,7 +316,7 @@ function setSetup(state: MapState, type: string, setup: LayerSetup) {
     delete state.shadingDrafts[type];
   }
 
-  const next = normalizeSetup(setup, nativeKindsOf(state).get(type));
+  const next = normalizeSetup(setup, nativeKindOf(state, type));
 
   if (isEmptySetup(next)) {
     delete state.layerSetups[type];
@@ -285,10 +326,9 @@ function setSetup(state: MapState, type: string, setup: LayerSetup) {
 }
 
 /**
- * Puts a preset's layer's setup in. A layer switched to a base map goes to
- * the bottom, in place of the preset's base map, and a preset so become a base
- * takes the base map's place. One that stops being a base leaves none, on
- * purpose, as a map switched to an overlay does.
+ * Puts a preset's layer's setup in. A layer switched to base replaces the
+ * preset's base map, and a preset so become a base replaces the map's; one
+ * that stops being a base leaves none, as a map switched to overlay does.
  */
 function setPresetSetup(
   state: MapState,
@@ -310,7 +350,13 @@ function setPresetSetup(
     delete state.shadingDrafts[key];
   }
 
-  const nativeKinds = nativeKindsOf(state);
+  const nativeKinds: LayerKinds = new Map(
+    preset.layers.flatMap((l) => {
+      const kind = nativeKindOf(state, l.type);
+
+      return kind ? [[l.type, kind]] : [];
+    }),
+  );
 
   layer.setup = normalizeSetup(setup, nativeKinds.get(type));
 
@@ -484,9 +530,9 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(mapLayerSetupReset, (state, { payload }) => {
       delete state.shadingDrafts[setupKey(payload)];
 
-      if (payload.preset === undefined) {
-        const hadBase = hasBase(state);
+      const hadBase = hasBase(state);
 
+      if (payload.preset === undefined) {
         delete state.layerSetups[payload.type];
 
         // Back to a base map, it takes the base map's place, as a switch does.
@@ -499,8 +545,6 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
           settleBase(state, hadBase);
         }
       } else {
-        const hadBase = hasBase(state);
-
         setPresetSetup(state, payload.preset, payload.type, {});
 
         settleBase(state, hadBase);
@@ -574,11 +618,13 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         } else if (onMap) {
           const hadBase = hasBase(state);
 
-          // It is a copy of every picture layer; the data layers stay over it.
+          // It is a copy of every layer a preset can hold; the rest stay.
           state.layers = [
             item,
             ...state.layers.filter(
-              (t) => presetIdOf(t) === undefined && !isPresettable(t),
+              (t) =>
+                presetIdOf(t) === undefined &&
+                !canJoinPreset(t, state.cachedMaps),
             ),
           ];
 
@@ -604,22 +650,12 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         return;
       }
 
-      const item = presetItem(id);
-
-      const base = presetKind(preset, nativeKindsOf(state)) === 'base';
-
-      // As with a base map, one with a base map is replaced, not turned off.
-      if (base && enable !== false) {
-        if (!state.layers.includes(item)) {
-          makeSoleBase(state, item);
-        }
-      } else if (state.layers.includes(item)) {
-        if (enable !== true) {
-          state.layers = state.layers.filter((t) => t !== item);
-        }
-      } else if (enable !== false) {
-        state.layers.push(item);
-      }
+      toggleItem(
+        state,
+        presetItem(id),
+        presetKind(preset, nativeKindsOf(state)) === 'base',
+        enable,
+      );
     })
     .addCase(mapPresetChange, (state, { payload: { id, change } }) => {
       const preset = findPreset(state, id);
@@ -637,9 +673,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
       if (
         !preset ||
-        !isPresettable(type) ||
-        // An offline map is this device's alone, a preset the account's.
-        state.cachedMaps.some((cm) => cm.type === type) ||
+        !canJoinPreset(type, state.cachedMaps) ||
         preset.layers.some((l) => l.type === type)
       ) {
         return;
@@ -737,20 +771,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       settleBase(state, hadBase);
     })
     .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
-      const kinds = kindsOf(state);
-
-      if (kinds.get(type) === 'base' && enable !== false) {
-        if (!state.layers.includes(type)) {
-          makeSoleBase(state, type);
-        }
-      } else if (state.layers.includes(type)) {
-        if (enable !== true) {
-          state.layers = state.layers.filter((t) => t !== type);
-        }
-      } else if (enable !== false) {
-        // On top; `overlayPlacementProcessor` moves it to its own place.
-        state.layers.push(type);
-      }
+      toggleItem(state, type, kindsOf(state).get(type) === 'base', enable);
     })
     .addCase(
       mapRefocus,

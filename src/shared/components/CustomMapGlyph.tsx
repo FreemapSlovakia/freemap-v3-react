@@ -37,7 +37,7 @@ export function customMapKind(def: {
     : undefined;
 }
 
-/** A custom, cached or combined map's picked icon, else its kind's. */
+/** A custom or cached map's or a preset's picked icon, else its kind's. */
 export function CustomMapGlyph({
   spec,
   kind,

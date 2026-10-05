@@ -8,6 +8,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { layerLabel } from '@shared/layerName.js';
 import { type ReactElement, type ReactNode, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaDatabase } from 'react-icons/fa';
@@ -60,7 +61,7 @@ export function MapDetailsMenu(): ReactElement | null {
     })),
     ...activeWmsLayerDefs.map((def) => ({
       key: `wms:${def.type}` as MapDetailsSource,
-      name: `${def.custom ? def.name : m?.mapLayers.letters[def.type]} (WMS)`,
+      name: `${layerLabel(def, m)} (WMS)`,
       selected: !excludeSources.has(`wms:${def.type}`),
     })),
   ];

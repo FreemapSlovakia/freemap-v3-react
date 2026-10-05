@@ -8,10 +8,10 @@ import {
 import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
 import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
-import { type LayerKind, withKind } from './layerKind.js';
+import { type LayerKind, withKind, withMemberKind } from './layerKind.js';
 import { isEmptySetup, type LayerSetup, setupKey } from './layerSetup.js';
 import {
-  isPresettable,
+  canJoinPreset,
   layerKinds,
   memberKind,
   mergeLayers,
@@ -30,30 +30,31 @@ export const allLayerEntries = (
   overrides: Readonly<Record<string, LayerKind>>,
 ) => [
   ...mapIndex.map((entry) => withKind(entry, overrides)),
-  ...catalogMaps.map((map) => withKind(map, overrides)),
+  // A tile map's technology is left out of the catalog's data.
+  ...catalogMaps.map((map) =>
+    withKind({ ...map, technology: map.technology ?? 'tile' }, overrides),
+  ),
   ...customLayers.map((def) => withKind(def, overrides)),
   ...cachedMaps,
 ];
 
-// Beside the shading source it needs, which keeps the stack free of a cycle.
 export {
   drawnTypesSelector,
-  nativeKindsSelector,
   presetByIdSelector,
-  presetKindsSelector,
   resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 
-const layerDefsSelector = createSelector(
+/** Each map's kind as its own setup switches it. */
+export const layerKindsSelector = createSelector(
   (state: RootState) => state.map.customLayers,
   (state: RootState) => state.map.cachedMaps,
   (state: RootState) => state.map.catalogMaps,
   kindOverridesSelector,
-  allLayerEntries,
+  (customLayers, cachedMaps, catalogMaps, overrides) =>
+    layerKinds(
+      allLayerEntries(customLayers, cachedMaps, catalogMaps, overrides),
+    ),
 );
-
-/** Each map's kind as its own setup switches it. */
-export const layerKindsSelector = createSelector(layerDefsSelector, layerKinds);
 
 /** One drawing of a map: on its own, or as a preset's layer. */
 export type LayerInstance = {
@@ -119,22 +120,20 @@ export function capturePreset(state: RootState): PresetLayer[] {
 
   return mergeLayers(
     layerInstancesSelector(state)
-      .filter(
-        ({ type }) =>
-          isPresettable(type) &&
-          // An offline map is this device's alone, a preset the account's.
-          !state.map.cachedMaps.some((cm) => cm.type === type),
-      )
+      .filter(({ type }) => canJoinPreset(type, state.map.cachedMaps))
       .map(({ type, setup, preset, kind }) => {
         const presetOpacity =
           preset === undefined ? undefined : presetById[preset]?.opacity;
 
-        // Taken apart, a preset's own opacity goes into each of its layers.
+        const def = defOf(type);
+
+        // Taken apart, a preset's own opacity goes into each of its layers,
+        // each of the kind it has in the preset, as `Layers` draws it.
         const opacity =
           presetOpacity === undefined
             ? setup.opacity
             : resolveLayerOpacity(
-                { ...defOf(type), layer: kind },
+                def && withMemberKind(def, kind, nativeKinds.get(type)),
                 setup.opacity,
               ) * presetOpacity;
 

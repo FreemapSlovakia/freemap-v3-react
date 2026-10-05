@@ -3,7 +3,7 @@ import { getCachedTileScale } from '@features/cachedMaps/cachedTileMaps.js';
 import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
 import { sourceLayerEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { withKind } from '@features/map/model/layerKind.js';
+import { withMemberKind } from '@features/map/model/layerKind.js';
 import {
   DEFAULT_SHADING,
   type LayerSetup,
@@ -602,12 +602,7 @@ export function Layers(): ReactNode {
 
   // A preset's layer is of the kind its own setup says, not the map's.
   const ofKind = <T extends LayerDef>(def: T, inst: LayerInstance): T =>
-    inst.preset === undefined || !inst.kind
-      ? def
-      : withKind(
-          { ...def, layer: nativeKinds.get(def.type) ?? def.layer },
-          { [def.type]: inst.kind },
-        );
+    withMemberKind(def, inst.kind, nativeKinds.get(def.type));
 
   function drawInstance(inst: LayerInstance, zIndex: number): ReactNode {
     const at = { key: inst.key, setup: inst.setup, zIndex };

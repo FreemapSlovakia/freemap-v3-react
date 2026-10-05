@@ -32,11 +32,18 @@ describe('layer kind', () => {
     ).toBe('overlay');
   });
 
-  it('starts tiles used as an overlay half transparent', () => {
+  it('starts tiles and a solid colour used as an overlay half transparent', () => {
     expect(
       withKind(
         { type: 'T', layer: 'base', technology: 'tile' },
         { T: 'overlay' },
+      ),
+    ).toMatchObject({ layer: 'overlay', defaultOpacity: 0.5 });
+
+    expect(
+      withKind(
+        { type: 'c', layer: 'base', technology: 'color' },
+        { c: 'overlay' },
       ),
     ).toMatchObject({ layer: 'overlay', defaultOpacity: 0.5 });
   });

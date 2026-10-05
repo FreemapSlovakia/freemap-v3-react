@@ -1,7 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { libraryIndexByIdSelector } from '@features/mapLibrary/model/selectors.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
+import { layerName } from '@shared/layerName.js';
 
 type Props = {
   result: SearchResult;
@@ -12,16 +13,17 @@ export function SourceName({ result }: Props) {
 
   const isWms = result.source.startsWith('wms:');
 
-  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
-
   const wmsType = isWms ? result.source.slice(4) : undefined;
 
-  const wmsMapName =
+  // Built-in, catalog or the user's own.
+  const wmsDef = useAppSelector((state) =>
     wmsType === undefined
-      ? null
-      : mapIndexById[wmsType]
-        ? m?.mapLayers.letters[wmsType]
-        : customLayerDefs.find((def) => def.type === wmsType)?.name;
+      ? undefined
+      : (libraryIndexByIdSelector(state)[wmsType] ??
+        state.map.customLayers.find((def) => def.type === wmsType)),
+  );
+
+  const wmsMapName = wmsDef && layerName(wmsDef, m);
 
   return (
     (m?.search.sources[isWms ? 'wms:' : result.source] ?? '') +

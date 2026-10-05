@@ -59,7 +59,7 @@ import {
   type TechnologyGroup,
   technologyGroup,
 } from '../filters.js';
-import { mapLibraryPreviewStart } from '../model/actions.js';
+import { canPreview, mapLibraryPreviewStart } from '../model/actions.js';
 import {
   installedLibraryIndexSelector,
   integratedLayerDefMapSelector,
@@ -628,24 +628,22 @@ function YourMapRow({
       </td>
 
       <td className="text-center">
-        {canSave &&
-          (preset ? (
-            <OpacityButton
-              value={preset.opacity ?? 1}
-              onChange={(opacity) =>
-                dispatch(
-                  mapPresetChange({ id: preset.id, change: { opacity } }),
-                )
-              }
-            />
-          ) : (
-            <OpacityButton
-              value={resolveLayerOpacity(def, ownOpacity)}
-              onChange={(opacity) =>
-                dispatch(mapLayerSetupChange({ type, setup: { opacity } }))
-              }
-            />
-          ))}
+        {canSave && (
+          <OpacityButton
+            value={
+              preset
+                ? (preset.opacity ?? 1)
+                : resolveLayerOpacity(def, ownOpacity)
+            }
+            onChange={(opacity) =>
+              dispatch(
+                preset
+                  ? mapPresetChange({ id: preset.id, change: { opacity } })
+                  : mapLayerSetupChange({ type, setup: { opacity } }),
+              )
+            }
+          />
+        )}
       </td>
 
       <td className="text-center text-nowrap fm-should-have-keyboard">
@@ -680,12 +678,14 @@ function YourMapRow({
               showFrom="never"
             />
           ) : (
-            <Action
-              icon={<FaEye />}
-              label={msm?.preview}
-              onClick={() => dispatch(mapLibraryPreviewStart({ type }))}
-              showFrom="never"
-            />
+            canPreview(type) && (
+              <Action
+                icon={<FaEye />}
+                label={msm?.preview}
+                onClick={() => dispatch(mapLibraryPreviewStart({ type }))}
+                showFrom="never"
+              />
+            )
           )}
 
           {map.kind !== 'library' && (

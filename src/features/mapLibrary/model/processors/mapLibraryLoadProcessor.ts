@@ -119,8 +119,11 @@ export const mapLibraryLoadProcessor: Processor = {
   },
 };
 
-/** Tries the failed maps again after a backoff, or as soon as the network returns. */
-function scheduleRetry(dispatch: Dispatch) {
+/**
+ * Tries the failed maps — bodies and catalog entries — again after a backoff,
+ * or as soon as the network returns.
+ */
+export function scheduleRetry(dispatch: Dispatch) {
   if (retryTimer !== undefined) {
     return;
   }

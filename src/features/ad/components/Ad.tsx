@@ -80,13 +80,56 @@ export default function Ad(): ReactElement | null {
 
   const ref = useLeftMarginAdjuster();
 
+  const [root, setRoot] = useState<HTMLDivElement | null>(null);
+
+  const [besideLogo, setBesideLogo] = useState(false);
+
+  // Hanging over the map only beside the logo's toolbar: on a line of its own
+  // it would cover what wraps below it (the Map layers panel).
+  useEffect(() => {
+    const row = root?.parentElement;
+
+    if (!root || !row) {
+      return;
+    }
+
+    const check = () => {
+      const first = row.firstElementChild;
+
+      setBesideLogo(
+        first instanceof HTMLElement &&
+          first !== root &&
+          root.offsetTop < first.offsetTop + first.offsetHeight,
+      );
+    };
+
+    check();
+
+    const resizes = new ResizeObserver(check);
+
+    resizes.observe(row);
+
+    const mutations = new MutationObserver(check);
+
+    mutations.observe(row, { childList: true });
+
+    return () => {
+      resizes.disconnect();
+
+      mutations.disconnect();
+    };
+  }, [root]);
+
+  if (closed) {
+    return null;
+  }
+
   return (
     <div
+      ref={setRoot}
       className={clsx(
-        'mt-2',
-        'd-flex',
-        'flex-column',
-        closed ? 'invisible' : 'visible',
+        'mt-2 d-flex flex-column',
+        besideLogo && 'fm-ad-overhang',
       )}
     >
       <div

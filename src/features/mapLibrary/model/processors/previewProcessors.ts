@@ -113,11 +113,7 @@ export const mapLibraryPreviewModalProcessor: Processor<typeof setActiveModal> =
 const previewedLayerGoneSelector = (state: RootState) => {
   const { preview } = state.mapLibrary;
 
-  // `i` is on unless listed.
-  return (
-    preview !== null &&
-    (preview.type === 'i') === state.map.layers.includes(preview.type)
-  );
+  return preview !== null && !state.map.layers.includes(preview.type);
 };
 
 /**

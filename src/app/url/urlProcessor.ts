@@ -1,5 +1,6 @@
 import { isEmptySetup } from '@features/map/model/layerSetup.js';
 import {
+  isSetupParam,
   presetUrlParts,
   SETUP_PARAM_PREFIX,
   serializeSetup,
@@ -100,8 +101,35 @@ const REPLACE_MIN_INTERVAL_MS = 500;
 // drag is one Back press.
 const SETUP_COALESCE_GAP_MS = 3000;
 
-const isSetupPart = ([key]: QueryPart) =>
-  key.startsWith(SETUP_PARAM_PREFIX) || /^p\.[^.]+\.(?:o|l\..+)$/.test(key);
+/**
+ * A content write's setups, which of them differ from the last write's, and
+ * the rest of its content serialized.
+ */
+function setupWriteOf(
+  parts: readonly QueryPart[],
+  contentPart: (part: QueryPart) => boolean,
+) {
+  const setups: Record<string, string> = {};
+
+  const other: QueryPart[] = [];
+
+  for (const part of parts) {
+    if (isSetupParam(part[0])) {
+      setups[part[0]] = String(part[1]);
+    } else if (contentPart(part)) {
+      other.push(part);
+    }
+  }
+
+  const changed = [
+    ...new Set([...Object.keys(setups), ...Object.keys(lastWrittenSetups)]),
+  ]
+    .filter((key) => setups[key] !== lastWrittenSetups[key])
+    .sort()
+    .join('\n');
+
+  return { setups, changed, other: serializeQuery(other) };
+}
 
 let previousRest: unknown[] = [];
 
@@ -229,6 +257,9 @@ function updateUrl(state: RootState, forced: boolean): void {
     // viewport-coalescing session so the first write after we resume starts a
     // fresh history entry instead of replacing the entry we navigated to.
     lastWriteWasViewOnly = false;
+
+    // Likewise a run of setup changes: continued, it would replace that entry.
+    lastChangedSetups = '';
 
     // Drop an owed rewrite rather than running it: on a popstate restore the
     // entry it would replace is the one just navigated to. `previousView` has
@@ -363,14 +394,17 @@ function updateUrl(state: RootState, forced: boolean): void {
     (id) => presetByIdSelector(state)[id],
   );
 
-  // Custom maps by id too, in their place: `custom-layers=` carries them.
+  // Custom maps by id too, in their place: `custom-layers=` carries them. An
+  // offline map is this device's alone, so a reload keeps it and another
+  // device drops it.
   const linked = inline.layers.filter(
     (type) =>
       type !== 'i' &&
       (mapIndexById[type] ||
         isCatalogId(type) ||
         presetIdOf(type) !== undefined ||
-        map.customLayers.some((def) => def.type === type)),
+        map.customLayers.some((def) => def.type === type) ||
+        map.cachedMaps.some((cm) => cm.type === type)),
   );
 
   const joined = linked.join('~');
@@ -657,31 +691,20 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   const now = Date.now();
 
-  const setups: Record<string, string> = Object.fromEntries(
-    [...queryParts, ...(mapId ? historyParts : [])]
-      .filter(isSetupPart)
-      .map(([key, value]) => [key, String(value)]),
-  );
-
-  const changedSetups = [
-    ...new Set([...Object.keys(setups), ...Object.keys(lastWrittenSetups)]),
-  ]
-    .filter((key) => setups[key] !== lastWrittenSetups[key])
-    .sort()
-    .join('\n');
-
-  const otherSignature = serializeQuery(
-    [...queryParts, ...(mapId ? historyParts : [])].filter(
-      (part) => contentPart(part) && !isSetupPart(part),
-    ),
-  );
+  // Setups are content, so a view-only write leaves them as they were.
+  const setupWrite = viewOnly
+    ? undefined
+    : setupWriteOf(
+        mapId ? [...queryParts, ...historyParts] : queryParts,
+        contentPart,
+      );
 
   // A slider dragged or boxes ticked on one layer: one entry for the run.
   const setupRun =
-    !viewOnly &&
-    changedSetups !== '' &&
-    changedSetups === lastChangedSetups &&
-    otherSignature === lastWrittenOther &&
+    setupWrite !== undefined &&
+    setupWrite.changed !== '' &&
+    setupWrite.changed === lastChangedSetups &&
+    setupWrite.other === lastWrittenOther &&
     now - lastWriteTs < SETUP_COALESCE_GAP_MS;
 
   const method =
@@ -743,11 +766,13 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   lastWrittenRest = restSignature;
 
-  lastWrittenOther = otherSignature;
+  if (setupWrite) {
+    lastWrittenOther = setupWrite.other;
 
-  lastWrittenSetups = setups;
+    lastWrittenSetups = setupWrite.setups;
+  }
 
-  lastChangedSetups = viewOnly ? '' : changedSetups;
+  lastChangedSetups = setupWrite?.changed ?? '';
 
   lastWriteWasViewOnly = viewOnly;
 

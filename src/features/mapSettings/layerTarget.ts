@@ -1,7 +1,6 @@
 import type { SetupTarget } from '@features/map/model/actions.js';
-import { withKind } from '@features/map/model/layerKind.js';
+import { withMemberKind } from '@features/map/model/layerKind.js';
 import type { LayerSetup } from '@features/map/model/layerSetup.js';
-import { memberKind } from '@features/map/model/mapPreset.js';
 import {
   integratedLayerDefMapSelector,
   nativeKindsSelector,
@@ -39,19 +38,7 @@ export function useTargetDef(target: SetupTarget): LayerDef | undefined {
 
   // A library map's def is of the kind its own setup switches it to; a
   // preset's copy goes by the copy's setup.
-  if (!def || target.preset === undefined || !nativeKind) {
-    return def;
-  }
-
-  const kind = memberKind(
-    { type: target.type, setup: setup ?? {} },
-    new Map([[target.type, nativeKind]]),
-  );
-
-  return withKind(
-    { ...def, layer: nativeKind },
-    {
-      [target.type]: kind!,
-    },
-  ) as LayerDef;
+  return def && target.preset !== undefined
+    ? withMemberKind(def, setup?.kind ?? nativeKind, nativeKind)
+    : def;
 }

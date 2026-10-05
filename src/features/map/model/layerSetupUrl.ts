@@ -93,7 +93,13 @@ export function parseSetup(value: string): LayerSetup {
 }
 
 /** Where a link carries preset `n` of its `layers=` (`@<n>`). */
-export const PRESET_PARAM_PREFIX = 'p.';
+const PRESET_PARAM_PREFIX = 'p.';
+
+/** A param that sets up a layer: a map's `l.<id>`, a preset's `.o` or `.l.<id>`. */
+export const isSetupParam = (key: string): boolean =>
+  key.startsWith(SETUP_PARAM_PREFIX) ||
+  (key.startsWith(PRESET_PARAM_PREFIX) &&
+    /^[^.]+\.(?:o|l\..+)$/.test(key.slice(PRESET_PARAM_PREFIX.length)));
 
 /**
  * A preset in a link: `p.<n>` its maps bottom first, `~`-joined; `p.<n>.n`

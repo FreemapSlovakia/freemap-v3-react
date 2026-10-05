@@ -339,6 +339,24 @@ describe('mapReducer — presets', () => {
     expect(next.layers).toEqual(['@n', 'i']);
   });
 
+  it('a new one of the map leaves an offline map, which it can’t hold, on', () => {
+    const next = mapReducer(
+      {
+        ...state,
+        layers: ['off1', 'h'],
+        cachedMaps: [
+          { type: 'off1', layer: 'base' },
+        ] as unknown as typeof state.cachedMaps,
+      },
+      mapPresetSave({
+        preset: { id: 'n', name: 'N', layers: [{ type: 'h', setup: {} }] },
+        onMap: true,
+      }),
+    );
+
+    expect(next.layers).toEqual(['off1', '@n']);
+  });
+
   it('a link’s, saved as one’s own, takes its place', () => {
     const next = mapReducer(
       {

@@ -61,4 +61,8 @@ describe('getMapStateFromUrl — layers', () => {
   it('keeps reading legacy concatenated layers', () => {
     expect(layersOf('XSJ17')).toEqual(['X', 'S', 'J1', '7']);
   });
+
+  it('says nothing of layers when it knows none it names', () => {
+    expect(layersOf('abc123~')).toBeUndefined();
+  });
 });

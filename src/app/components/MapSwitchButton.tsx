@@ -310,25 +310,24 @@ export function MapSwitchButton(): ReactElement {
       custom: false as const,
       cached: false,
     })),
-    ...[...customLayerDefs]
-      .sort((a, b) => byName(a.name || undefined, b.name || undefined))
-      .map((def) => ({ ...def, custom: true as const, cached: false })),
+    ...customLayerDefs.map((def) => ({
+      ...def,
+      custom: true as const,
+      cached: false,
+    })),
     ...cachedMaps
       .filter(isCachedMapComplete)
       .sort((a, b) => byName(a.name || undefined, b.name || undefined))
       .map((cm) => ({ ...cm, custom: true as const, cached: true })),
-  ]
-    // Stable: base maps keep their order above, ahead of the overlays.
-    .sort((a, b) => stackPlace(a) - stackPlace(b))
-    .map((def) => ({
-      scaleWithDpi: false,
-      ...def,
-      countryOk:
-        !countriesSet ||
-        def.custom ||
-        (coverageCountries(def)?.some((c) => countriesSet.has(c)) ?? true),
-      zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
-    }));
+  ].map((def) => ({
+    scaleWithDpi: false,
+    ...def,
+    countryOk:
+      !countriesSet ||
+      def.custom ||
+      (coverageCountries(def)?.some((c) => countriesSet.has(c)) ?? true),
+    zoomOk: def.minZoom === undefined || zoom >= def.minZoom,
+  }));
 
   type Entry =
     | { def: (typeof layerDefs)[number]; preset?: undefined }

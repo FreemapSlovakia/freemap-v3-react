@@ -6,6 +6,7 @@ import {
   LayerSetupSchema,
   LayerSetupsCompatSchema,
 } from '@features/map/model/layerSetup.js';
+import { upgradeLegacyMapSettings } from '@features/map/model/legacySettings.js';
 import {
   MapPresetArrayCompatSchema,
   MapPresetSchema,
@@ -110,13 +111,16 @@ export type UserSettings = z.infer<typeof UserSettingsSchema>;
 // settings from persisted/server payloads. A key that doesn't parse is left
 // out on its own: failing the whole object would drop every key, and the next
 // save would then send the defaults over them.
-export const UserSettingsCompatSchema = z.object({
-  layersSettings: LayersSettingsCompatSchema.optional().catch(undefined),
-  layerSetups: LayerSetupsCompatSchema.optional().catch(undefined),
-  customLayers: CustomLayerDefArrayCompatSchema.optional().catch(undefined),
-  presets: MapPresetArrayCompatSchema.optional().catch(undefined),
-  maxZoom: UserSettingsSchema.shape.maxZoom.catch(undefined),
-});
+export const UserSettingsCompatSchema = z.preprocess(
+  upgradeLegacyMapSettings,
+  z.object({
+    layersSettings: LayersSettingsCompatSchema.optional().catch(undefined),
+    layerSetups: LayerSetupsCompatSchema.optional().catch(undefined),
+    customLayers: CustomLayerDefArrayCompatSchema.optional().catch(undefined),
+    presets: MapPresetArrayCompatSchema.optional().catch(undefined),
+    maxZoom: UserSettingsSchema.shape.maxZoom.catch(undefined),
+  }),
+);
 
 export const UserSchema = z.object({
   authProviders: z.array(AuthProviderSchema),

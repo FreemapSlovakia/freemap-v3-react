@@ -673,16 +673,23 @@ export function handleLocationChange(store: MyStore): void {
 
   // `layers=` names the custom maps it carries in `custom-layers=`. A My Map's
   // link carries them only in history state, so a fresh tab takes any custom
-  // id on trust: the map's document brings their definitions.
+  // id on trust: the map's document brings their definitions. An offline map
+  // is known here, or on already: its list loads after a reload reads this.
+  const { cachedMaps, layers: onMap } = getState().map;
+
   const mapStateFromUrl = getMapStateFromUrl(
     (type) =>
       customTypes.includes(type) ||
-      (id !== undefined && CUSTOM_ID_RE.test(type)),
+      (id !== undefined && CUSTOM_ID_RE.test(type)) ||
+      cachedMaps.some((cm) => cm.type === type) ||
+      onMap.includes(type),
   );
 
   // The presets the link carries: those alike to one of the account's stand
   // for it, the rest are the link's own.
   let linkPresets: MapPreset[] | undefined;
+
+  let setups: Record<string, LayerSetup> | undefined;
 
   if (mapStateFromUrl.layers) {
     const inline = mapStateFromUrl.layers.flatMap((item) => {
@@ -704,15 +711,13 @@ export function handleLocationChange(store: MyStore): void {
     mapStateFromUrl.layers = adopted.layers;
 
     linkPresets = adopted.linkPresets;
-  }
 
-  // What the link says of each layer it names; one it says nothing of is at
-  // its defaults, so the link draws what the screen it came from did. A link
-  // from before setups has its shading in `shading=`.
-  let setups: Record<string, LayerSetup> | undefined;
-
-  if (mapStateFromUrl.layers) {
+    // What the link says of each layer it names; one it says nothing of is at
+    // its defaults, so the link draws what the screen it came from did. A
+    // link from before setups has its shading in `shading=`.
     setups = {};
+
+    const legacyShading = query['shading'];
 
     for (const type of mapStateFromUrl.layers) {
       if (presetIdOf(type) !== undefined) {
@@ -720,8 +725,6 @@ export function handleLocationChange(store: MyStore): void {
       }
 
       const value = query[`${SETUP_PARAM_PREFIX}${type}`];
-
-      const legacyShading = query['shading'];
 
       setups[type] =
         typeof value === 'string'

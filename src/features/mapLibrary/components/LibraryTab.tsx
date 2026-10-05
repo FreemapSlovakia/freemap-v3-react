@@ -23,7 +23,11 @@ import {
 import { Alert, Button, Form, Table } from 'react-bootstrap';
 import { FaEye, FaHistory, FaPlus } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
-import { type CatalogEntry, loadLibraryCatalog } from '../catalog.js';
+import {
+  type CatalogEntry,
+  loadLibraryCatalog,
+  technologyOf,
+} from '../catalog.js';
 import {
   type CategoryGroup,
   categoryGroup,
@@ -38,6 +42,7 @@ import {
   searchLibrary,
 } from '../librarySearch.js';
 import {
+  canPreview,
   mapLibraryCatalogMapsLoaded,
   mapLibraryPreviewStart,
 } from '../model/actions.js';
@@ -192,30 +197,29 @@ function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
         ))}
 
         <div className="small text-muted">
-          {mapDetail(
-            entry.category,
-            entry.index?.technology ?? entry.map?.technology ?? 'tile',
-          )}
+          {mapDetail(entry.category, technologyOf(entry))}
         </div>
       </td>
 
       <td>
-        <LongPressTooltip label={msm?.preview}>
-          {({ props }) => (
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => {
-                makeKnown();
+        {canPreview(type) && (
+          <LongPressTooltip label={msm?.preview}>
+            {({ props }) => (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  makeKnown();
 
-                dispatch(mapLibraryPreviewStart({ type }));
-              }}
-              {...props}
-            >
-              <FaEye />
-            </Button>
-          )}
-        </LongPressTooltip>
+                  dispatch(mapLibraryPreviewStart({ type }));
+                }}
+                {...props}
+              >
+                <FaEye />
+              </Button>
+            )}
+          </LongPressTooltip>
+        )}
       </td>
 
       <td>
@@ -329,12 +333,7 @@ export function LibraryTab({
       return prep &&
         passes(filters.layers, entry.layer) &&
         passes(filters.categories, categoryGroup(entry.category)) &&
-        passes(
-          filters.technologies,
-          technologyGroup(
-            entry.index?.technology ?? entry.map?.technology ?? 'tile',
-          ),
-        ) &&
+        passes(filters.technologies, technologyGroup(technologyOf(entry))) &&
         passesCountry(entry.countries, filters) &&
         (!filters.coversView || coversView(entry, view))
         ? [{ entry, ...prep }]
@@ -372,7 +371,8 @@ export function LibraryTab({
   // A search that matches nothing at all, installed maps included, may name a
   // map we lack; one emptied by the filters or an install doesn't.
   const unknownMap = useMemo(() => {
-    if (!query.trim() || !catalog) {
+    // Asked only once nothing shown matches: it searches the whole catalog.
+    if (!query.trim() || !catalog || ranked.length > 0) {
       return false;
     }
 
@@ -381,7 +381,7 @@ export function LibraryTab({
     );
 
     return searchLibrary(targets, targets, query, 1).total === 0;
-  }, [query, catalog, prepared]);
+  }, [query, catalog, prepared, ranked]);
 
   // Back to the first page on a new search or filter, but not when an install
   // or a preview changes the list under the user's scroll position.

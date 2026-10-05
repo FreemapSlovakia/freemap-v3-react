@@ -167,7 +167,7 @@ export const integratedLayerDefsSelector = createSelector(
 const PINNED_TECHNOLOGIES = new Set(['gallery', 'wikipedia', 'interactive']);
 
 /** Whether an overlay of this technology stays on top, out of the reordering. */
-export const isPinnedOverlay = (technology: string | undefined): boolean =>
+const isPinnedOverlay = (technology: string | undefined): boolean =>
   technology !== undefined && PINNED_TECHNOLOGIES.has(technology);
 
 /** The user's own maps, as drawn: of the kind their setups switch them to. */

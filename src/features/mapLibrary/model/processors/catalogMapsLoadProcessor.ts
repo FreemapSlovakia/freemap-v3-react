@@ -5,8 +5,12 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { createSelector } from 'reselect';
 import { loadCatalogMaps } from '../../catalog.js';
-import { mapLibraryCatalogMapsLoaded } from '../actions.js';
+import {
+  mapLibraryCatalogMapsLoaded,
+  mapLibraryLoadRetry,
+} from '../actions.js';
 import { drawnTypesSelector } from '../selectors.js';
+import { scheduleRetry } from './mapLibraryLoadProcessor.js';
 
 /** Catalog ids wanted but not known, comma-joined: installed, on the map, or an offline map's source. */
 const missingCatalogIdsSelector = createSelector(
@@ -36,7 +40,7 @@ const missingCatalogIdsSelector = createSelector(
 const asked = new Set<string>();
 
 export const catalogMapsLoadProcessor: Processor = {
-  actionCreator: init,
+  actionCreator: [init, mapLibraryLoadRetry],
   stateChangePredicate: missingCatalogIdsSelector,
   predicatesOperation: 'OR',
   handle({ getState, dispatch }) {
@@ -72,6 +76,8 @@ export const catalogMapsLoadProcessor: Processor = {
             style: 'danger',
           }),
         );
+
+        scheduleRetry(dispatch);
       },
     );
   },

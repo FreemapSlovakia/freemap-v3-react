@@ -39,6 +39,7 @@ import {
   presetIdOf,
   presetItem,
 } from '@features/map/model/mapPreset.js';
+import { layerKindsSelector } from '@features/map/model/selectors.js';
 import {
   installedLibraryIndexSelector,
   libraryIndexByIdSelector,
@@ -581,22 +582,12 @@ function Stack({
 
   const presetKinds = useAppSelector(presetKindsSelector);
 
-  const libraryDefs = useAppSelector(libraryIndexByIdSelector);
-
-  const customLayers = useAppSelector(resolvedCustomLayersSelector);
-
-  const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
+  const layerKinds = useAppSelector(layerKindsSelector);
 
   const kindOf = (item: string) => {
     const id = presetIdOf(item);
 
-    return id !== undefined
-      ? presetKinds[id]
-      : (
-          libraryDefs[item] ??
-          customLayers.find((def) => def.type === item) ??
-          cachedMaps.find((def) => def.type === item)
-        )?.layer;
+    return id !== undefined ? presetKinds[id] : layerKinds.get(item);
   };
 
   const overlays = stack.filter((item) => layers.includes(item));
@@ -610,10 +601,8 @@ function Stack({
 
   const maps = layers.filter(isMap);
 
-  // Two maps or presets to combine, or one map set up its own way, and no
-  // photos, Wikipedia, radar or viewshed on, which a preset can't hold: saved
-  // without them, it would turn on less than was seen. `i` only hides the
-  // tools' features.
+  // Two maps or presets, or one map set up its own way, and no data layer on,
+  // which a preset can't hold. `i` only hides the tools' features.
   const makesNew =
     (maps.length > 1 ||
       (maps.length === 1 &&

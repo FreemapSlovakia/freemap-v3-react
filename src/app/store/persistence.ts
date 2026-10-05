@@ -28,6 +28,7 @@ import {
 } from '@features/location/model/settingsReducer.js';
 import { LayersSettingsCompatSchema } from '@features/map/model/actions.js';
 import { LayerSetupsCompatSchema } from '@features/map/model/layerSetup.js';
+import { upgradeLegacyMapSettings } from '@features/map/model/legacySettings.js';
 import {
   MapPresetArrayCompatSchema,
   presetIdOf,
@@ -140,8 +141,13 @@ const PreSetupsMapSchema = z.object({
 
 // Accepts the legacy `{ mapType, overlays }` shape, mapping it to `{ layers }`,
 // and a map from before setups: overlay opacities and the shading moved into
-// the setups of their maps.
-const PersistedMapCompatSchema = z.preprocess((raw) => {
+// the setups of their maps; then see `upgradeLegacyMapSettings`.
+const PersistedMapCompatSchema = z.preprocess(
+  (raw) => upgradeLegacyMapSettings(withSetups(raw)),
+  PersistedMapSchema,
+);
+
+function withSetups(raw: unknown): unknown {
   if (!raw || typeof raw !== 'object') {
     return raw;
   }
@@ -172,7 +178,7 @@ const PersistedMapCompatSchema = z.preprocess((raw) => {
   }
 
   return { ...withLayers, layerSetups };
-}, PersistedMapSchema);
+}
 
 export const PersistedL10nSchema = z
   .object({
@@ -495,7 +501,8 @@ const PERSIST: PersistEntry[] = [
         layers: resolveLayerAliases(merged.layers).filter((item) => {
           const id = presetIdOf(item);
 
-          return id === undefined || presetIds.has(id);
+          // `_<id>`: a legacy map-combination marker.
+          return id === undefined ? !item.startsWith('_') : presetIds.has(id);
         }),
         layersSettings: resolveLayersSettingsAliases(merged.layersSettings),
         layerSetups: resolveLayersSettingsAliases(merged.layerSetups),

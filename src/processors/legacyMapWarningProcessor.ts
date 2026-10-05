@@ -12,18 +12,20 @@ import {
   toastsRemove,
 } from '@features/toasts/model/actions.js';
 import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
+import { createSelector } from 'reselect';
 
 const TOAST_PREFIX = 'myMaps.legacyWarning.';
 
-export const legacyMapWarningProcessor: Processor = {
-  stateChangePredicate: (state) => {
-    const drawn = drawnTypesSelector(state);
+// Checked on every action; recomputed only when what is drawn changes.
+const drawnLegacySelector = createSelector(drawnTypesSelector, (drawn) =>
+  mapIndex
+    .filter((def) => drawn.includes(def.type) && def.superseededBy)
+    .map((def) => def.type)
+    .join(','),
+);
 
-    return mapIndex
-      .filter((def) => drawn.includes(def.type) && def.superseededBy)
-      .map((def) => def.type)
-      .join(',');
-  },
+export const legacyMapWarningProcessor: Processor = {
+  stateChangePredicate: drawnLegacySelector,
   actionCreator: [mapRefocus, init],
   predicatesOperation: 'OR',
   async handle({ getState, dispatch }) {

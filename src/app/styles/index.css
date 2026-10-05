@@ -359,6 +359,18 @@ button#freemap-logo {
   cursor: pointer;
 }
 
+/* The ad hangs over the map rather than deepening the toolbar row, which would
+   push what wraps below it (the Map layers panel) down. */
+.fm-ad-overhang {
+  height: 0;
+  overflow: visible;
+}
+
+/* Or the column would shrink them to its zero height. */
+.fm-ad-overhang > * {
+  flex-shrink: 0;
+}
+
 /* An overlay's toolbar button: a corner set off from the base maps'. */
 .fm-overlay-corner {
   position: relative;

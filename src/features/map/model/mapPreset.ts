@@ -1,13 +1,14 @@
 import { resolveLayerAlias } from '@shared/mapDefinitions.js';
 import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import z from 'zod';
+import { DATA_TECHNOLOGIES, type LayerKind } from './layerKind.js';
 import {
   DEFAULT_SHADING,
   type LayerSetup,
   LayerSetupSchema,
 } from './layerSetup.js';
 
-export const PresetLayerSchema = z.object({
+const PresetLayerSchema = z.object({
   type: z.string(),
   setup: LayerSetupSchema,
 });
@@ -45,10 +46,10 @@ export const MapPresetArrayCompatSchema = z
   );
 
 /** Each layer's kind, as far as known; see `layerKinds`. */
-export type LayerKinds = ReadonlyMap<string, 'base' | 'overlay'>;
+export type LayerKinds = ReadonlyMap<string, LayerKind>;
 
 export const layerKinds = (
-  defs: readonly { type: string; layer: 'base' | 'overlay' }[],
+  defs: readonly { type: string; layer: LayerKind }[],
 ): LayerKinds => new Map(defs.map((def) => [def.type, def.layer]));
 
 /** How a preset stands in `map.layers`, which otherwise holds map ids. */
@@ -59,22 +60,22 @@ export const presetIdOf = (item: string): string | undefined =>
   item.startsWith('@') ? item.slice(1) : undefined;
 
 /** A preset a link or a document brought, not one of the account's. */
-export const LINK_PRESET_PREFIX = '~';
+const LINK_PRESET_PREFIX = '~';
 
 export const isLinkPreset = (id: string) => id.startsWith(LINK_PRESET_PREFIX);
 
-// Drawn by the app itself, partly above every map; not part of a picture.
-const DATA_TECHNOLOGIES = new Set([
-  'gallery',
-  'wikipedia',
-  'interactive',
-  'radar',
-  'viewshed',
-]);
-
-/** Whether a map may be a preset's layer: any but the data layers. */
+/** Whether a map may be a preset's layer by its kind: any but the data layers. */
 export const isPresettable = (type: string): boolean =>
   !DATA_TECHNOLOGIES.has(mapIndexById[type]?.technology ?? '');
+
+/**
+ * Whether a preset may hold this map here: neither a data layer nor an offline
+ * map, which is this device's alone while a preset is the account's.
+ */
+export const canJoinPreset = (
+  type: string,
+  cachedMaps: readonly { type: string }[],
+): boolean => isPresettable(type) && !cachedMaps.some((cm) => cm.type === type);
 
 /** The preset's layers with removed ones mapped to their successors, deduplicated. */
 export function presetLayers(preset: {
@@ -96,8 +97,8 @@ export function presetLayers(preset: {
 }
 
 /** What merging needs to know of a map that its setup leaves at defaults. */
-export type MergeDefaults = {
-  kind: (type: string) => 'base' | 'overlay' | undefined;
+type MergeDefaults = {
+  kind: (type: string) => LayerKind | undefined;
   wmsLayers: (type: string) => readonly string[];
 };
 
@@ -187,13 +188,13 @@ export const memberKind = (
 export const presetKind = (
   preset: MapPreset,
   nativeKinds: LayerKinds,
-): 'base' | 'overlay' =>
+): LayerKind =>
   preset.layers.some((layer) => memberKind(layer, nativeKinds) === 'base')
     ? 'base'
     : 'overlay';
 
 /** What a preset holds, as compared to tell a copy of it; parsed for a fixed key order. */
-export const presetContent = (preset: MapPreset) =>
+const presetContent = (preset: MapPreset) =>
   JSON.stringify(MapPresetSchema.parse({ ...preset, id: '' }));
 
 /**
