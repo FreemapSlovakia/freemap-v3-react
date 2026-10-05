@@ -163,13 +163,15 @@ describe('map tools', () => {
       lat: 48.7,
       lon: 19.1,
       zoom: 12,
-      layers: ['X', 'I'],
+      layers: ['X', 'I', '@p'],
       bounds: [18, 48, 20, 49],
       customLayers: [],
       cachedMaps: [],
       catalogMaps: [],
       layersSettings: {},
-      linkKinds: {},
+      layerSetups: {},
+      presets: [{ id: 'p', name: 'P', layers: [{ type: 'w', setup: {} }] }],
+      linkPresets: [],
     },
     mapLibrary: { bodies: {} },
   };
@@ -183,7 +185,7 @@ describe('map tools', () => {
       center: { lat: 48.7, lon: 19.1 },
       zoom: 12,
       bounds: { west: 18, south: 48, east: 20, north: 49 },
-      layers: ['X', 'I'],
+      layers: ['X', 'I', '@p'],
     });
   });
 
@@ -199,7 +201,7 @@ describe('map tools', () => {
     });
   });
 
-  it('turns off an overlay that is on and refuses an unknown code', async () => {
+  it('turns off the overlays and overlay presets on, and refuses an unknown code', async () => {
     const { store, dispatched } = fakeStore(state);
 
     const tool = mapTools.find((t) => t.name === 'set-map-layers')!;
@@ -208,6 +210,7 @@ describe('map tools', () => {
 
     expect(dispatched).toEqual([
       { type: 'MAP_TOGGLE_LAYER', payload: { type: 'I', enable: false } },
+      { type: 'MAP_PRESET_TOGGLE', payload: { id: 'p', enable: false } },
     ]);
 
     expect((await tool.execute({ base: 'nope' }, ctx(store))).isError).toBe(
@@ -632,7 +635,7 @@ describe('set-map-layers', () => {
         cachedMaps: [],
         catalogMaps: [],
         layersSettings: {},
-        linkKinds: {},
+        layerSetups: {},
       },
       mapLibrary: { bodies: {} },
     });

@@ -1,12 +1,20 @@
-import { isCombinationMarker } from '@features/map/model/mapCombination.js';
-import { kindOverridesSelector } from '@features/mapLibrary/model/selectors.js';
+import { isEmptySetup } from '@features/map/model/layerSetup.js';
+import {
+  presetUrlParts,
+  SETUP_PARAM_PREFIX,
+  serializeSetup,
+} from '@features/map/model/layerSetupUrl.js';
+import { inlinePresets, presetIdOf } from '@features/map/model/mapPreset.js';
+import {
+  drawnTypesSelector,
+  presetByIdSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
 import { isFullTurn } from '@features/panorama/model/settingsReducer.js';
 import {
   serializePanoramaTilt,
   serializePanoramaViewpoint,
 } from '@features/panorama/panoramaUrl.js';
-import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
 import { isPremium } from '@features/premium/premium.js';
 import { routeKey } from '@features/routePlanner/model/actions.js';
 import { serializeToposcope } from '@features/toposcope/toposcopeUrl.js';
@@ -17,7 +25,6 @@ import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
-import { hasSharedShadingLayer } from '@shared/mapLibrary/shadingLayers.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
 import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
@@ -251,9 +258,10 @@ function updateUrl(state: RootState, forced: boolean): void {
     main.embedFeatures,
     main.selection,
     map.layers,
-    kindOverridesSelector(state),
+    map.layerSetups,
     map.customLayers,
-    map.shading,
+    map.presets,
+    map.linkPresets,
     routePlanner,
     routePlanner.points,
     routePlanner.finishOnly,
@@ -333,17 +341,28 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   previousView = view;
 
-  const joined = map.layers
-    .filter(
-      (type) =>
-        type !== 'i' &&
-        (mapIndexById[type] || isCatalogId(type) || isCombinationMarker(type)),
-    )
-    .join('~');
+  // Presets go along as copies: whoever opens the link hasn't got them.
+  const inline = inlinePresets(
+    map.layers,
+    (id) => presetByIdSelector(state)[id],
+  );
 
-  // A lone catalog id could read as legacy concatenated layers (`XSOR7`); the
-  // `~` keeps it whole.
-  const layers = isCatalogId(joined) ? `${joined}~` : joined;
+  // Custom maps by id too, in their place: `custom-layers=` carries them.
+  const linked = inline.layers.filter(
+    (type) =>
+      type !== 'i' &&
+      (mapIndexById[type] ||
+        isCatalogId(type) ||
+        presetIdOf(type) !== undefined ||
+        map.customLayers.some((def) => def.type === type)),
+  );
+
+  const joined = linked.join('~');
+
+  // A lone id other than a built-in one could read as legacy concatenated
+  // layers (`XSOR7`); the `~` keeps it whole.
+  const layers =
+    linked.length === 1 && !mapIndexById[joined] ? `${joined}~` : joined;
 
   const queryParts: QueryPart[] = [
     [
@@ -356,29 +375,18 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['layers', layers]);
   }
 
-  // A map switched from its own kind; a catalog map whose own is not known yet
-  // is named anyway, as a kind it has already does nothing.
-  const overrides = kindOverridesSelector(state);
+  // Each layer's setup, so the link draws what is on screen; one at its
+  // defaults adds nothing.
+  for (const type of linked) {
+    const setup = map.layerSetups[type];
 
-  for (const kind of ['base', 'overlay'] as const) {
-    const switched = map.layers.filter((type) => {
-      const native =
-        mapIndexById[type] ??
-        map.catalogMaps.find((catalogMap) => catalogMap.type === type);
-
-      return (
-        overrides[type] === kind &&
-        (native ? native.layer !== kind : isCatalogId(type))
-      );
-    });
-
-    if (switched.length) {
-      queryParts.push([`as-${kind}`, switched.join('~')]);
+    if (presetIdOf(type) === undefined && !isEmptySetup(setup)) {
+      queryParts.push([`${SETUP_PARAM_PREFIX}${type}`, serializeSetup(setup!)]);
     }
   }
 
-  if (hasSharedShadingLayer(map.layers, map.customLayers)) {
-    queryParts.push(['shading', serializeShading(map.shading)]);
+  for (const preset of inline.presets) {
+    queryParts.push(...presetUrlParts(preset, preset.id));
   }
 
   // The map-click tool first, so a link that names several of them still
@@ -414,8 +422,10 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   const historyParts: QueryPart[] = mapId ? [] : queryParts;
 
+  const drawn = drawnTypesSelector(state);
+
   const filteredCustomLayers = map.customLayers?.filter(({ type }) =>
-    map.layers.includes(type),
+    drawn.includes(type),
   );
 
   if (filteredCustomLayers.length) {

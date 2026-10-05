@@ -4,7 +4,10 @@ import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
-import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefsSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -87,7 +90,7 @@ export default function OfflineMapExportModal({
     startSelecting,
   } = useMapAreaSelection();
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 

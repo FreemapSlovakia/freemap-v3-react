@@ -1,5 +1,4 @@
 import type { MapViewState } from '@features/map/model/actions.js';
-import { isCombinationMarker } from '@features/map/model/mapCombination.js';
 import { resolveLayerAliases } from '@shared/mapDefinitions.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { knownLayerIds, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
@@ -20,7 +19,10 @@ export function serializeZoom(zoom: number): string {
   return String(Number(zoom.toFixed(ZOOM_DECIMALS)));
 }
 
-export function getMapStateFromUrl(): Partial<MapViewState> {
+/** `isCustomType`: whether `layers=` may name this id as a custom map. */
+export function getMapStateFromUrl(
+  isCustomType: (id: string) => boolean = () => false,
+): Partial<MapViewState> {
   const query = new URLSearchParams(
     (location.hash || location.search).slice(1),
   );
@@ -84,9 +86,13 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
   layers = layers && resolveLayerAliases(layers);
 
   // A catalog id is kept unchecked: the catalog loads after the link is read.
+  // `@<n>` is a preset the link carries in `p.<n>` params.
   layers = layers?.filter(
     (layer) =>
-      layer in mapIndexById || isCatalogId(layer) || isCombinationMarker(layer),
+      layer in mapIndexById ||
+      isCatalogId(layer) ||
+      isCustomType(layer) ||
+      /^@\d+$/.test(layer),
   );
 
   return {

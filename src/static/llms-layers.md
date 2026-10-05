@@ -72,6 +72,7 @@ Mirrors `src/shared/mapLibrary/mapIndex.tsx`. A blank cell means the field is no
 | Forest Types                 | WLT | wms               |   12 |            |           15 |                 |              |          | sk           | © NLC Zvolen                                            |
 | Geological                   | WGE | wms               |      |            |           15 |                 |              | l        | sk           | © ŠGÚDŠ                                                 |
 | Hydrochemic                  | WHC | wms               |      |            |           15 |                 |              | w        | sk           | © ŠGÚDŠ                                                 |
+| Solid colour                 | c   | color             |      |            |              |                 |              |          |              | One colour all over, set in the Map layers panel; a blank base map, or a tint as an overlay. Not in the menu by default |
 
 **Overlay layers**
 

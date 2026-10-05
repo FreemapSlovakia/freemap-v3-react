@@ -627,6 +627,26 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
 - [ ] **Mid-download resume in the importer.** `got` won't resume a stream once
       bytes have started, so `loadPass` retries a transient drop by restarting the
       whole pass — up to 75 GB re-downloaded because a connection blinked.
+- [ ] **Data layers in map presets, so Save layers as preset is always there.**
+      The Map layers panel hides the button while photos, Wikipedia, the radar or
+      the viewshed is on (`makesNew` in `MapLayersPanel.tsx`), since a preset
+      can't hold them and would turn on less than was seen — so the button comes
+      and goes for no reason a user can tell. Fix by letting photos, Wikipedia and
+      the radar be preset layers (not `i`, which inverts, nor the viewshed, which
+      asks for a viewpoint on every turn-on): one instance, on while on by itself
+      or held by any preset on; drawn above the maps, outside the preset's pane;
+      the gallery/radar/wiki code reading `drawnTypesSelector` instead of
+      `map.layers`. Until then, at least say why it is missing (a disabled button
+      with a tooltip beats an absent one).
+- [ ] **The photo layer with its filter in a map preset** (e.g. "my 2024 photos
+      over aerial imagery"); file as an issue under `area: gallery` once the
+      presets work settles. `isPresettable` keeps every data layer out today.
+      Needs: the gallery filter as a field of the layer's setup, with a rule for
+      which wins while a preset holding it is on (the gallery tool's filter or
+      the preset's); a single instance — the layer draws markers and takes
+      clicks, so a preset turning it on takes over the one on the map rather than
+      drawing a second; and it stays pinned above the maps, outside the preset's
+      pane, so the preset's place and opacity don't apply to it.
 
 ## Offline maps (`src/features/cachedMaps/`)
 

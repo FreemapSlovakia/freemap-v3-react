@@ -2,9 +2,6 @@ import {
   type Document,
   DocumentSchema,
 } from '@features/documents/model/actions.js';
-import type { MapCombination } from '@features/map/model/mapCombination.js';
-import type { Shading } from '@features/parameterizedShading/model/Shading.js';
-import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import z from 'zod';
 
 const URL_MODAL_IDS = [
@@ -93,16 +90,14 @@ export const ModalIdSchema = z.enum([
 
 export type ModalId = z.infer<typeof ModalIdSchema>;
 
-/** Which custom map's form the library shows; a new map's without `edit`. */
+/** Which form the library shows: a custom map's or a preset's; a new one's without `edit`. */
 export type CustomMapRequest = {
-  /** The custom map or combination to edit. */
+  /** The custom map or preset to edit. */
   edit?: string;
-  /** A combination's unsaved state to edit in place of its saved one. */
-  draft?: MapCombination;
-  /** A new shading map with these settings, asked for by a shading row of the Map layers panel. */
-  addShadingMap?: { shading: Shading };
-  /** A new map starting as a copy of this one, asked for by a WMS row of the Map layers panel. */
-  addCopyOf?: CustomLayerDef;
+  /** A new preset of what is on the map, asked for by the Map layers panel. */
+  addPreset?: boolean;
+  /** A copy of this preset (a link's, or a duplicate) as the account's own, in its place on the map. */
+  addPresetFrom?: string;
   /** Where Cancel goes: that tab, or `null` to close; Installed maps if unset. */
   returnTo?: 'installed-maps' | 'available-maps' | null;
 };

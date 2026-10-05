@@ -8,6 +8,7 @@ import {
   type Line,
   toWireHoleIndexes,
 } from '@features/drawing/model/actions/drawingLineActions.js';
+import { inlinePresets } from '@features/map/model/mapPreset.js';
 import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
 import { savedRouteFromState } from '@features/routePlanner/model/savedRoute.js';
 import { savedSearchResultsFromState } from '@features/search/model/savedSearchResults.js';
@@ -85,9 +86,19 @@ export function getMapDataFromState(state: RootState): MapData {
       lat: map.lat,
       lon: map.lon,
       zoom: map.zoom,
-      layers: map.layers,
       customLayers: map.customLayers,
-      shading: map.shading,
+      // A snapshot, for readers who don't have the author's presets: copies.
+      ...inlinePresets(
+        map.layers,
+        (id) =>
+          map.presets.find((p) => p.id === id) ??
+          map.linkPresets.find((p) => p.id === id),
+      ),
+      layerSetups: Object.fromEntries(
+        map.layers.flatMap((type) =>
+          map.layerSetups[type] ? [[type, map.layerSetups[type]]] : [],
+        ),
+      ),
     },
   };
 }

@@ -1,5 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefsSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -22,7 +25,7 @@ export function MapDetailsMenu(): ReactElement | null {
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   const excludeSources = new Set(
     useAppSelector((state) => state.mapDetails.excludeSources),

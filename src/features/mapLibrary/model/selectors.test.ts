@@ -11,7 +11,14 @@ const stateWith = (
   layersSettings: Record<string, { installed?: boolean }>,
 ) =>
   ({
-    map: { layers, layersSettings, catalogMaps: [] },
+    map: {
+      layers,
+      layersSettings,
+      layerSetups: {},
+      catalogMaps: [],
+      presets: [],
+      linkPresets: [],
+    },
     mapLibrary: mapLibraryInitialState,
   }) as unknown as RootState;
 
@@ -44,6 +51,9 @@ describe('integratedLayerDefsSelector', () => {
       map: {
         layers: ['X'],
         layersSettings: { Z0001: { installed: true } },
+        layerSetups: {},
+        presets: [],
+        linkPresets: [],
         catalogMaps: [
           {
             type: 'Z0001',

@@ -3,20 +3,26 @@ import { getCachedTileScale } from '@features/cachedMaps/cachedTileMaps.js';
 import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
 import { sourceLayerEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { withKind } from '@features/map/model/layerKind.js';
 import {
-  activeCombinationsSelector,
-  opacitySetting,
+  DEFAULT_SHADING,
+  type LayerSetup,
+} from '@features/map/model/layerSetup.js';
+import { presetIdOf } from '@features/map/model/mapPreset.js';
+import {
+  type LayerInstance,
+  layerInstancesSelector,
   resolvedCustomLayersSelector,
 } from '@features/map/model/selectors.js';
 import {
   integratedLayerDefMapSelector,
   integratedLayerDefsSelector,
+  nativeKindsSelector,
   overlayZIndexSelector,
+  presetByIdSelector,
+  presetKindsSelector,
 } from '@features/mapLibrary/model/selectors.js';
-import {
-  colorToHexa,
-  effectiveShading,
-} from '@features/parameterizedShading/model/Shading.js';
+import { colorToHexa } from '@features/parameterizedShading/model/Shading.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
@@ -41,7 +47,7 @@ import {
   tileZoomOffset,
 } from '@shared/tileUrl.js';
 import { wmsBaseUrl } from '@shared/wms.js';
-import { type ReactElement, type ReactNode, useEffect } from 'react';
+import { Fragment, type ReactNode, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import transparent1x1 from '@/images/1x1-transparent.png';
@@ -49,6 +55,7 @@ import missingTile from '@/images/missing-tile-256x256.png';
 import { AsyncComponent } from './AsyncComponent.js';
 import { ColorLayer } from './ColorLayer.js';
 import { CoveragePane } from './CoveragePane.js';
+import { PresetPane } from './PresetPane.js';
 import { ScaledTileLayer } from './ScaledTileLayer.js';
 import { WmsImageLayer } from './WmsImageLayer.js';
 import { WmsTileLayer } from './WmsTileLayer.js';
@@ -83,7 +90,7 @@ const viewshedLayerFactory = () =>
     '@features/viewshed/components/ViewshedLayer.js'
   );
 
-export function Layers(): ReactElement | null {
+export function Layers(): ReactNode {
   const map = useMap();
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
@@ -100,15 +107,15 @@ export function Layers(): ReactElement | null {
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const layersSettings = useAppSelector((state) => state.map.layersSettings);
+  const instances = useAppSelector(layerInstancesSelector);
 
-  const activeCombinations = useAppSelector(activeCombinationsSelector);
+  const presetById = useAppSelector(presetByIdSelector);
+
+  const presetKinds = useAppSelector(presetKindsSelector);
+
+  const nativeKinds = useAppSelector(nativeKindsSelector);
 
   const overlayZIndex = useAppSelector(overlayZIndexSelector);
-
-  const shading = useAppSelector((state) => state.map.shading);
-
-  const shadingDrafts = useAppSelector((state) => state.map.shadingDrafts);
 
   const shadingOnServer = useAppSelector((state) => state.map.shadingOnServer);
 
@@ -156,43 +163,43 @@ export function Layers(): ReactElement | null {
   // `serverShading`: shading tiles from terrain-tiles, which follow the
   // display's density alone, as shading drawn in the browser does, and name
   // their datasets by its dictionary.
+  // `instance` is which drawing of the map this is: its key keeps a map drawn
+  // twice apart, its setup is that drawing's, its z-index its place.
   function getLayer(
     layerDef: LayerDef,
+    instance: { key: string; setup: LayerSetup; zIndex: number },
     fixedScale?: number,
     serverShading = false,
   ): ReactNode {
-    // Rendered on the server, a shading layer is plain tiles of its applied or
-    // saved shading; drafts are not drawn.
-    if (layerDef.technology === 'parametricShading' && shadingOnServer) {
-      const { shading: own, ...rest } = layerDef;
+    const { type, minZoom } = layerDef;
 
+    const { setup } = instance;
+
+    // Rendered on the server, a shading layer is plain tiles of its applied
+    // shading; drafts are not drawn.
+    if (layerDef.technology === 'parametricShading' && shadingOnServer) {
       return getLayer(
         {
-          ...rest,
+          ...layerDef,
           technology: 'tile',
-          url: serverShadingUrl(own ?? shading),
+          url: serverShadingUrl(setup.shading ?? DEFAULT_SHADING),
           errorTileUrl: transparent1x1,
         } as LayerDef,
+        instance,
         fixedScale,
         true,
       );
     }
 
-    const { type, minZoom } = layerDef;
-
-    // Only an overlay's is set anywhere; one kept from a map used as an
-    // overlay before has no control on a base map.
-    const opacity =
-      layerDef.layer === 'base'
-        ? 1
-        : resolveLayerOpacity(
-            layerDef,
-            opacitySetting(activeCombinations, layersSettings, type),
-          );
+    // A faded base map shows the map background through.
+    const opacity = resolveLayerOpacity(layerDef, setup.opacity);
 
     // Bases below every overlay; overlays by their place in the stack, each
     // its own z-index, as equal ones would stack by insertion.
-    const zIndex = layerDef.layer === 'base' ? 0 : (overlayZIndex[type] ?? 1);
+    const zIndex = layerDef.layer === 'base' ? 0 : instance.zIndex;
+
+    // In place of the map's id wherever React tells layers apart.
+    const id = instance.key;
 
     if (layerDef.technology === 'gallery') {
       return (
@@ -221,7 +228,7 @@ export function Layers(): ReactElement | null {
           // `maxZoom` is baked into every frame's tile layer when it is built,
           // and a frame that stays on screen is not rebuilt — so a change of it
           // takes a remount.
-          key={`${type}-${maxZoom}`}
+          key={`${id}-${maxZoom}`}
           opacity={opacity}
           zIndex={zIndex}
           maxZoom={maxZoom}
@@ -235,7 +242,7 @@ export function Layers(): ReactElement | null {
       return (
         <AsyncComponent
           factory={viewshedLayerFactory}
-          key={type}
+          key={id}
           opacity={opacity}
           zIndex={zIndex}
         />
@@ -264,8 +271,8 @@ export function Layers(): ReactElement | null {
     );
 
     if (layerDef.technology === 'wms') {
-      // As picked in the layers panel, else the map's own.
-      const picked = layersSettings[type]?.wmsLayers;
+      // As ticked in its setup, else the map's own.
+      const picked = setup?.wmsLayers;
 
       // Nothing picked draws nothing. Asked for, the server refuses, and the
       // image layer takes that for a size limit it then keeps to.
@@ -296,9 +303,13 @@ export function Layers(): ReactElement | null {
       ) {
         return (
           <WmsImageLayer
-            key={[type, wmsLayers.join(','), wmsHdpi ? 'hdpi' : 'ldpi'].join(
-              '-',
-            )}
+            // The kind picks `transparent` and `format`, which Leaflet reads once.
+            key={[
+              id,
+              layerDef.layer,
+              wmsLayers.join(','),
+              wmsHdpi ? 'hdpi' : 'ldpi',
+            ].join('-')}
             url={layerDef.url}
             layers={wmsLayers.join(',')}
             version="1.3.0"
@@ -336,7 +347,8 @@ export function Layers(): ReactElement | null {
       return (
         <WmsTileLayer
           key={[
-            type,
+            id,
+            layerDef.layer,
             effPremiumFromZoom ?? 99,
             effPremiumFromZoom ? prm?.premiumOnly : '',
             wmsLayers.join(','),
@@ -371,8 +383,8 @@ export function Layers(): ReactElement | null {
     if (layerDef.technology === 'color') {
       return (
         <ColorLayer
-          key={type}
-          color={colorToHexa(layerDef.color)}
+          key={id}
+          color={colorToHexa(setup?.color ?? layerDef.color)}
           opacity={opacity}
           zIndex={zIndex}
           minZoom={minZoom}
@@ -384,11 +396,8 @@ export function Layers(): ReactElement | null {
     if (layerDef.technology === 'parametricShading') {
       return (
         <AsyncComponent
-          // The url too: a custom shading map's source can change under it,
-          // and the layer doesn't take a new one in place.
           key={[
-            type,
-            layerDef.url,
+            id,
             effPremiumFromZoom ?? 99,
             effPremiumFromZoom ? prm?.premiumOnly : '',
           ].join('-')}
@@ -401,7 +410,7 @@ export function Layers(): ReactElement | null {
           maxZoom={maxZoom}
           maxNativeZoom={toNativeZoom(layerDef.maxNativeZoom)}
           zoomOffset={isHdpi ? 1 : 0}
-          shading={effectiveShading(layerDef, shadingDrafts, shading)}
+          shading={setup?.shading ?? DEFAULT_SHADING}
           premiumFromZoom={effPremiumFromZoom}
           premiumOnlyText={prm?.premiumOnly}
           onPremiumClick={
@@ -424,9 +433,10 @@ export function Layers(): ReactElement | null {
       return (
         <AsyncComponent
           factory={maplibreLayerFactory}
-          key={`${type}-${effectiveDpr}`}
+          key={`${id}-${effectiveDpr}`}
           style={layerDef.url}
           zIndex={zIndex}
+          opacity={opacity}
           maxZoom={maxZoom}
           minZoom={minZoom}
           language={language}
@@ -463,7 +473,7 @@ export function Layers(): ReactElement | null {
       // Opacity and z-index are applied in place (`updateGridLayer`), never by
       // a remount, which would blank the layer while its tiles reload.
       const key = [
-        type,
+        id,
         effPremiumFromZoom ?? 99,
         effPremiumFromZoom ? prm?.premiumOnly : '',
         resolutionScale ?? 'auto',
@@ -590,57 +600,119 @@ export function Layers(): ReactElement | null {
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
-  return window.isRobot ? null : (
-    <>
-      {integratedLayerDefs
-        .filter(({ type }) => layers.includes(type))
-        .filter(
-          ({ layerPreview }) => hasRole(user, 'layerPreview') || !layerPreview,
+  // A preset's layer is of the kind its own setup says, not the map's.
+  const ofKind = <T extends LayerDef>(def: T, inst: LayerInstance): T =>
+    inst.preset === undefined || !inst.kind
+      ? def
+      : withKind(
+          { ...def, layer: nativeKinds.get(def.type) ?? def.layer },
+          { [def.type]: inst.kind },
+        );
+
+  function drawInstance(inst: LayerInstance, zIndex: number): ReactNode {
+    const at = { key: inst.key, setup: inst.setup, zIndex };
+
+    const integrated = integratedLayerDefs.find((d) => d.type === inst.type);
+
+    if (integrated) {
+      return integrated.layerPreview && !hasRole(user, 'layerPreview')
+        ? null
+        : getLayer(ofKind(integrated, inst), at);
+    }
+
+    const custom = customLayerDefs.find((d) => d.type === inst.type);
+
+    if (custom) {
+      return getLayer(ofKind(custom, inst), at);
+    }
+
+    const cm = cachedMaps.find((d) => d.type === inst.type);
+
+    if (!cm) {
+      return null;
+    }
+
+    const fetchesMissing = online && cm.networkFallback !== false;
+
+    // Without its source's envelope the network fallback would skip the
+    // premium gate, so wait for a library source still loading.
+    if (
+      fetchesMissing &&
+      mapIndexById[cm.sourceType] &&
+      !integratedLayerDefMap[cm.sourceType]
+    ) {
+      return null;
+    }
+
+    const url = toCachedLayerUrl(cm.url, cm.type);
+
+    // Online the map wears its source layer's zoom range and premium gate:
+    // the service worker fetches whatever the cache lacks, so it behaves
+    // as the layer itself would, checkerboard included. Offline — or with
+    // the network fallback off — it is only what was downloaded: its own
+    // range, upscaled past the deepest zoom it holds rather than left blank.
+    const envelope = fetchesMissing
+      ? sourceLayerEnvelope(
+          cm.sourceType,
+          customLayerDefs,
+          integratedLayerDefMap,
         )
-        .map((item) => getLayer(item))}
-      {customLayerDefs
-        .filter(({ type }) => layers.includes(type))
-        .map((cm) => getLayer(cm))}
-      {cachedMaps
-        .filter(({ type }) => layers.includes(type))
-        .map((cm) => {
-          const fetchesMissing = online && cm.networkFallback !== false;
+      : undefined;
 
-          // Without its source's envelope the network fallback would skip the
-          // premium gate, so wait for a library source still loading.
-          if (
-            fetchesMissing &&
-            mapIndexById[cm.sourceType] &&
-            !integratedLayerDefMap[cm.sourceType]
-          ) {
-            return null;
-          }
+    // cors: false — cached tiles are served same-origin by the service
+    // worker, so `crossOrigin` buys nothing, and the CORS-mode request it
+    // produces makes Chrome's `cache.match` miss the stored entry.
+    return getLayer(
+      ofKind(
+        cm.technology === 'tile'
+          ? { ...cm, url, ...envelope, cors: false }
+          : { ...cm, url, ...envelope },
+        inst,
+      ),
+      at,
+      getCachedTileScale(cm),
+    );
+  }
 
-          const url = toCachedLayerUrl(cm.url, cm.type);
+  return window.isRobot
+    ? null
+    : layers.map((item) => {
+        const id = presetIdOf(item);
 
-          // Online the map wears its source layer's zoom range and premium gate:
-          // the service worker fetches whatever the cache lacks, so it behaves
-          // as the layer itself would, checkerboard included. Offline — or with
-          // the network fallback off — it is only what was downloaded: its own
-          // range, upscaled past the deepest zoom it holds rather than left blank.
-          const envelope = fetchesMissing
-            ? sourceLayerEnvelope(
-                cm.sourceType,
-                customLayerDefs,
-                integratedLayerDefMap,
-              )
-            : undefined;
+        if (id === undefined) {
+          const inst = instances.find((i) => i.key === item);
 
-          // cors: false — cached tiles are served same-origin by the service
-          // worker, so `crossOrigin` buys nothing, and the CORS-mode request it
-          // produces makes Chrome's `cache.match` miss the stored entry.
-          return getLayer(
-            cm.technology === 'tile'
-              ? { ...cm, url, ...envelope, cors: false }
-              : { ...cm, url, ...envelope },
-            getCachedTileScale(cm),
+          return (
+            inst && (
+              <Fragment key={item}>
+                {drawInstance(inst, overlayZIndex[item] ?? 1)}
+              </Fragment>
+            )
           );
-        })}
-    </>
-  );
+        }
+
+        const preset = presetById[id];
+
+        if (!preset) {
+          return null;
+        }
+
+        const overlay = presetKinds[id] === 'overlay';
+
+        // Its layers stack within its own pane, which takes the preset's place
+        // and opacity: faded as one picture, not layer by layer.
+        return (
+          <PresetPane
+            key={item}
+            zIndex={overlay ? (overlayZIndex[item] ?? 1) : 0}
+            opacity={preset.opacity ?? 1}
+          >
+            {instances
+              .filter((inst) => inst.preset === id)
+              .map((inst, i) => (
+                <Fragment key={inst.key}>{drawInstance(inst, i + 1)}</Fragment>
+              ))}
+          </PresetPane>
+        );
+      });
 }

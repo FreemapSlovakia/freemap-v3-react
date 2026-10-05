@@ -1,4 +1,5 @@
 import { mapSetEsriAttribution } from '@features/map/model/actions.js';
+import { drawnTypesSelector } from '@features/mapLibrary/model/selectors.js';
 import toastsClasses from '@features/toasts/components/Toasts.module.css';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { useRoutingAttributions } from '@shared/components/Attribution.js';
@@ -45,7 +46,7 @@ export function useAttributionInfo() {
 
   const dispatch = useDispatch();
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   const routingAttrs = useRoutingAttributions();
 

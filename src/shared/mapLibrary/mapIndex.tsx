@@ -34,6 +34,7 @@ import {
 } from 'react-icons/gi';
 import { IoAirplaneOutline } from 'react-icons/io5';
 import { LuLandPlot } from 'react-icons/lu';
+import { MdFormatColorFill } from 'react-icons/md';
 import { SiOpenstreetmap } from 'react-icons/si';
 import aerialBody from './defs/aerial.js';
 import dataLayerBody from './defs/dataLayer.js';
@@ -41,6 +42,7 @@ import openStreetMapBody from './defs/openStreetMap.js';
 import outdoorBody from './defs/outdoor.js';
 import parametricShadingBody from './defs/parametricShading.js';
 import photosBody from './defs/photos.js';
+import solidColorBody from './defs/solidColor.js';
 import viewshedBody from './defs/viewshed.js';
 import weatherRadarBody from './defs/weatherRadar.js';
 import wikipediaBody from './defs/wikipedia.js';
@@ -395,6 +397,15 @@ export const mapIndex: MapIndexEntry[] = [
     icon: <GiHills />,
     shortcut: { code: 'KeyH', shift: true },
     bundled: parametricShadingBody,
+  }),
+  entry({
+    layer: 'base',
+    type: 'c',
+    technology: 'color',
+    category: 'other',
+    defaultInMenu: false,
+    icon: <MdFormatColorFill />,
+    bundled: solidColorBody,
   }),
   entry({
     layer: 'overlay',

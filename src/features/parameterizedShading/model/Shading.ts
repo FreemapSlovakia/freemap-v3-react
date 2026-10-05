@@ -97,15 +97,6 @@ export const ShadingSchema = z.object({
 
 export type Shading = z.infer<typeof ShadingSchema>;
 
-/** A shading layer's shading as drawn: its draft, its own, else the shared one. */
-export function effectiveShading(
-  def: { type: string; shading?: Shading },
-  drafts: Record<string, Shading>,
-  shared: Shading,
-): Shading {
-  return drafts[def.type] ?? def.shading ?? shared;
-}
-
 /** A background is optional; a transparent one stands for none. */
 export const hasBackground = (shading: Shading) =>
   shading.backgroundColor[3] > 0;

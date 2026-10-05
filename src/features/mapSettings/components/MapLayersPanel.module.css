@@ -21,9 +21,10 @@
 }
 
 /* Drawn like the shading panel's `<hr>`s, which Bootstrap tints from the text
-   colour; `.border-top`'s fixed grey reads differently on the translucent panel. */
+   colour; `.border-top`'s fixed grey reads differently on the translucent panel.
+   `~`: dnd-kit puts hidden elements between the dragged list and the row below. */
 .row + .row,
-.overlays:not(:empty) + .row {
+.overlays:not(:empty) ~ .row {
   border-top: var(--bs-border-width) solid rgba(var(--bs-body-color-rgb), 0.25);
 }
 
@@ -42,10 +43,6 @@
 .chevron {
   width: 1.5em;
   text-align: center;
-}
-
-.open > :first-child {
-  font-weight: 500;
 }
 
 /* Where a drag handle would be, so names line up. */

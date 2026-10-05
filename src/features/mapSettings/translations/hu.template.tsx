@@ -16,7 +16,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     fromLibrary: 'A térképtárból',
     custom: 'Egyéni',
     offline: 'Offline',
-    combinations: 'Kombinációk',
+    presets: 'Előbeállítások',
     shownIn: 'Megjelenik',
     toolbar: 'Az eszköztáron',
     menu: 'A menüben',
@@ -50,13 +50,13 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       Egyéni térkép módosítása <i>{name}</i>
     </>
   ),
-  modifyCombinationTitle: (name) => (
+  modifyPresetTitle: (name) => (
     <>
-      Térképkombináció módosítása <i>{name}</i>
+      Térkép-előbeállítás módosítása <i>{name}</i>
     </>
   ),
   resetConfirm:
-    'Visszaállítja az összes térkép eszköztár-, menü-, átlátszóság- és billentyűparancs-beállítását az alapértékekre? A telepített térképek telepítve maradnak.',
+    'Visszaállítja az összes térkép eszköztár-, menü- és billentyűparancs-beállítását, valamint a beállításait (átlátszóság, rétegek, árnyékolás…) az alapértékekre? A telepített térképek telepítve maradnak.',
   downloadOffline: 'Letöltés offline használatra',
   keepOnMap: 'Maradjon a térképen',
   backToLibrary: 'Vissza a térképtárba',
@@ -67,11 +67,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'A beállítások el lettek mentve.',
   useAsBaseMap: 'Használat alaptérképként',
   useAsOverlay: 'Használat fedvényként',
-  basedOn: 'Alapja',
-  turnOff: 'Kikapcsolás',
   wmsLayers: {
-    reset: 'Alapértelmezett rétegek',
-    saveAsCustomMap: 'Mentés saját térképként',
     search: 'Rétegek keresése',
     selectAll: 'Összes kijelölése',
     deselectAll: 'Kijelölés megszüntetése',
@@ -79,17 +75,21 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   savingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a beállítások mentésénél', err),
   customMapSaved: 'Az egyéni térkép mentve.',
-  shadingMapHint:
-    'Az árnyékolás paramétereit a térkép bekapcsolása után megjelenő panelen lehet beállítani és menteni.',
-  combination: 'Térképkombináció',
-  combinationSaved: 'A térképkombináció mentve.',
-  updateFromCurrentMap: 'Frissítés az aktuális térképből',
-  baseMap: 'Alaptérkép',
+  preset: 'Térkép-előbeállítás',
+  presetSaved: 'A térkép-előbeállítás mentve.',
+  newPreset: 'Új térkép-előbeállítás',
+  saveAsPreset: 'Mentés előbeállításként',
+  saveLayersAsPreset: 'Rétegek mentése előbeállításként',
+  saveLayersAsPresetHint:
+    'Új előbeállítás a térképen lévő térképek másolataiból, az előbeállításokat szétszedve.',
+  duplicatePreset: 'Másolat',
+  openPreset: 'Megjelenítés a térképen',
+  addMap: 'Térkép hozzáadása',
+  presetEmpty: 'Nincsenek rétegek.',
+  presetHint:
+    'A rétegeit a térképen lehet szerkeszteni: nyissa meg az előbeállítást a Térképrétegek panelen. Minden változás azonnal mentődik.',
   baseMaps: 'Alaptérképek',
   overlays: 'Fedőrétegek',
-  addOverlay: 'Fedőréteg hozzáadása…',
-  noOverlays: 'Nincsenek fedőrétegek.',
-  combinationTooSmall: 'Legalább két réteg szükséges.',
 };
 
 export default hu;

@@ -21,7 +21,6 @@ import {
   FaLayerGroup,
   FaSlidersH,
 } from 'react-icons/fa';
-import { MdDashboardCustomize, MdLibraryAdd } from 'react-icons/md';
 
 /**
  * Everything about the maps other than which one is shown: the layer and
@@ -64,29 +63,15 @@ export function MapManageButton(): ReactElement {
       </LongPressTooltip>
 
       <FmDropdownMenu>
+        {/* Installed maps, Available maps and New custom map are its tabs and footer. */}
         <OnlineOnlyItem
           offline={!canSaveSettings}
           {...modalMenuItemProps('installed-maps')}
         >
-          <FaLayerGroup /> {m?.mapLayers.installedMaps}
+          <FaLayerGroup /> {m?.mapLayers.mapManager}
           <MenuGutter>
             <Chord modal="installed-maps" />
           </MenuGutter>
-        </OnlineOnlyItem>
-
-        <OnlineOnlyItem
-          offline={!canSaveSettings}
-          {...modalMenuItemProps('available-maps')}
-        >
-          <MdLibraryAdd /> {m?.mapLayers.availableMaps}
-          <MenuGutter>
-            <Chord modal="available-maps" />
-          </MenuGutter>
-        </OnlineOnlyItem>
-
-        {/* Neither list's name says that one's own map is added there. */}
-        <OnlineOnlyItem offline={!canSaveSettings} eventKey="new-custom-map">
-          <MdDashboardCustomize /> {m?.mapLayers.newCustomMap}
         </OnlineOnlyItem>
 
         <Dropdown.Divider />

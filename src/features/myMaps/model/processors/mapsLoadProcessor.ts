@@ -64,7 +64,8 @@ export const mapsLoadProcessor: Processor = {
 
         if (loadMeta.ignoreLayers) {
           delete data.map.layers;
-          delete data.map.shading;
+          delete data.map.layerSetups;
+          delete data.map.presets;
         }
       }
 

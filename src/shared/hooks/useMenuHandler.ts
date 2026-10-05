@@ -38,7 +38,6 @@ export type EventKey =
   | 'drawing'
   | 'clear-map-features'
   | 'reset-app'
-  | 'new-custom-map'
   | 'close'
   | 'gallery'
   | 'galEmails'
@@ -293,20 +292,6 @@ export function useMenuHandler({
             layers: layers.includes('I')
               ? layers.filter((o) => o !== 'I')
               : [...layers, 'I'],
-          }),
-        );
-
-        setShow(false);
-
-        return;
-      }
-
-      if (key === 'new-custom-map') {
-        // Opened from the menu, Cancel just closes it.
-        dispatch(
-          setActiveModal({
-            type: 'installed-maps',
-            customMap: { returnTo: null },
           }),
         );
 

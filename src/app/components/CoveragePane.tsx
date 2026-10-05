@@ -1,3 +1,4 @@
+import { useLeafletContext } from '@react-leaflet/core';
 import {
   coverageFailing,
   loadTileCoverage,
@@ -64,6 +65,9 @@ export function CoveragePane({
 
   const map = useMap();
 
+  // Inside a preset's pane where it is in one.
+  const parent = useLeafletContext().pane ?? 'tilePane';
+
   // `Pane` takes its style at creation only; a remount would reload every tile.
   useEffect(() => {
     const pane = map.getPane(name);
@@ -78,7 +82,7 @@ export function CoveragePane({
   const coverage = loaded ?? (failed ? unknownCoverage : undefined);
 
   return (
-    <Pane name={name} pane="tilePane" style={{ zIndex, opacity }}>
+    <Pane name={name} pane={parent} style={{ zIndex, opacity }}>
       {coverage && (
         // the layers take `skipTile` at construction, so a loaded coverage remounts them
         <Fragment key={loaded ? 'known' : 'unknown'}>

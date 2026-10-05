@@ -1,34 +1,16 @@
 import { setActiveModal } from '@app/store/actions.js';
-import {
-  closestCenter,
-  DndContext,
-  type DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   type LayerSettings,
   mapLayerSettingsChange,
-  mapOverlayOrderSet,
-  mapSetLayerKind,
+  mapLayerSetupChange,
+  mapPresetChange,
+  mapPresetToggle,
 } from '@features/map/model/actions.js';
 import { canSwitchKind } from '@features/map/model/layerKind.js';
-import type { MapCombination } from '@features/map/model/mapCombination.js';
-import { combinationOpacity } from '@features/map/model/mapCombination.js';
-import { activeCombinationsSelector } from '@features/map/model/selectors.js';
+import { type MapPreset, presetItem } from '@features/map/model/mapPreset.js';
 import { OpacityButton } from '@features/mapSettings/components/OpacityButton.js';
 import { ToolbarIcon } from '@features/mapSettings/components/ToolbarIcon.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
@@ -36,6 +18,7 @@ import { useCustomMapActions } from '@features/mapSettings/useCustomMapActions.j
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
+import { LayerKindMark } from '@shared/components/MapLayerItem.js';
 import {
   Action,
   ActionDivider,
@@ -53,17 +36,9 @@ import {
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import type { Shortcut } from '@shared/types/common.js';
-import type {
-  CSSProperties,
-  HTMLAttributes,
-  ReactElement,
-  ReactNode,
-  RefObject,
-} from 'react';
+import type { ReactElement, ReactNode, RefObject } from 'react';
 import { Form, Table } from 'react-bootstrap';
 import {
-  FaAdjust,
-  FaCamera,
   FaDownload,
   FaEye,
   FaHistory,
@@ -72,7 +47,7 @@ import {
   FaRegListAlt,
   FaTrash,
 } from 'react-icons/fa';
-import { MdDragIndicator } from 'react-icons/md';
+import { MdOpacity } from 'react-icons/md';
 import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import {
@@ -89,8 +64,9 @@ import {
   installedLibraryIndexSelector,
   integratedLayerDefMapSelector,
   libraryIndexByIdSelector,
-  overlayStackSelector,
   overlayZIndexSelector,
+  presetKindsSelector,
+  resolvedCustomLayersSelector,
 } from '../model/selectors.js';
 import {
   FilterChips,
@@ -102,12 +78,13 @@ import {
   useSharedFilterOptions,
 } from './FilterChips.js';
 
-/** A map the user has: installed from the library, or their own. */
+/** A map the user has: installed from the library, or their own; or a preset. */
 type YourMap = {
   type: string;
+  /** As switched; a preset's by whether it holds a base map. */
   layer: 'base' | 'overlay';
   name: string;
-  /** A second line: category and technology, or what a combination holds. */
+  /** A second line: category and technology, or what a preset holds. */
   detail?: string;
   icon: ReactNode;
   countries?: string[];
@@ -115,32 +92,21 @@ type YourMap = {
   coverage?: { countries?: string[]; bbox?: [number, number, number, number] };
   legacy: boolean;
   /** Library maps are previewed and uninstalled; the rest are edited elsewhere. */
-  kind: 'library' | 'custom' | 'cached' | 'combination';
+  kind: 'library' | 'custom' | 'cached' | 'preset';
   /** The user's own definition, which the row edits and deletes. */
   custom?: CustomLayerDef;
-  combination?: MapCombination;
+  preset?: MapPreset;
   defaultInMenu: boolean;
   defaultInToolbar: boolean;
   defaultShortcut?: Shortcut;
-  /** A combination has none of its own. */
+  /** A preset has none of its own. */
   technology?: string;
   category?: string;
 };
 
-// The project adds no screen-reader-only text; dnd-kit would.
-const NO_SCREEN_READER_TEXT = {
-  screenReaderInstructions: { draggable: '' },
-  announcements: {
-    onDragStart: () => undefined,
-    onDragOver: () => undefined,
-    onDragEnd: () => undefined,
-    onDragCancel: () => undefined,
-  },
-};
-
-// Fixed, so the base-map and overlay tables line up column for column.
+// Fixed, so the small columns stay narrow.
 const COLUMN_WIDTHS = {
-  handle: '1.5rem',
+  kind: '1.75rem',
   icon: '2rem',
   check: '2.5rem',
   opacity: '3rem',
@@ -153,12 +119,13 @@ export type YourMapKind =
   | 'fromLibrary'
   | 'custom'
   | 'offline'
-  | 'combinations';
+  | 'presets';
 
 export type YourMapShown = 'toolbar' | 'menu' | 'shortcut' | 'hidden';
 
 export type YourMapsFilters = {
   query: string;
+  layers: ReadonlySet<'base' | 'overlay'>;
   kinds: ReadonlySet<YourMapKind>;
   shown: ReadonlySet<YourMapShown>;
   technologies: ReadonlySet<TechnologyGroup>;
@@ -177,12 +144,13 @@ const kindOf = (map: YourMap): YourMapKind =>
       : 'builtIn'
     : map.kind === 'cached'
       ? 'offline'
-      : map.kind === 'combination'
-        ? 'combinations'
+      : map.kind === 'preset'
+        ? 'presets'
         : 'custom';
 
 export const initialYourMapsFilters: YourMapsFilters = {
   query: '',
+  layers: new Set(),
   kinds: new Set(),
   shown: new Set(),
   technologies: new Set(),
@@ -208,6 +176,8 @@ export function YourMapsTab({
   highlight,
   searchRef,
 }: TabProps): ReactElement {
+  const m = useMessages();
+
   const msm = useMapSettingsMessages();
 
   const { categoryOptions, technologyOptions } = useSharedFilterOptions();
@@ -256,6 +226,17 @@ export function YourMapsTab({
         />
 
         <FilterChips
+          name="your-layer"
+          label={m?.mapLayers.layer.layer}
+          options={[
+            { value: 'base', label: msm?.baseMaps },
+            { value: 'overlay', label: msm?.overlays },
+          ]}
+          selected={filters.layers}
+          onChange={(layers) => onChange({ ...filters, layers })}
+        />
+
+        <FilterChips
           name="kind"
           label={msm?.filters.kind}
           options={[
@@ -263,7 +244,7 @@ export function YourMapsTab({
             { value: 'fromLibrary', label: msm?.filters.fromLibrary },
             { value: 'custom', label: msm?.filters.custom },
             { value: 'offline', label: msm?.filters.offline },
-            { value: 'combinations', label: msm?.filters.combinations },
+            { value: 'presets', label: msm?.filters.presets },
           ]}
           selected={filters.kinds}
           onChange={(kinds) => onChange({ ...filters, kinds })}
@@ -318,17 +299,16 @@ export function YourMapsList({
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  // Of the kind they are switched to, as library maps are listed.
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
-  const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
+  const presets = useAppSelector((state) => state.map.presets);
 
-  const { stack, movable } = useAppSelector(overlayStackSelector);
+  const presetKinds = useAppSelector(presetKindsSelector);
 
   const overlayZIndex = useAppSelector(overlayZIndexSelector);
-
-  const dispatch = useDispatch();
 
   // Only while filtering by it, or every pan would rebuild the list.
   const viewBounds = useAppSelector((state) =>
@@ -343,7 +323,7 @@ export function YourMapsList({
 
   const nameOr = (def: { type: string; name?: string }) => layerLabel(def, m);
 
-  // A retired layer by its successor's name, as applying the combination does.
+  // A retired layer by its successor's name, as opening a preset does.
   const defOf = (type: string) => {
     const resolved = resolveLayerAlias(type)[0] ?? type;
 
@@ -358,8 +338,8 @@ export function YourMapsList({
 
   const baseName = (type: string) => nameOr(defOf(type));
 
-  // Custom, offline and combined maps are in the menu unless taken out, as the
-  // map menu has them.
+  // Custom and offline maps and presets are in the menu unless taken out, as
+  // the map menu has them.
   const maps: YourMap[] = [
     ...installedIndex.map(
       (def): YourMap => ({
@@ -418,25 +398,25 @@ export function YourMapsList({
         technology: cm.technology,
       }),
     ),
-    ...mapCombinations.map(
-      (combination): YourMap => ({
-        type: combination.id,
-        layer: combination.base === undefined ? 'overlay' : 'base',
-        name: combination.name,
-        // What it puts on the map: its base map, or none, and its overlays.
+    ...presets.map(
+      (preset): YourMap => ({
+        type: preset.id,
+        layer: presetKinds[preset.id] ?? 'overlay',
+        name: preset.name,
+        // What it puts on the map: its lowest layer and how many more.
         detail: [
-          msm?.combination,
-          (combination.base === undefined
-            ? m?.mapLayers.layer.overlay
-            : baseName(combination.base)) +
-            (combination.overlays.length > 0
-              ? ` + ${combination.overlays.length}`
-              : ''),
-        ].join(' · '),
-        icon: <CustomMapGlyph spec={combination.iconSpec} kind="combination" />,
+          msm?.preset,
+          preset.layers.length > 0
+            ? baseName(preset.layers[0].type) +
+              (preset.layers.length > 1 ? ` + ${preset.layers.length - 1}` : '')
+            : '',
+        ]
+          .filter(Boolean)
+          .join(' · '),
+        icon: <CustomMapGlyph spec={preset.iconSpec} kind="preset" />,
         legacy: false,
-        kind: 'combination',
-        combination,
+        kind: 'preset',
+        preset,
         defaultInMenu: true,
         defaultInToolbar: false,
       }),
@@ -469,6 +449,7 @@ export function YourMapsList({
     (map) =>
       map.type === highlight ||
       ((!filters.query.trim() || nameMatches(map.name, filters.query)) &&
+        passes(filters.layers, map.layer) &&
         passes(filters.kinds, kindOf(map)) &&
         passes(filters.shown, shownOf(map)) &&
         passes(filters.technologies, technologyGroup(map.technology)) &&
@@ -481,43 +462,6 @@ export function YourMapsList({
           ))),
   );
 
-  // A drag reorders the whole stack, so only with every overlay in view.
-  const sortable =
-    canSave &&
-    !filters.query.trim() &&
-    !filters.kinds.size &&
-    !filters.shown.size &&
-    !filters.technologies.size &&
-    !filters.country &&
-    !filters.categories.size &&
-    !filters.coversView;
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  const handleDragEnd = ({ active, over }: DragEndEvent) => {
-    if (!over || active.id === over.id) {
-      return;
-    }
-
-    // Only what may move: the rest keep their place by themselves.
-    const order = stack.filter((type) => movable.has(type));
-
-    dispatch(
-      mapOverlayOrderSet(
-        arrayMove(
-          order,
-          order.indexOf(String(active.id)),
-          order.indexOf(String(over.id)),
-        ),
-      ),
-    );
-  };
-
   if (maps.length === 0) {
     return <p className="text-muted text-center">{msm?.noInstalledMaps}</p>;
   }
@@ -526,148 +470,79 @@ export function YourMapsList({
     return <p className="text-muted text-center">{m?.mapLayers.noMapsFound}</p>;
   }
 
+  // Base maps, then overlays as they stack, top first; presets first in each.
+  const stackPlace = (map: YourMap) =>
+    map.layer === 'base'
+      ? 0
+      : -(overlayZIndex[map.preset ? presetItem(map.type) : map.type] ?? 0);
+
+  const rows = visible.toSorted(
+    (a, b) =>
+      (a.layer === 'base' ? 0 : 1) - (b.layer === 'base' ? 0 : 1) ||
+      (a.preset ? 0 : 1) - (b.preset ? 0 : 1) ||
+      stackPlace(a) - stackPlace(b),
+  );
+
   return (
-    <>
-      {(['base', 'overlay'] as const).map((layer) => {
-        const rows = visible.filter((map) => map.layer === layer);
+    <Table striped borderless size="sm" className="align-middle">
+      <colgroup>
+        <col style={{ width: COLUMN_WIDTHS.kind }} />
+        <col style={{ width: COLUMN_WIDTHS.icon }} />
+      </colgroup>
 
-        // Overlays as they stack, top first; combinations, which don't, after.
-        if (layer === 'overlay') {
-          rows.sort(
-            (a, b) =>
-              (overlayZIndex[b.type] ?? 0) - (overlayZIndex[a.type] ?? 0),
-          );
-        }
+      <thead>
+        <tr>
+          <th colSpan={3} />
 
-        // Pinned and offline overlays, combinations and a map still loading,
-        // not yet in the stack, stay put.
-        const draggable = (map: YourMap) =>
-          sortable && layer === 'overlay' && movable.has(map.type);
-
-        const sortableTypes = rows.filter(draggable).map((map) => map.type);
-
-        // Only the overlays can be dragged; outside the table, as it renders
-        // elements of its own.
-        const withDrag = (table: ReactElement) =>
-          layer === 'overlay' ? (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-              accessibility={NO_SCREEN_READER_TEXT}
+          {/* `ms-n1`: the cell's padding already puts the glyph over the
+              checkbox below. */}
+          <th style={{ width: COLUMN_WIDTHS.check }}>
+            <GlyphMarker
+              hint={msm?.showInToolbar}
+              color={null}
+              className="ms-n1"
             >
-              {table}
-            </DndContext>
-          ) : (
-            table
-          );
+              <ToolbarIcon />
+            </GlyphMarker>
+          </th>
 
-        return (
-          rows.length > 0 && (
-            <section
-              key={layer}
-              // Set off from the base maps above it.
-              className={
-                layer === 'overlay' && visible.some((m) => m.layer === 'base')
-                  ? 'border-top mt-3 pt-2'
-                  : undefined
-              }
-            >
-              {withDrag(
-                <Table striped borderless size="sm" className="align-middle">
-                  <colgroup>
-                    <col style={{ width: COLUMN_WIDTHS.handle }} />
-                    <col style={{ width: COLUMN_WIDTHS.icon }} />
-                  </colgroup>
+          <th style={{ width: COLUMN_WIDTHS.check }}>
+            <GlyphMarker hint={msm?.showInMenu} color={null} className="ms-n1">
+              <FaRegListAlt />
+            </GlyphMarker>
+          </th>
 
-                  <thead>
-                    <tr>
-                      {/* The section's name, on the row of the column glyphs. */}
-                      <th colSpan={3}>
-                        {layer === 'base' ? msm?.baseMaps : msm?.overlays}
-                      </th>
+          <th className="text-center" style={{ width: COLUMN_WIDTHS.opacity }}>
+            <GlyphMarker hint={msm?.overlayOpacity} color={null}>
+              <MdOpacity />
+            </GlyphMarker>
+          </th>
 
-                      {/* `ms-n1`: the cell's padding already puts the glyph over
-                        the checkbox below. */}
-                      <th style={{ width: COLUMN_WIDTHS.check }}>
-                        <GlyphMarker
-                          hint={msm?.showInToolbar}
-                          color={null}
-                          className="ms-n1"
-                        >
-                          <ToolbarIcon />
-                        </GlyphMarker>
-                      </th>
+          <th
+            className="text-center fm-should-have-keyboard"
+            style={{ width: COLUMN_WIDTHS.shortcut }}
+          >
+            <GlyphMarker hint={msm?.keyboardShortcut} color={null}>
+              <FaKeyboard />
+            </GlyphMarker>
+          </th>
 
-                      <th style={{ width: COLUMN_WIDTHS.check }}>
-                        <GlyphMarker
-                          hint={msm?.showInMenu}
-                          color={null}
-                          className="ms-n1"
-                        >
-                          <FaRegListAlt />
-                        </GlyphMarker>
-                      </th>
+          <th style={{ width: COLUMN_WIDTHS.actions }} />
+        </tr>
+      </thead>
 
-                      {/* Base maps are opaque: their column stays, empty, so the
-                        two tables line up. */}
-                      <th
-                        className="text-center"
-                        style={{ width: COLUMN_WIDTHS.opacity }}
-                      >
-                        {layer === 'overlay' && (
-                          <GlyphMarker hint={msm?.overlayOpacity} color={null}>
-                            <FaAdjust />
-                          </GlyphMarker>
-                        )}
-                      </th>
-
-                      <th
-                        className="text-center fm-should-have-keyboard"
-                        style={{ width: COLUMN_WIDTHS.shortcut }}
-                      >
-                        <GlyphMarker hint={msm?.keyboardShortcut} color={null}>
-                          <FaKeyboard />
-                        </GlyphMarker>
-                      </th>
-
-                      <th style={{ width: COLUMN_WIDTHS.actions }} />
-                    </tr>
-                  </thead>
-
-                  <SortableContext
-                    items={sortableTypes}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <tbody>
-                      {rows.map((map) =>
-                        draggable(map) ? (
-                          <SortableYourMapRow
-                            key={map.type}
-                            map={map}
-                            highlighted={map.type === highlight}
-                            settings={layersSettings[map.type]}
-                            canSave={canSave}
-                          />
-                        ) : (
-                          <YourMapRow
-                            key={map.type}
-                            map={map}
-                            highlighted={map.type === highlight}
-                            settings={layersSettings[map.type]}
-                            canSave={canSave}
-                          />
-                        ),
-                      )}
-                    </tbody>
-                  </SortableContext>
-                </Table>,
-              )}
-            </section>
-          )
-        );
-      })}
-    </>
+      <tbody>
+        {rows.map((map) => (
+          <YourMapRow
+            key={map.type}
+            map={map}
+            highlighted={map.type === highlight}
+            settings={layersSettings[map.type]}
+            canSave={canSave}
+          />
+        ))}
+      </tbody>
+    </Table>
   );
 }
 
@@ -676,49 +551,13 @@ type RowProps = {
   highlighted: boolean;
   settings: LayerSettings | undefined;
   canSave: boolean;
-  /** For a row that can be dragged to another place in the stack. */
-  drag?: {
-    setNodeRef: (el: HTMLElement | null) => void;
-    style: CSSProperties;
-    handle: HTMLAttributes<HTMLElement>;
-  };
 };
-
-function SortableYourMapRow(props: Omit<RowProps, 'drag'>): ReactElement {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: props.map.type });
-
-  return (
-    <YourMapRow
-      {...props}
-      drag={{
-        setNodeRef,
-        style: {
-          transform: CSS.Translate.toString(transform),
-          transition,
-          // Above its neighbours while carried.
-          position: isDragging ? 'relative' : undefined,
-          zIndex: isDragging ? 1 : undefined,
-        },
-        // Focusable for the keyboard sensor; no screen-reader attributes.
-        handle: { tabIndex: attributes.tabIndex, ...listeners },
-      }}
-    />
-  );
-}
 
 function YourMapRow({
   map,
   highlighted,
   settings,
   canSave,
-  drag,
 }: RowProps): ReactElement {
   const m = useMessages();
 
@@ -726,44 +565,32 @@ function YourMapRow({
 
   const dispatch = useDispatch();
 
-  const activeCombinations = useAppSelector(activeCombinationsSelector);
-
+  // The index entry until the body loads; both carry a switched kind's default.
   const def = useAppSelector(
-    (state) => integratedLayerDefMapSelector(state)[map.type],
+    (state) =>
+      integratedLayerDefMapSelector(state)[map.type] ??
+      libraryIndexByIdSelector(state)[map.type] ??
+      resolvedCustomLayersSelector(state).find(
+        (custom) => custom.type === map.type,
+      ),
   );
 
-  const { type, combination } = map;
+  const ownOpacity = useAppSelector(
+    (state) => state.map.layerSetups[map.type]?.opacity,
+  );
 
-  const { deleteCustomMap, deleteCombination, updateCombinationFromMap } =
-    useCustomMapActions();
+  const { type, preset } = map;
+
+  const { deleteCustomMap, deletePreset } = useCustomMapActions();
 
   const change = (patch: LayerSettings) =>
     dispatch(mapLayerSettingsChange({ type, settings: patch }));
 
-  // Not while an active combination sets it instead.
-  const opacityEditable =
-    map.layer === 'overlay' &&
-    map.kind !== 'combination' &&
-    combinationOpacity(activeCombinations, type) === undefined;
-
   return (
-    <tr
-      ref={drag?.setNodeRef}
-      style={drag?.style}
-      className={highlighted ? 'fm-flash' : undefined}
-    >
+    <tr className={highlighted ? 'fm-flash' : undefined}>
       {/* The scroll on a ref of its own, stable, so it runs once per mount. */}
       <td ref={highlighted ? scrollIntoCenter : undefined}>
-        {drag && (
-          <span
-            className="d-inline-flex text-muted"
-            // The handle alone starts a drag; on touch it mustn't scroll.
-            style={{ cursor: 'grab', touchAction: 'none' }}
-            {...drag.handle}
-          >
-            <MdDragIndicator />
-          </span>
-        )}
+        <LayerKindMark kind={map.layer} />
       </td>
 
       <td>{map.icon}</td>
@@ -801,12 +628,24 @@ function YourMapRow({
       </td>
 
       <td className="text-center">
-        {opacityEditable && canSave && (
-          <OpacityButton
-            value={resolveLayerOpacity(def, settings?.opacity)}
-            onChange={(opacity) => change({ opacity })}
-          />
-        )}
+        {canSave &&
+          (preset ? (
+            <OpacityButton
+              value={preset.opacity ?? 1}
+              onChange={(opacity) =>
+                dispatch(
+                  mapPresetChange({ id: preset.id, change: { opacity } }),
+                )
+              }
+            />
+          ) : (
+            <OpacityButton
+              value={resolveLayerOpacity(def, ownOpacity)}
+              onChange={(opacity) =>
+                dispatch(mapLayerSetupChange({ type, setup: { opacity } }))
+              }
+            />
+          ))}
       </td>
 
       <td className="text-center text-nowrap fm-should-have-keyboard">
@@ -828,14 +667,16 @@ function YourMapRow({
           align="end"
           toggleLabel={m?.general.actions}
         >
-          {/* A combination is several layers, applied rather than switched,
-              so it is refreshed from the map instead. */}
-          {combination ? (
+          {/* A preset is the user's own, shown as it is rather than previewed. */}
+          {preset ? (
             <Action
-              icon={<FaCamera />}
-              label={msm?.updateFromCurrentMap}
-              disabled={!canSave}
-              onClick={() => updateCombinationFromMap(combination)}
+              icon={<FaEye />}
+              label={msm?.openPreset}
+              onClick={() => {
+                dispatch(mapPresetToggle({ id: preset.id, enable: true }));
+
+                dispatch(setActiveModal(null));
+              }}
               showFrom="never"
             />
           ) : (
@@ -871,31 +712,34 @@ function YourMapRow({
             />
           )}
 
-          {map.kind === 'library' && canSwitchKind(map.technology) && (
-            <Action
-              // The kind it switches to, as `MapLayerItem` marks it.
-              icon={
-                map.layer === 'base' ? (
-                  <TbLayersSelectedBottom />
-                ) : (
-                  <TbLayersSelected />
-                )
-              }
-              label={
-                map.layer === 'base' ? msm?.useAsOverlay : msm?.useAsBaseMap
-              }
-              disabled={!canSave}
-              onClick={() =>
-                dispatch(
-                  mapSetLayerKind({
-                    type,
-                    kind: map.layer === 'base' ? 'overlay' : 'base',
-                  }),
-                )
-              }
-              showFrom="never"
-            />
-          )}
+          {(map.kind === 'library' || map.kind === 'custom') &&
+            canSwitchKind(map.technology) && (
+              <Action
+                // The kind it switches to, as `MapLayerItem` marks it.
+                icon={
+                  map.layer === 'base' ? (
+                    <TbLayersSelectedBottom />
+                  ) : (
+                    <TbLayersSelected />
+                  )
+                }
+                label={
+                  map.layer === 'base' ? msm?.useAsOverlay : msm?.useAsBaseMap
+                }
+                disabled={!canSave}
+                onClick={() =>
+                  dispatch(
+                    mapLayerSetupChange({
+                      type,
+                      setup: {
+                        kind: map.layer === 'base' ? 'overlay' : 'base',
+                      },
+                    }),
+                  )
+                }
+                showFrom="never"
+              />
+            )}
 
           {/* Only image tiles can be downloaded; see `CacheTilesForm`. */}
           {(map.kind === 'library' || map.kind === 'custom') &&
@@ -927,8 +771,8 @@ function YourMapRow({
               onClick={() =>
                 map.custom
                   ? deleteCustomMap(map.custom)
-                  : combination
-                    ? deleteCombination(combination)
+                  : preset
+                    ? deletePreset(preset)
                     : change({ installed: false })
               }
               showFrom="never"

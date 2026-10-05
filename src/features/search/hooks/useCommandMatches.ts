@@ -1,6 +1,9 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  libraryIndexSelector,
+  presetKindsSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { type Command, getCommands } from '@shared/commandDefinitions.js';
 import { fuzzyMatch } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -53,7 +56,9 @@ export function useCommandMatches(query: string): CommandMatch[] {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
-  const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
+  const presets = useAppSelector((state) => state.map.presets);
+
+  const presetKinds = useAppSelector(presetKindsSelector);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
@@ -73,7 +78,8 @@ export function useCommandMatches(query: string): CommandMatch[] {
             canSaveSettings,
             layers,
             customLayers,
-            mapCombinations,
+            presets,
+            presetKinds,
             layersSettings,
             libraryIndex,
             embedFeatures,
@@ -88,7 +94,8 @@ export function useCommandMatches(query: string): CommandMatch[] {
       canSaveSettings,
       layers,
       customLayers,
-      mapCombinations,
+      presets,
+      presetKinds,
       layersSettings,
       libraryIndex,
       embedFeatures,

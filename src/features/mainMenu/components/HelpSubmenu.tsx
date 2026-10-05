@@ -1,6 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { hasLegend } from '@features/legend/legendLayers.js';
-import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  drawnTypesSelector,
+  libraryIndexSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -28,7 +31,7 @@ export function HelpSubmenu(): JSX.Element {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   const libraryIndex = useAppSelector(libraryIndexSelector);
 

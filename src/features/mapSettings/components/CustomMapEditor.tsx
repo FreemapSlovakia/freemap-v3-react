@@ -3,14 +3,14 @@ import type { CustomMapRequest } from '@app/store/activeModal.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
-  mapCombinationSave,
   mapCustomLayerSave,
+  mapPresetSave,
 } from '@features/map/model/actions.js';
+import type { MapPreset } from '@features/map/model/mapPreset.js';
 import {
-  isWorthSaving,
-  type MapCombination,
-} from '@features/map/model/mapCombination.js';
-import { captureCombination } from '@features/map/model/selectors.js';
+  capturePreset,
+  presetByIdSelector,
+} from '@features/map/model/selectors.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
@@ -20,30 +20,30 @@ import { type ReactElement, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
-import { CustomMapForm, type CustomMapStart } from './CustomMapForm.js';
+import { CustomMapForm } from './CustomMapForm.js';
 import {
   type LayerVisibility,
   LayerVisibilityFields,
 } from './LayerVisibilityFields.js';
-import { MapCombinationForm } from './MapCombinationForm.js';
+import { PresetForm } from './PresetForm.js';
 
 type Props = { request: CustomMapRequest };
 
 type View =
-  | { mode: 'add'; draftType: string; start?: CustomMapStart }
+  | { mode: 'add'; draftType: string }
   | { mode: 'edit'; type: string }
-  | { mode: 'combination' };
+  | { mode: 'preset' };
 
 function makeType() {
   return Math.random().toString(36).slice(-6);
 }
 
-/** The form for a custom map or a combination, in the library's modal. */
+/** The form for a custom map or a preset, in the library's modal. */
 export function CustomMapEditor({ request }: Props): ReactElement {
   const m = useMessages();
 
-  // A custom map is nothing but an entry in the account's settings, so offline
-  // a signed-in user can neither add, change nor remove one.
+  // Both are nothing but entries in the account's settings, so offline a
+  // signed-in user can neither add, change nor remove one.
   const canSaveSettings = useCanSaveSettings();
 
   const dispatch = useDispatch();
@@ -52,19 +52,18 @@ export function CustomMapEditor({ request }: Props): ReactElement {
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
-  const mapCombinations = useAppSelector((state) => state.map.mapCombinations);
+  const presets = useAppSelector((state) => state.map.presets);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
-  // The form the request names: a map or combination to edit, a new shading
-  // map from the Map layers panel, or a new custom map.
-  // A map that is gone by now opens as a new one rather than as an empty edit
-  // that would save under its id.
+  // The form the request names: a map or preset to edit, a new preset of what
+  // is on the map, or a new custom map. One gone by now opens as a new one
+  // rather than as an empty edit that would save under its id.
   const startFor = (
     request: CustomMapRequest,
   ): {
     view: View;
-    combinationDraft?: MapCombination;
+    presetDraft?: MapPreset;
     visibility: LayerVisibility;
   } => {
     const visibilityOf = (type: string): LayerVisibility => {
@@ -81,14 +80,40 @@ export function CustomMapEditor({ request }: Props): ReactElement {
       };
     };
 
-    const combination =
-      request.draft ?? mapCombinations.find((c) => c.id === request.edit);
+    const newVisibility = {
+      showInMenu: true,
+      showInToolbar: false,
+      shortcut: null,
+    };
 
-    if (combination) {
+    const preset = presets.find((p) => p.id === request.edit);
+
+    if (preset) {
       return {
-        view: { mode: 'combination' },
-        combinationDraft: combination,
-        visibility: visibilityOf(combination.id),
+        view: { mode: 'preset' },
+        presetDraft: preset,
+        visibility: visibilityOf(preset.id),
+      };
+    }
+
+    // A copy of a preset (a link's, or a duplicate) is kept as it is; one made
+    // of the map takes all of it.
+    const source =
+      request.addPresetFrom === undefined
+        ? undefined
+        : presetByIdSelector(store.getState())[request.addPresetFrom];
+
+    if (source || request.addPreset) {
+      return {
+        view: { mode: 'preset' },
+        presetDraft: source
+          ? { ...source, id: makeType() }
+          : {
+              id: makeType(),
+              name: '',
+              layers: capturePreset(store.getState()),
+            },
+        visibility: newVisibility,
       };
     }
 
@@ -103,21 +128,8 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     }
 
     return {
-      view: {
-        mode: 'add',
-        draftType: makeType(),
-        start: request.addShadingMap
-          ? {
-              name: '',
-              technology: 'parametricShading',
-              ...request.addShadingMap,
-            }
-          : request.addCopyOf && {
-              name: request.addCopyOf.name ?? '',
-              copyOf: request.addCopyOf,
-            },
-      },
-      visibility: { showInMenu: true, showInToolbar: false, shortcut: null },
+      view: { mode: 'add', draftType: makeType() },
+      visibility: newVisibility,
     };
   };
 
@@ -127,9 +139,7 @@ export function CustomMapEditor({ request }: Props): ReactElement {
 
   const [draft, setDraft] = useState<CustomLayerDef | undefined>(undefined);
 
-  const [combinationDraft, setCombinationDraft] = useState(
-    initial.combinationDraft,
-  );
+  const [presetDraft, setPresetDraft] = useState(initial.presetDraft);
 
   const [visibility, setVisibility] = useState(initial.visibility);
 
@@ -150,47 +160,27 @@ export function CustomMapEditor({ request }: Props): ReactElement {
 
     setView(start.view);
 
-    setCombinationDraft(start.combinationDraft);
+    setPresetDraft(start.presetDraft);
 
     setVisibility(start.visibility);
   }
 
-  // A save shows its map in Installed maps (a panel's goes back to the map);
-  // Cancel goes back where the form was opened from.
+  const fromMap = Boolean(request.addPreset || request.addPresetFrom);
+
+  // A save shows its map in Installed maps (the panel's new preset goes back to
+  // the map); Cancel goes back where the form was opened from.
   const done = (saved?: string) => {
     const back = saved === undefined ? request.returnTo : undefined;
 
     dispatch(
       setActiveModal(
-        request.addShadingMap || request.addCopyOf || back === null
+        fromMap || back === null
           ? null
           : back === 'available-maps'
             ? { type: 'available-maps' }
             : { type: 'installed-maps', highlight: saved },
       ),
     );
-  };
-
-  const captureCurrentMap = (withBase: boolean) =>
-    captureCombination(store.getState(), withBase);
-
-  const addCombination = (start?: CustomMapStart) => {
-    setCombinationDraft({
-      id: makeType(),
-      name: start?.name ?? '',
-      iconSpec: start?.iconSpec,
-      ...captureCurrentMap(true),
-    });
-
-    setView({ mode: 'combination' });
-  };
-
-  const handleAddClick = (start?: CustomMapStart) => {
-    setDraft(undefined);
-
-    setCombinationDraft(undefined);
-
-    setView({ mode: 'add', draftType: makeType(), start });
   };
 
   const handleSave = () => {
@@ -218,37 +208,41 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     done(draft.type);
   };
 
-  const canSaveCombination = Boolean(
-    combinationDraft?.name.trim() && isWorthSaving(combinationDraft),
-  );
+  const canSavePreset = Boolean(presetDraft?.name.trim());
 
-  const handleSaveCombination = () => {
-    if (!combinationDraft || !canSaveCombination) {
+  const handleSavePreset = () => {
+    if (!presetDraft || !canSavePreset) {
       return;
     }
 
-    const combination = {
-      ...combinationDraft,
-      name: combinationDraft.name.trim(),
-    };
+    // Its layers as they are now: they may have been edited on the map meanwhile.
+    const existing = store
+      .getState()
+      .map.presets.find((p) => p.id === presetDraft.id);
 
-    const isEdit = mapCombinations.some((c) => c.id === combination.id);
+    const preset = {
+      ...(existing ?? presetDraft),
+      name: presetDraft.name.trim(),
+      iconSpec: presetDraft.iconSpec,
+    };
 
     trackMatomo([
       'trackEvent',
       'MapSettings',
-      isEdit ? 'update' : 'create',
-      'combination',
+      existing ? 'update' : 'create',
+      'preset',
     ]);
 
     dispatch(
-      mapCombinationSave({
-        combination,
+      mapPresetSave({
+        preset,
         settings: visibility,
+        onMap: request.addPreset,
+        replacing: request.addPresetFrom,
       }),
     );
 
-    done(combination.id);
+    done(preset.id);
   };
 
   const editingValue =
@@ -291,22 +285,17 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     </Modal.Footer>
   );
 
-  return view.mode === 'combination' ? (
+  return view.mode === 'preset' ? (
     <>
       <Modal.Body>
-        {combinationDraft && (
-          <MapCombinationForm
-            value={combinationDraft}
-            editing={mapCombinations.some((c) => c.id === combinationDraft.id)}
-            onChange={setCombinationDraft}
-            onPickTechnology={handleAddClick}
-          />
+        {presetDraft && (
+          <PresetForm value={presetDraft} onChange={setPresetDraft} />
         )}
 
         {visibilityFields}
       </Modal.Body>
 
-      {formFooter(handleSaveCombination, canSaveCombination)}
+      {formFooter(handleSavePreset, canSavePreset)}
     </>
   ) : (
     <>
@@ -315,9 +304,7 @@ export function CustomMapEditor({ request }: Props): ReactElement {
           key={`${draftType}:${generation}`}
           type={draftType}
           value={editingValue}
-          start={view.mode === 'add' ? view.start : undefined}
           onChange={setDraft}
-          onPickCombination={addCombination}
         />
 
         {visibilityFields}

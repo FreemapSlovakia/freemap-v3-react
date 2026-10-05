@@ -5,9 +5,9 @@ import {
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
+  drawnTypesSelector,
   integratedLayerDefMapSelector,
   integratedLayerDefsSelector,
-  shadingSourceSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { SONNY_ATTR } from '@shared/elevationSources.js';
@@ -67,7 +67,7 @@ function coversCountries(
 }
 
 export function Attribution({ unknown }: Props): ReactElement {
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   const countriesState = useAppSelector((state) => state.map.countries);
 
@@ -165,7 +165,7 @@ export function useRoutingAttributions(): AttributionDef[] {
  * covers an area the painted tiles say nothing about.
  */
 function useCategorizedAttribution(
-  layers: string[],
+  layers: readonly string[],
   countries?: string[],
   creditRouting = true,
   linked = false,
@@ -173,11 +173,7 @@ function useCategorizedAttribution(
 ) {
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
-
   const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
-
-  const shadingSource = useAppSelector(shadingSourceSelector);
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
@@ -312,20 +308,6 @@ function useCategorizedAttribution(
     }
   }
 
-  // A custom shading map draws the shading source's data, a linked WMS map its
-  // library map's.
-  for (const def of customLayers) {
-    if (!layers.includes(def.type)) {
-      continue;
-    }
-
-    if (def.technology === 'parametricShading') {
-      creditShading(def.type, shadingSource?.attribution ?? []);
-    } else if (def.technology === 'wms' && def.source) {
-      guessed.push(...(integratedLayerDefMap[def.source]?.attribution ?? []));
-    }
-  }
-
   // A cached map carries the codes of everything it downloaded, and the
   // dictionary to read them by; a map from before that wears its source
   // layer's credit instead.
@@ -387,7 +369,7 @@ function useCategorizedAttribution(
 }
 
 export function useResolvedAttribution(
-  layers: string[],
+  layers: readonly string[],
   countries?: string[],
   creditRouting = true,
   fromPaintedTiles = false,

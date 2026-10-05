@@ -15,7 +15,8 @@ import {
   toggleLocate,
 } from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
-import type { MapCombination } from '@features/map/model/mapCombination.js';
+import type { LayerSetup } from '@features/map/model/layerSetup.js';
+import type { MapPreset } from '@features/map/model/mapPreset.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import type { FeatureId, OsmFeatureId } from '@shared/types/featureId.js';
@@ -79,9 +80,10 @@ export {
 
 type Settings = {
   layersSettings?: Record<string, LayerSettings>;
+  layerSetups?: Record<string, LayerSetup>;
   overlayPaneOpacity?: number;
   customLayers?: CustomLayerDef[];
-  mapCombinations?: MapCombination[];
+  presets?: MapPreset[];
   maxZoom?: number;
   drawing?: Partial<DrawingStyle>;
 };

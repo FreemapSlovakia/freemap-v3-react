@@ -364,7 +364,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'simboli, legenda karte',
         'modal-about': 'kontakt, e-pošta, povratne informacije',
         'modal-installed-maps':
-          'knjižnica kart, odstrani, zemljevid, nastavitev slojev, sloji, upravljanje kart, orodna vrstica, meni, prosojnost, bližnjica, karte po meri, lastna karta, wms, tms, dodaj vir karte',
+          'upravljalnik kart, knjižnica kart, odstrani, zemljevid, nastavitev slojev, sloji, upravljanje kart, orodna vrstica, meni, prosojnost, bližnjica, karte po meri, lastna karta, wms, tms, dodaj vir karte',
         'modal-available-maps':
           'knjižnica kart, katalog, namesti, dodaj karte, več kart, zemljevid',
         'modal-offline-maps': 'prenesene karte, shramba',
@@ -388,6 +388,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-7': 'senčenje, relief, teren, višina, lidar',
         'layer-h':
           'senčenje, relief, teren, višina, naklon, ekspozicija, inverzija',
+        'layer-c': 'barva, prazna, ozadje, enobarvna, obarvanje, polnilo',
         'layer-l1': 'gozdne ceste, nlc',
         'layer-l2': 'gozdne ceste, nlc',
         'layer-VO': 'vektorska',
@@ -448,6 +449,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VD: 'Dataviz vektorska',
       VT: 'Outdoor vektorska',
       h: 'Parametrično senčenje terena',
+      c: 'Enobarvna ploskev',
       WDZ: 'Sestava drevja',
       WLT: 'Gozdni tipi',
       WGE: 'Geološka',
@@ -481,6 +483,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'različne licence Creative Commons',
     },
+    mapManager: 'Upravljalnik kart',
     installedMaps: 'Nameščene karte',
     availableMaps: 'Razpoložljive karte',
     newCustomMap: 'Nov zemljevid po meri',
@@ -545,7 +548,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         ?
       </>
     ),
-    saveAsShadingMap: 'Shrani kot zemljevid po meri',
     layersPanel: 'Sloji zemljevida',
   },
 

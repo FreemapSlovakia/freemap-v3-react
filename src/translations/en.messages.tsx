@@ -359,7 +359,7 @@ const messages: Messages = {
         'modal-legend': 'symbols, map key',
         'modal-about': 'contact, e-mail, feedback',
         'modal-installed-maps':
-          'map library, uninstall, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',
+          'map manager, map library, uninstall, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',
         'modal-available-maps':
           'map library, catalog, catalogue, install, add maps, more maps',
         'modal-offline-maps': 'downloaded maps, storage',
@@ -382,6 +382,7 @@ const messages: Messages = {
         'layer-7': 'hillshade, relief, terrain, elevation, lidar',
         'layer-h':
           'hillshade, relief, terrain, elevation, slope, aspect, custom shading',
+        'layer-c': 'color, blank, background, plain, tint, fill',
         'layer-l1': 'forest roads, nlc',
         'layer-l2': 'forest roads, nlc',
         'layer-VO': 'vector',
@@ -442,6 +443,7 @@ const messages: Messages = {
       VD: 'Dataviz Vector',
       VT: 'Outdoor Vector',
       h: 'Parametric terrain shading',
+      c: 'Solid colour',
       WDZ: 'Tree Composition',
       WLT: 'Forest Types',
       WGE: 'Geological',
@@ -475,11 +477,11 @@ const messages: Messages = {
       ),
       photosCc: 'various Creative Commons licenses',
     },
+    mapManager: 'Map manager',
     installedMaps: 'Installed maps',
     availableMaps: 'Available maps',
     newCustomMap: 'New custom map',
     activate: 'Activate',
-    saveAsShadingMap: 'Save as custom map',
     layersPanel: 'Map layers',
     base: 'Base layers',
     overlay: 'Overlay layers',

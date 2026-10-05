@@ -2,7 +2,10 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
-import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefMapSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import {
   type LayerVisibility,
   LayerVisibilityFields,
@@ -114,7 +117,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
 
   const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   const mapDefs = useMemo(() => {
     // Its own source stays pickable when editing, offered or not.

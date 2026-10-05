@@ -6,6 +6,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { LayerKindMark } from '@shared/components/MapLayerItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerName } from '@shared/layerName.js';
 import { flaggedCountries } from '@shared/mapDefinitions.js';
@@ -171,6 +172,10 @@ function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
 
   return (
     <tr>
+      <td>
+        <LayerKindMark kind={entry.layer} />
+      </td>
+
       <td>{index ? index.icon : catalogIcon(entry.category)}</td>
 
       <td className="w-100">
@@ -313,7 +318,8 @@ export function LibraryTab({
   const nameOf = (entry: CatalogEntry) =>
     prepared.get(entry.type)?.name ?? entry.type;
 
-  // Base maps before overlays, so a page only ever extends the last section.
+  // A search best match first; browsing, the maps that draw here first, then
+  // base maps before overlays, each part by name.
   const ranked = useMemo(() => {
     const view = { bounds: viewBounds, countries: viewCountries };
 
@@ -335,35 +341,32 @@ export function LibraryTab({
         : [];
     });
 
-    let ordered: CatalogEntry[];
-
     if (filters.query.trim()) {
-      ordered = searchLibrary(
+      return searchLibrary(
         items.map(({ entry }) => entry),
         items.map(({ target }) => target),
         filters.query,
         items.length,
       ).matches;
-    } else {
-      // Browsing: the maps that draw here first, each part by name.
-      const byName = makeLabelComparator(language);
-
-      ordered = items
-        .map(({ entry, name }) => ({
-          entry,
-          name,
-          here: coversView(entry, view),
-        }))
-        .sort(
-          (a, b) => Number(b.here) - Number(a.here) || byName(a.name, b.name),
-        )
-        .map(({ entry }) => entry);
     }
 
-    return [
-      ...ordered.filter((entry) => entry.layer === 'base'),
-      ...ordered.filter((entry) => entry.layer === 'overlay'),
-    ];
+    const byName = makeLabelComparator(language);
+
+    const isBase = (entry: CatalogEntry) => Number(entry.layer === 'base');
+
+    return items
+      .map(({ entry, name }) => ({
+        entry,
+        name,
+        here: coversView(entry, view),
+      }))
+      .sort(
+        (a, b) =>
+          Number(b.here) - Number(a.here) ||
+          isBase(b.entry) - isBase(a.entry) ||
+          byName(a.name, b.name),
+      )
+      .map(({ entry }) => entry);
   }, [entries, filters, prepared, viewBounds, viewCountries, language]);
 
   // A search that matches nothing at all, installed maps included, may name a
@@ -500,8 +503,6 @@ function LibraryResults({
   nameOf,
   canSave,
 }: ResultsProps): ReactElement {
-  const msm = useMapSettingsMessages();
-
   const [limit, setLimit] = useState(pageSize);
 
   const matches = ranked.slice(0, limit);
@@ -529,42 +530,21 @@ function LibraryResults({
     return () => observer.disconnect();
   };
 
+  // One table, as Installed maps; each row's icon tells the kind.
   return (
     <>
-      {(['base', 'overlay'] as const).map((layer) => {
-        const rows = matches.filter((entry) => entry.layer === layer);
-
-        return (
-          rows.length > 0 && (
-            <section
-              key={layer}
-              // Set off from the base maps above it.
-              className={
-                layer === 'overlay' && matches.some((e) => e.layer === 'base')
-                  ? 'border-top mt-3 pt-2'
-                  : undefined
-              }
-            >
-              <h6 className="mt-2">
-                {layer === 'base' ? msm?.baseMaps : msm?.overlays}
-              </h6>
-
-              <Table striped borderless size="sm" className="align-middle">
-                <tbody>
-                  {rows.map((entry) => (
-                    <LibraryRow
-                      key={entry.type}
-                      entry={entry}
-                      name={nameOf(entry)}
-                      canSave={canSave}
-                    />
-                  ))}
-                </tbody>
-              </Table>
-            </section>
-          )
-        );
-      })}
+      <Table striped borderless size="sm" className="align-middle">
+        <tbody>
+          {matches.map((entry) => (
+            <LibraryRow
+              key={entry.type}
+              entry={entry}
+              name={nameOf(entry)}
+              canSave={canSave}
+            />
+          ))}
+        </tbody>
+      </Table>
 
       {ranked.length > limit && <div key={limit} ref={observeMore} />}
     </>

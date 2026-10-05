@@ -3,17 +3,23 @@ import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { mapLibraryCatalogMapsLoaded } from '@features/mapLibrary/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
-  mapCombinationDelete,
-  mapCombinationSave,
   mapCustomLayerDelete,
   mapCustomLayerSave,
   mapLayerSettingsChange,
+  mapLayerSetupChange,
+  mapLayerSetupReset,
   mapLayersSettingsReset,
+  mapOverlayMove,
+  mapPresetChange,
+  mapPresetDelete,
+  mapPresetLayerAdd,
+  mapPresetLayerRemove,
+  mapPresetSave,
+  mapPresetToggle,
   mapRefocus,
   mapReplaceLayer,
   mapSetCountries,
   mapSetEsriAttribution,
-  mapSetLayerKind,
   mapSetLocalPrefs,
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
@@ -70,7 +76,7 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
     });
   });
 
-  it('saves a custom map with its settings, and deletes both', () => {
+  it('saves a custom map with its settings, and deletes both with its setup', () => {
     const def = {
       type: '.1',
       layer: 'base' as const,
@@ -79,14 +85,18 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
     };
 
     const saved = mapReducer(
-      { ...mapInitialState, layersSettings: { '.1': { opacity: 0.5 } } },
+      {
+        ...mapInitialState,
+        layersSettings: { '.1': { showInToolbar: true } },
+        layerSetups: { '.1': { opacity: 0.5 } },
+      },
       mapCustomLayerSave({ def, settings: { showInMenu: false } }),
     );
 
     expect(saved.customLayers).toEqual([def]);
 
     expect(saved.layersSettings['.1']).toEqual({
-      opacity: 0.5,
+      showInToolbar: true,
       showInMenu: false,
     });
 
@@ -95,46 +105,59 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
     expect(deleted.customLayers).toEqual([]);
 
     expect(deleted.layersSettings['.1']).toBeUndefined();
+
+    expect(deleted.layerSetups['.1']).toBeUndefined();
   });
 
-  it('replaces a combination in place, and deletes it with its settings', () => {
-    const a = { id: 'a', name: 'A', overlays: [] };
-
-    const b = { id: 'b', name: 'B', overlays: [] };
-
-    const state = {
-      ...mapInitialState,
-      mapCombinations: [a, b],
-      layersSettings: { a: { showInToolbar: true } },
+  it('deleting a custom map takes it off the map and out of presets', () => {
+    const def = {
+      type: '.1',
+      layer: 'base' as const,
+      technology: 'tile' as const,
+      url: 'https://example.com/{z}/{x}/{y}.png',
     };
 
-    const renamed = mapReducer(
-      state,
-      mapCombinationSave({ combination: { ...a, name: 'A2' } }),
+    const deleted = mapReducer(
+      {
+        ...mapInitialState,
+        layers: ['.1', 'i'],
+        customLayers: [def],
+        presets: [
+          {
+            id: 'p',
+            name: 'P',
+            layers: [
+              { type: '.1', setup: {} },
+              { type: 'w', setup: {} },
+            ],
+          },
+        ],
+      },
+      mapCustomLayerDelete({ type: '.1' }),
     );
 
-    expect(renamed.mapCombinations.map((c) => c.name)).toEqual(['A2', 'B']);
+    // The only base went, so the default one comes under.
+    expect(deleted.layers).toEqual(['X', 'i']);
 
-    const deleted = mapReducer(state, mapCombinationDelete({ id: 'a' }));
-
-    expect(deleted.mapCombinations).toEqual([b]);
-
-    expect(deleted.layersSettings['a']).toBeUndefined();
+    expect(deleted.presets[0]?.layers).toEqual([{ type: 'w', setup: {} }]);
   });
 
-  it('resets every map but what is installed', () => {
+  it('resets every map but what is installed, setups included', () => {
     const next = mapReducer(
       {
         ...mapInitialState,
         layersSettings: {
-          X: { showInMenu: false, opacity: 0.5 },
+          X: { showInMenu: false },
           O: { installed: false, showInToolbar: true },
         },
+        layerSetups: { w: { opacity: 0.5 } },
       },
       mapLayersSettingsReset(),
     );
 
     expect(next.layersSettings).toEqual({ O: { installed: false } });
+
+    expect(next.layerSetups).toEqual({});
   });
 
   it('keeps installed a map that was installed only by its settings', () => {
@@ -168,87 +191,266 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
   });
 });
 
-describe('mapReducer — mapToggleLayer (combinations)', () => {
+describe('mapReducer — presets', () => {
   const withBase = {
-    id: 'c1',
-    name: 'C',
-    base: 'X',
-    overlays: [{ type: 'w' }, { type: 'I' }],
+    id: 'p1',
+    name: 'P',
+    layers: [
+      { type: 'O', setup: {} },
+      { type: 'h', setup: { opacity: 0.4 } },
+    ],
   };
 
   const overlayOnly = {
-    id: 'c2',
-    name: 'D',
-    overlays: [{ type: 'I' }, { type: 'xh' }],
+    id: 'p2',
+    name: 'Q',
+    layers: [{ type: 'xh', setup: { opacity: 0.3 } }],
   };
 
-  const combined = {
+  const state = {
     ...mapInitialState,
-    layers: ['X', 'w', 'I', '_c1'],
-    mapCombinations: [withBase, overlayOnly],
+    layers: ['X', 'i', 'xb'],
+    presets: [withBase, overlayOnly],
   };
 
-  it("another base map takes the combination's overlays off, keeping added ones", () => {
-    const withAdded = mapReducer(combined, mapToggleLayer({ type: 'i' }));
+  it('one with a base map takes the base map’s place, setups untouched', () => {
+    const next = mapReducer(state, mapPresetToggle({ id: 'p1' }));
 
-    expect(withAdded.layers).toEqual(['X', 'w', 'I', '_c1', 'i']);
+    expect(next.layers).toEqual(['@p1', 'i', 'xb']);
 
-    expect(mapReducer(withAdded, mapToggleLayer({ type: 'O' })).layers).toEqual(
-      ['O', 'i'],
-    );
+    expect(next.layerSetups).toEqual({});
+
+    // Picking a base map takes it off again, with all its layers.
+    expect(mapReducer(next, mapToggleLayer({ type: 'S' })).layers).toEqual([
+      'S',
+      'i',
+      'xb',
+    ]);
   });
 
-  it('its own base map leaves it too', () => {
-    const next = mapReducer(combined, mapToggleLayer({ type: 'X' }));
+  it('one without goes on top, and off again', () => {
+    const on = mapReducer(state, mapPresetToggle({ id: 'p2' }));
 
-    expect(next.layers).toEqual(['X']);
-  });
+    expect(on.layers).toEqual(['X', 'i', 'xb', '@p2']);
 
-  it('stays active while its own overlays are switched off', () => {
-    const next = mapReducer(combined, mapToggleLayer({ type: 'w' }));
-
-    expect(next.layers).toEqual(['X', 'I', '_c1']);
-  });
-
-  it('keeps an overlay-only combination through a base map change', () => {
-    const next = mapReducer(
-      { ...combined, layers: ['S', 'I', 'xh', '_c2'] },
-      mapToggleLayer({ type: 'O' }),
-    );
-
-    expect(next.layers).toEqual(['O', 'I', 'xh', '_c2']);
-  });
-
-  it('keeps an overlay the leaving one shares with an overlay-only one', () => {
-    const next = mapReducer(
-      { ...combined, layers: ['X', 'w', 'I', '_c1', 'xh', '_c2'] },
-      mapToggleLayer({ type: 'O' }),
-    );
-
-    expect(next.layers).toEqual(['O', 'I', 'xh', '_c2']);
-  });
-
-  it('picking the base map already on leaves the layers untouched', () => {
-    const state = { ...mapInitialState, layers: ['X', 'w'] };
-
-    expect(mapReducer(state, mapToggleLayer({ type: 'X' })).layers).toBe(
+    expect(mapReducer(on, mapPresetToggle({ id: 'p2' })).layers).toEqual(
       state.layers,
     );
   });
 
-  it('"make sure its base is on" keeps it', () => {
+  it('keeps its own copy of a map, apart from the map on its own', () => {
     const next = mapReducer(
-      combined,
-      mapToggleLayer({ type: 'X', enable: true }),
+      {
+        ...state,
+        layers: ['X', 'xh', '@p2'],
+        layerSetups: { xh: { opacity: 1 } },
+      },
+      mapLayerSetupChange({
+        type: 'xh',
+        preset: 'p2',
+        setup: { opacity: 0.7 },
+      }),
     );
 
-    expect(next.layers).toBe(combined.layers);
+    expect(next.presets[1].layers).toEqual([
+      { type: 'xh', setup: { opacity: 0.7 } },
+    ]);
+
+    expect(next.layerSetups).toEqual({ xh: { opacity: 1 } });
   });
 
-  it('a move of the map keeps it', () => {
-    const next = mapReducer(combined, mapRefocus({ lat: 49, lon: 20 }));
+  it('takes maps in and out; a base map makes it a base', () => {
+    const on = { ...state, layers: ['X', '@p2'] };
 
-    expect(next.layers).toEqual(combined.layers);
+    const added = mapReducer(on, mapPresetLayerAdd({ id: 'p2', type: 'xb' }));
+
+    expect(added.presets[1].layers.map((l) => l.type)).toEqual(['xh', 'xb']);
+
+    const based = mapReducer(added, mapPresetLayerAdd({ id: 'p2', type: 'S' }));
+
+    expect(based.presets[1].layers.map((l) => l.type)).toEqual([
+      'S',
+      'xh',
+      'xb',
+    ]);
+
+    expect(based.layers).toEqual(['@p2']);
+
+    const moved = mapReducer(
+      based,
+      mapOverlayMove({ type: 'xb', to: 'xh', preset: 'p2' }),
+    );
+
+    expect(moved.presets[1].layers.map((l) => l.type)).toEqual([
+      'S',
+      'xb',
+      'xh',
+    ]);
+
+    const removed = mapReducer(
+      moved,
+      mapPresetLayerRemove({ id: 'p2', type: 'S' }),
+    );
+
+    // An overlay preset again; no base map is put under it.
+    expect(removed.layers).toEqual(['@p2']);
+  });
+
+  it('a base layer switched to an overlay leaves no base map', () => {
+    const based = {
+      ...state,
+      layers: ['@p3'],
+      presets: [
+        {
+          id: 'p3',
+          name: 'R',
+          layers: [
+            { type: 'l2', setup: { kind: 'base' as const } },
+            { type: 'xh', setup: {} },
+          ],
+        },
+      ],
+    };
+
+    const next = mapReducer(
+      based,
+      mapLayerSetupChange({
+        type: 'l2',
+        preset: 'p3',
+        setup: { kind: 'overlay' },
+      }),
+    );
+
+    expect(next.layers).toEqual(['@p3']);
+
+    // Nor does a later reset, the switch being on purpose.
+    expect(mapReducer(next, mapLayersSettingsReset()).layers).toEqual(['@p3']);
+  });
+
+  it('a new one of the map replaces what it was made of', () => {
+    const next = mapReducer(
+      state,
+      mapPresetSave({
+        preset: { id: 'n', name: 'N', layers: [{ type: 'X', setup: {} }] },
+        onMap: true,
+      }),
+    );
+
+    expect(next.layers).toEqual(['@n', 'i']);
+  });
+
+  it('a link’s, saved as one’s own, takes its place', () => {
+    const next = mapReducer(
+      {
+        ...state,
+        layers: ['X', '@~1'],
+        linkPresets: [{ ...overlayOnly, id: '~1' }],
+      },
+      mapPresetSave({ preset: { ...overlayOnly, id: 'n' }, replacing: '~1' }),
+    );
+
+    expect(next.layers).toEqual(['X', '@n']);
+
+    expect(next.linkPresets).toEqual([]);
+  });
+
+  it('changes its own opacity', () => {
+    const next = mapReducer(
+      state,
+      mapPresetChange({ id: 'p2', change: { opacity: 0.5 } }),
+    );
+
+    expect(next.presets[1].opacity).toBe(0.5);
+  });
+
+  it('replaces one in place, and deletes it from the map with its settings', () => {
+    const renamed = mapReducer(
+      state,
+      mapPresetSave({ preset: { ...withBase, name: 'P2' } }),
+    );
+
+    expect(renamed.presets.map((p) => p.name)).toEqual(['P2', 'Q']);
+
+    const deleted = mapReducer(
+      {
+        ...renamed,
+        layers: ['@p1', 'xb'],
+        layersSettings: { p1: { showInToolbar: true } },
+      },
+      mapPresetDelete({ id: 'p1' }),
+    );
+
+    expect(deleted.presets).toEqual([overlayOnly]);
+
+    expect(deleted.layersSettings['p1']).toBeUndefined();
+
+    expect(deleted.layers).toEqual(['X', 'xb']);
+  });
+});
+
+describe('mapReducer — layer setups', () => {
+  it('merges a change, and drops a setup left empty', () => {
+    const changed = mapReducer(
+      { ...mapInitialState, layerSetups: { w: { opacity: 0.5 } } },
+      mapLayerSetupChange({ type: 'w', setup: { wmsLayers: ['a'] } }),
+    );
+
+    expect(changed.layerSetups['w']).toEqual({
+      opacity: 0.5,
+      wmsLayers: ['a'],
+    });
+
+    const emptied = mapReducer(
+      changed,
+      mapLayerSetupChange({
+        type: 'w',
+        setup: { opacity: undefined, wmsLayers: undefined },
+      }),
+    );
+
+    expect(emptied.layerSetups['w']).toBeUndefined();
+  });
+
+  it('keeps a shading draft through an opacity change', () => {
+    const shading = { backgroundColor: [0, 0, 0, 1], components: [] } as never;
+
+    const next = mapReducer(
+      {
+        ...mapInitialState,
+        layerSetups: { h: { opacity: 0.5 } },
+        shadingDrafts: { h: shading },
+      },
+      mapLayerSetupChange({ type: 'h', setup: { opacity: 0.7 } }),
+    );
+
+    expect(next.shadingDrafts['h']).toBe(shading);
+  });
+
+  it('a reset drops the setup', () => {
+    const next = mapReducer(
+      { ...mapInitialState, layerSetups: { w: { opacity: 0.5 } } },
+      mapLayerSetupReset({ type: 'w' }),
+    );
+
+    expect(next.layerSetups).toEqual({});
+  });
+
+  it('moves an overlay to the place of another', () => {
+    const next = mapReducer(
+      { ...mapInitialState, layers: ['X', 'h', 'w', 'I'] },
+      mapOverlayMove({ type: 'I', to: 'h' }),
+    );
+
+    expect(next.layers).toEqual(['X', 'I', 'h', 'w']);
+  });
+
+  it('a link loads the setups it carries', () => {
+    const next = mapReducer(
+      { ...mapInitialState, layerSetups: { h: { opacity: 0.2 } } },
+      mapRefocus({ layers: ['X', 'h'], setups: { h: {} } }),
+    );
+
+    expect(next.layerSetups).toEqual({});
   });
 });
 
@@ -305,39 +507,80 @@ describe('mapReducer — mapReplaceLayer', () => {
 
     expect(next.layers).toEqual(['X']);
   });
+
+  it('drops the old one where the new one is on already', () => {
+    const state = { ...mapInitialState, layers: ['X', 'i', 'w'] };
+
+    const next = mapReducer(state, mapReplaceLayer({ from: 'i', to: 'w' }));
+
+    expect(next.layers).toEqual(['X', 'w']);
+  });
+
+  it('a base map used as an overlay is replaced by one used so too', () => {
+    const next = mapReducer(
+      {
+        ...mapInitialState,
+        layers: ['X', 'O'],
+        layerSetups: { O: { kind: 'overlay', opacity: 0.4 } },
+      },
+      mapReplaceLayer({ from: 'O', to: 'S' }),
+    );
+
+    expect(next.layers).toEqual(['X', 'S']);
+
+    expect(next.layerSetups['S']).toEqual({ kind: 'overlay', opacity: 0.4 });
+  });
+
+  it('replaces a preset’s layer, keeping only its opacity', () => {
+    const state = {
+      ...mapInitialState,
+      presets: [
+        {
+          id: 'p',
+          name: 'P',
+          layers: [{ type: 'i', setup: { opacity: 0.5, wmsLayers: ['a'] } }],
+        },
+      ],
+    };
+
+    const next = mapReducer(state, mapReplaceLayer({ from: 'i', to: 'w' }));
+
+    expect(next.presets[0]?.layers).toEqual([
+      { type: 'w', setup: { opacity: 0.5 } },
+    ]);
+  });
 });
 
-describe('mapReducer — combinations across sign-in', () => {
-  const mine = { id: 'm', name: 'M', base: 'X', overlays: [] };
+describe('mapReducer — presets across sign-in', () => {
+  const mine = { id: 'm', name: 'M', layers: [] };
 
-  const theirs = { id: 't', name: 'T', base: 'O', overlays: [] };
+  const theirs = { id: 't', name: 'T', layers: [] };
 
-  const local = { ...mapInitialState, mapCombinations: [mine] };
+  const local = { ...mapInitialState, presets: [mine] };
 
   // The map slice only reads `payload.settings`; a minimal cast user is enough.
   const signIn = (settings: object) => authSetUser({ settings } as never);
 
   it("takes the account's list once it has one, even empty", () => {
-    expect(
-      mapReducer(local, signIn({ mapCombinations: [theirs] })).mapCombinations,
-    ).toEqual([theirs]);
+    expect(mapReducer(local, signIn({ presets: [theirs] })).presets).toEqual([
+      theirs,
+    ]);
 
-    expect(
-      mapReducer(local, signIn({ mapCombinations: [] })).mapCombinations,
-    ).toEqual([]);
+    expect(mapReducer(local, signIn({ presets: [] })).presets).toEqual([]);
   });
 
   it('keeps the signed-out ones for an account that never had any', () => {
-    expect(mapReducer(local, signIn({})).mapCombinations).toEqual([mine]);
+    expect(mapReducer(local, signIn({})).presets).toEqual([mine]);
   });
 
   it("resets the account's settings on sign-out and on a session found to be over", () => {
     const signedIn = {
       ...local,
       customLayers: [
-        { type: 'c', layer: 'base', technology: 'tile', url: 'u' },
+        { type: '.1', layer: 'base', technology: 'tile', url: 'u' },
       ],
       layersSettings: { X: { showInToolbar: false } },
+      layerSetups: { w: { opacity: 0.5 } },
       maxZoom: 16,
     } as typeof local;
 
@@ -345,9 +588,10 @@ describe('mapReducer — combinations across sign-in', () => {
       mapReducer(signedIn, authLogout()),
       mapReducer(signedIn, authSetUser(null)),
     ]) {
-      expect(next.mapCombinations).toEqual([]);
+      expect(next.presets).toEqual([]);
       expect(next.customLayers).toEqual([]);
       expect(next.layersSettings).toEqual({});
+      expect(next.layerSetups).toEqual({});
       expect(next.maxZoom).toBe(mapInitialState.maxZoom);
     }
   });
@@ -497,21 +741,21 @@ describe('mapReducer — switched kind', () => {
   it('a map switched to base takes the place of the base on', () => {
     const next = mapReducer(
       { ...mapInitialState, layers: ['X', 'h'] },
-      mapSetLayerKind({ type: 'h', kind: 'base' }),
+      mapLayerSetupChange({ type: 'h', setup: { kind: 'base' } }),
     );
 
     expect(next.layers).toEqual(['h']);
 
-    expect(next.layersSettings['h']?.layer).toBe('base');
+    expect(next.layerSetups['h']?.kind).toBe('base');
   });
 
   it('switching a map back to its own kind drops the setting', () => {
     const next = mapReducer(
-      { ...mapInitialState, layersSettings: { h: { layer: 'base' } } },
-      mapSetLayerKind({ type: 'h', kind: 'overlay' }),
+      { ...mapInitialState, layerSetups: { h: { kind: 'base' } } },
+      mapLayerSetupChange({ type: 'h', setup: { kind: 'overlay' } }),
     );
 
-    expect(next.layersSettings['h']?.layer).toBeUndefined();
+    expect(next.layerSetups['h']).toBeUndefined();
   });
 
   it('a reset leaving no base puts the default one under', () => {
@@ -519,11 +763,24 @@ describe('mapReducer — switched kind', () => {
       {
         ...mapInitialState,
         layers: ['h'],
-        layersSettings: { h: { layer: 'base' } },
+        layerSetups: { h: { kind: 'base' } },
       },
-      mapLayersSettingsReset(),
+      mapLayerSetupReset({ type: 'h' }),
     );
 
     expect(next.layers).toEqual(['X', 'h']);
+  });
+
+  it('a reset back to a base map makes it the only base', () => {
+    const next = mapReducer(
+      {
+        ...mapInitialState,
+        layers: ['X', 'O', 'i'],
+        layerSetups: { O: { kind: 'overlay' } },
+      },
+      mapLayerSetupReset({ type: 'O' }),
+    );
+
+    expect(next.layers).toEqual(['O', 'i']);
   });
 });

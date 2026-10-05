@@ -20,7 +20,7 @@ menu filter, country flags and coverage hints. Instead:
 - **Uninstalling controls only what the UI offers, never whether a map works.**
   An uninstalled map is out of the toolbar, the menu (Show all included), its
   keyboard shortcut, the search box and the offline-map/export pickers. A link
-  naming it in `layers=`, a map combination or the default `X` base still
+  naming it in `layers=`, a map preset or the default `X` base still
   renders it, and the menu lists it while it is on so it can be switched off.
 - **Library maps are not custom maps.** A custom map is a frozen copy in the
   account settings, has no credits, coverage or licence, and travels in links
@@ -52,8 +52,8 @@ menu filter, country flags and coverage hints. Instead:
   `src/shared/mapLibrary/installed.ts`.
 - Honoured by `MapSwitchButton`, `keyboardHandler`, `commandDefinitions` (search
   box), `CacheTilesForm` (an edited offline map keeps its own source),
-  `OfflineMapExportModal` and `MapCombinationForm`'s pickers.
-- Custom, cached and combination maps are deleted rather than uninstalled.
+  `OfflineMapExportModal`'s pickers.
+- Custom maps, offline maps and presets are deleted rather than uninstalled.
 - The agent tool `list-map-layers` still lists uninstalled maps (an agent acts
   like a link).
 
@@ -62,8 +62,9 @@ menu filter, country flags and coverage hints. Instead:
 `src/features/mapLibrary/components/MapLibraryModal.tsx`, one modal under two
 ids that are its tabs: `installed-maps` (**Installed maps**, chord <kbd>m</kbd>
 <kbd>i</kbd>, where each map the user has is configured) and `available-maps`
-(**Available maps**, <kbd>m</kbd> <kbd>a</kbd>, the catalog); each has its own
-row in the Manage maps menu and in the search box, and switching tabs changes
+(**Available maps**, <kbd>m</kbd> <kbd>a</kbd>, the catalog); the Manage maps
+menu has one **Map manager** item opening Installed maps, the search box a row
+for each tab, and switching tabs changes
 `show=`. `map-library`, `map-layers-config` and the older ids are renamed to
 `installed-maps`. Built for a catalog of thousands:
 
@@ -79,8 +80,8 @@ row in the Manage maps menu and in the search box, and switching tabs changes
 - **Search** — `librarySearch.ts`: the search box's fuzzy match over the name,
   then (ranked lower) each keyword, country code and name and category on its
   own; targets are normalized once per catalog and language. With no query,
-  the filtered catalog with the maps that `coversView` first, each part by
-  name (`Intl.Collator`). Either way base maps go before overlays, and an
+  the filtered catalog with the maps that `coversView` first, in each part
+  base maps before overlays, then by name (`Intl.Collator`). An
   `IntersectionObserver` at the list's end adds 50 rows at a time. Paging
   restarts only on a new query or filter, not when an install or the view
   changes the list.
@@ -103,99 +104,119 @@ row in the Manage maps menu and in the search box, and switching tabs changes
   decides. Each tab shows its count.
   Category is the ELI one; built-in maps carry theirs in their index row, a
   custom map the one its form sets (`category` on `CustomLayerDef`), an
-  offline map its source map's, and combinations count as Other.
-  The two tables of Installed maps have fixed widths for the small columns, base
-  maps an empty opacity cell, so they line up.
+  offline map its source map's, and presets count as Other.
+  Installed maps is one table: base maps, then overlays in stack order, presets
+  first in each, each row marked by `LayerKindMark`; a Layer chip filters by
+  kind.
 - **Installed maps** — `YourMapsList`: the installed library maps (from
   `installedLibraryIndexSelector`, so no catalog is needed; the tab's count is
-  `yourMapsCountSelector`) and the custom, offline and
-  combined maps, with columns for every map's settings (toolbar, menu,
-  opacity, shortcut), so they read as one overview.
+  `yourMapsCountSelector`) and the custom maps, offline maps and presets, with
+  columns for every map's settings (toolbar, menu, opacity, shortcut), so they
+  read as one overview.
   A row's actions sit in a ⋮ menu (`ResponsiveActions`, all `showFrom="never"`):
-  preview for all but a combination (an offline map's fits to its downloaded
-  area), update from the map for a combination, modify for the user's own (an
+  preview for all but a preset (an offline map's fits to its downloaded
+  area), show on map for a preset, modify for the user's own (an
   offline map's form in Offline maps via `cachedMapsSetView({ edit })`), and
-  uninstall for a library map or delete for a custom map or combination
-  (`useCustomMapActions`, after a confirm). Base maps have no opacity column.
-- **Overlay stack** — `map.overlayOrder` (account settings, top first, alias-
-  resolved on load) is written when a row is dragged (`@dnd-kit/sortable`,
-  handle column, only with no search or chip on; the library's screen-reader
-  text is turned off) and pruned when a custom map is deleted or a map
-  uninstalled. `overlayStackSelector` takes the overlays a list may name
-  (installed or on, the user's own; a custom shading map with its source's
-  `zIndex`) and says which may move: not the pinned ones, nor offline maps,
-  which exist on one device while the order is the account's, so they stack
-  by default `zIndex` only. It and
+  uninstall for a library map or delete for a custom map or preset
+  (`useCustomMapActions`, after a confirm). The opacity column edits the
+  map's layer setup, or a preset's own.
+- **Layer setups** — `LayerSetup` (`map/model/layerSetup.ts`: kind, opacity,
+  WMS layers, shading, colour), one per map in `map.layerSetups` (account
+  settings), kept whether the map is on or off. `setSetup` drops a kind equal
+  to the map's own and an empty setup. Shading edits on the server renderer
+  wait as `map.shadingDrafts`, keyed by `setupKey`.
+- **Presets** (`map/model/mapPreset.ts`) — a named composite layer with its
+  own copies of maps and their setups, bottom first, and its own opacity. In
+  `map.layers` it is one item, `@<id>`; `layerInstancesSelector` flattens the
+  stack into what is drawn, so one map can be drawn on its own and inside
+  presets at once, each with its setup. `Layers.tsx` draws a preset's layers
+  in a `PresetPane`, which carries its place and opacity. A preset with a base
+  map is the base item (`mapPresetToggle` replaces the base like
+  `mapToggleLayer`); one without is an overlay item. Edits inside apply to the
+  preset at once (`mapLayerSetupChange` with `preset`, `mapPresetLayerAdd`/
+  `Remove`, `mapOverlayMove` with `preset`). The data layers are never in a
+  preset (`isPresettable`), nor is another preset or an offline map, and a
+  preset holds each map once: `capturePreset` merges a map drawn twice
+  (`mergeLayers`: WMS layers and shading components joined, the lower's
+  first). Deleting a custom or offline map takes it out of every preset too
+  (`dropMap`), and `mapReplaceLayer` (the legacy-map warning) replaces it in
+  presets as on the map. Code asking which maps are drawn reads
+  `drawnTypesSelector`, not `map.layers`.
+- **Links and documents carry presets inline** — `inlinePresets` numbers them
+  (`@<n>` in `layers=`, `p.<n>…` params, `layerSetupUrl.ts`); on reading,
+  `adoptPresets` maps one alike to one of the account's back to it (compared
+  as a link writes them, `sameInLink`), the rest become `map.linkPresets`
+  (`~<n>`), which the panel offers to save as the account's own.
+- **Overlay stack** — `map.layers` order (bottom first) is the stack.
+  `overlayStackSelector` lists the overlays a list may name (installed or on,
+  the user's own, overlay presets on the map) and says which may move: the
+  non-pinned ones on the map.
   `overlayStack` (`map/model/overlayStack.ts`) puts pinned ones
   (`isPinnedOverlay`: photos, Wikipedia, the data layer, which draw partly in
-  panes above every tile overlay) on top, then the order, then any overlay it
-  doesn't name by its default `zIndex` (a custom map's, if set), the later one
+  panes above every tile overlay) on top, then the order, then any overlay not
+  on the map by its default `zIndex` (a custom map's, if set), the later one
   above on a tie. `overlayZIndexSelector` gives each its z-index in
   `Layers.tsx`; tile, WMS-tile and gallery layers apply a changed one through
   `updateGridLayer` (browser-drawn shading too), the radar on every pooled
   frame. The map menu, toolbar and the table list overlays in the same order.
-  Reset to default clears it, and is enabled by a dragged order alone.
 - **The Map layers panel** (`mapSettings/components/MapLayersPanel.tsx`),
   opened by the toolbar button beside the map switcher, lists what is on the
-  map: overlays in `overlayStackSelector` order (dragged as in Installed maps),
-  then the base map. Its open state and expanded row live in
-  `mapLayersPanelStore.ts`, outside Redux, so the toolbar button and
-  `useRevealEditableMaps` (opening it on a WMS or shading map just turned on)
-  share them. A row holds the kind switch, the overlay opacity, the WMS
-  section and the shading editor (`ShadingSection`, its own chunk).
+  map: overlays and overlay presets in `overlayStackSelector` order (dragged
+  with `mapOverlayMove`), then the base item, each with its opacity, and Save
+  as preset (not in embeds). It drills down rather than expanding rows: a
+  preset opens to its own layers, a map to a page of its settings (kind
+  switch, opacity, WMS section, shading editor in its own chunk, colour,
+  Reset), so no other layer shows beside them. Where it is (`PanelPlace`) and
+  whether it is open live in `mapLayersPanelStore.ts`, outside Redux, so the
+  toolbar button and `useRevealEditableMaps` (opening a WMS or shading map
+  just turned on at its settings) share them. The setting controls take a
+  `SetupTarget` — a map, or a preset's copy of it (`layerTarget.ts`).
 - **The WMS section** (`WmsSection.tsx`). An empty pick draws nothing and is
   left out of feature info. It reads the service's capabilities (cached per URL for the page's life) into
-  `WmsLayerTree`, shared with the custom map form, and stores the pick as
-  `layersSettings[type].wmsLayers`, which `Layers.tsx` draws in place of the
-  def's `layers` — for custom maps too, so a toggle is a settings save rather
-  than a map save; `mapCustomLayerSave` clears it. The legend and the map
-  details' feature info ask for the same layers (`withPickedLayers`).
-- **Switched kind** — a library WMS, shading or raster tile map
-  (`canSwitchKind`; a raster base map as an overlay starts at 50% opacity) may
-  be used as the other kind: `layersSettings[type].layer` for the account,
-  `map.linkKinds` from a link's `as-base=` / `as-overlay=` (which wins; only
-  kinds differing from the account's are kept, so a link this browser wrote
-  never outlives a reset; the URL writer emits them for a switched map on
-  screen). `withKind` applies them in `libraryIndexSelector` and in
-  `allLayerEntries`, the two roots every kind is read from, including the
-  toggle reducer. A map switched to an overlay leaves no base map on purpose:
-  neither the URL check nor `ensureBase` adds X then, while a reset or an
-  account sync that switches kinds back keeps one base: the first of several,
-  or X where none is left (`settleBase`). Switching a map to its own kind
-  drops the setting rather than storing it. A
-  base map draws opaque whatever opacity it kept. The library browse view keeps
-  the catalog's kind; offline maps keep the kind they were saved with. Wherever no layer draws, `map.backgroundColor`
-  (a local pref, Leaflet's grey by default) shows.
-- **Linked WMS maps** — Save as custom map from the panel copies a library
-  map as a custom WMS map with `source` set to its id. `withWmsSource`
-  (`shared/mapLibrary/linkedWms.ts`, applied by `resolvedCustomLayersSelector`)
-  takes the server, zooms, tiling and coverage from the source, and
-  `Attribution` its credits; the stored copies of those are the fallback while
-  the source loads, and both load processors fetch sources like offline maps'.
-  The form edits only its name, icon and layers. A hand-made custom WMS map has
-  no `source` and keeps every field.
+  `WmsLayerTree`, shared with the custom map form, and stores the pick as the
+  setup's `wmsLayers`, which `Layers.tsx` draws in place of the
+  def's `layers` — for custom maps too; `mapCustomLayerSave` clears it. The
+  legend and the map details' feature info ask for the same layers
+  (`withTickedLayers`).
+- **Switched kind** — any library or custom map but the data layers
+  (`canSwitchKind`; a raster or vector base map as an overlay starts at 50%, a
+  vector map's opacity set on its canvas container) may be the other kind by
+  its setup's `kind`; a custom map's form sets its default kind, and saving it
+  drops the switch. `withKind` applies it in `libraryIndexSelector`,
+  `resolvedCustomLayersSelector` and `allLayerEntries`; a preset's copy goes
+  by its own setup. A switch on the map may leave no base map, on purpose;
+  `settleBase` puts X under only when a reset, a sync or a deletion took the
+  only one away. A base map has an opacity too, opaque by default (never an
+  overlay's `defaultOpacity`, `resolveLayerOpacity`), the map background
+  showing through it. The library browse view keeps the catalog's
+  kind; offline maps keep the kind they were saved with. Wherever no layer
+  draws, `map.backgroundColor` (a local pref, `#dddddd` by default) shows.
 - **The custom map form** (`CustomMapEditor`) replaces the list in the
   modal while its state carries a request: `setActiveModal({ type:
-  'installed-maps', customMap: { edit?, draft?, addShadingMap?, addCopyOf? } })`
-  — a map or a combination (with an unsaved `draft`, from a too-thin update) to
-  edit, a new shading map or a copy of a WMS map from the Map layers panel, or
-  a new map. Cancel goes where `returnTo` says (a tab, or
-  `null` to close, as from the menu's New custom map), a panel's new map back
-  to the map;
+  'installed-maps', customMap: { edit?, addPreset?, addPresetFrom?, returnTo? }
+  })` — a custom map or preset to edit, a new preset of everything on the map
+  or a copy of a preset — a link's, or a duplicate (from the Map layers panel, either put in place
+  of what it was made of), or a new map. A preset's form holds only its name,
+  icon and how it is reached. A custom map is image tiles, WMS or MapLibre.
+  Cancel goes where `returnTo` says (a tab, or
+  `null` to close, as from the menu's New custom map or the panel);
   Save passes `highlight`, which scrolls Installed maps to that row (it passes
   the filters whatever they are) and
   flashes it (`fm-flash`), as Offline maps' Show in Installed maps does.
   The forms set how a map is reached (toolbar, menu, shortcut:
-  `LayerVisibilityFields`); opacity is only in the table. Offline maps keeps a
+  `LayerVisibilityFields`). Offline maps keeps a
   `highlight` of its own for the map just saved. The form has no `show=`; `show=custom-maps` and <kbd>m</kbd> <kbd>c</kbd> open
   the library.
-- Both lists are split into base maps and overlays, keeping rank order.
+- Available maps is one table too, rows marked by `LayerKindMark`: a search in
+  rank order, browsing by `coversView`, then base maps before overlays, then
+  name.
 - **Every change applies at once.** `mapLayerSettingsChange` (installing
-  included), `mapLayersSettingsReset` (keeps `installed`; asks first), and
-  `mapCustomLayerSave`/`Delete` and `mapCombinationSave`/`Delete` (each with
-  the map's own settings) change the store; `mapSettingsSaveProcessor` then
-  sends the whole account settings — at once, or 500 ms after the last change
-  for an opacity drag, a pending immediate save never being postponed —
+  included), `mapLayerSetupChange`/`Reset`, `mapLayersSettingsReset` (keeps
+  `installed`; asks first), and `mapCustomLayerSave`/`Delete` and
+  `mapPresetSave`/`Delete` (each with the map's own settings) change the store;
+  `mapSettingsSaveProcessor` then
+  sends the whole account settings — at once, or 500 ms after the last setup
+  change (an opacity drag), a pending immediate save never being postponed —
   through `queueSettingsSave` (`src/app/store/settingsSaveQueue.ts`), the
   queue `saveSettingsProcessor` uses too: the API replaces settings whole, so
   saves must land in order. Each sends the state at its turn, so none is
@@ -244,16 +265,15 @@ A catalog map is not in `mapIndex`; it works once the map slice knows it.
   unrendered.
 - **`libraryIndexSelector`** — `mapIndex` plus the known catalog maps. The
   definition selectors, `allLayerEntries` (so the reducer's base/overlay
-  decision), `YourMapsList`, the combination pickers, keyboard shortcuts,
+  decision), `YourMapsList`, keyboard shortcuts,
   the search box and `list-map-layers` read it. Names read `def.name` before
   `mapLayers.letters`.
 - **Links** — `layers=` keeps a catalog id unchecked (the catalog loads after
   the link is read) and writes it back; a lone one is written with a trailing
   `~` (`layers=XSOR7~`), as legacy concatenated links (`XSJ17` = X, S, J1, 7)
-  share its alphabet. A link whose only candidate base is an unresolved catalog
-  id gets no `X` (`isUnresolvedCatalogId` in `catalogResolution.ts`; ids the
-  catalog lacked are resolved); `catalogBaseProcessor` adds `X` once none can
-  still turn out a base.
+  share its alphabet, and so is a lone preset (`layers=@1~`). A link is read as
+  written: one without a base map opens without one, the map background
+  showing.
 - **Names** — `layerName(def, m)` (`src/shared/layerName.ts`): a custom or
   catalog map's own name, else the translation.
 - **Icons** — `catalogIcon(category)`, one per ELI category.
@@ -309,20 +329,17 @@ the ids and templates.
   case (`WKA`/`wka`, `I`/`i`), which collides on case-insensitive file systems.
   The renderer overlays (`rendererOverlay.ts`) and MapTiler styles
   (`maptiler.ts`) share factories.
-- **Bundled maps** — `X`, `S`, `O`, `h` and the feature layers `I`, `w`, `v`,
+- **Bundled maps** — `X`, `S`, `O`, `h`, `c` and the feature layers `I`, `w`, `v`,
   `R`, `i` are imported statically (`bundled:`), so they are present from the
   first render. The other 26 are one rspack chunk each (~2.4 KB).
 - **Types** — `MapIndexEntry`, `MapBody`, `LayerTechnology` in
   `src/shared/mapDefinitions.tsx`, which keeps the shared types, credits
   (`FM_ATTR`, `NLC_ATTR`, …), `OUTDOOR_COUNTRIES`/`OUTDOOR_BBOX`,
-  `rendererTileUrl`, `LAYER_ALIASES`, `SHADING_SOURCE`. Shading helpers
-  (`hasSharedShadingLayer`, `withShadingSource`) live in
-  `src/shared/mapLibrary/shadingLayers.ts`; in `mapDefinitions.tsx` they would
-  form an import cycle with `mapIndex`.
+  `rendererTileUrl`, `LAYER_ALIASES`, `SHADING_SOURCE`.
 - **Store** — `src/features/mapLibrary/model/`: the `mapLibrary` slice holds
   `bodies` (seeded with `bundledBodies`), and `mapLibraryLoadProcessor` loads
-  the bodies of installed maps, maps on the map, offline maps' sources and the
-  shading source. Built-in maps are installed by default, but for those whose
+  the bodies of installed maps, maps on the map and offline maps' sources.
+  Built-in maps are installed by default, but for those whose
   index row has `defaultInstalled: false` and, on freemap.eu, those of
   Slovakia alone (`uninstalledByDefault` in `installed.ts`, until the user sets
   anything for one), so their bodies load at startup — one small chunk each, which HTTP/3 multiplexes cheaply. A failed
@@ -333,9 +350,8 @@ the ids and templates.
     not. Use for lookups by id (sources of offline maps, opacity, shading).
   - `integratedLayerDefsSelector` — loaded maps that are **offered** (installed
     or on), in index order. Use for lists.
-  - `shadingSourceSelector` — the `h` body custom shading maps draw.
   - Code that must know **every** map regardless of loading (ids, base vs
-    overlay, links, shortcuts, legacy warnings, combinations) reads `mapIndex`.
+    overlay, links, shortcuts, legacy warnings, presets) reads `mapIndex`.
 - **Premium gate** — `downloadTiles` awaits `loadIntegratedLayerDef(sourceType)`
   rather than reading the store, so an unloaded source can't skip the gate.
 - **Offline map on its source** — online with the network fallback on, a cached

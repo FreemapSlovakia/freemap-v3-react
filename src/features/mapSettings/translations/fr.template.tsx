@@ -6,11 +6,7 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   useAsBaseMap: 'Utiliser comme carte de base',
   useAsOverlay: 'Utiliser comme surcouche',
-  basedOn: 'Basée sur',
-  turnOff: 'Désactiver',
   wmsLayers: {
-    reset: 'Couches par défaut',
-    saveAsCustomMap: 'Enregistrer comme carte personnalisée',
     search: 'Rechercher des couches',
     selectAll: 'Tout sélectionner',
     deselectAll: 'Tout désélectionner',
@@ -33,7 +29,7 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     fromLibrary: 'De la bibliothèque',
     custom: 'Personnalisées',
     offline: 'Hors ligne',
-    combinations: 'Combinaisons',
+    presets: 'Préréglages',
     shownIn: 'Affichées',
     toolbar: 'Dans la barre',
     menu: 'Dans le menu',
@@ -67,13 +63,13 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       Modifier la carte personnalisée <i>{name}</i>
     </>
   ),
-  modifyCombinationTitle: (name) => (
+  modifyPresetTitle: (name) => (
     <>
-      Modifier la combinaison de cartes <i>{name}</i>
+      Modifier le préréglage de carte <i>{name}</i>
     </>
   ),
   resetConfirm:
-    'Rétablir les réglages par défaut de barre d’outils, de menu, d’opacité et de raccourcis de toutes les cartes ? Les cartes installées restent installées.',
+    'Rétablir les réglages par défaut de barre d’outils, de menu et de raccourcis de toutes les cartes, ainsi que leur configuration (opacité, couches, ombrage…) ? Les cartes installées restent installées.',
   downloadOffline: 'Télécharger pour une utilisation hors ligne',
   keepOnMap: 'Garder sur la carte',
   backToLibrary: 'Retour à la bibliothèque',
@@ -83,17 +79,21 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   keyboardShortcut: 'Raccourci clavier',
   saveSuccess: 'Les paramètres ont été enregistrés.',
   customMapSaved: 'La carte personnalisée a été enregistrée.',
-  shadingMapHint:
-    "Les paramètres de l'ombrage se règlent et s'enregistrent dans le panneau qui apparaît une fois cette carte activée.",
-  combination: 'Combinaison de cartes',
-  combinationSaved: 'La combinaison de cartes a été enregistrée.',
-  updateFromCurrentMap: 'Mettre à jour depuis la carte actuelle',
-  baseMap: 'Carte de base',
+  preset: 'Préréglage de carte',
+  presetSaved: 'Le préréglage de carte a été enregistré.',
+  newPreset: 'Nouveau préréglage de carte',
+  saveAsPreset: 'Enregistrer comme préréglage',
+  saveLayersAsPreset: 'Enregistrer les couches comme préréglage',
+  saveLayersAsPresetHint:
+    'Un nouveau préréglage fait de copies des cartes affichées, les préréglages décomposés.',
+  duplicatePreset: 'Dupliquer',
+  openPreset: 'Afficher sur la carte',
+  addMap: 'Ajouter une carte',
+  presetEmpty: 'Aucune couche.',
+  presetHint:
+    'Ses couches se modifient sur la carte : ouvrez le préréglage dans le panneau Couches de la carte. Chaque changement est enregistré aussitôt.',
   baseMaps: 'Cartes de base',
   overlays: 'Couches de superposition',
-  addOverlay: 'Ajouter une couche de superposition…',
-  noOverlays: 'Aucune couche de superposition.',
-  combinationTooSmall: 'Au moins deux couches sont requises.',
 };
 
 export default fr;

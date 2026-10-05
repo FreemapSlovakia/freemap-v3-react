@@ -1,29 +1,25 @@
-import { setActiveModal } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
-  mapCustomLayerSave,
-  mapSetShading,
+  mapLayerSetupChange,
   mapSetShadingDraft,
   mapSetShadingOnServer,
-  mapSetSharedShadingDraft,
+  type SetupTarget,
 } from '@features/map/model/actions.js';
+import { DEFAULT_SHADING, setupKey } from '@features/map/model/layerSetup.js';
+import { useTargetSetup } from '@features/mapSettings/layerTarget.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
-import { type CustomLayerDef, SHADING_SOURCE } from '@shared/mapDefinitions.js';
+import { SHADING_SOURCE } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { produce } from 'immer';
 import { type ReactElement, useState } from 'react';
 import { Button, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { FaCheck, FaUndo } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
 import { createDefaultShadingComponent } from '../model/createShadingComponent.js';
 import {
-  effectiveShading,
   hasBackground,
   type Shading,
   type ShadingComponent,
@@ -56,66 +52,44 @@ const newComponentId = () => Math.random();
 const hasWebGpu = 'gpu' in navigator;
 
 type Props = {
-  /** A shading layer on the map: a custom map with shading of its own, else the shared shading's. */
-  type: string;
+  /** The shading map whose setup this edits: its own, or a preset's copy. */
+  target: SetupTarget;
 };
 
-/** The shading editor, for one shading layer on the map. */
-export default function ShadingSection({ type }: Props): ReactElement {
-  const m = useMessages();
-
+/** The shading editor, for a shading map's setup. */
+export default function ShadingSection({ target }: Props): ReactElement {
   const sm = useShadingMessages();
 
-  const sharedShading = useAppSelector((state) => state.map.shading);
+  const applied = useTargetSetup(target)?.shading ?? DEFAULT_SHADING;
 
-  const drafts = useAppSelector((state) => state.map.shadingDrafts);
+  const draft = useAppSelector(
+    (state) => state.map.shadingDrafts[setupKey(target)],
+  );
 
-  const sharedDraft = useAppSelector((state) => state.map.sharedShadingDraft);
+  // Unique among the panel's controls.
+  const type = setupKey(target);
 
   const onServer = useAppSelector((state) => state.map.shadingOnServer);
 
-  const canSaveSettings = useCanSaveSettings();
-
-  // A custom map with shading of its own; any other shading layer shares
-  // `map.shading`.
-  const targetDef = useAppSelector((state) =>
-    state.map.customLayers.find(
-      (def): def is CustomLayerDef & { technology: 'parametricShading' } =>
-        def.type === type &&
-        def.technology === 'parametricShading' &&
-        Boolean(def.shading),
-    ),
-  );
-
-  const draft = targetDef && drafts[targetDef.type];
-
-  const shading = targetDef
-    ? effectiveShading(targetDef, drafts, sharedShading)
-    : (sharedDraft ?? sharedShading);
+  const shading = draft ?? applied;
 
   const showsBackground = hasBackground(shading);
 
-  // Every shading layer draws the terrain of the one built-in source.
+  // Every shading map draws the terrain of the one built-in source.
   const colorReliefMax = colorReliefMaxElevation([SHADING_SOURCE]);
 
   const dispatch = useDispatch();
 
+  const apply = (next: Shading) =>
+    dispatch(mapLayerSetupChange({ ...target, setup: { shading: next } }));
+
+  // Rendered on the server, edits wait for Apply; in the browser they show as made.
   function setShading(next: Shading) {
-    dispatch(
-      targetDef
-        ? mapSetShadingDraft({ type: targetDef.type, shading: next })
-        : onServer
-          ? mapSetSharedShadingDraft(next)
-          : mapSetShading(next),
-    );
-  }
-
-  function handleSave() {
-    if (!targetDef || !draft) {
-      return;
+    if (onServer) {
+      dispatch(mapSetShadingDraft({ ...target, shading: next }));
+    } else {
+      apply(next);
     }
-
-    dispatch(mapCustomLayerSave({ def: { ...targetDef, shading: draft } }));
   }
 
   const [pickedId, setId] = useState<number>();
@@ -208,11 +182,7 @@ export default function ShadingSection({ type }: Props): ReactElement {
     const next = shadingPreset(preset, newComponentId);
 
     // Applied at once, even where edits otherwise wait for Apply.
-    if (targetDef) {
-      setShading(next);
-    } else {
-      dispatch(mapSetShading(next));
-    }
+    apply(next);
 
     setId(undefined);
   }
@@ -228,24 +198,6 @@ export default function ShadingSection({ type }: Props): ReactElement {
 
     setModalKind(null);
   }
-
-  // The shared shading's edits wait for Apply while the server renders them.
-  const applies = !targetDef && onServer;
-
-  // Shading whose edits wait for a commit. Its buttons stay, disabled while
-  // there is nothing to commit, so editing never shifts the layout.
-  const committable = applies || Boolean(targetDef);
-
-  const canSaveAsMap = !window.fmEmbedded && !targetDef;
-
-  const saveAsMap = () =>
-    dispatch(
-      setActiveModal({
-        type: 'installed-maps',
-        // What is being edited, unapplied changes included.
-        customMap: { addShadingMap: { shading } },
-      }),
-    );
 
   return (
     <>
@@ -327,82 +279,30 @@ export default function ShadingSection({ type }: Props): ReactElement {
         />
       )}
 
-      {(committable || canSaveAsMap) && (
+      {/* Stays, disabled while there is nothing to apply, so editing never
+          shifts the layout. */}
+      {onServer && (
         <div className={`d-flex flex-wrap gap-1 pt-2 mt-2 ${classes.footer}`}>
-          {applies && (
-            <>
+          <Button
+            variant="primary"
+            disabled={!draft}
+            onClick={() => draft && apply(draft)}
+          >
+            <FaCheck /> {sm?.apply}
+          </Button>
+
+          <LongPressTooltip label={sm?.revert}>
+            {({ props }) => (
               <Button
-                variant="primary"
-                disabled={!sharedDraft}
-                onClick={() =>
-                  sharedDraft && dispatch(mapSetShading(sharedDraft))
-                }
+                variant="secondary"
+                disabled={!draft}
+                onClick={() => dispatch(mapSetShadingDraft(target))}
+                {...props}
               >
-                <FaCheck /> {sm?.apply}
+                <FaUndo />
               </Button>
-
-              <LongPressTooltip label={sm?.revert}>
-                {({ props }) => (
-                  <Button
-                    variant="secondary"
-                    disabled={!sharedDraft}
-                    onClick={() =>
-                      dispatch(mapSetSharedShadingDraft(undefined))
-                    }
-                    {...props}
-                  >
-                    <FaUndo />
-                  </Button>
-                )}
-              </LongPressTooltip>
-            </>
-          )}
-
-          {targetDef && (
-            <>
-              <Button
-                variant="primary"
-                disabled={!draft || !canSaveSettings}
-                onClick={handleSave}
-              >
-                <FaCheck /> {m?.general.save}
-              </Button>
-
-              <LongPressTooltip label={sm?.revert}>
-                {({ props }) => (
-                  <Button
-                    variant="secondary"
-                    disabled={!draft}
-                    onClick={() => dispatch(mapSetShadingDraft({ type }))}
-                    {...props}
-                  >
-                    <FaUndo />
-                  </Button>
-                )}
-              </LongPressTooltip>
-            </>
-          )}
-
-          {/* Named in full when it is the only button. */}
-          {canSaveAsMap &&
-            (committable ? (
-              <LongPressTooltip label={m?.mapLayers.saveAsShadingMap}>
-                {({ props }) => (
-                  <Button
-                    variant="secondary"
-                    className="ms-auto"
-                    onClick={saveAsMap}
-                    {...props}
-                  >
-                    <MdDashboardCustomize />
-                  </Button>
-                )}
-              </LongPressTooltip>
-            ) : (
-              <Button variant="secondary" onClick={saveAsMap}>
-                <MdDashboardCustomize /> {m?.mapLayers.saveAsShadingMap}
-              </Button>
-            ))}
+            )}
+          </LongPressTooltip>
         </div>
       )}
 

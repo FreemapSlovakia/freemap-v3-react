@@ -76,18 +76,14 @@ import {
   locateOnceProcessor,
 } from '@features/location/model/locateOnceProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
-import { combinationMarkerProcessor } from '@features/map/model/processors/combinationMarkerProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
-import { mapApplyCombinationProcessor } from '@features/map/model/processors/mapApplyCombinationProcessor.js';
 import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
 import { mapSettingsSaveProcessor } from '@features/map/model/processors/mapSettingsSaveProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
+import { overlayPlacementProcessor } from '@features/map/model/processors/overlayPlacementProcessor.js';
 import { exportMapFeaturesProcessor } from '@features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.js';
-import {
-  catalogBaseProcessor,
-  catalogMapsLoadProcessor,
-} from '@features/mapLibrary/model/processors/catalogMapsLoadProcessor.js';
+import { catalogMapsLoadProcessor } from '@features/mapLibrary/model/processors/catalogMapsLoadProcessor.js';
 import { mapLibraryLoadProcessor } from '@features/mapLibrary/model/processors/mapLibraryLoadProcessor.js';
 import {
   mapLibraryPreviewEndProcessor,
@@ -182,7 +178,6 @@ export const processors = [
   cancelProcessor,
   mapLibraryLoadProcessor,
   catalogMapsLoadProcessor,
-  catalogBaseProcessor,
   mapSettingsSaveProcessor,
   mapLibraryPreviewStartProcessor,
   mapLibraryPreviewEndProcessor,
@@ -225,8 +220,7 @@ export const processors = [
   objectsLookupProcessor,
   osmLoadProcessor,
   mapTypeGaProcessor,
-  mapApplyCombinationProcessor,
-  combinationMarkerProcessor,
+  overlayPlacementProcessor,
   toastsAddProcessor,
   toastsRemoveProcessor,
   toastsRestartTimeoutProcessor,

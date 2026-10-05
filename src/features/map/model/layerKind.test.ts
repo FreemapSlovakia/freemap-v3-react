@@ -2,26 +2,34 @@ import { describe, expect, it } from 'vitest';
 import { kindOverrides, withKind } from './layerKind.js';
 
 describe('layer kind', () => {
-  it("lets a link's kind win over the user's", () => {
+  it('takes the kinds the setups set', () => {
     expect(
-      kindOverrides(
-        { A: { layer: 'overlay' }, B: { layer: 'base' }, C: { opacity: 1 } },
-        { A: 'base' },
-      ),
-    ).toEqual({ A: 'base', B: 'base' });
+      kindOverrides({
+        A: { kind: 'overlay' },
+        B: { kind: 'base' },
+        C: { opacity: 1 },
+      }),
+    ).toEqual({ A: 'overlay', B: 'base' });
   });
 
-  it('switches WMS, shading and tiles, not a vector map', () => {
-    const overrides = { W: 'overlay', V: 'overlay' } as const;
+  it('switches maps, not a data layer', () => {
+    const overrides = { W: 'base', V: 'overlay', I: 'base' } as const;
 
     expect(
-      withKind({ type: 'W', layer: 'base', technology: 'wms' }, overrides),
-    ).toEqual({ type: 'W', layer: 'overlay', technology: 'wms' });
+      withKind({ type: 'W', layer: 'overlay', technology: 'wms' }, overrides),
+    ).toEqual({ type: 'W', layer: 'base', technology: 'wms' });
+
+    // A vector map's background would hide what is beneath, as tiles do.
+    expect(
+      withKind({ type: 'V', layer: 'base', technology: 'maplibre' }, overrides),
+    ).toMatchObject({ layer: 'overlay', defaultOpacity: 0.5 });
 
     expect(
-      withKind({ type: 'V', layer: 'base', technology: 'maplibre' }, overrides)
-        .layer,
-    ).toBe('base');
+      withKind(
+        { type: 'I', layer: 'overlay', technology: 'gallery' },
+        overrides,
+      ).layer,
+    ).toBe('overlay');
   });
 
   it('starts tiles used as an overlay half transparent', () => {

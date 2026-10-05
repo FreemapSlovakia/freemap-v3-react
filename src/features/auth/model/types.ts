@@ -1,8 +1,15 @@
-import { LayerSettingsSchema } from '@features/map/model/actions.js';
 import {
-  MapCombinationArrayCompatSchema,
-  MapCombinationSchema,
-} from '@features/map/model/mapCombination.js';
+  LayerSettingsSchema,
+  LayersSettingsCompatSchema,
+} from '@features/map/model/actions.js';
+import {
+  LayerSetupSchema,
+  LayerSetupsCompatSchema,
+} from '@features/map/model/layerSetup.js';
+import {
+  MapPresetArrayCompatSchema,
+  MapPresetSchema,
+} from '@features/map/model/mapPreset.js';
 import {
   CustomLayerDefArrayCompatSchema,
   CustomLayerDefSchema,
@@ -90,21 +97,25 @@ export type PurchasesResponse = z.infer<typeof PurchasesResponseSchema>;
 
 export const UserSettingsSchema = z.object({
   layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
+  layerSetups: z.record(z.string(), LayerSetupSchema).optional(),
   customLayers: z.array(CustomLayerDefSchema).optional(),
-  mapCombinations: z.array(MapCombinationSchema).optional(),
-  overlayOrder: z.array(z.string()).optional(),
+  presets: z.array(MapPresetSchema).optional(),
   maxZoom: z.number().optional(),
 });
 
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
 
-// Strict UserSettingsSchema with the customLayers field swapped for the
-// lenient compat schema (filters out invalid items, upgrades legacy tile
-// shapes). Use for parsing settings from persisted/server payloads.
+// Strict UserSettingsSchema with the lists swapped for lenient compat schemas
+// (filtering out invalid items, upgrading legacy shapes). Use for parsing
+// settings from persisted/server payloads. A key that doesn't parse is left
+// out on its own: failing the whole object would drop every key, and the next
+// save would then send the defaults over them.
 export const UserSettingsCompatSchema = z.object({
-  ...UserSettingsSchema.shape,
-  customLayers: CustomLayerDefArrayCompatSchema.optional(),
-  mapCombinations: MapCombinationArrayCompatSchema.optional(),
+  layersSettings: LayersSettingsCompatSchema.optional().catch(undefined),
+  layerSetups: LayerSetupsCompatSchema.optional().catch(undefined),
+  customLayers: CustomLayerDefArrayCompatSchema.optional().catch(undefined),
+  presets: MapPresetArrayCompatSchema.optional().catch(undefined),
+  maxZoom: UserSettingsSchema.shape.maxZoom.catch(undefined),
 });
 
 export const UserSchema = z.object({

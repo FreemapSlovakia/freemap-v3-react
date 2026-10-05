@@ -7,7 +7,10 @@ import {
 import type { RootState } from '@app/store/store.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { withTickedLayers } from '@features/map/model/layerSetup.js';
+import { drawnSetupsSelector } from '@features/map/model/selectors.js';
 import {
+  drawnTypesSelector,
   integratedLayerDefsSelector,
   resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
@@ -23,7 +26,6 @@ import {
   isWmsLayerDef,
   type LayerDef,
 } from '@shared/mapDefinitions.js';
-import { withPickedLayers } from '@shared/mapLibrary/linkedWms.js';
 import {
   fetchFeaturesAt,
   type OsmApiFeature,
@@ -102,16 +104,16 @@ export async function handle(
 
   trackMatomo(['trackEvent', 'MapDetails', 'search']);
 
+  const setups = drawnSetupsSelector(getState());
+
   const wmsLayerDefs = [
     ...integratedLayerDefsSelector(getState()),
     ...resolvedCustomLayersSelector(getState()),
   ]
     .filter(isWmsLayerDef)
     // Nothing picked is drawn, and is nothing to ask about either.
-    .filter(
-      (def) => getState().map.layersSettings[def.type]?.wmsLayers?.length !== 0,
-    )
-    .map((def) => withPickedLayers(def, getState().map.layersSettings));
+    .filter((def) => setups[def.type]?.wmsLayers?.length !== 0)
+    .map((def) => withTickedLayers(def, setups));
 
   const wmsLayerTypes = wmsLayerDefs.map((def) => def.type);
 
@@ -145,8 +147,8 @@ export async function handle(
           expectedStatus: 200,
         }).then((res) => res.json()),
 
-    ...getState()
-      .map.layers.filter(
+    ...drawnTypesSelector(getState())
+      .filter(
         (layer) =>
           wmsLayerTypes.includes(layer) &&
           !excludeSources.includes(`wms:${layer}`),

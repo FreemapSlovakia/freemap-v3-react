@@ -1,5 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefsSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { pointToTile } from '@mapbox/tilebelt';
 import { latLonToString } from '@shared/geoutils.js';
@@ -79,7 +82,7 @@ export function ElevationInfo({
 
   const m = useMessages();
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 

@@ -72,7 +72,7 @@ export function Results(): ReactElement {
   );
 
   const opacity = useAppSelector(
-    (state) => state.map.layersSettings['i']?.opacity ?? 1,
+    (state) => state.map.layerSetups['i']?.opacity ?? 1,
   );
 
   const map = useMap();

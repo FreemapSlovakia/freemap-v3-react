@@ -15,7 +15,7 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     fromLibrary: 'Z biblioteki',
     custom: 'Własne',
     offline: 'Offline',
-    combinations: 'Kombinacje',
+    presets: 'Ustawienia wstępne',
     shownIn: 'Widoczne',
     toolbar: 'Na pasku',
     menu: 'W menu',
@@ -49,13 +49,13 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       Edytuj własną mapę <i>{name}</i>
     </>
   ),
-  modifyCombinationTitle: (name) => (
+  modifyPresetTitle: (name) => (
     <>
-      Edytuj kombinację map <i>{name}</i>
+      Edytuj ustawienie wstępne mapy <i>{name}</i>
     </>
   ),
   resetConfirm:
-    'Przywrócić domyślne ustawienia paska narzędzi, menu, przezroczystości i skrótów wszystkich map? Zainstalowane mapy pozostaną zainstalowane.',
+    'Przywrócić domyślne ustawienia paska narzędzi, menu i skrótów wszystkich map oraz ich konfigurację (przezroczystość, warstwy, cieniowanie…)? Zainstalowane mapy pozostaną zainstalowane.',
   downloadOffline: 'Pobierz do użytku offline',
   keepOnMap: 'Zostaw na mapie',
   backToLibrary: 'Wróć do biblioteki',
@@ -66,11 +66,7 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'Ustawienia zostały zapisane.',
   useAsBaseMap: 'Użyj jako mapy bazowej',
   useAsOverlay: 'Użyj jako nakładki',
-  basedOn: 'Na podstawie',
-  turnOff: 'Wyłącz',
   wmsLayers: {
-    reset: 'Domyślne warstwy',
-    saveAsCustomMap: 'Zapisz jako własną mapę',
     search: 'Szukaj warstw',
     selectAll: 'Zaznacz wszystkie',
     deselectAll: 'Odznacz wszystkie',
@@ -78,17 +74,21 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   savingError: ({ err }) =>
     addError(getMessages()!, 'Błąd zapisu ustawień', err),
   customMapSaved: 'Mapa niestandardowa została zapisana.',
-  combinationTooSmall: 'Wymagane są co najmniej dwie warstwy.',
-  shadingMapHint:
-    'Parametry cieniowania ustawia się i zapisuje w panelu, który pojawia się po włączeniu tej mapy.',
-  combination: 'Kombinacja map',
-  combinationSaved: 'Kombinacja map została zapisana.',
-  updateFromCurrentMap: 'Aktualizuj z bieżącej mapy',
-  baseMap: 'Mapa podkładowa',
+  preset: 'Ustawienie wstępne mapy',
+  presetSaved: 'Ustawienie wstępne mapy zostało zapisane.',
+  newPreset: 'Nowe ustawienie wstępne mapy',
+  saveAsPreset: 'Zapisz jako ustawienie wstępne',
+  saveLayersAsPreset: 'Zapisz warstwy jako ustawienie wstępne',
+  saveLayersAsPresetHint:
+    'Nowe ustawienie wstępne z kopii map na mapie, ustawienia wstępne rozłożone.',
+  duplicatePreset: 'Duplikuj',
+  openPreset: 'Pokaż na mapie',
+  addMap: 'Dodaj mapę',
+  presetEmpty: 'Brak warstw.',
+  presetHint:
+    'Jego warstwy edytuje się na mapie: otwórz ustawienie wstępne w panelu Warstwy mapy. Każda zmiana zapisuje się od razu.',
   baseMaps: 'Mapy podkładowe',
   overlays: 'Warstwy nakładkowe',
-  addOverlay: 'Dodaj warstwę nakładkową…',
-  noOverlays: 'Brak warstw nakładkowych.',
 };
 
 export default pl;

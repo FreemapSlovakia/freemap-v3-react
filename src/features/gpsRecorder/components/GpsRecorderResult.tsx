@@ -82,7 +82,7 @@ export default function GpsRecorderResult(): ReactElement | null {
 
   // The interactive-overlay opacity dims the default panes; ours needs it too.
   const opacity = useAppSelector(
-    (state) => state.map.layersSettings['i']?.opacity ?? 1,
+    (state) => state.map.layerSetups['i']?.opacity ?? 1,
   );
 
   useEffect(() => {

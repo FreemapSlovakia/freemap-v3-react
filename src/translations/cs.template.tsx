@@ -371,7 +371,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'značky, symboly, vysvětlivky',
         'modal-about': 'kontakt, e-mail, zpětná vazba',
         'modal-installed-maps':
-          'knihovna map, odinstalovat, nastavení vrstev, vrstvy, správa map, panel nástrojů, nabídka, průhlednost, zkratka, vlastní mapy, vlastní mapa, wms, tms, přidat mapu',
+          'správce map, knihovna map, odinstalovat, nastavení vrstev, vrstvy, správa map, panel nástrojů, nabídka, průhlednost, zkratka, vlastní mapy, vlastní mapa, wms, tms, přidat mapu',
         'modal-available-maps':
           'knihovna map, katalog, instalovat, přidat mapy, další mapy',
         'modal-offline-maps': 'stažené mapy, úložiště',
@@ -394,6 +394,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-7': 'stínování, reliéf, terén, výškopis, lidar',
         'layer-h':
           'stínování, reliéf, terén, výškopis, sklon, orientace, inverze',
+        'layer-c': 'barva, prázdná, pozadí, podklad, výplň, tónování',
         'layer-l1': 'lesní cesty, nlc',
         'layer-l2': 'lesní cesty, nlc',
         'layer-VO': 'vektorová',
@@ -456,6 +457,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
       h: 'Parametrické stínování terénu',
+      c: 'Jednobarevná plocha',
       M: 'Fotografie z Wikimedia Commons',
       WDZ: 'Dřevinné složení',
       WLT: 'Lesní typy',
@@ -490,11 +492,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'různé licence Creative Commons',
     },
+    mapManager: 'Správce map',
     installedMaps: 'Nainstalované mapy',
     availableMaps: 'Dostupné mapy',
     newCustomMap: 'Nová vlastní mapa',
     activate: 'Aktivovat',
-    saveAsShadingMap: 'Uložit jako vlastní mapu',
     layersPanel: 'Vrstvy mapy',
     base: 'Základní vrstvy',
     overlay: 'Překryvné vrstvy',

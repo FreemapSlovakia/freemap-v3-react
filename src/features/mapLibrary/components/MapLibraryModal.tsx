@@ -17,7 +17,7 @@ import { layerLabel } from '@shared/layerName.js';
 import { type ReactElement, useRef, useState } from 'react';
 import { Button, ButtonGroup, Modal, ToggleButton } from 'react-bootstrap';
 import { FaLayerGroup, FaPlus } from 'react-icons/fa';
-import { MdDashboardCustomize, MdLibraryAdd } from 'react-icons/md';
+import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { yourMapsCountSelector } from '../model/selectors.js';
 import {
@@ -76,22 +76,17 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
 
   const yourMapsCount = useAppSelector(yourMapsCountSelector);
 
-  // Nothing to reset while no overlay was dragged and every map has only its
+  // Nothing to reset while no map has a setup and every map has only its
   // install state.
   const isDefault = useAppSelector(
     (state) =>
-      state.map.overlayOrder.length === 0 &&
+      Object.keys(state.map.layerSetups).length === 0 &&
       Object.values(state.map.layersSettings).every((s) =>
         Object.keys(s).every((key) => key === 'installed'),
       ),
   );
 
   const searchRef = useRef<HTMLInputElement>(null);
-
-  const tabTitle =
-    tab === 'available'
-      ? m?.mapLayers.availableMaps
-      : m?.mapLayers.installedMaps;
 
   // The form is headed by the map it edits, or as a new one.
   const editedType = customMapRequest?.edit;
@@ -102,24 +97,27 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
     return def && layerLabel(def, m);
   });
 
-  const editedCombinationName = useAppSelector(
-    (state) => state.map.mapCombinations.find((c) => c.id === editedType)?.name,
+  const editedPresetName = useAppSelector(
+    (state) => state.map.presets.find((p) => p.id === editedType)?.name,
   );
 
+  const newTitle =
+    customMapRequest?.addPreset || customMapRequest?.addPresetFrom
+      ? msm?.newPreset
+      : m?.mapLayers.newCustomMap;
+
   const formTitle =
-    editedCombinationName !== undefined
-      ? msm?.modifyCombinationTitle(editedCombinationName)
+    editedPresetName !== undefined
+      ? msm?.modifyPresetTitle(editedPresetName)
       : editedCustomName !== undefined
         ? msm?.modifyCustomMapTitle(editedCustomName)
-        : m?.mapLayers.newCustomMap;
+        : newTitle;
 
   useDocumentTitle(
     show
       ? customMapRequest
-        ? (editedCombinationName ??
-          editedCustomName ??
-          m?.mapLayers.newCustomMap)
-        : tabTitle
+        ? (editedPresetName ?? editedCustomName ?? newTitle)
+        : m?.mapLayers.mapManager
       : undefined,
   );
 
@@ -145,21 +143,19 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          {customMapRequest ? (
-            <>
-              <MdDashboardCustomize /> {formTitle}
-            </>
-          ) : (
-            <>
-              {tab === 'available' ? <MdLibraryAdd /> : <FaLayerGroup />}{' '}
-              {tabTitle}
-            </>
-          )}
+          <FaLayerGroup /> {m?.mapLayers.mapManager}
         </Modal.Title>
       </Modal.Header>
 
       {customMapRequest ? (
-        <CustomMapEditor request={customMapRequest} />
+        <>
+          {/* What the form edits, under the modal's own title. */}
+          <div className="h5 px-3 pt-3 mb-0">
+            <MdDashboardCustomize /> {formTitle}
+          </div>
+
+          <CustomMapEditor request={customMapRequest} />
+        </>
       ) : (
         <>
           <Modal.Body>

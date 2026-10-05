@@ -1,8 +1,8 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
-import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
+import { layerInstancesSelector } from '@features/map/model/selectors.js';
+import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
 import { osmLoad } from '@features/osm/model/osmActions.js';
-import { isBaseLayerDef } from '@shared/mapDefinitions.js';
 import {
   featureIdsEqual,
   OsmFeatureIdSchema,
@@ -86,7 +86,13 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       }
 
       if (bounds) {
-        const { layers } = getState().map;
+        const defs = integratedLayerDefMapSelector(getState());
+
+        // A preset's layer goes by its own kind, a loose map by its def's.
+        const baseDef = layerInstancesSelector(getState())
+          .filter((inst) => (inst.kind ?? defs[inst.type]?.layer) === 'base')
+          .map((inst) => defs[inst.type])
+          .find((def) => def !== undefined);
 
         await fitMapToBbox(
           dispatch,
@@ -94,9 +100,9 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           {
             maxZoom: Math.min(
               action.payload.result.zoom ?? 18,
-              integratedLayerDefsSelector(getState())
-                .filter(isBaseLayerDef)
-                .find((def) => layers.includes(def.type))?.maxNativeZoom ?? 16,
+              (baseDef && 'maxNativeZoom' in baseDef
+                ? baseDef.maxNativeZoom
+                : undefined) ?? 16,
             ),
           },
         );

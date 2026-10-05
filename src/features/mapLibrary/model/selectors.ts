@@ -6,36 +6,94 @@ import {
   type LayerKind,
   withKind,
 } from '@features/map/model/layerKind.js';
-import { overlayStack } from '@features/map/model/overlayStack.js';
 import {
-  type IntegratedLayerDef,
-  type IsWmsLayerDef,
-  type LayerDef,
-  type MapIndexEntry,
-  SHADING_SOURCE,
+  type LayerKinds,
+  layerKinds,
+  type MapPreset,
+  presetIdOf,
+  presetKind,
+} from '@features/map/model/mapPreset.js';
+import { overlayStack } from '@features/map/model/overlayStack.js';
+import type {
+  IntegratedLayerDef,
+  IsWmsLayerDef,
+  LayerDef,
+  MapIndexEntry,
 } from '@shared/mapDefinitions.js';
 import { catalogIndexEntry } from '@shared/mapLibrary/catalogMap.js';
 import {
   isLayerInstalled,
   isLayerOffered,
 } from '@shared/mapLibrary/installed.js';
-import { withWmsSource } from '@shared/mapLibrary/linkedWms.js';
 import { mapIndex, withBody } from '@shared/mapLibrary/mapIndex.js';
-import { withShadingSource } from '@shared/mapLibrary/shadingLayers.js';
 import { createSelector } from 'reselect';
 
-// As a string, so other settings changing (an opacity drag) leave it equal.
+// As a string, so other setup changes (an opacity drag) leave it equal.
 const kindOverridesKeySelector = createSelector(
-  (state: RootState) => state.map.layersSettings,
-  (state: RootState) => state.map.linkKinds,
-  (layersSettings, linkKinds) =>
-    JSON.stringify(kindOverrides(layersSettings, linkKinds)),
+  (state: RootState) => state.map.layerSetups,
+  (layerSetups) => JSON.stringify(kindOverrides(layerSetups)),
 );
 
-/** The maps switched between base map and overlay, by a link or the user. */
+/** The maps their setups switch between base map and overlay. */
 export const kindOverridesSelector = createSelector(
   kindOverridesKeySelector,
   (key): Readonly<Record<string, LayerKind>> => JSON.parse(key),
+);
+
+/** Each map's own kind, before any switch. */
+export const nativeKindsSelector = createSelector(
+  (state: RootState) => state.map.customLayers,
+  (state: RootState) => state.map.cachedMaps,
+  (state: RootState) => state.map.catalogMaps,
+  (customLayers, cachedMaps, catalogMaps): LayerKinds =>
+    layerKinds([...mapIndex, ...catalogMaps, ...customLayers, ...cachedMaps]),
+);
+
+/** The account's presets and those a link brought, by id. */
+export const presetByIdSelector = createSelector(
+  (state: RootState) => state.map.presets,
+  (state: RootState) => state.map.linkPresets,
+  (presets, linkPresets): Readonly<Record<string, MapPreset>> =>
+    Object.fromEntries(
+      [...linkPresets, ...presets].map((preset) => [preset.id, preset]),
+    ),
+);
+
+/** Each preset's kind, by id. */
+export const presetKindsSelector = createSelector(
+  presetByIdSelector,
+  nativeKindsSelector,
+  (byId, nativeKinds): Readonly<Record<string, LayerKind>> =>
+    Object.fromEntries(
+      Object.values(byId).map((preset) => [
+        preset.id,
+        presetKind(preset, nativeKinds),
+      ]),
+    ),
+);
+
+// As a string first, so the list keeps its identity while only setups change.
+const drawnTypesKeySelector = createSelector(
+  (state: RootState) => state.map.layers,
+  presetByIdSelector,
+  (layers, presetById) =>
+    JSON.stringify([
+      ...new Set(
+        layers.flatMap((item) => {
+          const id = presetIdOf(item);
+
+          return id === undefined
+            ? [item]
+            : (presetById[id]?.layers.map((layer) => layer.type) ?? []);
+        }),
+      ),
+    ]),
+);
+
+/** The maps drawn, each once, whether on their own or in a preset. */
+export const drawnTypesSelector = createSelector(
+  drawnTypesKeySelector,
+  (key): readonly string[] => JSON.parse(key),
 );
 
 /** The built-in maps, then the catalog maps wanted so far, as index rows. */
@@ -72,7 +130,7 @@ export const yourMapsCountSelector = (state: RootState): number =>
   installedLibraryIndexSelector(state).length +
   state.map.customLayers.length +
   state.map.cachedMaps.filter(isCachedMapComplete).length +
-  state.map.mapCombinations.length;
+  state.map.presets.length;
 
 /** Every library map whose body is loaded, by id, offered or not. */
 export const integratedLayerDefMapSelector = createSelector(
@@ -96,7 +154,7 @@ export const integratedLayerDefsSelector = createSelector(
   libraryIndexSelector,
   integratedLayerDefMapSelector,
   (state: RootState) => state.map.layersSettings,
-  (state: RootState) => state.map.layers,
+  drawnTypesSelector,
   (index, defs, layersSettings, layers): IntegratedLayerDef[] =>
     index.flatMap(({ type }) =>
       defs[type] && isLayerOffered(layersSettings, layers, type)
@@ -105,12 +163,6 @@ export const integratedLayerDefsSelector = createSelector(
     ),
 );
 
-/** The built-in shading layer whose terrain custom shading maps draw. */
-export const shadingSourceSelector = (
-  state: RootState,
-): IntegratedLayerDef | undefined =>
-  integratedLayerDefMapSelector(state)[SHADING_SOURCE];
-
 // Partly markers and shapes, in panes above every tile overlay.
 const PINNED_TECHNOLOGIES = new Set(['gallery', 'wikipedia', 'interactive']);
 
@@ -118,70 +170,68 @@ const PINNED_TECHNOLOGIES = new Set(['gallery', 'wikipedia', 'interactive']);
 export const isPinnedOverlay = (technology: string | undefined): boolean =>
   technology !== undefined && PINNED_TECHNOLOGIES.has(technology);
 
-/** Custom layers as drawn: shading and linked WMS maps with their sources' settings. */
+/** The user's own maps, as drawn: of the kind their setups switch them to. */
 export const resolvedCustomLayersSelector = createSelector(
   (state: RootState) => state.map.customLayers,
-  shadingSourceSelector,
-  integratedLayerDefMapSelector,
-  (customLayers, source, defs) =>
-    customLayers.map((def) =>
-      withWmsSource(withShadingSource(def, source), defs),
-    ),
+  kindOverridesSelector,
+  // The form edits the stored kind, the map's default.
+  (customLayers, overrides) =>
+    customLayers.map((def) => withKind(def, overrides)),
 );
 
 export type WmsLayerDef = LayerDef<IsWmsLayerDef, IsWmsLayerDef>;
 
-/** The WMS maps on the map, library and custom (as drawn), in the map's order. */
-export const activeWmsMapsSelector = createSelector(
-  integratedLayerDefMapSelector,
-  resolvedCustomLayersSelector,
-  (state: RootState) => state.map.layers,
-  (defs, customLayers, layers): WmsLayerDef[] =>
-    layers.flatMap((type) => {
-      const def: LayerDef | undefined =
-        defs[type] ?? customLayers.find((def) => def.type === type);
-
-      return def?.technology === 'wms' ? [def as WmsLayerDef] : [];
-    }),
-);
-
 /**
- * The overlays a list may name — installed or on, and the user's own — top
- * first (see `overlayStack`), and those a drag may move: not the pinned ones,
- * nor offline maps, which live on one device while the order is the account's.
+ * The overlays a list may name — installed or on, and the user's own, and the
+ * overlay presets on the map — top first: those on the map in their order
+ * there, the rest slotted in by their default `zIndex` (see `overlayStack`);
+ * and those on the map a drag may move, the pinned ones not.
  */
 export const overlayStackSelector = createSelector(
   integratedLayerDefsSelector,
   resolvedCustomLayersSelector,
   (state: RootState) => state.map.cachedMaps,
-  (state: RootState) => state.map.overlayOrder,
+  (state: RootState) => state.map.layers,
+  presetKindsSelector,
   (
     defs,
     customLayers,
     cachedMaps,
-    order,
+    layers,
+    presetKinds,
   ): { stack: string[]; movable: ReadonlySet<string> } => {
-    const items = [...defs, ...customLayers, ...cachedMaps].flatMap((def) =>
-      def.layer === 'overlay'
-        ? [
-            {
-              type: def.type,
-              zIndex: 'zIndex' in def ? def.zIndex : undefined,
-              pinned: isPinnedOverlay(def.technology),
-            },
-          ]
-        : [],
+    const items = [
+      ...[...defs, ...customLayers, ...cachedMaps].flatMap((def) =>
+        def.layer === 'overlay'
+          ? [
+              {
+                type: def.type,
+                zIndex: 'zIndex' in def ? def.zIndex : undefined,
+                pinned: isPinnedOverlay(def.technology),
+              },
+            ]
+          : [],
+      ),
+      ...layers.flatMap((item) => {
+        const id = presetIdOf(item);
+
+        return id !== undefined && presetKinds[id] === 'overlay'
+          ? [{ type: item, pinned: false }]
+          : [];
+      }),
+    ];
+
+    const onMap = new Set(layers);
+
+    const movable = new Set(
+      items
+        .filter((item) => !item.pinned && onMap.has(item.type))
+        .map((item) => item.type),
     );
 
-    const cached = new Set(cachedMaps.map((cm) => cm.type));
-
     return {
-      stack: overlayStack(items, order),
-      movable: new Set(
-        items
-          .filter((item) => !item.pinned && !cached.has(item.type))
-          .map((item) => item.type),
-      ),
+      stack: overlayStack(items, [...layers].reverse()),
+      movable,
     };
   },
 );

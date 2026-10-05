@@ -5,6 +5,7 @@ import {
   mapReplaceLayer,
   mapSuppressLegacyMapWarning,
 } from '@features/map/model/actions.js';
+import { drawnTypesSelector } from '@features/map/model/selectors.js';
 import {
   type ToastAction,
   toastsAdd,
@@ -15,19 +16,21 @@ import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 const TOAST_PREFIX = 'myMaps.legacyWarning.';
 
 export const legacyMapWarningProcessor: Processor = {
-  stateChangePredicate: (state) =>
-    mapIndex
-      .filter((def) => state.map.layers.includes(def.type) && def.superseededBy)
+  stateChangePredicate: (state) => {
+    const drawn = drawnTypesSelector(state);
+
+    return mapIndex
+      .filter((def) => drawn.includes(def.type) && def.superseededBy)
       .map((def) => def.type)
-      .join(','),
+      .join(',');
+  },
   actionCreator: [mapRefocus, init],
   predicatesOperation: 'OR',
   async handle({ getState, dispatch }) {
-    const {
-      layers,
-      legacyMapWarningSuppressions,
-      tempLegacyMapWarningSuppressions,
-    } = getState().map;
+    const { legacyMapWarningSuppressions, tempLegacyMapWarningSuppressions } =
+      getState().map;
+
+    const layers = drawnTypesSelector(getState());
 
     const justWarned = new Set(
       Object.values(getState().toasts.toasts)

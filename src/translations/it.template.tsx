@@ -374,7 +374,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'simboli, legenda della mappa',
         'modal-about': 'contatti, e-mail, feedback',
         'modal-installed-maps':
-          'libreria di mappe, disinstalla, configurazione dei livelli, livelli, gestisci mappe, barra degli strumenti, menu, opacità, scorciatoia, mappe personalizzate, mappa personalizzata, wms, tms, aggiungi sorgente',
+          'gestione mappe, libreria di mappe, disinstalla, configurazione dei livelli, livelli, gestisci mappe, barra degli strumenti, menu, opacità, scorciatoia, mappe personalizzate, mappa personalizzata, wms, tms, aggiungi sorgente',
         'modal-available-maps':
           'libreria di mappe, catalogo, installa, aggiungi mappe, altre mappe',
         'modal-offline-maps': 'mappe scaricate, archiviazione',
@@ -399,6 +399,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-7': 'ombreggiatura, rilievo, terreno, quota, lidar',
         'layer-h':
           'ombreggiatura, rilievo, terreno, quota, pendenza, esposizione, inversione',
+        'layer-c': 'colore, vuota, sfondo, tinta unita, riempimento',
         'layer-l1': 'strade forestali, nlc',
         'layer-l2': 'strade forestali, nlc',
         'layer-VO': 'vettoriale',
@@ -465,6 +466,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VT: 'Outdoor Vettoriale',
 
       h: 'Ombreggiatura parametrica del terreno',
+      c: 'Colore pieno',
       M: 'Foto di Wikimedia Commons',
       WDZ: 'Composizione arborea',
       WLT: 'Tipi di foresta',
@@ -534,6 +536,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Sovrapposto',
     },
     showMore: 'Mostra più mappe',
+    mapManager: 'Gestione mappe',
     installedMaps: 'Mappe installate',
     availableMaps: 'Mappe disponibili',
     technologies: {
@@ -559,7 +562,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         legacy. Passare alla moderna <b>{messages.mapLayers.letters[to]}</b>?
       </>
     ),
-    saveAsShadingMap: 'Salva come mappa personalizzata',
     layersPanel: 'Livelli della mappa',
   },
 

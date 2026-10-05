@@ -1,5 +1,8 @@
 import { authInitialState } from '@features/auth/model/reducer.js';
-import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
+import {
+  UserSchema,
+  UserSettingsCompatSchema,
+} from '@features/auth/model/types.js';
 import { cachedMapsSettingsInitialState } from '@features/cachedMaps/model/settingsReducer.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
 import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
@@ -23,8 +26,13 @@ import {
   HeadingSourceSchema,
   locationSettingsInitialState,
 } from '@features/location/model/settingsReducer.js';
-import { LayerSettingsSchema } from '@features/map/model/actions.js';
-import { MapCombinationArrayCompatSchema } from '@features/map/model/mapCombination.js';
+import { LayersSettingsCompatSchema } from '@features/map/model/actions.js';
+import { LayerSetupsCompatSchema } from '@features/map/model/layerSetup.js';
+import {
+  MapPresetArrayCompatSchema,
+  presetIdOf,
+  presetItem,
+} from '@features/map/model/mapPreset.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
@@ -73,6 +81,7 @@ import {
   CustomLayerDefArrayCompatSchema,
   resolveLayerAliases,
   resolveLayersSettingsAliases,
+  SHADING_SOURCE,
 } from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import { LatLonSchema } from '@shared/types/common.js';
@@ -88,7 +97,7 @@ export const PersistedAuthSchema = z.object({
   user: z
     .object({
       ...UserSchema.shape,
-      settings: UserSettingsSchema.optional().catch(undefined),
+      settings: UserSettingsCompatSchema.optional().catch(undefined),
     })
     .nullable()
     .optional(),
@@ -99,13 +108,15 @@ export const PersistedMapSchema = z
     lat: z.number(),
     lon: z.number(),
     zoom: z.number(),
-    layers: z.array(z.string()),
-    layersSettings: z.record(z.string(), LayerSettingsSchema),
-    customLayers: CustomLayerDefArrayCompatSchema,
-    mapCombinations: MapCombinationArrayCompatSchema,
-    overlayOrder: z.array(z.string()),
+    // Each left out on its own when it doesn't parse, rather than the whole
+    // slice falling back to its defaults.
+    layers: z.array(z.string()).optional().catch(undefined),
+    layersSettings: LayersSettingsCompatSchema.optional().catch(undefined),
+    layerSetups: LayerSetupsCompatSchema.optional().catch(undefined),
+    customLayers: CustomLayerDefArrayCompatSchema.optional().catch(undefined),
+    presets: MapPresetArrayCompatSchema.optional().catch(undefined),
+    linkPresets: MapPresetArrayCompatSchema.optional().catch(undefined),
     legacyMapWarningSuppressions: z.array(z.string()),
-    shading: ShadingSchema,
     shadingOnServer: z.boolean(),
     maxZoom: z.number(),
     resolutionScale: z.number().nullable(),
@@ -120,13 +131,47 @@ const LegacyMapSchema = z.object({
   overlays: z.string().array(),
 });
 
-// Accepts the legacy `{ mapType, overlays }` shape, mapping it to `{ layers }`.
+const PreSetupsMapSchema = z.object({
+  layersSettings: z
+    .record(z.string(), z.object({ opacity: z.number().optional() }))
+    .optional(),
+  shading: ShadingSchema.optional(),
+});
+
+// Accepts the legacy `{ mapType, overlays }` shape, mapping it to `{ layers }`,
+// and a map from before setups: overlay opacities and the shading moved into
+// the setups of their maps.
 const PersistedMapCompatSchema = z.preprocess((raw) => {
+  if (!raw || typeof raw !== 'object') {
+    return raw;
+  }
+
   const m = LegacyMapSchema.safeParse(raw);
 
-  return m.success && raw && typeof raw === 'object'
+  const withLayers = m.success
     ? { ...raw, layers: [m.data.mapType, ...m.data.overlays] }
     : raw;
+
+  const pre = PreSetupsMapSchema.safeParse(raw);
+
+  if ('layerSetups' in raw || !pre.success) {
+    return withLayers;
+  }
+
+  const layerSetups: Record<string, object> = Object.fromEntries(
+    Object.entries(pre.data.layersSettings ?? {}).flatMap(([type, s]) =>
+      s.opacity === undefined ? [] : [[type, { opacity: s.opacity }]],
+    ),
+  );
+
+  if (pre.data.shading) {
+    layerSetups[SHADING_SOURCE] = {
+      ...layerSetups[SHADING_SOURCE],
+      shading: pre.data.shading,
+    };
+  }
+
+  return { ...withLayers, layerSetups };
 }, PersistedMapSchema);
 
 export const PersistedL10nSchema = z
@@ -433,13 +478,27 @@ const PERSIST: PersistEntry[] = [
     // default, or one browser's storage read by another build — and the map
     // would then sit a fraction off what the store and the URL claim.
     rehydrate: (initial, data) => {
-      const merged = { ...initial, ...data };
+      // A field that didn't parse is undefined, and keeps the default.
+      const merged = {
+        ...initial,
+        ...Object.fromEntries(
+          Object.entries(data).filter(([, value]) => value !== undefined),
+        ),
+      } as typeof initial;
+
+      const presetIds = new Set(
+        [...merged.presets, ...merged.linkPresets].map((p) => p.id),
+      );
 
       return {
         ...merged,
-        layers: resolveLayerAliases(merged.layers),
+        layers: resolveLayerAliases(merged.layers).filter((item) => {
+          const id = presetIdOf(item);
+
+          return id === undefined || presetIds.has(id);
+        }),
         layersSettings: resolveLayersSettingsAliases(merged.layersSettings),
-        overlayOrder: resolveLayerAliases(merged.overlayOrder),
+        layerSetups: resolveLayersSettingsAliases(merged.layerSetups),
         zoom: merged.zoomSnap
           ? Math.round(merged.zoom / merged.zoomSnap) * merged.zoomSnap
           : merged.zoom,
@@ -451,11 +510,14 @@ const PERSIST: PersistEntry[] = [
       lon: m.lon,
       zoom: m.zoom,
       layers: m.layers,
+      layerSetups: m.layerSetups,
       customLayers: m.customLayers,
-      mapCombinations: m.mapCombinations,
-      overlayOrder: m.overlayOrder,
+      presets: m.presets,
+      // Only those still on the map.
+      linkPresets: m.linkPresets.filter((p) =>
+        m.layers.includes(presetItem(p.id)),
+      ),
       legacyMapWarningSuppressions: m.legacyMapWarningSuppressions,
-      shading: m.shading,
       shadingOnServer: m.shadingOnServer,
       maxZoom: m.maxZoom,
       resolutionScale: m.resolutionScale,

@@ -16,7 +16,7 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     fromLibrary: 'Iz knjižnice',
     custom: 'Po meri',
     offline: 'Brez povezave',
-    combinations: 'Kombinacije',
+    presets: 'Prednastavitve',
     shownIn: 'Prikazane',
     toolbar: 'V orodni vrstici',
     menu: 'V meniju',
@@ -50,13 +50,13 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       Uredi zemljevid po meri <i>{name}</i>
     </>
   ),
-  modifyCombinationTitle: (name) => (
+  modifyPresetTitle: (name) => (
     <>
-      Uredi kombinacijo zemljevidov <i>{name}</i>
+      Uredi prednastavitev zemljevida <i>{name}</i>
     </>
   ),
   resetConfirm:
-    'Ponastaviti nastavitve orodne vrstice, menija, prosojnosti in bližnjic vseh zemljevidov na privzete? Nameščeni zemljevidi ostanejo nameščeni.',
+    'Ponastaviti nastavitve orodne vrstice, menija in bližnjic vseh zemljevidov ter njihovo nastavitev (prosojnost, sloji, senčenje…) na privzete? Nameščeni zemljevidi ostanejo nameščeni.',
   downloadOffline: 'Prenesi za uporabo brez povezave',
   keepOnMap: 'Obdrži na karti',
   backToLibrary: 'Nazaj v knjižnico',
@@ -66,30 +66,30 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   keyboardShortcut: 'Bližnjica na tipkovnici',
   saveSuccess: 'Nastavitve so bile shranjene.',
   customMapSaved: 'Zemljevid po meri je bil shranjen.',
-  combinationTooSmall: 'Zahtevani sta vsaj dve plasti.',
-  shadingMapHint:
-    'Parametri senčenja se nastavijo in shranijo v plošči, ki se prikaže, ko vklopite ta zemljevid.',
   useAsBaseMap: 'Uporabi kot osnovni zemljevid',
   useAsOverlay: 'Uporabi kot prekrivni sloj',
-  basedOn: 'Temelji na',
-  turnOff: 'Izklopi',
   wmsLayers: {
-    reset: 'Privzeti sloji',
-    saveAsCustomMap: 'Shrani kot lasten zemljevid',
     search: 'Iskanje slojev',
     selectAll: 'Izberi vse',
     deselectAll: 'Počisti izbiro',
   },
   savingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri shranjevanju nastavitev', err),
-  combination: 'Kombinacija zemljevidov',
-  combinationSaved: 'Kombinacija zemljevidov je bila shranjena.',
-  updateFromCurrentMap: 'Posodobi iz trenutnega zemljevida',
-  baseMap: 'Osnovni zemljevid',
+  preset: 'Prednastavitev zemljevida',
+  presetSaved: 'Prednastavitev zemljevida je bila shranjena.',
+  newPreset: 'Nova prednastavitev zemljevida',
+  saveAsPreset: 'Shrani kot prednastavitev',
+  saveLayersAsPreset: 'Shrani sloje kot prednastavitev',
+  saveLayersAsPresetHint:
+    'Nova prednastavitev iz kopij zemljevidov na zemljevidu, prednastavitve razstavljene.',
+  duplicatePreset: 'Podvoji',
+  openPreset: 'Prikaži na zemljevidu',
+  addMap: 'Dodaj zemljevid',
+  presetEmpty: 'Ni slojev.',
+  presetHint:
+    'Njene sloje urejate na zemljevidu: odprite prednastavitev v plošči Sloji zemljevida. Vsaka sprememba se shrani takoj.',
   baseMaps: 'Osnovni zemljevidi',
   overlays: 'Prekrivni sloji',
-  addOverlay: 'Dodaj prekrivni sloj…',
-  noOverlays: 'Ni prekrivnih slojev.',
 };
 
 export default sl;

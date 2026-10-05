@@ -3,40 +3,33 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { Dispatch } from '@reduxjs/toolkit';
-import { type MapBody, SHADING_SOURCE } from '@shared/mapDefinitions.js';
+import type { MapBody } from '@shared/mapDefinitions.js';
 import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
-import { wmsSources } from '@shared/mapLibrary/linkedWms.js';
 import { mapIndex, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
 import { mapLibraryBodiesLoaded, mapLibraryLoadRetry } from '../actions.js';
+import { drawnTypesSelector } from '../selectors.js';
 
 /**
  * The maps whose bodies are wanted but not loaded, comma-joined: installed
- * ones, ones on the map, sources of offline maps and linked WMS maps, and the
- * shading source.
+ * ones, ones on the map and sources of offline maps.
  */
 const missingTypesSelector = createSelector(
   (state: RootState) => state.mapLibrary.bodies,
   (state: RootState) => state.map.layersSettings,
-  (state: RootState) => state.map.layers,
+  drawnTypesSelector,
   (state: RootState) => state.map.cachedMaps,
-  (state: RootState) => state.map.customLayers,
-  (bodies, layersSettings, layers, cachedMaps, customLayers) => {
-    const linked = wmsSources(customLayers);
-
-    return mapIndex
+  (bodies, layersSettings, layers, cachedMaps) =>
+    mapIndex
       .filter(
         ({ type }) =>
           !bodies[type] &&
           (isLayerInstalled(layersSettings, type) ||
             layers.includes(type) ||
-            type === SHADING_SOURCE ||
-            cachedMaps.some((cm) => cm.sourceType === type) ||
-            linked.includes(type)),
+            cachedMaps.some((cm) => cm.sourceType === type)),
       )
       .map(({ type }) => type)
-      .join(',');
-  },
+      .join(','),
 );
 
 const loading = new Set<string>();
@@ -99,7 +92,9 @@ export const mapLibraryLoadProcessor: Processor = {
 
       // Only a map on screen is worth telling about, an offline map's source
       // included (`Layers` holds that map back); the rest are menu entries.
-      const { layers, cachedMaps } = getState().map;
+      const { cachedMaps } = getState().map;
+
+      const layers = drawnTypesSelector(getState());
 
       const onScreen = new Set([
         ...layers,

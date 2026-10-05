@@ -374,7 +374,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'jelmagyarázat, jelek, szimbólumok',
         'modal-about': 'kapcsolat, e-mail, visszajelzés',
         'modal-installed-maps':
-          'térképtár, eltávolítás, rétegek beállítása, rétegek, térképek kezelése, eszköztár, menü, átlátszóság, gyorsbillentyű, egyéni térképek, saját térkép, wms, tms, térképforrás hozzáadása',
+          'térképkezelő, térképtár, eltávolítás, rétegek beállítása, rétegek, térképek kezelése, eszköztár, menü, átlátszóság, gyorsbillentyű, egyéni térképek, saját térkép, wms, tms, térképforrás hozzáadása',
         'modal-available-maps':
           'térképtár, katalógus, telepítés, térképek hozzáadása, további térképek',
         'modal-offline-maps': 'letöltött térképek, tárhely',
@@ -398,6 +398,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-7': 'domborzatárnyékolás, relief, terep, magasság, lidar',
         'layer-h':
           'domborzatárnyékolás, relief, terep, magasság, lejtő, kitettség, inverzió',
+        'layer-c': 'szín, üres, háttér, egyszínű, színezés, kitöltés',
         'layer-l1': 'erdei utak, nlc',
         'layer-l2': 'erdei utak, nlc',
         'layer-VO': 'vektoros',
@@ -457,6 +458,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VT: 'Outdoor vektoros',
 
       h: 'Paraméteres terepárnyékolás',
+      c: 'Egyszínű felület',
       M: 'Wikimedia Commons fotók',
       WDZ: 'Faállomány-összetétel',
       WLT: 'Erdőtípusok',
@@ -534,6 +536,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Átfedő',
     },
     showMore: 'További térképek megjelenítése',
+    mapManager: 'Térképkezelő',
     installedMaps: 'Telepített térképek',
     availableMaps: 'Elérhető térképek',
     technologies: {
@@ -559,7 +562,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         elavult. Átváltasz a modern <b>{messages.mapLayers.letters[to]}</b>?
       </>
     ),
-    saveAsShadingMap: 'Mentés egyéni térképként',
     layersPanel: 'Térképrétegek',
   },
 

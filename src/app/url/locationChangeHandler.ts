@@ -48,16 +48,22 @@ import {
   gallerySetFilter,
 } from '@features/gallery/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
+import { mapRefocus, mapSetCustomLayers } from '@features/map/model/actions.js';
+import type { LayerSetup } from '@features/map/model/layerSetup.js';
 import {
-  mapRefocus,
-  mapSetCustomLayers,
-  mapSetLinkKinds,
-  mapSetShading,
-} from '@features/map/model/actions.js';
-import type { LayerKind } from '@features/map/model/layerKind.js';
-import { layerKindsSelector } from '@features/map/model/selectors.js';
-import { isUnresolvedCatalogId } from '@features/mapLibrary/catalogResolution.js';
-import { kindOverridesSelector } from '@features/mapLibrary/model/selectors.js';
+  parsePresetParams,
+  parseSetup,
+  presetUrlParts,
+  SETUP_PARAM_PREFIX,
+  sameInLink,
+  serializeSetup,
+} from '@features/map/model/layerSetupUrl.js';
+import {
+  adoptPresets,
+  type MapPreset,
+  presetIdOf,
+  presetItem,
+} from '@features/map/model/mapPreset.js';
 import {
   type MapRestore,
   mapsRestore,
@@ -85,10 +91,7 @@ import {
   serializePanoramaTilt,
   serializePanoramaViewpoint,
 } from '@features/panorama/panoramaUrl.js';
-import {
-  parseShading,
-  serializeShading,
-} from '@features/parameterizedShading/model/Shading.js';
+import { parseShading } from '@features/parameterizedShading/model/Shading.js';
 import { isPremium } from '@features/premium/premium.js';
 import {
   type RoutePoint,
@@ -130,8 +133,10 @@ import {
   ColorizingModeSchema,
 } from '@shared/colorizers/index.js';
 import { isLanguage } from '@shared/langUtils.js';
-import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
-import { hasSharedShadingLayer } from '@shared/mapLibrary/shadingLayers.js';
+import {
+  CustomLayerDefArrayCompatSchema,
+  SHADING_SOURCE,
+} from '@shared/mapDefinitions.js';
 import {
   isMapClickTool,
   isToolAvailable,
@@ -168,6 +173,9 @@ import type { MyStore, RootState } from '../store/store.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 import { setUrlUpdatingEnabled } from './urlUpdating.js';
+
+// As `CustomMapEditor` makes them, or the legacy `.<n>` / `:<n>`.
+const CUSTOM_ID_RE = /^(?:[0-9a-z]{1,6}|[.:]\d+)$/;
 
 function parseQuery(search: string) {
   const q: Record<string, string | string[]> = {};
@@ -627,8 +635,6 @@ export function handleLocationChange(store: MyStore): void {
 
   handleGallery(getState, dispatch, query);
 
-  const mapStateFromUrl = getMapStateFromUrl();
-
   const customLayerDefsStr = query['custom-layers'];
 
   const { customLayers } = getState().map;
@@ -665,81 +671,124 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
-  // Before the layers, whose base map check reads the kinds. Only what differs
-  // from the account's own: a link this browser wrote must not pin the
-  // account's choice past a reset or a change made elsewhere.
-  {
-    const linkKinds: Record<string, LayerKind> = {};
+  // `layers=` names the custom maps it carries in `custom-layers=`. A My Map's
+  // link carries them only in history state, so a fresh tab takes any custom
+  // id on trust: the map's document brings their definitions.
+  const mapStateFromUrl = getMapStateFromUrl(
+    (type) =>
+      customTypes.includes(type) ||
+      (id !== undefined && CUSTOM_ID_RE.test(type)),
+  );
 
-    const { layersSettings } = getState().map;
+  // The presets the link carries: those alike to one of the account's stand
+  // for it, the rest are the link's own.
+  let linkPresets: MapPreset[] | undefined;
 
-    for (const kind of ['base', 'overlay'] as const) {
-      const value = query[`as-${kind}`];
+  if (mapStateFromUrl.layers) {
+    const inline = mapStateFromUrl.layers.flatMap((item) => {
+      const n = presetIdOf(item);
 
-      if (typeof value === 'string') {
-        for (const type of value.split('~')) {
-          if (layersSettings[type]?.layer !== kind) {
-            linkKinds[type] = kind;
-          }
-        }
+      const preset = n === undefined ? undefined : parsePresetParams(query, n);
+
+      return preset ? [preset] : [];
+    });
+
+    const adopted = adoptPresets(
+      mapStateFromUrl.layers,
+      inline,
+      getState().map.presets,
+      '',
+      sameInLink,
+    );
+
+    mapStateFromUrl.layers = adopted.layers;
+
+    linkPresets = adopted.linkPresets;
+  }
+
+  // What the link says of each layer it names; one it says nothing of is at
+  // its defaults, so the link draws what the screen it came from did. A link
+  // from before setups has its shading in `shading=`.
+  let setups: Record<string, LayerSetup> | undefined;
+
+  if (mapStateFromUrl.layers) {
+    setups = {};
+
+    for (const type of mapStateFromUrl.layers) {
+      if (presetIdOf(type) !== undefined) {
+        continue;
       }
-    }
 
-    if (
-      JSON.stringify(linkKinds) !== JSON.stringify(getState().map.linkKinds)
-    ) {
-      dispatch(mapSetLinkKinds(linkKinds));
+      const value = query[`${SETUP_PARAM_PREFIX}${type}`];
+
+      const legacyShading = query['shading'];
+
+      setups[type] =
+        typeof value === 'string'
+          ? parseSetup(value)
+          : type === SHADING_SOURCE && typeof legacyShading === 'string'
+            ? { shading: parseShading(legacyShading) }
+            : {};
     }
   }
 
+  // A link from before `layers=` named custom maps has them on top; one a
+  // preset of the link holds is not on the map on its own. A link without a
+  // base map opens without one, the map background showing.
   if (mapStateFromUrl.layers || customTypes.length) {
-    const layers = mapStateFromUrl.layers ?? [];
+    const named = new Set([
+      ...(mapStateFromUrl.layers ?? []),
+      ...(linkPresets ?? []).flatMap((p) => p.layers.map((l) => l.type)),
+      ...getState().map.presets.flatMap((p) =>
+        mapStateFromUrl.layers?.includes(presetItem(p.id))
+          ? p.layers.map((l) => l.type)
+          : [],
+      ),
+    ]);
 
-    const kinds = layerKindsSelector(getState());
-
-    // `layers=` never names custom layers, so a custom base map counts too.
-    // X goes before them: the URL written back reads it there, and any other
-    // order diffs as a layer change.
-    // A catalog map not loaded yet may be the base; `catalogBaseProcessor`
-    // adds X if it isn't. A map switched to an overlay leaves none on purpose.
-    const overrides = kindOverridesSelector(getState());
-
-    if (
-      ![...layers, ...customTypes].some(
-        (t) =>
-          kinds.get(t) === 'base' ||
-          isUnresolvedCatalogId(t, kinds) ||
-          overrides[t] === 'overlay',
-      )
-    ) {
-      layers.push('X');
-    }
-
-    mapStateFromUrl.layers = [...layers, ...customTypes];
+    mapStateFromUrl.layers = [
+      ...(mapStateFromUrl.layers ?? []),
+      ...customTypes.filter((type) => !named.has(type)),
+    ];
   }
 
   const diff = getMapStateDiffFromUrl(mapStateFromUrl, getState().map);
 
-  if (diff && Object.keys(diff).length) {
-    dispatch(mapRefocus(diff));
+  const { layerSetups } = getState().map;
+
+  // Compared as a link writes them: parsing shading gives its components new
+  // ids, and key order or rounding is no change either.
+  const setupsChanged =
+    setups !== undefined &&
+    Object.entries(setups).some(
+      ([type, setup]) =>
+        serializeSetup(setup) !== serializeSetup(layerSetups[type] ?? {}),
+    );
+
+  const asLinked = (presets: readonly MapPreset[]) =>
+    JSON.stringify(presets.map((p) => [p.id, presetUrlParts(p, '')]));
+
+  const linkPresetsChanged =
+    linkPresets !== undefined &&
+    asLinked(linkPresets) !== asLinked(getState().map.linkPresets);
+
+  if (
+    (diff && Object.keys(diff).length) ||
+    setupsChanged ||
+    linkPresetsChanged
+  ) {
+    dispatch(
+      mapRefocus({
+        ...diff,
+        ...(setupsChanged ? { setups } : {}),
+        ...(linkPresetsChanged ? { linkPresets } : {}),
+      }),
+    );
   }
 
   // After the layers the URL names are on: until here `map.layers` still holds
   // whatever was stored from last time, and the viewshed gates on it.
   handleViewshed(getState, dispatch, query);
-
-  const { shading } = query;
-
-  const map = getState().map;
-
-  if (
-    shading &&
-    !Array.isArray(shading) &&
-    hasSharedShadingLayer(map.layers, map.customLayers) &&
-    shading !== serializeShading(map.shading)
-  ) {
-    dispatch(mapSetShading(parseShading(shading)));
-  }
 
   {
     // Unified modal/overlay param. Legacy `document=`/`tip=`/`image=`/`wmc=`

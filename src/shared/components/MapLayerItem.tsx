@@ -6,7 +6,9 @@ import {
 } from '@shared/components/CustomMapGlyph.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { flaggedCountries } from '@shared/mapDefinitions.js';
+import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
 import { FaHistory } from 'react-icons/fa';
 import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
@@ -28,6 +30,25 @@ export type MapLayerItemDef = {
   experimental?: boolean;
 };
 
+/** Whether a layer is a base map or an overlay, named in a tooltip. */
+export function LayerKindMark({
+  kind,
+}: {
+  kind: 'base' | 'overlay';
+}): ReactElement {
+  const m = useMessages();
+
+  return (
+    <GlyphMarker
+      hint={m?.mapLayers.layer[kind]}
+      color={null}
+      className="opacity-50 flex-shrink-0"
+    >
+      {kind === 'base' ? <TbLayersSelected /> : <TbLayersSelectedBottom />}
+    </GlyphMarker>
+  );
+}
+
 /**
  * A layer's name with the marks that go with it, laid out as a row of its own —
  * it appears in a menu item, in a `<select>`-like toggle and in plain form text,
@@ -36,26 +57,43 @@ export type MapLayerItemDef = {
 export function MapLayerItem({
   def,
   label,
+  truncate,
 }: {
   def: MapLayerItemDef;
   /** Stands in for the resolved name — a search hit shows its matched letters in bold. */
   label?: ReactNode;
+  /** One line, the name cut with an ellipsis, rather than wrapping. */
+  truncate?: boolean;
 }): ReactElement {
   const m = useMessages();
 
+  const name = label ?? layerName(def, m) ?? def.type;
+
   return (
-    <span className="d-inline-flex flex-wrap align-items-center gap-1">
-      {def.layer === 'base' ? (
-        <TbLayersSelected className="opacity-50" />
-      ) : (
-        <TbLayersSelectedBottom className="opacity-50" />
+    <span
+      className={clsx(
+        'd-inline-flex align-items-center gap-1',
+        truncate ? 'mw-100 flex-nowrap' : 'flex-wrap',
       )}
+    >
+      <LayerKindMark kind={def.layer} />
 
       {def.icon ?? (
         <CustomMapGlyph spec={def.iconSpec} kind={customMapKind(def)} />
       )}
 
-      {label ?? layerName(def, m) ?? def.type}
+      {truncate ? (
+        // The full name of one cut short.
+        <LongPressTooltip label={name}>
+          {({ props }) => (
+            <span className="text-truncate" {...props}>
+              {name}
+            </span>
+          )}
+        </LongPressTooltip>
+      ) : (
+        name
+      )}
 
       {flaggedCountries(def)?.map((country) => (
         <CountryFlag key={country} country={country} />

@@ -16,7 +16,7 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     fromLibrary: 'Aus der Bibliothek',
     custom: 'Benutzerdefiniert',
     offline: 'Offline',
-    combinations: 'Kombinationen',
+    presets: 'Voreinstellungen',
     shownIn: 'Angezeigt',
     toolbar: 'In der Werkzeugleiste',
     menu: 'Im Menü',
@@ -50,13 +50,13 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       Benutzerdefinierte Karte <i>{name}</i> bearbeiten
     </>
   ),
-  modifyCombinationTitle: (name) => (
+  modifyPresetTitle: (name) => (
     <>
-      Kartenkombination <i>{name}</i> bearbeiten
+      Kartenvoreinstellung <i>{name}</i> bearbeiten
     </>
   ),
   resetConfirm:
-    'Symbolleisten-, Menü-, Deckkraft- und Tastenkürzel-Einstellungen aller Karten auf die Standardwerte zurücksetzen? Installierte Karten bleiben installiert.',
+    'Symbolleisten-, Menü- und Tastenkürzel-Einstellungen aller Karten und ihre Einrichtung (Deckkraft, Ebenen, Schattierung…) auf die Standardwerte zurücksetzen? Installierte Karten bleiben installiert.',
   downloadOffline: 'Für die Offline-Nutzung herunterladen',
   keepOnMap: 'Auf der Karte lassen',
   backToLibrary: 'Zurück zur Bibliothek',
@@ -67,11 +67,7 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'Einstellungen wurden gespeichert.',
   useAsBaseMap: 'Als Basiskarte verwenden',
   useAsOverlay: 'Als Overlay verwenden',
-  basedOn: 'Basiert auf',
-  turnOff: 'Ausblenden',
   wmsLayers: {
-    reset: 'Standardebenen',
-    saveAsCustomMap: 'Als eigene Karte speichern',
     search: 'Ebenen suchen',
     selectAll: 'Alle auswählen',
     deselectAll: 'Alle abwählen',
@@ -79,17 +75,21 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   savingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Speichern der Einstellungen', err),
   customMapSaved: 'Die benutzerdefinierte Karte wurde gespeichert.',
-  shadingMapHint:
-    'Die Schattierungsparameter werden in dem Bedienfeld eingestellt und gespeichert, das nach dem Aktivieren dieser Karte erscheint.',
-  combination: 'Kartenkombination',
-  combinationSaved: 'Die Kartenkombination wurde gespeichert.',
-  updateFromCurrentMap: 'Aus der aktuellen Karte aktualisieren',
-  baseMap: 'Grundkarte',
+  preset: 'Kartenvoreinstellung',
+  presetSaved: 'Die Kartenvoreinstellung wurde gespeichert.',
+  newPreset: 'Neue Kartenvoreinstellung',
+  saveAsPreset: 'Als Voreinstellung speichern',
+  saveLayersAsPreset: 'Ebenen als Voreinstellung speichern',
+  saveLayersAsPresetHint:
+    'Eine neue Voreinstellung aus Kopien der Karten auf der Karte, Voreinstellungen zerlegt.',
+  duplicatePreset: 'Duplizieren',
+  openPreset: 'Auf der Karte zeigen',
+  addMap: 'Karte hinzufügen',
+  presetEmpty: 'Keine Ebenen.',
+  presetHint:
+    'Ihre Ebenen werden auf der Karte bearbeitet: Öffnen Sie die Voreinstellung im Bedienfeld Kartenebenen. Jede Änderung wird sofort gespeichert.',
   baseMaps: 'Grundkarten',
   overlays: 'Überlagerungsebenen',
-  addOverlay: 'Überlagerungsebene hinzufügen…',
-  noOverlays: 'Keine Überlagerungsebenen.',
-  combinationTooSmall: 'Es sind mindestens zwei Ebenen erforderlich.',
 };
 
 export default de;

@@ -2,14 +2,16 @@ import type { RootState } from '@app/store/store.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
 import {
   mapFitBbox,
+  mapPresetToggle,
   mapRefocus,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
-import { withoutMarkers } from '@features/map/model/mapCombination.js';
+import { presetIdOf } from '@features/map/model/mapPreset.js';
 import { resolvedCustomLayersSelector } from '@features/map/model/selectors.js';
 import {
   integratedLayerDefMapSelector,
   libraryIndexSelector,
+  presetKindsSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { layerName } from '@shared/layerName.js';
 import type { IntegratedLayerDef } from '@shared/mapDefinitions.js';
@@ -108,7 +110,7 @@ export const mapTools = [
           east: map.bounds[2],
           north: map.bounds[3],
         },
-        layers: withoutMarkers(map.layers),
+        layers: map.layers,
         countries: map.countries,
         url: window.location.href,
       };
@@ -217,8 +219,16 @@ export const mapTools = [
             .map((layer) => layer.code),
         );
 
+        const presetKinds = presetKindsSelector(state);
+
         for (const code of store.getState().map.layers) {
-          if (isOverlay.has(code) && !wanted.has(code)) {
+          const presetId = presetIdOf(code);
+
+          if (presetId !== undefined) {
+            if (presetKinds[presetId] === 'overlay') {
+              store.dispatch(mapPresetToggle({ id: presetId, enable: false }));
+            }
+          } else if (isOverlay.has(code) && !wanted.has(code)) {
             store.dispatch(mapToggleLayer({ type: code, enable: false }));
           }
         }
@@ -228,7 +238,7 @@ export const mapTools = [
         }
       }
 
-      return { layers: withoutMarkers(store.getState().map.layers) };
+      return { layers: store.getState().map.layers };
     },
   }),
 ];

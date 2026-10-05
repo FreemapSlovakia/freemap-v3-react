@@ -16,7 +16,7 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     fromLibrary: 'Dalla libreria',
     custom: 'Personalizzate',
     offline: 'Offline',
-    combinations: 'Combinazioni',
+    presets: 'Preimpostazioni',
     shownIn: 'Mostrate',
     toolbar: 'Nella barra',
     menu: 'Nel menu',
@@ -50,13 +50,13 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       Modifica mappa personalizzata <i>{name}</i>
     </>
   ),
-  modifyCombinationTitle: (name) => (
+  modifyPresetTitle: (name) => (
     <>
-      Modifica combinazione di mappe <i>{name}</i>
+      Modifica preimpostazione di mappa <i>{name}</i>
     </>
   ),
   resetConfirm:
-    'Ripristinare le impostazioni di barra degli strumenti, menu, opacità e scorciatoie di tutte le mappe? Le mappe installate restano installate.',
+    'Ripristinare le impostazioni di barra degli strumenti, menu e scorciatoie di tutte le mappe e la loro configurazione (opacità, livelli, ombreggiatura…)? Le mappe installate restano installate.',
   downloadOffline: 'Scarica per l’uso offline',
   keepOnMap: 'Tieni sulla mappa',
   backToLibrary: 'Torna alla libreria',
@@ -67,11 +67,7 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'Impostazioni salvate.',
   useAsBaseMap: 'Usa come mappa di base',
   useAsOverlay: 'Usa come livello sovrapposto',
-  basedOn: 'Basata su',
-  turnOff: 'Disattiva',
   wmsLayers: {
-    reset: 'Livelli predefiniti',
-    saveAsCustomMap: 'Salva come mappa personalizzata',
     search: 'Cerca livelli',
     selectAll: 'Seleziona tutti',
     deselectAll: 'Deseleziona tutti',
@@ -79,17 +75,21 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   savingError: ({ err }) =>
     addError(getMessages()!, 'Errore nel salvataggio delle impostazioni:', err),
   customMapSaved: 'La mappa personalizzata è stata salvata.',
-  shadingMapHint:
-    "I parametri dell'ombreggiatura si impostano e si salvano nel pannello che compare dopo aver attivato questa mappa.",
-  combination: 'Combinazione di mappe',
-  combinationSaved: 'La combinazione di mappe è stata salvata.',
-  updateFromCurrentMap: 'Aggiorna dalla mappa attuale',
-  baseMap: 'Mappa di base',
+  preset: 'Preimpostazione di mappa',
+  presetSaved: 'La preimpostazione di mappa è stata salvata.',
+  newPreset: 'Nuova preimpostazione di mappa',
+  saveAsPreset: 'Salva come preimpostazione',
+  saveLayersAsPreset: 'Salva i livelli come preimpostazione',
+  saveLayersAsPresetHint:
+    'Una nuova preimpostazione con copie delle mappe sulla mappa, le preimpostazioni scomposte.',
+  duplicatePreset: 'Duplica',
+  openPreset: 'Mostra sulla mappa',
+  addMap: 'Aggiungi mappa',
+  presetEmpty: 'Nessun livello.',
+  presetHint:
+    'I suoi livelli si modificano sulla mappa: apri la preimpostazione nel pannello Livelli della mappa. Ogni modifica si salva subito.',
   baseMaps: 'Mappe di base',
   overlays: 'Livelli sovrapposti',
-  addOverlay: 'Aggiungi livello sovrapposto…',
-  noOverlays: 'Nessun livello sovrapposto.',
-  combinationTooSmall: 'Sono necessari almeno due livelli.',
 };
 
 export default it;

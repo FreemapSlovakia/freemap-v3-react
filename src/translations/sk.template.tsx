@@ -397,7 +397,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'značky, symboly, vysvetlivky',
         'modal-about': 'kontakt, e-mail, spätná väzba',
         'modal-installed-maps':
-          'knižnica máp, odinštalovať, nastavenie vrstiev, vrstvy, správa máp, panel nástrojov, menu, priehľadnosť, skratka, vlastné mapy, vlastná mapa, wms, tms, pridať mapu',
+          'správca máp, knižnica máp, odinštalovať, nastavenie vrstiev, vrstvy, správa máp, panel nástrojov, menu, priehľadnosť, skratka, vlastné mapy, vlastná mapa, wms, tms, pridať mapu',
         'modal-available-maps':
           'knižnica máp, katalóg, inštalovať, pridať mapy, ďalšie mapy',
         'modal-offline-maps': 'stiahnuté mapy, úložisko',
@@ -420,6 +420,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-7': 'tieňovanie, reliéf, terén, výškopis, lidar',
         'layer-h':
           'tieňovanie, reliéf, terén, výškopis, sklon, orientácia, inverzia',
+        'layer-c': 'farba, prázdna, pozadie, podklad, výplň, tónovanie',
         'layer-l1': 'lesné cesty, nlc',
         'layer-l2': 'lesné cesty, nlc',
         'layer-VO': 'vektorová',
@@ -481,6 +482,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
       h: 'Parametrické tieňovanie terénu',
+      c: 'Jednofarebná plocha',
       WDZ: 'Drevinové zloženie',
       WLT: 'Lesné typy',
       WGE: 'Geologická',
@@ -514,11 +516,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'rôzne licencie Creative Commons',
     },
+    mapManager: 'Správca máp',
     installedMaps: 'Nainštalované mapy',
     availableMaps: 'Dostupné mapy',
     newCustomMap: 'Nová vlastná mapa',
     activate: 'Aktivovať',
-    saveAsShadingMap: 'Uložiť ako vlastnú mapu',
     layersPanel: 'Vrstvy mapy',
     base: 'Základné vrstvy',
     overlay: 'Prekryvné vrstvy',

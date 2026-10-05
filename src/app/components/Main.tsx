@@ -23,6 +23,7 @@ import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { MapAreaSelectionResult } from '@features/mapArea/components/MapAreaSelectionResult.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
+import { drawnTypesSelector } from '@features/mapLibrary/model/selectors.js';
 import {
   useMapLayersPanel,
   useRevealEditableMaps,
@@ -603,7 +604,7 @@ export function Main(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   // Where the embedder hides the map switcher, its button and panel go too.
   const layersPanelAllowed = useAppSelector(

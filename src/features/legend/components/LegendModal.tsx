@@ -1,7 +1,10 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { withTickedLayers } from '@features/map/model/layerSetup.js';
+import { drawnSetupsSelector } from '@features/map/model/selectors.js';
 import {
+  drawnTypesSelector,
   integratedLayerDefMapSelector,
   libraryIndexSelector,
   resolvedCustomLayersSelector,
@@ -10,7 +13,6 @@ import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerName } from '@shared/layerName.js';
 import { RENDERER_ROUTES } from '@shared/mapDefinitions.js';
-import { withPickedLayers } from '@shared/mapLibrary/linkedWms.js';
 import { type ReactElement, useMemo, useState } from 'react';
 import { Accordion, Button, Modal } from 'react-bootstrap';
 import { FaExternalLinkAlt, FaList, FaTimes } from 'react-icons/fa';
@@ -33,7 +35,7 @@ export default function LegendModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   const customLayers = useAppSelector((state) => state.map.customLayers);
 
@@ -43,7 +45,7 @@ export default function LegendModal({ show }: Props): ReactElement {
 
   const resolvedCustomLayers = useAppSelector(resolvedCustomLayersSelector);
 
-  const layersSettings = useAppSelector((state) => state.map.layersSettings);
+  const layerSetups = useAppSelector(drawnSetupsSelector);
 
   const wmsLayerDefs = useMemo(
     () =>
@@ -51,8 +53,8 @@ export default function LegendModal({ show }: Props): ReactElement {
         libraryIndex,
         resolvedCustomLayers,
         integratedLayerDefMap,
-      ).map((def) => withPickedLayers(def, layersSettings)),
-    [libraryIndex, resolvedCustomLayers, integratedLayerDefMap, layersSettings],
+      ).map((def) => withTickedLayers(def, layerSetups)),
+    [libraryIndex, resolvedCustomLayers, integratedLayerDefMap, layerSetups],
   );
 
   const activeLegendLayers = getActiveLegendLayers(

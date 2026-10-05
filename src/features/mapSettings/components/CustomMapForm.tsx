@@ -4,21 +4,9 @@ import {
   type CategoryGroup,
   categoryGroup,
 } from '@features/mapLibrary/filters.js';
-import {
-  integratedLayerDefMapSelector,
-  shadingSourceSelector,
-} from '@features/mapLibrary/model/selectors.js';
-import {
-  type Color,
-  colorToHexa,
-  hexaToColor,
-  type Shading,
-} from '@features/parameterizedShading/model/Shading.js';
 import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
-import { MapLayerItem } from '@shared/components/MapLayerItem.js';
-import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
@@ -50,26 +38,10 @@ import {
 } from './CustomMapTypeField.js';
 import { WmsLayerTree } from './WmsLayerTree.js';
 
-/**
- * A new map's starting point: what carries over when the Type switches between
- * a layer and a combination, or a shading map saved from the Map layers panel.
- */
-export type CustomMapStart = {
-  name: string;
-  iconSpec?: string;
-  technology?: CustomMapTechnology;
-  shading?: Shading;
-  /** A map to start as a copy of, its type aside. */
-  copyOf?: CustomLayerDef;
-};
-
 type Props = {
   type: string;
   value?: CustomLayerDef;
-  /** A new map's starting point; ignored when `value` is given. */
-  start?: CustomMapStart;
   onChange: (value?: CustomLayerDef) => void;
-  onPickCombination: (start: CustomMapStart) => void;
 };
 
 type Model = {
@@ -85,22 +57,12 @@ type Model = {
   scaleWithDpi: boolean;
   extraScales: string[];
   technology: CustomMapTechnology;
+  /** A WMS map's default layers, drawn until its setup ticks others. */
   layers: string[];
-  /** A linked WMS map's library map, which decides all but its layers. */
-  source?: string;
   tiled: boolean;
   /** Read from the capabilities rather than typed, so it has no field. */
   bbox?: [number, number, number, number];
-  /** A shading map's own, edited in the Map layers panel rather than here. */
-  shading?: Shading;
-  color: Color;
 };
-
-const WHITE: Color = [255, 255, 255, 1];
-
-/** A colour has none, and a shading map takes the shading source's. */
-const usesUrl = (model: Model) =>
-  model.technology !== 'color' && model.technology !== 'parametricShading';
 
 /** Ground resolution of zoom 0 at the equator, in metres per pixel. */
 const ZOOM_0_RESOLUTION = 156543.03392804097;
@@ -176,10 +138,7 @@ function bboxForSelection(
 
 function valueToModel(value?: CustomLayerDef): Model {
   return {
-    url: value && 'url' in value ? value.url : '',
-    shading:
-      value?.technology === 'parametricShading' ? value.shading : undefined,
-    color: value?.technology === 'color' ? value.color : WHITE,
+    url: value?.url ?? '',
     name: value?.name ?? '',
     category: categoryGroup(value?.category),
     iconSpec: value?.iconSpec,
@@ -199,50 +158,14 @@ function valueToModel(value?: CustomLayerDef): Model {
         ? value.extraScales.map((a) => a.toString())
         : [],
     layers: value && 'layers' in value && value.layers ? value.layers : [],
-    source: value?.technology === 'wms' ? value.source : undefined,
     tiled: value && 'tiled' in value && value.tiled ? value.tiled : false,
     bbox: value?.bbox,
     technology: value?.technology ?? 'tile',
   };
 }
 
-export function CustomMapForm({
-  type,
-  value,
-  start,
-  onChange,
-  onPickCombination,
-}: Props): ReactElement {
-  const sharedShading = useAppSelector((state) => state.map.shading);
-
-  const shadingSource = useAppSelector(shadingSourceSelector);
-
-  const [model, setModel] = useState<Model>(() => {
-    const model = valueToModel(value);
-
-    if (value || !start) {
-      return model;
-    }
-
-    if (start.copyOf) {
-      return valueToModel(start.copyOf);
-    }
-
-    const technology = start.technology ?? model.technology;
-
-    return {
-      ...model,
-      name: start.name,
-      iconSpec: start.iconSpec,
-      technology,
-      // An overlay, like the shared shading it starts from.
-      ...(technology === 'parametricShading' && {
-        shading: start.shading ?? sharedShading,
-        layer: 'overlay' as const,
-        category: 'elevation' as const,
-      }),
-    };
-  });
+export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
+  const [model, setModel] = useState<Model>(() => valueToModel(value));
 
   const localVersion = useRef(0);
 
@@ -283,11 +206,9 @@ export function CustomMapForm({
         model.scaleWithDpi !== newModel.scaleWithDpi ||
         model.extraScales.join('|') !== newModel.extraScales.join('|') ||
         model.technology !== newModel.technology ||
-        model.source !== newModel.source ||
         model.tiled !== newModel.tiled ||
         model.bbox?.join(',') !== newModel.bbox?.join(',') ||
-        model.layer !== newModel.layer ||
-        model.color.join(',') !== newModel.color.join(',');
+        model.layer !== newModel.layer;
 
       if (changed) {
         externalVersion.current++;
@@ -314,7 +235,7 @@ export function CustomMapForm({
       return;
     }
 
-    if (usesUrl(model) && !model.url) {
+    if (!model.url) {
       onChange(undefined);
 
       return;
@@ -345,13 +266,6 @@ export function CustomMapForm({
 
         break;
       case 'wms':
-        // A linked map's server names no layers of its own to fall back on.
-        if (model.source !== undefined && model.layers.length === 0) {
-          onChange(undefined);
-
-          break;
-        }
-
         onChange({
           ...common,
           technology: 'wms',
@@ -359,7 +273,6 @@ export function CustomMapForm({
           minZoom,
           maxNativeZoom,
           layers: model.layers,
-          source: model.source,
           tiled: model.tiled,
           // Read from the capabilities, so it goes no further than the
           // technology that has any: switching to another must not leave a
@@ -377,26 +290,8 @@ export function CustomMapForm({
         });
 
         break;
-      case 'parametricShading': {
-        onChange({
-          ...common,
-          technology: 'parametricShading',
-          shading: model.shading,
-          url: shadingSource && 'url' in shadingSource ? shadingSource.url : '',
-        });
-
-        break;
-      }
-      case 'color':
-        onChange({
-          ...common,
-          technology: 'color',
-          color: model.color,
-        });
-
-        break;
     }
-  }, [type, model, onChange, shadingSource]);
+  }, [type, model, onChange]);
 
   const m = useMessages();
 
@@ -454,40 +349,6 @@ export function CustomMapForm({
       });
   };
 
-  const libraryDefs = useAppSelector(integratedLayerDefMapSelector);
-
-  const sourceDef =
-    model.technology === 'wms' && model.source !== undefined
-      ? libraryDefs[model.source]
-      : undefined;
-
-  const linked = model.technology === 'wms' && model.source !== undefined;
-
-  // The stored URL until the source is loaded.
-  const linkedUrl = linked
-    ? sourceDef && 'url' in sourceDef
-      ? sourceDef.url
-      : model.url
-    : undefined;
-
-  // A linked map's layers are all there is to edit, so they load unasked.
-  useEffect(() => {
-    if (!linkedUrl) {
-      return;
-    }
-
-    let current = true;
-
-    wms(linkedUrl).then(
-      ({ layersTree }) => current && setLayersTree(layersTree),
-      (err) => current && setWmsLayersFetchError(String(err)),
-    );
-
-    return () => {
-      current = false;
-    };
-  }, [linkedUrl]);
-
   const handleLayersChange = (next: string[]) => {
     setModel((model) => {
       const zoom = minZoomForSelection(layersTree ?? [], next, lat);
@@ -527,15 +388,7 @@ export function CustomMapForm({
               value={layer}
               checked={model.layer === layer}
               onChange={() =>
-                setModelWithVersion((model) => ({
-                  ...model,
-                  layer,
-                  // Nothing is beneath a base map to show through its colour.
-                  color:
-                    layer === 'base'
-                      ? [model.color[0], model.color[1], model.color[2], 1]
-                      : model.color,
-                }))
+                setModelWithVersion((model) => ({ ...model, layer }))
               }
             >
               {m?.mapLayers.layer[layer]}
@@ -578,253 +431,169 @@ export function CustomMapForm({
         </Form.Group>
       </div>
 
-      {linked ? (
-        <>
-          <Form.Group className="mt-3">
-            <Form.Label>{msm?.basedOn}</Form.Label>
+      <CustomMapTypeField
+        value={model.technology}
+        onChange={(technology) =>
+          setModelWithVersion((model) => ({ ...model, technology }))
+        }
+      />
 
-            <div>
-              {sourceDef ? <MapLayerItem def={sourceDef} /> : model.source}
-            </div>
-          </Form.Group>
+      <Form.Group controlId="category" className="mt-3">
+        <Form.Label>{msm?.filters.category}</Form.Label>
+
+        <Form.Select
+          value={model.category}
+          onChange={(e) =>
+            setModelWithVersion((model) => ({
+              ...model,
+              category: e.currentTarget.value as CategoryGroup,
+            }))
+          }
+        >
+          {CATEGORY_GROUPS.map((category) => (
+            <option key={category} value={category}>
+              {msm?.filters[category]}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group controlId="url" className="mt-3">
+        <Form.Label className="required">{m?.mapLayers.url}</Form.Label>
+
+        <Form.Control
+          className={classes.gridSpan}
+          type="text"
+          value={model.url}
+          isInvalid={invalidUrl}
+          onChange={handlers.url}
+        />
+
+        <Form.Control.Feedback type="invalid">
+          {m?.general.invalidUrl}
+        </Form.Control.Feedback>
+      </Form.Group>
+
+      {model.technology === 'wms' && (
+        <>
+          <Button
+            className={clsx('mt-3', classes.gridSpan)}
+            onClick={handleLoadLayersClick}
+            disabled={!URL_RE.test(model.url) || loadingLayers}
+          >
+            <Spinner className="invisible" size="sm" />
+
+            <span className="mx-2">{m?.mapLayers.loadWmsLayers}</span>
+
+            <Spinner
+              className={loadingLayers ? 'visible' : 'invisible'}
+              size="sm"
+            />
+          </Button>
 
           {wmsLayersFetchError && (
-            <Alert className="mt-3" variant="danger">
+            <Alert className={clsx('mt-3', classes.gridSpan)} variant="danger">
               {wmsLayersFetchError}
             </Alert>
           )}
 
           <WmsLayerTree
-            className="mt-3"
+            className={clsx('mt-3', classes.gridSpan)}
             style={{ maxHeight: '400px' }}
             layers={layersTree}
             selected={model.layers}
             onChange={handleLayersChange}
           />
-
-          {layerField}
-        </>
-      ) : (
-        <>
-          <CustomMapTypeField
-            value={model.technology}
-            editing={Boolean(value)}
-            onChange={(kind) => {
-              if (kind === 'combination') {
-                onPickCombination({
-                  name: model.name,
-                  iconSpec: model.iconSpec,
-                });
-              } else {
-                setModelWithVersion((model) => ({
-                  ...model,
-                  technology: kind,
-                  ...(kind === 'parametricShading' && {
-                    shading: model.shading ?? sharedShading,
-                    category:
-                      model.category === 'other' ? 'elevation' : model.category,
-                  }),
-                }));
-              }
-            }}
-          />
-
-          {model.technology === 'parametricShading' && (
-            <Form.Text className="d-block mt-3">
-              {msm?.shadingMapHint}
-            </Form.Text>
-          )}
-
-          <Form.Group controlId="category" className="mt-3">
-            <Form.Label>{msm?.filters.category}</Form.Label>
-
-            <Form.Select
-              value={model.category}
-              onChange={(e) =>
-                setModelWithVersion((model) => ({
-                  ...model,
-                  category: e.currentTarget.value as CategoryGroup,
-                }))
-              }
-            >
-              {CATEGORY_GROUPS.map((category) => (
-                <option key={category} value={category}>
-                  {msm?.filters[category]}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-
-          {/* First for a colour, as it decides whether the colour takes alpha. */}
-          {model.technology === 'color' && layerField}
-
-          {model.technology === 'color' && (
-            <Form.Group className="mt-3">
-              <Form.Label className="d-block">
-                {m?.mapLayers.technologies.color}
-              </Form.Label>
-
-              <RgbaColorPicker
-                alpha={model.layer === 'overlay'}
-                value={colorToHexa(model.color)}
-                onChange={(color) =>
-                  setModelWithVersion((model) => ({
-                    ...model,
-                    color: hexaToColor(color),
-                  }))
-                }
-              />
-            </Form.Group>
-          )}
-
-          {usesUrl(model) && (
-            <Form.Group controlId="url" className="mt-3">
-              <Form.Label className="required">{m?.mapLayers.url}</Form.Label>
-
-              <Form.Control
-                className={classes.gridSpan}
-                type="text"
-                value={model.url}
-                isInvalid={invalidUrl}
-                onChange={handlers.url}
-              />
-
-              <Form.Control.Feedback type="invalid">
-                {m?.general.invalidUrl}
-              </Form.Control.Feedback>
-            </Form.Group>
-          )}
-
-          {model.technology === 'wms' && (
-            <>
-              <Button
-                className={clsx('mt-3', classes.gridSpan)}
-                onClick={handleLoadLayersClick}
-                disabled={!URL_RE.test(model.url) || loadingLayers}
-              >
-                <Spinner className="invisible" size="sm" />
-
-                <span className="mx-2">{m?.mapLayers.loadWmsLayers}</span>
-
-                <Spinner
-                  className={loadingLayers ? 'visible' : 'invisible'}
-                  size="sm"
-                />
-              </Button>
-
-              {wmsLayersFetchError && (
-                <Alert
-                  className={clsx('mt-3', classes.gridSpan)}
-                  variant="danger"
-                >
-                  {wmsLayersFetchError}
-                </Alert>
-              )}
-
-              <WmsLayerTree
-                className={clsx('mt-3', classes.gridSpan)}
-                style={{ maxHeight: '400px' }}
-                layers={layersTree}
-                selected={model.layers}
-                onChange={handleLayersChange}
-              />
-            </>
-          )}
-
-          {/* Min/Max zoom */}
-          {usesUrl(model) && (
-            <>
-              {/* Halves rather than two natural widths: the labels differ in
-              length, so natural ones leave a gap after the shorter field.
-              End-aligned, since the longer label wraps to two lines. */}
-              <Row className="align-items-end gx-3">
-                <Col xs={12} sm={6}>
-                  <Form.Group controlId="minZoom" className="mt-3">
-                    <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
-
-                    <Form.Control
-                      type="number"
-                      min={0}
-                      value={model.minZoom}
-                      onChange={handleMinZoomChange}
-                    />
-                  </Form.Group>
-                </Col>
-
-                <Col xs={12} sm={6}>
-                  <Form.Group controlId="maxNativeZoom" className="mt-3">
-                    <Form.Label>{m?.mapLayers.maxNativeZoom}</Form.Label>
-
-                    <Form.Control
-                      type="number"
-                      min={0}
-                      value={model.maxNativeZoom}
-                      onChange={handlers.maxNativeZoom}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              {/* Extra scales + checkbox */}
-              {model.technology === 'tile' && (
-                <div className="mt-3">
-                  <Form.Label>{m?.mapLayers.extraScales}</Form.Label>
-
-                  <div className="d-flex gap-2 flex-wrap">
-                    {model.technology === 'tile' &&
-                      [...model.extraScales, ''].map((a, i) => (
-                        <Form.Control
-                          style={{ width: '4rem' }}
-                          key={i}
-                          type="number"
-                          min={1}
-                          step={1}
-                          value={a}
-                          onChange={(e) => {
-                            const extraScales = [...model.extraScales];
-                            extraScales[i] = e.currentTarget.value;
-                            setModel((model) => ({
-                              ...model,
-                              extraScales: extraScales.filter(Boolean),
-                            }));
-                          }}
-                        />
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* A WMS is always asked for the display's own density, and shading
-              always follows it. */}
-              {model.technology !== 'wms' &&
-                model.technology !== 'parametricShading' && (
-                  <Form.Check
-                    className="mt-3"
-                    id="chk-scale-dpi"
-                    label={m?.mapLayers.scaleWithDpi}
-                    checked={model.scaleWithDpi}
-                    onChange={handlers.scaleWithDpi}
-                  />
-                )}
-
-              {model.technology === 'wms' && (
-                <div className="mt-3 d-flex">
-                  <Form.Check
-                    id="chk-tiled"
-                    label={m?.mapLayers.tiled}
-                    checked={model.tiled}
-                    onChange={handlers.tiled}
-                  />
-
-                  <HintMark hint={m?.mapLayers.tiledHelp} />
-                </div>
-              )}
-            </>
-          )}
-
-          {model.technology !== 'color' && layerField}
         </>
       )}
+
+      {/* Min/Max zoom */}
+
+      {/* Halves rather than two natural widths: the labels differ in
+              length, so natural ones leave a gap after the shorter field.
+              End-aligned, since the longer label wraps to two lines. */}
+      <Row className="align-items-end gx-3">
+        <Col xs={12} sm={6}>
+          <Form.Group controlId="minZoom" className="mt-3">
+            <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
+
+            <Form.Control
+              type="number"
+              min={0}
+              value={model.minZoom}
+              onChange={handleMinZoomChange}
+            />
+          </Form.Group>
+        </Col>
+
+        <Col xs={12} sm={6}>
+          <Form.Group controlId="maxNativeZoom" className="mt-3">
+            <Form.Label>{m?.mapLayers.maxNativeZoom}</Form.Label>
+
+            <Form.Control
+              type="number"
+              min={0}
+              value={model.maxNativeZoom}
+              onChange={handlers.maxNativeZoom}
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+
+      {/* Extra scales + checkbox */}
+      {model.technology === 'tile' && (
+        <div className="mt-3">
+          <Form.Label>{m?.mapLayers.extraScales}</Form.Label>
+
+          <div className="d-flex gap-2 flex-wrap">
+            {model.technology === 'tile' &&
+              [...model.extraScales, ''].map((a, i) => (
+                <Form.Control
+                  style={{ width: '4rem' }}
+                  key={i}
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={a}
+                  onChange={(e) => {
+                    const extraScales = [...model.extraScales];
+                    extraScales[i] = e.currentTarget.value;
+                    setModel((model) => ({
+                      ...model,
+                      extraScales: extraScales.filter(Boolean),
+                    }));
+                  }}
+                />
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* A WMS is always asked for the display's own density. */}
+      {model.technology !== 'wms' && (
+        <Form.Check
+          className="mt-3"
+          id="chk-scale-dpi"
+          label={m?.mapLayers.scaleWithDpi}
+          checked={model.scaleWithDpi}
+          onChange={handlers.scaleWithDpi}
+        />
+      )}
+
+      {model.technology === 'wms' && (
+        <div className="mt-3 d-flex">
+          <Form.Check
+            id="chk-tiled"
+            label={m?.mapLayers.tiled}
+            checked={model.tiled}
+            onChange={handlers.tiled}
+          />
+
+          <HintMark hint={m?.mapLayers.tiledHelp} />
+        </div>
+      )}
+
+      {layerField}
     </div>
   );
 }

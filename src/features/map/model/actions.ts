@@ -4,13 +4,17 @@ import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import z from 'zod';
-import type { LayerKind } from './layerKind.js';
-import type { MapCombination } from './mapCombination.js';
+import type { LayerSetup } from './layerSetup.js';
+import type { MapPreset } from './mapPreset.js';
 
 export interface MapViewState {
   lat: number;
   lon: number;
   zoom: number;
+  /**
+   * Bottom first: the base map, then the overlays as they stack. A map is its
+   * id, a preset `@<id>` (see `presetItem`).
+   */
   layers: string[];
   bounds?: [number, number, number, number];
   // undefined = coverage not yet fetched, null = fetch failed, [] = fetched
@@ -18,51 +22,69 @@ export interface MapViewState {
   countries?: string[] | null;
 }
 
+/** Where a map or a preset is offered: what Installed maps sets. */
 export const LayerSettingsSchema = z.object({
   installed: z.boolean().optional(),
-  opacity: z.number().optional(),
   showInMenu: z.boolean().optional(),
   showInToolbar: z.boolean().optional(),
   shortcut: ShortcutSchema.nullish(),
-  wmsLayers: z.array(z.string()).optional(),
-  layer: z.enum(['base', 'overlay']).optional(),
 });
+
+/** By map id, an entry that doesn't parse left out on its own. */
+export const LayersSettingsCompatSchema = z
+  .record(z.string(), z.unknown())
+  .transform((entries) =>
+    Object.fromEntries(
+      Object.entries(entries).flatMap(([type, settings]) => {
+        const ok = LayerSettingsSchema.safeParse(settings);
+
+        return ok.success ? [[type, ok.data]] : [];
+      }),
+    ),
+  );
 
 export type LayerSettings = {
   /** False takes a library map out of every list, shortcut and the finder; links still show it. */
   installed?: boolean;
-  opacity?: number;
   showInMenu?: boolean;
   showInToolbar?: boolean;
   shortcut?: Shortcut | null;
-  /** A WMS map's layers as picked in the layers panel, in place of its own. */
-  wmsLayers?: string[];
-  /** A library map switched between base map and overlay; see `canSwitchKind`. */
-  layer?: LayerKind;
 };
 
-/** Switches a library map between base map and overlay, for the account. */
-export const mapSetLayerKind = createAction<{ type: string; kind: LayerKind }>(
-  'MAP_SET_LAYER_KIND',
-);
-
-/** The kinds a link switched maps to; they win over the user's own. */
-export const mapSetLinkKinds =
-  createAction<Record<string, LayerKind>>('MAP_SET_LINK_KINDS');
-
-/** Changes one map's settings at once; the account catches up in the background. */
+/** Changes where one map is offered; the account catches up in the background. */
 export const mapLayerSettingsChange = createAction<{
   type: string;
   settings: LayerSettings;
 }>('MAP_LAYER_SETTINGS_CHANGE');
 
-/** Puts every map's settings back to the defaults, keeping what is installed. */
+/** Puts every map's settings and setup back to the defaults, keeping what is installed. */
 export const mapLayersSettingsReset = createAction('MAP_LAYERS_SETTINGS_RESET');
 
-/** The overlays' stacking order, top first, as dragged in Installed maps. */
-export const mapOverlayOrderSet = createAction<string[]>(
-  'MAP_OVERLAY_ORDER_SET',
+/** A map's own setup, or with `preset` that preset's copy of it. */
+export type SetupTarget = { type: string; preset?: string };
+
+/**
+ * Changes a setup: each field given replaces its own, `undefined` drops it. A
+ * map on the map switched to a base map takes the base map's place.
+ */
+export const mapLayerSetupChange = createAction<
+  SetupTarget & { setup: Partial<LayerSetup> }
+>('MAP_LAYER_SETUP_CHANGE');
+
+/** Puts a setup back to the map's defaults. */
+export const mapLayerSetupReset = createAction<SetupTarget>(
+  'MAP_LAYER_SETUP_RESET',
 );
+
+/**
+ * Moves an item of the stack, or with `preset` a layer of that preset: `to` is
+ * the one it takes the place of.
+ */
+export const mapOverlayMove = createAction<{
+  type: string;
+  to: string;
+  preset?: string;
+}>('MAP_OVERLAY_MOVE');
 
 /**
  * Adds or replaces a custom map, with its own settings when given. Like the
@@ -75,30 +97,71 @@ export const mapCustomLayerSave = createAction<{
   offerActivate?: boolean;
 }>('MAP_CUSTOM_LAYER_SAVE');
 
-/** Removes a custom map and its settings. */
+/** Removes a custom map, its settings and its setup. */
 export const mapCustomLayerDelete = createAction<{ type: string }>(
   'MAP_CUSTOM_LAYER_DELETE',
 );
 
-/** Adds or replaces a map combination, with its own settings when given. */
-export const mapCombinationSave = createAction<{
-  combination: MapCombination;
+/**
+ * Adds or replaces a map preset, with its own settings when given. `onMap`
+ * puts it in place of the layers it was made of; `replacing` in place of the
+ * link's preset it is a copy of.
+ */
+export const mapPresetSave = createAction<{
+  preset: MapPreset;
   settings?: LayerSettings;
-}>('MAP_COMBINATION_SAVE');
+  onMap?: boolean;
+  replacing?: string;
+}>('MAP_PRESET_SAVE');
 
-/** Removes a map combination and its settings. */
-export const mapCombinationDelete = createAction<{ id: string }>(
-  'MAP_COMBINATION_DELETE',
+/** Removes a map preset, from the map too, and its settings. */
+export const mapPresetDelete = createAction<{ id: string }>(
+  'MAP_PRESET_DELETE',
+);
+
+/**
+ * Turns a preset on or off, as `mapToggleLayer` does a map: one with a base
+ * map takes the base map's place, one without goes on top.
+ */
+export const mapPresetToggle = createAction<{ id: string; enable?: boolean }>(
+  'MAP_PRESET_TOGGLE',
+);
+
+/** Changes a preset's own fields; each given replaces its own. */
+export const mapPresetChange = createAction<{
+  id: string;
+  change: Partial<Pick<MapPreset, 'opacity'>>;
+}>('MAP_PRESET_CHANGE');
+
+/** Adds a map to a preset; a base map replaces the preset's own. */
+export const mapPresetLayerAdd = createAction<{ id: string; type: string }>(
+  'MAP_PRESET_LAYER_ADD',
+);
+
+/** Takes a map out of a preset. */
+export const mapPresetLayerRemove = createAction<{ id: string; type: string }>(
+  'MAP_PRESET_LAYER_REMOVE',
 );
 
 export interface MapStateBase extends MapViewState {
   layersSettings: Record<string, LayerSettings>;
+  /** How each map is drawn, whether on or off; see `LayerSetup`. */
+  layerSetups: Record<string, LayerSetup>;
   customLayers: CustomLayerDef[];
   cachedMaps: CachedTileMapDef[];
 }
 
+/**
+ * Moves the map, or replaces its layers; `setups` replace those of the maps
+ * they name (what a link carries), an empty one meaning defaults, and
+ * `linkPresets` the presets a link brought.
+ */
 export const mapRefocus = createAction<
-  Partial<MapViewState> & { gpsTracked?: boolean }
+  Partial<MapViewState> & {
+    gpsTracked?: boolean;
+    setups?: Record<string, LayerSetup>;
+    linkPresets?: MapPreset[];
+  }
 >('MAP_REFOCUS');
 
 /** Fit the map to a [west, south, east, north] bbox, clamped to maxZoom. */
@@ -116,6 +179,14 @@ export const mapToggleLayer = createAction<{ type: string; enable?: boolean }>(
   'MAP_TOGGLE_LAYER',
 );
 
+/**
+ * Takes an item of the stack (a map, or `@<id>` a preset) off the map, a base
+ * one too: the map is then left without a base map, on purpose.
+ */
+export const mapLayerRemove = createAction<{ item: string }>(
+  'MAP_LAYER_REMOVE',
+);
+
 export const mapSuppressLegacyMapWarning = createAction<{
   type: string;
   forever: boolean;
@@ -129,38 +200,18 @@ export const mapSetEsriAttribution = createAction<string[]>(
   'MAP_SET_ESRI_ATTRIBUTION',
 );
 
-/** The shared shading; ends its draft. */
-export const mapSetShading = createAction<Shading>('MAP_SET_SHADING');
-
-/**
- * An edit of the shared shading the server does not render until applied;
- * `undefined` drops it.
- */
-export const mapSetSharedShadingDraft = createAction<Shading | undefined>(
-  'MAP_SET_SHARED_SHADING_DRAFT',
-);
-
 /** Whether shading layers are rendered on the server rather than in the browser. */
 export const mapSetShadingOnServer = createAction<boolean>(
   'MAP_SET_SHADING_ON_SERVER',
 );
 
-/** An unsaved edit of a custom map's own shading; `undefined` drops it. */
-export const mapSetShadingDraft = createAction<{
-  type: string;
-  shading?: Shading;
-}>('MAP_SET_SHADING_DRAFT');
-
 /**
- * Puts a map combination's layers and shading on the map. `toggle` takes an
- * active overlay-only one off instead, as its checkbox does; `replaces` is its
- * previous version, whose layers go first.
+ * An edit of a shading map's setup the server does not render until applied;
+ * `undefined` drops it.
  */
-export const mapApplyCombination = createAction<{
-  id: string;
-  toggle?: boolean;
-  replaces?: MapCombination;
-}>('MAP_APPLY_COMBINATION');
+export const mapSetShadingDraft = createAction<
+  SetupTarget & { shading?: Shading }
+>('MAP_SET_SHADING_DRAFT');
 
 export const mapSetLocalPrefs = createAction<{
   resolutionScale?: number | null;

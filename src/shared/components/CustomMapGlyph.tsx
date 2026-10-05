@@ -2,21 +2,18 @@ import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import type { IsCustomLayerTechnologiesDef } from '@shared/mapDefinitions.js';
 import type { ReactElement, ReactNode } from 'react';
 import { FaServer, FaTh } from 'react-icons/fa';
-import { GiHills } from 'react-icons/gi';
-import { MdFormatColorFill, MdOfflinePin } from 'react-icons/md';
+import { MdOfflinePin } from 'react-icons/md';
 import { TbStack2, TbVector } from 'react-icons/tb';
 
 export type CustomMapKind =
   | IsCustomLayerTechnologiesDef['technology']
-  | 'combination';
+  | 'preset';
 
 export const CUSTOM_MAP_ICONS: Record<CustomMapKind, ReactElement> = {
   tile: <FaTh />,
   maplibre: <TbVector />,
   wms: <FaServer />,
-  parametricShading: <GiHills />,
-  color: <MdFormatColorFill />,
-  combination: <TbStack2 />,
+  preset: <TbStack2 />,
 };
 
 type GlyphKind = CustomMapKind | 'cached';

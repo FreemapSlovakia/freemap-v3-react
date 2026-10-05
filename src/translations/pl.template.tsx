@@ -359,7 +359,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'symbole, legenda mapy',
         'modal-about': 'kontakt, e-mail, opinie',
         'modal-installed-maps':
-          'biblioteka map, odinstaluj, konfiguracja warstw, warstwy, zarządzanie mapami, pasek narzędzi, menu, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',
+          'menedżer map, biblioteka map, odinstaluj, konfiguracja warstw, warstwy, zarządzanie mapami, pasek narzędzi, menu, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',
         'modal-available-maps':
           'biblioteka map, katalog, zainstaluj, dodaj mapy, więcej map',
         'modal-offline-maps': 'pobrane mapy, pamięć',
@@ -382,6 +382,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-7': 'cieniowanie, rzeźba terenu, teren, wysokość, lidar',
         'layer-h':
           'cieniowanie, rzeźba terenu, teren, wysokość, nachylenie, ekspozycja, inwersja',
+        'layer-c': 'kolor, pusta, tło, jednolity, zabarwienie, wypełnienie',
         'layer-l1': 'drogi leśne, nlc',
         'layer-l2': 'drogi leśne, nlc',
         'layer-VO': 'wektorowa',
@@ -434,6 +435,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VD: 'Dataviz Wektorowa',
       VT: 'Outdoor Wektorowa',
       h: 'Parametryczne cieniowanie terenu',
+      c: 'Jednolity kolor',
       M: 'Zdjęcia z Wikimedia Commons',
       WDZ: 'Skład gatunkowy drzewostanu',
       WLT: 'Typy lasów',
@@ -514,6 +516,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Nakładka',
     },
     showMore: 'Pokaż więcej map',
+    mapManager: 'Menedżer map',
     installedMaps: 'Zainstalowane mapy',
     availableMaps: 'Dostępne mapy',
     technologies: {
@@ -540,7 +543,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         <b>{messages.mapLayers.letters[to]}</b>?
       </>
     ),
-    saveAsShadingMap: 'Zapisz jako mapę niestandardową',
     layersPanel: 'Warstwy mapy',
   },
 

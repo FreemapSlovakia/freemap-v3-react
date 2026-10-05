@@ -11,10 +11,11 @@ import {
 import { hasLegend } from '@features/legend/legendLayers.js';
 import {
   type LayerSettings,
-  mapApplyCombination,
+  mapPresetToggle,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
-import type { MapCombination } from '@features/map/model/mapCombination.js';
+import type { LayerKind } from '@features/map/model/layerKind.js';
+import type { MapPreset } from '@features/map/model/mapPreset.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { Chord } from '@shared/components/Chord.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
@@ -86,7 +87,9 @@ export type CommandContext = {
   /** The layers that are on. */
   layers: string[];
   customLayers: CustomLayerDef[];
-  mapCombinations: MapCombination[];
+  presets: MapPreset[];
+  /** `presetKindsSelector`'s answer. */
+  presetKinds: Readonly<Record<string, LayerKind>>;
   layersSettings: Record<string, LayerSettings>;
   /** `libraryIndexSelector`'s answer: built-in maps and the catalog maps known. */
   libraryIndex: MapIndexEntry[];
@@ -335,20 +338,18 @@ export function getCommands(ctx: CommandContext): Command[] {
       });
     }
 
-    for (const combination of ctx.mapCombinations) {
+    for (const preset of ctx.presets) {
       add({
-        id: `combination-${combination.id}`,
+        id: `preset-${preset.id}`,
         kind: 'map',
         layerDef: {
-          type: combination.id,
-          layer: combination.base === undefined ? 'overlay' : 'base',
-          name: combination.name,
-          icon: (
-            <CustomMapGlyph spec={combination.iconSpec} kind="combination" />
-          ),
+          type: preset.id,
+          layer: ctx.presetKinds[preset.id] ?? 'overlay',
+          name: preset.name,
+          icon: <CustomMapGlyph spec={preset.iconSpec} kind="preset" />,
         },
-        label: combination.name,
-        action: mapApplyCombination({ id: combination.id }),
+        label: preset.name,
+        action: mapPresetToggle({ id: preset.id, enable: true }),
       });
     }
   }

@@ -1,7 +1,10 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefsSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { isLayerOffered } from '@shared/mapLibrary/installed.js';
 import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
@@ -25,7 +28,7 @@ const tileTemplatesSelector = createSelector(
   (state: RootState) => state.map.customLayers,
   (state: RootState) => state.mapLibrary.bodies,
   (state: RootState) => state.map.layersSettings,
-  (state: RootState) => state.map.layers,
+  drawnTypesSelector,
   (
     integrated,
     customLayers,

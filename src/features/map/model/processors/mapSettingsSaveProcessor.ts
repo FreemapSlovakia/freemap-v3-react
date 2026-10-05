@@ -6,24 +6,29 @@ import {
 } from '@app/store/settingsSaveQueue.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { loadMapSettingsMessages } from '@features/mapSettings/translations/loadMapSettingsMessages.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
-  mapApplyCombination,
-  mapCombinationDelete,
-  mapCombinationSave,
   mapCustomLayerDelete,
   mapCustomLayerSave,
   mapLayerSettingsChange,
+  mapLayerSetupChange,
+  mapLayerSetupReset,
   mapLayersSettingsReset,
-  mapOverlayOrderSet,
-  mapSetLayerKind,
-  mapSetShadingDraft,
+  mapOverlayMove,
+  mapPresetChange,
+  mapPresetDelete,
+  mapPresetLayerAdd,
+  mapPresetLayerRemove,
+  mapPresetSave,
+  mapRefocus,
+  mapReplaceLayer,
+  mapSetShadingOnServer,
   mapToggleLayer,
 } from '../actions.js';
-import { accountSettingsOf, isShadingDraftSaved } from '../reducer.js';
-import { activeCombinationsSelector } from '../selectors.js';
+import { accountSettingsOf } from '../reducer.js';
 
-/** Long enough for an opacity slider's drag to end as one save. */
+/** Long enough for a slider's drag to end as one save. */
 const DEBOUNCE_MS = 500;
 
 let timer: ReturnType<typeof setTimeout> | undefined;
@@ -31,7 +36,7 @@ let timer: ReturnType<typeof setTimeout> | undefined;
 /** A save is queued and not yet started; it will send whatever comes first. */
 let waiting = false;
 
-/** What waits for the save that carries its change: toasts, ending a draft. */
+/** What waits for the save that carries its change: its toast. */
 let afterSave: (() => void)[] = [];
 
 // Its own id per map, so one toast doesn't replace another's Activate.
@@ -63,54 +68,63 @@ const savedToast = (
  */
 export const mapSettingsSaveProcessor: Processor<
   | typeof mapLayerSettingsChange
-  | typeof mapSetLayerKind
+  | typeof mapLayerSetupChange
+  | typeof mapLayerSetupReset
   | typeof mapLayersSettingsReset
-  | typeof mapOverlayOrderSet
   | typeof mapCustomLayerSave
   | typeof mapCustomLayerDelete
-  | typeof mapCombinationSave
-  | typeof mapCombinationDelete
+  | typeof mapPresetSave
+  | typeof mapPresetDelete
+  | typeof mapPresetChange
+  | typeof mapPresetLayerAdd
+  | typeof mapPresetLayerRemove
+  | typeof mapOverlayMove
+  | typeof mapRefocus
+  | typeof mapReplaceLayer
+  | typeof mapsLoaded
+  | typeof mapSetShadingOnServer
 > = {
   actionCreator: [
     mapLayerSettingsChange,
-    mapSetLayerKind,
+    mapLayerSetupChange,
+    mapLayerSetupReset,
     mapLayersSettingsReset,
-    mapOverlayOrderSet,
     mapCustomLayerSave,
     mapCustomLayerDelete,
-    mapCombinationSave,
-    mapCombinationDelete,
+    mapPresetSave,
+    mapPresetDelete,
+    mapPresetChange,
+    mapPresetLayerAdd,
+    mapPresetLayerRemove,
+    mapOverlayMove,
+    mapRefocus,
+    mapReplaceLayer,
+    mapsLoaded,
+    mapSetShadingOnServer,
   ],
   handle({ action, prevState, getState, dispatch, toastError }) {
-    if (mapCombinationSave.match(action)) {
-      const { id } = action.payload.combination;
+    // Most of these change the account's settings only sometimes: an edit of
+    // a link's preset, a link's or a document's setups, applied drafts.
+    const before = accountSettingsOf(prevState.map);
 
-      // An active one is re-applied, so the map shows what was just saved.
-      const previous = activeCombinationsSelector(prevState).find(
-        (c) => c.id === id,
-      );
+    const after = accountSettingsOf(getState().map);
 
-      if (previous) {
-        dispatch(mapApplyCombination({ id, replaces: previous }));
-      }
+    if (
+      (Object.keys(after) as (keyof typeof after)[]).every(
+        (key) => before[key] === after[key],
+      )
+    ) {
+      return;
+    }
+
+    if (mapPresetSave.match(action)) {
+      const { id } = action.payload.preset;
 
       afterSave.push(() => {
-        const state = getState();
-
         // Deleted meanwhile: nothing to say.
-        if (!state.map.mapCombinations.some((c) => c.id === id)) {
-          return;
+        if (getState().map.presets.some((p) => p.id === id)) {
+          dispatch(savedToast(id, 'presetSaved'));
         }
-
-        dispatch(
-          savedToast(
-            id,
-            'combinationSaved',
-            activeCombinationsSelector(state).some((c) => c.id === id)
-              ? undefined
-              : mapApplyCombination({ id }),
-          ),
-        );
       });
     } else if (mapCustomLayerSave.match(action)) {
       const { def, offerActivate } = action.payload;
@@ -121,11 +135,6 @@ export const mapSettingsSaveProcessor: Processor<
         // Deleted meanwhile: nothing to say.
         if (!map.customLayers.some((d) => d.type === def.type)) {
           return;
-        }
-
-        // Kept until saved, so a failed save can be tried again.
-        if (isShadingDraftSaved(def, map.shadingDrafts[def.type])) {
-          dispatch(mapSetShadingDraft({ type: def.type }));
         }
 
         dispatch(
@@ -180,11 +189,9 @@ export const mapSettingsSaveProcessor: Processor<
       });
     };
 
-    // Only a drag needs the pause; anything else must not be lost to a reload.
-    if (
-      mapLayerSettingsChange.match(action) &&
-      action.payload.settings.opacity !== undefined
-    ) {
+    // A setup is changed by drags (opacity, shading); anything else must not
+    // be lost to a reload.
+    if (mapLayerSetupChange.match(action) || mapPresetChange.match(action)) {
       timer = setTimeout(save, DEBOUNCE_MS);
     } else {
       save();

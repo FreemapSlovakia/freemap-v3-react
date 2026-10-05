@@ -1,5 +1,4 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { layerOpacitySetting } from '@features/map/model/selectors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Icon } from 'leaflet';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
@@ -63,7 +62,7 @@ export function WikiLayer(): ReactElement {
   const loading = useAppSelector((state) => state.wiki.loading);
 
   const opacity = useAppSelector(
-    (state) => layerOpacitySetting(state, 'w') ?? 1,
+    (state) => state.map.layerSetups['w']?.opacity ?? 1,
   );
 
   const dispatch = useDispatch();

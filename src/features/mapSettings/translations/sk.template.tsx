@@ -16,7 +16,7 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     fromLibrary: 'Z knižnice',
     custom: 'Vlastné',
     offline: 'Offline',
-    combinations: 'Kombinácie',
+    presets: 'Predvoľby',
     shownIn: 'Zobrazené',
     toolbar: 'V lište',
     menu: 'V menu',
@@ -50,13 +50,13 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       Upraviť vlastnú mapu <i>{name}</i>
     </>
   ),
-  modifyCombinationTitle: (name) => (
+  modifyPresetTitle: (name) => (
     <>
-      Upraviť kombináciu máp <i>{name}</i>
+      Upraviť predvoľbu mapy <i>{name}</i>
     </>
   ),
   resetConfirm:
-    'Vrátiť nastavenia panela nástrojov, menu, priehľadnosti a klávesových skratiek všetkých máp na predvolené? Nainštalované mapy zostanú nainštalované.',
+    'Vrátiť nastavenia panela nástrojov, menu a klávesových skratiek všetkých máp aj ich nastavenie (viditeľnosť, vrstvy, tieňovanie…) na predvolené? Nainštalované mapy zostanú nainštalované.',
   downloadOffline: 'Stiahnuť na použitie offline',
   keepOnMap: 'Ponechať na mape',
   backToLibrary: 'Späť do knižnice',
@@ -66,24 +66,24 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   keyboardShortcut: 'Klávesová skratka',
   saveSuccess: 'Zmeny boli uložené.',
   customMapSaved: 'Vlastná mapa bola uložená.',
-  combination: 'Kombinácia máp',
-  combinationSaved: 'Kombinácia máp bola uložená.',
-  updateFromCurrentMap: 'Aktualizovať z aktuálnej mapy',
-  baseMap: 'Podkladová mapa',
+  preset: 'Predvoľba mapy',
+  presetSaved: 'Predvoľba mapy bola uložená.',
+  newPreset: 'Nová predvoľba mapy',
+  saveAsPreset: 'Uložiť ako predvoľbu',
+  saveLayersAsPreset: 'Uložiť vrstvy ako predvoľbu',
+  saveLayersAsPresetHint:
+    'Nová predvoľba z kópií máp na mape, predvoľby rozložené.',
+  duplicatePreset: 'Duplikovať',
+  openPreset: 'Zobraziť na mape',
+  addMap: 'Pridať mapu',
+  presetEmpty: 'Žiadne vrstvy.',
+  presetHint:
+    'Jej vrstvy sa upravujú na mape: otvorte predvoľbu v paneli Vrstvy mapy. Každá zmena sa uloží hneď.',
   baseMaps: 'Podkladové mapy',
-  shadingMapHint:
-    'Parametre tieňovania sa nastavujú a ukladajú v paneli, ktorý sa zobrazí po aktivácii tejto mapy.',
   overlays: 'Prekryvné vrstvy',
-  addOverlay: 'Pridať prekryvnú vrstvu…',
-  noOverlays: 'Žiadne prekryvné vrstvy.',
-  combinationTooSmall: 'Vyžadujú sa minimálne dve vrstvy.',
   useAsBaseMap: 'Použiť ako podkladovú mapu',
   useAsOverlay: 'Použiť ako prekryvnú vrstvu',
-  basedOn: 'Založená na',
-  turnOff: 'Vypnúť',
   wmsLayers: {
-    reset: 'Predvolené vrstvy',
-    saveAsCustomMap: 'Uložiť ako vlastnú mapu',
     search: 'Hľadať vrstvy',
     selectAll: 'Vybrať všetky',
     deselectAll: 'Zrušiť výber všetkých',

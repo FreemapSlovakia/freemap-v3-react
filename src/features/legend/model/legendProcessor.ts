@@ -1,6 +1,9 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  drawnTypesSelector,
+  libraryIndexSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { EXTERNAL_LEGENDS, getActiveLegendLayers } from '../legendLayers.js';
 
 export const legendProcessor: Processor<typeof setActiveModal> = {
@@ -13,7 +16,7 @@ export const legendProcessor: Processor<typeof setActiveModal> = {
     const state = getState();
 
     const legendLayers = getActiveLegendLayers(
-      state.map.layers,
+      drawnTypesSelector(state),
       libraryIndexSelector(state),
       state.map.customLayers,
     );

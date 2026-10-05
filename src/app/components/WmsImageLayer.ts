@@ -231,7 +231,7 @@ class LWmsImageLayer extends Layer {
       }
 
       this.pulse = new ImageOverlay(BLANK_IMAGE, this.pulseBounds, {
-        pane: 'tilePane',
+        pane: this.props.pane ?? 'tilePane',
         zIndex: this.props.zIndex ?? 1,
         className: 'fm-wms-pulse',
         interactive: false,
@@ -296,9 +296,9 @@ class LWmsImageLayer extends Layer {
     // Starts invisible and replaces the previous image only once it has loaded,
     // so panning doesn't blank the map while the request is in flight.
     const image = new ImageOverlay(url, bounds, {
-      // The map layers stack in `tilePane`; the default `overlayPane` would put
-      // this one above vectors and markers.
-      pane: 'tilePane',
+      // The map layers stack in `tilePane` (or a preset's pane in it); the
+      // default `overlayPane` would put this one above vectors and markers.
+      pane: this.props.pane ?? 'tilePane',
       // Passing `undefined` would shadow Leaflet's own default of 1 and leave
       // the image at `z-index: auto`, below every tile layer.
       zIndex: zIndex ?? 1,

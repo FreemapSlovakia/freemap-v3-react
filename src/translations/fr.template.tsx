@@ -359,7 +359,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'symboles, légende de la carte',
         'modal-about': 'contact, e-mail, avis',
         'modal-installed-maps':
-          'bibliothèque de cartes, désinstaller, configuration des couches, couches, gérer les cartes, barre d’outils, menu, opacité, raccourci, cartes personnalisées, carte personnalisée, wms, tms, ajouter une source',
+          'gestionnaire de cartes, bibliothèque de cartes, désinstaller, configuration des couches, couches, gérer les cartes, barre d’outils, menu, opacité, raccourci, cartes personnalisées, carte personnalisée, wms, tms, ajouter une source',
         'modal-available-maps':
           'bibliothèque de cartes, catalogue, installer, ajouter des cartes, plus de cartes',
         'modal-offline-maps': 'cartes téléchargées, stockage',
@@ -383,6 +383,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-7': 'ombrage, relief, terrain, altitude, lidar',
         'layer-h':
           'ombrage, relief, terrain, altitude, pente, exposition, inversion',
+        'layer-c': 'couleur, vide, fond, uni, teinte, remplissage',
         'layer-l1': 'chemins forestiers, nlc',
         'layer-l2': 'chemins forestiers, nlc',
         'layer-VO': 'vectoriel',
@@ -440,6 +441,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VD: 'Dataviz vectorielle',
       VT: 'Outdoor vectorielle',
       h: 'Ombrage paramétrique du terrain',
+      c: 'Couleur unie',
       WDZ: 'Composition des essences',
       WLT: 'Types de forêts',
       WGE: 'Géologique',
@@ -504,6 +506,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineWarning:
       'Cette carte n’est pas enregistrée pour une utilisation hors ligne',
     customBase: 'Carte personnalisée',
+    mapManager: 'Gestionnaire de cartes',
     installedMaps: 'Cartes installées',
     availableMaps: 'Cartes disponibles',
     newCustomMap: 'Nouvelle carte personnalisée',
@@ -549,7 +552,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineMaps: 'Cartes hors ligne',
     browseCache: 'Mise en cache pendant la navigation',
     legacy: 'obsolète',
-    saveAsShadingMap: 'Enregistrer comme carte personnalisée',
     layersPanel: 'Couches de la carte',
   },
   elevationChart: {

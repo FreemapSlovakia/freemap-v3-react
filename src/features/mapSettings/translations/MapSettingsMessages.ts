@@ -14,7 +14,7 @@ export type MapSettingsMessages = {
     fromLibrary: string;
     custom: string;
     offline: string;
-    combinations: string;
+    presets: string;
     shownIn: string;
     toolbar: string;
     menu: string;
@@ -39,7 +39,7 @@ export type MapSettingsMessages = {
   uninstallMap: string;
   suggestMap: JSX.Element;
   modifyCustomMapTitle: (name: string) => JSX.Element;
-  modifyCombinationTitle: (name: string) => JSX.Element;
+  modifyPresetTitle: (name: string) => JSX.Element;
   resetConfirm: string;
   downloadOffline: string;
   keepOnMap: string;
@@ -50,26 +50,30 @@ export type MapSettingsMessages = {
   keyboardShortcut: string;
   saveSuccess: string;
   customMapSaved: string;
-  combination: string;
-  combinationSaved: string;
-  updateFromCurrentMap: string;
-  baseMap: string;
+  /** A named composite of layers with their setups. */
+  preset: string;
+  presetSaved: string;
+  newPreset: string;
+  /** A link's preset, as one of the account's own. */
+  saveAsPreset: string;
+  /** In the Map layers panel: what is on the map, as a new preset. */
+  saveLayersAsPreset: string;
+  saveLayersAsPresetHint: string;
+  /** A copy of a preset, in its place on the map. */
+  duplicatePreset: string;
+  /** Turns a preset on, from Installed maps. */
+  openPreset: string;
+  /** Adds a map to a preset, in the Map layers panel. */
+  addMap: string;
+  presetEmpty: string;
+  /** Says where a preset's layers are edited. */
+  presetHint: string;
   baseMaps: string;
-  shadingMapHint: string;
   overlays: string;
-  addOverlay: string;
-  noOverlays: string;
-  combinationTooSmall: string;
   useAsBaseMap: string;
   useAsOverlay: string;
-  /** Labels the library map a linked WMS map takes all but its layers from. */
-  basedOn: string;
-  /** Takes an overlay off the map, in the Map layers panel. */
-  turnOff: string;
   /** A WMS map's layers, in the Map layers panel. */
   wmsLayers: {
-    reset: string;
-    saveAsCustomMap: string;
     search: string;
     selectAll: string;
     deselectAll: string;

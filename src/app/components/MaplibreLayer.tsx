@@ -20,12 +20,16 @@ class MaplibreWithLang extends L.MaplibreGL {
 
   _zIndex?: number;
 
+  _opacity?: number;
+
   constructor(options: MaplibreLayerProps) {
     super(options);
 
     this._language = options.language;
 
     this._zIndex = options.zIndex;
+
+    this._opacity = options.opacity;
   }
 
   setLanguage(lang: string) {
@@ -48,10 +52,23 @@ class MaplibreWithLang extends L.MaplibreGL {
     }
   }
 
+  /** On the canvas's container, as the GL map has no opacity of its own. */
+  setOpacity(opacity: number | undefined) {
+    this._opacity = opacity;
+
+    const container = this.getContainer();
+
+    if (container) {
+      container.style.opacity = opacity === undefined ? '' : String(opacity);
+    }
+  }
+
   onAdd(map: L.Map) {
     L.MaplibreGL.prototype.onAdd.call(this, map);
 
     this.setZIndex(this._zIndex);
+
+    this.setOpacity(this._opacity);
 
     if (this._language) {
       this.setLanguage(this._language);
@@ -94,6 +111,7 @@ type MaplibreLayerProps = LayerProps &
   L.LeafletMaplibreGLOptions & {
     language?: string | null;
     zIndex?: number;
+    opacity?: number;
   };
 
 export default createTileLayerComponent<MaplibreWithLang, MaplibreLayerProps>(
@@ -115,6 +133,10 @@ export default createTileLayerComponent<MaplibreWithLang, MaplibreLayerProps>(
 
     if (props.zIndex !== prevProps.zIndex) {
       instance.setZIndex(props.zIndex);
+    }
+
+    if (props.opacity !== prevProps.opacity) {
+      instance.setOpacity(props.opacity);
     }
   },
 );

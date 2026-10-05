@@ -35,6 +35,8 @@ describe('mapLibraryLoadProcessor', () => {
         layersSettings,
         cachedMaps: [],
         customLayers: [],
+        presets: [],
+        linkPresets: [],
       },
       mapLibrary: mapLibraryInitialState,
     } as unknown as RootState;

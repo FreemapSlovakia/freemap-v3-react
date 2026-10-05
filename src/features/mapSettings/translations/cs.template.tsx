@@ -16,7 +16,7 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     fromLibrary: 'Z knihovny',
     custom: 'Vlastní',
     offline: 'Offline',
-    combinations: 'Kombinace',
+    presets: 'Předvolby',
     shownIn: 'Zobrazené',
     toolbar: 'V liště',
     menu: 'V menu',
@@ -50,13 +50,13 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       Upravit vlastní mapu <i>{name}</i>
     </>
   ),
-  modifyCombinationTitle: (name) => (
+  modifyPresetTitle: (name) => (
     <>
-      Upravit kombinaci map <i>{name}</i>
+      Upravit předvolbu mapy <i>{name}</i>
     </>
   ),
   resetConfirm:
-    'Vrátit nastavení panelu nástrojů, nabídky, průhlednosti a klávesových zkratek všech map na výchozí? Nainstalované mapy zůstanou nainstalované.',
+    'Vrátit nastavení panelu nástrojů, nabídky a klávesových zkratek všech map i jejich nastavení (viditelnost, vrstvy, stínování…) na výchozí? Nainstalované mapy zůstanou nainstalované.',
   downloadOffline: 'Stáhnout pro použití offline',
   keepOnMap: 'Ponechat na mapě',
   backToLibrary: 'Zpět do knihovny',
@@ -67,11 +67,7 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveSuccess: 'Změny byly uloženy.',
   useAsBaseMap: 'Použít jako podkladovou mapu',
   useAsOverlay: 'Použít jako překryvnou vrstvu',
-  basedOn: 'Založená na',
-  turnOff: 'Vypnout',
   wmsLayers: {
-    reset: 'Výchozí vrstvy',
-    saveAsCustomMap: 'Uložit jako vlastní mapu',
     search: 'Hledat vrstvy',
     selectAll: 'Vybrat vše',
     deselectAll: 'Zrušit výběr všech',
@@ -79,17 +75,21 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   savingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při ukládání nastavení', err),
   customMapSaved: 'Vlastní mapa byla uložena.',
-  combination: 'Kombinace map',
-  combinationSaved: 'Kombinace map byla uložena.',
-  updateFromCurrentMap: 'Aktualizovat z aktuální mapy',
-  baseMap: 'Podkladová mapa',
+  preset: 'Předvolba mapy',
+  presetSaved: 'Předvolba mapy byla uložena.',
+  newPreset: 'Nová předvolba mapy',
+  saveAsPreset: 'Uložit jako předvolbu',
+  saveLayersAsPreset: 'Uložit vrstvy jako předvolbu',
+  saveLayersAsPresetHint:
+    'Nová předvolba z kopií map na mapě, předvolby rozložené.',
+  duplicatePreset: 'Duplikovat',
+  openPreset: 'Zobrazit na mapě',
+  addMap: 'Přidat mapu',
+  presetEmpty: 'Žádné vrstvy.',
+  presetHint:
+    'Její vrstvy se upravují na mapě: otevřete předvolbu v panelu Vrstvy mapy. Každá změna se uloží hned.',
   baseMaps: 'Podkladové mapy',
-  shadingMapHint:
-    'Parametry stínování se nastavují a ukládají v panelu, který se zobrazí po aktivaci této mapy.',
   overlays: 'Překryvné vrstvy',
-  addOverlay: 'Přidat překryvnou vrstvu…',
-  noOverlays: 'Žádné překryvné vrstvy.',
-  combinationTooSmall: 'Vyžadují se minimálně dvě vrstvy.',
 };
 
 export default cs;

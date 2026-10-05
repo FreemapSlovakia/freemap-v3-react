@@ -28,7 +28,7 @@ function state(over: Record<string, unknown> = {}): RootState {
     trackViewer: { trackGeojson: null, trackUID: null, gpxUrl: null },
     // Saved with the document but deliberately outside the comparison, so the
     // values only have to exist.
-    map: { lat: 48, lon: 17, zoom: 12, layers: ['X'] },
+    map: { lat: 48, lon: 17, zoom: 12, layers: ['X'], layerSetups: {} },
     ...over,
   } as unknown as RootState;
 }

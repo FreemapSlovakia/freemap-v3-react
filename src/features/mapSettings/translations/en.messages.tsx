@@ -14,7 +14,7 @@ const en: MapSettingsMessages = {
     fromLibrary: 'From the library',
     custom: 'Custom',
     offline: 'Offline',
-    combinations: 'Combinations',
+    presets: 'Presets',
     shownIn: 'Shown',
     toolbar: 'In toolbar',
     menu: 'In menu',
@@ -48,13 +48,13 @@ const en: MapSettingsMessages = {
       Modify custom map <i>{name}</i>
     </>
   ),
-  modifyCombinationTitle: (name) => (
+  modifyPresetTitle: (name) => (
     <>
-      Modify map combination <i>{name}</i>
+      Modify map preset <i>{name}</i>
     </>
   ),
   resetConfirm:
-    'Put every map’s toolbar, menu, opacity and shortcut settings back to their defaults? Installed maps stay installed.',
+    'Put every map’s toolbar, menu and shortcut settings and its setup (opacity, layers, shading…) back to their defaults? Installed maps stay installed.',
   downloadOffline: 'Download for offline use',
   keepOnMap: 'Keep on map',
   backToLibrary: 'Back to library',
@@ -64,24 +64,24 @@ const en: MapSettingsMessages = {
   keyboardShortcut: 'Keyboard shortcut',
   saveSuccess: 'Settings have been saved.',
   customMapSaved: 'Custom map has been saved.',
-  combination: 'Map combination',
-  combinationSaved: 'Map combination has been saved.',
-  updateFromCurrentMap: 'Update from current map',
-  baseMap: 'Base map',
+  preset: 'Map preset',
+  presetSaved: 'Map preset has been saved.',
+  newPreset: 'New map preset',
+  saveAsPreset: 'Save as preset',
+  saveLayersAsPreset: 'Save layers as preset',
+  saveLayersAsPresetHint:
+    'A new preset of copies of the maps on the map, presets taken apart.',
+  duplicatePreset: 'Duplicate',
+  openPreset: 'Show on map',
+  addMap: 'Add map',
+  presetEmpty: 'No layers.',
+  presetHint:
+    'Its layers are edited on the map: open the preset in the Map layers panel. Every change is kept at once.',
   baseMaps: 'Base maps',
-  shadingMapHint:
-    'The shading parameters are set and saved in the panel that appears once this map is activated.',
   overlays: 'Overlays',
-  addOverlay: 'Add overlay…',
-  noOverlays: 'No overlays.',
-  combinationTooSmall: 'At least two layers are required.',
   useAsBaseMap: 'Use as base map',
   useAsOverlay: 'Use as overlay',
-  basedOn: 'Based on',
-  turnOff: 'Turn off',
   wmsLayers: {
-    reset: 'Default layers',
-    saveAsCustomMap: 'Save as custom map',
     search: 'Search layers',
     selectAll: 'Select all',
     deselectAll: 'Deselect all',

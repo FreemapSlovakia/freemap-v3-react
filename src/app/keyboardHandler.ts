@@ -19,7 +19,7 @@ import {
 } from '@features/gallery/model/actions.js';
 import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import {
-  mapApplyCombination,
+  mapPresetToggle,
   mapRefocus,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
@@ -253,12 +253,12 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       return mapToggleLayer({ type: layerType });
     }
 
-    const combination = state.map.mapCombinations.find(({ id }) =>
+    const preset = state.map.presets.find(({ id }) =>
       pressed(state.map.layersSettings[id]?.shortcut),
     );
 
-    if (combination) {
-      return mapApplyCombination({ id: combination.id, toggle: true });
+    if (preset) {
+      return mapPresetToggle({ id: preset.id });
     }
   }
 

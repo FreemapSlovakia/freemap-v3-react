@@ -1,8 +1,6 @@
 import {
-  ColorSchema,
   type Shading,
   type Color as ShadingColor,
-  ShadingSchema,
   serializeShading,
 } from '@features/parameterizedShading/model/Shading.js';
 import { currentSite, siteNames, siteUrls } from '@shared/sites.js';
@@ -314,13 +312,12 @@ type IsParametricShadingLayerDef = HasUrl &
   HasZIndex &
   HasScaleWithDpi & {
     technology: 'parametricShading';
-    /** A custom map's own shading; the shared one otherwise. */
-    shading?: Shading;
   };
 
 /** One colour all over: a blank base map, or a tint as an overlay. */
 type IsColorLayerDef = HasZIndex & {
   technology: 'color';
+  /** Until the layer's setup picks one. */
   color: ShadingColor;
 };
 
@@ -359,9 +356,8 @@ export type IsWmsLayerDef = HasUrl &
   HasZIndex &
   HasMaxNativeZoom & {
     technology: 'wms';
+    /** Drawn until the layer's setup ticks others. */
     layers: string[];
-    /** A custom map's library WMS map, whose server, zooms and credits it takes. */
-    source?: string;
     /**
      * Go back to a grid of tiles instead of one image per settled view. Needed
      * for a server that caps the image size below what a viewport asks for, or
@@ -426,15 +422,19 @@ export type IsOverlayLayerDef = HasZIndex & {
 // maps store their actual downloaded extent under `bounds`, which wins over any
 // `bbox` inherited from the source layer; declarative layers use `bbox`.
 /**
- * The opacity an overlay is drawn at: the user's own setting if they have one,
- * otherwise whatever the layer asks for, otherwise opaque.
+ * The opacity a layer is drawn at: the user's own setting if they have one,
+ * otherwise, for an overlay, whatever the layer asks for, otherwise opaque. A
+ * base map switched from an overlay doesn't take the overlay's default.
  */
 export const resolveLayerOpacity = (
   def: object | undefined,
   opacity: number | undefined,
 ): number =>
   opacity ??
-  (def && 'defaultOpacity' in def && typeof def.defaultOpacity === 'number'
+  (def &&
+  !('layer' in def && def.layer === 'base') &&
+  'defaultOpacity' in def &&
+  typeof def.defaultOpacity === 'number'
     ? def.defaultOpacity
     : 1);
 
@@ -507,6 +507,7 @@ export type IsAllTechnologiesLayerDef =
   | IsWmsLayerDef
   | IsMapLibreLayerDef
   | IsParametricShadingLayerDef
+  | IsColorLayerDef
   | IsGalleryLayerDef
   | IsInteractiveLayerDef
   | IsWikipediaLayerDef
@@ -525,12 +526,11 @@ export type IsCustomLayer = {
   iconSpec?: string;
 };
 
+/** What a custom map may be: a server the user adds. */
 export type IsCustomLayerTechnologiesDef =
   | IsTileLayerDef
   | IsWmsLayerDef
-  | IsMapLibreLayerDef
-  | IsParametricShadingLayerDef
-  | IsColorLayerDef;
+  | IsMapLibreLayerDef;
 
 export type CustomBaseLayerDef<
   T extends IsCustomLayerTechnologiesDef = IsCustomLayerTechnologiesDef,
@@ -577,7 +577,6 @@ export const IsWmsLayerDefSchema = z.object({
   maxNativeZoom: z.number().optional(),
   zIndex: z.number().optional(),
   tiled: z.boolean().optional(),
-  source: z.string().optional(),
 });
 
 export const IsMapLibreLayerDefSchema = z.object({
@@ -585,30 +584,9 @@ export const IsMapLibreLayerDefSchema = z.object({
   url: z.string(),
 });
 
-export const IsParametricShadingLayerDefSchema = z.object({
-  technology: z.literal('parametricShading'),
-  url: z.string(),
-  maxNativeZoom: z.number().optional(),
-  zIndex: z.number().optional(),
-  scaleWithDpi: z.boolean().optional(),
-  shading: ShadingSchema.optional(),
-});
-
-export const IsColorLayerDefSchema = z.object({
-  technology: z.literal('color'),
-  color: ColorSchema,
-  zIndex: z.number().optional(),
-});
-
 export const IsCustomLayerTechnologiesDefSchema = z.discriminatedUnion(
   'technology',
-  [
-    IsTileLayerDefSchema,
-    IsWmsLayerDefSchema,
-    IsMapLibreLayerDefSchema,
-    IsParametricShadingLayerDefSchema,
-    IsColorLayerDefSchema,
-  ],
+  [IsTileLayerDefSchema, IsWmsLayerDefSchema, IsMapLibreLayerDefSchema],
 );
 
 export const CustomLayerDefGenericSchema = <

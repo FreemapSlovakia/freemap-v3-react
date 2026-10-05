@@ -373,7 +373,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'zeichenerklärung, symbole, kartenlegende',
         'modal-about': 'kontakt, e-mail, feedback',
         'modal-installed-maps':
-          'kartenbibliothek, deinstallieren, ebenenkonfiguration, ebenen, karten verwalten, symbolleiste, menü, deckkraft, tastenkürzel, benutzerdefinierte karten, eigene karte, wms, tms, kartenquelle hinzufügen',
+          'kartenverwaltung, kartenbibliothek, deinstallieren, ebenenkonfiguration, ebenen, karten verwalten, symbolleiste, menü, deckkraft, tastenkürzel, benutzerdefinierte karten, eigene karte, wms, tms, kartenquelle hinzufügen',
         'modal-available-maps':
           'kartenbibliothek, katalog, installieren, karten hinzufügen, weitere karten',
         'modal-offline-maps': 'heruntergeladene karten, speicher',
@@ -398,6 +398,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-7': 'schummerung, relief, gelände, höhe, lidar',
         'layer-h':
           'schummerung, relief, gelände, höhe, hangneigung, exposition, inversion',
+        'layer-c': 'farbe, leer, hintergrund, einfarbig, tönung, füllung',
         'layer-l1': 'waldwege, nlc',
         'layer-l2': 'waldwege, nlc',
         'layer-VO': 'vektor',
@@ -450,6 +451,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       VD: 'Dataviz Vektor',
       VT: 'Outdoor Vektor',
       h: 'Parametrische Geländeschattierung',
+      c: 'Einfarbige Fläche',
       M: 'Wikimedia Commons Fotos',
       WDZ: 'Baumartenzusammensetzung',
       WLT: 'Waldtypen',
@@ -534,6 +536,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Overlay',
     },
     showMore: 'Mehr Karten anzeigen',
+    mapManager: 'Kartenverwaltung',
     installedMaps: 'Installierte Karten',
     availableMaps: 'Verfügbare Karten',
     technologies: {
@@ -559,7 +562,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         veraltet. Zur modernen <b>{messages.mapLayers.letters[to]}</b>wechseln?
       </>
     ),
-    saveAsShadingMap: 'Als benutzerdefinierte Karte speichern',
     layersPanel: 'Kartenebenen',
   },
 

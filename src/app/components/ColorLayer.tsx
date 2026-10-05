@@ -10,7 +10,7 @@ type Props = LayerProps & {
   maxZoom?: number;
 };
 
-/** One colour all over: a single element in `tilePane`, stacked like the tile layers. */
+/** One colour all over: a single element in its pane, stacked like the tile layers. */
 class LColorLayer extends Layer {
   private props: Props;
 
@@ -32,7 +32,11 @@ class LColorLayer extends Layer {
   }
 
   onAdd(map: LeafletMap) {
-    this.el = DomUtil.create('div', 'leaflet-layer', map.getPane('tilePane'));
+    this.el = DomUtil.create(
+      'div',
+      'leaflet-layer',
+      map.getPane(this.props.pane ?? 'tilePane'),
+    );
 
     this.el.style.pointerEvents = 'none';
 

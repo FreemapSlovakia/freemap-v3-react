@@ -7,15 +7,23 @@ import { useStore } from 'react-redux';
 
 const OPEN_KEY = 'fm.mapLayersPanel.open';
 
-/** Whether the Map layers panel is open, and which of its rows is expanded. */
-type PanelState = { open: boolean; expanded: string | null };
+/**
+ * Where the panel is: the stack, a preset in it (`{ preset }`), or the
+ * settings of a map (`{ type }`, with `preset` a preset's copy of it).
+ */
+export type PanelPlace = { preset?: string; type?: string };
+
+/** Whether the Map layers panel is open, and where in it. */
+type PanelState = { open: boolean; place: PanelPlace };
+
+const TOP: PanelPlace = {};
 
 let state: PanelState | undefined;
 
 const listeners = new Set<() => void>();
 
 function getState(): PanelState {
-  state ??= { open: storage.getItem(OPEN_KEY) === 'true', expanded: null };
+  state ??= { open: storage.getItem(OPEN_KEY) === 'true', place: TOP };
 
   return state;
 }
@@ -47,7 +55,7 @@ function update(patch: Partial<PanelState>, persist: boolean) {
 export function useMapLayersPanel() {
   const open = useSyncExternalStore(subscribe, () => getState().open);
 
-  const expanded = useSyncExternalStore(subscribe, () => getState().expanded);
+  const place = useSyncExternalStore(subscribe, () => getState().place);
 
   const cookiesEnabled = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult !== null,
@@ -58,18 +66,18 @@ export function useMapLayersPanel() {
     [cookiesEnabled],
   );
 
-  const setExpanded = useCallback(
-    (expanded: string | null) => update({ expanded }, false),
+  const setPlace = useCallback(
+    (place: PanelPlace) => update({ place }, false),
     [],
   );
 
-  /** Opens the panel on this map's row. */
+  /** Opens the panel on this map's settings. */
   const reveal = useCallback(
-    (type: string) => update({ open: true, expanded: type }, cookiesEnabled),
+    (type: string) => update({ open: true, place: { type } }, cookiesEnabled),
     [cookiesEnabled],
   );
 
-  return { open, setOpen, expanded, setExpanded, reveal };
+  return { open, setOpen, place, setPlace, reveal };
 }
 
 // The kinds of map whose settings are what turning one on is usually for.
