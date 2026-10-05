@@ -662,7 +662,7 @@ export function MapSwitchButton(): ReactElement {
     ) : null;
   }
 
-  function presetButton(preset: MapPreset, layer: 'base' | 'overlay') {
+  function presetButton(preset: MapPreset) {
     const { id } = preset;
 
     const active = activeLayers.includes(presetItem(id));
@@ -688,7 +688,6 @@ export function MapSwitchButton(): ReactElement {
             active={active}
             onClick={() => dispatch(mapPresetToggle({ id }))}
             {...props}
-            className={clsx(layer === 'overlay' && 'fm-overlay-corner')}
           >
             <CustomMapGlyph spec={preset.iconSpec} kind="preset" />
           </Button>
@@ -705,169 +704,181 @@ export function MapSwitchButton(): ReactElement {
 
   const overlayHasItems = overlayItems.some(Boolean);
 
+  function toolbarButton(entry: Entry) {
+    if (entry.preset) {
+      return presetButton(entry.preset);
+    }
+
+    const { def } = entry;
+
+    const { type } = def;
+
+    const showInToolbar =
+      layersSettings[def.type]?.showInToolbar ??
+      (!def.custom && Boolean(def.defaultInToolbar));
+
+    // Out of `minZoom` or coverage doesn't hide it: the accessories below
+    // offer the fix.
+    if (!activeLayers.includes(def.type) && !showInToolbar) {
+      return null;
+    }
+
+    const active = isLayerOn(def);
+
+    // Accessories are buttons joined to the layer button, each with its
+    // own fix-up action, so clicking the layer button itself only toggles
+    // the layer.
+    const accessories: {
+      key: string;
+      icon: ReactElement;
+      tooltip: ReactNode;
+      onClick: (e: MouseEvent<HTMLButtonElement>) => void;
+    }[] = [];
+
+    // a layer whose tiles aren't in view gets a button that zooms to its
+    // coverage, at the zoom the layer needs when that is further in than
+    // the extent would fit
+    const outOfCoverageBbox = getOutOfCoverageBbox(def);
+
+    if (outOfCoverageBbox) {
+      accessories.push({
+        key: 'coverage',
+        icon: def.zoomOk ? (
+          <FaGlobeEurope className="text-warning" />
+        ) : (
+          <FaSearchLocation className="text-warning" />
+        ),
+        tooltip: def.zoomOk
+          ? m?.mapLayers.outsideViewWarning
+          : findLabel(def.minZoom!),
+        onClick: () => {
+          dispatch(mapToggleLayer({ type, enable: true }));
+
+          dispatch(
+            mapFitBbox({
+              bbox: outOfCoverageBbox,
+              maxZoom: 'maxNativeZoom' in def ? def.maxNativeZoom : undefined,
+              minZoom: def.minZoom,
+            }),
+          );
+        },
+      });
+    } else if (!def.zoomOk) {
+      accessories.push({
+        key: 'zoom',
+        icon: <FaSearchPlus className="text-warning" />,
+        tooltip: m?.mapLayers.minZoomWarning(def.minZoom!),
+        onClick: () => {
+          dispatch(mapToggleLayer({ type, enable: true }));
+
+          dispatch(mapRefocus({ zoom: def.minZoom }));
+        },
+      });
+    }
+
+    if (
+      becomePremium &&
+      !def.custom &&
+      def.premiumFromZoom !== undefined &&
+      zoom >= premiumMapZoom(def.premiumFromZoom, def.scaleWithDpi)
+    ) {
+      accessories.push({
+        key: 'premium',
+        icon: <FaGem className="text-warning" />,
+        tooltip: (
+          <>
+            {prm?.premiumOnly} {prm?.clickToActivate}
+          </>
+        ),
+        onClick: (e) => becomePremium(e),
+      });
+    }
+
+    const joined = accessories.length > 0;
+
+    return (
+      <Fragment key={type}>
+        <LongPressTooltip
+          label={
+            <span className="d-inline-flex flex-wrap align-items-center gap-1">
+              {nameOf(def)}
+
+              {countryFlags(def)}
+
+              {commonBadges(def, 'tooltip')}
+            </span>
+          }
+        >
+          {({ props }) => (
+            <Button
+              variant="secondary"
+              data-type={type}
+              active={active}
+              onClick={handleLayerButtonClick}
+              {...props}
+              className={clsx(
+                // A crowded toolbar shrinks its buttons; the badge would
+                // then wrap under the icon.
+                'text-nowrap',
+                joined && 'pe-1 border-end-0 fm-btn-joined',
+              )}
+            >
+              {def.custom ? (
+                <CustomMapGlyph spec={def.iconSpec} kind={customMapKind(def)} />
+              ) : (
+                def.icon
+              )}
+
+              {commonBadges(def, 'toolbar')}
+            </Button>
+          )}
+        </LongPressTooltip>
+
+        {accessories.map((acc, i) => (
+          <LongPressTooltip key={acc.key} label={acc.tooltip}>
+            {({ props }) => (
+              <Button
+                variant="secondary"
+                active={active}
+                onClick={acc.onClick}
+                {...props}
+                className={clsx(
+                  'fm-btn-joined border-start-0',
+                  i === accessories.length - 1 ? 'ps-1' : 'px-1 border-end-0',
+                )}
+              >
+                {acc.icon}
+              </Button>
+            )}
+          </LongPressTooltip>
+        ))}
+      </Fragment>
+    );
+  }
+
+  const toolbarButtons = (isWide ? entries : []).flatMap((entry) => {
+    const button = toolbarButton(entry);
+
+    return button ? [{ kind: kindOf(entry), button }] : [];
+  });
+
+  // Seams set base maps, overlays and the menu apart; overlays sort last.
+  const seam = (key: string) => (
+    <span key={key} className="btn btn-secondary fm-seam" />
+  );
+
   return (
     <>
       <div className="px-1 d-none d-sm-block">{m?.mapLayers.switch}</div>
 
       <ButtonGroup>
-        {(isWide ? entries : []).map((entry) => {
-          if (entry.preset) {
-            return presetButton(entry.preset, entry.layer);
-          }
+        {toolbarButtons.flatMap(({ kind, button }, i) =>
+          i > 0 && kind === 'overlay' && toolbarButtons[i - 1].kind === 'base'
+            ? [seam('seam-overlays'), button]
+            : [button],
+        )}
 
-          const { def } = entry;
-
-          const { type } = def;
-
-          const showInToolbar =
-            layersSettings[def.type]?.showInToolbar ??
-            (!def.custom && Boolean(def.defaultInToolbar));
-
-          // Out of `minZoom` or coverage doesn't hide it: the accessories below
-          // offer the fix.
-          if (!activeLayers.includes(def.type) && !showInToolbar) {
-            return null;
-          }
-
-          const active = isLayerOn(def);
-
-          // Accessories are buttons joined to the layer button, each with its
-          // own fix-up action, so clicking the layer button itself only toggles
-          // the layer.
-          const accessories: {
-            key: string;
-            icon: ReactElement;
-            tooltip: ReactNode;
-            onClick: (e: MouseEvent<HTMLButtonElement>) => void;
-          }[] = [];
-
-          // a layer whose tiles aren't in view gets a button that zooms to its
-          // coverage, at the zoom the layer needs when that is further in than
-          // the extent would fit
-          const outOfCoverageBbox = getOutOfCoverageBbox(def);
-
-          if (outOfCoverageBbox) {
-            accessories.push({
-              key: 'coverage',
-              icon: def.zoomOk ? (
-                <FaGlobeEurope className="text-warning" />
-              ) : (
-                <FaSearchLocation className="text-warning" />
-              ),
-              tooltip: def.zoomOk
-                ? m?.mapLayers.outsideViewWarning
-                : findLabel(def.minZoom!),
-              onClick: () => {
-                dispatch(mapToggleLayer({ type, enable: true }));
-
-                dispatch(
-                  mapFitBbox({
-                    bbox: outOfCoverageBbox,
-                    maxZoom:
-                      'maxNativeZoom' in def ? def.maxNativeZoom : undefined,
-                    minZoom: def.minZoom,
-                  }),
-                );
-              },
-            });
-          } else if (!def.zoomOk) {
-            accessories.push({
-              key: 'zoom',
-              icon: <FaSearchPlus className="text-warning" />,
-              tooltip: m?.mapLayers.minZoomWarning(def.minZoom!),
-              onClick: () => {
-                dispatch(mapToggleLayer({ type, enable: true }));
-
-                dispatch(mapRefocus({ zoom: def.minZoom }));
-              },
-            });
-          }
-
-          if (
-            becomePremium &&
-            !def.custom &&
-            def.premiumFromZoom !== undefined &&
-            zoom >= premiumMapZoom(def.premiumFromZoom, def.scaleWithDpi)
-          ) {
-            accessories.push({
-              key: 'premium',
-              icon: <FaGem className="text-warning" />,
-              tooltip: (
-                <>
-                  {prm?.premiumOnly} {prm?.clickToActivate}
-                </>
-              ),
-              onClick: (e) => becomePremium(e),
-            });
-          }
-
-          const joined = accessories.length > 0;
-
-          return (
-            <Fragment key={type}>
-              <LongPressTooltip
-                label={
-                  <span className="d-inline-flex flex-wrap align-items-center gap-1">
-                    {nameOf(def)}
-
-                    {countryFlags(def)}
-
-                    {commonBadges(def, 'tooltip')}
-                  </span>
-                }
-              >
-                {({ props }) => (
-                  <Button
-                    variant="secondary"
-                    data-type={type}
-                    active={active}
-                    onClick={handleLayerButtonClick}
-                    {...props}
-                    className={clsx(
-                      // A crowded toolbar shrinks its buttons; the badge would
-                      // then wrap under the icon.
-                      'text-nowrap',
-                      joined && 'pe-1 border-end-0 fm-btn-joined',
-                      def.layer === 'overlay' && 'fm-overlay-corner',
-                    )}
-                  >
-                    {def.custom ? (
-                      <CustomMapGlyph
-                        spec={def.iconSpec}
-                        kind={customMapKind(def)}
-                      />
-                    ) : (
-                      def.icon
-                    )}
-
-                    {commonBadges(def, 'toolbar')}
-                  </Button>
-                )}
-              </LongPressTooltip>
-
-              {accessories.map((acc, i) => (
-                <LongPressTooltip key={acc.key} label={acc.tooltip}>
-                  {({ props }) => (
-                    <Button
-                      variant="secondary"
-                      active={active}
-                      onClick={acc.onClick}
-                      {...props}
-                      className={clsx(
-                        'fm-btn-joined border-start-0',
-                        i === accessories.length - 1
-                          ? 'ps-1'
-                          : 'px-1 border-end-0',
-                      )}
-                    >
-                      {acc.icon}
-                    </Button>
-                  )}
-                </LongPressTooltip>
-              ))}
-            </Fragment>
-          );
-        })}
+        {toolbarButtons.length > 0 && seam('seam-menu')}
 
         <Dropdown
           show={menuShown}

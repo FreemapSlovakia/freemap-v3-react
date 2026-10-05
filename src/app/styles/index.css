@@ -371,18 +371,11 @@ button#freemap-logo {
   flex-shrink: 0;
 }
 
-/* An overlay's toolbar button: a corner set off from the base maps'. */
-.fm-overlay-corner {
-  position: relative;
-}
-
-.fm-overlay-corner::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  border-top: 0.5rem solid var(--bs-info);
-  border-right: 0.5rem solid transparent;
+/* A sliver of a `.btn-secondary` between groups of buttons in a `.btn-group`. */
+.btn-group > .fm-seam {
+  flex: 0 0 auto;
+  width: 5px;
+  padding: 0;
   pointer-events: none;
 }
 
