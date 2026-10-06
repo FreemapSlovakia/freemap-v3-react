@@ -200,7 +200,6 @@ export function WmsLayerTree({
           {searchable && (
             <Form.Control
               type="search"
-              size="sm"
               className="flex-grow-1"
               placeholder={msm?.wmsLayers.search}
               value={query}
@@ -212,7 +211,6 @@ export function WmsLayerTree({
             {({ props }) => (
               <Button
                 variant="secondary"
-                size="sm"
                 className={clsx(!searchable && 'ms-auto')}
                 disabled={targets.every((n) => selected.includes(n))}
                 onClick={selectAll}
@@ -227,7 +225,6 @@ export function WmsLayerTree({
             {({ props }) => (
               <Button
                 variant="secondary"
-                size="sm"
                 disabled={!targets.some((n) => selected.includes(n))}
                 onClick={deselectAll}
                 {...props}

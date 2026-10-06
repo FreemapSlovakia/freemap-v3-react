@@ -82,7 +82,15 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Uložit vrstvy jako předvolbu',
   saveLayersAsPresetHint:
     'Nová předvolba z kopií map na mapě, předvolby rozložené.',
+  turnOffToSavePreset: (layers) =>
+    `Předvolba nemůže obsahovat datové vrstvy. Pro její uložení vypněte: ${layers}.`,
   duplicatePreset: 'Duplikovat',
+  saveAsMap: 'Uložit jako mapu',
+  namedMapHint:
+    'Její stínování, vrstvy WMS nebo barva se nastavují v panelu Vrstvy mapy a změna se projeví všude, kde se mapa používá.',
+  newNamedMap: 'Nová pojmenovaná mapa',
+  unappliedShading:
+    'Změny stínování ještě nejsou aplikovány: klikněte na název mapy a potom na Použít.',
   openPreset: 'Zobrazit na mapě',
   addMap: 'Přidat mapu',
   presetEmpty: 'Žádné vrstvy.',

@@ -2,6 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   drawnTypesSelector,
   integratedLayerDefsSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -22,7 +23,7 @@ import { useMapDetailsMessages } from '../translations/useMapDetailsMessages.js'
 export function MapDetailsMenu(): ReactElement | null {
   const [sourcesOpen, setSourcesOpen] = useState(false);
 
-  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
+  const customLayerDefs = useAppSelector(resolvedCustomLayersSelector);
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 

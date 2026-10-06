@@ -7,7 +7,7 @@ import type { MapPreset } from '@features/map/model/mapPreset.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { layerLabel } from '@shared/layerName.js';
-import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import type { StoredCustomLayerDef } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { useDispatch } from 'react-redux';
 
@@ -29,7 +29,7 @@ export function useCustomMapActions() {
       confirmStyle: 'danger',
     });
 
-  const deleteCustomMap = async (def: CustomLayerDef) => {
+  const deleteCustomMap = async (def: StoredCustomLayerDef) => {
     if (!(await confirmDelete(layerLabel(def, m)))) {
       return;
     }

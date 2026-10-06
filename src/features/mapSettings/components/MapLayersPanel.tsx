@@ -31,7 +31,12 @@ import {
   type SetupTarget,
 } from '@features/map/model/actions.js';
 import { canSwitchKind } from '@features/map/model/layerKind.js';
-import { isEmptySetup, setupKey } from '@features/map/model/layerSetup.js';
+import {
+  hasOwnConfig,
+  isEmptySetup,
+  setupKey,
+  usageOf,
+} from '@features/map/model/layerSetup.js';
 import {
   isLinkPreset,
   isPresettable,
@@ -42,6 +47,7 @@ import {
 import { layerKindsSelector } from '@features/map/model/selectors.js';
 import {
   installedLibraryIndexSelector,
+  type MapRef,
   mapByIdSelector,
   nativeKindsSelector,
   overlayStackSelector,
@@ -62,29 +68,37 @@ import {
   LayerKindMark,
   MapLayerItem,
 } from '@shared/components/MapLayerItem.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
+import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useFillToBottom } from '@shared/hooks/useFillToBottom.js';
+import { layerLabel } from '@shared/layerName.js';
 import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
 import {
   type CSSProperties,
+  createContext,
   Fragment,
   type HTMLAttributes,
   type ReactElement,
   type ReactNode,
+  useContext,
   useRef,
   useState,
 } from 'react';
 import { Button, Card, Dropdown } from 'react-bootstrap';
 import {
-  FaAngleRight,
   FaArrowLeft,
   FaCopy,
   FaLayerGroup,
   FaPencilAlt,
   FaPlus,
+  FaSave,
   FaTimes,
   FaTrash,
   FaUndo,
@@ -94,6 +108,7 @@ import { useDispatch } from 'react-redux';
 import { useTargetDef, useTargetSetup } from '../layerTarget.js';
 import { type PanelPlace, useMapLayersPanel } from '../mapLayersPanelStore.js';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
+import { LayerKindButton } from './LayerKindButton.js';
 import { LayerKindSwitch } from './LayerKindSwitch.js';
 import { LayerOpacitySlider } from './LayerOpacitySlider.js';
 import classes from './MapLayersPanel.module.css';
@@ -169,7 +184,11 @@ export default function MapLayersPanel(): ReactElement {
   return (
     <Card body className={clsx(classes.panel, 'fm-frosted', 'mt-2 ms-2')}>
       <div ref={setPanel} className="d-flex flex-column">
-        <div className="d-flex align-items-center gap-2 p-1 ps-2">
+        {/* The bare icon at the top lines up with the rows' icons; a button
+            sits at the edge as the close button does. */}
+        <div
+          className={clsx('d-flex align-items-center gap-2 p-1', top && 'ps-3')}
+        >
           {top ? (
             <FaLayerGroup className="flex-shrink-0" />
           ) : (
@@ -177,7 +196,6 @@ export default function MapLayersPanel(): ReactElement {
               {({ props }) => (
                 <Button
                   variant="secondary"
-                  size="sm"
                   className="flex-shrink-0"
                   onClick={() => setPlace(up)}
                   {...props}
@@ -227,7 +245,14 @@ export default function MapLayersPanel(): ReactElement {
 }
 
 /** A preset's name with its marks, laid out as `MapLayerItem` lays out a map's. */
-function PresetName({ id }: { id: string }): ReactElement | null {
+function PresetName({
+  id,
+  noKindMark,
+}: {
+  id: string;
+  /** Where the row shows the kind beside the opacity. */
+  noKindMark?: boolean;
+}): ReactElement | null {
   const preset = useAppSelector((state) => presetByIdSelector(state)[id]);
 
   const kind = useAppSelector((state) => presetKindsSelector(state)[id]);
@@ -238,7 +263,7 @@ function PresetName({ id }: { id: string }): ReactElement | null {
 
   return (
     <span className="d-inline-flex align-items-center gap-1 mw-100">
-      {kind && <LayerKindMark kind={kind} />}
+      {kind && !noKindMark && <LayerKindMark kind={kind} />}
 
       <span className="d-inline-flex flex-shrink-0">
         <CustomMapGlyph spec={preset.iconSpec} kind="preset" />
@@ -327,7 +352,7 @@ function SortableRows({
   };
 
   return (
-    <>
+    <HandleColumnContext.Provider value={sortable.length > 0}>
       <DndContext
         sensors={sensors}
         collisionDetection={underPointer}
@@ -339,7 +364,7 @@ function SortableRows({
           items={sortable}
           strategy={verticalListSortingStrategy}
         >
-          <div ref={ref} className={classes.overlays}>
+          <div ref={ref}>
             {items.map((item) =>
               sortable.includes(item) ? (
                 <SortableItem key={item} id={item} render={render} />
@@ -352,7 +377,7 @@ function SortableRows({
       </DndContext>
 
       {bottom}
-    </>
+    </HandleColumnContext.Provider>
   );
 }
 
@@ -386,26 +411,45 @@ function SortableItem({
   });
 }
 
+/**
+ * Whether the list keeps a column for drag handles: where any row has one, so
+ * the names beside it line up.
+ */
+const HandleColumnContext = createContext(true);
+
 /** One row: what it is, its opacity, taking it off, and opening it. */
 function Row({
   drag,
   label,
   onOpen,
+  kind,
   opacity,
   onOpacity,
   onRemove,
 }: {
   drag?: Drag;
   label: ReactNode;
+  /** Unset, the row has no page to open. */
   onOpen?: () => void;
+  /** Its base/overlay mark or switch, beside the opacity. */
+  kind?: ReactNode;
   opacity?: number;
   onOpacity?: (opacity: number) => void;
   onRemove?: () => void;
 }): ReactElement {
   const m = useMessages();
 
+  const handleColumn = useContext(HandleColumnContext);
+
   return (
-    <div ref={drag?.setNodeRef} style={drag?.style} className={classes.row}>
+    // Across the list's padding to the panel's edges and padded as a menu
+    // item is; the trash button reaches into that by its own padding, so its
+    // icon keeps the same distance from the edge as the row's first one.
+    <div
+      ref={drag?.setNodeRef}
+      style={drag?.style}
+      className={clsx(classes.row, 'mx-n2 px-3')}
+    >
       <div className="d-flex align-items-center gap-1">
         {drag ? (
           <span
@@ -417,7 +461,7 @@ function Row({
             <MdDragIndicator />
           </span>
         ) : (
-          <span className={classes.handleSpace} />
+          handleColumn && <span className={classes.handleSpace} />
         )}
 
         <button
@@ -432,6 +476,8 @@ function Row({
           {label}
         </button>
 
+        {kind && <span className="flex-shrink-0 d-inline-flex">{kind}</span>}
+
         {opacity !== undefined && onOpacity && (
           <span className="flex-shrink-0 d-inline-flex">
             <OpacityButton value={opacity} onChange={onOpacity} />
@@ -444,7 +490,7 @@ function Row({
               <Button
                 variant="link"
                 size="sm"
-                className="flex-shrink-0 text-body"
+                className="flex-shrink-0 text-body px-1 me-n1"
                 onClick={onRemove}
                 {...props}
               >
@@ -453,15 +499,6 @@ function Row({
             )}
           </LongPressTooltip>
         )}
-
-        <button
-          type="button"
-          className={clsx(classes.rowToggle, classes.chevron, 'flex-shrink-0')}
-          disabled={!onOpen}
-          onClick={onOpen}
-        >
-          {onOpen && <FaAngleRight />}
-        </button>
       </div>
     </div>
   );
@@ -477,11 +514,20 @@ function MapRow({
   drag?: Drag;
   onOpen: (place: PanelPlace) => void;
 }): ReactElement | null {
+  const msm = useMapSettingsMessages();
+
   const dispatch = useDispatch();
 
   const def = useTargetDef(target);
 
+  // Shading edits waiting for Apply, kept while the page is left.
+  const unapplied = useAppSelector((state) =>
+    Boolean(state.map.shadingDrafts[target.type]),
+  );
+
   const setup = useTargetSetup(target);
+
+  const ref = useAppSelector((state) => mapByIdSelector(state)[target.type]);
 
   // A base map too: the map is then left without one, its background showing.
   const remove = () =>
@@ -503,11 +549,39 @@ function MapRow({
     );
   }
 
+  // An offline map keeps the kind it was saved with.
+  const switchable = ref?.origin !== 'cached' && canSwitchKind(def.technology);
+
   return (
     <Row
       drag={drag}
-      label={<MapLayerItem def={def} truncate />}
-      onOpen={() => onOpen(target)}
+      label={
+        // The name gives way so the triangle stays in view.
+        <span className="d-inline-flex align-items-center gap-1 mw-100">
+          <span className="d-inline-flex min-w-0">
+            <MapLayerItem def={def} truncate noKindMark />
+          </span>
+
+          {unapplied && (
+            <UnsavedWarningIcon
+              className="flex-shrink-0"
+              tooltip={msm?.unappliedShading}
+            />
+          )}
+        </span>
+      }
+      onOpen={mapHasPage(ref) ? () => onOpen(target) : undefined}
+      kind={
+        <LayerKindButton
+          value={def.layer}
+          onChange={
+            switchable
+              ? (kind) =>
+                  dispatch(mapLayerSetupChange({ ...target, setup: { kind } }))
+              : undefined
+          }
+        />
+      }
       opacity={resolveLayerOpacity(def, setup?.opacity)}
       onOpacity={(opacity) =>
         dispatch(mapLayerSetupChange({ ...target, setup: { opacity } }))
@@ -530,6 +604,8 @@ function PresetRow({
 
   const preset = useAppSelector((state) => presetByIdSelector(state)[id]);
 
+  const kind = useAppSelector((state) => presetKindsSelector(state)[id]);
+
   if (!preset) {
     return null;
   }
@@ -537,8 +613,10 @@ function PresetRow({
   return (
     <Row
       drag={drag}
-      label={<PresetName id={id} />}
+      label={<PresetName id={id} noKindMark />}
       onOpen={() => onOpen({ preset: id })}
+      // By whether it holds a base map; switched on its layers' pages.
+      kind={kind && <LayerKindButton value={kind} />}
       opacity={preset.opacity ?? 1}
       onOpacity={(opacity) =>
         dispatch(mapPresetChange({ id, change: { opacity } }))
@@ -548,12 +626,26 @@ function PresetRow({
   );
 }
 
+/** Whether a map has a page: more to set than the row's kind and opacity. */
+function mapHasPage(ref: MapRef | undefined): boolean {
+  if (ref?.origin === 'custom') {
+    return true; // Modify, at least
+  }
+
+  return (
+    ref?.origin === 'library' &&
+    hasOwnConfig(ref.def?.technology ?? ref.entry.technology)
+  );
+}
+
 /** The stack: the overlays and overlay presets as they stack, then the base. */
 function Stack({
   onOpen,
 }: {
   onOpen: (place: PanelPlace) => void;
 }): ReactElement {
+  const m = useMessages();
+
   const msm = useMapSettingsMessages();
 
   const dispatch = useDispatch();
@@ -585,14 +677,16 @@ function Stack({
 
   const maps = layers.filter(isMap);
 
-  // Two maps or presets, or one map set up its own way, and no data layer on,
-  // which a preset can't hold. `i` only hides the tools' features.
+  // Two maps or presets, or one map at its own opacity or kind (its shading
+  // and layers stay the map's).
   const makesNew =
-    (maps.length > 1 ||
-      (maps.length === 1 &&
-        presetIdOf(maps[0]!) === undefined &&
-        !isEmptySetup(layerSetups[maps[0]!]))) &&
-    layers.every((item) => item === 'i' || isMap(item));
+    maps.length > 1 ||
+    (maps.length === 1 &&
+      presetIdOf(maps[0]!) === undefined &&
+      !isEmptySetup(usageOf(layerSetups[maps[0]!])));
+
+  // A preset can't hold them; `i` only hides the tools' features.
+  const dataLayers = layers.filter((item) => item !== 'i' && !isMap(item));
 
   const render = (item: string, drag?: Drag) => {
     const id = presetIdOf(item);
@@ -618,25 +712,36 @@ function Stack({
           setup, and a lone preset would come out a copy, which Duplicate is for. */}
       {!window.fmEmbedded && makesNew && (
         <div className="d-flex mt-2">
-          <LongPressTooltip label={msm?.saveLayersAsPresetHint}>
-            {({ props }) => (
-              <Button
-                variant="secondary"
-                size="sm"
-                className="ms-auto text-truncate"
-                disabled={!canSave}
-                onClick={() =>
-                  dispatch(
-                    setActiveModal({
-                      type: 'installed-maps',
-                      customMap: { addPreset: true, returnTo: null },
-                    }),
+          <LongPressTooltip
+            label={
+              dataLayers.length
+                ? msm?.turnOffToSavePreset(
+                    dataLayers
+                      .map((type) => layerLabel({ type }, m))
+                      .join(', '),
                   )
-                }
-                {...props}
-              >
-                <MdDashboardCustomize /> {msm?.saveLayersAsPreset}
-              </Button>
+                : msm?.saveLayersAsPresetHint
+            }
+          >
+            {/* The span takes the tooltip, which a disabled button can't. */}
+            {({ props }) => (
+              <span className="ms-auto d-flex min-w-0" {...props}>
+                <Button
+                  variant="secondary"
+                  className="text-truncate"
+                  disabled={!canSave || dataLayers.length > 0}
+                  onClick={() =>
+                    dispatch(
+                      setActiveModal({
+                        type: 'installed-maps',
+                        customMap: { addPreset: true, returnTo: null },
+                      }),
+                    )
+                  }
+                >
+                  <MdDashboardCustomize /> {msm?.saveLayersAsPreset}
+                </Button>
+              </span>
             )}
           </LongPressTooltip>
         </div>
@@ -688,7 +793,6 @@ function PresetLayers({
         <div className="d-flex mb-2">
           <Button
             variant="secondary"
-            size="sm"
             className="ms-auto text-truncate"
             disabled={!canSave}
             onClick={() =>
@@ -765,7 +869,6 @@ function AddMap({ id }: { id: string }): ReactElement {
     <Dropdown className="d-flex mt-2">
       <Dropdown.Toggle
         variant="secondary"
-        size="sm"
         className="ms-auto"
         disabled={candidates.length === 0}
       >
@@ -804,6 +907,8 @@ function LayerSettings({
   target: SetupTarget;
 }): ReactElement | null {
   const m = useMessages();
+
+  const msm = useMapSettingsMessages();
 
   const dispatch = useDispatch();
 
@@ -854,34 +959,67 @@ function LayerSettings({
         <AsyncComponent factory={shadingSectionFactory} target={target} />
       )}
 
-      <div className="d-flex gap-2 mt-2 justify-content-end flex-wrap">
-        {/* Its server, zooms and default kind are the map's own, in its form. */}
-        {mapOrigin === 'custom' && !window.fmEmbedded && (
-          <Button
-            variant="secondary"
-            size="sm"
-            disabled={!canSave}
-            onClick={() =>
-              dispatch(
-                setActiveModal({
-                  type: 'installed-maps',
-                  customMap: { edit: target.type, returnTo: null },
-                }),
-              )
-            }
-          >
-            <FaPencilAlt /> {m?.general.modify}
-          </Button>
-        )}
+      {/* The map's own actions, set off from what its sections edit. */}
+      <hr />
 
-        <Button
-          variant="secondary"
-          size="sm"
-          disabled={isEmptySetup(setup)}
-          onClick={() => dispatch(mapLayerSetupReset(target))}
-        >
-          <FaUndo /> {m?.general.resetToDefaults}
-        </Button>
+      {/* A scroller of its own, which `fit` measures the row against, and
+          unwrapped, so a label that doesn't fit folds its action away. */}
+      <div className="fm-ib-scroller">
+        <div className="d-flex">
+          <ResponsiveActions
+            className="ms-auto text-nowrap"
+            fit
+            toggleLabel={m?.general.actions}
+          >
+            {/* As set up here, under a name of its own. */}
+            {mapOrigin !== 'cached' &&
+              hasOwnConfig(technology) &&
+              !window.fmEmbedded && (
+                <Action
+                  icon={<FaSave />}
+                  label={msm?.saveAsMap}
+                  showFrom="md"
+                  showLabelFrom="xs"
+                  disabled={!canSave}
+                  onClick={() =>
+                    dispatch(
+                      setActiveModal({
+                        type: 'installed-maps',
+                        customMap: { addNamedFrom: target, returnTo: null },
+                      }),
+                    )
+                  }
+                />
+              )}
+
+            {/* Its server, zooms and default kind are the map's own, in its form. */}
+            {mapOrigin === 'custom' && !window.fmEmbedded && (
+              <Action
+                icon={<FaPencilAlt />}
+                label={m?.general.modify}
+                showFrom="sm"
+                showLabelFrom="xs"
+                disabled={!canSave}
+                onClick={() =>
+                  dispatch(
+                    setActiveModal({
+                      type: 'installed-maps',
+                      customMap: { edit: target.type, returnTo: null },
+                    }),
+                  )
+                }
+              />
+            )}
+
+            <Action
+              icon={<FaUndo />}
+              label={m?.general.resetToDefaults}
+              showLabelFrom="xs"
+              disabled={isEmptySetup(setup)}
+              onClick={() => dispatch(mapLayerSetupReset(target))}
+            />
+          </ResponsiveActions>
+        </div>
       </div>
     </div>
   );

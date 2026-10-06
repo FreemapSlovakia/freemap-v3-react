@@ -86,7 +86,15 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Enregistrer les couches comme préréglage',
   saveLayersAsPresetHint:
     'Un nouveau préréglage fait de copies des cartes affichées, les préréglages décomposés.',
+  turnOffToSavePreset: (layers) =>
+    `Un préréglage ne peut pas contenir de calques de données. Pour l'enregistrer, désactivez : ${layers}.`,
   duplicatePreset: 'Dupliquer',
+  saveAsMap: 'Enregistrer comme carte',
+  namedMapHint:
+    'Son ombrage, ses couches WMS ou sa couleur se règlent dans le panneau Couches de la carte, et un changement vaut partout où la carte est utilisée.',
+  newNamedMap: 'Nouvelle carte nommée',
+  unappliedShading:
+    "Modifications de l'ombrage pas encore appliquées : cliquez sur le nom de la carte, puis sur Appliquer.",
   openPreset: 'Afficher sur la carte',
   addMap: 'Ajouter une carte',
   presetEmpty: 'Aucune couche.',

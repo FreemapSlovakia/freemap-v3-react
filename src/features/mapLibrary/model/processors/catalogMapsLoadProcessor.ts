@@ -12,13 +12,14 @@ import {
 import { drawnTypesSelector } from '../selectors.js';
 import { scheduleRetry } from './mapLibraryLoadProcessor.js';
 
-/** Catalog ids wanted but not known, comma-joined: installed, on the map, or an offline map's source. */
+/** Catalog ids wanted but not known, comma-joined: installed, on the map, or an offline or named map's source. */
 const missingCatalogIdsSelector = createSelector(
   (state: RootState) => state.map.layersSettings,
   drawnTypesSelector,
   (state: RootState) => state.map.cachedMaps,
   (state: RootState) => state.map.catalogMaps,
-  (layersSettings, layers, cachedMaps, catalogMaps) =>
+  (state: RootState) => state.map.customLayers,
+  (layersSettings, layers, cachedMaps, catalogMaps, customLayers) =>
     [
       ...new Set([
         ...Object.keys(layersSettings).filter(
@@ -26,6 +27,7 @@ const missingCatalogIdsSelector = createSelector(
         ),
         ...layers,
         ...cachedMaps.map((cm) => cm.sourceType),
+        ...customLayers.flatMap((def) => (def.source ? [def.source] : [])),
       ]),
     ]
       .filter(

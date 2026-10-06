@@ -1,12 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SHADING } from './layerSetup.js';
-import { mergeLayers } from './mapPreset.js';
+import { mergeLayers, presetLayers } from './mapPreset.js';
 
-const defaults = {
-  kind: (type: string) =>
-    type === 'X' ? ('base' as const) : ('overlay' as const),
-  wmsLayers: (type: string) => (type === 'WKA' ? ['a', 'b'] : []),
-};
+const nativeKind = (type: string) =>
+  type === 'X' ? ('base' as const) : ('overlay' as const);
 
 describe('mergeLayers', () => {
   it('keeps a map drawn once as it is', () => {
@@ -15,44 +11,23 @@ describe('mergeLayers', () => {
       { type: 'xh', setup: { opacity: 0.5 } },
     ];
 
-    expect(mergeLayers(layers, defaults)).toEqual(layers);
+    expect(mergeLayers(layers, nativeKind)).toEqual(layers);
   });
 
-  it("joins a WMS map's layers in its upper place, the lower's first", () => {
+  it('keeps a map drawn twice once, in its upper place, with its upper opacity', () => {
     expect(
       mergeLayers(
         [
-          { type: 'WKA', setup: { wmsLayers: ['c'], opacity: 0.3 } },
+          { type: 'WKA', setup: { opacity: 0.3 } },
           { type: 'xh', setup: {} },
           { type: 'WKA', setup: { opacity: 0.8 } },
         ],
-        defaults,
+        nativeKind,
       ),
     ).toEqual([
       { type: 'xh', setup: {} },
-      { type: 'WKA', setup: { wmsLayers: ['c', 'a', 'b'], opacity: 0.8 } },
+      { type: 'WKA', setup: { opacity: 0.8 } },
     ]);
-  });
-
-  it("stacks shading components on the lower one's background", () => {
-    const [merged] = mergeLayers(
-      [
-        { type: 'h', setup: {} },
-        {
-          type: 'h',
-          setup: {
-            shading: { ...DEFAULT_SHADING, backgroundColor: [1, 2, 3, 1] },
-          },
-        },
-      ],
-      defaults,
-    );
-
-    expect(merged!.setup.shading?.backgroundColor).toEqual(
-      DEFAULT_SHADING.backgroundColor,
-    );
-
-    expect(merged!.setup.shading?.components.map((c) => c.id)).toEqual([1, 2]);
   });
 
   it('a base drawing makes the merged map a base, at the bottom', () => {
@@ -63,11 +38,27 @@ describe('mergeLayers', () => {
           { type: 'h', setup: { kind: 'base' } },
           { type: 'h', setup: {} },
         ],
-        defaults,
+        nativeKind,
       ).map((l) => [l.type, l.setup.kind]),
     ).toEqual([
       ['h', 'base'],
       ['xh', undefined],
+    ]);
+  });
+});
+
+describe('presetLayers', () => {
+  it('keeps only what a preset’s copy has of its own: opacity and kind', () => {
+    expect(
+      presetLayers({
+        layers: [
+          { type: 'WKA', setup: { opacity: 0.5, wmsLayers: ['a'] } },
+          { type: 'c', setup: { kind: 'overlay', color: [1, 2, 3, 1] } },
+        ],
+      }),
+    ).toEqual([
+      { type: 'WKA', setup: { opacity: 0.5 } },
+      { type: 'c', setup: { kind: 'overlay' } },
     ]);
   });
 });

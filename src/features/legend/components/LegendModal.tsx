@@ -39,7 +39,7 @@ export default function LegendModal({ show }: Props): ReactElement {
 
   const layers = useAppSelector(drawnTypesSelector);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
   const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
 

@@ -13,6 +13,7 @@ import { mapLibraryCatalogMapsLoaded } from '@features/mapLibrary/model/actions.
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createReducer } from '@reduxjs/toolkit';
+import { isNamedMapDef } from '@shared/mapDefinitions.js';
 import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
 import { isUninstalledByDefault } from '@shared/mapLibrary/installed.js';
 import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
@@ -26,6 +27,7 @@ import {
   mapLayerSetupChange,
   mapLayerSetupReset,
   mapLayersSettingsReset,
+  mapNamedMapCreate,
   mapOverlayMove,
   mapPresetChange,
   mapPresetDelete,
@@ -48,10 +50,13 @@ import {
 } from './actions.js';
 import { kindOverrides, type LayerKind } from './layerKind.js';
 import {
+  compactSetup,
+  configOf,
+  copySetup,
   isEmptySetup,
   type LayerSetup,
-  setupKey,
-  targetOfKey,
+  usageOf,
+  withLoadedConfig,
 } from './layerSetup.js';
 import {
   adoptPresets,
@@ -311,9 +316,7 @@ function normalizeSetup(
   // Its own kind is no switch, and kept as one it would read as a choice.
   const kind = setup.kind === nativeKind ? undefined : setup.kind;
 
-  return Object.fromEntries(
-    Object.entries({ ...setup, kind }).filter(([, v]) => v !== undefined),
-  ) as LayerSetup;
+  return compactSetup({ ...setup, kind });
 }
 
 /** Puts a map's own setup in, dropping an empty one; a new shading drops its draft. */
@@ -351,11 +354,12 @@ function setPresetSetup(
     return;
   }
 
-  const key = setupKey({ type, preset: id });
-
-  if (setup.shading !== layer.setup.shading) {
-    delete state.shadingDrafts[key];
-  }
+  // The shading, WMS layers and colour are the map's, shared with every
+  // drawing of it; the copy keeps its opacity and kind.
+  setSetup(state, type, {
+    ...state.layerSetups[type],
+    ...configOf(setup),
+  });
 
   const nativeKinds: LayerKinds = new Map(
     preset.layers.flatMap((l) => {
@@ -365,7 +369,7 @@ function setPresetSetup(
     }),
   );
 
-  layer.setup = normalizeSetup(setup, nativeKinds.get(type));
+  layer.setup = normalizeSetup(usageOf(setup), nativeKinds.get(type));
 
   if (memberKind(layer, nativeKinds) === 'base') {
     preset.layers = [
@@ -398,24 +402,26 @@ function setTargetSetup(
   }
 }
 
-/** A target's setup as stored. */
+/** A target's setup as drawn: a preset's copy with the map's own shading and layers. */
 function targetSetup(state: MapState, { type, preset }: SetupTarget) {
-  return preset === undefined
-    ? state.layerSetups[type]
-    : findPreset(state, preset)?.layers.find((l) => l.type === type)?.setup;
+  if (preset === undefined) {
+    return state.layerSetups[type];
+  }
+
+  const layer = findPreset(state, preset)?.layers.find((l) => l.type === type);
+
+  return layer && copySetup(state.layerSetups[type], layer.setup);
 }
 
 /**
  * Takes a map that is going away off the map and out of every preset, its
- * drafts with it.
+ * draft with it.
  */
 function dropMap(state: MapState, type: string) {
   state.layers = state.layers.filter((t) => t !== type);
 
   for (const preset of [...state.presets, ...state.linkPresets]) {
     preset.layers = preset.layers.filter((l) => l.type !== type);
-
-    delete state.shadingDrafts[setupKey({ type, preset: preset.id })];
   }
 
   delete state.shadingDrafts[type];
@@ -530,7 +536,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       }
     })
     .addCase(mapLayerSetupReset, (state, { payload }) => {
-      delete state.shadingDrafts[setupKey(payload)];
+      delete state.shadingDrafts[payload.type];
 
       if (payload.preset === undefined) {
         delete state.layerSetups[payload.type];
@@ -568,8 +574,9 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(mapCustomLayerSave, (state, { payload: { def, settings } }) => {
       upsert(state.customLayers, def, (d) => d.type === def.type);
 
-      // The layers and kind saved with the map replace any set on the map.
-      if (state.layerSetups[def.type]) {
+      // The layers and kind saved with the map replace any set on the map; a
+      // named map's form changes neither.
+      if (!isNamedMapDef(def) && state.layerSetups[def.type]) {
         setSetup(state, def.type, {
           ...state.layerSetups[def.type],
           wmsLayers: undefined,
@@ -585,14 +592,82 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
       mergeLayerSettings(state, def.type, settings);
     })
+    .addCase(
+      mapNamedMapCreate,
+      (state, { payload: { def, settings, from } }) => {
+        const drawn = targetSetup(state, from);
+
+        const member =
+          from.preset === undefined
+            ? undefined
+            : findPreset(state, from.preset)?.layers.find(
+                (l) => l.type === from.type,
+              );
+
+        const kind = member
+          ? memberKind(member, nativeKindsOf(state))
+          : kindsOf(state).get(from.type);
+
+        // A named map named again is a copy built on the same library map.
+        const named = state.customLayers.find((d) => d.type === from.type);
+
+        state.customLayers.push({
+          ...def,
+          layer: kind ?? def.layer,
+          source: named && isNamedMapDef(named) ? named.source : from.type,
+        });
+
+        mergeLayerSettings(state, def.type, settings);
+
+        // Its kind is now the named map's own; the opacity stays the drawing's.
+        setSetup(state, def.type, {
+          ...configOf(drawn),
+          opacity: member ? undefined : drawn?.opacity,
+        });
+
+        // A shading edit waiting for Apply goes with the shading it edits.
+        const draft = state.shadingDrafts[from.type];
+
+        if (draft) {
+          state.shadingDrafts[def.type] = draft;
+
+          delete state.shadingDrafts[from.type];
+        }
+
+        if (member) {
+          member.type = def.type;
+
+          // The named map's own kind now.
+          delete member.setup.kind;
+        } else {
+          const i = state.layers.indexOf(from.type);
+
+          if (i !== -1) {
+            state.layers[i] = def.type;
+          }
+        }
+      },
+    )
     .addCase(mapCustomLayerDelete, (state, { payload: { type } }) => {
-      dropMap(state, type);
+      // The named maps built on it go with it: they can't draw without it.
+      const gone = [
+        type,
+        ...state.customLayers
+          .filter((d) => d.source === type)
+          .map((d) => d.type),
+      ];
 
-      state.customLayers = state.customLayers.filter((d) => d.type !== type);
+      for (const t of gone) {
+        dropMap(state, t);
 
-      delete state.layersSettings[type];
+        delete state.layersSettings[t];
 
-      delete state.layerSetups[type];
+        delete state.layerSetups[t];
+      }
+
+      state.customLayers = state.customLayers.filter(
+        (d) => !gone.includes(d.type),
+      );
     })
     .addCase(
       mapPresetSave,
@@ -669,10 +744,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         return;
       }
 
-      // Starting as the map is drawn on its own.
-      preset.layers.push({ type, setup: { ...state.layerSetups[type] } });
+      // At the opacity and kind it has on its own.
+      preset.layers.push({ type, setup: {} });
 
-      setPresetSetup(state, id, type, preset.layers.at(-1)!.setup);
+      setPresetSetup(state, id, type, { ...state.layerSetups[type] });
     })
     .addCase(mapPresetLayerRemove, (state, { payload: { id, type } }) => {
       const preset = findPreset(state, id);
@@ -682,8 +757,6 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       }
 
       preset.layers = preset.layers.filter((l) => l.type !== type);
-
-      delete state.shadingDrafts[setupKey({ type, preset: id })];
     })
     .addCase(mapLayersSettingsReset, (state) =>
       keepingBase(state, () => {
@@ -861,6 +934,18 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
           }
         }
 
+        // A map only in its presets: its shading and layers, one's own
+        // drawing of it keeping its opacity and kind.
+        for (const [type, setup] of Object.entries(map.layerSetups ?? {})) {
+          if (!layers.includes(type)) {
+            setSetup(
+              state,
+              type,
+              withLoadedConfig(state.layerSetups[type], setup),
+            );
+          }
+        }
+
         state.linkPresets = linkPresets;
 
         state.layers = layers;
@@ -879,12 +964,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       state.countries = action.payload;
     })
     .addCase(mapSetShadingDraft, (state, { payload }) => {
-      const key = setupKey(payload);
-
       if (payload.shading) {
-        state.shadingDrafts[key] = payload.shading;
+        state.shadingDrafts[payload.type] = payload.shading;
       } else {
-        delete state.shadingDrafts[key];
+        delete state.shadingDrafts[payload.type];
       }
     })
     .addCase(mapSetShadingOnServer, (state, action) => {
@@ -892,13 +975,8 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
       // The browser draws every edit as it is made, so the drafts are simply taken.
       if (!action.payload) {
-        for (const [key, shading] of Object.entries(state.shadingDrafts)) {
-          const target = targetOfKey(key);
-
-          setTargetSetup(state, target, {
-            ...targetSetup(state, target),
-            shading,
-          });
+        for (const [type, shading] of Object.entries(state.shadingDrafts)) {
+          setSetup(state, type, { ...state.layerSetups[type], shading });
         }
       }
     })

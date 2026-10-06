@@ -4,6 +4,7 @@ import type { RootState } from '@app/store/store.js';
 import {
   drawnTypesSelector,
   integratedLayerDefsSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { isLayerOffered } from '@shared/mapLibrary/installed.js';
 import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
@@ -26,7 +27,7 @@ import { browseCacheCleared, browseCacheStatsLoaded } from './actions.js';
  */
 const tileTemplatesSelector = createSelector(
   integratedLayerDefsSelector,
-  (state: RootState) => state.map.customLayers,
+  resolvedCustomLayersSelector,
   (state: RootState) => state.mapLibrary.bodies,
   (state: RootState) => state.map.layersSettings,
   drawnTypesSelector,

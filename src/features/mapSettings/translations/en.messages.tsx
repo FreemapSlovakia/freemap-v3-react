@@ -71,7 +71,15 @@ const en: MapSettingsMessages = {
   saveLayersAsPreset: 'Save layers as preset',
   saveLayersAsPresetHint:
     'A new preset of copies of the maps on the map, presets taken apart.',
+  turnOffToSavePreset: (layers) =>
+    `A preset can't hold data layers. Turn off ${layers} to save one.`,
   duplicatePreset: 'Duplicate',
+  saveAsMap: 'Save as map',
+  namedMapHint:
+    'Its shading, WMS layers or colour are set in the Map layers panel, and a change shows wherever the map is used.',
+  newNamedMap: 'New named map',
+  unappliedShading:
+    'Shading changes not applied yet: click the map’s name, then Apply.',
   openPreset: 'Show on map',
   addMap: 'Add map',
   presetEmpty: 'No layers.',

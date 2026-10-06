@@ -16,9 +16,15 @@ import { ToolbarIcon } from '@features/mapSettings/components/ToolbarIcon.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
 import { useCustomMapActions } from '@features/mapSettings/useCustomMapActions.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
-import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
+import {
+  CUSTOM_MAP_ICONS,
+  CustomMapGlyph,
+} from '@shared/components/CustomMapGlyph.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
-import { LayerKindMark } from '@shared/components/MapLayerItem.js';
+import {
+  LAYER_KIND_ICONS,
+  LayerKindMark,
+} from '@shared/components/MapLayerItem.js';
 import {
   Action,
   ActionDivider,
@@ -28,10 +34,11 @@ import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerLabel, layerName } from '@shared/layerName.js';
 import {
-  type CustomLayerDef,
   flaggedCountries,
+  isNamedMapDef,
   resolveLayerAlias,
   resolveLayerOpacity,
+  type StoredCustomLayerDef,
 } from '@shared/mapDefinitions.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
@@ -39,16 +46,19 @@ import type { Shortcut } from '@shared/types/common.js';
 import type { ReactElement, ReactNode, RefObject } from 'react';
 import { Form, Table } from 'react-bootstrap';
 import {
+  FaCube,
   FaDownload,
   FaEye,
+  FaEyeSlash,
+  FaGlobeEurope,
   FaHistory,
   FaKeyboard,
   FaPencilAlt,
   FaRegListAlt,
   FaTrash,
+  FaUser,
 } from 'react-icons/fa';
-import { MdOpacity } from 'react-icons/md';
-import { TbLayersSelected, TbLayersSelectedBottom } from 'react-icons/tb';
+import { MdLibraryAdd, MdOfflinePin, MdOpacity } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   type CategoryGroup,
@@ -94,7 +104,7 @@ type YourMap = {
   /** Library maps are previewed and uninstalled; the rest are edited elsewhere. */
   kind: 'library' | 'custom' | 'cached' | 'preset';
   /** The user's own definition, which the row edits and deletes. */
-  custom?: CustomLayerDef;
+  custom?: StoredCustomLayerDef;
   preset?: MapPreset;
   defaultInMenu: boolean;
   defaultInToolbar: boolean;
@@ -180,7 +190,8 @@ export function YourMapsTab({
 
   const msm = useMapSettingsMessages();
 
-  const { categoryOptions, technologyOptions } = useSharedFilterOptions();
+  const { categoryOptions, technologyOptions, layerOptions } =
+    useSharedFilterOptions();
 
   // The user's own maps name no country, so the installed library maps'.
   const installedIndex = useAppSelector(installedLibraryIndexSelector);
@@ -228,10 +239,7 @@ export function YourMapsTab({
         <FilterChips
           name="your-layer"
           label={m?.mapLayers.layer.layer}
-          options={[
-            { value: 'base', label: msm?.baseMaps },
-            { value: 'overlay', label: msm?.overlays },
-          ]}
+          options={layerOptions}
           selected={filters.layers}
           onChange={(layers) => onChange({ ...filters, layers })}
         />
@@ -240,11 +248,27 @@ export function YourMapsTab({
           name="kind"
           label={msm?.filters.kind}
           options={[
-            { value: 'builtIn', label: msm?.filters.builtIn },
-            { value: 'fromLibrary', label: msm?.filters.fromLibrary },
-            { value: 'custom', label: msm?.filters.custom },
-            { value: 'offline', label: msm?.filters.offline },
-            { value: 'presets', label: msm?.filters.presets },
+            {
+              value: 'builtIn',
+              label: msm?.filters.builtIn,
+              icon: <FaCube />,
+            },
+            {
+              value: 'fromLibrary',
+              label: msm?.filters.fromLibrary,
+              icon: <MdLibraryAdd />,
+            },
+            { value: 'custom', label: msm?.filters.custom, icon: <FaUser /> },
+            {
+              value: 'offline',
+              label: msm?.filters.offline,
+              icon: <MdOfflinePin />,
+            },
+            {
+              value: 'presets',
+              label: msm?.filters.presets,
+              icon: CUSTOM_MAP_ICONS.preset,
+            },
           ]}
           selected={filters.kinds}
           onChange={(kinds) => onChange({ ...filters, kinds })}
@@ -254,10 +278,26 @@ export function YourMapsTab({
           name="shown"
           label={msm?.filters.shownIn}
           options={[
-            { value: 'toolbar', label: msm?.filters.toolbar },
-            { value: 'menu', label: msm?.filters.menu },
-            { value: 'hidden', label: msm?.filters.hidden },
-            { value: 'shortcut', label: msm?.filters.shortcut },
+            {
+              value: 'toolbar',
+              label: msm?.filters.toolbar,
+              icon: <ToolbarIcon />,
+            },
+            {
+              value: 'menu',
+              label: msm?.filters.menu,
+              icon: <FaRegListAlt />,
+            },
+            {
+              value: 'hidden',
+              label: msm?.filters.hidden,
+              icon: <FaEyeSlash />,
+            },
+            {
+              value: 'shortcut',
+              label: msm?.filters.shortcut,
+              icon: <FaKeyboard />,
+            },
           ]}
           selected={filters.shown}
           onChange={(shown) => onChange({ ...filters, shown })}
@@ -265,6 +305,7 @@ export function YourMapsTab({
 
         <FilterToggle
           name="your-covers-view"
+          icon={<FaGlobeEurope />}
           label={msm?.filters.coversView}
           checked={filters.coversView}
           onChange={(coversView) => onChange({ ...filters, coversView })}
@@ -301,6 +342,8 @@ export function YourMapsList({
 
   // Of the kind they are switched to, as library maps are listed.
   const customLayers = useAppSelector(resolvedCustomLayersSelector);
+
+  const storedCustomLayers = useAppSelector((state) => state.map.customLayers);
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
@@ -372,6 +415,27 @@ export function YourMapsList({
         technology: def.technology,
       }),
     ),
+    // A named map whose source can't be drawn (offline, gone from the
+    // catalog): still listed, so it can be modified or deleted.
+    ...storedCustomLayers
+      .filter(
+        (def) =>
+          isNamedMapDef(def) &&
+          !customLayers.some((drawn) => drawn.type === def.type),
+      )
+      .map(
+        (def): YourMap => ({
+          type: def.type,
+          layer: def.layer,
+          name: nameOr(def),
+          icon: <CustomMapGlyph spec={def.iconSpec} />,
+          legacy: false,
+          kind: 'custom',
+          custom: def,
+          defaultInMenu: true,
+          defaultInToolbar: false,
+        }),
+      ),
     ...cachedMaps.filter(isCachedMapComplete).map(
       (cm): YourMap => ({
         type: cm.type,
@@ -710,11 +774,7 @@ function YourMapRow({
               <Action
                 // The kind it switches to, as `MapLayerItem` marks it.
                 icon={
-                  map.layer === 'base' ? (
-                    <TbLayersSelectedBottom />
-                  ) : (
-                    <TbLayersSelected />
-                  )
+                  LAYER_KIND_ICONS[map.layer === 'base' ? 'overlay' : 'base']
                 }
                 label={
                   map.layer === 'base' ? msm?.useAsOverlay : msm?.useAsBaseMap

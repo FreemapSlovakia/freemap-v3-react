@@ -7,7 +7,6 @@ import {
 import { DEFAULT_SHADING, setupKey } from '@features/map/model/layerSetup.js';
 import { useTargetSetup } from '@features/mapSettings/layerTarget.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { SHADING_SOURCE } from '@shared/mapDefinitions.js';
@@ -15,7 +14,7 @@ import { trackMatomo } from '@shared/trackMatomo.js';
 import { produce } from 'immer';
 import { type ReactElement, useState } from 'react';
 import { Button, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
-import { FaCheck, FaUndo } from 'react-icons/fa';
+import { FaCheck, FaCloud, FaDesktop, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
 import { createDefaultShadingComponent } from '../model/createShadingComponent.js';
@@ -43,7 +42,6 @@ import {
 } from './ShadingComponentControl.js';
 import { ShadingComponentList } from './ShadingComponentList.js';
 import { ShadingComponentParams } from './ShadingComponentParams.js';
-import classes from './ShadingControl.module.css';
 import { ShadingToolbar } from './ShadingToolbar.js';
 
 // Out of the component, where the compiler takes it for a call during render.
@@ -62,9 +60,8 @@ export default function ShadingSection({ target }: Props): ReactElement {
 
   const applied = useTargetSetup(target)?.shading ?? DEFAULT_SHADING;
 
-  const draft = useAppSelector(
-    (state) => state.map.shadingDrafts[setupKey(target)],
-  );
+  // The map's own, whichever drawing of it is edited.
+  const draft = useAppSelector((state) => state.map.shadingDrafts[target.type]);
 
   // Unique among the panel's controls.
   const type = setupKey(target);
@@ -216,7 +213,7 @@ export default function ShadingSection({ target }: Props): ReactElement {
           variant="outline-primary"
           className="flex-grow-1 text-nowrap"
         >
-          {sm?.onServer}
+          <FaCloud /> {sm?.onServer}
         </ToggleButton>
 
         <ToggleButton
@@ -226,7 +223,7 @@ export default function ShadingSection({ target }: Props): ReactElement {
           className="flex-grow-1 text-nowrap"
           disabled={!hasWebGpu}
         >
-          {sm?.inBrowser} <ExperimentalFunction />
+          <FaDesktop /> {sm?.inBrowser} <ExperimentalFunction />
         </ToggleButton>
       </ToggleButtonGroup>
 
@@ -281,8 +278,10 @@ export default function ShadingSection({ target }: Props): ReactElement {
 
       {/* Stays, disabled while there is nothing to apply, so editing never
           shifts the layout. */}
+      {onServer && <hr />}
+
       {onServer && (
-        <div className={`d-flex flex-wrap gap-1 pt-2 mt-2 ${classes.footer}`}>
+        <div className="d-flex flex-wrap gap-2 text-nowrap">
           <Button
             variant="primary"
             disabled={!draft}
@@ -291,18 +290,13 @@ export default function ShadingSection({ target }: Props): ReactElement {
             <FaCheck /> {sm?.apply}
           </Button>
 
-          <LongPressTooltip label={sm?.revert}>
-            {({ props }) => (
-              <Button
-                variant="secondary"
-                disabled={!draft}
-                onClick={() => dispatch(mapSetShadingDraft(target))}
-                {...props}
-              >
-                <FaUndo />
-              </Button>
-            )}
-          </LongPressTooltip>
+          <Button
+            variant="secondary"
+            disabled={!draft}
+            onClick={() => dispatch(mapSetShadingDraft(target))}
+          >
+            <FaUndo /> {sm?.revert}
+          </Button>
         </div>
       )}
 

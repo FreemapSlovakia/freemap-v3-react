@@ -8,6 +8,7 @@ import {
   drawnTypesSelector,
   integratedLayerDefMapSelector,
   integratedLayerDefsSelector,
+  namedLayerDefsSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { SONNY_ATTR } from '@shared/elevationSources.js';
@@ -175,7 +176,12 @@ function useCategorizedAttribution(
 
   const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
 
-  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
+  const libraryDefs = useAppSelector(integratedLayerDefsSelector);
+
+  const namedDefs = useAppSelector(namedLayerDefsSelector);
+
+  // A named map credits its source's data under its own id.
+  const integratedLayerDefs = [...libraryDefs, ...namedDefs];
 
   const routingAttrs = useRoutingAttributions();
 

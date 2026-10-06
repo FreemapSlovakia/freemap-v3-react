@@ -98,6 +98,8 @@ export type CustomMapRequest = {
   addPreset?: boolean;
   /** A copy of this preset (a link's, or a duplicate) as the account's own, in its place on the map. */
   addPresetFrom?: string;
+  /** A named map of this drawing of a map, in its place; see `mapNamedMapCreate`. */
+  addNamedFrom?: { type: string; preset?: string };
   /** Where Cancel goes: that tab, or `null` to close; Installed maps if unset. */
   returnTo?: 'installed-maps' | 'available-maps' | null;
 };

@@ -1,12 +1,23 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
+import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useRegionNames } from '@shared/hooks/useRegionNames.js';
 import type { ReactElement, ReactNode } from 'react';
 import { Dropdown, Form, ToggleButton } from 'react-bootstrap';
+import {
+  FaDatabase,
+  FaEllipsisH,
+  FaHistory,
+  FaMap,
+  FaMountain,
+  FaPlane,
+  FaScroll,
+} from 'react-icons/fa';
 import {
   CATEGORY_GROUPS,
   categoryGroup,
@@ -17,7 +28,7 @@ type Props<T extends string> = {
   /** Tells the group's ids apart from another group's. */
   name: string;
   label: ReactNode;
-  options: readonly { value: T; label: ReactNode }[];
+  options: readonly { value: T; label: ReactNode; icon?: ReactNode }[];
   selected: ReadonlySet<T>;
   onChange: (selected: ReadonlySet<T>) => void;
 };
@@ -85,7 +96,7 @@ export function FilterChips<T extends string>({
 }: Props<T>): ReactElement {
   return (
     <FilterRow label={label}>
-      {options.map(({ value, label: optionLabel }) => (
+      {options.map(({ value, label: optionLabel, icon }) => (
         <ToggleButton
           key={value}
           id={`library-filter-${name}-${value}`}
@@ -104,7 +115,7 @@ export function FilterChips<T extends string>({
             onChange(next);
           }}
         >
-          {optionLabel}
+          {icon} {optionLabel}
         </ToggleButton>
       ))}
     </FilterRow>
@@ -115,11 +126,13 @@ export function FilterChips<T extends string>({
 export function FilterToggle({
   name,
   label,
+  icon,
   checked,
   onChange,
 }: {
   name: string;
   label: ReactNode;
+  icon?: ReactNode;
   checked: boolean;
   onChange: (checked: boolean) => void;
 }): ReactElement {
@@ -134,7 +147,7 @@ export function FilterToggle({
         checked={checked}
         onChange={() => onChange(!checked)}
       >
-        {label}
+        {icon} {label}
       </ToggleButton>
     </FilterRow>
   );
@@ -150,6 +163,7 @@ export function useSharedFilterOptions() {
     categoryOptions: CATEGORY_GROUPS.map((value) => ({
       value,
       label: msm?.filters[value],
+      icon: CATEGORY_ICONS[value],
     })),
     technologyOptions: TECHNOLOGY_GROUPS.map((value) => ({
       value,
@@ -157,9 +171,25 @@ export function useSharedFilterOptions() {
         value === 'data'
           ? msm?.filters.dataLayers
           : m?.mapLayers.technologies[value],
+      // As a custom map of that technology is marked.
+      icon: value === 'data' ? <FaDatabase /> : CUSTOM_MAP_ICONS[value],
+    })),
+    layerOptions: (['base', 'overlay'] as const).map((value) => ({
+      value,
+      label: value === 'base' ? msm?.baseMaps : msm?.overlays,
+      icon: LAYER_KIND_ICONS[value],
     })),
   };
 }
+
+const CATEGORY_ICONS: Record<(typeof CATEGORY_GROUPS)[number], ReactElement> = {
+  map: <FaMap />,
+  historicmap: <FaScroll />,
+  photo: <FaPlane />,
+  historicphoto: <FaHistory />,
+  elevation: <FaMountain />,
+  other: <FaEllipsisH />,
+};
 
 /**
  * A map's second line in the lists, in the chips' words: its category and

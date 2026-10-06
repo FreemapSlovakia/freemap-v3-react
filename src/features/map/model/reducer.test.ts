@@ -9,6 +9,7 @@ import {
   mapLayerSetupChange,
   mapLayerSetupReset,
   mapLayersSettingsReset,
+  mapNamedMapCreate,
   mapOverlayMove,
   mapPresetChange,
   mapPresetDelete,
@@ -24,6 +25,7 @@ import {
   mapSuppressLegacyMapWarning,
   mapToggleLayer,
 } from './actions.js';
+import { DEFAULT_SHADING } from './layerSetup.js';
 import { mapInitialState, mapReducer } from './reducer.js';
 
 /**
@@ -407,6 +409,25 @@ describe('mapReducer — presets', () => {
 });
 
 describe('mapReducer — layer setups', () => {
+  it('a preset copy’s layers are the map’s own, its opacity the copy’s', () => {
+    const next = mapReducer(
+      {
+        ...mapInitialState,
+        layerSetups: { WKA: { opacity: 0.9 } },
+        presets: [{ id: 'p', name: 'P', layers: [{ type: 'WKA', setup: {} }] }],
+      },
+      mapLayerSetupChange({
+        type: 'WKA',
+        preset: 'p',
+        setup: { wmsLayers: ['1'], opacity: 0.4 },
+      }),
+    );
+
+    expect(next.layerSetups['WKA']).toEqual({ opacity: 0.9, wmsLayers: ['1'] });
+
+    expect(next.presets[0]?.layers[0]?.setup).toEqual({ opacity: 0.4 });
+  });
+
   it('merges a change, and drops a setup left empty', () => {
     const changed = mapReducer(
       { ...mapInitialState, layerSetups: { w: { opacity: 0.5 } } },
@@ -856,5 +877,89 @@ describe('mapReducer — switched kind', () => {
     );
 
     expect(next.layers).toEqual(['O', 'i']);
+  });
+});
+
+describe('mapReducer — named maps', () => {
+  const named = {
+    type: 'n1',
+    name: 'Parcels',
+    layer: 'overlay' as const,
+    source: 'WKA',
+  };
+
+  it('takes a map’s layers and kind, and its place on the map', () => {
+    const next = mapReducer(
+      {
+        ...mapInitialState,
+        layers: ['X', 'WKA'],
+        layerSetups: {
+          WKA: { kind: 'overlay', opacity: 0.6, wmsLayers: ['1'] },
+        },
+      },
+      mapNamedMapCreate({ def: named, from: { type: 'WKA' } }),
+    );
+
+    expect(next.layers).toEqual(['X', 'n1']);
+
+    expect(next.customLayers).toEqual([named]);
+
+    // The kind is the named map's own now, so no switch is left.
+    expect(next.layerSetups['n1']).toEqual({ opacity: 0.6, wmsLayers: ['1'] });
+  });
+
+  it('takes a preset copy’s place, the copy keeping its opacity', () => {
+    const next = mapReducer(
+      {
+        ...mapInitialState,
+        layerSetups: { h: { opacity: 0.3, shading: DEFAULT_SHADING } },
+        presets: [
+          {
+            id: 'p',
+            name: 'P',
+            layers: [{ type: 'h', setup: { opacity: 0.5 } }],
+          },
+        ],
+      },
+      mapNamedMapCreate({
+        def: { ...named, source: 'h' },
+        from: { type: 'h', preset: 'p' },
+      }),
+    );
+
+    expect(next.presets[0]?.layers).toEqual([
+      { type: 'n1', setup: { opacity: 0.5 } },
+    ]);
+
+    expect(next.layerSetups['n1']).toEqual({ shading: DEFAULT_SHADING });
+
+    // The unnamed map keeps its own.
+    expect(next.layerSetups['h']?.shading).toBe(DEFAULT_SHADING);
+  });
+
+  it('takes a shading draft along, and the copy drops its kind', () => {
+    const next = mapReducer(
+      {
+        ...mapInitialState,
+        shadingDrafts: { h: DEFAULT_SHADING },
+        presets: [
+          {
+            id: 'p',
+            name: 'P',
+            layers: [{ type: 'h', setup: { kind: 'base' } }],
+          },
+        ],
+      },
+      mapNamedMapCreate({
+        def: { ...named, source: 'h' },
+        from: { type: 'h', preset: 'p' },
+      }),
+    );
+
+    expect(next.shadingDrafts).toEqual({ n1: DEFAULT_SHADING });
+
+    expect(next.customLayers[0]?.layer).toBe('base');
+
+    expect(next.presets[0]?.layers).toEqual([{ type: 'n1', setup: {} }]);
   });
 });

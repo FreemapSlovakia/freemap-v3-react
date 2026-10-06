@@ -4,6 +4,7 @@ import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   mapCustomLayerSave,
+  mapNamedMapCreate,
   mapPresetSave,
 } from '@features/map/model/actions.js';
 import type { MapPreset } from '@features/map/model/mapPreset.js';
@@ -11,15 +12,28 @@ import {
   capturePreset,
   presetByIdSelector,
 } from '@features/map/model/selectors.js';
+import {
+  mapByIdSelector,
+  mapEntryOf,
+} from '@features/mapLibrary/model/selectors.js';
+import {
+  CUSTOM_MAP_ICONS,
+  type CustomMapKind,
+} from '@shared/components/CustomMapGlyph.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
-import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import {
+  type CustomLayerDef,
+  isNamedMapDef,
+  type NamedMapDef,
+} from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
+import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import { CustomMapForm } from './CustomMapForm.js';
 import {
   type LayerVisibility,
@@ -32,7 +46,10 @@ type Props = { request: CustomMapRequest };
 type View =
   | { mode: 'add'; draftType: string }
   | { mode: 'edit'; type: string }
-  | { mode: 'preset' };
+  | { mode: 'preset' }
+  | { mode: 'named' };
+
+type NamedDraft = NamedMapDef & { name: string };
 
 function makeType() {
   return Math.random().toString(36).slice(-6);
@@ -41,6 +58,8 @@ function makeType() {
 /** The form for a custom map or a preset, in the library's modal. */
 export function CustomMapEditor({ request }: Props): ReactElement {
   const m = useMessages();
+
+  const msm = useMapSettingsMessages();
 
   // Both are nothing but entries in the account's settings, so offline a
   // signed-in user can neither add, change nor remove one.
@@ -64,6 +83,7 @@ export function CustomMapEditor({ request }: Props): ReactElement {
   ): {
     view: View;
     presetDraft?: MapPreset;
+    namedDraft?: NamedDraft;
     visibility: LayerVisibility;
   } => {
     const visibilityOf = (type: string): LayerVisibility => {
@@ -117,10 +137,31 @@ export function CustomMapEditor({ request }: Props): ReactElement {
       };
     }
 
-    if (
-      request.edit !== undefined &&
-      customLayers.some((def) => def.type === request.edit)
-    ) {
+    // The kind is the drawing's, which the save takes.
+    if (request.addNamedFrom) {
+      return {
+        view: { mode: 'named' },
+        namedDraft: {
+          type: makeType(),
+          name: '',
+          layer: 'overlay',
+          source: request.addNamedFrom.type,
+        },
+        visibility: newVisibility,
+      };
+    }
+
+    const custom = customLayers.find((def) => def.type === request.edit);
+
+    if (custom && isNamedMapDef(custom)) {
+      return {
+        view: { mode: 'named' },
+        namedDraft: { ...custom, name: custom.name ?? '' },
+        visibility: visibilityOf(custom.type),
+      };
+    }
+
+    if (request.edit !== undefined && custom) {
       return {
         view: { mode: 'edit', type: request.edit },
         visibility: visibilityOf(request.edit),
@@ -140,6 +181,12 @@ export function CustomMapEditor({ request }: Props): ReactElement {
   const [draft, setDraft] = useState<CustomLayerDef | undefined>(undefined);
 
   const [presetDraft, setPresetDraft] = useState(initial.presetDraft);
+
+  const [namedDraft, setNamedDraft] = useState(initial.namedDraft);
+
+  const namedSourceRef = useAppSelector((state) =>
+    namedDraft ? mapByIdSelector(state)[namedDraft.source] : undefined,
+  );
 
   const [visibility, setVisibility] = useState(initial.visibility);
 
@@ -162,10 +209,14 @@ export function CustomMapEditor({ request }: Props): ReactElement {
 
     setPresetDraft(start.presetDraft);
 
+    setNamedDraft(start.namedDraft);
+
     setVisibility(start.visibility);
   }
 
-  const fromMap = Boolean(request.addPreset || request.addPresetFrom);
+  const fromMap = Boolean(
+    request.addPreset || request.addPresetFrom || request.addNamedFrom,
+  );
 
   // A save shows its map in Installed maps (the panel's new preset goes back to
   // the map); Cancel goes back where the form was opened from.
@@ -245,10 +296,41 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     done(preset.id);
   };
 
-  const editingValue =
+  const canSaveNamed = Boolean(namedDraft?.name.trim());
+
+  const handleSaveNamed = () => {
+    if (!namedDraft || !canSaveNamed) {
+      return;
+    }
+
+    const def = { ...namedDraft, name: namedDraft.name.trim() };
+
+    trackMatomo([
+      'trackEvent',
+      'MapSettings',
+      request.addNamedFrom ? 'create' : 'update',
+      'namedMap',
+    ]);
+
+    dispatch(
+      request.addNamedFrom
+        ? mapNamedMapCreate({
+            def,
+            settings: visibility,
+            from: request.addNamedFrom,
+          })
+        : mapCustomLayerSave({ def, settings: visibility }),
+    );
+
+    done(def.type);
+  };
+
+  const edited =
     view.mode === 'edit'
       ? customLayers.find((d) => d.type === view.type)
       : undefined;
+
+  const editingValue = edited && !isNamedMapDef(edited) ? edited : undefined;
 
   const draftType =
     view.mode === 'add'
@@ -285,7 +367,29 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     </Modal.Footer>
   );
 
-  return view.mode === 'preset' ? (
+  // Library, catalog or custom; a named map's own resolves to its source's.
+  const namedTechnology = mapEntryOf(namedSourceRef)?.technology as
+    | CustomMapKind
+    | undefined;
+
+  return view.mode === 'named' ? (
+    <>
+      <Modal.Body>
+        {namedDraft && (
+          <PresetForm
+            value={namedDraft}
+            onChange={setNamedDraft}
+            hint={msm?.namedMapHint}
+            placeholder={namedTechnology && CUSTOM_MAP_ICONS[namedTechnology]}
+          />
+        )}
+
+        {visibilityFields}
+      </Modal.Body>
+
+      {formFooter(handleSaveNamed, canSaveNamed)}
+    </>
+  ) : view.mode === 'preset' ? (
     <>
       <Modal.Body>
         {presetDraft && (

@@ -101,8 +101,9 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
     (state) => state.map.presets.find((p) => p.id === editedType)?.name,
   );
 
-  const newTitle =
-    customMapRequest?.addPreset || customMapRequest?.addPresetFrom
+  const newTitle = customMapRequest?.addNamedFrom
+    ? msm?.newNamedMap
+    : customMapRequest?.addPreset || customMapRequest?.addPresetFrom
       ? msm?.newPreset
       : m?.mapLayers.newCustomMap;
 

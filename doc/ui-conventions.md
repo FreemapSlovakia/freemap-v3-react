@@ -179,6 +179,14 @@ and keep it.
 
 ## Tokens come from Bootstrap
 
+**A utility class before a CSS rule.** Spacing (negative margins included —
+`$enable-negative-margins` is on), borders, radius, colour, display and flex
+belong on the element as Bootstrap utilities, where they can be read without
+opening a stylesheet. A rule in a module or `index.css` is for what no utility
+can say — a `:has()` or `:hover` state, a component's own size — and is then
+written in Bootstrap's variables (`--bs-*`) or the tokens below, never in
+literals. When a change touches a custom rule a utility now covers, replace it.
+
 Bootstrap keeps its scales in Sass, and the app's own rules are plain CSS, so
 `index.scss` **republishes them as custom properties** rather than letting a
 literal be re-typed into a rule. Nothing in `index.css` or a component's CSS

@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   libraryIndexSelector,
   presetKindsSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { type Command, getCommands } from '@shared/commandDefinitions.js';
 import { fuzzyMatch } from '@shared/fuzzyMatch.js';
@@ -54,7 +55,7 @@ export function useCommandMatches(query: string): CommandMatch[] {
 
   const layers = useAppSelector((state) => state.map.layers);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
   const presets = useAppSelector((state) => state.map.presets);
 

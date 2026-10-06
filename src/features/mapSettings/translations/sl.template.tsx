@@ -82,7 +82,15 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Shrani sloje kot prednastavitev',
   saveLayersAsPresetHint:
     'Nova prednastavitev iz kopij zemljevidov na zemljevidu, prednastavitve razstavljene.',
+  turnOffToSavePreset: (layers) =>
+    `Prednastavitev ne more vsebovati podatkovnih plasti. Za shranjevanje izklopite: ${layers}.`,
   duplicatePreset: 'Podvoji',
+  saveAsMap: 'Shrani kot zemljevid',
+  namedMapHint:
+    'Njeno senčenje, sloje WMS ali barvo nastavite v plošči Sloji zemljevida, sprememba pa velja povsod, kjer je zemljevid uporabljen.',
+  newNamedMap: 'Nov poimenovan zemljevid',
+  unappliedShading:
+    'Spremembe senčenja še niso uporabljene: kliknite ime zemljevida, nato Uporabi.',
   openPreset: 'Prikaži na zemljevidu',
   addMap: 'Dodaj zemljevid',
   presetEmpty: 'Ni slojev.',

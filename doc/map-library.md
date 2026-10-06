@@ -123,22 +123,34 @@ for each tab, and switching tabs changes
 - **Layer setups** — `LayerSetup` (`map/model/layerSetup.ts`: kind, opacity,
   WMS layers, shading, colour), one per map in `map.layerSetups` (account
   settings), kept whether the map is on or off. `setSetup` drops a kind equal
-  to the map's own and an empty setup. Shading edits on the server renderer
-  wait as `map.shadingDrafts`, keyed by `setupKey`.
+  to the map's own and an empty setup. A map's WMS layers, shading and colour
+  (`configOf`) are its own wherever it is drawn; each drawing — the map on its
+  own, or a preset's copy — has its own opacity and kind (`usageOf`). So an
+  edit of the shading inside a preset changes the map everywhere. Shading
+  edits on the server renderer wait as `map.shadingDrafts`, by map.
+- **Named maps** — "Parcels", "Contour 1000": a custom-map entry with a
+  `source` map — a library map or a custom server, deleted with it — instead
+  of a server of its own (`NamedMapDef`), its WMS layers,
+  shading or colour in its own setup like any map's. `resolvedCustomLayersSelector`
+  draws it as its source under its own id, name and icon (`resolveNamedMap`),
+  once the source's body is loaded. **Save as map** on a map's page in the
+  panel creates one (`mapNamedMapCreate`) from that drawing's setup and kind,
+  in its place.
 - **Presets** (`map/model/mapPreset.ts`) — a named composite layer with its
-  own copies of maps and their setups, bottom first, and its own opacity. In
-  `map.layers` it is one item, `@<id>`; `layerInstancesSelector` flattens the
-  stack into what is drawn, so one map can be drawn on its own and inside
-  presets at once, each with its setup. `Layers.tsx` draws a preset's layers
+  own copies of maps, bottom first, each with its opacity and kind, and its
+  own opacity. In `map.layers` it is one item, `@<id>`; `layerInstancesSelector`
+  flattens the stack into what is drawn, so one map can be drawn on its own
+  and inside presets at once. `Layers.tsx` draws a preset's layers
   in a `PresetPane`, which carries its place and opacity. A preset with a base
   map is the base item (`mapPresetToggle` replaces the base like
   `mapToggleLayer`); one without is an overlay item. Edits inside apply to the
   preset at once (`mapLayerSetupChange` with `preset`, `mapPresetLayerAdd`/
   `Remove`, `mapOverlayMove` with `preset`). The data layers are never in a
   preset (`canJoinPreset`), nor is another preset or an offline map, and a
-  preset holds each map once: `capturePreset` merges a map drawn twice
-  (`mergeLayers`: WMS layers and shading components joined, the lower's
-  first). Deleting a custom or offline map takes it out of every preset too
+  preset holds each map once: `capturePreset` keeps a map drawn twice at its
+  upper drawing's opacity (`mergeLayers`). A link writes the setup of a map
+  drawn only in presets as `l.<id>` too, and `p.<n>.l.<id>` holds only the
+  copy's opacity and kind. Deleting a custom or offline map takes it out of every preset too
   (`dropMap`), and `mapReplaceLayer` (the legacy-map warning) replaces it in
   presets as on the map. Code asking which maps are drawn reads
   `drawnTypesSelector`, not `map.layers`.
@@ -179,8 +191,8 @@ for each tab, and switching tabs changes
   legend and the map details' feature info ask for the same layers
   (`withTickedLayers`).
 - **Switched kind** — any library or custom map but the data layers
-  (`canSwitchKind`; a raster or vector base map as an overlay starts at 50%, a
-  vector map's opacity set on its canvas container) may be the other kind by
+  (`canSwitchKind`; the switch leaves the opacity alone, and a vector map's
+  opacity is set on its canvas container) may be the other kind by
   its setup's `kind`; a custom map's form sets its default kind, and saving it
   drops the switch. `withKind` applies it in `libraryIndexSelector`,
   `resolvedCustomLayersSelector` and `allLayerEntries`; a preset's copy goes
@@ -207,8 +219,7 @@ for each tab, and switching tabs changes
   flashes it (`fm-flash`), as Offline maps' Show in Installed maps does.
   The forms set how a map is reached (toolbar, menu, shortcut:
   `LayerVisibilityFields`). Offline maps keeps a
-  `highlight` of its own for the map just saved. The form has no `show=`; `show=custom-maps` and <kbd>m</kbd> <kbd>c</kbd> open
-  the library.
+  `highlight` of its own for the map just saved. The form has no `show=`; `show=custom-maps` opens the library.
 - Available maps is one table too, rows marked by `LayerKindMark`: a search in
   rank order, browsing by `coversView`, then base maps before overlays, then
   name.

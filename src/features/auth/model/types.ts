@@ -13,6 +13,7 @@ import {
 import {
   CustomLayerDefArrayCompatSchema,
   CustomLayerDefSchema,
+  NamedMapDefSchema,
 } from '@shared/mapDefinitions.js';
 import { IsoDateSchema, LatLonSchema } from '@shared/types/common.js';
 import z from 'zod';
@@ -98,7 +99,9 @@ export type PurchasesResponse = z.infer<typeof PurchasesResponseSchema>;
 export const UserSettingsSchema = z.object({
   layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
   layerSetups: z.record(z.string(), LayerSetupSchema).optional(),
-  customLayers: z.array(CustomLayerDefSchema).optional(),
+  customLayers: z
+    .array(z.union([CustomLayerDefSchema, NamedMapDefSchema]))
+    .optional(),
   presets: z.array(MapPresetSchema).optional(),
   maxZoom: z.number().optional(),
 });

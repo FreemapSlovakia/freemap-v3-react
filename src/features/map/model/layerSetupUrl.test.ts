@@ -15,16 +15,17 @@ const preset: MapPreset = {
   opacity: 0.6,
   layers: [
     { type: 'S', setup: {} },
-    {
-      type: 'WKA',
-      setup: { kind: 'overlay', opacity: 0.5, wmsLayers: ['a,b', 'c'] },
-    },
+    { type: 'WKA', setup: { kind: 'overlay', opacity: 0.5 } },
   ],
 };
 
 describe('layer setups in links', () => {
   it('reads back what it writes', () => {
-    const setup = preset.layers[1]!.setup;
+    const setup = {
+      kind: 'overlay' as const,
+      opacity: 0.5,
+      wmsLayers: ['a,b', 'c'],
+    };
 
     expect(parseSetup(serializeSetup(setup))).toEqual(setup);
   });

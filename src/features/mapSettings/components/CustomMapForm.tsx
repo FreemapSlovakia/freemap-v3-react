@@ -401,7 +401,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
   return (
     <div>
-      <div className="d-flex gap-3 align-items-end">
+      <div className="d-flex gap-2 align-items-end">
         <Form.Group controlId="name" className="flex-grow-1 min-w-0">
           <Form.Label
             className={clsx('d-flex', 'align-items-end', classes.gridSpan)}

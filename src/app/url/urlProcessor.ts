@@ -1,4 +1,7 @@
-import { isEmptySetup } from '@features/map/model/layerSetup.js';
+import {
+  isEmptySetup,
+  presetOnlyConfigs,
+} from '@features/map/model/layerSetup.js';
 import {
   isSetupParam,
   presetUrlParts,
@@ -435,6 +438,14 @@ function updateUrl(state: RootState, forced: boolean): void {
     }
   }
 
+  for (const [type, config] of presetOnlyConfigs(
+    inline.presets,
+    linked,
+    map.layerSetups,
+  )) {
+    queryParts.push([`${SETUP_PARAM_PREFIX}${type}`, serializeSetup(config)]);
+  }
+
   for (const preset of inline.presets) {
     queryParts.push(...presetUrlParts(preset, preset.id));
   }
@@ -474,8 +485,15 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   const drawn = drawnTypesSelector(state);
 
-  const filteredCustomLayers = map.customLayers?.filter(({ type }) =>
-    drawn.includes(type),
+  // With the servers its named maps are built on, which it can't draw without.
+  const sources = new Set(
+    map.customLayers.flatMap((def) =>
+      drawn.includes(def.type) && def.source ? [def.source] : [],
+    ),
+  );
+
+  const filteredCustomLayers = map.customLayers.filter(
+    ({ type }) => drawn.includes(type) || sources.has(type),
   );
 
   if (filteredCustomLayers.length) {

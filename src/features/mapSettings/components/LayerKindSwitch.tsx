@@ -3,6 +3,7 @@ import {
   mapLayerSetupChange,
   type SetupTarget,
 } from '@features/map/model/actions.js';
+import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
 import type { CSSProperties, ReactElement } from 'react';
 import { ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -33,7 +34,6 @@ export function LayerKindSwitch({
     <ToggleButtonGroup
       type="radio"
       name={name}
-      size="sm"
       className={className}
       style={style}
       value={kind}
@@ -49,7 +49,7 @@ export function LayerKindSwitch({
           variant="outline-primary"
           className="flex-grow-1 text-nowrap"
         >
-          {m?.mapLayers.layer[value]}
+          {LAYER_KIND_ICONS[value]} {m?.mapLayers.layer[value]}
         </ToggleButton>
       ))}
     </ToggleButtonGroup>

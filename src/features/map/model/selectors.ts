@@ -5,11 +5,17 @@ import {
   nativeKindsSelector,
   presetByIdSelector,
 } from '@features/mapLibrary/model/selectors.js';
-import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
-import { mapIndex } from '@shared/mapLibrary/mapIndex.js';
+import { isNamedMapDef, resolveLayerOpacity } from '@shared/mapDefinitions.js';
+import { mapIndex, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
 import { type LayerKind, withKind, withMemberKind } from './layerKind.js';
-import { isEmptySetup, type LayerSetup, setupKey } from './layerSetup.js';
+import {
+  compactSetup,
+  copySetup,
+  type LayerSetup,
+  setupKey,
+  usageOf,
+} from './layerSetup.js';
 import {
   canJoinPreset,
   layerKinds,
@@ -28,15 +34,40 @@ export const allLayerEntries = (
   cachedMaps: RootState['map']['cachedMaps'],
   catalogMaps: RootState['map']['catalogMaps'],
   overrides: Readonly<Record<string, LayerKind>>,
-) => [
-  ...mapIndex.map((entry) => withKind(entry, overrides)),
+) => {
   // A tile map's technology is left out of the catalog's data.
-  ...catalogMaps.map((map) =>
-    withKind({ ...map, technology: map.technology ?? 'tile' }, overrides),
-  ),
-  ...customLayers.map((def) => withKind(def, overrides)),
-  ...cachedMaps,
-];
+  const catalog = catalogMaps.map((map) => ({
+    ...map,
+    technology: map.technology ?? 'tile',
+  }));
+
+  const sourceTechnology = new Map<string, string>([
+    ...catalog.map((map): [string, string] => [map.type, map.technology]),
+    ...customLayers.flatMap((def): [string, string][] =>
+      isNamedMapDef(def) ? [] : [[def.type, def.technology]],
+    ),
+  ]);
+
+  return [
+    ...mapIndex.map((entry) => withKind(entry, overrides)),
+    ...catalog.map((map) => withKind(map, overrides)),
+    ...customLayers.map((def) =>
+      withKind(
+        isNamedMapDef(def)
+          ? {
+              ...def,
+              // Its source's, which decides whether it may switch kind.
+              technology:
+                mapIndexById[def.source]?.technology ??
+                sourceTechnology.get(def.source),
+            }
+          : def,
+        overrides,
+      ),
+    ),
+    ...cachedMaps,
+  ];
+};
 
 export {
   drawnTypesSelector,
@@ -85,7 +116,7 @@ export const layerInstancesSelector = createSelector(
       return (presetById[id]?.layers ?? []).map((layer) => ({
         key: setupKey({ type: layer.type, preset: id }),
         type: layer.type,
-        setup: layer.setup,
+        setup: copySetup(layerSetups[layer.type], layer.setup),
         preset: id,
         kind: memberKind(layer, nativeKinds),
       }));
@@ -134,17 +165,9 @@ export function capturePreset(state: RootState): PresetLayer[] {
                 setup.opacity,
               ) * presetOpacity;
 
-        const taken = { ...setup, opacity };
-
-        return { type, setup: isEmptySetup(taken) ? {} : taken };
+        // The shading and layers stay the map's own.
+        return { type, setup: compactSetup({ ...usageOf(setup), opacity }) };
       }),
-    {
-      kind: (type) => nativeKinds.get(type),
-      wmsLayers: (type) => {
-        const def = defOf(type);
-
-        return def?.technology === 'wms' ? def.layers : [];
-      },
-    },
+    (type) => nativeKinds.get(type),
   );
 }

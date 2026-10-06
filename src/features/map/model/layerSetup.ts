@@ -47,12 +47,6 @@ export const setupKey = ({
   preset?: string;
 }) => (preset === undefined ? type : `@${preset}/${type}`);
 
-export function targetOfKey(key: string): { type: string; preset?: string } {
-  const m = /^@(.*)\/([^/]*)$/.exec(key);
-
-  return m ? { preset: m[1]!, type: m[2]! } : { type: key };
-}
-
 /** As `gdaldem hillshade` draws it: 315°, 45°, z 1, grey over black. */
 export const DEFAULT_SHADING: Shading = {
   backgroundColor: [0x00, 0x00, 0x00, 1],
@@ -79,6 +73,63 @@ export const withTickedLayers = <T extends { type: string; layers: string[] }>(
 
   return ticked ? { ...def, layers: ticked } : def;
 };
+
+/** Whether maps of this technology have WMS layers, shading or a colour to set. */
+export const hasOwnConfig = (technology: string | undefined): boolean =>
+  technology === 'wms' ||
+  technology === 'parametricShading' ||
+  technology === 'color';
+
+/**
+ * What is the map's own wherever it is drawn: in every preset holding it as
+ * on its own. Each key is present, an unset one undefined, so it overrides.
+ */
+export const configOf = (setup: LayerSetup | undefined): LayerSetup => ({
+  wmsLayers: setup?.wmsLayers,
+  shading: setup?.shading,
+  color: setup?.color,
+});
+
+/** What each drawing of a map has of its own: a preset's copy, or the map on its own. */
+export const usageOf = (setup: LayerSetup | undefined): LayerSetup => ({
+  kind: setup?.kind,
+  opacity: setup?.opacity,
+});
+
+/** A preset copy as drawn: the map's own shading and layers, the copy's opacity and kind. */
+export const copySetup = (
+  own: LayerSetup | undefined,
+  copy: LayerSetup,
+): LayerSetup => ({ ...configOf(own), ...copy });
+
+/** Without the fields left undefined. */
+export const compactSetup = (setup: LayerSetup): LayerSetup =>
+  Object.fromEntries(
+    Object.entries(setup).filter(([, v]) => v !== undefined),
+  ) as LayerSetup;
+
+/** A map's own setup taking a loaded config, keeping its own opacity and kind. */
+export const withLoadedConfig = (
+  own: LayerSetup | undefined,
+  loaded: LayerSetup | undefined,
+): LayerSetup => compactSetup({ ...usageOf(own), ...configOf(loaded) });
+
+/**
+ * The configs of maps held only by presets, as a link or document carries
+ * them: their copies hold the rest.
+ */
+export const presetOnlyConfigs = (
+  presets: readonly { layers: readonly { type: string }[] }[],
+  drawn: readonly string[],
+  layerSetups: Readonly<Record<string, LayerSetup>>,
+): [string, LayerSetup][] =>
+  [...new Set(presets.flatMap((preset) => preset.layers.map((l) => l.type)))]
+    .filter((type) => !drawn.includes(type))
+    .flatMap((type) => {
+      const config = compactSetup(configOf(layerSetups[type]));
+
+      return isEmptySetup(config) ? [] : [[type, config]];
+    });
 
 /** Whether it says anything at all; an empty one is left out of links and saves. */
 export const isEmptySetup = (setup: LayerSetup | undefined): boolean =>

@@ -82,7 +82,15 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Rétegek mentése előbeállításként',
   saveLayersAsPresetHint:
     'Új előbeállítás a térképen lévő térképek másolataiból, az előbeállításokat szétszedve.',
+  turnOffToSavePreset: (layers) =>
+    `Egy előbeállítás nem tartalmazhat adatrétegeket. A mentéshez kapcsold ki: ${layers}.`,
   duplicatePreset: 'Másolat',
+  saveAsMap: 'Mentés térképként',
+  namedMapHint:
+    'Az árnyékolását, WMS-rétegeit vagy színét a Térképrétegek panelen lehet beállítani, és a változás mindenhol érvényes, ahol a térképet használja.',
+  newNamedMap: 'Új elnevezett térkép',
+  unappliedShading:
+    'Az árnyékolás változásai még nincsenek alkalmazva: kattintson a térkép nevére, majd az Alkalmaz gombra.',
   openPreset: 'Megjelenítés a térképen',
   addMap: 'Térkép hozzáadása',
   presetEmpty: 'Nincsenek rétegek.',

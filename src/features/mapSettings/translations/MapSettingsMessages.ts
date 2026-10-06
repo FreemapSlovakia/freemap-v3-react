@@ -59,8 +59,17 @@ export type MapSettingsMessages = {
   /** In the Map layers panel: what is on the map, as a new preset. */
   saveLayersAsPreset: string;
   saveLayersAsPresetHint: string;
+  /** Why it is disabled: data layers on, which a preset can't hold. */
+  turnOffToSavePreset: (layers: string) => string;
   /** A copy of a preset, in its place on the map. */
   duplicatePreset: string;
+  /** On a map's page in the Map layers panel: the map as set up, under a name. */
+  saveAsMap: string;
+  /** Says where a named map's shading or layers are set, and that they are shared. */
+  namedMapHint: string;
+  newNamedMap: string;
+  /** Beside a map in the Map layers panel whose shading edits wait for Apply. */
+  unappliedShading: string;
   /** Turns a preset on, from Installed maps. */
   openPreset: string;
   /** Adds a map to a preset, in the Map layers panel. */

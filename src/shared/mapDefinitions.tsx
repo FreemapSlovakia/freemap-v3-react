@@ -516,6 +516,8 @@ export type IsAllTechnologiesLayerDef =
 
 export type IsCustomLayer = {
   name?: string;
+  /** A named map's library map, resolved; see `NamedMapDef`. */
+  source?: string;
   /** As the library filters by; see `categoryGroup`. */
   category?: string;
   /**
@@ -656,10 +658,44 @@ const OldTileCustomLayerDefSchema = z.object({
   cors: z.boolean().optional(),
 });
 
+/**
+ * A map the user names: a library map (`source`) drawn with its own shading,
+ * WMS layers or colour, which its setup holds as any map's does.
+ */
+export type NamedMapDef = IsCustomLayer &
+  IsCommonLayerDef & {
+    layer: 'base' | 'overlay';
+    source: string;
+  };
+
+export const NamedMapDefSchema = z.object({
+  ...IsCustomLayerSchema.shape,
+  ...IsCommonLayerDefSchema.shape,
+  layer: z.enum(['base', 'overlay']),
+  source: z.string(),
+});
+
+/** What the custom-map list holds: maps the user adds and maps they name. */
+export type StoredCustomLayerDef = CustomLayerDef | NamedMapDef;
+
+export const isNamedMapDef = (def: StoredCustomLayerDef): def is NamedMapDef =>
+  !('technology' in def);
+
 export const CustomLayerDefArrayCompatSchema = z
   .array(z.unknown())
   .transform((defs) =>
-    defs.flatMap<CustomLayerDef>((def) => {
+    defs.flatMap<StoredCustomLayerDef>((def) => {
+      if (
+        typeof def === 'object' &&
+        def !== null &&
+        !('technology' in def) &&
+        'source' in def
+      ) {
+        const named = NamedMapDefSchema.safeParse(def);
+
+        return named.success ? [named.data] : [];
+      }
+
       const ok = CustomLayerDefSchema.safeParse(def);
 
       if (ok.success) {

@@ -3,6 +3,7 @@ import { hasLegend } from '@features/legend/legendLayers.js';
 import {
   drawnTypesSelector,
   libraryIndexSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -27,7 +28,7 @@ import { useAttributionInfo } from './useAttributionInfo.js';
 export function CopyrightButton(): ReactElement {
   const m = useMessages();
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
   const layers = useAppSelector(drawnTypesSelector);
 

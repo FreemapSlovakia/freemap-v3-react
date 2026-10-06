@@ -15,6 +15,7 @@ import {
   mapLayerSetupChange,
   mapLayerSetupReset,
   mapLayersSettingsReset,
+  mapNamedMapCreate,
   mapOverlayMove,
   mapPresetChange,
   mapPresetDelete,
@@ -73,6 +74,7 @@ export const mapSettingsSaveProcessor: Processor<
   | typeof mapLayersSettingsReset
   | typeof mapCustomLayerSave
   | typeof mapCustomLayerDelete
+  | typeof mapNamedMapCreate
   | typeof mapPresetSave
   | typeof mapPresetDelete
   | typeof mapPresetChange
@@ -91,6 +93,7 @@ export const mapSettingsSaveProcessor: Processor<
     mapLayersSettingsReset,
     mapCustomLayerSave,
     mapCustomLayerDelete,
+    mapNamedMapCreate,
     mapPresetSave,
     mapPresetDelete,
     mapPresetChange,

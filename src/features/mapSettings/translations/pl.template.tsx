@@ -81,7 +81,15 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Zapisz warstwy jako ustawienie wstępne',
   saveLayersAsPresetHint:
     'Nowe ustawienie wstępne z kopii map na mapie, ustawienia wstępne rozłożone.',
+  turnOffToSavePreset: (layers) =>
+    `Ustawienie wstępne nie może zawierać warstw danych. Aby je zapisać, wyłącz: ${layers}.`,
   duplicatePreset: 'Duplikuj',
+  saveAsMap: 'Zapisz jako mapę',
+  namedMapHint:
+    'Jej cieniowanie, warstwy WMS lub kolor ustawia się w panelu Warstwy mapy, a zmiana obowiązuje wszędzie, gdzie mapa jest używana.',
+  newNamedMap: 'Nowa nazwana mapa',
+  unappliedShading:
+    'Zmiany cieniowania nie zostały jeszcze zastosowane: kliknij nazwę mapy, a potem Zastosuj.',
   openPreset: 'Pokaż na mapie',
   addMap: 'Dodaj mapę',
   presetEmpty: 'Brak warstw.',

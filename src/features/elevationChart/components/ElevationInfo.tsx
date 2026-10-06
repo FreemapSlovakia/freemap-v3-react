@@ -2,6 +2,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   drawnTypesSelector,
   integratedLayerDefsSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { pointToTile } from '@mapbox/tilebelt';
@@ -86,7 +87,7 @@ export function ElevationInfo({
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
   const tileLayerDefs = [...integratedLayerDefs, ...customLayers].filter(
     isTileLayerDef,

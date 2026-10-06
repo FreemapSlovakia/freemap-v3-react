@@ -82,7 +82,15 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Ebenen als Voreinstellung speichern',
   saveLayersAsPresetHint:
     'Eine neue Voreinstellung aus Kopien der Karten auf der Karte, Voreinstellungen zerlegt.',
+  turnOffToSavePreset: (layers) =>
+    `Eine Voreinstellung kann keine Datenebenen enthalten. Zum Speichern ausschalten: ${layers}.`,
   duplicatePreset: 'Duplizieren',
+  saveAsMap: 'Als Karte speichern',
+  namedMapHint:
+    'Ihre Schummerung, WMS-Ebenen oder Farbe werden im Bedienfeld Kartenebenen eingestellt; eine Änderung gilt überall, wo die Karte verwendet wird.',
+  newNamedMap: 'Neue benannte Karte',
+  unappliedShading:
+    'Schummerungsänderungen noch nicht angewendet: auf den Namen der Karte klicken, dann auf Anwenden.',
   openPreset: 'Auf der Karte zeigen',
   addMap: 'Karte hinzufügen',
   presetEmpty: 'Keine Ebenen.',

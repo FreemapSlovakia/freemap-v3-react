@@ -19,10 +19,10 @@ describe('layer kind', () => {
       withKind({ type: 'W', layer: 'overlay', technology: 'wms' }, overrides),
     ).toEqual({ type: 'W', layer: 'base', technology: 'wms' });
 
-    // A vector map's background would hide what is beneath, as tiles do.
+    // Its opacity is the user's to set, whichever kind it is.
     expect(
       withKind({ type: 'V', layer: 'base', technology: 'maplibre' }, overrides),
-    ).toMatchObject({ layer: 'overlay', defaultOpacity: 0.5 });
+    ).toEqual({ type: 'V', layer: 'overlay', technology: 'maplibre' });
 
     expect(
       withKind(
@@ -30,21 +30,5 @@ describe('layer kind', () => {
         overrides,
       ).layer,
     ).toBe('overlay');
-  });
-
-  it('starts tiles and a solid colour used as an overlay half transparent', () => {
-    expect(
-      withKind(
-        { type: 'T', layer: 'base', technology: 'tile' },
-        { T: 'overlay' },
-      ),
-    ).toMatchObject({ layer: 'overlay', defaultOpacity: 0.5 });
-
-    expect(
-      withKind(
-        { type: 'c', layer: 'base', technology: 'color' },
-        { c: 'overlay' },
-      ),
-    ).toMatchObject({ layer: 'overlay', defaultOpacity: 0.5 });
   });
 });

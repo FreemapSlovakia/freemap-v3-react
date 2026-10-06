@@ -3,6 +3,7 @@ import { hasLegend } from '@features/legend/legendLayers.js';
 import {
   drawnTypesSelector,
   libraryIndexSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
@@ -29,7 +30,7 @@ export function HelpSubmenu(): JSX.Element {
 
   const skCs = ['sk', 'cs'].includes(language);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
   const layers = useAppSelector(drawnTypesSelector);
 

@@ -3,9 +3,10 @@ import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import z from 'zod';
 import { DATA_TECHNOLOGIES, type LayerKind } from './layerKind.js';
 import {
-  DEFAULT_SHADING,
+  compactSetup,
   type LayerSetup,
   LayerSetupSchema,
+  usageOf,
 } from './layerSetup.js';
 
 const PresetLayerSchema = z.object({
@@ -91,71 +92,24 @@ export function presetLayers(preset: {
 
       seen.add(type);
 
-      return [{ type, setup: layer.setup }];
+      // Its shading, layers and colour are the map's own, not the copy's.
+      return [{ type, setup: compactSetup(usageOf(layer.setup)) }];
     }),
   );
 }
 
-/** What merging needs to know of a map that its setup leaves at defaults. */
-type MergeDefaults = {
-  kind: (type: string) => LayerKind | undefined;
-  wmsLayers: (type: string) => readonly string[];
-};
-
-/** Two drawings of one map as one, the lower's parts below the upper's. */
-function mergeSetups(
-  type: string,
-  lower: LayerSetup,
-  upper: LayerSetup,
-  defaults: MergeDefaults,
-): LayerSetup {
-  // Opacity and colour can't be joined: the upper drawing's stand.
-  const merged: LayerSetup = { ...upper };
-
-  if (lower.wmsLayers || upper.wmsLayers) {
-    const own = defaults.wmsLayers(type);
-
-    merged.wmsLayers = [
-      ...new Set([...(lower.wmsLayers ?? own), ...(upper.wmsLayers ?? own)]),
-    ];
-  }
-
-  if (lower.shading || upper.shading) {
-    const below = lower.shading ?? DEFAULT_SHADING;
-
-    const above = upper.shading ?? DEFAULT_SHADING;
-
-    // The upper one's background would cover the lower one's components.
-    const offset = Math.max(0, ...below.components.map((c) => c.id));
-
-    merged.shading = {
-      backgroundColor: below.backgroundColor,
-      components: [
-        ...below.components,
-        ...above.components.map((c, i) => ({ ...c, id: offset + i + 1 })),
-      ],
-    };
-  }
-
-  const kindOf = (setup: LayerSetup) => setup.kind ?? defaults.kind(type);
-
-  if (kindOf(lower) === 'base' || kindOf(upper) === 'base') {
-    merged.kind = 'base';
-  }
-
-  return merged;
-}
-
 /**
- * Layers as a preset holds them, one of each map: a map drawn twice merges
- * into its upper drawing's place, its WMS layers and shading components
- * joined, the lower's first. Base maps go to the bottom.
+ * Layers as a preset holds them, one of each map: a map drawn twice keeps its
+ * upper drawing's opacity, in its place, and is a base map if either is.
+ * Base maps go to the bottom.
  */
 export function mergeLayers(
   layers: readonly PresetLayer[],
-  defaults: MergeDefaults,
+  nativeKind: (type: string) => LayerKind | undefined,
 ): PresetLayer[] {
   const merged: PresetLayer[] = [];
+
+  const kindOf = (l: PresetLayer) => l.setup.kind ?? nativeKind(l.type);
 
   for (const layer of layers) {
     const i = merged.findIndex((l) => l.type === layer.type);
@@ -165,15 +119,15 @@ export function mergeLayers(
     } else {
       const [lower] = merged.splice(i, 1);
 
-      merged.push({
-        type: layer.type,
-        setup: mergeSetups(layer.type, lower!.setup, layer.setup, defaults),
-      });
+      merged.push(
+        kindOf(lower!) === 'base' && kindOf(layer) !== 'base'
+          ? { type: layer.type, setup: { ...layer.setup, kind: 'base' } }
+          : layer,
+      );
     }
   }
 
-  const isBase = (l: PresetLayer) =>
-    (l.setup.kind ?? defaults.kind(l.type)) === 'base';
+  const isBase = (l: PresetLayer) => kindOf(l) === 'base';
 
   return [...merged.filter(isBase), ...merged.filter((l) => !isBase(l))];
 }

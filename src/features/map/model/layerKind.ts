@@ -11,17 +11,11 @@ export const DATA_TECHNOLOGIES: ReadonlySet<string> = new Set([
   'viewshed',
 ]);
 
-// Opaque at full opacity, so hiding what is beneath as an overlay.
-const OPAQUE_TECHNOLOGIES: ReadonlySet<string> = new Set([
-  'tile',
-  'maplibre',
-  'color',
-]);
-
 /**
  * Whether a map may be switched between base map and overlay: a WMS is asked
  * for transparent or not, shading and a solid colour draw a background or
- * none, and opaque tiles and vector maps blend by opacity. The data layers can't.
+ * none, and opaque tiles and vector maps blend by the opacity the user sets.
+ * The data layers can't.
  */
 export const canSwitchKind = (technology: string | undefined): boolean =>
   technology !== undefined && !DATA_TECHNOLOGIES.has(technology);
@@ -41,19 +35,14 @@ export function kindOverrides(
   return overrides;
 }
 
-/** A library map with the kind it is switched to, if it may be. */
+/** A map with the kind it is switched to, if it may be; its opacity is untouched. */
 export function withKind<
   T extends { type: string; layer: LayerKind; technology?: string },
 >(def: T, overrides: Readonly<Record<string, LayerKind>>): T {
   const kind = overrides[def.type];
 
-  if (!kind || kind === def.layer || !canSwitchKind(def.technology)) {
-    return def;
-  }
-
-  // A base map's body has no `defaultOpacity` to override this.
-  return OPAQUE_TECHNOLOGIES.has(def.technology ?? '') && kind === 'overlay'
-    ? { ...def, layer: kind, defaultOpacity: 0.5 }
+  return !kind || kind === def.layer || !canSwitchKind(def.technology)
+    ? def
     : { ...def, layer: kind };
 }
 

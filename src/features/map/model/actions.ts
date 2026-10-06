@@ -1,7 +1,10 @@
 import type { CachedTileMapDef } from '@features/cachedMaps/cachedTileMaps.js';
 import type { Shading } from '@features/parameterizedShading/model/Shading.js';
 import { createAction } from '@reduxjs/toolkit';
-import type { CustomLayerDef } from '@shared/mapDefinitions.js';
+import type {
+  NamedMapDef,
+  StoredCustomLayerDef,
+} from '@shared/mapDefinitions.js';
 import { type Shortcut, ShortcutSchema } from '@shared/types/common.js';
 import z from 'zod';
 import type { LayerSetup } from './layerSetup.js';
@@ -91,11 +94,22 @@ export const mapOverlayMove = createAction<{
  * actions below it changes the store at once and the account catches up.
  */
 export const mapCustomLayerSave = createAction<{
-  def: CustomLayerDef;
+  def: StoredCustomLayerDef;
   settings?: LayerSettings;
   /** The saved toast offers to switch the map on. */
   offerActivate?: boolean;
 }>('MAP_CUSTOM_LAYER_SAVE');
+
+/**
+ * Names a map as one drawing of it is set up (`from`, a map on its own or a
+ * preset's copy): the named map takes its shading, WMS layers or colour and
+ * its kind, and its place there.
+ */
+export const mapNamedMapCreate = createAction<{
+  def: NamedMapDef;
+  settings?: LayerSettings;
+  from: SetupTarget;
+}>('MAP_NAMED_MAP_CREATE');
 
 /** Removes a custom map, its settings and its setup. */
 export const mapCustomLayerDelete = createAction<{ type: string }>(
@@ -147,7 +161,7 @@ export interface MapStateBase extends MapViewState {
   layersSettings: Record<string, LayerSettings>;
   /** How each map is drawn, whether on or off; see `LayerSetup`. */
   layerSetups: Record<string, LayerSetup>;
-  customLayers: CustomLayerDef[];
+  customLayers: StoredCustomLayerDef[];
   cachedMaps: CachedTileMapDef[];
 }
 
@@ -192,7 +206,7 @@ export const mapSuppressLegacyMapWarning = createAction<{
   forever: boolean;
 }>('MAP_SUPPRESS_LEGACY_MAP_WARING');
 
-export const mapSetCustomLayers = createAction<CustomLayerDef[]>(
+export const mapSetCustomLayers = createAction<StoredCustomLayerDef[]>(
   'MAP_SET_CUSTOM_LAYERS',
 );
 

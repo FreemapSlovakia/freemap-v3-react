@@ -21,7 +21,7 @@ import {
   useState,
 } from 'react';
 import { Alert, Button, Form, Table } from 'react-bootstrap';
-import { FaEye, FaHistory, FaPlus } from 'react-icons/fa';
+import { FaEye, FaGlobeEurope, FaHistory, FaPlus } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import {
   type CatalogEntry,
@@ -276,7 +276,8 @@ export function LibraryTab({
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const { categoryOptions, technologyOptions } = useSharedFilterOptions();
+  const { categoryOptions, technologyOptions, layerOptions } =
+    useSharedFilterOptions();
 
   const { query } = filters;
 
@@ -434,10 +435,7 @@ export function LibraryTab({
         <FilterChips
           name="library-layer"
           label={m?.mapLayers.layer.layer}
-          options={[
-            { value: 'base', label: msm?.baseMaps },
-            { value: 'overlay', label: msm?.overlays },
-          ]}
+          options={layerOptions}
           selected={filters.layers}
           onChange={(layers) => onChange({ ...filters, layers })}
         />
@@ -445,6 +443,7 @@ export function LibraryTab({
         <FilterToggle
           name="library-covers-view"
           label={msm?.filters.coversView}
+          icon={<FaGlobeEurope />}
           checked={filters.coversView}
           onChange={(coversView) => onChange({ ...filters, coversView })}
         />

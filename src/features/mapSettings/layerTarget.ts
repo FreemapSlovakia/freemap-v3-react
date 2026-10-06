@@ -1,6 +1,6 @@
 import type { SetupTarget } from '@features/map/model/actions.js';
 import { withMemberKind } from '@features/map/model/layerKind.js';
-import type { LayerSetup } from '@features/map/model/layerSetup.js';
+import { copySetup, type LayerSetup } from '@features/map/model/layerSetup.js';
 import {
   mapByIdSelector,
   nativeKindsSelector,
@@ -9,15 +9,24 @@ import {
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LayerDef } from '@shared/mapDefinitions.js';
 
-/** The setup a target names: a map's own, or a preset's copy. */
+/** The setup a target is drawn with: a map's own, or a preset's copy with the map's shading and layers. */
 export function useTargetSetup(target: SetupTarget): LayerSetup | undefined {
-  return useAppSelector((state) =>
+  const own = useAppSelector((state) => state.map.layerSetups[target.type]);
+
+  // Selected apart and merged here, so the selection keeps its identity.
+  const copy = useAppSelector((state) =>
     target.preset === undefined
-      ? state.map.layerSetups[target.type]
+      ? undefined
       : presetByIdSelector(state)[target.preset]?.layers.find(
           (layer) => layer.type === target.type,
         )?.setup,
   );
+
+  if (target.preset === undefined) {
+    return own;
+  }
+
+  return copy && copySetup(own, copy);
 }
 
 /** The map a target names, of the kind it is drawn as there. */

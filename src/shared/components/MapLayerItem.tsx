@@ -30,6 +30,12 @@ export type MapLayerItemDef = {
   experimental?: boolean;
 };
 
+/** A base map's and an overlay's glyph, wherever the kind is shown or picked. */
+export const LAYER_KIND_ICONS: Record<'base' | 'overlay', ReactElement> = {
+  base: <TbLayersSelected />,
+  overlay: <TbLayersSelectedBottom />,
+};
+
 /** Whether a layer is a base map or an overlay, named in a tooltip. */
 export function LayerKindMark({
   kind,
@@ -44,7 +50,7 @@ export function LayerKindMark({
       color={null}
       className="opacity-50 flex-shrink-0"
     >
-      {kind === 'base' ? <TbLayersSelected /> : <TbLayersSelectedBottom />}
+      {LAYER_KIND_ICONS[kind]}
     </GlyphMarker>
   );
 }
@@ -58,12 +64,15 @@ export function MapLayerItem({
   def,
   label,
   truncate,
+  noKindMark,
 }: {
   def: MapLayerItemDef;
   /** Stands in for the resolved name — a search hit shows its matched letters in bold. */
   label?: ReactNode;
   /** One line, the name cut with an ellipsis, rather than wrapping. */
   truncate?: boolean;
+  /** Where the row shows the kind elsewhere, as a control. */
+  noKindMark?: boolean;
 }): ReactElement {
   const m = useMessages();
 
@@ -76,7 +85,7 @@ export function MapLayerItem({
         truncate ? 'mw-100 flex-nowrap' : 'flex-wrap',
       )}
     >
-      <LayerKindMark kind={def.layer} />
+      {!noKindMark && <LayerKindMark kind={def.layer} />}
 
       {def.icon ?? (
         <CustomMapGlyph spec={def.iconSpec} kind={customMapKind(def)} />

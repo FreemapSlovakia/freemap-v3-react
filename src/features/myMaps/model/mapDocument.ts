@@ -8,6 +8,7 @@ import {
   type Line,
   toWireHoleIndexes,
 } from '@features/drawing/model/actions/drawingLineActions.js';
+import { presetOnlyConfigs } from '@features/map/model/layerSetup.js';
 import { inlinePresets } from '@features/map/model/mapPreset.js';
 import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
 import { savedRouteFromState } from '@features/routePlanner/model/savedRoute.js';
@@ -87,19 +88,32 @@ export function getMapDataFromState(state: RootState): MapData {
       lon: map.lon,
       zoom: map.zoom,
       customLayers: map.customLayers,
-      // A snapshot, for readers who don't have the author's presets: copies.
-      ...inlinePresets(
-        map.layers,
-        (id) =>
-          map.presets.find((p) => p.id === id) ??
-          map.linkPresets.find((p) => p.id === id),
-      ),
-      layerSetups: Object.fromEntries(
-        map.layers.flatMap((type) =>
-          map.layerSetups[type] ? [[type, map.layerSetups[type]]] : [],
-        ),
-      ),
+      ...documentLayers(map),
     },
+  };
+}
+
+/**
+ * The stack with its presets copied in, for readers who don't have the
+ * author's presets, and each drawn map's setup: a map only in presets by its
+ * shading and layers, the copies holding the rest.
+ */
+function documentLayers(map: RootState['map']) {
+  const inline = inlinePresets(
+    map.layers,
+    (id) =>
+      map.presets.find((p) => p.id === id) ??
+      map.linkPresets.find((p) => p.id === id),
+  );
+
+  return {
+    ...inline,
+    layerSetups: Object.fromEntries([
+      ...map.layers.flatMap((type) =>
+        map.layerSetups[type] ? [[type, map.layerSetups[type]]] : [],
+      ),
+      ...presetOnlyConfigs(inline.presets, map.layers, map.layerSetups),
+    ]),
   };
 }
 

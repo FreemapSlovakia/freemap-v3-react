@@ -12,21 +12,23 @@ import { drawnTypesSelector } from '../selectors.js';
 
 /**
  * The maps whose bodies are wanted but not loaded, comma-joined: installed
- * ones, ones on the map and sources of offline maps.
+ * ones, ones on the map and sources of offline and named maps.
  */
 const missingTypesSelector = createSelector(
   (state: RootState) => state.mapLibrary.bodies,
   (state: RootState) => state.map.layersSettings,
   drawnTypesSelector,
   (state: RootState) => state.map.cachedMaps,
-  (bodies, layersSettings, layers, cachedMaps) =>
+  (state: RootState) => state.map.customLayers,
+  (bodies, layersSettings, layers, cachedMaps, customLayers) =>
     mapIndex
       .filter(
         ({ type }) =>
           !bodies[type] &&
           (isLayerInstalled(layersSettings, type) ||
             layers.includes(type) ||
-            cachedMaps.some((cm) => cm.sourceType === type)),
+            cachedMaps.some((cm) => cm.sourceType === type) ||
+            customLayers.some((def) => def.source === type)),
       )
       .map(({ type }) => type)
       .join(','),

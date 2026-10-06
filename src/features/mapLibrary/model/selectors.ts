@@ -5,6 +5,7 @@ import {
   isCachedMapComplete,
 } from '@features/cachedMaps/cachedTileMaps.js';
 import {
+  canSwitchKind,
   kindOverrides,
   type LayerKind,
   withKind,
@@ -17,12 +18,14 @@ import {
   presetKind,
 } from '@features/map/model/mapPreset.js';
 import { overlayStack } from '@features/map/model/overlayStack.js';
-import type {
-  CustomLayerDef,
-  IntegratedLayerDef,
-  IsWmsLayerDef,
-  LayerDef,
-  MapIndexEntry,
+import {
+  type CustomLayerDef,
+  type IntegratedLayerDef,
+  type IsWmsLayerDef,
+  isNamedMapDef,
+  type LayerDef,
+  type MapIndexEntry,
+  type NamedMapDef,
 } from '@shared/mapDefinitions.js';
 import { catalogIndexEntry } from '@shared/mapLibrary/catalogMap.js';
 import {
@@ -168,13 +171,109 @@ const PINNED_TECHNOLOGIES = new Set(['gallery', 'wikipedia', 'interactive']);
 const isPinnedOverlay = (technology: string | undefined): boolean =>
   technology !== undefined && PINNED_TECHNOLOGIES.has(technology);
 
+/**
+ * A named map as its source draws it, under its own id, name and icon; none
+ * while its source's body loads. Typed as a custom map, though it may be a
+ * shading or colour map, which every drawing path handles.
+ */
+export function resolveNamedMap(
+  def: NamedMapDef,
+  sources: Readonly<Record<string, IntegratedLayerDef | CustomLayerDef>>,
+): CustomLayerDef | undefined {
+  const source = sources[def.source];
+
+  if (!source || !canSwitchKind(source.technology)) {
+    return undefined;
+  }
+
+  // What says how the library offers its map is not the named map's.
+  const {
+    icon: _icon,
+    shortcut: _shortcut,
+    defaultInMenu: _menu,
+    defaultInToolbar: _toolbar,
+    superseededBy: _superseded,
+    layerPreview: _preview,
+    defaultInstalled: _installed,
+    ...drawn
+  } = source as IntegratedLayerDef & { defaultInstalled?: boolean };
+
+  return { ...drawn, ...def } as CustomLayerDef;
+}
+
+// Each stored def's drawn form, while its source and kind are the same: what
+// keeps the list below equal as unrelated library bodies load.
+const drawnCache = new WeakMap<
+  object,
+  {
+    source: object | undefined;
+    kind: LayerKind | undefined;
+    drawn: CustomLayerDef;
+  }
+>();
+
 /** The user's own maps, as drawn: of the kind their setups switch them to. */
 export const resolvedCustomLayersSelector = createSelector(
   (state: RootState) => state.map.customLayers,
+  integratedLayerDefMapSelector,
   kindOverridesSelector,
   // The form edits the stored kind, the map's default.
-  (customLayers, overrides) =>
-    customLayers.map((def) => withKind(def, overrides)),
+  (customLayers, library, overrides): CustomLayerDef[] => {
+    // A library map, or one of the user's own servers.
+    const sources: Record<string, IntegratedLayerDef | CustomLayerDef> = {
+      ...library,
+    };
+
+    for (const def of customLayers) {
+      if (!isNamedMapDef(def)) {
+        sources[def.type] = def;
+      }
+    }
+
+    return customLayers.flatMap((def) => {
+      const source = isNamedMapDef(def) ? sources[def.source] : undefined;
+
+      const kind = overrides[def.type];
+
+      const cached = drawnCache.get(def);
+
+      if (cached && cached.source === source && cached.kind === kind) {
+        return [cached.drawn];
+      }
+
+      const resolved = isNamedMapDef(def) ? resolveNamedMap(def, sources) : def;
+
+      if (!resolved) {
+        return [];
+      }
+
+      const drawn = withKind(resolved, overrides);
+
+      drawnCache.set(def, { source, kind, drawn });
+
+      return [drawn];
+    });
+  },
+  {
+    // The same maps drawn the same, as one list, so its readers don't re-render.
+    memoizeOptions: {
+      resultEqualityCheck: (a: CustomLayerDef[], b: CustomLayerDef[]) =>
+        a.length === b.length && a.every((def, i) => def === b[i]),
+    },
+  },
+);
+
+/**
+ * The named maps, resolved, as the library defs they draw: what credits a
+ * source's data under the named map's id. Their source's `attribution` and
+ * technology are spread in by `resolveNamedMap`.
+ */
+export const namedLayerDefsSelector = createSelector(
+  resolvedCustomLayersSelector,
+  (defs): IntegratedLayerDef[] =>
+    defs.filter(
+      (def) => def.source !== undefined,
+    ) as unknown as IntegratedLayerDef[],
 );
 
 /** A map found by id, with what its origin carries. */

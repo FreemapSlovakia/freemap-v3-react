@@ -38,10 +38,8 @@ export const chordDefinitions: ChordDefinition[] = [
   { codes: ['KeyM', 'KeyP'], modal: 'map-preferences' },
   { codes: ['KeyM', 'KeyO'], modal: 'offline-maps' },
   { codes: ['KeyM', 'KeyB'], modal: 'browse-cache' },
-  { codes: ['KeyM', 'KeyI'], modal: 'installed-maps' },
+  { codes: ['KeyM', 'KeyM'], modal: 'installed-maps' },
   { codes: ['KeyM', 'KeyA'], modal: 'available-maps' },
-  // Also opens Installed maps, where custom maps are; menus show the first.
-  { codes: ['KeyM', 'KeyC'], modal: 'installed-maps' },
   { codes: ['KeyM', 'KeyL'], modal: 'legend' },
   { codes: ['KeyM', 'KeyE'], modal: 'elevation-settings' },
 

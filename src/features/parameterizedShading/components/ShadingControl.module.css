@@ -1,9 +1,3 @@
-/* Drawn like the section's `<hr>`s, which Bootstrap tints from the text colour;
-   `.border-top`'s fixed grey reads differently on the translucent panel. */
-.footer {
-  border-top: var(--bs-border-width) solid rgba(var(--bs-body-color-rgb), 0.25);
-}
-
 .shading-color {
   display: inline-block;
   width: 1em;

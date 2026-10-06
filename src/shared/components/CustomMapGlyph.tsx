@@ -2,17 +2,23 @@ import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import type { IsCustomLayerTechnologiesDef } from '@shared/mapDefinitions.js';
 import type { ReactElement, ReactNode } from 'react';
 import { FaServer, FaTh } from 'react-icons/fa';
-import { MdOfflinePin } from 'react-icons/md';
+import { GiHills } from 'react-icons/gi';
+import { MdFormatColorFill, MdOfflinePin } from 'react-icons/md';
 import { TbStack2, TbVector } from 'react-icons/tb';
 
+// A named map is drawn as its source, a shading or colour map among them.
 export type CustomMapKind =
   | IsCustomLayerTechnologiesDef['technology']
+  | 'parametricShading'
+  | 'color'
   | 'preset';
 
 export const CUSTOM_MAP_ICONS: Record<CustomMapKind, ReactElement> = {
   tile: <FaTh />,
   maplibre: <TbVector />,
   wms: <FaServer />,
+  parametricShading: <GiHills />,
+  color: <MdFormatColorFill />,
   preset: <TbStack2 />,
 };
 

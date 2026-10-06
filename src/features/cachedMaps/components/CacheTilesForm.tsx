@@ -5,6 +5,7 @@ import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import {
   drawnTypesSelector,
   integratedLayerDefMapSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import {
   type LayerVisibility,
@@ -111,7 +112,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 

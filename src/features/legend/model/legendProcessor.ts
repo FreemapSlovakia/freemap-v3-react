@@ -3,6 +3,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   drawnTypesSelector,
   libraryIndexSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { EXTERNAL_LEGENDS, getActiveLegendLayers } from '../legendLayers.js';
 
@@ -18,7 +19,7 @@ export const legendProcessor: Processor<typeof setActiveModal> = {
     const legendLayers = getActiveLegendLayers(
       drawnTypesSelector(state),
       libraryIndexSelector(state),
-      state.map.customLayers,
+      resolvedCustomLayersSelector(state),
     );
 
     // A lone external legend opens directly; beside others the modal links it.

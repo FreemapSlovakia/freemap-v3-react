@@ -49,7 +49,10 @@ import {
 } from '@features/gallery/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import { mapRefocus, mapSetCustomLayers } from '@features/map/model/actions.js';
-import type { LayerSetup } from '@features/map/model/layerSetup.js';
+import {
+  type LayerSetup,
+  withLoadedConfig,
+} from '@features/map/model/layerSetup.js';
 import {
   parsePresetParams,
   parseSetup,
@@ -135,6 +138,7 @@ import {
 import { isLanguage } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
+  isNamedMapDef,
   SHADING_SOURCE,
 } from '@shared/mapDefinitions.js';
 import {
@@ -651,7 +655,18 @@ export function handleLocationChange(store: MyStore): void {
         JSON.parse(customLayerDefsStr),
       );
 
-      customTypes.push(...customLayerDefs.map((def) => def.type));
+      // A named map's source rides along to draw it, not to be drawn.
+      const sources = new Set(
+        customLayerDefs.flatMap((def) =>
+          isNamedMapDef(def) ? [def.source] : [],
+        ),
+      );
+
+      customTypes.push(
+        ...customLayerDefs
+          .map((def) => def.type)
+          .filter((type) => !sources.has(type)),
+      );
 
       const newCustomLayerDefs = customLayerDefs.filter(
         (cl) => !existingCustomLayersDefStrings.includes(JSON.stringify(cl)),
@@ -732,6 +747,29 @@ export function handleLocationChange(store: MyStore): void {
           : type === SHADING_SOURCE && typeof legacyShading === 'string'
             ? { shading: parseShading(legacyShading) }
             : {};
+    }
+
+    // A map only in the link's presets: its shading and layers from the link,
+    // the opacity and kind of one's own drawing of it kept.
+    const onMap = new Set(mapStateFromUrl.layers);
+
+    const presetsOnMap = [
+      ...(linkPresets ?? []),
+      ...getState().map.presets,
+    ].filter((p) => onMap.has(presetItem(p.id)));
+
+    for (const { type } of presetsOnMap.flatMap((p) => p.layers)) {
+      const value = query[`${SETUP_PARAM_PREFIX}${type}`];
+
+      // Without one the link has the map's defaults: one's own config stays.
+      if (onMap.has(type) || setups[type] || typeof value !== 'string') {
+        continue;
+      }
+
+      setups[type] = withLoadedConfig(
+        getState().map.layerSetups[type],
+        parseSetup(value),
+      );
     }
   }
 

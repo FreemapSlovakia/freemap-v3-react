@@ -82,7 +82,15 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Salva i livelli come preimpostazione',
   saveLayersAsPresetHint:
     'Una nuova preimpostazione con copie delle mappe sulla mappa, le preimpostazioni scomposte.',
+  turnOffToSavePreset: (layers) =>
+    `Una preimpostazione non può contenere livelli di dati. Per salvarla, disattiva: ${layers}.`,
   duplicatePreset: 'Duplica',
+  saveAsMap: 'Salva come mappa',
+  namedMapHint:
+    "L'ombreggiatura, i livelli WMS o il colore si impostano nel pannello Livelli della mappa, e una modifica vale ovunque la mappa sia usata.",
+  newNamedMap: 'Nuova mappa con nome',
+  unappliedShading:
+    "Modifiche all'ombreggiatura non ancora applicate: fai clic sul nome della mappa, poi su Applica.",
   openPreset: 'Mostra sulla mappa',
   addMap: 'Aggiungi mappa',
   presetEmpty: 'Nessun livello.',
