@@ -25,6 +25,7 @@ import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
 import type { ReactElement, ReactNode } from 'react';
 import { BiWifiOff } from 'react-icons/bi';
 import {
+  FaBookOpen,
   FaChartArea,
   FaCode,
   FaDatabase,
@@ -40,7 +41,6 @@ import {
   FaSlidersH,
   FaUser,
 } from 'react-icons/fa';
-import { MdLibraryAdd } from 'react-icons/md';
 import { getDocuments } from '@/documents/index.js';
 import type { Messages } from '../translations/messagesInterface.js';
 import { layerName } from './layerName.js';
@@ -182,7 +182,7 @@ const modalCommands: ModalCommand[] = [
   },
   {
     id: 'available-maps',
-    icon: <MdLibraryAdd />,
+    icon: <FaBookOpen />,
     label: (m) => m.mapLayers.availableMaps,
     offline: (ctx) => !ctx.canSaveSettings,
   },

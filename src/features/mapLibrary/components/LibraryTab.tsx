@@ -49,6 +49,7 @@ import {
   FilterCountry,
   FilterPanel,
   FilterToggle,
+  MapDetail,
   passesCountry,
   useMapDetail,
   useSharedFilterOptions,
@@ -188,9 +189,7 @@ function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
           countries={flaggedCountries(entry)}
         />
 
-        <div className="small text-muted">
-          {mapDetail(entry.category, technologyOf(entry))}
-        </div>
+        <MapDetail parts={mapDetail(entry.category, technologyOf(entry))} />
       </td>
 
       <td>

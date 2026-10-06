@@ -44,7 +44,9 @@ import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import type { Shortcut } from '@shared/types/common.js';
 import type { ReactElement, ReactNode, RefObject } from 'react';
 import { Form, Table } from 'react-bootstrap';
+import { BiWifiOff } from 'react-icons/bi';
 import {
+  FaBookOpen,
   FaCube,
   FaDownload,
   FaEye,
@@ -56,7 +58,7 @@ import {
   FaTrash,
   FaUser,
 } from 'react-icons/fa';
-import { MdLibraryAdd, MdOfflinePin, MdOpacity } from 'react-icons/md';
+import { MdOpacity } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   type CategoryGroup,
@@ -77,10 +79,12 @@ import {
   resolvedCustomLayersSelector,
 } from '../model/selectors.js';
 import {
+  type DetailPart,
   FilterChips,
   FilterCountry,
   FilterPanel,
   FilterToggle,
+  MapDetail,
   passesCountry,
   useMapDetail,
   useSharedFilterOptions,
@@ -94,7 +98,7 @@ type YourMap = {
   layer: 'base' | 'overlay';
   name: string;
   /** A second line: category and technology, or what a preset holds. */
-  detail?: string;
+  detail?: DetailPart[];
   icon: ReactNode;
   countries?: string[];
   /** Where it draws, as `coversView` reads it; none means everywhere. */
@@ -144,6 +148,22 @@ export type YourMapsFilters = {
   /** With a country picked, keep the maps that name none. */
   worldwide: boolean;
   coversView: boolean;
+};
+
+const KIND_OPTIONS = [
+  'builtIn',
+  'fromLibrary',
+  'custom',
+  'offline',
+  'presets',
+] as const satisfies readonly YourMapKind[];
+
+const KIND_ICONS: Record<YourMapKind, ReactElement> = {
+  builtIn: <FaCube />,
+  fromLibrary: <FaBookOpen />,
+  custom: <FaUser />,
+  offline: <BiWifiOff />,
+  presets: CUSTOM_MAP_ICONS.preset,
 };
 
 const kindOf = (map: YourMap): YourMapKind =>
@@ -246,29 +266,11 @@ export function YourMapsTab({
         <FilterChips
           name="kind"
           label={msm?.filters.kind}
-          options={[
-            {
-              value: 'builtIn',
-              label: msm?.filters.builtIn,
-              icon: <FaCube />,
-            },
-            {
-              value: 'fromLibrary',
-              label: msm?.filters.fromLibrary,
-              icon: <MdLibraryAdd />,
-            },
-            { value: 'custom', label: msm?.filters.custom, icon: <FaUser /> },
-            {
-              value: 'offline',
-              label: msm?.filters.offline,
-              icon: <MdOfflinePin />,
-            },
-            {
-              value: 'presets',
-              label: msm?.filters.presets,
-              icon: CUSTOM_MAP_ICONS.preset,
-            },
-          ]}
+          options={KIND_OPTIONS.map((value) => ({
+            value,
+            label: msm?.filters[value],
+            icon: KIND_ICONS[value],
+          }))}
           selected={filters.kinds}
           onChange={(kinds) => onChange({ ...filters, kinds })}
         />
@@ -441,12 +443,10 @@ export function YourMapsList({
         layer: cm.layer,
         name: nameOr(cm),
         // The map it was downloaded from, whose category it takes.
-        detail: mapDetail(
-          defOf(cm.sourceType).category,
-          undefined,
-          msm?.filters.offline,
-          baseName(cm.sourceType),
-        ),
+        detail: [
+          ...mapDetail(defOf(cm.sourceType).category, undefined),
+          { label: baseName(cm.sourceType) },
+        ],
         category: defOf(cm.sourceType).category,
         icon: <CustomMapGlyph spec={cm.iconSpec} kind="cached" />,
         legacy: false,
@@ -463,15 +463,18 @@ export function YourMapsList({
         layer: presetKinds[preset.id] ?? 'overlay',
         name: preset.name,
         // What it puts on the map: its lowest layer and how many more.
-        detail: [
-          msm?.preset,
+        detail:
           preset.layers.length > 0
-            ? baseName(preset.layers[0].type) +
-              (preset.layers.length > 1 ? ` + ${preset.layers.length - 1}` : '')
-            : '',
-        ]
-          .filter(Boolean)
-          .join(' · '),
+            ? [
+                {
+                  label:
+                    baseName(preset.layers[0].type) +
+                    (preset.layers.length > 1
+                      ? ` + ${preset.layers.length - 1}`
+                      : ''),
+                },
+              ]
+            : [],
         icon: <CustomMapGlyph spec={preset.iconSpec} kind="preset" />,
         legacy: false,
         kind: 'preset',
@@ -659,7 +662,15 @@ function YourMapRow({
           countries={map.countries}
         />
 
-        {map.detail && <div className="small text-muted">{map.detail}</div>}
+        <MapDetail
+          parts={[
+            {
+              icon: KIND_ICONS[kindOf(map)],
+              label: msm?.filters[kindOf(map)] ?? '',
+            },
+            ...(map.detail ?? []),
+          ]}
+        />
       </td>
 
       <td>

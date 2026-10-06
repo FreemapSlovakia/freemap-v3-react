@@ -3,11 +3,12 @@ import { useMapSettingsMessages } from '@features/mapSettings/translations/useMa
 import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useRegionNames } from '@shared/hooks/useRegionNames.js';
-import type { ReactElement, ReactNode } from 'react';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Dropdown, Form, ToggleButton } from 'react-bootstrap';
 import {
   FaDatabase,
@@ -22,6 +23,7 @@ import {
   CATEGORY_GROUPS,
   categoryGroup,
   TECHNOLOGY_GROUPS,
+  technologyGroup,
 } from '../filters.js';
 
 type Props<T extends string> = {
@@ -191,10 +193,12 @@ const CATEGORY_ICONS: Record<(typeof CATEGORY_GROUPS)[number], ReactElement> = {
   other: <FaEllipsisH />,
 };
 
+/** One item of a map's second line: a chip's icon and words, or words alone. */
+export type DetailPart = { icon?: ReactNode; label: string };
+
 /**
- * A map's second line in the lists, in the chips' words: its category and
- * technology, but not Other or Data layers, which say nothing the name doesn't,
- * and any extras after them.
+ * A map's category and technology as the chips show them, but not Other or
+ * Data layers, which say nothing the name doesn't.
  */
 export function useMapDetail() {
   const m = useMessages();
@@ -204,21 +208,63 @@ export function useMapDetail() {
   return (
     category: string | undefined,
     technology: string | undefined,
-    ...extras: (string | undefined)[]
-  ): string => {
+  ): DetailPart[] => {
     const group = categoryGroup(category);
+
+    const techGroup = technologyGroup(technology);
 
     const technologies: Partial<Record<string, string>> | undefined =
       m?.mapLayers.technologies;
 
+    const techLabel =
+      technology === undefined ? undefined : technologies?.[technology];
+
     return [
-      group === 'other' ? undefined : msm?.filters[group],
-      technology === undefined ? undefined : technologies?.[technology],
-      ...extras,
-    ]
-      .filter(Boolean)
-      .join(' · ');
+      group === 'other' || !msm
+        ? undefined
+        : { icon: CATEGORY_ICONS[group], label: msm.filters[group] },
+      techGroup === undefined || techGroup === 'data' || !techLabel
+        ? undefined
+        : { icon: CUSTOM_MAP_ICONS[techGroup], label: techLabel },
+    ].filter((part) => part !== undefined);
   };
+}
+
+/** A map's second line; on a narrow screen its icons, the words on long press. */
+export function MapDetail({
+  parts,
+}: {
+  parts: readonly DetailPart[];
+}): ReactElement | null {
+  if (parts.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="small text-muted d-flex flex-wrap align-items-center column-gap-1">
+      {parts.map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 && <span>·</span>}
+
+          {part.icon ? (
+            <LongPressTooltip label={part.label} breakpoint="sm">
+              {({ props, label, labelClassName }) => (
+                <span
+                  className="d-inline-flex align-items-center gap-1"
+                  {...props}
+                >
+                  {part.icon}
+                  <span className={labelClassName}>{label}</span>
+                </span>
+              )}
+            </LongPressTooltip>
+          ) : (
+            <span className="text-truncate">{part.label}</span>
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
 }
 
 /**

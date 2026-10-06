@@ -1,9 +1,10 @@
 import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
 import type { IsCustomLayerTechnologiesDef } from '@shared/mapDefinitions.js';
 import type { ReactElement, ReactNode } from 'react';
+import { BiWifiOff } from 'react-icons/bi';
 import { FaServer, FaTh } from 'react-icons/fa';
 import { GiHills } from 'react-icons/gi';
-import { MdFormatColorFill, MdOfflinePin } from 'react-icons/md';
+import { MdFormatColorFill } from 'react-icons/md';
 import { TbStack2, TbVector } from 'react-icons/tb';
 
 // A named map is drawn as its source, a shading or colour map among them.
@@ -26,7 +27,7 @@ type GlyphKind = CustomMapKind | 'cached';
 
 const FALLBACKS: Record<GlyphKind, ReactElement> = {
   ...CUSTOM_MAP_ICONS,
-  cached: <MdOfflinePin />,
+  cached: <BiWifiOff />,
 };
 
 /** What a custom or cached map falls back on; a built-in layer has no kind. */

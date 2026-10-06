@@ -16,7 +16,7 @@ import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { layerLabel } from '@shared/layerName.js';
 import { type ReactElement, useRef, useState } from 'react';
 import { Button, ButtonGroup, Modal, ToggleButton } from 'react-bootstrap';
-import { FaLayerGroup, FaPlus } from 'react-icons/fa';
+import { FaBookOpen, FaLayerGroup, FaPlus } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { yourMapsCountSelector } from '../model/selectors.js';
@@ -172,7 +172,7 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
                   dispatch(setActiveModal({ type: 'installed-maps' }))
                 }
               >
-                {m?.mapLayers.installedMaps} ({yourMapsCount})
+                <FaLayerGroup /> {m?.mapLayers.installedMaps} ({yourMapsCount})
               </ToggleButton>
 
               <ToggleButton
@@ -186,7 +186,7 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
                   dispatch(setActiveModal({ type: 'available-maps' }))
                 }
               >
-                {m?.mapLayers.availableMaps}
+                <FaBookOpen /> {m?.mapLayers.availableMaps}
                 {catalog && ` (${entries.length})`}
               </ToggleButton>
             </ButtonGroup>
