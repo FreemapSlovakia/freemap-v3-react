@@ -84,6 +84,8 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Eine neue Voreinstellung aus Kopien der Karten auf der Karte, Voreinstellungen zerlegt.',
   turnOffToSavePreset: (layers) =>
     `Eine Voreinstellung kann keine Datenebenen enthalten. Zum Speichern ausschalten: ${layers}.`,
+  deleteAlsoNamed: (names) =>
+    `Die darauf aufbauenden Karten werden ebenfalls gelöscht: ${names}.`,
   duplicatePreset: 'Duplizieren',
   saveAsMap: 'Als Karte speichern',
   namedMapHint:

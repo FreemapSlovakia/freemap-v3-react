@@ -75,6 +75,8 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Nová predvoľba z kópií máp na mape, predvoľby rozložené.',
   turnOffToSavePreset: (layers) =>
     `Predvoľba nemôže obsahovať dátové vrstvy. Na jej uloženie vypnite: ${layers}.`,
+  deleteAlsoNamed: (names) =>
+    `Odstránia sa aj mapy na nej postavené: ${names}.`,
   duplicatePreset: 'Duplikovať',
   saveAsMap: 'Uložiť ako mapu',
   namedMapHint:

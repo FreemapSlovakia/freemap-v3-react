@@ -6,10 +6,15 @@ import {
 import type { MapPreset } from '@features/map/model/mapPreset.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerLabel } from '@shared/layerName.js';
-import type { StoredCustomLayerDef } from '@shared/mapDefinitions.js';
+import {
+  isNamedMapDef,
+  type StoredCustomLayerDef,
+} from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { useDispatch } from 'react-redux';
+import { useMapSettingsMessages } from './translations/useMapSettingsMessages.js';
 
 /** Deleting the user's own maps and presets, from a list of them. */
 export function useCustomMapActions() {
@@ -17,20 +22,38 @@ export function useCustomMapActions() {
 
   const mm = useMyMapsMessages();
 
+  const msm = useMapSettingsMessages();
+
+  const customLayers = useAppSelector((state) => state.map.customLayers);
+
   const dispatch = useDispatch();
 
   const confirm = useConfirm();
 
-  const confirmDelete = (name: string) =>
+  const confirmDelete = (name: string, alsoNamed: string[] = []) =>
     confirm({
       title: mm?.deleteTitle,
-      message: mm?.deleteConfirm(name),
+      message: (
+        <>
+          {mm?.deleteConfirm(name)}
+          {alsoNamed.length > 0 && (
+            <p className="mt-2 mb-0">
+              {msm?.deleteAlsoNamed(alsoNamed.join(', '))}
+            </p>
+          )}
+        </>
+      ),
       confirmLabel: m?.general.delete,
       confirmStyle: 'danger',
     });
 
   const deleteCustomMap = async (def: StoredCustomLayerDef) => {
-    if (!(await confirmDelete(layerLabel(def, m)))) {
+    // The reducer deletes them with it.
+    const alsoNamed = customLayers
+      .filter((named) => isNamedMapDef(named) && named.source === def.type)
+      .map((named) => layerLabel(named, m));
+
+    if (!(await confirmDelete(layerLabel(def, m), alsoNamed))) {
       return;
     }
 
