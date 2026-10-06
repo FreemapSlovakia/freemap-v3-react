@@ -31,10 +31,15 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaTag, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaCheck, FaTag } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import classes from './FeaturePropertiesModal.module.css';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from './FmModalFooter.js';
 
 /**
  * Everything the modal edits, whatever holds it. The caller resolves each field
@@ -324,15 +329,17 @@ export function FeaturePropertiesModal({
           )}
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button type="submit" variant="primary" disabled={invalidWidth}>
-            <FaCheck /> {m?.general.save}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            type="submit"
+            variant="primary"
+            disabled={invalidWidth}
+            icon={<FaCheck />}
+            label={m?.general.save}
+          />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

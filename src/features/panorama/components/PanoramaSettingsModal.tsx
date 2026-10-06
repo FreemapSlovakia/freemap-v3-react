@@ -3,6 +3,12 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
+import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
@@ -16,8 +22,8 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Button, ButtonGroup, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
+import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { FaCheck, FaCog } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   gradientFarStepIndex,
@@ -281,7 +287,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               <HintMark hint={m?.settings.tiltHint} />
             </Form.Label>
 
-            <ButtonGroup className="mb-2">
+            <FitButtonGroup className="mb-2">
               {TILT_PRESETS.map((preset) => {
                 const [lo, hi] = PANORAMA_TILTS[preset];
 
@@ -299,7 +305,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                   </Button>
                 );
               })}
-            </ButtonGroup>
+            </FitButtonGroup>
 
             {/* Degrees from the horizon, so both read positive and neither can
                 be dragged through the other into a band with no height. */}
@@ -514,10 +520,13 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
           )}
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button type="submit" disabled={invalid}>
-            <FaCheck /> {gm?.general.save}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            type="submit"
+            disabled={invalid}
+            icon={<FaCheck />}
+            label={gm?.general.save}
+          />
 
           {/* Everything the form holds, not only the look: the button says it
               resets the form, and a modal that quietly left the eye height and
@@ -529,10 +538,8 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
             )}
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {gm?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={gm?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

@@ -1,7 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
 import { FaUndo } from 'react-icons/fa';
+import { FmFooterButton } from './FmModalFooter.js';
 
 type Props = {
   /** Resets the surrounding form to its defaults. */
@@ -25,14 +25,14 @@ export function ResetToDefaultsButton({
   const m = useMessages();
 
   return (
-    <Button
+    <FmFooterButton
       variant="secondary"
       type="button"
       className={className}
       disabled={disabled}
       onClick={onClick}
-    >
-      <FaUndo /> {m?.general.resetToDefaults}
-    </Button>
+      icon={<FaUndo />}
+      label={m?.general.resetToDefaults}
+    />
   );
 }

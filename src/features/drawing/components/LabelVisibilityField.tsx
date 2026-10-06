@@ -1,10 +1,10 @@
-import { useButtonGroupFit } from '@shared/hooks/useButtonGroupFit.js';
+import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   type LabelVisibility,
   LabelVisibilitySchema,
 } from '@shared/labelVisibility.js';
 import type { ReactElement } from 'react';
-import { ButtonGroup, Form, ToggleButton } from 'react-bootstrap';
+import { Form, ToggleButton } from 'react-bootstrap';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 type Props = {
@@ -15,13 +15,11 @@ type Props = {
 export function LabelVisibilityField({ value, onChange }: Props): ReactElement {
   const dm = useDrawingMessages();
 
-  const groupProps = useButtonGroupFit();
-
   return (
     <Form.Group className="mt-3">
       <Form.Label className="d-block">{dm?.edit.showLabel}</Form.Label>
 
-      <ButtonGroup {...groupProps}>
+      <FitButtonGroup>
         {LabelVisibilitySchema.options.map((option) => (
           <ToggleButton
             key={option}
@@ -36,7 +34,7 @@ export function LabelVisibilityField({ value, onChange }: Props): ReactElement {
             {dm?.edit.labelVisibility[option]}
           </ToggleButton>
         ))}
-      </ButtonGroup>
+      </FitButtonGroup>
     </Form.Group>
   );
 }

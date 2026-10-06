@@ -1,6 +1,11 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -10,8 +15,8 @@ import {
   type SubmitEvent,
   useState,
 } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaChartArea, FaCheck, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaChartArea, FaCheck } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { elevationSetSettings } from '../model/actions.js';
 import {
@@ -222,20 +227,22 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
           />
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button variant="primary" type="submit" disabled={!dirty}>
-            <FaCheck /> {m?.general.save}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            variant="primary"
+            type="submit"
+            disabled={!dirty}
+            icon={<FaCheck />}
+            label={m?.general.save}
+          />
 
           <ResetToDefaultsButton
             onClick={handleResetDefaults}
             disabled={atDefault}
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

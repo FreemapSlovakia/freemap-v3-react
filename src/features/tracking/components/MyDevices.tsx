@@ -1,11 +1,16 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useEffect } from 'react';
-import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
-import { FaMobileAlt, FaPlus, FaTimes } from 'react-icons/fa';
+import { Alert, ListGroup, Modal } from 'react-bootstrap';
+import { FaMobileAlt, FaPlus } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
@@ -48,18 +53,19 @@ export function MyDevices(): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button
+      <FmModalFooter>
+        <FmFooterButton
           disabled={!online}
           onClick={() => dispatch(trackingActions.modifyDevice(null))}
-        >
-          <FaPlus /> {m?.general.add}
-        </Button>
+          icon={<FaPlus />}
+          label={m?.general.add}
+        />
 
-        <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton
+          label={m?.general.close}
+          onClick={() => dispatch(setActiveModal(null))}
+        />
+      </FmModalFooter>
     </>
   );
 }

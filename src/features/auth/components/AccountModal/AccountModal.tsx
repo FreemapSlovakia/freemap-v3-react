@@ -14,6 +14,7 @@ import { PurchasesSection } from '@features/purchases/components/PurchasesSectio
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
 import {
   FmDismissButton,
+  FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
@@ -21,7 +22,7 @@ import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useCallback, useEffect } from 'react';
-import { Accordion, Button, Modal } from 'react-bootstrap';
+import { Accordion, Modal } from 'react-bootstrap';
 import {
   FaAddressCard,
   FaEraser,
@@ -177,17 +178,21 @@ export default function AccountModal({ show }: Props): ReactElement | null {
         {/* Logging out clears what the account left in this browser — offline
             maps, queued saves, the cached app shell — and the server has to
             answer for the session to end at all, so it waits for a connection. */}
-        <Button
+        <FmFooterButton
           variant="secondary"
           disabled={!online}
           onClick={handleLogoutClick}
-        >
-          <FaSignOutAlt /> {m?.mainMenu.logOut}
-        </Button>
+          icon={<FaSignOutAlt />}
+          label={m?.mainMenu.logOut}
+        />
 
-        <Button variant="danger" disabled={!online} onClick={handleDeleteClick}>
-          <FaEraser /> {am?.account.delete}
-        </Button>
+        <FmFooterButton
+          variant="danger"
+          disabled={!online}
+          onClick={handleDeleteClick}
+          icon={<FaEraser />}
+          label={am?.account.delete}
+        />
 
         <FmDismissButton label={m?.general.close} onClick={close} />
       </FmModalFooter>

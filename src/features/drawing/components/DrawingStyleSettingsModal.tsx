@@ -1,6 +1,11 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import type { LabelVisibility } from '@shared/labelVisibility.js';
 import {
@@ -10,8 +15,8 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
+import { Modal } from 'react-bootstrap';
+import { FaCheck, FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   type DrawingStyle,
@@ -24,7 +29,7 @@ import { useDrawingStyleEditor } from './useDrawingStyleEditor.js';
 type ExtraAction = {
   key: string;
   label: ReactNode;
-  icon?: ReactNode;
+  icon: ReactNode;
   variant?: string;
   /** Receives the edited values; the modal closes afterwards. */
   onClick: (style: DrawingStyle, labelVisibility: LabelVisibility) => void;
@@ -124,19 +129,19 @@ export function DrawingStyleSettingsModal({
           />
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button
+        <FmModalFooter>
+          <FmFooterButton
             type="submit"
             disabled={
               editor.invalid ||
               (!editor.dirty && labelVisibility === currentLabelVisibility)
             }
-          >
-            <FaCheck /> {m?.general.save}
-          </Button>
+            icon={<FaCheck />}
+            label={m?.general.save}
+          />
 
           {extraActions?.map((action) => (
-            <Button
+            <FmFooterButton
               key={action.key}
               variant={action.variant ?? 'secondary'}
               disabled={editor.invalid}
@@ -145,9 +150,9 @@ export function DrawingStyleSettingsModal({
 
                 close();
               }}
-            >
-              {action.icon} {action.label}
-            </Button>
+              icon={action.icon}
+              label={action.label}
+            />
           ))}
 
           <ResetToDefaultsButton
@@ -164,10 +169,8 @@ export function DrawingStyleSettingsModal({
             }
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

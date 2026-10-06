@@ -1,11 +1,16 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaCheck, FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { type RouteStyle, routePlannerSetStyle } from '../model/actions.js';
 import { routePlannerSettingsInitialState } from '../model/settingsReducer.js';
@@ -130,20 +135,21 @@ export default function RoutePlannerStyleModal({ show }: Props): ReactElement {
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button type="submit" disabled={styleEquals(style, current)}>
-            <FaCheck /> {m?.general.save}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            type="submit"
+            disabled={styleEquals(style, current)}
+            icon={<FaCheck />}
+            label={m?.general.save}
+          />
 
           <ResetToDefaultsButton
             onClick={() => setStyle(defaults)}
             disabled={styleEquals(style, defaults)}
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

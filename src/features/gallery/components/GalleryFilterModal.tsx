@@ -1,8 +1,13 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useButtonGroupFit } from '@shared/hooks/useButtonGroupFit.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   type ChangeEvent,
@@ -13,14 +18,13 @@ import {
   useState,
 } from 'react';
 import {
-  Button,
   Form,
   InputGroup,
   Modal,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';
-import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
+import { FaCamera, FaCheck, FaEraser, FaFilter } from 'react-icons/fa';
 import { IoFlower } from 'react-icons/io5';
 import { SiWikimediacommons } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
@@ -41,10 +45,6 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const gm = useGalleryMessages();
-
-  // "Wikimedia Commons" often makes the joined source group too wide, and then
-  // it stacks rather than wrapping inside the buttons.
-  const sourceGroupProps = useButtonGroupFit();
 
   const filter = useAppSelector((state) => state.gallery.filter);
 
@@ -499,10 +499,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
               {gm?.filterModal.source}
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="filt-source"
-              {...sourceGroupProps}
               // Exactly one is always selected — 'all' means no restriction.
               value={
                 sources.length < GALLERY_SOURCES.length ? sources[0] : 'all'
@@ -534,27 +533,28 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
               >
                 <SiWikimediacommons /> Wikimedia Commons
               </ToggleButton>
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button type="submit" disabled={invalidRatingFrom || invalidRatingTo}>
-            <FaCheck /> {m?.general.apply}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            type="submit"
+            disabled={invalidRatingFrom || invalidRatingTo}
+            icon={<FaCheck />}
+            label={m?.general.apply}
+          />
 
-          <Button
+          <FmFooterButton
             variant="secondary"
             onClick={handleEraseClick}
             disabled={filterEmpty}
-          >
-            <FaEraser /> {m?.general.clear}
-          </Button>
+            icon={<FaEraser />}
+            label={m?.general.clear}
+          />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

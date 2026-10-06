@@ -2,6 +2,10 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -9,7 +13,7 @@ import { useOnline } from '@shared/hooks/useOnline.js';
 import { PREMIUM_PRICE_EUR } from '@shared/premiumPricing.js';
 import type { ReactElement } from 'react';
 import { Alert, Button, ButtonGroup, Dropdown, Modal } from 'react-bootstrap';
-import { FaGem, FaRegGem, FaStopwatch, FaTimes } from 'react-icons/fa';
+import { FaGem, FaRegGem, FaStopwatch } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useDtmCountryNames } from '../hooks/useDtmCountryNames.js';
 import {
@@ -102,7 +106,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         {!subscribed && (
           <Dropdown as={ButtonGroup}>
             <Button
@@ -142,10 +146,11 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
           </Dropdown>
         )}
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {subscribed ? m?.general.close : m?.general.cancel}
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton
+          label={subscribed ? m?.general.close : m?.general.cancel}
+          onClick={close}
+        />
+      </FmModalFooter>
     </Modal>
   );
 }

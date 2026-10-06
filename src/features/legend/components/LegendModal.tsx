@@ -11,13 +11,17 @@ import {
   mapEntryOf,
   resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerName } from '@shared/layerName.js';
 import { RENDERER_ROUTES } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo, useState } from 'react';
-import { Accordion, Button, Modal } from 'react-bootstrap';
-import { FaExternalLinkAlt, FaList, FaTimes } from 'react-icons/fa';
+import { Accordion, Modal } from 'react-bootstrap';
+import { FaExternalLinkAlt, FaList } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   EXTERNAL_LEGENDS,
@@ -144,11 +148,9 @@ export default function LegendModal({ show }: Props): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
-        </Button>
-      </Modal.Footer>
+      <FmModalFooter>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

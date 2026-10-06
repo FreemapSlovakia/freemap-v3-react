@@ -4,6 +4,11 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
@@ -31,7 +36,6 @@ import {
   FaPlay,
   FaPlus,
   FaStop,
-  FaTimes,
   FaTrash,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -318,7 +322,7 @@ export function CachedMapsList(): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         {/* a real link, so it can be opened or copied like the menu entries
             that address a modal; the click itself is handled here */}
         <Button variant="link" {...modalLink({ type: 'browse-cache' })}>
@@ -334,20 +338,21 @@ export function CachedMapsList(): ReactElement {
           <FaLayerGroup /> {m?.mapLayers.installedMaps}
         </Button>
 
-        <Button
+        <FmFooterButton
           variant="primary"
           disabled={!online}
           onClick={() => dispatch(cachedMapsSetView('add'))}
-        >
-          <FaPlus /> {cmm?.addOfflineMap}
-        </Button>
+          icon={<FaPlus />}
+          label={cmm?.addOfflineMap}
+        />
 
         <OfflineBadge />
 
-        <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton
+          label={m?.general.close}
+          onClick={() => dispatch(setActiveModal(null))}
+        />
+      </FmModalFooter>
     </>
   );
 }

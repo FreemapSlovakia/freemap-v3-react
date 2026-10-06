@@ -9,7 +9,16 @@ import {
   integratedLayerDefsSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import {
+  FitButtonGroup,
+  FitToggleButtonGroup,
+} from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
@@ -35,17 +44,14 @@ import {
   useState,
 } from 'react';
 import {
-  Button,
-  ButtonGroup,
   Dropdown,
   Form,
   InputGroup,
   Modal,
   Spinner,
   ToggleButton,
-  ToggleButtonGroup,
 } from 'react-bootstrap';
-import { FaDatabase, FaDownload, FaTimes } from 'react-icons/fa';
+import { FaDatabase, FaDownload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { downloadMap } from '../model/actions.js';
 import { useOfflineMapExportMessages } from '../translations/useOfflineMapExportMessages.js';
@@ -480,7 +486,7 @@ export default function OfflineMapExportModal({
           <Form.Group controlId="format" className="mb-3">
             <Form.Label>{ome?.format}</Form.Label>
 
-            <ButtonGroup className="d-block">
+            <FitButtonGroup>
               <LongPressTooltip label={ome?.formatMbtilesTooltip}>
                 {({ props }) => (
                   <ToggleButton
@@ -514,7 +520,7 @@ export default function OfflineMapExportModal({
                   </ToggleButton>
                 )}
               </LongPressTooltip>
-            </ButtonGroup>
+            </FitButtonGroup>
           </Form.Group>
 
           {mapDef && (
@@ -549,7 +555,7 @@ export default function OfflineMapExportModal({
             <Form.Group controlId="scale" className="mb-3">
               <Form.Label className="d-block">{ome?.scale}</Form.Label>
 
-              <ToggleButtonGroup
+              <FitToggleButtonGroup
                 type="radio"
                 name="scale"
                 value={scale}
@@ -565,7 +571,7 @@ export default function OfflineMapExportModal({
                     {scale}×
                   </ToggleButton>
                 ))}
-              </ToggleButtonGroup>
+              </FitToggleButtonGroup>
             </Form.Group>
           )}
 
@@ -584,7 +590,7 @@ export default function OfflineMapExportModal({
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer className="flex-wrap">
+        <FmModalFooter className="flex-wrap">
           {tileCount !== undefined && mapDef && (
             <div className="w-100 text-end">
               {ome?.summaryTiles}: <b>{cnf.format(tileCount)}</b>
@@ -610,7 +616,7 @@ export default function OfflineMapExportModal({
             </div>
           )}
 
-          <Button
+          <FmFooterButton
             variant="primary"
             onClick={close}
             type="submit"
@@ -621,14 +627,13 @@ export default function OfflineMapExportModal({
               invalidMaxZoom ||
               price >= Math.floor(user?.credits ?? 0)
             }
-          >
-            <FaDownload /> {m?.general.export} <kbd>Enter</kbd>
-          </Button>
+            icon={<FaDownload />}
+            label={m?.general.export}
+            kbd="Enter"
+          />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.close} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

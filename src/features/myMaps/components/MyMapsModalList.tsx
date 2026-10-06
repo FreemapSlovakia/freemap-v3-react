@@ -2,6 +2,11 @@ import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
+import {
   useConfirm,
   useConfirmChoice,
 } from '@shared/components/ModalProvider.js';
@@ -19,7 +24,6 @@ import { makeLabelComparator } from '@shared/stringUtils.js';
 import { type ReactElement, useMemo, useState } from 'react';
 import {
   Badge,
-  Button,
   Dropdown,
   Form,
   InputGroup,
@@ -451,19 +455,20 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button onClick={onAdd} disabled={!online}>
-          <FaPlus /> {mm?.addNew}
-        </Button>
+      <FmModalFooter>
+        <FmFooterButton
+          onClick={onAdd}
+          disabled={!online}
+          icon={<FaPlus />}
+          label={mm?.addNew}
+        />
 
         {/* Beside the button, not in it: a disabled one takes no pointer
             events, so a badge inside could never be asked what it means. */}
         <OfflineBadge />
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </>
   );
 }

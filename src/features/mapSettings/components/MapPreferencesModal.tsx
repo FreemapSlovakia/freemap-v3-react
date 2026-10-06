@@ -11,6 +11,12 @@ import { ensureCompassPermission } from '@features/location/ensureCompassPermiss
 import { locationSettingsInitialState } from '@features/location/model/settingsReducer.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
@@ -25,14 +31,8 @@ import {
   useCallback,
   useState,
 } from 'react';
-import {
-  Button,
-  Form,
-  Modal,
-  ToggleButton,
-  ToggleButtonGroup,
-} from 'react-bootstrap';
-import { FaCheck, FaSlidersH, FaTimes } from 'react-icons/fa';
+import { Form, Modal, ToggleButton } from 'react-bootstrap';
+import { FaCheck, FaSlidersH } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 // The zoom grid a gesture can settle on, as Leaflet's `zoomSnap`. Finer than a
@@ -259,7 +259,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               <HintMark hint={m?.mapLayers.zoomSnapHelp} />
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="zoomSnap"
               value={zoomSnap}
@@ -275,7 +275,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                   {label ?? m?.mapLayers.zoomSnapFree}
                 </ToggleButton>
               ))}
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
           </Form.Group>
 
           <Form.Group className="mt-3">
@@ -284,7 +284,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               <HintMark hint={m?.mapLayers.resolutionScaleHelp} />
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="resolutionScale"
               value={resolutionScale}
@@ -304,7 +304,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                   {scale}×
                 </ToggleButton>
               ))}
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
           </Form.Group>
 
           <Form.Group className="mt-3">
@@ -313,7 +313,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               <HintMark hint={m?.mapLayers.featureScaleHelp} />
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="featureScale"
               value={featureScale}
@@ -329,7 +329,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                   {scale}×
                 </ToggleButton>
               ))}
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
           </Form.Group>
 
           <Form.Group className="mt-3">
@@ -351,7 +351,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               <HintMark hint={m?.main.headingSourceHelp} />
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="headingSource"
               value={headingSource}
@@ -379,7 +379,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                     {m?.main.headingSources[source]}
                   </ToggleButton>
                 ))}
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
           </Form.Group>
 
           <Form.Group className="mt-3 d-flex">
@@ -394,24 +394,22 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button
+        <FmModalFooter>
+          <FmFooterButton
             variant="primary"
             type="submit"
             disabled={!dirty || invalidMaxZoom}
-          >
-            <FaCheck /> {m?.general.save}
-          </Button>
+            icon={<FaCheck />}
+            label={m?.general.save}
+          />
 
           <ResetToDefaultsButton
             onClick={handleResetDefaults}
             disabled={atDefault}
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

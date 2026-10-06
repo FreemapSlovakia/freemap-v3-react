@@ -1,12 +1,17 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DateTime } from '@shared/components/DateTime.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaBullseye, FaCheck } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
@@ -113,20 +118,22 @@ export function AccessTokenForm(): ReactElement {
         </Form.Group>
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button type="submit" disabled={!online}>
-          <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
-        </Button>
+      <FmModalFooter>
+        <FmFooterButton
+          type="submit"
+          disabled={!online}
+          icon={<FaCheck />}
+          label={m?.general.save}
+          kbd="Enter"
+        />
 
-        <Button
-          variant="dark"
+        <FmDismissButton
+          label={m?.general.cancel}
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(undefined));
           }}
-        >
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        />
+      </FmModalFooter>
     </Form>
   );
 }

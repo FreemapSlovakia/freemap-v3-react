@@ -4,8 +4,10 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapLayersSettingsReset } from '@features/map/model/actions.js';
 import { CustomMapEditor } from '@features/mapSettings/components/CustomMapEditor.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
+import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   FmDismissButton,
+  FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
@@ -15,7 +17,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { layerLabel } from '@shared/layerName.js';
 import { type ReactElement, useRef, useState } from 'react';
-import { Button, ButtonGroup, Modal, ToggleButton } from 'react-bootstrap';
+import { Modal, ToggleButton } from 'react-bootstrap';
 import { FaBookOpen, FaLayerGroup, FaPlus } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
@@ -160,7 +162,7 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
       ) : (
         <>
           <Modal.Body>
-            <ButtonGroup className="mb-3">
+            <FitButtonGroup className="mb-3">
               <ToggleButton
                 id="map-library-tab-installed"
                 type="radio"
@@ -189,7 +191,7 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
                 <FaBookOpen /> {m?.mapLayers.availableMaps}
                 {catalog && ` (${entries.length})`}
               </ToggleButton>
-            </ButtonGroup>
+            </FitButtonGroup>
 
             {tab === 'installed' ? (
               <YourMapsTab
@@ -212,8 +214,9 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
           </Modal.Body>
 
           <FmModalFooter>
-            <Button
+            <FmFooterButton
               variant="secondary"
+              priority={1}
               disabled={!canSaveSettings}
               onClick={() =>
                 dispatch(
@@ -226,9 +229,9 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
                   }),
                 )
               }
-            >
-              <FaPlus /> {m?.mapLayers.newCustomMap}
-            </Button>
+              icon={<FaPlus />}
+              label={m?.mapLayers.newCustomMap}
+            />
 
             <OfflineBadge offline={!canSaveSettings} />
 

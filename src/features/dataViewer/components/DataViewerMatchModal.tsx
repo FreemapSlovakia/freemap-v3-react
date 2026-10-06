@@ -3,14 +3,19 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   type TransportType,
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaMagic, FaTimes } from 'react-icons/fa';
+import { Alert, Form, Modal } from 'react-bootstrap';
+import { FaCheck, FaMagic } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { hasPerPointData } from '../matchTrack.js';
 import { dataViewerMatchTrack } from '../model/actions.js';
@@ -110,15 +115,17 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
           )}
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button variant="primary" type="submit" disabled={!active}>
-            <FaCheck /> {dvm?.match.run}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            variant="primary"
+            type="submit"
+            disabled={!active}
+            icon={<FaCheck />}
+            label={dvm?.match.run}
+          />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

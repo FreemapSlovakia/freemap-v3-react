@@ -1,10 +1,14 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { FaMountain, FaTimes } from 'react-icons/fa';
+import { FaMountain } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   dataViewerResolveElevationPrompt,
@@ -92,7 +96,7 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
         </p>
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         <Button variant="primary" onClick={() => resolve('all')}>
           {coverage === 'none' ? ef.add : ef.overrideAll}
         </Button>
@@ -109,10 +113,8 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
           </Button>
         )}
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.cancel}
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.cancel} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

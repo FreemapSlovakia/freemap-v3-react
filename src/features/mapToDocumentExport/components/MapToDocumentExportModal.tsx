@@ -12,6 +12,12 @@ import type { Exportable } from '@features/mapFeaturesExport/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
 import { useRoutingAttributions } from '@shared/components/Attribution.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import {
   useConfirm,
   useConfirmCancel,
@@ -47,7 +53,6 @@ import {
   Modal,
   Spinner,
   ToggleButton,
-  ToggleButtonGroup,
 } from 'react-bootstrap';
 import {
   FaCopy,
@@ -697,7 +702,7 @@ export default function MapToDocumentExportModal({
                 <Form.Group className="mt-3">
                   <Form.Label className="d-block"> {mtde?.format}</Form.Label>
 
-                  <ToggleButtonGroup
+                  <FitToggleButtonGroup
                     type="radio"
                     name="exportFormat"
                     value={format}
@@ -716,7 +721,7 @@ export default function MapToDocumentExportModal({
                         {fmt.toUpperCase()}
                       </ToggleButton>
                     ))}
-                  </ToggleButtonGroup>
+                  </FitToggleButtonGroup>
                 </Form.Group>
 
                 {(webp || qualityKey) && (
@@ -846,7 +851,7 @@ export default function MapToDocumentExportModal({
         )}
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         {result ? (
           <SplitButton
             variant="primary"
@@ -873,7 +878,7 @@ export default function MapToDocumentExportModal({
             ]}
           />
         ) : (
-          <Button
+          <FmFooterButton
             disabled={
               !online ||
               exporting ||
@@ -886,26 +891,28 @@ export default function MapToDocumentExportModal({
               invalidLabelSize
             }
             onClick={handleExport}
-          >
-            {exporting ? (
-              <Spinner as="span" size="sm" role="status" />
-            ) : (
-              <FaDownload />
-            )}{' '}
-            {m?.general.export}
-          </Button>
+            icon={
+              exporting ? (
+                <Spinner as="span" size="sm" role="status" />
+              ) : (
+                <FaDownload />
+              )
+            }
+            label={m?.general.export}
+          />
         )}
 
         {exporting ? (
-          <Button variant="dark" onClick={handleCancel}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
+          <FmFooterButton
+            variant="dark"
+            onClick={handleCancel}
+            icon={<FaTimes />}
+            label={m?.general.cancel}
+          />
         ) : (
-          <Button variant="dark" onClick={handleClose}>
-            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
+          <FmDismissButton label={m?.general.close} onClick={handleClose} />
         )}
-      </Modal.Footer>
+      </FmModalFooter>
     </Modal>
   );
 }

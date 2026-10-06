@@ -3,9 +3,10 @@ import {
   mapLayerSetupChange,
   type SetupTarget,
 } from '@features/map/model/actions.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
 import type { CSSProperties, ReactElement } from 'react';
-import { ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { ToggleButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useTargetDef } from '../layerTarget.js';
 
@@ -31,7 +32,7 @@ export function LayerKindSwitch({
   const name = `kind-${target.preset ?? ''}-${target.type}`;
 
   return (
-    <ToggleButtonGroup
+    <FitToggleButtonGroup
       type="radio"
       name={name}
       className={className}
@@ -52,6 +53,6 @@ export function LayerKindSwitch({
           {LAYER_KIND_ICONS[value]} {m?.mapLayers.layer[value]}
         </ToggleButton>
       ))}
-    </ToggleButtonGroup>
+    </FitToggleButtonGroup>
   );
 }

@@ -2,16 +2,15 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Alert, Button, Modal } from 'react-bootstrap';
-import {
-  FaExclamationTriangle,
-  FaGem,
-  FaSignInAlt,
-  FaTimes,
-} from 'react-icons/fa';
+import { Alert, Modal } from 'react-bootstrap';
+import { FaExclamationTriangle, FaGem, FaSignInAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useAuthMessages } from '../translations/useAuthMessages.js';
 import { AuthProviders } from './AuthProviders.js';
@@ -72,11 +71,9 @@ export default function LoginModal({ show }: Props): ReactElement {
         <AuthProviders mode="login" />
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+      <FmModalFooter>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

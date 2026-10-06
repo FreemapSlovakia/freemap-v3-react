@@ -3,13 +3,17 @@ import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { ShowModalLink } from '@shared/components/ShowModalLink.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import type { ReactElement } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
-import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
+import { FaGem, FaHeart, FaPaypal } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useSupportUsMessages } from './translations/useSupportUsMessages.js';
 
@@ -134,11 +138,9 @@ export default function SupportUsModal({ show }: Props): ReactElement {
         </div>
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+      <FmModalFooter>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

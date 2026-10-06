@@ -9,17 +9,15 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, type ButtonProps, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import classes from './FmModalFooter.module.css';
 import { LongPressTooltip } from './LongPressTooltip.js';
 
-const FooterTight = createContext(false);
+const DISMISS_PRIORITY = -1;
 
-/** Whether the footer this is in has run out of room for one row of buttons. */
-export function useFooterTight(): boolean {
-  return useContext(FooterTight);
-}
+/** Labels of this priority and below are collapsed. */
+const FooterCollapse = createContext(Number.NEGATIVE_INFINITY);
 
 type Props = {
   className?: string;
@@ -27,15 +25,16 @@ type Props = {
 };
 
 /**
- * A `Modal.Footer` that knows when its buttons no longer fit on one line, so
- * the dismiss button can drop to its glyph instead of the row wrapping. What it
- * measures is the row with every label shown, so the reading never depends on
- * what it decides.
+ * A `Modal.Footer` that keeps its buttons on one line: when they don't fit,
+ * labels drop to their tooltips one priority at a time — the dismiss button's
+ * first, then each {@link FmFooterButton}'s by its `priority` — only as far as
+ * the row needs. It measures with every label shown, so the reading never
+ * depends on what it decides.
  */
 export function FmModalFooter({ className, children }: Props): ReactElement {
   const [el, setEl] = useState<HTMLElement | null>(null);
 
-  const [tight, setTight] = useState(false);
+  const [threshold, setThreshold] = useState(Number.NEGATIVE_INFINITY);
 
   const measure = useCallback(() => {
     if (!el?.isConnected) {
@@ -50,11 +49,34 @@ export function FmModalFooter({ className, children }: Props): ReactElement {
 
     el.classList.add(classes.measure);
 
-    const required = el.getBoundingClientRect().width;
+    let required = el.getBoundingClientRect().width;
+
+    const widths = new Map<number, number>();
+
+    for (const label of el.querySelectorAll<HTMLElement>(`.${classes.label}`)) {
+      const priority = Number(label.dataset['priority']);
+
+      widths.set(
+        priority,
+        (widths.get(priority) ?? 0) + label.getBoundingClientRect().width,
+      );
+    }
 
     el.classList.remove(classes.measure);
 
-    setTight(required > available);
+    let next = Number.NEGATIVE_INFINITY;
+
+    for (const [priority, width] of [...widths].sort(([a], [b]) => a - b)) {
+      if (required <= available) {
+        break;
+      }
+
+      required -= width;
+
+      next = priority;
+    }
+
+    setThreshold(next);
   }, [el]);
 
   // Every render: labels change with the language, and buttons come and go.
@@ -73,11 +95,92 @@ export function FmModalFooter({ className, children }: Props): ReactElement {
   }, [el, measure]);
 
   return (
-    <FooterTight value={tight}>
+    <FooterCollapse value={threshold}>
       <Modal.Footer ref={setEl} className={className}>
         {children}
       </Modal.Footer>
-    </FooterTight>
+    </FooterCollapse>
+  );
+}
+
+type LabelProps = {
+  priority: number;
+  className: string;
+  children: ReactNode;
+};
+
+/** A label the footer measures, grouped by its priority. */
+function CollapsibleLabel({ priority, className, children }: LabelProps) {
+  return (
+    <span className={clsx(className, classes.label)} data-priority={priority}>
+      {' '}
+      {children}
+    </span>
+  );
+}
+
+type FooterButtonProps = {
+  icon: ReactNode;
+  label: ReactNode;
+  kbd?: string;
+  /**
+   * The higher, the longer the label stays when room runs out. Defaults to 1
+   * for a `primary` button, 0 otherwise; the dismiss button is below both.
+   */
+  priority?: number;
+} & Omit<ButtonProps, 'children'>;
+
+/**
+ * A footer button whose label gives way to its tooltip once the footer has no
+ * room left for it. Outside an `FmModalFooter` it is a plain icon-and-label
+ * button.
+ */
+export function FmFooterButton({
+  priority,
+  ...rest
+}: FooterButtonProps): ReactElement {
+  // `Button` itself renders `primary` when no variant is given.
+  return (
+    <CollapsibleButton
+      {...rest}
+      priority={priority ?? ((rest.variant ?? 'primary') === 'primary' ? 1 : 0)}
+    />
+  );
+}
+
+function CollapsibleButton({
+  icon,
+  label,
+  kbd,
+  priority,
+  ...rest
+}: FooterButtonProps & { priority: number }): ReactElement {
+  const threshold = useContext(FooterCollapse);
+
+  return (
+    <LongPressTooltip label={label} kbd={kbd} hideLabel={priority <= threshold}>
+      {({ props, label: content, labelClassName }) => {
+        const button = (tipProps?: typeof props) => (
+          <Button {...rest} {...tipProps}>
+            {icon}
+
+            <CollapsibleLabel priority={priority} className={labelClassName}>
+              {content}
+            </CollapsibleLabel>
+          </Button>
+        );
+
+        // A disabled button takes no pointer events, so a collapsed one would
+        // be a bare icon with no way to name it; the wrapper takes them instead.
+        return rest.disabled ? (
+          <span className="d-inline-block" {...props}>
+            {button()}
+          </span>
+        ) : (
+          button(props)
+        );
+      }}
+    </LongPressTooltip>
   );
 }
 
@@ -88,29 +191,23 @@ type DismissProps = {
 };
 
 /**
- * The footer's dismiss button. In a tight `FmModalFooter` it keeps only the ✕,
- * which the variant and the last position already name; the tooltip carries the
- * word for a pointer that can hover.
+ * The footer's dismiss button, the first to drop to its glyph: the ✕, the
+ * variant and the last position already name it.
  */
 export function FmDismissButton({
   label,
   onClick,
   disabled,
 }: DismissProps): ReactElement {
-  const tight = useFooterTight();
-
   return (
-    <LongPressTooltip label={label} kbd="Esc" hideLabel={tight}>
-      {({ props, label: content, labelClassName }) => (
-        <Button variant="dark" onClick={onClick} disabled={disabled} {...props}>
-          <FaTimes />
-
-          <span className={clsx(labelClassName, classes.label)}>
-            {' '}
-            {content}
-          </span>
-        </Button>
-      )}
-    </LongPressTooltip>
+    <CollapsibleButton
+      variant="dark"
+      icon={<FaTimes />}
+      label={label}
+      kbd="Esc"
+      priority={DISMISS_PRIORITY}
+      onClick={onClick}
+      disabled={disabled}
+    />
   );
 }

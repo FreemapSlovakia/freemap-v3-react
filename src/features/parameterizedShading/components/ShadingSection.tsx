@@ -7,13 +7,14 @@ import {
 import { DEFAULT_SHADING, setupKey } from '@features/map/model/layerSetup.js';
 import { useTargetSetup } from '@features/mapSettings/layerTarget.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { SHADING_SOURCE } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { produce } from 'immer';
 import { type ReactElement, useState } from 'react';
-import { Button, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Button, ToggleButton } from 'react-bootstrap';
 import { FaCheck, FaCloud, FaDesktop, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
@@ -198,7 +199,7 @@ export default function ShadingSection({ target }: Props): ReactElement {
 
   return (
     <>
-      <ToggleButtonGroup
+      <FitToggleButtonGroup
         type="radio"
         name={`shading-renderer-${type}`}
         className="d-flex"
@@ -225,7 +226,7 @@ export default function ShadingSection({ target }: Props): ReactElement {
         >
           <FaDesktop /> {sm?.inBrowser} <ExperimentalFunction />
         </ToggleButton>
-      </ToggleButtonGroup>
+      </FitToggleButtonGroup>
 
       <hr />
 

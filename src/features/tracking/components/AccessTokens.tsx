@@ -1,9 +1,13 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useEffect } from 'react';
-import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
+import { Alert, ListGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaChevronLeft, FaPlus } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -56,25 +60,25 @@ export function AccessTokens(): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button
+      <FmModalFooter>
+        <FmFooterButton
           disabled={!online}
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(null));
           }}
-        >
-          <FaPlus /> {m?.general.add}
-        </Button>
+          icon={<FaPlus />}
+          label={m?.general.add}
+        />
 
-        <Button
+        <FmFooterButton
           variant="dark"
           onClick={() => {
             dispatch(trackingActions.showAccessTokens(undefined));
           }}
-        >
-          <FaChevronLeft /> {m?.general.back}
-        </Button>
-      </Modal.Footer>
+          icon={<FaChevronLeft />}
+          label={m?.general.back}
+        />
+      </FmModalFooter>
     </>
   );
 }

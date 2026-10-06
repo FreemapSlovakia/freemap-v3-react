@@ -1,9 +1,13 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { FaRegAddressCard, FaTimes } from 'react-icons/fa';
+import { FaRegAddressCard } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../store/actions.js';
 import { useContactsMessages } from './aboutModal/translations/useContactsMessages.js';
@@ -105,7 +109,7 @@ export default function AboutModal({ show }: Props): ReactElement {
         </ul>
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         {(language === 'sk' || language === 'cs') && (
           <Button
             variant="link"
@@ -117,10 +121,8 @@ export default function AboutModal({ show }: Props): ReactElement {
           </Button>
         )}
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

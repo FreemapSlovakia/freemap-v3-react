@@ -20,6 +20,11 @@ import {
   CUSTOM_MAP_ICONS,
   type CustomMapKind,
 } from '@shared/components/CustomMapGlyph.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
@@ -30,8 +35,8 @@ import {
 } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import { FaCheck, FaTimes } from 'react-icons/fa';
+import { Modal } from 'react-bootstrap';
+import { FaCheck } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import { CustomMapForm } from './CustomMapForm.js';
@@ -350,21 +355,19 @@ export function CustomMapEditor({ request }: Props): ReactElement {
   );
 
   const formFooter = (onSave: () => void, canSave: boolean) => (
-    <Modal.Footer>
-      <Button
+    <FmModalFooter>
+      <FmFooterButton
         variant="primary"
         onClick={onSave}
         disabled={!canSave || !canSaveSettings}
-      >
-        <FaCheck /> {m?.general.save}
-      </Button>
+        icon={<FaCheck />}
+        label={m?.general.save}
+      />
 
       <OfflineBadge offline={!canSaveSettings} />
 
-      <Button variant="dark" onClick={() => done()}>
-        <FaTimes /> {m?.general.cancel}
-      </Button>
-    </Modal.Footer>
+      <FmDismissButton label={m?.general.cancel} onClick={() => done()} />
+    </FmModalFooter>
   );
 
   // Library, catalog or custom; a named map's own resolves to its source's.

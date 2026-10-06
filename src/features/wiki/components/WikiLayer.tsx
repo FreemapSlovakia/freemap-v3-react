@@ -1,10 +1,14 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Icon } from 'leaflet';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { createRoot } from 'react-dom/client';
-import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaWikipediaW } from 'react-icons/fa';
 import { Marker, Pane, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
@@ -144,11 +148,9 @@ export function WikiLayer(): ReactElement {
           )}
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close}
-          </Button>
-        </Modal.Footer>
+        <FmModalFooter>
+          <FmDismissButton label={m?.general.close} onClick={close} />
+        </FmModalFooter>
       </Modal>
 
       <Pane name="wiki" ref={setPane}>

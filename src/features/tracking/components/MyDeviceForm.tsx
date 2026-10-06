@@ -1,11 +1,16 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import type { ReactElement, SubmitEvent } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
+import { Form, InputGroup, Modal } from 'react-bootstrap';
+import { FaBullseye, FaCheck } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
@@ -135,23 +140,21 @@ export function MyDeviceForm(): ReactElement {
         </Form.Group>
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button
+      <FmModalFooter>
+        <FmFooterButton
           type="submit"
           disabled={!online || invalidName || invalidMaxCount || invalidMaxAge}
-        >
-          <FaCheck /> {m?.general.save}
-        </Button>
+          icon={<FaCheck />}
+          label={m?.general.save}
+        />
 
-        <Button
-          variant="dark"
+        <FmDismissButton
+          label={m?.general.cancel}
           onClick={() => {
             dispatch(trackingActions.modifyDevice(undefined));
           }}
-        >
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        />
+      </FmModalFooter>
     </Form>
   );
 }

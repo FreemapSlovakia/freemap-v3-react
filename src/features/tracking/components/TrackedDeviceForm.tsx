@@ -1,6 +1,11 @@
 import { selectFeature, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DateTime } from '@shared/components/DateTime.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -8,8 +13,8 @@ import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
+import { Form, InputGroup, Modal } from 'react-bootstrap';
+import { FaBullseye, FaCheck } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import type { TrackedDevice } from '../model/types.js';
@@ -240,8 +245,8 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button
+      <FmModalFooter>
+        <FmFooterButton
           type="submit"
           disabled={
             !id.trim() ||
@@ -251,19 +256,18 @@ export function TrackedDeviceForm(): ReactElement {
             invalidMaxAge ||
             invalidWidth
           }
-        >
-          <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
-        </Button>
+          icon={<FaCheck />}
+          label={m?.general.save}
+          kbd="Enter"
+        />
 
-        <Button
-          variant="dark"
+        <FmDismissButton
+          label={m?.general.cancel}
           onClick={() => {
             dispatch(setActiveModal({ type: 'tracking-watched' }));
           }}
-        >
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        />
+      </FmModalFooter>
     </Form>
   );
 }

@@ -26,6 +26,7 @@ import {
 } from '@shared/colorizers/index.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -62,7 +63,6 @@ import {
   Form,
   InputGroup,
   ToggleButton,
-  ToggleButtonGroup,
 } from 'react-bootstrap';
 import { BiShapePolygon } from 'react-icons/bi';
 import {
@@ -198,7 +198,7 @@ function MenuToggleGroup({
       </Dropdown.Header>
 
       <div className="px-3 pb-2">
-        <ToggleButtonGroup
+        <FitToggleButtonGroup
           className="d-flex"
           type="radio"
           name={name}
@@ -216,7 +216,7 @@ function MenuToggleGroup({
               {label ?? '…'}
             </ToggleButton>
           ))}
-        </ToggleButtonGroup>
+        </FitToggleButtonGroup>
       </div>
     </>
   );

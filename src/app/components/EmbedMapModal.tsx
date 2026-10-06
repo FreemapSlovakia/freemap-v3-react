@@ -1,5 +1,10 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -12,8 +17,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal, ToggleButton } from 'react-bootstrap';
-import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
+import { Form, InputGroup, Modal, ToggleButton } from 'react-bootstrap';
+import { FaClipboard, FaCode } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { setActiveModal } from '../store/actions.js';
@@ -349,18 +354,16 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button
+      <FmModalFooter>
+        <FmFooterButton
           onClick={handleCopyClick}
           disabled={invalidWidth || invalidHeight}
-        >
-          <FaClipboard /> {m?.general.copyCode}
-        </Button>
+          icon={<FaClipboard />}
+          label={m?.general.copyCode}
+        />
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

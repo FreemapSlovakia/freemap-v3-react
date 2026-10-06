@@ -3,10 +3,15 @@ import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useButtonGroupFit } from '@shared/hooks/useButtonGroupFit.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import type { Position } from 'geojson';
@@ -17,22 +22,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import {
-  Alert,
-  Button,
-  ButtonGroup,
-  Form,
-  Modal,
-  Spinner,
-  ToggleButton,
-} from 'react-bootstrap';
+import { Alert, Form, Modal, Spinner, ToggleButton } from 'react-bootstrap';
 import {
   FaDownload,
   FaDropbox,
   FaFileExport,
   FaGoogle,
   FaShareAlt,
-  FaTimes,
 } from 'react-icons/fa';
 import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
@@ -99,12 +95,6 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const confirm = useConfirm();
-
-  // Joined single-choice groups with long labels can't shrink, so they stack
-  // once a row no longer fits rather than wrapping inside the buttons.
-  const targetGroupProps = useButtonGroupFit();
-
-  const eleGroupProps = useButtonGroupFit();
 
   // Seeded from what the map holds, never from the connection: folding that in
   // would re-seed the checkboxes — losing the user's picks — the moment it
@@ -399,7 +389,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               <Form.Label>{em?.target}</Form.Label>
 
               <div>
-                <ButtonGroup {...targetGroupProps}>
+                <FitButtonGroup>
                   {ExportTargetSchema.options
                     .filter(
                       (exportTarget) => exportTarget !== 'share' || shareable,
@@ -454,7 +444,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                         }
                       </ToggleButton>
                     ))}
-                </ButtonGroup>
+                </FitButtonGroup>
               </div>
 
               {shareNote && (
@@ -515,7 +505,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 <Form.Label>{em?.format}</Form.Label>
 
                 <div>
-                  <ButtonGroup>
+                  <FitButtonGroup>
                     {ExportTypeSchema.options.map((exportType) => (
                       <ToggleButton
                         id={exportType}
@@ -530,7 +520,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                         {EXPORT_FORMAT_LABELS[exportType]}
                       </ToggleButton>
                     ))}
-                  </ButtonGroup>
+                  </FitButtonGroup>
                 </div>
               </Form.Group>
             )}
@@ -632,7 +622,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 <Form.Label>{em?.elevation.label}</Form.Label>
 
                 <div>
-                  <ButtonGroup {...eleGroupProps}>
+                  <FitButtonGroup>
                     {ExportElevationSchema.options.map((option) => (
                       <ToggleButton
                         id={`ele-${option}`}
@@ -654,15 +644,15 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                         {em?.elevation[option]}
                       </ToggleButton>
                     ))}
-                  </ButtonGroup>
+                  </FitButtonGroup>
                 </div>
               </Form.Group>
             )}
           </fieldset>
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button
+        <FmModalFooter>
+          <FmFooterButton
             type="submit"
             variant="primary"
             disabled={
@@ -672,19 +662,18 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               garminSelectedError ||
               (target === 'garmin' && (!name.trim() || !activity))
             }
-          >
-            {exporting ? (
-              <Spinner as="span" size="sm" role="status" />
-            ) : (
-              <FaFileExport />
-            )}{' '}
-            {m?.general.export}
-          </Button>
+            icon={
+              exporting ? (
+                <Spinner as="span" size="sm" role="status" />
+              ) : (
+                <FaFileExport />
+              )
+            }
+            label={m?.general.export}
+          />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.close} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

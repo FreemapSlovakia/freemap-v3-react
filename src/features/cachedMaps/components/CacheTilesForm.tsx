@@ -14,7 +14,12 @@ import {
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
@@ -50,14 +55,12 @@ import {
 } from 'react';
 import {
   Alert,
-  Button,
   Dropdown,
   Form,
   InputGroup,
   Modal,
   Spinner,
   ToggleButton,
-  ToggleButtonGroup,
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaChevronLeft, FaSave } from 'react-icons/fa';
@@ -675,7 +678,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
               <Form.Group controlId="scale" className="mb-3">
                 <Form.Label className="d-block">{ome?.scale}</Form.Label>
 
-                <ToggleButtonGroup
+                <FitToggleButtonGroup
                   type="radio"
                   name="scale"
                   value={scale}
@@ -691,7 +694,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
                       {s}×
                     </ToggleButton>
                   ))}
-                </ToggleButtonGroup>
+                </FitToggleButtonGroup>
               </Form.Group>
             )}
 
@@ -762,7 +765,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer className="flex-wrap">
+      <FmModalFooter className="flex-wrap">
         {tileCount !== undefined && (
           <div className="w-100 text-end">
             {cm?.tiles}: <b>{cnf.format(tileCount)}</b>
@@ -786,7 +789,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
           </div>
         )}
 
-        <Button
+        <FmFooterButton
           variant="primary"
           type="submit"
           disabled={
@@ -798,18 +801,18 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
             tileCount === Infinity ||
             !name.trim()
           }
-        >
-          <FaSave /> {editing ? m?.general.save : cm?.startCaching}{' '}
-          <kbd>Enter</kbd>
-        </Button>
+          icon={<FaSave />}
+          label={editing ? m?.general.save : cm?.startCaching}
+          kbd="Enter"
+        />
 
-        <Button
+        <FmFooterButton
           variant="dark"
           onClick={() => dispatch(cachedMapsSetView('list'))}
-        >
-          <FaChevronLeft /> {m?.general.back}
-        </Button>
-      </Modal.Footer>
+          icon={<FaChevronLeft />}
+          label={m?.general.back}
+        />
+      </FmModalFooter>
     </form>
   );
 }

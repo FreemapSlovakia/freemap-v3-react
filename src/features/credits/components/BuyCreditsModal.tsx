@@ -1,6 +1,10 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -14,7 +18,7 @@ import {
   InputGroup,
   Modal,
 } from 'react-bootstrap';
-import { FaCheck, FaCoins, FaStopwatch, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaCoins, FaStopwatch } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useCreditsMessages } from '../translations/useCreditsMessages.js';
 import { CreditsAlert } from './CredistAlert.js';
@@ -104,7 +108,7 @@ export default function CurrentDrawingPropertiesModal({
           <p className="mt-3 mb-0 text-body-secondary">{cm?.chronsHint}</p>
         </Modal.Body>
 
-        <Modal.Footer>
+        <FmModalFooter>
           <Dropdown as={ButtonGroup}>
             <Button
               variant="primary"
@@ -134,10 +138,8 @@ export default function CurrentDrawingPropertiesModal({
             </FmDropdownMenu>
           </Dropdown>
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

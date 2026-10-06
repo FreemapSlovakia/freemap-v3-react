@@ -1,12 +1,15 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
+import {
   type ReactElement,
   type SubmitEvent,
   useEffect,
   useState,
 } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
 import { TbAngle } from 'react-icons/tb';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
@@ -99,15 +102,13 @@ export function ProjectPointModal({
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer>
+        <FmModalFooter>
           <Button type="submit" disabled={!isValid()}>
             {dm?.projection.add}
           </Button>
 
-          <Button variant="dark" onClick={onClose}>
-            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.close} onClick={onClose} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

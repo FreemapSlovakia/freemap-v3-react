@@ -2,6 +2,11 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
@@ -18,9 +23,9 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Form, Modal } from 'react-bootstrap';
 import { type FileRejection, useDropzone } from 'react-dropzone';
-import { FaCamera, FaTimes, FaUpload } from 'react-icons/fa';
+import { FaCamera, FaUpload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { isUploadablePicture } from '../galleryUtils.js';
 import { usePictureDropHandler } from '../hooks/usePictureDropHandler.js';
@@ -377,23 +382,22 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button
+      <FmModalFooter>
+        <FmFooterButton
           onClick={() => {
             dispatch(galleryUpload());
           }}
           disabled={uploading || !online}
-        >
-          <FaUpload />{' '}
-          {uploading
-            ? gm?.uploadModal.uploading(items.length)
-            : gm?.uploadModal.upload}
-        </Button>
+          icon={<FaUpload />}
+          label={
+            uploading
+              ? gm?.uploadModal.uploading(items.length)
+              : gm?.uploadModal.upload
+          }
+        />
 
-        <Button onClick={handleClose} variant="dark">
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.cancel} onClick={handleClose} />
+      </FmModalFooter>
     </Modal>
   );
 }

@@ -1,12 +1,17 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement, useState } from 'react';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import { FaCheck, FaDatabase, FaTimes, FaTrash } from 'react-icons/fa';
+import { Col, Form, Modal, Row } from 'react-bootstrap';
+import { FaCheck, FaDatabase, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { TileServeMode } from '../browseCache.js';
 import { browseCacheCleared, cachedMapsSetSettings } from '../model/actions.js';
@@ -163,7 +168,7 @@ export function BrowseCacheSettings(): ReactElement {
         <Form.Text>{cmm?.browse.retentionHint}</Form.Text>
       </Modal.Body>
 
-      <Modal.Footer className="flex-wrap">
+      <FmModalFooter className="flex-wrap">
         <div className="w-100 text-end">
           {cmm?.browse.cached({
             tiles: nf.format(stats?.tiles ?? 0),
@@ -171,13 +176,19 @@ export function BrowseCacheSettings(): ReactElement {
           })}
         </div>
 
-        <Button variant="primary" type="submit">
-          <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
-        </Button>
+        <FmFooterButton
+          variant="primary"
+          type="submit"
+          icon={<FaCheck />}
+          label={m?.general.save}
+          kbd="Enter"
+        />
 
-        <Button
+        <FmFooterButton
           variant="danger"
           disabled={!stats?.tiles}
+          icon={<FaTrash />}
+          label={cmm?.browse.clear}
           onClick={async () => {
             if (
               await confirm({
@@ -190,14 +201,13 @@ export function BrowseCacheSettings(): ReactElement {
               dispatch(browseCacheCleared());
             }
           }}
-        >
-          <FaTrash /> {cmm?.browse.clear}
-        </Button>
+        />
 
-        <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton
+          label={m?.general.cancel}
+          onClick={() => dispatch(setActiveModal(null))}
+        />
+      </FmModalFooter>
     </form>
   );
 }

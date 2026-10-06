@@ -1,10 +1,13 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { decodeActiveModal } from '@app/store/activeModal.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
+import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { getDocuments } from '@/documents/index.js';
 import { DocumentSchema, documentShow } from '../model/actions.js';
@@ -154,11 +157,9 @@ function DocumentModal({ show }: Props): ReactElement | null {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+      <FmModalFooter>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

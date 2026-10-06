@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import type { ChangeEvent, ReactElement } from 'react';
 import {
@@ -163,7 +164,7 @@ export function DataLayerStyleFields({
       <Form.Group className="mt-3">
         <Form.Label className="d-block">{mtde?.customLayerOrder}</Form.Label>
 
-        <ToggleButtonGroup
+        <FitToggleButtonGroup
           type="radio"
           name="customLayerOrder"
           value={customLayerOrder}
@@ -184,7 +185,7 @@ export function DataLayerStyleFields({
           >
             {mtde?.orders.topmost}
           </ToggleButton>
-        </ToggleButtonGroup>
+        </FitToggleButtonGroup>
       </Form.Group>
     </fieldset>
   );

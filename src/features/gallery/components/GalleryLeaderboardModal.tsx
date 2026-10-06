@@ -1,12 +1,16 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { clsx } from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
-import { FaCamera, FaInfoCircle, FaTimes, FaTrophy } from 'react-icons/fa';
+import { FaCamera, FaInfoCircle, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector.js';
@@ -359,11 +363,9 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
           }
         })()}
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
-        </Button>
-      </Modal.Footer>
+      <FmModalFooter>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

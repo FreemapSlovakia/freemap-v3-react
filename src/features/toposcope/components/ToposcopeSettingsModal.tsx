@@ -1,13 +1,17 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { PlaceholderHint } from '@shared/components/PlaceholderHint.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCompass, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaCompass } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { toposcopeSet, toposcopeSetInscription } from '../model/actions.js';
 import { toposcopeInitialState } from '../model/reducer.js';
@@ -185,7 +189,7 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
         />
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         <ResetToDefaultsButton
           onClick={() =>
             dispatch(
@@ -202,10 +206,8 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
           }
         />
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

@@ -77,8 +77,11 @@ beside the group next to it.
 each button wrap its own label instead — two ragged lines of text inside a box
 sized for one. Two ways out, and the label lengths decide which:
 
-- **A few options** → keep it joined and stack it: spread `useButtonGroupFit()`
-  onto the group. It measures what one row would need against what the line
+- **A few options** → keep it joined and stack it: use `FitButtonGroup` /
+  `FitToggleButtonGroup` (`@shared/components/FitButtonGroup`, over
+  `useButtonGroupFit`) for every joined group that is a form field on its own
+  line. Leave plain `ButtonGroup` to toolbars, where a group shares its row and
+  stacking would break it. It measures what one row would need against what the line
   offers, so a group stacks exactly when it has to — which a breakpoint cannot
   tell, since the label lengths change with the language and the room with the
   surface. The group has to be alone on its line and its parent a block.
@@ -148,26 +151,27 @@ be set to whichever step its neighbours use.
 A footer's buttons sit in a `flex-wrap: wrap` row, so on a phone — and in a
 confirm dialog, which is narrow whatever the screen — the last one drops to a
 line of its own and sits there right-aligned, reading as a bug rather than as a
-layout. `FmModalFooter` measures the row and tells the footer when it no longer
-fits; `FmDismissButton` is the one button that answers, keeping only its ✕.
+layout. Every modal footer is an `FmModalFooter`, which measures the row and
+drops labels to their `LongPressTooltip`s one priority at a time, only as far
+as the row needs:
 
-Nothing else in a footer collapses. A toolbar's icons are a handful the user
-meets daily and its actions are cheap to undo, which is why ~20 of them drop
-their labels through `LongPressTooltip`'s `breakpoint`. A footer is where the
-user commits, so a bare glyph there is a misclick with nothing behind it, and a
-long-press tooltip is the weakest affordance on exactly the device this is for —
-finding out what a button does means holding it, which is also how you press it.
-The dismiss button is the exception because `dark` + `<FaTimes />` + last
-position already name it; the word is what's redundant. Where a footer needs
-room and isn't the dismiss button, drop the **icon** and keep the label.
+1. `FmDismissButton` first — `dark` + `<FaTimes />` + last position already
+   name it.
+2. Then each `FmFooterButton` (and `ResetToDefaultsButton`, built on it) by its
+   `priority`: 0 by default, 1 for a `primary` button. Raise it on the button
+   that matters most in its footer when that isn't the `primary` one — the Map
+   manager's New custom map, say.
 
-The measuring row shows every collapsible label, so what it reads never depends
-on what it decides. The `kbd` chips cost nothing to leave in: they are already
-hidden outside `(hover: hover) and (pointer: fine)` (`bootstrap-override.css`).
+So a footer button is an `FmFooterButton` with `icon` and `label` (and `kbd`
+for an `Enter` chip), never a `<Button>` with the icon written inside it. A
+button with no icon, a split or dropdown button, or a `link` button has nothing
+to collapse to and stays a plain one; if those alone overflow, the row wraps.
 
-Where a footer still doesn't fit with the dismiss button collapsed — the
-account modal's `Log out` + `Delete account` + ✕ on a 360px phone is 10px over —
-the row wraps as Bootstrap wraps it.
+The measured rows show every collapsible label, so what it reads never depends
+on what it decides. A `w-100` child — a summary line above the buttons — is a
+row of its own and is left out of the measurement. The `kbd` chips cost nothing
+to leave in: they are already hidden outside `(hover: hover) and (pointer: fine)`
+(`bootstrap-override.css`).
 
 ## Ellipsis in labels
 

@@ -3,13 +3,18 @@ import { setActiveModal } from '@app/store/actions.js';
 import { LabelVisibilityField } from '@features/drawing/components/LabelVisibilityField.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaCheck, FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   objectsSetLabelVisibility,
@@ -117,10 +122,13 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
           />
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button type="submit" disabled={!dirty}>
-            <FaCheck /> {m?.general.save}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            type="submit"
+            disabled={!dirty}
+            icon={<FaCheck />}
+            label={m?.general.save}
+          />
 
           <ResetToDefaultsButton
             onClick={handleReset}
@@ -132,10 +140,8 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
             }
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );
