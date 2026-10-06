@@ -8,6 +8,7 @@ import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useRegionNames } from '@shared/hooks/useRegionNames.js';
+import { flaggedCountries } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Dropdown, Form, ToggleButton } from 'react-bootstrap';
@@ -272,9 +273,9 @@ export function FilterCountry({
   countryLists,
   onChange,
   name,
-  worldwide,
-  worldwideLabel,
-  onWorldwideChange,
+  multiCountry,
+  multiCountryLabel,
+  onMultiCountryChange,
 }: {
   label: ReactNode;
   value: string;
@@ -283,10 +284,10 @@ export function FilterCountry({
   onChange: (value: string) => void;
   /** Tells the checkbox's id apart from the other tab's. */
   name: string;
-  /** Whether maps naming no country stay in while a country is picked. */
-  worldwide: boolean;
-  worldwideLabel: ReactNode;
-  onWorldwideChange: (worldwide: boolean) => void;
+  /** Whether maps without their own country list stay in while a country is picked. */
+  multiCountry: boolean;
+  multiCountryLabel: ReactNode;
+  onMultiCountryChange: (multiCountry: boolean) => void;
 }): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -338,21 +339,38 @@ export function FilterCountry({
       </Dropdown>
 
       <Form.Check
-        id={`library-filter-${name}-worldwide`}
+        id={`library-filter-${name}-multi-country`}
         className="mb-0"
-        label={worldwideLabel}
+        label={multiCountryLabel}
         disabled={!value}
-        checked={worldwide}
-        onChange={(e) => onWorldwideChange(e.currentTarget.checked)}
+        checked={multiCountry}
+        onChange={(e) => onMultiCountryChange(e.currentTarget.checked)}
       />
     </FilterRow>
   );
 }
 
-/** Whether a map passes the country filter. */
+/**
+ * Whether a map passes the country filter. A map without its own country list
+ * (worldwide, or the outdoor map's Europe-wide one) passes only with
+ * `multiCountry`.
+ */
 export const passesCountry = (
-  countries: readonly string[] | undefined,
-  filters: { country: string; worldwide: boolean },
-): boolean =>
-  !filters.country ||
-  (countries?.length ? countries.includes(filters.country) : filters.worldwide);
+  countries: string[] | undefined,
+  filters: { country: string; multiCountry: boolean },
+): boolean => {
+  if (!filters.country) {
+    return true;
+  }
+
+  const own = flaggedCountries({ countries });
+
+  if (own?.length) {
+    return own.includes(filters.country);
+  }
+
+  return (
+    filters.multiCountry &&
+    (!countries?.length || countries.includes(filters.country))
+  );
+};

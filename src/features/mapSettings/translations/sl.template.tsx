@@ -27,7 +27,7 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     category: 'Kategorija',
     country: 'Država',
     anyCountry: 'Vse države',
-    includeWorldwide: 'Vključi svetovne zemljevide',
+    includeMultiCountry: 'Vključi večdržavne zemljevide',
     photo: 'Ortofoto',
     historicphoto: 'Zgodovinski posnetki',
     historicmap: 'Zgodovinske karte',

@@ -27,7 +27,7 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     category: 'Kategória',
     country: 'Krajina',
     anyCountry: 'Všetky krajiny',
-    includeWorldwide: 'Vrátane celosvetových máp',
+    includeMultiCountry: 'Vrátane nadnárodných máp',
     photo: 'Ortofotá',
     historicphoto: 'Historické snímky',
     historicmap: 'Historické mapy',

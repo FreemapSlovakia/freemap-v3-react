@@ -66,8 +66,8 @@ export type LibraryFilters = {
   technologies: ReadonlySet<TechnologyGroup>;
   /** A country code, or empty for all. */
   country: string;
-  /** With a country picked, keep the maps that name none. */
-  worldwide: boolean;
+  /** With a country picked, keep the maps without their own country list. */
+  multiCountry: boolean;
   coversView: boolean;
 };
 
@@ -77,7 +77,7 @@ export const initialLibraryFilters: LibraryFilters = {
   categories: new Set(),
   technologies: new Set(),
   country: '',
-  worldwide: true,
+  multiCountry: true,
   coversView: false,
 };
 
@@ -418,9 +418,11 @@ export function LibraryTab({
           countryLists={entries.map((entry) => entry.countries)}
           onChange={(country) => onChange({ ...filters, country })}
           name="library-country"
-          worldwide={filters.worldwide}
-          worldwideLabel={msm?.filters.includeWorldwide}
-          onWorldwideChange={(worldwide) => onChange({ ...filters, worldwide })}
+          multiCountry={filters.multiCountry}
+          multiCountryLabel={msm?.filters.includeMultiCountry}
+          onMultiCountryChange={(multiCountry) =>
+            onChange({ ...filters, multiCountry })
+          }
         />
 
         <FilterChips

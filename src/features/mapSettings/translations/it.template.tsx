@@ -27,7 +27,7 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     category: 'Categoria',
     country: 'Paese',
     anyCountry: 'Tutti i paesi',
-    includeWorldwide: 'Includi mappe mondiali',
+    includeMultiCountry: 'Includi mappe multinazionali',
     photo: 'Ortofoto',
     historicphoto: 'Immagini storiche',
     historicmap: 'Mappe storiche',

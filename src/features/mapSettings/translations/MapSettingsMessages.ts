@@ -25,7 +25,7 @@ export type MapSettingsMessages = {
     category: string;
     country: string;
     anyCountry: string;
-    includeWorldwide: string;
+    includeMultiCountry: string;
     photo: string;
     historicphoto: string;
     historicmap: string;

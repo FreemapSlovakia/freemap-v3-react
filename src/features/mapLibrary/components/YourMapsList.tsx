@@ -143,8 +143,8 @@ export type YourMapsFilters = {
   categories: ReadonlySet<CategoryGroup>;
   /** A country code, or empty for all. */
   country: string;
-  /** With a country picked, keep the maps that name none. */
-  worldwide: boolean;
+  /** With a country picked, keep the maps without their own country list. */
+  multiCountry: boolean;
   coversView: boolean;
 };
 
@@ -183,7 +183,7 @@ export const initialYourMapsFilters: YourMapsFilters = {
   technologies: new Set(),
   categories: new Set(),
   country: '',
-  worldwide: true,
+  multiCountry: true,
   coversView: false,
 };
 
@@ -248,9 +248,11 @@ export function YourMapsTab({
           countryLists={installedIndex.map((def) => def.countries)}
           onChange={(country) => onChange({ ...filters, country })}
           name="your-country"
-          worldwide={filters.worldwide}
-          worldwideLabel={msm?.filters.includeWorldwide}
-          onWorldwideChange={(worldwide) => onChange({ ...filters, worldwide })}
+          multiCountry={filters.multiCountry}
+          multiCountryLabel={msm?.filters.includeMultiCountry}
+          onMultiCountryChange={(multiCountry) =>
+            onChange({ ...filters, multiCountry })
+          }
         />
 
         <FilterChips

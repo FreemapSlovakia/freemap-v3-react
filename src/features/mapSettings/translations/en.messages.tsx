@@ -25,7 +25,7 @@ const en: MapSettingsMessages = {
     category: 'Category',
     country: 'Country',
     anyCountry: 'All countries',
-    includeWorldwide: 'Include worldwide maps',
+    includeMultiCountry: 'Include multi-country maps',
     photo: 'Orthophotos',
     historicphoto: 'Historic imagery',
     historicmap: 'Historic maps',

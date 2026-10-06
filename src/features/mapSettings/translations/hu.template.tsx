@@ -27,7 +27,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     category: 'Kategória',
     country: 'Ország',
     anyCountry: 'Minden ország',
-    includeWorldwide: 'Világtérképekkel együtt',
+    includeMultiCountry: 'Több országot lefedő térképekkel együtt',
     photo: 'Ortofotók',
     historicphoto: 'Történelmi légifotók',
     historicmap: 'Történelmi térképek',
