@@ -81,8 +81,6 @@ export type MapSettingsMessages = {
   presetHint: string;
   baseMaps: string;
   overlays: string;
-  useAsBaseMap: string;
-  useAsOverlay: string;
   /** A WMS map's layers, in the Map layers panel. */
   wmsLayers: {
     search: string;

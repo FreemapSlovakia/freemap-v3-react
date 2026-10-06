@@ -66,8 +66,6 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   keyboardShortcut: 'Bližnjica na tipkovnici',
   saveSuccess: 'Nastavitve so bile shranjene.',
   customMapSaved: 'Zemljevid po meri je bil shranjen.',
-  useAsBaseMap: 'Uporabi kot osnovni zemljevid',
-  useAsOverlay: 'Uporabi kot prekrivni sloj',
   wmsLayers: {
     search: 'Iskanje slojev',
     selectAll: 'Izberi vse',

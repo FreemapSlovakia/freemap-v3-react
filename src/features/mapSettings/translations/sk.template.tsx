@@ -91,8 +91,6 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     'Jej vrstvy sa upravujú na mape: otvorte predvoľbu v paneli Vrstvy mapy. Každá zmena sa uloží hneď.',
   baseMaps: 'Podkladové mapy',
   overlays: 'Prekryvné vrstvy',
-  useAsBaseMap: 'Použiť ako podkladovú mapu',
-  useAsOverlay: 'Použiť ako prekryvnú vrstvu',
   wmsLayers: {
     search: 'Hľadať vrstvy',
     selectAll: 'Vybrať všetky',

@@ -64,8 +64,6 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'Pokaż na pasku narzędzi',
   keyboardShortcut: 'Skrót klawiszowy',
   saveSuccess: 'Ustawienia zostały zapisane.',
-  useAsBaseMap: 'Użyj jako mapy bazowej',
-  useAsOverlay: 'Użyj jako nakładki',
   wmsLayers: {
     search: 'Szukaj warstw',
     selectAll: 'Zaznacz wszystkie',

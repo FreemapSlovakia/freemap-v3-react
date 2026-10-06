@@ -65,8 +65,6 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'Zobrazit v liště',
   keyboardShortcut: 'Klávesová zkratka',
   saveSuccess: 'Změny byly uloženy.',
-  useAsBaseMap: 'Použít jako podkladovou mapu',
-  useAsOverlay: 'Použít jako překryvnou vrstvu',
   wmsLayers: {
     search: 'Hledat vrstvy',
     selectAll: 'Vybrat vše',

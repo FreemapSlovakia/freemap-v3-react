@@ -65,8 +65,6 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'In der Werkzeugleiste anzeigen',
   keyboardShortcut: 'Tastenkürzel',
   saveSuccess: 'Einstellungen wurden gespeichert.',
-  useAsBaseMap: 'Als Basiskarte verwenden',
-  useAsOverlay: 'Als Overlay verwenden',
   wmsLayers: {
     search: 'Ebenen suchen',
     selectAll: 'Alle auswählen',

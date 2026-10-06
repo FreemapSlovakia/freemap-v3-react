@@ -88,8 +88,6 @@ const en: MapSettingsMessages = {
     'Its layers are edited on the map: open the preset in the Map layers panel. Every change is kept at once.',
   baseMaps: 'Base maps',
   overlays: 'Overlays',
-  useAsBaseMap: 'Use as base map',
-  useAsOverlay: 'Use as overlay',
   wmsLayers: {
     search: 'Search layers',
     selectAll: 'Select all',

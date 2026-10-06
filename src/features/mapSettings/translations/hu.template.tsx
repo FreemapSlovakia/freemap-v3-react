@@ -65,8 +65,6 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'Megjelenítés az eszköztáron',
   keyboardShortcut: 'Gyorsbillentyű',
   saveSuccess: 'A beállítások el lettek mentve.',
-  useAsBaseMap: 'Használat alaptérképként',
-  useAsOverlay: 'Használat fedvényként',
   wmsLayers: {
     search: 'Rétegek keresése',
     selectAll: 'Összes kijelölése',

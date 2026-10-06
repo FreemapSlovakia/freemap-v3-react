@@ -65,8 +65,6 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   showInToolbar: 'Mostra nella barra degli strumenti',
   keyboardShortcut: 'Scorciatoia da tastiera',
   saveSuccess: 'Impostazioni salvate.',
-  useAsBaseMap: 'Usa come mappa di base',
-  useAsOverlay: 'Usa come livello sovrapposto',
   wmsLayers: {
     search: 'Cerca livelli',
     selectAll: 'Seleziona tutti',

@@ -11,6 +11,7 @@ import {
 } from '@features/map/model/actions.js';
 import { canSwitchKind } from '@features/map/model/layerKind.js';
 import { type MapPreset, presetItem } from '@features/map/model/mapPreset.js';
+import { LayerKindButton } from '@features/mapSettings/components/LayerKindButton.js';
 import { OpacityButton } from '@features/mapSettings/components/OpacityButton.js';
 import { ToolbarIcon } from '@features/mapSettings/components/ToolbarIcon.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
@@ -20,10 +21,7 @@ import {
   CustomMapGlyph,
 } from '@shared/components/CustomMapGlyph.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
-import {
-  LAYER_KIND_ICONS,
-  LayerKindMark,
-} from '@shared/components/MapLayerItem.js';
+import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
 import {
   Action,
   ActionDivider,
@@ -119,9 +117,9 @@ type YourMap = {
 
 // Fixed, so the small columns stay narrow.
 const COLUMN_WIDTHS = {
-  kind: '1.75rem',
   icon: '2rem',
   check: '2.5rem',
+  kind: '2.25rem',
   opacity: '3rem',
   shortcut: '5rem',
   actions: '4rem',
@@ -548,13 +546,12 @@ export function YourMapsList({
   return (
     <Table striped borderless size="sm" className="align-middle">
       <colgroup>
-        <col style={{ width: COLUMN_WIDTHS.kind }} />
         <col style={{ width: COLUMN_WIDTHS.icon }} />
       </colgroup>
 
       <thead>
         <tr>
-          <th colSpan={3} />
+          <th colSpan={2} />
 
           {/* `ms-n1`: the cell's padding already puts the glyph over the
               checkbox below. */}
@@ -574,7 +571,17 @@ export function YourMapsList({
             </GlyphMarker>
           </th>
 
-          <th className="text-center" style={{ width: COLUMN_WIDTHS.opacity }}>
+          <th className="text-center" style={{ width: COLUMN_WIDTHS.kind }}>
+            <GlyphMarker hint={m?.mapLayers.layer.layer} color={null}>
+              {LAYER_KIND_ICONS.base}
+            </GlyphMarker>
+          </th>
+
+          {/* The Map layers panel sets it too, so a phone goes without. */}
+          <th
+            className="text-center d-none d-sm-table-cell"
+            style={{ width: COLUMN_WIDTHS.opacity }}
+          >
             <GlyphMarker hint={msm?.overlayOpacity} color={null}>
               <MdOpacity />
             </GlyphMarker>
@@ -647,12 +654,14 @@ function YourMapRow({
 
   return (
     <tr className={highlighted ? 'fm-flash' : undefined}>
-      {/* The scroll on a ref of its own, stable, so it runs once per mount. */}
-      <td ref={highlighted ? scrollIntoCenter : undefined}>
-        <LayerKindMark kind={map.layer} />
+      {/* The scroll on a ref of its own, stable, so it runs once per mount.
+          At the top, the icon shares the name's line. */}
+      <td
+        ref={highlighted ? scrollIntoCenter : undefined}
+        className="align-top"
+      >
+        {map.icon}
       </td>
-
-      <td>{map.icon}</td>
 
       {/* No max width lets the name truncate instead of widening the table. */}
       <td className="w-100" style={{ maxWidth: 0 }}>
@@ -690,6 +699,20 @@ function YourMapRow({
       </td>
 
       <td className="text-center">
+        <LayerKindButton
+          value={map.layer}
+          onChange={
+            canSave &&
+            (map.kind === 'library' || map.kind === 'custom') &&
+            canSwitchKind(map.technology)
+              ? (kind) =>
+                  dispatch(mapLayerSetupChange({ type, setup: { kind } }))
+              : undefined
+          }
+        />
+      </td>
+
+      <td className="text-center d-none d-sm-table-cell">
         {canSave && (
           <OpacityButton
             value={
@@ -773,31 +796,6 @@ function YourMapRow({
               showFrom="never"
             />
           )}
-
-          {(map.kind === 'library' || map.kind === 'custom') &&
-            canSwitchKind(map.technology) && (
-              <Action
-                // The kind it switches to, as `MapLayerItem` marks it.
-                icon={
-                  LAYER_KIND_ICONS[map.layer === 'base' ? 'overlay' : 'base']
-                }
-                label={
-                  map.layer === 'base' ? msm?.useAsOverlay : msm?.useAsBaseMap
-                }
-                disabled={!canSave}
-                onClick={() =>
-                  dispatch(
-                    mapLayerSetupChange({
-                      type,
-                      setup: {
-                        kind: map.layer === 'base' ? 'overlay' : 'base',
-                      },
-                    }),
-                  )
-                }
-                showFrom="never"
-              />
-            )}
 
           {/* Only image tiles can be downloaded; see `CacheTilesForm`. */}
           {(map.kind === 'library' || map.kind === 'custom') &&
