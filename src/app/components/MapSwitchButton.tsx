@@ -563,6 +563,17 @@ export function MapSwitchButton(): ReactElement {
   const nameOf = (def: { type: string; name?: string; custom: boolean }) =>
     def.custom ? layerLabel(def, m) : (layerName(def, m) ?? '…');
 
+  // One line in the menu, the whole name on long press.
+  const menuName = (name: string) => (
+    <LongPressTooltip label={name}>
+      {({ props }) => (
+        <span className="text-truncate" {...props}>
+          {name}
+        </span>
+      )}
+    </LongPressTooltip>
+  );
+
   function layersMemuItems(layer: 'base' | 'overlay') {
     return entries
       .filter((entry) => kindOf(entry) === layer)
@@ -606,6 +617,9 @@ export function MapSwitchButton(): ReactElement {
             href={`#layers=${type}`}
             eventKey={`layer-${type}`}
             active={active}
+            className="flex-nowrap"
+            // A long press for the name's tooltip would start dragging the link.
+            draggable={false}
           >
             {/* base layers are mutually exclusive (radio), overlays stack
                   (checkbox) */}
@@ -621,7 +635,7 @@ export function MapSwitchButton(): ReactElement {
               def.icon
             )}
 
-            <span>{nameOf(def)}</span>
+            {menuName(nameOf(def))}
 
             {countryFlags(def)}
 
@@ -646,6 +660,7 @@ export function MapSwitchButton(): ReactElement {
         as="button"
         eventKey={`preset-${id}`}
         active={active}
+        className="flex-nowrap"
       >
         {layer === 'base' ? (
           <Radio value={active} />
@@ -655,7 +670,7 @@ export function MapSwitchButton(): ReactElement {
 
         <CustomMapGlyph spec={iconSpec} kind="preset" />
 
-        <span>{name}</span>
+        {menuName(name)}
 
         <MenuGutter>{getKbdShortcut(layersSettings[id]?.shortcut)}</MenuGutter>
       </Dropdown.Item>

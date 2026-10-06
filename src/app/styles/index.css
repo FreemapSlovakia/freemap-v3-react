@@ -471,6 +471,10 @@ button#freemap-logo {
 .fm-dropdown-with-scroller {
   padding: 0;
 
+  /* Popper sizes it from the viewport's left edge before shifting it, so an
+     unwrapped row would push it off screen; the gap is `fixedPopperConfig`'s. */
+  max-width: calc(100vw - 2 * var(--fm-space-2));
+
   /* The scroller is a square box in a rounded one, so its scrollbar (Chrome)
      and its highlighted items (Firefox) paint into the corners. Clipping here
      rounds them off, because the menu's padding box is what carries the inner

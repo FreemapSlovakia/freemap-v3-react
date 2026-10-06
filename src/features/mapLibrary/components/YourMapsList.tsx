@@ -15,7 +15,6 @@ import { OpacityButton } from '@features/mapSettings/components/OpacityButton.js
 import { ToolbarIcon } from '@features/mapSettings/components/ToolbarIcon.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
 import { useCustomMapActions } from '@features/mapSettings/useCustomMapActions.js';
-import { CountryFlag } from '@shared/components/CountryFlag.js';
 import {
   CUSTOM_MAP_ICONS,
   CustomMapGlyph,
@@ -51,7 +50,6 @@ import {
   FaEye,
   FaEyeSlash,
   FaGlobeEurope,
-  FaHistory,
   FaKeyboard,
   FaPencilAlt,
   FaRegListAlt,
@@ -87,6 +85,7 @@ import {
   useMapDetail,
   useSharedFilterOptions,
 } from './FilterChips.js';
+import { MapNameLine } from './MapNameLine.js';
 
 /** A map the user has: installed from the library, or their own; or a preset. */
 type YourMap = {
@@ -652,18 +651,13 @@ function YourMapRow({
 
       <td>{map.icon}</td>
 
-      <td className="w-100">
-        {map.name}
-
-        {map.legacy && (
-          <GlyphMarker hint={m?.mapLayers.legacy}>
-            <FaHistory />
-          </GlyphMarker>
-        )}
-
-        {map.countries?.map((country) => (
-          <CountryFlag key={country} country={country} />
-        ))}
+      {/* No max width lets the name truncate instead of widening the table. */}
+      <td className="w-100" style={{ maxWidth: 0 }}>
+        <MapNameLine
+          name={map.name}
+          legacy={map.legacy}
+          countries={map.countries}
+        />
 
         {map.detail && <div className="small text-muted">{map.detail}</div>}
       </td>

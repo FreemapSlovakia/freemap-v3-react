@@ -3,8 +3,6 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { CountryFlag } from '@shared/components/CountryFlag.js';
-import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { LayerKindMark } from '@shared/components/MapLayerItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -21,7 +19,7 @@ import {
   useState,
 } from 'react';
 import { Alert, Button, Form, Table } from 'react-bootstrap';
-import { FaEye, FaGlobeEurope, FaHistory, FaPlus } from 'react-icons/fa';
+import { FaEye, FaGlobeEurope, FaPlus } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import {
   type CatalogEntry,
@@ -55,6 +53,7 @@ import {
   useMapDetail,
   useSharedFilterOptions,
 } from './FilterChips.js';
+import { MapNameLine } from './MapNameLine.js';
 
 /** Rows added each time the list is scrolled to its end. */
 const pageSize = 50;
@@ -157,8 +156,6 @@ type LibraryRowProps = {
 };
 
 function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
-  const m = useMessages();
-
   const msm = useMapSettingsMessages();
 
   const mapDetail = useMapDetail();
@@ -183,18 +180,13 @@ function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
 
       <td>{index ? index.icon : catalogIcon(entry.category)}</td>
 
-      <td className="w-100">
-        {name}
-
-        {index?.superseededBy && (
-          <GlyphMarker hint={m?.mapLayers.legacy}>
-            <FaHistory />
-          </GlyphMarker>
-        )}
-
-        {flaggedCountries(entry)?.map((country) => (
-          <CountryFlag key={country} country={country} />
-        ))}
+      {/* No max width lets the name truncate instead of widening the table. */}
+      <td className="w-100" style={{ maxWidth: 0 }}>
+        <MapNameLine
+          name={name}
+          legacy={Boolean(index?.superseededBy)}
+          countries={flaggedCountries(entry)}
+        />
 
         <div className="small text-muted">
           {mapDetail(entry.category, technologyOf(entry))}
