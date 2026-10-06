@@ -4,7 +4,6 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapLayersSettingsReset } from '@features/map/model/actions.js';
 import { CustomMapEditor } from '@features/mapSettings/components/CustomMapEditor.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
-import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -17,7 +16,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { layerLabel } from '@shared/layerName.js';
 import { type ReactElement, useRef, useState } from 'react';
-import { Modal, ToggleButton } from 'react-bootstrap';
+import { Modal, Nav } from 'react-bootstrap';
 import { FaBookOpen, FaLayerGroup, FaPlus } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
@@ -161,38 +160,36 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
         </>
       ) : (
         <>
-          <Modal.Body>
-            <FitButtonGroup className="mb-3">
-              <ToggleButton
-                id="map-library-tab-installed"
-                type="radio"
-                name="map-library-tab"
-                variant="outline-primary"
-                value="installed"
-                checked={tab === 'installed'}
-                onChange={() =>
-                  dispatch(setActiveModal({ type: 'installed-maps' }))
-                }
-              >
+          {/* Outside the body, so it stays put while the list scrolls. */}
+          <Nav
+            variant="pills"
+            fill
+            className="px-3 py-2 border-bottom"
+            activeKey={tab}
+            onSelect={(key) =>
+              dispatch(
+                setActiveModal({
+                  type:
+                    key === 'available' ? 'available-maps' : 'installed-maps',
+                }),
+              )
+            }
+          >
+            <Nav.Item>
+              <Nav.Link eventKey="installed">
                 <FaLayerGroup /> {m?.mapLayers.installedMaps} ({yourMapsCount})
-              </ToggleButton>
+              </Nav.Link>
+            </Nav.Item>
 
-              <ToggleButton
-                id="map-library-tab-available"
-                type="radio"
-                name="map-library-tab"
-                variant="outline-primary"
-                value="available"
-                checked={tab === 'available'}
-                onChange={() =>
-                  dispatch(setActiveModal({ type: 'available-maps' }))
-                }
-              >
+            <Nav.Item>
+              <Nav.Link eventKey="available">
                 <FaBookOpen /> {m?.mapLayers.availableMaps}
                 {catalog && ` (${entries.length})`}
-              </ToggleButton>
-            </FitButtonGroup>
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
 
+          <Modal.Body>
             {tab === 'installed' ? (
               <YourMapsTab
                 filters={yourFilters}
