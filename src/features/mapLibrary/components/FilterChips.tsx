@@ -8,6 +8,7 @@ import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useRegionNames } from '@shared/hooks/useRegionNames.js';
+import clsx from 'clsx';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Dropdown, Form, ToggleButton } from 'react-bootstrap';
 import {
@@ -25,6 +26,7 @@ import {
   TECHNOLOGY_GROUPS,
   technologyGroup,
 } from '../filters.js';
+import classes from './FilterChips.module.css';
 
 type Props<T extends string> = {
   /** Tells the group's ids apart from another group's. */
@@ -37,7 +39,7 @@ type Props<T extends string> = {
 
 /**
  * Sets a tab's filters apart from the list below them. A grid of label and
- * chips, so every row's chips start at the widest label's edge.
+ * chips, or on a narrow panel each label above its chips.
  */
 export function FilterPanel({
   children,
@@ -46,10 +48,12 @@ export function FilterPanel({
 }): ReactElement {
   return (
     <div
-      className="d-grid border rounded bg-body-tertiary px-2 mb-3 overflow-hidden"
-      style={{ gridTemplateColumns: 'max-content 1fr' }}
+      className={clsx(
+        classes.panel,
+        'border rounded bg-body-tertiary mb-3 overflow-hidden',
+      )}
     >
-      {children}
+      <div className={clsx(classes.grid, 'px-2')}>{children}</div>
     </div>
   );
 }
@@ -63,23 +67,13 @@ export function FilterRow({
   children: ReactNode;
 }): ReactElement {
   return (
-    // Subgrid keeps the columns shared; -1px tucks the first row's divider
-    // under the panel's edge, where `overflow-hidden` clips it.
     <div
-      className="d-grid align-items-start column-gap-2 border-top py-2"
-      style={{
-        gridColumn: '1 / -1',
-        gridTemplateColumns: 'subgrid',
-        marginTop: -1,
-      }}
+      className={clsx(
+        classes.row,
+        'd-grid align-items-start column-gap-2 border-top py-2',
+      )}
     >
-      {/* Padded to sit level with the first line of chips. */}
-      <span
-        className="small text-muted"
-        style={{ paddingTop: 'calc(0.25rem + var(--bs-border-width))' }}
-      >
-        {label}
-      </span>
+      <span className={clsx(classes.label, 'small text-muted')}>{label}</span>
 
       <div className="d-flex flex-wrap align-items-center gap-2">
         {children}
