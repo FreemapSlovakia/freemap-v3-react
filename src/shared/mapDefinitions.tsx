@@ -193,7 +193,6 @@ export const OUTDOOR_COUNTRIES = [
   'bg',
   'by',
   'ch',
-  'cs',
   'cy',
   'cz',
   'de',
@@ -228,7 +227,6 @@ export const OUTDOOR_COUNTRIES = [
   'sm',
   'tr',
   'ua',
-  'uk',
   'va',
   'xk',
 ];
