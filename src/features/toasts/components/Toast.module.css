@@ -19,6 +19,14 @@
     display: flow-root;
   }
 
+  /* The flow-root stays beside the × all the way down; a scrolling table below
+     it reclaims that column (the .btn-close box plus its ms-2). */
+  :global(.btn-close)
+    ~ .message
+    > :global(.table-responsive):not(:first-child) {
+    margin-right: calc(-1.5em - 0.5rem);
+  }
+
   /* The button makes this row far taller than the 2px bar it carries, so it
      sits back in the alert's own bottom padding rather than adding to it. */
   .countdown {

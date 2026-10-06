@@ -98,7 +98,7 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
       )}
 
       {geojson.properties && (
-        <Table striped bordered size="sm">
+        <Table striped bordered size="sm" responsive>
           <tbody>
             {Object.entries(geojson.properties)
               .filter(([k]) => k !== 'display_name')
@@ -108,9 +108,9 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
                     <OsmTagKey tag={k} osm={parsedId.success} />
                   </th>
 
-                  {/* Breaking mid-word only where a value has no separator to
-                      wrap at, or it would widen the toast. */}
-                  <td className="text-break">
+                  {/* The min width makes long keys scroll the table instead of
+                      squeezing the value; mid-word breaks only for unbroken values. */}
+                  <td className="text-break" style={{ minWidth: '10rem' }}>
                     <OsmTagValue tag={k} value={v} osm={parsedId.success} />
                   </td>
                 </tr>
