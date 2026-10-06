@@ -89,7 +89,6 @@ type Settings = {
 };
 
 export const saveSettings = createAction<{
-  /** Only what `accountSettingsOf` sends too, or the next map save drops it. */
   settings?: Pick<Settings, 'maxZoom'>;
   user?: {
     name?: string;

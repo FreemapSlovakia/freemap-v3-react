@@ -149,8 +149,8 @@ type AccountSettings = Pick<
 >;
 
 /**
- * The account's settings, of which this slice is the only copy: a save sends
- * them all, the API storing them whole.
+ * The account's map settings, of which this slice is the only copy. The API
+ * replaces each key it gets; one left out stays, and `null` deletes it.
  */
 export const accountSettingsOf = (map: MapState): AccountSettings => ({
   layersSettings: map.layersSettings,

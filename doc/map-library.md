@@ -231,8 +231,8 @@ for each tab, and switching tabs changes
   sends the whole account settings — at once, or 500 ms after the last setup
   change (an opacity drag), a pending immediate save never being postponed —
   through `queueSettingsSave` (`src/app/store/settingsSaveQueue.ts`), the
-  queue `saveSettingsProcessor` uses too: the API replaces settings whole, so
-  saves must land in order. Each sends the state at its turn, so none is
+  queue `saveSettingsProcessor` uses too: the API replaces each key a save
+  sends, so saves must land in order. Each sends the state at its turn, so none is
   cancelled (`saveSettings` neither), no list goes from a stale copy, and a
   save still waiting in the queue carries later changes. `saveSettings` takes
   only `maxZoom`, and closes only the modal it came from. The saved toasts

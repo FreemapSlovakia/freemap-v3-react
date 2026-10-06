@@ -10,14 +10,13 @@ import {
 } from '@app/store/settingsSaveQueue.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { bumpPictureCacheBust } from '@features/auth/pictureCacheBust.js';
-import { accountSettingsOf } from '@features/map/model/reducer.js';
 import { loadMapSettingsMessages } from '@features/mapSettings/translations/loadMapSettingsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 
 export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,
-  // Queued with the map settings' saves, which send the same object.
+  // Queued with the map settings' saves, which send `maxZoom` too.
   handle: ({ dispatch, getState, action, toastError }) => {
     // The modal the save came from, which only it closes.
     const modal = getState().main.activeModal;
@@ -26,17 +25,8 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
       try {
         const { settings, user, keepOpen } = action.payload;
 
-        // The API replaces settings whole, so a save sends all of them.
-        const mergedSettings = settings && {
-          ...accountSettingsOf(getState().map),
-          ...settings,
-        };
-
         if (getState().auth.user) {
-          await patchAccountSettings(getState, {
-            ...user,
-            settings: mergedSettings,
-          });
+          await patchAccountSettings(getState, { ...user, settings });
 
           const { picture, ...userRest } = user ?? {};
 
