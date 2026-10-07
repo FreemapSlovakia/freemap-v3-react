@@ -27,8 +27,22 @@ describe('eliCatalog.json', () => {
     expect(
       maps.filter(
         (map) =>
-          !/^(https:)?\/\//.test(map.body.url) ||
-          !['{z}', '{x}', '{y}'].every((p) => map.body.url.includes(p)),
+          !('technology' in map) &&
+          (!/^(https:)?\/\//.test(map.body.url) ||
+            !['{z}', '{x}', '{y}'].every((p) => map.body.url.includes(p))),
+      ),
+    ).toEqual([]);
+  });
+
+  it('has WMS base URLs with layers and no request parameters', () => {
+    expect(
+      maps.filter(
+        (map) =>
+          'technology' in map &&
+          (!/^https:\/\//.test(map.body.url) ||
+            /[?&](request|layers|bbox|srs|crs)=/i.test(map.body.url) ||
+            !('layers' in map.body) ||
+            !map.body.layers?.length),
       ),
     ).toEqual([]);
   });

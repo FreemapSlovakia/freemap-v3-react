@@ -162,6 +162,74 @@ function toLeaflet(url) {
   };
 }
 
+// A GetMap URL's own parameters; Leaflet adds them per request.
+const WMS_PARAMS = new Set([
+  'service',
+  'request',
+  'version',
+  'layers',
+  'styles',
+  'format',
+  'transparent',
+  'srs',
+  'crs',
+  'bbox',
+  'width',
+  'height',
+  'exceptions',
+]);
+
+/** An ELI GetMap template → the base URL and layers the app asks with, or a drop reason. */
+function toWms(url, projections) {
+  if (!projections?.includes('EPSG:3857')) {
+    return { error: 'wms: no EPSG:3857' };
+  }
+
+  let parsed;
+
+  try {
+    parsed = new URL(url.replace(/\{[^}]*\}/g, 'x'));
+  } catch {
+    return { error: 'wms: bad URL' };
+  }
+
+  // ELI files ArcGIS REST `export` URLs as WMS too.
+  if (/\{wkid\}|\/MapServer\/export|[?&]f=image/i.test(url)) {
+    return { error: 'wms: ArcGIS REST, not WMS' };
+  }
+
+  // Placeholders belong in the request parameters only.
+  if (/\{[^}]*\}/.test(url.split('?')[0])) {
+    return { error: 'wms: placeholder in path' };
+  }
+
+  const param = (name) =>
+    [...parsed.searchParams].find(([k]) => k.toLowerCase() === name)?.[1];
+
+  const layers = param('layers')?.split(',').filter(Boolean);
+
+  if (!layers?.length) {
+    return { error: 'wms: no layers' };
+  }
+
+  // The app asks for the default style, which `default` names too.
+  if (
+    param('styles')
+      ?.split(',')
+      .some((style) => style && style.toLowerCase() !== 'default')
+  ) {
+    return { error: 'wms: styles' };
+  }
+
+  for (const key of [...parsed.searchParams.keys()]) {
+    if (WMS_PARAMS.has(key.toLowerCase())) {
+      parsed.searchParams.delete(key);
+    }
+  }
+
+  return { wms: true, url: parsed.toString(), layers };
+}
+
 // Rounded outwards so the box still contains the coverage.
 function bboxOf(geometry) {
   if (!geometry) {
@@ -235,14 +303,14 @@ async function probeTile(feature, leaflet) {
     ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n,
   );
 
-  const sub = leaflet.subdomains?.[0] ?? '';
-
-  const url = leaflet.url
-    .replace(/^\/\//, 'https://')
-    .replace('{s}', sub)
-    .replace('{z}', String(z))
-    .replace('{x}', String(x))
-    .replace('{y}', String(leaflet.tms ? n - 1 - y : y));
+  const url = leaflet.wms
+    ? getMapUrl(leaflet, p.overlay, z, x, y)
+    : leaflet.url
+        .replace(/^\/\//, 'https://')
+        .replace('{s}', leaflet.subdomains?.[0] ?? '')
+        .replace('{z}', String(z))
+        .replace('{x}', String(x))
+        .replace('{y}', String(leaflet.tms ? n - 1 - y : y));
 
   // A timeout or a dropped connection is tried once more before it counts.
   for (let attempt = 0; ; attempt++) {
@@ -259,10 +327,12 @@ async function probeTile(feature, leaflet) {
       }
 
       return {
-        status: res.status,
-        // A 404 carries the CORS headers as well.
+        // A WMS reports an error as an XML document with a 200.
+        status: leaflet.wms && res.ok && !size ? 'not an image' : res.status,
+        // A 404 carries the CORS headers as well. A WMS needs CORS only for
+        // its layer list in the Map layers panel; the map is plain images.
         cors: await allowsAppOrigins(url, res),
-        scales: size ? await probeScales(url, size.width) : [],
+        scales: size && !leaflet.wms ? await probeScales(url, size.width) : [],
       };
     } catch {
       if (attempt) {
@@ -270,6 +340,35 @@ async function probeTile(feature, leaflet) {
       }
     }
   }
+}
+
+/** The tile's GetMap request, as Leaflet's `TileLayer.WMS` makes it in the app. */
+function getMapUrl(wms, overlay, z, x, y) {
+  const size = (2 * Math.PI * 6378137) / 2 ** z;
+
+  const minX = -Math.PI * 6378137 + x * size;
+
+  const maxY = Math.PI * 6378137 - y * size;
+
+  const url = new URL(wms.url);
+
+  for (const [key, value] of Object.entries({
+    service: 'WMS',
+    request: 'GetMap',
+    layers: wms.layers.join(','),
+    styles: '',
+    format: overlay ? 'image/png' : 'image/jpeg',
+    transparent: String(Boolean(overlay)),
+    version: '1.3.0',
+    width: '256',
+    height: '256',
+    crs: 'EPSG:3857',
+    bbox: [minX, maxY - size, minX + size, maxY].join(','),
+  })) {
+    url.searchParams.set(key, value);
+  }
+
+  return url.toString();
 }
 
 /**
@@ -463,7 +562,7 @@ for (const feature of eli.features) {
 
   types[p.type] = (types[p.type] ?? 0) + 1;
 
-  if (p.type !== 'tms') {
+  if (p.type !== 'tms' && p.type !== 'wms') {
     continue;
   }
 
@@ -477,14 +576,15 @@ for (const feature of eli.features) {
     continue;
   }
 
-  const leaflet = toLeaflet(p.url);
+  const leaflet =
+    p.type === 'wms' ? toWms(p.url, p.available_projections) : toLeaflet(p.url);
 
   if (leaflet.error) {
     drop(leaflet.error, p);
     continue;
   }
 
-  if (p['tile-size'] && p['tile-size'] !== 256) {
+  if (!leaflet.wms && p['tile-size'] && p['tile-size'] !== 256) {
     drop('tile size', p);
     continue;
   }
@@ -562,6 +662,11 @@ const alive = kept.filter(({ feature }) => {
     return false;
   }
 
+  if (status === 'not an image') {
+    drop('wms: not an image', feature.properties);
+    return false;
+  }
+
   if (!answered(status)) {
     drop('dead', feature.properties);
     return false;
@@ -625,13 +730,35 @@ const catalog = kept
 
     const cc = p.country_code?.toLowerCase();
 
-    return {
+    const row = {
       type: ids[p.id],
       layer: p.overlay ? 'overlay' : 'base',
       name: p.name,
       countries: cc && cc !== 'zz' ? [cc] : undefined,
       bbox: bboxOf(feature.geometry),
       category: p.category,
+    };
+
+    const attribution = p.attribution?.text
+      ? [{ type: 'map', name: p.attribution.text, url: p.attribution.url }]
+      : [];
+
+    if (leaflet.wms) {
+      return {
+        ...row,
+        technology: 'wms',
+        body: {
+          url: leaflet.url,
+          layers: leaflet.layers,
+          minZoom: p.min_zoom,
+          maxNativeZoom: p.max_zoom,
+          attribution,
+        },
+      };
+    }
+
+    return {
+      ...row,
       body: {
         url: leaflet.url,
         subdomains: leaflet.subdomains,
@@ -648,15 +775,7 @@ const catalog = kept
           : DPI_SCALED_CATEGORIES.has(p.category)
             ? { scaleWithDpi: true }
             : {}),
-        attribution: p.attribution?.text
-          ? [
-              {
-                type: 'map',
-                name: p.attribution.text,
-                url: p.attribution.url,
-              },
-            ]
-          : [],
+        attribution,
       },
     };
   })
@@ -704,9 +823,14 @@ console.log(
         ),
       ),
       kept: catalog.length,
+      byTechnology: tally('technology'),
       byLayer: tally('layer'),
       byCategory: tally('category'),
       withoutCors: catalog.filter((m) => m.body.cors === false).length,
+      // Their maps draw without it; only the layer list in the panel needs it.
+      wmsWithoutCors: keptProps.filter(
+        (p) => p.type === 'wms' && !probe[p.id].cors,
+      ).length,
       withExtraScales: sortedObject(
         catalog.reduce((acc, m) => {
           const k = m.body.extraScales?.join(',');

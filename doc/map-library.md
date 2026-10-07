@@ -311,8 +311,16 @@ Editor Layer Index into `src/features/mapLibrary/eli/`:
   and the `@Nx` scales. `--reuse-probe` keeps answers (2xx or 404) of the
   current `PROBE_VERSION`; failures are always asked again.
 
-Kept: `tms` entries only (WMS needs a `wms` body), https, no key, placeholders
-Leaflet fills (`{zoom}`, `{-y}` → `tms`, `{switch:…}` → `subdomains`). Dropped:
+Kept: `tms` entries — https, no key, placeholders Leaflet fills (`{zoom}`,
+`{-y}` → `tms`, `{switch:…}` → `subdomains`) — and `wms` entries — https, no
+key, EPSG:3857 among `available_projections`, `LAYERS` named, no `STYLES` but
+`default` (the app asks for the default) — stored as a `wms` body: the GetMap
+URL without its request parameters, and the layers. ELI files ArcGIS REST
+`export` URLs as `wms`; those are dropped. A WMS is probed with the app's own
+request (1.3.0, a 256 px tile, JPEG for a base map, transparent PNG for an
+overlay), and one answering with anything but an image — a WMS error is an XML
+200 — is dropped; its CORS is recorded but only its layer list in the Map
+layers panel needs it, as the map is plain images. Dropped:
 OSMF-hosted (`*.openstreetmap.org`, editing only by its usage policy),
 `*.freemap.sk` (built in), scraped commercial sources (Google, Bing, Yandex,
 2GIS, HERE, Mapbox, Apple, Maxar, Esri basemaps — matched on the ELI id and
@@ -320,8 +328,8 @@ host only, as agency maps credit Esri), non-commercial licences, entries
 without a `license_url` (ELI's permissions are for tracing, not display — they
 wait for a review), and maps whose probe got no answer or anything but 2xx or
 404. A 404 stays: the probed spot may just lie outside a ragged coverage. A
-map CORS doesn't open to both origins gets `cors: false`. The probe also asks for the
-tile with the app's `@2x` suffix (then `@3x`, `@4x`) and takes each one whose
+tile map CORS doesn't open to both origins gets `cors: false`. The probe also asks for a
+tile map's tile with the app's `@2x` suffix (then `@3x`, `@4x`) and takes each one whose
 image is that many times wider as `extraScales`; without them, imagery and
 elevation (`photo`, `historicphoto`, `elevation`) get `scaleWithDpi`, as the
 built-in aerials do, and maps with labels neither. `eliCatalog.test.ts` checks
@@ -403,9 +411,9 @@ the ids and templates.
 
 1. **More catalog maps.** Review the entries held for a missing licence URL
    and the services with usage policies of their own (OpenTopoMap, CyclOSM,
-   Waymarked Trails, Wikimedia); add WMS (a `wms` body in `CatalogMap`, 812 of
-   ELI's 861 offer EPSG:3857); a committed overrides file the script applies,
-   by id, for a better name or icon or to hide an entry.
+   Waymarked Trails, Wikimedia); the WMS entries with a non-default style (the
+   `wms` body has no `styles`) or without `LAYERS`; a committed overrides file
+   the script applies, by id, for a better name or icon or to hide an entry.
 2. **Coverage as a union.** `{ countries } | { bbox } | { polygon }` (simplified
    polygon, its bbox derived). Keep the zoom-to target separate: `X` has both
    `countries` and a `bbox`. Countries keep using the server's covered-countries
