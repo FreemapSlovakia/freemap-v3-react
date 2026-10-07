@@ -3476,5 +3476,838 @@
     },
     "bbox": [7.2, 47.4, 10.7, 50],
     "note": "Black-and-white historic parcel map of Württemberg."
+  },
+  {
+    "id": "fm:ch-pixelkarte",
+    "name": "swisstopo national map (colour)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
+    "country_code": "CH",
+    "category": "map",
+    "overlay": false,
+    "max_zoom": 19,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "The national map series in colour, its scale switched by zoom."
+  },
+  {
+    "id": "fm:ch-pixelkarte-grey",
+    "name": "swisstopo national map (grey)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
+    "country_code": "CH",
+    "category": "map",
+    "overlay": false,
+    "max_zoom": 19,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "The national map in greyscale."
+  },
+  {
+    "id": "fm:ch-pixelkarte-winter",
+    "name": "swisstopo national map (winter)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe-winter/default/current/3857/{z}/{x}/{y}.jpeg",
+    "country_code": "CH",
+    "category": "map",
+    "overlay": false,
+    "max_zoom": 19,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "The national map with ski lifts, ski routes and slopes highlighted."
+  },
+  {
+    "id": "fm:ch-landeskarte-10",
+    "name": "swisstopo national map 1:10 000 (colour)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.landeskarte-farbe-10/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "map",
+    "overlay": false,
+    "max_zoom": 19,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "National map 1:10 000 in colour."
+  },
+  {
+    "id": "fm:ch-tlm-map",
+    "name": "swisstopo swissTLM map (colour)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-farbe/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "map",
+    "overlay": false,
+    "max_zoom": 19,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Map drawn from the swissTLM3D landscape model."
+  },
+  {
+    "id": "fm:ch-slope-30",
+    "name": "swisstopo slope classes over 30 degrees",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.hangneigung-ueber_30/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "elevation",
+    "overlay": true,
+    "max_zoom": 17,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Slope classes above 30 degrees, for avalanche terrain."
+  },
+  {
+    "id": "fm:ch-slope-30-ski",
+    "name": "swisstopo slope over 30 degrees (ski map style)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo-karto.hangneigung/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "elevation",
+    "overlay": true,
+    "max_zoom": 17,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Terrain steeper than 30 degrees, as the ski-tour map draws it."
+  },
+  {
+    "id": "fm:ch-ski-routes",
+    "name": "swisstopo ski touring routes",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo-karto.skitouren/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 17,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Ski touring routes."
+  },
+  {
+    "id": "fm:ch-snowshoe-routes",
+    "name": "swisstopo snowshoe routes",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo-karto.schneeschuhrouten/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 17,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Snowshoe routes of the winter map."
+  },
+  {
+    "id": "fm:ch-winter-hiking",
+    "name": "FEDRO winter hiking trails",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.winterwanderwege/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 17,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Roads Office FEDRO",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Prepared winter hiking trails."
+  },
+  {
+    "id": "fm:ch-snowshoe-trails",
+    "name": "FEDRO snowshoe trails",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.schneeschuhwanderwege/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 17,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Roads Office FEDRO",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Signposted snowshoe trails."
+  },
+  {
+    "id": "fm:ch-cableways-winter",
+    "name": "swisstopo cableways and ski lifts (winter)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.bahnen-winter/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Cableways and ski lifts."
+  },
+  {
+    "id": "fm:ch-accommodation-winter",
+    "name": "swisstopo winter accommodation",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.unterkuenfte-winter/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Mountain huts and accommodation open in winter."
+  },
+  {
+    "id": "fm:ch-wanderland",
+    "name": "Wanderland Schweiz national hiking routes",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.wanderland/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Roads Office FEDRO, cantons",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "SchweizMobil's national, regional and local hiking routes."
+  },
+  {
+    "id": "fm:ch-veloland",
+    "name": "Veloland Schweiz national cycling routes",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.veloland/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Roads Office FEDRO, cantons",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "SchweizMobil's national and regional cycling routes."
+  },
+  {
+    "id": "fm:ch-mountainbikeland",
+    "name": "Mountainbikeland Schweiz routes",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.mountainbikeland/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Roads Office FEDRO, cantons",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "SchweizMobil's mountain bike routes."
+  },
+  {
+    "id": "fm:ch-hiking-trails",
+    "name": "swisstopo swissTLM3D hiking trails",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-wanderwege/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Hiking and mountain trails by difficulty."
+  },
+  {
+    "id": "fm:ch-dufour",
+    "name": "swisstopo Dufour map (1845-1865)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.hiks-dufour/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "historicmap",
+    "overlay": false,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "The first official topographic map of Switzerland, 1:100 000."
+  },
+  {
+    "id": "fm:ch-siegfried",
+    "name": "swisstopo Siegfried map (1870-1949)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.hiks-siegfried/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "historicmap",
+    "overlay": false,
+    "max_zoom": 17,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "The Topographic Atlas of Switzerland, 1:25 000 and 1:50 000."
+  },
+  {
+    "id": "fm:ch-map-1925",
+    "name": "swisstopo national map 1925 (Journey through time)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.zeitreihen/default/19251231/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "historicmap",
+    "overlay": false,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "The national map as it stood at the end of 1925."
+  },
+  {
+    "id": "fm:ch-map-1955",
+    "name": "swisstopo national map 1955 (Journey through time)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.zeitreihen/default/19551231/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "historicmap",
+    "overlay": false,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "The national map as it stood at the end of 1955."
+  },
+  {
+    "id": "fm:ch-map-1985",
+    "name": "swisstopo national map 1985 (Journey through time)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.zeitreihen/default/19851231/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "historicmap",
+    "overlay": false,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "The national map as it stood at the end of 1985."
+  },
+  {
+    "id": "fm:ch-aerial-1946",
+    "name": "swisstopo SWISSIMAGE HIST 1946",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage-product_1946/default/1946/3857/{z}/{x}/{y}.jpeg",
+    "country_code": "CH",
+    "category": "historicphoto",
+    "overlay": false,
+    "max_zoom": 17,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Orthophoto mosaic of Switzerland, 1946."
+  },
+  {
+    "id": "fm:ch-bln",
+    "name": "FOEN federal inventory of landscapes and natural monuments (BLN)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.bundesinventare-bln/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Landscapes and natural monuments of national importance."
+  },
+  {
+    "id": "fm:ch-parks",
+    "name": "FOEN national park and parks of national importance",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.schutzgebiete-paerke_nationaler_bedeutung/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 16,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN, cantons",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "The Swiss National Park, regional nature parks and nature discovery parks."
+  },
+  {
+    "id": "fm:ch-biosphere",
+    "name": "FOEN biosphere reserves",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.schutzgebiete-biosphaerenreservate/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "UNESCO biosphere reserves."
+  },
+  {
+    "id": "fm:ch-ramsar",
+    "name": "FOEN Ramsar wetland sites",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.schutzgebiete-ramsar/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Wetlands of international importance."
+  },
+  {
+    "id": "fm:ch-hunting-ban",
+    "name": "FOEN federal hunting ban reserves (wildlife reserves)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.bundesinventare-jagdbanngebiete/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Federal wildlife reserves where hunting is banned."
+  },
+  {
+    "id": "fm:ch-moor-landscapes",
+    "name": "FOEN mire landscapes of national importance",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.bundesinventare-moorlandschaften/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Mire landscapes of particular beauty."
+  },
+  {
+    "id": "fm:ch-floodplains",
+    "name": "FOEN floodplains of national importance",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.bundesinventare-auen/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Floodplains of national importance."
+  },
+  {
+    "id": "fm:ch-pronatura",
+    "name": "Pro Natura nature reserves",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.pronatura.naturschutzgebiete/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 19,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Pro Natura",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Nature reserves held or managed by Pro Natura."
+  },
+  {
+    "id": "fm:ch-tranquillity",
+    "name": "FOEN tranquillity map",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.tranquillity-karte/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 16,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "How quiet the landscape is, from loud to tranquil."
+  },
+  {
+    "id": "fm:ch-flood-100",
+    "name": "FOEN Aquaprotect flood areas (100-year)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.aquaprotect_100/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Areas flooded in a 100-year flood."
+  },
+  {
+    "id": "fm:ch-surface-runoff",
+    "name": "FOEN surface runoff hazard map",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.gefaehrdungskarte-oberflaechenabfluss/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 19,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Where and how deep water runs over the surface in heavy rain."
+  },
+  {
+    "id": "fm:ch-permafrost",
+    "name": "FOEN potential permafrost distribution",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.permafrost/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Where permafrost is likely in the Alps."
+  },
+  {
+    "id": "fm:ch-geol-atlas",
+    "name": "swisstopo geological atlas 1:25 000",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geologischer_atlas/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Sheets of the Geological Atlas of Switzerland."
+  },
+  {
+    "id": "fm:ch-geocover",
+    "name": "swisstopo GeoCover geological map",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geocover/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 16,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Harmonised geology from bedrock to loose deposits."
+  },
+  {
+    "id": "fm:ch-geol-ggk200",
+    "name": "swisstopo general geological map 1:200 000",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-generalkarte-ggk200/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Historic general geological map, 1:200 000."
+  },
+  {
+    "id": "fm:ch-geotopes",
+    "name": "swisstopo geotopes",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geotope/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Geologically notable sites: outcrops, landforms, caves."
+  },
+  {
+    "id": "fm:ch-geotrails",
+    "name": "swisstopo geo-trails",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geowege/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Trails and sites for experiencing geology."
+  },
+  {
+    "id": "fm:ch-glaciers",
+    "name": "swisstopo extent of glaciers",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-gletscherausdehnung/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Glacier extents."
+  },
+  {
+    "id": "fm:ch-glaciation-lgm",
+    "name": "swisstopo Last Glacial Maximum 1:500 000",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-eiszeit-lgm-raster/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Ice cover at the Last Glacial Maximum."
+  },
+  {
+    "id": "fm:ch-habitats",
+    "name": "FOEN habitat map of Switzerland",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.lebensraumkarte-schweiz/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© Federal Office for the Environment FOEN",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Habitat types."
+  },
+  {
+    "id": "fm:ch-forest",
+    "name": "swisstopo swissTLM3D forest",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-wald/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 17,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_open",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Forest areas of the swissTLM3D landscape model."
+  },
+  {
+    "id": "fm:ch-building-zones",
+    "name": "ARE building zones (harmonised)",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.are.bauzonen/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Office for Spatial Development ARE, cantons",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Harmonised building zones."
+  },
+  {
+    "id": "fm:ch-cantons",
+    "name": "swisstopo cantonal boundaries",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissboundaries3d-kanton-flaeche.fill/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Cantonal boundaries."
+  },
+  {
+    "id": "fm:ch-municipalities",
+    "name": "swisstopo municipal boundaries",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© swisstopo",
+      "url": "https://www.swisstopo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Municipal boundaries."
+  },
+  {
+    "id": "fm:ch-drone-zones",
+    "name": "FOCA geographical UAS zones",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bazl.einschraenkungen-drohnen/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://opendata.swiss/en/terms-of-use/#terms_by",
+    "attribution": {
+      "text": "© Federal Office of Civil Aviation FOCA",
+      "url": "https://www.geo.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Zones restricting drone flights."
+  },
+  {
+    "id": "fm:ch-icao-chart",
+    "name": "FOCA ICAO aeronautical chart 1:500 000",
+    "type": "tms",
+    "url": "https://wmts.geo.admin.ch/1.0.0/ch.bazl.luftfahrtkarten-icao/default/current/3857/{z}/{x}/{y}.png",
+    "country_code": "CH",
+    "category": "other",
+    "overlay": false,
+    "max_zoom": 12,
+    "license_url": "https://www.swisstopo.admin.ch/ogd-conditions",
+    "attribution": {
+      "text": "© FOCA / swisstopo",
+      "url": "https://www.bazl.admin.ch"
+    },
+    "bbox": [5.95, 45.81, 10.5, 47.81],
+    "note": "Aeronautical chart 1:500 000; not for navigation."
   }
 ]

@@ -180,6 +180,45 @@
       }
     },
     {
+      "type": "0AJT2",
+      "layer": "overlay",
+      "name": "swisstopo slope classes over 30 degrees",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "elevation",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.hangneigung-ueber_30/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 17,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
+      "type": "0AQHT",
+      "layer": "base",
+      "name": "swisstopo national map 1:10 000 (colour)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "map",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.landeskarte-farbe-10/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "0AYRJ",
       "layer": "base",
       "name": "Kartverket Economic Maps (historic)",
@@ -690,6 +729,25 @@
       }
     },
     {
+      "type": "0VE7G",
+      "layer": "overlay",
+      "name": "FOEN potential permafrost distribution",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.permafrost/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "0WD27",
       "layer": "base",
       "name": "imagico.de: Kerch Strait",
@@ -1033,6 +1091,25 @@
         "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_2021/MapServer/WMSServer",
         "layers": ["0"],
         "attribution": []
+      }
+    },
+    {
+      "type": "1DFOV",
+      "layer": "overlay",
+      "name": "swisstopo Last Glacial Maximum 1:500 000",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-eiszeit-lgm-raster/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
       }
     },
     {
@@ -2728,6 +2805,25 @@
       }
     },
     {
+      "type": "3H1XQ",
+      "layer": "overlay",
+      "name": "swisstopo extent of glaciers",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-gletscherausdehnung/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "3HBE9",
       "layer": "base",
       "name": "Kanton Aargau 50cm DTM/Hillshade",
@@ -3060,6 +3156,25 @@
       }
     },
     {
+      "type": "44BUP",
+      "layer": "overlay",
+      "name": "swisstopo winter accommodation",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.unterkuenfte-winter/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "45OU0",
       "layer": "base",
       "name": "FNSB Aerial Imagery (2023)",
@@ -3180,6 +3295,25 @@
             "type": "map",
             "name": "© Regione Emilia-Romagna (CC BY 3.0)",
             "url": "https://geoportale.regione.emilia-romagna.it/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "48JA1",
+      "layer": "overlay",
+      "name": "FOEN federal inventory of landscapes and natural monuments (BLN)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.bundesinventare-bln/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
           }
         ]
       }
@@ -4491,6 +4625,25 @@
       }
     },
     {
+      "type": "5SGPF",
+      "layer": "overlay",
+      "name": "swisstopo general geological map 1:200 000",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-generalkarte-ggk200/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "5SUF9",
       "layer": "overlay",
       "name": "Trafikverket Road Network",
@@ -4917,6 +5070,25 @@
       }
     },
     {
+      "type": "6C9CG",
+      "layer": "overlay",
+      "name": "swisstopo municipal boundaries",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "6CDBQ",
       "layer": "base",
       "name": "VoGIS orthophoto 2006",
@@ -5015,6 +5187,25 @@
             "type": "map",
             "name": "Orthophotoplan 2015 - Toulouse Métropole, 14/12/2015, sous license ODbL",
             "url": "https://data.toulouse-metropole.fr/explore/dataset/orthophotoplan-2015/information/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "6H8GL",
+      "layer": "base",
+      "name": "swisstopo national map 1985 (Journey through time)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.zeitreihen/default/19851231/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
           }
         ]
       }
@@ -5161,6 +5352,28 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "6QYQK",
+      "layer": "base",
+      "name": "Miami-Dade County Orthoimagery (2021)",
+      "countries": ["us"],
+      "bbox": [-80.9429, 25.1309, -80.1055, 26.0249],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imageserverintra.miamidade.gov/arcgis/services/Woolpert2021/ImageServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 5,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Miami-Dade County",
+            "url": "https://gis-mdc.opendata.arcgis.com/pages/imagery"
           }
         ]
       }
@@ -5894,6 +6107,25 @@
       }
     },
     {
+      "type": "7UK29",
+      "layer": "overlay",
+      "name": "FEDRO winter hiking trails",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.winterwanderwege/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Roads Office FEDRO",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "7X78V",
       "layer": "base",
       "name": "Ontario Orthophotography Mosaic 2018-2022 (RGB)",
@@ -6529,6 +6761,25 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "8YV3H",
+      "layer": "overlay",
+      "name": "swisstopo cableways and ski lifts (winter)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.bahnen-winter/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
           }
         ]
       }
@@ -7688,6 +7939,25 @@
       }
     },
     {
+      "type": "ABC30",
+      "layer": "overlay",
+      "name": "swisstopo GeoCover geological map",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geocover/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "AC0N5",
       "layer": "base",
       "name": "City of Cape Town Aerial Imagery (2021)",
@@ -7848,6 +8118,25 @@
       }
     },
     {
+      "type": "AIOI9",
+      "layer": "overlay",
+      "name": "swisstopo geological atlas 1:25 000",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geologischer_atlas/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "AKAJT",
       "layer": "overlay",
       "name": "Kartverket Hillshade overlay",
@@ -7988,6 +8277,25 @@
             "type": "map",
             "name": "Freie und Hansestadt Hamburg, Landesbetrieb Geoinformation und Vermessung",
             "url": "https://www.hamburg.de/bsw/landesbetrieb-geoinformation-und-vermessung"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ATL5F",
+      "layer": "overlay",
+      "name": "FOEN Ramsar wetland sites",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.schutzgebiete-ramsar/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
           }
         ]
       }
@@ -8213,6 +8521,25 @@
             "type": "map",
             "name": "Osceola County, FL",
             "url": "https://www.osceola.org/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "B6JG7",
+      "layer": "overlay",
+      "name": "FOCA geographical UAS zones",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bazl.einschraenkungen-drohnen/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office of Civil Aviation FOCA",
+            "url": "https://www.geo.admin.ch"
           }
         ]
       }
@@ -8692,6 +9019,25 @@
       }
     },
     {
+      "type": "BZ5R3",
+      "layer": "overlay",
+      "name": "Pro Natura nature reserves",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.pronatura.naturschutzgebiete/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Pro Natura",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "BZSLR",
       "layer": "base",
       "name": "Hennepin County Orthoimagery (2022)",
@@ -9117,6 +9463,25 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "COAHD",
+      "layer": "overlay",
+      "name": "Mountainbikeland Schweiz routes",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.mountainbikeland/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Roads Office FEDRO, cantons",
+            "url": "https://www.geo.admin.ch"
           }
         ]
       }
@@ -9718,6 +10083,25 @@
       }
     },
     {
+      "type": "DFZG3",
+      "layer": "overlay",
+      "name": "FOEN federal hunting ban reserves (wildlife reserves)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.bundesinventare-jagdbanngebiete/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "DGNCJ",
       "layer": "overlay",
       "name": "ČÚZK DMR 5G slope",
@@ -9754,6 +10138,25 @@
             "type": "map",
             "name": "Franklin County Auditor, State of Ohio",
             "url": "https://auditor-fca.opendata.arcgis.com/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "DIUIB",
+      "layer": "overlay",
+      "name": "swisstopo swissTLM3D forest",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-wald/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
           }
         ]
       }
@@ -9936,6 +10339,25 @@
             "type": "map",
             "name": "IBGE",
             "url": "https://www.ibge.gov.br/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "DU2QU",
+      "layer": "overlay",
+      "name": "FOEN tranquillity map",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.tranquillity-karte/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
           }
         ]
       }
@@ -10306,6 +10728,25 @@
       }
     },
     {
+      "type": "EEG09",
+      "layer": "overlay",
+      "name": "swisstopo swissTLM3D hiking trails",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-wanderwege/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "EG0OA",
       "layer": "base",
       "name": "Calaveras County Orthoimagery (2024)",
@@ -10363,6 +10804,25 @@
             "type": "map",
             "name": "Orthophotoplan 2007 - Toulouse Métropole, 20/09/2012, sous license ODbL",
             "url": "https://data.toulouse-metropole.fr/explore/dataset/orthophotoplan-2007/information/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "EHAKZ",
+      "layer": "base",
+      "name": "swisstopo Dufour map (1845-1865)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.hiks-dufour/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
           }
         ]
       }
@@ -11264,6 +11724,25 @@
           {
             "type": "map",
             "name": "Map data: © Геоінформаційна система Любецької громади"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FT8FK",
+      "layer": "base",
+      "name": "swisstopo national map (colour)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "map",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg",
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
           }
         ]
       }
@@ -13863,6 +14342,25 @@
       }
     },
     {
+      "type": "JQUM0",
+      "layer": "base",
+      "name": "swisstopo national map 1955 (Journey through time)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.zeitreihen/default/19551231/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "JRHQC",
       "layer": "overlay",
       "name": "VoGIS biotope inventory",
@@ -14319,6 +14817,25 @@
       }
     },
     {
+      "type": "KCN9V",
+      "layer": "base",
+      "name": "swisstopo swissTLM map (colour)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "map",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swisstlm3d-karte-farbe/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "KEDIJ",
       "layer": "base",
       "name": "Berlin/Geoportal DOP20RGB (2020)",
@@ -14704,6 +15221,26 @@
       }
     },
     {
+      "type": "L445O",
+      "layer": "base",
+      "name": "swisstopo SWISSIMAGE HIST 1946",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage-product_1946/default/1946/3857/{z}/{x}/{y}.jpeg",
+        "maxNativeZoom": 17,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "L4XQS",
       "layer": "base",
       "name": "Palm Beach County Orthoimagery (2023)",
@@ -14896,6 +15433,26 @@
           "adv_alkis_flurstuecke"
         ],
         "attribution": []
+      }
+    },
+    {
+      "type": "LF7F7",
+      "layer": "overlay",
+      "name": "swisstopo slope over 30 degrees (ski map style)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "elevation",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo-karto.hangneigung/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 17,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
       }
     },
     {
@@ -15111,6 +15668,25 @@
           {
             "type": "map",
             "name": "Eusko Jaurlaritza / Gobierno Vasco. geoEuskadi"
+          }
+        ]
+      }
+    },
+    {
+      "type": "LTCVJ",
+      "layer": "overlay",
+      "name": "Veloland Schweiz national cycling routes",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.veloland/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Roads Office FEDRO, cantons",
+            "url": "https://www.geo.admin.ch"
           }
         ]
       }
@@ -15526,6 +16102,44 @@
       }
     },
     {
+      "type": "MCXTJ",
+      "layer": "overlay",
+      "name": "swisstopo geo-trails",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geowege/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
+      "type": "MDWLJ",
+      "layer": "overlay",
+      "name": "swisstopo cantonal boundaries",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissboundaries3d-kanton-flaeche.fill/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "MFHZJ",
       "layer": "base",
       "name": "Kendall County 2026 Aerial Imagery",
@@ -15845,6 +16459,25 @@
             "type": "map",
             "name": "IGN",
             "url": "https://geoservices.ign.fr/documentation/donnees/ortho/bdortho"
+          }
+        ]
+      }
+    },
+    {
+      "type": "MTDG9",
+      "layer": "base",
+      "name": "FOCA ICAO aeronautical chart 1:500 000",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bazl.luftfahrtkarten-icao/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© FOCA / swisstopo",
+            "url": "https://www.bazl.admin.ch"
           }
         ]
       }
@@ -16807,6 +17440,25 @@
       }
     },
     {
+      "type": "OCJRD",
+      "layer": "overlay",
+      "name": "FOEN habitat map of Switzerland",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.lebensraumkarte-schweiz/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "OD6YN",
       "layer": "overlay",
       "name": "DCS NSW Administrative Boundaries LGA",
@@ -17204,6 +17856,25 @@
       }
     },
     {
+      "type": "P23II",
+      "layer": "overlay",
+      "name": "FOEN floodplains of national importance",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.bundesinventare-auen/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "P24BO",
       "layer": "base",
       "name": "imagico.de: Russkiye Mountains east evening",
@@ -17549,6 +18220,25 @@
       }
     },
     {
+      "type": "PELMJ",
+      "layer": "overlay",
+      "name": "FEDRO snowshoe trails",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.schneeschuhwanderwege/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Roads Office FEDRO",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "PER3B",
       "layer": "overlay",
       "name": "Riksantikvaren Heritage Sites overlay",
@@ -17589,6 +18279,25 @@
             "type": "map",
             "name": "Sadrži podatke Geografskog informacijskog sustava Grada Karlovca",
             "url": "https://gis.karlovac.hr/thematic-map/map-portal"
+          }
+        ]
+      }
+    },
+    {
+      "type": "PHDQ1",
+      "layer": "overlay",
+      "name": "FOEN biosphere reserves",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.schutzgebiete-biosphaerenreservate/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
           }
         ]
       }
@@ -18594,6 +19303,25 @@
       }
     },
     {
+      "type": "QXIR9",
+      "layer": "overlay",
+      "name": "swisstopo ski touring routes",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo-karto.skitouren/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "QYWRQ",
       "layer": "base",
       "name": "Philadelphia Orthoimagery 2024 (1in)",
@@ -18810,6 +19538,25 @@
         "url": "https://www.wms.nrw.de/geobasis/wms_nw_dgm-schummerung",
         "layers": ["nw_dgm-schummerung_pan"],
         "attribution": []
+      }
+    },
+    {
+      "type": "R9J84",
+      "layer": "overlay",
+      "name": "FOEN national park and parks of national importance",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.schutzgebiete-paerke_nationaler_bedeutung/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN, cantons",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
       }
     },
     {
@@ -19957,6 +20704,25 @@
       }
     },
     {
+      "type": "TBMRD",
+      "layer": "overlay",
+      "name": "ARE building zones (harmonised)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.are.bauzonen/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for Spatial Development ARE, cantons",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "TDEM9",
       "layer": "base",
       "name": "NOAA NGS Gulf Coast Imagery, East (2023)",
@@ -20081,6 +20847,25 @@
       }
     },
     {
+      "type": "TLNTN",
+      "layer": "overlay",
+      "name": "FOEN mire landscapes of national importance",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.bundesinventare-moorlandschaften/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "TLSUG",
       "layer": "base",
       "name": "BEV Austrian Map (ÖK50 / ÖK25V)",
@@ -20096,6 +20881,25 @@
             "type": "map",
             "name": "© BEV – Bundesamt für Eich- und Vermessungswesen",
             "url": "https://www.bev.gv.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "TMLXS",
+      "layer": "overlay",
+      "name": "swisstopo geotopes",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.geologie-geotope/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
           }
         ]
       }
@@ -20427,6 +21231,25 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "U1UL1",
+      "layer": "base",
+      "name": "swisstopo national map (winter)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "map",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe-winter/default/current/3857/{z}/{x}/{y}.jpeg",
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
           }
         ]
       }
@@ -21246,6 +22069,25 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/products_and_services/web_services/access_web_services"
+          }
+        ]
+      }
+    },
+    {
+      "type": "VGCI7",
+      "layer": "overlay",
+      "name": "FOEN surface runoff hazard map",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.gefaehrdungskarte-oberflaechenabfluss/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
           }
         ]
       }
@@ -23255,6 +24097,25 @@
       }
     },
     {
+      "type": "Y57UQ",
+      "layer": "base",
+      "name": "swisstopo national map 1925 (Journey through time)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.zeitreihen/default/19251231/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "Y71HV",
       "layer": "base",
       "name": "dgu.hr: Croatia 2023-2024 aerial imagery",
@@ -23561,6 +24422,25 @@
       }
     },
     {
+      "type": "YK4QJ",
+      "layer": "base",
+      "name": "swisstopo national map (grey)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "map",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "YLYFV",
       "layer": "base",
       "name": "ACTmapi Imagery Feb 2024",
@@ -23617,6 +24497,25 @@
           {
             "type": "map",
             "name": "Geoportal Berlin/Digitale farbige TrueOrthophotos 2023 (DOP20RGB) (codefor.de mirror)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "YRJCO",
+      "layer": "overlay",
+      "name": "Wanderland Schweiz national hiking routes",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.astra.wanderland/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Roads Office FEDRO, cantons",
+            "url": "https://www.geo.admin.ch"
           }
         ]
       }
@@ -23926,6 +24825,25 @@
       }
     },
     {
+      "type": "ZBEL3",
+      "layer": "overlay",
+      "name": "FOEN Aquaprotect flood areas (100-year)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.bafu.aquaprotect_100/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Federal Office for the Environment FOEN",
+            "url": "https://www.geo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "ZGY5T",
       "layer": "overlay",
       "name": "© GeoBasis-DE/LVermGeo LSA, ALKIS Cadastre parcels",
@@ -23986,6 +24904,25 @@
       }
     },
     {
+      "type": "ZNTXQ",
+      "layer": "base",
+      "name": "swisstopo Siegfried map (1870-1949)",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.hiks-siegfried/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
       "type": "ZOQM2",
       "layer": "base",
       "name": "Gliwice: Orthophotomap 2017 (aerial image)",
@@ -24002,6 +24939,25 @@
             "type": "map",
             "name": "Urząd Miasta Gliwice",
             "url": "https://msip.gliwice.eu/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ZSFQW",
+      "layer": "overlay",
+      "name": "swisstopo snowshoe routes",
+      "countries": ["ch"],
+      "bbox": [5.95, 45.81, 10.5, 47.81],
+      "category": "other",
+      "body": {
+        "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo-karto.schneeschuhrouten/default/current/3857/{z}/{x}/{y}.png",
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© swisstopo",
+            "url": "https://www.swisstopo.admin.ch"
           }
         ]
       }
