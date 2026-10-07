@@ -4297,6 +4297,28 @@
       }
     },
     {
+      "type": "52HT9",
+      "layer": "overlay",
+      "name": "GURS municipality boundaries",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ipi.eprostor.gov.si/wms-si-gurs-rpe/wms",
+        "layers": ["SI.GURS.RPE:OBCINE"],
+        "minZoom": 10,
+        "maxNativeZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geodetska uprava Republike Slovenije",
+            "url": "https://www.e-prostor.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "54ULF",
       "layer": "base",
       "name": "Hesse DOP20",
@@ -4619,6 +4641,28 @@
             "type": "map",
             "name": "NH GRANIT",
             "url": "https://granit.unh.edu/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "5L9BH",
+      "layer": "overlay",
+      "name": "GURS settlement boundaries",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ipi.eprostor.gov.si/wms-si-gurs-rpe/wms",
+        "layers": ["SI.GURS.RPE:NASELJA"],
+        "minZoom": 10,
+        "maxNativeZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geodetska uprava Republike Slovenije",
+            "url": "https://www.e-prostor.gov.si/"
           }
         ]
       }
@@ -9571,6 +9615,27 @@
       }
     },
     {
+      "type": "C31SV",
+      "layer": "overlay",
+      "name": "ARSO annual precipitation 1981-2010",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:PAD_KOR_81_10_YR"],
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "C4UKE",
       "layer": "base",
       "name": "Vienna: Mehrzweckkarte (general purpose)",
@@ -11122,6 +11187,27 @@
       }
     },
     {
+      "type": "E6J84",
+      "layer": "overlay",
+      "name": "ARSO brown bear habitat",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:ZIV_PROST_MEDVED"],
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "E8E1B",
       "layer": "overlay",
       "name": "Wien contour lines",
@@ -11828,6 +11914,27 @@
       }
     },
     {
+      "type": "F1SIX",
+      "layer": "overlay",
+      "name": "ARSO mean annual temperature 1981-2010",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:KLIMA_TEMP_81_10_YR"],
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "F2MV6",
       "layer": "overlay",
       "name": "LfU Bayern Protected Areas",
@@ -12408,6 +12515,26 @@
       }
     },
     {
+      "type": "FYQTE",
+      "layer": "overlay",
+      "name": "ARSO Natura 2000 areas",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:ZOS_N2K_PLG"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "FZ7XD",
       "layer": "base",
       "name": "imagico.de: Nimrod Glacier South",
@@ -12744,6 +12871,28 @@
             "type": "map",
             "name": "Solano County",
             "url": "https://www.solanocounty.gov/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "GFJZN",
+      "layer": "base",
+      "name": "GURS national overview map 1:250 000",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ipi.eprostor.gov.si/wms-si-gurs-dts/wms",
+        "layers": ["SI.GURS.DK:DPK250"],
+        "minZoom": 9,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geodetska uprava Republike Slovenije",
+            "url": "https://www.e-prostor.gov.si/"
           }
         ]
       }
@@ -13392,6 +13541,27 @@
       }
     },
     {
+      "type": "H7ZKT",
+      "layer": "overlay",
+      "name": "ARSO mean wind speed at 50 m",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:VETER_POVP_LET_HITR_50M_94_01"],
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "H80P8",
       "layer": "base",
       "name": "URBIS 2014 aerial imagery",
@@ -13970,6 +14140,26 @@
       }
     },
     {
+      "type": "IAYO2",
+      "layer": "overlay",
+      "name": "ARSO ecologically important areas",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:EPO_PLG"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "ID6XP",
       "layer": "overlay",
       "name": "Fiskeridirektoratet Aquaculture overlay",
@@ -14152,6 +14342,27 @@
             "type": "map",
             "name": "Land Vorarlberg – data.vorarlberg.gv.at",
             "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "IMNG9",
+      "layer": "overlay",
+      "name": "ARSO days with snow cover 1971-2000",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:SNEG_O_POV_ST_D_71_00_YR"],
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
           }
         ]
       }
@@ -14784,6 +14995,26 @@
             "type": "map",
             "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
             "url": "https://www.lfu.bayern.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "JGS3P",
+      "layer": "overlay",
+      "name": "ARSO natural values register",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:NV_PLG"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
           }
         ]
       }
@@ -18690,6 +18921,28 @@
             "type": "map",
             "name": "Kanton Thurgau, Orthofoto2017 RGB",
             "url": "https://opendata.swiss/en/dataset/orthofoto-2017-dop17"
+          }
+        ]
+      }
+    },
+    {
+      "type": "P0RG1",
+      "layer": "overlay",
+      "name": "GURS cadastral parcels",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ipi.eprostor.gov.si/wms-si-gurs-kn/wms",
+        "layers": ["SI.GURS.KN:PARCELE"],
+        "minZoom": 16,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geodetska uprava Republike Slovenije",
+            "url": "https://www.e-prostor.gov.si/"
           }
         ]
       }
@@ -22644,6 +22897,27 @@
       }
     },
     {
+      "type": "UIJ1F",
+      "layer": "overlay",
+      "name": "ARSO seismic hazard map",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:POTRS_NEVAR_KRT_2021"],
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "UJTDO",
       "layer": "base",
       "name": "Nagahama city Imagery 2021",
@@ -24321,6 +24595,28 @@
       }
     },
     {
+      "type": "WRXLD",
+      "layer": "base",
+      "name": "GURS national topographic map 1:50 000",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ipi.eprostor.gov.si/wms-si-gurs-dts/wms",
+        "layers": ["SI.GURS.DK:DTK50"],
+        "minZoom": 8,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geodetska uprava Republike Slovenije",
+            "url": "https://www.e-prostor.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "WT3XN",
       "layer": "overlay",
       "name": "Czech RUIAN parcely",
@@ -25508,6 +25804,27 @@
       }
     },
     {
+      "type": "YE9RK",
+      "layer": "overlay",
+      "name": "GURS forest management areas",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ipi.eprostor.gov.si/wms-si-gurs-kn/wms",
+        "layers": ["SI.GURS.KN:GOZDNO_GOSP_OBM"],
+        "minZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geodetska uprava Republike Slovenije",
+            "url": "https://www.e-prostor.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "YEDNN",
       "layer": "base",
       "name": "Japan GSI airphoto Imagery",
@@ -25785,6 +26102,27 @@
       }
     },
     {
+      "type": "YVEXX",
+      "layer": "overlay",
+      "name": "MNVP municipal land-use plans",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ipi.eprostor.gov.si/wms-si-mnvp-pa/wms",
+        "layers": ["SI.MNVP.PA:NRP_OPN"],
+        "minZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Ministrstvo za naravne vire in prostor, Prostorski informacijski sistem",
+            "url": "https://pis.eprostor.gov.si/"
+          }
+        ]
+      }
+    },
+    {
       "type": "YWFJM",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1983",
@@ -25939,6 +26277,28 @@
         "url": "https://geoportal.asig.gov.al/service/adresar/ows",
         "layers": ["adr_ndertese", "adr_numertim", "adr_rruge"],
         "attribution": []
+      }
+    },
+    {
+      "type": "Z51UX",
+      "layer": "base",
+      "name": "GURS LiDAR hillshade",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://ipi.eprostor.gov.si/wms-si-gurs-dts/wms",
+        "layers": ["SI.GURS.ZPDZ:LIDAR"],
+        "minZoom": 8,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geodetska uprava Republike Slovenije",
+            "url": "https://www.e-prostor.gov.si/"
+          }
+        ]
       }
     },
     {
@@ -26342,6 +26702,26 @@
             "type": "map",
             "name": "© IGN",
             "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ZYY7S",
+      "layer": "overlay",
+      "name": "ARSO protected areas",
+      "countries": ["si"],
+      "bbox": [13.37, 45.42, 16.61, 46.88],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.arso.gov.si/geoserver/wms",
+        "layers": ["ARSO:ZOS_ZO_PLG_DRZ"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Agencija Republike Slovenije za okolje (ARSO)",
+            "url": "https://www.arso.gov.si/"
           }
         ]
       }

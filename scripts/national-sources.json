@@ -5306,5 +5306,331 @@
     },
     "bbox": [-5.2, 41.3, 9.6, 51.1],
     "note": "Avalanche sites from witness accounts."
+  },
+  {
+    "id": "fm:si-gurs-dtk50",
+    "name": "GURS national topographic map 1:50 000",
+    "type": "wms",
+    "url": "https://ipi.eprostor.gov.si/wms-si-gurs-dts/wms",
+    "layers": ["SI.GURS.DK:DTK50"],
+    "country_code": "SI",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 8,
+    "max_zoom": 16,
+    "license_url": "https://www.e-prostor.gov.si/dostopi/javni-dostop/?acitem=1821-1822",
+    "attribution": {
+      "text": "Geodetska uprava Republike Slovenije",
+      "url": "https://www.e-prostor.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "State topographic map 1:50 000."
+  },
+  {
+    "id": "fm:si-gurs-dpk250",
+    "name": "GURS national overview map 1:250 000",
+    "type": "wms",
+    "url": "https://ipi.eprostor.gov.si/wms-si-gurs-dts/wms",
+    "layers": ["SI.GURS.DK:DPK250"],
+    "country_code": "SI",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 9,
+    "max_zoom": 14,
+    "license_url": "https://www.e-prostor.gov.si/dostopi/javni-dostop/?acitem=1821-1822",
+    "attribution": {
+      "text": "Geodetska uprava Republike Slovenije",
+      "url": "https://www.e-prostor.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "State overview map 1:250 000."
+  },
+  {
+    "id": "fm:si-gurs-lidar-hillshade",
+    "name": "GURS LiDAR hillshade",
+    "type": "wms",
+    "url": "https://ipi.eprostor.gov.si/wms-si-gurs-dts/wms",
+    "layers": ["SI.GURS.ZPDZ:LIDAR"],
+    "country_code": "SI",
+    "category": "elevation",
+    "overlay": false,
+    "min_zoom": 8,
+    "max_zoom": 17,
+    "license_url": "https://www.e-prostor.gov.si/dostopi/javni-dostop/?acitem=1821-1822",
+    "attribution": {
+      "text": "Geodetska uprava Republike Slovenije",
+      "url": "https://www.e-prostor.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Grey hillshade from the 2011–2014 LiDAR survey."
+  },
+  {
+    "id": "fm:si-gurs-parcels",
+    "name": "GURS cadastral parcels",
+    "type": "wms",
+    "url": "https://ipi.eprostor.gov.si/wms-si-gurs-kn/wms",
+    "layers": ["SI.GURS.KN:PARCELE"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 16,
+    "max_zoom": 19,
+    "license_url": "https://www.e-prostor.gov.si/dostopi/javni-dostop/?acitem=1821-1822",
+    "attribution": {
+      "text": "Geodetska uprava Republike Slovenije",
+      "url": "https://www.e-prostor.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Parcel boundaries of the real-estate cadastre."
+  },
+  {
+    "id": "fm:si-gurs-municipalities",
+    "name": "GURS municipality boundaries",
+    "type": "wms",
+    "url": "https://ipi.eprostor.gov.si/wms-si-gurs-rpe/wms",
+    "layers": ["SI.GURS.RPE:OBCINE"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 10,
+    "max_zoom": 13,
+    "license_url": "https://www.e-prostor.gov.si/dostopi/javni-dostop/?acitem=1821-1822",
+    "attribution": {
+      "text": "Geodetska uprava Republike Slovenije",
+      "url": "https://www.e-prostor.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Municipality boundaries."
+  },
+  {
+    "id": "fm:si-gurs-settlements",
+    "name": "GURS settlement boundaries",
+    "type": "wms",
+    "url": "https://ipi.eprostor.gov.si/wms-si-gurs-rpe/wms",
+    "layers": ["SI.GURS.RPE:NASELJA"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 10,
+    "max_zoom": 13,
+    "license_url": "https://www.e-prostor.gov.si/dostopi/javni-dostop/?acitem=1821-1822",
+    "attribution": {
+      "text": "Geodetska uprava Republike Slovenije",
+      "url": "https://www.e-prostor.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Settlement boundaries."
+  },
+  {
+    "id": "fm:si-gurs-forest-management-areas",
+    "name": "GURS forest management areas",
+    "type": "wms",
+    "url": "https://ipi.eprostor.gov.si/wms-si-gurs-kn/wms",
+    "layers": ["SI.GURS.KN:GOZDNO_GOSP_OBM"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 13,
+    "license_url": "https://www.e-prostor.gov.si/dostopi/javni-dostop/?acitem=1821-1822",
+    "attribution": {
+      "text": "Geodetska uprava Republike Slovenije",
+      "url": "https://www.e-prostor.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Forest management areas."
+  },
+  {
+    "id": "fm:si-mnvp-land-use-plans",
+    "name": "MNVP municipal land-use plans",
+    "type": "wms",
+    "url": "https://ipi.eprostor.gov.si/wms-si-mnvp-pa/wms",
+    "layers": ["SI.MNVP.PA:NRP_OPN"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 14,
+    "license_url": "https://podatki.gov.si/dataset/namenska-raba-prostora",
+    "attribution": {
+      "text": "Ministrstvo za naravne vire in prostor, Prostorski informacijski sistem",
+      "url": "https://pis.eprostor.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Intended land use from municipal spatial plans, where adopted."
+  },
+  {
+    "id": "fm:si-arso-natura2000",
+    "name": "ARSO Natura 2000 areas",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:ZOS_N2K_PLG"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Natura 2000 sites."
+  },
+  {
+    "id": "fm:si-arso-protected-areas",
+    "name": "ARSO protected areas",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:ZOS_ZO_PLG_DRZ"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "National and regional parks, reserves and natural monuments."
+  },
+  {
+    "id": "fm:si-arso-natural-values",
+    "name": "ARSO natural values register",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:NV_PLG"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Registered natural values (naravne vrednote)."
+  },
+  {
+    "id": "fm:si-arso-ecologically-important-areas",
+    "name": "ARSO ecologically important areas",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:EPO_PLG"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Areas important for biodiversity."
+  },
+  {
+    "id": "fm:si-arso-bear-habitat",
+    "name": "ARSO brown bear habitat",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:ZIV_PROST_MEDVED"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 12,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Core and peripheral habitat of the brown bear."
+  },
+  {
+    "id": "fm:si-arso-seismic-hazard",
+    "name": "ARSO seismic hazard map",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:POTRS_NEVAR_KRT_2021"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 12,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Design ground acceleration, 2021."
+  },
+  {
+    "id": "fm:si-arso-precipitation",
+    "name": "ARSO annual precipitation 1981-2010",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:PAD_KOR_81_10_YR"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 12,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Mean annual precipitation, 1981–2010."
+  },
+  {
+    "id": "fm:si-arso-temperature",
+    "name": "ARSO mean annual temperature 1981-2010",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:KLIMA_TEMP_81_10_YR"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 12,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Mean annual air temperature, 1981–2010."
+  },
+  {
+    "id": "fm:si-arso-snow-cover-days",
+    "name": "ARSO days with snow cover 1971-2000",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:SNEG_O_POV_ST_D_71_00_YR"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 12,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Mean days with snow cover per season, 1971–2000."
+  },
+  {
+    "id": "fm:si-arso-wind-50m",
+    "name": "ARSO mean wind speed at 50 m",
+    "type": "wms",
+    "url": "https://gis.arso.gov.si/geoserver/wms",
+    "layers": ["ARSO:VETER_POVP_LET_HITR_50M_94_01"],
+    "country_code": "SI",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 12,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.sl",
+    "attribution": {
+      "text": "Agencija Republike Slovenije za okolje (ARSO)",
+      "url": "https://www.arso.gov.si/"
+    },
+    "bbox": [13.37, 45.42, 16.61, 46.88],
+    "note": "Mean annual wind speed 50 m above ground, 1994–2001."
   }
 ]

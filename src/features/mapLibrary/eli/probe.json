@@ -5861,6 +5861,114 @@
     "cors": true,
     "scales": []
   },
+  "fm:si-arso-bear-habitat": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-arso-ecologically-important-areas": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-arso-natura2000": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-arso-natural-values": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-arso-precipitation": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-arso-protected-areas": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-arso-seismic-hazard": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-arso-snow-cover-days": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-arso-temperature": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-arso-wind-50m": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:si-gurs-dpk250": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:si-gurs-dtk50": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:si-gurs-forest-management-areas": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:si-gurs-lidar-hillshade": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:si-gurs-municipalities": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:si-gurs-parcels": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:si-gurs-settlements": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:si-mnvp-land-use-plans": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:sk-sgudz-old-mines": {
     "v": 3,
     "status": 200,
