@@ -22,20 +22,19 @@ import { createDefaultShadingComponent } from '../model/createShadingComponent.j
 import {
   hasBackground,
   type Shading,
-  type ShadingComponent,
   type ShadingComponentType,
   serializeShading,
 } from '../model/Shading.js';
 import {
+  isParameterized,
+  type ParameterizedPreset,
+  type PresetParams,
   SHADING_PRESETS,
   type ShadingPreset,
   shadingPreset,
 } from '../model/shadingPresets.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
-import {
-  type ParameterizedKind,
-  ParameterizedShadingModal,
-} from './ParameterizedShadingModal.js';
+import { ParameterizedShadingModal } from './ParameterizedShadingModal.js';
 import { ShadingColorPicker } from './ShadingColorPicker.js';
 import {
   MANAGEABLE_TYPES,
@@ -99,16 +98,14 @@ export default function ShadingSection({ target }: Props): ReactElement {
 
   const id = selectedComponent?.id;
 
-  const [modalKind, setModalKind] = useState<ParameterizedKind | null>(null);
+  // The preset whose values the modal is asking for.
+  const [pending, setPending] = useState<{
+    preset: ParameterizedPreset;
+    append: boolean;
+  } | null>(null);
 
   function handleAdd(type0: string | null) {
     trackMatomo(['trackEvent', 'MapShading', 'add', type0 ?? undefined]);
-
-    if (type0 === 'contour' || type0 === 'fog') {
-      setModalKind(type0);
-
-      return;
-    }
 
     if (type0 === 'background') {
       setShading({ ...shading, backgroundColor: [255, 255, 255, 1] });
@@ -155,13 +152,29 @@ export default function ShadingSection({ target }: Props): ReactElement {
 
   const confirm = useConfirm();
 
-  async function handlePreset(preset: ShadingPreset) {
-    trackMatomo(['trackEvent', 'MapShading', 'preset', preset]);
+  async function handlePreset(preset: ShadingPreset, append: boolean) {
+    trackMatomo([
+      'trackEvent',
+      'MapShading',
+      append ? 'preset-append' : 'preset',
+      preset,
+    ]);
+
+    if (append) {
+      if (isParameterized(preset)) {
+        setPending({ preset, append });
+      } else {
+        applyPreset(preset, append);
+      }
+
+      return;
+    }
 
     // Ids are not serialized.
     const current = serializeShading(shading);
 
     // Only a hand-made shading is worth asking about; a preset is one click back.
+    // A parameterized one counts at its default values.
     const isPreset = SHADING_PRESETS.some(
       (p) => serializeShading(shadingPreset(p, () => 0)) === current,
     );
@@ -177,24 +190,32 @@ export default function ShadingSection({ target }: Props): ReactElement {
       return;
     }
 
-    const next = shadingPreset(preset, newComponentId);
-
-    // Applied at once, even where edits otherwise wait for Apply.
-    apply(next);
-
-    setId(undefined);
+    if (isParameterized(preset)) {
+      setPending({ preset, append });
+    } else {
+      applyPreset(preset, append);
+    }
   }
 
-  function handleAddParameterized(component: ShadingComponent) {
-    setShading(
-      produce(shading, (draft) => {
-        draft.components.push(component);
-      }),
-    );
+  function applyPreset(
+    preset: ShadingPreset,
+    append: boolean,
+    params?: PresetParams,
+  ) {
+    const next = shadingPreset(preset, newComponentId, params);
 
-    setId(component.id);
+    if (append) {
+      // An edit like Add, so it waits for Apply where edits do.
+      setShading({
+        ...shading,
+        components: [...shading.components, ...next.components],
+      });
+    } else {
+      // Applied at once, even where edits otherwise wait for Apply.
+      apply(next);
+    }
 
-    setModalKind(null);
+    setId(undefined);
   }
 
   return (
@@ -302,10 +323,16 @@ export default function ShadingSection({ target }: Props): ReactElement {
       )}
 
       <ParameterizedShadingModal
-        kind={modalKind}
+        kind={pending?.preset ?? null}
         colorReliefMax={colorReliefMax}
-        onClose={() => setModalKind(null)}
-        onAdd={handleAddParameterized}
+        onClose={() => setPending(null)}
+        onApply={(params) => {
+          if (pending) {
+            applyPreset(pending.preset, pending.append, params);
+          }
+
+          setPending(null);
+        }}
       />
     </>
   );

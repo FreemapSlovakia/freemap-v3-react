@@ -14,7 +14,8 @@ import type {
 // The panel is translucent: the picker's own white box and lavender button
 // strip would sit on it as solid patches.
 const PICKER_STYLE = {
-  body: { background: 'transparent' },
+  // Its knobs carry huge z-indexes that would rise above the dropdown menus.
+  body: { background: 'transparent', isolation: 'isolate' as const },
   rbgcpControlBtnWrapper: {
     background: 'rgba(var(--bs-body-color-rgb), 0.08)',
   },

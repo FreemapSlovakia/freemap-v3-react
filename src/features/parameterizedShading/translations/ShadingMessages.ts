@@ -5,8 +5,6 @@ export type ShadingMessages = {
   onServer: string;
   revert: string;
   background: string;
-  contour: string;
-  fogInversion: string;
   elevation: string;
   elevationBandWidth: string;
   color: string;
@@ -19,9 +17,12 @@ export type ShadingMessages = {
   parameters: string;
   contrast: string;
   brightness: string;
-  componentHeader: string;
-  templateHeader: string;
+  maxElevation: string;
+  highlightColor: string;
+  darkColor: string;
+  repeats: string;
   presets: string;
+  addToExisting: string;
   presetReplaceTitle: string;
   presetReplaceConfirm: string;
   mapPresetsHeader: string;
@@ -37,7 +38,6 @@ export type ShadingMessages = {
     sepia: string;
     night: string;
     slope: string;
-    lowland: string;
     moonlight: string;
     golden: string;
     glacier: string;
@@ -48,6 +48,9 @@ export type ShadingMessages = {
     watercolor: string;
     autumn: string;
     aspect: string;
+    contour: string;
+    fog: string;
+    metallic: string;
   };
   types: {
     'hillshade-igor': string;

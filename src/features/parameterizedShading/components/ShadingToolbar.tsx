@@ -1,12 +1,15 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import type { ReactElement } from 'react';
-import { Button, ButtonToolbar, Dropdown } from 'react-bootstrap';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { type ReactElement, useState } from 'react';
+import { Button, ButtonToolbar, Dropdown, Form } from 'react-bootstrap';
+import { BsCircleFill, BsTransparency } from 'react-icons/bs';
 import { FaPlus, FaSwatchbook, FaTrash } from 'react-icons/fa';
 import { SHADING_COMPONENT_TYPES } from '../model/Shading.js';
 import {
   ARTISTIC_PRESETS,
+  isOpaquePreset,
   MAP_PRESETS,
   type ShadingPreset,
 } from '../model/shadingPresets.js';
@@ -18,7 +21,8 @@ type Props = {
   canAddBackground: boolean;
   onAdd: (type: string | null) => void;
   onRemove: () => void;
-  onPreset: (preset: ShadingPreset) => void;
+  /** `append` adds the preset's components rather than replacing the shading. */
+  onPreset: (preset: ShadingPreset, append: boolean) => void;
 };
 
 export function ShadingToolbar({
@@ -32,19 +36,33 @@ export function ShadingToolbar({
 
   const sm = useShadingMessages();
 
-  const presetItem = (preset: ShadingPreset) => (
-    <Dropdown.Item
-      as="button"
-      key={preset}
-      eventKey={preset}
-      className="text-nowrap"
-    >
-      {sm?.presetNames[preset]}
-    </Dropdown.Item>
-  );
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const [append, setAppend] = useState(false);
+
+  const presetItem = (preset: ShadingPreset) => {
+    const opaque = isOpaquePreset(preset);
+
+    return (
+      <Dropdown.Item
+        as="button"
+        key={preset}
+        eventKey={preset}
+        className="text-nowrap"
+        disabled={append && opaque}
+      >
+        {opaque ? (
+          <BsCircleFill className="text-secondary" />
+        ) : (
+          <BsTransparency className="text-secondary" />
+        )}{' '}
+        {sm?.presetNames[preset]}
+      </Dropdown.Item>
+    );
+  };
 
   return (
-    <ButtonToolbar className="mt-2">
+    <ButtonToolbar className="mt-2 gap-2">
       <Dropdown onSelect={onAdd}>
         <Dropdown.Toggle id="add-shading-button" variant="success">
           <FaPlus /> {sm?.add}
@@ -66,8 +84,6 @@ export function ShadingToolbar({
             </>
           )}
 
-          <Dropdown.Header>{sm?.componentHeader}</Dropdown.Header>
-
           {SHADING_COMPONENT_TYPES.map((st) => (
             <Dropdown.Item
               as="button"
@@ -78,17 +94,6 @@ export function ShadingToolbar({
               {sm?.types[st]}
             </Dropdown.Item>
           ))}
-
-          <Dropdown.Divider />
-
-          <Dropdown.Header>{sm?.templateHeader}</Dropdown.Header>
-
-          <Dropdown.Item as="button" eventKey="contour" className="text-nowrap">
-            {sm?.contour}
-          </Dropdown.Item>
-          <Dropdown.Item as="button" eventKey="fog" className="text-nowrap">
-            {sm?.fogInversion}
-          </Dropdown.Item>
         </FmDropdownMenu>
       </Dropdown>
 
@@ -98,7 +103,9 @@ export function ShadingToolbar({
 
       <Dropdown
         className="ms-auto"
-        onSelect={(key) => key !== null && onPreset(key as ShadingPreset)}
+        onSelect={(key) =>
+          key !== null && onPreset(key as ShadingPreset, append)
+        }
       >
         <LongPressTooltip label={sm?.presets}>
           {({ props }) => (
@@ -109,6 +116,16 @@ export function ShadingToolbar({
         </LongPressTooltip>
 
         <FmDropdownMenu>
+          <Form.Check
+            id="shading-preset-append"
+            className="mx-3 my-1 text-nowrap"
+            label={sm?.addToExisting}
+            checked={append}
+            onChange={(e) => setAppend(e.currentTarget.checked)}
+          />
+
+          <Dropdown.Divider />
+
           <Dropdown.Header>{sm?.mapPresetsHeader}</Dropdown.Header>
 
           {MAP_PRESETS.map(presetItem)}
@@ -117,7 +134,12 @@ export function ShadingToolbar({
 
           <Dropdown.Header>{sm?.artisticPresetsHeader}</Dropdown.Header>
 
-          {ARTISTIC_PRESETS.map(presetItem)}
+          {ARTISTIC_PRESETS.toSorted((a, b) =>
+            (sm?.presetNames[a] ?? a).localeCompare(
+              sm?.presetNames[b] ?? b,
+              language,
+            ),
+          ).map(presetItem)}
         </FmDropdownMenu>
       </Dropdown>
     </ButtonToolbar>

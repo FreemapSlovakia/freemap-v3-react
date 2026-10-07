@@ -1,4 +1,9 @@
-import type { Color, Shading, ShadingComponent } from './Shading.js';
+import {
+  type Color,
+  hasBackground,
+  type Shading,
+  type ShadingComponent,
+} from './Shading.js';
 
 export const MAP_PRESETS = [
   'classic',
@@ -9,11 +14,13 @@ export const MAP_PRESETS = [
   'swiss',
   'slope',
   'hypsometric',
-  'lowland',
   'aspect',
+  'contour',
+  'fog',
 ] as const;
 
 export const ARTISTIC_PRESETS = [
+  'metallic',
   'sepia',
   'night',
   'moonlight',
@@ -30,6 +37,46 @@ export const ARTISTIC_PRESETS = [
 export const SHADING_PRESETS = [...MAP_PRESETS, ...ARTISTIC_PRESETS] as const;
 
 export type ShadingPreset = (typeof SHADING_PRESETS)[number];
+
+/** Presets built from what the user enters in a form. */
+export const PARAMETERIZED_PRESETS = [
+  'contour',
+  'fog',
+  'hypsometric',
+  'metallic',
+] as const satisfies readonly ShadingPreset[];
+
+export type ParameterizedPreset = (typeof PARAMETERIZED_PRESETS)[number];
+
+export const isParameterized = (
+  preset: ShadingPreset,
+): preset is ParameterizedPreset =>
+  (PARAMETERIZED_PRESETS as readonly ShadingPreset[]).includes(preset);
+
+export type PresetParams = {
+  elevation: number;
+  bandWidth: number;
+  /** Contour's colour, fog's below colour, metallic's highlight. */
+  color: Color;
+  /** Fog's colour above the band. */
+  aboveColor: Color;
+  /** Where hypsometric tints reach their top colour. */
+  maxElevation: number;
+  /** Metallic's colour between the highlights. */
+  darkColor: Color;
+  /** Metallic's highlights around the compass. */
+  repeats: number;
+};
+
+export const DEFAULT_PRESET_PARAMS: PresetParams = {
+  elevation: 500,
+  bandWidth: 10,
+  color: [255, 255, 255, 1],
+  aboveColor: [0xe6, 0xe6, 0xe6, 0],
+  maxElevation: 3000,
+  darkColor: [0, 0, 0, 1],
+  repeats: 3,
+};
 
 const deg = (d: number) => d * (Math.PI / 180);
 
@@ -93,7 +140,7 @@ const lit = (
   components: [igor(azimuth, shadow), igor((azimuth + 180) % 360, light)],
 });
 
-function build(preset: ShadingPreset): Shading {
+function build(preset: ShadingPreset, p: PresetParams): Shading {
   switch (preset) {
     case 'classic':
       return classic([0, 0, 0, 1], [255, 255, 255, 1]);
@@ -206,23 +253,6 @@ function build(preset: ShadingPreset): Shading {
         ],
       };
 
-    // Fixed metres rather than the terrain's range, to separate low ground.
-    case 'lowland':
-      return {
-        backgroundColor: [0, 0, 0, 0],
-        components: [
-          relief([
-            [0, [0x2e, 0x7d, 0x4f, 1]],
-            [150, [0x7c, 0xb3, 0x6a, 1]],
-            [300, [0xd8, 0xd8, 0x8a, 1]],
-            [500, [0xe0, 0xb0, 0x70, 1]],
-            [800, [0xb0, 0x70, 0x48, 1]],
-            [1200, [0xf0, 0xf0, 0xf0, 1]],
-          ]),
-          igor(315, [0, 0, 0, 0.8]),
-        ],
-      };
-
     // The outdoor map's tiles: freemap-outdoor-map scripts/lib/shading.nu.
     case 'outdoor':
       return {
@@ -249,21 +279,75 @@ function build(preset: ShadingPreset): Shading {
         [0xff, 0xe6, 0x80, 0.5],
       );
 
-    // Metres, closer together low down where most land is.
-    case 'hypsometric':
+    // Metres for a 3000 m top, scaled to `maxElevation`; closer together low
+    // down where most land is.
+    case 'hypsometric': {
+      const at = (metres: number) =>
+        Math.round((metres / 3000) * p.maxElevation);
+
       return {
         backgroundColor: [0, 0, 0, 0],
         components: [
           relief([
             [0, [0x5a, 0x9e, 0x5a, 1]],
-            [200, [0xa8, 0xc8, 0x78, 1]],
-            [500, [0xe8, 0xdc, 0x96, 1]],
-            [1000, [0xd4, 0xa8, 0x68, 1]],
-            [1600, [0xb0, 0x7c, 0x54, 1]],
-            [2300, [0x96, 0x82, 0x78, 1]],
-            [3000, [0xff, 0xff, 0xff, 1]],
+            [at(200), [0xa8, 0xc8, 0x78, 1]],
+            [at(500), [0xe8, 0xdc, 0x96, 1]],
+            [at(1000), [0xd4, 0xa8, 0x68, 1]],
+            [at(1600), [0xb0, 0x7c, 0x54, 1]],
+            [at(2300), [0x96, 0x82, 0x78, 1]],
+            [at(3000), [0xff, 0xff, 0xff, 1]],
           ]),
           igor(315, [0, 0, 0, 0.8]),
+        ],
+      };
+    }
+
+    case 'contour': {
+      const [r, g, b] = p.color;
+
+      const from = p.elevation - p.bandWidth / 2;
+
+      const to = p.elevation + p.bandWidth / 2;
+
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          relief([
+            [from, [r, g, b, 0]],
+            [from, p.color],
+            [to, p.color],
+            [to, [r, g, b, 0]],
+          ]),
+        ],
+      };
+    }
+
+    case 'fog':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          relief([
+            [p.elevation - p.bandWidth / 2, p.color],
+            [p.elevation + p.bandWidth / 2, p.aboveColor],
+          ]),
+        ],
+      };
+
+    // Alternating dark and light by aspect, like brushed metal; an odd stop
+    // count makes north dark on both ends, so there is no seam.
+    case 'metallic':
+      return {
+        backgroundColor: p.color,
+        components: [
+          {
+            id: 0,
+            type: 'aspect',
+            ...levels,
+            colorStops: Array.from({ length: 2 * p.repeats + 1 }, (_, i) => ({
+              value: (i / (2 * p.repeats)) * 2 * Math.PI,
+              color: i % 2 ? p.color : p.darkColor,
+            })),
+          },
         ],
       };
 
@@ -300,12 +384,29 @@ function build(preset: ShadingPreset): Shading {
   }
 }
 
+/**
+ * Whether the preset covers what is beneath: a background, or a colour relief
+ * opaque at every stop (aspect leaves flat ground transparent).
+ */
+export function isOpaquePreset(preset: ShadingPreset) {
+  const shading = build(preset, DEFAULT_PRESET_PARAMS);
+
+  return (
+    hasBackground(shading) ||
+    shading.components.some(
+      (c) =>
+        c.type === 'color-relief' && c.colorStops.every((s) => s.color[3] >= 1),
+    )
+  );
+}
+
 /** The preset's shading, its components numbered by `newId`. */
 export function shadingPreset(
   preset: ShadingPreset,
   newId: () => number,
+  params = DEFAULT_PRESET_PARAMS,
 ): Shading {
-  const shading = build(preset);
+  const shading = build(preset, params);
 
   return {
     ...shading,

@@ -12,6 +12,8 @@ type Props = {
   style?: CSSProperties;
   /** Allow editing the alpha channel; when `false` the result is `#rrggbb`. */
   alpha?: boolean;
+  /** Offered ahead of the recently used colours. */
+  presets?: string[];
 };
 
 const checkerBg: CSSProperties = {
@@ -27,6 +29,7 @@ export function RgbaColorPicker({
   className,
   style,
   alpha = true,
+  presets,
 }: Props): ReactElement {
   const recentColors = useAppSelector(
     (state) => state.drawingSettings.recentColors,
@@ -79,7 +82,8 @@ export function RgbaColorPicker({
               }}
               width={236}
               height={120}
-              presets={recentColors}
+              // The picker shows only the first 18.
+              presets={presets ? [...presets, ...recentColors] : recentColors}
               hideOpacity={!alpha}
               hideControls
               hideColorTypeBtns
