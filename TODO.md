@@ -5,22 +5,6 @@ product decisions — is tracked as a GitHub issue instead; the sections below s
 which label to look under. See [`doc/architecture.md`](./doc/architecture.md) for
 the surrounding context.
 
-## Waiting on evidence
-
-- [ ] **Stale restored map content can silently overwrite a newer save.** A tab
-      restored from an older history entry (Chrome session restore, reopened
-      tab, Memory Saver reload) keeps its older `sq` content, but
-      `mapsRestoreProcessor` adopts the newest `modifiedAt` from the shared
-      working copy or the backend, so the content reads as unsaved and Save's
-      `If-Unmodified-Since` passes — no 412, no conflict. Suspected in a user
-      report of lost My Maps points (2026-09-28), not confirmed. Fix shape: keep
-      the edit base (`mt` in `history.state`, carried forward like `tr`, and
-      through `sessionStash`) in its own `myMaps` field that `mapsSaveProcessor`
-      and the outbox send as `If-Unmodified-Since` and a save/load clears.
-      Don't forge `activeMap.modifiedAt`: `mergeMeta` never lowers it, the
-      working copy shares it across tabs, and `mt` goes stale when a save lands
-      without a content change.
-
 ## Committed work
 
 - [~] **Add automated tests.** Vitest + jsdom now configured (`vitest.config.ts`,
@@ -63,16 +47,6 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
-- [ ] **Credit a downloaded map by what is on screen.** It shows the union over
-      everything it holds, where the live map and the browse cache both narrow
-      to the tiles in view — its layers are built with `cors: false`, so they
-      keep the `<img>` path and nothing reads `X-Attribution` per tile. The flag
-      is there because `crossOrigin` made Chrome's `cache.match` miss the stored
-      entry, which a fetch doesn't do: take the fetch path for a same-origin URL
-      as well, and the stored tiles (which already carry the header) credit
-      per view. The download-time union then stays as the fallback for maps
-      cached before the header existed.
-
 - [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
       `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
       `useMemo` is left. Same method — see
@@ -94,11 +68,6 @@ Still emitting at info level (non-blocking, optional cleanup):
       byte-identically). Prefer doing it opportunistically while editing a file
       rather than as a sweep; the 26 handlers used more than once stay named.
 
-- [ ] **Viewshed viewpoint picking has no Escape.** Every other picking mode is
-      cancelled by Escape in `keyboardHandler`; `viewshedSetPickingViewpoint`
-      was never added to that chain, so its toolbar is the one that cannot
-      advertise `cancelKbd="Esc"`. Add it beside the toposcope and panorama
-      cases, then pass the prop.
 - [ ] **Make `pickingModeSelector` answer _which_ mode, not just whether.**
       It returns a boolean, so `mouseCursorSelector` re-enumerates four of the
       six modes, `keyboardHandler` handles them at three different priorities
@@ -115,24 +84,6 @@ Still emitting at info level (non-blocking, optional cleanup):
       `showGalleryPicker || picking` is a behaviour change for those two —
       decide it deliberately rather than letting the two lists keep diverging.
       Folds into the item above.
-- [ ] **A modified click on an SPA link never opens a new tab.** Every in-page
-      link — `useModalLink`, the `handleSelect` menu rows, `CreditsText`,
-      `Attribution` — calls `preventDefault` unconditionally, so Ctrl/Cmd-click
-      routes in-page instead of opening a tab. Middle-click escapes it (that is
-      `auxclick`), so the two gestures disagree. Guarding on the modifier keys
-      is the easy half; the hard half is that these hrefs are not deep links.
-      A bare `#show=…`/`#layers=…` replaces the *whole* hash, and a fresh load
-      restores only what persists — not the route, the drawing or the open
-      tools (`persistence.ts` keeps `transportType`/`milestones` and nothing
-      else of them) — so the new tab would open the modal over a map that is
-      not the one clicked on. Worse for the rows whose href *sets* what the
-      handler *toggles* (`#layers=`, `#tools=`): a bare `#layers=I` drops the
-      base layer and `urlMapUtils` substitutes `X`. A faithful href is the
-      current hash with `show=` merged in, which means reading mutable URL
-      state during render — a React Compiler hazard, see
-      [`doc/react-compiler.md`](./doc/react-compiler.md). Documents are the one
-      safe subset: self-contained, and the links people most want in a tab.
-      Attempted and reverted once; don't re-do the guard without the href.
 - [ ] **`Attribution`'s document-link branch is unreachable.** `PREFIX =
       '?document='` (`src/shared/components/Attribution.tsx`) matches no
       `AttributionDef.url` anywhere, so the `documentShow` interception has
@@ -226,54 +177,6 @@ Still emitting at info level (non-blocking, optional cleanup):
       for manual pending state, and **React Compiler** eligibility (decide first —
       it would let many hand-written `useMemo`/`useCallback` be dropped, changing
       how much manual hook churn is worthwhile).
-- [ ] **The premium offer names England's model for the whole UK.** The elevation
-      API reports England under its own `en` token and resolves the verbatim OGL v3
-      Environment Agency line for it, while the rest of the UK answers from Sonny —
-      so the profile's credit and the readout's decimal are both already exact
-      (`en` is two letters, so `hasSubMeterPrecision` grants the decimal the 1 m
-      composite deserves). What is left is the offer: `ELEVATION_API_DTM_COUNTRIES`
-      is a per-country list, so `gb` carries the England-only model's name through
-      `dtmAreaNames` for Scotland and Wales too, where the data is Sonny's 10 m.
-      Fixing it means the offer's list stops being keyed by country alone.
-- [ ] **A GraphHopper route credits Sonny alone, not the agencies behind it.**
-      `SONNY_ATTR` is one hardcoded line, added by `useRoutingAttributions` for any
-      standing GraphHopper result and by `useElevationSources` for a free-tier
-      route's profile. But the elevation API, asked for the same dataset, answers
-      with the whole chain — 8 credits for a point in Scotland, 18 for one in
-      Germany — because the upstream licences (DL-DE/BY-2.0, OGL v3 and the rest)
-      each want their own source line. So the router's own elevation, which every
-      free route draws and which weights every route including premium ones, is
-      credited by one line where a read of the same data is credited by eighteen.
-      The credit is owed for the weighting alone, so it is not only the free tier's
-      profile that needs it: a premium route re-sampled from the national models was
-      still *shaped* by Sonny, and an isochrone that draws no elevation at all was
-      too.
-      GraphHopper itself is no help: `/route` returns 3D coordinates but its
-      `info.copyrights` is only `["GraphHopper", "OpenStreetMap contributors"]`,
-      and no elevation provider can add to it — that list is static in
-      `GraphHopperConfig`, for Skadi and Mapterhorn as much as for Sonny. Reported
-      upstream as
-      [graphhopper#3397](https://github.com/graphhopper/graphhopper/issues/3397).
-      Two ways forward, neither waiting on it:
-      **interim** — `copyrights:` is a `config.yml` key (`setCopyrights` is a public
-      setter) on our own instance, so the chain can be listed there and read from
-      `info.copyrights` instead of `SONNY_ATTR`. It *replaces* the list, so the YAML
-      must re-include GraphHopper and OpenStreetMap contributors, and it is
-      graph-wide, so a Slovak route would carry every Sonny country in the graph.
-      **Proper** — our own backend resolves the credits, which it already does per
-      country, so an endpoint keyed by the countries a route crosses fits. Either
-      way, a client-side copy of Sonny's agency list is the coupling
-      `elevationSourcesFromTokens` was removed to end.
-- [ ] **A saved map's imported track loses its elevation credit.** Overriding a
-      loaded track's elevation puts the credits in `trackViewer.elevationAttributions`
-      and on the render-only copy; neither reaches the map document, which stores
-      `trackViewer: { trackGeojson, trackUID, gpxUrl }` and not `elevationDecision`.
-      So reopening the map — offline included — draws terrain-model elevation
-      crediting nobody until the fill is re-run, which is an under-credit rather
-      than the safe direction. A planned route has no such gap: its credits ride on
-      `SavedRoute.geometry` as `fm:elevationAttributions`. The fix is to carry
-      `elevationDecision` and the credits in the document, so it is a map-document
-      schema change (and the same shape the route already stores).
 
 ## Decisions worth not relitigating
 
@@ -407,46 +310,6 @@ Bugs and feature requests are issues under `area: drawing`.
       and KML `innerBoundaryIs`. These are pure functions over small fixtures —
       cheap to pin, and the place a regression would go unnoticed longest.
 
-- [ ] **A stored route is invisible to the unsaved-changes comparison.** A saved
-      map carries its computed route (`savedRoute.ts`), but `fingerprintState`
-      deliberately ignores it: the digest has to match what a _restore_ produces,
-      and a restore rebuilds the route from the URL, where a stored one has
-      nowhere to come from — so digesting it would report every restored map as
-      changed forever. Consequences: **Recompute route** has to say so outright
-      (`myMaps.routeRecomputed`, the one tracked flag in a slice that otherwise
-      derives everything), and switching to another alternative changes what a
-      save would store without the map reading as changed. Fixing it properly
-      means the restore knowing the stored result — e.g. keeping it in the
-      working copy beside the track, which would also close the entry below.
-
-- [ ] **A map with unsaved changes has no route offline.** The browser's working
-      copy (`mapStore.ts`) holds the track and the digest but not the route, so
-      reloading a _dirty_ saved map takes `mapsRestoreProcessor`'s
-      record-exists-and-differs path: no document is read, nothing supplies
-      `savedRoute`, and the route is asked for from the URL — which offline
-      fails to a straight dotted line. A clean map reloads through `mapsLoad`
-      and gets its stored route from the cached document, so only unsaved work
-      is affected. Fix by putting `savedRoute` in the working-copy record beside
-      the track (needs a record-schema bump).
-
-- [ ] **A pinned result is stored whole, however big it is.** A pin carries the
-      geometry it was loaded with, so pinning a large relation — a national
-      boundary, a long route relation — embeds its whole assembled collection in
-      every save body and every offline copy, with nothing on the path capping
-      it. `objectsLookupProcessor` caps how _many_ pins arrive at once
-      (`MAX_LOOKUPS`) but nothing caps how _large_ one is. Same exposure as the
-      stored track and route, so a size guard would belong to all three rather
-      than to pins alone.
-
-- [ ] **A map with unsaved changes has only its OSM pins offline.** The same
-      path, for the same reason: the pinned results a document carries reach the
-      screen through `mapsLoaded`, which a dirty reload never gets to. What the
-      URL names (`osm-node=` & co.) is re-fetched and so is there online but not
-      off; a pin the URL can't name — a geocoding hit without an OSM element, a
-      WMS feature — is gone either way until the map is saved again. The fix is
-      the record-schema bump above: store the pins in the working copy beside
-      the route and the track.
-
 ## Track viewer: generic geodata vs. recorded tracks
 
 The track viewer began as a GPX recording viewer and grew into a general geodata
@@ -512,25 +375,8 @@ disappear once the user saves a map, which is why "why are there two of these?"
 is a fair question from anyone who hasn't hit either limit.
 
 Not a merge — the URL budget is real and doesn't go away. The aim is to stop
-presenting one model as two kinds of object.
-
-- [ ] **Say the storage per feature, not per tool.** The data viewer's toolbar
-      already warns that a loaded track is in this browser only; drawing has no
-      mirror of it. A badge on each selection toolbar — "in the link" vs "in
-      this browser" — answers the question where the user is looking, and is
-      the honest reason there are two.
-- [ ] **Keep exactly one exclusive capability on each side, and name it.**
-      Today drawing owns vertex editing and the data viewer owns per-point
-      data; "Convert to…" bridges them both ways, with the loss warning. That
-      line is what makes the split explicable. Adding vertex dragging to the
-      data viewer would erase it, and the merge would then be the cheaper
-      option than keeping both — decide it deliberately.
-- [ ] **Close the cosmetic gaps that make the two look like different data
-      models.** The visible leftover is labels: a drawing label interpolates
-      `{p:key}` (`interpolateLabel.ts`), a data-viewer one is the raw `name`
-      property. Rendering `freemap:label` templates in `DataViewerResult` (and
-      handing `keyToken`/`labelHint` to `FeaturePropertiesModal` there) removes
-      it, and makes a drawing→data conversion round-trip visually identical.
+presenting one model as two kinds of object. Open items are issues under
+`area: drawing` and `area: data-viewer`.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 
@@ -610,37 +456,11 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
 - [ ] **Mid-download resume in the importer.** `got` won't resume a stream once
       bytes have started, so `loadPass` retries a transient drop by restarting the
       whole pass — up to 75 GB re-downloaded because a connection blinked.
-- [ ] **Data layers in map presets, so Save layers as preset is always there.**
-      The Map layers panel hides the button while photos, Wikipedia, the radar or
-      the viewshed is on (`makesNew` in `MapLayersPanel.tsx`), since a preset
-      can't hold them and would turn on less than was seen — so the button comes
-      and goes for no reason a user can tell. Fix by letting photos, Wikipedia and
-      the radar be preset layers (not `i`, which inverts, nor the viewshed, which
-      asks for a viewpoint on every turn-on): one instance, on while on by itself
-      or held by any preset on; drawn above the maps, outside the preset's pane;
-      the gallery/radar/wiki code reading `drawnTypesSelector` instead of
-      `map.layers`. Until then, at least say why it is missing (a disabled button
-      with a tooltip beats an absent one).
-- [ ] **The photo layer with its filter in a map preset** (e.g. "my 2024 photos
-      over aerial imagery"); file as an issue under `area: gallery` once the
-      presets work settles. `isPresettable` keeps every data layer out today.
-      Needs: the gallery filter as a field of the layer's setup, with a rule for
-      which wins while a preset holding it is on (the gallery tool's filter or
-      the preset's); a single instance — the layer draws markers and takes
-      clicks, so a preset turning it on takes over the one on the map rather than
-      drawing a second; and it stays pinned above the maps, outside the preset's
-      pane, so the preset's place and opacity don't apply to it.
 
 ## Map layers and presets (`src/features/map/`, see [`doc/map-library.md`](./doc/map-library.md))
 
-- [ ] **A catalog map's kind before the catalog loads.** `kindsOf` /
-      `nativeKindsOf` / `presetKind` learn a catalog map's kind only from
-      `map.catalogMaps`, which isn't persisted and arrives after start (or never,
-      if the fetch fails). Until then a catalog base map on the map, or a preset
-      whose base member is one, counts as no base: toggling another base map in
-      that window leaves two. Persist the kind of the catalog maps in use (on the
-      map, installed, in a preset, an offline map's source), or settle the base
-      once `mapLibraryCatalogMapsLoaded` arrives.
+Bugs and feature requests are issues under `area: maps-layers`.
+
 - [ ] **Decide a map's kind once, per drawing.** It is worked out in about eight
       places: `withKind` in `allLayerEntries`, `libraryIndexSelector` and
       `resolvedCustomLayersSelector` hand out defs already switched by the map's
@@ -672,40 +492,15 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       `keyboardHandler` and `CacheTilesForm`: put them beside
       `isLayerInstalled` in `installed.ts`, the default passed in. Likewise
       `layerName(def, m) ?? def.type`, hand-written at six sites.
-- [ ] **Smaller known issues:** a My Map whose custom map has a legacy id
-      (`.1`, `:1`) that one of the reader's own maps also has draws the reader's
-      (`mapsLoaded` adds only missing types); two identical own presets can swap
-      on reload, `adoptPresets` taking the first alike; a link's preset isn't in
-      the map switcher; **Duplicate** inside a preset returns to the top of the
-      panel rather than opening the copy; an installed catalog map the catalog
-      later drops can't be uninstalled (listed in neither tab).
 
 ## Offline maps (`src/features/cachedMaps/`)
 
-- [ ] **Make the shrink prune resumable.** Narrowing a cached map's area or zoom
-      range deletes the tiles that fall outside, walking the previous coverage
-      once. That walk is neither resumable nor recorded, so interrupting it —
-      Stop, or closing the tab — leaves the dropped tiles in Cache Storage with
-      nothing that will ever collect them, and the map's `sizeBytes` describing
-      storage the coverage no longer accounts for. Nothing re-walks the old
-      coverage afterwards, and only deleting the whole map frees them.
-      Fix by recording the coverage still to prune in `CachedTileMapDef` (set
-      before the walk, cleared after) and having `cacheTilesRestart` finish it
-      before downloading. Needs a big shrink interrupted mid-flight to matter,
-      hence deferred.
+Open items are issues under `area: offline-export`.
 
 ## Open in external app (`src/features/openInExternalApp/`)
 
-- [ ] **Add Ukraine's cadastral map if it reopens.** `map.land.gov.ua` has a
-      clean deep-link format, but the host has been firewalled to the outside
-      world since 2022-02-24 — it times out from every vantage point tried,
-      including one inside Ukraine, and the Internet Archive has no capture
-      after that date. `nsdi.gov.ua` is login-gated, so there is no substitute.
-      The template, recovered from the viewer's own bundle, is
-      `https://map.land.gov.ua/?cc={x3857},{y3857}&z={zoom}&l=kadastr&bl=ortho10k_all`
-      — EPSG:3857 metres, a plain web-mercator zoom, and two traps: `cc` must be
-      the first query parameter, and `z`/`l`/`bl` must all be present or its
-      parser throws.
+Open items are issues under `area: maps-layers`. What stays here is a negative
+finding, so nobody re-researches it:
 
 - Romania has no linkable viewer, and re-checking is unlikely to change that.
   ANCPI's public cadastral map (`geoportal.ancpi.ro/imobile.html`) reads no URL
@@ -777,16 +572,9 @@ Four rasters under `src/static` are referenced by nothing and stay anyway:
 `d7fbc64c`, so WhatsApp and iMessage keep unfurling links shared before then
 against it; the rest are fetched by real browsers, so something outside this repo
 embeds them. Deleting any of them only looks safe because the deploy rsync has no
-`--delete`. Still open:
+`--delete`.
 
-- [ ] **Have the taglines reviewed by native speakers.** "more than just a map"
-      was written here and translated by an agent; only `en` and `sk` have had a
-      human eye. `hu`, `it` and `fr` deliberately aren't literal — Hungarian
-      drops "just", Italian and French say "more than a *simple* map".
-- [ ] **A small-size wordmark variant.** Below roughly 110 px wide the black
-      outline swallows the white letters. The narrow header dodges it by
-      switching to the flower, but any future small wordmark use needs a
-      thinner-stroke cut.
+Open items are issues under `area: ui-ux`.
 
 ## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
 
@@ -794,12 +582,6 @@ Open items are issues under `area: infra`.
 
 ## Drawing properties (`props` on points and lines)
 
-- [ ] **Carry properties through GPX.** They export to GeoJSON `properties` and
-      come back, but GPX only carries the rendered `<name>` and the raw
-      `<fm:label>` — a drawing round-tripped through GPX keeps its label text
-      and loses the table behind it. Needs an `<fm:prop k="…">` element (or
-      similar) plus whatever it takes to get it back through `togeojson`, which
-      is the part that decides whether it's worth doing.
 - [ ] **Reconsider the carried-tag allowlist** (`CARRIED_TAGS` in
       `drawingPointActions.ts`). Ten keys is a guess at what's useful without
       making a bulk conversion produce an unsendable link; revisit once there's
