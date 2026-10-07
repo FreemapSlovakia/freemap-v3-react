@@ -6,6 +6,7 @@ import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
+import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
 import {
   CRS,
   type LatLngExpression,
@@ -60,6 +61,7 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     mapLibrary: { preview: null },
     toposcope: { pickingCenter: false },
     panorama: { picking: null },
+    viewshed: { pickingViewpoint: false },
     elevationChart: { target: null },
     drawingLines: { joinWith: undefined, drawing: false },
     trackViewer: { joinWith: null, splitting: false },
@@ -273,6 +275,18 @@ describe('handleEvent — Escape', () => {
         }),
       ),
     ).toEqual(panoramaSetPicking(null));
+  });
+
+  it('leaves the viewshed viewpoint picking before anything else', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          viewshed: { pickingViewpoint: true },
+          elevationChart: { target: {} },
+        }),
+      ),
+    ).toEqual(viewshedSetPickingViewpoint(false));
   });
 
   // The modal closes itself on its own document listener, which runs only

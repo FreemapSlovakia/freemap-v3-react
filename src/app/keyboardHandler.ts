@@ -29,6 +29,7 @@ import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
 import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
+import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
 import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
@@ -104,6 +105,10 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
 
     if (state.panorama.picking) {
       return panoramaSetPicking(null);
+    }
+
+    if (state.viewshed.pickingViewpoint) {
+      return viewshedSetPickingViewpoint(false);
     }
 
     // Before the chart and the panels below it: a mode waiting on a click has
