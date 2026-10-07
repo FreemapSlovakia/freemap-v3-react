@@ -937,7 +937,7 @@
   },
   "ETCOG24_NC_6in": {
     "v": 3,
-    "status": "error",
+    "status": 503,
     "cors": false,
     "scales": []
   },
@@ -3535,13 +3535,13 @@
   },
   "StratMap21_NCCIR_CapArea_Brazos_Kerr": {
     "v": 3,
-    "status": "error",
+    "status": 503,
     "cors": false,
     "scales": []
   },
   "Stratmap20_NCCIR_CapArea_McLennan": {
     "v": 3,
-    "status": "error",
+    "status": 503,
     "cors": false,
     "scales": []
   },
@@ -4105,13 +4105,13 @@
   },
   "brazos_county_2019_wms": {
     "v": 3,
-    "status": "error",
+    "status": 503,
     "cors": false,
     "scales": []
   },
   "caparea_2019_wms": {
     "v": 3,
-    "status": "error",
+    "status": 503,
     "cors": false,
     "scales": []
   },
@@ -5250,6 +5250,384 @@
     "scales": []
   },
   "fm:de-by-uraufnahme": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-bd-foret": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-brgm-geol1m": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-brgm-geol250": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-brgm-geol50": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-brgm-geol50-harmonisee": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-cassini-an": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-cassini-bnf": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-clc-2018": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-debroussaillement": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-dgac-drones": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-etat-major-10k-paris": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-etat-major-40k": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-etat-major-bdcarto": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-forets-anciennes": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-georisques-cavites": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-georisques-clpa-avalanches": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-georisques-clpa-temoignages": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-georisques-inondation-eaip": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-georisques-mouvements-terrain": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-georisques-radon": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-georisques-remontees-nappes": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-georisques-retrait-gonflement-argiles": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-georisques-sismique": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-1900-paris": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-coastal": {
+    "v": 3,
+    "status": 404,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-contours": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-cosia": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-dfci": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-estompage": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-estompage-hd": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-haies": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-hydrographie": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-lidar-mnh": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-limites-admin": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-plan": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-plan-hd": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-plans-eau": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-relief-bdalti": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-rpg": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-scan-regional": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-scan1000": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-scan50-1950": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ign-sections-cadastrales": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inao-aoc-viticole": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-apb": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-cdl": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-pn": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-pnr": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-rnn": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-rnr": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-sic": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-znieff1": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-znieff2": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inpn-zps": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-inrae-sols": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-onf-forets-publiques": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ortho-1950-1965": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ortho-1965-1980": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ortho-1980-1995": {
+    "v": 3,
+    "status": 404,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ortho-coast2000": {
+    "v": 3,
+    "status": 404,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-ortho-irc": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-petzl-rando-hivernale": {
+    "v": 3,
+    "status": 404,
+    "cors": true,
+    "scales": []
+  },
+  "fm:fr-prsf": {
     "v": 3,
     "status": 200,
     "cors": true,
@@ -7741,7 +8119,7 @@
   },
   "smith_county_2019_wms": {
     "v": 3,
-    "status": "error",
+    "status": 503,
     "cors": false,
     "scales": []
   },

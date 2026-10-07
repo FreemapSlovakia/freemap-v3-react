@@ -507,6 +507,26 @@
       }
     },
     {
+      "type": "0KFG1",
+      "layer": "overlay",
+      "name": "INRAE Carte des sols",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=INRA.CARTE.SOLS&STYLE=CARTE%20DES%20SOLS&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© INRAE, IGN",
+            "url": "https://www.inrae.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "0MIAC",
       "layer": "base",
       "name": "Monongalia County 2024 Aerial Imagery",
@@ -2065,6 +2085,26 @@
       }
     },
     {
+      "type": "2GAR7",
+      "layer": "overlay",
+      "name": "IGN BD Forêt v2",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=LANDCOVER.FORESTINVENTORY.V2&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "2GE6W",
       "layer": "overlay",
       "name": "Kanton Bern: Gebäudegrundrisse",
@@ -2119,6 +2159,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "2J2LH",
+      "layer": "base",
+      "name": "BRGM Carte géologique 1:250 000",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=BRGM_SCAN_F_GEOL250&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 0,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM",
+            "url": "https://www.brgm.fr/"
           }
         ]
       }
@@ -2520,6 +2580,26 @@
       }
     },
     {
+      "type": "2UC0G",
+      "layer": "base",
+      "name": "IGN SHOM Carte littorale",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "map",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.COASTALMAPS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN, © SHOM",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "2WQ5U",
       "layer": "base",
       "name": "Mecklenburg-Vorpommern DGM1 Schummerung",
@@ -2905,6 +2985,26 @@
       }
     },
     {
+      "type": "3RMHZ",
+      "layer": "overlay",
+      "name": "IGN Inventaire national des plans d'eau",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=INPE&STYLE=INPE&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "3RNSQ",
       "layer": "base",
       "name": "imagico.de: Southeastern Sulawesi",
@@ -3175,6 +3275,26 @@
       }
     },
     {
+      "type": "44RLT",
+      "layer": "overlay",
+      "name": "INAO Aires parcellaires AOC viticoles",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Aire-Parcellaire&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 0,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© INAO, IGN",
+            "url": "https://www.inao.gouv.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "45OU0",
       "layer": "base",
       "name": "FNSB Aerial Imagery (2023)",
@@ -3355,6 +3475,28 @@
             "type": "map",
             "name": "Land Tirol – data.tirol.gv.at",
             "url": "https://data.tirol.gv.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "4AHHX",
+      "layer": "overlay",
+      "name": "Géorisques Cavités souterraines",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/risques",
+        "layers": ["CAVITE_LOCALISEE"],
+        "minZoom": 8,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM, Géorisques",
+            "url": "https://www.georisques.gouv.fr/"
           }
         ]
       }
@@ -3589,6 +3731,26 @@
       }
     },
     {
+      "type": "4JAZD",
+      "layer": "base",
+      "name": "IGN Scan 1000",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "map",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNF_CARTES_SCAN-1000&STYLE=SCAN1000&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 0,
+        "maxNativeZoom": 10,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "4K9LF",
       "layer": "base",
       "name": "Hennepin County Orthoimagery (2024)",
@@ -3627,6 +3789,26 @@
             "type": "map",
             "name": "© Turun kaupunki",
             "url": "https://www.turku.fi/tietoa-turusta/kartat-ja-paikkatieto"
+          }
+        ]
+      }
+    },
+    {
+      "type": "4KR6W",
+      "layer": "overlay",
+      "name": "INPN ZNIEFF type 1",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_ZNIEFF1&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
           }
         ]
       }
@@ -4093,6 +4275,28 @@
       }
     },
     {
+      "type": "52C0B",
+      "layer": "overlay",
+      "name": "Géorisques CLPA avalanches (témoignages)",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/risques",
+        "layers": ["CLPA_temoignage"],
+        "minZoom": 8,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM, Géorisques",
+            "url": "https://www.georisques.gouv.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "54ULF",
       "layer": "base",
       "name": "Hesse DOP20",
@@ -4359,6 +4563,26 @@
       }
     },
     {
+      "type": "5J28I",
+      "layer": "base",
+      "name": "BRGM Carte géologique 1:1 000 000",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=BRGM_SCAN_F_GEOL1M&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 0,
+        "maxNativeZoom": 11,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM",
+            "url": "https://www.brgm.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "5JTLC",
       "layer": "base",
       "name": "QLD Lite",
@@ -4415,6 +4639,26 @@
             "type": "map",
             "name": "Czech RUIAN",
             "url": "https://poloha.net/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "5LH8R",
+      "layer": "base",
+      "name": "IGN Carte d'état-major Paris 1:10 000",
+      "countries": ["fr"],
+      "bbox": [1.9, 48.6, 2.8, 49.1],
+      "category": "historicmap",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR10&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -4500,6 +4744,27 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "5Q931",
+      "layer": "overlay",
+      "name": "IGN Courbes de niveau",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "elevation",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ELEVATION.CONTOUR.LINE&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 18,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -4834,6 +5099,27 @@
       }
     },
     {
+      "type": "63UV5",
+      "layer": "base",
+      "name": "IGN Photographies aériennes 1950-1965",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS.1950-1965&STYLE=BDORTHOHISTORIQUE&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 0,
+        "maxNativeZoom": 18,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "64H9H",
       "layer": "base",
       "name": "DVRPC Orthoimagery 2020 - Camden County (1ft)",
@@ -5044,6 +5330,26 @@
             "type": "map",
             "name": "Pinellas County",
             "url": "https://new-pinellas-egis.opendata.arcgis.com/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "6AXLA",
+      "layer": "base",
+      "name": "Archives nationales Carte de Cassini (exemplaire du roi)",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "historicmap",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=AN-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 0,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN, © Archives nationales",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -5979,6 +6285,26 @@
       }
     },
     {
+      "type": "7JIVF",
+      "layer": "base",
+      "name": "BnF Carte de Cassini",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "historicmap",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN, © BnF",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "7OWZU",
       "layer": "base",
       "name": "SPW(allonie) 2012-2013 aerial imagery",
@@ -6533,6 +6859,48 @@
       }
     },
     {
+      "type": "8DJSD",
+      "layer": "base",
+      "name": "IGN Relief du terrain BD ALTI",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "elevation",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ELEVATION.SLOPES&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 6,
+        "maxNativeZoom": 14,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "8E50G",
+      "layer": "overlay",
+      "name": "IGN MNH LiDAR HD",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "elevation",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNF_LIDAR-HD_MNH_ELEVATION.ELEVATIONGRIDCOVERAGE.SHADOW&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 0,
+        "maxNativeZoom": 18,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "8G66P",
       "layer": "overlay",
       "name": "Virginia Property Lines",
@@ -6698,6 +7066,49 @@
             "type": "map",
             "name": "© NVE",
             "url": "https://www.nve.no/karttjenester/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "8MHJW",
+      "layer": "base",
+      "name": "IGN Ortholittorale 2000",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS.COAST2000&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 18,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "8RKXR",
+      "layer": "overlay",
+      "name": "Géorisques Mouvements de terrain",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/risques",
+        "layers": ["MVT_LOCALISE"],
+        "minZoom": 8,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM, Géorisques",
+            "url": "https://www.georisques.gouv.fr/"
           }
         ]
       }
@@ -7918,6 +8329,26 @@
       }
     },
     {
+      "type": "A9PUA",
+      "layer": "base",
+      "name": "IGN Scan Régional",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "map",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNF_CARTES_SCAN-REGIONAL&STYLE=SCANREG&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 0,
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "AB0J3",
       "layer": "base",
       "name": "imagico.de: Graham Land East",
@@ -8425,6 +8856,26 @@
       }
     },
     {
+      "type": "AYAQR",
+      "layer": "overlay",
+      "name": "IGN Points de rencontre de secours en forêt",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=PROTECTEDAREAS.PRSF&STYLE=POINT%20RENCONTRE%20SECOURS%20FORET&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "AYXDS",
       "layer": "base",
       "name": "imagico.de: Sudirman Range 2015",
@@ -8710,6 +9161,27 @@
       }
     },
     {
+      "type": "BDRWL",
+      "layer": "base",
+      "name": "IGN Orthophotos infrarouge",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "photo",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS.IRC&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 6,
+        "maxNativeZoom": 19,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "BELFG",
       "layer": "base",
       "name": "South Tyrol DSM Hillshade 2013 (0.5 m)",
@@ -8766,6 +9238,26 @@
             "type": "map",
             "name": "Urząd Miasta Gliwice",
             "url": "https://msip.gliwice.eu/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "BKHO2",
+      "layer": "overlay",
+      "name": "INPN Parcs naturels régionaux",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_PNR&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
           }
         ]
       }
@@ -10000,6 +10492,47 @@
       }
     },
     {
+      "type": "DBSXX",
+      "layer": "base",
+      "name": "IGN Photographies aériennes 1965-1980",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS.1965-1980&STYLE=BDORTHOHISTORIQUE&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 3,
+        "maxNativeZoom": 18,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "DCMN7",
+      "layer": "overlay",
+      "name": "IGN BD Haie 2024",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=hedge.hedge&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 7,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "DCVU0",
       "layer": "base",
       "name": "Tours - Orthophotos 2013",
@@ -10547,6 +11080,27 @@
       }
     },
     {
+      "type": "E3TXY",
+      "layer": "overlay",
+      "name": "IGN Estompage haute résolution",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "elevation",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNF_ELEVATION.ELEVATIONGRIDCOVERAGE.SHADOW&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 17,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "E68ZS",
       "layer": "base",
       "name": "imagico.de: Thule Airbase DMS overflight October 2015",
@@ -10683,6 +11237,28 @@
             "type": "map",
             "name": "© NÉBIH Erdőtérkép",
             "url": "https://erdoterkep.nebih.gov.hu/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "EDB82",
+      "layer": "overlay",
+      "name": "Géorisques Zonage sismique",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/risques",
+        "layers": ["risq_zonage_sismique"],
+        "minZoom": 6,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM, Géorisques",
+            "url": "https://www.georisques.gouv.fr/"
           }
         ]
       }
@@ -13084,6 +13660,26 @@
       }
     },
     {
+      "type": "HRVHW",
+      "layer": "overlay",
+      "name": "ONF Forêts publiques",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=FORETS.PUBLIQUES&STYLE=FORETS%20PUBLIQUES%20ONF&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 3,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ONF, IGN",
+            "url": "https://www.onf.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "HSHS9",
       "layer": "base",
       "name": "ADOP Orthoimagery 2023 (9in)",
@@ -13121,6 +13717,26 @@
             "type": "map",
             "name": "Florida Department of Transportation",
             "url": "https://www.fdot.gov/gis/aerialmain.shtm"
+          }
+        ]
+      }
+    },
+    {
+      "type": "HUXSG",
+      "layer": "overlay",
+      "name": "INPN Réserves naturelles nationales",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_RNN&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
           }
         ]
       }
@@ -13541,6 +14157,26 @@
       }
     },
     {
+      "type": "IPUJ6",
+      "layer": "base",
+      "name": "IGN Plan IGN",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "map",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 0,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "IQF2X",
       "layer": "base",
       "name": "City of Coquitlam Aerial Imagery (2020)",
@@ -13868,6 +14504,26 @@
       }
     },
     {
+      "type": "J5WBB",
+      "layer": "overlay",
+      "name": "IGN Carroyage DFCI",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEM.DFCI&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "J7WAF",
       "layer": "base",
       "name": "Worms 2020",
@@ -13883,6 +14539,26 @@
             "type": "map",
             "name": "© Nibelungenstadt Worms",
             "url": "https://www.worms.de"
+          }
+        ]
+      }
+    },
+    {
+      "type": "J8K21",
+      "layer": "overlay",
+      "name": "IGN Forêts anciennes",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNF_FORETS-ANCIENNES&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -14638,6 +15314,26 @@
       }
     },
     {
+      "type": "K5KON",
+      "layer": "overlay",
+      "name": "Petzl Traces de randonnée hivernale",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=TRACES.RANDO.HIVERNALE&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Petzl Foundation, IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "K646S",
       "layer": "base",
       "name": "CIRB/CIBG most recent aerial imagery",
@@ -14792,6 +15488,26 @@
             "type": "map",
             "name": "Nassau County GIS",
             "url": "https://www.nassauflpa.com/gis/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "KBTNP",
+      "layer": "overlay",
+      "name": "IGN Sections cadastrales",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=CADASTRAL.PARCELS.SECTIONS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 13,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -16140,6 +16856,26 @@
       }
     },
     {
+      "type": "ME9IE",
+      "layer": "base",
+      "name": "BRGM Carte géologique 1:50 000 (scans)",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=BRGM_SCAN_D_GEOL50&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 0,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM",
+            "url": "https://www.brgm.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "MFHZJ",
       "layer": "base",
       "name": "Kendall County 2026 Aerial Imagery",
@@ -16775,6 +17511,26 @@
       }
     },
     {
+      "type": "NC88O",
+      "layer": "overlay",
+      "name": "IGN Obligations légales de débroussaillement",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=DEBROUSSAILLEMENT&STYLE=nolegend&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "NCBBC",
       "layer": "base",
       "name": "SPW(allonie) 2020 aerial imagery",
@@ -17035,6 +17791,28 @@
       }
     },
     {
+      "type": "NMV2H",
+      "layer": "overlay",
+      "name": "Géorisques Retrait-gonflement des argiles",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/risques",
+        "layers": ["ALEARG"],
+        "minZoom": 6,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM, Géorisques",
+            "url": "https://www.georisques.gouv.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "NMXS0",
       "layer": "base",
       "name": "imagico.de: Greenland mosaic",
@@ -17205,6 +17983,26 @@
       }
     },
     {
+      "type": "NWLX6",
+      "layer": "overlay",
+      "name": "INPN Arrêtés de protection de biotope",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_APB&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "NWZ8I",
       "layer": "overlay",
       "name": "NVE Avalanche Danger Areas overlay",
@@ -17316,6 +18114,27 @@
       }
     },
     {
+      "type": "O2C43",
+      "layer": "overlay",
+      "name": "IGN Estompage",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "elevation",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ELEVATION.ELEVATIONGRIDCOVERAGE.SHADOW&STYLE=estompage_grayscale&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 0,
+        "maxNativeZoom": 15,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "O2F1J",
       "layer": "base",
       "name": "GeoPortal DF 2021 50 cm",
@@ -17354,6 +18173,26 @@
             "type": "map",
             "name": "GSI Japan seamless photo",
             "url": "https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html"
+          }
+        ]
+      }
+    },
+    {
+      "type": "O5RDJ",
+      "layer": "overlay",
+      "name": "IGN Registre parcellaire graphique",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=LANDUSE.AGRICULTURE.LATEST&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -17968,6 +18807,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "P3QR3",
+      "layer": "overlay",
+      "name": "IGN BD CARTO État-major",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "historicmap",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=BDCARTO_ETAT-MAJOR.NIVEAU4&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -18625,6 +19484,28 @@
       }
     },
     {
+      "type": "Q2ITX",
+      "layer": "overlay",
+      "name": "BRGM Carte géologique 1:50 000 harmonisée",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.brgm.fr/geologie",
+        "layers": ["SCAN_H_GEOL50"],
+        "minZoom": 6,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM",
+            "url": "https://www.brgm.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "Q3SO0",
       "layer": "base",
       "name": "OS 2nd Ed. 6-inch. Louth, Ireland (1888-1915) (NLS)",
@@ -18719,6 +19600,48 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Q6ZHT",
+      "layer": "base",
+      "name": "IGN Plan IGN HD",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "map",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNF_PLAN-IGN-HD&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 6,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Q76NS",
+      "layer": "overlay",
+      "name": "Géorisques CLPA avalanches (observations)",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/risques",
+        "layers": ["CLPA_interpretation"],
+        "minZoom": 8,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM, Géorisques",
+            "url": "https://www.georisques.gouv.fr/"
           }
         ]
       }
@@ -19255,6 +20178,26 @@
       }
     },
     {
+      "type": "QTZS3",
+      "layer": "overlay",
+      "name": "IGN COSIA occupation du sol 2021-2023",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNF_COSIA_2021-2023&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "QU7NA",
       "layer": "base",
       "name": "Nancy - Orthophoto - 2002",
@@ -19298,6 +20241,26 @@
             "type": "map",
             "name": "© NVE",
             "url": "https://www.nve.no/karttjenester/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "QWR39",
+      "layer": "overlay",
+      "name": "INPN Natura 2000 oiseaux (ZPS)",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_ZPS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
           }
         ]
       }
@@ -20442,6 +21405,26 @@
       }
     },
     {
+      "type": "SS5A9",
+      "layer": "base",
+      "name": "IGN Carte d'état-major 1820-1866",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "historicmap",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 6,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "STOUE",
       "layer": "base",
       "name": "Bologna ortofoto 2022",
@@ -20557,6 +21540,26 @@
             "type": "map",
             "name": "ORKa.MV",
             "url": "https://www.orka-mv.de/nutzung.html"
+          }
+        ]
+      }
+    },
+    {
+      "type": "T3C71",
+      "layer": "overlay",
+      "name": "CORINE Land Cover 2018",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=LANDCOVER.CLC18_FR&STYLE=CORINE%20Land%20Cover%20-%20France%20m%C3%A9tropolitaine&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 0,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© SDES, Copernicus – CORINE Land Cover",
+            "url": "https://www.statistiques.developpement-durable.gouv.fr/"
           }
         ]
       }
@@ -20847,6 +21850,28 @@
       }
     },
     {
+      "type": "TKRG2",
+      "layer": "overlay",
+      "name": "Géorisques Potentiel radon",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/risques",
+        "layers": ["RADON_COMMUNE"],
+        "minZoom": 6,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM, Géorisques",
+            "url": "https://www.georisques.gouv.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "TLNTN",
       "layer": "overlay",
       "name": "FOEN mire landscapes of national importance",
@@ -21053,6 +22078,46 @@
       }
     },
     {
+      "type": "TU13J",
+      "layer": "overlay",
+      "name": "INPN Natura 2000 habitats (SIC/ZSC)",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_SIC&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "TU6GI",
+      "layer": "overlay",
+      "name": "DGAC Restrictions drones",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=TRANSPORTS.DRONES.RESTRICTIONS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 3,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© DGAC, IGN",
+            "url": "https://www.ecologie.gouv.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "TUQOQ",
       "layer": "overlay",
       "name": "Riksantikvarieämbetet - Archaeological Sites and Monuments",
@@ -21231,6 +22296,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "U1B6X",
+      "layer": "overlay",
+      "name": "INPN Réserves naturelles régionales",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_RNR&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
           }
         ]
       }
@@ -21621,6 +22706,26 @@
       }
     },
     {
+      "type": "UKSST",
+      "layer": "overlay",
+      "name": "INPN Conservatoire du littoral",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_CDL&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "UNMAE",
       "layer": "base",
       "name": "Scioto County Orthoimagery (2023)",
@@ -21676,6 +22781,28 @@
           {
             "type": "map",
             "name": "Geodaten Kanton Basel-Stadt OF 2017"
+          }
+        ]
+      }
+    },
+    {
+      "type": "UPQMW",
+      "layer": "overlay",
+      "name": "Géorisques Zones inondables (EAIP)",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/risques",
+        "layers": ["EAIP_CE"],
+        "minZoom": 6,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM, Géorisques",
+            "url": "https://www.georisques.gouv.fr/"
           }
         ]
       }
@@ -21901,6 +23028,26 @@
             "type": "map",
             "name": "NOAA National Geodetic Survey",
             "url": "https://www.ngs.noaa.gov/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "V5WJ9",
+      "layer": "overlay",
+      "name": "IGN Réseau hydrographique",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=HYDROGRAPHY.HYDROGRAPHY&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -22328,6 +23475,26 @@
       }
     },
     {
+      "type": "VTEOQ",
+      "layer": "overlay",
+      "name": "IGN Limites administratives",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=LIMITES_ADMINISTRATIVES_EXPRESS.LATEST&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "VU5Y5",
       "layer": "overlay",
       "name": "GUGiK soil-agricultural map",
@@ -22487,6 +23654,28 @@
             "type": "map",
             "name": "the LIST © State of Tasmania",
             "url": "http://www.thelist.tas.gov.au"
+          }
+        ]
+      }
+    },
+    {
+      "type": "W1GSZ",
+      "layer": "overlay",
+      "name": "Géorisques Remontées de nappes",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapsref.brgm.fr/wxs/georisques/risques",
+        "layers": ["REMNAPPE_FR"],
+        "minZoom": 6,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BRGM, Géorisques",
+            "url": "https://www.georisques.gouv.fr/"
           }
         ]
       }
@@ -22993,6 +24182,27 @@
       }
     },
     {
+      "type": "WLMA9",
+      "layer": "base",
+      "name": "IGN Photographies aériennes 1980-1995",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS.1980-1995&STYLE=BDORTHOHISTORIQUE&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 3,
+        "maxNativeZoom": 18,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "WO8NW",
       "layer": "overlay",
       "name": "Riksantikvarieämbetet - Protected Heritage Areas",
@@ -23413,6 +24623,26 @@
             "type": "map",
             "name": "© ČÚZK (CC BY 4.0)",
             "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "X3MS9",
+      "layer": "base",
+      "name": "IGN Carte 1950 (Scan 50 historique)",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "historicmap",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN50.1950&STYLE=SCAN50_1950&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 3,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -24923,6 +26153,26 @@
       }
     },
     {
+      "type": "ZOMQX",
+      "layer": "overlay",
+      "name": "INPN ZNIEFF type 2",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_ZNIEFF2&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "ZOQM2",
       "layer": "base",
       "name": "Gliwice: Orthophotomap 2017 (aerial image)",
@@ -24939,6 +26189,26 @@
             "type": "map",
             "name": "Urząd Miasta Gliwice",
             "url": "https://msip.gliwice.eu/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ZRQI3",
+      "layer": "overlay",
+      "name": "INPN Parcs nationaux",
+      "countries": ["fr"],
+      "bbox": [-5.2, 41.3, 9.6, 51.1],
+      "category": "other",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=Patrinat_PN&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png",
+        "minZoom": 6,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MNHN – INPN",
+            "url": "https://inpn.mnhn.fr/"
           }
         ]
       }
@@ -25052,6 +26322,26 @@
             "type": "map",
             "name": "© Kartverket",
             "url": "https://eiendomsregisteret.kartverket.no/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ZVU9B",
+      "layer": "base",
+      "name": "IGN Carte topographique environs de Paris 1906",
+      "countries": ["fr"],
+      "bbox": [1.9, 48.6, 2.8, 49.1],
+      "category": "historicmap",
+      "body": {
+        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.1900TYPEMAPS&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
+        "minZoom": 10,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© IGN",
+            "url": "https://www.ign.fr/"
           }
         ]
       }
