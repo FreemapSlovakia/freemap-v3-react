@@ -1077,5 +1077,39 @@
     },
     "bbox": [14.12, 49.0, 24.15, 54.84],
     "note": "National parks, landscape parks, nature reserves and Natura 2000 areas."
+  },
+  {
+    "id": "fm:hu-geology-100k",
+    "name": "MBFSZ geological map of Hungary 1:100 000",
+    "type": "wms",
+    "url": "https://map.hugeo.hu/arcgis/services/fdt100/fdt_100/MapServer/WMSServer",
+    "layers": ["1", "2", "3", "4", "5", "6", "7"],
+    "country_code": "HU",
+    "category": "other",
+    "overlay": false,
+    "license_url": "https://metadata.europe-geology.eu/record/full/68ff6dfe-431c-4272-8659-67520a010e58",
+    "attribution": {
+      "text": "© MBFSZ (Mining and Geological Survey of Hungary)",
+      "url": "https://map.mbfsz.gov.hu/"
+    },
+    "bbox": [16.0, 45.7, 23.0, 48.6],
+    "note": "Surface geology with boundaries, faults, dykes and bedding."
+  },
+  {
+    "id": "fm:hu-nebih-fire-ban",
+    "name": "NÉBIH daily fire ban",
+    "type": "wms",
+    "url": "https://erdoterkep.nebih.gov.hu/geoserver/ows",
+    "layers": ["nebih:NAPI_TUZTILALOM"],
+    "country_code": "HU",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://erdoterkep.nebih.gov.hu/geoserver/ows?service=WMS&request=GetCapabilities&version=1.3.0",
+    "attribution": {
+      "text": "© NÉBIH",
+      "url": "https://erdoterkep.nebih.gov.hu/"
+    },
+    "bbox": [16.0, 45.7, 23.0, 48.6],
+    "note": "Counties where lighting fires is banned today."
   }
 ]

@@ -4541,6 +4541,18 @@
     "cors": true,
     "scales": []
   },
+  "fm:hu-geology-100k": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hu-nebih-fire-ban": {
+    "v": 2,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
   "fm:pl-gdos-protected-areas": {
     "v": 2,
     "status": 200,

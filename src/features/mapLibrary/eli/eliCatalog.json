@@ -304,6 +304,26 @@
       }
     },
     {
+      "type": "0E3C7",
+      "layer": "overlay",
+      "name": "NÉBIH daily fire ban",
+      "countries": ["hu"],
+      "bbox": [16, 45.7, 23, 48.6],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://erdoterkep.nebih.gov.hu/geoserver/ows",
+        "layers": ["nebih:NAPI_TUZTILALOM"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© NÉBIH",
+            "url": "https://erdoterkep.nebih.gov.hu/"
+          }
+        ]
+      }
+    },
+    {
       "type": "0ES32",
       "layer": "base",
       "name": "imagico.de: New Ireland",
@@ -5516,6 +5536,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "9009T",
+      "layer": "base",
+      "name": "MBFSZ geological map of Hungary 1:100 000",
+      "countries": ["hu"],
+      "bbox": [16, 45.7, 23, 48.6],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://map.hugeo.hu/arcgis/services/fdt100/fdt_100/MapServer/WMSServer",
+        "layers": ["1", "2", "3", "4", "5", "6", "7"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© MBFSZ (Mining and Geological Survey of Hungary)",
+            "url": "https://map.mbfsz.gov.hu/"
           }
         ]
       }
