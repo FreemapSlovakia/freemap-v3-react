@@ -562,20 +562,6 @@ distance probe, a premium quality tier. What it does not do yet is issues under
       makes a mid-ramp sky representable. It does not remove the picker
       round-trip: `SKY_COLOR` still goes out and comes back as a real colour.
 
-## Weather radar (`src/features/weatherRadar/`, see [`doc/weather-radar.md`](./doc/weather-radar.md))
-
-[`doc/weather.md`](./doc/weather.md) records what was asked of the upstream feed
-and what landed. Nothing is outstanding there.
-
-- [ ] **Leftovers of the old LibreWXR instance on fm5.** The container is gone,
-      but the `weather.freemap.sk` vhost and its cert still point at the dead
-      upstream, and `/fm/data4/librewxr` still holds ~3 GB of its tiles.
-
-## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
-
-Colorize, path details and track matching are issues under `area: routing` and
-`area: data-viewer`.
-
 ## Terrain shading (`terrain.tiles.freemap.sk`)
 
 - [ ] **Delete the tilesets the shading layers no longer read**, once this all is
@@ -602,9 +588,9 @@ Colorize, path details and track matching are issues under `area: routing` and
       (`siatservices.provincia.tn.it/stemdata/2014_lidar_dtm_asc/`, ~194 GB ASCII). 2. South Tyrol: 2.5 m province-wide, CC0, WCS (`geoservices9.civis.bz.it`). 3. Piedmont: ICE 2009–11 5 m lidar, CC BY 4.0, WCS on `geomap.reteunitaria.piemonte.it`. 4. Friuli-VG: RAFVG 2017–20 0.5 m, CC BY 4.0, Eagle.fvg downloads. 5. Emilia-Romagna: RER 0.5 m, WCS, ~64% of the region so far. 6. Aosta (lidar, per-tile app) and Veneto (5 m lidar, per municipality).
 
       Also watch the MASE PNRR 0.25 m national reflight: it would cover
-                          Lombardy, the Apennines, Sardinia and the South, which have no usable
-                          regional lidar. Unverified: Aosta's resolution, Veneto's CRS, which
-                          parts of E-R are covered, and some licences.
+                                  Lombardy, the Apennines, Sardinia and the South, which have no usable
+                                  regional lidar. Unverified: Aosta's resolution, Veneto's CRS, which
+                                  parts of E-R are covered, and some licences.
 
 - [ ] **Slovakia from lidar points at z18**, replacing `sk.tif` and then `7`:
       `laz2geotiff xyz` (ground only, relative gap rule), the two-pass membrane
