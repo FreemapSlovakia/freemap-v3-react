@@ -63,7 +63,7 @@ Still emitting at info level (non-blocking, optional cleanup):
       removal, ~85 handlers across those files are a single expression used
       exactly once, so the named const buys nothing. Purely cosmetic: named and
       inline forms are memoized identically. Unlike the `useCallback` removal
-      this is *not* provably a no-op — inlining shifts where the arrow is
+      this is _not_ provably a no-op — inlining shifts where the arrow is
       created, so the cache layout changes (equivalently, but not
       byte-identically). Prefer doing it opportunistically while editing a file
       rather than as a sweep; the 26 handlers used more than once stay named.
@@ -85,14 +85,14 @@ Still emitting at info level (non-blocking, optional cleanup):
       decide it deliberately rather than letting the two lists keep diverging.
       Folds into the item above.
 - [ ] **`Attribution`'s document-link branch is unreachable.** `PREFIX =
-      '?document='` (`src/shared/components/Attribution.tsx`) matches no
+'?document='` (`src/shared/components/Attribution.tsx`) matches no
       `AttributionDef.url` anywhere, so the `documentShow` interception has
       never fired. Either something should produce such a URL — and then it
       wants the hash form the rest of the app uses, not a query — or the branch
       and the prefix should go.
 - [ ] **`MyMapsMenu` hand-builds the split button** `SplitButton` now
       abstracts (`Dropdown as={ButtonGroup}` + `Button` + `Dropdown.Toggle
-    split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
+split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
       button first, which `SplitButton` doesn't expose yet.
 - [ ] **`SplitButton`'s menu can't do what `SelectDropdown`'s can** — no `kbd`,
       `extra` (premium badge), `active` or `divider`, because it writes its own
@@ -289,19 +289,6 @@ can't be made exclusive + optics). Keep the free/open core intact.
 
 Bugs and feature requests are issues under `area: drawing`.
 
-- [x] **Holes in polygons.** A hole is its own `DrawnLine` pointing at its parent
-      by `holeOfId`, not a nested ring inside `points` — so every existing edit
-      (vertex drag, midpoint insert, simplify, reverse) works on it unchanged,
-      and the URL, the elevation chart and the `{lineIndex, pointId}` selection
-      needed no ring index. The parent renders `[outer, ...holes]` as one
-      `<Polygon>`, whose default `evenodd` fill rule punches the holes out and
-      takes clicks through them. Holes are fully subordinate: no label or style
-      of their own, measured as part of the parent, deleted with it. Rings stay
-      flat — an island in a lake is a further hole of the same parent — so there
-      is no chain to walk and no cycle to guard. Out on the wire a hole names
-      its parent by _position_ (`holeOf`), since neither the URL (`\x1eH<i>`)
-      nor a saved document carries line ids; both must keep agreeing, or a map
-      restored from its URL reads as having unsaved changes.
 - [ ] **No coverage for the hole wire formats.** The reducer's linking, cascade
       delete and stale-index tolerance are tested, but nothing exercises the
       round-trips the design leans on: URL `H` field ↔ store, document
@@ -493,23 +480,6 @@ Bugs and feature requests are issues under `area: maps-layers`.
       `isLayerInstalled` in `installed.ts`, the default passed in. Likewise
       `layerName(def, m) ?? def.type`, hand-written at six sites.
 
-## Offline maps (`src/features/cachedMaps/`)
-
-Open items are issues under `area: offline-export`.
-
-## Open in external app (`src/features/openInExternalApp/`)
-
-Open items are issues under `area: maps-layers`. What stays here is a negative
-finding, so nobody re-researches it:
-
-- Romania has no linkable viewer, and re-checking is unlikely to change that.
-  ANCPI's public cadastral map (`geoportal.ancpi.ro/imobile.html`) reads no URL
-  parameters at all — its `MapView` is built with no position. Its Web AppBuilder
-  viewers do take `center`/`level`, but their basemaps are Stereo 70 (EPSG:3844)
-  with bespoke 11–13-step LOD ladders, so `level` cannot be derived from a
-  web-mercator zoom. The whole host has also been down since the August 2026
-  ANCPI incident.
-
 ## Search / Photon geocoder (see [`doc/photon-geocoder.md`](./doc/photon-geocoder.md))
 
 - [ ] **Report the duplicate hits upstream.** Photon answers with one OSM element
@@ -576,21 +546,12 @@ embeds them. Deleting any of them only looks safe because the deploy rsync has n
 
 Open items are issues under `area: ui-ux`.
 
-## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
-
-Open items are issues under `area: infra`.
-
 ## Drawing properties (`props` on points and lines)
 
 - [ ] **Reconsider the carried-tag allowlist** (`CARRIED_TAGS` in
       `drawingPointActions.ts`). Ten keys is a guess at what's useful without
       making a bulk conversion produce an unsendable link; revisit once there's
       a sense of what people actually reference in labels.
-
-## Toposcope (`src/features/toposcope/`)
-
-The dial is drawn from the centre point plus the drawn points, and saves as an
-SVG. Open items are issues under `area: toposcope`.
 
 ## Panorama (`src/features/panorama/`, see [`doc/panorama.md`](./doc/panorama.md))
 
@@ -667,19 +628,14 @@ Colorize, path details and track matching are issues under `area: routing` and
       the IRPI-CNR HR-DTM at z15, de-blocked and de-rippled. Its Alps are
       pixel-doubled TINITALY 10 m, because the full-coverage regional sets
       were never used (inputs: Table 1 of EarthArXiv preprint 12152). By gain
-      for effort:
-      1. Trentino: 0.5 m lidar, CC BY 4.0, a plain directory listing
-         (`siatservices.provincia.tn.it/stemdata/2014_lidar_dtm_asc/`, ~194 GB ASCII).
-      2. South Tyrol: 2.5 m province-wide, CC0, WCS (`geoservices9.civis.bz.it`).
-      3. Piedmont: ICE 2009–11 5 m lidar, CC BY 4.0, WCS on `geomap.reteunitaria.piemonte.it`.
-      4. Friuli-VG: RAFVG 2017–20 0.5 m, CC BY 4.0, Eagle.fvg downloads.
-      5. Emilia-Romagna: RER 0.5 m, WCS, ~64% of the region so far.
-      6. Aosta (lidar, per-tile app) and Veneto (5 m lidar, per municipality).
+      for effort: 1. Trentino: 0.5 m lidar, CC BY 4.0, a plain directory listing
+      (`siatservices.provincia.tn.it/stemdata/2014_lidar_dtm_asc/`, ~194 GB ASCII). 2. South Tyrol: 2.5 m province-wide, CC0, WCS (`geoservices9.civis.bz.it`). 3. Piedmont: ICE 2009–11 5 m lidar, CC BY 4.0, WCS on `geomap.reteunitaria.piemonte.it`. 4. Friuli-VG: RAFVG 2017–20 0.5 m, CC BY 4.0, Eagle.fvg downloads. 5. Emilia-Romagna: RER 0.5 m, WCS, ~64% of the region so far. 6. Aosta (lidar, per-tile app) and Veneto (5 m lidar, per municipality).
 
       Also watch the MASE PNRR 0.25 m national reflight: it would cover
-      Lombardy, the Apennines, Sardinia and the South, which have no usable
-      regional lidar. Unverified: Aosta's resolution, Veneto's CRS, which
-      parts of E-R are covered, and some licences.
+                      Lombardy, the Apennines, Sardinia and the South, which have no usable
+                      regional lidar. Unverified: Aosta's resolution, Veneto's CRS, which
+                      parts of E-R are covered, and some licences.
+
 - [ ] **Slovakia from lidar points at z18**, replacing `sk.tif` and then `7`:
       `laz2geotiff xyz` (ground only, relative gap rule), the two-pass membrane
       `fill` with `--reach`, clipped by an official ÚGKK border (not OSM), the
