@@ -1,0 +1,36 @@
+/* Width a legend with a scale is given; the gradient bar fills it. */
+.bar-width {
+  max-width: 400px;
+}
+
+/* A row of swatches takes what it needs instead — capping it would only make a
+   row of labels scroll. */
+.fit-width {
+  width: fit-content;
+}
+
+/* Deep enough for the labels drawn over the bar, and about a button tall. */
+.bar {
+  height: 34px;
+}
+
+/* The labels are outlined in the page background so they read over both ends of
+   the gradient. */
+.bar-labels {
+  paint-order: stroke;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: var(--bs-body-bg);
+}
+
+/* Centred on the position the caller sets as `left`, so the outermost labels
+   sit centred on the bar's edges and overhang it. */
+.tick {
+  top: 16%;
+  width: 40px;
+  margin-left: -20px;
+}
+
+.chip {
+  width: 1em;
+  height: 1em;
+}

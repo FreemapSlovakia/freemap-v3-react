@@ -1,12 +1,15 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { Toolbar } from '@shared/components/Toolbar.js';
+import {
+  LegendGradientBar,
+  LegendShell,
+  LegendSwatch,
+  LegendTick,
+} from '@shared/components/Legend.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactNode, useMemo } from 'react';
-import { Button } from 'react-bootstrap';
-import { FaPalette, FaTimes } from 'react-icons/fa';
+import { FaPalette } from 'react-icons/fa';
 import type { Messages } from '@/translations/messagesInterface.js';
 import { readCoordTimes, rgbCss } from '../colorize.js';
 import type { ColorizingMode, HotlinePalette } from '../index.js';
@@ -190,7 +193,7 @@ type Props = {
 
 /**
  * Toggleable legend for the route/track colorization, reusing the active mode's
- * Hotline palette as the gradient bar. Mirrors the picture-gallery legend.
+ * Hotline palette as the gradient bar.
  */
 export function ColorizeLegend({ mode, control, features, onClose }: Props) {
   const cm = useColorizerMessages();
@@ -243,116 +246,40 @@ export function ColorizeLegend({ mode, control, features, onClose }: Props) {
   const background = paletteGradient(colorizers[mode].palette);
 
   return (
-    // A gradient takes the width it is given; a list of categories takes what it
-    // needs, capping it would only make a row of labels scroll.
-    <div
-      style={
-        named
-          ? { width: 'fit-content', maxWidth: '100%' }
-          : { width: '100%', maxWidth: '400px' }
-      }
+    <LegendShell
+      icon={<FaPalette />}
+      label={cm.legend}
+      unit={unit}
+      fit={Boolean(named)}
+      control={control}
+      onClose={onClose}
     >
-      <Toolbar className="mt-2 d-flex">
-        {control}
-
-        <LongPressTooltip label={cm.legend} breakpoint="sm">
-          {({ props, label, labelClassName }) => (
-            <span
-              className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
-              {...props}
-            >
-              <FaPalette />
-              <span className={labelClassName}>
-                {label}
-                {unit ? ` [${unit}]` : ''}
-              </span>
-            </span>
-          )}
-        </LongPressTooltip>
-
-        {named ? (
-          <div
-            // `overflow-y` is pinned: `auto` on one axis makes the browser
-            // compute `auto` on the other, which puts a scrollbar beside two
-            // lines that already fit. The padding keeps the clip edge off the
-            // `lh-1` text, whose diacritics rise above the line box.
-            className="ms-4 me-3 py-1 my-n1 d-flex align-items-center gap-3"
-            style={{ overflowX: 'auto', overflowY: 'hidden' }}
-          >
-            {categories.map(({ key, label, meters, color }) => (
-              <span
-                key={key}
-                className="d-flex flex-column align-items-center small lh-1 gap-1 text-nowrap"
-              >
-                <span className="d-inline-flex align-items-center gap-1">
-                  <span
-                    className="border rounded"
-                    style={{ width: '1em', height: '1em', background: color }}
-                  />
-
-                  {label}
-                </span>
-
-                <span className="text-secondary">
-                  {formatDistance(meters, language)}
-                </span>
-              </span>
-            ))}
-          </div>
-        ) : (
-          <div
-            // Extra left gap so the leftmost value — centered on the gradient's
-            // left edge — overhangs into empty space, not over the legend label.
-            className="ms-4 me-3"
-            style={{
-              flexGrow: '1',
-              position: 'relative',
-              height: '34px',
-            }}
-          >
-            <div
-              className="border rounded position-absolute"
-              style={{ inset: 0, background }}
+      {named ? (
+        <div
+          // `overflow-y` is pinned: `auto` on one axis makes the browser
+          // compute `auto` on the other, which puts a scrollbar beside two
+          // lines that already fit. The padding keeps the clip edge off the
+          // `lh-1` text, whose diacritics rise above the line box.
+          className="ms-4 me-3 py-1 my-n1 d-flex align-items-center gap-3 overflow-x-auto overflow-y-hidden"
+        >
+          {categories.map(({ key, label, meters, color }) => (
+            <LegendSwatch
+              key={key}
+              color={color}
+              label={label}
+              sub={formatDistance(meters, language)}
             />
-
-            <div
-              className="text-body position-absolute"
-              style={{
-                inset: 0,
-                paintOrder: 'stroke',
-                WebkitTextStrokeWidth: '2px',
-                WebkitTextStrokeColor: 'var(--bs-body-bg)',
-              }}
-            >
-              {ticks.map(({ t, label }) => (
-                <div
-                  key={t}
-                  style={{
-                    position: 'absolute',
-                    top: '16%',
-                    // Center every label on its position, so the endpoints sit
-                    // centered on the gradient edges (matching the gallery legend).
-                    left: `calc(${t * 100}% - 20px)`,
-                    width: '40px',
-                    textAlign: 'center',
-                    textWrap: 'nowrap',
-                  }}
-                >
-                  {label}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <LongPressTooltip label={m?.general.close}>
-          {({ props }) => (
-            <Button variant="dark" onClick={onClose} {...props}>
-              <FaTimes />
-            </Button>
-          )}
-        </LongPressTooltip>
-      </Toolbar>
-    </div>
+          ))}
+        </div>
+      ) : (
+        <LegendGradientBar background={background} className="ms-4 me-3">
+          {ticks.map(({ t, label }) => (
+            <LegendTick key={t} t={t}>
+              {label}
+            </LegendTick>
+          ))}
+        </LegendGradientBar>
+      )}
+    </LegendShell>
   );
 }

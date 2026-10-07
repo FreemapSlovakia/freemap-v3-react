@@ -643,14 +643,7 @@ and what landed. Nothing is outstanding there.
 ## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
 
 Colorize, path details and track matching are issues under `area: routing` and
-`area: data-viewer`. What stays here is internal:
-
-- [ ] **Two legends, built twice.** `PictureLegend` (gallery) and `ColorizeLegend`
-      (colorizers) each carry their own copy of the same shell — the toolbar, the
-      icon pair, the fit-vs-400px sizing — and now of the same swatch row as
-      well, since both grew a categorical variant. Lift `LegendShell` and a
-      swatch item into `src/shared/components/`, parameterized by icons and
-      label, and render both through them.
+`area: data-viewer`.
 
 ## Terrain shading (`terrain.tiles.freemap.sk`)
 
