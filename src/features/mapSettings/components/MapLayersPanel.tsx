@@ -63,15 +63,15 @@ import {
 } from '@features/parameterizedShading/model/Shading.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
   LayerKindMark,
   MapLayerItem,
 } from '@shared/components/MapLayerItem.js';
-import {
-  Action,
-  ResponsiveActions,
-} from '@shared/components/ResponsiveActions.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -962,65 +962,60 @@ function LayerSettings({
       {/* The map's own actions, set off from what its sections edit. */}
       <hr />
 
-      {/* A scroller of its own, which `fit` measures the row against, and
-          unwrapped, so a label that doesn't fit folds its action away. */}
-      <div className="fm-ib-scroller">
-        <div className="d-flex">
-          <ResponsiveActions
-            className="ms-auto text-nowrap"
-            fit
-            toggleLabel={m?.general.actions}
-          >
-            {/* As set up here, under a name of its own. */}
-            {mapOrigin !== 'cached' &&
-              hasOwnConfig(technology) &&
-              !window.fmEmbedded && (
-                <Action
-                  icon={<FaSave />}
-                  label={msm?.saveAsMap}
-                  showFrom="md"
-                  showLabelFrom="xs"
-                  disabled={!canSave}
-                  onClick={() =>
-                    dispatch(
-                      setActiveModal({
-                        type: 'installed-maps',
-                        customMap: { addNamedFrom: target, returnTo: null },
-                      }),
-                    )
-                  }
-                />
-              )}
-
-            {/* Its server, zooms and default kind are the map's own, in its form. */}
-            {mapOrigin === 'custom' && !window.fmEmbedded && (
-              <Action
-                icon={<FaPencilAlt />}
-                label={m?.general.modify}
-                showFrom="sm"
-                showLabelFrom="xs"
-                disabled={!canSave}
-                onClick={() =>
-                  dispatch(
-                    setActiveModal({
-                      type: 'installed-maps',
-                      customMap: { edit: target.type, returnTo: null },
-                    }),
-                  )
-                }
-              />
-            )}
-
-            <Action
-              icon={<FaUndo />}
-              label={m?.general.resetToDefaults}
-              showLabelFrom="xs"
-              disabled={isEmptySetup(setup)}
-              onClick={() => dispatch(mapLayerSetupReset(target))}
+      {/* Labels give way to icons, least important first, when room runs out. */}
+      <FmModalFooter
+        as="div"
+        className="d-flex flex-nowrap justify-content-end gap-2 text-nowrap"
+      >
+        {/* As set up here, under a name of its own. */}
+        {mapOrigin !== 'cached' &&
+          hasOwnConfig(technology) &&
+          !window.fmEmbedded && (
+            <FmFooterButton
+              variant="secondary"
+              priority={2}
+              icon={<FaSave />}
+              label={msm?.saveAsMap}
+              disabled={!canSave}
+              onClick={() =>
+                dispatch(
+                  setActiveModal({
+                    type: 'installed-maps',
+                    customMap: { addNamedFrom: target, returnTo: null },
+                  }),
+                )
+              }
             />
-          </ResponsiveActions>
-        </div>
-      </div>
+          )}
+
+        {/* Its server, zooms and default kind are the map's own, in its form. */}
+        {mapOrigin === 'custom' && !window.fmEmbedded && (
+          <FmFooterButton
+            variant="secondary"
+            priority={1}
+            icon={<FaPencilAlt />}
+            label={m?.general.modify}
+            disabled={!canSave}
+            onClick={() =>
+              dispatch(
+                setActiveModal({
+                  type: 'installed-maps',
+                  customMap: { edit: target.type, returnTo: null },
+                }),
+              )
+            }
+          />
+        )}
+
+        <FmFooterButton
+          variant="secondary"
+          priority={0}
+          icon={<FaUndo />}
+          label={m?.general.resetToDefaults}
+          disabled={isEmptySetup(setup)}
+          onClick={() => dispatch(mapLayerSetupReset(target))}
+        />
+      </FmModalFooter>
     </div>
   );
 }

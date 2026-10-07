@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import {
   createContext,
+  type ElementType,
   type ReactElement,
   type ReactNode,
   useCallback,
@@ -22,6 +23,8 @@ const FooterCollapse = createContext(Number.NEGATIVE_INFINITY);
 type Props = {
   className?: string;
   children: ReactNode;
+  /** A row outside a modal: the element to render instead of `Modal.Footer`. */
+  as?: ElementType;
 };
 
 /**
@@ -31,7 +34,11 @@ type Props = {
  * the row needs. It measures with every label shown, so the reading never
  * depends on what it decides.
  */
-export function FmModalFooter({ className, children }: Props): ReactElement {
+export function FmModalFooter({
+  className,
+  children,
+  as: Row = Modal.Footer,
+}: Props): ReactElement {
   const [el, setEl] = useState<HTMLElement | null>(null);
 
   const [threshold, setThreshold] = useState(Number.NEGATIVE_INFINITY);
@@ -96,9 +103,9 @@ export function FmModalFooter({ className, children }: Props): ReactElement {
 
   return (
     <FooterCollapse value={threshold}>
-      <Modal.Footer ref={setEl} className={className}>
+      <Row ref={setEl} className={className}>
         {children}
-      </Modal.Footer>
+      </Row>
     </FooterCollapse>
   );
 }
