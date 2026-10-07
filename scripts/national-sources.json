@@ -206,5 +206,815 @@
     },
     "bbox": [12.09, 48.55, 18.86, 51.06],
     "note": "Notable geological sites."
+  },
+  {
+    "id": "fm:at-bev-oek",
+    "name": "BEV Austrian Map (ÖK50 / ÖK25V)",
+    "type": "tms",
+    "url": "https://maps.bev.gv.at/tiles/karte/{z}/{x}/{y}.png",
+    "country_code": "AT",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 0,
+    "max_zoom": 16,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© BEV – Bundesamt für Eich- und Vermessungswesen",
+      "url": "https://www.bev.gv.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "State topographic map."
+  },
+  {
+    "id": "fm:at-geosphere-geology-50",
+    "name": "GeoSphere geological map 1:50 000",
+    "type": "wms",
+    "url": "https://gis.geosphere.at/images/services/geologie/karte_50/ImageServer/WMSServer",
+    "layers": ["karte_50"],
+    "country_code": "AT",
+    "category": "map",
+    "overlay": true,
+    "min_zoom": 7,
+    "max_zoom": 17,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© GeoSphere Austria",
+      "url": "https://www.geosphere.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "Scanned geological map sheets 1:25 000 and 1:50 000."
+  },
+  {
+    "id": "fm:at-geosphere-geofast-50",
+    "name": "GeoSphere GEOFAST provisional geological map 1:50 000",
+    "type": "wms",
+    "url": "https://gis.geosphere.at/images/services/geologie/karte_geofast_50/ImageServer/WMSServer",
+    "layers": ["karte_geofast_50"],
+    "country_code": "AT",
+    "category": "map",
+    "overlay": true,
+    "min_zoom": 6,
+    "max_zoom": 19,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© GeoSphere Austria",
+      "url": "https://www.geosphere.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "Provisional geological maps filling the gaps of the 1:50 000 series."
+  },
+  {
+    "id": "fm:at-geosphere-geology-hist-75",
+    "name": "GeoSphere historical geological map 1:75 000",
+    "type": "wms",
+    "url": "https://gis.geosphere.at/images/services/geologie/karte_historisch_75/ImageServer/WMSServer",
+    "layers": ["karte_historisch_75"],
+    "country_code": "AT",
+    "category": "historicmap",
+    "overlay": true,
+    "min_zoom": 6,
+    "max_zoom": 19,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© GeoSphere Austria",
+      "url": "https://www.geosphere.at/"
+    },
+    "bbox": [8.5, 42.0, 20.0, 50.5],
+    "note": "Historic geological maps of the Austro-Hungarian Monarchy 1:75 000."
+  },
+  {
+    "id": "fm:at-geosphere-geology-hist-500",
+    "name": "GeoSphere historical geological map 1:500 000 (Vetters)",
+    "type": "wms",
+    "url": "https://gis.geosphere.at/images/services/geologie/karte_historisch_500_vetters/ImageServer/WMSServer",
+    "layers": ["karte_historisch_500_vetters"],
+    "country_code": "AT",
+    "category": "historicmap",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© GeoSphere Austria",
+      "url": "https://www.geosphere.at/"
+    },
+    "bbox": [9.1, 45.5, 17.9, 49.5],
+    "note": "Vetters' geological map of Austria 1:500 000 (1933)."
+  },
+  {
+    "id": "fm:at-geosphere-geology-500",
+    "name": "GeoSphere geological units and tectonics 1:500 000",
+    "type": "wms",
+    "url": "https://gis.geosphere.at/maps/services/geologie/karte_500/MapServer/WMSServer",
+    "layers": ["0", "1"],
+    "country_code": "AT",
+    "category": "map",
+    "overlay": true,
+    "max_zoom": 15,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© GeoSphere Austria",
+      "url": "https://www.geosphere.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "Geological units and tectonic lines, for small scales."
+  },
+  {
+    "id": "fm:at-geosphere-landslides",
+    "name": "GeoSphere mass movements (landslides, rockfall)",
+    "type": "wms",
+    "url": "https://gis.geosphere.at/maps/services/naturgefahren/Gravitative_Massenbewegungen/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "max_zoom": 12,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© GeoSphere Austria",
+      "url": "https://www.geosphere.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "Inventory of landslides and rockfall; the service draws up to 1:100 000."
+  },
+  {
+    "id": "fm:at-wlv-hazard-zones",
+    "name": "WLV hazard zone plan (avalanche, torrent)",
+    "type": "wms",
+    "url": "https://inspire.lfrz.gv.at/000901/wms",
+    "layers": ["WLV_GZP"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply",
+    "attribution": {
+      "text": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
+      "url": "https://www.die-wildbach.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "Avalanche and torrent hazard zones, where mapped."
+  },
+  {
+    "id": "fm:at-wlv-catchments",
+    "name": "WLV avalanche and torrent catchment areas",
+    "type": "wms",
+    "url": "https://inspire.lfrz.gv.at/000901/wms",
+    "layers": ["WLV_EZG_LA", "WLV_EZG_WB"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply",
+    "attribution": {
+      "text": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
+      "url": "https://www.die-wildbach.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "Avalanche and torrent catchment areas."
+  },
+  {
+    "id": "fm:at-wlv-events",
+    "name": "WLV torrent and avalanche events",
+    "type": "wms",
+    "url": "https://inspire.lfrz.gv.at/000901/wms",
+    "layers": ["INSPIRE_WLV_Ereignisse"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply",
+    "attribution": {
+      "text": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
+      "url": "https://www.die-wildbach.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "Documented torrent and avalanche events."
+  },
+  {
+    "id": "fm:at-wlv-protective-forest",
+    "name": "WLV protective forest indication map",
+    "type": "wms",
+    "url": "https://inspire.lfrz.gv.at/000505/wms",
+    "layers": ["Hinweiskarte Schutzwald"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply",
+    "attribution": {
+      "text": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
+      "url": "https://www.die-wildbach.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "Forest protecting against avalanches, rockfall and erosion."
+  },
+  {
+    "id": "fm:at-bfw-forest-development-plan",
+    "name": "BFW forest development plan (forest functions)",
+    "type": "wms",
+    "url": "https://inspire.lfrz.gv.at/000606/wms",
+    "layers": [
+      "Oesterreichischer Waldentwicklungsplan - Waldfunktionsflaechen"
+    ],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "BFW – Bundesforschungszentrum für Wald",
+      "url": "https://www.bfw.gv.at/"
+    },
+    "bbox": [9.53, 46.37, 17.16, 49.02],
+    "note": "Protection, welfare and recreation forest areas."
+  },
+  {
+    "id": "fm:at-tirol-slope",
+    "name": "tiris slope map (degrees)",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/terrain/MapServer/WMSServer",
+    "layers": ["Gelaendeneigung-Grad"],
+    "country_code": "AT",
+    "category": "elevation",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Terrain slope in degrees from the 5 m terrain model."
+  },
+  {
+    "id": "fm:at-tirol-slope-winter",
+    "name": "tiris slope map for winter sports",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/terrain/MapServer/WMSServer",
+    "layers": ["Gelaendeneigung_Wintersport-Grad"],
+    "country_code": "AT",
+    "category": "elevation",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Slope classes for avalanche terrain and ski touring."
+  },
+  {
+    "id": "fm:at-tirol-aspect",
+    "name": "tiris aspect map",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/terrain/MapServer/WMSServer",
+    "layers": ["Exposition"],
+    "country_code": "AT",
+    "category": "elevation",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Slope aspect coloured by direction."
+  },
+  {
+    "id": "fm:at-tirol-hillshade-multi",
+    "name": "tiris multidirectional hillshade (DGM)",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/terrain/MapServer/WMSServer",
+    "layers": ["Schummerung_multidirektional_Gelaendemodell"],
+    "country_code": "AT",
+    "category": "elevation",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Multidirectional hillshade of the terrain model."
+  },
+  {
+    "id": "fm:at-tirol-ortho-1940",
+    "name": "tiris historical orthophoto 1940",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/orthofoto/MapServer/WMSServer",
+    "layers": ["1940"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Orthophoto mosaic 1940; coverage varies by flight."
+  },
+  {
+    "id": "fm:at-tirol-ortho-1949-1954",
+    "name": "tiris historical orthophoto 1949-1954",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/orthofoto/MapServer/WMSServer",
+    "layers": ["1949_1954"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Orthophoto mosaic 1949–1954."
+  },
+  {
+    "id": "fm:at-tirol-ortho-1970-1982",
+    "name": "tiris historical orthophoto 1970-1982",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/orthofoto/MapServer/WMSServer",
+    "layers": ["1970_1982"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Orthophoto mosaic 1970–1982."
+  },
+  {
+    "id": "fm:at-tirol-ortho-1999-2004",
+    "name": "tiris historical orthophoto 1999-2004",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/orthofoto/MapServer/WMSServer",
+    "layers": ["1999_2004"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Orthophoto mosaic 1999–2004."
+  },
+  {
+    "id": "fm:at-tirol-protected-areas",
+    "name": "tiris protected areas (nature reserves, national park, Natura 2000)",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/geoland/MapServer/WMSServer",
+    "layers": [
+      "Naturschutzgebiet",
+      "Nationalpark",
+      "Naturpark",
+      "Landschaftsschutzgebiet",
+      "Vogelschutzrichtlinie_SPA",
+      "Habitatrichtlinie_SCI"
+    ],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Nature reserves, national park, nature parks, landscape protection and Natura 2000 areas."
+  },
+  {
+    "id": "fm:at-tirol-forest-development-plan",
+    "name": "tiris forest development plan",
+    "type": "wms",
+    "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/geoland/MapServer/WMSServer",
+    "layers": ["Waldentwicklungsplan"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 10,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Tirol – data.tirol.gv.at",
+      "url": "https://data.tirol.gv.at/"
+    },
+    "bbox": [10.1, 46.65, 12.97, 47.75],
+    "note": "Forest functions."
+  },
+  {
+    "id": "fm:at-vlbg-tourenkarte",
+    "name": "VoGIS ski touring map (slope + aspect)",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_gelaendeinfo_r_atlas_wms.map",
+    "layers": ["tourenkarte_kombination"],
+    "country_code": "AT",
+    "category": "elevation",
+    "overlay": true,
+    "min_zoom": 10,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Slope classes and aspect combined, for ski touring."
+  },
+  {
+    "id": "fm:at-vlbg-tourenkarte-slope",
+    "name": "VoGIS ski touring map (slope classes)",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_gelaendeinfo_r_atlas_wms.map",
+    "layers": ["tourenkarte_neigung"],
+    "country_code": "AT",
+    "category": "elevation",
+    "overlay": true,
+    "min_zoom": 10,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Slope classes for ski touring."
+  },
+  {
+    "id": "fm:at-vlbg-slope-50cm",
+    "name": "VoGIS slope in degrees (2023, 0.5 m)",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_neigung_gr_r_wms.map",
+    "layers": ["st2023_50cm_gr"],
+    "country_code": "AT",
+    "category": "elevation",
+    "overlay": true,
+    "min_zoom": 8,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Slope in degrees from the 2023 laser scan."
+  },
+  {
+    "id": "fm:at-vlbg-hazard-zones",
+    "name": "VoGIS WLV hazard zone plan",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/geoserver/ows",
+    "layers": ["vogis:gefahrenzonenplan_WLV_grp"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Avalanche and torrent hazard zones."
+  },
+  {
+    "id": "fm:at-vlbg-protected-areas",
+    "name": "VoGIS protected areas (nature reserves, Natura 2000)",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/geoserver/ows",
+    "layers": ["vogis:Schutzgebiete_grp"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Nature reserves, Natura 2000 and other protected areas."
+  },
+  {
+    "id": "fm:at-vlbg-protective-forest",
+    "name": "VoGIS protective forest indication map",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/geoserver/ows",
+    "layers": ["vogis:hinweiskarte_schutzwald"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Protective forest."
+  },
+  {
+    "id": "fm:at-vlbg-wildlife-quiet-zones",
+    "name": "VoGIS wildlife quiet zones",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/geoserver/ows",
+    "layers": ["vogis:wildruhezone"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Areas ski tourers keep out of in winter."
+  },
+  {
+    "id": "fm:at-vlbg-mtb",
+    "name": "VoGIS mountain bike network",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/geoserver/ows",
+    "layers": ["vogis:mountainbike_strecken"],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Official mountain bike routes."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-195x",
+    "name": "VoGIS orthophoto 1950s",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_195x_r_wms.map",
+    "layers": ["sw195x_25cm"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, 1950s."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-196x",
+    "name": "VoGIS orthophoto 1960s",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_196x_r_wms.map",
+    "layers": ["sw196x_25cm"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, 1960s."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-197x",
+    "name": "VoGIS orthophoto 1970s",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_197x_r_wms.map",
+    "layers": ["sw197x_25cm"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, 1970s."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-198x",
+    "name": "VoGIS orthophoto 1980s (colour)",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_198x_r_wms.map",
+    "layers": ["pe198x_20cm"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, 1980s, colour."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-199x",
+    "name": "VoGIS orthophoto 1990s",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_199x_r_wms.map",
+    "layers": ["sw199x_50cm"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, 1990s."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-2001",
+    "name": "VoGIS orthophoto 2001",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_2001_r_wms.map",
+    "layers": ["pef2001_25cm"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, 2001."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-2006",
+    "name": "VoGIS orthophoto 2006",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_2006_r_wms.map",
+    "layers": ["ef2006_25cm"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, 2006."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-2009",
+    "name": "VoGIS orthophoto 2009",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_2009_r_wms.map",
+    "layers": ["ef2009_25cm"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, 2009."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-winter-2005",
+    "name": "VoGIS orthophoto winter 2005",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_winter_2005_r_wms.map",
+    "layers": ["Echtfarbenbild-Winter-2005-50cm"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, winter 2005."
+  },
+  {
+    "id": "fm:at-vlbg-ortho-2025",
+    "name": "VoGIS orthophoto 2025",
+    "type": "wms",
+    "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_2025_r_wms.map",
+    "layers": ["ef2025_10cm"],
+    "country_code": "AT",
+    "category": "photo",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Vorarlberg – data.vorarlberg.gv.at",
+      "url": "https://data.vorarlberg.gv.at/"
+    },
+    "bbox": [9.53, 46.83, 10.24, 47.55],
+    "note": "Orthophoto mosaic, 2025, 10 cm."
+  },
+  {
+    "id": "fm:at-stmk-ortho-sw-1994-2001",
+    "name": "GIS-Steiermark black and white orthophoto 1994-2001",
+    "type": "wms",
+    "url": "https://gis.stmk.gv.at/image/services/OGD_DOP/SW_1994_2001/ImageServer/WMSServer",
+    "layers": ["SW_1994_2001"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Steiermark – data.steiermark.gv.at",
+      "url": "https://data.steiermark.gv.at/"
+    },
+    "bbox": [13.55, 46.6, 16.2, 47.85],
+    "note": "Black and white orthophotos 1994–2001."
+  },
+  {
+    "id": "fm:at-stmk-ortho-2003-2007",
+    "name": "GIS-Steiermark orthophoto 2003-2007",
+    "type": "wms",
+    "url": "https://gis.stmk.gv.at/image/services/OGD_DOP/Flug_2003_2007_RGB/ImageServer/WMSServer",
+    "layers": ["Flug_2003_2007_RGB"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Steiermark – data.steiermark.gv.at",
+      "url": "https://data.steiermark.gv.at/"
+    },
+    "bbox": [13.55, 46.6, 16.2, 47.85],
+    "note": "Colour orthophotos of the 2003–2007 flights, 25 cm."
+  },
+  {
+    "id": "fm:at-stmk-ortho-2008-2011",
+    "name": "GIS-Steiermark orthophoto 2008-2011",
+    "type": "wms",
+    "url": "https://gis.stmk.gv.at/image/services/OGD_DOP/Flug_2008_2011_RGB/ImageServer/WMSServer",
+    "layers": ["Flug_2008_2011_RGB"],
+    "country_code": "AT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Steiermark – data.steiermark.gv.at",
+      "url": "https://data.steiermark.gv.at/"
+    },
+    "bbox": [13.55, 46.6, 16.2, 47.85],
+    "note": "Colour orthophotos of the 2008–2011 flights, 20 cm."
+  },
+  {
+    "id": "fm:at-stmk-franziszeischer-kataster",
+    "name": "GIS-Steiermark Franziszeischer Kataster (1820-1841)",
+    "type": "wms",
+    "url": "https://gis.stmk.gv.at/image/services/OGD_RDATA/FranziszeischerKataster/ImageServer/WMSServer",
+    "layers": ["FranziszeischerKataster"],
+    "country_code": "AT",
+    "category": "historicmap",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Steiermark – data.steiermark.gv.at",
+      "url": "https://data.steiermark.gv.at/"
+    },
+    "bbox": [13.55, 46.6, 16.2, 47.85],
+    "note": "Georeferenced scans of the Franciscan cadastre of Styria."
+  },
+  {
+    "id": "fm:at-stmk-hillshade-multi",
+    "name": "GIS-Steiermark multidirectional hillshade (DGM)",
+    "type": "wms",
+    "url": "https://gis.stmk.gv.at/arcgis/services/OGD/als_schummerung/MapServer/WMSServer",
+    "layers": ["Digitales_Gelaendemodell_DGM_multidirektional"],
+    "country_code": "AT",
+    "category": "elevation",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/3.0/at/deed.de",
+    "attribution": {
+      "text": "Land Steiermark – data.steiermark.gv.at",
+      "url": "https://data.steiermark.gv.at/"
+    },
+    "bbox": [13.55, 46.6, 16.2, 47.85],
+    "note": "Multidirectional hillshade from airborne laser scanning."
+  },
+  {
+    "id": "fm:at-noe-protected-areas",
+    "name": "NÖ protected areas (nature reserves, landscape protection, Natura 2000, nature parks)",
+    "type": "wms",
+    "url": "https://sdi.noe.gv.at/at.gv.noe.geoserver/OGD/wms",
+    "layers": [
+      "RNA_NSGEB",
+      "RNA_LSGEB",
+      "RNA_N2K_FFH",
+      "RNA_N2K_VS",
+      "RNA_NATURPARK"
+    ],
+    "country_code": "AT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "Land Niederösterreich – data.noe.gv.at",
+      "url": "https://data.noe.gv.at/"
+    },
+    "bbox": [14.4, 47.4, 17.1, 49.03],
+    "note": "Nature reserves, landscape protection, Natura 2000 and nature parks."
   }
 ]
