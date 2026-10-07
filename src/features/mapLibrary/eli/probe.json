@@ -2749,32 +2749,32 @@
   },
   "ORTOS_DGRF_2004_06": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "ORTOS_DGT_2014_15": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "ORTOS_DGT_2018_WMS": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "ORTOS_DGT_2021_RGB": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "ORTOS_DGT_2025_RGB": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "OSIP": {
@@ -4241,6 +4241,18 @@
     "cors": true,
     "scales": []
   },
+  "fm:at-geosphere-wuerm-glaciation": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:at-geosphere-wuerm-rivers": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:at-noe-protected-areas": {
     "v": 3,
     "status": 200,
@@ -4337,6 +4349,24 @@
     "cors": true,
     "scales": []
   },
+  "fm:at-vlbg-biotopes": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:at-vlbg-flood-hazard": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:at-vlbg-glaciers": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:at-vlbg-hazard-zones": {
     "v": 3,
     "status": 200,
@@ -4421,6 +4451,12 @@
     "cors": true,
     "scales": []
   },
+  "fm:at-vlbg-ski-pistes": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:at-vlbg-slope-50cm": {
     "v": 3,
     "status": 200,
@@ -4439,7 +4475,43 @@
     "cors": true,
     "scales": []
   },
+  "fm:at-vlbg-wildlife-keep-free": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:at-vlbg-wildlife-quiet-zones": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:at-wien-contours": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:at-wien-flood-hazard": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:at-wien-franziszeischer-kataster": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:at-wien-hiking-trails": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:at-wien-protected-areas": {
     "v": 3,
     "status": 200,
     "cors": true,
@@ -4511,6 +4583,18 @@
     "cors": true,
     "scales": []
   },
+  "fm:cz-cuzk-data250": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-data50": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:cz-cuzk-dmr5g-aspect": {
     "v": 3,
     "status": 200,
@@ -4529,13 +4613,97 @@
     "cors": true,
     "scales": []
   },
+  "fm:cz-cuzk-geomorphology": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-kn": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-mcr1m": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-mcr2m": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-mcr500": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-overview": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:cz-cuzk-zabaged-contours": {
     "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
+  "fm:cz-cuzk-zabaged-planimetry": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-zabaged-trails-lifts": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:cz-cuzk-zm": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-zm10": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-zm100": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-zm25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-zm250": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-zm5": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-zm50": {
     "v": 3,
     "status": 200,
     "cors": true,
@@ -4559,6 +4727,18 @@
     "cors": true,
     "scales": []
   },
+  "fm:de-bgr-buek200": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bgr-gk1000": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:de-bgr-guek250": {
     "v": 3,
     "status": 200,
@@ -4572,6 +4752,12 @@
     "scales": []
   },
   "fm:de-bkg-dtk100": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bkg-dtk250": {
     "v": 3,
     "status": 200,
     "cors": true,
@@ -4611,6 +4797,12 @@
     "v": 3,
     "status": 200,
     "cors": false,
+    "scales": []
+  },
+  "fm:de-bw-hist-flurkarte-wuerttemberg": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "fm:de-bw-histdop-1960s": {
@@ -4667,7 +4859,55 @@
     "cors": true,
     "scales": []
   },
+  "fm:de-by-dtk500": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-engineering-geology-digk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:de-by-geology-dgk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-geology-gk500": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-geotopes": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-histdop-2003-2008": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-histdop-2009-2014": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-histdop-2015-2019": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-histdop-2020-2025": {
     "v": 3,
     "status": 200,
     "cors": true,
@@ -4685,7 +4925,19 @@
     "cors": true,
     "scales": []
   },
+  "fm:de-by-lfu-protected-areas": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:de-by-positionsblaetter": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-renovationsmessung": {
     "v": 3,
     "status": 200,
     "cors": true,
@@ -4707,6 +4959,24 @@
     "v": 3,
     "status": 200,
     "cors": true,
+    "scales": []
+  },
+  "fm:hu-admin-units": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:hu-forest-cover-2020": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:hu-forest-cover-districts": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
     "scales": []
   },
   "fm:hu-geology-100k": {
@@ -4871,6 +5141,12 @@
     "cors": false,
     "scales": []
   },
+  "fm:it-tn-hazard-synthesis": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:it-tn-orthophoto-1973": {
     "v": 3,
     "status": 200,
@@ -4889,13 +5165,37 @@
     "cors": true,
     "scales": []
   },
+  "fm:pl-gugik-general-map": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:pl-gugik-hypsometry": {
     "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
+  "fm:pl-gugik-soil-agri": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:pl-gugik-topo": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:sk-sgudz-old-mines": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:sk-ugkk-3rd-military-survey": {
     "v": 3,
     "status": 200,
     "cors": true,

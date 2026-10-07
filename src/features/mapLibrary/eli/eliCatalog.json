@@ -1118,6 +1118,26 @@
       }
     },
     {
+      "type": "1I36J",
+      "layer": "overlay",
+      "name": "ŠGÚDŠ old mining works",
+      "countries": ["sk"],
+      "bbox": [16.8299, 47.7299, 22.57, 49.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.geology.sk/arcgis/services/WebServices/SBD/MapServer/WMSServer",
+        "layers": ["0", "1"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ŠGÚDŠ",
+            "url": "https://www.geology.sk/"
+          }
+        ]
+      }
+    },
+    {
       "type": "1JYTU",
       "layer": "overlay",
       "name": "ISPRA geological map 1:25 000 (CARG)",
@@ -1215,6 +1235,178 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "1MMWL",
+      "layer": "overlay",
+      "name": "ČÚZK ZABAGED planimetry (all layers)",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis/services/ZABAGED_POLOHOPIS/MapServer/WMSServer",
+        "layers": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "49",
+          "50",
+          "51",
+          "52",
+          "53",
+          "54",
+          "55",
+          "56",
+          "57",
+          "58",
+          "59",
+          "60",
+          "61",
+          "62",
+          "63",
+          "64",
+          "65",
+          "66",
+          "67",
+          "68",
+          "69",
+          "70",
+          "71",
+          "72",
+          "73",
+          "74",
+          "75",
+          "76",
+          "77",
+          "78",
+          "79",
+          "80",
+          "81",
+          "82",
+          "83",
+          "84",
+          "85",
+          "86",
+          "87",
+          "88",
+          "89",
+          "90",
+          "91",
+          "92",
+          "93",
+          "94",
+          "95",
+          "96",
+          "97",
+          "98",
+          "99",
+          "100",
+          "101",
+          "102",
+          "103",
+          "104",
+          "105",
+          "106",
+          "107",
+          "108",
+          "109",
+          "110",
+          "111",
+          "112",
+          "113",
+          "114",
+          "115",
+          "116",
+          "117",
+          "118",
+          "119",
+          "120",
+          "121",
+          "122",
+          "123",
+          "124",
+          "125",
+          "126",
+          "127",
+          "128",
+          "129",
+          "130",
+          "131",
+          "132",
+          "133",
+          "134",
+          "135",
+          "136",
+          "137",
+          "138",
+          "139",
+          "140",
+          "141",
+          "142",
+          "143",
+          "144",
+          "145",
+          "146",
+          "147",
+          "148"
+        ],
+        "minZoom": 12,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -1753,6 +1945,28 @@
       }
     },
     {
+      "type": "2EETM",
+      "layer": "overlay",
+      "name": "BGR Geological Map GK1000",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bgr.de/wms/geologie/gk1000/",
+        "layers": ["0", "2"],
+        "minZoom": 9,
+        "maxNativeZoom": 10,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: GK1000, (c) BGR Hannover, 2014",
+            "url": "https://www.bgr.bund.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "2FRNQ",
       "layer": "base",
       "name": "imagico.de: Volcán Calbuco",
@@ -1936,6 +2150,147 @@
       }
     },
     {
+      "type": "2PTY2",
+      "layer": "overlay",
+      "name": "ČÚZK DATA250 topographic data 1:250 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis/services/DATA250/MapServer/WMSServer",
+        "layers": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "49",
+          "50",
+          "51",
+          "52",
+          "53",
+          "54",
+          "55",
+          "56",
+          "57",
+          "58",
+          "59",
+          "60",
+          "61",
+          "62",
+          "63",
+          "64",
+          "65",
+          "66",
+          "67",
+          "68",
+          "69",
+          "70",
+          "71",
+          "72",
+          "73",
+          "74",
+          "75",
+          "76",
+          "77",
+          "78",
+          "79",
+          "80",
+          "81",
+          "82",
+          "83",
+          "84",
+          "85",
+          "86",
+          "87",
+          "88",
+          "89",
+          "90",
+          "91",
+          "92",
+          "93",
+          "94",
+          "95",
+          "96",
+          "97",
+          "98",
+          "99",
+          "100",
+          "101",
+          "102",
+          "103",
+          "104",
+          "105",
+          "106",
+          "107",
+          "108",
+          "109",
+          "110",
+          "111",
+          "112",
+          "113",
+          "114",
+          "115",
+          "116",
+          "117"
+        ],
+        "minZoom": 9,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "2PVHH",
       "layer": "base",
       "name": "Mecklenburg-Vorpommern DTK",
@@ -2000,6 +2355,27 @@
             "type": "map",
             "name": "Tiles © cquest@Openstreetmap France, data © IGN, LO/OL",
             "url": "https://wiki.openstreetmap.org/wiki/FR:Servers/tile.openstreetmap.fr#Route500.E2.84.A2.C2.A9.C2.AE"
+          }
+        ]
+      }
+    },
+    {
+      "type": "2TKDW",
+      "layer": "overlay",
+      "name": "ČÚZK Cadastral map (KN)",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.cuzk.cz/wms/wms.asp",
+        "layers": ["KN"],
+        "minZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -2643,6 +3019,26 @@
       }
     },
     {
+      "type": "40QTI",
+      "layer": "overlay",
+      "name": "NÉBIH Forest cover per forestry district",
+      "countries": ["hu"],
+      "bbox": [16.02, 45.68, 22.94, 48.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://erdoterkep.nebih.gov.hu/geoserver/ows",
+        "layers": ["nebih:korzet_erdosultseg"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© NÉBIH Erdőtérkép",
+            "url": "https://erdoterkep.nebih.gov.hu/"
+          }
+        ]
+      }
+    },
+    {
       "type": "42IIH",
       "layer": "base",
       "name": "imagico.de: Prokletije Mountains",
@@ -3102,6 +3498,27 @@
       }
     },
     {
+      "type": "4KZFI",
+      "layer": "overlay",
+      "name": "Provincia di Trento hazard synthesis map",
+      "countries": ["it"],
+      "bbox": [10.396, 45.62, 12.032, 46.58],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.provincia.tn.it/agol/services/geologico/CP_sintesi_finale/MapServer/WMSServer",
+        "layers": ["3", "5"],
+        "minZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Provincia autonoma di Trento (CC BY 4.0)",
+            "url": "https://www.provincia.tn.it/"
+          }
+        ]
+      }
+    },
+    {
       "type": "4LUSE",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1996",
@@ -3218,6 +3635,98 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "4S4LY",
+      "layer": "overlay",
+      "name": "ČÚZK DATA50 topographic data 1:50 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis/services/DATA50/MapServer/WMSServer",
+        "layers": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "49",
+          "50",
+          "51",
+          "52",
+          "53",
+          "54",
+          "55",
+          "56",
+          "57",
+          "58",
+          "59",
+          "60",
+          "61",
+          "62",
+          "63",
+          "64",
+          "65",
+          "66",
+          "67",
+          "68"
+        ],
+        "minZoom": 10,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -3574,6 +4083,26 @@
       }
     },
     {
+      "type": "5DEIL",
+      "layer": "overlay",
+      "name": "VoGIS glacier extents (1950s-2012)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:gletscherflaechen_grp"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "5DMVV",
       "layer": "base",
       "name": "Sarasota County Orthoimagery (2025)",
@@ -3757,6 +4286,28 @@
       }
     },
     {
+      "type": "5LM6X",
+      "layer": "base",
+      "name": "Orthophotos of the northern portion of mainland Portugal - 25 cm - 2021 (DGT)",
+      "countries": ["pt"],
+      "bbox": [-9.1126, 39.5729, -6.166, 42.1677],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2021",
+        "layers": ["Ortos2021-RGB"],
+        "minZoom": 14,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Informação geográfica cedida pela Direção-Geral do Território",
+            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/d70dd232-aaee-4e6b-a804-5a0b70c537be"
+          }
+        ]
+      }
+    },
+    {
       "type": "5LWFG",
       "layer": "base",
       "name": "Ukraine - Cherkasy 2021",
@@ -3773,6 +4324,27 @@
             "type": "map",
             "name": "© Геопортал містобудівного кадастру міста Черкаси",
             "url": "https://mgis.chmr.gov.ua/portal/home/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "5MZKC",
+      "layer": "overlay",
+      "name": "Wien Franziszeischer Kataster (parcels)",
+      "countries": ["at"],
+      "bbox": [16.18, 48.12, 16.58, 48.32],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://data.wien.gv.at/daten/geo",
+        "layers": ["FRANZKATOGD"],
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Stadt Wien – data.wien.gv.at",
+            "url": "https://data.wien.gv.at/"
           }
         ]
       }
@@ -3961,6 +4533,28 @@
       }
     },
     {
+      "type": "5UQR9",
+      "layer": "base",
+      "name": "BKG DTK250",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://sg.geodatenzentrum.de/wms_dtk250",
+        "layers": ["dtk250"],
+        "minZoom": 5,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis-DE / BKG (2026) dl-de/by-2-0",
+            "url": "https://gdz.bkg.bund.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "5W8PE",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1980",
@@ -4103,6 +4697,57 @@
             "type": "map",
             "name": "Delaware Valley Regional Planning Commission",
             "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3214"
+          }
+        ]
+      }
+    },
+    {
+      "type": "64O4Y",
+      "layer": "base",
+      "name": "ČÚZK ZM250 topographic map 1:250 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM/ZTM250/MapServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 5,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "6685Q",
+      "layer": "overlay",
+      "name": "Bayern Orthophotos 2020-2025",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/histdop/v1/histdop",
+        "layers": [
+          "by_dop_2020_h",
+          "by_dop_2021_h",
+          "by_dop_2022_h",
+          "by_dop_2023_h",
+          "by_dop_2024_h",
+          "by_dop_2025_h"
+        ],
+        "minZoom": 8,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
           }
         ]
       }
@@ -4412,6 +5057,28 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "6MJO1",
+      "layer": "base",
+      "name": "Bayern Historische Flurkarte (Renovationsmessung)",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/hist/v1/histkarten",
+        "layers": ["by_renovationsmessung"],
+        "minZoom": 16,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
           }
         ]
       }
@@ -4829,6 +5496,26 @@
       }
     },
     {
+      "type": "78HFP",
+      "layer": "overlay",
+      "name": "Wien hiking trails (Stadtwanderwege, Rundumadum)",
+      "countries": ["at"],
+      "bbox": [16.18, 48.12, 16.58, 48.32],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://data.wien.gv.at/daten/geo",
+        "layers": ["WANDERWEGEOGD"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Stadt Wien – data.wien.gv.at",
+            "url": "https://data.wien.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "78LCS",
       "layer": "base",
       "name": "tiris historical orthophoto 1949-1954",
@@ -4933,6 +5620,26 @@
           {
             "type": "map",
             "name": "Realized by means of Brussels UrbIS®© - Distribution & Copyright CIRB"
+          }
+        ]
+      }
+    },
+    {
+      "type": "7CC2G",
+      "layer": "overlay",
+      "name": "VoGIS ski pistes and routes (2015)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:Skipisten_grp"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -5432,6 +6139,86 @@
       }
     },
     {
+      "type": "89ZCB",
+      "layer": "overlay",
+      "name": "BGR Soil Map BÜK200",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bgr.de/wms/boden/buek200/",
+        "layers": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "34",
+          "35",
+          "36",
+          "37",
+          "38",
+          "39",
+          "40",
+          "41",
+          "42",
+          "43",
+          "44",
+          "45",
+          "46",
+          "47",
+          "48",
+          "49",
+          "50",
+          "51",
+          "52",
+          "53",
+          "54",
+          "55",
+          "56"
+        ],
+        "minZoom": 8,
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: BÜK200, (c) BGR, Hannover, 2018",
+            "url": "https://www.bgr.bund.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "8A9SX",
       "layer": "base",
       "name": "OS 1st Ed. 6-inch. Armagh, Ireland (1840s-1880s) (NLS)",
@@ -5684,6 +6471,28 @@
       }
     },
     {
+      "type": "8SDQF",
+      "layer": "base",
+      "name": "LGL Baden-Württemberg Historic Cadastral Map Württemberg 1:2500",
+      "countries": ["de"],
+      "bbox": [7.2, 47.4, 10.7, 50],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_HIST_FKWue_25_K",
+        "layers": ["RDS.LY_HISTFK25_SWKOMBI"],
+        "minZoom": 15,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+            "url": "https://www.lgl-bw.de"
+          }
+        ]
+      }
+    },
+    {
       "type": "8YAZN",
       "layer": "base",
       "name": "Pinellas County Orthoimagery (2025)",
@@ -5822,6 +6631,28 @@
             "type": "map",
             "name": "Regione Lombardia - Infrastruttura per l'informazione territoriale",
             "url": "https://www.dati.gov.it/content/italian-open-data-license-v20"
+          }
+        ]
+      }
+    },
+    {
+      "type": "93D0N",
+      "layer": "base",
+      "name": "Orthophotos of the coastal areas of mainland Portugal - 10 cm - 2014-2015 (DGT)",
+      "countries": ["pt"],
+      "bbox": [-9.5321, 36.9367, -7.3896, 41.9309],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2014-2015-litoral",
+        "layers": ["Ortoimagens_2014-2015_Litoral"],
+        "minZoom": 14,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Informação geográfica cedida pela Direção-Geral do Território",
+            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/66425725-0ab4-4d7a-ad1c-b0d923881a61"
           }
         ]
       }
@@ -6751,6 +7582,34 @@
       }
     },
     {
+      "type": "A6W49",
+      "layer": "overlay",
+      "name": "Bayern Orthophotos 2015-2019",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/histdop/v1/histdop",
+        "layers": [
+          "by_dop_2015_h",
+          "by_dop_2016_h",
+          "by_dop_2017_h",
+          "by_dop_2018_h",
+          "by_dop_2019_h"
+        ],
+        "minZoom": 8,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
+          }
+        ]
+      }
+    },
+    {
       "type": "A7RE0",
       "layer": "base",
       "name": "Worms 2012",
@@ -6864,6 +7723,31 @@
           {
             "type": "map",
             "name": "AGIS OF2025"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ACWUW",
+      "layer": "overlay",
+      "name": "Wien nature reserves, landscape protection and Natura 2000",
+      "countries": ["at"],
+      "bbox": [16.18, 48.12, 16.58, 48.32],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://data.wien.gv.at/daten/geo",
+        "layers": [
+          "NATURA2TOGD",
+          "NATURA2TVOGELOGD",
+          "NATURSCHUTZGEBOGD",
+          "LANDSCHUTZGEBOGD"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Stadt Wien – data.wien.gv.at",
+            "url": "https://data.wien.gv.at/"
           }
         ]
       }
@@ -7555,6 +8439,26 @@
             "type": "map",
             "name": "Urząd Miasta Gliwice",
             "url": "https://msip.gliwice.eu/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "BLEE2",
+      "layer": "overlay",
+      "name": "GeoSphere Würm river network (Eastern Alps)",
+      "countries": ["at"],
+      "bbox": [8.5, 45.5, 17.5, 49],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.geosphere.at/maps/services/glaziologie/wuerm_ostalpen_500_fl/MapServer/WMSServer",
+        "layers": ["0"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoSphere Austria",
+            "url": "https://www.geosphere.at/"
           }
         ]
       }
@@ -8914,6 +9818,28 @@
       }
     },
     {
+      "type": "DNC7I",
+      "layer": "base",
+      "name": "GUGiK general geographic map",
+      "countries": ["pl"],
+      "bbox": [14.12, 49, 24.15, 54.84],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapy.geoportal.gov.pl/wss/service/img/guest/Ogolnogeograficzna/MapServer/WMSServer",
+        "layers": ["Ogolnogeograficzna"],
+        "minZoom": 4,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GUGiK (Główny Urząd Geodezji i Kartografii)",
+            "url": "https://www.geoportal.gov.pl/"
+          }
+        ]
+      }
+    },
+    {
       "type": "DNQWW",
       "layer": "base",
       "name": "Pinellas County Orthoimagery (2023)",
@@ -9220,6 +10146,26 @@
       }
     },
     {
+      "type": "E8E1B",
+      "layer": "overlay",
+      "name": "Wien contour lines",
+      "countries": ["at"],
+      "bbox": [16.18, 48.12, 16.58, 48.32],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://data.wien.gv.at/daten/geo",
+        "layers": ["HOEHENLINIEOGD"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Stadt Wien – data.wien.gv.at",
+            "url": "https://data.wien.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "E9XUR",
       "layer": "base",
       "name": "osm-hr: US Topo 50",
@@ -9300,6 +10246,26 @@
       }
     },
     {
+      "type": "ECZ4V",
+      "layer": "overlay",
+      "name": "NÉBIH Forest cover 2020",
+      "countries": ["hu"],
+      "bbox": [16.02, 45.68, 22.94, 48.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://erdoterkep.nebih.gov.hu/geoserver/ows",
+        "layers": ["nebih:erdo2020_raszter"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© NÉBIH Erdőtérkép",
+            "url": "https://erdoterkep.nebih.gov.hu/"
+          }
+        ]
+      }
+    },
+    {
       "type": "EDIE7",
       "layer": "base",
       "name": "Inuyama city and around Imagery 2023",
@@ -9315,6 +10281,26 @@
           {
             "type": "map",
             "name": "OSMFJ_Ortho"
+          }
+        ]
+      }
+    },
+    {
+      "type": "EDVC3",
+      "layer": "base",
+      "name": "ČÚZK ZM10 topographic map 1:10 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM/ZTM10/MapServer/WMSServer",
+        "layers": ["0"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -9481,6 +10467,28 @@
             "type": "map",
             "name": "OSMFJ_Ortho",
             "url": "https://www.city.kagoshima.lg.jp/ict/opendata.html"
+          }
+        ]
+      }
+    },
+    {
+      "type": "EMG7T",
+      "layer": "base",
+      "name": "Bayern DTK500",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/dtk/v1/dtk500",
+        "layers": ["by_dtk500"],
+        "minZoom": 7,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
           }
         ]
       }
@@ -9779,6 +10787,34 @@
             "type": "map",
             "name": "Land Tirol – data.tirol.gv.at",
             "url": "https://data.tirol.gv.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "F2MV6",
+      "layer": "overlay",
+      "name": "LfU Bayern Protected Areas",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.lfu.bayern.de/gdi/wms/natur/schutzgebiete",
+        "layers": [
+          "nationalpark",
+          "naturschutzgebiet",
+          "landschaftsschutzgebiet",
+          "naturpark",
+          "fauna_flora_habitat_gebiet",
+          "vogelschutzgebiet",
+          "biosphaerenreservat"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
+            "url": "https://www.lfu.bayern.de/"
           }
         ]
       }
@@ -10756,6 +11792,28 @@
       }
     },
     {
+      "type": "GLZD0",
+      "layer": "overlay",
+      "name": "LfU Bayern Geological Map 1:500 000",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.lfu.bayern.de/gdi/wms/geologie/gk500",
+        "layers": ["haupteinheitgk500"],
+        "minZoom": 6,
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
+            "url": "https://www.lfu.bayern.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "GOEFE",
       "layer": "base",
       "name": "Saint Lucie County Orthoimagery (2024)",
@@ -11353,6 +12411,28 @@
             "type": "map",
             "name": "Ohio Department of Transportation",
             "url": "https://gis.dot.state.oh.us/tims_classic/About"
+          }
+        ]
+      }
+    },
+    {
+      "type": "HCJTA",
+      "layer": "base",
+      "name": "Orthophotos of mainland Portugal - 50 cm - 2004-2006 (DGT)",
+      "countries": ["pt"],
+      "bbox": [-9.8191, 36.686, -6.1571, 42.1869],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2004-2006",
+        "layers": ["Ortos2004-2006-RGB"],
+        "minZoom": 14,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Informação geográfica cedida pela Direção-Geral do Território",
+            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/5fd2c1e18f5f4c3f814a3e7212937ce7"
           }
         ]
       }
@@ -11962,6 +13042,26 @@
       }
     },
     {
+      "type": "IKSVR",
+      "layer": "overlay",
+      "name": "VoGIS BWV flood hazard zones",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:gefahrenzonen_BWV_grp"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "IQF2X",
       "layer": "base",
       "name": "City of Coquitlam Aerial Imagery (2020)",
@@ -12450,6 +13550,28 @@
       }
     },
     {
+      "type": "JE18C",
+      "layer": "overlay",
+      "name": "LfU Bayern Engineering Geology (dIGK25)",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.lfu.bayern.de/gdi/wms/geologie/digk25",
+        "layers": ["baugrund_digk25"],
+        "minZoom": 12,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
+            "url": "https://www.lfu.bayern.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "JEL22",
       "layer": "base",
       "name": "Bouches-du-Rhône 2009",
@@ -12741,6 +13863,26 @@
       }
     },
     {
+      "type": "JRHQC",
+      "layer": "overlay",
+      "name": "VoGIS biotope inventory",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:biotope"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "JT049",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1990",
@@ -12901,6 +14043,35 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "K1ZT0",
+      "layer": "overlay",
+      "name": "Bayern Orthophotos 2003-2008",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/histdop/v1/histdop",
+        "layers": [
+          "by_dop_2003_h",
+          "by_dop_2004_h",
+          "by_dop_2005_h",
+          "by_dop_2006_h",
+          "by_dop_2007_h",
+          "by_dop_2008_h"
+        ],
+        "minZoom": 8,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
           }
         ]
       }
@@ -13657,6 +14828,50 @@
       }
     },
     {
+      "type": "L87F5",
+      "layer": "base",
+      "name": "ČÚZK Overview map of the Czech Republic",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/PrehledovaMapa/MapServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 5,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "LCNUS",
+      "layer": "overlay",
+      "name": "LfU Bayern Geotopes",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.lfu.bayern.de/gdi/wms/geologie/geotope",
+        "layers": ["geotoplage"],
+        "minZoom": 8,
+        "maxNativeZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
+            "url": "https://www.lfu.bayern.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "LCVQY",
       "layer": "base",
       "name": "NRW Liegenschaftskataster",
@@ -13782,6 +14997,26 @@
             "type": "map",
             "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
             "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+          }
+        ]
+      }
+    },
+    {
+      "type": "LLGS6",
+      "layer": "base",
+      "name": "ÚGKK 3rd military survey",
+      "countries": ["sk"],
+      "bbox": [16.8299, 47.7299, 22.57, 49.61],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://zbgisws.skgeodesy.sk/hm_III_vm/service.svc/get",
+        "layers": ["1", "2", "3"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ÚGKK SR",
+            "url": "https://www.geoportal.sk/"
           }
         ]
       }
@@ -15103,6 +16338,28 @@
       }
     },
     {
+      "type": "NK8SO",
+      "layer": "base",
+      "name": "ČÚZK Map of the Czech Republic 1:2 000 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM/MCR2M/MapServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 7,
+        "maxNativeZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "NLXIM",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 2005",
@@ -16206,6 +17463,28 @@
       }
     },
     {
+      "type": "PBPBU",
+      "layer": "base",
+      "name": "ČÚZK Map of the Czech Republic 1:500 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM/MCR500/MapServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 5,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "PCPMS",
       "layer": "base",
       "name": "City of Coquitlam Aerial Imagery (2014)",
@@ -16569,6 +17848,27 @@
             "type": "map",
             "name": "Mégalis Bretagne et Collectivités Territoriales Bretonnes",
             "url": "https://public.sig.rennesmetropole.fr/geonetwork/srv/fre/catalog.search#/metadata/02a468e1-a970-40bc-9ffa-72e1beef74e6"
+          }
+        ]
+      }
+    },
+    {
+      "type": "PYGXY",
+      "layer": "overlay",
+      "name": "ČÚZK ZABAGED hiking trails and ski lifts",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis/services/ZABAGED_POLOHOPIS/MapServer/WMSServer",
+        "layers": ["66", "73"],
+        "minZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -18022,6 +19322,28 @@
       }
     },
     {
+      "type": "S50OB",
+      "layer": "base",
+      "name": "ČÚZK Map of the Czech Republic 1:1 000 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM/MCR1M/MapServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 5,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "S6525",
       "layer": "base",
       "name": "NOAA NGS PR/USVI Coastal Imagery (2024)",
@@ -18222,6 +19544,26 @@
             "type": "map",
             "name": "Tiles © cquest@Openstreetmap France, data © OpenStreetMap contributors, ODBL",
             "url": "https://wiki.openstreetmap.org/wiki/FR:WikiProject_France/WikiProject_Base_Adresses_Nationale_Ouverte_(BANO)#Licence_du_r.C3.A9sultat"
+          }
+        ]
+      }
+    },
+    {
+      "type": "SI6SI",
+      "layer": "base",
+      "name": "ČÚZK ZM50 topographic map 1:50 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM/ZTM50/MapServer/WMSServer",
+        "layers": ["0"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -18433,6 +19775,26 @@
       }
     },
     {
+      "type": "SYST8",
+      "layer": "overlay",
+      "name": "VoGIS game-free areas (Wildfreihaltung)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:wildfreihaltung"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "T13GN",
       "layer": "base",
       "name": "Offene Regionalkarte Mecklenburg-Vorpommern (ORKa.MV)",
@@ -18467,6 +19829,28 @@
             "type": "map",
             "name": "Mercer County, State of Ohio",
             "url": "https://www.mercercountyohio.org/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "T4IPD",
+      "layer": "base",
+      "name": "Orthophotos of mainland Portugal - 25 cm - 2025 (DGT)",
+      "countries": ["pt"],
+      "bbox": [-9.5629, 36.9481, -6.125, 42.1896],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2025",
+        "layers": ["Ortos2025-RGB"],
+        "minZoom": 14,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Informação geográfica cedida pela Direção-Geral do Território",
+            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/96d83932-f957-40d6-a2ea-3a25751c4b2d"
           }
         ]
       }
@@ -18845,6 +20229,26 @@
       }
     },
     {
+      "type": "TR4ZN",
+      "layer": "overlay",
+      "name": "Wien flood hazard zone plan",
+      "countries": ["at"],
+      "bbox": [16.18, 48.12, 16.58, 48.32],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://data.wien.gv.at/daten/geo",
+        "layers": ["HWGEFAHROGD"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Stadt Wien – data.wien.gv.at",
+            "url": "https://data.wien.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "TUQOQ",
       "layer": "overlay",
       "name": "Riksantikvarieämbetet - Archaeological Sites and Monuments",
@@ -19129,6 +20533,28 @@
       }
     },
     {
+      "type": "U5Y1G",
+      "layer": "base",
+      "name": "Orthophotos of mainland Portugal - 25 cm - 2018 (DGT)",
+      "countries": ["pt"],
+      "bbox": [-9.8191, 36.686, -6.1571, 42.1869],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2018",
+        "layers": ["Ortos2018-RGB"],
+        "minZoom": 14,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Informação geográfica cedida pela Direção-Geral do Território",
+            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/daf5479d-29c8-4e0c-b7b8-0e1791891186"
+          }
+        ]
+      }
+    },
+    {
       "type": "U6IP2",
       "layer": "base",
       "name": "Steiermark Terrain",
@@ -19183,6 +20609,26 @@
           {
             "type": "map",
             "name": "Digitales Oberflächenmodell LIDAR 50cm © Amt für Wald des Kantons Bern"
+          }
+        ]
+      }
+    },
+    {
+      "type": "U6T2W",
+      "layer": "base",
+      "name": "ČÚZK ZM25 topographic map 1:25 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM/ZTM25/MapServer/WMSServer",
+        "layers": ["0"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -19448,6 +20894,28 @@
             "type": "map",
             "name": "Sadrži podatke Državne geodetske uprave",
             "url": "https://dgu.gov.hr/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "UVI53",
+      "layer": "base",
+      "name": "ČÚZK ZM100 topographic map 1:100 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM/ZTM100/MapServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 8,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -20013,6 +21481,28 @@
             "type": "map",
             "name": "Staatsbetrieb Geobasisinformation und Vermessung Sachsen",
             "url": "https://geomis.sachsen.de/geomis-client/?lang=de#/datasets/iso/475a9197-620f-4dcb-b8aa-7f71b626443f"
+          }
+        ]
+      }
+    },
+    {
+      "type": "VU5Y5",
+      "layer": "overlay",
+      "name": "GUGiK soil-agricultural map",
+      "countries": ["pl"],
+      "bbox": [13.7, 48.64, 24.87, 55.03],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapy.geoportal.gov.pl/wss/service/pub/guest/MapaGlebowoRolnicza/MapServer/WMSServer",
+        "layers": ["0", "1", "2"],
+        "minZoom": 14,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GUGiK (Główny Urząd Geodezji i Kartografii)",
+            "url": "https://www.geoportal.gov.pl/"
           }
         ]
       }
@@ -21064,6 +22554,28 @@
       }
     },
     {
+      "type": "X3DMB",
+      "layer": "base",
+      "name": "ČÚZK ZM5 topographic map 1:5 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM/ZTM5/MapServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 12,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "X3UNE",
       "layer": "base",
       "name": "IGN Argenmap gris",
@@ -21368,6 +22880,27 @@
       }
     },
     {
+      "type": "XI944",
+      "layer": "overlay",
+      "name": "Lechner Administrative units 2025",
+      "countries": ["hu"],
+      "bbox": [16.02, 45.68, 22.94, 48.61],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://inspire.lechnerkozpont.hu/geoserver/ows",
+        "layers": ["AU.2025:AdministrativeUnits.2025"],
+        "minZoom": 7,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Lechner Tudásközpont (INSPIRE)",
+            "url": "https://inspire.lechnerkozpont.hu/"
+          }
+        ]
+      }
+    },
+    {
       "type": "XIPRN",
       "layer": "base",
       "name": "Seminole County Orthoimagery (2024)",
@@ -21383,6 +22916,27 @@
             "type": "map",
             "name": "Seminole County GIS",
             "url": "https://maps2.scpafl.org/SCPAExternal/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "XIV7V",
+      "layer": "overlay",
+      "name": "GeoSphere Würm ice age glaciation of the Alps",
+      "countries": ["at"],
+      "bbox": [4, 43.5, 17, 49],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.geosphere.at/maps/services/glaziologie/wuerm_alpen/MapServer/WMSServer",
+        "layers": ["0"],
+        "maxNativeZoom": 8,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoSphere Austria",
+            "url": "https://www.geosphere.at/"
           }
         ]
       }
@@ -21634,6 +23188,28 @@
           {
             "type": "map",
             "name": "© Saarländer Landesamt für Vermessung, Geoinformation und Landentwicklung - dl-de/by-2-0 (https://www.govdata.de/dl-de/by-2-0)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Y1DNU",
+      "layer": "overlay",
+      "name": "ČÚZK Geomorphological units",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis/services/GeomorfologickeJednotky/MapServer/WMSServer",
+        "layers": ["0", "1", "2", "3", "4", "5", "6"],
+        "minZoom": 7,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -22316,6 +23892,35 @@
           {
             "type": "map",
             "name": "Instituto de Estadística y Cartografía de Andalucía - Junta de Andalucía"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ZB5E2",
+      "layer": "overlay",
+      "name": "Bayern Orthophotos 2009-2014",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/histdop/v1/histdop",
+        "layers": [
+          "by_dop_2009_h",
+          "by_dop_2010_h",
+          "by_dop_2011_h",
+          "by_dop_2012_h",
+          "by_dop_2013_h",
+          "by_dop_2014_h"
+        ],
+        "minZoom": 8,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
           }
         ]
       }
