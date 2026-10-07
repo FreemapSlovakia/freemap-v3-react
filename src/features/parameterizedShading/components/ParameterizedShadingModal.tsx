@@ -22,6 +22,8 @@ const deBelowColor = (value: string | null) => value ?? '#e6e6e6d0';
 
 const deAboveColor = (value: string | null) => value ?? '#e6e6e600';
 
+const deMinElevation = (value: string | null) => value ?? '0';
+
 const deMaxElevation = (value: string | null) => value ?? '3000';
 
 const deMetallicColor = (value: string | null) => value ?? '#ffffffff';
@@ -95,6 +97,12 @@ export function ParameterizedShadingModal({
     deAboveColor,
   );
 
+  const [minElevation, setMinElevation] = usePersistentState<string>(
+    'fm.shading.hypsometric.minElevation',
+    String,
+    deMinElevation,
+  );
+
   const [maxElevation, setMaxElevation] = usePersistentState<string>(
     'fm.shading.hypsometric.maxElevation',
     String,
@@ -128,19 +136,30 @@ export function ParameterizedShadingModal({
   // A band taller than the terrain itself paints the whole map one colour.
   const invalidWidth = isInvalidFloat(width, false, 0, colorReliefMax);
 
-  const invalidMaxElevation = isInvalidFloat(
-    maxElevation,
+  const invalidMinElevation = isInvalidFloat(
+    minElevation,
     false,
-    1,
+    0,
     colorReliefMax,
   );
+
+  // Above the bottom, where that is valid; a zero-height range has no tints.
+  const maxFloor =
+    minElevation === '' || invalidMinElevation ? 0 : Number(minElevation);
+
+  const invalidMaxElevation =
+    isInvalidFloat(maxElevation, false, maxFloor, colorReliefMax) ||
+    (maxElevation !== '' && Number(maxElevation) <= maxFloor);
 
   const invalidRepeats = isInvalidInt(repeats, false, 1, MAX_REPEATS);
 
   const invalid = isBand
     ? elevation === '' || width === '' || invalidElevation || invalidWidth
     : kind === 'hypsometric'
-      ? maxElevation === '' || invalidMaxElevation
+      ? minElevation === '' ||
+        maxElevation === '' ||
+        invalidMinElevation ||
+        invalidMaxElevation
       : repeats === '' || invalidRepeats;
 
   function handleSubmit() {
@@ -160,6 +179,7 @@ export function ParameterizedShadingModal({
             : metallicColor,
       ),
       aboveColor: hexaToColor(aboveColor),
+      minElevation: Number(minElevation),
       maxElevation: Number(maxElevation),
       darkColor: hexaToColor(darkColor),
       repeats: Number(repeats),
@@ -262,6 +282,31 @@ export function ParameterizedShadingModal({
           )}
 
           {kind === 'hypsometric' && (
+            <Form.Group className="mb-3" controlId="ps-min-elevation">
+              <Form.Label>{sm?.minElevation}</Form.Label>
+
+              <InputGroup hasValidation>
+                <Form.Control
+                  type="number"
+                  step="any"
+                  min={0}
+                  max={colorReliefMax}
+                  value={minElevation}
+                  onChange={(e) => setMinElevation(e.currentTarget.value)}
+                  autoFocus
+                  isInvalid={invalidMinElevation}
+                />
+
+                <InputGroup.Text>m</InputGroup.Text>
+
+                <Form.Control.Feedback type="invalid">
+                  {elevationRange}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
+          )}
+
+          {kind === 'hypsometric' && (
             <Form.Group className="mb-3" controlId="ps-max-elevation">
               <Form.Label>{sm?.maxElevation}</Form.Label>
 
@@ -269,11 +314,10 @@ export function ParameterizedShadingModal({
                 <Form.Control
                   type="number"
                   step="any"
-                  min={1}
+                  min={maxFloor}
                   max={colorReliefMax}
                   value={maxElevation}
                   onChange={(e) => setMaxElevation(e.currentTarget.value)}
-                  autoFocus
                   isInvalid={invalidMaxElevation}
                 />
 
@@ -281,7 +325,7 @@ export function ParameterizedShadingModal({
 
                 <Form.Control.Feedback type="invalid">
                   {m?.general.valueRange({
-                    min: '1 m',
+                    min: `${maxFloor} m`,
                     max: `${colorReliefMax} m`,
                   })}
                 </Form.Control.Feedback>

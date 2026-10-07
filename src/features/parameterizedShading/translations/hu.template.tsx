@@ -21,6 +21,7 @@ const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
   parameters: 'Paraméterek',
   contrast: 'Kontraszt',
   brightness: 'Fényerő',
+  minElevation: 'A legalsó szín magassága',
   maxElevation: 'A legfelső szín magassága',
   highlightColor: 'Csillogás színe',
   darkColor: 'Árnyék színe',

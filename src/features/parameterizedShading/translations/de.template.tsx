@@ -21,6 +21,7 @@ const de: DeepPartialWithRequiredObjects<ShadingMessages> = {
   parameters: 'Parameter',
   contrast: 'Kontrast',
   brightness: 'Helligkeit',
+  minElevation: 'Höhe der untersten Farbe',
   maxElevation: 'Höhe der obersten Farbe',
   highlightColor: 'Glanzfarbe',
   darkColor: 'Schattenfarbe',

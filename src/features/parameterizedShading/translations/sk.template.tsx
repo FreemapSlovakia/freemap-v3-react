@@ -21,6 +21,7 @@ const sk: DeepPartialWithRequiredObjects<ShadingMessages> = {
   parameters: 'Parametre',
   contrast: 'Kontrast',
   brightness: 'Jas',
+  minElevation: 'Výška najnižšej farby',
   maxElevation: 'Výška najvyššej farby',
   highlightColor: 'Farba lesku',
   darkColor: 'Farba tieňa',

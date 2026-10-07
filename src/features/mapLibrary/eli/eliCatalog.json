@@ -160,6 +160,26 @@
       }
     },
     {
+      "type": "09R52",
+      "layer": "overlay",
+      "name": "GeoSphere historical geological map 1:500 000 (Vetters)",
+      "countries": ["at"],
+      "bbox": [9.1, 45.5, 17.9, 49.5],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.geosphere.at/images/services/geologie/karte_historisch_500_vetters/ImageServer/WMSServer",
+        "layers": ["karte_historisch_500_vetters"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoSphere Austria",
+            "url": "https://www.geosphere.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "0AYRJ",
       "layer": "base",
       "name": "Kartverket Economic Maps (historic)",
@@ -789,6 +809,26 @@
             "type": "map",
             "name": "Sanborn Map Company, FirstMap",
             "url": "https://firstmap.delaware.gov"
+          }
+        ]
+      }
+    },
+    {
+      "type": "13UID",
+      "layer": "base",
+      "name": "tiris historical orthophoto 1970-1982",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/orthofoto/MapServer/WMSServer",
+        "layers": ["1970_1982"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
           }
         ]
       }
@@ -1707,6 +1747,26 @@
       }
     },
     {
+      "type": "2PF1F",
+      "layer": "base",
+      "name": "GIS-Steiermark orthophoto 2008-2011",
+      "countries": ["at"],
+      "bbox": [13.55, 46.6, 16.2, 47.85],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.stmk.gv.at/image/services/OGD_DOP/Flug_2008_2011_RGB/ImageServer/WMSServer",
+        "layers": ["Flug_2008_2011_RGB"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Steiermark – data.steiermark.gv.at",
+            "url": "https://data.steiermark.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "2PVHH",
       "layer": "base",
       "name": "Mecklenburg-Vorpommern DTK",
@@ -1915,6 +1975,26 @@
             "type": "map",
             "name": "Staatsbetrieb Geobasisinformation und Vermessung Sachsen",
             "url": "https://geomis.sachsen.de/geomis-client/?lang=de#/datasets/iso/8dbabd0c-b357-49e5-9b10-b792620159e5"
+          }
+        ]
+      }
+    },
+    {
+      "type": "35WO8",
+      "layer": "base",
+      "name": "VoGIS orthophoto 1970s",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_197x_r_wms.map",
+        "layers": ["sw197x_25cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -2478,6 +2558,26 @@
       }
     },
     {
+      "type": "49YEP",
+      "layer": "base",
+      "name": "tiris multidirectional hillshade (DGM)",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/terrain/MapServer/WMSServer",
+        "layers": ["Schummerung_multidirektional_Gelaendemodell"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "4CB2X",
       "layer": "base",
       "name": "imagico.de: Lützow-Holm Bay",
@@ -2866,6 +2966,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "4SB8Y",
+      "layer": "overlay",
+      "name": "WLV torrent and avalanche events",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://inspire.lfrz.gv.at/000901/wms",
+        "layers": ["INSPIRE_WLV_Ereignisse"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
+            "url": "https://www.die-wildbach.at/"
           }
         ]
       }
@@ -3880,6 +4000,26 @@
       }
     },
     {
+      "type": "6CDBQ",
+      "layer": "base",
+      "name": "VoGIS orthophoto 2006",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_2006_r_wms.map",
+        "layers": ["ef2006_25cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "6CFYJ",
       "layer": "base",
       "name": "imagico.de: Russkiye Mountains west evening",
@@ -4042,6 +4182,26 @@
             "type": "map",
             "name": "Staatsbetrieb Geobasisinformation und Vermessung Sachsen",
             "url": "https://geomis.sachsen.de/geomis-client/?lang=de#/datasets/iso/a55d5e28-998a-4d8f-916d-33f922381d1a"
+          }
+        ]
+      }
+    },
+    {
+      "type": "6OHN2",
+      "layer": "overlay",
+      "name": "VoGIS protected areas (nature reserves, Natura 2000)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:Schutzgebiete_grp"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -4399,6 +4559,46 @@
       }
     },
     {
+      "type": "78DFO",
+      "layer": "base",
+      "name": "VoGIS orthophoto 2001",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_2001_r_wms.map",
+        "layers": ["pef2001_25cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "78LCS",
+      "layer": "base",
+      "name": "tiris historical orthophoto 1949-1954",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/orthofoto/MapServer/WMSServer",
+        "layers": ["1949_1954"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "7905A",
       "layer": "overlay",
       "name": "Kartverket Aviation Obstructions overlay",
@@ -4524,6 +4724,26 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "7I192",
+      "layer": "overlay",
+      "name": "tiris slope map (degrees)",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/terrain/MapServer/WMSServer",
+        "layers": ["Gelaendeneigung-Grad"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
           }
         ]
       }
@@ -4735,6 +4955,33 @@
             "type": "map",
             "name": "tiris.tirol.gv.at",
             "url": "https://tiris.tirol.gv.at"
+          }
+        ]
+      }
+    },
+    {
+      "type": "80X9H",
+      "layer": "overlay",
+      "name": "tiris protected areas (nature reserves, national park, Natura 2000)",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/geoland/MapServer/WMSServer",
+        "layers": [
+          "Naturschutzgebiet",
+          "Nationalpark",
+          "Naturpark",
+          "Landschaftsschutzgebiet",
+          "Vogelschutzrichtlinie_SPA",
+          "Habitatrichtlinie_SCI"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
           }
         ]
       }
@@ -5017,6 +5264,26 @@
       }
     },
     {
+      "type": "8G86Z",
+      "layer": "base",
+      "name": "VoGIS orthophoto 1960s",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_196x_r_wms.map",
+        "layers": ["sw196x_25cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "8IKBR",
       "layer": "base",
       "name": "imagico.de: Fimbul Ice Shelf to Heimefront Range",
@@ -5033,6 +5300,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "8JI2D",
+      "layer": "base",
+      "name": "VoGIS orthophoto 2025",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_2025_r_wms.map",
+        "layers": ["ef2025_10cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -5890,6 +6177,26 @@
       }
     },
     {
+      "type": "9YFQU",
+      "layer": "base",
+      "name": "VoGIS orthophoto 1950s",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_195x_r_wms.map",
+        "layers": ["sw195x_25cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "9YLBU",
       "layer": "base",
       "name": "VoGIS: Echtfarbenbild 2012 (12cm)",
@@ -6693,6 +7000,26 @@
       }
     },
     {
+      "type": "B97IR",
+      "layer": "base",
+      "name": "tiris historical orthophoto 1940",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/orthofoto/MapServer/WMSServer",
+        "layers": ["1940"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "B9VOS",
       "layer": "base",
       "name": "imagico.de: Sør Rondane Mountains west evening",
@@ -6772,6 +7099,26 @@
             "type": "map",
             "name": "Grad Zagreb, Gradski ured za strategijsko planiranje i razvoj Grada",
             "url": "https://geoportal.zagreb.hr/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "BDGFM",
+      "layer": "overlay",
+      "name": "tiris aspect map",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/terrain/MapServer/WMSServer",
+        "layers": ["Exposition"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
           }
         ]
       }
@@ -8170,6 +8517,28 @@
       }
     },
     {
+      "type": "DVXWC",
+      "layer": "overlay",
+      "name": "GeoSphere historical geological map 1:75 000",
+      "countries": ["at"],
+      "bbox": [8.5, 42, 20, 50.5],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.geosphere.at/images/services/geologie/karte_historisch_75/ImageServer/WMSServer",
+        "layers": ["karte_historisch_75"],
+        "minZoom": 6,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoSphere Austria",
+            "url": "https://www.geosphere.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "DW2FF",
       "layer": "base",
       "name": "Nancy - Orthophoto - 2001",
@@ -8378,6 +8747,26 @@
         "minZoom": 2,
         "maxNativeZoom": 16,
         "attribution": []
+      }
+    },
+    {
+      "type": "ECK8F",
+      "layer": "base",
+      "name": "GIS-Steiermark black and white orthophoto 1994-2001",
+      "countries": ["at"],
+      "bbox": [13.55, 46.6, 16.2, 47.85],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.stmk.gv.at/image/services/OGD_DOP/SW_1994_2001/ImageServer/WMSServer",
+        "layers": ["SW_1994_2001"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Steiermark – data.steiermark.gv.at",
+            "url": "https://data.steiermark.gv.at/"
+          }
+        ]
       }
     },
     {
@@ -8845,6 +9234,26 @@
       }
     },
     {
+      "type": "F1PQT",
+      "layer": "base",
+      "name": "tiris historical orthophoto 1999-2004",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/orthofoto/MapServer/WMSServer",
+        "layers": ["1999_2004"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "F3T0Y",
       "layer": "base",
       "name": "Ukraine - Cherkasy 2015",
@@ -9288,6 +9697,28 @@
       }
     },
     {
+      "type": "FWESI",
+      "layer": "overlay",
+      "name": "BFW forest development plan (forest functions)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://inspire.lfrz.gv.at/000606/wms",
+        "layers": [
+          "Oesterreichischer Waldentwicklungsplan - Waldfunktionsflaechen"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "BFW – Bundesforschungszentrum für Wald",
+            "url": "https://www.bfw.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "FWEWX",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1947",
@@ -9531,6 +9962,26 @@
             "type": "map",
             "name": "GrandNancy Orthophotographie 2016",
             "url": "https://wiki.openstreetmap.org/wiki/Nancy/Orthophotographie"
+          }
+        ]
+      }
+    },
+    {
+      "type": "GD1N1",
+      "layer": "base",
+      "name": "VoGIS orthophoto winter 2005",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_winter_2005_r_wms.map",
+        "layers": ["Echtfarbenbild-Winter-2005-50cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -9853,6 +10304,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "GV4XZ",
+      "layer": "overlay",
+      "name": "VoGIS mountain bike network",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:mountainbike_strecken"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -10650,6 +11121,26 @@
       }
     },
     {
+      "type": "I75AN",
+      "layer": "overlay",
+      "name": "VoGIS protective forest indication map",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:hinweiskarte_schutzwald"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "ID6XP",
       "layer": "overlay",
       "name": "Fiskeridirektoratet Aquaculture overlay",
@@ -10729,6 +11220,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "IFZXR",
+      "layer": "overlay",
+      "name": "VoGIS WLV hazard zone plan",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:gefahrenzonenplan_WLV_grp"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -11226,6 +11737,26 @@
       }
     },
     {
+      "type": "JCPP2",
+      "layer": "base",
+      "name": "VoGIS orthophoto 1990s",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_199x_r_wms.map",
+        "layers": ["sw199x_50cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "JD92K",
       "layer": "base",
       "name": "imagico.de: El Altar",
@@ -11447,6 +11978,27 @@
             "type": "map",
             "name": "Kendall County GIS",
             "url": "https://geodata.kendallcountyil.gov/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "JPJ0W",
+      "layer": "overlay",
+      "name": "VoGIS ski touring map (slope classes)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_gelaendeinfo_r_atlas_wms.map",
+        "layers": ["tourenkarte_neigung"],
+        "minZoom": 10,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -12182,6 +12734,28 @@
       }
     },
     {
+      "type": "KZNUJ",
+      "layer": "overlay",
+      "name": "GeoSphere geological map 1:50 000",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.geosphere.at/images/services/geologie/karte_50/ImageServer/WMSServer",
+        "layers": ["karte_50"],
+        "minZoom": 7,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoSphere Austria",
+            "url": "https://www.geosphere.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "L19OW",
       "layer": "base",
       "name": "Miami County Orthoimagery (2023)",
@@ -12708,6 +13282,26 @@
             "type": "map",
             "name": "© Česká geologická služba",
             "url": "https://www.geology.cz/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "M3D2H",
+      "layer": "base",
+      "name": "GIS-Steiermark orthophoto 2003-2007",
+      "countries": ["at"],
+      "bbox": [13.55, 46.6, 16.2, 47.85],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.stmk.gv.at/image/services/OGD_DOP/Flug_2003_2007_RGB/ImageServer/WMSServer",
+        "layers": ["Flug_2003_2007_RGB"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Steiermark – data.steiermark.gv.at",
+            "url": "https://data.steiermark.gv.at/"
           }
         ]
       }
@@ -13944,6 +14538,26 @@
       }
     },
     {
+      "type": "NWFT9",
+      "layer": "base",
+      "name": "GIS-Steiermark Franziszeischer Kataster (1820-1841)",
+      "countries": ["at"],
+      "bbox": [13.55, 46.6, 16.2, 47.85],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.stmk.gv.at/image/services/OGD_RDATA/FranziszeischerKataster/ImageServer/WMSServer",
+        "layers": ["FranziszeischerKataster"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Steiermark – data.steiermark.gv.at",
+            "url": "https://data.steiermark.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "NWZ8I",
       "layer": "overlay",
       "name": "NVE Avalanche Danger Areas overlay",
@@ -14114,6 +14728,26 @@
             "type": "map",
             "name": "IGN",
             "url": "https://cartes.gouv.fr/rechercher-une-donnee/dataset/IGNF_ORTHO-EXPRESS"
+          }
+        ]
+      }
+    },
+    {
+      "type": "OAA86",
+      "layer": "base",
+      "name": "GIS-Steiermark multidirectional hillshade (DGM)",
+      "countries": ["at"],
+      "bbox": [13.55, 46.6, 16.2, 47.85],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.stmk.gv.at/arcgis/services/OGD/als_schummerung/MapServer/WMSServer",
+        "layers": ["Digitales_Gelaendemodell_DGM_multidirektional"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Steiermark – data.steiermark.gv.at",
+            "url": "https://data.steiermark.gv.at/"
           }
         ]
       }
@@ -14901,6 +15535,27 @@
       }
     },
     {
+      "type": "PM1DS",
+      "layer": "overlay",
+      "name": "VoGIS slope in degrees (2023, 0.5 m)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_neigung_gr_r_wms.map",
+        "layers": ["st2023_50cm_gr"],
+        "minZoom": 8,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "POLAV",
       "layer": "overlay",
       "name": "Medium voltage gridlines",
@@ -14933,6 +15588,27 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "PPAX8",
+      "layer": "overlay",
+      "name": "GeoSphere geological units and tectonics 1:500 000",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.geosphere.at/maps/services/geologie/karte_500/MapServer/WMSServer",
+        "layers": ["0", "1"],
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoSphere Austria",
+            "url": "https://www.geosphere.at/"
           }
         ]
       }
@@ -16207,6 +16883,26 @@
       }
     },
     {
+      "type": "RQ8Q7",
+      "layer": "base",
+      "name": "VoGIS orthophoto 2009",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_2009_r_wms.map",
+        "layers": ["ef2009_25cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "RTLUN",
       "layer": "base",
       "name": "OS 2nd Ed. 6-inch. Offaly (née Kings County), Ireland (1888-1915) (NLS)",
@@ -16222,6 +16918,27 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "RWA6M",
+      "layer": "overlay",
+      "name": "tiris forest development plan",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/geoland/MapServer/WMSServer",
+        "layers": ["Waldentwicklungsplan"],
+        "minZoom": 10,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
           }
         ]
       }
@@ -16513,6 +17230,26 @@
       }
     },
     {
+      "type": "S85OZ",
+      "layer": "overlay",
+      "name": "tiris slope map for winter sports",
+      "countries": ["at"],
+      "bbox": [10.1, 46.65, 12.97, 47.75],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.tirol.gv.at/arcgis/services/Service_Public/terrain/MapServer/WMSServer",
+        "layers": ["Gelaendeneigung_Wintersport-Grad"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Tirol – data.tirol.gv.at",
+            "url": "https://data.tirol.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "S9RPJ",
       "layer": "base",
       "name": "Tallahassee - Leon County Orthoimagery (2022 CIR)",
@@ -16659,6 +17396,28 @@
       }
     },
     {
+      "type": "SMKRZ",
+      "layer": "overlay",
+      "name": "GeoSphere GEOFAST provisional geological map 1:50 000",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.geosphere.at/images/services/geologie/karte_geofast_50/ImageServer/WMSServer",
+        "layers": ["karte_geofast_50"],
+        "minZoom": 6,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoSphere Austria",
+            "url": "https://www.geosphere.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "SNQRQ",
       "layer": "overlay",
       "name": "Vicmap Property - Property Polygon",
@@ -16720,6 +17479,26 @@
       }
     },
     {
+      "type": "SUKBV",
+      "layer": "overlay",
+      "name": "WLV avalanche and torrent catchment areas",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://inspire.lfrz.gv.at/000901/wms",
+        "layers": ["WLV_EZG_LA", "WLV_EZG_WB"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
+            "url": "https://www.die-wildbach.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "SUL4Q",
       "layer": "base",
       "name": "basemap.at Orthofoto",
@@ -16735,6 +17514,26 @@
             "type": "map",
             "name": "basemap.at",
             "url": "https://basemap.at"
+          }
+        ]
+      }
+    },
+    {
+      "type": "SXO1O",
+      "layer": "base",
+      "name": "VoGIS orthophoto 1980s (colour)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_198x_r_wms.map",
+        "layers": ["pe198x_20cm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -17021,6 +17820,26 @@
             "type": "map",
             "name": "basemap.at",
             "url": "https://basemap.at"
+          }
+        ]
+      }
+    },
+    {
+      "type": "TLSUG",
+      "layer": "base",
+      "name": "BEV Austrian Map (ÖK50 / ÖK25V)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "map",
+      "body": {
+        "url": "https://maps.bev.gv.at/tiles/karte/{z}/{x}/{y}.png",
+        "minZoom": 0,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BEV – Bundesamt für Eich- und Vermessungswesen",
+            "url": "https://www.bev.gv.at/"
           }
         ]
       }
@@ -17989,6 +18808,26 @@
       }
     },
     {
+      "type": "V8FN3",
+      "layer": "overlay",
+      "name": "WLV protective forest indication map",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://inspire.lfrz.gv.at/000505/wms",
+        "layers": ["Hinweiskarte Schutzwald"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
+            "url": "https://www.die-wildbach.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "VCZD9",
       "layer": "base",
       "name": "imagico.de: Eastern Sør Rondane Mountains",
@@ -18431,6 +19270,27 @@
       }
     },
     {
+      "type": "W1YQH",
+      "layer": "overlay",
+      "name": "GeoSphere mass movements (landslides, rockfall)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.geosphere.at/maps/services/naturgefahren/Gravitative_Massenbewegungen/MapServer/WMSServer",
+        "layers": ["0"],
+        "maxNativeZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoSphere Austria",
+            "url": "https://www.geosphere.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "W1ZLA",
       "layer": "base",
       "name": "Uruguay IDE.uy Ortofotos 2019",
@@ -18774,6 +19634,27 @@
           {
             "type": "map",
             "name": "Institut Cartogràfic i Geològic de Catalunya"
+          }
+        ]
+      }
+    },
+    {
+      "type": "WIPHX",
+      "layer": "overlay",
+      "name": "VoGIS ski touring map (slope + aspect)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_gelaendeinfo_r_atlas_wms.map",
+        "layers": ["tourenkarte_kombination"],
+        "minZoom": 10,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -19167,6 +20048,32 @@
       }
     },
     {
+      "type": "X072Z",
+      "layer": "overlay",
+      "name": "NÖ protected areas (nature reserves, landscape protection, Natura 2000, nature parks)",
+      "countries": ["at"],
+      "bbox": [14.4, 47.4, 17.1, 49.03],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://sdi.noe.gv.at/at.gv.noe.geoserver/OGD/wms",
+        "layers": [
+          "RNA_NSGEB",
+          "RNA_LSGEB",
+          "RNA_N2K_FFH",
+          "RNA_N2K_VS",
+          "RNA_NATURPARK"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Niederösterreich – data.noe.gv.at",
+            "url": "https://data.noe.gv.at/"
+          }
+        ]
+      }
+    },
+    {
       "type": "X0I7C",
       "layer": "base",
       "name": "City of Dublin Orthoimagery (2023)",
@@ -19465,6 +20372,26 @@
           {
             "type": "map",
             "name": "Geodaten Kanton Basel-Stadt"
+          }
+        ]
+      }
+    },
+    {
+      "type": "XH1GR",
+      "layer": "overlay",
+      "name": "WLV hazard zone plan (avalanche, torrent)",
+      "countries": ["at"],
+      "bbox": [9.53, 46.37, 17.16, 49.0201],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://inspire.lfrz.gv.at/000901/wms",
+        "layers": ["WLV_GZP"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
+            "url": "https://www.die-wildbach.at/"
           }
         ]
       }
@@ -19844,6 +20771,26 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Y90BJ",
+      "layer": "overlay",
+      "name": "VoGIS wildlife quiet zones",
+      "countries": ["at"],
+      "bbox": [9.53, 46.83, 10.24, 47.55],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://vogis.cnv.at/geoserver/ows",
+        "layers": ["vogis:wildruhezone"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
+            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }

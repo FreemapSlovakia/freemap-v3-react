@@ -60,6 +60,8 @@ export type PresetParams = {
   color: Color;
   /** Fog's colour above the band. */
   aboveColor: Color;
+  /** Where hypsometric tints start from their bottom colour. */
+  minElevation: number;
   /** Where hypsometric tints reach their top colour. */
   maxElevation: number;
   /** Metallic's colour between the highlights. */
@@ -73,6 +75,7 @@ export const DEFAULT_PRESET_PARAMS: PresetParams = {
   bandWidth: 10,
   color: [255, 255, 255, 1],
   aboveColor: [0xe6, 0xe6, 0xe6, 0],
+  minElevation: 0,
   maxElevation: 3000,
   darkColor: [0, 0, 0, 1],
   repeats: 3,
@@ -279,17 +282,19 @@ function build(preset: ShadingPreset, p: PresetParams): Shading {
         [0xff, 0xe6, 0x80, 0.5],
       );
 
-    // Metres for a 3000 m top, scaled to `maxElevation`; closer together low
-    // down where most land is.
+    // Metres for 0–3000 m, scaled to `minElevation`–`maxElevation`; closer
+    // together low down where most land is.
     case 'hypsometric': {
       const at = (metres: number) =>
-        Math.round((metres / 3000) * p.maxElevation);
+        Math.round(
+          p.minElevation + (metres / 3000) * (p.maxElevation - p.minElevation),
+        );
 
       return {
         backgroundColor: [0, 0, 0, 0],
         components: [
           relief([
-            [0, [0x5a, 0x9e, 0x5a, 1]],
+            [at(0), [0x5a, 0x9e, 0x5a, 1]],
             [at(200), [0xa8, 0xc8, 0x78, 1]],
             [at(500), [0xe8, 0xdc, 0x96, 1]],
             [at(1000), [0xd4, 0xa8, 0x68, 1]],

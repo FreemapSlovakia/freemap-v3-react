@@ -17,6 +17,7 @@ export type ShadingMessages = {
   parameters: string;
   contrast: string;
   brightness: string;
+  minElevation: string;
   maxElevation: string;
   highlightColor: string;
   darkColor: string;

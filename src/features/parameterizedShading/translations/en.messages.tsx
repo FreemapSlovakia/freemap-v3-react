@@ -20,6 +20,7 @@ const en: ShadingMessages = {
   parameters: 'Parameters',
   contrast: 'Contrast',
   brightness: 'Brightness',
+  minElevation: 'Elevation of the bottom colour',
   maxElevation: 'Elevation of the top colour',
   highlightColor: 'Highlight colour',
   darkColor: 'Shadow colour',

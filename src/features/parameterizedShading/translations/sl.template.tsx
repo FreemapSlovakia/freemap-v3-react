@@ -21,6 +21,7 @@ const sl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   parameters: 'Parametri',
   contrast: 'Kontrast',
   brightness: 'Svetlost',
+  minElevation: 'Višina najnižje barve',
   maxElevation: 'Višina najvišje barve',
   highlightColor: 'Barva leska',
   darkColor: 'Barva sence',
