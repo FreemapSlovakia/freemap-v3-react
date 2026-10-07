@@ -330,8 +330,9 @@ OSMF-hosted (`*.openstreetmap.org`, editing only by its usage policy),
 2GIS, HERE, Mapbox, Apple, Maxar, Esri basemaps — matched on the ELI id and
 host only, as agency maps credit Esri), non-commercial licences, entries
 without a `license_url` (ELI's permissions are for tracing, not display — they
-wait for a review), and maps whose probe got no answer or anything but 2xx or
-404. A 404 stays: the probed spot may just lie outside a ragged coverage. A
+wait for a review), maps whose probe got no answer or anything but 2xx or
+404, and maps whose https request is redirected to http, which an https page
+blocks. A 404 stays: the probed spot may just lie outside a ragged coverage. A
 tile map CORS doesn't open to both origins gets `cors: false`. The probe also asks for a
 tile map's tile with the app's `@2x` suffix (then `@3x`, `@4x`) and takes each one whose
 image is that many times wider as `extraScales`; without them, imagery and

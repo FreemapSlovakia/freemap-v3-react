@@ -202,6 +202,26 @@
       }
     },
     {
+      "type": "0B3VQ",
+      "layer": "base",
+      "name": "South Tyrol technical map 1995 1:10 000",
+      "countries": ["it"],
+      "bbox": [10.38, 46.22, 12.48, 47.0901],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-BasemapImagery/wms",
+        "layers": ["TopographicMap-1995-10k"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+            "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+          }
+        ]
+      }
+    },
+    {
       "type": "0BUN0",
       "layer": "overlay",
       "name": "Postcode centroids",
@@ -382,6 +402,26 @@
             "type": "map",
             "name": "MassGIS",
             "url": "https://www.mass.gov/info-details/massgis-data-2025-aerial-imagery"
+          }
+        ]
+      }
+    },
+    {
+      "type": "0IOQP",
+      "layer": "base",
+      "name": "South Tyrol orthophoto 1999",
+      "countries": ["it"],
+      "bbox": [10.38, 46.22, 12.48, 47.0901],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+        "layers": ["Aerial-1999-RGB"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+            "url": "https://geoservices.buergernetz.bz.it/geokatalog"
           }
         ]
       }
@@ -1054,6 +1094,27 @@
       }
     },
     {
+      "type": "1JYTU",
+      "layer": "overlay",
+      "name": "ISPRA geological map 1:25 000 (CARG)",
+      "countries": ["it"],
+      "bbox": [6.6, 35.5, 18.6, 47.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://sgi2.isprambiente.it/arcgis/services/servizi/Geologia25k/MapServer/WMSServer",
+        "layers": ["3", "1", "2", "0"],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ISPRA – Servizio Geologico d'Italia (CC BY 4.0)",
+            "url": "https://www.isprambiente.gov.it/"
+          }
+        ]
+      }
+    },
+    {
       "type": "1KI1X",
       "layer": "base",
       "name": "NOAA NGS Gulf Coast Imagery, West (2023)",
@@ -1088,27 +1149,6 @@
           {
             "type": "map",
             "name": "Plan Cadastral du SITN, Neuchâtel"
-          }
-        ]
-      }
-    },
-    {
-      "type": "1KVP9",
-      "layer": "base",
-      "name": "StratMap CapArea Imagery (2019)",
-      "countries": ["us"],
-      "bbox": [-99, 29.6, -96.55, 31.05],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap19_NCCIR_CapArea/ImageServer/WMSServer",
-        "layers": ["0"],
-        "minZoom": 2,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Strategic Mapping Program (StratMap). CapArea Imagery, 2019-01-29",
-            "url": "https://data.geographic.texas.gov/collection/?c=f84442b8-ac2a-4708-b5c0-9d15515f4483"
           }
         ]
       }
@@ -1172,6 +1212,27 @@
             "type": "map",
             "name": "San Juan County GIS",
             "url": "https://data-sjcounty.opendata.arcgis.com"
+          }
+        ]
+      }
+    },
+    {
+      "type": "1O5ET",
+      "layer": "base",
+      "name": "Friuli Venezia Giulia regional technical map CTRN 1:5 000",
+      "countries": ["it"],
+      "bbox": [12.3, 45.55, 13.92, 46.67],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
+        "layers": ["TER_AMB:CTRN5KColore"],
+        "minZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Regione Autonoma Friuli Venezia Giulia – IRDAT (IODL 2.0)",
+            "url": "https://irdat.regione.fvg.it/"
           }
         ]
       }
@@ -1727,22 +1788,21 @@
       }
     },
     {
-      "type": "2JL7B",
-      "layer": "base",
-      "name": "StratMap CapArea, Brazos & Kerr Imagery (Natural Color 2021)",
-      "countries": ["us"],
-      "bbox": [-99.5479, 29.6239, -96.0141, 31.048],
-      "category": "photo",
+      "type": "2KBM5",
+      "layer": "overlay",
+      "name": "ISPRA IFFI landslide inventory",
+      "countries": ["it"],
+      "bbox": [6.6, 35.5, 18.6, 47.1],
+      "category": "other",
       "technology": "wms",
       "body": {
-        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap21_NCCIR_CapArea_Brazos_Kerr/ImageServer/WMSServer",
-        "layers": ["0"],
-        "maxNativeZoom": 19,
+        "url": "https://idrogeo.isprambiente.it/geoserver/ows",
+        "layers": ["idrogeo:frane"],
         "attribution": [
           {
             "type": "map",
-            "name": "Strategic Mapping Program (StratMap). CapArea, Brazos & Kerr Imagery",
-            "url": "https://geographic.texas.gov/stratmap/"
+            "name": "© ISPRA – IdroGeo (CC BY 4.0)",
+            "url": "https://idrogeo.isprambiente.it/"
           }
         ]
       }
@@ -1832,6 +1892,26 @@
             "type": "map",
             "name": "© GeoBasis-DE/MV <YEAR>, CC-by 4.0, www.laiv-mv.de",
             "url": "https://www.laiv-mv.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "2SFA7",
+      "layer": "base",
+      "name": "South Tyrol orthophoto 1992/97",
+      "countries": ["it"],
+      "bbox": [10.38, 46.22, 12.48, 47.0901],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+        "layers": ["Aerial-1992-1997-BW"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+            "url": "https://geoservices.buergernetz.bz.it/geokatalog"
           }
         ]
       }
@@ -2574,6 +2654,26 @@
             "type": "map",
             "name": "IGN",
             "url": "https://geoservices.ign.fr/rgealti"
+          }
+        ]
+      }
+    },
+    {
+      "type": "48GJH",
+      "layer": "base",
+      "name": "Emilia-Romagna aerial orthophoto 1954 (GAI flight)",
+      "countries": ["it"],
+      "bbox": [9.195, 43.719, 12.831, 45.188],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://servizigis.regione.emilia-romagna.it/wms/voloGAI1954",
+        "layers": ["VoloGAI1954"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Regione Emilia-Romagna (CC BY 3.0)",
+            "url": "https://geoportale.regione.emilia-romagna.it/"
           }
         ]
       }
@@ -3525,28 +3625,6 @@
       }
     },
     {
-      "type": "5LM6X",
-      "layer": "base",
-      "name": "Orthophotos of the northern portion of mainland Portugal - 25 cm - 2021 (DGT)",
-      "countries": ["pt"],
-      "bbox": [-9.1126, 39.5729, -6.166, 42.1677],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2021",
-        "layers": ["Ortos2021-RGB"],
-        "minZoom": 14,
-        "maxNativeZoom": 20,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Informação geográfica cedida pela Direção-Geral do Território",
-            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/d70dd232-aaee-4e6b-a804-5a0b70c537be"
-          }
-        ]
-      }
-    },
-    {
       "type": "5LWFG",
       "layer": "base",
       "name": "Ukraine - Cherkasy 2021",
@@ -3810,6 +3888,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "61JVM",
+      "layer": "overlay",
+      "name": "Regione Piemonte hiking network",
+      "countries": ["it"],
+      "bbox": [6.62, 44.06, 9.2101, 46.46],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geomap.reteunitaria.piemonte.it/ws/vtmonfor/rp-01/sentieriwms/wms_vtmonfor_sentieri",
+        "layers": ["ReteEscursionistica"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Regione Piemonte",
+            "url": "https://www.geoportale.piemonte.it/"
           }
         ]
       }
@@ -4264,28 +4362,6 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "6QYQK",
-      "layer": "base",
-      "name": "Miami-Dade County Orthoimagery (2021)",
-      "countries": ["us"],
-      "bbox": [-80.9429, 25.1309, -80.1055, 26.0249],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://imageserverintra.miamidade.gov/arcgis/services/Woolpert2021/ImageServer/WMSServer",
-        "layers": ["0"],
-        "minZoom": 5,
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Miami-Dade County",
-            "url": "https://gis-mdc.opendata.arcgis.com/pages/imagery"
           }
         ]
       }
@@ -5600,28 +5676,6 @@
       }
     },
     {
-      "type": "93D0N",
-      "layer": "base",
-      "name": "Orthophotos of the coastal areas of mainland Portugal - 10 cm - 2014-2015 (DGT)",
-      "countries": ["pt"],
-      "bbox": [-9.5321, 36.9367, -7.3896, 41.9309],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2014-2015-litoral",
-        "layers": ["Ortoimagens_2014-2015_Litoral"],
-        "minZoom": 14,
-        "maxNativeZoom": 20,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Informação geográfica cedida pela Direção-Geral do Território",
-            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/66425725-0ab4-4d7a-ad1c-b0d923881a61"
-          }
-        ]
-      }
-    },
-    {
       "type": "9624J",
       "layer": "base",
       "name": "LINZ Auckland 2023",
@@ -5732,22 +5786,21 @@
       }
     },
     {
-      "type": "9AH1D",
+      "type": "9BGHY",
       "layer": "base",
-      "name": "StratMap Brazos County Imagery (2019)",
-      "countries": ["us"],
-      "bbox": [-96.63, 30.33, -96.06, 30.99],
+      "name": "South Tyrol orthophoto 2003",
+      "countries": ["it"],
+      "bbox": [10.38, 46.22, 12.48, 47.0901],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap19_NCCIR_6in_Brazos/ImageServer/WMSServer",
-        "layers": ["0"],
-        "minZoom": 3,
+        "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+        "layers": ["Aerial-2003-BW"],
         "attribution": [
           {
             "type": "map",
-            "name": "Strategic Mapping Program (StratMap). Brazos County Imagery, 2019-01-29",
-            "url": "https://data.geographic.texas.gov/collection/?c=aa2cd74e-9c2d-4f00-bae5-609b5e898093"
+            "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+            "url": "https://geoservices.buergernetz.bz.it/geokatalog"
           }
         ]
       }
@@ -6778,6 +6831,26 @@
       }
     },
     {
+      "type": "AOEO2",
+      "layer": "overlay",
+      "name": "ISPRA landslide hazard (PAI)",
+      "countries": ["it"],
+      "bbox": [6.6, 35.5, 18.6, 47.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://idrogeo.isprambiente.it/geoserver/ows",
+        "layers": ["idrogeo:pericolosita_frane"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ISPRA – IdroGeo (CC BY 4.0)",
+            "url": "https://idrogeo.isprambiente.it/"
+          }
+        ]
+      }
+    },
+    {
       "type": "AORDZ",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 2001",
@@ -7641,6 +7714,26 @@
       }
     },
     {
+      "type": "C7UCN",
+      "layer": "base",
+      "name": "Provincia di Trento orthophoto 1973",
+      "countries": ["it"],
+      "bbox": [10.396, 45.62, 12.032, 46.58],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://siat.provincia.tn.it/geoserver/ows",
+        "layers": ["stem:ofdtn73"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Provincia autonoma di Trento (CC BY 4.0)",
+            "url": "https://www.provincia.tn.it/"
+          }
+        ]
+      }
+    },
+    {
       "type": "C7VQM",
       "layer": "base",
       "name": "Erlangen Luftbild (2016 5,0 cm)",
@@ -7883,6 +7976,26 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "CP25P",
+      "layer": "base",
+      "name": "Provincia di Trento orthophoto 1994",
+      "countries": ["it"],
+      "bbox": [10.396, 45.62, 12.032, 46.58],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://siat.provincia.tn.it/geoserver/ows",
+        "layers": ["stem:ofdtn94"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Provincia autonoma di Trento (CC BY 4.0)",
+            "url": "https://www.provincia.tn.it/"
           }
         ]
       }
@@ -8497,6 +8610,26 @@
           {
             "type": "map",
             "name": "Geoportal Berlin/Digitale farbige TrueOrthophotos 2020 (TrueDOP20RGB) (codefor.de mirror)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "DJGRK",
+      "layer": "overlay",
+      "name": "Regione Piemonte protected areas and Natura 2000",
+      "countries": ["it"],
+      "bbox": [6.62, 44.06, 9.2101, 46.46],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geomap.reteunitaria.piemonte.it/ws/gsareprot/rp-01/areeprotwms/wms_gsareprot_1",
+        "layers": ["AreeProtetteReteNatura2000"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Regione Piemonte (CC BY 4.0)",
+            "url": "https://www.geoportale.piemonte.it/"
           }
         ]
       }
@@ -9914,6 +10047,29 @@
       }
     },
     {
+      "type": "G16MR",
+      "layer": "overlay",
+      "name": "Friuli Venezia Giulia parks and nature reserves",
+      "countries": ["it"],
+      "bbox": [12.3, 45.55, 13.92, 46.67],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
+        "layers": [
+          "SITI_PROT:PARCHI_NATURALI_REG",
+          "SITI_PROT:RISERVE_NATURALI_REG"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Regione Autonoma Friuli Venezia Giulia – IRDAT (IODL 2.0)",
+            "url": "https://irdat.regione.fvg.it/"
+          }
+        ]
+      }
+    },
+    {
       "type": "G3WSF",
       "layer": "base",
       "name": "Berlin/Geoportal Straßenbefahrung 2014, Alkis",
@@ -10520,6 +10676,29 @@
       }
     },
     {
+      "type": "GX47W",
+      "layer": "overlay",
+      "name": "Friuli Venezia Giulia avalanche sites (CLPV)",
+      "countries": ["it"],
+      "bbox": [12.31, 46.04, 13.72, 46.66],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
+        "layers": [
+          "ZONE_RISC:CV_VALANGHE_FOTOINT",
+          "ZONE_RISC:CV_VALANGHE_RILEVATE"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Regione Autonoma Friuli Venezia Giulia – IRDAT (IODL 2.0)",
+            "url": "https://irdat.regione.fvg.it/"
+          }
+        ]
+      }
+    },
+    {
       "type": "H047M",
       "layer": "base",
       "name": "Sacramento County Orthoimagery (2022)",
@@ -10807,28 +10986,6 @@
             "type": "map",
             "name": "Ohio Department of Transportation",
             "url": "https://gis.dot.state.oh.us/tims_classic/About"
-          }
-        ]
-      }
-    },
-    {
-      "type": "HCJTA",
-      "layer": "base",
-      "name": "Orthophotos of mainland Portugal - 50 cm - 2004-2006 (DGT)",
-      "countries": ["pt"],
-      "bbox": [-9.8191, 36.686, -6.1571, 42.1869],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2004-2006",
-        "layers": ["Ortos2004-2006-RGB"],
-        "minZoom": 14,
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Informação geográfica cedida pela Direção-Geral do Território",
-            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/5fd2c1e18f5f4c3f814a3e7212937ce7"
           }
         ]
       }
@@ -11231,6 +11388,26 @@
       }
     },
     {
+      "type": "I6D6J",
+      "layer": "base",
+      "name": "South Tyrol orthophoto 1982/85",
+      "countries": ["it"],
+      "bbox": [10.38, 46.22, 12.48, 47.0901],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+        "layers": ["Aerial-1982-1985-BW"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+            "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+          }
+        ]
+      }
+    },
+    {
       "type": "I75AN",
       "layer": "overlay",
       "name": "VoGIS protective forest indication map",
@@ -11350,27 +11527,6 @@
             "type": "map",
             "name": "Land Vorarlberg – data.vorarlberg.gv.at",
             "url": "https://data.vorarlberg.gv.at/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "IH659",
-      "layer": "base",
-      "name": "StratMap CapArea & McLennan Imagery (Natural Color 2020)",
-      "countries": ["us"],
-      "bbox": [-98.9699, 29.6239, -96.5609, 31.8925],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap20_NCCIR_CapArea_McLennan/ImageServer/WMSServer",
-        "layers": ["0"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Strategic Mapping Program (StratMap). CapArea & McLennan Imagery",
-            "url": "https://geographic.texas.gov/stratmap/"
           }
         ]
       }
@@ -11617,6 +11773,26 @@
             "type": "map",
             "name": "IBGE",
             "url": "https://www.ibge.gov.br/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "J1H3U",
+      "layer": "base",
+      "name": "South Tyrol orthophoto 2023 (near-infrared)",
+      "countries": ["it"],
+      "bbox": [10.38, 46.22, 12.48, 47.0901],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+        "layers": ["Aerial-2023-CIR"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+            "url": "https://geoservices.buergernetz.bz.it/geokatalog"
           }
         ]
       }
@@ -12052,27 +12228,6 @@
       }
     },
     {
-      "type": "JMMWO",
-      "layer": "base",
-      "name": "TX: Smith County Imagery 2019",
-      "countries": ["us"],
-      "bbox": [-95.61, 32.13, -94.98, 32.7],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.geographic.texas.gov/server/services/Smith_County/SmithCo_2020_NCCIR_6in/ImageServer/WMSServer",
-        "layers": ["0"],
-        "minZoom": 3,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Smith County (Smith). Smith County Imagery, 2019-12-11",
-            "url": "https://data.geographic.texas.gov/collection/?c=38f1b2e7-6fc7-4357-80a4-1ee33d7abaaf"
-          }
-        ]
-      }
-    },
-    {
       "type": "JOVHX",
       "layer": "base",
       "name": "Kendall County 2022 Aerial Imagery",
@@ -12295,6 +12450,27 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "K2EVY",
+      "layer": "base",
+      "name": "Hennepin County Orthoimagery (2021)",
+      "countries": ["us"],
+      "bbox": [-93.7709, 44.7852, -93.1724, 45.2487],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.hennepin.us/arcgis/services/Imagery/UTM_Aerial_2021/MapServer/WMSServer",
+        "layers": ["1"],
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Hennepin County GIS",
+            "url": "https://gis-hennepin.hub.arcgis.com/"
           }
         ]
       }
@@ -13249,6 +13425,26 @@
           {
             "type": "map",
             "name": "Eusko Jaurlaritza / Gobierno Vasco. geoEuskadi"
+          }
+        ]
+      }
+    },
+    {
+      "type": "LTX10",
+      "layer": "overlay",
+      "name": "Friuli Venezia Giulia Natura 2000 sites",
+      "countries": ["it"],
+      "bbox": [12.3, 45.55, 13.92, 46.67],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
+        "layers": ["SITI_PROT:SIC", "SITI_PROT:ZPS"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Regione Autonoma Friuli Venezia Giulia – IRDAT (IODL 2.0)",
+            "url": "https://irdat.regione.fvg.it/"
           }
         ]
       }
@@ -17217,6 +17413,26 @@
       }
     },
     {
+      "type": "S0B09",
+      "layer": "overlay",
+      "name": "ISPRA avalanche sites (CLPV and cadastres)",
+      "countries": ["it"],
+      "bbox": [6.6, 43.5, 13.9, 47.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://idrogeo.isprambiente.it/geoserver/ows",
+        "layers": ["idrogeo:clpv", "idrogeo:catasti_valanghe"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ISPRA – IdroGeo (CC BY 4.0)",
+            "url": "https://idrogeo.isprambiente.it/"
+          }
+        ]
+      }
+    },
+    {
       "type": "S1GND",
       "layer": "base",
       "name": "imagico.de: USGS 500k Antarctica maps",
@@ -17688,28 +17904,6 @@
       }
     },
     {
-      "type": "T4IPD",
-      "layer": "base",
-      "name": "Orthophotos of mainland Portugal - 25 cm - 2025 (DGT)",
-      "countries": ["pt"],
-      "bbox": [-9.5629, 36.9481, -6.125, 42.1896],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2025",
-        "layers": ["Ortos2025-RGB"],
-        "minZoom": 14,
-        "maxNativeZoom": 20,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Informação geográfica cedida pela Direção-Geral do Território",
-            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/96d83932-f957-40d6-a2ea-3a25751c4b2d"
-          }
-        ]
-      }
-    },
-    {
       "type": "T53OF",
       "layer": "overlay",
       "name": "Vienna: Beschriftungen (annotations)",
@@ -18127,6 +18321,26 @@
       }
     },
     {
+      "type": "TVSTT",
+      "layer": "base",
+      "name": "Provincia di Trento technical map CTP 1987",
+      "countries": ["it"],
+      "bbox": [10.396, 45.62, 12.032, 46.58],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://siat.provincia.tn.it/geoserver/ows",
+        "layers": ["stem:ctp_87_mosaic"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Provincia autonoma di Trento (CC BY 4.0)",
+            "url": "https://www.provincia.tn.it/"
+          }
+        ]
+      }
+    },
+    {
       "type": "TXW4P",
       "layer": "base",
       "name": "SPW(allonie) most recent aerial imagery",
@@ -18342,28 +18556,6 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "U5Y1G",
-      "layer": "base",
-      "name": "Orthophotos of mainland Portugal - 25 cm - 2018 (DGT)",
-      "countries": ["pt"],
-      "bbox": [-9.8191, 36.686, -6.1571, 42.1869],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://cartografia.dgterritorio.gov.pt/wms/ortos2018",
-        "layers": ["Ortos2018-RGB"],
-        "minZoom": 14,
-        "maxNativeZoom": 20,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Informação geográfica cedida pela Direção-Geral do Território",
-            "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/daf5479d-29c8-4e0c-b7b8-0e1791891186"
           }
         ]
       }
@@ -19060,6 +19252,26 @@
             "type": "map",
             "name": "Contains information licensed under the Open Government Licence - Coquitlam",
             "url": "https://www.coquitlam.ca/894/Open-Government-Licence"
+          }
+        ]
+      }
+    },
+    {
+      "type": "VIO2K",
+      "layer": "base",
+      "name": "South Tyrol Franciscan cadastre 1858",
+      "countries": ["it"],
+      "bbox": [10.38, 46.22, 12.48, 47.0901],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Cadastre-Historical/wms",
+        "layers": ["Cadastre1858-Map"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+            "url": "https://geoservices.buergernetz.bz.it/geokatalog"
           }
         ]
       }
@@ -20820,6 +21032,26 @@
             "type": "map",
             "name": "Contains information licensed under the Open Government Licence – Toronto",
             "url": "https://open.toronto.ca/open-data-license/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Y4RO0",
+      "layer": "base",
+      "name": "South Tyrol orthophoto 1989/90",
+      "countries": ["it"],
+      "bbox": [10.38, 46.22, 12.48, 47.0901],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+        "layers": ["Aerial-1989-1990-RGB"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+            "url": "https://geoservices.buergernetz.bz.it/geokatalog"
           }
         ]
       }

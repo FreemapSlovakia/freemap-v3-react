@@ -43,7 +43,7 @@ const EXCLUDED_HOSTS = [
 const DPI_SCALED_CATEGORIES = new Set(['photo', 'historicphoto', 'elevation']);
 
 // Bumped when a probe record's meaning changes, so --reuse-probe asks again.
-const PROBE_VERSION = 2;
+const PROBE_VERSION = 3;
 
 /** A tile was served, or the probed spot merely had none (ragged coverage). */
 const answered = (status) =>
@@ -369,8 +369,13 @@ async function probeTile(feature, leaflet) {
       }
 
       return {
-        // A WMS reports an error as an XML document with a 200.
-        status: leaflet.wms && res.ok && !size ? 'not an image' : res.status,
+        // A redirect to http is blocked on an https page. A WMS reports an
+        // error as an XML document with a 200.
+        status: !res.url.startsWith('https:')
+          ? 'redirected to http'
+          : leaflet.wms && res.ok && !size
+            ? 'not an image'
+            : res.status,
         // A 404 carries the CORS headers as well. A WMS needs CORS only for
         // its layer list in the Map layers panel; the map is plain images.
         cors: await allowsAppOrigins(url, res),
@@ -708,6 +713,11 @@ const alive = kept.filter(({ feature }) => {
 
   if (status === 'not an image') {
     drop('wms: not an image', feature.properties);
+    return false;
+  }
+
+  if (status === 'redirected to http') {
+    drop('redirected to http', feature.properties);
     return false;
   }
 

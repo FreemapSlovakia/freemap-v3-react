@@ -1111,5 +1111,472 @@
     },
     "bbox": [16.0, 45.7, 23.0, 48.6],
     "note": "Counties where lighting fires is banned today."
+  },
+  {
+    "id": "fm:it-ispra-iffi-landslides",
+    "name": "ISPRA IFFI landslide inventory",
+    "type": "wms",
+    "url": "https://idrogeo.isprambiente.it/geoserver/ows",
+    "layers": ["idrogeo:frane"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.isprambiente.gov.it/it/note-legali",
+    "attribution": {
+      "text": "© ISPRA – IdroGeo (CC BY 4.0)",
+      "url": "https://idrogeo.isprambiente.it/"
+    },
+    "bbox": [6.6, 35.5, 18.6, 47.1],
+    "note": "Inventory of landslides in Italy."
+  },
+  {
+    "id": "fm:it-ispra-avalanche-sites",
+    "name": "ISPRA avalanche sites (CLPV and cadastres)",
+    "type": "wms",
+    "url": "https://idrogeo.isprambiente.it/geoserver/ows",
+    "layers": ["idrogeo:clpv", "idrogeo:catasti_valanghe"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.isprambiente.gov.it/it/note-legali",
+    "attribution": {
+      "text": "© ISPRA – IdroGeo (CC BY 4.0)",
+      "url": "https://idrogeo.isprambiente.it/"
+    },
+    "bbox": [6.6, 43.5, 13.9, 47.1],
+    "note": "Probable avalanche locations and regional avalanche cadastres in the Alps."
+  },
+  {
+    "id": "fm:it-ispra-landslide-hazard",
+    "name": "ISPRA landslide hazard (PAI)",
+    "type": "wms",
+    "url": "https://idrogeo.isprambiente.it/geoserver/ows",
+    "layers": ["idrogeo:pericolosita_frane"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.isprambiente.gov.it/it/note-legali",
+    "attribution": {
+      "text": "© ISPRA – IdroGeo (CC BY 4.0)",
+      "url": "https://idrogeo.isprambiente.it/"
+    },
+    "bbox": [6.6, 35.5, 18.6, 47.1],
+    "note": "Landslide hazard from the river basin plans."
+  },
+  {
+    "id": "fm:it-ispra-geology-25k",
+    "name": "ISPRA geological map 1:25 000 (CARG)",
+    "type": "wms",
+    "url": "https://sgi2.isprambiente.it/arcgis/services/servizi/Geologia25k/MapServer/WMSServer",
+    "layers": ["3", "1", "2", "0"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 9,
+    "license_url": "https://www.isprambiente.gov.it/it/note-legali",
+    "attribution": {
+      "text": "© ISPRA – Servizio Geologico d'Italia (CC BY 4.0)",
+      "url": "https://www.isprambiente.gov.it/"
+    },
+    "bbox": [6.6, 35.5, 18.6, 47.1],
+    "note": "Geological units, boundaries and tectonics where the CARG survey is done."
+  },
+  {
+    "id": "fm:it-euap-protected-areas",
+    "name": "MASE protected areas (EUAP)",
+    "type": "wms",
+    "url": "https://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/Vettoriali/EUAP.map",
+    "layers": ["SP.SITIPROTETTI.EUAP"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://gn.mase.gov.it/portale/note-legali",
+    "attribution": {
+      "text": "© Ministero dell'Ambiente e della Sicurezza Energetica – Geoportale Nazionale",
+      "url": "https://gn.mase.gov.it/"
+    },
+    "bbox": [6.6, 35.5, 18.6, 47.1],
+    "note": "National parks, reserves and regional parks."
+  },
+  {
+    "id": "fm:it-natura2000-zps",
+    "name": "MASE Natura 2000 Special Protection Areas (ZPS)",
+    "type": "wms",
+    "url": "https://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/Vettoriali/ZPS.map",
+    "layers": ["SP.SITIPROTETTI.ZPS"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://gn.mase.gov.it/portale/note-legali",
+    "attribution": {
+      "text": "© Ministero dell'Ambiente e della Sicurezza Energetica – Geoportale Nazionale",
+      "url": "https://gn.mase.gov.it/"
+    },
+    "bbox": [6.6, 35.5, 18.6, 47.1],
+    "note": "Natura 2000 bird protection areas."
+  },
+  {
+    "id": "fm:it-natura2000-sic-zsc",
+    "name": "MASE Natura 2000 SCI/SAC (SIC/ZSC)",
+    "type": "wms",
+    "url": "https://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/Vettoriali/SIC.map",
+    "layers": ["SP.SITIPROTETTI.SIC_ZSC"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://gn.mase.gov.it/portale/note-legali",
+    "attribution": {
+      "text": "© Ministero dell'Ambiente e della Sicurezza Energetica – Geoportale Nazionale",
+      "url": "https://gn.mase.gov.it/"
+    },
+    "bbox": [6.6, 35.5, 18.6, 47.1],
+    "note": "Natura 2000 habitat sites."
+  },
+  {
+    "id": "fm:it-igm-25000",
+    "name": "IGM topographic map 1:25 000",
+    "type": "wms",
+    "url": "https://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/IGM_25000.map",
+    "layers": ["CB.IGM25000.32", "CB.IGM25000.33"],
+    "country_code": "IT",
+    "category": "historicmap",
+    "overlay": false,
+    "license_url": "https://gn.mase.gov.it/portale/note-legali",
+    "attribution": {
+      "text": "© IGM – Istituto Geografico Militare, Geoportale Nazionale",
+      "url": "https://gn.mase.gov.it/"
+    },
+    "bbox": [6.6, 35.5, 18.6, 47.1],
+    "note": "IGM 1:25 000 topographic sheets."
+  },
+  {
+    "id": "fm:it-igm-100000",
+    "name": "IGM topographic map 1:100 000",
+    "type": "wms",
+    "url": "https://wms.pcn.minambiente.it/ogc?map=/ms_ogc/WMS_v1.3/raster/IGM_100000.map",
+    "layers": ["MB.IGM100000.32", "MB.IGM100000.33"],
+    "country_code": "IT",
+    "category": "historicmap",
+    "overlay": false,
+    "license_url": "https://gn.mase.gov.it/portale/note-legali",
+    "attribution": {
+      "text": "© IGM – Istituto Geografico Militare, Geoportale Nazionale",
+      "url": "https://gn.mase.gov.it/"
+    },
+    "bbox": [6.6, 35.5, 18.6, 47.1],
+    "note": "IGM 1:100 000 topographic sheets."
+  },
+  {
+    "id": "fm:it-tn-orthophoto-1973",
+    "name": "Provincia di Trento orthophoto 1973",
+    "type": "wms",
+    "url": "https://siat.provincia.tn.it/geoserver/ows",
+    "layers": ["stem:ofdtn73"],
+    "country_code": "IT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Provincia autonoma di Trento (CC BY 4.0)",
+      "url": "https://www.provincia.tn.it/"
+    },
+    "bbox": [10.396, 45.62, 12.032, 46.58],
+    "note": "Black-and-white orthophoto mosaic of 1973."
+  },
+  {
+    "id": "fm:it-tn-orthophoto-1994",
+    "name": "Provincia di Trento orthophoto 1994",
+    "type": "wms",
+    "url": "https://siat.provincia.tn.it/geoserver/ows",
+    "layers": ["stem:ofdtn94"],
+    "country_code": "IT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Provincia autonoma di Trento (CC BY 4.0)",
+      "url": "https://www.provincia.tn.it/"
+    },
+    "bbox": [10.396, 45.62, 12.032, 46.58],
+    "note": "Black-and-white orthophoto mosaic of 1994."
+  },
+  {
+    "id": "fm:it-tn-ctp-1987",
+    "name": "Provincia di Trento technical map CTP 1987",
+    "type": "wms",
+    "url": "https://siat.provincia.tn.it/geoserver/ows",
+    "layers": ["stem:ctp_87_mosaic"],
+    "country_code": "IT",
+    "category": "historicmap",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Provincia autonoma di Trento (CC BY 4.0)",
+      "url": "https://www.provincia.tn.it/"
+    },
+    "bbox": [10.396, 45.62, 12.032, 46.58],
+    "note": "The 1987 provincial technical map with contours, buildings and roads."
+  },
+  {
+    "id": "fm:it-bz-orthophoto-1982-85",
+    "name": "South Tyrol orthophoto 1982/85",
+    "type": "wms",
+    "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+    "layers": ["Aerial-1982-1985-BW"],
+    "country_code": "IT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+      "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+    },
+    "bbox": [10.38, 46.22, 12.48, 47.09],
+    "note": "Black-and-white orthophoto 1982/85."
+  },
+  {
+    "id": "fm:it-bz-orthophoto-1989-90",
+    "name": "South Tyrol orthophoto 1989/90",
+    "type": "wms",
+    "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+    "layers": ["Aerial-1989-1990-RGB"],
+    "country_code": "IT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+      "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+    },
+    "bbox": [10.38, 46.22, 12.48, 47.09],
+    "note": "Colour orthophoto 1989/90."
+  },
+  {
+    "id": "fm:it-bz-orthophoto-1992-97",
+    "name": "South Tyrol orthophoto 1992/97",
+    "type": "wms",
+    "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+    "layers": ["Aerial-1992-1997-BW"],
+    "country_code": "IT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+      "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+    },
+    "bbox": [10.38, 46.22, 12.48, 47.09],
+    "note": "Black-and-white orthophoto 1992/97."
+  },
+  {
+    "id": "fm:it-bz-orthophoto-1999",
+    "name": "South Tyrol orthophoto 1999",
+    "type": "wms",
+    "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+    "layers": ["Aerial-1999-RGB"],
+    "country_code": "IT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+      "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+    },
+    "bbox": [10.38, 46.22, 12.48, 47.09],
+    "note": "Colour orthophoto 1999."
+  },
+  {
+    "id": "fm:it-bz-orthophoto-2003",
+    "name": "South Tyrol orthophoto 2003",
+    "type": "wms",
+    "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+    "layers": ["Aerial-2003-BW"],
+    "country_code": "IT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+      "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+    },
+    "bbox": [10.38, 46.22, 12.48, 47.09],
+    "note": "Black-and-white orthophoto 2003."
+  },
+  {
+    "id": "fm:it-bz-orthophoto-2023-cir",
+    "name": "South Tyrol orthophoto 2023 (near-infrared)",
+    "type": "wms",
+    "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
+    "layers": ["Aerial-2023-CIR"],
+    "country_code": "IT",
+    "category": "photo",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+      "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+    },
+    "bbox": [10.38, 46.22, 12.48, 47.09],
+    "note": "Colour-infrared orthophoto 2023; vegetation shows red."
+  },
+  {
+    "id": "fm:it-bz-cadastre-1858",
+    "name": "South Tyrol Franciscan cadastre 1858",
+    "type": "wms",
+    "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Cadastre-Historical/wms",
+    "layers": ["Cadastre1858-Map"],
+    "country_code": "IT",
+    "category": "historicmap",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+      "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+    },
+    "bbox": [10.38, 46.22, 12.48, 47.09],
+    "note": "The Franciscan cadastre's historic land-use map (1858)."
+  },
+  {
+    "id": "fm:it-bz-technical-map-1995",
+    "name": "South Tyrol technical map 1995 1:10 000",
+    "type": "wms",
+    "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-BasemapImagery/wms",
+    "layers": ["TopographicMap-1995-10k"],
+    "country_code": "IT",
+    "category": "historicmap",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
+      "url": "https://geoservices.buergernetz.bz.it/geokatalog"
+    },
+    "bbox": [10.38, 46.22, 12.48, 47.09],
+    "note": "Black-and-white 1995 technical map with contours."
+  },
+  {
+    "id": "fm:it-piemonte-protected-natura2000",
+    "name": "Regione Piemonte protected areas and Natura 2000",
+    "type": "wms",
+    "url": "https://geomap.reteunitaria.piemonte.it/ws/gsareprot/rp-01/areeprotwms/wms_gsareprot_1",
+    "layers": ["AreeProtetteReteNatura2000"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/deed.it",
+    "attribution": {
+      "text": "© Regione Piemonte (CC BY 4.0)",
+      "url": "https://www.geoportale.piemonte.it/"
+    },
+    "bbox": [6.62, 44.06, 9.21, 46.46],
+    "note": "Parks, reserves, Natura 2000 and regional sites."
+  },
+  {
+    "id": "fm:it-piemonte-hiking-network",
+    "name": "Regione Piemonte hiking network",
+    "type": "wms",
+    "url": "https://geomap.reteunitaria.piemonte.it/ws/vtmonfor/rp-01/sentieriwms/wms_vtmonfor_sentieri",
+    "layers": ["ReteEscursionistica"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply",
+    "attribution": {
+      "text": "© Regione Piemonte",
+      "url": "https://www.geoportale.piemonte.it/"
+    },
+    "bbox": [6.62, 44.06, 9.21, 46.46],
+    "note": "The region's official hiking trail network."
+  },
+  {
+    "id": "fm:it-fvg-ctrn-5000",
+    "name": "Friuli Venezia Giulia regional technical map CTRN 1:5 000",
+    "type": "wms",
+    "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
+    "layers": ["TER_AMB:CTRN5KColore"],
+    "country_code": "IT",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 14,
+    "license_url": "https://www.dati.gov.it/iodl/2.0/",
+    "attribution": {
+      "text": "© Regione Autonoma Friuli Venezia Giulia – IRDAT (IODL 2.0)",
+      "url": "https://irdat.regione.fvg.it/"
+    },
+    "bbox": [12.3, 45.55, 13.92, 46.67],
+    "note": "Regional map 1:5 000 with contours."
+  },
+  {
+    "id": "fm:it-fvg-avalanche-sites",
+    "name": "Friuli Venezia Giulia avalanche sites (CLPV)",
+    "type": "wms",
+    "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
+    "layers": [
+      "ZONE_RISC:CV_VALANGHE_FOTOINT",
+      "ZONE_RISC:CV_VALANGHE_RILEVATE"
+    ],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.dati.gov.it/iodl/2.0/",
+    "attribution": {
+      "text": "© Regione Autonoma Friuli Venezia Giulia – IRDAT (IODL 2.0)",
+      "url": "https://irdat.regione.fvg.it/"
+    },
+    "bbox": [12.31, 46.04, 13.72, 46.66],
+    "note": "Mapped avalanche sites, photo-interpreted and surveyed."
+  },
+  {
+    "id": "fm:it-fvg-parks-reserves",
+    "name": "Friuli Venezia Giulia parks and nature reserves",
+    "type": "wms",
+    "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
+    "layers": [
+      "SITI_PROT:PARCHI_NATURALI_REG",
+      "SITI_PROT:RISERVE_NATURALI_REG"
+    ],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.dati.gov.it/iodl/2.0/",
+    "attribution": {
+      "text": "© Regione Autonoma Friuli Venezia Giulia – IRDAT (IODL 2.0)",
+      "url": "https://irdat.regione.fvg.it/"
+    },
+    "bbox": [12.3, 45.55, 13.92, 46.67],
+    "note": "Regional natural parks and nature reserves."
+  },
+  {
+    "id": "fm:it-fvg-natura2000",
+    "name": "Friuli Venezia Giulia Natura 2000 sites",
+    "type": "wms",
+    "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
+    "layers": ["SITI_PROT:SIC", "SITI_PROT:ZPS"],
+    "country_code": "IT",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.dati.gov.it/iodl/2.0/",
+    "attribution": {
+      "text": "© Regione Autonoma Friuli Venezia Giulia – IRDAT (IODL 2.0)",
+      "url": "https://irdat.regione.fvg.it/"
+    },
+    "bbox": [12.3, 45.55, 13.92, 46.67],
+    "note": "Natura 2000 habitat and bird sites."
+  },
+  {
+    "id": "fm:it-er-aerial-1954",
+    "name": "Emilia-Romagna aerial orthophoto 1954 (GAI flight)",
+    "type": "wms",
+    "url": "https://servizigis.regione.emilia-romagna.it/wms/voloGAI1954",
+    "layers": ["VoloGAI1954"],
+    "country_code": "IT",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/3.0/it/",
+    "attribution": {
+      "text": "© Regione Emilia-Romagna (CC BY 3.0)",
+      "url": "https://geoportale.regione.emilia-romagna.it/"
+    },
+    "bbox": [9.195, 43.719, 12.831, 45.188],
+    "note": "The 1954–55 Gruppo Aereo Italiano flight, black and white."
   }
 ]

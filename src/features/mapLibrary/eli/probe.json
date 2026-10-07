@@ -1,7038 +1,7200 @@
 {
   "ACC_2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ACT202402": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ADOP_2017_1ft": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ADOP_2023_9in": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "AL_DPGJC_ASIG_SistemiAdresave": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ARA_Bushfires_2020": {
-    "v": 2,
+    "v": 3,
     "status": 502,
     "cors": false,
     "scales": []
   },
   "Aargau-AGIS-2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Aargau-AGIS-2014-Hillshade": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Aargau-AGIS-2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Aargau-AGIS-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Aargau-AGIS-2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Aargau-AGIS-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Aargau-AGIS-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Aargau-AGIS-2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Aargau-AGIS-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Aargau-AGIS-2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Actueel_orthoHR_WMTS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "AktuelleLuftbilderDerLandeshauptstadtMuenchen20cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Alachua_Ortho_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Alachua_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Allen_OH_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "American-1966_Aerial": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "BANO": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "BDGEx_ctm_multi": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "BGT_standaardvisualisatie_WMTS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "BH_Ortofoto_2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Baden_Wuerttemberg-DOP20": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Baker_Ortho_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bayonne_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bayonne_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2020-TrueDOP": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2025-Summer": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-Alkis": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-Baumbestand_Alkis": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Berlin-Strassenbefahrung-2014-Alkis": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bern-Orthofotos": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bern-dsm-hillshade-2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bern-dtm-hillshade-2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bologna-Orthophoto-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bologna-Orthophoto-2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bologna-Orthophoto-2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bologna-Orthophoto-2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bordeaux_2012": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bordeaux_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bordeaux_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Bozeman_MT_2021": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Bozeman_MT_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Bozeman_MT_2024": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Bozeman_MT_2025": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Bozeman_MT_2026": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Brandenburg-DGM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Brandenburg-DOP20c": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Brest_2004": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Budapest_XI_2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Budapest_XI_2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Budapest_XI_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Budapest_XI_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Budapest_XI_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Budapest_XI_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Burbank_CA_2021": {
-    "v": 2,
+    "v": 3,
     "status": 403,
     "cors": false,
     "scales": []
   },
   "Bytom-2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Bytom-2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Bytom-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "CRAIG-Auvergne-2013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "CRAIG-Auvergne-2016_mirror1": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "CTFRIBOURG2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "CT_ECO_Ortho_2019_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "CT_ECO_Ortho_2023_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "CT_ECO_Shaded_relief_2016": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "CT_ECO_Shaded_relief_2023": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "Cadastre": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Calaveras_CA_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Calaveras_CA_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "CityOfLaunceston_2011": {
-    "v": 2,
+    "v": 3,
     "status": 503,
     "cors": false,
     "scales": []
   },
   "CityOfLaunceston_2013": {
-    "v": 2,
+    "v": 3,
     "status": 503,
     "cors": false,
     "scales": []
   },
   "City_of_Dublin_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "City_of_Fairfield_OH_2020": {
-    "v": 2,
+    "v": 3,
     "status": 400,
     "cors": true,
     "scales": []
   },
   "City_of_Fairfield_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "City_of_Hilliard_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "City_of_Parksville_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Code-Point_Open": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Coquitlam_2003": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2006": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2009": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2012": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Coquitlam_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Courtenay_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Courtenay_2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Courtenay_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Courtenay_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Craig_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Crook-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Crook-2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Curitiba_Ortofoto_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "CzechCUZKdmr5g": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "CzechCUZKorthophoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Czech_CUZK-KM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Czech_RUIAN-budovy": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Czech_RUIAN-parcely": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Czech_pLPIS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DCGIS-County-Imagery-2017-Fall-Leaf-Off-6-Inch": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DCGIS-County-Imagery-2019-Spring-Leaf-Off-6-Inch": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DC_From_Above_Ortho_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DC_From_Above_Ortho_2021": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": false,
     "scales": []
   },
   "DC_From_Above_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": false,
     "scales": []
   },
   "DC_From_Above_Ortho_2025": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": false,
     "scales": []
   },
   "DE_Orthophotography_2017_NC": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "DOGAMI-Lidar": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DVRPC_2020_BucksPA": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DVRPC_2020_CamdenNJ": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DVRPC_2020_GloucestorNJ": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DVRPC_2020_MercerNJ": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DVRPC_2025_BucksPA": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DVRPC_2025_BurlingtonNJ": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DVRPC_2025_ChesterPA": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DVRPC_2025_MercerNJ": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DV_DHMV_II_HILL_25cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DV_DHMV_II_SVF_25cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DV_GRB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DV_OrthoPhoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DV_OrthoPhoto_20132015_10cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DV_OrthoPhoto_Preliminary": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "DV_Wegenregister": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Delaware2012Orthophotography": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Delaware_FirstMap_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Delaware_FirstMap_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Delaware_FirstMap_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Delaware_OH_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Delaware_OH_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Delaware_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Delaware_Parks_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Dourados_Ortofotos": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "EA_LIDAR_DSM_1m_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "EA_LIDAR_DTM_1m_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "EMS-Orthophotographie-2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "EOXAT2017CLOUDLESS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ETCOG24_NC_6in": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Erlangen-2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Erlangen-2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Erlangen-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Erlangen-2022": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "Escambia_Ortho_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Escambia_Ortho_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "FNSB_Aerial_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "FOMI_2000": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "FOMI_2005": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "FOMI_2007_2010": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "FOMI_2011_2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "FOMI_2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "FOMI_2015_leafoff_20cm": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "FOMI_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "FOMI_2016_leafoff_20cm": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "Fortaleza_Base_Map": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Fortaleza_Ortofoto_2016": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Fortaleza_Ortofoto_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Fortaleza_Street_Names": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Frankfurt-am-Main-2016": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "Frankfurt-am-Main-2017": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "Frankfurt-am-Main-2018": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "Frankfurt-am-Main-2019": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "Franklin_OH_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Franklin_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DGM-CL": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DGM-SG": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-2005": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-2006_2008": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-2009_2011": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-2012_2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-2015_2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-2018_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-2021_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-2023_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-DOP-RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-Flurstuecke": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-ROHDOP-RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GEOSN-WebAtlas": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GURS-DOF025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "GURS-buildings": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "GURS-roads": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Geneve-dsm-2014": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "Geneve-dsm-2017": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "Geneve-dsm-2019": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "Geneve-dsm-2023": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "Geneve-dtm-2014": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "Geneve-dtm-2017": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "Geneve-dtm-2019": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "Geneve-dtm-2023": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "Geneve-orthophoto-2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Geneve-orthophoto-2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Geneve-orthophoto-2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Geneve-orthophoto-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Geneve-orthophoto-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Geneve-orthophoto-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GeoDanmark_Orthophoto_Spring_Septima": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GeoPortal_DF_2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GeoPortal_DF_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GeoPortal_DF_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GeoPortal_DF_2021_50cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Geodatastyrelsen_Cadastral_Parcels_INSPIRE": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Geolittoral-Orthophotos2000": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": false,
     "scales": []
   },
   "Geolittoral-Sentiers": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": false,
     "scales": []
   },
   "GeolittoralV2-Orthophotos": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": false,
     "scales": []
   },
   "Geoportal2-PL-aerial_image_WMTS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "German-1944_Aerial": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Gliwice-2009": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Gliwice-2013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Gliwice-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Gliwice-2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Gliwice-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Gliwice-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "GrandNancy_Orthophotographie_1994": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_1999": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2001": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2002": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2005": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2008": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2012": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "GrandNancy_Orthophotographie_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hamburg-Alkis-Farbig": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hamburg-DK5": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hamburg-DOP20-belaubt": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hamburg-DOP20-unbelaubt": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hampshire-Aerial-FCIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hampshire-Aerial-RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hennepin_Ortho_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hennepin_Ortho_2021": {
-    "v": 2,
-    "status": "error",
-    "cors": false,
+    "v": 3,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Hennepin_Ortho_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hennepin_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hennepin_Ortho_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hennepin_Ortho_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hessen-ALKIS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hessen-DOP20": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hessen-DTK": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Hessen-WebAtlas": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IBGE_BC250_Aglomerado_Rural": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IBGE_BC250_Gerador_Eletrica": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IBGE_BC250_Municipio": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IBGE_BC250_Pista_Pouso": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IBGE_BC250_Rios_Drenagem": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IBGE_BC250_Rodoviario": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IBGE_BC250_Terra_Indegina": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IBGE_BC250_Uso_Sustentavel": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IBGE_BC250_Villa": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ICGC-orto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ICGC-topo": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IDEIB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IECA-CDAU-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "IGEAR-ortofoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "KTBASELSTADT2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "KTBASELSTADT2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "KTBASELSTADT2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "KYAPED_Phase_1": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "KYAPED_Phase_2": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "KYAPED_Phase_3": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Kanton-Schaffhausen-DSM-2013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Kanton-Schaffhausen-Luftbild-2013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "KantonBernBuildings": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Kendall_IL_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Kendall_IL_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Kendall_IL_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Kendall_IL_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "King_WA_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "King_WA_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "King_WA_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "King_WA_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Koeln-TrueDOP-2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LA_County_Basemap": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_Auckland_2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_Auckland_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_Bay_of_Plenty_2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_Christchurch_2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_Cyclone_Gabrielle_Hawkes_Bay": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_Hamilton_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_NZ_Aerial_Imagery": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_NZ_DSM_Hillshade": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_NZ_Hillshade": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_NZ_Topo50_Gridless_Maps": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LINZ_Wellington_2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LIST_Topographic": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LPI_NSW_Administrative_Boundaries_County": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LPI_NSW_Administrative_Boundaries_LGA": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LPI_NSW_Administrative_Boundaries_NPWS_Reserve": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LPI_NSW_Administrative_Boundaries_Parish": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LPI_NSW_Administrative_Boundaries_StateForest": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LPI_NSW_Administrative_Boundaries_Suburb": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LSA-ALKIS-CP": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LSA-ALKIS_BU": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LSA-ATKIS-HYN": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LSA-DOP20": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LSA-DVG": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LV_CADASTRAL": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "LV_ORTOFOTO_C1": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "LV_ORTOFOTO_C3": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "LV_ORTOFOTO_C4": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "LV_ORTOFOTO_C5": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "LV_ORTOFOTO_C6": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "LV_TERRAIN_LIDAR_LGIA": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "LV_TOPO50_LGIA": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Leon_Ortho_2022_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Leon_Ortho_2022_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Leon_Ortho_2024_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Leon_Ortho_2024_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LiDAR_Bare_Earth_NE_HS_NH_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LiDAR_Bare_Earth_NW_HS_NH_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "LocalAuthorities_RightsOfWay": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Loire_Atlantique-Orthophotos-2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Lombardia-Italy-CTR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Lorain_OH_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Lucas_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Ludwigshafen-2019": {
-    "v": 2,
+    "v": 3,
     "status": 503,
     "cors": false,
     "scales": []
   },
   "Ludwigshafen-2022": {
-    "v": 2,
+    "v": 3,
     "status": 503,
     "cors": false,
     "scales": []
   },
   "MDT2M_LITORAL_2014_15": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "MOA_Aerial_2021": {
-    "v": 2,
+    "v": 3,
     "status": 403,
     "cors": false,
     "scales": []
   },
   "MOA_Aerial_2024": {
-    "v": 2,
+    "v": 3,
     "status": 403,
     "cors": false,
     "scales": []
   },
   "MRCOG_Ortho_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Maaamet-Estonia_Cadastre": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "Maaamet-Estonia_Ortho": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Maine_2021": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "Manatee_Ortho_2021": {
-    "v": 2,
+    "v": 3,
     "status": 502,
     "cors": false,
     "scales": []
   },
   "Manatee_Ortho_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Manatee_Ortho_2023_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Manatee_Ortho_2023_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Manatee_Ortho_Latest": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Marco_Island_FL_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Marco_Island_FL_Ortho_2024": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Marco_Island_FL_Ortho_Post-Ian_2022": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Marco_Island_FL_Ortho_Pre-Ian_2022": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Martin_Ortho_2021": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Martin_Ortho_2022": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Martin_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "MassGIS-L3-Parcels": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "MassGIS-LIDAR-Shaded-Relief": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "MassGIS-LIDAR-Slope": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "MassGIS-basemap": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "MassGIS_2021_Aerial": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "MassGIS_2023_Aerial": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "MassGIS_2025_Aerial": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "MassGIS_2025_Aerial_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Maui_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Maui_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Maui_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Mercer_OH_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "MetroCOG_Ortho_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Miami-Dade_Ortho_2021": {
-    "v": 2,
-    "status": 200,
+    "v": 3,
+    "status": 400,
     "cors": true,
     "scales": []
   },
   "Miami_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Minnesota-Composite-Image-Service": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Monongalia_WV_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Monongalia_WV_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Monongalia_WV_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Monongalia_WV_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Monongalia_WV_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Morgan_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Mulhouse_2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NC_Latest_Ortho_Natural": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NH_2021_2022_6in_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NH_2021_2022_6in_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NJ_Infrared_2020": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "NJ_Natural_2020": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "NLSC-EMAP5": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_East_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_East_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_East_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_Gulf_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_Gulf_Central_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_Gulf_East_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_Gulf_East_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_Gulf_West_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_Gulf_West_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_NGS_70701_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "NOAA_PR_USVI_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_Southeast_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_West_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NOAA_West_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NPI-JanMayen-topo": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NPI-Svalbard-ortofoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NRCS_Alaska_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
-    "cors": false,
+    "cors": true,
     "scales": []
   },
   "NRCS_American_Samoa_2024": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": false,
     "scales": []
   },
   "NRCS_CNMI_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NRCan-HRDEM-DSM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NRCan-HRDEM-DTM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1943": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1944": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1947": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1951": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1955": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1965": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1966": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1969": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1970": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1971": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1972": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1975": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1976": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1978": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1980": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1982": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1983": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1984": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1986": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1989": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1990": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1991": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1993": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1994": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1996": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1998": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_2001": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_2004": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_2005": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_2006": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_2013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_LPI_BaseMap": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_LPI_Imagery": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NSW_LPI_TopographicMap": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NYSDOP_Latest": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "NYSDOP_Latest_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Nassau_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "Naturvardsverket-protected": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "Naturvardsverket-trails": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Niedersachsen-ALKIS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Niedersachsen-DOP20": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ODOT_TIMS_Road_Inventory": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OGDLidarZH-DOM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OGDLidarZH-DOM-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OGDLidarZH-DTM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OGDLidarZH-DTM-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OGDOrthoZH2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OGDOrthoZH2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OGDOrthoZH2018": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "OGDOrthoZH2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OGDOrthoZH2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OGDOrthoZH2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ORTOSAT_DGT_2023_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ORTOS_DGRF_2004_06": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "ORTOS_DGT_2014_15": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "ORTOS_DGT_2018_WMS": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "ORTOS_DGT_2021_RGB": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "ORTOS_DGT_2025_RGB": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "OSIP": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OSMUK-Cadastral-Parcels": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Okaloosa_Ortho_2019": {
-    "v": 2,
+    "v": 3,
     "status": 400,
     "cors": true,
     "scales": []
   },
   "Ontario_Mosaic_2018-2022_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Ontario_Mosaic_2018-2022_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Ontario_Mosaic_2023-2027_RGB": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "OpenAerialMapMosaic": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "OpenStreetMap-turistautak": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Oregon-OSIP-2022": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Oregon-OSIP-2024": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Osceola_Ortho_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Osceola_Ortho_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "PAgis_Ortho_2018": {
-    "v": 2,
+    "v": 3,
     "status": 400,
     "cors": true,
     "scales": []
   },
   "PEMA_Orthoimagery": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "PNOA-Spain-TMS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "PNOA-rapida": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Palm-Beach_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Philadelphia_Ortho_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Philadelphia_Ortho_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Philadelphia_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Philadelphia_Ortho_2024_1in": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Philadelphia_Ortho_2024_3in": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Philadelphia_Ortho_2025_3in": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Pinellas_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Pinellas_Ortho_2024": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "Pinellas_Ortho_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "PlanCadastralNeuchatel": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Plateau_orthophoto_official": {
-    "v": 2,
+    "v": 3,
     "status": 403,
     "cors": true,
     "scales": []
   },
   "PortlandMaps": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "PortlandMapsAerial": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "PrahaIPRlatestorthophoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "PrahaIPRlow-vegetationorthophoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Putnam_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "QLD_LatestStateProgram": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "QLD_Lite": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "QLD_Topo": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "RABA-KGZ": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "RABA-KGZ-3000": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Rheinland-Pfalz-DOP20": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Riksantikvariambetet-archaeological": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Riksantikvariambetet-heritage": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Riksantikvariambetet-protected": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Riksantikvariambetet-ruins": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "SANDAG_2020": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "SANDAG_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "SITNA-catastro": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW2009": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW2012": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW_ORTHO_LAST": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPW_PICC": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "SPWrelief2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Saarland-DOP20": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Sacramento_CA_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Saint_Johns_Basemap": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Saint_Johns_Ortho_2021": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Saint_Johns_Ortho_2024": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Saint_Johns_Ortho_2025": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Saint_Johns_Ortho_2026": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Saint_Johns_Ortho_CIR_2021": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Saint_Johns_Ortho_CIR_2024": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Saint_Johns_Ortho_CIR_2025": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Saint_Johns_Ortho_CIR_2026": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Saint_Lucie_Ortho_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Saint_Lucie_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Saint_Lucie_Ortho_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Saint_Lucie_Ortho_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Francisco_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Francisco_2022_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Francisco_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Francisco_2023_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Francisco_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Francisco_2024_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Francisco_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Juan_NM_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Juan_NM_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Juan_NM_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "San_Juan_NM_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Santa_Rosa_Ortho_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Santa_Rosa_Ortho_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Sarasota_Ortho_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Sarasota_Ortho_2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "Scioto_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Seminole_Ortho_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Seminole_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Seminole_Ortho_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Seminole_Ortho_2025": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": true,
     "scales": []
   },
   "Seneca_OH_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Singapore-Orthophoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solano_CA_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solano_CA_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solano_CA_2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solano_CA_2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis-ortho2014-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis-ortho2015-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis-ortho2016-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis-ortho2017-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis2014-dom-wms": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis2014-dtm-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis2018-dsm-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis2018-dtm-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis2019-dsm-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Solothurn-sogis2019-dtm-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-Basemap": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-DSM_2006_2_5m": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-DSM_2013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-DTM_2006_2_5m": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-DTM_2013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-Orthofoto-2014-2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-Orthofoto-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-Orthofoto-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-Orthofoto-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-Orthofoto2011-20cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South-Tyrol-Orthofoto2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South_Africa-CapeTown-Aerial-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South_Africa-CapeTown-Aerial-2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South_Africa-CapeTown-Aerial-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South_Africa-CapeTown-Aerial-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South_Africa-CapeTown-Aerial-2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "South_Africa-CapeTown-Aerial-2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Stockton_CA_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "StratMap21_NCCIR_CapArea_Brazos_Kerr": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Stratmap20_NCCIR_CapArea_McLennan": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Stuttgart-latest": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "TEClines": {
-    "v": 2,
+    "v": 3,
     "status": 403,
     "cors": false,
     "scales": []
   },
   "TECstops": {
-    "v": 2,
+    "v": 3,
     "status": 403,
     "cors": false,
     "scales": []
   },
   "TNMap_Orthoimagery_Latest": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "TW_NLSC_WMS_EMAP6": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "TW_NLSC_WMS_LANDSECT": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "TW_NLSC_WMS_Village": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Thuringia-DOP20": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Torokbalint-orthophoto-2013": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Torokbalint-orthophoto-2015": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Torokbalint-orthophoto-2018": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Torokbalint-orthophoto-2021": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "Toronto-Imagery-Most-Current-Year": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Toulouse-Orthophotoplan-2007": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Toulouse-Orthophotoplan-2011": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Toulouse-Orthophotoplan-2013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Toulouse-Orthophotoplan-2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Toulouse-Orthophotoplan-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Toulouse-Orthophotoplan-2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Tours-Orthophoto-2008_2010": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Tours-Orthophoto-2013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "URBIS2009": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "URBIS2012": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "URBIS2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "URBIS2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "USDA_Micronesia_2023": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "USGS-3DEP": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "USGS-Imagery": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "USGS-The-National-Map-Topo": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UY-2019-orthophotos": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UkraineCherkasy2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UkraineCherkasy2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UkraineDonAndriivskaOTG2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UkraineLubetskaOTG2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UkraineVinnytsiaTG2021": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "UrbISDTM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISHillshade": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2004": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2021EO": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2021NS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2022EO": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2022NS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2024EO": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2024NIREO": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2024NIRNS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISOrtho2024NS": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbISRelief": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbisAdmFR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbisAdmFRNL": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "UrbisAdmNL": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Uster-2008": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "VBMPImagery_Most_Recent": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "VCGI_LiDAR_DEM_Hillshade": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "VGIN-BuildingFootprints_WM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "VGIN-PropertyLines_WM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "VT_Best_CIR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "VT_Best_CLR": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Vercors-Orthophotos-1999": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Vicmap-address_no": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Vicmap-property_view": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Volusia_Ortho_2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Volusia_Ortho_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Worms-2003": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Worms-2008": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Worms-2012": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Worms-2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Worms-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Worms-2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Zuerich-zh_luftbild2011-tms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Zuerich-zh_luftbild2013-wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Zuerich-zh_uebersichtsplan-tms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "Zug-2011": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": false,
     "scales": []
   },
   "Zug-2016": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": false,
     "scales": []
   },
   "Zug-2018": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": false,
     "scales": []
   },
   "Zug-2019-wms": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": false,
     "scales": []
   },
   "Zug-2020-wms": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": false,
     "scales": []
   },
   "Zug-2021-wms": {
-    "v": 2,
+    "v": 3,
     "status": 500,
     "cors": false,
     "scales": []
   },
   "aachen_alkis_wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ac3-flynorth-valle-del-cauca-2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "basemap.at": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "basemap.at-orthofoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "basemap.at-overlay": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "basemap.at-surface": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "basemap.at-terrain": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "bev-inspire-orthofoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "bkg-verwaltungsgebiete": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "brazos_county_2019_wms": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "caparea_2019_wms": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "cyclosm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "dgu-dof-2011": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "dgu-dof-2014-2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "dgu-dof-2019-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "dgu-dof-2021-2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "dgu-dof-2022-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "dgu-dof-2023-2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "dgu-hok": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "dgu-topo-100": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "dgu-topo-200": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "dgu-topo-25-new": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "eufar-balaton": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fiskeridir-akvakultur": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-bev-oek": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-bfw-forest-development-plan": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-geosphere-geofast-50": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-geosphere-geology-50": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-geosphere-geology-500": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-geosphere-geology-hist-500": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-geosphere-geology-hist-75": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-geosphere-landslides": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-noe-protected-areas": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "fm:at-stmk-franziszeischer-kataster": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-stmk-hillshade-multi": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-stmk-ortho-2003-2007": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-stmk-ortho-2008-2011": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-stmk-ortho-sw-1994-2001": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-aspect": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-forest-development-plan": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-hillshade-multi": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-ortho-1940": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-ortho-1949-1954": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-ortho-1970-1982": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-ortho-1999-2004": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-protected-areas": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-slope": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-tirol-slope-winter": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-hazard-zones": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-mtb": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-195x": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-196x": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-197x": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-198x": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-199x": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-2001": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-2006": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-2009": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-ortho-winter-2005": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-protected-areas": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-protective-forest": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-slope-50cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-tourenkarte": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-tourenkarte-slope": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-vlbg-wildlife-quiet-zones": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-wlv-catchments": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-wlv-events": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-wlv-hazard-zones": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:at-wlv-protective-forest": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-aopk-international": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-aopk-natura2000": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-aopk-protected-areas": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-cgs-geology-50": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-cgs-geosites": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-cgs-haidinger-1-144000": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-cgs-landslides": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-cuzk-dmr5g-aspect": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-cuzk-dmr5g-slope": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-cuzk-dmr5g-tinted-hillshade": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-cuzk-zabaged-contours": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:cz-cuzk-zm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:hu-geology-100k": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:hu-nebih-fire-ban": {
-    "v": 2,
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-bz-cadastre-1858": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-bz-orthophoto-1982-85": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-bz-orthophoto-1989-90": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-bz-orthophoto-1992-97": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-bz-orthophoto-1999": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-bz-orthophoto-2003": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-bz-orthophoto-2023-cir": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-bz-technical-map-1995": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-er-aerial-1954": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-euap-protected-areas": {
+    "v": 3,
+    "status": "redirected to http",
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-fvg-avalanche-sites": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-fvg-ctrn-5000": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-fvg-natura2000": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-fvg-parks-reserves": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-igm-100000": {
+    "v": 3,
+    "status": "redirected to http",
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-igm-25000": {
+    "v": 3,
+    "status": "redirected to http",
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-ispra-avalanche-sites": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-ispra-geology-25k": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-ispra-iffi-landslides": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-ispra-landslide-hazard": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-natura2000-sic-zsc": {
+    "v": 3,
+    "status": "redirected to http",
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-natura2000-zps": {
+    "v": 3,
+    "status": "redirected to http",
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-piemonte-hiking-network": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-piemonte-protected-natura2000": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:it-tn-ctp-1987": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-tn-orthophoto-1973": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:it-tn-orthophoto-1994": {
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "fm:pl-gdos-protected-areas": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:pl-gugik-hypsometry": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fm:pl-gugik-topo": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.dpt.04.2010": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.dpt.05.2010": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.dpt.06.2009": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.dpt.13.2009": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.dpt.84.2010": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.ign.bdortho": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.ign.mnslidarhd": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.ign.mntlidarhd": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.ign.orthoexpress.2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.ign.orthoexpress.2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.ign.orthoexpress.2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.ign.orthoexpress.2026": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.orthohr": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2013": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2014": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2015": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2016": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2017": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2018": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2021": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2022": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2023": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.orthohr.2024": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "fr.pcrs": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "gcba-ortofotos-2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "gcba-ortofotos-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "geoEuskadi-ORTO": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "geoEuskadi-basemap": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "geoscribble-latest": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "gis-rijeka-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "gis.stmk.gv.at-surface": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "gis.stmk.gv.at-terrain": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "gothenburg-citymap": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "grid-voltages-owners": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": [2]
   },
   "gsi.go.jp_airphoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "gsi.go.jp_airphoto_2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "gsi.go.jp_airphoto_2020": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "gsi.go.jp_airphoto_2021": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "gsi.go.jp_seamlessphoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "gsi.go.jp_std_map": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "hri-orto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "ign-argenmap": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ign-argenmap-gray": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ign-atlas-argentina-500k": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ign-atlas-tucuman-100k": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ign-bl-slope": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "ign-cartas-100k": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ign-cartas-250k": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ign-cartas-500k": {
-    "v": 2,
+    "v": 3,
     "status": 400,
     "cors": true,
     "scales": []
   },
   "ign-cartas-50k": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ign-orthophotos-mosaic": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ign-uav-mosaic": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "img.nj.gov-Infrared2015": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "img.nj.gov-Natural2015": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "jaragua-do-sul-2020": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "kalmar-orto-2014": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "kalmar-orto-2016": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "kalmar-orto-2018": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "kalmar-orto-2020": {
-    "v": 2,
+    "v": 3,
     "status": 499,
     "cors": true,
     "scales": []
   },
   "kartverket-abas": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-bygninger": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-dom-skygge": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-dtm-skygge": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-fjellskygge": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-friluft": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-historic": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-hoydekurver": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-luftfartshindre": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "kartverket-matrikkel": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-ok-1st": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-sjokart": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-topo": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kartverket-vegnett": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kt_tg_av": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kt_tg_ortho_2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kt_tg_radrouten": {
-    "v": 2,
+    "v": 3,
     "status": 401,
     "cors": true,
     "scales": []
   },
   "kt_tg_ww": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "kystverket-navigasjon": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "lu.geoportail.opendata.basemap": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "lu.geoportail.opendata.cadastre": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "lu.geoportail.opendata.ortho2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "lu.geoportail.opendata.ortho_2019_winter": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "lu.geoportail.opendata.ortholatest": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "lu.geoportail.opendata.topo": {
-    "v": 2,
+    "v": 3,
     "status": 400,
     "cors": true,
     "scales": []
   },
   "lu.openstreetmap.lidar.hillshade.2019.classy": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "maaamet.ee-cir_ngr": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "maaamet.ee-orto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "maaamet.ee-pohi_vr2": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "madrid-ayto-geoportal": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mainzlatestaerialimagery": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "miljodirektoratet-friluftsomrader": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "miljodirektoratet-vern": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "montauban_2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-DGM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-DOP20": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-DOP20-2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-DOP20-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-DOP20-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-DOP20-2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-DOP20-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-DOP20-2024": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-DTK": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "mv-flurstuecke": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "npd-offshore": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "npi-svalbard-fkb": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "nrw_alkis_buildings_gst_wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
-    "cors": false,
+    "cors": true,
     "scales": []
   },
   "nrw_alkis_wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "nrw_dtm_wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "nrw_idop_wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "nrw_ortho_wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "nrw_vdop_wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "nve-nettanlegg": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "nve-snoskred": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "nve-vannkraft": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "nve-vindkraft": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "openlabs-geoportal-public-transport": {
-    "v": 2,
+    "v": 3,
     "status": "error",
     "cors": false,
     "scales": []
   },
   "orka.mv": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "orthophoto_lyon_2012": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "orthophoto_lyon_2015": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "orthophoto_lyon_2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "orthophoto_lyon_2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "orthophoto_lyon_2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "orthophoto_lyon_plus_recente": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_antrim": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_armagh": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_carlow": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_cavan": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_clare": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_cork": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_derry": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_donegal": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_down": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_dublin": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_fermanagh": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_galway": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_kerry": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_kildare": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_kilkenny": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_laois": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_leitrim": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_limerick": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_longford": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_louth": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_mayo": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_meath": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_monaghan": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_offaly": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_roscommon": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_sligo": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_tipperary": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_tyrone": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_waterford": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_westmeath": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_wexford": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os1ed_6inch_wicklow": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_antrim": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_armagh": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_carlow": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_cavan": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_clare": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_cork": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_derry": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_donegal": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_down": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_dublin": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_fermanagh": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_galway": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_kerry": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_kildare": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_kilkenny": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_laois": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_leitrim": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_limerick": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_longford": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_louth": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_mayo": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_meath": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_monaghan": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_offaly": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_roscommon": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_sligo": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_tipperary": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_tyrone": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_waterford": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_westmeath": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_wexford": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "os2ed_6inch_wicklow": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "osm-hr-karlovac-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "osm-hr-knin-2007": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "osm-hr-orbview": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": false,
     "scales": []
   },
   "osm-hr-ustopo50": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "osm-hr-zagreb-2012": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "osm-hr-zagreb-2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "osmbe": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmbe-fr": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmbe-nl": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfj-handa-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfj-inuyama-2023": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfj-kagoshima-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfj-kouchi-2020": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfj-kyoto-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfj-muroran-2019": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfj-nagahama-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfj-nagaoka-2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfj-osaka-2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmfr_volta": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-AST_L1T_00302052007154424_20150518041444_91492": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-AST_L1T_00311162013112731_20150618142416_109190": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-DMS_1142622_03746_20110415_17533956": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-DMS_1142636_160xx_20110507_1822xxxx": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-EO1A0040712016264110KF": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-EO1A0120532016364110KF": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-EO1A1350972013086110KF": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80281222016035LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80360072014245LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80611072014036LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80651332014352LGN01": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80651332016358LGN02": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80661332021346LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80691332019346LGN01": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80691332021351LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80700162014211LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80701332017363LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80711332020363LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80741332021354LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80770232017156LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80781332017355LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80791332016360LGN01": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80791332020355LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80801332017353LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80801332021348LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80821332017351LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80821332021346LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80861332016361LGN01": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80871332017354LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80881332017345LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80891322019359LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80891332019359LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80901322020001LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80901332019350LGN01": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80910682014358LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80921322019364LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80921332019364LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC80940622015159LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81030632015286LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81130622013270LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81190582014075LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81250592016107LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81490352013282LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81510432015030LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81511242016033LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81730602015040LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81800982013291LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81960222015233LGN00ir": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81960222015233LGN00vis": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC81991002015286LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC82050982015344LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC82100502015347LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC82100972015347LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC82160152013239LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC82280982013259LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LC82330892016031LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LO80771332019354LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-LO80841332019355LGN00": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R009_S61_20160109": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R017_S67_20170223T022551": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R021_N44_20160807T083013": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R021_N44_20180429T082601": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R022_N06_20151221T103009": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R039_S15_20160510T145731": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R040_N01_20160311T164128": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R042_S78_20170214T202521": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R047_S54_20160411T044330": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R065_N47_20160929T102022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R067_S40_20170127T140051": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R067_S40_20170417T140051": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R078_N01_20160702T082522": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R078_N68_20160930T081002": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R086_N60_20160831T213532": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R088_S05_20160812T011732": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R089_N52_20160623T024048": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R089_N52_20200930T023551": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R092_S02_20160613T075613": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R092_S05_20160802T075556": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R093_N41_20150828T092005": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R093_N79_20200831T091601": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R094_N79_20160812T105622": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R111_N09_20160604T154554": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R119_N09_20160327T050917": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2A_R136_N41_20150831T093006": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R005_S69_20180222T061749": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R005_S7X_20200303T061749": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R009_S64_20230216T125859": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R015_N52_20190816T222539": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R022_N47_20191026T101029": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R032_S07_20200921T025549": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R035_SXX_20220124T083939": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R037_S8X_20230129T120239": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R043_S67_20190301T220359": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R049_S8X_20210209T080929": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R049_SXX_20220316T080929": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R052_SXX_20230130T130859": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R057_S7X_20190210T213409": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R061_S7X_20200226T041719": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R063_SXX_20220317T073919": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R069_S83_20230111T174429": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R071_S72_20200216T210519": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R075_S7X_20190113T034629": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R077_S7X_20220226T070839": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R091_S7X_20210324T063829": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R095_S6X_20200119T131859": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R095_S6X_20220128T131859": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R098_S83_20230113T182459": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R099_SXX_20230212T200529": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R109_SXX_20230124T124909": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R121_S7X_20220301T085959": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R121_SXX_20220209T085949": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R127_S83_20230115T190459": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R128_SXX_20230214T204609": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R129_S67_20200121T222409": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R129_S67_20200301T222409": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R138_S6X_20220302T132919": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-S2B_R143_S7X_20200302T215359": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-aral1": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-aral2": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-aster_anti2": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-aster_anti3": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-aster_anti_east": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-aster_anti_west": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-caspian_2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-dms_kangerlussuaq_20151008": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-dms_kangerlussuaq_20160518": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-dms_thule2_2015.09.25": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-dms_thule_2015.09.25": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-dms_thule_2015.10.06": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-enderby": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-greenland": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-larsen_2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-ls_polar": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-ls_polar2": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-ls_polar4": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-ls_polar5": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-ndvina": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-nellesmere_ast": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-nellesmere_ast_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-ngreenland_ast": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-northsea_s2_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-northsea_s2_2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-northsea_s2_2018": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-s2sval": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-ural_s2_2016": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-usgs_250k_ant": {
-    "v": 2,
+    "v": 3,
     "status": 404,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-usgs_500k_ant": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "osmim-imagicode-usgs_50k_ant": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmim-imagicode-walps_autumn_2017": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "osmse-ekonomiska": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "osmse-generalstab": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "rennes_ortho_2014_osmfr": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rennes_ortho_2014_tms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rennes_ortho_2018_osmfr": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rennes_ortho_2018_tms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rennes_ortho_2020_osmfr": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rennes_ortho_2020_tms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rennes_ortho_2021_wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "riksantikvaren-kulturminner": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rio2019": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "rio2022": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "route500": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "route500hydro": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rs-osm-official-cyr": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rs-osm-official-lat": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "rs-rgz-ar": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "smith_county_2019_wms": {
-    "v": 2,
-    "status": 200,
-    "cors": true,
+    "v": 3,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "sollentuna-orto": {
-    "v": 2,
+    "v": 3,
     "status": 503,
     "cors": false,
     "scales": []
   },
   "ssb-sentrum": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "ssb-tettsteder": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "stockholm-orto": {
-    "v": 2,
+    "v": 3,
     "status": "not an image",
     "cors": true,
     "scales": []
   },
   "swisstopo_swissalti3d": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "swisstopo_swissimage": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "swisstopo_swisssurface3d": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "tampere-aerial-2022": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "tampere-aerial-2025": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "tirol.gv.at-DGM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "tirol.gv.at-DOM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "tirol.gv.at-contourlines": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "tirol.gv.at-orthofoto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "tirol.gv.at-orthofoto-cir": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "trafikverket-baninfo": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "trafikverket-vagnat": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "trafikverket-vagnat-extra": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "turku-orto": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "turku-orto-2018-true": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "turku-orto-2021": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "turku-topo": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "us-pr-slope": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": []
   },
   "viersen_alkis_wms": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "vogis.cnv.at-DGM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "vogis.cnv.at-DOM": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "vogis.cnv.at-ef2012_12cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "vogis.cnv.at-ef2015_10cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "vogis.cnv.at-ef2018_10cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "vogis.cnv.at-ef2020_10cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "vogis.cnv.at-ef2022_10cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "vogis.cnv.at-wi2015_20cm": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "wien.gv.at-aerial_image": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "wien.gv.at-gp": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "wien.gv.at-gp-situation": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "wien.gv.at-labels": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": true,
     "scales": []
   },
   "zm-medium-voltage-overhead-gridlines": {
-    "v": 2,
+    "v": 3,
     "status": 200,
     "cors": false,
     "scales": [2]
