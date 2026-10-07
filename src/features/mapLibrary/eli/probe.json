@@ -4541,6 +4541,174 @@
     "cors": true,
     "scales": []
   },
+  "fm:de-basemap-de-raster": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bfn-natura2000": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bfn-protected-areas": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bgr-guek250": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bkg-corine-5ha": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bkg-dtk100": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bkg-topplus-open": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bkg-topplus-open-grey": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bw-dtk10": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bw-dtk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bw-dtk50": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bw-geology-gk50": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:de-bw-histdop-1960s": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bw-histdop-1970s": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bw-histdop-1980s": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bw-histdop-1990s": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bw-histdop-2000s": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bw-natural-risk-zones": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:de-by-dtk100": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-dtk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-dtk50": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-geology-dgk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-landslide-hints": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-lawinenstriche": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-positionsblaetter": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-rockfall-hints": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-topographischer-atlas": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-by-uraufnahme": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:hu-geology-100k": {
     "v": 3,
     "status": 200,

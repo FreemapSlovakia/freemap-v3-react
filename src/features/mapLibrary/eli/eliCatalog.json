@@ -831,6 +831,30 @@
       }
     },
     {
+      "type": "127TG",
+      "layer": "overlay",
+      "name": "BfN Protected Areas (national parks, nature reserves)",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.bfn.de/ogc/wms/schutzgebiet",
+        "layers": [
+          "Biosphaerenreservate",
+          "Naturschutzgebiete",
+          "Nationalparke"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Bundesamt für Naturschutz (BfN)",
+            "url": "https://geodienste.bfn.de/schutzgebiete"
+          }
+        ]
+      }
+    },
+    {
       "type": "136HW",
       "layer": "overlay",
       "name": "Kartverket Administrative Boundaries overlay",
@@ -1275,6 +1299,27 @@
           {
             "type": "map",
             "name": "AGIS OF2014"
+          }
+        ]
+      }
+    },
+    {
+      "type": "1QW85",
+      "layer": "overlay",
+      "name": "LfU Bayern Landslide Hazard Hints",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.lfu.bayern.de/gdi/wms/geologie/georisiken",
+        "layers": ["ghk_hang", "ghk_rutschanf", "ghk_tief_rutsch"],
+        "minZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
+            "url": "https://www.lfu.bayern.de/"
           }
         ]
       }
@@ -1849,6 +1894,28 @@
       }
     },
     {
+      "type": "2NNQV",
+      "layer": "base",
+      "name": "LGL Baden-Württemberg DTK10",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_ATKIS_DTK_10_K",
+        "layers": ["RDS.LY_DTK10K_COL"],
+        "minZoom": 10,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+            "url": "https://www.lgl-bw.de"
+          }
+        ]
+      }
+    },
+    {
       "type": "2PF1F",
       "layer": "base",
       "name": "GIS-Steiermark orthophoto 2008-2011",
@@ -2185,6 +2252,27 @@
       }
     },
     {
+      "type": "3D2YZ",
+      "layer": "overlay",
+      "name": "LGL Baden-Württemberg Historic Orthophotos 1960s",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_HIST_DOP_1960-1969",
+        "layers": ["1960", "1961", "1964", "1968", "1969"],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+            "url": "https://www.lgl-bw.de"
+          }
+        ]
+      }
+    },
+    {
       "type": "3DFPU",
       "layer": "base",
       "name": "UrbIS-Ortho 2024 (NIR north-south)",
@@ -2402,6 +2490,28 @@
             "type": "map",
             "name": "San Juan County GIS",
             "url": "https://data-sjcounty.opendata.arcgis.com"
+          }
+        ]
+      }
+    },
+    {
+      "type": "3UZY3",
+      "layer": "base",
+      "name": "Bayern Topographischer Atlas (1:50 000)",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/hist/v1/histkarten",
+        "layers": ["by_topoatlas"],
+        "minZoom": 12,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
           }
         ]
       }
@@ -3128,6 +3238,28 @@
             "type": "map",
             "name": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
             "url": "https://www.die-wildbach.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "4SEFV",
+      "layer": "base",
+      "name": "LGL Baden-Württemberg DTK50",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_ATKIS_DTK_50_K_A",
+        "layers": ["RDS_LY_DTK50K_COL"],
+        "minZoom": 8,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+            "url": "https://www.lgl-bw.de"
           }
         ]
       }
@@ -5036,6 +5168,25 @@
       }
     },
     {
+      "type": "7T8KU",
+      "layer": "base",
+      "name": "basemap.de Web Raster",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "map",
+      "body": {
+        "url": "https://sgx.geodatenzentrum.de/wmts_basemapde/tile/1.0.0/de_basemapde_web_raster_farbe/default/GLOBAL_WEBMERCATOR/{z}/{y}/{x}.png",
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis-DE / BKG (2026) CC BY 4.0",
+            "url": "https://basemap.de"
+          }
+        ]
+      }
+    },
+    {
       "type": "7X78V",
       "layer": "base",
       "name": "Ontario Orthophotography Mosaic 2018-2022 (RGB)",
@@ -6028,6 +6179,29 @@
       }
     },
     {
+      "type": "9NLUG",
+      "layer": "overlay",
+      "name": "LfU Bayern Avalanche Paths (Lawinenkataster)",
+      "countries": ["de"],
+      "bbox": [10, 47.27, 13.84, 47.8],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.lfu.bayern.de/gdi/wms/wasser/lawinenkataster",
+        "layers": [
+          "ueberwachte_lawinenstriche",
+          "nicht_ueberwachte_lawinenstriche"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
+            "url": "https://www.lfu.bayern.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "9NOHR",
       "layer": "base",
       "name": "imagico.de: Northern Dvina delta at low tide",
@@ -6535,6 +6709,28 @@
       }
     },
     {
+      "type": "A5W87",
+      "layer": "overlay",
+      "name": "BGR Geological Map GÜK250",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bgr.de/wms/geologie/guek250/",
+        "layers": ["7", "8", "11"],
+        "minZoom": 10,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: GÜK250 (WMS), © BGR, Hannover, 2019",
+            "url": "https://www.bgr.bund.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "A63PS",
       "layer": "base",
       "name": "NOAA NGS Gulf Coast Imagery, West (2026)",
@@ -6955,6 +7151,28 @@
       }
     },
     {
+      "type": "AVHVX",
+      "layer": "base",
+      "name": "LGL Baden-Württemberg DTK25",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_ATKIS_DTK_25_K_A",
+        "layers": ["RDS_LY_DTK25K_COL"],
+        "minZoom": 9,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+            "url": "https://www.lgl-bw.de"
+          }
+        ]
+      }
+    },
+    {
       "type": "AW6EZ",
       "layer": "base",
       "name": "UrbIS-Ortho 2019",
@@ -7363,6 +7581,25 @@
             "type": "map",
             "name": "Stadt Wien",
             "url": "https://data.wien.gv.at"
+          }
+        ]
+      }
+    },
+    {
+      "type": "BLTQX",
+      "layer": "base",
+      "name": "BKG TopPlus-Open",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "map",
+      "body": {
+        "url": "https://sg.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BKG (2026) dl-de/by-2-0",
+            "url": "https://sgx.geodatenzentrum.de/web_public/gdz/datenquellen/datenquellen_topplusopen.html"
           }
         ]
       }
@@ -8245,6 +8482,28 @@
       }
     },
     {
+      "type": "CXX0H",
+      "layer": "base",
+      "name": "Bayern Historische Flurkarte (Uraufnahme)",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/hist/v1/histkarten",
+        "layers": ["by_uraufnahme"],
+        "minZoom": 16,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
+          }
+        ]
+      }
+    },
+    {
       "type": "CYRCY",
       "layer": "base",
       "name": "IGN cartas topográficas 50k",
@@ -8675,6 +8934,28 @@
       }
     },
     {
+      "type": "DPAUF",
+      "layer": "base",
+      "name": "Bayern Positionsblätter (1817-1841)",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/hist/v1/histkarten",
+        "layers": ["by_positionsblatt"],
+        "minZoom": 12,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
+          }
+        ]
+      }
+    },
+    {
       "type": "DQD0R",
       "layer": "base",
       "name": "OS 1st Ed. 6-inch. Offaly (née Kings County), Ireland (1840s-1880s) (NLS)",
@@ -8964,6 +9245,38 @@
         "minZoom": 2,
         "maxNativeZoom": 16,
         "attribution": []
+      }
+    },
+    {
+      "type": "EAZ3X",
+      "layer": "overlay",
+      "name": "LGL Baden-Württemberg Historic Orthophotos 1990s",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_HIST_DOP_1990-1999",
+        "layers": [
+          "1990",
+          "1991",
+          "1992",
+          "1993",
+          "1994",
+          "1995",
+          "1996",
+          "1997",
+          "1998",
+          "1999"
+        ],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+            "url": "https://www.lgl-bw.de"
+          }
+        ]
       }
     },
     {
@@ -10047,6 +10360,38 @@
       }
     },
     {
+      "type": "G0XYS",
+      "layer": "overlay",
+      "name": "LGL Baden-Württemberg Historic Orthophotos 1980s",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_HIST_DOP_1980-1989",
+        "layers": [
+          "1980",
+          "1981",
+          "1982",
+          "1983",
+          "1984",
+          "1985",
+          "1986",
+          "1987",
+          "1988",
+          "1989"
+        ],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+            "url": "https://www.lgl-bw.de"
+          }
+        ]
+      }
+    },
+    {
       "type": "G16MR",
       "layer": "overlay",
       "name": "Friuli Venezia Giulia parks and nature reserves",
@@ -10816,6 +11161,28 @@
             "type": "map",
             "name": "OSMFJ_Ortho",
             "url": "https://www.geospatial.jp/ckan/dataset/r03-photo"
+          }
+        ]
+      }
+    },
+    {
+      "type": "H5FYY",
+      "layer": "overlay",
+      "name": "LGRB Baden-Württemberg Natural Risk Zones",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.lgrb-bw.de/inspire/services/nz_v",
+        "layers": ["nz_l"],
+        "minZoom": 12,
+        "maxNativeZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGRB-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0",
+            "url": "https://www.lgrb-bw.de"
           }
         ]
       }
@@ -12023,6 +12390,25 @@
       }
     },
     {
+      "type": "JBPH4",
+      "layer": "base",
+      "name": "BKG TopPlus-Open (grayscale)",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "map",
+      "body": {
+        "url": "https://sg.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png",
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© BKG (2026) dl-de/by-2-0",
+            "url": "https://sgx.geodatenzentrum.de/web_public/gdz/datenquellen/datenquellen_topplusopen.html"
+          }
+        ]
+      }
+    },
+    {
       "type": "JCPP2",
       "layer": "base",
       "name": "VoGIS orthophoto 1990s",
@@ -12100,6 +12486,27 @@
             "type": "map",
             "name": "Contains information licensed under the Open Government Licence - Coquitlam",
             "url": "https://www.coquitlam.ca/894/Open-Government-Licence"
+          }
+        ]
+      }
+    },
+    {
+      "type": "JGCSL",
+      "layer": "overlay",
+      "name": "LfU Bayern Geological Map 1:25 000 (dGK25)",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.lfu.bayern.de/gdi/wms/geologie/dgk25",
+        "layers": ["dgk25_raster"],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
+            "url": "https://www.lfu.bayern.de/"
           }
         ]
       }
@@ -12189,6 +12596,28 @@
       }
     },
     {
+      "type": "JHZQN",
+      "layer": "base",
+      "name": "Bayern DTK100",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/dtk/v1/dtk100",
+        "layers": ["by_dtk100"],
+        "minZoom": 12,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
+          }
+        ]
+      }
+    },
+    {
       "type": "JIGDD",
       "layer": "base",
       "name": "swisstopo SWISSIMAGE",
@@ -12243,6 +12672,28 @@
             "type": "map",
             "name": "Kendall County GIS",
             "url": "https://geodata.kendallcountyil.gov/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "JOXD4",
+      "layer": "base",
+      "name": "Bayern DTK25",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/dtk/v1/dtk25",
+        "layers": ["by_dtk25"],
+        "minZoom": 13,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
           }
         ]
       }
@@ -15120,6 +15571,28 @@
       }
     },
     {
+      "type": "OFVFO",
+      "layer": "base",
+      "name": "BKG DTK100",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://sg.geodatenzentrum.de/wms_dtk100",
+        "layers": ["dtk100"],
+        "minZoom": 7,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis-DE / BKG (2026) CC BY 4.0",
+            "url": "https://gdz.bkg.bund.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "OI60Z",
       "layer": "base",
       "name": "VoGIS: Echtfarbenbild Winter 2015 (20cm)",
@@ -15706,6 +16179,28 @@
             "type": "map",
             "name": "Bundesamt für Eich- und Vermessungswesen",
             "url": "https://www.bev.gv.at/Services/Geoinformationsdienste/INSPIRE-Geodatendienste/INSPIRE-Darstellungsdienste.html"
+          }
+        ]
+      }
+    },
+    {
+      "type": "PBGDY",
+      "layer": "base",
+      "name": "Bayern DTK50",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoservices.bayern.de/od/wms/dtk/v1/dtk50",
+        "layers": ["by_dtk50"],
+        "minZoom": 13,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
+            "url": "https://geodaten.bayern.de/opengeodata/"
           }
         ]
       }
@@ -16523,6 +17018,58 @@
             "type": "map",
             "name": "CRAIG - Métropole du Grand Lyon 2023",
             "url": "https://data.grandlyon.com/portail/fr/jeux-de-donnees/orthophotographie-2023-de-la-metropole-de-lyon/info"
+          }
+        ]
+      }
+    },
+    {
+      "type": "QMKF7",
+      "layer": "overlay",
+      "name": "BfN Natura 2000 (FFH and bird areas)",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.bfn.de/ogc/wms/schutzgebiet",
+        "layers": ["Fauna_Flora_Habitat_Gebiete", "Vogelschutzgebiete"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Bundesamt für Naturschutz (BfN)",
+            "url": "https://geodienste.bfn.de/schutzgebiete"
+          }
+        ]
+      }
+    },
+    {
+      "type": "QOM6C",
+      "layer": "overlay",
+      "name": "LGL Baden-Württemberg Historic Orthophotos 1970s",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_HIST_DOP_1970-1979",
+        "layers": [
+          "1970",
+          "1971",
+          "1972",
+          "1973",
+          "1974",
+          "1975",
+          "1976",
+          "1977",
+          "1978",
+          "1979"
+        ],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+            "url": "https://www.lgl-bw.de"
           }
         ]
       }
@@ -17612,6 +18159,27 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "SDHJB",
+      "layer": "overlay",
+      "name": "LfU Bayern Rockfall Hazard Hints",
+      "countries": ["de"],
+      "bbox": [8.97, 47.27, 13.84, 50.57],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.lfu.bayern.de/gdi/wms/geologie/georisiken",
+        "layers": ["ghk_sturz_o_wald", "ghk_sturz_m_wald"],
+        "minZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
+            "url": "https://www.lfu.bayern.de/"
           }
         ]
       }
@@ -19252,6 +19820,28 @@
             "type": "map",
             "name": "Contains information licensed under the Open Government Licence - Coquitlam",
             "url": "https://www.coquitlam.ca/894/Open-Government-Licence"
+          }
+        ]
+      }
+    },
+    {
+      "type": "VIDH2",
+      "layer": "overlay",
+      "name": "LGRB Baden-Württemberg Geology (GK50 lithology)",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.lgrb-bw.de/inspire/services/ge_v",
+        "layers": ["ge_l_gu"],
+        "minZoom": 12,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGRB-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0",
+            "url": "https://www.lgrb-bw.de"
           }
         ]
       }
@@ -20981,6 +21571,38 @@
       }
     },
     {
+      "type": "XYTEM",
+      "layer": "overlay",
+      "name": "LGL Baden-Württemberg Historic Orthophotos 2000s",
+      "countries": ["de"],
+      "bbox": [7.51, 47.53, 10.5, 49.79],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/ows/WMS_LGL-BW_HIST_DOP_2000-2009",
+        "layers": [
+          "2000",
+          "2001",
+          "2002",
+          "2003",
+          "2004",
+          "2005",
+          "2006",
+          "2007",
+          "2008",
+          "2009"
+        ],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
+            "url": "https://www.lgl-bw.de"
+          }
+        ]
+      }
+    },
+    {
       "type": "XZ9BA",
       "layer": "base",
       "name": "Praha IPR latest orthophoto",
@@ -21153,6 +21775,28 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "YBQCA",
+      "layer": "overlay",
+      "name": "BKG CORINE Land Cover 5 ha (2018)",
+      "countries": ["de"],
+      "bbox": [5.87, 47.27, 15.04, 55.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://sg.geodatenzentrum.de/wms_clc5_2018",
+        "layers": ["clc5"],
+        "minZoom": 5,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Bundesamt für Kartographie und Geodäsie 2026",
+            "url": "https://gdz.bkg.bund.de/"
           }
         ]
       }
