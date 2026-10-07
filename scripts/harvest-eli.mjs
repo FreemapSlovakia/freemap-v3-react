@@ -20,6 +20,11 @@ const catalogPath = join(outDir, 'eliCatalog.json');
 
 const probePath = join(outDir, 'probe.json');
 
+const nationalSourcesPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  'national-sources.json',
+);
+
 const args = process.argv.slice(2);
 
 const reuseProbe = args.includes('--reuse-probe');
@@ -92,6 +97,43 @@ async function loadEli(path) {
   }
 
   return res.json();
+}
+
+/**
+ * Maps found beyond ELI, as ELI features: a WMS by its base URL and `layers`,
+ * the coverage by its `bbox`. Ids are `fm:<country>-…`, apart from ELI's.
+ */
+function loadNationalSources() {
+  let entries;
+
+  try {
+    entries = JSON.parse(readFileSync(nationalSourcesPath, 'utf8'));
+  } catch {
+    return [];
+  }
+
+  return entries.map(({ layers, bbox: [w, s, e, n], note, ...p }) => ({
+    type: 'Feature',
+    properties: {
+      ...p,
+      url: layers
+        ? `${p.url}${p.url.includes('?') ? '&' : '?'}SERVICE=WMS&REQUEST=GetMap&LAYERS=${layers.join(',')}&STYLES=`
+        : p.url,
+      available_projections: layers ? ['EPSG:3857'] : undefined,
+    },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [w, s],
+          [e, s],
+          [e, n],
+          [w, n],
+          [w, s],
+        ],
+      ],
+    },
+  }));
 }
 
 function host(url) {
@@ -545,6 +587,8 @@ const toJson = (value) =>
 
 const eli = await loadEli(inputPath);
 
+eli.features.push(...loadNationalSources());
+
 const counts = { total: eli.features.length };
 
 const drops = {};
@@ -793,7 +837,7 @@ writeFileSync(
   catalogPath,
   toJson({
     source:
-      'OSM Editor Layer Index, https://github.com/osmlab/editor-layer-index',
+      'OSM Editor Layer Index, https://github.com/osmlab/editor-layer-index, and scripts/national-sources.json',
     licence: 'CC BY-SA 3.0, https://creativecommons.org/licenses/by-sa/3.0/',
     maps: catalog,
   }),

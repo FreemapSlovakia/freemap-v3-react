@@ -2209,7 +2209,7 @@
   },
   "Miami-Dade_Ortho_2021": {
     "v": 2,
-    "status": 400,
+    "status": 200,
     "cors": true,
     "scales": []
   },
@@ -4188,6 +4188,78 @@
     "scales": []
   },
   "fiskeridir-akvakultur": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-aopk-international": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-aopk-natura2000": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-aopk-protected-areas": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cgs-geology-50": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cgs-geosites": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cgs-haidinger-1-144000": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cgs-landslides": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-dmr5g-aspect": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-dmr5g-slope": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-dmr5g-tinted-hillshade": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-zabaged-contours": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:cz-cuzk-zm": {
     "v": 2,
     "status": 200,
     "cors": true,

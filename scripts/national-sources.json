@@ -1,0 +1,210 @@
+[
+  {
+    "id": "fm:cz-cuzk-zm",
+    "name": "ČÚZK Základní topografická mapa ČR",
+    "type": "wms",
+    "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM_WM/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "CZ",
+    "category": "map",
+    "overlay": false,
+    "license_url": "https://cuzk.gov.cz/Uvod/Produkty-a-sluzby/Otevrena-data/Otevrena-data-zakladni-informace.aspx",
+    "attribution": {
+      "text": "© ČÚZK (CC BY 4.0)",
+      "url": "https://www.cuzk.gov.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "State topographic map, its scale (1:5 000–1:250 000) switched by zoom."
+  },
+  {
+    "id": "fm:cz-cuzk-zabaged-contours",
+    "name": "ČÚZK ZABAGED contour lines",
+    "type": "wms",
+    "url": "https://ags.cuzk.gov.cz/arcgis/services/ZABAGED_VRSTEVNICE/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "CZ",
+    "category": "elevation",
+    "overlay": true,
+    "min_zoom": 16,
+    "license_url": "https://cuzk.gov.cz/Uvod/Produkty-a-sluzby/Otevrena-data/Otevrena-data-zakladni-informace.aspx",
+    "attribution": {
+      "text": "© ČÚZK (CC BY 4.0)",
+      "url": "https://www.cuzk.gov.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "Contour lines; the service draws from 1:10 000."
+  },
+  {
+    "id": "fm:cz-cuzk-dmr5g-tinted-hillshade",
+    "name": "ČÚZK DMR 5G tinted hillshade",
+    "type": "wms",
+    "url": "https://ags.cuzk.gov.cz/arcgis2/services/dmr5g/ImageServer/WMSServer",
+    "layers": ["dmr5g:TintedHillshadeContinuous"],
+    "country_code": "CZ",
+    "category": "elevation",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://cuzk.gov.cz/Uvod/Produkty-a-sluzby/Otevrena-data/Otevrena-data-zakladni-informace.aspx",
+    "attribution": {
+      "text": "© ČÚZK (CC BY 4.0)",
+      "url": "https://www.cuzk.gov.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "LiDAR hillshade tinted by elevation."
+  },
+  {
+    "id": "fm:cz-cuzk-dmr5g-slope",
+    "name": "ČÚZK DMR 5G slope",
+    "type": "wms",
+    "url": "https://ags.cuzk.gov.cz/arcgis2/services/dmr5g/ImageServer/WMSServer",
+    "layers": ["dmr5g:SlopeRGBMap"],
+    "country_code": "CZ",
+    "category": "elevation",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://cuzk.gov.cz/Uvod/Produkty-a-sluzby/Otevrena-data/Otevrena-data-zakladni-informace.aspx",
+    "attribution": {
+      "text": "© ČÚZK (CC BY 4.0)",
+      "url": "https://www.cuzk.gov.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "Slope steepness from the LiDAR model, for ski touring and avalanche terrain."
+  },
+  {
+    "id": "fm:cz-cuzk-dmr5g-aspect",
+    "name": "ČÚZK DMR 5G aspect",
+    "type": "wms",
+    "url": "https://ags.cuzk.gov.cz/arcgis2/services/dmr5g/ImageServer/WMSServer",
+    "layers": ["dmr5g:AspectRGBMap"],
+    "country_code": "CZ",
+    "category": "elevation",
+    "overlay": true,
+    "max_zoom": 18,
+    "license_url": "https://cuzk.gov.cz/Uvod/Produkty-a-sluzby/Otevrena-data/Otevrena-data-zakladni-informace.aspx",
+    "attribution": {
+      "text": "© ČÚZK (CC BY 4.0)",
+      "url": "https://www.cuzk.gov.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "Slope aspect (exposure) from the LiDAR model."
+  },
+  {
+    "id": "fm:cz-aopk-protected-areas",
+    "name": "AOPK ČR protected areas",
+    "type": "wms",
+    "url": "https://gis.nature.cz/arcgis/services/UzemniOchrana/ChranUzemi/MapServer/WMSServer",
+    "layers": ["1", "2", "7", "8"],
+    "country_code": "CZ",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.nature.cz/otevrena-data",
+    "attribution": {
+      "text": "© AOPK ČR (CC BY 4.0)",
+      "url": "https://www.nature.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "National parks, protected landscape areas and their zones, small protected areas."
+  },
+  {
+    "id": "fm:cz-aopk-natura2000",
+    "name": "AOPK ČR Natura 2000",
+    "type": "wms",
+    "url": "https://gis.nature.cz/arcgis/services/UzemniOchrana/Natura2000/MapServer/WMSServer",
+    "layers": ["1", "2"],
+    "country_code": "CZ",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.nature.cz/otevrena-data",
+    "attribution": {
+      "text": "© AOPK ČR (CC BY 4.0)",
+      "url": "https://www.nature.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "Natura 2000 sites of community importance and bird areas."
+  },
+  {
+    "id": "fm:cz-aopk-international",
+    "name": "AOPK ČR UNESCO, Ramsar and biosphere reserves",
+    "type": "wms",
+    "url": "https://gis.nature.cz/arcgis/services/UzemniOchrana/MezinarodOchrana/MapServer/WMSServer",
+    "layers": ["3", "4", "5", "6"],
+    "country_code": "CZ",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.nature.cz/otevrena-data",
+    "attribution": {
+      "text": "© AOPK ČR (CC BY 4.0)",
+      "url": "https://www.nature.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "International designations: UNESCO sites, Ramsar wetlands, biosphere reserves."
+  },
+  {
+    "id": "fm:cz-cgs-geology-50",
+    "name": "ČGS geological map 1:50 000",
+    "type": "wms",
+    "url": "https://mapy.geology.cz/arcgis/services/Geologie/G50_rastr/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "CZ",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.geology.cz/",
+    "attribution": {
+      "text": "© Česká geologická služba",
+      "url": "https://www.geology.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "Geological map 1:50 000."
+  },
+  {
+    "id": "fm:cz-cgs-landslides",
+    "name": "ČGS landslides",
+    "type": "wms",
+    "url": "https://mapy.geology.cz/arcgis/services/Geohazardy/svahove_deformace/MapServer/WMSServer",
+    "layers": ["0", "2", "3"],
+    "country_code": "CZ",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.geology.cz/",
+    "attribution": {
+      "text": "© Česká geologická služba",
+      "url": "https://www.geology.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "Mapped slope deformations."
+  },
+  {
+    "id": "fm:cz-cgs-haidinger-1-144000",
+    "name": "ČGS old geological maps 1:144 000",
+    "type": "wms",
+    "url": "https://mapy.geology.cz/arcgis/services/Geologie/stare_mapy_144000/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "CZ",
+    "category": "historicmap",
+    "overlay": false,
+    "license_url": "https://www.geology.cz/",
+    "attribution": {
+      "text": "© Česká geologická služba",
+      "url": "https://www.geology.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "Haidinger's historic printed geological maps of Bohemia."
+  },
+  {
+    "id": "fm:cz-cgs-geosites",
+    "name": "ČGS geological sites",
+    "type": "wms",
+    "url": "https://mapy.geology.cz/arcgis/services/Popularizace/geologicke_lokality/MapServer/WMSServer",
+    "layers": ["0", "1"],
+    "country_code": "CZ",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://www.geology.cz/",
+    "attribution": {
+      "text": "© Česká geologická služba",
+      "url": "https://www.geology.cz/"
+    },
+    "bbox": [12.09, 48.55, 18.86, 51.06],
+    "note": "Notable geological sites."
+  }
+]

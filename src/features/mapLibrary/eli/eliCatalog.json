@@ -1,5 +1,5 @@
 {
-  "source": "OSM Editor Layer Index, https://github.com/osmlab/editor-layer-index",
+  "source": "OSM Editor Layer Index, https://github.com/osmlab/editor-layer-index, and scripts/national-sources.json",
   "licence": "CC BY-SA 3.0, https://creativecommons.org/licenses/by-sa/3.0/",
   "maps": [
     {
@@ -198,6 +198,26 @@
             "type": "map",
             "name": "Contains OS data © Crown, Royal Mail data © Royal Mail and National Statistics data © Crown copyright and database right",
             "url": "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "0C8BU",
+      "layer": "overlay",
+      "name": "AOPK ČR Natura 2000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.nature.cz/arcgis/services/UzemniOchrana/Natura2000/MapServer/WMSServer",
+        "layers": ["1", "2"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© AOPK ČR (CC BY 4.0)",
+            "url": "https://www.nature.cz/"
           }
         ]
       }
@@ -1400,6 +1420,26 @@
             "type": "map",
             "name": "Instituto Geográfico Nacional de la República Argentina",
             "url": "https://www.ign.gob.ar/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "291IL",
+      "layer": "overlay",
+      "name": "AOPK ČR protected areas",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.nature.cz/arcgis/services/UzemniOchrana/ChranUzemi/MapServer/WMSServer",
+        "layers": ["1", "2", "7", "8"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© AOPK ČR (CC BY 4.0)",
+            "url": "https://www.nature.cz/"
           }
         ]
       }
@@ -4027,6 +4067,28 @@
       }
     },
     {
+      "type": "6QYQK",
+      "layer": "base",
+      "name": "Miami-Dade County Orthoimagery (2021)",
+      "countries": ["us"],
+      "bbox": [-80.9429, 25.1309, -80.1055, 26.0249],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imageserverintra.miamidade.gov/arcgis/services/Woolpert2021/ImageServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 5,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Miami-Dade County",
+            "url": "https://gis-mdc.opendata.arcgis.com/pages/imagery"
+          }
+        ]
+      }
+    },
+    {
       "type": "6SSSL",
       "layer": "base",
       "name": "City of Cape Town Aerial Imagery (2025)",
@@ -4591,6 +4653,26 @@
             "type": "map",
             "name": "City and County of San Francisco",
             "url": "https://www.sf.gov/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "7QN49",
+      "layer": "base",
+      "name": "ČGS old geological maps 1:144 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapy.geology.cz/arcgis/services/Geologie/stare_mapy_144000/MapServer/WMSServer",
+        "layers": ["0"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Česká geologická služba",
+            "url": "https://www.geology.cz/"
           }
         ]
       }
@@ -6863,6 +6945,27 @@
       }
     },
     {
+      "type": "BT2E2",
+      "layer": "overlay",
+      "name": "ČÚZK DMR 5G tinted hillshade",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis2/services/dmr5g/ImageServer/WMSServer",
+        "layers": ["dmr5g:TintedHillshadeContinuous"],
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "BVOZV",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1989",
@@ -7045,6 +7148,26 @@
       }
     },
     {
+      "type": "C5JWQ",
+      "layer": "overlay",
+      "name": "AOPK ČR UNESCO, Ramsar and biosphere reserves",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.nature.cz/arcgis/services/UzemniOchrana/MezinarodOchrana/MapServer/WMSServer",
+        "layers": ["3", "4", "5", "6"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© AOPK ČR (CC BY 4.0)",
+            "url": "https://www.nature.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "C6GV6",
       "layer": "base",
       "name": "imagico.de: Wohlthat Mountains 2021 evening",
@@ -7143,6 +7266,27 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "CATOK",
+      "layer": "overlay",
+      "name": "ČÚZK DMR 5G aspect",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis2/services/dmr5g/ImageServer/WMSServer",
+        "layers": ["dmr5g:AspectRGBMap"],
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -7862,6 +8006,27 @@
             "type": "map",
             "name": "Contains information licensed under the Open Government Licence - City of Courtenay",
             "url": "https://data-courtenay.opendata.arcgis.com/pages/city-of-courtenay-open-data-licence"
+          }
+        ]
+      }
+    },
+    {
+      "type": "DGNCJ",
+      "layer": "overlay",
+      "name": "ČÚZK DMR 5G slope",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis2/services/dmr5g/ImageServer/WMSServer",
+        "layers": ["dmr5g:SlopeRGBMap"],
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -12528,6 +12693,26 @@
       }
     },
     {
+      "type": "M35C5",
+      "layer": "overlay",
+      "name": "ČGS geological map 1:50 000",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapy.geology.cz/arcgis/services/Geologie/G50_rastr/MapServer/WMSServer",
+        "layers": ["0"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Česká geologická služba",
+            "url": "https://www.geology.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "M3OAC",
       "layer": "base",
       "name": "Bordeaux - 2012",
@@ -12851,6 +13036,26 @@
             "type": "map",
             "name": "©GeoBasis-DE / LVermGeoRP<YEAR>, dl-de/by-2-0, www.lvermgeo.rlp.de",
             "url": "https://www.lvermgeo.rlp.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "MHO1R",
+      "layer": "base",
+      "name": "ČÚZK Základní topografická mapa ČR",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis1/services/ZTM_WM/MapServer/WMSServer",
+        "layers": ["0"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
           }
         ]
       }
@@ -16268,6 +16473,26 @@
       }
     },
     {
+      "type": "S762X",
+      "layer": "overlay",
+      "name": "ČGS landslides",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapy.geology.cz/arcgis/services/Geohazardy/svahove_deformace/MapServer/WMSServer",
+        "layers": ["0", "2", "3"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Česká geologická služba",
+            "url": "https://www.geology.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "S76QE",
       "layer": "base",
       "name": "Kanton Solothurn, DTM Relief 2014 50cm",
@@ -17334,6 +17559,27 @@
       }
     },
     {
+      "type": "UGG4P",
+      "layer": "overlay",
+      "name": "ČÚZK ZABAGED contour lines",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://ags.cuzk.gov.cz/arcgis/services/ZABAGED_VRSTEVNICE/MapServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© ČÚZK (CC BY 4.0)",
+            "url": "https://www.cuzk.gov.cz/"
+          }
+        ]
+      }
+    },
+    {
       "type": "UH25Q",
       "layer": "base",
       "name": "Hennepin County Orthoimagery (2025)",
@@ -17886,6 +18132,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "VNVOS",
+      "layer": "overlay",
+      "name": "ČGS geological sites",
+      "countries": ["cz"],
+      "bbox": [12.09, 48.55, 18.86, 51.06],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapy.geology.cz/arcgis/services/Popularizace/geologicke_lokality/MapServer/WMSServer",
+        "layers": ["0", "1"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Česká geologická služba",
+            "url": "https://www.geology.cz/"
           }
         ]
       }

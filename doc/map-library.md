@@ -297,7 +297,11 @@ A catalog map is not in `mapIndex`; it works once the map slice knows it.
 ### Harvesting
 
 `node scripts/harvest-eli.mjs [imagery.geojson] [--reuse-probe]` turns the OSM
-Editor Layer Index into `src/features/mapLibrary/eli/`:
+Editor Layer Index, plus the maps found beyond it in
+`scripts/national-sources.json`, into `src/features/mapLibrary/eli/`. A national
+source is ELI's properties with a `bbox` for the coverage, a WMS by its base
+`url` and `layers`, and an id `fm:<country>-…`; it goes through the same filters
+and probe. The national sources are researched one country at a time.
 
 - **`ids.json`** — the committed id table, ELI id → catalog id (a SHA-256 of
   the ELI id mod 36⁵, rehashed while it has no letter or is taken). An entry
