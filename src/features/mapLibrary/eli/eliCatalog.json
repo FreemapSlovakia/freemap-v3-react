@@ -1323,6 +1323,28 @@
       }
     },
     {
+      "type": "23H8E",
+      "layer": "overlay",
+      "name": "GUGiK terrain hypsometry",
+      "countries": ["pl"],
+      "bbox": [14.12, 49, 24.15, 54.84],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/NMT/GRID1/WMS/Hypsometry",
+        "layers": ["Raster"],
+        "minZoom": 5,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GUGiK (Główny Urząd Geodezji i Kartografii)",
+            "url": "https://www.geoportal.gov.pl/"
+          }
+        ]
+      }
+    },
+    {
       "type": "23O08",
       "layer": "base",
       "name": "VIP Orthoimagery - Best of Color",
@@ -6382,6 +6404,28 @@
       }
     },
     {
+      "type": "A3JTA",
+      "layer": "base",
+      "name": "GUGiK topographic map",
+      "countries": ["pl"],
+      "bbox": [14.12, 49, 24.15, 54.84],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapy.geoportal.gov.pl/wss/service/img/guest/TOPO/MapServer/WMSServer",
+        "layers": ["Raster"],
+        "minZoom": 5,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GUGiK (Główny Urząd Geodezji i Kartografii)",
+            "url": "https://www.geoportal.gov.pl/"
+          }
+        ]
+      }
+    },
+    {
       "type": "A48T5",
       "layer": "base",
       "name": "Hampshire Aerial FCIR",
@@ -9652,6 +9696,32 @@
             "type": "map",
             "name": "© GeoBasis-DE/LVermGeo LSA",
             "url": "https://www.lvermgeo.sachsen-anhalt.de/de/kostenfreie_geobasisdaten_lvermgeo.html"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FSD3G",
+      "layer": "overlay",
+      "name": "GDOŚ protected areas",
+      "countries": ["pl"],
+      "bbox": [14.12, 49, 24.15, 54.84],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://sdi.gdos.gov.pl/wms",
+        "layers": [
+          "GDOS:ParkiNarodowe",
+          "GDOS:ParkiKrajobrazowe",
+          "GDOS:Rezerwaty",
+          "GDOS:ObszarySpecjalnejOchrony",
+          "GDOS:SpecjalneObszaryOchrony"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GDOŚ (Generalna Dyrekcja Ochrony Środowiska)",
+            "url": "https://www.gov.pl/web/gdos"
           }
         ]
       }

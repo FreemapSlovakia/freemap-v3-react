@@ -4541,6 +4541,24 @@
     "cors": true,
     "scales": []
   },
+  "fm:pl-gdos-protected-areas": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:pl-gugik-hypsometry": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:pl-gugik-topo": {
+    "v": 2,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fr.dpt.04.2010": {
     "v": 2,
     "status": 200,

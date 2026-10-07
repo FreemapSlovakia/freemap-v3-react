@@ -1016,5 +1016,66 @@
     },
     "bbox": [14.4, 47.4, 17.1, 49.03],
     "note": "Nature reserves, landscape protection, Natura 2000 and nature parks."
+  },
+  {
+    "id": "fm:pl-gugik-topo",
+    "name": "GUGiK topographic map",
+    "type": "wms",
+    "url": "https://mapy.geoportal.gov.pl/wss/service/img/guest/TOPO/MapServer/WMSServer",
+    "layers": ["Raster"],
+    "country_code": "PL",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 5,
+    "max_zoom": 19,
+    "license_url": "https://mapy.geoportal.gov.pl/wss/service/img/guest/TOPO/MapServer/WMSServer?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0",
+    "attribution": {
+      "text": "© GUGiK (Główny Urząd Geodezji i Kartografii)",
+      "url": "https://www.geoportal.gov.pl/"
+    },
+    "bbox": [14.12, 49.0, 24.15, 54.84],
+    "note": "State topographic map, its scale (1:10 000–1:1 000 000) switched by zoom."
+  },
+  {
+    "id": "fm:pl-gugik-hypsometry",
+    "name": "GUGiK terrain hypsometry",
+    "type": "wms",
+    "url": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/NMT/GRID1/WMS/Hypsometry",
+    "layers": ["Raster"],
+    "country_code": "PL",
+    "category": "elevation",
+    "overlay": true,
+    "min_zoom": 5,
+    "max_zoom": 19,
+    "license_url": "https://mapy.geoportal.gov.pl/wss/service/PZGIK/NMT/GRID1/WMS/Hypsometry?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0",
+    "attribution": {
+      "text": "© GUGiK (Główny Urząd Geodezji i Kartografii)",
+      "url": "https://www.geoportal.gov.pl/"
+    },
+    "bbox": [14.12, 49.0, 24.15, 54.84],
+    "note": "Elevation tint from the national terrain model; opaque."
+  },
+  {
+    "id": "fm:pl-gdos-protected-areas",
+    "name": "GDOŚ protected areas",
+    "type": "wms",
+    "url": "https://sdi.gdos.gov.pl/wms",
+    "layers": [
+      "GDOS:ParkiNarodowe",
+      "GDOS:ParkiKrajobrazowe",
+      "GDOS:Rezerwaty",
+      "GDOS:ObszarySpecjalnejOchrony",
+      "GDOS:SpecjalneObszaryOchrony"
+    ],
+    "country_code": "PL",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://sdi.gdos.gov.pl/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
+    "attribution": {
+      "text": "© GDOŚ (Generalna Dyrekcja Ochrony Środowiska)",
+      "url": "https://www.gov.pl/web/gdos"
+    },
+    "bbox": [14.12, 49.0, 24.15, 54.84],
+    "note": "National parks, landscape parks, nature reserves and Natura 2000 areas."
   }
 ]
