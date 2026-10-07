@@ -516,36 +516,6 @@ Bugs and feature requests are issues under `area: maps-layers`.
       `photon.komoot.io`, which runs the same 1.3.0 and the same 2026-08-08
       import, so none of it is our index.
 
-## Branding assets (`src/images/freemap-*.svg`)
-
-The logo became vector in `f0cf4885` (2026-09-01): `freemap-logo-sk.svg`,
-`freemap-logo-eu.svg` and the site-neutral `freemap-flower.svg`, with gloss from
-gradients rather than SVG filters, and text converted to paths. The entry
-document stamps `data-site` on `<html>`, so CSS, the pre-JS bootstrap and the
-print logo all pick the same wordmark. The editable sources, which still carry
-live Sriracha text, are in [`design/`](./design/README.md) alongside the export
-procedure and the two traps it has to avoid.
-
-`RspackIconsPlugin` renders every raster from those SVGs at build time, so no
-generated bitmap is committed: the favicons, apple-touch and mstile icons and the
-manifest icons are the flower alone (site-neutral, all sizes), the iOS splash
-screens carry the wordmark per domain, and the `og:image` is 1200×630 with the
-tagline under it, per domain and language. The header logo is a raster too, at
-1×–4× behind `image-set()` — Firefox draws these SVGs blurred at that fixed small
-size, and a vector buys nothing where the box never changes. The tagline lives in
-`entryDocs` in `rspack.config.ts` beside the other build-time copy, set in the
-bundled `src/fonts/LiberationSans-Bold.ttf` so CI and local renders match.
-
-Four rasters under `src/static` are referenced by nothing and stay anyway:
-`logo.jpg`, `freemap-logo.{png,jpg}` and `freemap-logo-for-garmin.jpg` drew 114,
-39, 32 and 35 requests on 2026-09-06. `logo.jpg` was the `og:image` until
-`d7fbc64c`, so WhatsApp and iMessage keep unfurling links shared before then
-against it; the rest are fetched by real browsers, so something outside this repo
-embeds them. Deleting any of them only looks safe because the deploy rsync has no
-`--delete`.
-
-Open items are issues under `area: ui-ux`.
-
 ## Drawing properties (`props` on points and lines)
 
 - [ ] **Reconsider the carried-tag allowlist** (`CARRIED_TAGS` in
@@ -632,9 +602,9 @@ Colorize, path details and track matching are issues under `area: routing` and
       (`siatservices.provincia.tn.it/stemdata/2014_lidar_dtm_asc/`, ~194 GB ASCII). 2. South Tyrol: 2.5 m province-wide, CC0, WCS (`geoservices9.civis.bz.it`). 3. Piedmont: ICE 2009–11 5 m lidar, CC BY 4.0, WCS on `geomap.reteunitaria.piemonte.it`. 4. Friuli-VG: RAFVG 2017–20 0.5 m, CC BY 4.0, Eagle.fvg downloads. 5. Emilia-Romagna: RER 0.5 m, WCS, ~64% of the region so far. 6. Aosta (lidar, per-tile app) and Veneto (5 m lidar, per municipality).
 
       Also watch the MASE PNRR 0.25 m national reflight: it would cover
-                      Lombardy, the Apennines, Sardinia and the South, which have no usable
-                      regional lidar. Unverified: Aosta's resolution, Veneto's CRS, which
-                      parts of E-R are covered, and some licences.
+                          Lombardy, the Apennines, Sardinia and the South, which have no usable
+                          regional lidar. Unverified: Aosta's resolution, Veneto's CRS, which
+                          parts of E-R are covered, and some licences.
 
 - [ ] **Slovakia from lidar points at z18**, replacing `sk.tif` and then `7`:
       `laz2geotiff xyz` (ground only, relative gap rule), the two-pass membrane
