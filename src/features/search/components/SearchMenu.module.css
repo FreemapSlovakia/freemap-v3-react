@@ -8,7 +8,7 @@
    (`fm-toolbar-fit`) and the buttons hold their size, so the box gives up the
    difference. */
 .search-input {
-  min-width: 160px !important;
+  min-width: 8rem !important;
 
   /* On the input, not on `::placeholder`, which takes only `::first-line`
      properties — set here it ellipsizes the placeholder and the value alike. */

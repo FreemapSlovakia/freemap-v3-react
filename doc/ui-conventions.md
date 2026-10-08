@@ -10,6 +10,7 @@ Covered here: [button variants](#button-variants),
 [where a hint goes](#where-a-hint-goes),
 [spacing](#spacing-the-container-decides), [modal footers](#modal-footers),
 [ellipsis in labels](#ellipsis-in-labels),
+[surfaces over the map](#surfaces-over-the-map),
 [toolbar outlines](#toolbar-outlines).
 
 ## Button variants
@@ -429,6 +430,20 @@ gap. Don't mix the two separators in one line.
 
 This is about UI text. What an export writes into a file (`geojsonToKml`,
 `gpxExportProcessorHandler`) answers to that format, not to this.
+
+## Surfaces over the map
+
+Everything that floats over the map — toolbars, the Map layers panel, floating
+windows such as the panorama — is one surface: `--fm-frosted-bg` over a 6px
+backdrop blur, from the `.fm-frosted` rule in `index.css`. `.fm-toolbar` takes
+it on its own; any other panel adds `fm-frosted` and a transparent background of
+its own (a `Card` paints one). Modals keep Bootstrap's opaque body background.
+
+The blur sits on a `::before`, not on the box: `backdrop-filter` makes its
+element the containing block of the `position: fixed` dropdowns inside, which
+then position against the panel instead of the viewport. So the box needs `position` other than `static`, and nothing
+else on it may use `::before`. A surface that covers the whole screen drops the
+blur, which there is pure cost (see `FloatingWindow`'s fullscreen rule).
 
 ## Toolbar outlines
 

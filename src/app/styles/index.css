@@ -14,11 +14,11 @@
   --fm-frosted-bg: rgba(0, 0, 0, 0.7);
 }
 
-/* A panel over the map, translucent over a blurred backdrop so the map reads
-   behind it without making its text unreadable. On a pseudo-element:
-   `backdrop-filter` on the box would make it the containing block of the
-   fixed-strategy dropdowns inside. */
-.fm-frosted {
+/* Everything over the map: translucent over a blurred backdrop. On a
+   pseudo-element: `backdrop-filter` on the box would make it the containing
+   block of the fixed-strategy dropdowns inside. */
+.fm-frosted,
+.fm-toolbar {
   isolation: isolate;
 
   &::before {
@@ -126,11 +126,9 @@ button#freemap-logo {
 .fm-toolbar {
   @media screen {
     min-height: 3rem;
-    background-color: rgba(255, 255, 255, 0.8);
-
-    [data-bs-theme="dark"] & {
-      background-color: rgba(0, 0, 0, 0.8);
-    }
+    /* The backdrop is the `.fm-frosted` rule's; the ad's toolbar is no card. */
+    position: relative;
+    background-color: transparent;
 
     display: inline-flex;
     flex-direction: row;
@@ -170,11 +168,19 @@ button#freemap-logo {
   }
 }
 
+/* `.fm-frosted`'s isolation makes a toolbar a stacking context, so its open
+   menu's z-index stops at the toolbar; lift the toolbar over later siblings. */
+.fm-toolbar:has(.dropdown-menu.show) {
+  z-index: 1;
+}
+
 /* Fits the screen instead of scrolling off it; only for a toolbar with an
    elastic child to give up the room. The subtraction is the toolbar's own
-   margins, which `max-width` does not count. */
+   margins, which `max-width` does not count. Where even the elastic child's
+   floor doesn't fit, `min-width` wins and the scroller takes over. */
 .fm-toolbar-fit {
   max-width: calc(100% - 2 * var(--fm-space-2));
+  min-width: min-content;
 }
 
 /* A selection toolbar, outlined to set the selected feature apart from the
@@ -274,8 +280,11 @@ button#freemap-logo {
   );
 }
 
+/* Down to the toolbar's own top margin (`mt-2` / `m-2`). */
 .fm-ib-scroller-top::before,
-.fm-ib-scroller-top > div:first-child::before {
+.fm-ib-scroller-top > div:first-child::before,
+.fm-ib-scroller-bottom::before,
+.fm-ib-scroller-bottom > div:first-child::before {
   margin-top: 0.5rem;
 }
 
