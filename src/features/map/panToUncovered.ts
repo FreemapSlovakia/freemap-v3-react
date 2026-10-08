@@ -1,8 +1,6 @@
 import type { Dispatch } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
-import { point } from 'leaflet';
-import { mapPromise } from './hooks/leafletElementHolder.js';
-import { mapRefocus } from './model/actions.js';
+import { fitLoadedMap, mapToFit } from './fitMapToBbox.js';
 
 // Grid the map is probed on: fine enough to find the gaps between the toolbars,
 // and no finer than the margins the answer is measured against — the cell size
@@ -119,25 +117,47 @@ export function largestUncoveredRect(container: HTMLElement): Rect {
  * for is the rudest thing this could do. `margin` is how far inside "well
  * inside" means.
  */
-export async function panToUncovered(
+export function panToUncovered(
   dispatch: Dispatch,
   at: LatLon,
+  options?: Omit<UncoveredOptions, 'keepZoom'>,
+): Promise<void> {
+  return fitToUncovered(dispatch, [at.lon, at.lat, at.lon, at.lat], {
+    ...options,
+    keepZoom: true,
+  });
+}
+
+type UncoveredOptions = {
+  ifHidden?: boolean;
+  margin?: number;
+  /** See `FitOptions.keepZoom`. */
+  keepZoom?: boolean;
+  /** The zoom not to go past; the map's own unless given, as the store's. */
+  maxZoom?: number;
+};
+
+/**
+ * `panToUncovered` for a [west, south, east, north] extent, zoomed out only as
+ * far as it needs to fit the uncovered part and never in.
+ */
+export async function fitToUncovered(
+  dispatch: Dispatch,
+  bbox: [number, number, number, number],
   {
     ifHidden = false,
     margin = MARGIN_PX,
-  }: { ifHidden?: boolean; margin?: number } = {},
+    keepZoom,
+    maxZoom,
+  }: UncoveredOptions = {},
 ): Promise<void> {
-  const map = await mapPromise;
+  const map = await mapToFit(bbox);
 
-  const container = map.getContainer();
-
-  if (!container.isConnected) {
+  if (!map) {
     return;
   }
 
-  const free = largestUncoveredRect(container);
-
-  const target = map.latLngToContainerPoint([at.lat, at.lon]);
+  const free = largestUncoveredRect(map.getContainer());
 
   // Never more than a third of what there is, or on a phone the inset would
   // swallow the free area and nothing would ever count as visible.
@@ -145,29 +165,85 @@ export async function panToUncovered(
 
   const my = Math.min(margin, free.height / 3);
 
+  const nw = map.latLngToContainerPoint([bbox[3], bbox[0]]);
+
+  const se = map.latLngToContainerPoint([bbox[1], bbox[2]]);
+
   if (
     ifHidden &&
-    target.x > free.x + mx &&
-    target.y > free.y + my &&
-    target.x < free.x + free.width - mx &&
-    target.y < free.y + free.height - my
+    nw.x > free.x + mx &&
+    nw.y > free.y + my &&
+    se.x < free.x + free.width - mx &&
+    se.y < free.y + free.height - my
   ) {
     return;
   }
 
-  // Where the center must go for the target to land in the middle of the free
-  // area: the center sits at half the size now, and moves by what the target
-  // has to travel.
-  const { lat, lng } = map.containerPointToLatLng(
-    map
-      .getSize()
-      .divideBy(2)
-      .add(target)
-      .subtract(point(free.x + free.width / 2, free.y + free.height / 2)),
-  );
+  const area = {
+    x: free.x + mx,
+    y: free.y + my,
+    width: free.width - 2 * mx,
+    height: free.height - 2 * my,
+  };
 
-  // Through the store, so the view the store holds stays the view on screen —
-  // and because looking somewhere the user pointed at ends GPS following, which
-  // would otherwise pull the map straight back on the next fix.
-  dispatch(mapRefocus({ lat, lon: lng, gpsTracked: false }));
+  // Into the free area less its margins, never zooming in.
+  fitLoadedMap(
+    map,
+    dispatch,
+    bbox,
+    keepZoom ? { area, keepZoom } : { area, maxZoom: maxZoom ?? map.getZoom() },
+  );
+}
+
+// The longest a fit waits for its toolbar: a lazy chunk on a slow connection.
+const TOOLBAR_WAIT_MS = 1000;
+
+type PendingFit = { run: () => void; timer: ReturnType<typeof setTimeout> };
+
+let pending: PendingFit | undefined;
+
+/**
+ * Runs a fit on the next frame, or — where `toolbarComing`, the pick bringing
+ * up a selection toolbar that may cover what it places — once that toolbar has
+ * mounted, or after a second at the latest. The next call cancels a fit not yet
+ * run, so each pick fits once.
+ */
+export function fitOnceSettled(run: () => void, toolbarComing: boolean): void {
+  if (pending) {
+    clearTimeout(pending.timer);
+
+    pending = undefined;
+  }
+
+  if (!toolbarComing) {
+    requestAnimationFrame(run);
+
+    return;
+  }
+
+  const waiting: PendingFit = {
+    run,
+    timer: setTimeout(() => {
+      if (pending === waiting) {
+        pending = undefined;
+
+        run();
+      }
+    }, TOOLBAR_WAIT_MS),
+  };
+
+  pending = waiting;
+}
+
+/** Called by a selection toolbar as it mounts: see `fitOnceSettled`. */
+export function selectionToolbarMounted(): void {
+  const waiting = pending;
+
+  if (waiting) {
+    clearTimeout(waiting.timer);
+
+    pending = undefined;
+
+    requestAnimationFrame(waiting.run);
+  }
 }

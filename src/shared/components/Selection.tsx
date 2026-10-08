@@ -1,10 +1,11 @@
 import { selectFeature } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { selectionToolbarMounted } from '@features/map/panToUncovered.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import type { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -30,6 +31,9 @@ export function Selection({
   children?: ReactNode;
 }): ReactElement {
   const dispatch = useDispatch();
+
+  // A pick that brought this toolbar up may now be under it.
+  useEffect(selectionToolbarMounted, []);
 
   const sc = useScrollClasses('horizontal');
 

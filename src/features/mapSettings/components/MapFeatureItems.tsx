@@ -9,7 +9,11 @@ import {
 import type { DrawnLine } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { mapFitBbox } from '@features/map/model/actions.js';
+import {
+  fitOnceSettled,
+  fitToUncovered,
+  GENEROUS_MARGIN_PX,
+} from '@features/map/panToUncovered.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { tolledMeters } from '@features/routePlanner/model/pathDetails.js';
 import {
@@ -210,6 +214,8 @@ function ItemList({
     : items;
 
   const pick = (item: Item) => {
+    const before = store.getState().main.selection?.type;
+
     for (const action of item.actions ??
       (item.selects ? [selectFeature(item.selects)] : [])) {
       dispatch(action);
@@ -217,17 +223,33 @@ function ItemList({
 
     const bbox = item.bbox();
 
-    // Into view without zooming in; out only where it would not fit.
-    if (bbox) {
-      dispatch(
-        mapFitBbox({ bbox, maxZoom: store.getState().map.zoom, padding: 40 }),
-      );
-    }
-
     // On a phone the panel covers what was just selected.
-    if (!isWideScreen()) {
+    const closing = !isWideScreen();
+
+    if (closing) {
       setOpen(false);
     }
+
+    if (!bbox) {
+      return;
+    }
+
+    // Into the part of the map nothing covers, once a closing panel is gone;
+    // not moved where it is in view already, zoomed out only to fit, and never
+    // past the store's zoom, which may be ahead of an animating map.
+    const bringIntoView = () =>
+      void fitToUncovered(dispatch, bbox, {
+        ifHidden: true,
+        margin: closing ? undefined : GENEROUS_MARGIN_PX,
+        maxZoom: store.getState().map.zoom,
+      });
+
+    // A selection of another kind brings up its toolbar, which may cover the
+    // item: the fit measures once it is there.
+    fitOnceSettled(
+      bringIntoView,
+      item.selects !== undefined && item.selects.type !== before,
+    );
   };
 
   return (

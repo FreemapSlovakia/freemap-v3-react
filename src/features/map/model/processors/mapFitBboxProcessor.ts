@@ -5,8 +5,8 @@ import { mapFitBbox } from '../actions.js';
 export const mapFitBboxProcessor: Processor<typeof mapFitBbox> = {
   actionCreator: mapFitBbox,
   handle: async ({ action, dispatch }) => {
-    const { bbox, maxZoom, minZoom, padding } = action.payload;
+    const { bbox, maxZoom, minZoom } = action.payload;
 
-    await fitMapToBbox(dispatch, bbox, { maxZoom, minZoom, padding });
+    await fitMapToBbox(dispatch, bbox, { maxZoom, minZoom });
   },
 };
