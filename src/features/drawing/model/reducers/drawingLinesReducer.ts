@@ -137,9 +137,6 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       }
     })
     .addCase(drawingLineDelete, (state, { payload }) => {
-      // The index can already be stale: `deleteProcessor` clears the selection
-      // first, and that drops a line too short to keep — so there may be
-      // nothing here to take holes from.
       const id = state.lines[payload.lineIndex]?.id;
 
       return {

@@ -1,4 +1,8 @@
-import { type Selection, selectFeature } from '@app/store/actions.js';
+import {
+  deleteFeature,
+  type Selection,
+  selectFeature,
+} from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { changesetDetail } from '@features/changesets/model/changesetDetail.js';
 import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
@@ -43,6 +47,7 @@ import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import { DELETABLE_SELECTIONS, sameSelection } from '@shared/selection.js';
 import {
   lineStyleFromProperties,
   pointStyleFromProperties,
@@ -50,7 +55,6 @@ import {
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
-  featureIdsEqual,
   type OsmFeatureId,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
@@ -78,6 +82,7 @@ import type { MapFeatureId } from '../mapFeatureCounts.js';
 import { isWideScreen, useMapLayersPanel } from '../mapLayersPanelStore.js';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './MapLayersPanel.module.css';
+import { RowRemoveButton } from './RowRemoveButton.js';
 
 type Bbox = [number, number, number, number];
 
@@ -135,16 +140,6 @@ function geojsonBbox(geojson: GeoJSON | null | undefined): Bbox | undefined {
   const [w, s, e, n] = turfBbox(geojson);
 
   return [w, s, e, n];
-}
-
-function sameSelection(a: Selection | null, b: Selection): boolean {
-  if (a?.type !== b.type || !('id' in a) || !('id' in b)) {
-    return false;
-  }
-
-  return typeof a.id === 'object' && typeof b.id === 'object'
-    ? featureIdsEqual(a.id, b.id)
-    : a.id === b.id;
 }
 
 /** The items of one of the tools' features, each selected on the map by a tap. */
@@ -287,14 +282,14 @@ function ItemList({
             item.selects &&
               sameSelection(selection, item.selects) &&
               classes.rowSelected,
-            'mx-n2 px-3',
+            'd-flex align-items-center gap-1 mx-n2 px-3',
           )}
         >
           <button
             type="button"
             className={clsx(
               classes.rowToggle,
-              'w-100 d-flex align-items-center gap-1 text-start',
+              'flex-grow-1 d-flex align-items-center gap-1 text-start',
             )}
             onClick={() => pick(item)}
           >
@@ -327,6 +322,13 @@ function ItemList({
               )}
             </span>
           </button>
+
+          {/* The selection stays, unless it is this item. */}
+          {item.selects && DELETABLE_SELECTIONS.has(item.selects.type) && (
+            <RowRemoveButton
+              onClick={() => dispatch(deleteFeature(item.selects))}
+            />
+          )}
         </div>
       ))}
 

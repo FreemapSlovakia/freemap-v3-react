@@ -112,7 +112,13 @@ export const setEmbedFeatures = createAction<string[]>('SET_EMBED_FEATURES');
 
 export const purchase = createAction<Purchase>('PURCHASE');
 
-export const deleteFeature = createAction('DELETE_FEATURE');
+/**
+ * Deletes the selected feature, or `target` where given — then leaving the
+ * selection, renumbered where the deletion shifts it.
+ */
+export const deleteFeature = createAction<Selection | undefined>(
+  'DELETE_FEATURE',
+);
 
 export interface DrawPointSelection {
   type: 'draw-points';
@@ -175,6 +181,14 @@ export type Selection =
   | DataViewerSelection;
 
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
+
+/**
+ * The same feature, re-addressed after a deletion shifted it. Unlike
+ * `selectFeature`, it leaves modes and the details toast as they are.
+ */
+export const selectionRenumbered = createAction<Selection | null>(
+  'SELECTION_RENUMBERED',
+);
 
 /**
  * What the conversion dialog answered about the features' own data; see

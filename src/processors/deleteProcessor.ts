@@ -1,6 +1,12 @@
-import { deleteFeature, selectFeature } from '@app/store/actions.js';
+import {
+  deleteFeature,
+  type Selection,
+  selectFeature,
+  selectionRenumbered,
+} from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { isToolOpen } from '@app/store/selectors.js';
+import type { RootState } from '@app/store/store.js';
 import {
   dataViewerDelete,
   dataViewerDeleteFeature,
@@ -17,47 +23,178 @@ import {
 } from '@features/routePlanner/model/actions.js';
 import { searchUnselectResult } from '@features/search/model/actions.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
+import type { Dispatch } from '@reduxjs/toolkit';
+import { DELETABLE_SELECTIONS, sameSelection } from '@shared/selection.js';
 
-export const deleteProcessor: Processor = {
-  actionCreator: deleteFeature,
-  id: 'deleteFeature',
-  transform: ({ getState, dispatch }) => {
-    const state = getState();
-
-    if (state.main.selection?.type === 'line-point') {
+/** Deletes one feature, leaving the selection to the caller. */
+function deleteOne(dispatch: Dispatch, target: Selection): void {
+  switch (target.type) {
+    case 'line-point':
       dispatch(
         drawingLineDeletePoint({
-          lineIndex: state.main.selection.lineIndex,
-          pointId: state.main.selection.pointId,
+          lineIndex: target.lineIndex,
+          pointId: target.pointId,
         }),
       );
-    } else if (state.main.selection?.type === 'draw-line-poly') {
-      dispatch(selectFeature(null));
 
-      dispatch(drawingLineDelete({ lineIndex: state.main.selection.id }));
-    } else if (state.main.selection?.type === 'draw-points') {
-      dispatch(selectFeature(null));
+      break;
 
-      dispatch(drawingPointDelete({ index: state.main.selection.id }));
-    } else if (state.main.selection?.type === 'tracking') {
-      dispatch(selectFeature(null));
+    case 'draw-line-poly':
+      dispatch(drawingLineDelete({ lineIndex: target.id }));
 
-      dispatch(trackingActions.delete({ token: state.main.selection.id }));
-    } else if (state.main.selection?.type === 'route-point') {
-      dispatch(selectFeature(null));
+      break;
 
-      dispatch(routePlannerRemovePoint(state.main.selection.id));
-    } else if (state.main.selection?.type === 'data-viewer') {
-      // Only the selected feature goes; the rest of the imported data stays.
-      dispatch(dataViewerDeleteFeature(state.main.selection.id));
-    } else if (state.main.selection?.type === 'search') {
-      // Only the result acted upon goes; the others stay on the map. This is
-      // the shortcut for the toolbar's delete button, and for a result being
-      // looked at rather than kept — which has no such button, going as it
-      // does the moment it stops being looked at — it is the way to say so
-      // outright.
-      dispatch(searchUnselectResult(state.main.selection.id));
-    } else if (state.main.selection === null) {
+    case 'draw-points':
+      dispatch(drawingPointDelete({ index: target.id }));
+
+      break;
+
+    case 'tracking':
+      dispatch(trackingActions.delete({ token: target.id }));
+
+      break;
+
+    case 'route-point':
+      dispatch(routePlannerRemovePoint(target.id));
+
+      break;
+
+    // Only that feature goes; the rest of the imported data stays.
+    case 'data-viewer':
+      dispatch(dataViewerDeleteFeature(target.id));
+
+      break;
+
+    // Only that result goes; the others stay on the map. For one only being
+    // looked at, which has no delete button of its own, this is the way to
+    // say so outright.
+    case 'search':
+      dispatch(searchUnselectResult(target.id));
+
+      break;
+  }
+}
+
+// Selected, these are deselected before they go; the rest clear themselves.
+const DESELECT_FIRST = new Set<Selection['type']>([
+  'draw-line-poly',
+  'draw-points',
+  'tracking',
+  'route-point',
+]);
+
+/** Where the line at `index` sits in `after`, found by its id. */
+function lineIndexAfter(
+  index: number,
+  before: RootState,
+  after: RootState,
+): number | undefined {
+  const id = before.drawingLines.lines[index]?.id;
+
+  const at = after.drawingLines.lines.findIndex((line) => line.id === id);
+
+  return at === -1 ? undefined : at;
+}
+
+/**
+ * `kept` once `removed` is gone, or null where it went too: lines found again
+ * by id, as a polygon takes its holes; the other kinds selected by position
+ * moved up one past the removed item.
+ */
+function selectionAfterRemoval(
+  kept: Selection,
+  removed: Selection,
+  before: RootState,
+  after: RootState,
+): Selection | null {
+  if (removed.type === 'draw-line-poly') {
+    const lineAfter = (index: number) => lineIndexAfter(index, before, after);
+
+    if (kept.type === 'line-point') {
+      const at = lineAfter(kept.lineIndex);
+
+      return at === undefined ? null : { ...kept, lineIndex: at };
+    }
+
+    if (kept.type === 'draw-line-poly') {
+      const at = lineAfter(kept.id);
+
+      return at === undefined ? null : { ...kept, id: at };
+    }
+  }
+
+  // Its legs are rebuilt without the point.
+  if (removed.type === 'route-point' && kept.type === 'route-leg') {
+    return null;
+  }
+
+  if (
+    kept.type === removed.type &&
+    'id' in kept &&
+    'id' in removed &&
+    typeof kept.id === 'number' &&
+    typeof removed.id === 'number' &&
+    kept.id > removed.id
+  ) {
+    return { ...kept, id: kept.id - 1 } as Selection;
+  }
+
+  return kept;
+}
+
+export const deleteProcessor: Processor<typeof deleteFeature> = {
+  actionCreator: deleteFeature,
+  id: 'deleteFeature',
+  transform: ({ getState, dispatch, action }) => {
+    const state = getState();
+
+    const { selection } = state.main;
+
+    const target = action.payload;
+
+    // Another feature than the selected one, from a list: the selection stays,
+    // touched only where the deletion renumbers it.
+    if (target && !sameSelection(target, selection)) {
+      if (!DELETABLE_SELECTIONS.has(target.type)) {
+        return undefined;
+      }
+
+      deleteOne(dispatch, target);
+
+      if (selection) {
+        const after = getState();
+
+        const next = selectionAfterRemoval(selection, target, state, after);
+
+        // A route point's pick mode depends on its place, which can change
+        // without its index.
+        if (
+          !sameSelection(next, after.main.selection) ||
+          target.type === 'route-point'
+        ) {
+          dispatch(selectionRenumbered(next));
+        }
+      }
+
+      return undefined;
+    }
+
+    if (selection && DELETABLE_SELECTIONS.has(selection.type)) {
+      if (DESELECT_FIRST.has(selection.type)) {
+        dispatch(selectFeature(null));
+      }
+
+      if (selection.type === 'draw-line-poly') {
+        // Deselecting drops unfinished lines, renumbering the rest.
+        const at = lineIndexAfter(selection.id, state, getState());
+
+        if (at !== undefined) {
+          deleteOne(dispatch, { ...selection, id: at });
+        }
+      } else {
+        deleteOne(dispatch, selection);
+      }
+    } else if (selection === null) {
       // Nothing is selected, so Del means "delete all of the open tool's" — of
       // the tools that have such a thing, the one owning map clicks goes first,
       // it being what the map is currently for.

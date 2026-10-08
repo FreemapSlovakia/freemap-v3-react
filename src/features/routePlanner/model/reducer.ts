@@ -1,7 +1,9 @@
 import {
   clearMapFeatures,
   openTool,
+  type Selection,
   selectFeature,
+  selectionRenumbered,
 } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { authSetUser } from '@features/auth/model/actions.js';
@@ -270,6 +272,23 @@ function showSavedRoute(
   };
 }
 
+function selectedPickMode(
+  state: RoutePlannerState,
+  { payload }: { payload: Selection | null },
+): RoutePlannerState {
+  return {
+    ...state,
+    pickMode:
+      payload?.type === 'route-point'
+        ? payload.id === 0 && !state.finishOnly
+          ? 'start'
+          : payload.id === state.points.length - 1
+            ? 'finish'
+            : null
+        : null,
+  };
+}
+
 export const routePlannerReducer = createReducer(
   routePlannerInitialState,
   (builder) =>
@@ -285,17 +304,8 @@ export const routePlannerReducer = createReducer(
         ...state,
         milestones: payload,
       }))
-      .addCase(selectFeature, (state, { payload }) => ({
-        ...state,
-        pickMode:
-          payload?.type === 'route-point'
-            ? payload.id === 0 && !state.finishOnly
-              ? 'start'
-              : payload.id === state.points.length - 1
-                ? 'finish'
-                : null
-            : null,
-      }))
+      .addCase(selectFeature, selectedPickMode)
+      .addCase(selectionRenumbered, selectedPickMode)
       // Arm point-picking when route-planner is opened (or restored): fall back
       // to finishing an existing route, or starting a new one. Only when nothing
       // is already armed.

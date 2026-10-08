@@ -45,6 +45,7 @@ import {
   openTool,
   type Selection,
   selectFeature,
+  selectionRenumbered,
   setActiveModal,
   setEmbedFeatures,
   setErrorTicketId,
@@ -253,6 +254,9 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.detailsShown = true;
 
       state.detailsOnRequest = false;
+    })
+    .addCase(selectionRenumbered, (state, action) => {
+      state.selection = action.payload;
     })
     .addCase(setDetailsShown, (state, action) => {
       state.detailsShown = action.payload;

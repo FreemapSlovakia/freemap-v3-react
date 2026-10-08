@@ -102,7 +102,6 @@ import {
   FaPencilAlt,
   FaPlus,
   FaSave,
-  FaTrash,
   FaUndo,
 } from 'react-icons/fa';
 import { MdDashboardCustomize, MdDragIndicator } from 'react-icons/md';
@@ -116,6 +115,7 @@ import { LayerOpacitySlider } from './LayerOpacitySlider.js';
 import { MapFeatureItems } from './MapFeatureItems.js';
 import classes from './MapLayersPanel.module.css';
 import { OpacityButton } from './OpacityButton.js';
+import { RowRemoveButton } from './RowRemoveButton.js';
 import { type MapFeatureRow, useMapFeatureRows } from './useMapFeatureRows.js';
 import { WmsSection } from './WmsSection.js';
 
@@ -523,8 +523,6 @@ function Row({
   onOpacity?: (opacity: number) => void;
   onRemove?: () => void;
 }): ReactElement {
-  const m = useMessages();
-
   const handleColumn = useContext(HandleColumnContext);
 
   return (
@@ -570,21 +568,7 @@ function Row({
           </span>
         )}
 
-        {onRemove && (
-          <LongPressTooltip label={m?.general.remove}>
-            {({ props }) => (
-              <Button
-                variant="link"
-                size="sm"
-                className="flex-shrink-0 text-body px-1 me-n1"
-                onClick={onRemove}
-                {...props}
-              >
-                <FaTrash />
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
+        {onRemove && <RowRemoveButton onClick={onRemove} />}
       </div>
     </div>
   );
