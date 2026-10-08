@@ -66,6 +66,9 @@ function entry<T extends LayerTechnology>(
   return { ...spec, load: () => Promise.resolve(body) };
 }
 
+/** The data layer: on, it hides the tools' features (`map.featuresHidden`). */
+export const FEATURES_LAYER = 'i';
+
 /**
  * Every library map, in the order the menus list them. A map's body is in its
  * own file under `defs/`, named for readability: ids differ only by case. The
@@ -254,7 +257,7 @@ export const mapIndex: MapIndexEntry[] = [
   }),
   entry({
     layer: 'overlay',
-    type: 'i',
+    type: FEATURES_LAYER,
     technology: 'interactive',
     icon: <FaPencilAlt />,
     shortcut: { code: 'KeyD', shift: true },

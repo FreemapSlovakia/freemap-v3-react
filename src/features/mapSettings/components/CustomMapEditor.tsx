@@ -69,15 +69,12 @@ function LeftOutOfPreset(): ReactElement | null {
 
   const featureRows = useMapFeatureRows();
 
-  // Data layers, and offline maps, which are this device's alone; `i` only
-  // hides the tools' features.
+  // Data layers, and offline maps, which are this device's alone.
   const leftOut = [
     ...layers
       .filter(
         (item) =>
-          item !== 'i' &&
-          presetIdOf(item) === undefined &&
-          !canJoinPreset(item, cachedMaps),
+          presetIdOf(item) === undefined && !canJoinPreset(item, cachedMaps),
       )
       .map((type) =>
         layerLabel(cachedMaps.find((cm) => cm.type === type) ?? { type }, m),

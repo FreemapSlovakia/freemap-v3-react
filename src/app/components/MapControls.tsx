@@ -1,7 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
 import { useMap } from '@features/map/hooks/useMap.js';
-import { type MapViewState, mapRefocus } from '@features/map/model/actions.js';
+import {
+  type MapViewState,
+  mapRefocus,
+  mapSetFeaturesHidden,
+} from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { useMapLayersPanel } from '@features/mapSettings/mapLayersPanelStore.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -10,7 +14,13 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
-import { FaLayerGroup, FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
+import {
+  FaEyeSlash,
+  FaLayerGroup,
+  FaMinus,
+  FaPlus,
+  FaRegDotCircle,
+} from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
@@ -101,6 +111,8 @@ export function MapControls(): ReactElement | null {
 
   const layersPanel = useMapLayersPanel();
 
+  const featuresHidden = useAppSelector((state) => state.map.featuresHidden);
+
   const handleFullscreenClick = useCallback(() => {
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
@@ -138,19 +150,42 @@ export function MapControls(): ReactElement | null {
           <>
             <MapSwitchButton />
 
-            <LongPressTooltip label={m?.mapLayers.layersPanel} kbd=".">
-              {({ props }) => (
-                <Button
-                  variant={layersPanel.attention ? 'primary' : 'secondary'}
-                  className={clsx(layersPanel.attention && classes.attention)}
-                  active={layersPanel.open}
-                  onClick={() => layersPanel.setOpen(!layersPanel.open)}
-                  {...props}
-                >
-                  <FaLayerGroup />
-                </Button>
+            <ButtonGroup>
+              <LongPressTooltip label={m?.mapLayers.layersPanel} kbd=".">
+                {({ props }) => (
+                  <Button
+                    variant={layersPanel.attention ? 'primary' : 'secondary'}
+                    className={clsx(
+                      layersPanel.attention && classes.attention,
+                      featuresHidden && 'pe-1 border-end-0 fm-btn-joined',
+                    )}
+                    active={layersPanel.open}
+                    onClick={() => layersPanel.setOpen(!layersPanel.open)}
+                    {...props}
+                  >
+                    <FaLayerGroup />
+                  </Button>
+                )}
+              </LongPressTooltip>
+
+              {/* Joined to the panel's button, as a map's out-of-coverage mark
+                  is to its own; shows the features again. */}
+              {featuresHidden && (
+                <LongPressTooltip label={m?.mapLayers.interactiveLayerWarning}>
+                  {({ props }) => (
+                    <Button
+                      variant={layersPanel.attention ? 'primary' : 'secondary'}
+                      active={layersPanel.open}
+                      className="ps-1 border-start-0 fm-btn-joined"
+                      onClick={() => dispatch(mapSetFeaturesHidden(false))}
+                      {...props}
+                    >
+                      <FaEyeSlash className="text-warning" />
+                    </Button>
+                  )}
+                </LongPressTooltip>
               )}
-            </LongPressTooltip>
+            </ButtonGroup>
           </>
         )}
 

@@ -402,12 +402,11 @@ function updateUrl(state: RootState, forced: boolean): void {
   // device drops it.
   const linked = inline.layers.filter(
     (type) =>
-      type !== 'i' &&
-      (mapIndexById[type] ||
-        isCatalogId(type) ||
-        presetIdOf(type) !== undefined ||
-        map.customLayers.some((def) => def.type === type) ||
-        map.cachedMaps.some((cm) => cm.type === type)),
+      mapIndexById[type] ||
+      isCatalogId(type) ||
+      presetIdOf(type) !== undefined ||
+      map.customLayers.some((def) => def.type === type) ||
+      map.cachedMaps.some((cm) => cm.type === type),
   );
 
   const joined = linked.join('~');

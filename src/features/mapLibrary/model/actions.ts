@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { MapBody } from '@shared/mapDefinitions.js';
 import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
+import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
 
 export const mapLibraryBodiesLoaded = createAction<Record<string, MapBody>>(
   'MAP_LIBRARY_BODIES_LOADED',
@@ -21,7 +22,7 @@ export const mapLibraryPreviewStart = createAction<{
 }>('MAP_LIBRARY_PREVIEW_START');
 
 /** Not the data layer `i`, which is on unless listed. */
-export const canPreview = (type: string) => type !== 'i';
+export const canPreview = (type: string) => type !== FEATURES_LAYER;
 
 /** Ends a preview, keeping the map on or putting the earlier layers back. */
 export const mapLibraryPreviewEnd = createAction<{ keep: boolean }>(

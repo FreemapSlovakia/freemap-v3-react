@@ -42,6 +42,7 @@ import {
   getLayerBbox,
 } from '@shared/mapDefinitions.js';
 import { coverageCountries } from '@shared/mapLibrary/coverage.js';
+import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
 import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import type { Shortcut } from '@shared/types/common.js';
 import clsx from 'clsx';
@@ -119,6 +120,8 @@ export function MapSwitchButton(): ReactElement {
   const lon = useAppSelector((state) => state.map.lon);
 
   const activeLayers = useAppSelector((state) => state.map.layers);
+
+  const featuresHidden = useAppSelector((state) => state.map.featuresHidden);
 
   const pictureFilterIsActive = useAppSelector((state) =>
     Object.values(state.gallery.filter).some((x) => x !== undefined),
@@ -514,8 +517,8 @@ export function MapSwitchButton(): ReactElement {
         )}
 
         {place !== 'tooltip' &&
-          activeLayers.includes('i') &&
-          def.type === 'i' && (
+          featuresHidden &&
+          def.type === FEATURES_LAYER && (
             <Badge label={m?.mapLayers.interactiveLayerWarning}>
               <FaEyeSlash />
             </Badge>
@@ -541,9 +544,16 @@ export function MapSwitchButton(): ReactElement {
     );
   }
 
-  /** A layer's check; `i` on the map hides the interactive layer. */
+  /** A layer's check; the data layer's is checked while features show. */
   const isLayerOn = (def: { type: string }) =>
-    (def.type === 'i') !== activeLayers.includes(def.type);
+    def.type === FEATURES_LAYER
+      ? !featuresHidden
+      : activeLayers.includes(def.type);
+
+  // Whether a layer is listed as on wherever only those on are: the data layer
+  // while it hides the features, so its row stays offered to show them again.
+  const isOnMap = (type: string) =>
+    type === FEATURES_LAYER ? featuresHidden : activeLayers.includes(type);
 
   /** Whether a layer or preset is listed at the menu's filter and expand level. */
   const isListed = (
@@ -593,7 +603,7 @@ export function MapSwitchButton(): ReactElement {
         const name = nameOf(def);
 
         if (
-          !isListed(name, activeLayers.includes(type), {
+          !isListed(name, isOnMap(type), {
             showInMenu,
             showInToolbar,
           })
@@ -729,7 +739,7 @@ export function MapSwitchButton(): ReactElement {
 
     // Out of `minZoom` or coverage doesn't hide it: the accessories below
     // offer the fix.
-    if (!activeLayers.includes(def.type) && !showInToolbar) {
+    if (!isOnMap(def.type) && !showInToolbar) {
       return null;
     }
 
@@ -907,13 +917,6 @@ export function MapSwitchButton(): ReactElement {
           >
             <FaEllipsisV className="d-none d-sm-block" />
             <FaRegMap className="d-sm-none" />
-
-            {/* Narrow screens have no toolbar button to carry it. */}
-            {!isWide && activeLayers.includes('i') && (
-              <Badge label={m?.mapLayers.interactiveLayerWarning}>
-                <FaEyeSlash />
-              </Badge>
-            )}
           </Dropdown.Toggle>
 
           <FmDropdownMenu>

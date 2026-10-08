@@ -33,7 +33,10 @@ import {
   presetIdOf,
   presetItem,
 } from '@features/map/model/mapPreset.js';
-import { mapInitialState } from '@features/map/model/reducer.js';
+import {
+  mapInitialState,
+  withoutFeaturesLayer,
+} from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
@@ -493,12 +496,14 @@ const PERSIST: PersistEntry[] = [
 
       return {
         ...merged,
-        layers: resolveLayerAliases(merged.layers).filter((item) => {
-          const id = presetIdOf(item);
+        layers: withoutFeaturesLayer(
+          resolveLayerAliases(merged.layers).filter((item) => {
+            const id = presetIdOf(item);
 
-          // `_<id>`: a legacy map-combination marker.
-          return id === undefined ? !item.startsWith('_') : presetIds.has(id);
-        }),
+            // `_<id>`: a legacy map-combination marker.
+            return id === undefined ? !item.startsWith('_') : presetIds.has(id);
+          }),
+        ),
         layersSettings: resolveLayersSettingsAliases(merged.layersSettings),
         layerSetups: resolveLayersSettingsAliases(merged.layerSetups),
         zoom: merged.zoomSnap

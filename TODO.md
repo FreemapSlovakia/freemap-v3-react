@@ -466,12 +466,6 @@ Bugs and feature requests are issues under `area: maps-layers`.
       the `defaultOpacity` a switch-back leaves on a base copy is ignored by
       `resolveLayerOpacity`. Medium to large — many readers expect `def.layer`
       switched.
-- [ ] **Take `i` out of `map.layers`.** It is a per-device "hide the tools'
-      features" flag stored as an inverted layer, special-cased in the switcher,
-      `Main`, the panel's `makesNew`, `canPreview`, the link writer (dropped) and
-      `getMapStateDiffFromUrl` (re-added). A boolean in the map slice, migrated
-      in `persistence.ts` from `layers.includes('i')`, with the menu row and the
-      shortcut toggling it, removes those cases.
 - [ ] **Helpers for a map's effective settings.** The shortcut
       (`settings.shortcut === undefined ? def.shortcut : …`) and the
       menu/toolbar defaults are recomputed inline in `YourMapsList`,

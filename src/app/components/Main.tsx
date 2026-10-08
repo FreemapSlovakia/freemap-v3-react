@@ -726,9 +726,7 @@ export function Main(): ReactElement {
     (state) => state.mapArea.selecting !== null,
   );
 
-  const showResults = useAppSelector(
-    (state) => !state.map.layers.includes('i'),
-  );
+  const showResults = useAppSelector((state) => !state.map.featuresHidden);
 
   const showPictures = useAppSelector((state) =>
     state.map.layers.includes('I'),

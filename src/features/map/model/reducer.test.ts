@@ -32,7 +32,8 @@ import { mapInitialState, mapReducer } from './reducer.js';
  * Pure reducer tests for the map slice. They drive the reducer directly with
  * dispatched actions and assert the resulting state — no store, middleware, or
  * processors involved. `'X'` / `'O'` / `'S'` are integrated BASE layers and
- * `'i'` / `'w'` are OVERLAYS (see `src/shared/mapDefinitions.tsx`).
+ * `'w'` is an OVERLAY (see `src/shared/mapLibrary/mapIndex.tsx`); `'i'`, the
+ * data layer, stands for an overlay only where nothing toggles it.
  */
 
 describe('mapReducer — mapToggleLayer (base layers)', () => {
@@ -497,25 +498,25 @@ describe('mapReducer — mapToggleLayer (overlays)', () => {
   it('toggles an overlay on when absent', () => {
     const state = { ...mapInitialState, layers: ['X'] };
 
-    const next = mapReducer(state, mapToggleLayer({ type: 'i' }));
+    const next = mapReducer(state, mapToggleLayer({ type: 'w' }));
 
-    expect(next.layers).toEqual(['X', 'i']);
+    expect(next.layers).toEqual(['X', 'w']);
   });
 
   it('toggles an overlay off when present', () => {
-    const state = { ...mapInitialState, layers: ['X', 'i'] };
+    const state = { ...mapInitialState, layers: ['X', 'w'] };
 
-    const next = mapReducer(state, mapToggleLayer({ type: 'i' }));
+    const next = mapReducer(state, mapToggleLayer({ type: 'w' }));
 
     expect(next.layers).toEqual(['X']);
   });
 
   it('enable:true keeps an already-present overlay on', () => {
-    const state = { ...mapInitialState, layers: ['X', 'i'] };
+    const state = { ...mapInitialState, layers: ['X', 'w'] };
 
-    const next = mapReducer(state, mapToggleLayer({ type: 'i', enable: true }));
+    const next = mapReducer(state, mapToggleLayer({ type: 'w', enable: true }));
 
-    expect(next.layers).toEqual(['X', 'i']);
+    expect(next.layers).toEqual(['X', 'w']);
   });
 
   it('enable:false on an absent overlay leaves layers unchanged', () => {
@@ -523,10 +524,39 @@ describe('mapReducer — mapToggleLayer (overlays)', () => {
 
     const next = mapReducer(
       state,
-      mapToggleLayer({ type: 'i', enable: false }),
+      mapToggleLayer({ type: 'w', enable: false }),
     );
 
     expect(next.layers).toEqual(['X']);
+  });
+});
+
+describe('mapReducer — the data layer', () => {
+  it('hides the features rather than joining the layers', () => {
+    const state = { ...mapInitialState, layers: ['X'] };
+
+    const next = mapReducer(state, mapToggleLayer({ type: 'i' }));
+
+    expect(next.featuresHidden).toBe(true);
+    expect(next.layers).toEqual(['X']);
+  });
+
+  it('shows them again on a second toggle', () => {
+    const state = { ...mapInitialState, featuresHidden: true };
+
+    const next = mapReducer(state, mapToggleLayer({ type: 'i' }));
+
+    expect(next.featuresHidden).toBe(false);
+  });
+
+  it('drops a data layer a link still names', () => {
+    const next = mapReducer(
+      mapInitialState,
+      mapRefocus({ layers: ['O', 'i'] }),
+    );
+
+    expect(next.layers).toEqual(['O']);
+    expect(next.featuresHidden).toBe(false);
   });
 });
 

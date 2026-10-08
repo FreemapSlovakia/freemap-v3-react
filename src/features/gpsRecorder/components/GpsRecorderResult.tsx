@@ -3,6 +3,7 @@ import { drawingStyleToPathOptions } from '@features/drawing/drawingStyleToPathO
 import { useMap } from '@features/map/hooks/useMap.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
 import { type ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { CircleMarker, Pane, Polyline } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
@@ -82,7 +83,7 @@ export default function GpsRecorderResult(): ReactElement | null {
 
   // The interactive-overlay opacity dims the default panes; ours needs it too.
   const opacity = useAppSelector(
-    (state) => state.map.layerSetups['i']?.opacity ?? 1,
+    (state) => state.map.layerSetups[FEATURES_LAYER]?.opacity ?? 1,
   );
 
   useEffect(() => {

@@ -16,6 +16,7 @@ import {
 import { layerName } from '@shared/layerName.js';
 import type { IntegratedLayerDef } from '@shared/mapDefinitions.js';
 import {
+  FEATURES_LAYER,
   loadIntegratedLayerDef,
   mapIndex,
 } from '@shared/mapLibrary/mapIndex.js';
@@ -25,6 +26,10 @@ import { defineTool } from '../tool.js';
 const LatSchema = z.number().min(-90).max(90).describe('WGS-84 latitude');
 
 const LonSchema = z.number().min(-180).max(180).describe('WGS-84 longitude');
+
+/** The layers on, the data layer among them while it hides the features. */
+const layersOn = (map: RootState['map']) =>
+  map.featuresHidden ? [...map.layers, FEATURES_LAYER] : map.layers;
 
 /**
  * Every layer code the map knows about, integrated and user-added alike; zooms
@@ -110,7 +115,7 @@ export const mapTools = [
           east: map.bounds[2],
           north: map.bounds[3],
         },
-        layers: map.layers,
+        layers: layersOn(map),
         countries: map.countries,
         url: window.location.href,
       };
@@ -221,7 +226,7 @@ export const mapTools = [
 
         const presetKinds = presetKindsSelector(state);
 
-        for (const code of store.getState().map.layers) {
+        for (const code of layersOn(store.getState().map)) {
           const presetId = presetIdOf(code);
 
           if (presetId !== undefined) {
@@ -238,7 +243,7 @@ export const mapTools = [
         }
       }
 
-      return { layers: store.getState().map.layers };
+      return { layers: layersOn(store.getState().map) };
     },
   }),
 ];

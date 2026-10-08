@@ -16,7 +16,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { isNamedMapDef } from '@shared/mapDefinitions.js';
 import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
 import { isUninstalledByDefault } from '@shared/mapLibrary/installed.js';
-import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
+import { FEATURES_LAYER, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import {
   type LayerSettings,
   type MapStateBase,
@@ -41,6 +41,7 @@ import {
   mapSetCountries,
   mapSetCustomLayers,
   mapSetEsriAttribution,
+  mapSetFeaturesHidden,
   mapSetLocalPrefs,
   mapSetShadingDraft,
   mapSetShadingOnServer,
@@ -93,7 +94,13 @@ export interface MapState extends MapStateBase {
   linkPresets: MapPreset[];
   /** The catalog maps wanted so far: installed, on the map or an offline map's source. */
   catalogMaps: CatalogMap[];
+  /** What the data layer toggles; neither persisted nor linked. */
+  featuresHidden: boolean;
 }
+
+/** Drops the data layer that stored state, a link or a saved map still names. */
+export const withoutFeaturesLayer = (layers: string[]) =>
+  layers.filter((item) => item !== FEATURES_LAYER);
 
 const LAT = 48.70714112;
 const LON = 19.49950112;
@@ -124,6 +131,7 @@ export const mapInitialState: MapState = {
   presets: [],
   linkPresets: [],
   catalogMaps: [],
+  featuresHidden: false,
   // undefined = not yet fetched (unknown coverage); [] would wrongly mean
   // "covers no country" and flash out-of-coverage warnings during initial load
   countries: undefined,
@@ -835,7 +843,16 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       settleBase(state);
     })
     .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
+      if (type === FEATURES_LAYER) {
+        state.featuresHidden = enable ?? !state.featuresHidden;
+
+        return;
+      }
+
       toggleItem(state, type, kindsOf(state).get(type) === 'base', enable);
+    })
+    .addCase(mapSetFeaturesHidden, (state, { payload }) => {
+      state.featuresHidden = payload;
     })
     .addCase(
       mapRefocus,
@@ -870,7 +887,7 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         }
 
         if (layers) {
-          state.layers = layers;
+          state.layers = withoutFeaturesLayer(layers);
         }
 
         if (
@@ -924,8 +941,9 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       // A document is a snapshot: its layers as they were drawn, its presets
       // copies — the account's own where one is the same.
       if (map.layers) {
+        // Before the setups below: a stale data layer must not reset its own.
         const { layers, linkPresets } = adoptPresets(
-          map.layers,
+          withoutFeaturesLayer(map.layers),
           map.presets ?? [],
           state.presets,
           'd',

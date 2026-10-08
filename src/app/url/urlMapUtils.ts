@@ -172,10 +172,6 @@ export function getMapStateDiffFromUrl(
 
   if (layers && layers.join('\n') !== state2.layers.join('\n')) {
     changes.layers = layers;
-
-    if (state2.layers.includes('i')) {
-      changes.layers.push('i');
-    }
   }
 
   if (lat !== undefined && Math.abs(lat - state2.lat) > 0.00001) {

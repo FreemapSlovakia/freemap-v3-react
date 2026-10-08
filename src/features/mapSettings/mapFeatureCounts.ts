@@ -1,14 +1,21 @@
 import type { RootState } from '@app/store/store.js';
 import { keptSearchResultsSelector } from '@features/search/model/selectors.js';
 
-export type MapFeatureId =
-  | 'search'
-  | 'objects'
-  | 'tracking'
-  | 'data'
-  | 'route'
-  | 'drawing'
-  | 'changesets';
+const MAP_FEATURE_IDS = [
+  'search',
+  'objects',
+  'tracking',
+  'data',
+  'route',
+  'drawing',
+  'changesets',
+] as const;
+
+export type MapFeatureId = (typeof MAP_FEATURE_IDS)[number];
+
+/** Whether any tool's feature has a row in the Map layers panel. */
+export const anyMapFeature = (state: RootState) =>
+  MAP_FEATURE_IDS.some((id) => mapFeatureCount(state, id) !== undefined);
 
 /**
  * How many items a tool's feature holds, or `undefined` while it has no row in

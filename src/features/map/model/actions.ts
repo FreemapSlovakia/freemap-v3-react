@@ -193,6 +193,11 @@ export const mapToggleLayer = createAction<{ type: string; enable?: boolean }>(
   'MAP_TOGGLE_LAYER',
 );
 
+/** Hides the tools' features, or shows them; the data layer toggles the same. */
+export const mapSetFeaturesHidden = createAction<boolean>(
+  'MAP_SET_FEATURES_HIDDEN',
+);
+
 /**
  * Takes an item of the stack (a map, or `@<id>` a preset) off the map, a base
  * one too: the map is then left without a base map, on purpose.

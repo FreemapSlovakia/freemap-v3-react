@@ -9,6 +9,7 @@ import { RoutePlannerResult } from '@features/routePlanner/components/RoutePlann
 import { SearchResults } from '@features/search/components/SearchResults.js';
 import { TrackingResult } from '@features/tracking/components/TrackingResult.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
 import { type ReactElement, useEffect } from 'react';
 import { AsyncComponent } from './AsyncComponent.js';
 
@@ -71,7 +72,7 @@ export function Results(): ReactElement {
   );
 
   const opacity = useAppSelector(
-    (state) => state.map.layerSetups['i']?.opacity ?? 1,
+    (state) => state.map.layerSetups[FEATURES_LAYER]?.opacity ?? 1,
   );
 
   const map = useMap();
