@@ -100,7 +100,11 @@ type YourMap = {
   icon: ReactNode;
   countries?: string[];
   /** Where it draws, as `coversView` reads it; none means everywhere. */
-  coverage?: { countries?: string[]; bbox?: [number, number, number, number] };
+  coverage?: {
+    countries?: string[];
+    bbox?: [number, number, number, number];
+    bboxes?: [number, number, number, number][];
+  };
   legacy: boolean;
   /** Library maps are previewed and uninstalled; the rest are edited elsewhere. */
   kind: 'library' | 'custom' | 'cached' | 'preset';
@@ -388,7 +392,11 @@ export function YourMapsList({
         name: layerName(def, m) ?? def.type,
         icon: def.icon,
         countries: flaggedCountries(def),
-        coverage: { countries: def.countries, bbox: def.bbox },
+        coverage: {
+          countries: def.countries,
+          bbox: def.bbox,
+          bboxes: def.bboxes,
+        },
         detail: mapDetail(def.category, def.technology),
         legacy: Boolean(def.superseededBy),
         kind: 'library',

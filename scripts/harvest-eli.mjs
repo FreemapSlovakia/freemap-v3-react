@@ -312,6 +312,82 @@ function bboxOf(geometry) {
   ];
 }
 
+// More than this, and the nearest parts are merged.
+const MAX_PARTS = 8;
+
+const boxArea = (b) => (b[2] - b[0]) * (b[3] - b[1]);
+
+const boxUnion = (a, b) => [
+  Math.min(a[0], b[0]),
+  Math.min(a[1], b[1]),
+  Math.max(a[2], b[2]),
+  Math.max(a[3], b[3]),
+];
+
+const boxesMeet = (a, b) =>
+  a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+
+/**
+ * A coverage as boxes: one per polygon, those that meet merged, then the pair
+ * whose union adds the least merged until MAX_PARTS are left. `bbox` is the
+ * largest, a preview's target; `bboxes` only where there are several parts.
+ */
+function coverageOf(geometry) {
+  const polygons =
+    geometry?.type === 'MultiPolygon'
+      ? geometry.coordinates.map((coordinates) => ({
+          type: 'Polygon',
+          coordinates,
+        }))
+      : geometry
+        ? [geometry]
+        : [];
+
+  const parts = polygons.map(bboxOf);
+
+  for (let merged = true; merged; ) {
+    merged = false;
+
+    for (let i = 0; i < parts.length && !merged; i++) {
+      for (let j = i + 1; j < parts.length; j++) {
+        if (boxesMeet(parts[i], parts[j])) {
+          parts[i] = boxUnion(parts[i], parts[j]);
+          parts.splice(j, 1);
+          merged = true;
+          break;
+        }
+      }
+    }
+  }
+
+  while (parts.length > MAX_PARTS) {
+    let best;
+
+    for (let i = 0; i < parts.length; i++) {
+      for (let j = i + 1; j < parts.length; j++) {
+        const cost =
+          boxArea(boxUnion(parts[i], parts[j])) -
+          boxArea(parts[i]) -
+          boxArea(parts[j]);
+
+        if (!best || cost < best.cost) {
+          best = { i, j, cost };
+        }
+      }
+    }
+
+    parts[best.i] = boxUnion(parts[best.i], parts[best.j]);
+    parts.splice(best.j, 1);
+  }
+
+  parts.sort((a, b) => boxArea(b) - boxArea(a));
+
+  return {
+    bbox: parts[0],
+    bboxes: parts.length > 1 ? parts : undefined,
+  };
+}
+
 /** Runs `task` over `items`, at most `limit` at a time. */
 async function mapConcurrently(items, limit, task) {
   let next = 0;
@@ -332,7 +408,8 @@ async function mapConcurrently(items, limit, task) {
 async function probeTile(feature, leaflet) {
   const p = feature.properties;
 
-  const box = bboxOf(feature.geometry) ?? [-180, -85, 180, 85];
+  // The largest part's middle: the whole box's may lie at sea between parts.
+  const box = coverageOf(feature.geometry).bbox ?? [-180, -85, 180, 85];
 
   const z = Math.max(p.min_zoom ?? 0, Math.min(p.max_zoom ?? 18, 12));
 
@@ -794,7 +871,7 @@ const catalog = kept
       layer: p.overlay ? 'overlay' : 'base',
       name: p.name,
       countries: cc && cc !== 'zz' ? [cc] : undefined,
-      bbox: bboxOf(feature.geometry),
+      ...coverageOf(feature.geometry),
       category: p.category,
     };
 

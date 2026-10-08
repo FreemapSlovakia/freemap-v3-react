@@ -41,7 +41,10 @@ import {
   getCountriesBbox,
   getLayerBbox,
 } from '@shared/mapDefinitions.js';
-import { coverageCountries } from '@shared/mapLibrary/coverage.js';
+import {
+  coverageCountries,
+  outsideBoxes,
+} from '@shared/mapLibrary/coverage.js';
 import { effectiveShortcut } from '@shared/mapLibrary/installed.js';
 import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
 import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
@@ -419,9 +422,8 @@ export function MapSwitchButton(): ReactElement {
 
     const box = getLayerBbox(def);
 
-    return box && (lon < box[0] || lon > box[2] || lat < box[1] || lat > box[3])
-      ? box
-      : undefined;
+    // Away from every part, the target is the largest, `box`.
+    return box && outsideBoxes(def.bboxes ?? [box], lon, lat) ? box : undefined;
   };
 
   /** Both warnings in one line, or nothing while the messages are loading. */

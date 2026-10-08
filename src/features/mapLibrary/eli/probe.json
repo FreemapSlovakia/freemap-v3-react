@@ -937,7 +937,7 @@
   },
   "ETCOG24_NC_6in": {
     "v": 3,
-    "status": 503,
+    "status": "error",
     "cors": false,
     "scales": []
   },
@@ -2791,7 +2791,7 @@
   },
   "Okaloosa_Ortho_2019": {
     "v": 3,
-    "status": 400,
+    "status": 500,
     "cors": true,
     "scales": []
   },
@@ -3535,14 +3535,14 @@
   },
   "StratMap21_NCCIR_CapArea_Brazos_Kerr": {
     "v": 3,
-    "status": 503,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Stratmap20_NCCIR_CapArea_McLennan": {
     "v": 3,
-    "status": 503,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Stuttgart-latest": {
@@ -4105,14 +4105,14 @@
   },
   "brazos_county_2019_wms": {
     "v": 3,
-    "status": 503,
+    "status": 200,
     "cors": false,
     "scales": []
   },
   "caparea_2019_wms": {
     "v": 3,
-    "status": 503,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "cyclosm": {
@@ -8227,7 +8227,7 @@
   },
   "smith_county_2019_wms": {
     "v": 3,
-    "status": 503,
+    "status": 200,
     "cors": false,
     "scales": []
   },

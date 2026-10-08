@@ -1,4 +1,7 @@
-import { coverageCountries } from '@shared/mapLibrary/coverage.js';
+import {
+  coverageBoxes,
+  coverageCountries,
+} from '@shared/mapLibrary/coverage.js';
 import { removeAccents } from '@shared/stringUtils.js';
 
 type Bbox = [number, number, number, number];
@@ -64,11 +67,11 @@ export const nameMatches = (name: string, query: string): boolean =>
 
 /**
  * Whether a map draws where the view is: one of its countries is in view, and
- * a catalog map's box (see `coverageCountries`) meets it too. With no country
- * known for the view (outside Europe, at sea) the box alone decides.
+ * one of a catalog map's boxes (see `coverageCountries`) meets it too. With no
+ * country known for the view (out at sea) the boxes alone decide.
  */
 export function coversView(
-  def: { type: string; countries?: string[]; bbox?: Bbox },
+  def: { type: string; countries?: string[]; bbox?: Bbox; bboxes?: Bbox[] },
   view: { bounds?: Bbox; countries?: string[] | null },
 ): boolean {
   const inView = (countries: string[]) =>
@@ -80,17 +83,20 @@ export function coversView(
     return !view.countries || inView(countries);
   }
 
-  const { bbox } = def;
+  const boxes = coverageBoxes(def);
 
   const { bounds } = view;
 
   return (
     (!def.countries || !view.countries?.length || inView(def.countries)) &&
-    (!bbox ||
+    (!boxes.length ||
       !bounds ||
-      (bbox[0] <= bounds[2] &&
-        bbox[2] >= bounds[0] &&
-        bbox[1] <= bounds[3] &&
-        bbox[3] >= bounds[1]))
+      boxes.some(
+        (box) =>
+          box[0] <= bounds[2] &&
+          box[2] >= bounds[0] &&
+          box[1] <= bounds[3] &&
+          box[3] >= bounds[1],
+      ))
   );
 }

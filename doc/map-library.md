@@ -302,7 +302,12 @@ A catalog map is not in `mapIndex`; it works once the map slice knows it.
 - **Icons** — `catalogIcon(category)`, one per ELI category.
 - **Coverage** — ELI's `country_code` says where the imagery lies, not what it
   covers (a city orthophoto names its country), so a preview tells a catalog
-  map's distance by its `bbox`.
+  map's distance by its boxes. A coverage in parts far apart (France with its
+  overseas departments) has `bboxes`, a box per part, and `bbox` is the largest:
+  "Covers this view" and the out-of-coverage test go by every part
+  (`coverageBoxes`, `outsideBoxes` in `src/shared/mapLibrary/coverage.ts`), a
+  preview flies to the largest. One box spanning them all would match anywhere
+  between, the Atlantic included.
 
 ### Harvesting
 
@@ -319,7 +324,8 @@ and probe. The national sources are researched one country at a time.
   if it returns. Ids never go to anything else.
 - **`eliCatalog.json`** — `{ source, licence, maps: CatalogMap[] }`, sorted by
   id; derived from ELI, so CC BY-SA 3.0 and credited.
-- **`probe.json`** — one tile per map fetched as the app would (no referrer,
+- **`probe.json`** — one tile per map, at the middle of its largest part,
+  fetched as the app would (no referrer,
   an `Origin`), a failed fetch tried once more: status, whether CORS lets both
   www.freemap.sk and www.freemap.eu read it (`*`, or each origin named back),
   and the `@Nx` scales. `--reuse-probe` keeps answers (2xx or 404) of the
@@ -438,7 +444,8 @@ the ids and templates.
    `wms` body has no `styles`) or without `LAYERS`; a committed overrides file
    the script applies, by id, for a better name or icon or to hide an entry.
 2. **Coverage as a union.** `{ countries } | { bbox } | { polygon }` (simplified
-   polygon, its bbox derived). Keep the zoom-to target separate: `X` has both
+   polygon, its bbox derived), beyond today's per-part `bboxes`. Keep the
+   zoom-to target separate: `X` has both
    `countries` and a `bbox`. Countries keep using the server's covered-countries
    check; polygons are tested in the browser. Most catalog polygons are country
    outlines — convert those to `countries` in the pipeline.

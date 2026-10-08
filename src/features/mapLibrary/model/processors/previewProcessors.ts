@@ -7,7 +7,11 @@ import {
   mapToggleLayer,
 } from '@features/map/model/actions.js';
 import { getCountriesBbox, getLayerBbox } from '@shared/mapDefinitions.js';
-import { coverageCountries } from '@shared/mapLibrary/coverage.js';
+import {
+  coverageBoxes,
+  coverageCountries,
+  outsideBoxes,
+} from '@shared/mapLibrary/coverage.js';
 import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { mapLibraryPreviewEnd, mapLibraryPreviewStart } from '../actions.js';
 import { mapByIdSelector } from '../selectors.js';
@@ -57,10 +61,15 @@ export const mapLibraryPreviewStartProcessor: Processor<
     const countries =
       ref.origin === 'library' ? coverageCountries(ref.entry) : undefined;
 
+    // Away from every part, the preview goes to the largest, `box`.
     const away = countries
       ? inView != null && !countries.some((country) => inView.includes(country))
       : box !== undefined &&
-        (lon < box[0] || lon > box[2] || lat < box[1] || lat > box[3]);
+        outsideBoxes(
+          ref.origin === 'library' ? coverageBoxes(ref.entry) : [box],
+          lon,
+          lat,
+        );
 
     if (away && box) {
       dispatch(

@@ -70,6 +70,27 @@ describe('library filters', () => {
     expect(coversView({ type: 'O' }, view)).toBe(true);
   });
 
+  it('tests each part of a map whose coverage lies in parts', () => {
+    const france = {
+      type: 'ABCDE',
+      bbox: [-5, 42, 8, 51] as [number, number, number, number],
+      bboxes: [
+        [-5, 42, 8, 51],
+        [-61.3, 14.3, -60.8, 14.9],
+      ] as [number, number, number, number][],
+    };
+
+    // At sea, no country known: Martinique's part decides.
+    expect(
+      coversView(france, { bounds: [-61.1, 14.5, -61, 14.6], countries: [] }),
+    ).toBe(true);
+
+    // Between the parts, where the one box spanning both would have matched.
+    expect(
+      coversView(france, { bounds: [-30, 30, -29, 31], countries: [] }),
+    ).toBe(false);
+  });
+
   it('needs a catalog map’s box even where its country is in view', () => {
     expect(
       coversView(

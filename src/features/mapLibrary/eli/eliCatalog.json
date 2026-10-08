@@ -122,7 +122,17 @@
       "layer": "base",
       "name": "Japan GSI airphoto Imagery/update 2019",
       "countries": ["jp"],
-      "bbox": [125.125, 24.7, 145.6834, 43.375],
+      "bbox": [139, 35.125, 141.2667, 38.65],
+      "bboxes": [
+        [139, 35.125, 141.2667, 38.65],
+        [140.3, 42.1333, 145.6834, 43.375],
+        [139.9333, 38.6083, 141.9334, 40.775],
+        [134.375, 33.425, 136.925, 34.575],
+        [129.9, 32.7166, 133.0334, 33.3334],
+        [130.5, 30.3416, 131.25, 32.8584],
+        [136.125, 35.525, 137.4084, 36.8917],
+        [125.125, 24.7, 125.4917, 24.95]
+      ],
       "category": "photo",
       "body": {
         "url": "https://cyberjapandata.gsi.go.jp/xyz/nendophoto2019/{z}/{x}/{y}.png",
@@ -265,7 +275,13 @@
       "layer": "overlay",
       "name": "Postcode centroids",
       "countries": ["gb"],
-      "bbox": [-8.7164, 49.8673, 1.8334, 60.9104],
+      "bbox": [-7.8307, 49.8673, 1.8334, 59.5699],
+      "bboxes": [
+        [-7.8307, 49.8673, 1.8334, 59.5699],
+        [-1.9484, 59.7979, -0.6626, 60.9104],
+        [-8.7164, 57.7305, -8.3592, 57.9441],
+        [-2.2034, 60.0929, -1.9864, 60.1969]
+      ],
       "category": "other",
       "body": {
         "url": "https://www.raggedred.net/tiles/codepoint/{z}/{x}/{y}.png",
@@ -614,7 +630,11 @@
       "layer": "base",
       "name": "SPW(allonie) 2015 aerial imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -668,7 +688,11 @@
       "layer": "base",
       "name": "Maui County Orthoimagery (2026)",
       "countries": ["us"],
-      "bbox": [-156.692, 20.7053, -156.4292, 20.9163],
+      "bbox": [-156.692, 20.829, -156.6301, 20.9163],
+      "bboxes": [
+        [-156.692, 20.829, -156.6301, 20.9163],
+        [-156.4756, 20.7053, -156.4292, 20.7999]
+      ],
       "category": "photo",
       "body": {
         "url": "https://tiles.arcgis.com/tiles/fsrDo0QMPlK9CkZD/arcgis/rest/services/Pictometry_PostKonaStorm_2026/MapServer/tile/{z}/{y}/{x}",
@@ -731,7 +755,16 @@
       "layer": "base",
       "name": "FÖMI orthophoto 2016 leaf-off 20cm (webp)",
       "countries": ["hu"],
-      "bbox": [16.502, 45.8127, 22.1596, 48.5445],
+      "bbox": [19.9229, 47.6433, 22.1596, 48.5445],
+      "bboxes": [
+        [19.9229, 47.6433, 22.1596, 48.5445],
+        [18.1682, 46.8092, 19.4211, 47.8202],
+        [20.3239, 46.6863, 21.8607, 47.3058],
+        [18.3705, 45.8127, 18.9225, 46.58],
+        [19.7796, 46.1155, 20.6144, 46.5923],
+        [16.502, 46.5923, 17.0732, 46.9813],
+        [17.4356, 46.5222, 17.9066, 46.829]
+      ],
       "category": "photo",
       "body": {
         "url": "https://orto1.tile.openstreetmap.hu/fomi_2016_lombtalan_20cm/{z}/{x}/{y}.webp",
@@ -1021,7 +1054,12 @@
       "layer": "base",
       "name": "KyFromAbove Aerial Imagery (2012-2014)",
       "countries": ["us"],
-      "bbox": [-89.5716, 36.4971, -83.9694, 39.1476],
+      "bbox": [-86.2754, 37.4401, -83.9694, 39.1476],
+      "bboxes": [
+        [-86.2754, 37.4401, -83.9694, 39.1476],
+        [-89.4173, 36.4971, -87.2957, 37.6479],
+        [-89.5716, 36.4974, -89.4654, 36.5802]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -1104,7 +1142,11 @@
       "layer": "base",
       "name": "SPW(allonie) 2021 aerial imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -1295,11 +1337,40 @@
       }
     },
     {
+      "type": "1KVP9",
+      "layer": "base",
+      "name": "StratMap CapArea Imagery (2019)",
+      "countries": ["us"],
+      "bbox": [-99, 29.6, -96.55, 31.05],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap19_NCCIR_CapArea/ImageServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 2,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Strategic Mapping Program (StratMap). CapArea Imagery, 2019-01-29",
+            "url": "https://data.geographic.texas.gov/collection/?c=f84442b8-ac2a-4708-b5c0-9d15515f4483"
+          }
+        ]
+      }
+    },
+    {
       "type": "1KYLZ",
       "layer": "base",
       "name": "Cadastre",
       "countries": ["fr"],
-      "bbox": [-61.9281, -21.4966, 55.9658, 51.3294],
+      "bbox": [-6.3, 41.2768, 9.8, 51.3294],
+      "bboxes": [
+        [-6.3, 41.2768, 9.8, 51.3294],
+        [-54.8053, 2.032, -51.5203, 6.004],
+        [-61.9281, 15.7394, -60.8812, 16.5875],
+        [55.0881, -21.4966, 55.9658, -20.7728],
+        [-61.2763, 14.3668, -60.7236, 14.9022],
+        [44.9205, -13.1197, 45.3528, -12.5702]
+      ],
       "category": "map",
       "body": {
         "url": "https://tms.cadastre.openstreetmap.fr/*/tout/{z}/{x}/{y}.png",
@@ -1641,7 +1712,12 @@
       "layer": "base",
       "name": "Ortho HR 2016",
       "countries": ["fr"],
-      "bbox": [-3.7443, -13.0819, 45.3153, 50.1845],
+      "bbox": [-3.7443, 42.5661, 7.1978, 50.1845],
+      "bboxes": [
+        [-3.7443, 42.5661, 7.1978, 50.1845],
+        [8.5184, 41.3188, 9.5726, 43.0331],
+        [44.9332, -13.0819, 45.3153, -12.572]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2016/{z}/{x}/{y}.jpeg",
@@ -1764,7 +1840,11 @@
       "layer": "base",
       "name": "VIP Orthoimagery - Best of Color",
       "countries": ["us"],
-      "bbox": [-73.4373, 42.7269, -71.4351, 45.1647],
+      "bbox": [-73.4373, 42.7269, -71.4379, 45.0328],
+      "bboxes": [
+        [-73.4373, 42.7269, -71.4379, 45.0328],
+        [-73.4059, 45.0633, -71.4351, 45.1647]
+      ],
       "category": "photo",
       "body": {
         "url": "https://maps.vcgi.vermont.gov/arcgis/rest/services/EGC_services/IMG_VCGI_CLR_WM_CACHE/ImageServer/WMTS/tile/1.0.0/EGC_services_IMG_VCGI_CLR_WM_CACHE/default/default028mm/{z}/{y}/{x}",
@@ -1926,7 +2006,11 @@
       "layer": "base",
       "name": "Maa-amet Basic Map",
       "countries": ["ee"],
-      "bbox": [21.694, 57.5088, 28.2111, 59.8316],
+      "bbox": [21.694, 57.5088, 28.2111, 59.7135],
+      "bboxes": [
+        [21.694, 57.5088, 28.2111, 59.7135],
+        [26.315, 59.7852, 26.4074, 59.8316]
+      ],
       "category": "map",
       "technology": "wms",
       "body": {
@@ -2184,6 +2268,31 @@
       }
     },
     {
+      "type": "2JL7B",
+      "layer": "base",
+      "name": "StratMap CapArea, Brazos & Kerr Imagery (Natural Color 2021)",
+      "countries": ["us"],
+      "bbox": [-98.9699, 29.6239, -96.0141, 31.048],
+      "bboxes": [
+        [-98.9699, 29.6239, -96.0141, 31.048],
+        [-99.5479, 29.8897, -98.9833, 30.1415]
+      ],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap21_NCCIR_CapArea_Brazos_Kerr/ImageServer/WMSServer",
+        "layers": ["0"],
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Strategic Mapping Program (StratMap). CapArea, Brazos & Kerr Imagery",
+            "url": "https://geographic.texas.gov/stratmap/"
+          }
+        ]
+      }
+    },
+    {
       "type": "2KBM5",
       "layer": "overlay",
       "name": "ISPRA IFFI landslide inventory",
@@ -2208,7 +2317,12 @@
       "layer": "base",
       "name": "Ortho HR 2018",
       "countries": ["fr"],
-      "bbox": [-63.1709, 17.835, 8.2503, 51.112],
+      "bbox": [-1.8089, 42.3224, 8.2503, 51.112],
+      "bboxes": [
+        [-1.8089, 42.3224, 8.2503, 51.112],
+        [-5.1706, 47.6594, -1.9, 48.9293],
+        [-63.1709, 17.835, -62.7636, 18.1437]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2018/{z}/{x}/{y}.jpeg",
@@ -2644,7 +2758,11 @@
       "layer": "base",
       "name": "KyFromAbove Aerial Imagery (2022-2024)",
       "countries": ["us"],
-      "bbox": [-89.5716, 36.4971, -81.965, 39.1476],
+      "bbox": [-89.4173, 36.4971, -81.965, 39.1476],
+      "bboxes": [
+        [-89.4173, 36.4971, -81.965, 39.1476],
+        [-89.5716, 36.4974, -89.4654, 36.5802]
+      ],
       "category": "photo",
       "body": {
         "url": "https://kygisserver.ky.gov/arcgis/rest/services/WGS84WM_Services/Ky_Imagery_Phase3_3IN_WGS84WM/MapServer/tile/{z}/{y}/{x}",
@@ -2747,7 +2865,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1971",
       "countries": ["au"],
-      "bbox": [150.9851, -34.0117, 151.7295, -33.0132],
+      "bbox": [150.9851, -34.0117, 151.4342, -33.4852],
+      "bboxes": [
+        [150.9851, -34.0117, 151.4342, -33.4852],
+        [151.4866, -33.3841, 151.7295, -33.0132]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1971/MapServer/tile/{z}/{y}/{x}",
@@ -2768,7 +2890,11 @@
       "layer": "overlay",
       "name": "DCS NSW Administrative Boundaries Suburb",
       "countries": ["au"],
-      "bbox": [140.9937, -37.507, 159.3728, -28.1415],
+      "bbox": [140.9937, -37.507, 153.697, -28.1415],
+      "bboxes": [
+        [140.9937, -37.507, 153.697, -28.1415],
+        [159.0033, -31.8596, 159.3728, -31.4374]
+      ],
       "category": "other",
       "technology": "wms",
       "body": {
@@ -3136,7 +3262,14 @@
       "layer": "base",
       "name": "City of Cape Town Aerial Imagery (2024)",
       "countries": ["za"],
-      "bbox": [18.3001, -34.235, 18.9823, -33.4934],
+      "bbox": [18.3001, -34.2255, 18.4904, -33.8953],
+      "bboxes": [
+        [18.3001, -34.2255, 18.4904, -33.8953],
+        [18.7857, -34.235, 18.9823, -34.0235],
+        [18.4467, -33.6274, 18.6055, -33.4934],
+        [18.5618, -34.0893, 18.6364, -33.9121],
+        [18.4488, -33.8439, 18.5645, -33.7853]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -3610,7 +3743,11 @@
       "layer": "overlay",
       "name": "DCS NSW Administrative Boundaries County",
       "countries": ["au"],
-      "bbox": [140.9937, -37.507, 159.3728, -28.1415],
+      "bbox": [140.9937, -37.507, 153.697, -28.1415],
+      "bboxes": [
+        [140.9937, -37.507, 153.697, -28.1415],
+        [159.0033, -31.8596, 159.3728, -31.4374]
+      ],
       "category": "other",
       "technology": "wms",
       "body": {
@@ -3714,7 +3851,17 @@
       "layer": "base",
       "name": "Japan GSI airphoto Imagery/update 2020",
       "countries": ["jp"],
-      "bbox": [130.25, 30.9833, 142.0725, 43.25],
+      "bbox": [140.7529, 36.8613, 142.0725, 40.2261],
+      "bboxes": [
+        [140.7529, 36.8613, 142.0725, 40.2261],
+        [135.5916, 34.4415, 138.9, 35.3334],
+        [130.65, 30.9833, 131.6334, 32.3917],
+        [133.4083, 33.95, 135.0334, 34.7084],
+        [132.0083, 33.3333, 133.45, 33.5167],
+        [141.175, 42.925, 141.575, 43.25],
+        [130.25, 33.5, 130.7084, 33.75],
+        [132.475, 32.7, 132.8084, 32.9584]
+      ],
       "category": "photo",
       "body": {
         "url": "https://cyberjapandata.gsi.go.jp/xyz/nendophoto2020/{z}/{x}/{y}.png",
@@ -3839,7 +3986,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1996",
       "countries": ["au"],
-      "bbox": [150.9349, -34.0055, 151.7335, -32.9905],
+      "bbox": [150.9349, -34.0055, 151.4335, -33.4967],
+      "bboxes": [
+        [150.9349, -34.0055, 151.4335, -33.4967],
+        [151.489, -33.2035, 151.7335, -32.9905]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1996/MapServer/tile/{z}/{y}/{x}",
@@ -4113,7 +4264,17 @@
       "layer": "base",
       "name": "Ortho HR 2013",
       "countries": ["fr"],
-      "bbox": [-63.1617, -21.4034, 55.846, 50.3809],
+      "bbox": [-3.7443, 42.5661, 7.6296, 50.3809],
+      "bboxes": [
+        [-3.7443, 42.5661, 7.6296, 50.3809],
+        [8.5184, 41.3188, 9.5726, 43.0331],
+        [-61.8319, 15.8156, -60.9907, 16.5297],
+        [55.2072, -21.4034, 55.846, -20.8628],
+        [-61.2454, 14.3717, -60.7813, 14.9006],
+        [44.9121, -13.0902, 45.3069, -12.5552],
+        [-62.9532, 17.862, -62.7804, 17.9807],
+        [-63.1617, 18.043, -62.961, 18.135]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2013/{z}/{x}/{y}.jpeg",
@@ -4134,7 +4295,17 @@
       "layer": "base",
       "name": "Japan GSI airphoto Imagery/update 2021",
       "countries": ["jp"],
-      "bbox": [130.25, 33, 145.7084, 44.1167],
+      "bbox": [133.6666, 34.1583, 136, 35.6167],
+      "bboxes": [
+        [133.6666, 34.1583, 136, 35.6167],
+        [130.25, 33, 132.875, 33.7084],
+        [140.8416, 38.6666, 141.175, 43.25],
+        [135.95, 35.85, 137.4417, 36.85],
+        [143.7333, 42.7416, 145.7084, 43.2584],
+        [140.25, 40.025, 141.7334, 40.35],
+        [139.625, 35.9166, 140.075, 36.3167],
+        [144.1833, 43.8333, 144.3084, 44.1167]
+      ],
       "category": "photo",
       "body": {
         "url": "https://cyberjapandata.gsi.go.jp/xyz/nendophoto2021/{z}/{x}/{y}.png",
@@ -4216,7 +4387,12 @@
       "layer": "base",
       "name": "Maine Orthoimagery Program (2021)",
       "countries": ["us"],
-      "bbox": [-70.5638, 43.5331, -70.1625, 43.8741],
+      "bbox": [-70.3664, 43.685, -70.1625, 43.8532],
+      "bboxes": [
+        [-70.3664, 43.685, -70.1625, 43.8532],
+        [-70.2838, 43.5331, -70.189, 43.6379],
+        [-70.5638, 43.8127, -70.4796, 43.8741]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -4345,7 +4521,13 @@
       "layer": "overlay",
       "name": "OSMUK Cadastral Parcels",
       "countries": ["gb"],
-      "bbox": [-8.7164, 49.8673, 1.8334, 60.9104],
+      "bbox": [-7.8307, 49.8673, 1.8334, 59.5699],
+      "bboxes": [
+        [-7.8307, 49.8673, 1.8334, 59.5699],
+        [-1.9484, 59.7979, -0.6626, 60.9104],
+        [-8.7164, 57.7305, -8.3592, 57.9441],
+        [-2.2034, 60.0929, -1.9864, 60.1969]
+      ],
       "category": "other",
       "body": {
         "url": "https://tiles.osmuk.org/PropertyBoundaries/{z}/{x}/{y}.png",
@@ -4629,7 +4811,11 @@
       "layer": "base",
       "name": "NH GRANIT 2021/2022 6-inch Orthophotos (Color)",
       "countries": ["us"],
-      "bbox": [-72.579, 42.6905, -70.597, 45.3122],
+      "bbox": [-72.579, 42.6905, -70.689, 45.3122],
+      "bboxes": [
+        [-72.579, 42.6905, -70.689, 45.3122],
+        [-70.6375, 42.9605, -70.597, 43.0172]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -4776,7 +4962,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1994",
       "countries": ["au"],
-      "bbox": [150.9891, -34.2344, 151.437, -33.495],
+      "bbox": [150.9926, -34.0049, 151.437, -33.495],
+      "bboxes": [
+        [150.9926, -34.0049, 151.437, -33.495],
+        [150.9891, -34.2344, 151.1517, -34.1152]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1994/MapServer/tile/{z}/{y}/{x}",
@@ -4839,7 +5029,12 @@
       "layer": "base",
       "name": "USGS Imagery",
       "countries": ["us"],
-      "bbox": [-179.9341, 17.623, -64.5378, 71.9791],
+      "bbox": [-139, 24, -66.9311, 49.4426],
+      "bboxes": [
+        [-139, 24, -66.9311, 49.4426],
+        [-179.9341, 50.8337, -129.9572, 71.9791],
+        [-68.0274, 17.623, -64.5378, 18.5435]
+      ],
       "category": "photo",
       "body": {
         "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}",
@@ -5021,7 +5216,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1980",
       "countries": ["au"],
-      "bbox": [150.4824, -34.5134, 151.513, -32.9825],
+      "bbox": [150.4824, -34.5134, 151.2704, -33.9872],
+      "bboxes": [
+        [150.4824, -34.5134, 151.2704, -33.9872],
+        [150.9868, -33.5144, 151.513, -32.9825]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1980/MapServer/tile/{z}/{y}/{x}",
@@ -5105,7 +5304,14 @@
       "layer": "base",
       "name": "Ortho HR 2015",
       "countries": ["fr"],
-      "bbox": [-5.1706, 42.3224, 8.2503, 51.0939],
+      "bbox": [1.6753, 42.3224, 7.0922, 46.5445],
+      "bboxes": [
+        [1.6753, 42.3224, 7.0922, 46.5445],
+        [0.0368, 48.6502, 4.2423, 51.0939],
+        [-1.8089, 42.7677, 1.4585, 45.7226],
+        [-5.1706, 47.6594, -0.7199, 49.7413],
+        [5.4046, 47.4117, 8.2503, 49.5739]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2015/{z}/{x}/{y}.jpeg",
@@ -5876,7 +6082,17 @@
       "layer": "base",
       "name": "Ortho HR 2024",
       "countries": ["fr"],
-      "bbox": [-63.1617, 15.8156, 9.5726, 51.0274],
+      "bbox": [-1.8089, 42.3213, 7.2092, 46.5333],
+      "bboxes": [
+        [-1.8089, 42.3213, 7.2092, 46.5333],
+        [1.3566, 48.1041, 4.2676, 51.0274],
+        [-5.1706, 47.2596, -2.0158, 48.7797],
+        [6.8196, 47.4034, 8.2503, 49.0851],
+        [8.5182, 41.3191, 9.5726, 43.0331],
+        [-61.8319, 15.8156, -60.9907, 16.5297],
+        [-63.1617, 18.0242, -62.961, 18.135],
+        [-62.9541, 17.8614, -62.7809, 17.9819]
+      ],
       "category": "photo",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2024/{z}/{x}/{y}.jpeg",
@@ -6022,7 +6238,11 @@
       "layer": "base",
       "name": "Ortho HR 2023",
       "countries": ["fr"],
-      "bbox": [-2.3097, -13.0819, 45.3153, 49.4515],
+      "bbox": [-2.3097, 42.9674, 7.7289, 49.4515],
+      "bboxes": [
+        [-2.3097, 42.9674, 7.7289, 49.4515],
+        [44.9332, -13.0819, 45.3153, -12.572]
+      ],
       "category": "photo",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2023/{z}/{x}/{y}.jpeg",
@@ -6353,7 +6573,11 @@
       "layer": "base",
       "name": "SPW(allonie) 2012-2013 aerial imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -6401,7 +6625,12 @@
       "layer": "base",
       "name": "San Francisco Orthoimagery CIR (2024)",
       "countries": ["us"],
-      "bbox": [-122.5234, 37.5943, -122.3164, 37.9411],
+      "bbox": [-122.5234, 37.6977, -122.3164, 37.9411],
+      "bboxes": [
+        [-122.5234, 37.6977, -122.3164, 37.9411],
+        [-122.4239, 37.5943, -122.3356, 37.6431],
+        [-122.5003, 37.6187, -122.4467, 37.6371]
+      ],
       "category": "photo",
       "body": {
         "url": "https://tile.sf.gov/api/tiles/p2024_irg8cm/{z}/{x}/{y}",
@@ -6442,7 +6671,11 @@
       "layer": "base",
       "name": "Solano County Orthoimagery (2023)",
       "countries": ["us"],
-      "bbox": [-122.361, 38.026, -121.6632, 38.4973],
+      "bbox": [-122.361, 38.026, -121.7819, 38.4973],
+      "bboxes": [
+        [-122.361, 38.026, -121.7819, 38.4973],
+        [-121.7367, 38.12, -121.6632, 38.2071]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://tiles.arcgis.com/tiles/SCn6czzcqKAFwdGU/arcgis/rest/services/Aerial2023_WGS84_ESRI_Aux/MapServer/tile/{z}/{y}/{x}",
@@ -6651,7 +6884,14 @@
       "layer": "base",
       "name": "Ortho Express 2024",
       "countries": ["fr"],
-      "bbox": [-5.1706, 41.3191, 9.5726, 51.112],
+      "bbox": [-1.8089, 42.3229, 7.2092, 46.5333],
+      "bboxes": [
+        [-1.8089, 42.3229, 7.2092, 46.5333],
+        [1.3566, 48.1041, 4.3088, 51.112],
+        [-5.1706, 47.2596, -2.0158, 48.7797],
+        [6.8196, 47.4034, 8.2503, 49.0851],
+        [8.5182, 41.3191, 9.5726, 43.0331]
+      ],
       "category": "photo",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS.ORTHO-EXPRESS.2024/{z}/{x}/{y}.jpeg",
@@ -7049,7 +7289,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1966",
       "countries": ["au"],
-      "bbox": [150.7478, -34.5687, 152.0131, -32.7416],
+      "bbox": [150.9909, -33.504, 152.0131, -32.7416],
+      "bboxes": [
+        [150.9909, -33.504, 152.0131, -32.7416],
+        [150.7478, -34.5687, 151.0056, -34.1846]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1966/MapServer/tile/{z}/{y}/{x}",
@@ -7429,7 +7673,11 @@
       "layer": "base",
       "name": "Hamburg ALKIS Basiskarte (farbig) (HH LGV ALKIS 2025)",
       "countries": ["de"],
-      "bbox": [8.4826, 53.3979, 10.3252, 53.9358],
+      "bbox": [9.7304, 53.3979, 10.3252, 53.739],
+      "bboxes": [
+        [9.7304, 53.3979, 10.3252, 53.739],
+        [8.4826, 53.9092, 8.528, 53.9358]
+      ],
       "category": "map",
       "technology": "wms",
       "body": {
@@ -7469,6 +7717,27 @@
             "type": "map",
             "name": "Freie und Hansestadt Hamburg, Landesbetrieb Geoinformation und Vermessung",
             "url": "https://www.hamburg.de/bsw/landesbetrieb-geoinformation-und-vermessung"
+          }
+        ]
+      }
+    },
+    {
+      "type": "9AH1D",
+      "layer": "base",
+      "name": "StratMap Brazos County Imagery (2019)",
+      "countries": ["us"],
+      "bbox": [-96.63, 30.33, -96.06, 30.99],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap19_NCCIR_6in_Brazos/ImageServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 3,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Strategic Mapping Program (StratMap). Brazos County Imagery, 2019-01-29",
+            "url": "https://data.geographic.texas.gov/collection/?c=aa2cd74e-9c2d-4f00-bae5-609b5e898093"
           }
         ]
       }
@@ -7596,7 +7865,17 @@
       "layer": "base",
       "name": "Ortho HR",
       "countries": ["fr"],
-      "bbox": [-178.4902, -23.2623, 169.3274, 51.3096],
+      "bbox": [-5.4424, 41.2557, 9.8355, 51.3096],
+      "bboxes": [
+        [-5.4424, 41.2557, 9.8355, 51.3096],
+        [162.4153, -23.2623, 169.3274, -17.6287],
+        [-54.8053, 2.032, -51.5203, 6.004],
+        [-63.1653, 14.3668, -60.7236, 18.1393],
+        [-178.4902, -14.6794, -175.7607, -12.8786],
+        [55.0881, -21.4966, 55.9658, -20.7728],
+        [44.9205, -13.1197, 45.3528, -12.5702],
+        [-56.4588, 46.7058, -56.0481, 47.1754]
+      ],
       "category": "photo",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/HR.ORTHOIMAGERY.ORTHOPHOTOS/{z}/{x}/{y}.jpeg",
@@ -8068,7 +8347,14 @@
       "layer": "base",
       "name": "San Francisco Orthoimagery (2023)",
       "countries": ["us"],
-      "bbox": [-122.5181, 37.5981, -122.317, 37.939],
+      "bbox": [-122.5181, 37.6997, -122.317, 37.8448],
+      "bboxes": [
+        [-122.5181, 37.6997, -122.317, 37.8448],
+        [-122.4177, 37.5981, -122.3447, 37.6418],
+        [-122.4542, 37.8519, -122.4175, 37.8738],
+        [-122.5089, 37.6199, -122.4541, 37.6345],
+        [-122.4359, 37.9244, -122.4174, 37.939]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://tile.sf.gov/api/tiles/p2023_rgb8cm/{z}/{x}/{y}",
@@ -8109,7 +8395,17 @@
       "layer": "base",
       "name": "Delaware Parks 2022",
       "countries": ["us"],
-      "bbox": [-75.7873, 38.4666, -75.0483, 39.8198],
+      "bbox": [-75.6917, 39.7485, -75.481, 39.8198],
+      "bboxes": [
+        [-75.6917, 39.7485, -75.481, 39.8198],
+        [-75.1357, 38.5776, -75.0781, 38.7717],
+        [-75.7382, 39.5467, -75.5644, 39.5941],
+        [-75.079, 38.4666, -75.0483, 38.6818],
+        [-75.7873, 39.7004, -75.7046, 39.7458],
+        [-75.5655, 38.9713, -75.5122, 38.999],
+        [-75.4862, 38.513, -75.4512, 38.533],
+        [-75.6053, 39.2489, -75.5865, 39.2597]
+      ],
       "category": "photo",
       "body": {
         "url": "https://imagery.firstmap.delaware.gov/imagery/rest/services/DE_Imagery/DE_Imagery_2022_Parks_HR/ImageServer/tile/{z}/{y}/{x}",
@@ -8149,7 +8445,16 @@
       "layer": "base",
       "name": "PCRS raster",
       "countries": ["fr"],
-      "bbox": [-3.7384, 42.7966, 6.8895, 48.7138],
+      "bbox": [-3.7384, 47.2628, -1.0183, 48.7138],
+      "bboxes": [
+        [-3.7384, 47.2628, -1.0183, 48.7138],
+        [0.4378, 42.7966, 3.2463, 43.9239],
+        [-0.9075, 46.224, 1.2028, 47.1829],
+        [6.1268, 45.1077, 6.8895, 45.8947],
+        [2.9051, 47.5032, 4.2522, 47.6799],
+        [2.9997, 47.8702, 4.3124, 47.9799],
+        [5.7867, 45.4943, 6.0186, 45.9358]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -8340,7 +8645,17 @@
       "layer": "base",
       "name": "osm-hr: Orbview",
       "countries": ["hr"],
-      "bbox": [13.5928, 41.979, 22.6037, 47.0248],
+      "bbox": [15.2967, 43.4698, 17.0206, 47.0182],
+      "bboxes": [
+        [15.2967, 43.4698, 17.0206, 47.0182],
+        [19.3959, 42.0327, 20.0372, 47.0248],
+        [21.9803, 42.885, 22.6037, 45.0197],
+        [20.3329, 44.3397, 21.4608, 45.0651],
+        [18.984, 45.9666, 19.4606, 47.0164],
+        [13.5928, 44.8724, 14.0159, 45.6323],
+        [21.4943, 41.979, 21.6028, 44.0052],
+        [18.7923, 42.1882, 18.9041, 44.0082]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://tms.osm-hr.org/orbview/{z}/{x}/{y}.png",
@@ -8356,7 +8671,12 @@
       "layer": "base",
       "name": "DCS NSW Imagery",
       "countries": ["au"],
-      "bbox": [140.9868, -37.5358, 159.29, -28.1146],
+      "bbox": [140.9868, -37.5358, 153.7788, -28.1146],
+      "bboxes": [
+        [140.9868, -37.5358, 153.7788, -28.1146],
+        [159.023, -31.6116, 159.1262, -31.482],
+        [159.2267, -31.794, 159.29, -31.7439]
+      ],
       "category": "photo",
       "body": {
         "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -8502,7 +8822,11 @@
       "layer": "base",
       "name": "Maa-amet Forestry",
       "countries": ["ee"],
-      "bbox": [21.694, 57.5088, 28.2111, 59.8316],
+      "bbox": [21.694, 57.5088, 28.2111, 59.7135],
+      "bboxes": [
+        [21.694, 57.5088, 28.2111, 59.7135],
+        [26.315, 59.7852, 26.4074, 59.8316]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -8583,7 +8907,11 @@
       "layer": "base",
       "name": "SPW(allonie) 2019 aerial imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -8741,7 +9069,11 @@
       "layer": "base",
       "name": "Hamburg 20cm (HH LGV DOP20 belaubt 2024)",
       "countries": ["de"],
-      "bbox": [8.4826, 53.3979, 10.3252, 53.9358],
+      "bbox": [9.7304, 53.3979, 10.3252, 53.739],
+      "bboxes": [
+        [9.7304, 53.3979, 10.3252, 53.739],
+        [8.4826, 53.9092, 8.528, 53.9358]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -9044,7 +9376,12 @@
       "layer": "base",
       "name": "NOAA NGS East Coast Imagery (2026)",
       "countries": ["us"],
-      "bbox": [-82.9492, 24.5041, -74.2416, 37.1648],
+      "bbox": [-82.043, 24.5041, -74.2416, 37.1648],
+      "bboxes": [
+        [-82.043, 24.5041, -74.2416, 37.1648],
+        [-82.2056, 24.5261, -82.0686, 24.6033],
+        [-82.9492, 24.61, -82.78, 24.667]
+      ],
       "category": "photo",
       "body": {
         "url": "https://stormscdn.ngs.noaa.gov/ec2601a-ob-n/{z}/{x}/{y}",
@@ -9126,7 +9463,12 @@
       "layer": "base",
       "name": "Kartverket Nautical Charts",
       "countries": ["no"],
-      "bbox": [-173.0008, -79.0003, 37.9962, 82.3487],
+      "bbox": [-13.733, 56.0859, 37.9962, 82.3487],
+      "bboxes": [
+        [-13.733, 56.0859, 37.9962, 82.3487],
+        [-15.0239, -73.0009, 33.3326, -60.162],
+        [-173.0008, -79.0003, -125.0016, -70.5487]
+      ],
       "category": "map",
       "body": {
         "url": "https://cache.kartverket.no/v1/service?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=sjokartraster&STYLE=default&FORMAT=image/png&tileMatrixSet=webmercator&tileMatrix={z}&tileRow={y}&tileCol={x}",
@@ -9396,7 +9738,11 @@
       "layer": "base",
       "name": "NH GRANIT LiDAR Hillshade 2022 (Northwest)",
       "countries": ["us"],
-      "bbox": [-72.5617, 42.6717, -70.5787, 45.3148],
+      "bbox": [-72.5617, 42.6717, -70.6753, 45.3148],
+      "bboxes": [
+        [-72.5617, 42.6717, -70.6753, 45.3148],
+        [-70.648, 42.9589, -70.5787, 43.0149]
+      ],
       "category": "elevation",
       "technology": "wms",
       "body": {
@@ -9478,7 +9824,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1989",
       "countries": ["au"],
-      "bbox": [150.9871, -34.0066, 151.289, -33.6117],
+      "bbox": [150.9871, -33.7629, 151.2636, -33.6117],
+      "bboxes": [
+        [150.9871, -33.7629, 151.2636, -33.6117],
+        [151.2366, -34.0066, 151.289, -33.8642]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1989/MapServer/tile/{z}/{y}/{x}",
@@ -9599,7 +9949,11 @@
       "layer": "base",
       "name": "LINZ NZ DSM Hillshade",
       "countries": ["nz"],
-      "bbox": [-176.9568, -47.3798, 178.7092, -34.2345],
+      "bbox": [166.2725, -47.3798, 178.7092, -34.2345],
+      "bboxes": [
+        [166.2725, -47.3798, 178.7092, -34.2345],
+        [-176.9568, -44.4024, -176.0888, -43.6321]
+      ],
       "category": "elevation",
       "body": {
         "url": "https://basemaps.linz.govt.nz/v1/tiles/hillshade-dsm/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01egend5f8dv4zcbfj6z2t7rs3",
@@ -10129,7 +10483,17 @@
       "layer": "base",
       "name": "LINZ NZ Topo50 Gridless Maps",
       "countries": ["nz"],
-      "bbox": [-178.942, -52.6709, 179.5248, -8.5048],
+      "bbox": [166.0407, -47.5798, 179.5248, -33.5861],
+      "bboxes": [
+        [166.0407, -47.5798, 179.5248, -33.5861],
+        [-172.5455, -11.5838, -157.8269, -8.5048],
+        [165.7842, -52.6709, 169.3637, -47.9941],
+        [-159.871, -21.992, -157.2761, -18.7901],
+        [-178.942, -31.3932, -177.8023, -29.1684],
+        [-163.2284, -18.1055, -163.0178, -13.1731],
+        [178.6932, -49.7397, 179.0784, -47.7356],
+        [-169.9651, -19.1863, -169.7571, -18.9298]
+      ],
       "category": "map",
       "body": {
         "url": "https://basemaps.linz.govt.nz/v1/tiles/topo-raster/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01egend5f8dv4zcbfj6z2t7rs3",
@@ -10249,7 +10613,11 @@
       "layer": "base",
       "name": "NRCS Alaska Imagery (2023)",
       "countries": ["us"],
-      "bbox": [-179.6989, 50.2961, 179.88, 72.0581],
+      "bbox": [-179.6989, 50.2961, -129.9895, 72.0581],
+      "bboxes": [
+        [-179.6989, 50.2961, -129.9895, 72.0581],
+        [171.9356, 51.1205, 179.88, 53.1847]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -10354,7 +10722,11 @@
       "layer": "base",
       "name": "Maa-amet Ortho (TMS)",
       "countries": ["ee"],
-      "bbox": [21.694, 57.5088, 28.2111, 59.8316],
+      "bbox": [21.694, 57.5088, 28.2111, 59.7135],
+      "bboxes": [
+        [21.694, 57.5088, 28.2111, 59.7135],
+        [26.315, 59.7852, 26.4074, 59.8316]
+      ],
       "category": "photo",
       "body": {
         "url": "https://tiles.maaamet.ee/tm/tms/1.0.0/foto@GMC/{z}/{x}/{y}.png",
@@ -10725,7 +11097,11 @@
       "layer": "base",
       "name": "Franklin County Orthoimagery (2023)",
       "countries": ["us"],
-      "bbox": [-83.2622, 39.7527, -82.7089, 40.4381],
+      "bbox": [-83.2582, 39.7527, -82.7089, 40.2805],
+      "bboxes": [
+        [-83.2582, 39.7527, -82.7089, 40.2805],
+        [-83.2622, 40.3826, -83.1855, 40.4381]
+      ],
       "category": "photo",
       "body": {
         "url": "https://maps.columbus.gov/arcgis/rest/services/Imagery/Imagery2023/MapServer/tile/{z}/{y}/{x}",
@@ -11232,7 +11608,16 @@
       "layer": "base",
       "name": "osm-hr: US Topo 50",
       "countries": ["hr"],
-      "bbox": [13.4994, 41.0001, 23.1016, 46.7512],
+      "bbox": [15.5996, 41.0001, 23.1016, 46.2495],
+      "bboxes": [
+        [15.5996, 41.0001, 23.1016, 46.2495],
+        [13.4994, 45.5, 14.4011, 46.5022],
+        [13.7996, 44.7496, 14.1003, 45.2505],
+        [15.8997, 46.5004, 16.1997, 46.7512],
+        [14.6996, 46.25, 14.9999, 46.5002],
+        [14.4003, 44.9999, 14.7001, 45.2503],
+        [14.7, 45.5003, 15.0005, 45.7501]
+      ],
       "category": "map",
       "body": {
         "url": "https://tms.osm-hr.org/ustopo/{z}/{x}/{y}.png",
@@ -11246,7 +11631,12 @@
       "layer": "base",
       "name": "The National Map Topographic",
       "countries": ["us"],
-      "bbox": [-179.9341, 17.623, -64.5378, 71.9791],
+      "bbox": [-139, 24, -66.9311, 49.4426],
+      "bboxes": [
+        [-139, 24, -66.9311, 49.4426],
+        [-179.9341, 50.8337, -129.9572, 71.9791],
+        [-68.0274, 17.623, -64.5378, 18.5435]
+      ],
       "category": "map",
       "body": {
         "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
@@ -12049,7 +12439,11 @@
       "layer": "base",
       "name": "SPW(allonie) 2018 aerial imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -12063,7 +12457,11 @@
       "layer": "base",
       "name": "LINZ NZ Aerial Imagery",
       "countries": ["nz"],
-      "bbox": [-176.9568, -47.3798, 178.7092, -34.2345],
+      "bbox": [166.2725, -47.3798, 178.7092, -34.2345],
+      "bboxes": [
+        [166.2725, -47.3798, 178.7092, -34.2345],
+        [-176.9568, -44.4024, -176.0888, -43.6321]
+      ],
       "category": "photo",
       "body": {
         "url": "https://basemaps.linz.govt.nz/v1/tiles/aerial/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01egend5f8dv4zcbfj6z2t7rs3",
@@ -12759,7 +13157,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1951",
       "countries": ["au"],
-      "bbox": [151.0335, -33.9112, 151.2122, -33.8672],
+      "bbox": [151.0335, -33.9112, 151.0836, -33.8672],
+      "bboxes": [
+        [151.0335, -33.9112, 151.0836, -33.8672],
+        [151.1827, -33.9037, 151.2122, -33.8735]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1951/MapServer/tile/{z}/{y}/{x}",
@@ -12860,7 +13262,11 @@
       "layer": "base",
       "name": "Solano County Orthoimagery (2025)",
       "countries": ["us"],
-      "bbox": [-122.4714, 37.9971, -121.5887, 38.541],
+      "bbox": [-122.4714, 38.0187, -121.5887, 38.541],
+      "bboxes": [
+        [-122.4714, 38.0187, -121.5887, 38.541],
+        [-122.0672, 37.9971, -122.0488, 38.0117]
+      ],
       "category": "photo",
       "body": {
         "url": "https://tiles.arcgis.com/tiles/SCn6czzcqKAFwdGU/arcgis/rest/services/Aerial2025_WGS84/MapServer/tile/{z}/{y}/{x}",
@@ -13062,7 +13468,11 @@
       "layer": "base",
       "name": "GeoDK Aerial Imagery",
       "countries": ["dk"],
-      "bbox": [8.0185, 54.4681, 15.31, 57.8229],
+      "bbox": [8.0185, 54.4681, 12.9793, 57.8229],
+      "bboxes": [
+        [8.0185, 54.4681, 12.9793, 57.8229],
+        [14.6317, 54.9757, 15.31, 55.364]
+      ],
       "category": "photo",
       "body": {
         "url": "https://osmtools.septima.dk/mapproxy/tiles/1.0.0/kortforsyningen_ortoforaar/EPSG3857/{z}/{x}/{y}.jpeg",
@@ -13082,7 +13492,11 @@
       "layer": "overlay",
       "name": "DCS NSW Administrative Boundaries State Forest",
       "countries": ["au"],
-      "bbox": [140.9937, -37.507, 159.3728, -28.1415],
+      "bbox": [140.9937, -37.507, 153.697, -28.1415],
+      "bboxes": [
+        [140.9937, -37.507, 153.697, -28.1415],
+        [159.0033, -31.8596, 159.3728, -31.4374]
+      ],
       "category": "other",
       "technology": "wms",
       "body": {
@@ -13225,7 +13639,11 @@
       "layer": "base",
       "name": "FÖMI orthophoto 2015 leaf-off 20cm (webp)",
       "countries": ["hu"],
-      "bbox": [17.3213, 46.6828, 20.8891, 47.8143],
+      "bbox": [19.3185, 46.6828, 20.8891, 47.1215],
+      "bboxes": [
+        [19.3185, 46.6828, 20.8891, 47.1215],
+        [17.3213, 47.2718, 17.9348, 47.8143]
+      ],
       "category": "photo",
       "body": {
         "url": "https://orto1.tile.openstreetmap.hu/fomi_2015-2020_lombtalan_20cm/{z}/{x}/{y}.webp",
@@ -13371,7 +13789,14 @@
       "layer": "base",
       "name": "NOAA NGS Southeast Coast Imagery (2025)",
       "countries": ["us"],
-      "bbox": [-82.9492, 24.5071, -79.7669, 32.0597],
+      "bbox": [-81.4989, 25.1879, -79.7669, 32.0597],
+      "bboxes": [
+        [-81.4989, 25.1879, -79.7669, 32.0597],
+        [-81.5005, 24.5907, -80.5374, 24.9745],
+        [-82.0425, 24.5071, -81.6485, 24.6092],
+        [-82.2056, 24.5261, -82.0686, 24.6033],
+        [-82.9492, 24.61, -82.78, 24.667]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://stormscdn.ngs.noaa.gov/ec2501a-ob-n/{z}/{x}/{y}",
@@ -13493,7 +13918,11 @@
       "layer": "base",
       "name": "SPW(allonie) 2016 aerial imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -13709,7 +14138,11 @@
       "layer": "base",
       "name": "Maa-amet Ortho (WMS)",
       "countries": ["ee"],
-      "bbox": [21.694, 57.5088, 28.2111, 59.8316],
+      "bbox": [21.694, 57.5088, 28.2111, 59.7135],
+      "bboxes": [
+        [21.694, 57.5088, 28.2111, 59.7135],
+        [26.315, 59.7852, 26.4074, 59.8316]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -13751,7 +14184,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1955",
       "countries": ["au"],
-      "bbox": [150.5967, -34.1933, 151.3498, -33.6174],
+      "bbox": [150.9903, -34.1933, 151.3498, -33.6174],
+      "bboxes": [
+        [150.9903, -34.1933, 151.3498, -33.6174],
+        [150.5967, -33.9899, 150.7616, -33.7398]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1955/MapServer/tile/{z}/{y}/{x}",
@@ -14063,7 +14500,13 @@
       "layer": "base",
       "name": "NOAA NGS East Coast Imagery (2023)",
       "countries": ["us"],
-      "bbox": [-82.9492, 24.507, -70.4596, 39.7268],
+      "bbox": [-82.0423, 24.507, -70.4596, 38.8325],
+      "bboxes": [
+        [-82.0423, 24.507, -70.4596, 38.8325],
+        [-75.0083, 38.8865, -73.5028, 39.7268],
+        [-82.2056, 24.5261, -82.0686, 24.6033],
+        [-82.9492, 24.61, -82.78, 24.667]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://stormscdn.ngs.noaa.gov/ec2301a-ob-n/{z}/{x}/{y}",
@@ -14259,6 +14702,31 @@
             "type": "map",
             "name": "Land Vorarlberg – data.vorarlberg.gv.at",
             "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "IH659",
+      "layer": "base",
+      "name": "StratMap CapArea & McLennan Imagery (Natural Color 2020)",
+      "countries": ["us"],
+      "bbox": [-98.9699, 29.6239, -96.5609, 31.048],
+      "bboxes": [
+        [-98.9699, 29.6239, -96.5609, 31.048],
+        [-97.628, 31.2169, -96.7717, 31.8925]
+      ],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap20_NCCIR_CapArea_McLennan/ImageServer/WMSServer",
+        "layers": ["0"],
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Strategic Mapping Program (StratMap). CapArea & McLennan Imagery",
+            "url": "https://geographic.texas.gov/stratmap/"
           }
         ]
       }
@@ -14534,7 +15002,14 @@
       "layer": "base",
       "name": "San Francisco Orthoimagery (2022)",
       "countries": ["us"],
-      "bbox": [-122.5181, 37.5981, -122.317, 37.939],
+      "bbox": [-122.5181, 37.6997, -122.317, 37.8448],
+      "bboxes": [
+        [-122.5181, 37.6997, -122.317, 37.8448],
+        [-122.4177, 37.5981, -122.3447, 37.6418],
+        [-122.4542, 37.8519, -122.4175, 37.8738],
+        [-122.5089, 37.6199, -122.4541, 37.6345],
+        [-122.4359, 37.9244, -122.4174, 37.939]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://tile.sf.gov/api/tiles/p2022_rgb8cm/{z}/{x}/{y}",
@@ -14840,7 +15315,15 @@
       "layer": "base",
       "name": "NOAA NGS East Coast Imagery (2024)",
       "countries": ["us"],
-      "bbox": [-82.9492, 24.5071, -70.4596, 39.4947],
+      "bbox": [-81.4989, 24.6282, -77.9192, 33.9653],
+      "bboxes": [
+        [-81.4989, 24.6282, -77.9192, 33.9653],
+        [-77.5441, 34.2139, -70.4596, 38.8325],
+        [-75.0083, 38.8865, -73.5028, 39.4947],
+        [-82.0425, 24.5071, -81.6485, 24.6092],
+        [-82.2056, 24.5261, -82.0686, 24.6033],
+        [-82.9492, 24.61, -82.78, 24.667]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://stormscdn.ngs.noaa.gov/ec2401a-ob-n/{z}/{x}/{y}",
@@ -15165,6 +15648,27 @@
       }
     },
     {
+      "type": "JMMWO",
+      "layer": "base",
+      "name": "TX: Smith County Imagery 2019",
+      "countries": ["us"],
+      "bbox": [-95.61, 32.13, -94.98, 32.7],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/Smith_County/SmithCo_2020_NCCIR_6in/ImageServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 3,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Smith County (Smith). Smith County Imagery, 2019-12-11",
+            "url": "https://data.geographic.texas.gov/collection/?c=38f1b2e7-6fc7-4357-80a4-1ee33d7abaaf"
+          }
+        ]
+      }
+    },
+    {
       "type": "JOVHX",
       "layer": "base",
       "name": "Kendall County 2022 Aerial Imagery",
@@ -15292,7 +15796,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1990",
       "countries": ["au"],
-      "bbox": [151.4861, -33.3841, 151.7334, -32.9903],
+      "bbox": [151.4888, -33.1343, 151.7334, -32.9903],
+      "bboxes": [
+        [151.4888, -33.1343, 151.7334, -32.9903],
+        [151.4861, -33.3841, 151.581, -33.2395]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1990/MapServer/tile/{z}/{y}/{x}",
@@ -15649,7 +16157,11 @@
       "layer": "base",
       "name": "Franklin County Orthoimagery (2021)",
       "countries": ["us"],
-      "bbox": [-83.2622, 39.7527, -82.7089, 40.4381],
+      "bbox": [-83.2582, 39.7527, -82.7089, 40.2805],
+      "bboxes": [
+        [-83.2582, 39.7527, -82.7089, 40.2805],
+        [-83.2622, 40.3826, -83.1855, 40.4381]
+      ],
       "category": "photo",
       "body": {
         "url": "https://maps.columbus.gov/arcgis/rest/services/Imagery/Imagery2021/MapServer/tile/{z}/{y}/{x}",
@@ -15889,7 +16401,12 @@
       "layer": "base",
       "name": "San Francisco Orthoimagery (2024)",
       "countries": ["us"],
-      "bbox": [-122.5234, 37.5943, -122.3164, 37.9411],
+      "bbox": [-122.5234, 37.6977, -122.3164, 37.9411],
+      "bboxes": [
+        [-122.5234, 37.6977, -122.3164, 37.9411],
+        [-122.4239, 37.5943, -122.3356, 37.6431],
+        [-122.5003, 37.6187, -122.4467, 37.6371]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://tile.sf.gov/api/tiles/p2024_rgb8cm/{z}/{x}/{y}",
@@ -15931,7 +16448,11 @@
       "layer": "base",
       "name": "SPW(allonie) PICC numerical imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "map",
       "technology": "wms",
       "body": {
@@ -16049,7 +16570,11 @@
       "layer": "base",
       "name": "LINZ NZ Hillshade",
       "countries": ["nz"],
-      "bbox": [-176.9568, -47.3798, 178.7092, -34.2345],
+      "bbox": [166.2725, -47.3798, 178.7092, -34.2345],
+      "bboxes": [
+        [166.2725, -47.3798, 178.7092, -34.2345],
+        [-176.9568, -44.4024, -176.0888, -43.6321]
+      ],
       "category": "elevation",
       "body": {
         "url": "https://basemaps.linz.govt.nz/v1/tiles/hillshade/WebMercatorQuad/{z}/{x}/{y}.webp?api=d01egend5f8dv4zcbfj6z2t7rs3",
@@ -16212,7 +16737,11 @@
       "layer": "base",
       "name": "Solano County Orthoimagery (2022)",
       "countries": ["us"],
-      "bbox": [-122.4714, 37.9971, -121.5887, 38.541],
+      "bbox": [-122.4714, 38.0187, -121.5887, 38.541],
+      "bboxes": [
+        [-122.4714, 38.0187, -121.5887, 38.541],
+        [-122.0672, 37.9971, -122.0488, 38.0117]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://tiles.arcgis.com/tiles/SCn6czzcqKAFwdGU/arcgis/rest/services/Aerial2022_WGS84_ESRI_Aux/MapServer/tile/{z}/{y}/{x}",
@@ -16232,7 +16761,11 @@
       "layer": "base",
       "name": "Maui County Orthoimagery (2025)",
       "countries": ["us"],
-      "bbox": [-156.692, 20.7704, -156.2899, 20.909],
+      "bbox": [-156.3751, 20.7704, -156.2899, 20.8215],
+      "bboxes": [
+        [-156.3751, 20.7704, -156.2899, 20.8215],
+        [-156.692, 20.8508, -156.661, 20.909]
+      ],
       "category": "photo",
       "body": {
         "url": "https://tiles.arcgis.com/tiles/fsrDo0QMPlK9CkZD/arcgis/rest/services/PictometryLahainaKula_2025/MapServer/tile/{z}/{y}/{x}",
@@ -16253,7 +16786,15 @@
       "layer": "base",
       "name": "Ortho HR 2019",
       "countries": ["fr"],
-      "bbox": [-3.7443, 41.3188, 9.5726, 50.1845],
+      "bbox": [-0.3477, 42.5661, 4.769, 46.8083],
+      "bboxes": [
+        [-0.3477, 42.5661, 4.769, 46.8083],
+        [-1.9713, 47.557, 1.8239, 50.0823],
+        [3.3621, 47.5662, 5.9078, 50.1845],
+        [8.5184, 41.3188, 9.5726, 43.0331],
+        [-3.7443, 47.2643, -2.0251, 48.2207],
+        [-2.4276, 46.2386, -0.5234, 47.0897]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2019/{z}/{x}/{y}.jpeg",
@@ -16663,7 +17204,11 @@
       "layer": "base",
       "name": "PNOA - Ortofoto rápida (provisional)",
       "countries": ["es"],
-      "bbox": [-18.9236, 26.3611, 5.0986, 44.1486],
+      "bbox": [-9.7791, 35.2639, 5.0986, 44.1486],
+      "bboxes": [
+        [-9.7791, 35.2639, 5.0986, 44.1486],
+        [-18.9236, 26.3611, -12.4787, 30.2565]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -16845,7 +17390,11 @@
       "layer": "overlay",
       "name": "DCS NSW Administrative Boundaries NPWS Reserve",
       "countries": ["au"],
-      "bbox": [140.9937, -37.507, 159.3728, -28.1415],
+      "bbox": [140.9937, -37.507, 153.697, -28.1415],
+      "bboxes": [
+        [140.9937, -37.507, 153.697, -28.1415],
+        [159.0033, -31.8596, 159.3728, -31.4374]
+      ],
       "category": "other",
       "technology": "wms",
       "body": {
@@ -16888,7 +17437,17 @@
       "layer": "base",
       "name": "Ortho HR 2017",
       "countries": ["fr"],
-      "bbox": [-63.1617, -21.4034, 55.846, 50.3809],
+      "bbox": [2.8389, 42.9674, 7.7289, 48.0419],
+      "bboxes": [
+        [2.8389, 42.9674, 7.7289, 48.0419],
+        [-0.4774, 43.9677, 2.6282, 47.2863],
+        [1.3654, 48.1102, 3.5707, 50.3809],
+        [-61.8319, 14.3707, -60.7902, 16.5297],
+        [-2.3097, 47.6208, -1.0084, 48.7259],
+        [55.2072, -21.4034, 55.846, -20.8628],
+        [-56.4337, 46.7396, -56.0762, 47.1525],
+        [-63.1617, 18.032, -62.961, 18.135]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2017/{z}/{x}/{y}.jpeg",
@@ -17232,7 +17791,11 @@
       "layer": "base",
       "name": "GST Cadastral Parcels Map INSPIRE",
       "countries": ["dk"],
-      "bbox": [8.0185, 54.4681, 15.31, 57.8229],
+      "bbox": [8.0185, 54.4681, 12.9793, 57.8229],
+      "bboxes": [
+        [8.0185, 54.4681, 12.9793, 57.8229],
+        [14.6317, 54.9757, 15.31, 55.364]
+      ],
       "category": "other",
       "technology": "wms",
       "body": {
@@ -17573,7 +18136,12 @@
       "layer": "base",
       "name": "USGS 3D Elevation Program",
       "countries": ["us"],
-      "bbox": [-179.9341, 17.623, -64.5378, 71.9791],
+      "bbox": [-139, 24, -66.9311, 49.4426],
+      "bboxes": [
+        [-139, 24, -66.9311, 49.4426],
+        [-179.9341, 50.8337, -129.9572, 71.9791],
+        [-68.0274, 17.623, -64.5378, 18.5435]
+      ],
       "category": "elevation",
       "technology": "wms",
       "body": {
@@ -17686,7 +18254,11 @@
       "layer": "base",
       "name": "Hamburg DK5 (HH LGV DK5 2024)",
       "countries": ["de"],
-      "bbox": [8.4826, 53.3979, 10.3252, 53.9358],
+      "bbox": [9.7304, 53.3979, 10.3252, 53.739],
+      "bboxes": [
+        [9.7304, 53.3979, 10.3252, 53.739],
+        [8.4826, 53.9092, 8.528, 53.9358]
+      ],
       "category": "map",
       "technology": "wms",
       "body": {
@@ -17766,7 +18338,11 @@
       "layer": "base",
       "name": "SPW(allonie) 2020 aerial imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -17881,7 +18457,11 @@
       "layer": "base",
       "name": "NH GRANIT LiDAR Hillshade 2022 (Northeast)",
       "countries": ["us"],
-      "bbox": [-72.5617, 42.6717, -70.5787, 45.3148],
+      "bbox": [-72.5617, 42.6717, -70.6753, 45.3148],
+      "bboxes": [
+        [-72.5617, 42.6717, -70.6753, 45.3148],
+        [-70.648, 42.9589, -70.5787, 43.0149]
+      ],
       "category": "elevation",
       "technology": "wms",
       "body": {
@@ -18089,7 +18669,11 @@
       "layer": "base",
       "name": "SPW(allonie) 2009-2010 aerial imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "historicphoto",
       "technology": "wms",
       "body": {
@@ -18156,7 +18740,13 @@
       "layer": "overlay",
       "name": "Miljødirektoratet Protected Areas overlay",
       "countries": ["no"],
-      "bbox": [-10.9573, 57.7393, 36.6503, 81.5442],
+      "bbox": [4.2187, 57.7393, 31.9043, 71.329],
+      "bboxes": [
+        [4.2187, 57.7393, 31.9043, 71.329],
+        [4.0428, 75.7913, 36.6503, 81.5442],
+        [-10.9573, 70.2978, -6.1375, 71.621],
+        [16.7988, 73.8918, 21.2578, 74.9482]
+      ],
       "category": "other",
       "technology": "wms",
       "body": {
@@ -18285,7 +18875,17 @@
       "layer": "base",
       "name": "AC3 Fly North Valle del Cauca (sismo 2026)",
       "countries": ["co"],
-      "bbox": [-76.5321, 3.8123, -76.0373, 4.9148],
+      "bbox": [-76.4959, 3.9183, -76.4108, 3.9896],
+      "bboxes": [
+        [-76.4959, 3.9183, -76.4108, 3.9896],
+        [-76.3251, 4.1506, -76.2824, 4.2186],
+        [-76.0933, 4.3138, -76.0618, 4.4059],
+        [-76.23, 4.7454, -76.2093, 4.7703],
+        [-76.1656, 4.197, -76.1488, 4.2192],
+        [-76.5321, 3.8123, -76.5154, 3.8289],
+        [-76.0455, 4.9041, -76.0373, 4.9148],
+        [-76.3774, 3.9, -76.3762, 3.9011]
+      ],
       "category": "photo",
       "body": {
         "url": "https://geoserver.osm.lat/geoserver/gwc/service/tms/1.0.0/FlyNorth:FlyNorth-ValleDelCauca@EPSG:900913@png/{z}/{x}/{y}.png",
@@ -18533,7 +19133,11 @@
       "layer": "overlay",
       "name": "DCS NSW Administrative Boundaries LGA",
       "countries": ["au"],
-      "bbox": [140.9937, -37.507, 159.3728, -28.1415],
+      "bbox": [140.9937, -37.507, 153.697, -28.1415],
+      "bboxes": [
+        [140.9937, -37.507, 153.697, -28.1415],
+        [159.0033, -31.8596, 159.3728, -31.4374]
+      ],
       "category": "other",
       "technology": "wms",
       "body": {
@@ -18697,7 +19301,11 @@
       "layer": "base",
       "name": "NH GRANIT 2021/2022 6-inch Orthophotos (Infrared)",
       "countries": ["us"],
-      "bbox": [-72.579, 42.6905, -70.597, 45.3122],
+      "bbox": [-72.579, 42.6905, -70.689, 45.3122],
+      "bboxes": [
+        [-72.579, 42.6905, -70.689, 45.3122],
+        [-70.6375, 42.9605, -70.597, 43.0172]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -18820,7 +19428,17 @@
       "layer": "base",
       "name": "Ortho HR 2021",
       "countries": ["fr"],
-      "bbox": [-63.1617, 3.7201, 9.5726, 51.112],
+      "bbox": [1.6753, 42.3224, 6.9769, 46.5296],
+      "bboxes": [
+        [1.6753, 42.3224, 6.9769, 46.5296],
+        [0.0374, 46.7301, 4.3088, 51.112],
+        [-1.8089, 42.7677, 1.4585, 46.3892],
+        [-54.5022, 3.7201, -51.5426, 5.7882],
+        [5.3695, 47.4034, 8.2503, 49.085],
+        [-5.1706, 47.6594, -1.9, 48.9293],
+        [8.5184, 41.3188, 9.5726, 43.0331],
+        [-63.1617, 17.8614, -62.7809, 18.135]
+      ],
       "category": "photo",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2021/{z}/{x}/{y}.jpeg",
@@ -19293,7 +19911,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1998",
       "countries": ["au"],
-      "bbox": [150.4859, -34.2425, 152.0252, -32.4849],
+      "bbox": [150.4859, -34.2425, 151.4226, -33.4858],
+      "bboxes": [
+        [150.4859, -34.2425, 151.4226, -33.4858],
+        [151.4757, -33.019, 152.0252, -32.4849]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1998/MapServer/tile/{z}/{y}/{x}",
@@ -19355,7 +19977,13 @@
       "layer": "overlay",
       "name": "Riksantikvaren Heritage Sites overlay",
       "countries": ["no"],
-      "bbox": [-10.9573, 57.7393, 36.6503, 81.5442],
+      "bbox": [4.2187, 57.7393, 31.9043, 71.329],
+      "bboxes": [
+        [4.2187, 57.7393, 31.9043, 71.329],
+        [4.0428, 75.7913, 36.6503, 81.5442],
+        [-10.9573, 70.2978, -6.1375, 71.621],
+        [16.7988, 73.8918, 21.2578, 74.9482]
+      ],
       "category": "other",
       "technology": "wms",
       "body": {
@@ -19540,7 +20168,14 @@
       "layer": "base",
       "name": "Ortho HR 2022",
       "countries": ["fr"],
-      "bbox": [-61.8319, -21.4034, 55.846, 50.1804],
+      "bbox": [-3.7443, 42.5661, 7.66, 50.1804],
+      "bboxes": [
+        [-3.7443, 42.5661, 7.66, 50.1804],
+        [-61.8319, 15.8156, -60.9907, 16.5297],
+        [55.2072, -21.4034, 55.846, -20.8628],
+        [-61.2361, 14.3707, -60.7902, 14.8919],
+        [-56.4337, 46.7396, -56.0762, 47.1525]
+      ],
       "category": "photo",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2022/{z}/{x}/{y}.jpeg",
@@ -20350,7 +20985,11 @@
       "layer": "base",
       "name": "KyFromAbove Aerial Imagery (2018-2022)",
       "countries": ["us"],
-      "bbox": [-89.5716, 36.4971, -81.965, 39.1476],
+      "bbox": [-89.4173, 36.4971, -81.965, 39.1476],
+      "bboxes": [
+        [-89.4173, 36.4971, -81.965, 39.1476],
+        [-89.5716, 36.4974, -89.4654, 36.5802]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://kygisserver.ky.gov/arcgis/rest/services/WGS84WM_Services/Ky_Imagery_Phase2_6IN_WGS84WM/MapServer/tile/{z}/{y}/{x}",
@@ -20982,7 +21621,12 @@
       "layer": "base",
       "name": "San Francisco Orthoimagery (2025)",
       "countries": ["us"],
-      "bbox": [-122.5234, 37.5943, -122.3164, 37.9411],
+      "bbox": [-122.5234, 37.6977, -122.3164, 37.9411],
+      "bboxes": [
+        [-122.5234, 37.6977, -122.3164, 37.9411],
+        [-122.4239, 37.5943, -122.3356, 37.6431],
+        [-122.5003, 37.6187, -122.4467, 37.6371]
+      ],
       "category": "photo",
       "body": {
         "url": "https://tile.sf.gov/api/tiles/p2025_rgb8cm/{z}/{x}/{y}",
@@ -21311,7 +21955,13 @@
       "layer": "base",
       "name": "NOAA NGS PR/USVI Coastal Imagery (2024)",
       "countries": ["us"],
-      "bbox": [-67.5114, 17.9145, -65.208, 18.6755],
+      "bbox": [-67.5114, 17.9145, -65.6379, 18.6755],
+      "bboxes": [
+        [-67.5114, 17.9145, -65.6379, 18.6755],
+        [-65.5985, 18.3138, -65.5109, 18.4075],
+        [-65.2787, 18.2963, -65.208, 18.3582],
+        [-65.5975, 18.2117, -65.5682, 18.2762]
+      ],
       "category": "photo",
       "body": {
         "url": "https://stormscdn.ngs.noaa.gov/cb2401a-ob-n/{z}/{x}/{y}",
@@ -21495,7 +22145,15 @@
       "layer": "overlay",
       "name": "BANO",
       "countries": ["fr"],
-      "bbox": [-61.9281, -21.4966, 55.9658, 51.3294],
+      "bbox": [-6.3, 41.2768, 9.8, 51.3294],
+      "bboxes": [
+        [-6.3, 41.2768, 9.8, 51.3294],
+        [-54.8053, 2.032, -51.5203, 6.004],
+        [-61.9281, 15.7394, -60.8812, 16.5875],
+        [55.0881, -21.4966, 55.9658, -20.7728],
+        [-61.2763, 14.3668, -60.7236, 14.9022],
+        [44.9205, -13.1197, 45.3528, -12.5702]
+      ],
       "category": "qa",
       "body": {
         "url": "https://{s}.layers.openstreetmap.fr/bano/{z}/{x}/{y}.png",
@@ -22212,7 +22870,14 @@
       "layer": "base",
       "name": "San Francisco Orthoimagery CIR (2023)",
       "countries": ["us"],
-      "bbox": [-122.5181, 37.5981, -122.317, 37.939],
+      "bbox": [-122.5181, 37.6997, -122.317, 37.8448],
+      "bboxes": [
+        [-122.5181, 37.6997, -122.317, 37.8448],
+        [-122.4177, 37.5981, -122.3447, 37.6418],
+        [-122.4542, 37.8519, -122.4175, 37.8738],
+        [-122.5089, 37.6199, -122.4541, 37.6345],
+        [-122.4359, 37.9244, -122.4174, 37.939]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://tile.sf.gov/api/tiles/p2023_irg8cm/{z}/{x}/{y}",
@@ -22439,7 +23104,11 @@
       "layer": "base",
       "name": "SPW(allonie) most recent aerial imagery",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -23107,7 +23776,12 @@
       "layer": "base",
       "name": "dgu.hr: Topo 25 new",
       "countries": ["hr"],
-      "bbox": [13.4271, 42.3288, 19.5591, 46.4899],
+      "bbox": [14.9863, 42.3288, 19.5591, 46.2197],
+      "bboxes": [
+        [14.9863, 42.3288, 19.5591, 46.2197],
+        [13.4271, 44.7492, 14.977, 45.5539],
+        [16.3049, 46.3996, 16.4998, 46.4899]
+      ],
       "category": "map",
       "technology": "wms",
       "body": {
@@ -23291,7 +23965,12 @@
       "layer": "base",
       "name": "NOAA NGS Gulf Coast Imagery, East (2026)",
       "countries": ["us"],
-      "bbox": [-94.8217, 24.6118, -80.7696, 30.7323],
+      "bbox": [-90.0169, 25.0537, -80.7696, 30.7323],
+      "bboxes": [
+        [-90.0169, 25.0537, -80.7696, 30.7323],
+        [-94.8217, 29.3493, -94.1664, 29.6795],
+        [-81.5232, 24.6118, -81.2807, 24.7123]
+      ],
       "category": "photo",
       "body": {
         "url": "https://stormscdn.ngs.noaa.gov/gc2601c-ob-n/{z}/{x}/{y}",
@@ -23352,7 +24031,14 @@
       "layer": "overlay",
       "name": "Volta",
       "countries": ["fr"],
-      "bbox": [-63.2095, 2.032, 9.8, 51.3294],
+      "bbox": [-6.3, 41.2768, 9.8, 51.3294],
+      "bboxes": [
+        [-6.3, 41.2768, 9.8, 51.3294],
+        [-54.8053, 2.032, -51.5203, 6.004],
+        [-61.9281, 15.7394, -60.8812, 16.5875],
+        [-61.2763, 14.3668, -60.7236, 14.9022],
+        [-63.2095, 17.8335, -62.7644, 18.1809]
+      ],
       "category": "map",
       "body": {
         "url": "https://{s}.tile.openstreetmap.fr/volta/{z}/{x}/{y}.png",
@@ -23477,7 +24163,11 @@
       "layer": "overlay",
       "name": "DCS NSW Administrative Boundaries Parish",
       "countries": ["au"],
-      "bbox": [140.9937, -37.507, 159.3728, -28.1415],
+      "bbox": [140.9937, -37.507, 153.697, -28.1415],
+      "bboxes": [
+        [140.9937, -37.507, 153.697, -28.1415],
+        [159.0033, -31.8596, 159.3728, -31.4374]
+      ],
       "category": "other",
       "technology": "wms",
       "body": {
@@ -23917,7 +24607,11 @@
       "layer": "base",
       "name": "LIST Topographic",
       "countries": ["au"],
-      "bbox": [143.5404, -54.7896, 158.9872, -39.1603],
+      "bbox": [143.5404, -43.9157, 149.3385, -39.1603],
+      "bboxes": [
+        [143.5404, -43.9157, 149.3385, -39.1603],
+        [158.7221, -54.7896, 158.9872, -54.4738]
+      ],
       "category": "map",
       "body": {
         "url": "https://services.thelist.tas.gov.au/arcgis/rest/services/Basemaps/Topographic/MapServer/tile/{z}/{y}/{x}",
@@ -24391,7 +25085,11 @@
       "layer": "base",
       "name": "Solano County Orthoimagery (2024)",
       "countries": ["us"],
-      "bbox": [-122.361, 38.026, -121.6632, 38.4973],
+      "bbox": [-122.361, 38.026, -121.7819, 38.4973],
+      "bboxes": [
+        [-122.361, 38.026, -121.7819, 38.4973],
+        [-121.7367, 38.12, -121.6632, 38.2071]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://tiles.arcgis.com/tiles/SCn6czzcqKAFwdGU/arcgis/rest/services/Aerial2024_WGS84/MapServer/tile/{z}/{y}/{x}",
@@ -24544,7 +25242,14 @@
       "layer": "base",
       "name": "San Francisco Orthoimagery CIR (2022)",
       "countries": ["us"],
-      "bbox": [-122.5181, 37.5981, -122.317, 37.939],
+      "bbox": [-122.5181, 37.6997, -122.317, 37.8448],
+      "bboxes": [
+        [-122.5181, 37.6997, -122.317, 37.8448],
+        [-122.4177, 37.5981, -122.3447, 37.6418],
+        [-122.4542, 37.8519, -122.4175, 37.8738],
+        [-122.5089, 37.6199, -122.4541, 37.6345],
+        [-122.4359, 37.9244, -122.4174, 37.939]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://tile.sf.gov/api/tiles/p2022_irg8cm/{z}/{x}/{y}",
@@ -24565,7 +25270,11 @@
       "layer": "base",
       "name": "SPW(allonie) shaded relief",
       "countries": ["be"],
-      "bbox": [2.842, 49.4973, 6.4055, 50.812],
+      "bbox": [3.1783, 49.4973, 6.4055, 50.812],
+      "bboxes": [
+        [3.1783, 49.4973, 6.4055, 50.812],
+        [2.842, 50.694, 3.0294, 50.8104]
+      ],
       "category": "elevation",
       "technology": "wms",
       "body": {
@@ -24741,7 +25450,11 @@
       "layer": "base",
       "name": "Hamburg 20cm (HH LGV DOP20 unbelaubt 2026)",
       "countries": ["de"],
-      "bbox": [8.4826, 53.3979, 10.3252, 53.9358],
+      "bbox": [9.7304, 53.3979, 10.3252, 53.739],
+      "bboxes": [
+        [9.7304, 53.3979, 10.3252, 53.739],
+        [8.4826, 53.9092, 8.528, 53.9358]
+      ],
       "category": "photo",
       "technology": "wms",
       "body": {
@@ -24761,7 +25474,12 @@
       "layer": "base",
       "name": "NPI Svalbard detailed topo",
       "countries": ["no"],
-      "bbox": [11.7033, 78.0299, 16.3311, 78.9546],
+      "bbox": [15.2236, 78.1348, 16.3311, 78.3312],
+      "bboxes": [
+        [15.2236, 78.1348, 16.3311, 78.3312],
+        [11.7033, 78.8902, 12.1016, 78.9546],
+        [14.1284, 78.0299, 14.3202, 78.1095]
+      ],
       "category": "map",
       "body": {
         "url": "https://geodata.npolar.no/arcgis/rest/services/Basisdata/FKB_Svalbard_WMTS_3857/MapServer/WMTS/tile/1.0.0/Basisdata_FKB_Svalbard_WMTS_3857/default/default028mm/{z}/{y}/{x}",
@@ -24989,7 +25707,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1965",
       "countries": ["au"],
-      "bbox": [150.7341, -34.4329, 151.7447, -32.9888],
+      "bbox": [150.7341, -34.4329, 151.4619, -33.3672],
+      "bboxes": [
+        [150.7341, -34.4329, 151.4619, -33.3672],
+        [151.4866, -33.3796, 151.7447, -32.9888]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1965/MapServer/tile/{z}/{y}/{x}",
@@ -25131,7 +25853,17 @@
       "layer": "base",
       "name": "BD Ortho IGN",
       "countries": ["fr"],
-      "bbox": [-178.4902, -23.2623, 169.3274, 51.3096],
+      "bbox": [-5.4424, 41.2557, 9.8355, 51.3096],
+      "bboxes": [
+        [-5.4424, 41.2557, 9.8355, 51.3096],
+        [162.4153, -23.2623, 169.3274, -17.6287],
+        [-54.8053, 2.032, -51.5203, 6.004],
+        [-63.1653, 14.3668, -60.7236, 18.1393],
+        [-178.4902, -14.6794, -175.7607, -12.8786],
+        [55.0881, -21.4966, 55.9658, -20.7728],
+        [44.9205, -13.1197, 45.3528, -12.5702],
+        [-56.4588, 46.7058, -56.0481, 47.1754]
+      ],
       "category": "photo",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS/{z}/{x}/{y}.jpeg",
@@ -25314,7 +26046,11 @@
       "layer": "base",
       "name": "PNOA Spain",
       "countries": ["es"],
-      "bbox": [-18.9236, 26.3611, 5.0986, 44.1486],
+      "bbox": [-9.7791, 35.2639, 5.0986, 44.1486],
+      "bboxes": [
+        [-9.7791, 35.2639, 5.0986, 44.1486],
+        [-18.9236, 26.3611, -12.4787, 30.2565]
+      ],
       "category": "photo",
       "body": {
         "url": "https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{y}.jpeg",
@@ -26127,7 +26863,11 @@
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1983",
       "countries": ["au"],
-      "bbox": [150.9857, -34.2329, 151.5132, -32.9873],
+      "bbox": [150.9857, -33.5122, 151.5132, -32.9873],
+      "bboxes": [
+        [150.9857, -33.5122, 151.5132, -32.9873],
+        [150.9892, -34.2329, 151.2461, -33.9903]
+      ],
       "category": "historicphoto",
       "body": {
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1983/MapServer/tile/{z}/{y}/{x}",

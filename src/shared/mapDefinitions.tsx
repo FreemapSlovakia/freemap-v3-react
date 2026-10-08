@@ -303,6 +303,8 @@ export type IsCommonLayerDef = {
    * layers derive their target from `countries` instead.
    */
   bbox?: [number, number, number, number];
+  /** A coverage in parts far apart, a box each; `bbox` is then the largest. */
+  bboxes?: [number, number, number, number][];
 };
 
 type IsParametricShadingLayerDef = HasUrl &
@@ -798,6 +800,7 @@ type MapIndexField =
   | 'icon'
   | 'countries'
   | 'bbox'
+  | 'bboxes'
   | 'shortcut'
   | 'defaultInMenu'
   | 'defaultInToolbar'

@@ -31,6 +31,8 @@ export type CatalogMap = {
   countries?: string[];
   /** Where it covers, as [west, south, east, north]: what a preview fits to. */
   bbox?: [number, number, number, number];
+  /** A coverage in parts far apart (France with its overseas departments), a box each. */
+  bboxes?: [number, number, number, number][];
   category?: string;
 } & (
   | { technology?: 'tile'; body: MapBody<'tile'> }
@@ -45,6 +47,7 @@ export const catalogIndexEntry = (map: CatalogMap): MapIndexEntry => {
     name: map.name,
     countries: map.countries,
     bbox: map.bbox,
+    bboxes: map.bboxes,
     category: map.category,
     icon: catalogIcon(map.category),
     defaultInMenu: true,
