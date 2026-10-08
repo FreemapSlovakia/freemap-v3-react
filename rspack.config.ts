@@ -441,9 +441,9 @@ const config: Configuration = {
     minimizer: [
       new TerserPlugin({
         minify: TerserPlugin.swcMinify,
-        // Already-minified maplibre worker assets: re-minifying them buys
-        // nothing and risks breaking the ESM link between the two files.
-        exclude: /^maplibre-gl-(worker|shared)\./,
+        // The maplibre worker asset is already minified; re-minifying buys
+        // nothing.
+        exclude: /^maplibre-gl-worker\./,
       }),
       // LightningCSS (replaces cssnano) so it also downlevels native CSS
       // nesting to flat selectors for the browsers in `cssTargets`.
@@ -603,7 +603,7 @@ const config: Configuration = {
       {
         // maplibre-gl's worker is loaded by URL at runtime, not bundled, so it
         // stays a raw asset — the `.mjs` rule above would otherwise parse it as
-        // a module. The loader also emits the sibling module it imports.
+        // a module.
         test: /[\\/]maplibre-gl-worker\.mjs$/,
         type: 'asset/resource',
         generator: { filename: '[name].[contenthash].js' },

@@ -1,52 +1,25 @@
-import { createHash } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-
-const SHARED_MJS = './maplibre-gl-shared.mjs';
-
-/** Drops the `.map` reference; maplibre's source maps aren't emitted. */
-function stripSourceMappingUrl(code) {
-  return code.replace(/\n?\/\/# sourceMappingURL=.*$/m, '');
-}
+/** Matches a static `import` of another module — see below. */
+const STATIC_IMPORT =
+  /(?:^|[^.$\w])import\s*(?:[^;]{0,400}?\bfrom\s*)?["'][^"']+["']/;
 
 /**
- * Prepares maplibre-gl's prebuilt worker for emission as a raw asset.
+ * Prepares maplibre-gl's prebuilt worker for emission as a raw asset: drops the
+ * `.map` reference, since maplibre's source maps aren't emitted.
  *
- * The worker imports `maplibre-gl-shared.mjs` as a literal `./` sibling, so
- * that file is emitted here and the import rewritten to point at it. Both get
- * a `.js` extension — nginx's stock mime.types maps no `.mjs`, and a module
- * worker served without a JavaScript content type is rejected — and a content
- * hash, so a redeploy can never pair a fresh worker with a cached stale
- * sibling.
+ * The worker is self-contained. If a future version splits a sibling module out
+ * again, this errors out: the specifier sits inside an asset the bundler treats
+ * as opaque bytes, so nothing else would rewrite it to the emitted name.
  */
-export default async function maplibreWorkerLoader(source) {
-  if (!source.includes(SHARED_MJS)) {
+export default function maplibreWorkerLoader(source) {
+  if (STATIC_IMPORT.test(source)) {
     this.emitError(
       new Error(
-        `maplibre-gl worker no longer imports ${SHARED_MJS} — rework the worker asset wiring.`,
+        'maplibre-gl worker imports another module — rework the worker asset wiring.',
       ),
     );
 
     return source;
   }
 
-  const sharedPath = path.join(
-    path.dirname(this.resourcePath),
-    'maplibre-gl-shared.mjs',
-  );
-
-  this.addDependency(sharedPath);
-
-  const shared = stripSourceMappingUrl(await readFile(sharedPath, 'utf8'));
-
-  const hash = createHash('sha256').update(shared).digest('hex').slice(0, 16);
-
-  const sharedName = `maplibre-gl-shared.${hash}.js`;
-
-  this.emitFile(sharedName, shared);
-
-  return stripSourceMappingUrl(source).replaceAll(
-    SHARED_MJS,
-    `./${sharedName}`,
-  );
+  return source.replace(/\n?\/\/# sourceMappingURL=.*$/m, '');
 }

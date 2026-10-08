@@ -7,8 +7,7 @@ import '../maplibreLanguage.js';
 // maplibre-gl ships its worker as a separate file that auto-detects itself from
 // `import.meta.url` — which points at the bundle, not the worker, once rspack
 // has inlined the library, so the URL has to be handed over explicitly. rspack
-// emits the worker and the module it imports as assets; see
-// doc/build-and-deploy.md.
+// emits the worker as an asset; see doc/build-and-deploy.md.
 setWorkerUrl(
   new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href,
 );

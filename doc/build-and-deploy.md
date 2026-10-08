@@ -93,18 +93,18 @@ Symptom of breakage: `classes['typo']` stops being a type error (the ambient `Re
 
 ## maplibre-gl's worker is a build-emitted asset, not a bundled module
 
-Since v6, maplibre-gl no longer inlines its worker. It ships `dist/maplibre-gl-worker.mjs`, resolves it from `import.meta.url` at runtime, and that file `import`s `dist/maplibre-gl-shared.mjs` as a literal `./` sibling. Under a bundler `import.meta.url` points at the bundle, so the auto-detection yields `''` and `new Worker('')` — the map silently fails. rspack even bakes the build machine's `file:///home/…` path into the output. Consumers must call `setWorkerUrl()`; `MaplibreLayer.tsx` does, at module scope.
+Since v6, maplibre-gl no longer inlines its worker. It ships `dist/maplibre-gl-worker.mjs` and resolves it from `import.meta.url` at runtime. Under a bundler `import.meta.url` points at the bundle, so the auto-detection yields `''` and `new Worker('')` — the map silently fails. rspack even bakes the build machine's `file:///home/…` path into the output. Consumers must call `setWorkerUrl()`; `MaplibreLayer.tsx` does, at module scope.
 
 The wiring (`rspack.config.ts` + `maplibreWorkerLoader.js`):
 
 - A rule matching `maplibre-gl-worker.mjs` makes it `type: 'asset/resource'`. It has to come **after** the generic `.mjs` rule, which would otherwise force it back to `javascript/auto` and bundle it as a module.
-- `maplibreWorkerLoader.js` reads the shared sibling, emits it, and rewrites the worker's import to the emitted name. Nothing else can rewrite that specifier — it's inside an asset the bundler treats as opaque bytes. The loader errors out if the specifier ever disappears.
-- Both are emitted as **`.js`**, not `.mjs`: nginx's stock `mime.types` has no `.mjs` entry, and a module worker served as `application/octet-stream` is rejected by the browser (it would also miss `gzip_types`).
-- Both carry a **content hash**. The offline shell (`offlineStaticCache.ts`) only re-fetches assets whose URL changed, so stable names would pin an old worker against a new bundle after a redeploy.
-- `TerserPlugin` **excludes** them. They're already minified, and re-minifying the two halves separately risks breaking the ESM bindings between them.
+- `maplibreWorkerLoader.js` strips the worker's `sourceMappingURL` (maplibre's maps aren't emitted) and errors out if the worker ever imports another module: that specifier sits inside an asset the bundler treats as opaque bytes, so nothing would rewrite it to the emitted name. 6.0–6.12 did split out a `maplibre-gl-shared.mjs` sibling, which the loader had to emit by hand; 6.13 made the worker self-contained again and left the shared files as empty deprecated stubs.
+- It is emitted as **`.js`**, not `.mjs`: nginx's stock `mime.types` has no `.mjs` entry, and a module worker served as `application/octet-stream` is rejected by the browser (it would also miss `gzip_types`).
+- It carries a **content hash**. The offline shell (`offlineStaticCache.ts`) only re-fetches assets whose URL changed, so a stable name would pin an old worker against a new bundle after a redeploy.
+- `TerserPlugin` **excludes** it — already minified.
 - `ignoreWarnings` drops maplibre's "Critical dependency: the request of a dependency is an expression" — that's the `new Worker(url)` call, which is the intended design here.
 
-Cheap check that the pair still links after a maplibre bump: `cd dist && node --input-type=module -e "import('./maplibre-gl-worker.<hash>.js')"`. `ReferenceError: self is not defined` means the modules linked and only evaluation hit a browser global — that's a pass. A `SyntaxError` about a missing export means the two halves are mismatched.
+Cheap check after a maplibre bump: `cd dist && node --input-type=module -e "import('./maplibre-gl-worker.<hash>.js')"`. `ReferenceError: self is not defined` means it parsed and only evaluation hit a browser global — that's a pass.
 
 Also note v6 requires WebGL2, so the vector layers are simply unavailable on devices that lack it.
 
