@@ -56,6 +56,7 @@ import {
   resolvedCustomLayersSelector,
   type WmsLayerDef,
 } from '@features/mapLibrary/model/selectors.js';
+import { PanelHeaderSlotContext } from '@features/mapSettings/panelHeaderSlot.js';
 import {
   colorToHexa,
   hexaToColor,
@@ -88,6 +89,7 @@ import {
   type ReactElement,
   type ReactNode,
   useContext,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -181,6 +183,36 @@ export default function MapLayersPanel(): ReactElement {
 
   const top = at.type === undefined && at.preset === undefined;
 
+  // The map's only item, if it is a map with settings.
+  const onlyWithPage = useAppSelector((state) => {
+    const [only, ...rest] = state.map.layers;
+
+    return only !== undefined &&
+      rest.length === 0 &&
+      presetIdOf(only) === undefined &&
+      mapHasPage(mapByIdSelector(state)[only])
+      ? only
+      : undefined;
+  });
+
+  const [headerSlot, setHeaderSlot] = useState<HTMLDivElement | null>(null);
+
+  const opened = useRef(false);
+
+  // Opened on the stack of that one map: its settings instead, before the
+  // stack paints.
+  useLayoutEffect(() => {
+    if (opened.current) {
+      return;
+    }
+
+    opened.current = true;
+
+    if (top && onlyWithPage !== undefined) {
+      setPlace({ type: onlyWithPage });
+    }
+  }, [top, onlyWithPage, setPlace]);
+
   return (
     <Card body className={clsx(classes.panel, 'fm-frosted', 'mt-2 ms-2')}>
       <div ref={setPanel} className="d-flex flex-column">
@@ -216,6 +248,8 @@ export default function MapLayersPanel(): ReactElement {
             )}
           </span>
 
+          <div ref={setHeaderSlot} className="d-contents" />
+
           <LongPressTooltip label={m?.general.close}>
             {({ props }) => (
               <Button
@@ -232,7 +266,9 @@ export default function MapLayersPanel(): ReactElement {
 
         <div className={clsx(classes.list, 'px-2 pb-2')}>
           {target ? (
-            <LayerSettings key={setupKey(target)} target={target} />
+            <PanelHeaderSlotContext value={headerSlot}>
+              <LayerSettings key={setupKey(target)} target={target} />
+            </PanelHeaderSlotContext>
           ) : at.preset !== undefined ? (
             <PresetLayers id={at.preset} onOpen={setPlace} />
           ) : (

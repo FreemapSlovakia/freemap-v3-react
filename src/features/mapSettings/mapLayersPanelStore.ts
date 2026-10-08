@@ -3,6 +3,7 @@ import {
   mapByIdSelector,
   mapEntryOf,
 } from '@features/mapLibrary/model/selectors.js';
+import { getMinWidthForBreakpoint } from '@shared/breakpoints.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
@@ -10,14 +11,26 @@ import { useStore } from 'react-redux';
 
 const OPEN_KEY = 'fm.mapLayersPanel.open';
 
+// From `sm` up, as the toolbar's own layout switch; below, the panel covers the map.
+const WIDE = `(min-width: ${getMinWidthForBreakpoint('sm')}px)`;
+
 /**
  * Where the panel is: the stack, a preset in it (`{ preset }`), or the
  * settings of a map (`{ type }`, with `preset` a preset's copy of it).
  */
 export type PanelPlace = { preset?: string; type?: string };
 
-/** Whether the Map layers panel is open, and where in it. */
-type PanelState = { open: boolean; place: PanelPlace };
+/**
+ * Whether the Map layers panel is open, and where in it. `attention` marks its
+ * button while it holds settings it didn't open for; `auto` is an opening for a
+ * map just turned on, not the user's, which closes again with that map.
+ */
+type PanelState = {
+  open: boolean;
+  place: PanelPlace;
+  attention: boolean;
+  auto: boolean;
+};
 
 const TOP: PanelPlace = {};
 
@@ -26,7 +39,12 @@ let state: PanelState | undefined;
 const listeners = new Set<() => void>();
 
 function getState(): PanelState {
-  state ??= { open: storage.getItem(OPEN_KEY) === 'true', place: TOP };
+  state ??= {
+    open: storage.getItem(OPEN_KEY) === 'true',
+    place: TOP,
+    attention: false,
+    auto: false,
+  };
 
   return state;
 }
@@ -60,27 +78,45 @@ export function useMapLayersPanel() {
 
   const place = useSyncExternalStore(subscribe, () => getState().place);
 
+  const attention = useSyncExternalStore(subscribe, () => getState().attention);
+
   const cookiesEnabled = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult !== null,
   );
 
   const setOpen = useCallback(
-    (open: boolean) => update({ open }, cookiesEnabled),
+    (open: boolean) =>
+      update({ open, attention: false, auto: false }, cookiesEnabled),
     [cookiesEnabled],
   );
 
+  // Moving in the panel makes it the user's.
   const setPlace = useCallback(
-    (place: PanelPlace) => update({ place }, false),
+    (place: PanelPlace) => update({ place, auto: false }, false),
     [],
   );
 
-  /** Opens the panel on this map's settings. */
+  /**
+   * Opens the panel on this map's settings; on a phone, where it would cover
+   * the map, only points its button at them.
+   */
   const reveal = useCallback(
-    (type: string) => update({ open: true, place: { type } }, cookiesEnabled),
+    (type: string) => {
+      const { open, auto } = getState();
+
+      if (!window.matchMedia(WIDE).matches) {
+        update({ place: { type }, attention: !open }, false);
+      } else {
+        update(
+          { open: true, place: { type }, auto: !open || auto },
+          cookiesEnabled,
+        );
+      }
+    },
     [cookiesEnabled],
   );
 
-  return { open, setOpen, place, setPlace, reveal };
+  return { open, setOpen, place, setPlace, reveal, attention };
 }
 
 // The kinds of map whose settings are what turning one on is usually for.
@@ -105,7 +141,7 @@ export function useRevealEditableMaps(enabled: boolean): void {
 
   const store = useStore<RootState>();
 
-  const { reveal } = useMapLayersPanel();
+  const { reveal, setOpen } = useMapLayersPanel();
 
   const seen = useRef(layers);
 
@@ -113,6 +149,17 @@ export function useRevealEditableMaps(enabled: boolean): void {
     const before = seen.current;
 
     seen.current = layers;
+
+    const { attention, auto, open, place } = getState();
+
+    // The map it was opened or pointed at for is gone.
+    if (place.type !== undefined && !layers.includes(place.type)) {
+      if (auto && open) {
+        setOpen(false);
+      } else if (attention) {
+        update({ attention: false }, false);
+      }
+    }
 
     if (!enabled) {
       return;
@@ -125,5 +172,5 @@ export function useRevealEditableMaps(enabled: boolean): void {
     if (added) {
       reveal(added);
     }
-  }, [layers, enabled, reveal, store]);
+  }, [layers, enabled, reveal, setOpen, store]);
 }

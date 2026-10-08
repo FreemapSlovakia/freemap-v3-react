@@ -11,6 +11,11 @@
     margin: 0;
     padding: 0;
   }
+
+  /* Below `sm`; still holds the shading's 236px light wheel and colour picker. */
+  @media (max-width: 575.98px) {
+    width: 17.5rem;
+  }
 }
 
 /* Below the header, sharing the height `useFillToBottom` caps. */

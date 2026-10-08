@@ -9,15 +9,18 @@ import {
   useTargetDef,
   useTargetSetup,
 } from '@features/mapSettings/layerTarget.js';
+import { PanelHeaderSlotContext } from '@features/mapSettings/panelHeaderSlot.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { SHADING_SOURCE } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { produce } from 'immer';
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useContext, useState } from 'react';
 import { Button, ToggleButton } from 'react-bootstrap';
+import { createPortal } from 'react-dom';
 import { FaCheck, FaCloud, FaDesktop, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
@@ -70,6 +73,8 @@ export default function ShadingSection({ target }: Props): ReactElement {
   const type = setupKey(target);
 
   const onServer = useAppSelector((state) => state.map.shadingOnServer);
+
+  const headerSlot = useContext(PanelHeaderSlotContext);
 
   const shading = draft ?? applied;
 
@@ -296,13 +301,15 @@ export default function ShadingSection({ target }: Props): ReactElement {
       {shading.components.some(
         (component) => MANAGEABLE_TYPES[component.type],
       ) && (
-        <ShadingComponentControl
-          components={shading.components}
-          background={showsBackground ? shading.backgroundColor : undefined}
-          onChange={(components) => setShading({ ...shading, components })}
-          selectedId={id}
-          onSelect={setId}
-        />
+        <div className="d-flex justify-content-center">
+          <ShadingComponentControl
+            components={shading.components}
+            background={showsBackground ? shading.backgroundColor : undefined}
+            onChange={(components) => setShading({ ...shading, components })}
+            selectedId={id}
+            onSelect={setId}
+          />
+        </div>
       )}
 
       {selectedComponent && (
@@ -323,29 +330,40 @@ export default function ShadingSection({ target }: Props): ReactElement {
         />
       )}
 
-      {/* Stays, disabled while there is nothing to apply, so editing never
-          shifts the layout. */}
-      {onServer && <hr />}
+      {/* In the panel's header, so they stay in view however far it scrolls. */}
+      {onServer &&
+        draft &&
+        headerSlot &&
+        createPortal(
+          <>
+            <LongPressTooltip label={sm?.apply}>
+              {({ props }) => (
+                <Button
+                  variant="primary"
+                  className="flex-shrink-0"
+                  onClick={() => apply(draft)}
+                  {...props}
+                >
+                  <FaCheck />
+                </Button>
+              )}
+            </LongPressTooltip>
 
-      {onServer && (
-        <div className="d-flex flex-wrap gap-2 text-nowrap">
-          <Button
-            variant="primary"
-            disabled={!draft}
-            onClick={() => draft && apply(draft)}
-          >
-            <FaCheck /> {sm?.apply}
-          </Button>
-
-          <Button
-            variant="secondary"
-            disabled={!draft}
-            onClick={() => dispatch(mapSetShadingDraft(target))}
-          >
-            <FaUndo /> {sm?.revert}
-          </Button>
-        </div>
-      )}
+            <LongPressTooltip label={sm?.revert}>
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  className="flex-shrink-0"
+                  onClick={() => dispatch(mapSetShadingDraft(target))}
+                  {...props}
+                >
+                  <FaUndo />
+                </Button>
+              )}
+            </LongPressTooltip>
+          </>,
+          headerSlot,
+        )}
 
       <ParameterizedShadingModal
         kind={pending?.preset ?? null}

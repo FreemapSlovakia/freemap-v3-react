@@ -7,6 +7,7 @@ import { useMapLayersPanel } from '@features/mapSettings/mapLayersPanelStore.js'
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import clsx from 'clsx';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
 import { FaLayerGroup, FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
@@ -15,6 +16,7 @@ import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { toggleLocate } from '../store/actions.js';
 import { mapLibraryPreviewingSelector } from '../store/selectors.js';
+import classes from './MapControls.module.css';
 import { MapManageButton } from './MapManageButton.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
 
@@ -139,7 +141,8 @@ export function MapControls(): ReactElement | null {
             <LongPressTooltip label={m?.mapLayers.layersPanel}>
               {({ props }) => (
                 <Button
-                  variant="secondary"
+                  variant={layersPanel.attention ? 'primary' : 'secondary'}
+                  className={clsx(layersPanel.attention && classes.attention)}
                   active={layersPanel.open}
                   onClick={() => layersPanel.setOpen(!layersPanel.open)}
                   {...props}

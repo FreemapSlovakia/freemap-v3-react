@@ -87,9 +87,12 @@ export function MapLayerItem({
     >
       {!noKindMark && <LayerKindMark kind={def.layer} />}
 
-      {def.icon ?? (
-        <CustomMapGlyph spec={def.iconSpec} kind={customMapKind(def)} />
-      )}
+      {/* Only the name gives way. */}
+      <span className="d-inline-flex flex-shrink-0">
+        {def.icon ?? (
+          <CustomMapGlyph spec={def.iconSpec} kind={customMapKind(def)} />
+        )}
+      </span>
 
       {truncate ? (
         // The full name of one cut short.

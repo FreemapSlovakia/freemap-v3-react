@@ -182,7 +182,12 @@ for each tab, and switching tabs changes
   Reset), so no other layer shows beside them. Where it is (`PanelPlace`) and
   whether it is open live in `mapLayersPanelStore.ts`, outside Redux, so the
   toolbar button and `useRevealEditableMaps` (opening a WMS or shading map
-  just turned on at its settings) share them. The setting controls take a
+  just turned on at its settings, and closing it with that map unless the user
+  opened or moved in it; below `sm` a closed panel only marks the button, the
+  panel covering the map there) share them. Pages put actions that must stay in
+  view into the header through `PanelHeaderSlotContext`. Opened on the stack
+  when the map's only item is a map with a page, it goes to that page. The
+  setting controls take a
   `SetupTarget` — a map, or a preset's copy of it (`layerTarget.ts`).
 - **The WMS section** (`WmsSection.tsx`). An empty pick draws nothing and is
   left out of feature info. It reads the service's capabilities (cached per URL for the page's life) into

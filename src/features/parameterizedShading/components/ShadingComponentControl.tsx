@@ -280,6 +280,8 @@ export function ShadingComponentControl({
       width={size}
       height={size}
       viewBox={[-size / 2, -size / 2, size, size].join(' ')}
+      // Shrinks in a narrow panel; dragging maps through the screen CTM.
+      style={{ maxWidth: '100%', height: 'auto' }}
       ref={setSvg}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

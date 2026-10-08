@@ -1,9 +1,13 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useState } from 'react';
-import { Button, ButtonToolbar, Dropdown, Form } from 'react-bootstrap';
+import { Dropdown, Form } from 'react-bootstrap';
 import { BsCircleFill, BsTransparency } from 'react-icons/bs';
 import { FaPlus, FaSwatchbook, FaTrash } from 'react-icons/fa';
 import { SHADING_COMPONENT_TYPES } from '../model/Shading.js';
@@ -69,7 +73,11 @@ export function ShadingToolbar({
   };
 
   return (
-    <ButtonToolbar className="mt-2 gap-2">
+    // One line: Remove's label gives way to its tooltip when room runs out.
+    <FmModalFooter
+      as="div"
+      className="d-flex flex-nowrap gap-2 mt-2 text-nowrap"
+    >
       <Dropdown onSelect={onAdd}>
         <Dropdown.Toggle id="add-shading-button" variant="success">
           <FaPlus /> {sm?.add}
@@ -104,9 +112,13 @@ export function ShadingToolbar({
         </FmDropdownMenu>
       </Dropdown>
 
-      <Button disabled={!canRemove} variant="danger" onClick={onRemove}>
-        <FaTrash /> {m?.general.remove}
-      </Button>
+      <FmFooterButton
+        variant="danger"
+        icon={<FaTrash />}
+        label={m?.general.remove}
+        disabled={!canRemove}
+        onClick={onRemove}
+      />
 
       <Dropdown
         className="ms-auto"
@@ -158,6 +170,6 @@ export function ShadingToolbar({
           ).map(presetItem)}
         </FmDropdownMenu>
       </Dropdown>
-    </ButtonToolbar>
+    </FmModalFooter>
   );
 }
