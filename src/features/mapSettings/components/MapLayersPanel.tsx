@@ -219,7 +219,7 @@ export default function MapLayersPanel(): ReactElement {
         {/* The bare icon at the top lines up with the rows' icons; a button
             sits at the edge as the close button does. */}
         <div
-          className={clsx('d-flex align-items-center gap-2 p-1', top && 'ps-3')}
+          className={clsx('d-flex align-items-center gap-1 p-1', top && 'ps-3')}
         >
           {top ? (
             <FaLayerGroup className="flex-shrink-0" />
@@ -1001,7 +1001,7 @@ function LayerSettings({
       {/* Labels give way to icons, least important first, when room runs out. */}
       <FmModalFooter
         as="div"
-        className="d-flex flex-nowrap justify-content-end gap-2 text-nowrap"
+        className="d-flex flex-nowrap justify-content-end gap-1 text-nowrap"
       >
         {/* As set up here, under a name of its own. */}
         {mapOrigin !== 'cached' &&

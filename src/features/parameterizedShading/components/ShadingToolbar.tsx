@@ -76,7 +76,7 @@ export function ShadingToolbar({
     // One line: Remove's label gives way to its tooltip when room runs out.
     <FmModalFooter
       as="div"
-      className="d-flex flex-nowrap gap-2 mt-2 text-nowrap"
+      className="d-flex flex-nowrap gap-1 mt-2 text-nowrap"
     >
       <Dropdown onSelect={onAdd}>
         <Dropdown.Toggle id="add-shading-button" variant="success">

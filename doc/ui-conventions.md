@@ -385,6 +385,13 @@ These containers own the gap; nothing inside them carries a margin:
 | `.btn-toolbar` | `0.25rem` | `bootstrap-override.css` — a `gap-*` utility overrides it where a toolbar wants more air (see `Toast`) |
 | `.dropdown-item` | `0.25rem` | `bootstrap-override.css`; a wrapping flex row, so a long label still wraps inside its own item |
 | `ResponsiveActions` | `gap` prop | its own `d-inline-flex` |
+| A button row in a floating panel | `gap-1` | the panel's header, toolbar and footer rows (`MapLayersPanel`) — a panel over the map takes the toolbars' rhythm, not a modal's |
+
+The gap between buttons follows the **surface**: whatever floats over the map
+(toolbars, the Map layers panel) spaces its buttons by `0.25rem`; modals and
+their forms keep Bootstrap's roomier `0.5rem` (`.modal-footer`, `gap-2`). Groups
+within a row are set apart by structure — `ms-auto`, or a toolbar of their own
+— never by a wider gap between every button.
 
 **One gap vocabulary: Bootstrap's `gap-*` utilities.** The project's own
 `f-gap-1` / `f-gap-2` are gone; don't reintroduce a parallel set.
