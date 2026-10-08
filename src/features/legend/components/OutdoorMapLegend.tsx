@@ -1,11 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ObjectFilterChip } from '@features/objects/components/ObjectFilterChip.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import {
-  getGenericNameFromOsmElementSync,
-  getOsmMapping,
-} from '@osm/osmNameResolver.js';
-import type { OsmMapping } from '@osm/types.js';
+import { getGenericNameFromOsmElementSync } from '@osm/osmNameResolver.js';
+import { useOsmMapping } from '@osm/useOsmMapping.js';
 import { fuzzyMatch } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
@@ -66,11 +63,7 @@ export default function OutdoorMapLegend({
 
   const lang = useEffectiveChosenLanguage();
 
-  const [osmMapping, setOsmMapping] = useState<OsmMapping>();
-
-  useEffect(() => {
-    getOsmMapping(lang).then((osmMapping) => setOsmMapping(osmMapping));
-  }, [lang]);
+  const osmMapping = useOsmMapping(lang);
 
   useEffect(() => {
     if (!osmMapping) {

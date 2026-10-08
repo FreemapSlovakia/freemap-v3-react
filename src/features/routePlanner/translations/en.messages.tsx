@@ -39,7 +39,6 @@ const en: RoutePlannerMessages = {
   },
   start: 'Start',
   finish: 'Finish',
-  midpoint: ({ n }) => `Midpoint ${n}`,
   stop: 'Stop',
   swap: 'Swap start and finish',
   point: {

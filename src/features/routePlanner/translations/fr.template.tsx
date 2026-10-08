@@ -40,7 +40,6 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   start: 'Départ',
   finish: 'Arrivée',
-  midpoint: ({ n }) => `Point intermédiaire ${n}`,
   stop: 'Arrêt',
   swap: 'Inverser le départ et l’arrivée',
   point: {

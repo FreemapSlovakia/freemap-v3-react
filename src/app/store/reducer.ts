@@ -31,6 +31,7 @@ import {
   searchSelectResult,
   searchUnselectResult,
 } from '@features/search/model/actions.js';
+import { trackingActions } from '@features/tracking/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import { isMapClickTool } from '@shared/toolDefinitions.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
@@ -86,6 +87,12 @@ export const mainInitialState: MainState = {
   hiddenInfoBars: {},
   shownInfoBars: {},
 };
+
+function clearTrackingSelection(state: MainState, token: string) {
+  if (state.selection?.type === 'tracking' && state.selection.id === token) {
+    state.selection = null;
+  }
+}
 
 /**
  * Whether the selected feature belongs to `tool` — such a tool keeps the
@@ -285,6 +292,22 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       ) {
         state.selection = null;
       }
+    })
+    .addCase(trackingActions.setTrackedDevices, (state, action) => {
+      const { selection } = state;
+
+      if (
+        selection?.type === 'tracking' &&
+        !action.payload.some((device) => device.token === selection.id)
+      ) {
+        state.selection = null;
+      }
+    })
+    .addCase(trackingActions.delete, (state, { payload }) => {
+      clearTrackingSelection(state, payload.token);
+    })
+    .addCase(trackingActions.deleteTrackedDevice, (state, { payload }) => {
+      clearTrackingSelection(state, payload);
     })
     .addCase(drawingLineJoinFinish, (state, { payload }) => {
       state.selection = payload.selection;

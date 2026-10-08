@@ -1,6 +1,5 @@
 import { AsyncComponent } from '@app/components/AsyncComponent.js';
-import { openTool, setActiveModal } from '@app/store/actions.js';
-import { openToolsSelector } from '@app/store/selectors.js';
+import { setActiveModal } from '@app/store/actions.js';
 import {
   type CollisionDetection,
   closestCenter,
@@ -39,6 +38,7 @@ import {
   usageOf,
 } from '@features/map/model/layerSetup.js';
 import {
+  canJoinPreset,
   isLinkPreset,
   isPresettable,
   memberKind,
@@ -81,7 +81,6 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useFillToBottom } from '@shared/hooks/useFillToBottom.js';
 import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
-import { isDrawTool } from '@shared/toolDefinitions.js';
 import clsx from 'clsx';
 import {
   type CSSProperties,
@@ -151,8 +150,6 @@ const underPointer: CollisionDetection = (args) => {
 export default function MapLayersPanel(): ReactElement {
   const m = useMessages();
 
-  const msm = useMapSettingsMessages();
-
   const { setOpen, place, setPlace } = useMapLayersPanel();
 
   const layers = useAppSelector((state) => state.map.layers);
@@ -164,41 +161,29 @@ export default function MapLayersPanel(): ReactElement {
       ? presetById[place.preset]
       : undefined;
 
-  const featureRows = useMapFeatureRows();
+  const listedRows = useMapFeatureRows();
+
+  // Not in an embed: a visitor neither opens the tools nor clears the host's data.
+  const featureRows = window.fmEmbedded ? [] : listedRows;
 
   const featureRow =
     place.feature === undefined
       ? undefined
       : featureRows.find((row) => row.id === place.feature);
 
-  // Any draw tool counts: the three share one toolbar.
-  const featureToolOpen = useAppSelector((state) =>
-    openToolsSelector(state).some(
-      (tool) =>
-        tool === featureRow?.tool ||
-        (isDrawTool(tool) && isDrawTool(featureRow?.tool)),
-    ),
-  );
-
-  const dispatch = useDispatch();
-
   // Where the panel was left, if that is still on the map; else the stack.
-  const at: PanelPlace =
+  const stillThere =
     place.feature !== undefined
-      ? featureRow
-        ? place
-        : {}
+      ? featureRow !== undefined
       : place.type === undefined
-        ? preset
-          ? place
-          : {}
+        ? preset !== undefined
         : place.preset === undefined
           ? layers.includes(place.type)
-            ? place
-            : {}
-          : preset?.layers.some((layer) => layer.type === place.type)
-            ? place
-            : {};
+          : Boolean(preset?.layers.some((layer) => layer.type === place.type));
+
+  const at: PanelPlace = stillThere ? place : {};
+
+  const feature = at.feature === undefined ? undefined : featureRow;
 
   const target = at.type === undefined ? undefined : { ...at, type: at.type };
 
@@ -229,11 +214,10 @@ export default function MapLayersPanel(): ReactElement {
 
   const opened = useRef(false);
 
-  // The stack lists the tools' features too, outside an embed.
-  const featuresListed = !window.fmEmbedded && featureRows.length > 0;
+  const featuresListed = featureRows.length > 0;
 
-  // Opened on the stack of that one map: its settings instead, before the
-  // stack paints.
+  // Opened on the stack of that one map and nothing else: its settings
+  // instead, before the stack paints.
   useLayoutEffect(() => {
     if (opened.current) {
       return;
@@ -274,30 +258,17 @@ export default function MapLayersPanel(): ReactElement {
             </LongPressTooltip>
           )}
 
-          {/* The feature's icon opens its tool, as a selection's toolbar does. */}
-          {at.feature !== undefined && featureRow?.tool && (
-            <LongPressTooltip label={msm?.openTool}>
-              {({ props }) => (
-                <Button
-                  variant="dark"
-                  className="flex-shrink-0"
-                  disabled={featureToolOpen}
-                  onClick={() => dispatch(openTool(featureRow.tool!))}
-                  {...props}
-                >
-                  {featureRow.icon}
-                </Button>
-              )}
-            </LongPressTooltip>
-          )}
+          {/* A feature's icon opens its tool, as a selection's toolbar does. */}
+          {feature &&
+            (feature.control ?? (
+              <span className="d-inline-flex flex-shrink-0">
+                {feature.icon}
+              </span>
+            ))}
 
           <span className="flex-grow-1 min-w-0 d-flex">
-            {at.feature !== undefined && featureRow ? (
-              featureRow.tool ? (
-                <TruncatedText>{featureRow.label}</TruncatedText>
-              ) : (
-                <FeatureRowLabel row={featureRow} />
-              )
+            {feature ? (
+              <TruncatedText>{feature.label}</TruncatedText>
             ) : target ? (
               <TargetName target={target} />
             ) : at.preset !== undefined && preset ? (
@@ -322,8 +293,8 @@ export default function MapLayersPanel(): ReactElement {
         </div>
 
         <div className={clsx(classes.list, 'px-2 pb-2')}>
-          {at.feature !== undefined ? (
-            <MapFeatureItems feature={at.feature} />
+          {feature ? (
+            <MapFeatureItems feature={feature.id} />
           ) : target ? (
             <PanelHeaderSlotContext value={headerSlot}>
               <LayerSettings key={setupKey(target)} target={target} />
@@ -369,20 +340,14 @@ function PresetName({
   );
 }
 
-function FeatureRowLabel({
-  row,
-  count,
-}: {
-  row: MapFeatureRow;
-  count?: boolean;
-}): ReactElement {
+function FeatureRowLabel({ row }: { row: MapFeatureRow }): ReactElement {
   return (
     <span className="d-inline-flex align-items-center gap-1 mw-100">
       <span className="d-inline-flex flex-shrink-0">{row.icon}</span>
 
       <TruncatedText>{row.label}</TruncatedText>
 
-      {count && row.count !== undefined && (
+      {row.count !== undefined && (
         <Badge pill bg="secondary" className="flex-shrink-0">
           {row.count}
         </Badge>
@@ -786,10 +751,12 @@ function Stack({
 
   const layerSetups = useAppSelector((state) => state.map.layerSetups);
 
-  const isMap = (item: string) =>
-    presetIdOf(item) !== undefined || isPresettable(item);
+  const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
-  const maps = layers.filter(isMap);
+  // What a preset can hold: not offline maps, which are this device's alone.
+  const maps = layers.filter(
+    (item) => presetIdOf(item) !== undefined || canJoinPreset(item, cachedMaps),
+  );
 
   // Two maps or presets, or one map at its own opacity or kind (its shading
   // and layers stay the map's).
@@ -814,18 +781,14 @@ function Stack({
       <SortableRows
         items={overlays}
         movable={movable}
-        // Not in an embed: a visitor neither opens the tools nor clears the host's data.
-        top={
-          !window.fmEmbedded &&
-          featureRows.map((row) => (
-            <Row
-              key={row.id}
-              label={<FeatureRowLabel row={row} count />}
-              onOpen={() => onOpen({ feature: row.id })}
-              onRemove={row.onRemove}
-            />
-          ))
-        }
+        top={featureRows.map((row) => (
+          <Row
+            key={row.id}
+            label={<FeatureRowLabel row={row} />}
+            onOpen={() => onOpen({ feature: row.id })}
+            onRemove={row.onRemove}
+          />
+        ))}
         bottom={base && render(base)}
         onMove={(type, to) => dispatch(mapOverlayMove({ type, to }))}
         render={render}

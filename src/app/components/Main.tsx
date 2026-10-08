@@ -25,6 +25,7 @@ import { MapAreaSelectionResult } from '@features/mapArea/components/MapAreaSele
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
 import { drawnTypesSelector } from '@features/mapLibrary/model/selectors.js';
 import {
+  useForgetEmptiedFeaturePage,
   useMapLayersPanel,
   useRevealEditableMaps,
 } from '@features/mapSettings/mapLayersPanelStore.js';
@@ -618,6 +619,8 @@ export function Main(): ReactElement {
   const showMapLayersPanel = layersPanelAllowed && layersPanelOpen;
 
   useRevealEditableMaps(layersPanelAllowed);
+
+  useForgetEmptiedFeaturePage();
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 

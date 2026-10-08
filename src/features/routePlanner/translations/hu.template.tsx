@@ -37,7 +37,6 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   start: 'Kiindulás',
   finish: 'Úti cél',
-  midpoint: ({ n }) => `${n}. köztes pont`,
   swap: 'Kiindulási pont és cél felcserélése',
   point: {
     pick: 'Kijelölés a térképen',

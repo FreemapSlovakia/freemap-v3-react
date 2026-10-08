@@ -137,7 +137,8 @@ export interface LinePointSelection {
 
 export interface TrackingSelection {
   type: 'tracking';
-  id: string | number;
+  /** The device's token. */
+  id: string;
 }
 
 export interface RoutePointSelection {

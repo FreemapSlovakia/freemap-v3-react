@@ -59,7 +59,7 @@ export type MapSettingsMessages = {
   /** In the Map layers panel: what is on the map, as a new preset. */
   saveLayersAsPreset: string;
   saveLayersAsPresetHint: string;
-  /** Why it is disabled: data layers on, which a preset can't hold. */
+  /** In the new-preset form: what is on the map that a preset leaves out. */
   leftOutOfPreset: (layers: string) => string;
   /** Deleting a custom map: the named maps built on it, deleted with it. */
   deleteAlsoNamed: (names: string) => string;
@@ -81,8 +81,6 @@ export type MapSettingsMessages = {
   searchResults: string;
   /** Placeholder narrowing a feature's items in the Map layers panel. */
   filterItems: string;
-  /** On a feature's items page in the Map layers panel: opens its tool. */
-  openTool: string;
   /** A feature's item list with nothing in it, as the objects in view can be. */
   nothingInView: string;
   /** Says where a preset's layers are edited. */

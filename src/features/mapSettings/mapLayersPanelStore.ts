@@ -8,6 +8,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
 import { useStore } from 'react-redux';
+import { type MapFeatureId, mapFeatureCount } from './mapFeatureCounts.js';
 
 const OPEN_KEY = 'fm.mapLayersPanel.open';
 
@@ -19,7 +20,11 @@ const WIDE = `(min-width: ${getMinWidthForBreakpoint('sm')}px)`;
  * of a map (`{ type }`, with `preset` a preset's copy of it), or the items of
  * a tool's features (`{ feature }`, a `useMapFeatureRows` id).
  */
-export type PanelPlace = { preset?: string; type?: string; feature?: string };
+export type PanelPlace = {
+  preset?: string;
+  type?: string;
+  feature?: MapFeatureId;
+};
 
 /** Whether the panel leaves the map in view beside it. */
 export const isWideScreen = () => window.matchMedia(WIDE).matches;
@@ -177,4 +182,26 @@ export function useRevealEditableMaps(enabled: boolean): void {
       reveal(added);
     }
   }, [layers, enabled, reveal, setOpen, store]);
+}
+
+/**
+ * Lets go of a feature's page once the feature empties, open panel or not, so
+ * the page doesn't come back by itself when it holds something again.
+ */
+export function useForgetEmptiedFeaturePage(): void {
+  const feature = useSyncExternalStore(
+    subscribe,
+    () => getState().place.feature,
+  );
+
+  const emptied = useAppSelector(
+    (state) =>
+      feature !== undefined && mapFeatureCount(state, feature) === undefined,
+  );
+
+  useEffect(() => {
+    if (emptied) {
+      update({ place: TOP }, false);
+    }
+  }, [emptied]);
 }

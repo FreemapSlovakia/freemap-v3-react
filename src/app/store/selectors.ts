@@ -195,7 +195,7 @@ export const trackingTracksSelector = (state: RootState): Track[] =>
 
 export const trackingActiveTrackIdSelector = (
   state: RootState,
-): string | number | undefined =>
+): string | undefined =>
   state.main.selection?.type === 'tracking'
     ? state.main.selection.id
     : undefined;

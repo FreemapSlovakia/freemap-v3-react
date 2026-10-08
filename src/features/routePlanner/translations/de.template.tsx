@@ -68,7 +68,6 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   start: 'Start',
   finish: 'Ziel',
-  midpoint: ({ n }) => `Zwischenpunkt ${n}`,
   swap: 'Start und Ziel tauschen',
   development: 'in Entwicklung',
   alternative: 'Alternative',

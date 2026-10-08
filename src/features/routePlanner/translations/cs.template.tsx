@@ -37,7 +37,6 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   start: 'Start',
   finish: 'Cíl',
-  midpoint: ({ n }) => `Průchozí bod ${n}`,
   swap: 'Prohodit start a cíl',
   point: {
     pick: 'Vybrat na mapě',

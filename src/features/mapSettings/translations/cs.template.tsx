@@ -95,7 +95,6 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   presetEmpty: 'Žádné vrstvy.',
   searchResults: 'Výsledky hledání',
   filterItems: 'Filtrovat',
-  openTool: 'Otevřít nástroj',
   nothingInView: 'V této části mapy se nic nenašlo.',
   presetHint:
     'Její vrstvy se upravují na mapě: otevřete předvolbu v panelu Vrstvy mapy. Každá změna se uloží hned.',

@@ -1016,15 +1016,12 @@ export function handleLocationChange(store: MyStore): void {
 
   const fq = query['follow'];
 
+  // A device's token, all digits or not: tokens are strings throughout.
   if (typeof fq === 'string') {
-    const follow = /^\d+$/.test(fq) ? Number.parseInt(fq, 10) : fq;
-
     const { selection } = getState().main;
 
-    if (
-      (selection?.type === 'tracking' ? selection?.id : undefined) !== follow
-    ) {
-      dispatch(selectFeature({ type: 'tracking', id: follow }));
+    if ((selection?.type === 'tracking' ? selection?.id : undefined) !== fq) {
+      dispatch(selectFeature({ type: 'tracking', id: fq }));
     }
   }
 

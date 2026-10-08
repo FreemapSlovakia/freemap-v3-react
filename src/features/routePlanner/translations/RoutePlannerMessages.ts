@@ -44,8 +44,6 @@ export type RoutePlannerMessages = {
   start: string;
   stop: string;
   finish: string;
-  /** A numbered waypoint between start and finish, as its marker reads. */
-  midpoint: (props: { n: number }) => string;
   swap: string;
   point: {
     point: string;

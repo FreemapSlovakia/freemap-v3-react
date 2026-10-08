@@ -37,7 +37,6 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   start: 'Inizio',
   finish: 'Fine',
-  midpoint: ({ n }) => `Punto intermedio ${n}`,
   swap: 'Inverti inizio e fine',
   point: {
     pick: 'Seleziona sulla mappa',

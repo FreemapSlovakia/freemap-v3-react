@@ -1,14 +1,9 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import {
-  getGenericNameFromOsmElementSync,
-  getNameFromOsmElement,
-  getOsmMapping,
-  resolveGenericName,
-} from '@osm/osmNameResolver.js';
-import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import type { OsmMapping } from '@osm/types.js';
+import { getNameFromOsmElement } from '@osm/osmNameResolver.js';
+import { osmPoiKind } from '@osm/osmPoiKind.js';
+import { useOsmMapping } from '@osm/useOsmMapping.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -20,7 +15,7 @@ import {
   OsmFeatureIdSchema,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import { type ReactElement, useEffect, useState } from 'react';
+import type { ReactElement } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 
@@ -45,11 +40,7 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
       : null,
   );
 
-  const [osmMapping, setOsmMapping] = useState<OsmMapping>();
-
-  useEffect(() => {
-    getOsmMapping(language).then(setOsmMapping);
-  }, [language]);
+  const osmMapping = useOsmMapping(language);
 
   const nf = useNumberFormat({
     minimumFractionDigits: 0,
@@ -73,16 +64,11 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
 
         const parsed = OsmFeatureIdSchema.safeParse(id);
 
-        const gn = parsed.success
-          ? getGenericNameFromOsmElementSync(
-              tags,
-              parsed.data.elementType,
-              osmMapping.osmTagToNameMapping,
-              osmMapping.colorNames,
-            )
-          : '';
-
-        const img = resolveGenericName(osmTagToIconMapping, tags);
+        const { poi, generic: gn } = osmPoiKind(
+          tags,
+          parsed.success ? parsed.data.elementType : undefined,
+          osmMapping,
+        );
 
         const { ele } = tags;
 
@@ -97,7 +83,7 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
             key={`poi-${stringifyFeatureId(id)}`}
             interactive={interactive}
             position={{ lat: coords.lat, lng: coords.lon }}
-            poi={img[0]}
+            poi={poi}
             poiOpacity={access === 'private' || access === 'no' ? 0.33 : 1.0}
             color={color}
             // Selection is the ring, so the marker keeps the color the objects

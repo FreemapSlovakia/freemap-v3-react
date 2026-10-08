@@ -183,6 +183,7 @@ export const mapFitBbox = createAction<{
   bbox: [number, number, number, number];
   maxZoom?: number;
   minZoom?: number;
+  padding?: number;
 }>('MAP_FIT_BBOX');
 
 export const mapReplaceLayer = createAction<{ from: string; to: string }>(
