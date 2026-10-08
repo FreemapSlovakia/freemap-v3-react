@@ -96,6 +96,7 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   presetEmpty: 'Keine Ebenen.',
   searchResults: 'Suchergebnisse',
   filterItems: 'Filtern',
+  openTool: 'Werkzeug öffnen',
   nothingInView: 'In diesem Kartenausschnitt wurde nichts gefunden.',
   presetHint:
     'Ihre Ebenen werden auf der Karte bearbeitet: Öffnen Sie die Voreinstellung im Bedienfeld Kartenebenen. Jede Änderung wird sofort gespeichert.',

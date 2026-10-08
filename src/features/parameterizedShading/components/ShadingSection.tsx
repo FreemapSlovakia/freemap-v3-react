@@ -340,7 +340,6 @@ export default function ShadingSection({ target }: Props): ReactElement {
               {({ props }) => (
                 <Button
                   variant="primary"
-                  size="sm"
                   className="flex-shrink-0"
                   onClick={() => apply(draft)}
                   {...props}
@@ -354,7 +353,6 @@ export default function ShadingSection({ target }: Props): ReactElement {
               {({ props }) => (
                 <Button
                   variant="secondary"
-                  size="sm"
                   className="flex-shrink-0"
                   onClick={() => dispatch(mapSetShadingDraft(target))}
                   {...props}

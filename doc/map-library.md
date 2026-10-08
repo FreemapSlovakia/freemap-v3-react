@@ -175,8 +175,8 @@ for each tab, and switching tabs changes
 - **The Map layers panel** (`mapSettings/components/MapLayersPanel.tsx`),
   opened by the toolbar button beside the map switcher, lists what is on the
   map: the tools' features (`useMapFeatureRows`: a row each that holds
-  anything, opening its tool and its items page, `MapFeatureItems`, and
-  clearing it; not in embeds), then overlays
+  anything, opening its items page, `MapFeatureItems`, with its tool's
+  button in the header, and clearing it; not in embeds), then overlays
   and overlay presets in `overlayStackSelector` order (dragged
   with `mapOverlayMove`), then the base item, each with its opacity, and Save
   as preset (not in embeds). It drills down rather than expanding rows: a

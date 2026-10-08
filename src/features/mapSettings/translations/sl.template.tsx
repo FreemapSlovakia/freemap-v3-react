@@ -96,6 +96,7 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   presetEmpty: 'Ni slojev.',
   searchResults: 'Rezultati iskanja',
   filterItems: 'Filtriraj',
+  openTool: 'Odpri orodje',
   nothingInView: 'V tem delu zemljevida ni bilo nič najdeno.',
   presetHint:
     'Njene sloje urejate na zemljevidu: odprite prednastavitev v plošči Sloji zemljevida. Vsaka sprememba se shrani takoj.',

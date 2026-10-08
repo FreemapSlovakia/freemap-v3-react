@@ -1,6 +1,5 @@
 import {
   closeTool,
-  openTool,
   type Selection,
   selectFeature,
   type Tool,
@@ -36,10 +35,11 @@ export type MapFeatureRow = {
   icon: ReactElement;
   label: string | undefined;
   count?: number;
-  /** Opens the feature's toolbar; unset where it is up while there is any. */
-  onOpen?: () => void;
-  /** Whether it opens to a list of its items (`MapFeatureItems`). */
-  items?: true;
+  /**
+   * The tool its items page opens; unset where the toolbar is up while there
+   * is anything.
+   */
+  tool?: Tool;
   onRemove: () => void;
 };
 
@@ -90,8 +90,6 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     (state) => state.changesets.changesets.length,
   );
 
-  const open = (tool: Tool) => () => dispatch(openTool(tool));
-
   // Removed, a feature takes a selection of its own with it, as Delete does.
   const remove =
     (types: Selection['type'][], ...actions: UnknownAction[]) =>
@@ -117,7 +115,6 @@ export function useMapFeatureRows(): MapFeatureRow[] {
   const rows: (MapFeatureRow | false)[] = [
     pinned.length > 0 && {
       id: 'search',
-      items: true,
       icon: <FaSearch />,
       label: msm?.searchResults,
       count: pinned.length,
@@ -128,7 +125,6 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     },
     objects !== undefined && {
       id: 'objects',
-      items: true,
       icon: <TbMapPins />,
       label: m?.tools.objects,
       count: objects,
@@ -136,37 +132,33 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     },
     trackedDevices > 0 && {
       id: 'tracking',
-      items: true,
       icon: <FaBullseye />,
       label: m?.tools.tracking,
       count: trackedDevices,
-      onOpen: open('tracking'),
+      tool: 'tracking',
       onRemove: remove(['tracking'], trackingActions.setTrackedDevices([])),
     },
     dataFeatures !== undefined && {
       id: 'data',
-      items: true,
       icon: <MdShapeLine />,
       label: m?.tools.dataViewer,
       count: dataFeatures,
-      onOpen: open('import-file'),
+      tool: 'import-file',
       onRemove: remove(['data-viewer'], dataViewerDelete()),
     },
     routePoints > 0 && {
       id: 'route',
-      items: true,
       icon: <FaRoute />,
       label: m?.tools.routePlanner,
-      onOpen: open('route-planner'),
+      tool: 'route-planner',
       onRemove: remove(['route-point', 'route-leg'], routePlannerDelete()),
     },
     drawingLines + drawingPoints > 0 && {
       id: 'drawing',
-      items: true,
       icon: <FaPencilRuler />,
       label: m?.tools.measurement,
       count: drawingLines + drawingPoints,
-      onOpen: open(drawTool),
+      tool: drawTool,
       onRemove: remove(
         ['draw-points', 'draw-line-poly', 'line-point'],
         drawingLineSetLines([]),
@@ -178,8 +170,8 @@ export function useMapFeatureRows(): MapFeatureRow[] {
       icon: <FaPencilAlt />,
       label: m?.tools.changesets,
       count: changesets,
-      // Its toolbar is up while there are any; opening it again refetches.
-      items: true,
+      // No `tool`: its toolbar is up while there are any, and opening it
+      // again refetches.
       // Closing the tool takes its changesets off the map.
       onRemove: () => dispatch(closeTool('changesets')),
     },

@@ -95,6 +95,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   presetEmpty: 'Nincsenek rétegek.',
   searchResults: 'Keresési eredmények',
   filterItems: 'Szűrés',
+  openTool: 'Eszköz megnyitása',
   nothingInView: 'A térkép ezen részén nincs találat.',
   presetHint:
     'A rétegeit a térképen lehet szerkeszteni: nyissa meg az előbeállítást a Térképrétegek panelen. Minden változás azonnal mentődik.',

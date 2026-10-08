@@ -1,5 +1,6 @@
 import { AsyncComponent } from '@app/components/AsyncComponent.js';
-import { setActiveModal } from '@app/store/actions.js';
+import { openTool, setActiveModal } from '@app/store/actions.js';
+import { openToolsSelector } from '@app/store/selectors.js';
 import {
   type CollisionDetection,
   closestCenter,
@@ -80,6 +81,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useFillToBottom } from '@shared/hooks/useFillToBottom.js';
 import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
+import { isDrawTool } from '@shared/toolDefinitions.js';
 import clsx from 'clsx';
 import {
   type CSSProperties,
@@ -149,6 +151,8 @@ const underPointer: CollisionDetection = (args) => {
 export default function MapLayersPanel(): ReactElement {
   const m = useMessages();
 
+  const msm = useMapSettingsMessages();
+
   const { setOpen, place, setPlace } = useMapLayersPanel();
 
   const layers = useAppSelector((state) => state.map.layers);
@@ -165,7 +169,18 @@ export default function MapLayersPanel(): ReactElement {
   const featureRow =
     place.feature === undefined
       ? undefined
-      : featureRows.find((row) => row.id === place.feature && row.items);
+      : featureRows.find((row) => row.id === place.feature);
+
+  // Any draw tool counts: the three share one toolbar.
+  const featureToolOpen = useAppSelector((state) =>
+    openToolsSelector(state).some(
+      (tool) =>
+        tool === featureRow?.tool ||
+        (isDrawTool(tool) && isDrawTool(featureRow?.tool)),
+    ),
+  );
+
+  const dispatch = useDispatch();
 
   // Where the panel was left, if that is still on the map; else the stack.
   const at: PanelPlace =
@@ -249,7 +264,6 @@ export default function MapLayersPanel(): ReactElement {
               {({ props }) => (
                 <Button
                   variant="secondary"
-                  size="sm"
                   className="flex-shrink-0"
                   onClick={() => setPlace(up)}
                   {...props}
@@ -260,9 +274,30 @@ export default function MapLayersPanel(): ReactElement {
             </LongPressTooltip>
           )}
 
+          {/* The feature's icon opens its tool, as a selection's toolbar does. */}
+          {at.feature !== undefined && featureRow?.tool && (
+            <LongPressTooltip label={msm?.openTool}>
+              {({ props }) => (
+                <Button
+                  variant="dark"
+                  className="flex-shrink-0"
+                  disabled={featureToolOpen}
+                  onClick={() => dispatch(openTool(featureRow.tool!))}
+                  {...props}
+                >
+                  {featureRow.icon}
+                </Button>
+              )}
+            </LongPressTooltip>
+          )}
+
           <span className="flex-grow-1 min-w-0 d-flex">
             {at.feature !== undefined && featureRow ? (
-              <FeatureRowLabel row={featureRow} />
+              featureRow.tool ? (
+                <TruncatedText>{featureRow.label}</TruncatedText>
+              ) : (
+                <FeatureRowLabel row={featureRow} />
+              )
             ) : target ? (
               <TargetName target={target} />
             ) : at.preset !== undefined && preset ? (
@@ -786,17 +821,7 @@ function Stack({
             <Row
               key={row.id}
               label={<FeatureRowLabel row={row} count />}
-              onOpen={
-                row.onOpen || row.items
-                  ? () => {
-                      row.onOpen?.();
-
-                      if (row.items) {
-                        onOpen({ feature: row.id });
-                      }
-                    }
-                  : undefined
-              }
+              onOpen={() => onOpen({ feature: row.id })}
               onRemove={row.onRemove}
             />
           ))

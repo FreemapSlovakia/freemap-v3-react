@@ -81,6 +81,8 @@ export type MapSettingsMessages = {
   searchResults: string;
   /** Placeholder narrowing a feature's items in the Map layers panel. */
   filterItems: string;
+  /** On a feature's items page in the Map layers panel: opens its tool. */
+  openTool: string;
   /** A feature's item list with nothing in it, as the objects in view can be. */
   nothingInView: string;
   /** Says where a preset's layers are edited. */

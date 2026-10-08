@@ -95,6 +95,7 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   presetEmpty: 'Brak warstw.',
   searchResults: 'Wyniki wyszukiwania',
   filterItems: 'Filtruj',
+  openTool: 'Otwórz narzędzie',
   nothingInView: 'Na tym fragmencie mapy nic nie znaleziono.',
   presetHint:
     'Jego warstwy edytuje się na mapie: otwórz ustawienie wstępne w panelu Warstwy mapy. Każda zmiana zapisuje się od razu.',
