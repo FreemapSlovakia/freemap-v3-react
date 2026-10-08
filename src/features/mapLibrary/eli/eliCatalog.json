@@ -404,6 +404,26 @@
       }
     },
     {
+      "type": "0EX6R",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2021)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2021_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "0EY3P",
       "layer": "base",
       "name": "imagico.de: Kirwan Escarpment evening",
@@ -522,27 +542,6 @@
             "type": "map",
             "name": "© INRAE, IGN",
             "url": "https://www.inrae.fr/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "0MIAC",
-      "layer": "base",
-      "name": "Monongalia County 2024 Aerial Imagery",
-      "countries": ["us"],
-      "bbox": [-80.438, 39.4238, -79.7486, 39.7333],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.morgantownwv.gov/image/services/Imagery/Monongalia_County_2024/ImageServer/WMSServer",
-        "layers": ["Monongalia_County_2024"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Monongalia Morgantown Area Geospatial Information Consortium",
-            "url": "https://mmagic-monco.hub.arcgis.com/"
           }
         ]
       }
@@ -1295,6 +1294,27 @@
       }
     },
     {
+      "type": "1KVP9",
+      "layer": "base",
+      "name": "StratMap CapArea Imagery (2019)",
+      "countries": ["us"],
+      "bbox": [-99, 29.6, -96.55, 31.05],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap19_NCCIR_CapArea/ImageServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 2,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Strategic Mapping Program (StratMap). CapArea Imagery, 2019-01-29",
+            "url": "https://data.geographic.texas.gov/collection/?c=f84442b8-ac2a-4708-b5c0-9d15515f4483"
+          }
+        ]
+      }
+    },
+    {
       "type": "1KYLZ",
       "layer": "base",
       "name": "Cadastre",
@@ -1593,6 +1613,26 @@
       }
     },
     {
+      "type": "1Q57I",
+      "layer": "base",
+      "name": "Kanton Zug Menzingen 2021 6.5 cm",
+      "countries": ["ch"],
+      "bbox": [8.5537, 47.147, 8.6669, 47.2058],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2021_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
+          }
+        ]
+      }
+    },
+    {
       "type": "1QW85",
       "layer": "overlay",
       "name": "LfU Bayern Landslide Hazard Hints",
@@ -1755,26 +1795,6 @@
             "type": "map",
             "name": "© GUGiK (Główny Urząd Geodezji i Kartografii)",
             "url": "https://www.geoportal.gov.pl/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "23O08",
-      "layer": "base",
-      "name": "VIP Orthoimagery - Best of Color",
-      "countries": ["us"],
-      "bbox": [-73.4373, 42.7269, -71.4351, 45.1647],
-      "category": "photo",
-      "body": {
-        "url": "https://maps.vcgi.vermont.gov/arcgis/rest/services/EGC_services/IMG_VCGI_CLR_WM_CACHE/ImageServer/WMTS/tile/1.0.0/EGC_services_IMG_VCGI_CLR_WM_CACHE/default/default028mm/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Vermont Imagery Program, Vermont Center for Geographic Information",
-            "url": "https://vcgi.vermont.gov/data-and-programs/imagery-program"
           }
         ]
       }
@@ -2001,27 +2021,6 @@
       }
     },
     {
-      "type": "2BZJ8",
-      "layer": "base",
-      "name": "DVRPC Orthoimagery 2020 - Gloucestor County (1ft)",
-      "countries": ["us"],
-      "bbox": [-75.4289, 39.5148, -74.8772, 39.8847],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2020/MapServer/WMSServer",
-        "layers": ["3"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Delaware Valley Regional Planning Commission",
-            "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3214"
-          }
-        ]
-      }
-    },
-    {
       "type": "2CM5V",
       "layer": "overlay",
       "name": "IBGE BC250 - Terra Indígena",
@@ -2123,21 +2122,23 @@
       }
     },
     {
-      "type": "2GKM6",
+      "type": "2GUK7",
       "layer": "base",
-      "name": "VIP Orthoimagery - Infrared",
-      "countries": ["us"],
-      "bbox": [-73.4373, 42.7269, -71.4379, 45.0328],
+      "name": "Ukraine - Vinnytsia TG 2021",
+      "countries": ["ua"],
+      "bbox": [28.3615, 49.1769, 28.7567, 49.319],
       "category": "photo",
       "body": {
-        "url": "https://maps.vcgi.vermont.gov/arcgis/rest/services/EGC_services/IMG_VCGI_CIR_WM_CACHE/ImageServer/WMTS/tile/1.0.0/EGC_services_IMG_VCGI_CIR_WM_CACHE/default/default028mm/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
+        "url": "https://maps2.vmr.gov.ua/OpenData/ofp/2021-03/GoogleMapsCompatible/{z}/{y}/{x}.png?ver=03082021",
+        "minZoom": 14,
+        "maxNativeZoom": 19,
+        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
             "type": "map",
-            "name": "Vermont Imagery Program, Vermont Center for Geographic Information",
-            "url": "https://vcgi.vermont.gov/data-and-programs/imagery-program"
+            "name": "© Вінницька міська рада",
+            "url": "https://www.vmr.gov.ua/"
           }
         ]
       }
@@ -2179,6 +2180,27 @@
             "type": "map",
             "name": "© BRGM",
             "url": "https://www.brgm.fr/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "2JL7B",
+      "layer": "base",
+      "name": "StratMap CapArea, Brazos & Kerr Imagery (Natural Color 2021)",
+      "countries": ["us"],
+      "bbox": [-99.5479, 29.6239, -96.0141, 31.048],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap21_NCCIR_CapArea_Brazos_Kerr/ImageServer/WMSServer",
+        "layers": ["0"],
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Strategic Mapping Program (StratMap). CapArea, Brazos & Kerr Imagery",
+            "url": "https://geographic.texas.gov/stratmap/"
           }
         ]
       }
@@ -2759,6 +2781,26 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "37QHG",
+      "layer": "base",
+      "name": "Kanton Zug 2011",
+      "countries": ["ch"],
+      "bbox": [8.3872, 47.0801, 8.7049, 47.2531],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2011_kt_zg"],
+        "minZoom": 4,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -3544,6 +3586,25 @@
       }
     },
     {
+      "type": "4D2Q6",
+      "layer": "base",
+      "name": "Saint Johns County Basemap",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "map",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Basemap/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 23,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "4DA04",
       "layer": "base",
       "name": "South Tyrol Orthofoto 2011 (highres)",
@@ -3856,25 +3917,6 @@
       }
     },
     {
-      "type": "4OUSN",
-      "layer": "overlay",
-      "name": "Virginia Building Footprints",
-      "countries": ["us"],
-      "bbox": [-83.7001, 36.5581, -75.1986, 39.4553],
-      "category": "other",
-      "body": {
-        "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Building_Footprints/MapServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Virginia Geographic Information Network (VGIN)",
-            "url": "https://vgin.vdem.virginia.gov/"
-          }
-        ]
-      }
-    },
-    {
       "type": "4P27U",
       "layer": "base",
       "name": "Manatee County Orthoimagery (2022)",
@@ -4085,25 +4127,6 @@
             "type": "map",
             "name": "LGL-BW (2026) Datenlizenz Deutschland - Namensnennung - Version 2.0, www.lgl-bw.de",
             "url": "https://www.lgl-bw.de"
-          }
-        ]
-      }
-    },
-    {
-      "type": "4UTQG",
-      "layer": "base",
-      "name": "geoEuskadiren Ortoargazkiak",
-      "countries": ["es"],
-      "bbox": [-3.4544, 42.4691, -1.7263, 43.4637],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://www.geo.euskadi.eus/WMS_ORTOARGAZKIAK",
-        "layers": ["ORTO_EGUNERATUENA_MAS_ACTUALIZADA"],
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Eusko Jaurlaritza / Gobierno Vasco. geoEuskadi"
           }
         ]
       }
@@ -4730,27 +4753,6 @@
       }
     },
     {
-      "type": "5LWFG",
-      "layer": "base",
-      "name": "Ukraine - Cherkasy 2021",
-      "countries": ["ua"],
-      "bbox": [31.9434, 49.3566, 32.1473, 49.5026],
-      "category": "photo",
-      "body": {
-        "url": "https://mgis.chmr.gov.ua/server/rest/services/base_map/orthophoto_2021/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 14,
-        "maxNativeZoom": 21,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© Геопортал містобудівного кадастру міста Черкаси",
-            "url": "https://mgis.chmr.gov.ua/portal/home/"
-          }
-        ]
-      }
-    },
-    {
       "type": "5MZKC",
       "layer": "overlay",
       "name": "Wien Franziszeischer Kataster (parcels)",
@@ -5159,27 +5161,6 @@
             "type": "map",
             "name": "© IGN",
             "url": "https://www.ign.fr/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "64H9H",
-      "layer": "base",
-      "name": "DVRPC Orthoimagery 2020 - Camden County (1ft)",
-      "countries": ["us"],
-      "bbox": [-75.1359, 39.6083, -74.7361, 39.9964],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2020/MapServer/WMSServer",
-        "layers": ["6"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Delaware Valley Regional Planning Commission",
-            "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3214"
           }
         ]
       }
@@ -5707,28 +5688,6 @@
       }
     },
     {
-      "type": "6QYQK",
-      "layer": "base",
-      "name": "Miami-Dade County Orthoimagery (2021)",
-      "countries": ["us"],
-      "bbox": [-80.9429, 25.1309, -80.1055, 26.0249],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://imageserverintra.miamidade.gov/arcgis/services/Woolpert2021/ImageServer/WMSServer",
-        "layers": ["0"],
-        "minZoom": 5,
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Miami-Dade County",
-            "url": "https://gis-mdc.opendata.arcgis.com/pages/imagery"
-          }
-        ]
-      }
-    },
-    {
       "type": "6SSSL",
       "layer": "base",
       "name": "City of Cape Town Aerial Imagery (2025)",
@@ -5909,26 +5868,6 @@
             "type": "map",
             "name": "Tiles © cquest@Openstreetmap France, data © Onema - IGN, LO/OL",
             "url": "http://www.sandre.eaufrance.fr/actualite/la-bd-carthage-en-licence-ouverte-open-licence"
-          }
-        ]
-      }
-    },
-    {
-      "type": "75OZN",
-      "layer": "base",
-      "name": "Calaveras County Orthoimagery (2022)",
-      "countries": ["us"],
-      "bbox": [-120.9956, 37.8328, -120.0179, 38.5099],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://gisportal.calaverascounty.gov/image/rest/services/CC_Aug2022_Cache/ImageServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 23,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Calaveras County",
-            "url": "https://www.calaverasgov.us/"
           }
         ]
       }
@@ -6882,27 +6821,6 @@
       }
     },
     {
-      "type": "8D7JA",
-      "layer": "base",
-      "name": "DVRPC Orthoimagery 2025 - Burlington County (1ft)",
-      "countries": ["us"],
-      "bbox": [-75.0574, 39.5415, -74.3894, 40.1842],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2025/MapServer/WMSServer",
-        "layers": ["7"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Delaware Valley Regional Planning Commission",
-            "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3224"
-          }
-        ]
-      }
-    },
-    {
       "type": "8DJSD",
       "layer": "base",
       "name": "IGN Relief du terrain BD ALTI",
@@ -6940,25 +6858,6 @@
             "type": "map",
             "name": "© IGN",
             "url": "https://www.ign.fr/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "8G66P",
-      "layer": "overlay",
-      "name": "Virginia Property Lines",
-      "countries": ["us"],
-      "bbox": [-83.7001, 36.5581, -75.1986, 39.4553],
-      "category": "other",
-      "body": {
-        "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/MapServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Virginia Geographic Information Network (VGIN)",
-            "url": "https://vgin.vdem.virginia.gov/"
           }
         ]
       }
@@ -7474,6 +7373,27 @@
       }
     },
     {
+      "type": "9AH1D",
+      "layer": "base",
+      "name": "StratMap Brazos County Imagery (2019)",
+      "countries": ["us"],
+      "bbox": [-96.63, 30.33, -96.06, 30.99],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap19_NCCIR_6in_Brazos/ImageServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 3,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Strategic Mapping Program (StratMap). Brazos County Imagery, 2019-01-29",
+            "url": "https://data.geographic.texas.gov/collection/?c=aa2cd74e-9c2d-4f00-bae5-609b5e898093"
+          }
+        ]
+      }
+    },
+    {
       "type": "9BGHY",
       "layer": "base",
       "name": "South Tyrol orthophoto 2003",
@@ -7489,26 +7409,6 @@
             "type": "map",
             "name": "© Autonome Provinz Bozen/Provincia Autonoma di Bolzano CC-BY 4.0",
             "url": "https://geoservices.buergernetz.bz.it/geokatalog"
-          }
-        ]
-      }
-    },
-    {
-      "type": "9BO2N",
-      "layer": "base",
-      "name": "King County Orthoimagery (2023)",
-      "countries": ["us"],
-      "bbox": [-122.5485, 47.0597, -121.038, 47.9589],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://gismaps.kingcounty.gov/arcgis/rest/services/BaseMaps/KingCo_Aerial_2023/MapServer/WMTS/tile/1.0.0/BaseMaps_KingCo_Aerial_2023/default/default028mm/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "King County Geographic Information System",
-            "url": "https://kingcounty.gov/services/gis.aspx"
           }
         ]
       }
@@ -7942,27 +7842,6 @@
       }
     },
     {
-      "type": "9V03H",
-      "layer": "base",
-      "name": "DVRPC Orthoimagery 2025 - Bucks County (1ft)",
-      "countries": ["us"],
-      "bbox": [-75.4838, 40.052, -74.7214, 40.6087],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2025/MapServer/WMSServer",
-        "layers": ["8"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Delaware Valley Regional Planning Commission",
-            "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3224"
-          }
-        ]
-      }
-    },
-    {
       "type": "9WQE5",
       "layer": "base",
       "name": "Bologna ortofoto 2017",
@@ -8283,6 +8162,26 @@
             "type": "map",
             "name": "NOAA National Geodetic Survey",
             "url": "https://www.ngs.noaa.gov/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "A6MWN",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2026)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "photo",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2026_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -9001,21 +8900,21 @@
       }
     },
     {
-      "type": "B3Y50",
+      "type": "B6CJZ",
       "layer": "base",
-      "name": "Osceola County Orthoimagery (2025)",
-      "countries": ["us"],
-      "bbox": [-81.6721, 27.6349, -80.8481, 28.3501],
-      "category": "historicphoto",
+      "name": "Kanton Zug Gemeinde Zug Süd 2018",
+      "countries": ["ch"],
+      "bbox": [8.4945, 47.1129, 8.5653, 47.1592],
+      "category": "photo",
+      "technology": "wms",
       "body": {
-        "url": "https://paags.property-appraiser.org/server/rest/services/AGS_AERIALS_2025_WM/MapServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "scaleWithDpi": true,
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2018_kt_zg"],
+        "minZoom": 6,
         "attribution": [
           {
             "type": "map",
-            "name": "Osceola County, FL",
-            "url": "https://www.osceola.org/"
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -9651,26 +9550,6 @@
             "type": "map",
             "name": "Stadt Wien",
             "url": "https://data.wien.gv.at"
-          }
-        ]
-      }
-    },
-    {
-      "type": "C5EJV",
-      "layer": "base",
-      "name": "King County Orthoimagery (2025)",
-      "countries": ["us"],
-      "bbox": [-122.5485, 47.0597, -121.038, 47.9589],
-      "category": "photo",
-      "body": {
-        "url": "https://gismaps.kingcounty.gov/arcgis/rest/services/BaseMaps/KingCo_Aerial_2025/MapServer/WMTS/tile/1.0.0/BaseMaps_KingCo_Aerial_2025/default/default028mm/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "King County Geographic Information System",
-            "url": "https://kingcounty.gov/services/gis.aspx"
           }
         ]
       }
@@ -11409,26 +11288,6 @@
       }
     },
     {
-      "type": "EG0OA",
-      "layer": "base",
-      "name": "Calaveras County Orthoimagery (2024)",
-      "countries": ["us"],
-      "bbox": [-120.9956, 37.8328, -120.0179, 38.5099],
-      "category": "photo",
-      "body": {
-        "url": "https://gisportal.calaverascounty.gov/image/rest/services/Orthos_2024/ImageServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 23,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Calaveras County",
-            "url": "https://www.calaverasgov.us/"
-          }
-        ]
-      }
-    },
-    {
       "type": "EG61J",
       "layer": "base",
       "name": "City of Parksville Orthoimagery (2025)",
@@ -11963,27 +11822,6 @@
       }
     },
     {
-      "type": "F3T0Y",
-      "layer": "base",
-      "name": "Ukraine - Cherkasy 2015",
-      "countries": ["ua"],
-      "bbox": [31.9434, 49.3566, 32.1473, 49.5026],
-      "category": "photo",
-      "body": {
-        "url": "https://mgis.chmr.gov.ua/server/rest/services/base_map/orthophoto_2015/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 14,
-        "maxNativeZoom": 21,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© Геопортал містобудівного кадастру міста Черкаси",
-            "url": "https://mgis.chmr.gov.ua/portal/home/"
-          }
-        ]
-      }
-    },
-    {
       "type": "F4KHM",
       "layer": "base",
       "name": "Nancy - Orthophoto - 2008",
@@ -12451,49 +12289,6 @@
       }
     },
     {
-      "type": "FWESI",
-      "layer": "overlay",
-      "name": "BFW forest development plan (forest functions)",
-      "countries": ["at"],
-      "bbox": [9.53, 46.37, 17.16, 49.0201],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://inspire.lfrz.gv.at/000606/wms",
-        "layers": [
-          "Oesterreichischer Waldentwicklungsplan - Waldfunktionsflaechen"
-        ],
-        "attribution": [
-          {
-            "type": "map",
-            "name": "BFW – Bundesforschungszentrum für Wald",
-            "url": "https://www.bfw.gv.at/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "FWEWX",
-      "layer": "base",
-      "name": "NSW DCS SS HAPE Imagery 1947",
-      "countries": ["au"],
-      "bbox": [150.5978, -34.0082, 151.014, -33.5001],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1947/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 1,
-        "maxNativeZoom": 21,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
-            "url": "https://www.spatial.nsw.gov.au/"
-          }
-        ]
-      }
-    },
-    {
       "type": "FX1FF",
       "layer": "base",
       "name": "imagico.de: Pechora Sea Coast",
@@ -12651,27 +12446,6 @@
       }
     },
     {
-      "type": "G4XHQ",
-      "layer": "base",
-      "name": "DVRPC Orthoimagery 2025 - Chester County (1ft)",
-      "countries": ["us"],
-      "bbox": [-76.1367, 39.7214, -75.3608, 40.245],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2025/MapServer/WMSServer",
-        "layers": ["5"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Delaware Valley Regional Planning Commission",
-            "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3224"
-          }
-        ]
-      }
-    },
-    {
       "type": "G6KCY",
       "layer": "base",
       "name": "Taiwan Village Boundaries",
@@ -12750,27 +12524,6 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
-          }
-        ]
-      }
-    },
-    {
-      "type": "G7RU5",
-      "layer": "base",
-      "name": "NSW DCS SS HAPE Imagery 1951",
-      "countries": ["au"],
-      "bbox": [151.0335, -33.9112, 151.2122, -33.8672],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1951/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 1,
-        "maxNativeZoom": 18,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
-            "url": "https://www.spatial.nsw.gov.au/"
           }
         ]
       }
@@ -13747,27 +13500,6 @@
       }
     },
     {
-      "type": "HHC5Z",
-      "layer": "base",
-      "name": "NSW DCS SS HAPE Imagery 1955",
-      "countries": ["au"],
-      "bbox": [150.5967, -34.1933, 151.3498, -33.6174],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1955/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 1,
-        "maxNativeZoom": 21,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
-            "url": "https://www.spatial.nsw.gov.au/"
-          }
-        ]
-      }
-    },
-    {
       "type": "HIZYK",
       "layer": "base",
       "name": "Steiermark Surface",
@@ -14322,6 +14054,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "IKI5T",
+      "layer": "base",
+      "name": "Ludwigshafen 2019",
+      "countries": ["de"],
+      "bbox": [8.2967, 49.4056, 8.4785, 49.5679],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodaten.ludwigshafen.de/wms/luftbild_historisch",
+        "layers": ["C7F0E141BD264811A166B9D478C0E20F"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Stadt Ludwigshafen am Rhein",
+            "url": "https://ludwigshafen.de/impressum/ludwigshafende"
           }
         ]
       }
@@ -15165,6 +14917,27 @@
       }
     },
     {
+      "type": "JMMWO",
+      "layer": "base",
+      "name": "TX: Smith County Imagery 2019",
+      "countries": ["us"],
+      "bbox": [-95.61, 32.13, -94.98, 32.7],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/Smith_County/SmithCo_2020_NCCIR_6in/ImageServer/WMSServer",
+        "layers": ["0"],
+        "minZoom": 3,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Smith County (Smith). Smith County Imagery, 2019-12-11",
+            "url": "https://data.geographic.texas.gov/collection/?c=38f1b2e7-6fc7-4357-80a4-1ee33d7abaaf"
+          }
+        ]
+      }
+    },
+    {
       "type": "JOVHX",
       "layer": "base",
       "name": "Kendall County 2022 Aerial Imagery",
@@ -15283,6 +15056,26 @@
             "type": "map",
             "name": "Land Vorarlberg – data.vorarlberg.gv.at",
             "url": "https://data.vorarlberg.gv.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "JS2ZD",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2025)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2025_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -15477,27 +15270,6 @@
             "type": "map",
             "name": "Geobasisdaten: Bayerische Vermessungsverwaltung – www.geodaten.bayern.de",
             "url": "https://geodaten.bayern.de/opengeodata/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "K2EVY",
-      "layer": "base",
-      "name": "Hennepin County Orthoimagery (2021)",
-      "countries": ["us"],
-      "bbox": [-93.7709, 44.7852, -93.1724, 45.2487],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.hennepin.us/arcgis/services/Imagery/UTM_Aerial_2021/MapServer/WMSServer",
-        "layers": ["1"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Hennepin County GIS",
-            "url": "https://gis-hennepin.hub.arcgis.com/"
           }
         ]
       }
@@ -15865,6 +15637,26 @@
       }
     },
     {
+      "type": "KK670",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2025)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2025_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "KMXGS",
       "layer": "base",
       "name": "Manatee County Orthoimagery (2023)",
@@ -15980,6 +15772,26 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "KU4UN",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2026)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "photo",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2026_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -16603,23 +16415,6 @@
       }
     },
     {
-      "type": "LTCEI",
-      "layer": "base",
-      "name": "geoEuskadiren Kartografia",
-      "countries": ["es"],
-      "bbox": [-3.4544, 42.4691, -1.7263, 43.4637],
-      "category": "map",
-      "body": {
-        "url": "https://www.geo.euskadi.eus/geoeuskadi/rest/services/U11/WMTS_KARTO/MapServer/WMTS/tile/1.0.0/U11_WMTS_KARTO/default/GoogleMapsCompatible/{z}/{y}/{x}.png",
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Eusko Jaurlaritza / Gobierno Vasco. geoEuskadi"
-          }
-        ]
-      }
-    },
-    {
       "type": "LTCVJ",
       "layer": "overlay",
       "name": "Veloland Schweiz national cycling routes",
@@ -17007,27 +16802,6 @@
       }
     },
     {
-      "type": "MARMF",
-      "layer": "base",
-      "name": "Monongalia County 2026 Aerial Imagery",
-      "countries": ["us"],
-      "bbox": [-80.438, 39.4238, -79.7486, 39.7333],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.morgantownwv.gov/image/services/Imagery/Monongalia_County_2026_Aerial_Imagery/ImageServer/WMSServer",
-        "layers": ["Monongalia_County_2026_Aerial_Imagery:None"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Monongalia Morgantown Area Geospatial Information Consortium",
-            "url": "https://mmagic-monco.hub.arcgis.com/"
-          }
-        ]
-      }
-    },
-    {
       "type": "MAT3C",
       "layer": "base",
       "name": "imagico.de: Graham Land West",
@@ -17082,6 +16856,26 @@
             "type": "map",
             "name": "© swisstopo",
             "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ME0CB",
+      "layer": "base",
+      "name": "Ludwigshafen 2022",
+      "countries": ["de"],
+      "bbox": [8.2974, 49.4007, 8.4778, 49.576],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodaten.ludwigshafen.de/wms/luftbild_2022",
+        "layers": ["4B1281A1EBD54D74897B3DDA16F00006"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Stadt Ludwigshafen am Rhein",
+            "url": "https://ludwigshafen.de/impressum/ludwigshafende"
           }
         ]
       }
@@ -17569,22 +17363,6 @@
       }
     },
     {
-      "type": "N6A6L",
-      "layer": "base",
-      "name": "USGS 3D Elevation Program",
-      "countries": ["us"],
-      "bbox": [-179.9341, 17.623, -64.5378, 71.9791],
-      "category": "elevation",
-      "technology": "wms",
-      "body": {
-        "url": "https://elevation.nationalmap.gov/arcgis/services/3DEPElevation/ImageServer/WMSServer",
-        "layers": ["3DEPElevation:Hillshade Gray"],
-        "minZoom": 9,
-        "maxNativeZoom": 20,
-        "attribution": []
-      }
-    },
-    {
       "type": "N6FPW",
       "layer": "overlay",
       "name": "City of Turku topographic map",
@@ -17898,26 +17676,6 @@
       }
     },
     {
-      "type": "NI3IB",
-      "layer": "base",
-      "name": "Osceola County Orthoimagery (2026)",
-      "countries": ["us"],
-      "bbox": [-81.6721, 27.6349, -80.8481, 28.3501],
-      "category": "photo",
-      "body": {
-        "url": "https://paags.property-appraiser.org/server/rest/services/AGS_AERIALS_2026_WM/MapServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Osceola County, FL",
-            "url": "https://www.osceola.org/"
-          }
-        ]
-      }
-    },
-    {
       "type": "NIF6U",
       "layer": "base",
       "name": "Budapest district XI orthophoto 2017",
@@ -18110,27 +17868,6 @@
         "url": "https://www.wms.nrw.de/geobasis/wms_nw_idop",
         "layers": ["nw_idop_rgb"],
         "attribution": []
-      }
-    },
-    {
-      "type": "NTBBR",
-      "layer": "base",
-      "name": "DVRPC Orthoimagery 2025 - Mercer County (1ft)",
-      "countries": ["us"],
-      "bbox": [-74.9432, 40.1365, -74.481, 40.4242],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2025/MapServer/WMSServer",
-        "layers": ["2"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Delaware Valley Regional Planning Commission",
-            "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3224"
-          }
-        ]
       }
     },
     {
@@ -18771,6 +18508,26 @@
             "type": "map",
             "name": "basemap.at",
             "url": "https://basemap.at"
+          }
+        ]
+      }
+    },
+    {
+      "type": "OSGM2",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2024)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2024_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -20045,46 +19802,6 @@
       }
     },
     {
-      "type": "QCADD",
-      "layer": "base",
-      "name": "King County Orthoimagery (2021)",
-      "countries": ["us"],
-      "bbox": [-122.5485, 47.0597, -121.038, 47.9589],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://gismaps.kingcounty.gov/arcgis/rest/services/BaseMaps/KingCo_Aerial_2021/MapServer/WMTS/tile/1.0.0/BaseMaps_KingCo_Aerial_2021/default/default028mm/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "King County Geographic Information System",
-            "url": "https://kingcounty.gov/services/gis.aspx"
-          }
-        ]
-      }
-    },
-    {
-      "type": "QD2S8",
-      "layer": "base",
-      "name": "King County Orthoimagery (2019)",
-      "countries": ["us"],
-      "bbox": [-122.5485, 47.0597, -121.038, 47.9589],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://gismaps.kingcounty.gov/arcgis/rest/services/BaseMaps/KingCo_Aerial_2019/MapServer/WMTS/tile/1.0.0/BaseMaps_KingCo_Aerial_2019/default/default028mm/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "King County Geographic Information System",
-            "url": "https://kingcounty.gov/services/gis.aspx"
-          }
-        ]
-      }
-    },
-    {
       "type": "QFAEI",
       "layer": "base",
       "name": "Kanton Zurich, Orthofoto ZH Sommer 2014/15 RGB 10cm",
@@ -20319,28 +20036,6 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "QQIVI",
-      "layer": "base",
-      "name": "Oregon DOGAMI Lidar",
-      "countries": ["us"],
-      "bbox": [-124.6196, 41.7794, -116.4547, 47.3869],
-      "category": "elevation",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.dogami.oregon.gov/arcgis/services/lidar/DIGITAL_TERRAIN_MODEL_MOSAIC_HS/ImageServer/WMSServer",
-        "layers": ["DIGITAL_TERRAIN_MODEL_MOSAIC_HS"],
-        "minZoom": 6,
-        "maxNativeZoom": 21,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Oregon Department of Geology and Mineral Industries",
-            "url": "https://www.oregon.gov/dogami"
           }
         ]
       }
@@ -20659,6 +20354,26 @@
       }
     },
     {
+      "type": "R3NRY",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2021)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2021_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "R41GB",
       "layer": "base",
       "name": "Lyon Orthophoto plus récente",
@@ -20891,27 +20606,6 @@
             "type": "map",
             "name": "Connecticut Environmental Conditions Online",
             "url": "https://cteco.uconn.edu/data/imagery/index.htm"
-          }
-        ]
-      }
-    },
-    {
-      "type": "RJGIF",
-      "layer": "base",
-      "name": "Monongalia County 2022 Aerial Imagery",
-      "countries": ["us"],
-      "bbox": [-80.438, 39.4238, -79.7486, 39.7333],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.morgantownwv.gov/image/services/Imagery/Monongalia_County_2022_Aerial_Imagery/ImageServer/WMSServer",
-        "layers": ["Monongalia_County_2022_Aerial_Imagery:None"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Monongalia Morgantown Area Geospatial Information Consortium",
-            "url": "https://mmagic-monco.hub.arcgis.com/"
           }
         ]
       }
@@ -21264,27 +20958,6 @@
       }
     },
     {
-      "type": "S3LYE",
-      "layer": "base",
-      "name": "PEMA Orthoimagery (2018-2020)",
-      "countries": ["us"],
-      "bbox": [-80.5252, 39.719, -74.6867, 42.3714],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/PEMAImagery2018_2020/MapServer/WMSServer",
-        "layers": ["1"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Pennsylvania Emergency Management Agency",
-            "url": "https://www.pema.pa.gov/911-Program/Partners/NG911-GIS/Aerial-Imagery/Pages/default.aspx"
-          }
-        ]
-      }
-    },
-    {
       "type": "S50OB",
       "layer": "base",
       "name": "ČÚZK Map of the Czech Republic 1:1 000 000",
@@ -21569,27 +21242,6 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
-          }
-        ]
-      }
-    },
-    {
-      "type": "SLT6W",
-      "layer": "base",
-      "name": "DVRPC Orthoimagery 2020 - Bucks County (1ft)",
-      "countries": ["us"],
-      "bbox": [-75.4838, 40.052, -74.7214, 40.6087],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2020/MapServer/WMSServer",
-        "layers": ["8"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Delaware Valley Regional Planning Commission",
-            "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3214"
           }
         ]
       }
@@ -22270,27 +21922,6 @@
       }
     },
     {
-      "type": "TPINB",
-      "layer": "base",
-      "name": "NSW DCS SS HAPE Imagery 1943",
-      "countries": ["au"],
-      "bbox": [150.2119, -34.1705, 151.323, -33.5527],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1943/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 1,
-        "maxNativeZoom": 21,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
-            "url": "https://www.spatial.nsw.gov.au/"
-          }
-        ]
-      }
-    },
-    {
       "type": "TQ16O",
       "layer": "base",
       "name": "OS 2nd Ed. 6-inch. Armagh, Ireland (1888-1915) (NLS)",
@@ -22614,6 +22245,27 @@
       }
     },
     {
+      "type": "U3E51",
+      "layer": "base",
+      "name": "DC From Above Orthophoto 2023",
+      "countries": ["us"],
+      "bbox": [-77.1198, 38.7971, -76.9092, 38.996],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.dcgis.dc.gov/dcgis/services/Ortho/Ortho_2023/ImageServer/WMSServer",
+        "layers": ["Ortho_2023"],
+        "maxNativeZoom": 21,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "OCTO, DCGIS",
+            "url": "https://opendata.dc.gov/datasets/DCGIS::aerial-photography-orthophoto-2023/about"
+          }
+        ]
+      }
+    },
+    {
       "type": "U3GDH",
       "layer": "base",
       "name": "Kanton Aargau 20cm (AGIS 2020)",
@@ -22871,27 +22523,6 @@
             "type": "map",
             "name": "© ČÚZK (CC BY 4.0)",
             "url": "https://www.cuzk.gov.cz/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "UH25Q",
-      "layer": "base",
-      "name": "Hennepin County Orthoimagery (2025)",
-      "countries": ["us"],
-      "bbox": [-93.7709, 44.7852, -93.1724, 45.2487],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.hennepin.us/arcgis/services/Imagery/UTM_Aerial_2025/MapServer/WMSServer",
-        "layers": ["0"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Hennepin County GIS",
-            "url": "https://gis-hennepin.hub.arcgis.com/"
           }
         ]
       }
@@ -23447,27 +23078,6 @@
             "type": "map",
             "name": "Orthophotographie CRAIG/Sintegra/IGN 2013",
             "url": "https://wiki.openstreetmap.org/wiki/WikiProject_France/CRAIG"
-          }
-        ]
-      }
-    },
-    {
-      "type": "VEFOS",
-      "layer": "base",
-      "name": "Monongalia County 2025 Aerial Imagery",
-      "countries": ["us"],
-      "bbox": [-80.438, 39.4238, -79.7486, 39.7333],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.morgantownwv.gov/image/services/Imagery/Monongalia_County_2025_Aerial_Imagery/ImageServer/WMSServer",
-        "layers": ["Monongalia_County_2025_Aerial_Imagery"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Monongalia Morgantown Area Geospatial Information Consortium",
-            "url": "https://mmagic-monco.hub.arcgis.com/"
           }
         ]
       }
@@ -24160,27 +23770,6 @@
       }
     },
     {
-      "type": "WCCY1",
-      "layer": "base",
-      "name": "VBMP Most Recent Imagery",
-      "countries": ["us"],
-      "bbox": [-83.6754, 36.5405, -75.2317, 39.4666],
-      "category": "photo",
-      "body": {
-        "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VBMP_Imagery/MostRecentImagery_WGS/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 2,
-        "maxNativeZoom": 20,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Virginia Geographic Information Network, Commonwealth of Virginia",
-            "url": "https://vgin.vdem.virginia.gov/"
-          }
-        ]
-      }
-    },
-    {
       "type": "WDL0J",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1970",
@@ -24223,22 +23812,21 @@
       }
     },
     {
-      "type": "WEM3Z",
+      "type": "WG455",
       "layer": "base",
-      "name": "NSW DCS SS HAPE Imagery 1944",
-      "countries": ["au"],
-      "bbox": [151.3192, -33.033, 151.8376, -32.6981],
-      "category": "historicphoto",
+      "name": "Kanton Zug (Walchwil und Zug (Alpli)) 2019",
+      "countries": ["ch"],
+      "bbox": [8.4938, 47.0763, 8.5866, 47.1338],
+      "category": "photo",
+      "technology": "wms",
       "body": {
-        "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1944/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 1,
-        "maxNativeZoom": 21,
-        "scaleWithDpi": true,
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2019_kt_zg"],
+        "minZoom": 6,
         "attribution": [
           {
             "type": "map",
-            "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
-            "url": "https://www.spatial.nsw.gov.au/"
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -24595,6 +24183,26 @@
       }
     },
     {
+      "type": "WRA6D",
+      "layer": "base",
+      "name": "Kanton Zug Nord 2016",
+      "countries": ["ch"],
+      "bbox": [8.4075, 47.1492, 8.5796, 47.2373],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2016_kt_zg"],
+        "minZoom": 4,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
+          }
+        ]
+      }
+    },
+    {
       "type": "WRXLD",
       "layer": "base",
       "name": "GURS national topographic map 1:50 000",
@@ -24711,27 +24319,6 @@
             "type": "map",
             "name": "Staatsbetrieb Geobasisinformation und Vermessung Sachsen",
             "url": "https://geomis.sachsen.de/geomis-client/?lang=de#/datasets/iso/5e0f6071-008e-4d57-810e-48a8362acf04"
-          }
-        ]
-      }
-    },
-    {
-      "type": "WVAXW",
-      "layer": "base",
-      "name": "Monongalia County 2023 Aerial Imagery",
-      "countries": ["us"],
-      "bbox": [-80.438, 39.4238, -79.7486, 39.7333],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.morgantownwv.gov/image/services/Imagery/Monongalia_County_2023/ImageServer/WMSServer",
-        "layers": ["Monongalia_County_2023:None"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Monongalia Morgantown Area Geospatial Information Consortium",
-            "url": "https://mmagic-monco.hub.arcgis.com/"
           }
         ]
       }
@@ -24980,27 +24567,6 @@
             "type": "map",
             "name": "Geoinformation Stadt Bern",
             "url": "https://map.bern.ch/geoportal/#/produkt/Orthofoto_2023"
-          }
-        ]
-      }
-    },
-    {
-      "type": "X5BC7",
-      "layer": "base",
-      "name": "NSW DCS SS HAPE Imagery 1965",
-      "countries": ["au"],
-      "bbox": [150.7341, -34.4329, 151.7447, -32.9888],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1965/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 1,
-        "maxNativeZoom": 21,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
-            "url": "https://www.spatial.nsw.gov.au/"
           }
         ]
       }
@@ -25352,26 +24918,6 @@
       }
     },
     {
-      "type": "XOZB6",
-      "layer": "base",
-      "name": "VCGI LiDAR - DEM Hillshade",
-      "countries": ["us"],
-      "bbox": [-73.4373, 42.7269, -71.4379, 45.0328],
-      "category": "elevation",
-      "body": {
-        "url": "https://maps.vcgi.vermont.gov/arcgis/rest/services/EGC_services/IMG_VCGI_LIDARHILLSHD_WM_CACHE_v1/ImageServer/WMTS/tile/1.0.0/EGC_services_IMG_VCGI_LIDARHILLSHD_WM_CACHE_v1/default/default028mm/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Vermont Center for Geographic Information",
-            "url": "https://vcgi.vermont.gov/data-and-programs/lidar-program"
-          }
-        ]
-      }
-    },
-    {
       "type": "XQICD",
       "layer": "base",
       "name": "Stadt Zürich Luftbild 2013",
@@ -25387,6 +24933,26 @@
           {
             "type": "map",
             "name": "Stadt Zürich Open Government Data"
+          }
+        ]
+      }
+    },
+    {
+      "type": "XRG1Z",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2024)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2024_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -25538,6 +25104,27 @@
         "minZoom": 1,
         "maxNativeZoom": 20,
         "attribution": []
+      }
+    },
+    {
+      "type": "Y0NP1",
+      "layer": "base",
+      "name": "DC From Above Orthophoto 2025",
+      "countries": ["us"],
+      "bbox": [-77.1198, 38.7971, -76.9092, 38.996],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.dcgis.dc.gov/dcgis/services/Ortho/Ortho_2025/ImageServer/WMSServer",
+        "layers": ["Ortho_2025"],
+        "maxNativeZoom": 21,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "OCTO, DCGIS",
+            "url": "https://opendata.dc.gov/datasets/DCGIS::aerial-photography-orthophoto-2025/about"
+          }
+        ]
       }
     },
     {
@@ -25988,27 +25575,6 @@
       }
     },
     {
-      "type": "YLYFV",
-      "layer": "base",
-      "name": "ACTmapi Imagery Feb 2024",
-      "countries": ["au"],
-      "bbox": [148.9544, -35.5149, 149.4208, -35.115],
-      "category": "photo",
-      "body": {
-        "url": "https://tiles.arcgis.com/tiles/E5n4f1VY84i0xSjy/arcgis/rest/services/ACT_Aerial_Imagery_202402_AGOL_Compatible/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 10,
-        "maxNativeZoom": 21,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Aerial Imagery from ACTMapi ©ACT Government and MetroMap",
-            "url": "https://www.actmapi.act.gov.au/home"
-          }
-        ]
-      }
-    },
-    {
       "type": "YNTZ2",
       "layer": "base",
       "name": "imagico.de: Rila and Pirin Mountains",
@@ -26302,6 +25868,26 @@
       }
     },
     {
+      "type": "Z5MWQ",
+      "layer": "base",
+      "name": "Kanton Zug Neuheim 2020 3.5 cm",
+      "countries": ["ch"],
+      "bbox": [8.5574, 47.1848, 8.6119, 47.219],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2020_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
+          }
+        ]
+      }
+    },
+    {
       "type": "Z63K4",
       "layer": "base",
       "name": "Rennes orthophotographie 2021 (5 cm)",
@@ -26454,22 +26040,22 @@
       }
     },
     {
-      "type": "ZKO8D",
+      "type": "ZM06L",
       "layer": "base",
-      "name": "DVRPC Orthoimagery 2020 - Mercer County (1ft)",
+      "name": "DC From Above Orthophoto 2021",
       "countries": ["us"],
-      "bbox": [-74.9432, 40.1365, -74.481, 40.4242],
-      "category": "photo",
+      "bbox": [-77.1198, 38.7971, -76.9092, 38.996],
+      "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2020/MapServer/WMSServer",
-        "layers": ["2"],
-        "maxNativeZoom": 19,
+        "url": "https://imagery.dcgis.dc.gov/dcgis/services/Ortho/Ortho_2021/ImageServer/WMSServer",
+        "layers": ["Ortho_2021"],
+        "maxNativeZoom": 21,
         "attribution": [
           {
             "type": "map",
-            "name": "Delaware Valley Regional Planning Commission",
-            "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3214"
+            "name": "OCTO, DCGIS",
+            "url": "https://opendata.dc.gov/datasets/DCGIS::aerial-photography-orthophoto-2021/about"
           }
         ]
       }

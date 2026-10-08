@@ -7,8 +7,8 @@
   },
   "ACT202402": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "ADOP_2017_1ft": {
@@ -487,14 +487,14 @@
   },
   "Calaveras_CA_2022": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Calaveras_CA_2024": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "CityOfLaunceston_2011": {
@@ -739,20 +739,20 @@
   },
   "DC_From_Above_Ortho_2021": {
     "v": 3,
-    "status": 500,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "DC_From_Above_Ortho_2023": {
     "v": 3,
-    "status": 500,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "DC_From_Above_Ortho_2025": {
     "v": 3,
-    "status": 500,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "DE_Orthophotography_2017_NC": {
@@ -763,56 +763,56 @@
   },
   "DOGAMI-Lidar": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "DVRPC_2020_BucksPA": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "DVRPC_2020_CamdenNJ": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "DVRPC_2020_GloucestorNJ": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "DVRPC_2020_MercerNJ": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "DVRPC_2025_BucksPA": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "DVRPC_2025_BurlingtonNJ": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "DVRPC_2025_ChesterPA": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "DVRPC_2025_MercerNJ": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "DV_DHMV_II_HILL_25cm": {
@@ -937,7 +937,7 @@
   },
   "ETCOG24_NC_6in": {
     "v": 3,
-    "status": 503,
+    "status": "error",
     "cors": false,
     "scales": []
   },
@@ -1501,8 +1501,8 @@
   },
   "Hennepin_Ortho_2021": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Hennepin_Ortho_2022": {
@@ -1525,7 +1525,7 @@
   },
   "Hennepin_Ortho_2025": {
     "v": 3,
-    "status": 200,
+    "status": "not an image",
     "cors": true,
     "scales": []
   },
@@ -1717,26 +1717,26 @@
   },
   "King_WA_2019": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "King_WA_2021": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "King_WA_2023": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "King_WA_2025": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Koeln-TrueDOP-2024": {
@@ -2005,14 +2005,14 @@
   },
   "Ludwigshafen-2019": {
     "v": 3,
-    "status": 503,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Ludwigshafen-2022": {
     "v": 3,
-    "status": 503,
-    "cors": false,
+    "status": 404,
+    "cors": true,
     "scales": []
   },
   "MDT2M_LITORAL_2014_15": {
@@ -2209,7 +2209,7 @@
   },
   "Miami-Dade_Ortho_2021": {
     "v": 3,
-    "status": 200,
+    "status": 400,
     "cors": true,
     "scales": []
   },
@@ -2227,32 +2227,32 @@
   },
   "Monongalia_WV_2022": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Monongalia_WV_2023": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Monongalia_WV_2024": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Monongalia_WV_2025": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Monongalia_WV_2026": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Morgan_OH_2023": {
@@ -2407,7 +2407,7 @@
   },
   "NRCS_American_Samoa_2024": {
     "v": 3,
-    "status": "not an image",
+    "status": "error",
     "cors": false,
     "scales": []
   },
@@ -2431,38 +2431,38 @@
   },
   "NSW_DCS_SS_HAPE_Imagery_1943": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1944": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1947": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1951": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1955": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1965": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "NSW_DCS_SS_HAPE_Imagery_1966": {
@@ -2791,7 +2791,7 @@
   },
   "Okaloosa_Ortho_2019": {
     "v": 3,
-    "status": 400,
+    "status": 500,
     "cors": true,
     "scales": []
   },
@@ -2839,14 +2839,14 @@
   },
   "Osceola_Ortho_2025": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 403,
+    "cors": false,
     "scales": []
   },
   "Osceola_Ortho_2026": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 403,
+    "cors": false,
     "scales": []
   },
   "PAgis_Ortho_2018": {
@@ -2857,8 +2857,8 @@
   },
   "PEMA_Orthoimagery": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "PNOA-Spain-TMS": {
@@ -3133,56 +3133,56 @@
   },
   "Saint_Johns_Basemap": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Saint_Johns_Ortho_2021": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Saint_Johns_Ortho_2024": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Saint_Johns_Ortho_2025": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Saint_Johns_Ortho_2026": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Saint_Johns_Ortho_CIR_2021": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Saint_Johns_Ortho_CIR_2024": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Saint_Johns_Ortho_CIR_2025": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Saint_Johns_Ortho_CIR_2026": {
     "v": 3,
-    "status": "error",
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Saint_Lucie_Ortho_2021": {
@@ -3535,13 +3535,13 @@
   },
   "StratMap21_NCCIR_CapArea_Brazos_Kerr": {
     "v": 3,
-    "status": 503,
+    "status": 200,
     "cors": false,
     "scales": []
   },
   "Stratmap20_NCCIR_CapArea_McLennan": {
     "v": 3,
-    "status": 503,
+    "status": "error",
     "cors": false,
     "scales": []
   },
@@ -3703,8 +3703,8 @@
   },
   "USGS-3DEP": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": 504,
+    "cors": false,
     "scales": []
   },
   "USGS-Imagery": {
@@ -3727,14 +3727,14 @@
   },
   "UkraineCherkasy2015": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "UkraineCherkasy2021": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "UkraineDonAndriivskaOTG2020": {
@@ -3751,7 +3751,7 @@
   },
   "UkraineVinnytsiaTG2021": {
     "v": 3,
-    "status": "error",
+    "status": 200,
     "cors": false,
     "scales": []
   },
@@ -3895,38 +3895,38 @@
   },
   "VBMPImagery_Most_Recent": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "VCGI_LiDAR_DEM_Hillshade": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "VGIN-BuildingFootprints_WM": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "VGIN-PropertyLines_WM": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "VT_Best_CIR": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "VT_Best_CLR": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "Vercors-Orthophotos-1999": {
@@ -4015,38 +4015,38 @@
   },
   "Zug-2011": {
     "v": 3,
-    "status": 500,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Zug-2016": {
     "v": 3,
-    "status": 500,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Zug-2018": {
     "v": 3,
-    "status": 500,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Zug-2019-wms": {
     "v": 3,
-    "status": 500,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Zug-2020-wms": {
     "v": 3,
-    "status": 500,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "Zug-2021-wms": {
     "v": 3,
-    "status": 500,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "aachen_alkis_wms": {
@@ -4105,13 +4105,13 @@
   },
   "brazos_county_2019_wms": {
     "v": 3,
-    "status": 503,
-    "cors": false,
+    "status": 200,
+    "cors": true,
     "scales": []
   },
   "caparea_2019_wms": {
     "v": 3,
-    "status": 503,
+    "status": 200,
     "cors": false,
     "scales": []
   },
@@ -4201,7 +4201,7 @@
   },
   "fm:at-bfw-forest-development-plan": {
     "v": 3,
-    "status": 200,
+    "status": "not an image",
     "cors": true,
     "scales": []
   },
@@ -6151,14 +6151,14 @@
   },
   "geoEuskadi-ORTO": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "geoEuskadi-basemap": {
     "v": 3,
-    "status": 200,
-    "cors": true,
+    "status": "error",
+    "cors": false,
     "scales": []
   },
   "geoscribble-latest": {
@@ -6626,7 +6626,7 @@
   "nrw_alkis_buildings_gst_wms": {
     "v": 3,
     "status": 200,
-    "cors": true,
+    "cors": false,
     "scales": []
   },
   "nrw_alkis_wms": {
@@ -8192,7 +8192,7 @@
   "rio2022": {
     "v": 3,
     "status": "not an image",
-    "cors": true,
+    "cors": false,
     "scales": []
   },
   "route500": {
@@ -8227,7 +8227,7 @@
   },
   "smith_county_2019_wms": {
     "v": 3,
-    "status": 503,
+    "status": 200,
     "cors": false,
     "scales": []
   },
