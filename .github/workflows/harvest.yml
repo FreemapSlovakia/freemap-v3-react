@@ -19,11 +19,13 @@ permissions:
 
 jobs:
   harvest:
-    runs-on: ubuntu-latest
+    # Probed from Europe, where the users are: European servers refuse GitHub's
+    # US runners (and some US ones refuse Europe), which reads as dead maps.
+    runs-on: [self-hosted, fm5]
     timeout-minutes: 30
     env:
       BRANCH: harvest/map-library
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v7
 
@@ -31,10 +33,10 @@ jobs:
         with:
           version: 11.5.0
 
+      # No `cache: pnpm`: on a self-hosted runner the store is already on the box.
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
@@ -45,7 +47,8 @@ jobs:
 
       # One open PR at a time: a new run replaces the branch, and the PR's
       # body follows the latest report.
-      - name: Open or update the PR
+      - name: Push the branch
+        id: push
         run: |
           # probe.json alone changes on most runs: failures are asked again.
           if git diff --quiet -- src/features/mapLibrary/eli/eliCatalog.json src/features/mapLibrary/eli/ids.json; then
@@ -59,9 +62,28 @@ jobs:
           git add src/features/mapLibrary/eli
           git commit -q -m "chore(map-library): weekly harvest"
           git push -f origin "$BRANCH"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
-          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
-            gh pr edit "$BRANCH" --body-file "$RUNNER_TEMP/report.md"
-          else
-            gh pr create --head "$BRANCH" --title "Map library: weekly harvest" --body-file "$RUNNER_TEMP/report.md"
-          fi
+      # The REST API rather than `gh`, which fm5 doesn't have.
+      - name: Open or update the PR
+        if: steps.push.outputs.changed == 'true'
+        run: |
+          node --input-type=module -e '
+            const { GITHUB_TOKEN, GITHUB_REPOSITORY, BRANCH, RUNNER_TEMP } = process.env;
+            const body = (await import("node:fs")).readFileSync(`${RUNNER_TEMP}/report.md`, "utf8");
+            const api = (path, init = {}) =>
+              fetch(`https://api.github.com/repos/${GITHUB_REPOSITORY}${path}`, {
+                ...init,
+                headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: "application/vnd.github+json" },
+              }).then(async (res) => {
+                if (!res.ok) throw new Error(`${path}: ${res.status} ${await res.text()}`);
+                return res.json();
+              });
+            const owner = GITHUB_REPOSITORY.split("/")[0];
+            const [open] = await api(`/pulls?state=open&head=${owner}:${BRANCH}`);
+            if (open) {
+              await api(`/pulls/${open.number}`, { method: "PATCH", body: JSON.stringify({ body }) });
+            } else {
+              await api("/pulls", { method: "POST", body: JSON.stringify({ head: BRANCH, base: "main", title: "Map library: weekly harvest", body }) });
+            }
+          '

@@ -316,7 +316,8 @@ and probe. The national sources are researched one country at a time.
   and the `@Nx` scales. `--reuse-probe` keeps answers (2xx or 404) of the
   current `PROBE_VERSION`; failures are always asked again.
 
-`.github/workflows/harvest.yml` runs the harvest every Monday without
+`.github/workflows/harvest.yml` runs the harvest every Monday on the fm5 runner
+— from Europe, as many European servers refuse GitHub's US runners — without
 `--reuse-probe`, so every map is asked again, and opens (or updates) one PR on
 `harvest/map-library` when the catalog or the id table changed. Its body is the
 `--report` markdown: the maps that left, with the drop reason, came back or are
