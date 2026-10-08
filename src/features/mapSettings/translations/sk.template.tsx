@@ -88,6 +88,8 @@ const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addMap: 'Pridať mapu',
   presetEmpty: 'Žiadne vrstvy.',
   searchResults: 'Výsledky hľadania',
+  filterItems: 'Filtrovať',
+  nothingInView: 'V tejto časti mapy sa nič nenašlo.',
   presetHint:
     'Jej vrstvy sa upravujú na mape: otvorte predvoľbu v paneli Vrstvy mapy. Každá zmena sa uloží hneď.',
   baseMaps: 'Podkladové mapy',

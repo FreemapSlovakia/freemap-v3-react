@@ -6,7 +6,7 @@ import {
 } from '@shared/components/CustomMapGlyph.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { flaggedCountries } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
@@ -94,18 +94,7 @@ export function MapLayerItem({
         )}
       </span>
 
-      {truncate ? (
-        // The full name of one cut short.
-        <LongPressTooltip label={name}>
-          {({ props }) => (
-            <span className="text-truncate" {...props}>
-              {name}
-            </span>
-          )}
-        </LongPressTooltip>
-      ) : (
-        name
-      )}
+      {truncate ? <TruncatedText>{name}</TruncatedText> : name}
 
       {flaggedCountries(def)?.map((country) => (
         <CountryFlag key={country} country={country} />

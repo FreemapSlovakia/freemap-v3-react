@@ -472,10 +472,6 @@ Bugs and feature requests are issues under `area: maps-layers`.
       `getMapStateDiffFromUrl` (re-added). A boolean in the map slice, migrated
       in `persistence.ts` from `layers.includes('i')`, with the menu row and the
       shortcut toggling it, removes those cases.
-- [ ] **Hide a layer without removing it.** A per-row toggle in the Map layers
-      panel, for maps and for the tools' features (drawing, route, loaded data,
-      tracking, objects) alike; removing stays as it is. Subsumes `i`, which is
-      the same thing for all features at once — settle it with the item above.
 - [ ] **Helpers for a map's effective settings.** The shortcut
       (`settings.shortcut === undefined ? def.shortcut : …`) and the
       menu/toolbar defaults are recomputed inline in `YourMapsList`,

@@ -35,9 +35,10 @@ function closedRing(ring: readonly Point[]): Position[] {
   return [...ring, ring[0]!].map((point) => [point.lon, point.lat]);
 }
 
-/** Square metres enclosed, holes already taken off. */
+/** Square metres enclosed, holes already taken off; none while still being drawn. */
 export function ringsArea(rings: Position[][]): number {
-  return area(polygon(rings, {}));
+  // turf throws on a ring of fewer than three points (four closed).
+  return (rings[0]?.length ?? 0) < 4 ? 0 : area(polygon(rings, {}));
 }
 
 /** Metres around, every ring counted. */

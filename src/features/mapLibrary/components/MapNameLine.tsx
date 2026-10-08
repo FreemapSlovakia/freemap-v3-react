@@ -1,7 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { TruncatedText } from '@shared/components/TruncatedText.js';
 import type { ReactElement } from 'react';
 import { FaHistory } from 'react-icons/fa';
 
@@ -17,13 +17,7 @@ export function MapNameLine({ name, legacy, countries }: Props): ReactElement {
 
   return (
     <div className="d-flex align-items-center gap-1">
-      <LongPressTooltip label={name}>
-        {({ props }) => (
-          <span className="text-truncate" {...props}>
-            {name}
-          </span>
-        )}
-      </LongPressTooltip>
+      <TruncatedText>{name}</TruncatedText>
 
       {legacy && (
         <GlyphMarker hint={m?.mapLayers.legacy}>

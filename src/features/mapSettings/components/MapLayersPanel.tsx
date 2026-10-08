@@ -74,6 +74,7 @@ import {
   MapLayerItem,
 } from '@shared/components/MapLayerItem.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
+import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
@@ -93,7 +94,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Card, Dropdown } from 'react-bootstrap';
+import { Badge, Button, Card, CloseButton, Dropdown } from 'react-bootstrap';
 import {
   FaArrowLeft,
   FaCopy,
@@ -101,7 +102,6 @@ import {
   FaPencilAlt,
   FaPlus,
   FaSave,
-  FaTimes,
   FaTrash,
   FaUndo,
 } from 'react-icons/fa';
@@ -113,9 +113,10 @@ import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.j
 import { LayerKindButton } from './LayerKindButton.js';
 import { LayerKindSwitch } from './LayerKindSwitch.js';
 import { LayerOpacitySlider } from './LayerOpacitySlider.js';
+import { MapFeatureItems } from './MapFeatureItems.js';
 import classes from './MapLayersPanel.module.css';
 import { OpacityButton } from './OpacityButton.js';
-import { useMapFeatureRows } from './useMapFeatureRows.js';
+import { type MapFeatureRow, useMapFeatureRows } from './useMapFeatureRows.js';
 import { WmsSection } from './WmsSection.js';
 
 const shadingSectionFactory = () =>
@@ -160,19 +161,30 @@ export default function MapLayersPanel(): ReactElement {
       ? presetById[place.preset]
       : undefined;
 
+  const featureRows = useMapFeatureRows();
+
+  const featureRow =
+    place.feature === undefined
+      ? undefined
+      : featureRows.find((row) => row.id === place.feature && row.items);
+
   // Where the panel was left, if that is still on the map; else the stack.
   const at: PanelPlace =
-    place.type === undefined
-      ? preset
+    place.feature !== undefined
+      ? featureRow
         ? place
         : {}
-      : place.preset === undefined
-        ? layers.includes(place.type)
+      : place.type === undefined
+        ? preset
           ? place
           : {}
-        : preset?.layers.some((layer) => layer.type === place.type)
-          ? place
-          : {};
+        : place.preset === undefined
+          ? layers.includes(place.type)
+            ? place
+            : {}
+          : preset?.layers.some((layer) => layer.type === place.type)
+            ? place
+            : {};
 
   const target = at.type === undefined ? undefined : { ...at, type: at.type };
 
@@ -182,7 +194,10 @@ export default function MapLayersPanel(): ReactElement {
 
   useFillToBottom(panel, classes.list);
 
-  const top = at.type === undefined && at.preset === undefined;
+  const top =
+    at.type === undefined &&
+    at.preset === undefined &&
+    at.feature === undefined;
 
   // The map's only item, if it is a map with settings.
   const onlyWithPage = useAppSelector((state) => {
@@ -217,10 +232,13 @@ export default function MapLayersPanel(): ReactElement {
   return (
     <Card body className={clsx(classes.panel, 'fm-frosted', 'mt-2 ms-2')}>
       <div ref={setPanel} className="d-flex flex-column">
-        {/* The bare icon at the top lines up with the rows' icons; a button
-            sits at the edge as the close button does. */}
+        {/* The bare icon at the top lines up with the rows' icons. */}
         <div
-          className={clsx('d-flex align-items-center gap-1 p-1', top && 'ps-3')}
+          className={clsx(
+            classes.header,
+            'd-flex align-items-center gap-1 py-1 pe-1',
+            top ? 'ps-3' : 'ps-2',
+          )}
         >
           {top ? (
             <FaLayerGroup className="flex-shrink-0" />
@@ -229,7 +247,8 @@ export default function MapLayersPanel(): ReactElement {
               {({ props }) => (
                 <Button
                   variant="secondary"
-                  className="flex-shrink-0"
+                  size="sm"
+                  className="flex-shrink-0 me-1"
                   onClick={() => setPlace(up)}
                   {...props}
                 >
@@ -240,7 +259,9 @@ export default function MapLayersPanel(): ReactElement {
           )}
 
           <span className="flex-grow-1 min-w-0 d-flex">
-            {target ? (
+            {at.feature !== undefined && featureRow ? (
+              <FeatureRowLabel row={featureRow} />
+            ) : target ? (
               <TargetName target={target} />
             ) : at.preset !== undefined && preset ? (
               <PresetName id={at.preset} />
@@ -253,27 +274,27 @@ export default function MapLayersPanel(): ReactElement {
 
           <LongPressTooltip label={m?.general.close}>
             {({ props }) => (
-              <Button
-                variant="dark"
-                className="flex-shrink-0"
+              <CloseButton
+                // In the corner, as a toast's is.
+                className="flex-shrink-0 align-self-start ms-1"
                 onClick={() => setOpen(false)}
                 {...props}
-              >
-                <FaTimes />
-              </Button>
+              />
             )}
           </LongPressTooltip>
         </div>
 
         <div className={clsx(classes.list, 'px-2 pb-2')}>
-          {target ? (
+          {at.feature !== undefined ? (
+            <MapFeatureItems feature={at.feature} />
+          ) : target ? (
             <PanelHeaderSlotContext value={headerSlot}>
               <LayerSettings key={setupKey(target)} target={target} />
             </PanelHeaderSlotContext>
           ) : at.preset !== undefined ? (
             <PresetLayers id={at.preset} onOpen={setPlace} />
           ) : (
-            <Stack onOpen={setPlace} />
+            <Stack onOpen={setPlace} featureRows={featureRows} />
           )}
         </div>
       </div>
@@ -306,14 +327,29 @@ function PresetName({
         <CustomMapGlyph spec={preset.iconSpec} kind="preset" />
       </span>
 
-      {/* The full name of one cut short. */}
-      <LongPressTooltip label={preset.name}>
-        {({ props }) => (
-          <span className="text-truncate" {...props}>
-            {preset.name}
-          </span>
-        )}
-      </LongPressTooltip>
+      <TruncatedText>{preset.name}</TruncatedText>
+    </span>
+  );
+}
+
+function FeatureRowLabel({
+  row,
+  count,
+}: {
+  row: MapFeatureRow;
+  count?: boolean;
+}): ReactElement {
+  return (
+    <span className="d-inline-flex align-items-center gap-1 mw-100">
+      <span className="d-inline-flex flex-shrink-0">{row.icon}</span>
+
+      <TruncatedText>{row.label}</TruncatedText>
+
+      {count && row.count !== undefined && (
+        <Badge pill bg="secondary" className="flex-shrink-0">
+          {row.count}
+        </Badge>
+      )}
     </span>
   );
 }
@@ -682,8 +718,10 @@ function mapHasPage(ref: MapRef | undefined): boolean {
 /** The stack: the overlays and overlay presets as they stack, then the base. */
 function Stack({
   onOpen,
+  featureRows,
 }: {
   onOpen: (place: PanelPlace) => void;
+  featureRows: MapFeatureRow[];
 }): ReactElement {
   const m = useMessages();
 
@@ -739,35 +777,29 @@ function Stack({
     );
   };
 
-  // Not in an embed: a visitor neither opens the tools nor clears the host's data.
-  const featureRows = useMapFeatureRows();
-
   return (
     <>
       <SortableRows
         items={overlays}
         movable={movable}
+        // Not in an embed: a visitor neither opens the tools nor clears the host's data.
         top={
           !window.fmEmbedded &&
           featureRows.map((row) => (
             <Row
               key={row.id}
-              label={
-                <span className="d-inline-flex align-items-center gap-1 mw-100">
-                  <span className="d-inline-flex flex-shrink-0">
-                    {row.icon}
-                  </span>
+              label={<FeatureRowLabel row={row} count />}
+              onOpen={
+                row.onOpen || row.items
+                  ? () => {
+                      row.onOpen?.();
 
-                  <span className="text-truncate">{row.label}</span>
-
-                  {row.count !== undefined && (
-                    <span className="text-muted flex-shrink-0">
-                      {row.count}
-                    </span>
-                  )}
-                </span>
+                      if (row.items) {
+                        onOpen({ feature: row.id });
+                      }
+                    }
+                  : undefined
               }
-              onOpen={row.onOpen}
               onRemove={row.onRemove}
             />
           ))

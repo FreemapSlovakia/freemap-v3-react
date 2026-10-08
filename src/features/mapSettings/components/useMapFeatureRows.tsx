@@ -31,6 +31,8 @@ export type MapFeatureRow = {
   count?: number;
   /** Opens the feature's toolbar; unset where it is up while there is any. */
   onOpen?: () => void;
+  /** Whether it opens to a list of its items (`MapFeatureItems`). */
+  items?: true;
   onRemove: () => void;
 };
 
@@ -93,6 +95,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
   const rows: (MapFeatureRow | false)[] = [
     pinned.length > 0 && {
       id: 'search',
+      items: true,
       icon: <FaSearch />,
       label: msm?.searchResults,
       count: pinned.length,
@@ -104,6 +107,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     },
     objects !== undefined && {
       id: 'objects',
+      items: true,
       icon: <TbMapPins />,
       label: m?.tools.objects,
       count: objects,
@@ -111,6 +115,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     },
     trackedDevices > 0 && {
       id: 'tracking',
+      items: true,
       icon: <FaBullseye />,
       label: m?.tools.tracking,
       count: trackedDevices,
@@ -119,6 +124,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     },
     dataFeatures !== undefined && {
       id: 'data',
+      items: true,
       icon: <MdShapeLine />,
       label: m?.tools.dataViewer,
       count: dataFeatures,
@@ -127,6 +133,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     },
     routePoints > 0 && {
       id: 'route',
+      items: true,
       icon: <FaRoute />,
       label: m?.tools.routePlanner,
       onOpen: open('route-planner'),
@@ -134,6 +141,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     },
     drawingLines.length + drawingPoints > 0 && {
       id: 'drawing',
+      items: true,
       icon: <FaPencilRuler />,
       label: m?.tools.measurement,
       count: drawingLines.length + drawingPoints,

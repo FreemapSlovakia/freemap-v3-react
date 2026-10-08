@@ -18,6 +18,11 @@
   }
 }
 
+/* As tall as a toolbar's row of full-size buttons, whatever it holds. */
+.header {
+  min-height: 3rem;
+}
+
 /* Below the header, sharing the height `useFillToBottom` caps. */
 .list {
   flex: 1 1 auto;
@@ -40,6 +45,11 @@
 /* The name opens the row's page: the row lights up as a menu item would. */
 .row:has(.row-toggle:not(:disabled):hover) {
   background-color: var(--bs-tertiary-bg);
+}
+
+/* The item selected on the map. */
+.row-selected {
+  background-color: var(--bs-secondary-bg);
 }
 
 /* Where a drag handle would be, so names line up. */

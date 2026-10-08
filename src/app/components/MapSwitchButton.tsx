@@ -32,6 +32,7 @@ import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
+import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { layerLabel, layerName } from '@shared/layerName.js';
@@ -563,16 +564,7 @@ export function MapSwitchButton(): ReactElement {
   const nameOf = (def: { type: string; name?: string; custom: boolean }) =>
     def.custom ? layerLabel(def, m) : (layerName(def, m) ?? '…');
 
-  // One line in the menu, the whole name on long press.
-  const menuName = (name: string) => (
-    <LongPressTooltip label={name}>
-      {({ props }) => (
-        <span className="text-truncate" {...props}>
-          {name}
-        </span>
-      )}
-    </LongPressTooltip>
-  );
+  const menuName = (name: string) => <TruncatedText>{name}</TruncatedText>;
 
   function layersMemuItems(layer: 'base' | 'overlay') {
     return entries

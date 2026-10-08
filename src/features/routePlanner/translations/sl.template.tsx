@@ -40,6 +40,7 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   start: 'Začetek',
   finish: 'Cilj',
+  midpoint: ({ n }) => `Vmesna točka ${n}`,
   stop: 'Postanek',
   swap: 'Zamenjaj začetek in cilj',
   point: {

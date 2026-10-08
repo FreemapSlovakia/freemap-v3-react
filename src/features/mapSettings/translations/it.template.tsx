@@ -95,6 +95,8 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addMap: 'Aggiungi mappa',
   presetEmpty: 'Nessun livello.',
   searchResults: 'Risultati della ricerca',
+  filterItems: 'Filtra',
+  nothingInView: 'Nessun risultato in questa parte della mappa.',
   presetHint:
     'I suoi livelli si modificano sulla mappa: apri la preimpostazione nel pannello Livelli della mappa. Ogni modifica si salva subito.',
   baseMaps: 'Mappe di base',

@@ -79,6 +79,10 @@ export type MapSettingsMessages = {
   presetEmpty: string;
   /** The pinned search results, as a row in the Map layers panel. */
   searchResults: string;
+  /** Placeholder narrowing a feature's items in the Map layers panel. */
+  filterItems: string;
+  /** A feature's item list with nothing in it, as the objects in view can be. */
+  nothingInView: string;
   /** Says where a preset's layers are edited. */
   presetHint: string;
   baseMaps: string;

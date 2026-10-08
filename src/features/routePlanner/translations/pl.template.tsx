@@ -72,6 +72,7 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   start: 'Start',
   finish: 'Meta',
+  midpoint: ({ n }) => `Punkt pośredni ${n}`,
   swap: 'Zamień start i metę',
   development: 'w przygotowaniu',
   alternative: 'Alternatywa',

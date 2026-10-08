@@ -15,10 +15,14 @@ const OPEN_KEY = 'fm.mapLayersPanel.open';
 const WIDE = `(min-width: ${getMinWidthForBreakpoint('sm')}px)`;
 
 /**
- * Where the panel is: the stack, a preset in it (`{ preset }`), or the
- * settings of a map (`{ type }`, with `preset` a preset's copy of it).
+ * Where the panel is: the stack, a preset in it (`{ preset }`), the settings
+ * of a map (`{ type }`, with `preset` a preset's copy of it), or the items of
+ * a tool's features (`{ feature }`, a `useMapFeatureRows` id).
  */
-export type PanelPlace = { preset?: string; type?: string };
+export type PanelPlace = { preset?: string; type?: string; feature?: string };
+
+/** Whether the panel leaves the map in view beside it. */
+export const isWideScreen = () => window.matchMedia(WIDE).matches;
 
 /**
  * Whether the Map layers panel is open, and where in it. `attention` marks its
@@ -104,7 +108,7 @@ export function useMapLayersPanel() {
     (type: string) => {
       const { open, auto } = getState();
 
-      if (!window.matchMedia(WIDE).matches) {
+      if (!isWideScreen()) {
         update({ place: { type }, attention: !open }, false);
       } else {
         update(
