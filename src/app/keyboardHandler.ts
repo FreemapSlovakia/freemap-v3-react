@@ -27,6 +27,7 @@ import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
 import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
+import { mapLayersPanelToggle } from '@features/mapSettings/model/actions.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
@@ -297,6 +298,11 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     }
 
     return undefined;
+  }
+
+  // By the character, wherever a layout puts it.
+  if (!keyTimer && event.key === '.') {
+    return mapLayersPanelToggle();
   }
 
   if (!window.fmEmbedded && !keyTimer && chordPrefixCodes.has(event.code)) {

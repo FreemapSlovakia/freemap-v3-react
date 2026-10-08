@@ -138,7 +138,7 @@ export function MapControls(): ReactElement | null {
           <>
             <MapSwitchButton />
 
-            <LongPressTooltip label={m?.mapLayers.layersPanel}>
+            <LongPressTooltip label={m?.mapLayers.layersPanel} kbd=".">
               {({ props }) => (
                 <Button
                   variant={layersPanel.attention ? 'primary' : 'secondary'}

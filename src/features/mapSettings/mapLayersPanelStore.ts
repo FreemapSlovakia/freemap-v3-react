@@ -78,6 +78,11 @@ function update(patch: Partial<PanelState>, persist: boolean) {
   }
 }
 
+/** Opens the panel or closes it, as `setOpen` does; for the keyboard. */
+export function toggleMapLayersPanel(persist: boolean): void {
+  update({ open: !getState().open, attention: false, auto: false }, persist);
+}
+
 /**
  * The Map layers panel's state, kept outside React so the toolbar button, the
  * panel and the hook opening it for a newly shown map share it.

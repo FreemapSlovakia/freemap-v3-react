@@ -91,6 +91,7 @@ import {
   mapLibraryPreviewModalProcessor,
   mapLibraryPreviewStartProcessor,
 } from '@features/mapLibrary/model/processors/previewProcessors.js';
+import { mapLayersPanelToggleProcessor } from '@features/mapSettings/model/mapLayersPanelToggleProcessor.js';
 import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
@@ -179,6 +180,7 @@ export const processors = [
   mapLibraryLoadProcessor,
   catalogMapsLoadProcessor,
   mapSettingsSaveProcessor,
+  mapLayersPanelToggleProcessor,
   mapLibraryPreviewStartProcessor,
   mapLibraryPreviewEndProcessor,
   mapLibraryPreviewModalProcessor,
