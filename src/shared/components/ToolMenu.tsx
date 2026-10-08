@@ -45,6 +45,8 @@ type Props = {
    * tool's name stays beside it either way.
    */
   wrapCollapsedIcon?: (icon: ReactNode) => ReactNode;
+  /** Set while the map-click tool is in a state where it takes no map clicks. */
+  mapClicksIdle?: boolean;
 };
 
 export function ToolMenu({
@@ -54,6 +56,7 @@ export function ToolMenu({
   noClose,
   iconClassName,
   wrapCollapsedIcon,
+  mapClicksIdle,
 }: Props): ReactElement {
   const sc = useScrollClasses('horizontal');
 
@@ -81,9 +84,9 @@ export function ToolMenu({
 
   // Not merely "is a map-click tool": while a picking mode owns the map the tool
   // goes inert, and the outline would then promise clicks it doesn't take.
-  const ownsMapClicks = useAppSelector(
-    (state) => activeMapToolSelector(state) === tool,
-  );
+  const ownsMapClicks =
+    useAppSelector((state) => activeMapToolSelector(state) === tool) &&
+    !mapClicksIdle;
 
   const buttonIcon = collapsed && wrapCollapsedIcon !== undefined;
 

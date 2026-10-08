@@ -713,7 +713,14 @@ export default function RoutePlannerMenu(): ReactElement {
     useState(false);
 
   return (
-    <ToolMenu tool="route-planner">
+    <ToolMenu
+      tool="route-planner"
+      // Mirrors the click handler in RoutePlannerResult.
+      mapClicksIdle={
+        pickPointMode === null &&
+        !(activeTTDef?.api === 'gh' && activeMode !== 'route')
+      }
+    >
       <RoutePlannerTransportType
         onChange={(transportType) =>
           dispatch(routePlannerSetTransportType(transportType!))
