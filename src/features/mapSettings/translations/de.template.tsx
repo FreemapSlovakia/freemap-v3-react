@@ -94,6 +94,7 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Auf der Karte zeigen',
   addMap: 'Karte hinzufügen',
   presetEmpty: 'Keine Ebenen.',
+  searchResults: 'Suchergebnisse',
   presetHint:
     'Ihre Ebenen werden auf der Karte bearbeitet: Öffnen Sie die Voreinstellung im Bedienfeld Kartenebenen. Jede Änderung wird sofort gespeichert.',
   baseMaps: 'Grundkarten',

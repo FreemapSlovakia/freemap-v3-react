@@ -94,6 +94,7 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Prikaži na zemljevidu',
   addMap: 'Dodaj zemljevid',
   presetEmpty: 'Ni slojev.',
+  searchResults: 'Rezultati iskanja',
   presetHint:
     'Njene sloje urejate na zemljevidu: odprite prednastavitev v plošči Sloji zemljevida. Vsaka sprememba se shrani takoj.',
   baseMaps: 'Osnovni zemljevidi',

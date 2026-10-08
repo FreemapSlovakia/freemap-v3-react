@@ -115,6 +115,7 @@ import { LayerKindSwitch } from './LayerKindSwitch.js';
 import { LayerOpacitySlider } from './LayerOpacitySlider.js';
 import classes from './MapLayersPanel.module.css';
 import { OpacityButton } from './OpacityButton.js';
+import { useMapFeatureRows } from './useMapFeatureRows.js';
 import { WmsSection } from './WmsSection.js';
 
 const shadingSectionFactory = () =>
@@ -335,17 +336,19 @@ type Drag = {
 
 /**
  * Rows top first, the movable ones by a handle and only among each other;
- * `bottom` stays under them.
+ * `top` stays above them and `bottom` under them.
  */
 function SortableRows({
   items,
   movable,
+  top,
   bottom,
   onMove,
   render,
 }: {
   items: string[];
   movable: ReadonlySet<string>;
+  top?: ReactNode;
   bottom?: ReactNode;
   onMove: (item: string, to: string) => void;
   render: (item: string, drag?: Drag) => ReactNode;
@@ -389,6 +392,8 @@ function SortableRows({
 
   return (
     <HandleColumnContext.Provider value={sortable.length > 0}>
+      {top}
+
       <DndContext
         sensors={sensors}
         collisionDetection={underPointer}
@@ -734,11 +739,39 @@ function Stack({
     );
   };
 
+  // Not in an embed: a visitor neither opens the tools nor clears the host's data.
+  const featureRows = useMapFeatureRows();
+
   return (
     <>
       <SortableRows
         items={overlays}
         movable={movable}
+        top={
+          !window.fmEmbedded &&
+          featureRows.map((row) => (
+            <Row
+              key={row.id}
+              label={
+                <span className="d-inline-flex align-items-center gap-1 mw-100">
+                  <span className="d-inline-flex flex-shrink-0">
+                    {row.icon}
+                  </span>
+
+                  <span className="text-truncate">{row.label}</span>
+
+                  {row.count !== undefined && (
+                    <span className="text-muted flex-shrink-0">
+                      {row.count}
+                    </span>
+                  )}
+                </span>
+              }
+              onOpen={row.onOpen}
+              onRemove={row.onRemove}
+            />
+          ))
+        }
         bottom={base && render(base)}
         onMove={(type, to) => dispatch(mapOverlayMove({ type, to }))}
         render={render}

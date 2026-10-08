@@ -77,6 +77,8 @@ export type MapSettingsMessages = {
   /** Adds a map to a preset, in the Map layers panel. */
   addMap: string;
   presetEmpty: string;
+  /** The pinned search results, as a row in the Map layers panel. */
+  searchResults: string;
   /** Says where a preset's layers are edited. */
   presetHint: string;
   baseMaps: string;

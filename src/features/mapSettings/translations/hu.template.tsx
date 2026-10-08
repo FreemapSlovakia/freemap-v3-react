@@ -93,6 +93,7 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Megjelenítés a térképen',
   addMap: 'Térkép hozzáadása',
   presetEmpty: 'Nincsenek rétegek.',
+  searchResults: 'Keresési eredmények',
   presetHint:
     'A rétegeit a térképen lehet szerkeszteni: nyissa meg az előbeállítást a Térképrétegek panelen. Minden változás azonnal mentődik.',
   baseMaps: 'Alaptérképek',

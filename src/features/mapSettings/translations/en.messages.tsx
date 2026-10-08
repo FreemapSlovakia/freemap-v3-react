@@ -84,6 +84,7 @@ const en: MapSettingsMessages = {
   openPreset: 'Show on map',
   addMap: 'Add map',
   presetEmpty: 'No layers.',
+  searchResults: 'Search results',
   presetHint:
     'Its layers are edited on the map: open the preset in the Map layers panel. Every change is kept at once.',
   baseMaps: 'Base maps',

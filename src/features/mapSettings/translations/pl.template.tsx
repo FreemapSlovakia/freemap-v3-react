@@ -93,6 +93,7 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Pokaż na mapie',
   addMap: 'Dodaj mapę',
   presetEmpty: 'Brak warstw.',
+  searchResults: 'Wyniki wyszukiwania',
   presetHint:
     'Jego warstwy edytuje się na mapie: otwórz ustawienie wstępne w panelu Warstwy mapy. Każda zmiana zapisuje się od razu.',
   baseMaps: 'Mapy podkładowe',

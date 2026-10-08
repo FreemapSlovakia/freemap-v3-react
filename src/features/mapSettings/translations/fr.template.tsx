@@ -98,6 +98,7 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Afficher sur la carte',
   addMap: 'Ajouter une carte',
   presetEmpty: 'Aucune couche.',
+  searchResults: 'Résultats de recherche',
   presetHint:
     'Ses couches se modifient sur la carte : ouvrez le préréglage dans le panneau Couches de la carte. Chaque changement est enregistré aussitôt.',
   baseMaps: 'Cartes de base',
