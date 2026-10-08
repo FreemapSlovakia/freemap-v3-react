@@ -287,19 +287,7 @@ export function Layers(): ReactNode {
       // where the source itself runs out of detail.
       const wmsHdpi = effectiveDpr / featureScale > 1.4;
 
-      const effPremiumFromZoom = isPremium(user)
-        ? undefined
-        : wmsHdpi
-          ? 14
-          : 15;
-
-      // The premium checkerboard works by not fetching every second tile, which
-      // an untiled view has no equivalent of — masking one would still ship the
-      // pixels — so a premium-gated zoom stays on tiles.
-      if (
-        !layerDef.tiled &&
-        (effPremiumFromZoom === undefined || zoom < effPremiumFromZoom)
-      ) {
+      if (!layerDef.tiled) {
         return (
           <WmsImageLayer
             // The kind picks `transparent` and `format`, which Leaflet reads once.
@@ -348,8 +336,6 @@ export function Layers(): ReactNode {
           key={[
             id,
             layerDef.layer,
-            effPremiumFromZoom ?? 99,
-            effPremiumFromZoom ? prm?.premiumOnly : '',
             wmsLayers.join(','),
             wmsHdpi ? 'hdpi' : 'ldpi',
           ].join('-')}
@@ -369,11 +355,6 @@ export function Layers(): ReactNode {
           transparent={layerDef.layer === 'overlay'}
           format={layerDef.layer === 'overlay' ? 'image/png' : 'image/jpeg'}
           opacity={opacity}
-          premiumFromZoom={effPremiumFromZoom}
-          premiumOnlyText={prm?.premiumOnly}
-          onPremiumClick={
-            effPremiumFromZoom === undefined ? undefined : handlePremiumClick
-          }
           zIndex={zIndex}
         />
       );

@@ -20,7 +20,6 @@ const def: MapBody<'wms'> = {
   ],
   attribution: [GKU_ATTR],
   zIndex: 3,
-  premiumFromZoom: 15,
 };
 
 export default def;

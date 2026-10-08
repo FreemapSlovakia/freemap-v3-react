@@ -21,7 +21,6 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
             hint={
               <ul className="mb-0 ps-3 text-start">
                 <li>najvišje ravni približevanja Outdoor zemljevida</li>
-                <li>zemljevidi na osnovi WMS</li>
                 <li>
                   najvišje ravni približevanja ortofoto zemljevidov Slovaške in
                   Češke

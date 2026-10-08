@@ -45,7 +45,6 @@ describe('mapIndex', () => {
       type: 'WKA',
       layer: 'base',
       technology: 'wms',
-      premiumFromZoom: 15,
     });
 
     expect(await loadIntegratedLayerDef('nope')).toBeUndefined();

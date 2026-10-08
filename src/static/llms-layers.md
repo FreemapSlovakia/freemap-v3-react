@@ -67,11 +67,11 @@ Mirrors `src/shared/mapLibrary/mapIndex.tsx`. A blank cell means the field is no
 | Streets Vector               | VS  | maplibre          |      |            |              |                 |              |          |              | OSM data; MapTiler                                     |
 | Dataviz Vector               | VD  | maplibre          |      |            |              |                 |              |          |              | OSM data; MapTiler                                     |
 | Outdoor Vector               | VT  | maplibre          |      |            |              |                 |              |          |              | OSM data; MapTiler                                     |
-| Cadastre                     | WKA | wms               |      |            |           15 |                 |              | k        | sk           | © GKÚ                                                   |
-| Tree Composition             | WDZ | wms               |   13 |            |           15 |                 |              |          | sk           | © NLC Zvolen                                            |
-| Forest Types                 | WLT | wms               |   12 |            |           15 |                 |              |          | sk           | © NLC Zvolen                                            |
-| Geological                   | WGE | wms               |      |            |           15 |                 |              | l        | sk           | © ŠGÚDŠ                                                 |
-| Hydrochemic                  | WHC | wms               |      |            |           15 |                 |              | w        | sk           | © ŠGÚDŠ                                                 |
+| Cadastre                     | WKA | wms               |      |            |              |                 |              | k        | sk           | © GKÚ                                                   |
+| Tree Composition             | WDZ | wms               |   13 |            |              |                 |              |          | sk           | © NLC Zvolen                                            |
+| Forest Types                 | WLT | wms               |   12 |            |              |                 |              |          | sk           | © NLC Zvolen                                            |
+| Geological                   | WGE | wms               |      |            |              |                 |              | l        | sk           | © ŠGÚDŠ                                                 |
+| Hydrochemic                  | WHC | wms               |      |            |              |                 |              | w        | sk           | © ŠGÚDŠ                                                 |
 | Solid colour                 | c   | color             |      |            |              |                 |              |          |              | One colour all over, set in the Map layers panel; a blank base map, or a tint as an overlay. Not in the menu by default |
 
 **Overlay layers**
@@ -94,7 +94,7 @@ Mirrors `src/shared/mapLibrary/mapIndex.tsx`. A blank cell means the field is no
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |
 | Forest tracks NLC          | l2  | maplibre          |    9 |            |              |                 |              | ⇧n       | sk        | © NLC Zvolen                                               |
 | Parametric terrain shading | h   | parametricShading |      |         18 |           15 |                 |              | ⇧h       |           | Shaded with the shading settings of its row in the Map layers panel, on the server or in the browser; national terrain models (so far SK, CZ, AT, CH, DE, NL, BE, LU, SI, HR, PL, IT, FR) and the 30 m GEDTM30 elsewhere in Europe, each credited when the tiles on screen use it; © Freemap |
-| Cadastre                   | wka | wms               |      |            |           15 |                 |              | ⇧k       | sk        | © GKÚ (cadastre over aerial)                               |
+| Cadastre                   | wka | wms               |      |            |              |                 |              | ⇧k       | sk        | © GKÚ (cadastre over aerial)                               |
 
 Notes:
 

@@ -22,7 +22,6 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
             hint={
               <ul className="mb-0 ps-3 text-start">
                 <li>höchste Zoomstufen der Outdoor-Karte</li>
-                <li>WMS-basierte Karten</li>
                 <li>
                   höchste Zoomstufen der Orthofotokarten der Slowakei und
                   Tschechiens

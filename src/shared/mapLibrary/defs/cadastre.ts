@@ -19,7 +19,6 @@ const def: MapBody<'wms'> = {
     '15',
   ],
   attribution: [GKU_ATTR],
-  premiumFromZoom: 15,
 };
 
 export default def;

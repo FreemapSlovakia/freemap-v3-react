@@ -5,7 +5,6 @@ const def: MapBody<'wms'> = {
   layers: ['LC.LandCoverSurfaces'],
   attribution: [NLC_ATTR],
   minZoom: 12,
-  premiumFromZoom: 15,
 };
 
 export default def;

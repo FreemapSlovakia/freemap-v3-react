@@ -21,7 +21,6 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
             hint={
               <ul className="mb-0 ps-3 text-start">
                 <li>niveaux de zoom les plus élevés de la carte Outdoor</li>
-                <li>cartes basées sur WMS</li>
                 <li>
                   niveaux de zoom les plus élevés des orthophotos de la
                   Slovaquie et de la Tchéquie

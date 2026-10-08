@@ -5,7 +5,6 @@ const def: MapBody<'wms'> = {
   layers: ['0'],
   attribution: [NLC_ATTR],
   minZoom: 13,
-  premiumFromZoom: 15,
 };
 
 export default def;

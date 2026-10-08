@@ -28,7 +28,6 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
                   detailné tieňovanie reliéfu Slovenska a Česka vo vysokom
                   rozlíšení
                 </li>
-                <li>mapy založené na WMS</li>
               </ul>
             }
           >

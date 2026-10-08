@@ -21,7 +21,6 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
             hint={
               <ul className="mb-0 ps-3 text-start">
                 <li>najwyższe poziomy powiększenia mapy Outdoor</li>
-                <li>mapy oparte na WMS</li>
                 <li>
                   najwyższe poziomy powiększenia map ortofoto Słowacji i Czech
                 </li>

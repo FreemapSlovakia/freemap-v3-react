@@ -20,7 +20,6 @@ const en: PremiumMessages = {
             hint={
               <ul className="mb-0 ps-3 text-start">
                 <li>highest zoom levels of Outdoor Map</li>
-                <li>WMS-based maps</li>
                 <li>
                   highest zoom levels of ortophoto maps of Slovakia and Czechia
                 </li>

@@ -32,7 +32,7 @@ The form for a user-defined map layer, shown in place of the modal's list; Save 
 - for WMS: the service's layers drawn by default, as a tree like the Map layers panel's (below); what is ticked in the panel replaces them until the row's **Reset to default**, and saving the form goes back to them
 - min zoom / max native zoom (for a WMS the latter caps the requested image resolution instead of the zoom drawn at)
 - extra resolutions and "scale with DPI" (not for WMS, which always matches the display density)
-- for WMS: "load in tiles" — off by default, since a WMS is asked for one GetMap covering the whole view per pan/zoom; switch it on for a server that limits image size or caches tiles (premium-gated zooms use tiles either way)
+- for WMS: "load in tiles" — off by default, since a WMS is asked for one GetMap covering the whole view per pan/zoom; switch it on for a server that limits image size or caches tiles
 - layer: base or overlay, the map's default kind (an overlay is always drawn above the base map; where it stacks among the overlays is set by dragging in the Map layers panel); the map can be switched to the other kind on the map, as a library map can, and saving the form goes back to this one
 - show in toolbar / show in menu, and a keyboard shortcut (on devices with a keyboard); opacity is set in **Installed maps** or the Map layers panel
 

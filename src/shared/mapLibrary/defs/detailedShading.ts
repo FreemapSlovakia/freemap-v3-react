@@ -15,7 +15,7 @@ const def: MapBody<'tile'> = {
   ],
   errorTileUrl: white1x1,
   scaleWithDpi: true,
-  premiumFromZoom: 15,
+  premiumFromZoom: 16,
   creditsPerMTile: 1000,
 };
 

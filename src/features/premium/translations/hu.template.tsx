@@ -21,7 +21,6 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
             hint={
               <ul className="mb-0 ps-3 text-start">
                 <li>az Outdoor Map túratérkép legnagyobb nagyítási szintjei</li>
-                <li>WMS-alapú térképek</li>
                 <li>
                   Szlovákia és Csehország ortofotóinak legnagyobb nagyítási
                   szintjei

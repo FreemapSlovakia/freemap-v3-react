@@ -27,7 +27,6 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
                 <li>
                   podrobné stínování Slovenska a Česka ve vysokém rozlišení
                 </li>
-                <li>mapy založené na WMS</li>
               </ul>
             }
           >

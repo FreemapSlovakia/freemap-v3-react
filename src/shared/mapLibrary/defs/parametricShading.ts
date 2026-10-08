@@ -11,7 +11,7 @@ const def: MapBody<'parametricShading'> = {
   // The terrain is credited from terrain-tiles' own dictionary, by what the
   // tiles on screen report (`tileAttribution.ts`).
   attribution: [FM_ATTR],
-  premiumFromZoom: 15,
+  premiumFromZoom: 16,
   zIndex: 2,
 };
 
