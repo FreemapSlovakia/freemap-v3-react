@@ -80,8 +80,8 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Rétegek mentése előbeállításként',
   saveLayersAsPresetHint:
     'Új előbeállítás a térképen lévő térképek másolataiból, az előbeállításokat szétszedve.',
-  turnOffToSavePreset: (layers) =>
-    `Egy előbeállítás nem tartalmazhat adatrétegeket. A mentéshez kapcsold ki: ${layers}.`,
+  leftOutOfPreset: (layers) =>
+    `Egy előbeállítás csak térképeket tartalmaz, így ezek kimaradnak: ${layers}.`,
   deleteAlsoNamed: (names) => `Az erre épülő térképek is törlődnek: ${names}.`,
   duplicatePreset: 'Másolat',
   saveAsMap: 'Mentés térképként',

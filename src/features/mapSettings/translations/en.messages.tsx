@@ -71,8 +71,8 @@ const en: MapSettingsMessages = {
   saveLayersAsPreset: 'Save layers as preset',
   saveLayersAsPresetHint:
     'A new preset of copies of the maps on the map, presets taken apart.',
-  turnOffToSavePreset: (layers) =>
-    `A preset can't hold data layers. Turn off ${layers} to save one.`,
+  leftOutOfPreset: (layers) =>
+    `A preset holds only maps, so it won't include: ${layers}.`,
   deleteAlsoNamed: (names) => `The maps built on it go too: ${names}.`,
   duplicatePreset: 'Duplicate',
   saveAsMap: 'Save as map',

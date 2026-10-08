@@ -189,7 +189,8 @@ for each tab, and switching tabs changes
   opened or moved in it; below `sm` a closed panel only marks the button, the
   panel covering the map there) share them. Pages put actions that must stay in
   view into the header through `PanelHeaderSlotContext`. Opened on the stack
-  when the map's only item is a map with a page, it goes to that page. The
+  when the map's only item is a map with a page and no tool's features are
+  listed, it goes to that page. The
   setting controls take a
   `SetupTarget` — a map, or a preset's copy of it (`layerTarget.ts`).
 - **The WMS section** (`WmsSection.tsx`). An empty pick draws nothing and is

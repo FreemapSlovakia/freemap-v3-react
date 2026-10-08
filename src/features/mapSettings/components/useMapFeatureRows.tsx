@@ -1,4 +1,10 @@
-import { closeTool, openTool, type Tool } from '@app/store/actions.js';
+import {
+  closeTool,
+  openTool,
+  type Selection,
+  selectFeature,
+  type Tool,
+} from '@app/store/actions.js';
 import { activeMapToolSelector } from '@app/store/selectors.js';
 import { dataViewerDelete } from '@features/dataViewer/model/actions.js';
 import { drawingLineSetLines } from '@features/drawing/model/actions/drawingLineActions.js';
@@ -7,11 +13,12 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
 import { searchUnselectResult } from '@features/search/model/actions.js';
+import { keptSearchResultsSelector } from '@features/search/model/selectors.js';
 import { trackingActions } from '@features/tracking/model/actions.js';
+import type { UnknownAction } from '@reduxjs/toolkit';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
-import { featureIdsEqual } from '@shared/types/featureId.js';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import {
   FaBullseye,
   FaPencilAlt,
@@ -27,7 +34,7 @@ import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.j
 export type MapFeatureRow = {
   id: string;
   icon: ReactElement;
-  label: ReactNode;
+  label: string | undefined;
   count?: number;
   /** Opens the feature's toolbar; unset where it is up while there is any. */
   onOpen?: () => void;
@@ -46,14 +53,9 @@ export function useMapFeatureRows(): MapFeatureRow[] {
 
   const activeTool = useAppSelector(activeMapToolSelector);
 
-  const shownResults = useAppSelector((state) => state.search.selectedResults);
+  const selectionType = useAppSelector((state) => state.main.selection?.type);
 
-  const previewId = useAppSelector((state) => state.search.previewId);
-
-  // The one only being looked at is not pinned.
-  const pinned = shownResults.filter(
-    (result) => !previewId || !featureIdsEqual(result.id, previewId),
-  );
+  const pinned = useAppSelector(keptSearchResultsSelector);
 
   const objects = useAppSelector((state) =>
     state.objects.active.length ? state.objects.objects.length : undefined,
@@ -71,7 +73,14 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     (state) => state.routePlanner.points.length,
   );
 
-  const drawingLines = useAppSelector((state) => state.drawingLines.lines);
+  // Counts only: the lines change on every vertex drag.
+  const drawingLines = useAppSelector(
+    (state) => state.drawingLines.lines.length,
+  );
+
+  const drawingHasLine = useAppSelector((state) =>
+    state.drawingLines.lines.some((line) => line.type === 'line'),
+  );
 
   const drawingPoints = useAppSelector(
     (state) => state.drawingPoints.points.length,
@@ -83,12 +92,25 @@ export function useMapFeatureRows(): MapFeatureRow[] {
 
   const open = (tool: Tool) => () => dispatch(openTool(tool));
 
+  // Removed, a feature takes a selection of its own with it, as Delete does.
+  const remove =
+    (types: Selection['type'][], ...actions: UnknownAction[]) =>
+    () => {
+      if (selectionType && types.includes(selectionType)) {
+        dispatch(selectFeature(null));
+      }
+
+      for (const action of actions) {
+        dispatch(action);
+      }
+    };
+
   // The draw tool for what the drawing holds, unless one is open already.
   const drawTool: Tool = isDrawTool(activeTool)
     ? activeTool!
-    : drawingLines.some((line) => line.type === 'line')
+    : drawingHasLine
       ? 'draw-lines'
-      : drawingLines.length
+      : drawingLines
         ? 'draw-polygons'
         : 'draw-points';
 
@@ -99,11 +121,10 @@ export function useMapFeatureRows(): MapFeatureRow[] {
       icon: <FaSearch />,
       label: msm?.searchResults,
       count: pinned.length,
-      onRemove: () => {
-        for (const result of pinned) {
-          dispatch(searchUnselectResult(result.id));
-        }
-      },
+      onRemove: remove(
+        ['search'],
+        ...pinned.map((result) => searchUnselectResult(result.id)),
+      ),
     },
     objects !== undefined && {
       id: 'objects',
@@ -111,7 +132,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
       icon: <TbMapPins />,
       label: m?.tools.objects,
       count: objects,
-      onRemove: () => dispatch(objectsSetFilter([])),
+      onRemove: remove(['objects'], objectsSetFilter([])),
     },
     trackedDevices > 0 && {
       id: 'tracking',
@@ -120,7 +141,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
       label: m?.tools.tracking,
       count: trackedDevices,
       onOpen: open('tracking'),
-      onRemove: () => dispatch(trackingActions.setTrackedDevices([])),
+      onRemove: remove(['tracking'], trackingActions.setTrackedDevices([])),
     },
     dataFeatures !== undefined && {
       id: 'data',
@@ -129,7 +150,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
       label: m?.tools.dataViewer,
       count: dataFeatures,
       onOpen: open('import-file'),
-      onRemove: () => dispatch(dataViewerDelete()),
+      onRemove: remove(['data-viewer'], dataViewerDelete()),
     },
     routePoints > 0 && {
       id: 'route',
@@ -137,27 +158,28 @@ export function useMapFeatureRows(): MapFeatureRow[] {
       icon: <FaRoute />,
       label: m?.tools.routePlanner,
       onOpen: open('route-planner'),
-      onRemove: () => dispatch(routePlannerDelete()),
+      onRemove: remove(['route-point', 'route-leg'], routePlannerDelete()),
     },
-    drawingLines.length + drawingPoints > 0 && {
+    drawingLines + drawingPoints > 0 && {
       id: 'drawing',
       items: true,
       icon: <FaPencilRuler />,
       label: m?.tools.measurement,
-      count: drawingLines.length + drawingPoints,
+      count: drawingLines + drawingPoints,
       onOpen: open(drawTool),
-      onRemove: () => {
-        dispatch(drawingLineSetLines([]));
-
-        dispatch(drawingPointSetAll([]));
-      },
+      onRemove: remove(
+        ['draw-points', 'draw-line-poly', 'line-point'],
+        drawingLineSetLines([]),
+        drawingPointSetAll([]),
+      ),
     },
     changesets > 0 && {
       id: 'changesets',
       icon: <FaPencilAlt />,
       label: m?.tools.changesets,
       count: changesets,
-      onOpen: open('changesets'),
+      // Its toolbar is up while there are any; opening it again refetches.
+      items: true,
       // Closing the tool takes its changesets off the map.
       onRemove: () => dispatch(closeTool('changesets')),
     },

@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import { createSelector } from '@reduxjs/toolkit';
 import { type FeatureId, featureIdsEqual } from '@shared/types/featureId.js';
 import type { SearchResult } from './actions.js';
 
@@ -18,6 +19,16 @@ export function activeSearchResultSelector(
       ) ?? null)
     : null;
 }
+
+/** The results shown and kept: all but the one only being looked at. */
+export const keptSearchResultsSelector = createSelector(
+  (state: RootState) => state.search.selectedResults,
+  (state: RootState) => state.search.previewId,
+  (results, previewId) =>
+    results.filter(
+      (result) => !(previewId && featureIdsEqual(previewId, result.id)),
+    ),
+);
 
 /**
  * Whether what is shown for `id` is the stand-in for a fetch in flight — an

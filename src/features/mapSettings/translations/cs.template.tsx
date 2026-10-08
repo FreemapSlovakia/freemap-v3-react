@@ -80,8 +80,8 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Uložit vrstvy jako předvolbu',
   saveLayersAsPresetHint:
     'Nová předvolba z kopií map na mapě, předvolby rozložené.',
-  turnOffToSavePreset: (layers) =>
-    `Předvolba nemůže obsahovat datové vrstvy. Pro její uložení vypněte: ${layers}.`,
+  leftOutOfPreset: (layers) =>
+    `Předvolba obsahuje jen mapy, proto do ní nebude zahrnuto: ${layers}.`,
   deleteAlsoNamed: (names) => `Smažou se i mapy na ní postavené: ${names}.`,
   duplicatePreset: 'Duplikovat',
   saveAsMap: 'Uložit jako mapu',

@@ -60,7 +60,7 @@ export type MapSettingsMessages = {
   saveLayersAsPreset: string;
   saveLayersAsPresetHint: string;
   /** Why it is disabled: data layers on, which a preset can't hold. */
-  turnOffToSavePreset: (layers: string) => string;
+  leftOutOfPreset: (layers: string) => string;
   /** Deleting a custom map: the named maps built on it, deleted with it. */
   deleteAlsoNamed: (names: string) => string;
   /** A copy of a preset, in its place on the map. */

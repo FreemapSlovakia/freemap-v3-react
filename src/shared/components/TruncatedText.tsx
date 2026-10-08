@@ -5,35 +5,42 @@ import { LongPressTooltip } from './LongPressTooltip.js';
 /** Text cut short with an ellipsis, given in full by a tooltip only while it is. */
 export function TruncatedText({
   className,
+  tooltip,
   children,
 }: {
   className?: string;
+  /** The tooltip's text where the shown one is styled for the panel, not for it. */
+  tooltip?: ReactNode;
   children: ReactNode;
 }): ReactElement {
   const [el, setEl] = useState<HTMLElement | null>(null);
 
   const [truncated, setTruncated] = useState(false);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: new text can overflow without a resize
   useEffect(() => {
     if (!el) {
       return;
     }
 
-    const measure = () => setTruncated(el.scrollWidth > el.clientWidth);
-
-    measure();
-
-    const ro = new ResizeObserver(measure);
+    const ro = new ResizeObserver(() =>
+      setTruncated(el.scrollWidth > el.clientWidth),
+    );
 
     ro.observe(el);
 
     return () => ro.disconnect();
-  }, [el, children]);
+  }, [el]);
+
+  // New text can overflow without a resize; an unchanged answer re-renders nothing.
+  useEffect(() => {
+    if (el) {
+      setTruncated(el.scrollWidth > el.clientWidth);
+    }
+  });
 
   return (
     // Shown at all only while the text is cut: see `hideLabel`.
-    <LongPressTooltip label={children} hideLabel={truncated}>
+    <LongPressTooltip label={tooltip ?? children} hideLabel={truncated}>
       {({ props }) => (
         <span {...props} className="d-flex min-w-0">
           <span ref={setEl} className={clsx('text-truncate', className)}>

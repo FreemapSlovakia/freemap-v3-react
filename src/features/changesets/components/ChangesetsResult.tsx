@@ -1,4 +1,3 @@
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -7,8 +6,8 @@ import { type ReactElement, useCallback } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { type Changeset, changesetsSetParams } from '../model/actions.js';
-import { loadChangesetsMessages } from '../translations/loadChangesetsMessages.js';
+import type { Changeset } from '../model/actions.js';
+import { changesetDetail } from '../model/changesetDetail.js';
 import classes from './ChangesetsResult.module.css';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
@@ -40,21 +39,6 @@ export function ChangesetsResult(): ReactElement {
 
   const dispatch = useDispatch();
 
-  function showChangesetDetail(changeset: Changeset) {
-    dispatch(
-      toastsAdd({
-        id: 'changeset.detail',
-        messageKey: 'detail',
-        messageLoader: loadChangesetsMessages,
-        messageParams: {
-          changeset,
-        },
-        cancelType: changesetsSetParams.type,
-        style: 'info',
-      }),
-    );
-  }
-
   return (
     <>
       {changesets.map((changeset) => {
@@ -68,7 +52,7 @@ export function ChangesetsResult(): ReactElement {
             position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
             eventHandlers={{
               click() {
-                showChangesetDetail(changeset);
+                dispatch(changesetDetail(changeset));
               },
             }}
           >

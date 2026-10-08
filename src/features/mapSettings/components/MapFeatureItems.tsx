@@ -1,4 +1,6 @@
 import { type Selection, selectFeature } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
+import { changesetDetail } from '@features/changesets/model/changesetDetail.js';
 import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
 import {
   drawingLineLabel,
@@ -7,11 +9,13 @@ import {
   pointLabelValues,
 } from '@features/drawing/labelValues.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
 import type { Leg } from '@features/routePlanner/model/actions.js';
 import { tolledMeters } from '@features/routePlanner/model/pathDetails.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
+import { keptSearchResultsSelector } from '@features/search/model/selectors.js';
 import {
   getGenericNameFromOsmElementSync,
   getNameFromOsmElement,
@@ -21,35 +25,50 @@ import {
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import type { OsmMapping } from '@osm/types.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
+import { formatArea, naturalAreaUnit } from '@shared/areaFormatter.js';
+import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import {
+  lineStyleFromProperties,
+  pointStyleFromProperties,
+} from '@shared/styleFromProperties.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
   featureIdsEqual,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
+import { area as turfArea } from '@turf/area';
 import { bbox as turfBbox } from '@turf/bbox';
+import { length as turfLength } from '@turf/length';
 import clsx from 'clsx';
 import type { Geometry } from 'geojson';
-import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
+import {
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Form } from 'react-bootstrap';
 import {
   FaBullseye,
   FaDrawPolygon,
   FaLongArrowAltRight,
   FaMapMarkerAlt,
+  FaPencilAlt,
   FaPlay,
   FaSearch,
   FaStop,
 } from 'react-icons/fa';
 import { MdPolyline } from 'react-icons/md';
 import { TbMapPin } from 'react-icons/tb';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { isWideScreen, useMapLayersPanel } from '../mapLayersPanelStore.js';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './MapLayersPanel.module.css';
@@ -74,27 +93,29 @@ type Item = {
   selected: boolean;
   /** What selecting it on the map dispatches. */
   actions: UnknownAction[];
-  bbox?: Bbox;
+  /** Worked out only when it is picked: a long line has many points. */
+  bbox: () => Bbox | undefined;
 };
 
 // A filter box from this many items on.
 const FILTER_FROM = 10;
 
-function latLonBbox(points: readonly LatLon[]): Bbox | undefined {
-  if (points.length === 0) {
-    return undefined;
+// A loop: spreading a long track into `Math.min` overflows the stack.
+function latLonBbox(points: Iterable<LatLon>): Bbox | undefined {
+  let bbox: Bbox | undefined;
+
+  for (const { lat, lon } of points) {
+    bbox = bbox
+      ? [
+          Math.min(bbox[0], lon),
+          Math.min(bbox[1], lat),
+          Math.max(bbox[2], lon),
+          Math.max(bbox[3], lat),
+        ]
+      : [lon, lat, lon, lat];
   }
 
-  const lats = points.map((p) => p.lat);
-
-  const lons = points.map((p) => p.lon);
-
-  return [
-    Math.min(...lons),
-    Math.min(...lats),
-    Math.max(...lons),
-    Math.max(...lats),
-  ];
+  return bbox;
 }
 
 function geometryBbox(geometry: Geometry | null | undefined): Bbox | undefined {
@@ -136,6 +157,9 @@ export function MapFeatureItems({ feature }: { feature: string }): ReactNode {
     case 'drawing':
       return <DrawingItems />;
 
+    case 'changesets':
+      return <ChangesetItems />;
+
     default:
       return null;
   }
@@ -149,17 +173,22 @@ function ItemList({
   /** Under the list, about the feature as a whole. */
   footer?: ReactNode;
 }): ReactElement {
+  const m = useMessages();
+
   const msm = useMapSettingsMessages();
 
   const dispatch = useDispatch();
 
-  const zoom = useAppSelector((state) => state.map.zoom);
+  const store = useStore<RootState>();
 
   const { setOpen } = useMapLayersPanel();
 
   const [filter, setFilter] = useState('');
 
-  const query = filter.trim().toLocaleLowerCase();
+  const filterable = items.length >= FILTER_FROM;
+
+  // Not while its box is gone: it would narrow the list out of sight.
+  const query = filterable ? filter.trim().toLocaleLowerCase() : '';
 
   const shown = query
     ? items.filter((item) =>
@@ -174,9 +203,14 @@ function ItemList({
       dispatch(action);
     }
 
+    const bbox = item.bbox();
+
     // Into view without zooming in; out only where it would not fit.
-    if (item.bbox) {
-      fitMapToBbox(dispatch, item.bbox, { maxZoom: zoom, padding: 40 });
+    if (bbox) {
+      fitMapToBbox(dispatch, bbox, {
+        maxZoom: store.getState().map.zoom,
+        padding: 40,
+      });
     }
 
     // On a phone the panel covers what was just selected.
@@ -187,7 +221,7 @@ function ItemList({
 
   return (
     <>
-      {items.length >= FILTER_FROM && (
+      {filterable && (
         <Form.Control
           type="search"
           size="sm"
@@ -223,7 +257,13 @@ function ItemList({
             </span>
 
             <span className="d-flex flex-column min-w-0">
-              <TruncatedText className={clsx(item.muted && 'text-muted')}>
+              <TruncatedText
+                className={clsx(item.muted && 'text-muted')}
+                // Muted grey is lost on the tooltip's dark background.
+                tooltip={
+                  item.detail ? `${item.label} · ${item.detail}` : undefined
+                }
+              >
                 {item.display ?? item.label}
 
                 {item.detail && (
@@ -242,8 +282,10 @@ function ItemList({
       ))}
 
       {/* Objects keep their row while the filter is on, whatever is in view. */}
-      {items.length === 0 && (
-        <p className="text-muted mt-1 mb-0">{msm?.nothingInView}</p>
+      {shown.length === 0 && (
+        <p className="text-muted mt-1 mb-0">
+          {items.length === 0 ? msm?.nothingInView : m?.search.noResults}
+        </p>
       )}
 
       {footer}
@@ -252,9 +294,7 @@ function ItemList({
 }
 
 function SearchItems(): ReactElement {
-  const results = useAppSelector((state) => state.search.selectedResults);
-
-  const previewId = useAppSelector((state) => state.search.previewId);
+  const results = useAppSelector(keptSearchResultsSelector);
 
   const selection = useAppSelector((state) => state.main.selection);
 
@@ -264,36 +304,31 @@ function SearchItems(): ReactElement {
 
   return (
     <ItemList
-      items={results
-        .filter(
-          (result) => !previewId || !featureIdsEqual(result.id, previewId),
-        )
-        .map((result) => {
-          // An element loaded by its id carries only its tags.
-          const osm = osmNaming(
-            (result.geojson.properties ?? {}) as Record<string, string>,
-            result.id.type === 'osm' ? result.id.elementType : undefined,
-            language,
-            mapping,
-          );
+      items={results.map((result) => {
+        // An element loaded by its id carries only its tags.
+        const osm = osmNaming(
+          (result.geojson.properties ?? {}) as Record<string, string>,
+          result.id.type === 'osm' ? result.id.elementType : undefined,
+          language,
+          mapping,
+        );
 
-          const name = result.displayName || osm.name;
+        const name = result.displayName || osm.name;
 
-          const generic = result.genericName || osm.generic;
+        const generic = result.genericName || osm.generic;
 
-          return {
-            key: stringifyFeatureId(result.id),
-            icon: osm.icon || <FaSearch />,
-            label: name || generic || stringifyFeatureId(result.id),
-            detail: name ? generic : undefined,
-            muted: !name && !generic,
-            selected:
-              selection?.type === 'search' &&
-              featureIdsEqual(selection.id, result.id),
-            actions: [
-              searchSelectResult({ result, focus: false, tier: 'keep' }),
-            ],
-            bbox: result.loading
+        return {
+          key: stringifyFeatureId(result.id),
+          icon: osm.icon || <FaSearch />,
+          label: name || generic || stringifyFeatureId(result.id),
+          detail: name ? generic : undefined,
+          muted: !name && !generic,
+          selected:
+            selection?.type === 'search' &&
+            featureIdsEqual(selection.id, result.id),
+          actions: [searchSelectResult({ result, focus: false, tier: 'keep' })],
+          bbox: () =>
+            result.loading
               ? undefined
               : geometryBbox(
                   result.geojson.type === 'Feature'
@@ -305,8 +340,8 @@ function SearchItems(): ReactElement {
                         ),
                       },
                 ),
-          };
-        })}
+        };
+      })}
     />
   );
 }
@@ -389,7 +424,7 @@ function ObjectItems(): ReactElement {
               selection?.type === 'objects' &&
               featureIdsEqual(selection.id, id),
             actions: [selectFeature({ type: 'objects', id })],
-            bbox: latLonBbox([coords]),
+            bbox: () => latLonBbox([coords]),
           };
         })
         // By name, the unnamed after them by kind; not by distance, as picking
@@ -425,7 +460,7 @@ function TrackingItems(): ReactElement {
           muted: !device.label,
           selected: isSelected(selection, 'tracking', device.token),
           actions: [selectFeature({ type: 'tracking', id: device.token })],
-          bbox: last && latLonBbox([last]),
+          bbox: () => last && latLonBbox([last]),
         };
       })}
     />
@@ -439,28 +474,70 @@ function DataItems(): ReactElement {
 
   const selection = useAppSelector((state) => state.main.selection);
 
+  const defaultStyle = useAppSelector(
+    (state) => state.trackViewerSettings.style,
+  );
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  // Once per loaded file: a recorded track can have tens of thousands of points.
+  const sizes = useMemo(
+    () =>
+      (features ?? []).map((feature) => {
+        const type = feature.geometry?.type;
+
+        if (type === 'Polygon' || type === 'MultiPolygon') {
+          const m2 = turfArea(feature);
+
+          return formatArea(m2, naturalAreaUnit(m2), language);
+        }
+
+        return type === 'LineString' || type === 'MultiLineString'
+          ? formatDistance(turfLength(feature, { units: 'meters' }), language)
+          : undefined;
+      }),
+    [features, language],
+  );
+
   return (
     <ItemList
       items={(features ?? []).map((feature, index) => {
-        const name = feature.properties?.['name'];
+        const rawName = feature.properties?.['name'];
+
+        const name = typeof rawName === 'string' ? rawName : '';
 
         const type = feature.geometry?.type;
 
+        const point = type === 'Point' || type === 'MultiPoint';
+
+        const polygon = type === 'Polygon' || type === 'MultiPolygon';
+
+        const size = sizes[index];
+
+        // As it is drawn: its own style, else the track viewer's default.
+        const color = splitColorAlpha(
+          (point
+            ? pointStyleFromProperties(feature.properties).color
+            : lineStyleFromProperties(feature.properties, polygon).color) ??
+            defaultStyle.color,
+        ).color;
+
         return {
           key: String(index),
-          icon:
-            type === 'Point' || type === 'MultiPoint' ? (
-              <FaMapMarkerAlt />
-            ) : type === 'Polygon' || type === 'MultiPolygon' ? (
-              <FaDrawPolygon />
-            ) : (
-              <MdPolyline />
-            ),
-          label: typeof name === 'string' && name ? name : `#${index + 1}`,
-          muted: typeof name !== 'string' || !name,
+          icon: point ? (
+            <FaMapMarkerAlt />
+          ) : polygon ? (
+            <FaDrawPolygon />
+          ) : (
+            <MdPolyline />
+          ),
+          color,
+          label: name || size || `#${index + 1}`,
+          subline: name ? size : undefined,
+          muted: !name,
           selected: isSelected(selection, 'data-viewer', index),
           actions: [selectFeature({ type: 'data-viewer', id: index })],
-          bbox: geometryBbox(feature.geometry),
+          bbox: () => geometryBbox(feature.geometry),
         };
       })}
     />
@@ -576,7 +653,7 @@ function RouteItems(): ReactElement {
           : undefined,
       selected: isSelected(selection, 'route-point', index),
       actions: [selectFeature({ type: 'route-point', id: index })],
-      bbox: latLonBbox([points[index]!]),
+      bbox: () => latLonBbox([points[index]!]),
     };
   };
 
@@ -594,14 +671,15 @@ function RouteItems(): ReactElement {
     subline: figures(leg.distance, leg.duration),
     selected: isSelected(selection, 'route-leg', index),
     actions: [selectFeature({ type: 'route-leg', id: index })],
-    bbox: latLonBbox(
-      leg.steps.flatMap((step) =>
-        step.geometry.coordinates.map(([lon, lat]) => ({
-          lat: lat!,
-          lon: lon!,
-        })),
+    bbox: () =>
+      latLonBbox(
+        leg.steps.flatMap((step) =>
+          step.geometry.coordinates.map(([lon, lat]) => ({
+            lat: lat!,
+            lon: lon!,
+          })),
+        ),
       ),
-    ),
   });
 
   return (
@@ -627,7 +705,7 @@ function DrawingItems(): ReactElement {
 
   const selection = useAppSelector((state) => state.main.selection);
 
-  // What an unlabelled item is told apart by: where it is, or its size.
+  // An item's size, or where it is: under its label, or in place of one.
   const measure = (
     template: string,
     values: Record<string, string | undefined>,
@@ -644,25 +722,26 @@ function DrawingItems(): ReactElement {
 
           const label = line.label ? drawingLineLabel(line, lines).trim() : '';
 
+          const size = measure(
+            line.type === 'polygon' ? '{area}' : '{length}',
+            lineLabelValues(line, lines),
+          );
+
           return [
             {
               key: `line-${line.id}`,
               icon:
                 line.type === 'polygon' ? <FaDrawPolygon /> : <MdPolyline />,
               color: line.color,
-              label:
-                label ||
-                measure(
-                  line.type === 'polygon' ? '{area}' : '{length}',
-                  lineLabelValues(line, lines),
-                ),
+              label: label || size,
+              subline: label ? size : undefined,
               muted: !label,
               selected: isSelected(selection, 'draw-line-poly', index),
               actions: [
                 selectFeature({ type: 'draw-line-poly', id: index }),
                 drawingMeasure({}),
               ],
-              bbox: latLonBbox(line.points),
+              bbox: () => latLonBbox(line.points),
             },
           ];
         }),
@@ -680,10 +759,42 @@ function DrawingItems(): ReactElement {
               selectFeature({ type: 'draw-points', id: index }),
               drawingMeasure({}),
             ],
-            bbox: latLonBbox([point.coords]),
+            bbox: () => latLonBbox([point.coords]),
           };
         }),
       ]}
+    />
+  );
+}
+
+function ChangesetItems(): ReactElement {
+  const changesets = useAppSelector((state) => state.changesets.changesets);
+
+  const language = useEffectiveChosenLanguage();
+
+  const dateFormat = new Intl.DateTimeFormat(language, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+
+  // Newest first; picked, one shows what its marker's click does.
+  return (
+    <ItemList
+      items={changesets
+        .toSorted((a, b) => b.closedAt.getTime() - a.closedAt.getTime())
+        .map((changeset) => ({
+          key: String(changeset.id),
+          icon: <FaPencilAlt />,
+          label: changeset.userName,
+          detail: changeset.description || undefined,
+          subline: dateFormat.format(changeset.closedAt),
+          selected: false,
+          actions: [changesetDetail(changeset)],
+          bbox: () =>
+            latLonBbox([
+              { lat: changeset.centerLat, lon: changeset.centerLon },
+            ]),
+        }))}
     />
   );
 }

@@ -84,8 +84,8 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Enregistrer les couches comme préréglage',
   saveLayersAsPresetHint:
     'Un nouveau préréglage fait de copies des cartes affichées, les préréglages décomposés.',
-  turnOffToSavePreset: (layers) =>
-    `Un préréglage ne peut pas contenir de calques de données. Pour l'enregistrer, désactivez : ${layers}.`,
+  leftOutOfPreset: (layers) =>
+    `Un préréglage ne contient que des cartes ; il n'inclura donc pas : ${layers}.`,
   deleteAlsoNamed: (names) =>
     `Les cartes construites dessus seront aussi supprimées : ${names}.`,
   duplicatePreset: 'Dupliquer',

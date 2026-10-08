@@ -7,7 +7,11 @@ import {
   mapNamedMapCreate,
   mapPresetSave,
 } from '@features/map/model/actions.js';
-import type { MapPreset } from '@features/map/model/mapPreset.js';
+import {
+  isPresettable,
+  type MapPreset,
+  presetIdOf,
+} from '@features/map/model/mapPreset.js';
 import {
   capturePreset,
   presetByIdSelector,
@@ -28,6 +32,7 @@ import {
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
+import { layerLabel } from '@shared/layerName.js';
 import {
   type CustomLayerDef,
   isNamedMapDef,
@@ -35,7 +40,7 @@ import {
 } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useState } from 'react';
-import { Modal } from 'react-bootstrap';
+import { Alert, Modal } from 'react-bootstrap';
 import { FaCheck } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
@@ -45,6 +50,7 @@ import {
   LayerVisibilityFields,
 } from './LayerVisibilityFields.js';
 import { PresetForm } from './PresetForm.js';
+import { useMapFeatureRows } from './useMapFeatureRows.js';
 
 type Props = { request: CustomMapRequest };
 
@@ -79,6 +85,24 @@ export function CustomMapEditor({ request }: Props): ReactElement {
   const presets = useAppSelector((state) => state.map.presets);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
+
+  const onMap = useAppSelector((state) => state.map.layers);
+
+  const featureRows = useMapFeatureRows();
+
+  // On the map but no map, so a preset of it leaves them out; `i` only hides
+  // the tools' features.
+  const leftOut = [
+    ...onMap
+      .filter(
+        (item) =>
+          item !== 'i' &&
+          presetIdOf(item) === undefined &&
+          !isPresettable(item),
+      )
+      .map((type) => layerLabel({ type }, m)),
+    ...featureRows.flatMap((row) => (row.label ? [row.label] : [])),
+  ];
 
   // The form the request names: a map or preset to edit, a new preset of what
   // is on the map, or a new custom map. One gone by now opens as a new one
@@ -395,6 +419,12 @@ export function CustomMapEditor({ request }: Props): ReactElement {
   ) : view.mode === 'preset' ? (
     <>
       <Modal.Body>
+        {request.addPreset && leftOut.length > 0 && (
+          <Alert variant="warning">
+            {msm?.leftOutOfPreset(leftOut.join(', '))}
+          </Alert>
+        )}
+
         {presetDraft && (
           <PresetForm value={presetDraft} onChange={setPresetDraft} />
         )}

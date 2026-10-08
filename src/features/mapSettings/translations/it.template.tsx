@@ -80,8 +80,8 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Salva i livelli come preimpostazione',
   saveLayersAsPresetHint:
     'Una nuova preimpostazione con copie delle mappe sulla mappa, le preimpostazioni scomposte.',
-  turnOffToSavePreset: (layers) =>
-    `Una preimpostazione non può contenere livelli di dati. Per salvarla, disattiva: ${layers}.`,
+  leftOutOfPreset: (layers) =>
+    `Una preimpostazione contiene solo mappe, quindi non includerà: ${layers}.`,
   deleteAlsoNamed: (names) =>
     `Verranno eliminate anche le mappe basate su di essa: ${names}.`,
   duplicatePreset: 'Duplica',

@@ -79,8 +79,8 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Zapisz warstwy jako ustawienie wstępne',
   saveLayersAsPresetHint:
     'Nowe ustawienie wstępne z kopii map na mapie, ustawienia wstępne rozłożone.',
-  turnOffToSavePreset: (layers) =>
-    `Ustawienie wstępne nie może zawierać warstw danych. Aby je zapisać, wyłącz: ${layers}.`,
+  leftOutOfPreset: (layers) =>
+    `Ustawienie wstępne zawiera tylko mapy, więc nie obejmie: ${layers}.`,
   deleteAlsoNamed: (names) =>
     `Mapy na niej oparte również zostaną usunięte: ${names}.`,
   duplicatePreset: 'Duplikuj',

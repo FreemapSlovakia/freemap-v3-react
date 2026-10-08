@@ -80,8 +80,8 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   saveLayersAsPreset: 'Shrani sloje kot prednastavitev',
   saveLayersAsPresetHint:
     'Nova prednastavitev iz kopij zemljevidov na zemljevidu, prednastavitve razstavljene.',
-  turnOffToSavePreset: (layers) =>
-    `Prednastavitev ne more vsebovati podatkovnih plasti. Za shranjevanje izklopite: ${layers}.`,
+  leftOutOfPreset: (layers) =>
+    `Prednastavitev vsebuje le zemljevide, zato ne bo vključevala: ${layers}.`,
   deleteAlsoNamed: (names) =>
     `Izbrisani bodo tudi zemljevidi, zgrajeni na njem: ${names}.`,
   duplicatePreset: 'Podvoji',

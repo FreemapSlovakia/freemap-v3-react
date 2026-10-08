@@ -79,7 +79,6 @@ import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useFillToBottom } from '@shared/hooks/useFillToBottom.js';
-import { layerLabel } from '@shared/layerName.js';
 import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
 import {
@@ -215,6 +214,9 @@ export default function MapLayersPanel(): ReactElement {
 
   const opened = useRef(false);
 
+  // The stack lists the tools' features too, outside an embed.
+  const featuresListed = !window.fmEmbedded && featureRows.length > 0;
+
   // Opened on the stack of that one map: its settings instead, before the
   // stack paints.
   useLayoutEffect(() => {
@@ -224,10 +226,10 @@ export default function MapLayersPanel(): ReactElement {
 
     opened.current = true;
 
-    if (top && onlyWithPage !== undefined) {
+    if (top && onlyWithPage !== undefined && !featuresListed) {
       setPlace({ type: onlyWithPage });
     }
-  }, [top, onlyWithPage, setPlace]);
+  }, [top, onlyWithPage, featuresListed, setPlace]);
 
   return (
     <Card body className={clsx(classes.panel, 'fm-frosted', 'mt-2 ms-2')}>
@@ -248,7 +250,7 @@ export default function MapLayersPanel(): ReactElement {
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="flex-shrink-0 me-1"
+                  className="flex-shrink-0"
                   onClick={() => setPlace(up)}
                   {...props}
                 >
@@ -276,7 +278,7 @@ export default function MapLayersPanel(): ReactElement {
             {({ props }) => (
               <CloseButton
                 // In the corner, as a toast's is.
-                className="flex-shrink-0 align-self-start ms-1"
+                className="flex-shrink-0 align-self-start"
                 onClick={() => setOpen(false)}
                 {...props}
               />
@@ -723,8 +725,6 @@ function Stack({
   onOpen: (place: PanelPlace) => void;
   featureRows: MapFeatureRow[];
 }): ReactElement {
-  const m = useMessages();
-
   const msm = useMapSettingsMessages();
 
   const dispatch = useDispatch();
@@ -763,9 +763,6 @@ function Stack({
     (maps.length === 1 &&
       presetIdOf(maps[0]!) === undefined &&
       !isEmptySetup(usageOf(layerSetups[maps[0]!])));
-
-  // A preset can't hold them; `i` only hides the tools' features.
-  const dataLayers = layers.filter((item) => item !== 'i' && !isMap(item));
 
   const render = (item: string, drag?: Drag) => {
     const id = presetIdOf(item);
@@ -813,24 +810,15 @@ function Stack({
           setup, and a lone preset would come out a copy, which Duplicate is for. */}
       {!window.fmEmbedded && makesNew && (
         <div className="d-flex mt-2">
-          <LongPressTooltip
-            label={
-              dataLayers.length
-                ? msm?.turnOffToSavePreset(
-                    dataLayers
-                      .map((type) => layerLabel({ type }, m))
-                      .join(', '),
-                  )
-                : msm?.saveLayersAsPresetHint
-            }
-          >
+          {/* What a preset can't hold is named in the form it opens. */}
+          <LongPressTooltip label={msm?.saveLayersAsPresetHint}>
             {/* The span takes the tooltip, which a disabled button can't. */}
             {({ props }) => (
               <span className="ms-auto d-flex min-w-0" {...props}>
                 <Button
                   variant="secondary"
                   className="text-truncate"
-                  disabled={!canSave || dataLayers.length > 0}
+                  disabled={!canSave}
                   onClick={() =>
                     dispatch(
                       setActiveModal({
