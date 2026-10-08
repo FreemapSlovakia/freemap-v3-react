@@ -28,7 +28,6 @@ import {
   mapPresetChange,
   mapPresetLayerAdd,
   mapPresetLayerRemove,
-  mapSetFeaturesHidden,
   type SetupTarget,
 } from '@features/map/model/actions.js';
 import { canSwitchKind } from '@features/map/model/layerKind.js';
@@ -76,19 +75,12 @@ import {
   MapLayerItem,
 } from '@shared/components/MapLayerItem.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
-import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useFillToBottom } from '@shared/hooks/useFillToBottom.js';
-import { layerLabel } from '@shared/layerName.js';
 import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
-import {
-  effectiveShortcut,
-  isLayerInstalled,
-} from '@shared/mapLibrary/installed.js';
-import { FEATURES_LAYER, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import clsx from 'clsx';
 import {
   type CSSProperties,
@@ -106,8 +98,6 @@ import { Badge, Button, Card, CloseButton, Dropdown } from 'react-bootstrap';
 import {
   FaArrowLeft,
   FaCopy,
-  FaEye,
-  FaEyeSlash,
   FaLayerGroup,
   FaPencilAlt,
   FaPlus,
@@ -290,8 +280,6 @@ export default function MapLayersPanel(): ReactElement {
 
           <div ref={setHeaderSlot} className="d-contents" />
 
-          {top && featuresListed && <FeaturesHiddenToggle />}
-
           <LongPressTooltip label={m?.general.close}>
             {({ props }) => (
               <CloseButton
@@ -349,41 +337,6 @@ function PresetName({
 
       <TruncatedText>{preset.name}</TruncatedText>
     </span>
-  );
-}
-
-function FeaturesHiddenToggle(): ReactElement {
-  const m = useMessages();
-
-  const dispatch = useDispatch();
-
-  const hidden = useAppSelector((state) => state.map.featuresHidden);
-
-  // As the keyboard answers it, which skips an uninstalled layer.
-  const shortcut = useAppSelector((state) => {
-    const { layersSettings } = state.map;
-
-    return isLayerInstalled(layersSettings, FEATURES_LAYER)
-      ? effectiveShortcut(layersSettings, mapIndexById[FEATURES_LAYER]!)
-      : undefined;
-  });
-
-  return (
-    <LongPressTooltip
-      label={layerLabel({ type: FEATURES_LAYER }, m)}
-      kbd={shortcut ? formatShortcut(shortcut) : undefined}
-    >
-      {({ props }) => (
-        <Button
-          variant={hidden ? 'primary' : 'outline-primary'}
-          className="flex-shrink-0"
-          onClick={() => dispatch(mapSetFeaturesHidden(!hidden))}
-          {...props}
-        >
-          {hidden ? <FaEyeSlash /> : <FaEye />}
-        </Button>
-      )}
-    </LongPressTooltip>
   );
 }
 

@@ -914,6 +914,13 @@ export function MapSwitchButton(): ReactElement {
           >
             <FaEllipsisV className="d-none d-sm-block" />
             <FaRegMap className="d-sm-none" />
+
+            {/* Narrow screens have no toolbar button to carry it. */}
+            {!isWide && featuresHidden && (
+              <Badge label={m?.mapLayers.interactiveLayerWarning}>
+                <FaEyeSlash />
+              </Badge>
+            )}
           </Dropdown.Toggle>
 
           <FmDropdownMenu>

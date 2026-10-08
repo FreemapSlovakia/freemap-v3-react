@@ -1,3 +1,4 @@
+import { isToolOpen } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { keptSearchResultsSelector } from '@features/search/model/selectors.js';
 
@@ -14,8 +15,21 @@ const MAP_FEATURE_IDS = [
 export type MapFeatureId = (typeof MAP_FEATURE_IDS)[number];
 
 /** Whether any tool's feature has a row in the Map layers panel. */
-export const anyMapFeature = (state: RootState) =>
+const anyMapFeature = (state: RootState) =>
   MAP_FEATURE_IDS.some((id) => mapFeatureCount(state, id) !== undefined);
+
+/**
+ * Whether hiding the features would hide anything: the rows' features, and
+ * what `Results` draws with no row — a search preview, a recording, tracks,
+ * the panorama's marks.
+ */
+export const anyFeatureDrawn = (state: RootState) =>
+  anyMapFeature(state) ||
+  state.search.selectedResults.length > 0 ||
+  state.tracking.tracks.length > 0 ||
+  state.gpsRecorder.points.length > 0 ||
+  Boolean(state.gpsRecorder.status?.recording) ||
+  (state.panorama.viewpoint !== null && isToolOpen(state, 'panorama'));
 
 /**
  * How many items a tool's feature holds, or `undefined` while it has no row in

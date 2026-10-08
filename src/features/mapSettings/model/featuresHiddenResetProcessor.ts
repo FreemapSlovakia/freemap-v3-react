@@ -1,15 +1,13 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapSetFeaturesHidden } from '@features/map/model/actions.js';
-import { anyMapFeature } from '../mapFeatureCounts.js';
+import { anyFeatureDrawn } from '../mapFeatureCounts.js';
 
-// Removing the last of them leaves nothing the hiding is for. On the change
-// only: what has no row (a recording, a search preview) may be hidden alone.
+// Hidden with nothing to hide — none left, or none to begin with — they show:
+// a warning about hidden features would be about nothing.
 export const featuresHiddenResetProcessor: Processor = {
-  statePredicate: (state) => state.map.featuresHidden,
-  stateChangePredicate: anyMapFeature,
-  handle: ({ getState, dispatch }) => {
-    if (!anyMapFeature(getState())) {
-      dispatch(mapSetFeaturesHidden(false));
-    }
+  statePredicate: (state) =>
+    state.map.featuresHidden && !anyFeatureDrawn(state),
+  handle: ({ dispatch }) => {
+    dispatch(mapSetFeaturesHidden(false));
   },
 };

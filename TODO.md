@@ -467,8 +467,7 @@ Bugs and feature requests are issues under `area: maps-layers`.
       `resolveLayerOpacity`. Medium to large — many readers expect `def.layer`
       switched.
 - [ ] **Helpers for a map's effective settings.** `effectiveShortcut` in
-      `installed.ts` serves `keyboardHandler`, `MapSwitchButton` and the
-      panel; `YourMapsList`, `CustomMapEditor`, `commandDefinitions` and
+      `installed.ts` serves `keyboardHandler` and `MapSwitchButton`; `YourMapsList`, `CustomMapEditor`, `commandDefinitions` and
       `CacheTilesForm` still resolve the shortcut inline, and the menu/toolbar
       defaults are recomputed everywhere: helpers beside it, the default passed
       in. Likewise `layerName(def, m) ?? def.type`, hand-written at six sites.
