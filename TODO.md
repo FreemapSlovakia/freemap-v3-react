@@ -466,13 +466,12 @@ Bugs and feature requests are issues under `area: maps-layers`.
       the `defaultOpacity` a switch-back leaves on a base copy is ignored by
       `resolveLayerOpacity`. Medium to large — many readers expect `def.layer`
       switched.
-- [ ] **Helpers for a map's effective settings.** The shortcut
-      (`settings.shortcut === undefined ? def.shortcut : …`) and the
-      menu/toolbar defaults are recomputed inline in `YourMapsList`,
-      `CustomMapEditor`, `MapSwitchButton`, `commandDefinitions`,
-      `keyboardHandler` and `CacheTilesForm`: put them beside
-      `isLayerInstalled` in `installed.ts`, the default passed in. Likewise
-      `layerName(def, m) ?? def.type`, hand-written at six sites.
+- [ ] **Helpers for a map's effective settings.** `effectiveShortcut` in
+      `installed.ts` serves `keyboardHandler`, `MapSwitchButton` and the
+      panel; `YourMapsList`, `CustomMapEditor`, `commandDefinitions` and
+      `CacheTilesForm` still resolve the shortcut inline, and the menu/toolbar
+      defaults are recomputed everywhere: helpers beside it, the default passed
+      in. Likewise `layerName(def, m) ?? def.type`, hand-written at six sites.
 
 ## Search / Photon geocoder (see [`doc/photon-geocoder.md`](./doc/photon-geocoder.md))
 

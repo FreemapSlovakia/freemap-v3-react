@@ -916,6 +916,9 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     })
     .addCase(authLogout, resetAccountSettings)
     .addCase(mapsLoaded, (state, { payload: { data } }) => {
+      // A map opened is opened to be seen.
+      state.featuresHidden = false;
+
       const { map } = data;
 
       if (!map) {

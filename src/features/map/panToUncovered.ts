@@ -179,14 +179,21 @@ export async function fitToUncovered(
     return;
   }
 
-  const area = {
-    x: free.x + mx,
-    y: free.y + my,
-    width: free.width - 2 * mx,
-    height: free.height - 2 * my,
-  };
+  const size = map.getSize();
 
-  // Into the free area less its margins, never zooming in.
+  // A sliver of free map would fit an extent only far zoomed out; the whole
+  // map, partly covered, serves better.
+  const area =
+    keepZoom || (free.width >= size.x / 4 && free.height >= size.y / 4)
+      ? {
+          x: free.x + mx,
+          y: free.y + my,
+          width: free.width - 2 * mx,
+          height: free.height - 2 * my,
+        }
+      : undefined;
+
+  // Never zooming in.
   fitLoadedMap(
     map,
     dispatch,
@@ -203,10 +210,8 @@ type PendingFit = { run: () => void; timer: ReturnType<typeof setTimeout> };
 let pending: PendingFit | undefined;
 
 /**
- * Runs a fit on the next frame, or — where `toolbarComing`, the pick bringing
- * up a selection toolbar that may cover what it places — once that toolbar has
- * mounted, or after a second at the latest. The next call cancels a fit not yet
- * run, so each pick fits once.
+ * Runs a fit on the next frame, or once a coming selection toolbar has mounted
+ * (a second at most), as it may cover the place. The next call cancels it.
  */
 export function fitOnceSettled(run: () => void, toolbarComing: boolean): void {
   if (pending) {

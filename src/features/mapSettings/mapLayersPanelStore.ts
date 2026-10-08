@@ -80,7 +80,16 @@ function update(patch: Partial<PanelState>, persist: boolean) {
 
 /** Opens the panel or closes it, as `setOpen` does; for the keyboard. */
 export function toggleMapLayersPanel(persist: boolean): void {
-  update({ open: !getState().open, attention: false, auto: false }, persist);
+  setPanelOpen(!getState().open, persist);
+}
+
+/** Whether the panel's open state may be remembered: cookies answered. */
+export const panelStatePersists = (state: RootState) =>
+  state.cookieConsent.cookieConsentResult !== null;
+
+// The user's opening or closing: no longer the auto-opened one, nor flagged.
+function setPanelOpen(open: boolean, persist: boolean) {
+  update({ open, attention: false, auto: false }, persist);
 }
 
 /**
@@ -94,13 +103,10 @@ export function useMapLayersPanel() {
 
   const attention = useSyncExternalStore(subscribe, () => getState().attention);
 
-  const cookiesEnabled = useAppSelector(
-    (state) => state.cookieConsent.cookieConsentResult !== null,
-  );
+  const cookiesEnabled = useAppSelector(panelStatePersists);
 
   const setOpen = useCallback(
-    (open: boolean) =>
-      update({ open, attention: false, auto: false }, cookiesEnabled),
+    (open: boolean) => setPanelOpen(open, cookiesEnabled),
     [cookiesEnabled],
   );
 

@@ -84,7 +84,10 @@ import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useFillToBottom } from '@shared/hooks/useFillToBottom.js';
 import { layerLabel } from '@shared/layerName.js';
 import { resolveLayerOpacity } from '@shared/mapDefinitions.js';
-import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
+import {
+  effectiveShortcut,
+  isLayerInstalled,
+} from '@shared/mapLibrary/installed.js';
 import { FEATURES_LAYER, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import clsx from 'clsx';
 import {
@@ -356,18 +359,13 @@ function FeaturesHiddenToggle(): ReactElement {
 
   const hidden = useAppSelector((state) => state.map.featuresHidden);
 
-  // As the keyboard answers it: a cleared one (`null`) is none, and an
-  // uninstalled layer has none.
+  // As the keyboard answers it, which skips an uninstalled layer.
   const shortcut = useAppSelector((state) => {
     const { layersSettings } = state.map;
 
-    if (!isLayerInstalled(layersSettings, FEATURES_LAYER)) {
-      return undefined;
-    }
-
-    const own = layersSettings[FEATURES_LAYER]?.shortcut;
-
-    return own === undefined ? mapIndexById[FEATURES_LAYER]?.shortcut : own;
+    return isLayerInstalled(layersSettings, FEATURES_LAYER)
+      ? effectiveShortcut(layersSettings, mapIndexById[FEATURES_LAYER]!)
+      : undefined;
   });
 
   return (

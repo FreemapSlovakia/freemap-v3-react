@@ -9,6 +9,7 @@ import {
 import type { DrawnLine } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { mapSetFeaturesHidden } from '@features/map/model/actions.js';
 import {
   fitOnceSettled,
   fitToUncovered,
@@ -105,6 +106,8 @@ type Item = {
 
 // A filter box from this many items on.
 const FILTER_FROM = 10;
+
+const MAX_ROWS = 200;
 
 // A loop: spreading a long track into `Math.min` overflows the stack.
 function latLonBbox(points: Iterable<LatLon>): Bbox | undefined {
@@ -205,7 +208,7 @@ function ItemList({
   // Not while its box is gone: it would narrow the list out of sight.
   const query = filterable ? filter.trim().toLocaleLowerCase() : '';
 
-  const shown = query
+  const matching = query
     ? items.filter((item) =>
         `${item.label} ${item.detail ?? ''}`
           .toLocaleLowerCase()
@@ -213,8 +216,19 @@ function ItemList({
       )
     : items;
 
+  // Rendered rows are costly (a tooltip and an observer each); the filter
+  // reaches the rest.
+  const shown = matching.slice(0, MAX_ROWS);
+
   const pick = (item: Item) => {
-    const before = store.getState().main.selection?.type;
+    const { main, map } = store.getState();
+
+    const before = main.selection?.type;
+
+    // A picked item has to be drawn to be seen.
+    if (map.featuresHidden) {
+      dispatch(mapSetFeaturesHidden(false));
+    }
 
     for (const action of item.actions ??
       (item.selects ? [selectFeature(item.selects)] : [])) {
@@ -315,6 +329,12 @@ function ItemList({
           </button>
         </div>
       ))}
+
+      {matching.length > shown.length && (
+        <p className="text-muted mt-1 mb-0">
+          +{matching.length - shown.length}
+        </p>
+      )}
 
       {(items.length === 0 ? empty : shown.length === 0) && (
         <p className="text-muted mt-1 mb-0">

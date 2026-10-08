@@ -42,6 +42,7 @@ import {
   getLayerBbox,
 } from '@shared/mapDefinitions.js';
 import { coverageCountries } from '@shared/mapLibrary/coverage.js';
+import { effectiveShortcut } from '@shared/mapLibrary/installed.js';
 import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
 import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import type { Shortcut } from '@shared/types/common.js';
@@ -526,11 +527,7 @@ export function MapSwitchButton(): ReactElement {
 
         {/* The shortcut sits at the row's edge the way a menu writes it. */}
         {place !== 'toolbar' &&
-          getKbdShortcut(
-            layersSettings[def.type]?.shortcut === undefined
-              ? def.shortcut
-              : layersSettings[def.type].shortcut,
-          )}
+          getKbdShortcut(effectiveShortcut(layersSettings, def))}
 
         {/* All but a downloaded map or a colour draw nothing offline.
             Outermost, so a transient badge doesn't shift the shortcut's column. */}

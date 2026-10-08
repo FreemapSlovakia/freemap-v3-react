@@ -1,5 +1,6 @@
 import type { LayerSettings } from '@features/map/model/actions.js';
 import { currentSite } from '@shared/sites.js';
+import type { Shortcut } from '@shared/types/common.js';
 import { isCatalogId } from './catalogId.js';
 import { mapIndex } from './mapIndex.js';
 
@@ -39,6 +40,16 @@ export const isLayerInstalled = (
     (!isCatalogId(type) &&
       (!uninstalledByDefault.has(type) || settings !== undefined))
   );
+};
+
+/** A map's shortcut: the user's own, where cleared (`null`) none, else its default. */
+export const effectiveShortcut = (
+  layersSettings: LayersSettings,
+  def: { type: string; shortcut?: Shortcut | null },
+): Shortcut | null | undefined => {
+  const own = layersSettings[def.type]?.shortcut;
+
+  return own === undefined ? def.shortcut : own;
 };
 
 /** Whether a list should offer a library map: installed, or on the map anyway. */

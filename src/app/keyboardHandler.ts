@@ -32,7 +32,10 @@ import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
-import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
+import {
+  effectiveShortcut,
+  isLayerInstalled,
+} from '@shared/mapLibrary/installed.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import type { Shortcut } from '@shared/types/common.js';
 import {
@@ -241,11 +244,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       ...libraryIndexSelector(state).filter((def) =>
         isLayerInstalled(state.map.layersSettings, def.type),
       ),
-    ].find((def) => {
-      const shortcut = state.map.layersSettings[def.type]?.shortcut;
-
-      return pressed(shortcut === undefined ? def.shortcut : shortcut);
-    });
+    ].find((def) => pressed(effectiveShortcut(state.map.layersSettings, def)));
 
     const layerType =
       layerDef &&
