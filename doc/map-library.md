@@ -335,9 +335,15 @@ and probe. The national sources are researched one country at a time.
 — from Europe, as many European servers refuse GitHub's US runners — without
 `--reuse-probe`, so every map is asked again, and opens (or updates) one PR on
 `harvest/map-library` when the catalog or the id table changed. Its body is the
-`--report` markdown: the maps that left, with the drop reason, came back or are
-new. A server down for one run shows up as left — read the reason before
-merging.
+`--report` markdown: the maps that left, with the drop reason, came back, are
+new, or are failing.
+
+A map already in the catalog that fails its probe stays for `GRACE_DAYS` (14)
+from its first failure, its last good CORS and scales kept: `probe.json` records
+`failingSince`, cleared by the next good answer. A server that is down for a
+while, or refuses the harvest's network, isn't dropped on one run. The workflow
+keeps `probe.json` on fm5's disk between runs, since a week with no catalog
+change commits nothing and the dates must still count.
 
 Kept: `tms` entries — https, no key, placeholders Leaflet fills (`{zoom}`,
 `{-y}` → `tms`, `{switch:…}` → `subdomains`) — and `wms` entries — https, no

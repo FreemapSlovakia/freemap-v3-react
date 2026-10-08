@@ -783,40 +783,6 @@ await mapConcurrently(kept, 12, async ({ feature, leaflet }) => {
       : { v: PROBE_VERSION, ...(await probeTile(feature, leaflet)) };
 });
 
-// A tile that couldn't be had at all drops the map; a 404 only says the probed
-// spot is empty, which a ragged coverage often is.
-const alive = kept.filter(({ feature }) => {
-  const { status } = probe[feature.properties.id];
-
-  if (status === 401 || status === 403) {
-    drop('forbidden', feature.properties);
-    return false;
-  }
-
-  if (status === 'not an image') {
-    drop('wms: not an image', feature.properties);
-    return false;
-  }
-
-  if (status === 'redirected to http') {
-    drop('redirected to http', feature.properties);
-    return false;
-  }
-
-  if (!answered(status)) {
-    drop('dead', feature.properties);
-    return false;
-  }
-
-  return true;
-});
-
-kept.length = 0;
-
-kept.push(...alive);
-
-counts.types = types;
-
 // The id table: existing entries always win.
 const table = (() => {
   try {
@@ -825,6 +791,69 @@ const table = (() => {
     return { ids: {}, retired: {} };
   }
 })();
+
+/** Why a probe answer drops a map, or undefined when it doesn't. */
+const failure = (status) =>
+  status === 401 || status === 403
+    ? 'forbidden'
+    : status === 'not an image'
+      ? 'wms: not an image'
+      : status === 'redirected to http'
+        ? 'redirected to http'
+        : answered(status)
+          ? undefined
+          : 'dead';
+
+// A map already in the catalog stays this long after it starts failing: a
+// server down for a while, or refusing the harvest's own network, isn't gone.
+const GRACE_DAYS = 14;
+
+const today = new Date().toISOString().slice(0, 10);
+
+const daysSince = (date) => (Date.parse(today) - Date.parse(date)) / 86_400_000;
+
+// Kept on grace, for the report: [id, reason, failing since].
+const failing = [];
+
+// A tile that couldn't be had at all drops the map; a 404 only says the probed
+// spot is empty, which a ragged coverage often is.
+const alive = kept.filter(({ feature }) => {
+  const { id } = feature.properties;
+
+  const reason = failure(probe[id].status);
+
+  if (!reason) {
+    return true;
+  }
+
+  const previous = previousProbe[id];
+
+  const since = previous?.failingSince ?? today;
+
+  if (table.ids[id] && daysSince(since) < GRACE_DAYS) {
+    // The last good answer's CORS and scales, so the map keeps drawing as it did.
+    probe[id] = {
+      ...probe[id],
+      cors: previous?.cors ?? probe[id].cors,
+      scales: previous?.scales ?? probe[id].scales,
+      failingSince: since,
+    };
+
+    failing.push([id, reason, since]);
+
+    return true;
+  }
+
+  drop(reason, feature.properties);
+
+  return false;
+});
+
+kept.length = 0;
+
+kept.push(...alive);
+
+counts.types = types;
 
 const ids = { ...table.ids };
 const retired = { ...table.retired };
@@ -1025,10 +1054,19 @@ if (reportPath) {
   writeFileSync(
     reportPath,
     [
-      `${catalog.length} maps in the catalog: ${added.length} new, ${back.length} back, ${left.length} left.`,
+      `${catalog.length} maps in the catalog: ${added.length} new, ${back.length} back, ${left.length} left, ${failing.length} failing.`,
       '',
       ...section('Left the catalog', left, (id) =>
         line(id, reasonOf.get(id) ?? 'gone from the source'),
+      ),
+      ...section(
+        `Failing, kept until ${GRACE_DAYS} days`,
+        failing.map(([id]) => id),
+        (id) => {
+          const [, reason, since] = failing.find(([f]) => f === id);
+
+          return line(id, `${reason} since ${since}`);
+        },
       ),
       ...section('Back in the catalog', back, (id) => line(id)),
       ...section('New', added, (id) => line(id)),

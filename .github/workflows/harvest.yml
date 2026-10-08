@@ -40,10 +40,22 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # The probe record outlives a run on fm5's disk: a week with no catalog
+      # change commits nothing, and the failingSince dates must still count.
+      - name: Restore the probe record
+        run: |
+          STATE="$HOME/.cache/freemap-harvest/probe.json"
+          if [ -f "$STATE" ]; then cp "$STATE" src/features/mapLibrary/eli/probe.json; fi
+
       - name: Harvest
         run: node scripts/harvest-eli.mjs --report="$RUNNER_TEMP/report.md"
 
       - run: pnpm exec biome check --write src/features/mapLibrary/eli
+
+      - name: Keep the probe record
+        run: |
+          mkdir -p "$HOME/.cache/freemap-harvest"
+          cp src/features/mapLibrary/eli/probe.json "$HOME/.cache/freemap-harvest/probe.json"
 
       # One open PR at a time: a new run replaces the branch, and the PR's
       # body follows the latest report.
