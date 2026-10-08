@@ -528,6 +528,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     background: 'Ozadje zemljevida',
     backgroundHelp:
       'Vidi se povsod, kjer noben sloj ne riše: brez osnovnega zemljevida, ob osnovnem zemljevidu, ki pokriva le del sveta ali je prosojen, in kjer se ploščice še nalagajo.',
+    backgroundCheckerboard: 'Šahovnica',
     lookupStyle: 'Slog zadetka',
     resetApp: 'Ponastavi aplikacijo',
     resetAppConfirm:

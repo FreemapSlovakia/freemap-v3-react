@@ -167,7 +167,8 @@ for each tab, and switching tabs changes
   (`isPinnedOverlay`: photos, Wikipedia, the data layer, which draw partly in
   panes above every tile overlay) on top, then the order, then any overlay not
   on the map by its default `zIndex` (a custom map's, if set), the later one
-  above on a tie. `overlayZIndexSelector` gives each its z-index in
+  above on a tie, on the map or not, so turning one on doesn't move its row
+  past an equal one. `overlayZIndexSelector` gives each its z-index in
   `Layers.tsx`; tile, WMS-tile and gallery layers apply a changed one through
   `updateGridLayer` (browser-drawn shading too), the radar on every pooled
   frame. The map menu, toolbar and the table list overlays in the same order.

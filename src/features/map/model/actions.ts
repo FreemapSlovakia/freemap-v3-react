@@ -232,6 +232,7 @@ export const mapSetLocalPrefs = createAction<{
   featureScale?: number;
   zoomSnap?: number;
   backgroundColor?: string;
+  backgroundCheckerboard?: boolean;
 }>('MAP_SET_LOCAL_PREFS');
 
 export const mapSetBounds =

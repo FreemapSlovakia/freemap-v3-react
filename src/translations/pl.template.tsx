@@ -510,6 +510,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     background: 'Tło mapy',
     backgroundHelp:
       'Widoczne wszędzie, gdzie żadna warstwa nie rysuje: bez mapy bazowej, obok mapy bazowej pokrywającej tylko część świata lub przezroczystej oraz tam, gdzie kafelki jeszcze się wczytują.',
+    backgroundCheckerboard: 'Szachownica',
     layer: {
       layer: 'Warstwa',
       base: 'Podstawowa',

@@ -530,6 +530,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     background: 'Kartenhintergrund',
     backgroundHelp:
       'Erscheint überall, wo keine Ebene zeichnet: ohne Basiskarte, neben einer Basiskarte, die nur einen Teil der Welt abdeckt oder transparent ist, und wo Kacheln noch laden.',
+    backgroundCheckerboard: 'Schachbrettmuster',
     layer: {
       layer: 'Ebene',
       base: 'Basis',

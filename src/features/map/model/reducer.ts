@@ -83,6 +83,8 @@ export interface MapState extends MapStateBase {
   zoomSnap: number;
   /** Behind every layer, showing wherever none draws. */
   backgroundColor: string;
+  /** Draws the background as a checkerboard of its colour, so transparency shows. */
+  backgroundCheckerboard: boolean;
   /** Edits of shading maps' setups not applied yet, while the server renders them. */
   shadingDrafts: Record<string, Shading>;
   shadingOnServer: boolean;
@@ -116,6 +118,7 @@ export const mapInitialState: MapState = {
   zoomSnap: 1,
   // Leaflet's own.
   backgroundColor: '#dddddd',
+  backgroundCheckerboard: true,
   shadingDrafts: {},
   shadingOnServer: true,
   presets: [],
@@ -999,6 +1002,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
       if (payload.backgroundColor !== undefined) {
         state.backgroundColor = payload.backgroundColor;
+      }
+
+      if (payload.backgroundCheckerboard !== undefined) {
+        state.backgroundCheckerboard = payload.backgroundCheckerboard;
       }
     })
     .addCase(processGeoipResult, (state, { payload }) => {

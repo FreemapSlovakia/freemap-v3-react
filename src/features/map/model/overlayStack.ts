@@ -39,13 +39,22 @@ export function overlayStack(
 
   const stack = [...listed];
 
+  const indexOf = new Map(items.map((item, i) => [item.type, i]));
+
   for (const type of ascending(
     items.filter((item) => !item.pinned && !listedSet.has(item.type)),
   )) {
     const z = zOf(byType.get(type));
 
-    // Above the first one it doesn't rank below.
-    const at = stack.findIndex((other) => zOf(byType.get(other)) <= z);
+    const i = indexOf.get(type)!;
+
+    // Above the first one it outranks. Ties go by `items` whether on or off, so
+    // turning one on doesn't move it past an equal one.
+    const at = stack.findIndex((other) => {
+      const otherZ = zOf(byType.get(other));
+
+      return otherZ < z || (otherZ === z && indexOf.get(other)! < i);
+    });
 
     stack.splice(at === -1 ? stack.length : at, 0, type);
   }

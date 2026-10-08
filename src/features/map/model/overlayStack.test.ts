@@ -48,6 +48,14 @@ describe('overlayStack', () => {
     ).toEqual(['offline', 'custom', 'builtIn']);
   });
 
+  it('keeps equal z-indexes in place whichever of them is in the order', () => {
+    const equal = [{ type: 'a' }, { type: 'b' }, { type: 'c' }];
+
+    expect(overlayStack(equal, ['b'])).toEqual(['c', 'b', 'a']);
+
+    expect(overlayStack(equal, ['a'])).toEqual(['c', 'b', 'a']);
+  });
+
   it('ignores unknown and pinned types in the order', () => {
     expect(
       overlayStack(items, ['gone', 'photos', 'shading', 'trails', 'cadastre']),

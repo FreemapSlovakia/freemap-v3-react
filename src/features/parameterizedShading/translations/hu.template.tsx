@@ -28,6 +28,7 @@ const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Ismétlések száma',
   presets: 'Előbeállítások',
   addToExisting: 'Hozzáadás a meglévőhöz',
+  withBackground: 'Háttérrel',
   presetReplaceTitle: 'Árnyékolás cseréje',
   presetReplaceConfirm:
     'Az előbeállítás a teljes árnyékolást lecseréli, a módosításaival együtt. Folytatja?',

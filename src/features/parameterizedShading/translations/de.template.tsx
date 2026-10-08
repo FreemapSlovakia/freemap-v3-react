@@ -28,6 +28,7 @@ const de: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Anzahl der Wiederholungen',
   presets: 'Voreinstellungen',
   addToExisting: 'Zum Bestehenden hinzufügen',
+  withBackground: 'Mit Hintergrund',
   presetReplaceTitle: 'Schummerung ersetzen',
   presetReplaceConfirm:
     'Die Voreinstellung ersetzt die gesamte Schummerung samt Ihren Änderungen. Fortfahren?',

@@ -27,6 +27,7 @@ const en: ShadingMessages = {
   repeats: 'Number of repeats',
   presets: 'Presets',
   addToExisting: 'Add to existing',
+  withBackground: 'With background',
   presetReplaceTitle: 'Replace shading',
   presetReplaceConfirm:
     'The preset replaces the whole shading, including your changes. Continue?',

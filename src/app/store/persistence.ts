@@ -123,6 +123,7 @@ export const PersistedMapSchema = z
     featureScale: z.number(),
     zoomSnap: z.number(),
     backgroundColor: z.string(),
+    backgroundCheckerboard: z.boolean(),
   })
   .partial();
 
@@ -525,6 +526,7 @@ const PERSIST: PersistEntry[] = [
       featureScale: m.featureScale,
       zoomSnap: m.zoomSnap,
       backgroundColor: m.backgroundColor,
+      backgroundCheckerboard: m.backgroundCheckerboard,
     }),
   }),
   defineEntry({

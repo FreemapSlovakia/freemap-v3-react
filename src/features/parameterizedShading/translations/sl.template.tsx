@@ -28,6 +28,7 @@ const sl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Število ponovitev',
   presets: 'Prednastavitve',
   addToExisting: 'Dodaj k obstoječemu',
+  withBackground: 'Z ozadjem',
   presetReplaceTitle: 'Zamenjaj senčenje',
   presetReplaceConfirm:
     'Prednastavitev zamenja celotno senčenje, skupaj z vašimi spremembami. Nadaljujem?',

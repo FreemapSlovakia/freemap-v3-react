@@ -530,6 +530,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     background: 'Térkép háttere',
     backgroundHelp:
       'Ott látszik, ahol egyik réteg sem rajzol: alaptérkép nélkül, olyan alaptérkép mellett, amely csak a világ egy részét fedi le vagy átlátszó, és ahol a csempék még töltődnek.',
+    backgroundCheckerboard: 'Sakktáblaminta',
     layer: {
       layer: 'Réteg',
       base: 'Alap',

@@ -1,3 +1,3 @@
 import { rendererOverlay } from './rendererOverlay.js';
 
-export default rendererOverlay('xq', 12, 7);
+export default rendererOverlay('xq', 12, 10);

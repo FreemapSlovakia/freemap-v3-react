@@ -346,6 +346,7 @@ export type Messages = {
     featureScaleHelp: string;
     background: string;
     backgroundHelp: string;
+    backgroundCheckerboard: string;
     lookupStyle: string;
     resetApp: string;
     resetAppConfirm: string;

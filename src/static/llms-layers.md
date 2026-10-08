@@ -61,8 +61,9 @@ Mirrors `src/shared/mapLibrary/mapIndex.tsx`. A blank cell means the field is no
 | Aerial (2017–2019)           | J1  | tile              |    0 |         19 |              |            1000 | S            |          | sk           | © GKÚ, NLC (legacy mosaic)                              |
 | Aerial (2020–2022)           | J2  | tile              |    0 |         19 |              |            1000 | S            |          | sk           | © GKÚ, NLC (legacy mosaic)                              |
 | Public transport (ÖPNV)      | d   | tile              |    0 |         18 |              |                 |              | q        |              | © MeMoMaps, OSM                                        |
-| Detailed terrain shading     | 7   | tile              |    0 |         20 |           15 |            1000 |              | h        | sk           | © Freemap; LLS DMR © ÚGKK SR                            |
+| Detailed terrain shading     | 7   | tile              |    0 |         20 |           15 |            1000 |              | ⇧h       | sk           | © Freemap; LLS DMR © ÚGKK SR                            |
 | Surface shading              | 6   | tile              |    0 |         18 |              |            1000 |              |          | sk           | © Freemap; DMP 1.0 © ÚGKK SR                            |
+| Parametric terrain shading   | h   | parametricShading |      |         18 |           15 |                 |              | h        |              | Shaded with the shading settings of its row in the Map layers panel, on the server or in the browser; national terrain models (so far SK, CZ, AT, CH, DE, NL, BE, LU, SI, HR, PL, IT, ES, FR) and the 30 m GEDTM30 elsewhere in Europe, each credited when the tiles on screen use it; © Freemap |
 | OpenStreetMap Vector         | VO  | maplibre          |      |            |              |                 |              |          |              | OSM data; MapTiler                                     |
 | Streets Vector               | VS  | maplibre          |      |            |              |                 |              |          |              | OSM data; MapTiler                                     |
 | Dataviz Vector               | VD  | maplibre          |      |            |              |                 |              |          |              | OSM data; MapTiler                                     |
@@ -93,7 +94,6 @@ Mirrors `src/shared/mapLibrary/mapIndex.tsx`. A blank cell means the field is no
 | Outdoor map without base   | xa  | tile              |    5 |         20 |           19 |                 |              |          | Europe    | The outdoor map minus what an aerial image already shows (relief, contours, land cover, water, buildings, trees), for laying over an aerial map or a shading layer (Parametric terrain shading, Detailed terrain shading). © Freemap, OSM |
 | Forest tracks NLC (2017)   | l1  | tile              |   11 |         15 |              |            1000 | l2           |          | sk        | © NLC Zvolen (legacy)                                      |
 | Forest tracks NLC          | l2  | maplibre          |    9 |            |              |                 |              | ⇧n       | sk        | © NLC Zvolen                                               |
-| Parametric terrain shading | h   | parametricShading |      |         18 |           15 |                 |              | ⇧h       |           | Shaded with the shading settings of its row in the Map layers panel, on the server or in the browser; national terrain models (so far SK, CZ, AT, CH, DE, NL, BE, LU, SI, HR, PL, IT, ES, FR) and the 30 m GEDTM30 elsewhere in Europe, each credited when the tiles on screen use it; © Freemap |
 | Cadastre                   | wka | wms               |      |            |              |                 |              | ⇧k       | sk        | © GKÚ (cadastre over aerial)                               |
 
 Notes:
@@ -105,6 +105,6 @@ Notes:
 
 ##### Internal layer codes
 
-The id values above are used in deep links via the `layers=` URL param: one base-layer code, optionally followed by `~` and the concatenated overlay codes (e.g. `layers=X~I` = Outdoor base + Photos overlay). Links with the removed ids `y` and `z` open `h` instead, the removed base maps `5` and `8` open `X` with `h`, and `Z` opens `S`. They are **advisory** for interpreting links and do **not** grant permission to scrape tiles or data; respect each layer's attribution and license.
+The id values above are used in deep links via the `layers=` URL param: one base-layer code, optionally followed by `~` and the concatenated overlay codes (e.g. `layers=X~I` = Outdoor base + Photos overlay). Links with the removed ids `y`, `z`, `5` and `8` open `h` instead, and `Z` opens `S`. They are **advisory** for interpreting links and do **not** grant permission to scrape tiles or data; respect each layer's attribution and license.
 
 Clicking a marker on the Wikipedia overlay opens a preview modal, addressable via the unified `show=` param: `/#show=wiki/<lang>:<title>`. Wikimedia Commons photos are part of the Photos layer and open in the gallery viewer like any other photo (legacy `/#show=wmc/<pageId>` and `/#wmc=<pageId>` links still resolve there).

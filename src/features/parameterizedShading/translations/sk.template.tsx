@@ -28,6 +28,7 @@ const sk: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Počet opakovaní',
   presets: 'Predvoľby',
   addToExisting: 'Pridať k existujúcemu',
+  withBackground: 'S pozadím',
   presetReplaceTitle: 'Nahradiť tieňovanie',
   presetReplaceConfirm:
     'Predvoľba nahradí celé tieňovanie vrátane vašich úprav. Pokračovať?',

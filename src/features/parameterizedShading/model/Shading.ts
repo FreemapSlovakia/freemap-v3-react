@@ -102,6 +102,17 @@ export const hasBackground = (shading: Shading) =>
   shading.backgroundColor[3] > 0;
 
 /**
+ * Whether it covers what is beneath: a background, or a colour relief opaque at
+ * every stop (aspect leaves flat ground transparent).
+ */
+export const isOpaqueShading = (shading: Shading) =>
+  hasBackground(shading) ||
+  shading.components.some(
+    (c) =>
+      c.type === 'color-relief' && c.colorStops.every((s) => s.color[3] >= 1),
+  );
+
+/**
  * `bg!type_params!…`, as the URL and the terrain-tiles server read it. Contrast
  * and brightness ride on the type as `type~contrast~brightness`, only when not
  * the defaults, so links from before them still read.

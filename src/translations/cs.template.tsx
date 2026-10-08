@@ -525,6 +525,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     background: 'Pozadí mapy',
     backgroundHelp:
       'Zobrazí se všude, kde žádná vrstva nekreslí: bez podkladové mapy, vedle podkladové mapy, která pokrývá jen část světa nebo je průhledná, a tam, kde se dlaždice ještě načítají.',
+    backgroundCheckerboard: 'Šachovnice',
     layer: {
       layer: 'Vrstva',
       base: 'Základní',

@@ -23,6 +23,9 @@ type Props = {
   onRemove: () => void;
   /** `append` adds the preset's components rather than replacing the shading. */
   onPreset: (preset: ShadingPreset, append: boolean) => void;
+  /** A preset keeps an optional background or gets a white one; ignored while appending. */
+  withBackground: boolean;
+  onWithBackgroundChange: (withBackground: boolean) => void;
 };
 
 export function ShadingToolbar({
@@ -31,6 +34,8 @@ export function ShadingToolbar({
   onAdd,
   onRemove,
   onPreset,
+  withBackground,
+  onWithBackgroundChange,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -41,7 +46,9 @@ export function ShadingToolbar({
   const [append, setAppend] = useState(false);
 
   const presetItem = (preset: ShadingPreset) => {
-    const opaque = isOpaquePreset(preset);
+    const alwaysOpaque = isOpaquePreset(preset);
+
+    const opaque = alwaysOpaque || (withBackground && !append);
 
     return (
       <Dropdown.Item
@@ -49,7 +56,7 @@ export function ShadingToolbar({
         key={preset}
         eventKey={preset}
         className="text-nowrap"
-        disabled={append && opaque}
+        disabled={append && alwaysOpaque}
       >
         {opaque ? (
           <BsCircleFill className="text-secondary" />
@@ -122,6 +129,15 @@ export function ShadingToolbar({
             label={sm?.addToExisting}
             checked={append}
             onChange={(e) => setAppend(e.currentTarget.checked)}
+          />
+
+          <Form.Check
+            id="shading-preset-with-background"
+            className="mx-3 my-1 text-nowrap"
+            label={sm?.withBackground}
+            checked={withBackground && !append}
+            disabled={append}
+            onChange={(e) => onWithBackgroundChange(e.currentTarget.checked)}
           />
 
           <Dropdown.Divider />

@@ -557,6 +557,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     background: 'Pozadie mapy',
     backgroundHelp:
       'Zobrazí sa všade, kde žiadna vrstva nekreslí: bez podkladovej mapy, vedľa podkladovej mapy, ktorá pokrýva len časť sveta alebo je priehľadná, a tam, kde sa dlaždice ešte načítavajú.',
+    backgroundCheckerboard: 'Šachovnica',
     lookupStyle: 'Štýl nálezu',
     resetApp: 'Obnoviť aplikáciu',
     resetAppConfirm:

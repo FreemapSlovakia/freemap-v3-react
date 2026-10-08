@@ -28,6 +28,7 @@ const fr: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Nombre de répétitions',
   presets: 'Préréglages',
   addToExisting: 'Ajouter à l’existant',
+  withBackground: 'Avec fond',
   presetReplaceTitle: 'Remplacer l’ombrage',
   presetReplaceConfirm:
     'Le préréglage remplace tout l’ombrage, vos modifications comprises. Continuer ?',

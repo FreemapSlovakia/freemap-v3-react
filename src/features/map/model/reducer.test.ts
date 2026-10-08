@@ -345,13 +345,13 @@ describe('mapReducer — presets', () => {
     const next = mapReducer(
       {
         ...state,
-        layers: ['off1', 'h'],
+        layers: ['off1', 'xh'],
         cachedMaps: [
           { type: 'off1', layer: 'base' },
         ] as unknown as typeof state.cachedMaps,
       },
       mapPresetSave({
-        preset: { id: 'n', name: 'N', layers: [{ type: 'h', setup: {} }] },
+        preset: { id: 'n', name: 'N', layers: [{ type: 'xh', setup: {} }] },
         onMap: true,
       }),
     );
@@ -485,8 +485,8 @@ describe('mapReducer — layer setups', () => {
 
   it('a link loads the setups it carries', () => {
     const next = mapReducer(
-      { ...mapInitialState, layerSetups: { h: { opacity: 0.2 } } },
-      mapRefocus({ layers: ['X', 'h'], setups: { h: {} } }),
+      { ...mapInitialState, layerSetups: { w: { opacity: 0.2 } } },
+      mapRefocus({ layers: ['X', 'w'], setups: { w: {} } }),
     );
 
     expect(next.layerSetups).toEqual({});
@@ -815,22 +815,22 @@ describe('mapReducer — misc setters', () => {
 describe('mapReducer — switched kind', () => {
   it('a map switched to base takes the place of the base on', () => {
     const next = mapReducer(
-      { ...mapInitialState, layers: ['X', 'h'] },
-      mapLayerSetupChange({ type: 'h', setup: { kind: 'base' } }),
+      { ...mapInitialState, layers: ['X', 'xh'] },
+      mapLayerSetupChange({ type: 'xh', setup: { kind: 'base' } }),
     );
 
-    expect(next.layers).toEqual(['h']);
+    expect(next.layers).toEqual(['xh']);
 
-    expect(next.layerSetups['h']?.kind).toBe('base');
+    expect(next.layerSetups['xh']?.kind).toBe('base');
   });
 
   it('switching a map back to its own kind drops the setting', () => {
     const next = mapReducer(
-      { ...mapInitialState, layerSetups: { h: { kind: 'base' } } },
-      mapLayerSetupChange({ type: 'h', setup: { kind: 'overlay' } }),
+      { ...mapInitialState, layerSetups: { xh: { kind: 'base' } } },
+      mapLayerSetupChange({ type: 'xh', setup: { kind: 'overlay' } }),
     );
 
-    expect(next.layerSetups['h']).toBeUndefined();
+    expect(next.layerSetups['xh']).toBeUndefined();
   });
 
   it('a reset leaving no base puts none under', () => {
@@ -849,21 +849,21 @@ describe('mapReducer — switched kind', () => {
   it('resetting every setting puts the default base under the one it took', () => {
     const switched = {
       ...mapInitialState,
-      layerSetups: { h: { kind: 'base' as const } },
+      layerSetups: { xh: { kind: 'base' as const } },
     };
 
     expect(
-      mapReducer({ ...switched, layers: ['h'] }, mapLayersSettingsReset())
+      mapReducer({ ...switched, layers: ['xh'] }, mapLayersSettingsReset())
         .layers,
-    ).toEqual(['X', 'h']);
+    ).toEqual(['X', 'xh']);
 
     // None before, none after.
     expect(
       mapReducer(
-        { ...mapInitialState, layers: ['h'] },
+        { ...mapInitialState, layers: ['xh'] },
         mapLayersSettingsReset(),
       ).layers,
-    ).toEqual(['h']);
+    ).toEqual(['xh']);
   });
 
   it('a reset back to a base map makes it the only base', () => {

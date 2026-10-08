@@ -727,9 +727,8 @@ export const LAYER_ALIASES: Readonly<Record<string, readonly string[]>> = {
   z: ['h'],
   // `S` draws the same orthophoto where it has data.
   Z: ['S'],
-  // Base maps, so a base goes in with the overlay.
-  '5': ['X', 'h'],
-  '8': ['X', 'h'],
+  '5': ['h'],
+  '8': ['h'],
 };
 
 /**

@@ -24,6 +24,7 @@ export type ShadingMessages = {
   repeats: string;
   presets: string;
   addToExisting: string;
+  withBackground: string;
   presetReplaceTitle: string;
   presetReplaceConfirm: string;
   mapPresetsHeader: string;

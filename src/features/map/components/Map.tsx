@@ -48,12 +48,25 @@ export function TheMap({ children }: Props): ReactElement {
 
   const backgroundColor = useAppSelector((state) => state.map.backgroundColor);
 
+  const checkerboard = useAppSelector(
+    (state) => state.map.backgroundCheckerboard,
+  );
+
   // Whatever no layer covers: no base map, or a transparent one.
   useEffect(() => {
     if (map) {
-      map.getContainer().style.backgroundColor = backgroundColor;
+      const { style } = map.getContainer();
+
+      style.backgroundColor = backgroundColor;
+
+      // The second square is pulled towards grey, so it shows on any colour.
+      style.backgroundImage = checkerboard
+        ? `repeating-conic-gradient(${backgroundColor} 0 25%, color-mix(in srgb, ${backgroundColor} 80%, #808080) 0 50%)`
+        : '';
+
+      style.backgroundSize = checkerboard ? '16px 16px' : '';
     }
-  }, [map, backgroundColor]);
+  }, [map, backgroundColor, checkerboard]);
 
   // Leaflet consults `zoomSnap` on each gesture rather than at construction, so
   // the live map can be retuned in place. Only react-leaflet's own props are

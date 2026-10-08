@@ -28,6 +28,7 @@ const it: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Numero di ripetizioni',
   presets: 'Preimpostazioni',
   addToExisting: 'Aggiungi all’esistente',
+  withBackground: 'Con sfondo',
   presetReplaceTitle: 'Sostituisci ombreggiatura',
   presetReplaceConfirm:
     'La preimpostazione sostituisce tutta l’ombreggiatura, comprese le tue modifiche. Continuare?',

@@ -5,7 +5,10 @@ import {
   type SetupTarget,
 } from '@features/map/model/actions.js';
 import { DEFAULT_SHADING, setupKey } from '@features/map/model/layerSetup.js';
-import { useTargetSetup } from '@features/mapSettings/layerTarget.js';
+import {
+  useTargetDef,
+  useTargetSetup,
+} from '@features/mapSettings/layerTarget.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
@@ -71,6 +74,22 @@ export default function ShadingSection({ target }: Props): ReactElement {
   const shading = draft ?? applied;
 
   const showsBackground = hasBackground(shading);
+
+  const isBase = useTargetDef(target)?.layer === 'base';
+
+  // Whether a preset keeps an optional background, or gets a white one; a base
+  // map's would otherwise show the map background through.
+  // A choice holds only for the kind it was made for.
+  const [backgroundChoice, setBackgroundChoice] = useState<{
+    isBase: boolean;
+    value: boolean;
+  }>();
+
+  const withBackground =
+    backgroundChoice?.isBase === isBase ? backgroundChoice.value : isBase;
+
+  const setWithBackground = (value: boolean) =>
+    setBackgroundChoice({ isBase, value });
 
   // Every shading map draws the terrain of the one built-in source.
   const colorReliefMax = colorReliefMaxElevation([SHADING_SOURCE]);
@@ -175,8 +194,12 @@ export default function ShadingSection({ target }: Props): ReactElement {
 
     // Only a hand-made shading is worth asking about; a preset is one click back.
     // A parameterized one counts at its default values.
-    const isPreset = SHADING_PRESETS.some(
-      (p) => serializeShading(shadingPreset(p, () => 0)) === current,
+    const isPreset = SHADING_PRESETS.some((p) =>
+      [false, true].some(
+        (bg) =>
+          serializeShading(shadingPreset(p, () => 0, undefined, bg)) ===
+          current,
+      ),
     );
 
     if (
@@ -202,7 +225,7 @@ export default function ShadingSection({ target }: Props): ReactElement {
     append: boolean,
     params?: PresetParams,
   ) {
-    const next = shadingPreset(preset, newComponentId, params);
+    const next = shadingPreset(preset, newComponentId, params, withBackground);
 
     if (append) {
       // An edit like Add, so it waits for Apply where edits do.
@@ -264,6 +287,8 @@ export default function ShadingSection({ target }: Props): ReactElement {
         onAdd={handleAdd}
         onRemove={handleRemove}
         onPreset={handlePreset}
+        withBackground={withBackground}
+        onWithBackgroundChange={setWithBackground}
       />
 
       <hr />

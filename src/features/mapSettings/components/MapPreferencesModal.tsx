@@ -83,6 +83,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
   const [background, setBackground] = useState(initialBackground);
 
+  const initialCheckerboard = useAppSelector(
+    (state) => state.map.backgroundCheckerboard,
+  );
+
+  const [checkerboard, setCheckerboard] = useState(initialCheckerboard);
+
   const initialHeadingSource = useAppSelector(
     (state) => state.locationSettings.headingSource,
   );
@@ -126,6 +132,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
     setBackground(mapInitialState.backgroundColor);
 
+    setCheckerboard(mapInitialState.backgroundCheckerboard);
+
     setHeadingSource(locationSettingsInitialState.headingSource);
 
     setShowBearingLine(locationSettingsInitialState.showBearingLine);
@@ -146,7 +154,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       resolutionScale !== initialResolutionScale ||
       featureScale !== initialFeatureScale ||
       zoomSnap !== initialZoomSnap ||
-      background !== initialBackground
+      background !== initialBackground ||
+      checkerboard !== initialCheckerboard
     ) {
       dispatch(
         mapSetLocalPrefs({
@@ -155,6 +164,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
           featureScale: Number(featureScale),
           zoomSnap: Number(zoomSnap),
           backgroundColor: background,
+          backgroundCheckerboard: checkerboard,
         }),
       );
     }
@@ -202,6 +212,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     featureScale !== initialFeatureScale ||
     zoomSnap !== initialZoomSnap ||
     background !== initialBackground ||
+    checkerboard !== initialCheckerboard ||
     headingSource !== initialHeadingSource ||
     showBearingLine !== initialShowBearingLine;
 
@@ -216,6 +227,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     featureScale === String(mapInitialState.featureScale) &&
     zoomSnap === String(mapInitialState.zoomSnap) &&
     background === mapInitialState.backgroundColor &&
+    checkerboard === mapInitialState.backgroundCheckerboard &&
     headingSource === locationSettingsInitialState.headingSource &&
     showBearingLine === locationSettingsInitialState.showBearingLine;
 
@@ -342,6 +354,14 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               alpha={false}
               value={background}
               onChange={setBackground}
+            />
+
+            <Form.Check
+              className="mt-2"
+              id="chk-background-checkerboard"
+              label={m?.mapLayers.backgroundCheckerboard}
+              checked={checkerboard}
+              onChange={(e) => setCheckerboard(e.currentTarget.checked)}
             />
           </Form.Group>
 

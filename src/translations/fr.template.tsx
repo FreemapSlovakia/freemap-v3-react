@@ -539,6 +539,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     background: 'Fond de carte',
     backgroundHelp:
       'Apparaît partout où aucune couche ne dessine : sans carte de base, à côté d’une carte de base qui ne couvre qu’une partie du monde ou est transparente, et là où des tuiles se chargent encore.',
+    backgroundCheckerboard: 'Damier',
     lookupStyle: 'Style du résultat',
     resetApp: 'Réinitialiser l’application',
     resetAppConfirm:

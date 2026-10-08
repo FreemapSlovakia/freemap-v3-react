@@ -1,6 +1,6 @@
 import {
   type Color,
-  hasBackground,
+  isOpaqueShading,
   type Shading,
   type ShadingComponent,
 } from './Shading.js';
@@ -143,7 +143,7 @@ const lit = (
   components: [igor(azimuth, shadow), igor((azimuth + 180) % 360, light)],
 });
 
-function build(preset: ShadingPreset, p: PresetParams): Shading {
+function buildOwn(preset: ShadingPreset, p: PresetParams): Shading {
   switch (preset) {
     case 'classic':
       return classic([0, 0, 0, 1], [255, 255, 255, 1]);
@@ -389,29 +389,51 @@ function build(preset: ShadingPreset, p: PresetParams): Shading {
   }
 }
 
-/**
- * Whether the preset covers what is beneath: a background, or a colour relief
- * opaque at every stop (aspect leaves flat ground transparent).
- */
-export function isOpaquePreset(preset: ShadingPreset) {
-  const shading = build(preset, DEFAULT_PRESET_PARAMS);
+/** Presets whose background is only paper under them, so they work without it. */
+const OPTIONAL_BACKGROUND: ReadonlySet<ShadingPreset> = new Set([
+  'plastic',
+  'swiss',
+  'golden',
+  'glacier',
+  'ink',
+  'watercolor',
+]);
 
-  return (
-    hasBackground(shading) ||
-    shading.components.some(
-      (c) =>
-        c.type === 'color-relief' && c.colorStops.every((s) => s.color[3] >= 1),
-    )
-  );
+/** Whether the preset covers what is beneath even without a background asked for. */
+export const isOpaquePreset = (preset: ShadingPreset) =>
+  isOpaqueShading(build(preset, DEFAULT_PRESET_PARAMS, false));
+
+function build(
+  preset: ShadingPreset,
+  params: PresetParams,
+  withBackground: boolean,
+): Shading {
+  const shading = buildOwn(preset, params);
+
+  const opaque = isOpaqueShading(shading);
+
+  if (opaque && !OPTIONAL_BACKGROUND.has(preset)) {
+    return shading;
+  }
+
+  if (!withBackground) {
+    return { ...shading, backgroundColor: [0, 0, 0, 0] };
+  }
+
+  return opaque ? shading : { ...shading, backgroundColor: [255, 255, 255, 1] };
 }
 
-/** The preset's shading, its components numbered by `newId`. */
+/**
+ * The preset's shading, its components numbered by `newId`. `withBackground`
+ * keeps an optional background, or puts white under a preset that has none.
+ */
 export function shadingPreset(
   preset: ShadingPreset,
   newId: () => number,
   params = DEFAULT_PRESET_PARAMS,
+  withBackground = false,
 ): Shading {
-  const shading = build(preset, params);
+  const shading = build(preset, params, withBackground);
 
   return {
     ...shading,
