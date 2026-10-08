@@ -1,0 +1,67 @@
+name: Map library harvest
+
+# Re-probes every catalog map and opens a PR with what changed, so a dead or
+# moved server is reviewed rather than found by users. No --reuse-probe: a
+# reused answer never notices a map dying.
+on:
+  schedule:
+    # Weekly, Monday, UTC.
+    - cron: '0 4 * * 1'
+  workflow_dispatch: {}
+
+concurrency:
+  group: harvest
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BRANCH: harvest/map-library
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.5.0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Harvest
+        run: node scripts/harvest-eli.mjs --report="$RUNNER_TEMP/report.md"
+
+      - run: pnpm exec biome check --write src/features/mapLibrary/eli
+
+      # One open PR at a time: a new run replaces the branch, and the PR's
+      # body follows the latest report.
+      - name: Open or update the PR
+        run: |
+          # probe.json alone changes on most runs: failures are asked again.
+          if git diff --quiet -- src/features/mapLibrary/eli/eliCatalog.json src/features/mapLibrary/eli/ids.json; then
+            echo "The catalog is unchanged."
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -B "$BRANCH"
+          git add src/features/mapLibrary/eli
+          git commit -q -m "chore(map-library): weekly harvest"
+          git push -f origin "$BRANCH"
+
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            gh pr edit "$BRANCH" --body-file "$RUNNER_TEMP/report.md"
+          else
+            gh pr create --head "$BRANCH" --title "Map library: weekly harvest" --body-file "$RUNNER_TEMP/report.md"
+          fi

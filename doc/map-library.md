@@ -315,6 +315,13 @@ and probe. The national sources are researched one country at a time.
   and the `@Nx` scales. `--reuse-probe` keeps answers (2xx or 404) of the
   current `PROBE_VERSION`; failures are always asked again.
 
+`.github/workflows/harvest.yml` runs the harvest every Monday without
+`--reuse-probe`, so every map is asked again, and opens (or updates) one PR on
+`harvest/map-library` when the catalog or the id table changed. Its body is the
+`--report` markdown: the maps that left, with the drop reason, came back or are
+new. A server down for one run shows up as left — read the reason before
+merging.
+
 Kept: `tms` entries — https, no key, placeholders Leaflet fills (`{zoom}`,
 `{-y}` → `tms`, `{switch:…}` → `subdomains`) — and `wms` entries — https, no
 key, EPSG:3857 among `available_projections`, `LAYERS` named, no `STYLES` but

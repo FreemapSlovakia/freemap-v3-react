@@ -1,6 +1,6 @@
 // The OSM Editor Layer Index → src/features/mapLibrary/eli/; see "Harvesting"
 // in doc/map-library.md. Run: node scripts/harvest-eli.mjs [imagery.geojson]
-// [--reuse-probe]
+// [--reuse-probe] [--report=<file.md>]
 
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -30,6 +30,11 @@ const args = process.argv.slice(2);
 const reuseProbe = args.includes('--reuse-probe');
 
 const inputPath = args.find((arg) => !arg.startsWith('--'));
+
+// Markdown of what entered, left or came back, for the scheduled harvest's PR.
+const reportPath = args
+  .find((arg) => arg.startsWith('--report='))
+  ?.slice('--report='.length);
 
 // Matched against the tile URL's host.
 const EXCLUDED_HOSTS = [
@@ -912,3 +917,44 @@ console.log(
     2,
   ),
 );
+
+if (reportPath) {
+  const nameOf = new Map(
+    eli.features.map(({ properties: p }) => [p.id, p.name ?? p.id]),
+  );
+
+  const reasonOf = new Map(
+    Object.entries(drops).flatMap(([reason, list]) =>
+      list.map((id) => [id, reason]),
+    ),
+  );
+
+  const line = (id, extra) =>
+    `- \`${table.ids[id] ?? ids[id] ?? retired[id]}\` ${nameOf.get(id) ?? id}${extra ? ` — ${extra}` : ''}`;
+
+  const left = Object.keys(table.ids).filter((id) => !ids[id]);
+
+  const back = Object.keys(table.retired).filter((id) => ids[id]);
+
+  const added = Object.keys(ids).filter(
+    (id) => !table.ids[id] && !table.retired[id],
+  );
+
+  const section = (title, list, extra) =>
+    list.length
+      ? [`### ${title} (${list.length})`, '', ...list.sort().map(extra), '']
+      : [];
+
+  writeFileSync(
+    reportPath,
+    [
+      `${catalog.length} maps in the catalog: ${added.length} new, ${back.length} back, ${left.length} left.`,
+      '',
+      ...section('Left the catalog', left, (id) =>
+        line(id, reasonOf.get(id) ?? 'gone from the source'),
+      ),
+      ...section('Back in the catalog', back, (id) => line(id)),
+      ...section('New', added, (id) => line(id)),
+    ].join('\n'),
+  );
+}
