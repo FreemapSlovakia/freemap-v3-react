@@ -3,6 +3,7 @@ import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import { LabelVisibilitySchema } from '@shared/labelVisibility.js';
 import z from 'zod';
+import { drawingChangePropertiesBatch } from '../actions/drawingBatchActions.js';
 import {
   drawingLineChangeProperties,
   drawingPreventCutHoleHint,
@@ -186,6 +187,11 @@ export const drawingSettingsReducer = createReducer(
       })
       .addCase(drawingSetLabelVisibility, (state, { payload }) => {
         state.labelVisibility = payload;
+      })
+      .addCase(drawingChangePropertiesBatch, (state, { payload }) => {
+        for (const color of payload.pickedColors) {
+          updateRecentDrawingColors(state, color);
+        }
       })
       .addMatcher(
         isAnyOf(drawingLineChangeProperties, drawingPointChangeProperties),

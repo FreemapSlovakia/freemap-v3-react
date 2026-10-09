@@ -211,27 +211,29 @@ export const dataViewerReducer = createReducer(
         }
       })
       .addCase(dataViewerSetFeatureProperties, (state, { payload }) => {
-        const feature = state.trackGeojson?.features[payload.index];
+        for (const { index, properties } of payload) {
+          const feature = state.trackGeojson?.features[index];
 
-        if (!feature) {
-          return;
-        }
+          if (!feature) {
+            continue;
+          }
 
-        feature.properties = payload.properties;
+          feature.properties = properties;
 
-        // The densified copy is what gets drawn where it exists, so it needs
-        // the new style — but not the properties wholesale: its coordinates are
-        // not the recorded ones, and the models its sampling credited are
-        // stamped on it alone.
-        const rendered = state.renderTrackGeojson?.features[payload.index];
+          // The densified copy is what gets drawn where it exists, so it needs
+          // the new style — but not the properties wholesale: its coordinates
+          // are not the recorded ones, and the models its sampling credited are
+          // stamped on it alone.
+          const rendered = state.renderTrackGeojson?.features[index];
 
-        if (rendered) {
-          const credits = rendered.properties?.[ELEVATION_ATTRIBUTIONS_PROP];
+          if (rendered) {
+            const credits = rendered.properties?.[ELEVATION_ATTRIBUTIONS_PROP];
 
-          rendered.properties = withoutPerPointData(payload.properties);
+            rendered.properties = withoutPerPointData(properties);
 
-          if (credits !== undefined && rendered.properties) {
-            rendered.properties[ELEVATION_ATTRIBUTIONS_PROP] = credits;
+            if (credits !== undefined && rendered.properties) {
+              rendered.properties[ELEVATION_ATTRIBUTIONS_PROP] = credits;
+            }
           }
         }
 

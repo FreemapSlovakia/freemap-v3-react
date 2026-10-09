@@ -1,6 +1,8 @@
 import { openTool, setActiveModal, ToolSchema } from '@app/store/actions.js';
 import { openDrawToolSelector } from '@app/store/selectors.js';
+import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { BatchPropertiesDropdown } from '@shared/components/BatchPropertiesItems.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
@@ -9,8 +11,19 @@ import { toolDefinitions } from '@shared/toolDefinitions.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaPaintBrush } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
+import { createSelector } from 'reselect';
+import { drawingBatchCounts } from '../featureProperties.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
+
+// Counted again only when the drawing changes, not on every action.
+const batchCountsSelector = createSelector(
+  [
+    (state: RootState) => state.drawingPoints.points,
+    (state: RootState) => state.drawingLines.lines,
+  ],
+  drawingBatchCounts,
+);
 
 export default function DrawingMenu(): ReactElement | undefined {
   const drawTool = useAppSelector(openDrawToolSelector);
@@ -24,6 +37,9 @@ export default function DrawingMenu(): ReactElement | undefined {
   const m = useMessages();
 
   const dm = useDrawingMessages();
+
+  // Counts, not the features: drawing one must not re-render the toolbar.
+  const batchCounts = useAppSelector(batchCountsSelector, shallowEqual);
 
   return (
     drawToolDef && (
@@ -43,12 +59,8 @@ export default function DrawingMenu(): ReactElement | undefined {
             }))}
         />
 
-        <LongPressTooltip
-          label={dm?.defProps.menuItem}
-          breakpoint="md"
-          kbd="e d"
-        >
-          {({ props, label, labelClassName }) => (
+        <LongPressTooltip label={dm?.defProps.menuItem} kbd="e d">
+          {({ props }) => (
             <Button
               variant="secondary"
               onClick={() =>
@@ -56,10 +68,15 @@ export default function DrawingMenu(): ReactElement | undefined {
               }
               {...props}
             >
-              <FaPaintBrush /> <span className={labelClassName}>{label}</span>
+              <FaPaintBrush />
             </Button>
           )}
         </LongPressTooltip>
+
+        <BatchPropertiesDropdown
+          modal="drawing-batch-properties"
+          counts={batchCounts}
+        />
       </ToolMenu>
     )
   );

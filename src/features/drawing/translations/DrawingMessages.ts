@@ -21,6 +21,8 @@ export type DrawingMessages = {
     optionalKeys: string;
     shape: string;
     text: string;
+    /** Between the icon and the text, which a marker shows one of. */
+    or: string;
     textHint: string;
     type: string;
     dashArray: string;
@@ -43,6 +45,22 @@ export type DrawingMessages = {
     insertIntoLabel: string;
     showLabel: string;
     labelVisibility: Record<LabelVisibility, string>;
+    /** Marks a field whose value differs between features edited together. */
+    different: string;
+    /** Brings up such a field's control, to set it on all of them. */
+    change: string;
+    /** Takes it back, leaving each feature its own value. */
+    keep: string;
+  };
+  /** Opens the properties of every feature of a kind at once. */
+  batch: {
+    title: string;
+    /** The dialog's title: `kind` is one of the labels below. */
+    dialogTitle: (props: { kind: string; count: number }) => string;
+    all: string;
+    points: string;
+    lines: string;
+    polygons: string;
   };
   split: string;
   join: string;

@@ -226,7 +226,7 @@ export function lineStyleToProperties(
   properties: Record<string, unknown> | null | undefined,
   style: {
     type: DrawingLineType;
-    color: string;
+    color?: string;
     fillColor?: string;
     width?: number;
     lineCap?: LineCap;
@@ -234,7 +234,7 @@ export function lineStyleToProperties(
     dashArray?: number[];
   },
 ): Record<string, unknown> {
-  const stroke = splitColorAlpha(style.color);
+  const stroke = style.color ? splitColorAlpha(style.color) : undefined;
 
   // Both dialects read a dash as a string; our own reader takes nothing else.
   const dash = style.dashArray?.length ? style.dashArray.join(' ') : undefined;
@@ -251,7 +251,7 @@ export function lineStyleToProperties(
     'freemap:lineCap': style.lineCap,
     'freemap:lineJoin': style.lineJoin,
     'freemap:dashArray': dash,
-    stroke: stroke.color,
+    stroke: stroke?.color,
     'stroke-opacity': alpha(stroke),
     'stroke-width': style.width,
     'stroke-linecap': style.lineCap,
@@ -266,32 +266,41 @@ export function lineStyleToProperties(
   });
 }
 
-/** The inverse of {@link pointStyleFromProperties}; see {@link lineStyleToProperties}. */
+/**
+ * The inverse of {@link pointStyleFromProperties}; see {@link lineStyleToProperties}.
+ * Only the fields `style` names are written, so a symbol it could not read survives.
+ */
 export function pointStyleToProperties(
   properties: Record<string, unknown> | null | undefined,
-  style: { color: string; markerType?: MarkerType; icon?: string },
+  style: { color?: string; markerType?: MarkerType; icon?: string },
 ): Record<string, unknown> {
-  const marker = splitColorAlpha(style.color);
+  const marker = style.color ? splitColorAlpha(style.color) : undefined;
 
   const icon = style.icon || undefined;
 
   const sym = iconSpecToGarminSym(icon);
 
   return patched(properties, {
-    'freemap:color': style.color,
-    'freemap:markerType': style.markerType,
-    'freemap:icon': icon,
-    'marker-color': marker.color,
-    'marker-color-opacity': alpha(marker),
-    'marker-symbol': sym,
-    markerType: style.markerType,
-    icon,
-    // GPX export writes `<sym>` from this one.
-    sym,
-    'osmand:color': undefined,
-    'osmand:icon': undefined,
-    'osmand:background': undefined,
-    'icon-color': undefined,
-    'icon-opacity': undefined,
+    ...('color' in style && {
+      'freemap:color': style.color,
+      'marker-color': marker?.color,
+      'marker-color-opacity': alpha(marker),
+      'osmand:color': undefined,
+      'icon-color': undefined,
+      'icon-opacity': undefined,
+    }),
+    ...('markerType' in style && {
+      'freemap:markerType': style.markerType,
+      markerType: style.markerType,
+      'osmand:background': undefined,
+    }),
+    ...('icon' in style && {
+      'freemap:icon': icon,
+      'marker-symbol': sym,
+      icon,
+      // GPX export writes `<sym>` from this one.
+      sym,
+      'osmand:icon': undefined,
+    }),
   });
 }

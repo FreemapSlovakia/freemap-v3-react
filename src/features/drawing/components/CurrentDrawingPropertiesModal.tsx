@@ -1,24 +1,27 @@
-import {
-  type DrawingLineType,
-  drawingLineChangeProperties,
-} from '@features/drawing/model/actions/drawingLineActions.js';
+import { setActiveModal } from '@app/store/actions.js';
+import { drawingLineChangeProperties } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointChangeProperties } from '@features/drawing/model/actions/drawingPointActions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { COLORS } from '@shared/colors.js';
 import {
   type FeatureProperties,
   FeaturePropertiesModal,
 } from '@shared/components/FeaturePropertiesModal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { polygon } from '@turf/helpers';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback, useEffect } from 'react';
 import { shallowEqual, useDispatch } from 'react-redux';
+import {
+  lineChange,
+  lineProperties,
+  pointChange,
+  pointProperties,
+} from '../featureProperties.js';
 
 type Props = { show: boolean };
 
 export default function CurrentDrawingPropertiesModal({
   show,
-}: Props): ReactElement {
+}: Props): ReactElement | null {
   const selection = useAppSelector((state) => state.main.selection);
 
   const point = useAppSelector(
@@ -209,56 +212,29 @@ export default function CurrentDrawingPropertiesModal({
 
     dispatch(
       selection.type === 'draw-line-poly'
-        ? drawingLineChangeProperties({
-            index: selection.id,
-            properties: {
-              label: values.label || undefined,
-              color: values.color,
-              fillColor: values.fillColor,
-              width: values.width,
-              type: values.type,
-              dashArray: values.dashArray,
-              lineCap: values.lineCap,
-              lineJoin: values.lineJoin,
-              props: values.props,
-            },
-          })
-        : drawingPointChangeProperties({
-            index: selection.id,
-            properties: {
-              label: values.label || undefined,
-              color: values.color,
-              markerType: values.markerType,
-              icon: values.icon || undefined,
-              props: values.props,
-            },
-          }),
+        ? drawingLineChangeProperties(lineChange(selection.id, values))
+        : drawingPointChangeProperties(pointChange(selection.id, values)),
     );
   };
 
-  const isLine = selection?.type === 'draw-line-poly';
+  const gone = !line && !point;
 
-  const type: DrawingLineType = line?.type ?? 'line';
+  // Its feature gone, as after a Back that rebuilt the drawing: no modal to stay open.
+  useEffect(() => {
+    if (show && gone) {
+      dispatch(setActiveModal(null));
+    }
+  }, [show, gone, dispatch]);
 
-  const color = (isLine ? line?.color : point?.color) ?? COLORS.normal;
+  if (gone) {
+    return null;
+  }
 
   return (
     <FeaturePropertiesModal
       show={show}
-      kind={isLine ? 'line-poly' : 'point'}
-      initial={{
-        label: (isLine ? line?.label : point?.label) ?? '',
-        props: isLine ? line?.props : point?.props,
-        color,
-        markerType: point?.markerType ?? 'pin',
-        icon: point?.icon ?? '',
-        type,
-        fillColor: line?.fillColor ?? (type === 'polygon' ? color : undefined),
-        width: line?.width,
-        dashArray: line?.dashArray ?? [],
-        lineCap: line?.lineCap ?? 'round',
-        lineJoin: line?.lineJoin ?? 'round',
-      }}
+      kind={line ? 'line-poly' : 'point'}
+      initial={line ? lineProperties(line) : pointProperties(point!)}
       closable={(polyPoints?.length ?? 0) >= 3}
       onSave={handleSave}
     />

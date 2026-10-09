@@ -6,6 +6,10 @@ import {
   propsToRows,
   rowsToProps,
 } from '@features/drawing/components/DrawingPropsEditor.js';
+import {
+  type Mixed,
+  MixedField,
+} from '@features/drawing/components/MixedField.js';
 import { PROPERTY_PREFIX } from '@features/drawing/interpolateLabel.js';
 import type {
   DrawingLineType,
@@ -16,6 +20,7 @@ import type { DrawingProps } from '@features/drawing/model/actions/drawingPointA
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
+import type { Batch, BatchEdit, BatchField } from '@shared/batchProperties.js';
 import { COLORS } from '@shared/colors.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
@@ -25,7 +30,7 @@ import { parseIconSpec } from '@shared/drawingIcons.js';
 import { useInsertAtCaret } from '@shared/hooks/useInsertAtCaret.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import {
-  type ChangeEvent,
+  Fragment,
   type ReactElement,
   type SubmitEvent,
   useCallback,
@@ -63,24 +68,85 @@ export type FeatureProperties = {
 
 type Props = {
   show: boolean;
-  kind: 'point' | 'line-poly';
+  /** `all` edits points and lines together, with the style fields of both. */
+  kind: 'point' | 'line-poly' | 'all';
   initial: FeatureProperties;
   /** Whether the geometry can close, which is what the line↔polygon switch needs. */
   closable: boolean;
-  /** Returning `true` says it handled the submit itself, and keeps it open. */
-  onSave: (values: FeatureProperties) => boolean | undefined;
+  /** Edits many features at once, `initial` being what they share. */
+  batch?: Batch;
+  title?: string;
+  /**
+   * Returning `true` says it handled the submit itself, and keeps it open.
+   * `edit` is what a batch edit applies to each feature.
+   */
+  onSave: (values: FeatureProperties, edit: BatchEdit) => boolean | undefined;
 };
+
+function withMember<T>(
+  set: ReadonlySet<T>,
+  member: T,
+  present: boolean,
+): ReadonlySet<T> {
+  if (set.has(member) === present) {
+    return set;
+  }
+
+  const next = new Set(set);
+
+  if (present) {
+    next.add(member);
+  } else {
+    next.delete(member);
+  }
+
+  return next;
+}
 
 export function FeaturePropertiesModal({
   show,
   kind,
   initial,
   closable,
+  batch,
+  title,
   onSave,
 }: Props): ReactElement {
   const m = useMessages();
 
   const dm = useDrawingMessages();
+
+  const [touched, setTouched] = useState<ReadonlySet<BatchField>>(new Set());
+
+  // Property keys, by the key a row was opened with, set on all.
+  const [changedKeys, setChangedKeys] = useState<ReadonlySet<string>>(
+    new Set(),
+  );
+
+  const setKept = (field: BatchField, kept: boolean) =>
+    setTouched((t) => withMember(t, field, !kept));
+
+  /** A setter that also marks its field as changed. */
+  const edit =
+    <T,>(field: BatchField, set: (value: T) => void) =>
+    (value: T) => {
+      setKept(field, false);
+
+      set(value);
+    };
+
+  // Untouched is kept: each feature's own value stays.
+  const mixed: Mixed | undefined = batch && {
+    differs: (field) => batch.mixed.has(field),
+    kept: (field) => !touched.has(field),
+    setKept,
+  };
+
+  const mixedKeys: Mixed<string> | undefined = batch && {
+    differs: (key) => batch.mixedKeys.has(key),
+    kept: (key) => !changedKeys.has(key),
+    setKept: (key, kept) => setChangedKeys((c) => withMember(c, key, !kept)),
+  };
 
   const [editedLabel, setEditedLabel] = useState(initial.label);
 
@@ -113,7 +179,12 @@ export function FeaturePropertiesModal({
   // The label field, so a property can be written in at the cursor.
   const labelRef = useRef<HTMLTextAreaElement>(null);
 
-  const insertExpression = useInsertAtCaret(labelRef, setEditedLabel);
+  const setLabel = edit('label', setEditedLabel);
+
+  const insertExpression = useInsertAtCaret(labelRef, setLabel);
+
+  // A kept label is nothing to write into: an insert would replace them all.
+  const labelKept = mixed?.differs('label') && mixed.kept('label');
 
   const handleInsertKey = (key: string) => {
     insertExpression(`{${PROPERTY_PREFIX}${key}}`);
@@ -128,37 +199,43 @@ export function FeaturePropertiesModal({
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const handled = onSave({
-      label: editedLabel,
-      props: rowsToProps(editedRows),
-      color: editedColor,
-      markerType: editedMarkerType,
-      icon: editedIcon,
-      type: editedType,
-      fillColor: editedFillColor,
-      width: parseFloat(editedWidth) || undefined,
-      dashArray: editedDash,
-      lineCap: editedLineCap,
-      lineJoin: editedLineJoin,
-    });
+    const handled = onSave(
+      {
+        label: editedLabel,
+        props: rowsToProps(editedRows),
+        color: editedColor,
+        markerType: editedMarkerType,
+        icon: editedIcon,
+        type: editedType,
+        fillColor: editedFillColor,
+        width: parseFloat(editedWidth) || undefined,
+        dashArray: editedDash,
+        lineCap: editedLineCap,
+        lineJoin: editedLineJoin,
+      },
+      {
+        touched,
+        rows: editedRows,
+        keptKeys: new Set(
+          [...(batch?.mixedKeys ?? [])].filter((key) => !changedKeys.has(key)),
+        ),
+      },
+    );
 
     if (!handled) {
       close();
     }
   };
 
-  const handleLocalLabelChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setEditedLabel(e.currentTarget.value);
-  };
-
   // A point has no width field, so a width it happens to carry cannot be the
   // thing standing between the user and Save.
+  // Nor can a batch's untouched width, which is never written.
   const invalidWidth =
-    kind === 'line-poly' && isInvalidFloat(editedWidth, false, 1, 99);
+    kind !== 'point' &&
+    (!batch || touched.has('width')) &&
+    isInvalidFloat(editedWidth, false, 1, 99);
 
-  useDocumentTitle(show ? dm?.edit.title : undefined);
+  useDocumentTitle(show ? (title ?? dm?.edit.title) : undefined);
 
   return (
     <Modal
@@ -175,7 +252,7 @@ export function FeaturePropertiesModal({
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaTag /> {dm?.edit.title}
+            <FaTag /> {title ?? dm?.edit.title}
           </Modal.Title>
         </Modal.Header>
 
@@ -186,30 +263,43 @@ export function FeaturePropertiesModal({
             {/* A textarea because a label may run to several lines — which
                 also means Enter breaks the line instead of submitting, and the
                 Save button is the way out. */}
-            <Form.Control
-              autoFocus
-              ref={labelRef}
-              as="textarea"
-              rows={2}
-              value={editedLabel}
-              onChange={handleLocalLabelChange}
-            />
+            <MixedField field="label" mixed={mixed}>
+              <Form.Control
+                autoFocus
+                ref={labelRef}
+                as="textarea"
+                rows={2}
+                value={editedLabel}
+                onChange={(e) => setLabel(e.currentTarget.value)}
+              />
+            </MixedField>
 
             <Form.Text muted>
               {dm?.edit.hint}{' '}
-              <PlaceholderHint
-                text={
-                  kind === 'point'
-                    ? dm?.edit.pointKeys
-                    : editedType === 'polygon'
-                      ? dm?.edit.polygonKeys
-                      : dm?.edit.lineKeys
-                }
-                onInsert={insertExpression}
-              />{' '}
+              {(batch
+                ? [
+                    batch.has.points > 0 && dm?.edit.pointKeys,
+                    batch.has.lines > 0 && dm?.edit.lineKeys,
+                    batch.has.polygons > 0 && dm?.edit.polygonKeys,
+                  ].filter((text) => typeof text === 'string')
+                : [
+                    kind === 'point'
+                      ? dm?.edit.pointKeys
+                      : editedType === 'polygon'
+                        ? dm?.edit.polygonKeys
+                        : dm?.edit.lineKeys,
+                  ]
+              ).map((text, i) => (
+                <Fragment key={i}>
+                  <PlaceholderHint
+                    text={text}
+                    onInsert={labelKept ? undefined : insertExpression}
+                  />{' '}
+                </Fragment>
+              ))}
               <PlaceholderHint
                 text={dm?.edit.optionalKeys}
-                onInsert={insertExpression}
+                onInsert={labelKept ? undefined : insertExpression}
               />
             </Form.Text>
           </Form.Group>
@@ -218,110 +308,130 @@ export function FeaturePropertiesModal({
             <DrawingPropsEditor
               rows={editedRows}
               onChange={setEditedRows}
-              onInsertKey={handleInsertKey}
+              onInsertKey={labelKept ? undefined : handleInsertKey}
+              mixed={mixedKeys}
             />
           </Form.Group>
 
-          {kind === 'line-poly' ? (
-            <>
-              <DrawingLineStyleFields
-                color={editedColor || COLORS.normal}
-                onColorChange={setEditedColor}
-                fillColor={
-                  editedType === 'polygon' ? editedFillColor : undefined
+          {kind !== 'point' && (
+            <DrawingLineStyleFields
+              color={editedColor || COLORS.normal}
+              onColorChange={edit('color', setEditedColor)}
+              fillColor={editedType === 'polygon' ? editedFillColor : undefined}
+              onFillColorChange={
+                editedType === 'polygon'
+                  ? edit('fillColor', setEditedFillColor)
+                  : undefined
+              }
+              width={editedWidth}
+              onWidthChange={edit('width', setEditedWidth)}
+              invalidWidth={invalidWidth}
+              lineCap={editedLineCap}
+              onLineCapChange={edit('lineCap', setEditedLineCap)}
+              lineJoin={editedLineJoin}
+              onLineJoinChange={edit('lineJoin', setEditedLineJoin)}
+              dashArray={editedDash}
+              onDashArrayChange={edit('dashArray', setEditedDash)}
+              mixed={mixed}
+            />
+          )}
+
+          {kind === 'line-poly' && !batch && (
+            <Form.Group controlId="type" className="mt-3">
+              <Form.Label>{dm?.edit.type}</Form.Label>
+
+              <Form.Select
+                value={editedType}
+                // An unset fill stays so, following the stroke.
+                onChange={(e) =>
+                  setEditedType(e.currentTarget.value as DrawingLineType)
                 }
-                onFillColorChange={
-                  editedType === 'polygon' ? setEditedFillColor : undefined
-                }
-                width={editedWidth}
-                onWidthChange={setEditedWidth}
-                invalidWidth={invalidWidth}
-                lineCap={editedLineCap}
-                onLineCapChange={setEditedLineCap}
-                lineJoin={editedLineJoin}
-                onLineJoinChange={setEditedLineJoin}
-                dashArray={editedDash}
-                onDashArrayChange={setEditedDash}
-              />
+                disabled={!closable}
+              >
+                <option value="line">{m?.selections.drawLines}</option>
+                <option value="polygon">{m?.selections.drawPolygons}</option>
+              </Form.Select>
+            </Form.Group>
+          )}
 
-              <Form.Group controlId="type" className="mt-3">
-                <Form.Label>{dm?.edit.type}</Form.Label>
+          {kind === 'point' && (
+            <Form.Group controlId="color" className="mt-3">
+              <Form.Label>{dm?.edit.color}</Form.Label>
 
-                <Form.Select
-                  value={editedType}
-                  onChange={(e) => {
-                    const newType = e.currentTarget.value as DrawingLineType;
-
-                    setEditedType(newType);
-
-                    if (newType === 'polygon' && !editedFillColor) {
-                      setEditedFillColor(editedColor);
-                    }
-                  }}
-                  disabled={!closable}
-                >
-                  <option value="line">{m?.selections.drawLines}</option>
-                  <option value="polygon">{m?.selections.drawPolygons}</option>
-                </Form.Select>
-              </Form.Group>
-            </>
-          ) : (
-            <>
-              <Form.Group controlId="color" className="mt-3">
-                <Form.Label>{dm?.edit.color}</Form.Label>
-
+              <MixedField field="color" mixed={mixed}>
                 <RgbaColorPicker
                   value={editedColor || COLORS.normal}
-                  onChange={setEditedColor}
+                  onChange={edit('color', setEditedColor)}
                 />
-              </Form.Group>
+              </MixedField>
+            </Form.Group>
+          )}
 
+          {kind !== 'line-poly' && (
+            <>
               <Form.Group controlId="markerType" className="mt-3">
                 <Form.Label>{dm?.edit.shape}</Form.Label>
 
-                <MarkerTypeSelect
-                  asSelect
-                  value={editedMarkerType}
-                  onChange={setEditedMarkerType}
-                />
+                <MixedField field="markerType" mixed={mixed}>
+                  <MarkerTypeSelect
+                    asSelect
+                    value={editedMarkerType}
+                    onChange={edit('markerType', setEditedMarkerType)}
+                  />
+                </MixedField>
               </Form.Group>
 
               <Form.Group className="mt-3">
-                <div className={classes.iconTextGrid}>
-                  <Form.Label htmlFor="icon" className={classes.iconLabel}>
-                    {m?.general.icon}
-                  </Form.Label>
+                {/* Kept, the grid with its own labels gives way to the button. */}
+                {mixed?.differs('icon') && mixed.kept('icon') && (
+                  <Form.Label>{m?.general.icon}</Form.Label>
+                )}
 
-                  <div className={classes.icon}>
-                    <IconPicker
-                      id="icon"
-                      selected={
-                        editedIconSpec?.kind === 'fa' ||
-                        editedIconSpec?.kind === 'poi'
-                          ? editedIcon
-                          : undefined
+                <MixedField field="icon" mixed={mixed}>
+                  <div className={classes.iconTextGrid}>
+                    <Form.Label htmlFor="icon" className={classes.iconLabel}>
+                      {m?.general.icon}
+                    </Form.Label>
+
+                    <div className={classes.icon}>
+                      <IconPicker
+                        id="icon"
+                        selected={
+                          editedIconSpec?.kind === 'fa' ||
+                          editedIconSpec?.kind === 'poi'
+                            ? editedIcon
+                            : undefined
+                        }
+                        onSelect={(spec) =>
+                          edit('icon', setEditedIcon)(spec ?? '')
+                        }
+                      />
+                    </div>
+
+                    <span className={classes.or}>{dm?.edit.or}</span>
+
+                    <Form.Label htmlFor="text" className={classes.textLabel}>
+                      {dm?.edit.text}
+                    </Form.Label>
+
+                    <Form.Control
+                      id="text"
+                      className={classes.text}
+                      type="text"
+                      maxLength={2}
+                      value={
+                        editedIconSpec?.kind === 'text'
+                          ? editedIconSpec.text
+                          : ''
                       }
-                      onSelect={(spec) => setEditedIcon(spec ?? '')}
+                      onChange={(e) =>
+                        edit('icon', setEditedIcon)(e.currentTarget.value)
+                      }
                     />
                   </div>
 
-                  <Form.Label htmlFor="text" className={classes.textLabel}>
-                    {dm?.edit.text}
-                  </Form.Label>
-
-                  <Form.Control
-                    id="text"
-                    className={classes.text}
-                    type="text"
-                    maxLength={2}
-                    value={
-                      editedIconSpec?.kind === 'text' ? editedIconSpec.text : ''
-                    }
-                    onChange={(e) => setEditedIcon(e.currentTarget.value)}
-                  />
-                </div>
-
-                <Form.Text muted>{dm?.edit.textHint}</Form.Text>
+                  <Form.Text muted>{dm?.edit.textHint}</Form.Text>
+                </MixedField>
               </Form.Group>
             </>
           )}

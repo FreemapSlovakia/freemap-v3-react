@@ -2,18 +2,20 @@ import type { DrawingProps } from '@features/drawing/model/actions/drawingPointA
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import type { ReactElement } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
-import { FaPlus, FaTag, FaTrash } from 'react-icons/fa';
+import { FaPen, FaPlus, FaTag, FaTrash, FaUndo } from 'react-icons/fa';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
+import type { Mixed } from './MixedField.js';
 
 /**
  * Rows rather than a record while editing: a half-typed key is briefly empty or
  * a duplicate of another, and a record would drop or merge the row under the
  * cursor. Folded back into a record on save.
  */
-export type PropRow = [key: string, value: string];
+export type PropRow = [key: string, value: string, origin?: string];
 
+/** Each row remembers the key it was opened with, which a batch edit maps back by. */
 export function propsToRows(props: DrawingProps | undefined): PropRow[] {
-  return Object.entries(props ?? {});
+  return Object.entries(props ?? {}).map(([key, value]) => [key, value, key]);
 }
 
 /**
@@ -37,6 +39,8 @@ type Props = {
    * label is plain text and has nothing to write into it.
    */
   onInsertKey?: (key: string) => void;
+  /** Keys, by the key a row was opened with, that features edited together differ in. */
+  mixed?: Mixed<string>;
 };
 
 /**
@@ -49,6 +53,7 @@ export function DrawingPropsEditor({
   rows,
   onChange,
   onInsertKey,
+  mixed,
 }: Props): ReactElement {
   const m = useDrawingMessages();
 
@@ -61,57 +66,106 @@ export function DrawingPropsEditor({
           are rows between them. */}
       <Form.Label className="d-block mb-1">{m?.edit.properties}</Form.Label>
 
-      {rows.map(([key, value], i) => (
-        // Rows are identified by position: the key is what's being typed, so it
-        // is neither stable nor unique while the user is in it.
-        <InputGroup key={i} className="mb-1">
-          {onInsertKey && (
-            <LongPressTooltip label={m?.edit.insertIntoLabel}>
+      {rows.map(([key, value, origin], i) => {
+        // By the key the row was opened with, which renaming leaves alone.
+        const differing =
+          origin !== undefined && mixed?.differs(origin)
+            ? { mixed, origin }
+            : undefined;
+
+        return (
+          // Rows are identified by position: the key is what's being typed, so it
+          // is neither stable nor unique while the user is in it.
+          <InputGroup key={i} className="mb-1">
+            {onInsertKey && (
+              <LongPressTooltip label={m?.edit.insertIntoLabel}>
+                {({ props }) => (
+                  <Button
+                    variant="secondary"
+                    disabled={!key.trim()}
+                    onClick={() => onInsertKey(key.trim())}
+                    {...props}
+                  >
+                    <FaTag />
+                  </Button>
+                )}
+              </LongPressTooltip>
+            )}
+
+            <Form.Control
+              // A set width, so the columns line up whatever buttons a row has.
+              style={{ flex: '0 0 40%' }}
+              value={key}
+              placeholder={m?.edit.propertyKey}
+              onChange={(e) =>
+                replace(i, [e.currentTarget.value, value, origin])
+              }
+            />
+
+            {differing?.mixed.kept(differing.origin) ? (
+              <>
+                <InputGroup.Text className="flex-grow-1 text-body-secondary">
+                  {m?.edit.different}
+                </InputGroup.Text>
+
+                <LongPressTooltip label={m?.edit.change}>
+                  {({ props }) => (
+                    <Button
+                      variant="secondary"
+                      onClick={() =>
+                        differing.mixed.setKept(differing.origin, false)
+                      }
+                      {...props}
+                    >
+                      <FaPen />
+                    </Button>
+                  )}
+                </LongPressTooltip>
+              </>
+            ) : (
+              <>
+                <Form.Control
+                  value={value}
+                  placeholder={m?.edit.propertyValue}
+                  onChange={(e) =>
+                    replace(i, [key, e.currentTarget.value, origin])
+                  }
+                />
+
+                {differing && (
+                  <LongPressTooltip label={m?.edit.keep}>
+                    {({ props }) => (
+                      <Button
+                        variant="secondary"
+                        onClick={() =>
+                          differing.mixed.setKept(differing.origin, true)
+                        }
+                        {...props}
+                      >
+                        <FaUndo />
+                      </Button>
+                    )}
+                  </LongPressTooltip>
+                )}
+              </>
+            )}
+
+            <LongPressTooltip label={m?.edit.removeProperty}>
               {({ props }) => (
                 <Button
-                  variant="secondary"
-                  disabled={!key.trim()}
-                  onClick={() => onInsertKey(key.trim())}
+                  variant="danger"
+                  onClick={() => onChange(rows.filter((_, j) => j !== i))}
                   {...props}
                 >
-                  <FaTag />
+                  <FaTrash />
                 </Button>
               )}
             </LongPressTooltip>
-          )}
+          </InputGroup>
+        );
+      })}
 
-          <Form.Control
-            value={key}
-            placeholder={m?.edit.propertyKey}
-            onChange={(e) => replace(i, [e.currentTarget.value, value])}
-          />
-
-          <Form.Control
-            value={value}
-            placeholder={m?.edit.propertyValue}
-            onChange={(e) => replace(i, [key, e.currentTarget.value])}
-          />
-
-          <LongPressTooltip label={m?.edit.removeProperty}>
-            {({ props }) => (
-              <Button
-                variant="danger"
-                onClick={() => onChange(rows.filter((_, j) => j !== i))}
-                {...props}
-              >
-                <FaTrash />
-              </Button>
-            )}
-          </LongPressTooltip>
-        </InputGroup>
-      ))}
-
-      <Button
-        variant="secondary"
-        size="sm"
-        className="mt-1"
-        onClick={() => onChange([...rows, ['', '']])}
-      >
+      <Button variant="secondary" onClick={() => onChange([...rows, ['', '']])}>
         <FaPlus /> {m?.edit.addProperty}
       </Button>
     </>

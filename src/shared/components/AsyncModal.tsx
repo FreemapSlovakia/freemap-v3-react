@@ -1,5 +1,10 @@
 import { useLazy } from '@app/hooks/useLazy.js';
-import { type ComponentType, type ReactElement, useMemo } from 'react';
+import {
+  type ComponentType,
+  type ReactElement,
+  useMemo,
+  useState,
+} from 'react';
 import { type ShowProps, useShow } from '../hooks/useShow.js';
 
 type Props<T extends ComponentType<ShowProps>> = {
@@ -16,5 +21,15 @@ export function AsyncModal({
     show,
   );
 
-  return useShow(show) && Modal ? <Modal show={show} /> : null;
+  // A fresh instance per opening: one reopened while the last still fades out
+  // would otherwise carry on with its state.
+  const [opening, setOpening] = useState({ show, count: 0 });
+
+  if (show !== opening.show) {
+    setOpening({ show, count: opening.count + (show ? 1 : 0) });
+  }
+
+  return useShow(show) && Modal ? (
+    <Modal key={opening.count} show={show} />
+  ) : null;
 }

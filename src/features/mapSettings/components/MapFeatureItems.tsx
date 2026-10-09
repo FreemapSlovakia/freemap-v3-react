@@ -5,6 +5,8 @@ import {
 } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { changesetDetail } from '@features/changesets/model/changesetDetail.js';
+import { dataViewerBatchCounts } from '@features/dataViewer/featureEditing.js';
+import { drawingBatchCounts } from '@features/drawing/featureProperties.js';
 import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
 import {
   lineLabelValues,
@@ -40,6 +42,7 @@ import { useOsmMapping } from '@osm/useOsmMapping.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { formatArea, naturalAreaUnit } from '@shared/areaFormatter.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
+import { BatchPropertiesDropdown } from '@shared/components/BatchPropertiesItems.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -64,7 +67,13 @@ import { bbox as turfBbox } from '@turf/bbox';
 import { length as turfLength } from '@turf/length';
 import clsx from 'clsx';
 import type { GeoJSON } from 'geojson';
-import { type ReactElement, type ReactNode, useMemo, useState } from 'react';
+import {
+  type ComponentProps,
+  type ReactElement,
+  type ReactNode,
+  useMemo,
+  useState,
+} from 'react';
 import { Form } from 'react-bootstrap';
 import {
   FaBullseye,
@@ -542,8 +551,19 @@ function DataItems(): ReactElement {
     [features, language],
   );
 
+  const batchCounts = useMemo(
+    () => dataViewerBatchCounts(features ?? []),
+    [features],
+  );
+
   return (
     <ItemList
+      footer={
+        <BatchFooter
+          modal="data-viewer-batch-properties"
+          counts={batchCounts}
+        />
+      }
       items={(features ?? []).map((feature, index) => {
         const name = names[index]!;
 
@@ -854,7 +874,23 @@ function DrawingItems(): ReactElement {
           };
         }),
       ]}
+      footer={
+        <BatchFooter
+          modal="drawing-batch-properties"
+          counts={drawingBatchCounts(points, lines)}
+        />
+      }
     />
+  );
+}
+
+function BatchFooter(
+  props: ComponentProps<typeof BatchPropertiesDropdown>,
+): ReactElement {
+  return (
+    <div className="mt-2">
+      <BatchPropertiesDropdown size="sm" {...props} />
+    </div>
   );
 }
 

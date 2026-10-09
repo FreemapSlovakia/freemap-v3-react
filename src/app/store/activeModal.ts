@@ -2,6 +2,7 @@ import {
   type Document,
   DocumentSchema,
 } from '@features/documents/model/actions.js';
+import type { BatchKind } from '@shared/batchProperties.js';
 import z from 'zod';
 
 const URL_MODAL_IDS = [
@@ -125,6 +126,11 @@ export type ActiveModal =
       highlight?: string;
     }
   | { type: 'tracking-watched'; token?: string }
+  /** The properties of every drawn or loaded feature of a kind at once. */
+  | {
+      type: 'drawing-batch-properties' | 'data-viewer-batch-properties';
+      kind: BatchKind;
+    }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
   | { type: 'wiki'; key: string };

@@ -2,6 +2,10 @@ import { applySettings, clearMapFeatures } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
+  drawingChangePropertiesBatch,
+  type PointChange,
+} from '../actions/drawingBatchActions.js';
+import {
   type DrawingPoint,
   drawingPointAdd,
   drawingPointChangePosition,
@@ -14,6 +18,21 @@ import {
 export interface DrawingPointsState {
   points: DrawingPoint[];
   change: number;
+}
+
+function changePoint(
+  state: DrawingPointsState,
+  { index, properties }: { index: number; properties: PointChange },
+): void {
+  const point = state.points[index];
+
+  if (!point) {
+    return;
+  }
+
+  Object.assign(point, properties);
+
+  point.props = normalizeProps(point.props);
 }
 
 const initialState: DrawingPointsState = {
@@ -45,11 +64,12 @@ export const drawingPointsReducer = createReducer(initialState, (builder) =>
       state.change++;
     })
     .addCase(drawingPointChangeProperties, (state, { payload }) => {
-      const point = state.points[payload.index];
-
-      Object.assign(point, payload.properties);
-
-      point.props = normalizeProps(point.props);
+      changePoint(state, payload);
+    })
+    .addCase(drawingChangePropertiesBatch, (state, { payload }) => {
+      for (const change of payload.points) {
+        changePoint(state, change);
+      }
     })
     .addCase(drawingPointChangePosition, (state, { payload }) => {
       const point = state.points[payload.index];

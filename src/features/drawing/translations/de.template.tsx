@@ -24,6 +24,9 @@ const de: DeepPartialWithRequiredObjects<DrawingMessages> = {
       selected: 'Wenn ausgewählt',
       'hover-selected': 'Beim Überfahren oder wenn ausgewählt',
     },
+    different: '<verschieden>',
+    change: 'Ändern',
+    keep: 'Beibehalten',
     title: 'Eigenschaften',
     color: 'Farbe',
     fillColor: 'Füllfarbe',
@@ -32,6 +35,7 @@ const de: DeepPartialWithRequiredObjects<DrawingMessages> = {
     hint: 'Mit der Eingabetaste beginnt eine neue Zeile. Um die Beschriftung zu entfernen, lassen Sie das Feld leer.',
     shape: 'Form',
     text: 'Text',
+    or: 'oder',
     textHint:
       'Symbol oder maximal 2 Zeichen werden in der Markierung angezeigt.',
     type: 'Geometrietyp',
@@ -47,7 +51,7 @@ const de: DeepPartialWithRequiredObjects<DrawingMessages> = {
   },
 
   defProps: {
-    menuItem: 'Stileinstellungen',
+    menuItem: 'Standardstil festlegen',
     title: 'Standard-Stileinstellungen für Zeichnen',
     applyToAll: 'Speichern und auf alle anwenden',
   },
@@ -60,6 +64,15 @@ const de: DeepPartialWithRequiredObjects<DrawingMessages> = {
   },
 
   modify: 'Eigenschaften',
+  batch: {
+    title: 'Eigenschaften gesammelt bearbeiten',
+    dialogTitle: ({ kind, count }) =>
+      `Eigenschaften gesammelt bearbeiten – ${kind} (${count})`,
+    all: 'Alle Objekte',
+    points: 'Alle Punkte',
+    lines: 'Alle Linien',
+    polygons: 'Alle Polygone',
+  },
   continue: 'Fortfahren',
   join: 'Verbinden',
   split: 'Teilen',

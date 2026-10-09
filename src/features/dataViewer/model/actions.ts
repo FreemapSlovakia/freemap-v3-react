@@ -179,10 +179,9 @@ export const dataViewerDeleteFeature = createAction<number>(
  * {@link dataViewerDeleteFeature} this edits the loaded data, so the result is
  * no longer the file it came from.
  */
-export const dataViewerSetFeatureProperties = createAction<{
-  index: number;
-  properties: GeoJsonProperties;
-}>('DATA_VIEWER_SET_FEATURE_PROPERTIES');
+export const dataViewerSetFeatureProperties = createAction<
+  { index: number; properties: GeoJsonProperties }[]
+>('DATA_VIEWER_SET_FEATURE_PROPERTIES');
 
 /**
  * Arms the split cursor on the selected track: while it is on, the track offers

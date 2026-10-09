@@ -444,6 +444,18 @@ const currentDrawingPropertiesModalFactory = () =>
     '../../features/drawing/components/CurrentDrawingPropertiesModal.js'
   );
 
+const drawingBatchPropertiesModalFactory = () =>
+  import(
+    /* webpackChunkName: "drawing-batch-properties-modal" */
+    '@features/drawing/components/DrawingBatchPropertiesModal.js'
+  );
+
+const dataViewerBatchPropertiesModalFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-batch-properties-modal" */
+    '@features/dataViewer/components/DataViewerBatchPropertiesModal.js'
+  );
+
 const dataViewerUploadModalFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-upload-modal" */
@@ -1326,6 +1338,16 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'current-drawing-properties'}
         factory={currentDrawingPropertiesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'drawing-batch-properties'}
+        factory={drawingBatchPropertiesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'data-viewer-batch-properties'}
+        factory={dataViewerBatchPropertiesModalFactory}
       />
 
       <AsyncModal

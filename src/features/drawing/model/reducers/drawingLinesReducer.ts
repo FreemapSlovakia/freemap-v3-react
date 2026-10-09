@@ -5,6 +5,10 @@ import {
   openTool,
   selectFeature,
 } from '@app/store/actions.js';
+import {
+  drawingChangePropertiesBatch,
+  type LineChange,
+} from '@features/drawing/model/actions/drawingBatchActions.js';
 import { normalizeProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
@@ -49,6 +53,31 @@ export const initialState: DrawingLinesState = {
   joinWith: undefined,
   holeFor: undefined,
 };
+
+function changeLine(
+  state: DrawingLinesState,
+  { index, properties }: { index: number; properties: LineChange },
+): void {
+  const line = state.lines[index];
+
+  if (!line) {
+    return;
+  }
+
+  const wasPolygon = line.type === 'polygon';
+
+  Object.assign(line, properties);
+
+  line.props = normalizeProps(line.props);
+
+  // Only a polygon can be a hole or hold one, so turning this ring into a line
+  // frees both it and its own holes.
+  if (wasPolygon && properties.type === 'line') {
+    line.holeOfId = undefined;
+
+    freeHolesOf(state.lines, line.id);
+  }
+}
 
 // Line ids are handed out here because the reducer is the one funnel every
 // line reaches the store through — a URL parse, a loaded map, a conversion, a
@@ -122,18 +151,11 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       ],
     }))
     .addCase(drawingLineChangeProperties, (state, { payload }) => {
-      const line = state.lines[payload.index];
-
-      Object.assign(line, payload.properties);
-
-      line.props = normalizeProps(line.props);
-
-      // Only a polygon can be a hole or hold one, so turning this ring into a
-      // line frees both it and its own holes.
-      if (payload.properties.type === 'line') {
-        line.holeOfId = undefined;
-
-        freeHolesOf(state.lines, line.id);
+      changeLine(state, payload);
+    })
+    .addCase(drawingChangePropertiesBatch, (state, { payload }) => {
+      for (const change of payload.lines) {
+        changeLine(state, change);
       }
     })
     .addCase(drawingLineDelete, (state, { payload }) => {

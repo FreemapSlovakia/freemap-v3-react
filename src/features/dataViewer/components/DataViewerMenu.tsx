@@ -16,6 +16,7 @@ import {
 } from '@shared/colorizers/index.js';
 import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
+import { BatchPropertiesItems } from '@shared/components/BatchPropertiesItems.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -42,6 +43,7 @@ import {
   FaUpload,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { dataViewerBatchCounts } from '../featureEditing.js';
 import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
 import { useSimplifyData } from '../hooks/useSimplifyData.js';
 import {
@@ -76,8 +78,15 @@ export function DataViewerMenu(): ReactElement {
 
   const cancelConfirm = useConfirmCancel();
 
-  const hasTrack = useAppSelector((state) =>
-    Boolean(state.trackViewer.trackGeojson),
+  const features = useAppSelector(
+    (state) => state.trackViewer.trackGeojson?.features,
+  );
+
+  const hasTrack = features !== undefined;
+
+  const batchCounts = useMemo(
+    () => dataViewerBatchCounts(features ?? []),
+    [features],
   );
 
   const canUpload = useAppSelector((state) => !state.trackViewer.trackUID);
@@ -352,6 +361,12 @@ export function DataViewerMenu(): ReactElement {
             <Dropdown.Item as="button" eventKey="convert-to-drawing">
               <FaPencilAlt /> &nbsp;{m?.general.convertAllToDrawing ?? '…'}
             </Dropdown.Item>
+
+            <BatchPropertiesItems
+              modal="data-viewer-batch-properties"
+              counts={batchCounts}
+              divided
+            />
           </FmDropdownMenu>
         </Dropdown>
       )}
