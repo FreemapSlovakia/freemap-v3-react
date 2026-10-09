@@ -17,7 +17,7 @@ import {
   OsmFeatureIdSchema,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import type { ReactElement } from 'react';
+import { type ReactElement, useState } from 'react';
 import { Table } from 'react-bootstrap';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { GenericNameToggles } from './GenericNameToggles.js';
@@ -47,6 +47,67 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
   const parsedId = OsmFeatureIdSchema.safeParse(id);
 
   const om = useObjectsMessages();
+
+  const properties = Object.entries(geojson.properties ?? {}).filter(
+    ([k]) => k !== 'display_name',
+  );
+
+  const [stacked, setStacked] = useState(false);
+
+  // When the widest key leaves the values less than they need (up to 10rem),
+  // the whole table puts each value below its key. Both are measured the same
+  // in either layout; the table is observed too, so new content is measured.
+  const tableRef = (el: HTMLDivElement | null) => {
+    if (!el) {
+      return;
+    }
+
+    const widest = (selector: string) =>
+      Math.max(
+        0,
+        ...[...el.querySelectorAll<HTMLElement>(selector)].map(
+          (e) => e.offsetWidth,
+        ),
+      );
+
+    const check = () => {
+      const values = [...el.querySelectorAll<HTMLElement>('[data-value]')];
+
+      // Unwrapped only while read, within one task, so it never paints.
+      for (const value of values) {
+        value.style.width = 'max-content';
+      }
+
+      const valueWidth = widest('[data-value]');
+
+      for (const value of values) {
+        value.style.width = '';
+      }
+
+      const rem = parseFloat(
+        getComputedStyle(document.documentElement).fontSize,
+      );
+
+      // 1.25rem for the cells' padding and borders. Not flushSync: re-rendering
+      // inside the callback resizes what's observed, a ResizeObserver loop error.
+      setStacked(
+        widest('[data-key]') + Math.min(valueWidth, 10 * rem) + 1.25 * rem >
+          el.clientWidth,
+      );
+    };
+
+    const observer = new ResizeObserver(check);
+
+    observer.observe(el);
+
+    const table = el.querySelector('table');
+
+    if (table) {
+      observer.observe(table);
+    }
+
+    return () => observer.disconnect();
+  };
 
   return (
     <>
@@ -98,30 +159,68 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
       )}
 
       {geojson.properties && (
-        <Table striped bordered size="sm" responsive>
-          <tbody>
-            {Object.entries(geojson.properties)
-              .filter(([k]) => k !== 'display_name')
-              .map(([k, v]) => (
-                <tr key={k}>
-                  <th className="text-nowrap">
-                    <OsmTagKey tag={k} osm={parsedId.success} />
-                  </th>
+        // The toast shrinks to fit; widened to its cap, the width measured
+        // doesn't depend on the layout chosen.
+        <div ref={tableRef} style={{ width: '100vw', maxWidth: '100%' }}>
+          <Table striped bordered size="sm" responsive>
+            <tbody>
+              {properties.map(([k, v]) =>
+                stacked ? (
+                  <tr key={k}>
+                    <td>
+                      <div className="fw-bold">
+                        <PropertyKey tag={k} osm={parsedId.success} />
+                      </div>
 
-                  {/* The min width makes long keys scroll the table instead of
-                      squeezing the value; mid-word breaks only for unbroken values. */}
-                  <td className="text-break" style={{ minWidth: '10rem' }}>
-                    <OsmTagValue tag={k} value={v} osm={parsedId.success} />
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
+                      <PropertyValue tag={k} value={v} osm={parsedId.success} />
+                    </td>
+                  </tr>
+                ) : (
+                  <tr key={k}>
+                    <th>
+                      <PropertyKey tag={k} osm={parsedId.success} />
+                    </th>
+
+                    <td>
+                      <PropertyValue tag={k} value={v} osm={parsedId.success} />
+                    </td>
+                  </tr>
+                ),
+              )}
+            </tbody>
+          </Table>
+        </div>
       )}
 
       <span>
         {om?.source}: <SourceName result={result} />
       </span>
     </>
+  );
+}
+
+/** A key at its unwrapped width, which the layout decision measures. */
+function PropertyKey({ tag, osm }: { tag: string; osm: boolean }) {
+  return (
+    <span data-key className="d-inline-block text-nowrap">
+      <OsmTagKey tag={tag} osm={osm} />
+    </span>
+  );
+}
+
+/** Mid-word breaks only for unbroken values. */
+function PropertyValue({
+  tag,
+  value,
+  osm,
+}: {
+  tag: string;
+  value: string;
+  osm: boolean;
+}) {
+  return (
+    <div data-value className="text-break">
+      <OsmTagValue tag={tag} value={value} osm={osm} />
+    </div>
   );
 }
