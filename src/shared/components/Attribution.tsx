@@ -20,7 +20,7 @@ import {
 } from '@shared/tileAttribution.js';
 import { useTerrainLicenses, useTileLicenses } from '@shared/tileLicenses.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
-import { Fragment, type ReactElement, useMemo } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useTileZoom } from '../hooks/useTileZoom.js';
 import {
@@ -402,9 +402,12 @@ export function useResolvedAttribution(
               {m?.mapLayers.type[type]}{' '}
               {attributions.map((a, j) => [
                 j > 0 ? ', ' : '',
+                // Inline blocks: a line breaks between credits, inside one only
+                // when it doesn't fit a line of its own.
                 a.url ? (
                   <a
                     key={j}
+                    className="d-inline-block"
                     href={a.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -429,9 +432,9 @@ export function useResolvedAttribution(
                     {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
                   </a>
                 ) : (
-                  <Fragment key={j}>
+                  <span key={j} className="d-inline-block">
                     {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
-                  </Fragment>
+                  </span>
                 ),
               ])}
               {esriAttribution?.map((a) => `, ${a}`).join('') ?? ''}
