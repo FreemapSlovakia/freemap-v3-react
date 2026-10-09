@@ -189,7 +189,6 @@ export async function handle(
           url.searchParams.set('QUERY_LAYERS', def.layers.join(','));
           // Part of the map request GetFeatureInfo copies, and mandatory there.
           url.searchParams.set('STYLES', '');
-          url.searchParams.set('INFO_FORMAT', 'application/geo+json'); // TODO
           url.searchParams.set('CRS', 'EPSG:3857'); // TODO
           url.searchParams.set('I', point.x.toFixed());
           url.searchParams.set('J', point.y.toFixed());
@@ -197,29 +196,36 @@ export async function handle(
           url.searchParams.set('HEIGHT', size.y.toFixed());
           url.searchParams.set('BBOX', [a.x, a.y, b.x, b.y].join(','));
 
-          // A server that can't answer in GeoJSON (or at all) is left out
-          // rather than failing the whole query. Capabilities can't decide this
-          // up front: ags.geology.sk advertises only application/json, refuses
-          // it, and serves geo+json.
-          try {
-            const res = await httpRequest({ getState, url: url.toString() });
+          // geo+json first, then GeoServer's application/json (GeoJSON too).
+          // Capabilities can't pick: ags.geology.sk advertises only
+          // application/json, refuses it, and serves geo+json. A server
+          // answering neither is left out rather than failing the whole query.
+          for (const format of ['application/geo+json', 'application/json']) {
+            url.searchParams.set('INFO_FORMAT', format);
 
-            return {
-              type: def.type,
-              name,
-              info: toWgs84(
-                JSON.parse(
-                  (await res.text())
-                    // kataster.skgeodesy.sk returns number with decimal comma, try to fix it
-                    .replace(/\[(\d+),(\d+),(\d+),(\d+)\]/g, '[$1.$2,$3.$4]'),
-                ),
-              ) as FeatureCollection, // TODO validate
-            };
-          } catch (err) {
-            console.warn(`Feature info from ${name} failed`, err);
+            try {
+              const res = await httpRequest({ getState, url: url.toString() });
 
-            return undefined;
+              return {
+                type: def.type,
+                name,
+                info: toWgs84(
+                  JSON.parse(
+                    (await res.text())
+                      // kataster.skgeodesy.sk returns number with decimal comma, try to fix it
+                      .replace(/\[(\d+),(\d+),(\d+),(\d+)\]/g, '[$1.$2,$3.$4]'),
+                  ),
+                ) as FeatureCollection, // TODO validate
+              };
+            } catch (err) {
+              console.warn(
+                `Feature info from ${name} as ${format} failed`,
+                err,
+              );
+            }
           }
+
+          return undefined;
         }),
       ),
   ]);
