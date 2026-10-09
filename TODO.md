@@ -556,6 +556,21 @@ distance probe, a premium quality tier. What it does not do yet is issues under
 
 ## Terrain shading (`terrain.tiles.freemap.sk`)
 
+- [ ] **Keep shading exports off the interactive workers.** An offline export
+      of `h` (freemap-v3-api `downloadMap`) renders every tile on the same
+      per-CPU pool as on-screen shading, 8 at a time, so a large export slows
+      the map for everyone. Give export requests a lower priority or their own
+      small pool in terrain-tiles, or lower the API's concurrency for `h`.
+- [ ] **Key the global model `_` in `/licenses`**, as the outdoor renderer
+      does. The API's credit line recognises terrain-tiles' fallback only by
+      its id (`GLOBAL_KEYS` in freemap-v3-api `tileAttribution.ts`), so a
+      renamed model would sort among the national ones.
+- [ ] **Derive `opaque` on the API instead of trusting the client.** The
+      shading export picks JPEG vs PNG and base map vs overlay from the
+      client's flag (`isOpaqueShading`); a wrong flag exports black where the
+      shading should show through. Needs parsing the spec, or terrain-tiles
+      saying whether a shading is opaque.
+
 - [ ] **Delete the tilesets the shading layers no longer read**, once this all is
       deployed: `dem-sk.mbtiles` and `dem-cz.mbtiles` (the old `y`/`z` sources,
       ~1.2 TB), `dmr5-shading.mbtiles` (`5`) and `cz-shading.mbtiles` (`8`) in

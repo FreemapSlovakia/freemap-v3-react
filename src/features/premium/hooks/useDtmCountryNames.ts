@@ -1,8 +1,5 @@
 import { ELEVATION_API_DTM_COUNTRIES } from '@shared/elevationSources.js';
-import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useRegionNames } from '@shared/hooks/useRegionNames.js';
-import { makeLabelComparator } from '@shared/stringUtils.js';
-import { useMemo } from 'react';
+import { useCountryList } from '@shared/hooks/useCountryList.js';
 import { usePremiumMessages } from '../translations/usePremiumMessages.js';
 
 /**
@@ -13,20 +10,7 @@ import { usePremiumMessages } from '../translations/usePremiumMessages.js';
  * more than it holds.
  */
 export function useDtmCountryNames(): string {
-  const language = useAppSelector((state) => state.l10n.language);
-
   const areaNames = usePremiumMessages()?.dtmAreaNames;
 
-  const regionNames = useRegionNames();
-
-  return useMemo(() => {
-    const names = ELEVATION_API_DTM_COUNTRIES.map(
-      (country) =>
-        areaNames?.[country as keyof typeof areaNames] ??
-        regionNames.of(country.toUpperCase()) ??
-        country,
-    ).sort(makeLabelComparator(language));
-
-    return new Intl.ListFormat(language, { type: 'conjunction' }).format(names);
-  }, [language, areaNames, regionNames]);
+  return useCountryList(ELEVATION_API_DTM_COUNTRIES, areaNames) ?? '';
 }

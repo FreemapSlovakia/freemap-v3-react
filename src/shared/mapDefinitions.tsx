@@ -135,8 +135,11 @@ export const OFM_ATTR: AttributionDef = {
 export const TERRAIN_TILES_URL = process.env['FM_TERRAIN_TILES_URL'];
 
 /** Tiles of `shading` rendered on the server. */
-export const serverShadingUrl = (shading: Shading) =>
-  `${TERRAIN_TILES_URL}/hillshade/{z}/{x}/{y}?format=webp&shading=${encodeURIComponent(
+export const serverShadingUrl = (
+  shading: Shading,
+  format: 'webp' | 'png' | 'jpeg' = 'webp',
+) =>
+  `${TERRAIN_TILES_URL}/hillshade/{z}/{x}/{y}?format=${format}&shading=${encodeURIComponent(
     serializeShading(shading),
   )}`;
 
@@ -312,6 +315,8 @@ type IsParametricShadingLayerDef = HasUrl &
   HasZIndex &
   HasScaleWithDpi & {
     technology: 'parametricShading';
+    /** The offline export's; must match the API's `downloadableMaps`. */
+    creditsPerMTile?: number;
   };
 
 /** One colour all over: a blank base map, or a tint as an overlay. */

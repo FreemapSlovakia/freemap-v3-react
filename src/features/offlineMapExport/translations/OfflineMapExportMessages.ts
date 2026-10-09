@@ -26,4 +26,5 @@ export type OfflineMapExportMessages = {
   formatSqlitedb: string;
   formatMbtilesTooltip: string;
   formatSqlitedbTooltip: string;
+  outsideCoverage: (countries: string) => string;
 };

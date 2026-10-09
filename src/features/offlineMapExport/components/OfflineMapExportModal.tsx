@@ -1,13 +1,27 @@
 import { setActiveModal } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { mapSetBounds } from '@features/map/model/actions.js';
+import { fetchCoveredCountries } from '@features/map/model/fetchCoveredCountries.js';
+import { DEFAULT_SHADING } from '@features/map/model/layerSetup.js';
+import { drawnSetupsSelector } from '@features/map/model/selectors.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
+import {
+  type Bbox,
+  mapAreaSelectConfirm,
+} from '@features/mapArea/model/actions.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import {
   drawnTypesSelector,
   integratedLayerDefsSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
+import {
+  isOpaqueShading,
+  serializeShading,
+} from '@features/parameterizedShading/model/Shading.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import {
   FitButtonGroup,
@@ -20,17 +34,26 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import {
+  MapLayerItem,
+  type MapLayerItemDef,
+} from '@shared/components/MapLayerItem.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCountryList } from '@shared/hooks/useCountryList.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
 import { layerName } from '@shared/layerName.js';
-import type { IntegratedLayerDef } from '@shared/mapDefinitions.js';
+import {
+  flaggedCountries,
+  SHADING_SOURCE,
+  serverShadingUrl,
+} from '@shared/mapDefinitions.js';
+import { coverageCountries } from '@shared/mapLibrary/coverage.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { countTilesInBbox } from '@shared/tileEnumeration.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
@@ -44,6 +67,7 @@ import {
   useState,
 } from 'react';
 import {
+  Alert,
   Dropdown,
   Form,
   InputGroup,
@@ -52,12 +76,23 @@ import {
   ToggleButton,
 } from 'react-bootstrap';
 import { FaDatabase, FaDownload } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { downloadMap } from '../model/actions.js';
 import { useOfflineMapExportMessages } from '../translations/useOfflineMapExportMessages.js';
 
 // pre-filled upper bound; the layer's own `maxNativeZoom` still caps it
 const DEFAULT_MAX_ZOOM = 16;
+
+type ExportableMap = MapLayerItemDef & {
+  /** The API's map `type`. */
+  exportType: string;
+  url: string;
+  minZoom?: number;
+  maxNativeZoom?: number;
+  extraScales?: number[];
+  creditsPerMTile: number;
+  shading?: { spec: string; opaque: boolean };
+};
 
 type Props = { show: boolean };
 
@@ -100,44 +135,82 @@ export default function OfflineMapExportModal({
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
-  const mapDefs = useMemo(
-    () =>
-      integratedLayerDefs.flatMap((layer) => {
-        if (layer.technology !== 'tile') {
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
+
+  const layerSetups = useAppSelector((state) => state.map.layerSetups);
+
+  const drawnSetups = useAppSelector(drawnSetupsSelector);
+
+  const mapDefs = useMemo((): ExportableMap[] => {
+    const tileMaps = integratedLayerDefs.flatMap((layer) => {
+      if (layer.technology !== 'tile') {
+        return [];
+      }
+
+      // A layer exported as something else takes that one's tiles, price and
+      // countries, whose flags then say what the export covers.
+      const exported = layer.offlineExport
+        ? {
+            ...layer,
+            ...layer.offlineExport,
+            exportType: layer.offlineExport.type,
+          }
+        : layer.creditsPerMTile === undefined
+          ? undefined
+          : {
+              ...layer,
+              creditsPerMTile: layer.creditsPerMTile,
+              exportType: layer.type,
+            };
+
+      return exported
+        ? [
+            {
+              ...exported,
+              type: layer.type,
+              overlay: layer.layer === 'overlay', // TODO make server understand `layer` property
+              url: exported.url.startsWith('//')
+                ? `http:${exported.url}`
+                : exported.url,
+            },
+          ]
+        : [];
+    });
+
+    // The library's and the user's own, each rendered by the terrain service
+    // with its own shading.
+    const shadingMaps = [...integratedLayerDefs, ...customLayers].flatMap(
+      (def) => {
+        if (
+          def.technology !== 'parametricShading' ||
+          !('creditsPerMTile' in def) ||
+          def.creditsPerMTile === undefined
+        ) {
           return [];
         }
 
-        // A layer exported as something else takes that one's tiles, price and
-        // countries, whose flags then say what the export covers.
-        const exported = layer.offlineExport
-          ? {
-              ...layer,
-              ...layer.offlineExport,
-              exportType: layer.offlineExport.type,
-            }
-          : layer.creditsPerMTile === undefined
-            ? undefined
-            : {
-                ...layer,
-                creditsPerMTile: layer.creditsPerMTile,
-                exportType: layer.type,
-              };
+        // as drawn, a preset's copy included
+        const shading =
+          drawnSetups[def.type]?.shading ??
+          layerSetups[def.type]?.shading ??
+          DEFAULT_SHADING;
 
-        return exported
-          ? [
-              {
-                ...exported,
-                type: layer.type,
-                overlay: layer.layer === 'overlay', // TODO make server understand `layer` property
-                url: exported.url.startsWith('//')
-                  ? `http:${exported.url}`
-                  : exported.url,
-              },
-            ]
-          : [];
-      }),
-    [integratedLayerDefs],
-  );
+        const opaque = isOpaqueShading(shading);
+
+        return [
+          {
+            ...def,
+            creditsPerMTile: def.creditsPerMTile,
+            exportType: SHADING_SOURCE,
+            url: serverShadingUrl(shading, opaque ? 'jpeg' : 'png'),
+            shading: { spec: serializeShading(shading), opaque },
+          },
+        ];
+      },
+    );
+
+    return [...tileMaps, ...shadingMaps];
+  }, [integratedLayerDefs, customLayers, layerSetups, drawnSetups]);
 
   // for server: src/downloadableMaps.ts
   // console.log(
@@ -209,6 +282,60 @@ export default function OfflineMapExportModal({
     );
   }, [mapDef]);
 
+  // the Europe-wide list is no limit
+  const coverage =
+    mapDef && flaggedCountries(mapDef) && coverageCountries(mapDef);
+
+  const limited = coverage !== undefined;
+
+  const store = useStore<RootState>();
+
+  const lookUp = show && limited ? bbox : undefined;
+
+  // with the box it answers for, so a moved area never shows a stale answer
+  const [areaCountries, setAreaCountries] = useState<{
+    bbox: Bbox;
+    countries: string[];
+  }>();
+
+  const answered = areaCountries?.bbox === lookUp;
+
+  useEffect(() => {
+    if (!lookUp || answered) {
+      return;
+    }
+
+    let cancelled = false;
+
+    fetchCoveredCountries(store.getState, lookUp, [
+      setActiveModal,
+      mapAreaSelectConfirm,
+      mapSetBounds,
+    ])
+      .then((countries) => {
+        if (!cancelled) {
+          setAreaCountries({ bbox: lookUp, countries });
+        }
+      })
+      // no warning rather than a wrong one
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [store, lookUp, answered]);
+
+  const countriesInArea =
+    lookUp && answered ? areaCountries?.countries : undefined;
+
+  const outsideCoverage =
+    coverage &&
+    countriesInArea &&
+    (countriesInArea.length === 0 ||
+      countriesInArea.some((country) => !coverage.includes(country)));
+
+  const coverageNames = useCountryList(coverage);
+
   const tileCount = useMemo(() => {
     if (!bbox) {
       return undefined;
@@ -273,6 +400,7 @@ export default function OfflineMapExportModal({
         minZoom: parseInt(minZoom, 10),
         scale: parseInt(scale, 10),
         boundary: bboxPolygon(bbox as BBox),
+        shading: mapDef?.shading,
       }),
     );
   };
@@ -303,7 +431,7 @@ export default function OfflineMapExportModal({
     );
   }, [m, mapType, mapDefName, nameChanged]);
 
-  function getItem(def: IntegratedLayerDef) {
+  function getItem(def: MapLayerItemDef) {
     return <MapLayerItem def={def} />;
   }
 
@@ -470,6 +598,12 @@ export default function OfflineMapExportModal({
             />
           </Form.Group>
 
+          {outsideCoverage && coverageNames && (
+            <Alert variant="warning">
+              {ome?.outsideCoverage(coverageNames)}
+            </Alert>
+          )}
+
           <Form.Group controlId="name" className="mb-3">
             <Form.Label>{ome?.name}</Form.Label>
 
@@ -484,7 +618,7 @@ export default function OfflineMapExportModal({
           </Form.Group>
 
           <Form.Group controlId="format" className="mb-3">
-            <Form.Label>{ome?.format}</Form.Label>
+            <Form.Label className="d-block">{ome?.format}</Form.Label>
 
             <FitButtonGroup>
               <LongPressTooltip label={ome?.formatMbtilesTooltip}>
