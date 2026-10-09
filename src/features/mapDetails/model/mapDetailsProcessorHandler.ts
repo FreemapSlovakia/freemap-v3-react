@@ -197,19 +197,29 @@ export async function handle(
           url.searchParams.set('HEIGHT', size.y.toFixed());
           url.searchParams.set('BBOX', [a.x, a.y, b.x, b.y].join(','));
 
-          const res = await httpRequest({ getState, url: url.toString() });
+          // A server that can't answer in GeoJSON (or at all) is left out
+          // rather than failing the whole query. Capabilities can't decide this
+          // up front: ags.geology.sk advertises only application/json, refuses
+          // it, and serves geo+json.
+          try {
+            const res = await httpRequest({ getState, url: url.toString() });
 
-          return {
-            type: def.type,
-            name,
-            info: toWgs84(
-              JSON.parse(
-                (await res.text())
-                  // kataster.skgeodesy.sk returns number with decimal comma, try to fix it
-                  .replace(/\[(\d+),(\d+),(\d+),(\d+)\]/g, '[$1.$2,$3.$4]'),
-              ),
-            ) as FeatureCollection, // TODO validate
-          };
+            return {
+              type: def.type,
+              name,
+              info: toWgs84(
+                JSON.parse(
+                  (await res.text())
+                    // kataster.skgeodesy.sk returns number with decimal comma, try to fix it
+                    .replace(/\[(\d+),(\d+),(\d+),(\d+)\]/g, '[$1.$2,$3.$4]'),
+                ),
+              ) as FeatureCollection, // TODO validate
+            };
+          } catch (err) {
+            console.warn(`Feature info from ${name} failed`, err);
+
+            return undefined;
+          }
         }),
       ),
   ]);
@@ -243,8 +253,9 @@ export async function handle(
 
   sr.push(
     ...wms
+      .filter((wms) => wms !== undefined)
       .flatMap((wms) =>
-        wms.info.features.map((feature) => ({
+        (wms.info.features ?? []).map((feature) => ({
           ...wms,
           info: feature,
         })),
