@@ -261,9 +261,21 @@ export async function handle(
     ...wms
       .filter((wms) => wms !== undefined)
       .flatMap((wms) =>
-        (wms.info.features ?? []).map((feature) => ({
+        (wms.info.features ?? []).map(({ bbox: _projected, ...feature }) => ({
           ...wms,
-          info: feature,
+          // GeoServer's `bbox` stays in EPSG:3857 (toWgs84 projects only the
+          // geometry), and its values are typed, null included; the details
+          // table expects strings.
+          info: {
+            ...feature,
+            properties:
+              feature.properties &&
+              Object.fromEntries(
+                Object.entries(feature.properties).flatMap(([k, v]) =>
+                  v == null ? [] : [[k, String(v)]],
+                ),
+              ),
+          },
         })),
       )
       .map((wms, seq) => {
@@ -296,8 +308,13 @@ export async function handle(
             map: wms.type,
             seq,
           },
-          genericName: (wms.info as unknown as { layerName: unknown })
-            .layerName as string, // ArcGIS only?,
+          // ArcGIS names the layer; GeoServer prefixes the feature id with it.
+          genericName: ((wms.info as unknown as { layerName?: string })
+            .layerName ??
+            (typeof wms.info.id === 'string'
+              ? wms.info.id.split('.')[0]
+              : undefined) ??
+            wms.name) as string,
           source: `wms:${wms.type}`,
         } satisfies SearchResult;
       }),
