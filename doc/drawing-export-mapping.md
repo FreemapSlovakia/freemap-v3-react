@@ -106,6 +106,20 @@ carries one is ours and its `<name>` is ignored; a file without one is read as
 before, the name becoming a property and the label `{p:name}`. (The data-viewer
 point branch instead copies the name as literal text; that predates this.)
 
+The data viewer draws such a file the way the drawing did. Its `name` is only
+ever the label as last rendered, and a template's data lives only in the table:
+`normalizeName` gives a templated feature its `title` as `name`, or none, so
+neither a GeoJSON `name` property nor a GPX `<name>` is read as data.
+`featureLabel` renders `freemap:label` from the table and the geometry, else
+reads `name`. The editor stores a template over the table — made on the first
+one, seeded with the plain label it replaces — and the rendering in `name`;
+beside a table a plain label is written to `freemap:label` too, as a drawing
+export does, so a conversion does not take the table's `name` instead. Exports
+render afresh (`withRenderedLabel`): into `name` for GPX and the baked-marker
+formats (KML among them), and into `title` for GeoJSON, beside the table stated
+as plain properties. KML carries the rendered `<name>` alone, so a template does
+not survive it.
+
 An export from before the table existed therefore keeps its old behaviour rather
 than losing its properties, and no separate marker is needed to tell the two
 apart.

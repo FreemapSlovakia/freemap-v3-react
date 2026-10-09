@@ -33,6 +33,7 @@ import { poiIcons } from '@osm/poiIcons.js';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { tagsToPoiIconName } from '@shared/drawingIcons.js';
+import { withRenderedLabel } from '@shared/featureProperties.js';
 import {
   buildMarkerSvg,
   resolveMarkerGlyph,
@@ -821,7 +822,10 @@ export async function buildExportFeatureCollection({
   }
 
   if (include.import && trackViewer.trackGeojson) {
-    const imported = trackViewer.trackGeojson.features;
+    // A marker is baked with `name` as its caption.
+    const imported = trackViewer.trackGeojson.features.map((feature) =>
+      withRenderedLabel(feature, markerMode ? 'name' : 'title'),
+    );
 
     if (markerMode) {
       features.push(

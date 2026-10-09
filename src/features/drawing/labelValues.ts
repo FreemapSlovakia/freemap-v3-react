@@ -15,6 +15,11 @@ import {
   formatAzimuth,
   formatLocationLines,
 } from '@shared/geoutils.js';
+import type { LatLon } from '@shared/types/common.js';
+import { area as turfArea } from '@turf/area';
+import { feature } from '@turf/helpers';
+import { length as turfLength } from '@turf/length';
+import type { Geometry, Position } from 'geojson';
 import { interpolateLabel, PROPERTY_PREFIX } from './interpolateLabel.js';
 import {
   lineLength,
@@ -89,8 +94,6 @@ export function lineLabelValues(
 ): LabelValues {
   const values = withProps(line.props);
 
-  const locale = getLanguage();
-
   // Each measurement is taken at most once however many keys name it.
   let rings: ReturnType<typeof measuredRings> | undefined;
 
@@ -102,11 +105,78 @@ export function lineLabelValues(
 
   const polygonish = line.type === 'polygon';
 
+  addMeasures(
+    values,
+    () => (polygonish ? ringsPerimeter(measured()) : lineLength(line)),
+    polygonish ? () => ringsArea(measured()) : undefined,
+    !polygonish && line.points.length === 2
+      ? [line.points[0]!, line.points[1]!]
+      : undefined,
+    getLanguage(),
+  );
+
+  return values;
+}
+
+/**
+ * An imported feature's values: the keys a drawn one answers, measured from its
+ * GeoJSON geometry.
+ */
+export function geometryLabelValues(
+  geometry: Geometry | null,
+  props: Record<string, string> | undefined,
+  locale = getLanguage(),
+): LabelValues {
+  if (geometry?.type === 'Point') {
+    const [lon, lat] = geometry.coordinates;
+
+    return pointLabelValues({ coords: { lat: lat!, lon: lon! }, props });
+  }
+
+  const values = withProps(props);
+
+  switch (geometry?.type) {
+    case 'LineString':
+    case 'MultiLineString':
+    case 'Polygon':
+    case 'MultiPolygon': {
+      const isPolygon =
+        geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
+
+      const ends =
+        geometry.type === 'LineString' && geometry.coordinates.length === 2
+          ? geometry.coordinates
+          : undefined;
+
+      const at = ([lon, lat]: Position): LatLon => ({ lat: lat!, lon: lon! });
+
+      // Every ring counts towards a polygon's length, as `ringsPerimeter` does.
+      addMeasures(
+        values,
+        () => turfLength(feature(geometry), { units: 'meters' }),
+        isPolygon ? () => turfArea(geometry) : undefined,
+        ends && [at(ends[0]!), at(ends[1]!)],
+        locale,
+      );
+    }
+  }
+
+  return values;
+}
+
+/**
+ * The measured keys. An `areaM2` makes the shape a polygon; `ends` belong to a
+ * straight two-point line, the one shape with a single direction to give.
+ */
+function addMeasures(
+  values: LabelValues,
+  lengthM: () => number,
+  areaM2: (() => number) | undefined,
+  ends: readonly [LatLon, LatLon] | undefined,
+  locale: string,
+): void {
   // A polygon's length is the way round it, which is what its readout calls the
   // perimeter — the same number under both names rather than two words for it.
-  const lengthM = () =>
-    polygonish ? ringsPerimeter(measured()) : lineLength(line);
-
   lazy(values, 'length', () => formatDistance(lengthM(), locale));
   lazy(values, 'perimeter', () => formatDistance(lengthM(), locale));
 
@@ -118,12 +188,12 @@ export function lineLabelValues(
     );
   }
 
-  if (polygonish) {
-    const areaM2 = () => ringsArea(measured());
+  if (areaM2) {
+    lazy(values, 'area', () => {
+      const m2 = areaM2();
 
-    lazy(values, 'area', () =>
-      formatArea(areaM2(), naturalAreaUnit(areaM2()), locale),
-    );
+      return formatArea(m2, naturalAreaUnit(m2), locale);
+    });
 
     for (const [unit, key] of Object.entries(areaUnitKeys) as [
       AreaUnit,
@@ -131,14 +201,11 @@ export function lineLabelValues(
     ][]) {
       lazy(values, key, () => formatArea(areaM2(), unit, locale));
     }
-  } else if (line.points.length === 2) {
-    // Only where there is one direction to give: a line with a bend has several.
+  } else if (ends) {
     lazy(values, 'azimuth', () =>
-      formatAzimuth(bearingTo(line.points[0]!, line.points[1]!), locale),
+      formatAzimuth(bearingTo(ends[0], ends[1]), locale),
     );
   }
-
-  return values;
 }
 
 /** A drawn point's label as it should read, wherever it is being read. */

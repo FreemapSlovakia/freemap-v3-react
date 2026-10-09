@@ -9,21 +9,16 @@ import {
   type FeatureProperties,
   FeaturePropertiesModal,
 } from '@shared/components/FeaturePropertiesModal.js';
-import { PlaceholderHint } from '@shared/components/PlaceholderHint.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { polygon } from '@turf/helpers';
 import { type ReactElement, useCallback } from 'react';
 import { shallowEqual, useDispatch } from 'react-redux';
-import { PROPERTY_PREFIX } from '../interpolateLabel.js';
-import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
 type Props = { show: boolean };
 
 export default function CurrentDrawingPropertiesModal({
   show,
 }: Props): ReactElement {
-  const dm = useDrawingMessages();
-
   const selection = useAppSelector((state) => state.main.selection);
 
   const point = useAppSelector(
@@ -265,25 +260,6 @@ export default function CurrentDrawingPropertiesModal({
         lineJoin: line?.lineJoin ?? 'round',
       }}
       closable={(polyPoints?.length ?? 0) >= 3}
-      placeholders={{
-        hint: (type, insert) => (
-          <>
-            {dm?.edit.hint}{' '}
-            <PlaceholderHint
-              text={
-                isLine
-                  ? type === 'polygon'
-                    ? dm?.edit.polygonKeys
-                    : dm?.edit.lineKeys
-                  : dm?.edit.pointKeys
-              }
-              onInsert={insert}
-            />{' '}
-            <PlaceholderHint text={dm?.edit.optionalKeys} onInsert={insert} />
-          </>
-        ),
-        token: (key) => `{${PROPERTY_PREFIX}${key}}`,
-      }}
       onSave={handleSave}
     />
   );

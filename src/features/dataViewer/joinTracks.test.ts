@@ -142,6 +142,45 @@ describe('joinTrackFeatures — properties', () => {
     expect(joined.properties?.['src']).toBe('watch');
   });
 
+  it('merges a templated label as rendered, as plain text', () => {
+    const joined = joinTrackFeatures(
+      line(run(0, 3), {
+        name: 'old',
+        'freemap:label': '{p:n}',
+        'freemap:props': { n: 'A' },
+      }),
+      line(run(3, 3), { name: 'B' }),
+      'line',
+    );
+
+    expect(joined.properties).toMatchObject({
+      name: 'A, B',
+      'freemap:label': 'A, B',
+    });
+  });
+
+  it('takes no label or table from the second track under the first’s', () => {
+    const joined = joinTrackFeatures(
+      line(run(0, 3), { name: 'Trip' }),
+      line(run(3, 3), { 'freemap:label': '[{p:x}]', 'freemap:props': {} }),
+      'line',
+    );
+
+    expect(joined.properties).toMatchObject({ name: 'Trip' });
+    expect(joined.properties).not.toHaveProperty('freemap:label');
+    expect(joined.properties).not.toHaveProperty('freemap:props');
+  });
+
+  it('takes the second track’s label where the first has none', () => {
+    const joined = joinTrackFeatures(
+      line(run(0, 3), { name: '' }),
+      line(run(3, 3), { name: 'B' }),
+      'line',
+    );
+
+    expect(joined.properties?.['name']).toBe('B');
+  });
+
   it('cuts the channels of both to the joined points', () => {
     const joined = joinTrackFeatures(
       line(run(0, 3), { coordinateProperties: { heart: [1, 2, 3] } }),

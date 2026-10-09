@@ -1,3 +1,4 @@
+import { featureLabel } from '@shared/featureProperties.js';
 import type {
   Feature,
   FeatureCollection,
@@ -72,15 +73,14 @@ export function trackWaypoints(
 
     const [lon, lat] = feature.geometry.coordinates;
 
-    const name = feature.properties?.['name'];
-
     const time = feature.properties?.['time'];
 
     return [
       {
         lat: lat!,
         lon: lon!,
-        label: typeof name === 'string' ? name : undefined,
+        // The chart writes it on one line.
+        label: featureLabel(feature, { singleLine: true }),
         time: typeof time === 'string' ? time : undefined,
       },
     ];

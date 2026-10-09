@@ -3,6 +3,7 @@ import {
   type PathDetails,
   remapPathDetails,
 } from '@shared/colorizers/colorize.js';
+import { featureLabel, withPlainLabel } from '@shared/featureProperties.js';
 import {
   cumulativeDistances,
   distanceTo,
@@ -338,18 +339,36 @@ export function joinTrackFeatures(
     ),
   }));
 
-  const properties: Record<string, unknown> = {
-    ...withoutPerPointData(b.properties),
+  // The label, and the table a template of it reads, are `a`'s alone.
+  const {
+    name: _name,
+    title: _title,
+    'freemap:label': _label,
+    'freemap:props': _table,
+    ...bData
+  } = withoutPerPointData(b.properties) ?? {};
+
+  const merged: Record<string, unknown> = {
+    ...bData,
     ...withoutPerPointData(a.properties),
   };
 
-  const names = [first.properties['name'], second.properties['name']].filter(
-    (name): name is string => typeof name === 'string' && name !== '',
-  );
+  const labelA = featureLabel(a);
 
-  if (names.length > 0) {
-    properties['name'] = [...new Set(names)].join(', ');
-  }
+  const labelB = featureLabel(b);
+
+  const inOrder =
+    first.properties === a.properties ? [labelA, labelB] : [labelB, labelA];
+
+  // `a`'s label stands as it is; two labels, or `b`'s alone, are written plain.
+  const label = !labelA
+    ? labelB
+    : labelB && labelB !== labelA
+      ? inOrder.join(', ')
+      : undefined;
+
+  const properties =
+    label === undefined ? merged : withPlainLabel(merged, label);
 
   // Which vertex of the joined line the second track starts at — the one they
   // share, where a `line` join dropped it from the second.

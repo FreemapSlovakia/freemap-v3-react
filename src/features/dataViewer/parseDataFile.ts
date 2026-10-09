@@ -130,7 +130,22 @@ export function normalizeName<G extends Geometry | null>(
 ): Feature<G> {
   const props = feature.properties;
 
-  if (!props || props['name'] != null) {
+  if (!props) {
+    return feature;
+  }
+
+  // Ours under a template, which renders the label: `name` is then the label as
+  // rendered (`title`), never a GeoJSON property — the table carries those.
+  if (props['freemap:label'] != null) {
+    const { name: _name, title, ...rest } = props;
+
+    return {
+      ...feature,
+      properties: typeof title === 'string' ? { ...rest, name: title } : rest,
+    };
+  }
+
+  if (props['name'] != null) {
     return feature;
   }
 

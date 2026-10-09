@@ -16,6 +16,7 @@ import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
+import { featureLabel } from '@shared/featureProperties.js';
 import {
   HALO_COLOR,
   HALO_PANE,
@@ -111,7 +112,6 @@ function polygonEntry(
   const fill = splitColorAlpha(fillSpec ?? style.color ?? defaultStyle.color);
 
   return {
-    name: feature.properties?.['name'],
     featureIndex,
     positions: coordinates.map((ring) =>
       ring.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
@@ -209,6 +209,15 @@ export default function DataViewerResult({
   const labelModeOf = (featureIndex: number) =>
     labelTooltipMode(labelVisibility, featureIndex === selectedIndex);
 
+  // Per source feature, as a template's `{length}` measures the whole of it.
+  const labels = useMemo(
+    () =>
+      trackGeojson.features.map((feature) =>
+        featureLabel(feature, { locale: language }),
+      ),
+    [trackGeojson, language],
+  );
+
   const dispatch = useDispatch();
 
   const split = useTrackSplit(selectedIndex);
@@ -264,7 +273,6 @@ export default function DataViewerResult({
           );
 
           return {
-            name: feature.properties?.['name'] as string | undefined,
             featureIndex,
             lineData: coords.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
             style: {
@@ -416,7 +424,7 @@ export default function DataViewerResult({
           />
         ))}
 
-      {features.map(({ lineData, name, style, featureIndex }, i) => (
+      {features.map(({ lineData, style, featureIndex }, i) => (
         <Polyline
           key={`outline-${i}-${interactive ? 'a' : 'b'}`}
           pane="fm-trackviewer-hit"
@@ -455,9 +463,10 @@ export default function DataViewerResult({
               : {}),
           }}
         >
-          {name && (
-            <LabelTooltip mode={labelModeOf(featureIndex)} label={name} />
-          )}
+          <LabelTooltip
+            mode={labelModeOf(featureIndex)}
+            label={labels[featureIndex]}
+          />
         </Polyline>
       ))}
 
@@ -528,7 +537,7 @@ export default function DataViewerResult({
           );
         })}
 
-      {polygons.map(({ positions, name, style, featureIndex }, i) => (
+      {polygons.map(({ positions, style, featureIndex }, i) => (
         <Polygon
           key={`mpoly-${i}-${interactive ? 'a' : 'b'}`}
           pane="fm-trackviewer-polygons"
@@ -549,9 +558,10 @@ export default function DataViewerResult({
             click: () => select(featureIndex),
           }}
         >
-          {name && (
-            <LabelTooltip mode={labelModeOf(featureIndex)} label={name} />
-          )}
+          <LabelTooltip
+            mode={labelModeOf(featureIndex)}
+            label={labels[featureIndex]}
+          />
         </Polygon>
       ))}
 
@@ -560,7 +570,7 @@ export default function DataViewerResult({
           key={`point-${i}`}
           lat={lat}
           lon={lon}
-          name={properties?.['name']}
+          name={labels[featureIndex]}
           properties={properties}
           interactive={interactive}
           labelMode={labelModeOf(featureIndex)}
@@ -717,7 +727,7 @@ function WaypointMarker({
       {name && labelMode && (
         <Tooltip
           key={labelMode}
-          className="compact"
+          className="compact multiline"
           direction="top"
           permanent={labelMode === 'permanent'}
         >
@@ -734,12 +744,12 @@ function LabelTooltip({
   label,
 }: {
   mode: LabelTooltipMode | undefined;
-  label: string;
+  label: string | undefined;
 }): ReactElement | null {
-  return mode ? (
+  return mode && label ? (
     <Tooltip
       key={mode}
-      className="compact"
+      className="compact multiline"
       direction="top"
       permanent={mode === 'permanent'}
       sticky={mode === 'hover'}

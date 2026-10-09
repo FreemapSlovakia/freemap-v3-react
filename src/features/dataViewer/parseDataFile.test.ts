@@ -316,10 +316,9 @@ describe('parseDataFile drawing extensions', () => {
     expect(props?.['fm_prop']).toBeUndefined();
   });
 
-  it('keeps `<name>` too, which the viewer titles the feature by', () => {
-    // The table is what the conversion reads; `<name>` holds the label
-    // rendered, and is the only thing somebody else's file says.
-    expect(propsOf(OWN_GPX, 'own.gpx')?.['name']).toBe('Dubník 504');
+  it('drops `<name>` under a template, which renders the label again', () => {
+    // Read as data, `<name>` would feed the label back into `{p:name}`.
+    expect(propsOf(OWN_GPX, 'own.gpx')).not.toHaveProperty('name');
   });
 
   it('leaves a file with no extensions of ours alone', () => {
@@ -328,5 +327,34 @@ describe('parseDataFile drawing extensions', () => {
     expect(props?.['name']).toBe('Dubník');
 
     expect(props?.['freemap:props']).toBeUndefined();
+  });
+
+  it('names a templated GeoJSON feature by its rendering, not its property', () => {
+    const geojson = (properties: Record<string, unknown>) =>
+      JSON.stringify({
+        type: 'Feature',
+        properties,
+        geometry: { type: 'Point', coordinates: [17, 48] },
+      });
+
+    expect(
+      propsOf(
+        geojson({
+          name: 'Dubník',
+          title: 'Dubník 504',
+          'freemap:label': '{p:name} {p:ele}',
+          'freemap:props': { name: 'Dubník', ele: '504' },
+        }),
+        'own.geojson',
+      ),
+    ).toMatchObject({ name: 'Dubník 504' });
+
+    // Rendered to nothing: no title, and the property is no label.
+    expect(
+      propsOf(
+        geojson({ name: 'Dubník', 'freemap:label': '[{p:x}]' }),
+        'own.geojson',
+      ),
+    ).not.toHaveProperty('name');
   });
 });

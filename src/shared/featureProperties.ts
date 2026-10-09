@@ -1,4 +1,8 @@
-import { PROPERTY_PREFIX } from '@features/drawing/interpolateLabel.js';
+import {
+  interpolateLabel,
+  PROPERTY_PREFIX,
+} from '@features/drawing/interpolateLabel.js';
+import { geometryLabelValues } from '@features/drawing/labelValues.js';
 import type { DrawingProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import { isClosedGeometry } from '@shared/geoutils.js';
 import { lineStyleFromProperties } from '@shared/styleFromProperties.js';
@@ -114,6 +118,128 @@ export function ownLabel(
   const label = properties?.['freemap:label'];
 
   return typeof label === 'string' ? label : undefined;
+}
+
+/** A template rendered over an imported feature's table and geometry. */
+function renderLabel(
+  template: string,
+  { geometry, properties }: Pick<Feature, 'geometry' | 'properties'>,
+  locale?: string,
+): string {
+  return interpolateLabel(
+    template,
+    geometryLabelValues(geometry, featureDataProps(properties), locale),
+  ).trim();
+}
+
+/**
+ * An imported feature's label as it reads: its template rendered, else its
+ * `name`, which holds the label as last rendered. `singleLine` is for a place
+ * that writes it on one line.
+ */
+export function featureLabel(
+  feature: Pick<Feature, 'geometry' | 'properties'>,
+  { locale, singleLine }: { locale?: string; singleLine?: boolean } = {},
+): string | undefined {
+  const template = ownLabel(feature.properties);
+
+  const text =
+    template === undefined
+      ? String(feature.properties?.['name'] ?? '').trim()
+      : renderLabel(template, feature, locale);
+
+  return (singleLine ? text.replace(/\s+/g, ' ') : text) || undefined;
+}
+
+/**
+ * The properties labelled with plain text. Beside a table `freemap:label` says
+ * so too, as a drawing's export does, or a conversion would label the feature
+ * from the table's `name`.
+ */
+export function withPlainLabel(
+  properties: Record<string, unknown>,
+  label: string,
+): Record<string, unknown> {
+  const { title: _title, name: _name, 'freemap:label': _, ...out } = properties;
+
+  return {
+    ...out,
+    name: label,
+    ...(ownTable(out) && { 'freemap:label': label }),
+  };
+}
+
+/**
+ * The properties with an edited label, which `name` holds as it reads. A
+ * template is `freemap:label` over the feature's table — made on the first one,
+ * seeded with the plain label it replaces, so `{p:name}` still finds that.
+ */
+export function withEditedLabel(
+  feature: Pick<Feature, 'geometry' | 'properties'>,
+  label: string,
+  rows: DrawingProps,
+): Record<string, unknown> {
+  const {
+    title: _title,
+    name,
+    'freemap:label': template,
+    ...out
+  } = feature.properties ?? {};
+
+  if (!label) {
+    return out;
+  }
+
+  const seed =
+    template === undefined && isScalar(name) && name !== ''
+      ? { name: String(name) }
+      : {};
+
+  const templated = {
+    ...out,
+    'freemap:label': label,
+    [OWN_TABLE]: ownTable(out) ?? { ...seed, ...rows },
+  };
+
+  const rendered = renderLabel(label, {
+    geometry: feature.geometry,
+    properties: templated,
+  });
+
+  if (rendered === label) {
+    return withPlainLabel(out, label);
+  }
+
+  return rendered ? { ...templated, name: rendered } : templated;
+}
+
+/**
+ * The feature as an export writes it, its template rendered: into `name` where
+ * the reader takes the label from there (GPX, a baked marker), or into `title`
+ * beside the table's data as plain properties, as a drawing's GeoJSON has it.
+ */
+export function withRenderedLabel<F extends Feature>(
+  feature: F,
+  into: 'name' | 'title',
+): F {
+  const properties = feature.properties;
+
+  if (ownLabel(properties) === undefined) {
+    return feature;
+  }
+
+  const label = featureLabel(feature);
+
+  if (into === 'name') {
+    return { ...feature, properties: { ...properties, name: label } };
+  }
+
+  const { name: _name, ...rest } = properties ?? {};
+
+  return {
+    ...feature,
+    properties: { ...ownTable(properties), ...rest, title: label },
+  };
 }
 
 /**

@@ -44,6 +44,7 @@ import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { formatDuration } from '@shared/durationFormatter.js';
+import { featureLabel } from '@shared/featureProperties.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
@@ -531,12 +532,20 @@ function DataItems(): ReactElement {
     [features, language],
   );
 
+  // Likewise, as a `{length}` label measures too.
+  const names = useMemo(
+    () =>
+      (features ?? []).map(
+        (feature) =>
+          featureLabel(feature, { locale: language, singleLine: true }) ?? '',
+      ),
+    [features, language],
+  );
+
   return (
     <ItemList
       items={(features ?? []).map((feature, index) => {
-        const rawName = feature.properties?.['name'];
-
-        const name = typeof rawName === 'string' ? rawName : '';
+        const name = names[index]!;
 
         const type = feature.geometry?.type;
 

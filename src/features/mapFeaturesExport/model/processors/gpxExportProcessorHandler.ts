@@ -43,6 +43,7 @@ import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
 import { fetchElevations } from '@shared/elevation.js';
+import { withRenderedLabel } from '@shared/featureProperties.js';
 import {
   buildMarkerSvg,
   resolveMarkerGlyph,
@@ -1187,7 +1188,12 @@ function addTracking(
 
 function addImportedTrack(doc: Document, { trackGeojson }: DataViewerState) {
   if (trackGeojson) {
-    addGeojson(doc, trackGeojson);
+    addGeojson(doc, {
+      ...trackGeojson,
+      features: trackGeojson.features.map((feature) =>
+        withRenderedLabel(feature, 'name'),
+      ),
+    });
   }
 }
 

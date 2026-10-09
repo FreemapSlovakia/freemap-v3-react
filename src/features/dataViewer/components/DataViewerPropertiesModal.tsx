@@ -5,6 +5,8 @@ import {
 import {
   featureDataProps,
   mergeFeatureDataProps,
+  ownLabel,
+  withEditedLabel,
 } from '@shared/featureProperties.js';
 import { isClosedGeometry } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -60,37 +62,31 @@ export default function DataViewerPropertiesModal({
   const isPoint = geometryType === 'Point' || geometryType === 'MultiPoint';
 
   const handleSave = (values: FeatureProperties): undefined => {
-    if (index === undefined) {
+    if (index === undefined || !feature) {
       return;
     }
 
-    const merged = mergeFeatureDataProps(properties, values.props ?? {});
+    const rows = values.props ?? {};
 
-    const label = values.label.trim();
+    const merged = mergeFeatureDataProps(properties, rows);
 
-    if (label) {
-      merged['name'] = label;
-    } else {
-      delete merged['name'];
-    }
-
-    // Both would outrank or contradict the name just written: `title` is read
-    // as the label by importers, `freemap:label` is the drawing template it
-    // was rendered from.
-    delete merged['title'];
-
-    delete merged['freemap:label'];
+    // Styled first: the line↔polygon switch decides what `{area}` answers.
+    const styled = isPoint
+      ? pointStyleToProperties(merged, {
+          color: values.color,
+          markerType: values.markerType,
+          icon: values.icon,
+        })
+      : lineStyleToProperties(merged, values);
 
     dispatch(
       dataViewerSetFeatureProperties({
         index,
-        properties: isPoint
-          ? pointStyleToProperties(merged, {
-              color: values.color,
-              markerType: values.markerType,
-              icon: values.icon,
-            })
-          : lineStyleToProperties(merged, values),
+        properties: withEditedLabel(
+          { geometry: feature.geometry, properties: styled },
+          values.label.trim(),
+          rows,
+        ),
       }),
     );
   };
@@ -112,14 +108,12 @@ export default function DataViewerPropertiesModal({
 
   const type = isPolygon ? 'polygon' : (lineStyle.type ?? 'line');
 
-  const rawName = properties?.['name'];
-
   return (
     <FeaturePropertiesModal
       show={show}
       kind={isPoint ? 'point' : 'line-poly'}
       initial={{
-        label: rawName == null ? '' : String(rawName),
+        label: ownLabel(properties) ?? String(properties?.['name'] ?? ''),
         props: featureDataProps(properties),
         color: (isPoint ? pointStyle.color : lineStyle.color) ?? defaults.color,
         markerType: pointStyle.markerType ?? defaults.markerType,

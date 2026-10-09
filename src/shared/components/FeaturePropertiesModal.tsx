@@ -6,6 +6,7 @@ import {
   propsToRows,
   rowsToProps,
 } from '@features/drawing/components/DrawingPropsEditor.js';
+import { PROPERTY_PREFIX } from '@features/drawing/interpolateLabel.js';
 import type {
   DrawingLineType,
   LineCap,
@@ -18,6 +19,7 @@ import type { MarkerType } from '@features/objects/model/actions.js';
 import { COLORS } from '@shared/colors.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
+import { PlaceholderHint } from '@shared/components/PlaceholderHint.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
 import { useInsertAtCaret } from '@shared/hooks/useInsertAtCaret.js';
@@ -25,7 +27,6 @@ import { isInvalidFloat } from '@shared/numberValidator.js';
 import {
   type ChangeEvent,
   type ReactElement,
-  type ReactNode,
   type SubmitEvent,
   useCallback,
   useRef,
@@ -60,26 +61,12 @@ export type FeatureProperties = {
   lineJoin: LineJoin;
 };
 
-/**
- * The hint under the label field and the token a property key writes into it.
- * Absent where a label is plain text, which also hides the rows' tag button.
- */
-type Placeholders = {
-  /** `insert` writes an expression into the label, as the rows' buttons do. */
-  hint: (
-    type: DrawingLineType,
-    insert: (expression: string) => void,
-  ) => ReactNode;
-  token: (key: string) => string;
-};
-
 type Props = {
   show: boolean;
   kind: 'point' | 'line-poly';
   initial: FeatureProperties;
   /** Whether the geometry can close, which is what the line↔polygon switch needs. */
   closable: boolean;
-  placeholders?: Placeholders;
   /** Returning `true` says it handled the submit itself, and keeps it open. */
   onSave: (values: FeatureProperties) => boolean | undefined;
 };
@@ -89,7 +76,6 @@ export function FeaturePropertiesModal({
   kind,
   initial,
   closable,
-  placeholders,
   onSave,
 }: Props): ReactElement {
   const m = useMessages();
@@ -130,7 +116,7 @@ export function FeaturePropertiesModal({
   const insertExpression = useInsertAtCaret(labelRef, setEditedLabel);
 
   const handleInsertKey = (key: string) => {
-    insertExpression(placeholders?.token(key) ?? '');
+    insertExpression(`{${PROPERTY_PREFIX}${key}}`);
   };
 
   const dispatch = useDispatch();
@@ -209,18 +195,30 @@ export function FeaturePropertiesModal({
               onChange={handleLocalLabelChange}
             />
 
-            {placeholders && (
-              <Form.Text muted>
-                {placeholders.hint(editedType, insertExpression)}
-              </Form.Text>
-            )}
+            <Form.Text muted>
+              {dm?.edit.hint}{' '}
+              <PlaceholderHint
+                text={
+                  kind === 'point'
+                    ? dm?.edit.pointKeys
+                    : editedType === 'polygon'
+                      ? dm?.edit.polygonKeys
+                      : dm?.edit.lineKeys
+                }
+                onInsert={insertExpression}
+              />{' '}
+              <PlaceholderHint
+                text={dm?.edit.optionalKeys}
+                onInsert={insertExpression}
+              />
+            </Form.Text>
           </Form.Group>
 
           <Form.Group className="mt-3">
             <DrawingPropsEditor
               rows={editedRows}
               onChange={setEditedRows}
-              onInsertKey={placeholders && handleInsertKey}
+              onInsertKey={handleInsertKey}
             />
           </Form.Group>
 

@@ -10,6 +10,7 @@ import {
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
+import { featureLabel } from '@shared/featureProperties.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature } from 'geojson';
@@ -96,6 +97,8 @@ export default function DataViewerSelection(): ReactElement | null {
 
   const splitting = useAppSelector((state) => state.trackViewer.splitting);
 
+  const language = useAppSelector((state) => state.l10n.language);
+
   const splitPoint = useAppSelector((state) => state.trackViewer.splitPoint);
 
   const joinWith = useAppSelector((state) => state.trackViewer.joinWith);
@@ -158,7 +161,10 @@ export default function DataViewerSelection(): ReactElement | null {
 
   const isPoint = geometryType === 'Point' || geometryType === 'MultiPoint';
 
-  const name = feature.properties?.['name'];
+  // The place's title for "Open in…", which only a point offers.
+  const name = isPoint
+    ? featureLabel(feature, { locale: language, singleLine: true })
+    : undefined;
 
   // The kind of the selected feature, a line additionally by its position among
   // the loaded lines — not its name, which the properties dialog shows.
@@ -349,7 +355,7 @@ export default function DataViewerSelection(): ReactElement | null {
               lat={lat}
               lon={lon}
               includePoint
-              pointTitle={typeof name === 'string' ? name : undefined}
+              pointTitle={name}
               url={`/?point=${lat}/${lon}`}
               toggleProps={props}
               menuItems={
