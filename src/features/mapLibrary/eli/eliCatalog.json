@@ -564,6 +564,26 @@
       }
     },
     {
+      "type": "0MQ18",
+      "layer": "base",
+      "name": "GeoSN Messtischblatt Sachsen (before 1945)",
+      "countries": ["de"],
+      "bbox": [11.8699, 50.17, 15.04, 51.69],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.sachsen.de/wms_geosn_hist/guest",
+        "layers": ["messtischblatt_vor_1945"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Quelle: GeoSN, dl-de/by-2-0",
+            "url": "https://www.landesvermessung.sachsen.de/allgemeine-nutzungsbedingungen-8954.html"
+          }
+        ]
+      }
+    },
+    {
       "type": "0OLNE",
       "layer": "base",
       "name": "IDEIB - Ortofoto més recent de les Illes Balears",
@@ -2045,6 +2065,27 @@
       }
     },
     {
+      "type": "2AMCE",
+      "layer": "base",
+      "name": "LGB Messtischblatt Deutsches Reich 1:25 000 (1901–1945)",
+      "countries": ["de"],
+      "bbox": [11.26, 51.36, 14.77, 53.56],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://isk.geobasis-bb.de/mapproxy/dr25/service/wms",
+        "layers": ["dr25"],
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Staatsbibliothek zu Berlin – Preußischer Kulturbesitz, dl-de/by-2-0",
+            "url": "https://geobasis-bb.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "2B491",
       "layer": "base",
       "name": "basemap.at",
@@ -2121,6 +2162,33 @@
             "type": "map",
             "name": "IBGE",
             "url": "https://www.ibge.gov.br/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "2DYJY",
+      "layer": "overlay",
+      "name": "Geoportal Berlin Verlauf der Berliner Mauer (1989)",
+      "countries": ["de"],
+      "bbox": [13.09, 52.34, 13.76, 52.68],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://gdi.berlin.de/services/wms/berlinermauer",
+        "layers": [
+          "a_grenzmauer",
+          "b_hinterlandmauer",
+          "c_politischegrenze",
+          "d_grenzstreifen"
+        ],
+        "minZoom": 11,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geoportal Berlin / Verlauf der Berliner Mauer",
+            "url": "https://gdi.berlin.de/"
           }
         ]
       }
@@ -2243,6 +2311,28 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "2IF8Z",
+      "layer": "overlay",
+      "name": "LfULG Geologische Karte 1:50 000 Erzgebirge/Vogtland",
+      "countries": ["de"],
+      "bbox": [11.8699, 50.17, 14, 51.1],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://luis.sachsen.de/arcgis/services/geologie/gk50_ev/MapServer/WMSServer",
+        "layers": ["0", "2", "3", "4"],
+        "minZoom": 11,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Sächsisches Landesamt für Umwelt, Landwirtschaft und Geologie, dl-de/by-2-0",
+            "url": "https://www.geologie.sachsen.de/"
           }
         ]
       }
@@ -2820,6 +2910,28 @@
       }
     },
     {
+      "type": "33YX3",
+      "layer": "base",
+      "name": "Geoportal Berlin Straubes Übersichtsplan (1910)",
+      "countries": ["de"],
+      "bbox": [13.25, 52.45, 13.55, 52.58],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://gdi.berlin.de/services/wms/straubeplan",
+        "layers": ["straubeplan"],
+        "minZoom": 12,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geoportal Berlin / Landesarchiv Berlin / Straubes Übersichtsplan von Berlin",
+            "url": "https://gdi.berlin.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "35WO8",
       "layer": "base",
       "name": "VoGIS orthophoto 1970s",
@@ -2881,6 +2993,26 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "3AL97",
+      "layer": "base",
+      "name": "GeoSN TK25 DDR Ausgabe Staat (Sachsen)",
+      "countries": ["de"],
+      "bbox": [11.8699, 50.17, 15.04, 51.69],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.sachsen.de/wms_geosn_hist/guest",
+        "layers": ["tk25_ddr_ausgabe_staat"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Quelle: GeoSN, dl-de/by-2-0",
+            "url": "https://www.landesvermessung.sachsen.de/allgemeine-nutzungsbedingungen-8954.html"
           }
         ]
       }
@@ -3608,6 +3740,26 @@
             "type": "map",
             "name": "Land Tirol – data.tirol.gv.at",
             "url": "https://data.tirol.gv.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "4A1MF",
+      "layer": "base",
+      "name": "GeoSN Digitale Topographische Karten Sachsen (DTK10–DTK100)",
+      "countries": ["de"],
+      "bbox": [11.8699, 50.17, 15.04, 51.69],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.sachsen.de/wms_geosn_dtk-pg-color/guest",
+        "layers": ["sn_dtk_pg_color"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Quelle: GeoSN, dl-de/by-2-0",
+            "url": "https://www.landesvermessung.sachsen.de/allgemeine-nutzungsbedingungen-8954.html"
           }
         ]
       }
@@ -4726,6 +4878,47 @@
       }
     },
     {
+      "type": "5G8GO",
+      "layer": "base",
+      "name": "LGV Hamburg Historische Karte 1:5000 (1950–1960)",
+      "countries": ["de"],
+      "bbox": [9.73, 53.39, 10.33, 53.74],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.hamburg.de/HH_WMS_Historische_Karte_1_5000",
+        "layers": ["jahrgang_1950-1960"],
+        "minZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Freie und Hansestadt Hamburg, LGV, dl-de/by-2-0",
+            "url": "https://www.geoportal-hamburg.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "5HL3P",
+      "layer": "base",
+      "name": "HIL Topographische Karte 1:25 000 Hessen (um 1970)",
+      "countries": ["de"],
+      "bbox": [7.8, 49.39, 10.36, 51.65],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wms.hlgl.uni-marburg.de/mapcache/hist_tk/gmaps/tk25_1970@GoogleMapsCompatible/{z}/{x}/{y}.png",
+        "minZoom": 10,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Hessisches Institut für Landesgeschichte (HIL), dl-de/zero-2-0",
+            "url": "https://www.lagis-hessen.de/maps/topografische-karten/"
+          }
+        ]
+      }
+    },
+    {
       "type": "5HOX5",
       "layer": "base",
       "name": "imagico.de: North Sea Coast 2017",
@@ -4762,6 +4955,27 @@
             "type": "map",
             "name": "© GeoBasis-DE/LGLN YEAR",
             "url": "https://ni-lgln-opengeodata.hub.arcgis.com/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "5IV8X",
+      "layer": "base",
+      "name": "Geoportal Berlin Luftbilder 1953",
+      "countries": ["de"],
+      "bbox": [13.09, 52.34, 13.76, 52.68],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://gdi.berlin.de/services/wms/luftbild_1953_22",
+        "layers": ["c_luftbilder_1953_22_raster"],
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geoportal Berlin / Luftbilder 1953",
+            "url": "https://gdi.berlin.de/"
           }
         ]
       }
@@ -5233,6 +5447,27 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "5W9GY",
+      "layer": "overlay",
+      "name": "LfULG Überschwemmungsgebiete Sachsen",
+      "countries": ["de"],
+      "bbox": [11.8699, 50.17, 15.04, 51.69],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://luis.sachsen.de/arcgis/services/wasser/ueg_uegef/MapServer/WMSServer",
+        "layers": ["0", "1"],
+        "minZoom": 10,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Sächsisches Landesamt für Umwelt, Landwirtschaft und Geologie, dl-de/by-2-0",
+            "url": "https://www.umwelt.sachsen.de/"
           }
         ]
       }
@@ -6798,6 +7033,26 @@
       }
     },
     {
+      "type": "835UJ",
+      "layer": "base",
+      "name": "Geobasis NRW DTK (Digitale Topographische Karte)",
+      "countries": ["de"],
+      "bbox": [5.86, 50.32, 9.4601, 52.53],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.wms.nrw.de/geobasis/wms_nw_dtk",
+        "layers": ["nw_dtk_col"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis NRW (2026), dl-de/zero-2-0",
+            "url": "https://www.bezreg-koeln.nrw.de/geobasis-nrw"
+          }
+        ]
+      }
+    },
+    {
       "type": "83CX2",
       "layer": "base",
       "name": "MetroCOG Orthoimagery (2020)",
@@ -6875,6 +7130,27 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "84BJX",
+      "layer": "base",
+      "name": "LGB Karte des Deutschen Reiches 1:100 000 (1901–1940)",
+      "countries": ["de"],
+      "bbox": [11.26, 51.36, 14.77, 53.56],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://isk.geobasis-bb.de/mapproxy/dr100/service/wms",
+        "layers": ["dr100"],
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis-DE/LGB, dl-de/by-2-0",
+            "url": "https://geobasis-bb.de/"
           }
         ]
       }
@@ -7424,6 +7700,47 @@
       }
     },
     {
+      "type": "8SM0X",
+      "layer": "base",
+      "name": "LVermGeo DTK25 Sachsen-Anhalt",
+      "countries": ["de"],
+      "bbox": [10.56, 50.94, 13.19, 53.04],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.geodatenportal.sachsen-anhalt.de/wss/service/ST_LVermGeo_DTK_WMS_OpenData/guest",
+        "layers": ["lsa_lvermgeo_dtk25_col_1"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis-DE / LVermGeo ST, dl-de/by-2-0",
+            "url": "https://www.lvermgeo.sachsen-anhalt.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "8Y9QB",
+      "layer": "base",
+      "name": "Geobasis NRW TK25 (1936–1945)",
+      "countries": ["de"],
+      "bbox": [5.86, 50.32, 9.4601, 52.53],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.wms.nrw.de/geobasis/wms_nw_tk25_1936-1945",
+        "layers": ["nw_tk25_1936-1945"],
+        "minZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis NRW (2026), dl-de/zero-2-0",
+            "url": "https://www.bezreg-koeln.nrw.de/geobasis-nrw"
+          }
+        ]
+      }
+    },
+    {
       "type": "8YAZN",
       "layer": "base",
       "name": "Pinellas County Orthoimagery (2025)",
@@ -7603,6 +7920,26 @@
             "type": "map",
             "name": "Informação geográfica cedida pela Direção-Geral do Território",
             "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/66425725-0ab4-4d7a-ad1c-b0d923881a61"
+          }
+        ]
+      }
+    },
+    {
+      "type": "947IH",
+      "layer": "base",
+      "name": "LVermGeo RLP Tranchot/v. Müffling map (1803–1820)",
+      "countries": ["de"],
+      "bbox": [5.94, 49.17, 8.52, 51.01],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geo4.service24.rlp.de/wms/hktm.fcgi",
+        "layers": ["rp_hktm"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "©GeoBasis-DE / LVermGeoRP (2026), dl-de/by-2-0, http://www.lvermgeo.rlp.de [Daten bearbeitet]",
+            "url": "https://lvermgeo.rlp.de"
           }
         ]
       }
@@ -7995,6 +8332,27 @@
       }
     },
     {
+      "type": "9N757",
+      "layer": "base",
+      "name": "Geobasis NRW Preußische Uraufnahme (1836–1850)",
+      "countries": ["de"],
+      "bbox": [5.86, 50.32, 9.4601, 52.53],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.wms.nrw.de/geobasis/wms_nw_uraufnahme",
+        "layers": ["nw_uraufnahme_rw"],
+        "minZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis NRW (2026), dl-de/zero-2-0",
+            "url": "https://www.bezreg-koeln.nrw.de/geobasis-nrw"
+          }
+        ]
+      }
+    },
+    {
       "type": "9NLUG",
       "layer": "overlay",
       "name": "LfU Bayern Avalanche Paths (Lawinenkataster)",
@@ -8196,6 +8554,26 @@
             "type": "map",
             "name": "Volusia County Property Appraiser’s Office",
             "url": "https://volusiacountyfl.maps.arcgis.com/apps/webappviewer/index.html?id=b773f4bfcadd4d9aa8b99cb599e0aec6"
+          }
+        ]
+      }
+    },
+    {
+      "type": "9TP30",
+      "layer": "overlay",
+      "name": "Hamburg Geologische Karte 1:50 000",
+      "countries": ["de"],
+      "bbox": [9.73, 53.39, 10.33, 53.74],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.hamburg.de/HH_WMS_Geologische_Karte_50000",
+        "layers": ["theme_gk_50000"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Freie und Hansestadt Hamburg, Behörde für Umwelt und Energie, dl-de/by-2-0",
+            "url": "https://www.geoportal-hamburg.de/"
           }
         ]
       }
@@ -8508,6 +8886,36 @@
             "type": "map",
             "name": "© Kartverket",
             "url": "https://www.kartverket.no/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "A36H8",
+      "layer": "base",
+      "name": "Geobasis NRW historical aerial imagery 1951–1959",
+      "countries": ["de"],
+      "bbox": [5.86, 50.32, 9.4601, 52.53],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.wms.nrw.de/geobasis/wms_nw_hist_dop",
+        "layers": [
+          "nw_hist_dop_1951",
+          "nw_hist_dop_1952",
+          "nw_hist_dop_1953",
+          "nw_hist_dop_1954",
+          "nw_hist_dop_1955",
+          "nw_hist_dop_1956",
+          "nw_hist_dop_1957",
+          "nw_hist_dop_1958",
+          "nw_hist_dop_1959"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis NRW (2026), dl-de/zero-2-0",
+            "url": "https://www.bezreg-koeln.nrw.de/geobasis-nrw"
           }
         ]
       }
@@ -9003,6 +9411,28 @@
       }
     },
     {
+      "type": "AMNS2",
+      "layer": "base",
+      "name": "LVermGeo SH Preußische Landesaufnahme (1878–1880)",
+      "countries": ["de"],
+      "bbox": [7.86, 53.36, 11.32, 55.06],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://dienste.gdi-sh.de/WMS_SH_FD_Chronologen",
+        "layers": ["3"],
+        "minZoom": 15,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis-DE/LVermGeo SH/CC BY 4.0",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LVERMGEOSH/"
+          }
+        ]
+      }
+    },
+    {
       "type": "AOEO2",
       "layer": "overlay",
       "name": "ISPRA landslide hazard (PAI)",
@@ -9124,6 +9554,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "AUBYA",
+      "layer": "base",
+      "name": "LVermGeo RLP Preußische Kartenaufnahme (1843–1878)",
+      "countries": ["de"],
+      "bbox": [5.94, 49.4799, 8.18, 51.01],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geo4.service24.rlp.de/wms/hkpk.fcgi",
+        "layers": ["rp_hkpk"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "©GeoBasis-DE / LVermGeoRP (2026), dl-de/by-2-0, http://www.lvermgeo.rlp.de [Daten bearbeitet]",
+            "url": "https://lvermgeo.rlp.de"
           }
         ]
       }
@@ -9333,6 +9783,27 @@
       }
     },
     {
+      "type": "B1WB8",
+      "layer": "base",
+      "name": "Geobasis NRW Preußische Neuaufnahme (1891–1912)",
+      "countries": ["de"],
+      "bbox": [5.86, 50.32, 9.4601, 52.53],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.wms.nrw.de/geobasis/wms_nw_neuaufnahme",
+        "layers": ["nw_neuaufnahme"],
+        "minZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis NRW (2026), dl-de/zero-2-0",
+            "url": "https://www.bezreg-koeln.nrw.de/geobasis-nrw"
+          }
+        ]
+      }
+    },
+    {
       "type": "B3Y50",
       "layer": "base",
       "name": "Osceola County Orthoimagery (2025)",
@@ -9348,6 +9819,26 @@
             "type": "map",
             "name": "Osceola County, FL",
             "url": "https://www.osceola.org/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "B69KA",
+      "layer": "base",
+      "name": "GeoInformation Bremen Karte des Gebietes der Freien Hansestadt Bremen (1882)",
+      "countries": ["de"],
+      "bbox": [8.48, 53.01, 8.99, 53.23],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.bremen.de/Historische_Karten",
+        "layers": ["1882-Karte-von-dem-Gebiete-der-Freien-Hansestadt-Bremen"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Landesamt GeoInformation Bremen, CC BY",
+            "url": "https://www.geo.bremen.de/"
           }
         ]
       }
@@ -11237,6 +11728,28 @@
       }
     },
     {
+      "type": "DOSNG",
+      "layer": "base",
+      "name": "HVBG Hessen Colour-infrared aerial imagery (DOP CIR)",
+      "countries": ["de"],
+      "bbox": [7.77, 49.39, 10.24, 51.66],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.gds-srv.hessen.de/cgi-bin/lika-services/ogc-free-images.ows",
+        "layers": ["he_dop_cir"],
+        "minZoom": 13,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© HVBG Hessen",
+            "url": "https://hvbg.hessen.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "DPAUF",
       "layer": "base",
       "name": "Bayern Positionsblätter (1817-1841)",
@@ -11293,6 +11806,26 @@
           {
             "type": "map",
             "name": "Geoportal Berlin/Digitale farbige Orthophotos 2021 (DOP20RGB) (codefor.de mirror)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "DST9B",
+      "layer": "base",
+      "name": "HIL Landesaufnahme Kurfürstentum Hessen (19th c.)",
+      "countries": ["de"],
+      "bbox": [8.35, 49.99, 11.18, 52.56],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wms.hlgl.uni-marburg.de/mapcache/landesaufnahme/gmaps/kfh@GoogleMapsCompatible/{z}/{x}/{y}.png",
+        "minZoom": 11,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Hessisches Institut für Landesgeschichte (HIL), dl-de/zero-2-0",
+            "url": "https://www.lagis-hessen.de/maps/topografische-karten/"
           }
         ]
       }
@@ -12477,6 +13010,35 @@
       }
     },
     {
+      "type": "F820P",
+      "layer": "overlay",
+      "name": "TLUBN Geologische Karte Thüringen (GK25 / GÜK200 / GÜK800)",
+      "countries": ["de"],
+      "bbox": [9.8699, 50.2, 12.65, 51.65],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.geoproxy.geoportal-th.de/geoproxy/services/geologie",
+        "layers": [
+          "guek800",
+          "guek800_tec",
+          "guek200",
+          "guek200_tec",
+          "gk25",
+          "gk25_tec"
+        ],
+        "minZoom": 8,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GDI-Th",
+            "url": "https://www.geoportal-th.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "F9U26",
       "layer": "base",
       "name": "City of Courtenay Orthoimagery (2018)",
@@ -12493,6 +13055,48 @@
             "type": "map",
             "name": "Contains information licensed under the Open Government Licence - City of Courtenay",
             "url": "https://data-courtenay.opendata.arcgis.com/pages/city-of-courtenay-open-data-licence"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FB4NA",
+      "layer": "base",
+      "name": "Geoportal Berlin Hobrechtplan (1862)",
+      "countries": ["de"],
+      "bbox": [13.09, 52.34, 13.76, 52.68],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://gdi.berlin.de/services/wms/hobrechtplan",
+        "layers": ["hobrechtplan"],
+        "minZoom": 11,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geoportal Berlin / Hobrechtplan 1862",
+            "url": "https://gdi.berlin.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FBD37",
+      "layer": "overlay",
+      "name": "LGB RLP Geologische Übersichtskarte 1:300.000",
+      "countries": ["de"],
+      "bbox": [6.11, 48.97, 8.51, 50.94],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapserver.lgb-rlp.de/cgi-bin/mc_guek300",
+        "layers": ["guek300_uebersichtskarte"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "©LGB-RLP (2026), dl-de/by-2-0, https://www.lgb-rlp.de [Daten bearbeitet]",
+            "url": "https://www.lgb-rlp.de/karten-und-produkte/online-karten/nutzungsbedingungenonline.html"
           }
         ]
       }
@@ -12676,6 +13280,28 @@
             "type": "map",
             "name": "IBGE",
             "url": "https://www.ibge.gov.br/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FN8E2",
+      "layer": "overlay",
+      "name": "GD NRW Geologische Karte 1:100.000 (IS GK 100)",
+      "countries": ["de"],
+      "bbox": [5.86, 50.32, 9.4601, 52.53],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.wms.nrw.de/gd/GK100",
+        "layers": ["0", "2"],
+        "minZoom": 11,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Geowissenschaftliche Daten: IS GK 100 @ Geologischer Dienst NRW, 2026, dl-de/by-2-0",
+            "url": "https://www.gd.nrw.de"
           }
         ]
       }
@@ -13765,6 +14391,26 @@
       }
     },
     {
+      "type": "H0ZLS",
+      "layer": "overlay",
+      "name": "LGB RLP Altbergbau-Ampelkarte",
+      "countries": ["de"],
+      "bbox": [6.11, 48.97, 8.51, 50.94],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapserver.lgb-rlp.de/cgi-bin/mc_aak",
+        "layers": ["AltbergbauAmpel"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "©LGB-RLP (2026), dl-de/by-2-0, https://www.lgb-rlp.de [Daten bearbeitet]",
+            "url": "https://www.lgb-rlp.de/karten-und-produkte/online-karten/nutzungsbedingungenonline.html"
+          }
+        ]
+      }
+    },
+    {
       "type": "H170H",
       "layer": "base",
       "name": "Budapest district XI orthophoto 2015",
@@ -13807,6 +14453,26 @@
             "type": "map",
             "name": "NOAA National Geodetic Survey",
             "url": "https://www.ngs.noaa.gov/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "H2ANI",
+      "layer": "overlay",
+      "name": "LAGB Subrosion and Sinkhole Hazard Sachsen-Anhalt",
+      "countries": ["de"],
+      "bbox": [10.56, 50.94, 13.19, 53.04],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.geodatenportal.sachsen-anhalt.de/arcgis/services/LAGB/LAGB_Geogefahren_G2_OpenData/MapServer/WMSServer",
+        "layers": ["1", "3", "4", "5", "6", "7"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Natürliche Risikogebiete, Gefahrenhinweise (WMS) © 2026 LAGB ST",
+            "url": "https://www.lagb.sachsen-anhalt.de/"
           }
         ]
       }
@@ -14220,6 +14886,26 @@
             "type": "map",
             "name": "© GIS-Steiermark",
             "url": "http://www.gis.steiermark.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "HPDMT",
+      "layer": "base",
+      "name": "LVermGeo SH DTK25",
+      "countries": ["de"],
+      "bbox": [7.86, 53.36, 11.32, 55.06],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://dienste.gdi-sh.de/WMS_SH_DTK25_OpenGBD",
+        "layers": ["sh_dtk25_col"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis-DE/LVermGeo SH/CC BY 4.0",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LVERMGEOSH/"
           }
         ]
       }
@@ -15399,6 +16085,26 @@
       }
     },
     {
+      "type": "JDD13",
+      "layer": "base",
+      "name": "HIL Topographische Karte Herzogtum Nassau (1819/1848)",
+      "countries": ["de"],
+      "bbox": [7.45, 49.9099, 8.74, 50.94],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wms.hlgl.uni-marburg.de/mapcache/landesaufnahme/gmaps/hn@GoogleMapsCompatible/{z}/{x}/{y}.png",
+        "minZoom": 11,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Hessisches Institut für Landesgeschichte (HIL), dl-de/zero-2-0",
+            "url": "https://www.lagis-hessen.de/maps/topografische-karten/"
+          }
+        ]
+      }
+    },
+    {
       "type": "JE18C",
       "layer": "overlay",
       "name": "LfU Bayern Engineering Geology (dIGK25)",
@@ -16506,6 +17212,27 @@
       }
     },
     {
+      "type": "KU4FR",
+      "layer": "base",
+      "name": "LGB Schmettausches Kartenwerk Brandenburg/Berlin (1767–1787)",
+      "countries": ["de"],
+      "bbox": [11.26, 51.36, 14.77, 53.56],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://isk.geobasis-bb.de/mapproxy/schmettau/service/wms",
+        "layers": ["schmettau"],
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Staatsbibliothek zu Berlin – Preußischer Kulturbesitz, dl-de/by-2-0",
+            "url": "https://geobasis-bb.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "KVIHZ",
       "layer": "base",
       "name": "Saxony latest aerial imagery",
@@ -17301,6 +18028,27 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "M0C5N",
+      "layer": "base",
+      "name": "LGV Hamburg Historische Karte 1:5000 (1925–1930)",
+      "countries": ["de"],
+      "bbox": [9.73, 53.39, 10.33, 53.74],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.hamburg.de/HH_WMS_Historische_Karte_1_5000",
+        "layers": ["jahrgang_1925-1930"],
+        "minZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Freie und Hansestadt Hamburg, LGV, dl-de/by-2-0",
+            "url": "https://www.geoportal-hamburg.de/"
           }
         ]
       }
@@ -19029,6 +19777,27 @@
       }
     },
     {
+      "type": "O61GO",
+      "layer": "overlay",
+      "name": "TLUBN Überschwemmungsgebiete Thüringen",
+      "countries": ["de"],
+      "bbox": [9.8699, 50.2, 12.65, 51.65],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.geoproxy.geoportal-th.de/geoproxy/services/UESG",
+        "layers": ["uesg"],
+        "minZoom": 10,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GDI-Th",
+            "url": "https://www.geoportal-th.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "O7GB8",
       "layer": "base",
       "name": "Ortho Express 2026",
@@ -19191,6 +19960,31 @@
             "type": "map",
             "name": "Datenquelle: Land Vorarlberg – data.vorarlberg.gv.at",
             "url": "https://www.vorarlberg.at/vorarlberg/bauen_wohnen/bauen/vermessung_geoinformation/weitereinformationen/services/wmsdienste.htm"
+          }
+        ]
+      }
+    },
+    {
+      "type": "OJ7WK",
+      "layer": "overlay",
+      "name": "Sächsisches Oberbergamt Hohlraumkarte (old mining voids)",
+      "countries": ["de"],
+      "bbox": [11.8699, 50.17, 15.04, 51.69],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodienste.sachsen.de/wms_oba_hohlraumkarte/guest",
+        "layers": [
+          "sperrbereiche_lmbv",
+          "grubenbauen",
+          "unterirdischehohlraeume"
+        ],
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Sächsisches Oberbergamt; Darstellung auf der Grundlage von Daten der Lausitzer und Mitteldeutschen Bergbau-Verwaltungsgesellschaft mbH",
+            "url": "https://www.lmbv.de/index.php/nutzungsbedingungen.html"
           }
         ]
       }
@@ -19379,6 +20173,26 @@
             "type": "map",
             "name": "basemap.at",
             "url": "https://basemap.at"
+          }
+        ]
+      }
+    },
+    {
+      "type": "OS5S4",
+      "layer": "base",
+      "name": "LVermGeo RLP Topographische Aufnahme der Pfalz (1836–1841)",
+      "countries": ["de"],
+      "bbox": [7.1, 48.9, 8.62, 49.83],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://geo4.service24.rlp.de/wms/hkpb.fcgi",
+        "layers": ["rp_hkpb"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "©GeoBasis-DE / LVermGeoRP (2026), dl-de/by-2-0, http://www.lvermgeo.rlp.de [Daten bearbeitet]",
+            "url": "https://lvermgeo.rlp.de"
           }
         ]
       }
@@ -19757,6 +20571,27 @@
             "type": "map",
             "name": "City of Philadelphia",
             "url": "https://www.opendataphilly.org/dataset/aerial-photography"
+          }
+        ]
+      }
+    },
+    {
+      "type": "P82LE",
+      "layer": "base",
+      "name": "Geobasis NRW Tranchot/v. Müffling map (1801–1828)",
+      "countries": ["de"],
+      "bbox": [5.86, 50.32, 7.3, 51.87],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.wms.nrw.de/geobasis/wms_nw_tranchot",
+        "layers": ["nw_tranchot"],
+        "minZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis NRW (2026), dl-de/zero-2-0",
+            "url": "https://www.bezreg-koeln.nrw.de/geobasis-nrw"
           }
         ]
       }
@@ -22822,6 +23657,28 @@
       }
     },
     {
+      "type": "TM5SX",
+      "layer": "base",
+      "name": "LVermGeo SH Messtischblätter (1932–1950)",
+      "countries": ["de"],
+      "bbox": [7.86, 53.36, 11.32, 55.06],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://dienste.gdi-sh.de/WMS_SH_FD_Chronologen",
+        "layers": ["1"],
+        "minZoom": 15,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GeoBasis-DE/LVermGeo SH/CC BY 4.0",
+            "url": "https://www.schleswig-holstein.de/DE/landesregierung/ministerien-behoerden/LVERMGEOSH/"
+          }
+        ]
+      }
+    },
+    {
       "type": "TMLXS",
       "layer": "overlay",
       "name": "swisstopo geotopes",
@@ -22991,6 +23848,26 @@
             "type": "map",
             "name": "Stadt Wien – data.wien.gv.at",
             "url": "https://data.wien.gv.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "TRL1X",
+      "layer": "base",
+      "name": "HIL Landesaufnahme Fürstentum Waldeck (19th c.)",
+      "countries": ["de"],
+      "bbox": [8.57, 51.03, 9.28, 51.54],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wms.hlgl.uni-marburg.de/mapcache/landesaufnahme/gmaps/waldeck@GoogleMapsCompatible/{z}/{x}/{y}.png",
+        "minZoom": 11,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Hessisches Institut für Landesgeschichte (HIL), dl-de/zero-2-0",
+            "url": "https://www.lagis-hessen.de/maps/topografische-karten/"
           }
         ]
       }
@@ -23484,6 +24361,35 @@
       }
     },
     {
+      "type": "UCR0V",
+      "layer": "base",
+      "name": "TLBG Digitale Topographische Karten Thüringen (DTK10–ÜK600)",
+      "countries": ["de"],
+      "bbox": [9.8699, 50.2, 12.65, 51.65],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://www.geoproxy.geoportal-th.de/geoproxy/services/geobasis/DTK",
+        "layers": [
+          "th_dtk10",
+          "th_dtk25",
+          "th_dtk50",
+          "th_dtk100",
+          "UEK250",
+          "TH600"
+        ],
+        "minZoom": 10,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GDI-Th",
+            "url": "https://www.geoportal-th.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "UDP2T",
       "layer": "base",
       "name": "imagico.de: Ohio Range",
@@ -23855,6 +24761,52 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "UYOQ7",
+      "layer": "base",
+      "name": "Geoportal Berlin Geologische Karte (1874–1937)",
+      "countries": ["de"],
+      "bbox": [13.09, 52.34, 13.76, 52.68],
+      "category": "historicmap",
+      "technology": "wms",
+      "body": {
+        "url": "https://gdi.berlin.de/services/wms/geolkarte_1874_1937",
+        "layers": ["geolkarte_1874_1937"],
+        "minZoom": 9,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geoportal Berlin / Geologische Karte 1874-1937",
+            "url": "https://gdi.berlin.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "UYYL0",
+      "layer": "overlay",
+      "name": "GDI-SL Geologische Karte Saarland (GK25/GK100)",
+      "countries": ["de"],
+      "bbox": [6.36, 49.11, 7.4, 49.64],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoportal.saarland.de/arcgis/services/Internet/Geologie/MapServer/WMSServer",
+        "layers": [
+          "GK100_Lithostratigraphie",
+          "GK25_Lithologie",
+          "GK25_Tektonik"
+        ],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© GDI-SL (2026)",
+            "url": "https://geoportal.saarland.de"
           }
         ]
       }
@@ -24794,6 +25746,26 @@
       }
     },
     {
+      "type": "W8CKX",
+      "layer": "base",
+      "name": "HIL Karte des Großherzogtums Hessen (1823–1850)",
+      "countries": ["de"],
+      "bbox": [7.76, 49.32, 9.95, 51.3401],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wms.hlgl.uni-marburg.de/mapcache/landesaufnahme/gmaps/ghh@GoogleMapsCompatible/{z}/{x}/{y}.png",
+        "minZoom": 11,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Hessisches Institut für Landesgeschichte (HIL), dl-de/zero-2-0",
+            "url": "https://www.lagis-hessen.de/maps/topografische-karten/"
+          }
+        ]
+      }
+    },
+    {
       "type": "W8XBQ",
       "layer": "base",
       "name": "Brandenburg GeoBasis-DE/LGB (latest) / DOP20c",
@@ -24933,6 +25905,26 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "WEP9M",
+      "layer": "base",
+      "name": "LVermGeo RLP DTK25",
+      "countries": ["de"],
+      "bbox": [6.11, 48.97, 8.51, 50.94],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi",
+        "layers": ["rp_dtk25"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "©GeoBasis-DE / LVermGeoRP (2026), dl-de/by-2-0, http://www.lvermgeo.rlp.de [Daten bearbeitet]",
+            "url": "https://lvermgeo.rlp.de"
           }
         ]
       }
@@ -25494,6 +26486,27 @@
       }
     },
     {
+      "type": "WZS50",
+      "layer": "overlay",
+      "name": "LfULG Geologische Übersichtskarte Sachsen 1:400 000",
+      "countries": ["de"],
+      "bbox": [11.8699, 50.17, 15.04, 51.69],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://luis.sachsen.de/arcgis/services/geologie/gk400/MapServer/WMSServer",
+        "layers": ["4", "5", "6"],
+        "maxNativeZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Sächsisches Landesamt für Umwelt, Landwirtschaft und Geologie, dl-de/by-2-0",
+            "url": "https://www.geologie.sachsen.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "X01LS",
       "layer": "base",
       "name": "City of Turku ortophoto - 2021",
@@ -25597,6 +26610,28 @@
           {
             "type": "map",
             "name": "© Digitaal Vlaanderen"
+          }
+        ]
+      }
+    },
+    {
+      "type": "X2PA9",
+      "layer": "base",
+      "name": "LGLN Amtliche Karte 1:5000 Niedersachsen (with contours)",
+      "countries": ["de"],
+      "bbox": [6.65, 51.29, 11.6, 53.89],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://opendata.lgln.niedersachsen.de/doorman/noauth/ak5_wms",
+        "layers": ["ni_ak5_farbe_mit_hoehenlinien"],
+        "minZoom": 16,
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© LGLN (2026), CC BY 4.0",
+            "url": "https://opendata.lgln.niedersachsen.de/"
           }
         ]
       }
@@ -26824,6 +27859,28 @@
       }
     },
     {
+      "type": "YUXE1",
+      "layer": "overlay",
+      "name": "LBGR Geologische Karte Brandenburg 1:25 000",
+      "countries": ["de"],
+      "bbox": [11.26, 51.36, 14.77, 53.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://inspire.brandenburg.de/services/gk_wms",
+        "layers": ["gk25"],
+        "minZoom": 9,
+        "maxNativeZoom": 16,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Landesamt für Bergbau, Geologie und Rohstoffe Brandenburg, dl-de/by-2-0",
+            "url": "https://lbgr.brandenburg.de/"
+          }
+        ]
+      }
+    },
+    {
       "type": "YV0UV",
       "layer": "base",
       "name": "Aachen Liegenschaftskataster",
@@ -27020,6 +28077,26 @@
       }
     },
     {
+      "type": "Z4U6R",
+      "layer": "base",
+      "name": "HIL Topographische Karte 1:25 000 Hessen (um 1900)",
+      "countries": ["de"],
+      "bbox": [7.8, 49.39, 10.36, 51.65],
+      "category": "historicmap",
+      "body": {
+        "url": "https://wms.hlgl.uni-marburg.de/mapcache/hist_tk/gmaps/tk25_1900@GoogleMapsCompatible/{z}/{x}/{y}.png",
+        "minZoom": 10,
+        "maxNativeZoom": 18,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Hessisches Institut für Landesgeschichte (HIL), dl-de/zero-2-0",
+            "url": "https://www.lagis-hessen.de/maps/topografische-karten/"
+          }
+        ]
+      }
+    },
+    {
       "type": "Z51UX",
       "layer": "base",
       "name": "GURS LiDAR hillshade",
@@ -27081,6 +28158,26 @@
             "type": "map",
             "name": "© SSB",
             "url": "https://www.ssb.no/natur-og-miljo/areal/statistikk/aktivitet-i-sentrumssoner"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Z8FIK",
+      "layer": "base",
+      "name": "LGLN DTK25 Niedersachsen",
+      "countries": ["de"],
+      "bbox": [6.65, 51.29, 11.6, 53.89],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://opendata.lgln.niedersachsen.de/doorman/noauth/dtk25_wms",
+        "layers": ["ni_dtk25_farbe"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© LGLN (2026), CC BY 4.0",
+            "url": "https://opendata.lgln.niedersachsen.de/"
           }
         ]
       }

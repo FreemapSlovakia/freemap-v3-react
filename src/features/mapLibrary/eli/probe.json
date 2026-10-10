@@ -907,8 +907,8 @@
   },
   "Dourados_Ortofotos": {
     "v": 3,
-    "status": "not an image",
-    "cors": true,
+    "status": 500,
+    "cors": false,
     "scales": []
   },
   "EA_LIDAR_DSM_1m_2022": {
@@ -2791,7 +2791,7 @@
   },
   "Okaloosa_Ortho_2019": {
     "v": 3,
-    "status": 500,
+    "status": 400,
     "cors": true,
     "scales": []
   },
@@ -5009,6 +5009,60 @@
     "cors": true,
     "scales": []
   },
+  "fm:de-bb-dr100": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bb-geology-gk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bb-messtischblatt": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-bb-schmettau": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-be-aerial-1953": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-be-berlin-wall": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-be-geology-1874-1937": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-be-hobrechtplan": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-be-straubeplan": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:de-bfn-natura2000": {
     "v": 3,
     "status": 200,
@@ -5250,6 +5304,258 @@
     "scales": []
   },
   "fm:de-by-uraufnahme": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-hb-karte-1882": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-he-dop-cir": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-he-grossherzogtum-hessen": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-he-hist-tk25-1900": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-he-hist-tk25-1970": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-he-kurhessen": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-he-nassau": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-he-waldeck": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-hh-geology-gk50": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-hh-hist-karte-1925": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-hh-hist-karte-1950": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-ni-ak5": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-ni-dtk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-nw-dtk": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-nw-geology-gk100": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-nw-histdop-1950s": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-nw-neuaufnahme": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-nw-tk25-1936-1945": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-nw-tranchot": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-nw-uraufnahme": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-rp-altbergbau": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-rp-dtk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-rp-geology-guek300": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-rp-pfalz-aufnahme": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-rp-preussische-kartenaufnahme": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-rp-tranchot": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sh-dtk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sh-preussische-landesaufnahme-1878": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sh-preussische-landesaufnahme-1932": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sl-geology": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sn-dtk": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sn-flood-areas": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sn-geology-gk400": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sn-geology-gk50-erzgebirge": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sn-hohlraumkarte": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sn-messtischblatt": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-sn-tk25-ddr": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-st-dtk25": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-st-subrosion-hazard": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-th-dtk": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-th-flood-areas": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:de-th-geology": {
     "v": 3,
     "status": 200,
     "cors": true,
