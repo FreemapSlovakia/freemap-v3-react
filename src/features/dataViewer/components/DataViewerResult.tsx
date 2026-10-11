@@ -254,7 +254,7 @@ export default function DataViewerResult({
         const segments =
           geom.type === 'LineString' ? [geom.coordinates] : geom.coordinates;
 
-        return segments.map((coords) => {
+        return segments.map((coords, segmentIndex) => {
           const closed =
             coords.length > 2 &&
             coords[0]![0] === coords.at(-1)![0] &&
@@ -274,6 +274,8 @@ export default function DataViewerResult({
 
           return {
             featureIndex,
+            // One label per recording, so only its first segment carries one.
+            labelled: segmentIndex === 0,
             lineData: coords.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
             style: {
               type: style.type === 'polygon' ? 'polygon' : 'line',
@@ -424,7 +426,7 @@ export default function DataViewerResult({
           />
         ))}
 
-      {features.map(({ lineData, style, featureIndex }, i) => (
+      {features.map(({ lineData, style, featureIndex, labelled }, i) => (
         <Polyline
           key={`outline-${i}-${interactive ? 'a' : 'b'}`}
           pane="fm-trackviewer-hit"
@@ -463,10 +465,12 @@ export default function DataViewerResult({
               : {}),
           }}
         >
-          <LabelTooltip
-            mode={labelModeOf(featureIndex)}
-            label={labels[featureIndex]}
-          />
+          {labelled && (
+            <LabelTooltip
+              mode={labelModeOf(featureIndex)}
+              label={labels[featureIndex]}
+            />
+          )}
         </Polyline>
       ))}
 
