@@ -60,7 +60,13 @@ export type OsmTagToNameMapping = {
     car_rental: string;
     car_wash: string;
     casino: string;
-    charging_station: string;
+    charging_station: {
+      '*': string;
+      bicycle: { yes: string };
+      motorcar: { yes: string };
+      motorcycle: { yes: string };
+      scooter: { yes: string };
+    };
     childcare: string;
     cinema: string;
     clinic: string;
