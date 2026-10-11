@@ -1,3 +1,4 @@
+import { MenuPortal } from '@shared/components/MenuPortal.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import clsx from 'clsx';
@@ -84,24 +85,26 @@ export function FmDropdownMenu({
   }, [level]);
 
   return (
-    <Dropdown.Menu
-      {...props}
-      popperConfig={popperConfig}
-      className={clsx(
-        'fm-dropdown-with-scroller',
-        popperConfig?.strategy === 'fixed' && 'fm-dropdown-fixed',
-        className,
-      )}
-    >
-      <div
-        className="fm-menu-scroller"
-        ref={refSetter}
-        key={`reset-${scrollResetKey}`}
+    <MenuPortal>
+      <Dropdown.Menu
+        {...props}
+        popperConfig={popperConfig}
+        className={clsx(
+          'fm-dropdown-with-scroller',
+          popperConfig?.strategy === 'fixed' && 'fm-dropdown-fixed',
+          className,
+        )}
       >
-        <div />
+        <div
+          className="fm-menu-scroller"
+          ref={refSetter}
+          key={`reset-${scrollResetKey}`}
+        >
+          <div />
 
-        {children}
-      </div>
-    </Dropdown.Menu>
+          {children}
+        </div>
+      </Dropdown.Menu>
+    </MenuPortal>
   );
 }

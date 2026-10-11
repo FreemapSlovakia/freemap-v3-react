@@ -30,6 +30,7 @@ import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuPortal } from '@shared/components/MenuPortal.js';
 import {
   Action,
   ActionItems,
@@ -757,13 +758,15 @@ export default function RoutePlannerMenu(): ReactElement {
             )}
           </LongPressTooltip>
 
-          <Dropdown.Menu
-            className="fm-dropdown-fixed"
-            popperConfig={fixedPopperConfig}
-            as={GraphopperModeMenu}
-          >
-            {(['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]).map(
-              (mode) => (
+          <MenuPortal>
+            <Dropdown.Menu
+              className="fm-dropdown-fixed"
+              popperConfig={fixedPopperConfig}
+              as={GraphopperModeMenu}
+            >
+              {(
+                ['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]
+              ).map((mode) => (
                 <Dropdown.Item
                   as="button"
                   eventKey={mode}
@@ -775,9 +778,9 @@ export default function RoutePlannerMenu(): ReactElement {
                   {rpm?.mode[mode === 'roundtrip' ? 'routndtrip-gh' : mode] ??
                     '…'}
                 </Dropdown.Item>
-              ),
-            )}
-          </Dropdown.Menu>
+              ))}
+            </Dropdown.Menu>
+          </MenuPortal>
         </Dropdown>
       )}
 

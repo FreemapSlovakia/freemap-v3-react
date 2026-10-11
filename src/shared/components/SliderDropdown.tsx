@@ -83,13 +83,10 @@ export function SliderDropdown({
       </LongPressTooltip>
 
       <FmDropdownMenu>
-        {/* A column, because everything inside a toolbar inherits
-            `white-space: nowrap` — without it the label and the slider sit
-            side by side on one line. */}
         {/* Fixed rather than shrink-to-fit: a value label grows as the slider
             moves, and the menu would resize under the finger dragging it. */}
         <div
-          className="px-3 py-1 d-flex flex-column gap-3 text-wrap"
+          className="px-3 py-1 d-flex flex-column gap-3"
           style={{ width: 'min(20rem, calc(100vw - 1rem))' }}
         >
           {children}

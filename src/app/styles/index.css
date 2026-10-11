@@ -16,8 +16,7 @@
 
 /* Everything over the map: translucent over a blurred backdrop. On a
    pseudo-element: `backdrop-filter` on the box would make it the containing
-   block of the fixed-strategy dropdowns inside. iOS drops a scrolled toolbar's
-   isolation — see the `@supports` rule below. */
+   block of any fixed-strategy dropdown left inside. */
 .fm-frosted,
 .fm-toolbar {
   isolation: isolate;
@@ -157,36 +156,6 @@ button#freemap-logo {
 
     & * {
       white-space: nowrap;
-    }
-
-    /* A menu is not a toolbar row: it drops out of the row's own layout and has
-       room to wrap, which anything holding prose needs. Scoped here rather than
-       escaped again in each menu — this is the third one that had to. */
-    & .dropdown-menu,
-    & .dropdown-menu * {
-      white-space: normal;
-    }
-  }
-}
-
-/* `.fm-frosted`'s isolation makes a toolbar a stacking context (except on iOS,
-   below), so its open menu's z-index stops at the toolbar; lift the toolbar
-   over later siblings. `:where` so the iOS rule outranks it. */
-:where(.fm-toolbar:has(.dropdown-menu.show)) {
-  z-index: 1;
-}
-
-/* iOS only: there a toolbar that is a stacking context inside `.fm-ib-scroller`
-   gets its fixed menus clipped to the scroller, leaving a few-pixel strip. So
-   such a toolbar is plain translucent, without the isolated blurred backdrop. */
-@supports (-webkit-touch-callout: none) {
-  .fm-ib-scroller .fm-toolbar {
-    isolation: auto;
-    z-index: auto;
-    background-color: var(--fm-frosted-bg);
-
-    &::before {
-      content: none;
     }
   }
 }

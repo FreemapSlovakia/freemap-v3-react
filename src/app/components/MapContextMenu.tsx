@@ -5,6 +5,7 @@ import type { Modifier, Obj } from '@popperjs/core';
 import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuPortal } from '@shared/components/MenuPortal.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
@@ -192,59 +193,64 @@ export function MapContextMenu(): ReactElement {
         }}
       />
 
-      <Dropdown.Menu
-        className={clsx('fm-dropdown-with-scroller', classes.menu)}
-        popperConfig={popperConfig}
-      >
-        <span ref={arrowRef} className={classes.arrow} />
-
-        <div
-          className="fm-menu-scroller"
-          ref={sc}
-          style={{ maxHeight: contextMenu.maxHeight }}
+      <MenuPortal>
+        <Dropdown.Menu
+          className={clsx('fm-dropdown-with-scroller', classes.menu)}
+          popperConfig={popperConfig}
         >
-          <div />
+          <span ref={arrowRef} className={classes.arrow} />
 
-          {submenu === 'openExternally' ? (
-            <>
-              <SubmenuHeader
-                icon={<FaExternalLinkAlt />}
-                title={oeam?.openIn}
-              />
+          <div
+            className="fm-menu-scroller"
+            ref={sc}
+            style={{ maxHeight: contextMenu.maxHeight }}
+          >
+            <div />
 
-              <OpenInExternalAppDropdownItems
-                lat={contextMenu.lat}
-                lon={contextMenu.lon}
-                zoom={zoom}
-                includePoint
-                copy={false}
-                share={false}
-              />
-            </>
-          ) : (
-            <>
-              <LocationActionItems
-                lat={contextMenu.lat}
-                lon={contextMenu.lon}
-                onAct={closeMenu}
-              />
+            {submenu === 'openExternally' ? (
+              <>
+                <SubmenuHeader
+                  icon={<FaExternalLinkAlt />}
+                  title={oeam?.openIn}
+                />
 
-              {!window.fmEmbedded && (
-                <>
-                  <Dropdown.Divider />
+                <OpenInExternalAppDropdownItems
+                  lat={contextMenu.lat}
+                  lon={contextMenu.lon}
+                  zoom={zoom}
+                  includePoint
+                  copy={false}
+                  share={false}
+                />
+              </>
+            ) : (
+              <>
+                <LocationActionItems
+                  lat={contextMenu.lat}
+                  lon={contextMenu.lon}
+                  onAct={closeMenu}
+                />
 
-                  <Dropdown.Item as="button" eventKey="submenu-openExternally">
-                    <FaExternalLinkAlt /> {oeam?.openIn}
-                    <MenuGutter>
-                      <FaChevronRight />
-                    </MenuGutter>
-                  </Dropdown.Item>
-                </>
-              )}
-            </>
-          )}
-        </div>
-      </Dropdown.Menu>
+                {!window.fmEmbedded && (
+                  <>
+                    <Dropdown.Divider />
+
+                    <Dropdown.Item
+                      as="button"
+                      eventKey="submenu-openExternally"
+                    >
+                      <FaExternalLinkAlt /> {oeam?.openIn}
+                      <MenuGutter>
+                        <FaChevronRight />
+                      </MenuGutter>
+                    </Dropdown.Item>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </Dropdown.Menu>
+      </MenuPortal>
     </Dropdown>
   );
 }
