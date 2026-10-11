@@ -1,6 +1,8 @@
 import {
   PATH_DETAILS_PROP,
   type PathDetails,
+  perPartPathDetails,
+  readPathDetailsParts,
   remapPathDetails,
 } from '@shared/colorizers/colorize.js';
 import { featureLabel, withPlainLabel } from '@shared/featureProperties.js';
@@ -43,10 +45,13 @@ export function canJoinTracks(
 interface Side {
   segments: Position[][];
   channels: Channel[];
-  details: PathDetails | undefined;
+  /** One entry per segment, each measured from the start of its own. */
+  details: PathDetails[] | undefined;
   properties: Record<string, unknown>;
   /** Distance to each vertex, segment gaps excluded; empty unless measured. */
   distances: number[];
+  /** How long each segment is, which is what its spans are turned around by. */
+  lengths: number[];
   /** Set only where the track was recorded with times, which fix its direction. */
   startTime: number | undefined;
 }
@@ -57,8 +62,29 @@ interface Run {
   segment: number;
 }
 
-const pathDetailsOf = (feature: TrackLine) =>
-  feature.properties?.[PATH_DETAILS_PROP] as PathDetails | undefined;
+const pathDetailsOf = (feature: TrackLine) => readPathDetailsParts(feature);
+
+/** The length of one segment, which nothing else measures on its own. */
+const segmentLength = (segment: Position[]): number =>
+  cumulativeDistances(segment).at(-1) ?? 0;
+
+/**
+ * One side's spans on the axis of its own segments laid end to end — the axis
+ * {@link remapPathDetails} maps them onto the joined line by.
+ */
+function sideDetails(side: Side): PathDetails | undefined {
+  let merged: PathDetails | undefined;
+
+  let offset = 0;
+
+  side.details?.forEach((part, i) => {
+    merged = mergePathDetails(merged, part, offset);
+
+    offset += side.lengths[i] ?? 0;
+  });
+
+  return merged;
+}
 
 /** The first recorded time, which is what orders two timed tracks. */
 function startTimeOf(feature: TrackLine): number | undefined {
@@ -79,6 +105,7 @@ function readSide(feature: TrackLine, measure: boolean): Side {
     details: pathDetailsOf(feature),
     properties: feature.properties ?? {},
     distances: measure ? segmentDistances(segments).flat() : [],
+    lengths: segments.map(segmentLength),
     startTime: startTimeOf(feature),
   };
 }
@@ -137,7 +164,9 @@ function reverseSide(side: Side): Side {
     // The axis runs the other way now, so each vertex sits as far from the new
     // start as it did from the old finish.
     distances: side.distances.map((d) => length - d).reverse(),
-    details: side.details && reversePathDetails(side.details, length),
+    details: side.details?.map((part, i) =>
+      reversePathDetails(part, side.lengths[i] ?? 0),
+    ),
   };
 }
 
@@ -222,18 +251,22 @@ function joinedPathDetails(
   joined: Position[],
   startsAt: number,
 ): PathDetails | undefined {
-  if (!first.details && !second.details) {
+  const firstDetails = sideDetails(first);
+
+  const secondDetails = sideDetails(second);
+
+  if (!firstDetails && !secondDetails) {
     return undefined;
   }
 
   const cum = cumulativeDistances(joined);
 
   return mergePathDetails(
-    first.details && remapPathDetails(first.details, first.distances, cum),
+    firstDetails && remapPathDetails(firstDetails, first.distances, cum),
     // The second's spans measure from its own first vertex — the one a shared
     // seam dropped, which is where it starts in the result.
-    second.details &&
-      remapPathDetails(second.details, second.distances, cum.slice(startsAt)),
+    secondDetails &&
+      remapPathDetails(secondDetails, second.distances, cum.slice(startsAt)),
     0,
   );
 }
@@ -383,10 +416,18 @@ export function joinTrackFeatures(
         joinedPathDetails(first, oriented, coordinates[0]!, startsAt)
       : // Segment gaps count on neither axis here, so the second's spans only
         // move by the first track's length.
-        mergePathDetails(first.details, second.details, sideLength(first));
+        mergePathDetails(
+          sideDetails(first),
+          sideDetails(second),
+          sideLength(first),
+        );
 
   if (details) {
-    properties[PATH_DETAILS_PROP] = details;
+    // As many entries as the result has parts, each covering its own.
+    properties[PATH_DETAILS_PROP] =
+      geometry.type === 'LineString'
+        ? [details]
+        : perPartPathDetails(details, geometry);
   } else {
     delete properties[PATH_DETAILS_PROP];
   }

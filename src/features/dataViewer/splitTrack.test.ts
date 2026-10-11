@@ -246,35 +246,38 @@ describe('splitTrackFeature — router path details', () => {
   const spans = vertexDistances(lineString(5))[0]!;
 
   const feature = lineString(5, {
-    ['fm:pathDetails']: {
-      surface: [
-        { start: 0, end: spans[2]!, value: 'asphalt' },
-        { start: spans[2]!, end: spans[4]!, value: 'gravel' },
-      ],
-    },
+    ['fm:pathDetails']: [
+      {
+        surface: [
+          { start: 0, end: spans[2]!, value: 'asphalt' },
+          { start: spans[2]!, end: spans[4]!, value: 'gravel' },
+        ],
+      },
+    ],
   });
 
   it('measures the spans from each half of its own start', () => {
     const [head, tail] = splitTrackFeature(feature, 0, 2)!;
 
-    expect(head.properties?.['fm:pathDetails']).toEqual({
-      surface: [{ start: 0, end: spans[2]!, value: 'asphalt' }],
-    });
+    expect(head.properties?.['fm:pathDetails']).toEqual([
+      { surface: [{ start: 0, end: spans[2]!, value: 'asphalt' }] },
+    ]);
 
-    expect(tail.properties?.['fm:pathDetails']).toEqual({
-      surface: [{ start: 0, end: spans[4]! - spans[2]!, value: 'gravel' }],
-    });
+    expect(tail.properties?.['fm:pathDetails']).toEqual([
+      { surface: [{ start: 0, end: spans[4]! - spans[2]!, value: 'gravel' }] },
+    ]);
   });
 
   it('clips a span the cut runs through', () => {
     const [head, tail] = splitTrackFeature(feature, 0, 3)!;
 
     expect(
-      (head.properties!['fm:pathDetails'] as { surface: unknown[] }).surface,
+      (head.properties!['fm:pathDetails'] as { surface: unknown[] }[])[0]!
+        .surface,
     ).toHaveLength(2);
 
-    expect(tail.properties?.['fm:pathDetails']).toEqual({
-      surface: [{ start: 0, end: spans[4]! - spans[3]!, value: 'gravel' }],
-    });
+    expect(tail.properties?.['fm:pathDetails']).toEqual([
+      { surface: [{ start: 0, end: spans[4]! - spans[3]!, value: 'gravel' }] },
+    ]);
   });
 });

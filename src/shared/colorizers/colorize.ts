@@ -1,9 +1,11 @@
 import {
+  lineSegments,
   lowerBound,
+  segmentDistances,
   smoothSeries,
   trackTimeSegments,
 } from '@shared/geoutils.js';
-import type { Feature, LineString } from 'geojson';
+import type { Feature, LineString, MultiLineString } from 'geojson';
 import type { ColorizerMessages } from './translations/ColorizerMessages.js';
 
 export type HotlinePalette = Array<{
@@ -103,18 +105,49 @@ export type PathDetailSpan = { start: number; end: number; value: string };
 
 export type PathDetails = Record<string, PathDetailSpan[]>;
 
-/** Where {@link PathDetailSpan}s ride on the feature being colorized. */
+/**
+ * Where {@link PathDetailSpan}s ride on the feature being colorized: one
+ * {@link PathDetails} per part of the line, so a multi-segment track keeps its
+ * spans to itself without being cut into features to carry them.
+ */
 export const PATH_DETAILS_PROP = 'fm:pathDetails';
 
+/**
+ * The spans part `part` of the line is painted with. A flattened part carries
+ * its own entry and so is read at the default; a whole line is read with the
+ * index of the part being asked about.
+ */
 export function readPathDetails(
   feature: Feature<LineString>,
   key: string,
+  part = 0,
 ): PathDetailSpan[] | undefined {
   const details = feature.properties?.[PATH_DETAILS_PROP] as
-    | PathDetails
+    | PathDetails[]
     | undefined;
 
-  return details?.[key];
+  return details?.[part]?.[key];
+}
+
+/** Every part's spans, for the code that moves them between parts. */
+export function readPathDetailsParts(
+  feature: Feature,
+): PathDetails[] | undefined {
+  return feature.properties?.[PATH_DETAILS_PROP] as PathDetails[] | undefined;
+}
+
+/**
+ * `details` as one entry per part of `geometry`, each clipped to its own part
+ * and measured from its start. The axis skips the gap between two parts, as
+ * the distance a colorizer walks over the parts does.
+ */
+export function perPartPathDetails(
+  details: PathDetails,
+  geometry: LineString | MultiLineString,
+): PathDetails[] {
+  return segmentDistances(lineSegments(geometry)).map((distances) =>
+    clipPathDetails(details, distances[0] ?? 0, distances.at(-1) ?? 0),
+  );
 }
 
 /** The spans covering `[from, to]`, measured from `from`. */

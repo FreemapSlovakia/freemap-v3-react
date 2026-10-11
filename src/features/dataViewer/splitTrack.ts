@@ -2,6 +2,7 @@ import {
   clipPathDetails,
   PATH_DETAILS_PROP,
   type PathDetails,
+  readPathDetailsParts,
 } from '@shared/colorizers/colorize.js';
 import { lineSegments, segmentDistances } from '@shared/geoutils.js';
 import type { LineString, MultiLineString, Position } from 'geojson';
@@ -29,8 +30,9 @@ interface Run {
 interface Source {
   segments: Position[][];
   channels: Channel[];
-  details: PathDetails | undefined;
-  /** Only measured for `details`, which are metres from the start. */
+  /** One entry per segment, each measured from the start of its own. */
+  details: PathDetails[] | undefined;
+  /** Only measured for `details`, which are metres from the segment's start. */
   distances: number[][] | null;
 }
 
@@ -46,9 +48,7 @@ function drawableSegments(segments: Position[][]): number {
 function readSource(feature: TrackLine): Source {
   const segments = lineSegments(feature.geometry);
 
-  const details = feature.properties?.[PATH_DETAILS_PROP] as
-    | PathDetails
-    | undefined;
+  const details = readPathDetailsParts(feature);
 
   return {
     segments,
@@ -123,22 +123,29 @@ function takeRuns(
       kept.map((run) => channel.segments[run.segment]!.slice(run.from, run.to)),
   );
 
-  if (source.details && source.distances) {
-    const first = kept[0]!;
-
-    const last = kept.at(-1)!;
-
-    const from = source.distances[first.segment]?.[first.from] ?? 0;
-
-    // Spans are metres from the start of the line, so each piece re-bases them.
-    properties[PATH_DETAILS_PROP] = clipPathDetails(
-      source.details,
-      from,
-      source.distances[last.segment]?.[last.to - 1] ?? from,
-    );
+  if (source.details) {
+    properties[PATH_DETAILS_PROP] = kept.map((run) => runDetails(run, source));
   }
 
   return { ...feature, geometry, properties };
+}
+
+/**
+ * The spans of one run: the segment's own, re-based to the piece of it the run
+ * is — spans are metres from where the segment starts.
+ */
+function runDetails(run: Run, source: Source): PathDetails {
+  const details = source.details?.[run.segment] ?? {};
+
+  const distances = source.distances?.[run.segment];
+
+  if (!distances || (run.from === 0 && run.to === distances.length)) {
+    return details;
+  }
+
+  const from = distances[run.from]! - distances[0]!;
+
+  return clipPathDetails(details, from, distances[run.to - 1]! - distances[0]!);
 }
 
 /** A track that has something to cut: a vertex with a piece on either side. */

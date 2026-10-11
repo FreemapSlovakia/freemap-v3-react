@@ -249,7 +249,7 @@ export function matchedSegment(
       type: 'Feature',
       properties: {
         ...withoutPerPointData(original.properties),
-        [PATH_DETAILS_PROP]: toMetreSpans(cum, path.details),
+        [PATH_DETAILS_PROP]: [toMetreSpans(cum, path.details)],
       },
       geometry: { type: 'LineString', coordinates },
     },

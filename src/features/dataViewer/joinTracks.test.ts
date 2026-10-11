@@ -29,13 +29,13 @@ const run = (from: number, n: number) =>
 const cp = (feature: TrackLine) =>
   feature.properties!['coordinateProperties'] as Record<string, unknown>;
 
-const surfaceOf = (feature: TrackLine) =>
+/** The `surface` spans of one part of a track, which is what carries them. */
+const surfaceOf = (feature: TrackLine, part = 0) =>
   (
-    feature.properties![PATH_DETAILS_PROP] as Record<
-      string,
-      { start: number; end: number; value: string }[]
-    >
-  )['surface']!;
+    feature.properties![PATH_DETAILS_PROP] as {
+      surface: { start: number; end: number; value: string }[];
+    }[]
+  )[part]!['surface']!;
 
 const times = (from: number, n: number) =>
   Array.from(
@@ -223,14 +223,14 @@ describe('joinTrackFeatures — properties', () => {
           [0, 0],
           [0.001, 0],
         ],
-        { [PATH_DETAILS_PROP]: { surface: spans } },
+        { [PATH_DETAILS_PROP]: [{ surface: spans }] },
       ),
       line(
         [
           [0.001, 0],
           [0.002, 0],
         ],
-        { [PATH_DETAILS_PROP]: { surface: spans } },
+        { [PATH_DETAILS_PROP]: [{ surface: spans }] },
       ),
       'line',
     );
@@ -318,9 +318,7 @@ describe('joinTrackFeatures — path details across a segment gap', () => {
   ]);
 
   // The track's own axis leaves the gap out, so its second segment starts where
-  // its first ended.
-  const secondSegment = cum[1]!;
-
+  // its first ended — which is why each part's spans are measured on their own.
   const gapped = multiLine(
     [
       [
@@ -333,16 +331,10 @@ describe('joinTrackFeatures — path details across a segment gap', () => {
       ],
     ],
     {
-      [PATH_DETAILS_PROP]: {
-        surface: [
-          { start: 10, end: 100, value: 'asphalt' },
-          {
-            start: secondSegment + 20,
-            end: secondSegment + 90,
-            value: 'gravel',
-          },
-        ],
-      },
+      [PATH_DETAILS_PROP]: [
+        { surface: [{ start: 10, end: 100, value: 'asphalt' }] },
+        { surface: [{ start: 20, end: 90, value: 'gravel' }] },
+      ],
     },
   );
 
@@ -362,10 +354,11 @@ describe('joinTrackFeatures — path details across a segment gap', () => {
   it('leaves them alone when the segments are kept apart', () => {
     const joined = joinTrackFeatures(gapped, line(run(1, 2)), 'segments');
 
-    expect(surfaceOf(joined)[1]).toEqual({
-      start: secondSegment + 20,
-      end: secondSegment + 90,
-      value: 'gravel',
-    });
+    // Each part's spans already measure from that part's own start.
+    expect(surfaceOf(joined, 1)).toHaveLength(1);
+
+    expect(surfaceOf(joined, 1)[0]!.start).toBeCloseTo(20, 6);
+
+    expect(surfaceOf(joined, 1)[0]!.end).toBeCloseTo(90, 6);
   });
 });

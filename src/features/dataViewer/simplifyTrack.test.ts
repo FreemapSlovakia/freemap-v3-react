@@ -105,9 +105,9 @@ describe('simplifyTrackFeature', () => {
     const before = vertexDistances(lineString(coordinates)).at(-1)!.at(-1)!;
 
     const feature = lineString(coordinates, {
-      [PATH_DETAILS_PROP]: {
-        surface: [{ start: 0, end: before, value: 'asphalt' }],
-      },
+      [PATH_DETAILS_PROP]: [
+        { surface: [{ start: 0, end: before, value: 'asphalt' }] },
+      ],
     });
 
     const kept = simplifyTrackFeature(feature, 100)!;
@@ -121,8 +121,8 @@ describe('simplifyTrackFeature', () => {
     const [span] = (
       kept.properties![PATH_DETAILS_PROP] as {
         surface: { start: number; end: number }[];
-      }
-    ).surface;
+      }[]
+    )[0]!.surface;
 
     expect(span!.start).toBe(0);
 
@@ -157,12 +157,10 @@ describe('simplifyTrackFeature', () => {
         ...feature,
         properties: {
           ...feature.properties,
-          [PATH_DETAILS_PROP]: {
-            surface: [
-              { start: 0, end: half, value: 'asphalt' },
-              { start: half, end: whole, value: 'gravel' },
-            ],
-          },
+          [PATH_DETAILS_PROP]: [
+            { surface: [{ start: 0, end: half, value: 'asphalt' }] },
+            { surface: [{ start: 0, end: whole, value: 'gravel' }] },
+          ],
         },
       },
       100,
@@ -170,15 +168,17 @@ describe('simplifyTrackFeature', () => {
 
     const kept = vertexDistances(simplified);
 
-    const { surface } = simplified.properties![PATH_DETAILS_PROP] as {
-      surface: { start: number; end: number; value: string }[];
-    };
+    const [first, second] = (
+      simplified.properties![PATH_DETAILS_PROP] as {
+        surface: { start: number; end: number; value: string }[];
+      }[]
+    ).map((part) => part.surface);
 
     // Each span still covers exactly its own segment of the shortened line.
-    expect(surface[0]!.start).toBe(0);
-    expect(surface[0]!.end).toBeCloseTo(kept[0]!.at(-1)!, 6);
-    expect(surface[1]!.start).toBeCloseTo(kept[1]![0]!, 6);
-    expect(surface[1]!.end).toBeCloseTo(kept[1]!.at(-1)!, 6);
+    expect(first![0]!.start).toBe(0);
+    expect(first![0]!.end).toBeCloseTo(kept[0]!.at(-1)!, 6);
+    expect(second![0]!.start).toBeCloseTo(kept[1]![0]!, 6);
+    expect(second![0]!.end).toBeCloseTo(kept[1]!.at(-1)!, 6);
   });
 
   it('leaves a line the tolerance cannot thin alone', () => {

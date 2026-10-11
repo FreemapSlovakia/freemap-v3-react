@@ -1,6 +1,6 @@
 import {
   PATH_DETAILS_PROP,
-  type PathDetails,
+  readPathDetailsParts,
   remapPathDetails,
 } from '@shared/colorizers/colorize.js';
 import { lineSegments } from '@shared/geoutils.js';
@@ -98,17 +98,23 @@ export function simplifyTrackFeature(
       }),
   );
 
-  const details = feature.properties?.[PATH_DETAILS_PROP] as
-    | PathDetails
-    | undefined;
+  const details = readPathDetailsParts(feature);
 
   if (details) {
     const before = vertexDistances(feature);
 
-    properties[PATH_DETAILS_PROP] = remapPathDetails(
-      details,
-      kept.flatMap((indices, i) => indices.map((j) => before[i]![j]!)),
-      vertexDistances({ ...feature, geometry }).flat(),
+    const after = vertexDistances({ ...feature, geometry });
+
+    // Each part is remapped by its own vertices, which dropping points moves
+    // within that part alone.
+    properties[PATH_DETAILS_PROP] = details.map((part, i) =>
+      kept[i]
+        ? remapPathDetails(
+            part,
+            kept[i]!.map((j) => before[i]![j]!),
+            after[i] ?? [],
+          )
+        : part,
     );
   }
 
