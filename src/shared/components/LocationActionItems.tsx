@@ -44,8 +44,8 @@ type Props = LatLon & {
 };
 
 /**
- * Everything the map can do with a place: centre on it, name it, ask what is
- * around it, draw at it, route from or to it, take a view from it. Dropdown
+ * Everything the map can do with a place: ask what is around it, name it,
+ * centre on it, draw at it, route from or to it, take a view from it. Dropdown
  * items, so every menu that knows a position carries the same flat list.
  */
 export function LocationActionItems({
@@ -71,28 +71,6 @@ export function LocationActionItems({
 
   return (
     <>
-      <Dropdown.Item
-        as="button"
-        onClick={() => {
-          dispatch(mapRefocus({ lat, lon }));
-
-          onAct?.();
-        }}
-      >
-        <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        as="button"
-        onClick={() => {
-          dispatch(drawingMeasure({ position: { lat, lon } }));
-
-          onAct?.();
-        }}
-      >
-        <FaRuler /> {m?.mapCtxMenu.measurePosition}
-      </Dropdown.Item>
-
       {(!window.fmEmbedded || embedFeatures.includes('search')) && (
         <OnlineOnlyItem
           as="button"
@@ -110,6 +88,17 @@ export function LocationActionItems({
         </OnlineOnlyItem>
       )}
 
+      <Dropdown.Item
+        as="button"
+        onClick={() => {
+          dispatch(drawingMeasure({ position: { lat, lon } }));
+
+          onAct?.();
+        }}
+      >
+        <FaRuler /> {m?.mapCtxMenu.measurePosition}
+      </Dropdown.Item>
+
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
         <OnlineOnlyItem
           as="button"
@@ -122,6 +111,17 @@ export function LocationActionItems({
           <FaCamera /> {m?.mapCtxMenu.showPhotos}
         </OnlineOnlyItem>
       )}
+
+      <Dropdown.Item
+        as="button"
+        onClick={() => {
+          dispatch(mapRefocus({ lat, lon }));
+
+          onAct?.();
+        }}
+      >
+        <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
+      </Dropdown.Item>
 
       {!window.fmEmbedded && (
         <>
