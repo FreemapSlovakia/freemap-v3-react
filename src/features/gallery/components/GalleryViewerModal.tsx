@@ -153,6 +153,11 @@ const SHARED_IMAGE_WIDTH = 3840;
 const READOUT_STAR_SIZE = 20;
 const RATING_STAR_SIZE = 24;
 
+const divider = <span className={classes.divider} />;
+
+// The flex row's gap already supplies half the spacing.
+const rowDivider = <span className={clsx(classes.divider, 'mx-1')} />;
+
 // The photo whose details are on screen, with its Commons metadata if any.
 interface ShownDetails {
   image: Picture;
@@ -954,17 +959,25 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
           {image && (
             <div className={clsx(classes.footer, 'mt-3')} inert={detailsStale}>
               {isFullscreen && imageIds && (
-                <>{`${index + 1} / ${imageIds.length}`} ｜ </>
+                <>
+                  {`${index + 1} / ${imageIds.length}`}
+                  {divider}
+                </>
               )}
 
-              {isFullscreen && displayTitle && <>{displayTitle} ｜ </>}
+              {isFullscreen && displayTitle && (
+                <>
+                  {displayTitle}
+                  {divider}
+                </>
+              )}
 
               {/* Whoever gets the photo itself; the rest are already reading an
                   alert that says it. */}
               {premium && !disabledPremium && (
                 <>
                   <PremiumGem noOffer hint={gm?.viewer.premiumPhoto} />
-                  {'｜ '}
+                  {divider}
                 </>
               )}
 
@@ -984,7 +997,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       ) : (
                         commonsMeta.artist
                       )}
-                      {' ｜ '}
+                      {divider}
                     </>
                   )}
                   <SiWikimediacommons />{' '}
@@ -1011,7 +1024,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {isWikimedia && createdAt && (
                 <>
-                  {' ｜ '}
+                  {divider}
                   {gm?.viewer.uploadedOn(
                     <b key={createdAt.getTime()}>
                       {dateFormat.format(createdAt)}
@@ -1022,7 +1035,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {(capturedDate || capturedRaw) && (
                 <>
-                  {' ｜ '}
+                  {divider}
                   {capturedDate ? (
                     gm?.viewer.captured(
                       <b key={capturedDate.getTime()}>
@@ -1041,12 +1054,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {azimuth != null && (
                 <>
-                  {' ｜ '}
+                  {divider}
                   <Azimuth value={azimuth} size={READOUT_STAR_SIZE} />
                 </>
               )}
 
-              {' ｜ '}
+              {divider}
 
               <Rating
                 className={classes.stars}
@@ -1055,7 +1068,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 readonly
               />
 
-              {tags && tags.length > 0 && ' ｜ '}
+              {tags && tags.length > 0 && divider}
 
               {tags?.map((tag) => (
                 <Fragment key={tag}>
@@ -1066,7 +1079,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {badgeLicense ? (
                 <>
-                  {' ｜ '}
+                  {divider}
                   <LongPressTooltip
                     label={
                       <>
@@ -1099,7 +1112,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 isWikimedia &&
                 commonsMeta?.license && (
                   <>
-                    {' ｜ '}
+                    {divider}
                     {commonsMeta.licenseUrl ? (
                       <a
                         href={commonsMeta.licenseUrl}
@@ -1115,7 +1128,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 )
               )}
 
-              {displayDescription && ` ｜ ${displayDescription}`}
+              {displayDescription && (
+                <>
+                  {divider}
+                  {displayDescription}
+                </>
+              )}
 
               {!isFullscreen && editModel && (
                 <Form id="gallery-edit-form" onSubmit={handleSave}>
@@ -1218,13 +1236,13 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         <RecentTags
                           existingTags={tags}
                           onAdd={handleTagAdd}
-                          prefix={<div>｜</div>}
+                          prefix={rowDivider}
                         />
                       )}
 
                       {editModel === null && canEdit && (
                         <>
-                          ｜
+                          {rowDivider}
                           <Form.Check
                             id="chk-fast-premium"
                             label={gm?.uploadModal.premium}

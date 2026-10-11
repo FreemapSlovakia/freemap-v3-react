@@ -20,12 +20,31 @@
   }
 }
 
+.divider {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-inline: 0.5em;
+  vertical-align: -0.125em;
+  background-color: currentColor;
+  opacity: 0.3;
+}
+
 .stars {
   display: inline-block;
   margin: -2px;
+  line-height: 0;
+  /* `middle` centres on the x-height, below the centre of caps and digits. */
+  position: relative;
+  top: -0.1em;
 
+  /* Baseline-aligned SVGs leave a gap above them. */
   & span {
-    line-height: 16px;
+    line-height: 0;
+  }
+
+  & svg {
+    vertical-align: top;
   }
 }
 
