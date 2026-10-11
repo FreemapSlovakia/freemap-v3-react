@@ -1,8 +1,10 @@
 import {
   deleteFeature,
+  openTool,
   type Selection,
   selectFeature,
 } from '@app/store/actions.js';
+import { openToolsSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { changesetDetail } from '@features/changesets/model/changesetDetail.js';
 import { dataViewerBatchCounts } from '@features/dataViewer/featureEditing.js';
@@ -14,6 +16,8 @@ import {
 } from '@features/drawing/labelValues.js';
 import type { DrawnLine } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
+import { selectRecorderLines } from '@features/gpsRecorder/model/selectors.js';
+import { recorderLineLength } from '@features/gpsRecorder/segments.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapSetFeaturesHidden } from '@features/map/model/actions.js';
 import {
@@ -114,8 +118,7 @@ type Item = {
   /** The selection it is, highlighted while current, and made by a tap. */
   selects?: Selection;
   /** Dispatched by a tap instead, where selecting it on the map does more. */
-  actions?: UnknownAction[];
-  /** Worked out only when it is picked: a long line has many points. */
+  actions?: UnknownAction[] /** Worked out only when it is picked: a long line has many points. */;
   bbox: () => Bbox | undefined;
 };
 
@@ -164,6 +167,9 @@ export function MapFeatureItems({
 
     case 'objects':
       return <ObjectItems />;
+
+    case 'gps-recorder':
+      return <RecorderItems />;
 
     case 'tracking':
       return <TrackingItems />;
@@ -226,12 +232,10 @@ function ItemList({
   const shown = matching.slice(0, MAX_ROWS);
 
   const pick = (item: Item) => {
-    const { main, map } = store.getState();
-
-    const before = main.selection?.type;
+    const state = store.getState();
 
     // A picked item has to be drawn to be seen.
-    if (map.featuresHidden) {
+    if (state.map.featuresHidden) {
       dispatch(mapSetFeaturesHidden(false));
     }
 
@@ -239,6 +243,17 @@ function ItemList({
       (item.selects ? [selectFeature(item.selects)] : [])) {
       dispatch(action);
     }
+
+    const after = store.getState();
+
+    const openBefore = openToolsSelector(state);
+
+    // A selection of another kind, or a tool just opened, brings up its
+    // toolbar, which may cover the item: the fit measures once it is there.
+    const toolbarComing =
+      (after.main.selection !== null &&
+        after.main.selection.type !== state.main.selection?.type) ||
+      openToolsSelector(after).some((tool) => !openBefore.includes(tool));
 
     const bbox = item.bbox();
 
@@ -263,12 +278,7 @@ function ItemList({
         maxZoom: store.getState().map.zoom,
       });
 
-    // A selection of another kind brings up its toolbar, which may cover the
-    // item: the fit measures once it is there.
-    fitOnceSettled(
-      bringIntoView,
-      item.selects !== undefined && item.selects.type !== before,
-    );
+    fitOnceSettled(bringIntoView, toolbarComing);
   };
 
   return (
@@ -479,6 +489,46 @@ function ObjectItems(): ReactElement {
             Number(a.muted) - Number(b.muted) ||
             collator.compare(a.label, b.label),
         )}
+    />
+  );
+}
+
+function RecorderItems(): ReactElement {
+  const lines = useAppSelector(selectRecorderLines);
+
+  const style = useAppSelector((state) => state.gpsRecorderSettings.style);
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const dateFormat = useDateTimeFormat({
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+
+  return (
+    <ItemList
+      items={lines.map((line) => {
+        const first = line[0]!;
+
+        const last = line.at(-1)!;
+
+        return {
+          key: String(first.seq),
+          icon: <MdPolyline />,
+          color: splitColorAlpha(style.color).color,
+          label: dateFormat.format(first.ts),
+          subline: [
+            formatDistance(recorderLineLength(line), language),
+            last.ts > first.ts &&
+              formatDuration((last.ts - first.ts) / 1000, language),
+          ]
+            .filter(Boolean)
+            .join(' · '),
+          // It has no selection; its toolbar is what acts on it.
+          actions: [openTool('gps-recorder')],
+          bbox: () => latLonBbox(line),
+        };
+      })}
     />
   );
 }

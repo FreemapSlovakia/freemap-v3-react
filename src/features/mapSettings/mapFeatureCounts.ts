@@ -1,10 +1,12 @@
 import { isToolOpen } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
+import { selectRecorderLines } from '@features/gpsRecorder/model/selectors.js';
 import { keptSearchResultsSelector } from '@features/search/model/selectors.js';
 
 const MAP_FEATURE_IDS = [
   'search',
   'objects',
+  'gps-recorder',
   'tracking',
   'data',
   'route',
@@ -20,8 +22,8 @@ const anyMapFeature = (state: RootState) =>
 
 /**
  * Whether hiding the features would hide anything: the rows' features, and
- * what `Results` draws with no row — a search preview, a recording, tracks,
- * the panorama's marks.
+ * what `Results` draws with no row — a search preview, a recording with no line
+ * yet, tracks, the panorama's marks.
  */
 export const anyFeatureDrawn = (state: RootState) =>
   anyMapFeature(state) ||
@@ -50,6 +52,9 @@ export function mapFeatureCount(
       return state.objects.active.length
         ? state.objects.objects.length
         : undefined;
+
+    case 'gps-recorder':
+      return some(selectRecorderLines(state).length);
 
     case 'tracking':
       return some(state.tracking.trackedDevices.length);

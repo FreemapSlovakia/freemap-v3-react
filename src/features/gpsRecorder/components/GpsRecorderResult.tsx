@@ -11,7 +11,7 @@ import { useRecorderLocationFeed } from '../hooks/useRecorderLocationFeed.js';
 import { useRecorderWakeLock } from '../hooks/useRecorderWakeLock.js';
 import {
   selectLatestRecorderPoint,
-  selectRecorderSegments,
+  selectRecorderLines,
 } from '../model/selectors.js';
 
 // Above every other path pane (400–450), below `markerPane` (600).
@@ -41,18 +41,16 @@ export default function GpsRecorderResult(): ReactElement | null {
 
   useRecorderWakeLock();
 
-  const segments = useAppSelector(selectRecorderSegments);
+  const lines = useAppSelector(selectRecorderLines);
 
   const latest = useAppSelector(selectLatestRecorderPoint);
 
   const positions = useMemo(
     () =>
-      segments
-        .filter((segment) => segment.length >= 2)
-        .map((segment) =>
-          segment.map((point): [number, number] => [point.lat, point.lon]),
-        ),
-    [segments],
+      lines.map((line) =>
+        line.map((point): [number, number] => [point.lat, point.lon]),
+      ),
+    [lines],
   );
 
   const handleClick = useCallback(() => {

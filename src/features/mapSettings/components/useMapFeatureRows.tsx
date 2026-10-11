@@ -6,6 +6,7 @@ import { dataViewerDelete } from '@features/dataViewer/model/actions.js';
 import { DrawingToggleButton } from '@features/drawing/components/DrawingToggleButton.js';
 import { drawingLineSetLines } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingPointSetAll } from '@features/drawing/model/actions/drawingPointActions.js';
+import { GpsRecorderToggleButton } from '@features/gpsRecorder/components/GpsRecorderToggleButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { RoutePlannerToggleButton } from '@features/routePlanner/components/RoutePlannerToggleButton.js';
@@ -33,7 +34,8 @@ export type MapFeatureRow = {
    * a selection's toolbar has. Unset where there is none to open from here.
    */
   control?: ReactElement;
-  onRemove: () => void;
+  /** Unset where removing isn't the panel's to offer. */
+  onRemove?: () => void;
 };
 
 type DrawTool = Extract<Tool, 'draw-points' | 'draw-lines' | 'draw-polygons'>;
@@ -54,6 +56,10 @@ export function useMapFeatureRows(): MapFeatureRow[] {
   const pinned = useAppSelector((state) => mapFeatureCount(state, 'search'));
 
   const objects = useAppSelector((state) => mapFeatureCount(state, 'objects'));
+
+  const recorderSegments = useAppSelector((state) =>
+    mapFeatureCount(state, 'gps-recorder'),
+  );
 
   const trackedDevices = useAppSelector((state) =>
     mapFeatureCount(state, 'tracking'),
@@ -138,6 +144,13 @@ export function useMapFeatureRows(): MapFeatureRow[] {
       label: m?.tools.objects,
       count: objects,
       onRemove: () => dispatch(objectsSetFilter([])),
+    },
+    recorderSegments !== undefined && {
+      id: 'gps-recorder',
+      ...ofTool('gps-recorder'),
+      count: recorderSegments,
+      control: <GpsRecorderToggleButton />,
+      // None: it would delete the track on the recorder, not just the map's copy.
     },
     trackedDevices !== undefined && {
       id: 'tracking',

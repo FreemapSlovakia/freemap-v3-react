@@ -210,7 +210,7 @@ type PendingFit = { run: () => void; timer: ReturnType<typeof setTimeout> };
 let pending: PendingFit | undefined;
 
 /**
- * Runs a fit on the next frame, or once a coming selection toolbar has mounted
+ * Runs a fit on the next frame, or once a coming selection or tool toolbar has mounted
  * (a second at most), as it may cover the place. The next call cancels it.
  */
 export function fitOnceSettled(run: () => void, toolbarComing: boolean): void {
@@ -240,8 +240,8 @@ export function fitOnceSettled(run: () => void, toolbarComing: boolean): void {
   pending = waiting;
 }
 
-/** Called by a selection toolbar as it mounts: see `fitOnceSettled`. */
-export function selectionToolbarMounted(): void {
+/** Called by a selection's or a tool's toolbar as it mounts: see `fitOnceSettled`. */
+export function toolbarMounted(): void {
   const waiting = pending;
 
   if (waiting) {

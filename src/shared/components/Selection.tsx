@@ -1,6 +1,6 @@
 import { selectFeature } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { selectionToolbarMounted } from '@features/map/panToUncovered.js';
+import { toolbarMounted } from '@features/map/panToUncovered.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
@@ -33,7 +33,7 @@ export function Selection({
   const dispatch = useDispatch();
 
   // A pick that brought this toolbar up may now be under it.
-  useEffect(selectionToolbarMounted, []);
+  useEffect(toolbarMounted, []);
 
   const sc = useScrollClasses('horizontal');
 

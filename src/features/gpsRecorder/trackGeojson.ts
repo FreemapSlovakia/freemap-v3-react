@@ -6,6 +6,7 @@ import type {
   Position,
 } from 'geojson';
 import type { RecorderPoint } from './protocol.js';
+import { isRecorderLine } from './segments.js';
 
 /**
  * One fix as a GeoJSON coordinate. The altitude is omitted where the fix
@@ -73,7 +74,7 @@ export function recorderSegmentsToProfileFeature(
   segments: readonly (readonly RecorderPoint[])[],
 ): Feature<MultiLineString> | null {
   const coordinates = segments
-    .filter((segment) => segment.length >= 2)
+    .filter(isRecorderLine)
     .map((segment) => segment.map(coordinateOf));
 
   return countElevated(coordinates) < 2
@@ -112,8 +113,6 @@ export function recorderSegmentsToFeatureCollection(
 ): FeatureCollection {
   return {
     type: 'FeatureCollection',
-    features: segments
-      .filter((segment) => segment.length >= 2)
-      .map(recorderSegmentToFeature),
+    features: segments.filter(isRecorderLine).map(recorderSegmentToFeature),
   };
 }

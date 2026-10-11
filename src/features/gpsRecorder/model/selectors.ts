@@ -1,7 +1,7 @@
 import type { RootState } from '@app/store/store.js';
 import { createSelector } from 'reselect';
 import type { RecorderPoint } from '../protocol.js';
-import { splitPointsIntoSegments } from '../segments.js';
+import { isRecorderLine, splitPointsIntoSegments } from '../segments.js';
 import {
   foldRecorderStats,
   isFoldCurrent,
@@ -28,6 +28,12 @@ export const selectRecorderSegments: (state: RootState) => RecorderPoint[][] =
     (state: RootState) => state.gpsRecorderSettings.splitGapS,
     (points, splitGapS) => splitPointsIntoSegments(points, splitGapS * 1000),
   );
+
+/** The segments long enough to be a line. */
+export const selectRecorderLines = createSelector(
+  selectRecorderSegments,
+  (segments) => segments.filter(isRecorderLine),
+);
 
 /**
  * Whether the recording has a profile to draw: two fixes carrying an altitude,

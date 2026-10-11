@@ -30,7 +30,7 @@ import {
 } from '../model/actions.js';
 import {
   selectRecorderHasProfile,
-  selectRecorderSegments,
+  selectRecorderLines,
 } from '../model/selectors.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
 import classes from './GpsRecorderMenu.module.css';
@@ -55,8 +55,8 @@ export default function GpsRecorderMenu(): ReactElement {
 
   // What finishing would actually produce: the hand-over drops segments too short
   // to be a line, so counting raw fixes would offer a Finish that takes nothing.
-  const saveable = useAppSelector((state) =>
-    selectRecorderSegments(state).some((segment) => segment.length >= 2),
+  const saveable = useAppSelector(
+    (state) => selectRecorderLines(state).length > 0,
   );
 
   // The profile of the ride so far, redrawn as fixes arrive — offered while the
@@ -112,7 +112,6 @@ export default function GpsRecorderMenu(): ReactElement {
       dispatch(gpsRecorderSync());
     }
   }, [open, dispatch]);
-
   // Always asked: the tap empties the recorder either way — its track is taken
   // and deleted, so a start afterwards begins a new one. Running, it also ends a
   // ride that cannot be resumed, which is what the message leads with.

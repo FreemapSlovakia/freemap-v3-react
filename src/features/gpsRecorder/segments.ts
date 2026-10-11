@@ -1,3 +1,4 @@
+import { distanceTo } from '@shared/geoutils.js';
 import type { RecorderPoint } from './protocol.js';
 
 /**
@@ -62,4 +63,38 @@ export function splitPointsIntoSegments(
   segments.push(current);
 
   return segments;
+}
+
+/** Whether a segment is long enough to be drawn and handed over as a line. */
+export const isRecorderLine = (segment: readonly RecorderPoint[]): boolean =>
+  segment.length >= 2;
+
+type LineLength = { count: number; last: RecorderPoint; meters: number };
+
+// By first point: the reducer keeps point objects, so a line that only grew
+// is extended rather than remeasured, and a cleared track matches nothing.
+const lineLengths = new WeakMap<RecorderPoint, LineLength>();
+
+/** A segment's length in metres. */
+export function recorderLineLength(line: RecorderPoint[]): number {
+  const cached = lineLengths.get(line[0]!);
+
+  const from =
+    cached && line[cached.count - 1] === cached.last
+      ? cached
+      : { count: 1, last: line[0]!, meters: 0 };
+
+  let { meters, last } = from;
+
+  for (let i = from.count; i < line.length; i++) {
+    const point = line[i]!;
+
+    meters += distanceTo(last, point);
+
+    last = point;
+  }
+
+  lineLengths.set(line[0]!, { count: line.length, last, meters });
+
+  return meters;
 }

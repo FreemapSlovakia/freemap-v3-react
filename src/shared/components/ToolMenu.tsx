@@ -1,6 +1,7 @@
 import { closeTool, openTool, type Tool } from '@app/store/actions.js';
 import { activeMapToolSelector, isToolOpen } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toolbarMounted } from '@features/map/panToUncovered.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
@@ -9,7 +10,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import clsx from 'clsx';
-import type { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import {
   FaAngleLeft,
@@ -81,6 +82,13 @@ export function ToolMenu({
   const open = useAppSelector((state) => isToolOpen(state, tool));
 
   const collapsed = !open || (collapsible && userCollapsed);
+
+  // Releases a fit waiting for the opened tool's controls.
+  useEffect(() => {
+    if (open) {
+      toolbarMounted();
+    }
+  }, [open]);
 
   // Not merely "is a map-click tool": while a picking mode owns the map the tool
   // goes inert, and the outline would then promise clicks it doesn't take.
