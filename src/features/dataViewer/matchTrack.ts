@@ -9,9 +9,10 @@ import {
   trackTimeSegments,
   withoutPerPointData,
 } from '@shared/geoutils.js';
-import type { Feature, LineString, Position } from 'geojson';
+import type { LineString, MultiLineString, Position } from 'geojson';
 import z from 'zod';
 import { GeoJSONLineStringSchema } from 'zod-geojson';
+import { type Channel, readChannels, writeChannels } from './trackChannels.js';
 import type { TrackLine } from './trackSelection.js';
 
 /**
@@ -80,6 +81,8 @@ const MatchResponseSchema = z.object({
 export type MatchSegment = {
   coordinates: Position[];
   times: number[] | null;
+  /** Every per-point channel of the recording, cut to this segment's points. */
+  channels: Record<string, unknown[]>;
   cum: number[];
   length: number;
 };
@@ -96,6 +99,8 @@ export type MatchSegment = {
 export function trackSegments(feature: TrackLine): MatchSegment[] {
   const timeSegments = trackTimeSegments(feature);
 
+  const channels = readChannels(feature);
+
   return lineSegments(feature.geometry).map((coordinates, i) => {
     const raw = timeSegments[i];
 
@@ -109,6 +114,11 @@ export function trackSegments(feature: TrackLine): MatchSegment[] {
               typeof t === 'string' ? new Date(t).getTime() : NaN,
             )
           : null,
+      // The arrays index the whole recording, so each segment takes its own
+      // row of them.
+      channels: Object.fromEntries(
+        channels.map((channel) => [channel.key, channel.segments[i] ?? []]),
+      ),
       cum,
       length: cum.at(-1) ?? 0,
     };
@@ -221,22 +231,24 @@ export function segmentToGpx(segment: MatchSegment): string {
 }
 
 /**
- * The matched line and how long it came out, from one parse of the response.
+ * The graph's line for one segment, with how long it came out, from one parse
+ * of the response.
  *
  * The path details ride along as metre spans — what every categorical colorize
  * mode reads, and the only form that survives the line being densified later.
- * The original's properties come too, minus anything indexed per recorded
- * point: the matched line has its own points.
+ * They are metres from this segment's own start, so a part of the matched track
+ * carries its own.
  *
  * The length is walked here rather than read from the response's own
  * `distance`, which is the graph's edge distance and runs ~2 % above a walk of
  * the points it returns. The caller weighs it against the recording's length,
  * and both sides have to be measured the same way.
  */
-export function matchedSegment(
-  raw: unknown,
-  original: TrackLine,
-): { feature: Feature<LineString>; length: number } {
+export function matchedSegment(raw: unknown): {
+  coordinates: Position[];
+  details: PathDetails;
+  length: number;
+} {
   const path = MatchResponseSchema.parse(raw).paths[0]!;
 
   const coordinates = path.points.coordinates;
@@ -244,16 +256,70 @@ export function matchedSegment(
   const cum = cumulativeDistances(coordinates);
 
   return {
+    coordinates,
+    details: toMetreSpans(cum, path.details),
     length: cum.at(-1) ?? 0,
-    feature: {
-      type: 'Feature',
-      properties: {
-        ...withoutPerPointData(original.properties),
-        [PATH_DETAILS_PROP]: [toMetreSpans(cum, path.details)],
-      },
-      geometry: { type: 'LineString', coordinates },
-    },
   };
+}
+
+/** One part of a matched track: the graph's line, or the recorded one kept. */
+export interface MatchedPart {
+  coordinates: Position[];
+  /**
+   * The recorded per-point channels, cut to these coordinates — `null` where
+   * the graph's own points replaced them, which no recorded sample pairs with.
+   */
+  channels: Record<string, unknown[]> | null;
+  /** The router's spans, metres from this part's start. */
+  details: PathDetails;
+}
+
+/** A segment the graph could not answer for, kept exactly as it was recorded. */
+export function asRecordedPart(segment: MatchSegment): MatchedPart {
+  return {
+    coordinates: segment.coordinates,
+    channels: segment.channels,
+    details: {},
+  };
+}
+
+/**
+ * The recording with every segment's matched line in it: one feature, whose
+ * segments are the geometry's parts and which carries the per-point channels
+ * and the path-detail spans of each of them. The recording stays one entry in
+ * the viewer — a track dropdown, a start/finish pair and an elevation profile
+ * all read the collection, not the graph's answer for one segment.
+ */
+export function matchedTrack(
+  parts: MatchedPart[],
+  original: TrackLine,
+): TrackLine {
+  const coordinates = parts.map((part) => part.coordinates);
+
+  const geometry: LineString | MultiLineString =
+    coordinates.length === 1
+      ? { type: 'LineString', coordinates: coordinates[0]! }
+      : { type: 'MultiLineString', coordinates };
+
+  const properties: Record<string, unknown> = {
+    ...withoutPerPointData(original.properties),
+  };
+
+  writeChannels(
+    properties,
+    readChannels(original),
+    geometry.type === 'LineString',
+    (channel: Channel) =>
+      parts.map(
+        (part) =>
+          part.channels?.[channel.key] ??
+          new Array<unknown>(part.coordinates.length).fill(null),
+      ),
+  );
+
+  properties[PATH_DETAILS_PROP] = parts.map((part) => part.details);
+
+  return { ...original, geometry, properties };
 }
 
 /** `/match`'s index ranges as metre spans along the line it returned. */

@@ -2,11 +2,14 @@ import { HttpError, httpRequest } from '@app/httpRequest.js';
 import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
+  asRecordedPart,
   isMatchable,
   MATCH_ACCURACY,
   MATCH_MAX_BYTES,
   MATCH_MAX_LENGTH_RATIO,
+  type MatchedPart,
   matchedSegment,
+  matchedTrack,
   segmentToGpx,
   trackSegments,
 } from '@features/dataViewer/matchTrack.js';
@@ -19,9 +22,7 @@ import { loadDataViewerMessages } from '@features/dataViewer/translations/loadDa
 import { graphhopperMatchUrl } from '@features/routePlanner/model/graphhopperRoute.js';
 import { pathDetailKeys } from '@features/routePlanner/model/pathDetails.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { withoutPerPointData } from '@shared/geoutils.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
-import type { Feature, LineString, Position } from 'geojson';
 
 /**
  * GraphHopper reports a segment it cannot route through as a Java exception
@@ -59,17 +60,7 @@ export const dataViewerMatchTrackProcessor: Processor<
         ),
       ]);
 
-    const matched: Feature<LineString>[] = [];
-
-    /**
-     * A segment as it was recorded, for anything the graph can't answer for.
-     * Per-point data goes even here — these arrays index the whole track.
-     */
-    const asRecorded = (coordinates: Position[]): Feature<LineString> => ({
-      type: 'Feature',
-      properties: withoutPerPointData(active.feature.properties),
-      geometry: { type: 'LineString', coordinates },
-    });
+    const parts: MatchedPart[] = [];
 
     let attempted = 0;
 
@@ -81,7 +72,7 @@ export const dataViewerMatchTrackProcessor: Processor<
       // One request per segment — see `trackSegments`.
       for (const segment of trackSegments(active.feature)) {
         if (!isMatchable(segment)) {
-          matched.push(asRecorded(segment.coordinates));
+          parts.push(asRecordedPart(segment));
 
           continue;
         }
@@ -122,18 +113,22 @@ export const dataViewerMatchTrackProcessor: Processor<
 
           broken++;
 
-          matched.push(asRecorded(segment.coordinates));
+          parts.push(asRecordedPart(segment));
 
           continue;
         }
 
-        const { feature, length } = matchedSegment(raw, active.feature);
+        const matched = matchedSegment(raw);
 
         attempted += segment.length;
 
-        matchedTotal += length;
+        matchedTotal += matched.length;
 
-        matched.push(feature);
+        parts.push({
+          coordinates: matched.coordinates,
+          channels: null,
+          details: matched.details,
+        });
       }
     } catch (err) {
       // Skips an abort: clearing the map cancels the request, and that is the
@@ -191,15 +186,18 @@ export const dataViewerMatchTrackProcessor: Processor<
       );
     }
 
-    // A feature per segment rather than one `MultiLineString`: the details are
-    // metres along their own line, and `@turf/flatten` would give every part of
-    // a multi-line the same spans.
+    // The recording stays one entry with every segment's answer in it, so the
+    // track list, the start/finish pair, the profile and "more info" all still
+    // read one recording. Each part's spans ride along as the geometry's parts,
+    // which is the index a colorizer reads them by.
+    const matched = matchedTrack(parts, active.feature);
+
     dispatch(
       dataViewerSetData({
         trackGeojson: {
           ...trackGeojson,
-          features: trackGeojson.features.flatMap((feature, i) =>
-            i === active.index ? matched : [feature],
+          features: trackGeojson.features.map((feature, i) =>
+            i === active.index ? matched : feature,
           ),
         },
       }),
