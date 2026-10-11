@@ -17,6 +17,7 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
 import { featureLabel } from '@shared/featureProperties.js';
+import { flattenTracks } from '@shared/flattenTracks.js';
 import {
   HALO_COLOR,
   HALO_PANE,
@@ -34,7 +35,6 @@ import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
-import { flatten } from '@turf/flatten';
 import type {
   Feature,
   FeatureCollection,
@@ -293,7 +293,7 @@ export default function DataViewerResult({
   );
 
   // Native GeoJSON Polygon geometry (e.g. an imported .geojson) and standalone
-  // points (GPX `<wpt>`), in one pass: `flatten` splits Multi* and opens a
+  // points (GPX `<wpt>`), in one pass: the split opens a Multi* and a
   // GeometryCollection, and the source feature index rides along so a click
   // selects the whole feature a part came from.
   const [polygons, points] = useMemo(() => {
@@ -307,7 +307,7 @@ export default function DataViewerResult({
     }[] = [];
 
     for (const [featureIndex, feature] of trackGeojson.features.entries()) {
-      for (const part of flatten(feature).features) {
+      for (const part of flattenTracks(feature)) {
         const geom = part.geometry;
 
         if (geom.type === 'Point') {

@@ -1,4 +1,4 @@
-import { flatten } from '@turf/flatten';
+import { flattenTracks } from '@shared/flattenTracks.js';
 import type { Feature, FeatureCollection, Position } from 'geojson';
 import { midLatitude, simplifyIndices, simplifyRing } from './simplifyGeo.js';
 
@@ -96,7 +96,7 @@ export function suggestSimplifyTolerance(lines: Position[][]): number {
 export function convertibleLines(
   geojson: Feature | FeatureCollection,
 ): Position[][] {
-  return flatten(geojson).features.flatMap((feature) => {
+  return flattenTracks(geojson).flatMap((feature) => {
     const { geometry } = feature;
 
     return geometry?.type === 'LineString'

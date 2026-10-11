@@ -1,7 +1,7 @@
 import type { RootState } from '@app/store/store.js';
 import { hasGeometry } from '@features/search/model/resultUtils.js';
+import { flattenTracks } from '@shared/flattenTracks.js';
 import { stitchLines } from '@shared/geoutils.js';
-import { flatten as turfFlatten } from '@turf/flatten';
 import type { Feature, LineString, Position } from 'geojson';
 import type { Exportable } from './model/actions.js';
 
@@ -84,7 +84,7 @@ export function getExportables(): Partial<
       // nothing and the course would read as having no line.
       const features = structuredClone(
         shown.flatMap(({ geojson }) =>
-          turfFlatten(geojson).features.map((feature) => feature as Feature),
+          flattenTracks(geojson).map((feature) => feature as Feature),
         ),
       );
 
@@ -116,7 +116,7 @@ export function getExportables(): Partial<
       // untouched.
       const features = structuredClone(
         trackGeojson.features.flatMap((feature) =>
-          turfFlatten(feature).features.map((part) => part as Feature),
+          flattenTracks(feature).map((part) => part as Feature),
         ),
       );
 
