@@ -3322,6 +3322,26 @@
       }
     },
     {
+      "type": "3IFGO",
+      "layer": "overlay",
+      "name": "Bioportal Natura 2000 – special protection areas for birds (POP)",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bioportal.hr/wms",
+        "layers": ["n2krh2023ptice"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+            "url": "https://www.bioportal.hr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "3J19Y",
       "layer": "base",
       "name": "OS 2nd Ed. 6-inch. Leitrim, Ireland (1888-1915) (NLS)",
@@ -4877,6 +4897,26 @@
       }
     },
     {
+      "type": "59V5E",
+      "layer": "overlay",
+      "name": "Ministry of Culture register of cultural heritage",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoportal.kulturnadobra.hr/servisi/grafika/RKD_MK_Javni/wms",
+        "layers": ["ZasticenoKulturnoDobro"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo kulture i medija – Registar kulturnih dobara RH",
+            "url": "https://geoportal.kulturnadobra.hr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "5AR7F",
       "layer": "base",
       "name": "imagico.de: Sør Rondane Mountains east evening",
@@ -5519,6 +5559,26 @@
             "type": "map",
             "name": "© Trafikverket, CC0",
             "url": "https://www.trafikverket.se"
+          }
+        ]
+      }
+    },
+    {
+      "type": "5TQHW",
+      "layer": "overlay",
+      "name": "Bioportal cave cadastre 2024 (1 km grid)",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bioportal.hr/wms",
+        "layers": ["katastar_speleoloskih_objekata2024"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+            "url": "https://www.bioportal.hr/"
           }
         ]
       }
@@ -6964,6 +7024,26 @@
       }
     },
     {
+      "type": "7KUH2",
+      "layer": "overlay",
+      "name": "Bioportal protected areas",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bioportal.hr/wms",
+        "layers": ["zasticeno_podrucje_poligoni", "zasticeno_podrucje_tocke"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+            "url": "https://www.bioportal.hr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "7OWZU",
       "layer": "base",
       "name": "SPW(allonie) 2012-2013 aerial imagery",
@@ -8315,6 +8395,26 @@
             "type": "map",
             "name": "Strategic Mapping Program (StratMap). Brazos County Imagery, 2019-01-29",
             "url": "https://data.geographic.texas.gov/collection/?c=aa2cd74e-9c2d-4f00-bae5-609b5e898093"
+          }
+        ]
+      }
+    },
+    {
+      "type": "9AT79",
+      "layer": "overlay",
+      "name": "Bioportal marine habitat map 2023",
+      "countries": ["hr"],
+      "bbox": [13.33, 42.2299, 19.45, 45.81],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bioportal.hr/wms",
+        "layers": ["morska_stanista_p_1_1"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+            "url": "https://www.bioportal.hr/"
           }
         ]
       }
@@ -12092,6 +12192,26 @@
       }
     },
     {
+      "type": "DQUWC",
+      "layer": "overlay",
+      "name": "Bioportal protected-area management zoning",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bioportal.hr/wms",
+        "layers": ["zonacije_poligoni_07052024"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+            "url": "https://www.bioportal.hr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "DRHGF",
       "layer": "base",
       "name": "Berlin/Geoportal DOP20RGB (2021)",
@@ -12815,6 +12935,26 @@
       }
     },
     {
+      "type": "EIOIQ",
+      "layer": "overlay",
+      "name": "MZOZT CORINE Land Cover 1980",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://servisi.azo.hr/tlo/wms",
+        "layers": ["corine_1980"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije, CORINE Land Cover",
+            "url": "https://www.haop.hr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "EL82Q",
       "layer": "base",
       "name": "imagico.de: Sverdrup Mountains evening",
@@ -13031,6 +13171,28 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "EWOL6",
+      "layer": "base",
+      "name": "DGU topographic map 1:25 000 (TK25, older edition)",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoportal.dgu.hr/services/tk/ows",
+        "layers": ["TK25"],
+        "minZoom": 10,
+        "maxNativeZoom": 17,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Sadrži podatke Državne geodetske uprave",
+            "url": "https://dgu.gov.hr/"
           }
         ]
       }
@@ -13395,6 +13557,26 @@
             "type": "map",
             "name": "Contains information licensed under the Open Government Licence - City of Courtenay",
             "url": "https://data-courtenay.opendata.arcgis.com/pages/city-of-courtenay-open-data-licence"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FB2M1",
+      "layer": "overlay",
+      "name": "Ministry of Agriculture hunting grounds",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://geoportal.mps.hr/geocluster/geoportal_inspire/wms",
+        "layers": ["inspire_granicalovista"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo poljoprivrede, šumarstva i ribarstva",
+            "url": "https://poljoprivreda.gov.hr/"
           }
         ]
       }
@@ -16775,6 +16957,26 @@
       }
     },
     {
+      "type": "JLTMD",
+      "layer": "overlay",
+      "name": "Bioportal habitat map 2004 – terrestrial habitats",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bioportal.hr/wms",
+        "layers": ["kopnena_stanista"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+            "url": "https://www.bioportal.hr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "JMMWO",
       "layer": "base",
       "name": "TX: Smith County Imagery 2019",
@@ -17083,6 +17285,27 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "JZNHM",
+      "layer": "overlay",
+      "name": "DGU Register of geographical names",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://rgi.dgu.hr/geoserver/wmsgn/wms",
+        "layers": ["GN.GeographicalNames"],
+        "minZoom": 12,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Sadrži podatke Državne geodetske uprave",
+            "url": "https://dgu.gov.hr/"
           }
         ]
       }
@@ -17539,6 +17762,27 @@
             "type": "map",
             "name": "CRAIG - Métropole du Grand Lyon 2022",
             "url": "https://data.grandlyon.com/portail/fr/jeux-de-donnees/orthophotographie-2022-de-la-metropole-de-lyon--format-ecw/info"
+          }
+        ]
+      }
+    },
+    {
+      "type": "KKX4Y",
+      "layer": "overlay",
+      "name": "APPRRR ARKOD agricultural land parcels",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://servisi.apprrr.hr/NIPP/wms",
+        "layers": ["hr.land_parcels"],
+        "minZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Agencija za plaćanja u poljoprivredi, ribarstvu i ruralnom razvoju – ARKOD",
+            "url": "https://www.apprrr.hr/prostorni-podaci-servisi/"
           }
         ]
       }
@@ -19265,6 +19509,26 @@
       }
     },
     {
+      "type": "MS5N8",
+      "layer": "overlay",
+      "name": "MZOZT CORINE Land Cover 2018",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://servisi.azo.hr/tlo/wms",
+        "layers": ["clc2018"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije, CORINE Land Cover (EEA/Copernicus)",
+            "url": "https://www.haop.hr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "MSEKZ",
       "layer": "base",
       "name": "Ortho HR 2020",
@@ -20091,6 +20355,26 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "NVWS1",
+      "layer": "overlay",
+      "name": "Bioportal map of terrestrial non-forest habitats 2016",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bioportal.hr/wms",
+        "layers": ["kopnena_stanista_2016"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+            "url": "https://www.bioportal.hr/"
           }
         ]
       }
@@ -23367,6 +23651,26 @@
       }
     },
     {
+      "type": "S1GXR",
+      "layer": "overlay",
+      "name": "Bioportal Ramsar sites, UNESCO geoparks and biosphere reserves",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bioportal.hr/wms",
+        "layers": ["ramsar", "global_geopark_2024", "unesco_mab"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+            "url": "https://www.bioportal.hr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "S3LYE",
       "layer": "base",
       "name": "PEMA Orthoimagery (2018-2020)",
@@ -23835,6 +24139,26 @@
       }
     },
     {
+      "type": "STQEJ",
+      "layer": "overlay",
+      "name": "MZOZT ecosystem map – land",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://servisi.azo.hr/priroda/wms",
+        "layers": ["ekosustavi_hr_kopno"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije",
+            "url": "https://www.haop.hr/"
+          }
+        ]
+      }
+    },
+    {
       "type": "SUKBV",
       "layer": "overlay",
       "name": "WLV avalanche and torrent catchment areas",
@@ -23870,6 +24194,26 @@
             "type": "map",
             "name": "basemap.at",
             "url": "https://basemap.at"
+          }
+        ]
+      }
+    },
+    {
+      "type": "SVANB",
+      "layer": "overlay",
+      "name": "Bioportal Natura 2000 – sites of community importance (POVS)",
+      "countries": ["hr"],
+      "bbox": [13.49, 42.39, 19.45, 46.56],
+      "category": "other",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.bioportal.hr/wms",
+        "layers": ["n2krh2023stanista"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+            "url": "https://www.bioportal.hr/"
           }
         ]
       }
@@ -28582,6 +28926,26 @@
           {
             "type": "map",
             "name": "Geoportal Berlin/Digitale farbige TrueOrthophotos 2023 (DOP20RGB) (codefor.de mirror)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "YRGF6",
+      "layer": "base",
+      "name": "HHI small-craft nautical charts (Male karte)",
+      "countries": ["hr"],
+      "bbox": [13.33, 42.2299, 18.93, 45.81],
+      "category": "map",
+      "body": {
+        "url": "https://tiles.arcgis.com/tiles/tDYJmhP975urQUZt/arcgis/rest/services/mk_v2/MapServer/tile/{z}/{y}/{x}",
+        "minZoom": 7,
+        "maxNativeZoom": 14,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Hrvatski hidrografski institut – Male karte (not for navigation)",
+            "url": "https://www.hhi.hr/"
           }
         ]
       }

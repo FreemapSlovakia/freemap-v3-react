@@ -2407,7 +2407,7 @@
   },
   "NRCS_American_Samoa_2024": {
     "v": 3,
-    "status": "error",
+    "status": "not an image",
     "cors": false,
     "scales": []
   },
@@ -6113,6 +6113,114 @@
     "cors": true,
     "scales": []
   },
+  "fm:hr-apprrr-arkod": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-azo-corine-1980": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-azo-corine-2018": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-azo-ecosystems": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-bioportal-cave-cadastre": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-bioportal-habitats-2004": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-bioportal-habitats-2016": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-bioportal-international-designations": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-bioportal-marine-habitats-2023": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-bioportal-natura2000-birds": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-bioportal-natura2000-habitats": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-bioportal-pa-zoning": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-bioportal-protected-areas": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-dgu-geographical-names": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-dgu-tk25": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:hr-hhi-small-craft-charts": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:hr-min-culture-heritage": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
+  "fm:hr-mps-hunting-grounds": {
+    "v": 3,
+    "status": 200,
+    "cors": false,
+    "scales": []
+  },
   "fm:hu-admin-units": {
     "v": 3,
     "status": 200,
@@ -6830,7 +6938,7 @@
   "ign-cartas-500k": {
     "v": 3,
     "status": 400,
-    "cors": false,
+    "cors": true,
     "scales": []
   },
   "ign-cartas-50k": {

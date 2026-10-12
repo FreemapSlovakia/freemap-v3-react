@@ -7264,5 +7264,316 @@
     },
     "bbox": [5.73, 49.44, 6.53, 50.19],
     "note": "1969 soil map of Luxembourg at 1:100 000 (scanned)."
+  },
+  {
+    "id": "fm:hr-dgu-tk25",
+    "name": "DGU topographic map 1:25 000 (TK25, older edition)",
+    "type": "wms",
+    "url": "https://geoportal.dgu.hr/services/tk/ows",
+    "layers": ["TK25"],
+    "country_code": "HR",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 10,
+    "max_zoom": 17,
+    "license_url": "https://data.gov.hr/id/licence/otvorena-dozvola-rh",
+    "attribution": {
+      "text": "Sadrži podatke Državne geodetske uprave",
+      "url": "https://dgu.gov.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "The older edition of the state 1:25 000 topographic map, which differs from the new Topo 25 already in the catalog."
+  },
+  {
+    "id": "fm:hr-dgu-geographical-names",
+    "name": "DGU Register of geographical names",
+    "type": "wms",
+    "url": "https://rgi.dgu.hr/geoserver/wmsgn/wms",
+    "layers": ["GN.GeographicalNames"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 12,
+    "license_url": "https://data.gov.hr/id/licence/otvorena-dozvola-rh",
+    "attribution": {
+      "text": "Sadrži podatke Državne geodetske uprave",
+      "url": "https://dgu.gov.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Official toponyms (peaks, valleys, hamlets, field names) as black labels."
+  },
+  {
+    "id": "fm:hr-hhi-small-craft-charts",
+    "name": "HHI small-craft nautical charts (Male karte)",
+    "type": "tms",
+    "url": "https://tiles.arcgis.com/tiles/tDYJmhP975urQUZt/arcgis/rest/services/mk_v2/MapServer/tile/{z}/{y}/{x}",
+    "country_code": "HR",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 7,
+    "max_zoom": 14,
+    "license_url": "https://registri.nipp.hr/izvori/1016",
+    "attribution": {
+      "text": "© Hrvatski hidrografski institut – Male karte (not for navigation)",
+      "url": "https://www.hhi.hr/"
+    },
+    "bbox": [13.33, 42.23, 18.93, 45.81],
+    "note": "The 1:100 000 small-craft nautical chart series for the eastern Adriatic, from the Gulf of Trieste to the Bay of Kotor."
+  },
+  {
+    "id": "fm:hr-bioportal-protected-areas",
+    "name": "Bioportal protected areas",
+    "type": "wms",
+    "url": "https://services.bioportal.hr/wms",
+    "layers": ["zasticeno_podrucje_poligoni", "zasticeno_podrucje_tocke"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1657",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+      "url": "https://www.bioportal.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Protected areas, including national and nature parks, reserves and natural monuments (points), labelled by name."
+  },
+  {
+    "id": "fm:hr-bioportal-natura2000-habitats",
+    "name": "Bioportal Natura 2000 – sites of community importance (POVS)",
+    "type": "wms",
+    "url": "https://services.bioportal.hr/wms",
+    "layers": ["n2krh2023stanista"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1657",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+      "url": "https://www.bioportal.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Natura 2000 conservation areas designated under the Habitats Directive (2023 boundaries)."
+  },
+  {
+    "id": "fm:hr-bioportal-natura2000-birds",
+    "name": "Bioportal Natura 2000 – special protection areas for birds (POP)",
+    "type": "wms",
+    "url": "https://services.bioportal.hr/wms",
+    "layers": ["n2krh2023ptice"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1657",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+      "url": "https://www.bioportal.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Natura 2000 areas designated under the Birds Directive (2023), drawn with hatching."
+  },
+  {
+    "id": "fm:hr-bioportal-habitats-2016",
+    "name": "Bioportal map of terrestrial non-forest habitats 2016",
+    "type": "wms",
+    "url": "https://services.bioportal.hr/wms",
+    "layers": ["kopnena_stanista_2016"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1657",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+      "url": "https://www.bioportal.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Detailed habitat-type map of non-forest land (grasslands, rocky ground, wetlands) from 2016."
+  },
+  {
+    "id": "fm:hr-bioportal-habitats-2004",
+    "name": "Bioportal habitat map 2004 – terrestrial habitats",
+    "type": "wms",
+    "url": "https://services.bioportal.hr/wms",
+    "layers": ["kopnena_stanista"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1657",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+      "url": "https://www.bioportal.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Habitat map of the whole country at 1:100 000, including forest types, from the national habitat classification."
+  },
+  {
+    "id": "fm:hr-bioportal-marine-habitats-2023",
+    "name": "Bioportal marine habitat map 2023",
+    "type": "wms",
+    "url": "https://services.bioportal.hr/wms",
+    "layers": ["morska_stanista_p_1_1"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1657",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+      "url": "https://www.bioportal.hr/"
+    },
+    "bbox": [13.33, 42.23, 19.45, 45.81],
+    "note": "Benthic habitats of the Croatian coastal sea, such as Posidonia meadows and reefs, from 2023 mapping."
+  },
+  {
+    "id": "fm:hr-bioportal-pa-zoning",
+    "name": "Bioportal protected-area management zoning",
+    "type": "wms",
+    "url": "https://services.bioportal.hr/wms",
+    "layers": ["zonacije_poligoni_07052024"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1657",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+      "url": "https://www.bioportal.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Management zones inside national and nature parks (strict protection, active management, use zones), labelled by zone code."
+  },
+  {
+    "id": "fm:hr-bioportal-cave-cadastre",
+    "name": "Bioportal cave cadastre 2024 (1 km grid)",
+    "type": "wms",
+    "url": "https://services.bioportal.hr/wms",
+    "layers": ["katastar_speleoloskih_objekata2024"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1657",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+      "url": "https://www.bioportal.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "1 km grid squares that contain registered caves and pits; exact locations are generalised."
+  },
+  {
+    "id": "fm:hr-bioportal-international-designations",
+    "name": "Bioportal Ramsar sites, UNESCO geoparks and biosphere reserves",
+    "type": "wms",
+    "url": "https://services.bioportal.hr/wms",
+    "layers": ["ramsar", "global_geopark_2024", "unesco_mab"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1657",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
+      "url": "https://www.bioportal.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Internationally designated areas: Ramsar wetlands, UNESCO Global Geoparks (Papuk, Vis, Biokovo-Imotski) and Man and the Biosphere reserves."
+  },
+  {
+    "id": "fm:hr-azo-ecosystems",
+    "name": "MZOZT ecosystem map – land",
+    "type": "wms",
+    "url": "https://servisi.azo.hr/priroda/wms",
+    "layers": ["ekosustavi_hr_kopno"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1665",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije",
+      "url": "https://www.haop.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "National mapping of terrestrial ecosystem types (forests, grasslands, wetlands, cropland, urban areas)."
+  },
+  {
+    "id": "fm:hr-azo-corine-2018",
+    "name": "MZOZT CORINE Land Cover 2018",
+    "type": "wms",
+    "url": "https://servisi.azo.hr/tlo/wms",
+    "layers": ["clc2018"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1667",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije, CORINE Land Cover (EEA/Copernicus)",
+      "url": "https://www.haop.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "CORINE land cover classes for Croatia, 2018 inventory, in the standard CLC colours."
+  },
+  {
+    "id": "fm:hr-azo-corine-1980",
+    "name": "MZOZT CORINE Land Cover 1980",
+    "type": "wms",
+    "url": "https://servisi.azo.hr/tlo/wms",
+    "layers": ["corine_1980"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1667",
+    "attribution": {
+      "text": "© Ministarstvo zaštite okoliša i zelene tranzicije, CORINE Land Cover",
+      "url": "https://www.haop.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Croatia's 1980 CORINE land cover map, older than the pan-European CLC 1990 baseline."
+  },
+  {
+    "id": "fm:hr-min-culture-heritage",
+    "name": "Ministry of Culture register of cultural heritage",
+    "type": "wms",
+    "url": "https://geoportal.kulturnadobra.hr/servisi/grafika/RKD_MK_Javni/wms",
+    "layers": ["ZasticenoKulturnoDobro"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/498",
+    "attribution": {
+      "text": "© Ministarstvo kulture i medija – Registar kulturnih dobara RH",
+      "url": "https://geoportal.kulturnadobra.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Protected cultural monuments as type icons (churches, fortifications, archaeological sites), plus heritage-zone outlines."
+  },
+  {
+    "id": "fm:hr-mps-hunting-grounds",
+    "name": "Ministry of Agriculture hunting grounds",
+    "type": "wms",
+    "url": "https://geoportal.mps.hr/geocluster/geoportal_inspire/wms",
+    "layers": ["inspire_granicalovista"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://registri.nipp.hr/izvori/1724",
+    "attribution": {
+      "text": "© Ministarstvo poljoprivrede, šumarstva i ribarstva",
+      "url": "https://poljoprivreda.gov.hr/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Boundaries of state and private hunting grounds (lovišta)."
+  },
+  {
+    "id": "fm:hr-apprrr-arkod",
+    "name": "APPRRR ARKOD agricultural land parcels",
+    "type": "wms",
+    "url": "https://servisi.apprrr.hr/NIPP/wms",
+    "layers": ["hr.land_parcels"],
+    "country_code": "HR",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 14,
+    "license_url": "https://registri.nipp.hr/izvori/385",
+    "attribution": {
+      "text": "© Agencija za plaćanja u poljoprivredi, ribarstvu i ruralnom razvoju – ARKOD",
+      "url": "https://www.apprrr.hr/prostorni-podaci-servisi/"
+    },
+    "bbox": [13.49, 42.39, 19.45, 46.56],
+    "note": "Current farm parcel boundaries from the ARKOD land-parcel identification system (LPIS)."
   }
 ]
