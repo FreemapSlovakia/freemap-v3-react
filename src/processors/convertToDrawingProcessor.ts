@@ -62,6 +62,7 @@ import {
   defaultLabel,
   ownTable,
 } from '@shared/featureProperties.js';
+import { flattenTracks } from '@shared/flattenTracks.js';
 import { mergeLines } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { askSimplification } from '@shared/simplifyDialog.js';
@@ -76,7 +77,6 @@ import {
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { flatten as turfFlatten } from '@turf/flatten';
 import type { Feature, FeatureCollection, Position } from 'geojson';
 import type { Dispatch } from 'redux';
 
@@ -235,7 +235,7 @@ function geojsonToDrawing(
   tolerance = 0,
   carry?: ConvertCarry,
 ): { lineCount: number; pointCount: number } {
-  const { features } = turfFlatten(geojson);
+  const features = flattenTracks(geojson);
 
   mergeLines(features);
 
@@ -556,7 +556,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
 
       let pointCount = 0;
 
-      const features = turfFlatten(source).features.map((feature) =>
+      const features = flattenTracks(source).map((feature) =>
         simplifyFeature(feature, payload.tolerance),
       );
 

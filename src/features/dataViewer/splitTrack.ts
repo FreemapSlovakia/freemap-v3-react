@@ -2,8 +2,13 @@ import {
   clipPathDetails,
   PATH_DETAILS_PROP,
   type PathDetails,
+  readPathDetailsParts,
 } from '@shared/colorizers/colorize.js';
-import { lineSegments, segmentDistances } from '@shared/geoutils.js';
+import {
+  cumulativeDistances,
+  lineSegments,
+  segmentDistances,
+} from '@shared/geoutils.js';
 import type { LineString, MultiLineString, Position } from 'geojson';
 import { type Channel, readChannels, writeChannels } from './trackChannels.js';
 import type { TrackLine } from './trackSelection.js';
@@ -29,9 +34,8 @@ interface Run {
 interface Source {
   segments: Position[][];
   channels: Channel[];
-  details: PathDetails | undefined;
-  /** Only measured for `details`, which are metres from the start. */
-  distances: number[][] | null;
+  /** One entry per segment, each measured from the start of its own. */
+  details: PathDetails[] | undefined;
 }
 
 /** A run with a line in it; a lone point draws nothing and is dropped. */
@@ -44,17 +48,10 @@ function drawableSegments(segments: Position[][]): number {
 }
 
 function readSource(feature: TrackLine): Source {
-  const segments = lineSegments(feature.geometry);
-
-  const details = feature.properties?.[PATH_DETAILS_PROP] as
-    | PathDetails
-    | undefined;
-
   return {
-    segments,
+    segments: lineSegments(feature.geometry),
     channels: readChannels(feature),
-    details,
-    distances: details ? vertexDistances(feature) : null,
+    details: readPathDetailsParts(feature),
   };
 }
 
@@ -123,22 +120,29 @@ function takeRuns(
       kept.map((run) => channel.segments[run.segment]!.slice(run.from, run.to)),
   );
 
-  if (source.details && source.distances) {
-    const first = kept[0]!;
-
-    const last = kept.at(-1)!;
-
-    const from = source.distances[first.segment]?.[first.from] ?? 0;
-
-    // Spans are metres from the start of the line, so each piece re-bases them.
-    properties[PATH_DETAILS_PROP] = clipPathDetails(
-      source.details,
-      from,
-      source.distances[last.segment]?.[last.to - 1] ?? from,
-    );
+  if (source.details) {
+    properties[PATH_DETAILS_PROP] = kept.map((run) => runDetails(run, source));
   }
 
   return { ...feature, geometry, properties };
+}
+
+/**
+ * The spans of one run: the segment's own, re-based to the piece of it the run
+ * is — spans are metres from where the segment starts.
+ */
+function runDetails(run: Run, source: Source): PathDetails {
+  const details = source.details?.[run.segment] ?? {};
+
+  const segment = source.segments[run.segment]!;
+
+  if (run.from === 0 && run.to === segment.length) {
+    return details;
+  }
+
+  const distances = cumulativeDistances(segment);
+
+  return clipPathDetails(details, distances[run.from]!, distances[run.to - 1]!);
 }
 
 /** A track that has something to cut: a vertex with a piece on either side. */

@@ -225,15 +225,17 @@ describe('trailColorColorizer', () => {
     let start = 0;
 
     return line(COORDS, {
-      [PATH_DETAILS_PROP]: {
-        hiking_colours: runs.map(([mask, meters]) => {
-          const span = { start, end: start + meters, value: String(mask) };
+      [PATH_DETAILS_PROP]: [
+        {
+          hiking_colours: runs.map(([mask, meters]) => {
+            const span = { start, end: start + meters, value: String(mask) };
 
-          start += meters;
+            start += meters;
 
-          return span;
-        }),
-      },
+            return span;
+          }),
+        },
+      ],
     });
   };
 
@@ -325,9 +327,9 @@ describe('trailColorColorizer', () => {
   // `hiking_colours`.
   it('reads whichever of the two masks the route carries', () => {
     const bike = line(COORDS, {
-      [PATH_DETAILS_PROP]: {
-        bike_colours: [{ start: 0, end: SPAN, value: String(RED) }],
-      },
+      [PATH_DETAILS_PROP]: [
+        { bike_colours: [{ start: 0, end: SPAN, value: String(RED) }] },
+      ],
     });
 
     expect(trailColorColorizer.isAvailable?.([bike])).toBe(true);
@@ -345,7 +347,7 @@ describe('trailColorColorizer', () => {
   const sharesOf = (details: Record<string, unknown>) =>
     Object.fromEntries(
       trailColorColorizer.categories!(
-        [line(COORDS, { [PATH_DETAILS_PROP]: details })],
+        [line(COORDS, { [PATH_DETAILS_PROP]: [details] })],
         colorizerMessages,
       ).map(({ key, meters }) => [key, meters]),
     );
@@ -396,9 +398,9 @@ describe('trailColorColorizer', () => {
     // The line runs ~223 m; only its first 100 m is valued, as a car leg
     // following a walked one would leave it.
     const partly = line(COORDS, {
-      [PATH_DETAILS_PROP]: {
-        hiking_colours: [{ start: 0, end: 100, value: String(RED) }],
-      },
+      [PATH_DETAILS_PROP]: [
+        { hiking_colours: [{ start: 0, end: 100, value: String(RED) }] },
+      ],
     });
 
     expect(

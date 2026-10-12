@@ -215,8 +215,9 @@ export function routeColorizeFeatures(
         : // A run is a piece of the line, so anything of the line's that answers
           // to its length cannot come along.
           withoutPerPointData(line?.properties ?? null)),
-      [PATH_DETAILS_PROP]:
+      [PATH_DETAILS_PROP]: [
         unrouted.length === 0 ? details : clipPathDetails(details, from, to),
+      ],
       // What was cut out before this run still counts on the whole route's
       // distance axis, which the elevation chart colors against.
       [LINE_START_PROP]: from,

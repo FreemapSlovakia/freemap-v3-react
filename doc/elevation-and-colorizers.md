@@ -660,15 +660,22 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   be split first — and the split has to take the per-point channels and the path-detail
   spans with it: `@turf/flatten` copies the whole of `properties` onto every part, leaving
   a nested `coordinateProperties` that lines up with no part's coordinates, which reads as
-  "no data" and takes Time/Speed/HR off the dropdown. `trackLineParts.ts` is the data
-  viewer's own flatten, over the same `trackSegmentFeatures` that **Explode** cuts with —
-  one feature per segment, channels cut to it and the spans clipped onto its own start.
+  "no data" and takes Time/Speed/HR off the dropdown. `flattenTracks` (`src/shared/`) is
+  the flatten that hands part `i` its own entry of `fm:pathDetails`; the data viewer's
+  `trackLineParts.ts` instead cuts with `trackSegmentFeatures`, the cut **Explode** keeps
+  as features, which takes the channels too.
 - **Categorical modes** (`modes/pathDetail.ts`) paint named values instead of a scale.
   They read GraphHopper path details that ride on the feature as
-  `properties['fm:pathDetails']` — stretches in **metres** along the line, because the
+  `properties['fm:pathDetails']` — an array with **one entry per part of the line**, entry
+  `i` the stretches of part `i` in metres from _that part's_ start. That is what lets a
+  paused recording stay one recording: `@turf/flatten` gives every part the whole of
+  `properties`, so a plain object of spans would have each part wearing the spans of all of
+  them. Tracks saved earlier hold one object measured along the whole line, gaps between
+  parts left out; `readPathDetailsParts` cuts that into the per-part form on every read.
+  Metres rather than point indices because the
   line is densified for premium users and every point index shifts with it (the same
   reason `structureElevation.ts` measures bridges that way). Because they are measured
-  from the start of the line, an edit that moves a vertex has to move them too:
+  from the start of their part, an edit that moves a vertex has to move them too:
   `clipPathDetails` re-bases them onto each piece a cut or an explode gives (or a tail
   would be painted with the categories of the original beginning), and `remapPathDetails`
   reads them off a new axis when simplifying or joining moves every vertex along it. `compute` returns the whole
@@ -900,8 +907,11 @@ Facts that decide the implementation, all measured against the live server:
   observations, so a paused recording sent whole has it _route across the pause_: a real
   recording carrying a stray three-point fragment 28 km from the walk matched at four
   times its length. `trackSegments` keeps them apart, measuring each on its own, and the
-  result is a feature per segment rather than one `MultiLineString` — the details are
-  metres along their own line, and `@turf/flatten` would hand every part the same spans.
+  result is one feature again, the segments as its parts and each part's details as the
+  entry of the same index (`matchedTrack`) — the track list, the start/finish pair, the
+  profile and "more info" all read the collection, so a recording has to stay one entry in
+  it whatever the graph answered. `flattenTracks` is what turns that back into per-part
+  lines for the colorizers, each with its own spans.
   A segment the graph cannot get through is kept as recorded rather than failing the lot,
   since one leg of a mixed track routinely defeats whatever profile the other leg needs.
 - **A match longer than the recording is refused** (`MATCH_MAX_LENGTH_RATIO`). Matching can
@@ -921,12 +931,17 @@ Facts that decide the implementation, all measured against the live server:
   which is measured this way rather than read from the response's own `distance` (the
   graph's edge distance, ~2 % above a walk of the points it returns) so that both sides of
   the ratio check are measured alike.
-- **Per-point channels do not survive.** The matched line has its own points (1010 for a
-  286-point input in one measurement) and nothing maps the recorded ones onto them, so
-  `coordinateProperties` is dropped and the feature keeps its name alone. The modal warns
-  only when the track actually carries times or sensors. Transferring them would need a
-  correspondence between the two lines — `nearestPointOnLine` would give it, in either
-  direction, and it is the obvious next step if the loss proves unpopular.
+- **Per-point channels do not survive a matched segment, but survive an unmatched one.**
+  The matched line has its own points (1010 for a 286-point input in one measurement) and
+  nothing maps the recorded ones onto them, so its part of every channel is padded with
+  `null`, and a channel no kept segment records is dropped rather than left all `null`.
+  A segment kept as recorded keeps the recorded points, so its row of every channel and its
+  spans ride along (`trackSegments` cuts them, `asRecordedPart` hands them over).
+  The modal warns
+  only when the track actually carries times or sensors. Transferring them to a matched
+  segment would need a correspondence between the two lines — `nearestPointOnLine` would
+  give it, in either direction, and it is the obvious next step if the loss proves
+  unpopular.
 
 ### Lossless GeoJSON↔GPX transfer
 

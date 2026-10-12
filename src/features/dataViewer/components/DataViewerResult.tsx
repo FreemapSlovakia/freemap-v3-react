@@ -17,6 +17,7 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
 import { featureLabel } from '@shared/featureProperties.js';
+import { cumulativeDistances } from '@shared/geoutils.js';
 import {
   HALO_COLOR,
   HALO_PANE,
@@ -254,7 +255,16 @@ export default function DataViewerResult({
         const segments =
           geom.type === 'LineString' ? [geom.coordinates] : geom.coordinates;
 
-        return segments.map((coords) => {
+        // A permanent label goes on the longest segment only, not a stray
+        // fragment; a hover label stays on every segment.
+        const lengths =
+          segments.length > 1
+            ? segments.map((s) => cumulativeDistances(s).at(-1) ?? 0)
+            : [0];
+
+        const labelledIndex = lengths.indexOf(Math.max(...lengths));
+
+        return segments.map((coords, segmentIndex) => {
           const closed =
             coords.length > 2 &&
             coords[0]![0] === coords.at(-1)![0] &&
@@ -274,6 +284,7 @@ export default function DataViewerResult({
 
           return {
             featureIndex,
+            labelled: segmentIndex === labelledIndex,
             lineData: coords.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
             style: {
               type: style.type === 'polygon' ? 'polygon' : 'line',
@@ -424,7 +435,7 @@ export default function DataViewerResult({
           />
         ))}
 
-      {features.map(({ lineData, style, featureIndex }, i) => (
+      {features.map(({ lineData, style, featureIndex, labelled }, i) => (
         <Polyline
           key={`outline-${i}-${interactive ? 'a' : 'b'}`}
           pane="fm-trackviewer-hit"
@@ -463,10 +474,12 @@ export default function DataViewerResult({
               : {}),
           }}
         >
-          <LabelTooltip
-            mode={labelModeOf(featureIndex)}
-            label={labels[featureIndex]}
-          />
+          {(labelled || labelModeOf(featureIndex) === 'hover') && (
+            <LabelTooltip
+              mode={labelModeOf(featureIndex)}
+              label={labels[featureIndex]}
+            />
+          )}
         </Polyline>
       ))}
 

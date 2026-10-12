@@ -1,6 +1,7 @@
 import {
   PATH_DETAILS_PROP,
   type PathDetails,
+  readPathDetailsParts,
   remapPathDetails,
 } from '@shared/colorizers/colorize.js';
 import { featureLabel, withPlainLabel } from '@shared/featureProperties.js';
@@ -43,6 +44,9 @@ export function canJoinTracks(
 interface Side {
   segments: Position[][];
   channels: Channel[];
+  /** One entry per segment as read; never turned round. */
+  parts: PathDetails[] | undefined;
+  /** The parts laid end to end on the axis of {@link Side.distances}. */
   details: PathDetails | undefined;
   properties: Record<string, unknown>;
   /** Distance to each vertex, segment gaps excluded; empty unless measured. */
@@ -57,9 +61,6 @@ interface Run {
   segment: number;
 }
 
-const pathDetailsOf = (feature: TrackLine) =>
-  feature.properties?.[PATH_DETAILS_PROP] as PathDetails | undefined;
-
 /** The first recorded time, which is what orders two timed tracks. */
 function startTimeOf(feature: TrackLine): number | undefined {
   const first = firstTrackTime(feature);
@@ -73,12 +74,23 @@ function startTimeOf(feature: TrackLine): number | undefined {
 function readSide(feature: TrackLine, measure: boolean): Side {
   const segments = lineSegments(feature.geometry);
 
+  const distances = measure ? segmentDistances(segments) : [];
+
+  const parts = readPathDetailsParts(feature);
+
   return {
     segments,
     channels: readChannels(feature),
-    details: pathDetailsOf(feature),
+    parts,
+    details: measure
+      ? parts?.reduce<PathDetails | undefined>(
+          (merged, part, i) =>
+            mergePathDetails(merged, part, distances[i]?.[0] ?? 0),
+          undefined,
+        )
+      : undefined,
     properties: feature.properties ?? {},
-    distances: measure ? segmentDistances(segments).flat() : [],
+    distances: distances.flat(),
     startTime: startTimeOf(feature),
   };
 }
@@ -275,9 +287,12 @@ export function joinTrackFeatures(
   b: TrackLine,
   mode: TrackJoinMode,
 ): TrackLine {
-  // Only the path-detail spans are measured against a track's length, so a
-  // track without them is never walked for one.
-  const measure = Boolean(pathDetailsOf(a) ?? pathDetailsOf(b));
+  // Only spans laid onto one line are measured, so nothing else walks a track.
+  const measure =
+    mode === 'line' &&
+    Boolean(
+      a.properties?.[PATH_DETAILS_PROP] ?? b.properties?.[PATH_DETAILS_PROP],
+    );
 
   const [first, oriented] = orient(
     readSide(a, measure),
@@ -376,14 +391,23 @@ export function joinTrackFeatures(
     first.segments.reduce((n, segment) => n + segment.length, 0) -
     (shared ? 1 : 0);
 
-  const details =
-    mode === 'line'
-      ? // The oriented second, not the trimmed one: its spans still measure
-        // from the vertex a shared seam dropped.
-        joinedPathDetails(first, oriented, coordinates[0]!, startsAt)
-      : // Segment gaps count on neither axis here, so the second's spans only
-        // move by the first track's length.
-        mergePathDetails(first.details, second.details, sideLength(first));
+  let details: PathDetails[] | undefined;
+
+  if (mode === 'line') {
+    // The oriented second, not the trimmed one: its spans still measure from
+    // the vertex a shared seam dropped.
+    const joined = joinedPathDetails(
+      first,
+      oriented,
+      coordinates[0]!,
+      startsAt,
+    );
+
+    details = joined && [joined];
+  } else if (first.parts || second.parts) {
+    // Kept as segments, no side is turned round, so each keeps its own spans.
+    details = out.map(([run]) => sides[run!.side].parts?.[run!.segment] ?? {});
+  }
 
   if (details) {
     properties[PATH_DETAILS_PROP] = details;
