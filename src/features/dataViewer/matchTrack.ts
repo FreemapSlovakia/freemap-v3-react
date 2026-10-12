@@ -2,6 +2,7 @@ import {
   PATH_DETAILS_PROP,
   type PathDetailSpan,
   type PathDetails,
+  readPathDetailsParts,
 } from '@shared/colorizers/colorize.js';
 import {
   cumulativeDistances,
@@ -12,7 +13,7 @@ import {
 import type { LineString, MultiLineString, Position } from 'geojson';
 import z from 'zod';
 import { GeoJSONLineStringSchema } from 'zod-geojson';
-import { type Channel, readChannels, writeChannels } from './trackChannels.js';
+import { readChannels, writeChannels } from './trackChannels.js';
 import type { TrackLine } from './trackSelection.js';
 
 /**
@@ -83,6 +84,8 @@ export type MatchSegment = {
   times: number[] | null;
   /** Every per-point channel of the recording, cut to this segment's points. */
   channels: Record<string, unknown[]>;
+  /** The spans this segment already carries, kept if it goes unmatched. */
+  details: PathDetails;
   cum: number[];
   length: number;
 };
@@ -100,6 +103,8 @@ export function trackSegments(feature: TrackLine): MatchSegment[] {
   const timeSegments = trackTimeSegments(feature);
 
   const channels = readChannels(feature);
+
+  const details = readPathDetailsParts(feature);
 
   return lineSegments(feature.geometry).map((coordinates, i) => {
     const raw = timeSegments[i];
@@ -119,6 +124,7 @@ export function trackSegments(feature: TrackLine): MatchSegment[] {
       channels: Object.fromEntries(
         channels.map((channel) => [channel.key, channel.segments[i] ?? []]),
       ),
+      details: details?.[i] ?? {},
       cum,
       length: cum.at(-1) ?? 0,
     };
@@ -231,18 +237,9 @@ export function segmentToGpx(segment: MatchSegment): string {
 }
 
 /**
- * The graph's line for one segment, with how long it came out, from one parse
- * of the response.
- *
- * The path details ride along as metre spans — what every categorical colorize
- * mode reads, and the only form that survives the line being densified later.
- * They are metres from this segment's own start, so a part of the matched track
- * carries its own.
- *
- * The length is walked here rather than read from the response's own
- * `distance`, which is the graph's edge distance and runs ~2 % above a walk of
- * the points it returns. The caller weighs it against the recording's length,
- * and both sides have to be measured the same way.
+ * The graph's line for one segment, its path details as metre spans from the
+ * segment's start, and its length — walked rather than read from `distance`
+ * (~2 % long), so it compares with the recording's walked length.
  */
 export function matchedSegment(raw: unknown): {
   coordinates: Position[];
@@ -279,16 +276,13 @@ export function asRecordedPart(segment: MatchSegment): MatchedPart {
   return {
     coordinates: segment.coordinates,
     channels: segment.channels,
-    details: {},
+    details: segment.details,
   };
 }
 
 /**
- * The recording with every segment's matched line in it: one feature, whose
- * segments are the geometry's parts and which carries the per-point channels
- * and the path-detail spans of each of them. The recording stays one entry in
- * the viewer — a track dropdown, a start/finish pair and an elevation profile
- * all read the collection, not the graph's answer for one segment.
+ * The recording as one feature, one geometry part per segment, each with its
+ * own channels and path-detail spans.
  */
 export function matchedTrack(
   parts: MatchedPart[],
@@ -305,11 +299,14 @@ export function matchedTrack(
     ...withoutPerPointData(original.properties),
   };
 
+  // A channel no kept part records would be all padding, which reads as data.
   writeChannels(
     properties,
-    readChannels(original),
+    readChannels(original).filter((channel) =>
+      parts.some((part) => part.channels?.[channel.key]),
+    ),
     geometry.type === 'LineString',
-    (channel: Channel) =>
+    (channel) =>
       parts.map(
         (part) =>
           part.channels?.[channel.key] ??
@@ -319,7 +316,10 @@ export function matchedTrack(
 
   properties[PATH_DETAILS_PROP] = parts.map((part) => part.details);
 
-  return { ...original, geometry, properties };
+  // The recording's bbox no longer bounds the graph's line.
+  const { bbox: _bbox, ...rest } = original;
+
+  return { ...rest, geometry, properties };
 }
 
 /** `/match`'s index ranges as metre spans along the line it returned. */

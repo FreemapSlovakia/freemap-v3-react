@@ -277,6 +277,36 @@ describe('matchedTrack', () => {
     ]);
   });
 
+  it('drops a channel no kept part records', () => {
+    const allMatched = matchedTrack(
+      [0, 1].map(() => ({
+        coordinates: [
+          [0, 0],
+          [0.01, 0],
+        ],
+        channels: null,
+        details: {},
+      })),
+      recording,
+    );
+
+    expect(allMatched.properties?.['coordinateProperties']).toBeUndefined();
+  });
+
+  it('keeps the spans of a segment kept as recorded', () => {
+    const surface = { surface: [{ start: 0, end: 5, value: 'gravel' }] };
+
+    const [, kept] = trackSegments({
+      ...recording,
+      properties: {
+        ...recording.properties,
+        'fm:pathDetails': [{}, surface],
+      },
+    });
+
+    expect(asRecordedPart(kept!).details).toEqual(surface);
+  });
+
   it('slices the channels of every segment, timed or not', () => {
     expect(trackSegments(recording)[0]?.channels['heart']).toEqual([100, 110]);
   });

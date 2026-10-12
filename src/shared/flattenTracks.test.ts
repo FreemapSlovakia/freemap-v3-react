@@ -1,4 +1,8 @@
-import { PATH_DETAILS_PROP } from '@shared/colorizers/colorize.js';
+import {
+  PATH_DETAILS_PROP,
+  readPathDetails,
+} from '@shared/colorizers/colorize.js';
+import { cumulativeDistances } from '@shared/geoutils.js';
 import type {
   Feature,
   FeatureCollection,
@@ -97,6 +101,49 @@ describe('flattenTracks', () => {
     };
 
     expect(flattenTracks(line)).toEqual([line]);
+  });
+
+  const surfaceOf = (part: Feature) =>
+    readPathDetails(part as Feature<LineString>, 'surface');
+
+  it('keeps parts with their feature past one with no geometry', () => {
+    const parts = flattenTracks({
+      type: 'FeatureCollection',
+      features: [
+        { type: 'Feature', properties: {}, geometry: null as never },
+        recording,
+      ],
+    });
+
+    expect(
+      parts
+        .filter((part) => part.properties?.['name'])
+        .map((part) => surfaceOf(part)?.[0]?.value),
+    ).toEqual(['asphalt', 'gravel', 'path']);
+  });
+
+  it('cuts spans saved as one object along the whole line into parts', () => {
+    const [length0, length1] = recording.geometry.coordinates.map(
+      (c) => cumulativeDistances(c).at(-1)!,
+    );
+
+    const parts = flattenTracks({
+      ...recording,
+      properties: {
+        [PATH_DETAILS_PROP]: {
+          surface: [
+            { start: 0, end: length0!, value: 'asphalt' },
+            { start: length0!, end: length0! + length1!, value: 'gravel' },
+          ],
+        },
+      },
+    });
+
+    const second = surfaceOf(parts[1]!)!;
+
+    expect(second).toHaveLength(1);
+    expect(second[0]!.value).toBe('gravel');
+    expect(second[0]!.start).toBeCloseTo(0, 6);
   });
 
   // A part the track says nothing about carries no spans, which a colorizer

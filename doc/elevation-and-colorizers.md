@@ -661,16 +661,18 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   spans with it: `@turf/flatten` copies the whole of `properties` onto every part, leaving
   a nested `coordinateProperties` that lines up with no part's coordinates, which reads as
   "no data" and takes Time/Speed/HR off the dropdown. `flattenTracks` (`src/shared/`) is
-  the flatten that hands part `i` its own entry of `fm:pathDetails`; `trackLineParts.ts`
-  is the data viewer's use of it, cutting the channels alongside —
-  `trackSegmentFeatures` that **Explode** cuts with is the same cut kept as features.
+  the flatten that hands part `i` its own entry of `fm:pathDetails`; the data viewer's
+  `trackLineParts.ts` instead cuts with `trackSegmentFeatures`, the cut **Explode** keeps
+  as features, which takes the channels too.
 - **Categorical modes** (`modes/pathDetail.ts`) paint named values instead of a scale.
   They read GraphHopper path details that ride on the feature as
   `properties['fm:pathDetails']` — an array with **one entry per part of the line**, entry
   `i` the stretches of part `i` in metres from _that part's_ start. That is what lets a
   paused recording stay one recording: `@turf/flatten` gives every part the whole of
   `properties`, so a plain object of spans would have each part wearing the spans of all of
-  them. Metres rather than point indices because the
+  them. Tracks saved earlier hold one object measured along the whole line, gaps between
+  parts left out; `readPathDetailsParts` cuts that into the per-part form on every read.
+  Metres rather than point indices because the
   line is densified for premium users and every point index shifts with it (the same
   reason `structureElevation.ts` measures bridges that way). Because they are measured
   from the start of their part, an edit that moves a vertex has to move them too:
@@ -932,8 +934,9 @@ Facts that decide the implementation, all measured against the live server:
 - **Per-point channels do not survive a matched segment, but survive an unmatched one.**
   The matched line has its own points (1010 for a 286-point input in one measurement) and
   nothing maps the recorded ones onto them, so its part of every channel is padded with
-  `null`. A segment kept as recorded keeps the recorded points, so its row of every channel
-  rides along sliced to it (`trackSegments` cuts them, `asRecordedPart` hands them over).
+  `null`, and a channel no kept segment records is dropped rather than left all `null`.
+  A segment kept as recorded keeps the recorded points, so its row of every channel and its
+  spans ride along (`trackSegments` cuts them, `asRecordedPart` hands them over).
   The modal warns
   only when the track actually carries times or sensors. Transferring them to a matched
   segment would need a correspondence between the two lines — `nearestPointOnLine` would

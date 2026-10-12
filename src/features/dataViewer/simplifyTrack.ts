@@ -3,7 +3,7 @@ import {
   readPathDetailsParts,
   remapPathDetails,
 } from '@shared/colorizers/colorize.js';
-import { lineSegments } from '@shared/geoutils.js';
+import { cumulativeDistances, lineSegments } from '@shared/geoutils.js';
 import {
   midLatitude,
   simplifyGeometry,
@@ -16,7 +16,6 @@ import type {
   MultiPolygon,
   Polygon,
 } from 'geojson';
-import { vertexDistances } from './splitTrack.js';
 import {
   isAveragable,
   meanSample,
@@ -101,12 +100,11 @@ export function simplifyTrackFeature(
   const details = readPathDetailsParts(feature);
 
   if (details) {
-    const before = vertexDistances(feature);
+    // Each part's spans are metres from that part's own start.
+    const before = segments.map(cumulativeDistances);
 
-    const after = vertexDistances({ ...feature, geometry });
+    const after = coordinates.map(cumulativeDistances);
 
-    // Each part is remapped by its own vertices, which dropping points moves
-    // within that part alone.
     properties[PATH_DETAILS_PROP] = details.map((part, i) =>
       kept[i]
         ? remapPathDetails(

@@ -112,28 +112,35 @@ export type PathDetails = Record<string, PathDetailSpan[]>;
  */
 export const PATH_DETAILS_PROP = 'fm:pathDetails';
 
-/**
- * The spans part `part` of the line is painted with. A flattened part carries
- * its own entry and so is read at the default; a whole line is read with the
- * index of the part being asked about.
- */
+/** The spans a single line is painted with. */
 export function readPathDetails(
   feature: Feature<LineString>,
   key: string,
-  part = 0,
 ): PathDetailSpan[] | undefined {
-  const details = feature.properties?.[PATH_DETAILS_PROP] as
-    | PathDetails[]
-    | undefined;
-
-  return details?.[part]?.[key];
+  return readPathDetailsParts(feature)?.[0]?.[key];
 }
 
-/** Every part's spans, for the code that moves them between parts. */
+/**
+ * Every part's spans. Saved tracks may hold one object measured along the
+ * whole line, which is cut into parts here.
+ */
 export function readPathDetailsParts(
   feature: Feature,
 ): PathDetails[] | undefined {
-  return feature.properties?.[PATH_DETAILS_PROP] as PathDetails[] | undefined;
+  const details = feature.properties?.[PATH_DETAILS_PROP] as
+    | PathDetails[]
+    | PathDetails
+    | undefined;
+
+  if (!details || Array.isArray(details)) {
+    return details;
+  }
+
+  const { geometry } = feature;
+
+  return geometry?.type === 'MultiLineString'
+    ? perPartPathDetails(details, geometry)
+    : [details];
 }
 
 /**
@@ -141,7 +148,7 @@ export function readPathDetailsParts(
  * and measured from its start. The axis skips the gap between two parts, as
  * the distance a colorizer walks over the parts does.
  */
-export function perPartPathDetails(
+function perPartPathDetails(
   details: PathDetails,
   geometry: LineString | MultiLineString,
 ): PathDetails[] {

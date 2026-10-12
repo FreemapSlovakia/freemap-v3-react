@@ -351,6 +351,31 @@ describe('joinTrackFeatures — path details across a segment gap', () => {
     expect(surface[1]!.end).toBeCloseTo(cum[2]! + 90, 6);
   });
 
+  it('keeps each segment its spans when the track is turned round', () => {
+    // Ends where `gapped` ends, so `gapped` is reversed to meet it.
+    const joined = joinTrackFeatures(
+      line([
+        [0.02, 0],
+        [0.011, 0],
+      ]),
+      gapped,
+      'line',
+    );
+
+    const at = cumulativeDistances(
+      (joined.geometry as { coordinates: number[][] }).coordinates,
+    );
+
+    const span = (value: string) =>
+      surfaceOf(joined).find((s) => s.value === value)!;
+
+    // Laid down as a, reversed second segment, gap, reversed first segment.
+    expect(span('gravel').start).toBeCloseTo(at[2]! - 90, 3);
+    expect(span('gravel').end).toBeCloseTo(at[2]! - 20, 3);
+    expect(span('asphalt').start).toBeCloseTo(at[4]! - 100, 3);
+    expect(span('asphalt').end).toBeCloseTo(at[4]! - 10, 3);
+  });
+
   it('leaves them alone when the segments are kept apart', () => {
     const joined = joinTrackFeatures(gapped, line(run(1, 2)), 'segments');
 

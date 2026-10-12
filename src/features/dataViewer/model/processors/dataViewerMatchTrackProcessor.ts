@@ -186,10 +186,7 @@ export const dataViewerMatchTrackProcessor: Processor<
       );
     }
 
-    // The recording stays one entry with every segment's answer in it, so the
-    // track list, the start/finish pair, the profile and "more info" all still
-    // read one recording. Each part's spans ride along as the geometry's parts,
-    // which is the index a colorizer reads them by.
+    // The recording stays one feature, with one geometry part per segment.
     const matched = matchedTrack(parts, active.feature);
 
     dispatch(
@@ -203,9 +200,8 @@ export const dataViewerMatchTrackProcessor: Processor<
       }),
     );
 
-    // Loading data drops the selection and resets the active track; the matched
-    // features begin where the original stood, so the toolbar this was reached
-    // from stays on the line it acted upon.
+    // Loading data drops the selection; the matched track sits at the original's
+    // index, so reselect it to keep the toolbar on it.
     dispatch(selectFeature({ type: 'data-viewer', id: active.index }));
   },
 };

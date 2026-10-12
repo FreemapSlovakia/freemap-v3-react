@@ -17,7 +17,7 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useIconContentProps } from '@shared/drawingIcons.js';
 import { featureLabel } from '@shared/featureProperties.js';
-import { flattenTracks } from '@shared/flattenTracks.js';
+import { cumulativeDistances } from '@shared/geoutils.js';
 import {
   HALO_COLOR,
   HALO_PANE,
@@ -35,6 +35,7 @@ import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
+import { flatten } from '@turf/flatten';
 import type {
   Feature,
   FeatureCollection,
@@ -254,6 +255,15 @@ export default function DataViewerResult({
         const segments =
           geom.type === 'LineString' ? [geom.coordinates] : geom.coordinates;
 
+        // A permanent label goes on the longest segment only, not a stray
+        // fragment; a hover label stays on every segment.
+        const lengths =
+          segments.length > 1
+            ? segments.map((s) => cumulativeDistances(s).at(-1) ?? 0)
+            : [0];
+
+        const labelledIndex = lengths.indexOf(Math.max(...lengths));
+
         return segments.map((coords, segmentIndex) => {
           const closed =
             coords.length > 2 &&
@@ -274,8 +284,7 @@ export default function DataViewerResult({
 
           return {
             featureIndex,
-            // One label per recording, so only its first segment carries one.
-            labelled: segmentIndex === 0,
+            labelled: segmentIndex === labelledIndex,
             lineData: coords.map(([lng, lat]) => ({ lat: lat!, lng: lng! })),
             style: {
               type: style.type === 'polygon' ? 'polygon' : 'line',
@@ -295,7 +304,7 @@ export default function DataViewerResult({
   );
 
   // Native GeoJSON Polygon geometry (e.g. an imported .geojson) and standalone
-  // points (GPX `<wpt>`), in one pass: the split opens a Multi* and a
+  // points (GPX `<wpt>`), in one pass: `flatten` splits Multi* and opens a
   // GeometryCollection, and the source feature index rides along so a click
   // selects the whole feature a part came from.
   const [polygons, points] = useMemo(() => {
@@ -309,7 +318,7 @@ export default function DataViewerResult({
     }[] = [];
 
     for (const [featureIndex, feature] of trackGeojson.features.entries()) {
-      for (const part of flattenTracks(feature)) {
+      for (const part of flatten(feature).features) {
         const geom = part.geometry;
 
         if (geom.type === 'Point') {
@@ -465,7 +474,7 @@ export default function DataViewerResult({
               : {}),
           }}
         >
-          {labelled && (
+          {(labelled || labelModeOf(featureIndex) === 'hover') && (
             <LabelTooltip
               mode={labelModeOf(featureIndex)}
               label={labels[featureIndex]}
