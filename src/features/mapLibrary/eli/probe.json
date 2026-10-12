@@ -2407,7 +2407,7 @@
   },
   "NRCS_American_Samoa_2024": {
     "v": 3,
-    "status": "not an image",
+    "status": "error",
     "cors": false,
     "scales": []
   },
@@ -4541,6 +4541,180 @@
     "cors": true,
     "scales": []
   },
+  "fm:be-bru-nature": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-bru-ortho-1935": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-bru-ortho-1953": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-bru-ortho-1971": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-access-forests": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-anb-domains": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-flood-hazard": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-geology-tertiary": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-gewestplan": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-natura2000": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-ortho-1971": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-ortho-1979-1990": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-soil": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-vl-ven-ivon": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-flood-hazard": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-geology": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-karst": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-landcover-2023": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-national-parks": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-natura2000": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-ortho-1971": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-ortho-1978-1990": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-ortho-1994-2000": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-ortho-2001-2003": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-ortho-2006-2007": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-ortho-infrared": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-plan-de-secteur": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-ravel": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:be-wal-slope": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:ch-accommodation-winter": {
     "v": 3,
     "status": 200,
@@ -6137,6 +6311,72 @@
     "cors": false,
     "scales": []
   },
+  "fm:lu-flood-hq100": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-hiking": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-landcover-2024": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-ortho-2001": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-ortho-infrared-2010": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-protected-areas": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-slope-2024": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-soil-100k": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-topo-20k": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-topo-50k": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
+  "fm:lu-topo-5k": {
+    "v": 3,
+    "status": 200,
+    "cors": true,
+    "scales": []
+  },
   "fm:pl-gdos-protected-areas": {
     "v": 3,
     "status": 200,
@@ -6590,7 +6830,7 @@
   "ign-cartas-500k": {
     "v": 3,
     "status": 400,
-    "cors": true,
+    "cors": false,
     "scales": []
   },
   "ign-cartas-50k": {

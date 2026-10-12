@@ -6574,5 +6574,695 @@
     },
     "bbox": [10.56, 50.94, 13.19, 53.04],
     "note": "Potential karst/subrosion hazard zones and gridded density of recorded sinkholes and subsidence (Südharz, Mansfeld); EPSG:3857 not advertised but served aligned."
+  },
+  {
+    "id": "fm:be-wal-ortho-1971",
+    "name": "SPW aerial imagery 1971 (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_1971/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://geoportail.wallonie.be/files/documents/ConditionsSPW/DataSPW-CPU-TypeC.pdf",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Black-and-white orthophoto mosaic of Wallonia from the 1971 flights (SPW data type C: web publication allowed with source)."
+  },
+  {
+    "id": "fm:be-wal-ortho-1978-1990",
+    "name": "SPW aerial imagery 1978–1990 (Wallonia, partial)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_1978_1990/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://geoportail.wallonie.be/files/documents/ConditionsSPW/DataSPW-CPU-TypeC.pdf",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Colour orthophotos 1978–1990; partial coverage of Wallonia."
+  },
+  {
+    "id": "fm:be-wal-ortho-1994-2000",
+    "name": "SPW aerial imagery 1994–2000 (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_1994_2000/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://geoportail.wallonie.be/files/documents/ConditionsSPW/DataSPW-CPU-TypeC.pdf",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Colour orthophoto mosaic of Wallonia, 1994–2000 flights."
+  },
+  {
+    "id": "fm:be-wal-ortho-2001-2003",
+    "name": "SPW/IGN aerial imagery 2001–2003 (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_2001_2003/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW, IGN",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Panchromatic orthophoto mosaic of Wallonia, 2001–2003."
+  },
+  {
+    "id": "fm:be-wal-ortho-2006-2007",
+    "name": "SPW aerial imagery 2006–2007 (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_2006_2007/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Colour orthophoto mosaic of Wallonia, 2006–2007."
+  },
+  {
+    "id": "fm:be-wal-ortho-infrared",
+    "name": "SPW colour-infrared imagery, latest (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_LAST_IR/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "BE",
+    "category": "photo",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "False-colour near-infrared version of the latest 25 cm Walloon orthophoto (vegetation in red)."
+  },
+  {
+    "id": "fm:be-wal-slope",
+    "name": "SPW slope map from LiDAR 2013–2014 (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/RELIEF/WALLONIE_MNP_2013_2014__PENTES/MapServer/WMSServer",
+    "layers": ["1"],
+    "country_code": "BE",
+    "category": "elevation",
+    "overlay": false,
+    "license_url": "https://geoportail.wallonie.be/files/documents/ConditionsSPW/DataSPW-CPU-TypeC.pdf",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Colour-classed terrain slope (%) derived from the 1 m LiDAR DTM."
+  },
+  {
+    "id": "fm:be-wal-geology",
+    "name": "SPW geological map of Wallonia",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/SOL_SOUS_SOL/CARTE_GEOLOGIQUE_SIMPLE/MapServer/WMSServer",
+    "layers": ["1", "2", "7"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 9,
+    "max_zoom": 16,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Lithostratigraphic units and faults of the Carte géologique de Wallonie (1:25 000 sheets; some areas still unmapped)."
+  },
+  {
+    "id": "fm:be-wal-karst",
+    "name": "SPW Walloon karst atlas",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/SOL_SOUS_SOL/KARST/MapServer/WMSServer",
+    "layers": ["0", "1", "2", "3", "4", "5"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Carbonate formations, caves/galleries, sinkholes, swallow-holes and underground flow paths."
+  },
+  {
+    "id": "fm:be-wal-landcover-2023",
+    "name": "SPW WALOUS land cover 2023 (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/SOL_SOUS_SOL/WAL_OCS_IA__2023/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 9,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW, Aerospacelab",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "High-resolution land-cover classification of Wallonia (2023)."
+  },
+  {
+    "id": "fm:be-wal-natura2000",
+    "name": "SPW Natura 2000 sites (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/FAUNE_FLORE/NATURA2000/MapServer/WMSServer",
+    "layers": ["1", "2"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Perimeters of the Natura 2000 sites in Wallonia."
+  },
+  {
+    "id": "fm:be-wal-national-parks",
+    "name": "SPW national parks (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/FAUNE_FLORE/PARCS_NATIONAUX/MapServer/WMSServer",
+    "layers": ["0", "1", "2", "3"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Perimeters and core/development zones of the Entre-Sambre-et-Meuse and Vallée de la Semois national parks."
+  },
+  {
+    "id": "fm:be-wal-flood-hazard",
+    "name": "SPW flood hazard map (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/EAU/ALEA_INOND/MapServer/WMSServer",
+    "layers": ["4", "5", "6"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Flood hazard from river overflow and runoff, classed very low to high."
+  },
+  {
+    "id": "fm:be-wal-ravel",
+    "name": "SPW RAVeL and véloroutes (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/MOBILITE/RAVEL_VELOROUTES/MapServer/WMSServer",
+    "layers": ["0"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "RAVeL greenways and signed cycle routes of Wallonia, with route numbers."
+  },
+  {
+    "id": "fm:be-wal-plan-de-secteur",
+    "name": "SPW plan de secteur (Wallonia)",
+    "type": "wms",
+    "url": "https://geoservices.wallonie.be/arcgis/services/AMENAGEMENT_TERRITOIRE/PDS/MapServer/WMSServer",
+    "layers": ["2"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "min_zoom": 12,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© SPW (Service public de Wallonie)",
+      "url": "https://geoportail.wallonie.be/"
+    },
+    "bbox": [2.84, 49.49, 6.41, 50.82],
+    "note": "Regional land-use zoning plan in force (zones d'affectation)."
+  },
+  {
+    "id": "fm:be-vl-ortho-1971",
+    "name": "Digitaal Vlaanderen aerial imagery 1971 (Flanders)",
+    "type": "wms",
+    "url": "https://geo.api.vlaanderen.be/OKZ/wms",
+    "layers": ["OKZPAN71VL"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Digitaal Vlaanderen",
+      "url": "https://www.vlaanderen.be/digitaal-vlaanderen"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Panchromatic 1 m summer orthophoto mosaic of Flanders and Brussels, 1971."
+  },
+  {
+    "id": "fm:be-vl-ortho-1979-1990",
+    "name": "Digitaal Vlaanderen aerial imagery 1979–1990 (Flanders)",
+    "type": "wms",
+    "url": "https://geo.api.vlaanderen.be/OKZ/wms",
+    "layers": ["OKZRGB79_90VL"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Digitaal Vlaanderen",
+      "url": "https://www.vlaanderen.be/digitaal-vlaanderen"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Colour 1 m summer orthophoto mosaic of Flanders, 1979–1990."
+  },
+  {
+    "id": "fm:be-vl-natura2000",
+    "name": "ANB Natura 2000 areas (Flanders)",
+    "type": "wms",
+    "url": "https://www.mercator.vlaanderen.be/raadpleegdienstenmercatorpubliek/wms",
+    "layers": ["ps:ps_hbtrl", "ps:ps_vglrl"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Agentschap Natuur en Bos",
+      "url": "https://www.natuurenbos.be/"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Habitats Directive and Birds Directive special protection areas in Flanders."
+  },
+  {
+    "id": "fm:be-vl-ven-ivon",
+    "name": "ANB VEN and IVON nature network (Flanders)",
+    "type": "wms",
+    "url": "https://www.mercator.vlaanderen.be/raadpleegdienstenmercatorpubliek/wms",
+    "layers": ["ps:ps_ven"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Agentschap Natuur en Bos",
+      "url": "https://www.natuurenbos.be/"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Flemish Ecological Network (VEN) and Integral Interweaving and Support Network (IVON) areas."
+  },
+  {
+    "id": "fm:be-vl-access-forests",
+    "name": "ANB access rules in forests and nature areas (Flanders)",
+    "type": "wms",
+    "url": "https://www.mercator.vlaanderen.be/raadpleegdienstenmercatorpubliek/wms",
+    "layers": ["lu:lu_tgkhd_pgs", "lu:lu_tgkhd_pl", "lu:lu_tgkhd_pt"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Agentschap Natuur en Bos",
+      "url": "https://www.natuurenbos.be/"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Where walkers may leave the paths, play zones, and paths open to walkers, cyclists and riders in Flemish woods and nature reserves."
+  },
+  {
+    "id": "fm:be-vl-anb-domains",
+    "name": "ANB public forests and nature domains (Flanders)",
+    "type": "wms",
+    "url": "https://www.mercator.vlaanderen.be/raadpleegdienstenmercatorpubliek/wms",
+    "layers": ["am:am_patdat"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Agentschap Natuur en Bos",
+      "url": "https://www.natuurenbos.be/"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Public forests and nature domains managed by the Agency for Nature and Forests."
+  },
+  {
+    "id": "fm:be-vl-gewestplan",
+    "name": "Departement Omgeving gewestplan (Flanders)",
+    "type": "wms",
+    "url": "https://www.mercator.vlaanderen.be/raadpleegdienstenmercatorpubliek/wms",
+    "layers": ["lu:lu_gwp_rv_raster"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": false,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Departement Omgeving Vlaanderen",
+      "url": "https://omgeving.vlaanderen.be/"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Scanned regional land-use zoning plan (gewestplan) of Flanders."
+  },
+  {
+    "id": "fm:be-vl-geology-tertiary",
+    "name": "DOV Tertiary geological map 1:50 000 (Flanders)",
+    "type": "wms",
+    "url": "https://www.dov.vlaanderen.be/geoserver/wms",
+    "layers": ["neo_paleo:tertiair_50k"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Databank Ondergrond Vlaanderen (DOV)",
+      "url": "https://www.dov.vlaanderen.be/"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Tertiary lithostratigraphic formations beneath the Quaternary cover."
+  },
+  {
+    "id": "fm:be-vl-soil",
+    "name": "DOV digital soil map (Flanders)",
+    "type": "wms",
+    "url": "https://www.dov.vlaanderen.be/geoserver/wms",
+    "layers": ["bodemkaart:bodemtypes"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Databank Ondergrond Vlaanderen (DOV)",
+      "url": "https://www.dov.vlaanderen.be/"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Belgian soil map of Flanders: soil types with texture/drainage codes."
+  },
+  {
+    "id": "fm:be-vl-flood-hazard",
+    "name": "VMM flood hazard map (Flanders)",
+    "type": "wms",
+    "url": "https://geoservice.waterinfo.be/OGRK/wms",
+    "layers": [
+      "Overstromingsgevaarkaarten-FLUVIAAL:overstroombaar_gebied_FLU_noCC",
+      "Overstromingsgevaarkaarten-KUST:overstroombaar_gebied_KUST_noCC"
+    ],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://data.vlaanderen.be/doc/licentie/modellicentie-gratis-hergebruik/v1.0",
+    "attribution": {
+      "text": "© Vlaamse Milieumaatschappij (VMM), CIW",
+      "url": "https://www.waterinfo.vlaanderen.be/"
+    },
+    "bbox": [2.54, 50.68, 5.92, 51.51],
+    "note": "Areas that can flood from rivers or the sea under the current climate (EU Floods Directive)."
+  },
+  {
+    "id": "fm:be-bru-ortho-1935",
+    "name": "urban.brussels aerial imagery 1930–1935 (Brussels)",
+    "type": "wms",
+    "url": "https://gis.urban.brussels/geoserver/ows",
+    "layers": ["URBAN_DCC_ER:Orthophotoplans_1935"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "urban.brussels (Brusky)",
+      "url": "https://urban.brussels/"
+    },
+    "bbox": [4.24, 50.76, 4.48, 50.92],
+    "note": "Black-and-white orthophotoplan of Brussels from the 1930 and 1935 flights (partial coverage)."
+  },
+  {
+    "id": "fm:be-bru-ortho-1953",
+    "name": "urban.brussels aerial imagery 1953 (Brussels)",
+    "type": "wms",
+    "url": "https://gis.urban.brussels/geoserver/ows",
+    "layers": ["URBAN_DCC_ER:Orthophotoplans_1953"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "urban.brussels (Brusky)",
+      "url": "https://urban.brussels/"
+    },
+    "bbox": [4.24, 50.76, 4.48, 50.92],
+    "note": "Black-and-white orthophotoplan of the Brussels Region, 1953."
+  },
+  {
+    "id": "fm:be-bru-ortho-1971",
+    "name": "urban.brussels aerial imagery 1971 (Brussels)",
+    "type": "wms",
+    "url": "https://gis.urban.brussels/geoserver/ows",
+    "layers": ["URBAN_DCC_ER:Orthophotoplans_1971"],
+    "country_code": "BE",
+    "category": "historicphoto",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "urban.brussels (Brusky)",
+      "url": "https://urban.brussels/"
+    },
+    "bbox": [4.24, 50.76, 4.48, 50.92],
+    "note": "Black-and-white orthophotoplan of the Brussels Region, 1971."
+  },
+  {
+    "id": "fm:be-bru-nature",
+    "name": "Brussels Environment Natura 2000 and nature reserves",
+    "type": "wms",
+    "url": "https://wms.environnement.brussels/be_wms",
+    "layers": ["bruenvi_natura_2000_station", "bruenvi_natural_reserve"],
+    "country_code": "BE",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution": {
+      "text": "© Bruxelles Environnement / Leefmilieu Brussel",
+      "url": "https://environnement.brussels/"
+    },
+    "bbox": [4.24, 50.76, 4.48, 50.92],
+    "note": "Natura 2000 sites and nature/forest reserves in the Brussels Region (Sonian Forest etc.)."
+  },
+  {
+    "id": "fm:lu-topo-20k",
+    "name": "ACT topographic map 1:20 000 (Luxembourg)",
+    "type": "tms",
+    "url": "https://wmts1.geoportail.lu/opendata/wmts/topo_20k/GLOBAL_WEBMERCATOR_4_V3/{z}/{x}/{y}.png",
+    "country_code": "LU",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 11,
+    "max_zoom": 18,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Administration du cadastre et de la topographie (ACT), geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "Official 1:20 000 topographic map of Luxembourg (raster)."
+  },
+  {
+    "id": "fm:lu-topo-50k",
+    "name": "ACT topographic map 1:50 000 (Luxembourg)",
+    "type": "tms",
+    "url": "https://wmts1.geoportail.lu/opendata/wmts/topo_50k/GLOBAL_WEBMERCATOR_4_V3/{z}/{x}/{y}.png",
+    "country_code": "LU",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 9,
+    "max_zoom": 15,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Administration du cadastre et de la topographie (ACT), geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "Official 1:50 000 topographic map of Luxembourg."
+  },
+  {
+    "id": "fm:lu-topo-5k",
+    "name": "ACT topographic plan 1:5 000 (Luxembourg)",
+    "type": "tms",
+    "url": "https://wmts1.geoportail.lu/opendata/wmts/topo_5k/GLOBAL_WEBMERCATOR_4_V3/{z}/{x}/{y}.png",
+    "country_code": "LU",
+    "category": "map",
+    "overlay": false,
+    "min_zoom": 14,
+    "max_zoom": 19,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Administration du cadastre et de la topographie (ACT), geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "Large-scale 1:5 000 topographic plan (BD-L-Scan5) with contours and spot heights."
+  },
+  {
+    "id": "fm:lu-ortho-2001",
+    "name": "ACT aerial imagery 2001 (Luxembourg)",
+    "type": "tms",
+    "url": "https://wmts1.geoportail.lu/opendata/wmts/ortho_2001/GLOBAL_WEBMERCATOR_4_V3/{z}/{x}/{y}.jpeg",
+    "country_code": "LU",
+    "category": "historicphoto",
+    "overlay": false,
+    "max_zoom": 19,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Administration du cadastre et de la topographie (ACT), geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "Official orthophoto of Luxembourg, 2001 edition."
+  },
+  {
+    "id": "fm:lu-ortho-infrared-2010",
+    "name": "ACT colour-infrared imagery 2010 (Luxembourg)",
+    "type": "tms",
+    "url": "https://wmts1.geoportail.lu/opendata/wmts/ortho_irc/GLOBAL_WEBMERCATOR_4_V3/{z}/{x}/{y}.jpeg",
+    "country_code": "LU",
+    "category": "historicphoto",
+    "overlay": false,
+    "max_zoom": 19,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Administration du cadastre et de la topographie (ACT), geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "False-colour infrared orthophoto of Luxembourg, 2010."
+  },
+  {
+    "id": "fm:lu-hiking",
+    "name": "geoportail.lu hiking trails (Luxembourg)",
+    "type": "wms",
+    "url": "https://wms.geoportail.lu/public_map_layers/service",
+    "layers": ["227", "2048", "158", "235"],
+    "country_code": "LU",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Ministère de l'Economie – Direction générale Tourisme, geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "National and local signed walking trails, CFL station-to-station trails and international GR routes."
+  },
+  {
+    "id": "fm:lu-protected-areas",
+    "name": "geoportail.lu protected areas (Luxembourg)",
+    "type": "wms",
+    "url": "https://wms.geoportail.lu/public_map_layers/service",
+    "layers": ["540", "533", "804"],
+    "country_code": "LU",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Ministère de l'Environnement / ANF, geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "Natura 2000 habitat (ZSC) and bird (ZPS) sites plus declared national protected zones (ZPIN)."
+  },
+  {
+    "id": "fm:lu-flood-hq100",
+    "name": "AGE flood zones HQ100 (Luxembourg)",
+    "type": "wms",
+    "url": "https://wms.geoportail.lu/public_map_layers/service",
+    "layers": ["3262"],
+    "country_code": "LU",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Administration de la gestion de l'eau, geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "Area and water depth of a 100-year flood (Floods Directive, regulatory map)."
+  },
+  {
+    "id": "fm:lu-landcover-2024",
+    "name": "LIS-L land cover 2024 (Luxembourg)",
+    "type": "wms",
+    "url": "https://wms.geoportail.lu/public_map_layers/service",
+    "layers": ["3401"],
+    "country_code": "LU",
+    "category": "other",
+    "overlay": true,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "LIS-L, geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "Detailed land-cover classification (buildings, sealed, trees, grass, water…) for 2024."
+  },
+  {
+    "id": "fm:lu-slope-2024",
+    "name": "ACT slope map from DTM 2024 (Luxembourg)",
+    "type": "wms",
+    "url": "https://wms.geoportail.lu/public_map_layers/service",
+    "layers": ["1461"],
+    "country_code": "LU",
+    "category": "elevation",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Administration du cadastre et de la topographie (ACT), geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "Colour-coded slope in degrees from the 50 cm 2024 LiDAR terrain model."
+  },
+  {
+    "id": "fm:lu-soil-100k",
+    "name": "ASTA soil map 1:100 000 (Luxembourg)",
+    "type": "wms",
+    "url": "https://wms.geoportail.lu/public_map_layers/service",
+    "layers": ["272"],
+    "country_code": "LU",
+    "category": "other",
+    "overlay": false,
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "attribution": {
+      "text": "© Administration des services techniques de l'agriculture (ASTA), geoportail.lu",
+      "url": "https://www.geoportail.lu/"
+    },
+    "bbox": [5.73, 49.44, 6.53, 50.19],
+    "note": "1969 soil map of Luxembourg at 1:100 000 (scanned)."
   }
 ]
