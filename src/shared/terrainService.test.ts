@@ -63,6 +63,21 @@ describe('TerrainCreditsSchema', () => {
     ]);
   });
 
+  it('keeps a line shared by several datasets once', () => {
+    const mdt02 = { name: 'MDT02: IGN (CNIG)', url: 'https://cnig.es/' };
+
+    expect(
+      TerrainCreditsSchema.parse([
+        { source: 'es-29', attributions: [mdt02] },
+        { source: 'es-30', attributions: [mdt02] },
+        { source: 'es-31', attributions: [{ name: mdt02.name }] },
+      ]),
+    ).toEqual([
+      { type: 'data', ...mdt02 },
+      { type: 'data', name: mdt02.name },
+    ]);
+  });
+
   // A service that predates the field, and anything malformed: both read as
   // "nothing reported", which credits every model rather than none.
   it('reads a missing or malformed list as nothing reported', () => {

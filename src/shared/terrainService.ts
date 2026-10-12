@@ -45,15 +45,30 @@ export function terrainErrorCode(err: unknown): TerrainErrorCode {
  * the models it was answered from and what to display for each, so nothing here
  * keeps a copy of the licence text. Empty only from a service too old to report
  * them, and then nothing is credited — there is no list here to stand in.
+ *
+ * Datasets of one model carry the same line (each of Spain's three zones), so
+ * a line is kept once per name and url.
  */
 export const TerrainCreditsSchema = z
   .array(z.looseObject({ attributions: z.unknown() }))
   .catch([])
-  .transform((sources) =>
-    sources.flatMap((source) =>
-      AttributionListSchema.parse(source.attributions),
-    ),
-  );
+  .transform((sources) => {
+    const seen = new Set<string>();
+
+    return sources
+      .flatMap((source) => AttributionListSchema.parse(source.attributions))
+      .filter((credit) => {
+        const key = JSON.stringify([credit.name, credit.url]);
+
+        if (seen.has(key)) {
+          return false;
+        }
+
+        seen.add(key);
+
+        return true;
+      });
+  });
 
 const ProgressSchema = z.object({
   phase: z.enum(['queued', 'rendering', 'encoding', 'done']),
