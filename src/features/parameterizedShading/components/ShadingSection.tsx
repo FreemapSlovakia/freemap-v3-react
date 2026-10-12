@@ -13,7 +13,6 @@ import { PanelHeaderSlotContext } from '@features/mapSettings/panelHeaderSlot.js
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { SHADING_SOURCE } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -29,13 +28,11 @@ import {
   hasBackground,
   type Shading,
   type ShadingComponentType,
-  serializeShading,
 } from '../model/Shading.js';
 import {
   isParameterized,
   type ParameterizedPreset,
   type PresetParams,
-  SHADING_PRESETS,
   type ShadingPreset,
   shadingPreset,
 } from '../model/shadingPresets.js';
@@ -174,49 +171,13 @@ export default function ShadingSection({ target }: Props): ReactElement {
     setId(undefined);
   }
 
-  const confirm = useConfirm();
-
-  async function handlePreset(preset: ShadingPreset, append: boolean) {
+  function handlePreset(preset: ShadingPreset, append: boolean) {
     trackMatomo([
       'trackEvent',
       'MapShading',
       append ? 'preset-append' : 'preset',
       preset,
     ]);
-
-    if (append) {
-      if (isParameterized(preset)) {
-        setPending({ preset, append });
-      } else {
-        applyPreset(preset, append);
-      }
-
-      return;
-    }
-
-    // Ids are not serialized.
-    const current = serializeShading(shading);
-
-    // Only a hand-made shading is worth asking about; a preset is one click back.
-    // A parameterized one counts at its default values.
-    const isPreset = SHADING_PRESETS.some((p) =>
-      [false, true].some(
-        (bg) =>
-          serializeShading(shadingPreset(p, () => 0, undefined, bg)) ===
-          current,
-      ),
-    );
-
-    if (
-      shading.components.length > 0 &&
-      !isPreset &&
-      !(await confirm({
-        title: sm?.presetReplaceTitle,
-        message: sm?.presetReplaceConfirm,
-      }))
-    ) {
-      return;
-    }
 
     if (isParameterized(preset)) {
       setPending({ preset, append });

@@ -28,9 +28,6 @@ const en: ShadingMessages = {
   presets: 'Presets',
   addToExisting: 'Add to existing',
   withBackground: 'With background',
-  presetReplaceTitle: 'Replace shading',
-  presetReplaceConfirm:
-    'The preset replaces the whole shading, including your changes. Continue?',
   mapPresetsHeader: 'Cartographic',
   artisticPresetsHeader: 'Artistic',
   presetNames: {

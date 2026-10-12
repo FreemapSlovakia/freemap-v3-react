@@ -29,9 +29,6 @@ const cs: DeepPartialWithRequiredObjects<ShadingMessages> = {
   presets: 'Předvolby',
   addToExisting: 'Přidat ke stávajícímu',
   withBackground: 'S pozadím',
-  presetReplaceTitle: 'Nahradit stínování',
-  presetReplaceConfirm:
-    'Předvolba nahradí celé stínování včetně vašich úprav. Pokračovat?',
   mapPresetsHeader: 'Kartografické',
   artisticPresetsHeader: 'Umělecké',
   presetNames: {

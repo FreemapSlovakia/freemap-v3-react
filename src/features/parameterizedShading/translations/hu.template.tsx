@@ -29,9 +29,6 @@ const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
   presets: 'Előbeállítások',
   addToExisting: 'Hozzáadás a meglévőhöz',
   withBackground: 'Háttérrel',
-  presetReplaceTitle: 'Árnyékolás cseréje',
-  presetReplaceConfirm:
-    'Az előbeállítás a teljes árnyékolást lecseréli, a módosításaival együtt. Folytatja?',
   mapPresetsHeader: 'Térképészeti',
   artisticPresetsHeader: 'Művészi',
   presetNames: {

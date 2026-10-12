@@ -29,9 +29,6 @@ const pl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   presets: 'Ustawienia wstępne',
   addToExisting: 'Dodaj do istniejącego',
   withBackground: 'Z tłem',
-  presetReplaceTitle: 'Zastąp cieniowanie',
-  presetReplaceConfirm:
-    'Ustawienie wstępne zastąpi całe cieniowanie wraz z Twoimi zmianami. Kontynuować?',
   mapPresetsHeader: 'Kartograficzne',
   artisticPresetsHeader: 'Artystyczne',
   presetNames: {

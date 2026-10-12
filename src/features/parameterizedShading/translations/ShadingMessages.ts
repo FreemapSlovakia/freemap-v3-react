@@ -25,8 +25,6 @@ export type ShadingMessages = {
   presets: string;
   addToExisting: string;
   withBackground: string;
-  presetReplaceTitle: string;
-  presetReplaceConfirm: string;
   mapPresetsHeader: string;
   artisticPresetsHeader: string;
   presetNames: {

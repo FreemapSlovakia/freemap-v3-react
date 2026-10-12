@@ -29,9 +29,6 @@ const sl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   presets: 'Prednastavitve',
   addToExisting: 'Dodaj k obstoječemu',
   withBackground: 'Z ozadjem',
-  presetReplaceTitle: 'Zamenjaj senčenje',
-  presetReplaceConfirm:
-    'Prednastavitev zamenja celotno senčenje, skupaj z vašimi spremembami. Nadaljujem?',
   mapPresetsHeader: 'Kartografske',
   artisticPresetsHeader: 'Umetniške',
   presetNames: {

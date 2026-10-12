@@ -29,9 +29,6 @@ const fr: DeepPartialWithRequiredObjects<ShadingMessages> = {
   presets: 'Préréglages',
   addToExisting: 'Ajouter à l’existant',
   withBackground: 'Avec fond',
-  presetReplaceTitle: 'Remplacer l’ombrage',
-  presetReplaceConfirm:
-    'Le préréglage remplace tout l’ombrage, vos modifications comprises. Continuer ?',
   mapPresetsHeader: 'Cartographiques',
   artisticPresetsHeader: 'Artistiques',
   presetNames: {

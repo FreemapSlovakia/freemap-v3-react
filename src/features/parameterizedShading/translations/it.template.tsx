@@ -29,9 +29,6 @@ const it: DeepPartialWithRequiredObjects<ShadingMessages> = {
   presets: 'Preimpostazioni',
   addToExisting: 'Aggiungi all’esistente',
   withBackground: 'Con sfondo',
-  presetReplaceTitle: 'Sostituisci ombreggiatura',
-  presetReplaceConfirm:
-    'La preimpostazione sostituisce tutta l’ombreggiatura, comprese le tue modifiche. Continuare?',
   mapPresetsHeader: 'Cartografiche',
   artisticPresetsHeader: 'Artistiche',
   presetNames: {
