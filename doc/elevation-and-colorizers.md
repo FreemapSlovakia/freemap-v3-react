@@ -450,18 +450,30 @@ settings slice), the way the route finder's midpoint hint works. `rangeHint` is 
 message, not a string: it writes a key as `<kbd>`, and the toast renderer resolves only
 strings and functions — a bare JSX value comes out as `…`.
 
-A click hands the place to `panToUncovered` (`src/features/map/panToUncovered.ts`): it
-hit-tests a 24 px grid over the map container (coarser on a large screen — the sweep is
-capped at `MAX_CELLS` hit tests, since it runs on the click path before the browser
-paints), finds the largest rectangle of cells nothing covers (histogram method), and pans
-so the place lands in its middle — the chart's own window is usually over what it points
-at. Hit-testing rather than a list of chrome elements, so a panel added later counts for
-free. However narrow the gap comes out, it is returned as it is: falling back to the whole
-map for a small one would tell `ifHidden` that a mark behind a panel is in view. Every caller passes `ifHidden`, which
-leaves a place already well inside that rectangle where it is: reading along a profile is a
-lot of presses, and the map sliding under each of them helps nobody. The chart and the
-toposcope widen the inset to `GENEROUS_MARGIN_PX`, so a mark clinging to the edge of the
-free area is still centred; the panorama's probe keeps the default.
+`largestUncoveredRect` (`src/features/map/panToUncovered.ts`) hit-tests a 48 px grid over
+the map container (coarser on a large screen — the sweep is capped at `MAX_CELLS` hit tests,
+since it runs on the press path before the browser paints) and finds the largest rectangle
+of cells nothing covers (histogram method) — the chart's own window is usually over what it
+points at. Hit-testing rather than a list of chrome elements, so a panel added later counts
+for free. However narrow the gap comes out, it is returned as it is: falling back to the
+whole map for a small one would say that a mark behind a panel is in view.
+
+The chart follows a primary-button press with `keepUncovered` — zoomed in, a tap instead,
+since a press there may start a slide; a pinch ends following for the rest of its gesture. A
+place well inside that rectangle (inset by `GENEROUS_MARGIN_PX`) is left where it is; a
+hidden one glides to the middle of it through `mapRefocus`, like any other refocus. A drag
+past the click slop cuts the glide short, then holds the place still on screen — where it
+was, or the middle it was gliding to — and slides the map under it. The rectangle is measured
+once per gesture; none found (a full-screen panel) means no following. The slide is
+Leaflet's own drag: `_rawPanBy` plus `move` per pointer move, with `moveend` batched to every
+`KEEP_SYNC_MS` and the gesture's end (`endKeep`), since each `moveend` syncs the store, the
+URL and the covered-countries fetch. The first pan ends GPS following, which would otherwise
+pull the map back; following a tracked device is not ended, so its refocuses still fight a
+slide.
+
+`panToUncovered` is the one-off form: the toposcope passes `GENEROUS_MARGIN_PX` with
+`ifHidden`, the panorama's probe `ifHidden` alone. `fitToUncovered` fits an extent the same
+way, for the map-features list (`MapFeatureItems`).
 
 ### Colorizing the chart — `useChartColorize`
 
