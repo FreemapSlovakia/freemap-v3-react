@@ -13,6 +13,7 @@ const en: OpenInExternalAppMessages = {
   josm: 'JOSM',
   id: 'iD',
   window: 'New window',
+  geoApp: 'Map app',
   url: 'Share location',
   image: 'Share photo',
 };

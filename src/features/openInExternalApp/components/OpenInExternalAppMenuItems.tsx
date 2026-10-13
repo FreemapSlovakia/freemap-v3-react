@@ -10,8 +10,10 @@ import { canShareFile } from '@shared/webShare.js';
 import type { ReactElement, ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
+  FaAndroid,
   FaClipboard,
   FaLink,
+  FaMapMarkedAlt,
   FaShareAlt,
   FaWindowMaximize,
 } from 'react-icons/fa';
@@ -33,9 +35,11 @@ import {
   getBasemapAtUrl,
   getCuzkUrl,
   getF4mapUrl,
+  getFreemapAndroidUrl,
   getGeocachingUrl,
   getGeoportailUrl,
   getGeoportalPlUrl,
+  getGeoUrl,
   getGoogleUrl,
   getHikingSkUrl,
   getIberpixUrl,
@@ -94,6 +98,8 @@ interface TargetProps
  * rules it has for `svg`, so only an `svg` gets exactly the same width.
  */
 const noIcon = <svg width="1em" height="1em" />;
+
+const isAndroid = /Android/i.test(navigator.userAgent);
 
 export function openMenuItemProps(externalTarget: ExternalTarget) {
   return {
@@ -287,6 +293,17 @@ export function OpenInExternalTargetItems({
       <Dropdown.Divider />
 
       {/* General-purpose maps. */}
+      {/* Android only: elsewhere a `geo:` link reaches no map app — on desktop
+          Chromium, Freemap registers itself as its handler. */}
+      {isAndroid && (
+        <Dropdown.Item
+          href={getFreemapAndroidUrl(lat, lon, zoom, includePoint)}
+          eventKey="url"
+        >
+          <FaAndroid /> Freemap (Android)
+        </Dropdown.Item>
+      )}
+
       <OnlineOnlyItem
         href={getMapyCzUrl(lat, lon, zoom, includePoint)}
         target="_blank"
@@ -333,6 +350,16 @@ export function OpenInExternalTargetItems({
       >
         <SiWaze /> Waze
       </OnlineOnlyItem>
+
+      {/* Whichever map app the user picks; Android only, as above. */}
+      {isAndroid && (
+        <Dropdown.Item
+          href={getGeoUrl(lat, lon, zoom, includePoint)}
+          eventKey="url"
+        >
+          <FaMapMarkedAlt /> {oeam?.geoApp}
+        </Dropdown.Item>
+      )}
 
       <Dropdown.Divider />
 

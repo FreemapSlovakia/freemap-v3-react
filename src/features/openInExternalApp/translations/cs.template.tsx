@@ -14,6 +14,7 @@ const cs: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   josm: 'JOSM',
   id: 'iD',
   window: 'Nové okno',
+  geoApp: 'Mapová aplikace',
   url: 'Sdílet polohu',
   image: 'Sdílet fotografii',
 };

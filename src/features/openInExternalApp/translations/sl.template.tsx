@@ -14,6 +14,7 @@ const sl: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   josm: 'JOSM',
   id: 'iD',
   window: 'Novo okno',
+  geoApp: 'Aplikacija za zemljevide',
   url: 'Deli lokacijo',
   image: 'Deli fotografijo',
 };

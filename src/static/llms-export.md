@@ -12,10 +12,12 @@ Opens a submenu:
 - JOSM <kbd>j</kbd> <kbd>j</kbd>
 - iD <kbd>j</kbd> <kbd>i</kbd>
 - Osmose
+- Freemap (Android) — Android only; opens the place in the Freemap Android app, or its Google Play page when not installed
 - Mapy.com <kbd>j</kbd> <kbd>m</kbd>
 - Google Maps <kbd>j</kbd> <kbd>g</kbd>
 - Apple Maps <kbd>j</kbd> <kbd>a</kbd>
 - Waze
+- Map app — Android only; a `geo:` link, so Android offers every installed map app (Google Maps, Locus, OsmAnd, …)
 - Google Street View <kbd>j</kbd> <kbd>s</kbd>
 - Mapillary <kbd>j</kbd> <kbd>l</kbd>
 - Panoramax <kbd>j</kbd> <kbd>x</kbd>

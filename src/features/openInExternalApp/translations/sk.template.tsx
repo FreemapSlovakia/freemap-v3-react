@@ -14,6 +14,7 @@ const sk: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   josm: 'JOSM',
   id: 'iD',
   window: 'Nové okno',
+  geoApp: 'Mapová aplikácia',
   url: 'Zdieľať polohu',
   image: 'Zdieľať fotografiu',
 };

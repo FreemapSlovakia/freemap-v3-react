@@ -12,6 +12,7 @@ import { point } from '@turf/helpers';
 import {
   getAppleMapsUrl,
   getF4mapUrl,
+  getGeoUrl,
   getGoogleUrl,
   getHikingSkUrl,
   getIdUrl,
@@ -281,7 +282,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'url': {
-        const geo = `geo:${lat.toFixed(6)},${lon.toFixed(6)}?z=${zoom}`;
+        const geo = getGeoUrl(lat, lon, zoom);
 
         const text = [pointDescription, geo].filter(Boolean).join('\n');
 

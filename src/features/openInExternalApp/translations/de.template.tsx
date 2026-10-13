@@ -14,6 +14,7 @@ const de: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   josm: 'JOSM',
   id: 'iD',
   window: 'Neues Fenster',
+  geoApp: 'Karten-App',
   url: 'Standort teilen',
   image: 'Foto teilen',
 };
