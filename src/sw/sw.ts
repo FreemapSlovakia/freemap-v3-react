@@ -5,6 +5,7 @@ import {
   CACHED_TILE_PATH_PREFIX,
   parseCachedTilePath,
 } from '@features/cachedMaps/cachedTileUrl.js';
+import { isStaticCacheReady, SHELL_URL } from '@shared/offlineStaticCache.js';
 import {
   stripTileScale,
   TILE_DRAW_PARAM,
@@ -37,6 +38,12 @@ const TILE_CACHE_PREFIX = 'tiles-';
 const TILE_SCALES = [1, 2, 3, 4];
 
 const CACHED_TILE_MAPS_KEY = 'cachedTileMaps';
+
+// how long the app's page may take before the cached one is served instead
+const SHELL_TIMEOUT_MS = 3000;
+
+// a build's content-hashed file name, as the nginx `immutable` rule matches it
+const HASHED_ASSET_RE = /\.[a-z0-9]{16}\.[^/]+$/;
 
 // how soon an unknown map id may send us back to the database
 const RELOAD_MS = 5000;
@@ -119,7 +126,11 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (isStaticAssetRequest(url)) {
-    event.respondWith(serveStaticAsset(event));
+    event.respondWith(
+      event.request.mode === 'navigate' && url.pathname === '/'
+        ? serveShell(event)
+        : serveStaticAsset(event),
+    );
   }
 });
 
@@ -130,22 +141,99 @@ function isStaticAssetRequest(url: URL): boolean {
   );
 }
 
-async function serveStaticAsset(event: FetchEvent): Promise<Response> {
-  // Online: pass through to the network. The offline-static cache is owned
-  // entirely by the app's offlineStaticCache (populated only when offline
-  // content exists, refreshed on redeploy), so the SW never writes it — it's a
-  // pure reader when the network is gone.
+/**
+ * The app's page from the offline-static cache, if that holds a complete build —
+ * the app advances the cached page only once every chunk it names is cached.
+ */
+async function cachedShell(): Promise<Response | undefined> {
   try {
-    return await fetch(event.request);
+    return (await isStaticCacheReady())
+      ? // served with `Vary: Accept-Language`, which a bare URL can't satisfy
+        await caches.match(SHELL_URL, {
+          cacheName: STATIC_CACHE_NAME,
+          ignoreVary: true,
+        })
+      : undefined;
   } catch {
+    return undefined;
+  }
+}
+
+/**
+ * The app's page from the network, or the cached one where the network is gone
+ * or slower than {@link SHELL_TIMEOUT_MS}: a weak signal stalls rather than
+ * fails, and would otherwise keep the app from starting at all.
+ */
+async function serveShell(event: FetchEvent): Promise<Response> {
+  const network = fetch(event.request);
+
+  // the cached page may have answered already; this one then has no taker
+  network.catch(() => {});
+
+  const cached = await cachedShell();
+
+  if (!cached) {
+    return serveStaticAsset(event, network);
+  }
+
+  if (!navigator.onLine) {
+    return cached;
+  }
+
+  try {
+    return (
+      (await Promise.race([
+        network,
+        new Promise<undefined>((resolve) =>
+          setTimeout(resolve, SHELL_TIMEOUT_MS),
+        ),
+      ])) ?? cached
+    );
+  } catch {
+    return cached;
+  }
+}
+
+async function serveStaticAsset(
+  event: FetchEvent,
+  network?: Promise<Response>,
+): Promise<Response> {
+  // A hashed file never changes under its name, so a cached copy is always the
+  // right one. The offline-static cache is written only by the app's
+  // offlineStaticCache (kept while offline content exists, pruned on redeploy).
+  if (HASHED_ASSET_RE.test(new URL(event.request.url).pathname)) {
+    const cached = await caches
+      .match(event.request, { cacheName: STATIC_CACHE_NAME })
+      .catch(() => undefined);
+
+    if (cached) {
+      return cached;
+    }
+  }
+
+  try {
+    if (network) {
+      return await network;
+    }
+
+    return await fetch(event.request);
+  } catch (err) {
+    // A refresh bypassing caches — offlineStaticCache's — must fail rather than
+    // be handed the stale copy, which it would store as the new one.
+    if (
+      event.request.cache === 'reload' ||
+      event.request.cache === 'no-store'
+    ) {
+      throw err;
+    }
+
     const cached = await caches
       .open(STATIC_CACHE_NAME)
-      .then((cache) =>
-        cache.match(
-          new URL(event.request.url).pathname === '/'
-            ? 'index.html'
-            : event.request,
-        ),
+      .then(async (cache) =>
+        new URL(event.request.url).pathname === '/'
+          ? ((await cache.match(SHELL_URL, { ignoreVary: true })) ??
+            cache.match('index.html'))
+          : cache.match(event.request),
       );
 
     if (cached) {

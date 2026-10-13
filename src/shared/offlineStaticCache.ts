@@ -4,6 +4,13 @@ const STATIC_CACHE_NAME = 'offline-static';
 
 const STATIC_MANIFEST_KEY = 'staticAssetsManifest';
 
+/**
+ * The app's page as the service worker serves it: `/` as nginx answered it, in
+ * this browser's language and for this site, unlike the manifest's plain
+ * `index.html`.
+ */
+export const SHELL_URL = '/';
+
 const CACHE_VERSION_KEY = 'staticCacheVersion';
 
 // Bump to force a one-time rebuild of every existing offline-static cache on the
@@ -161,22 +168,29 @@ function stableAssetUrls(manifest: Record<string, string>): string[] {
 /**
  * Re-fetches the given URLs bypassing the HTTP cache and stores them, so a
  * stable-named entry (index.html) reflects the current build rather than a
- * heuristically-cached stale copy. Tolerates per-URL failures.
+ * heuristically-cached stale copy. Tolerates per-URL failures, keeping the
+ * existing copy; returns whether every URL was stored.
  */
-async function refreshUrls(cache: Cache, urls: string[]): Promise<void> {
-  await Promise.all(
+async function refreshUrls(cache: Cache, urls: string[]): Promise<boolean> {
+  const stored = await Promise.all(
     urls.map(async (url) => {
       try {
         const res = await fetch(url, { cache: 'reload' });
 
         if (res.ok) {
           await cache.put(url, res);
+
+          return true;
         }
       } catch {
-        // best-effort; the existing cached copy stays in place
+        // falls through to report it
       }
+
+      return false;
     }),
   );
+
+  return stored.every(Boolean);
 }
 
 export async function cacheStaticAssets(): Promise<void> {
@@ -217,6 +231,11 @@ export async function cacheStaticAssets(): Promise<void> {
   // Every code asset is cached — force the stable-named shell to the current
   // build so it doesn't reference chunks from a heuristically-cached older copy.
   await refreshUrls(cache, stableAssetUrls(manifest));
+
+  // the page the service worker serves; without it the cache isn't ready
+  if (!(await refreshUrls(cache, [SHELL_URL]))) {
+    throw new Error('static caching failed: app page not cached');
+  }
 
   await set(STATIC_MANIFEST_KEY, manifest);
 }
@@ -297,11 +316,16 @@ export async function syncStaticCache(): Promise<void> {
   // Unchanged manifest → the current snapshot is already complete (the sentinel
   // is only written after a verified-complete populate), so there's nothing to
   // do.
+  const cache = await caches.open(STATIC_CACHE_NAME);
+
   if (allMatch) {
+    // a snapshot made before the page was cached gets it now, at this build
+    if (!(await cache.match(SHELL_URL, { ignoreVary: true }))) {
+      await refreshUrls(cache, [SHELL_URL]);
+    }
+
     return;
   }
-
-  const cache = await caches.open(STATIC_CACHE_NAME);
 
   const critical = criticalUrls(newManifest);
   const criticalSet = new Set(critical);
@@ -334,6 +358,12 @@ export async function syncStaticCache(): Promise<void> {
   // etc.) to the new build it references. Bypass the HTTP cache so we don't
   // re-store a heuristically-cached stale copy.
   await refreshUrls(cache, stableAssetUrls(newManifest));
+
+  // The served page still names the old chunks until it is refreshed, so they
+  // stay until it is; the next load retries.
+  if (!(await refreshUrls(cache, [SHELL_URL]))) {
+    return;
+  }
 
   // Fully cached and consistent — now safe to prune superseded URLs and commit.
   await Promise.all(
