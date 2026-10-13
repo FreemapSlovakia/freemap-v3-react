@@ -1,4 +1,4 @@
-import { httpRequest } from '@app/httpRequest.js';
+import { HttpError, httpRequest } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
   deleteFeature,
@@ -21,6 +21,7 @@ import {
 } from '@features/search/model/actions.js';
 import { photonToSearchResult } from '@features/search/model/resultUtils.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import {
   type IsWmsLayerDef,
   isWmsLayerDef,
@@ -46,6 +47,11 @@ import type { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import type { Dispatch } from 'redux';
 import { loadMapDetailsMessages } from '../translations/loadMapDetailsMessages.js';
+import {
+  decodeFeatureInfo,
+  dropOffView,
+  parseFeatureInfo,
+} from './featureInfoParser.js';
 
 /** An object is worth reporting when it carries one of these keys. */
 const osmKeys = [
@@ -90,6 +96,17 @@ const cancelType = [
   deleteFeature.type,
   searchSetQuery.type,
 ];
+
+// GeoJSON (geo+json, GeoServer's json), then GML; MapServer refuses text/xml.
+const INFO_FORMATS = [
+  'application/geo+json',
+  'application/json',
+  'text/xml',
+  'application/vnd.ogc.gml',
+];
+
+/** The format each WMS last answered in, by service URL, to try first. */
+const infoFormats = new Map<string, string>();
 
 // Dismiss the details toast once the map-details tool is gone.
 const mapDetailsClosed = (state: RootState) =>
@@ -196,32 +213,47 @@ export async function handle(
           url.searchParams.set('HEIGHT', size.y.toFixed());
           url.searchParams.set('BBOX', [a.x, a.y, b.x, b.y].join(','));
 
-          // geo+json first, then GeoServer's application/json (GeoJSON too).
-          // Capabilities can't pick: ags.geology.sk advertises only
-          // application/json, refuses it, and serves geo+json. A server
-          // answering neither is left out rather than failing the whole query.
-          for (const format of ['application/geo+json', 'application/json']) {
+          // Tried in turn, as capabilities can't pick: ags.geology.sk advertises
+          // only application/json, refuses it, and serves geo+json. A server
+          // answering none is left out rather than failing the whole query.
+          const remembered = infoFormats.get(def.url);
+
+          for (const format of new Set(
+            remembered ? [remembered, ...INFO_FORMATS] : INFO_FORMATS,
+          )) {
             url.searchParams.set('INFO_FORMAT', format);
 
             try {
               const res = await httpRequest({ getState, url: url.toString() });
 
-              return {
-                type: def.type,
-                name,
-                info: toWgs84(
-                  JSON.parse(
-                    (await res.text())
-                      // kataster.skgeodesy.sk returns number with decimal comma, try to fix it
-                      .replace(/\[(\d+),(\d+),(\d+),(\d+)\]/g, '[$1.$2,$3.$4]'),
-                  ),
-                ) as FeatureCollection, // TODO validate
-              };
-            } catch (err) {
-              console.warn(
-                `Feature info from ${name} as ${format} failed`,
-                err,
+              const body = decodeFeatureInfo(
+                await res.arrayBuffer(),
+                res.headers.get('Content-Type'),
               );
+
+              const info = dropOffView(
+                toWgs84(parseFeatureInfo(body)) as FeatureCollection,
+                bounds,
+              );
+
+              infoFormats.set(def.url, format);
+
+              return { type: def.type, name, info };
+            } catch (err) {
+              if (isAbortError(err)) {
+                return undefined;
+              }
+
+              console.warn(`Feature info from ${name} as ${format}`, err);
+
+              // Failing whatever the format. A 400, a 500 or a network error
+              // (a refusal without CORS headers) may be a refusal, so go on.
+              if (
+                err instanceof HttpError &&
+                [401, 403, 404, 429, 502, 503, 504].includes(err.status)
+              ) {
+                return undefined;
+              }
             }
           }
 
@@ -261,11 +293,10 @@ export async function handle(
     ...wms
       .filter((wms) => wms !== undefined)
       .flatMap((wms) =>
-        (wms.info.features ?? []).map(({ bbox: _projected, ...feature }) => ({
+        wms.info.features.map((feature) => ({
           ...wms,
-          // GeoServer's `bbox` stays in EPSG:3857 (toWgs84 projects only the
-          // geometry), and its values are typed, null included; the details
-          // table expects strings.
+          // GeoServer's values are typed, null included; the details table
+          // expects strings.
           info: {
             ...feature,
             properties:
@@ -297,12 +328,13 @@ export async function handle(
               };
 
         return {
-          geojson: wms.info.geometry
-            ? wms.info
-            : {
-                ...wms.info,
-                geometry: { type: 'Point', coordinates: [lon, lat] },
-              },
+          geojson: {
+            ...wms.info,
+            geometry: wms.info.geometry ?? {
+              type: 'Point',
+              coordinates: [lon, lat],
+            },
+          },
           id: id ?? {
             type: 'wms',
             map: wms.type,

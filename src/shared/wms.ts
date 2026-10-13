@@ -11,15 +11,15 @@ export type Layer = {
   legendUrl: string | null;
 };
 
+/** EPSG:3857 and the codes that are aliases of it. */
+export const MERCATOR_EPSG_CODES = ['3857', '900913', '102100', '102113'];
+
 /**
  * Projections the map can draw. `CRS:84` and the Google-Mercator aliases count
  * as the two standard codes they are equivalent to.
  */
 const SUPPORTED_CRS = new Set([
-  'EPSG:3857',
-  'EPSG:900913',
-  'EPSG:102100',
-  'EPSG:102113',
+  ...MERCATOR_EPSG_CODES.map((code) => `EPSG:${code}`),
   'EPSG:4326',
   'CRS:84',
 ]);
@@ -77,6 +77,27 @@ export function wmsBaseUrl(
   return url.toString();
 }
 
+/** Parses an OGC service's XML answer, throwing on non-XML or an exception. */
+export function parseWmsXml(text: string): Document {
+  const dom = new DOMParser().parseFromString(text, 'text/xml');
+
+  const root = dom.documentElement;
+
+  // Searched from the document rather than from the root, which is itself the
+  // `parsererror` element when the response was not XML at all.
+  if (!root?.localName || dom.getElementsByTagName('parsererror').length) {
+    throw new Error("The server's response is not XML.");
+  }
+
+  // Answered with 200 by servers that report failure in the body. The OWS
+  // form is `ExceptionReport`, the WMS one `ServiceExceptionReport`.
+  if (/^(Service)?Exception/.test(root.localName)) {
+    throw new Error(root.textContent?.trim() || 'WMS service exception');
+  }
+
+  return dom;
+}
+
 export async function wms(urlString: string) {
   const url = new URL(wmsBaseUrl(urlString));
 
@@ -90,21 +111,9 @@ export async function wms(urlString: string) {
     throw new Error(await res.text());
   }
 
-  const dom = new DOMParser().parseFromString(await res.text(), 'text/xml');
+  const dom = parseWmsXml(await res.text());
 
   const root = dom.documentElement;
-
-  // Searched from the document rather than from the root, which is itself the
-  // `parsererror` element when the response was not XML at all.
-  if (!root?.localName || dom.getElementsByTagName('parsererror').length) {
-    throw new Error("The server's response is not XML.");
-  }
-
-  // Both are answered with 200 by servers that report failure in the body, so
-  // without this the layer list would just come up empty and unexplained.
-  if (root.localName.startsWith('ServiceException')) {
-    throw new Error(root.textContent?.trim() || 'WMS service exception');
-  }
 
   /**
    * Elements are matched by local name, ignoring the namespace they are in: a
