@@ -31,7 +31,9 @@
 
 .type-zoom-control {
   display: flex;
-  flex-wrap: wrap;
+  /* when too narrow, the credits button wraps above the map controls into the
+     corner rather than pushing them up */
+  flex-wrap: wrap-reverse;
   justify-content: center;
   pointer-events: none;
   position: absolute;
@@ -51,8 +53,10 @@
     }
   }
 
+  /* wrap-reverse makes flex-start the bottom */
   & > div:last-child {
-    align-self: flex-end;
+    align-self: flex-start;
+    margin-left: auto;
     pointer-events: auto;
   }
 }

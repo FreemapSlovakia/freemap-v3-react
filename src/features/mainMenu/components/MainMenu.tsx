@@ -10,6 +10,7 @@ import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js
 import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useFullscreen } from '@shared/hooks/useFullscreen.js';
 import {
   documentMenuItemProps,
   modalMenuItemProps,
@@ -40,6 +41,7 @@ import {
   FaUser,
 } from 'react-icons/fa';
 import { IoLanguage } from 'react-icons/io5';
+import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { flagItems } from './languageItems.js';
 import classes from './MainMenu.module.css';
 
@@ -57,6 +59,8 @@ export function MainMenu(): ReactElement {
   const hasClearableMapFeatures = useAppSelector(
     hasClearableMapFeaturesSelector,
   );
+
+  const fullscreen = useFullscreen();
 
   const m = useMessages();
 
@@ -89,6 +93,15 @@ export function MainMenu(): ReactElement {
         <OnlineOnlyItem {...modalMenuItemProps('login')}>
           <FaSignInAlt /> {m?.mainMenu.logIn}
         </OnlineOnlyItem>
+      )}
+
+      {fullscreen.available && (
+        <Dropdown.Item as="button" eventKey="fullscreen">
+          {fullscreen.active ? <RiFullscreenExitLine /> : <RiFullscreenLine />}{' '}
+          {fullscreen.active
+            ? m?.general.exitFullscreen
+            : m?.general.fullscreen}
+        </Dropdown.Item>
       )}
 
       <Dropdown.Divider />

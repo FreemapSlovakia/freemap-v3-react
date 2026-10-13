@@ -32,11 +32,13 @@ import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { afterPrefix } from '../types/typeUtils.js';
+import { toggleFullscreen } from './useFullscreen.js';
 
 export type EventKey =
   | 'url'
   | 'drawing'
   | 'clear-map-features'
+  | 'fullscreen'
   | 'reset-app'
   | 'close'
   | 'gallery'
@@ -231,6 +233,14 @@ export function useMenuHandler({
 
       if (key === 'clear-map-features') {
         dispatch(clearMapFeatures());
+
+        setShow(false);
+
+        return;
+      }
+
+      if (key === 'fullscreen') {
+        toggleFullscreen();
 
         setShow(false);
 

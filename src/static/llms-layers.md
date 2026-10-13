@@ -11,7 +11,7 @@ The toolbar also contains the following buttons:
 - zoom in (keyboard shortcut: <kbd>+</kbd>)
 - zoom out (keyboard shortcut: <kbd>-</kbd>)
 - find me (locate me by the browser's geolocation API)
-- toggle fullscreen (not shown in the installed app, which has no browser chrome to escape, nor on iOS, whose Safari has no fullscreen to enter)
+- toggle fullscreen (only in an embedded map, which has no main menu; elsewhere it is the main menu's Fullscreen item)
 - manage maps (last; a gear opening the menu described in [Manage maps](/llms-manage-maps.md), hidden while a photo position or a map area is being picked, and never present in an embedded map)
 
 **Find me** cycles through three states: off; on with the map following the position (the button is highlighted); and on without following, once the map has been moved by hand (the button stays pressed but loses the highlight). Pressing it in that third state brings the map back to the position and resumes following rather than switching locating off — only a press while following turns it off.

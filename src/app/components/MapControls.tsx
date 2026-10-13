@@ -7,13 +7,16 @@ import { useMapLayersPanel } from '@features/mapSettings/mapLayersPanelStore.js'
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import {
+  toggleFullscreen,
+  useFullscreen,
+} from '@shared/hooks/useFullscreen.js';
 import clsx from 'clsx';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
 import { FaLayerGroup, FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
-import { useMediaQuery } from 'react-responsive';
 import { toggleLocate } from '../store/actions.js';
 import { mapLibraryPreviewingSelector } from '../store/selectors.js';
 import classes from './MapControls.module.css';
@@ -91,45 +94,11 @@ export function MapControls(): ReactElement | null {
     [dispatch],
   );
 
-  // An installed app has no browser chrome to escape, so the button would win
-  // nothing. Deliberately not `(display-mode: fullscreen)` as well: that also
-  // matches while the Fullscreen API is active, which would take the button
-  // away at the moment it is needed to leave again.
-  const installed = useMediaQuery({ query: '(display-mode: standalone)' });
-
   const map = useMap();
 
   const layersPanel = useMapLayersPanel();
 
-  const handleFullscreenClick = useCallback(() => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
-    } else {
-      try {
-        // Some WebViews advertise the API but reject (or throw synchronously)
-        // with "Fullscreen is not supported"; swallow both.
-        document.body.requestFullscreen().catch(() => {});
-      } catch {
-        // ignore
-      }
-    }
-  }, []);
-
-  const [fullscreen, setFullscreen] = useState(() =>
-    Boolean(document.fullscreenElement),
-  );
-
-  useEffect(() => {
-    function handler() {
-      setFullscreen(Boolean(document.fullscreenElement));
-    }
-
-    document.addEventListener('fullscreenchange', handler);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handler);
-    };
-  }, []);
+  const fullscreen = useFullscreen();
 
   return !map ? null : (
     <Toolbar className="m-2">
@@ -205,17 +174,22 @@ export function MapControls(): ReactElement | null {
         </LongPressTooltip>
       )}
 
-      {document.fullscreenEnabled && !installed && (
+      {/* Elsewhere it is in the main menu, which an embed lacks. */}
+      {window.fmEmbedded && fullscreen.available && (
         <LongPressTooltip
-          label={fullscreen ? m?.general.exitFullscreen : m?.general.fullscreen}
+          label={
+            fullscreen.active
+              ? m?.general.exitFullscreen
+              : m?.general.fullscreen
+          }
         >
           {({ props }) => (
-            <Button
-              variant="secondary"
-              onClick={handleFullscreenClick}
-              {...props}
-            >
-              {fullscreen ? <RiFullscreenExitLine /> : <RiFullscreenLine />}
+            <Button variant="secondary" onClick={toggleFullscreen} {...props}>
+              {fullscreen.active ? (
+                <RiFullscreenExitLine />
+              ) : (
+                <RiFullscreenLine />
+              )}
             </Button>
           )}
         </LongPressTooltip>

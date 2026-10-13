@@ -68,6 +68,12 @@ Supported login providers:
 
 For each provider the modal shows either a **Connect** button (to link it) or a **Disconnect** button (if already linked), so multiple providers can be linked to a single Freemap account.
 
+### Fullscreen
+
+- Access: Main menu > Fullscreen (reads "Exit fullscreen mode" while fullscreen)
+
+Not offered in the installed app, which has no browser chrome to escape, nor on iOS, whose Safari has no fullscreen to enter.
+
 ### Clear map elements
 
 - Access: Main menu > Clear map elements
