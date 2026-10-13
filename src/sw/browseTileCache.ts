@@ -590,16 +590,18 @@ async function upscaledTile(
   url: string,
   grid: TileGrid,
 ): Promise<Response | undefined> {
-  // An aborted request is a tile nobody will show. A missing `@Nx` tile must
-  // fail, so the layer retries it at scale 1, which may be held as it is.
+  // An aborted request is a tile nobody will show. An `@Nx` tile held at scale 1
+  // must fail instead, so the layer retries it there and gets the real one.
   if (
     typeof OffscreenCanvas === 'undefined' ||
     event.request.signal.aborted ||
-    stripTileScale(url) !== url
+    (stripTileScale(url) !== url && held.entries.has(stripTileScale(url)))
   ) {
     return undefined;
   }
 
+  // Ancestors keep the request's `@Nx`: a hi-DPI screen browsed and stored only
+  // that spelling.
   for (const ancestor of tileAncestors(url, grid, MAX_UPSCALE_LEVELS)) {
     if (!held.entries.has(ancestor.url)) {
       continue;
@@ -772,9 +774,9 @@ async function serveBrowseTile(
       return cached;
     }
 
-    // Online, the rejection is the server's answer: a CORS-less error rejects
-    // the same way.
-    if (settings.mode === 'network-only' || navigator.onLine) {
+    // Not gated on `navigator.onLine`: a weak signal reports online and still
+    // rejects, and an error tile drops the enlarged parent Leaflet was showing.
+    if (settings.mode === 'network-only') {
       throw err;
     }
 
