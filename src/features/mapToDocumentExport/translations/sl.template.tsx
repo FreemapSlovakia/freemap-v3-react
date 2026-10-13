@@ -43,7 +43,21 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   lossless: 'Brez izgub',
   lossy: 'Z izgubami',
   quality: 'Kakovost',
+  sizeTitle: 'Velikost in podrobnost',
+  zoom: 'Stopnja povečave',
+  printScale: 'Merilo',
   mapScale: 'Ločljivost zemljevida',
+  printSize: 'Velikost natisa',
+  imageSize: 'Velikost slike',
+  lock: 'Zakleni',
+  unlock: 'Odkleni',
+  scaleFollowsZoom: 'Nezaklenjeno merilo sledi povečavi.',
+  symbolSize: ({ percent }) =>
+    `Besedila in znaki se natisnejo v ${percent} % običajne velikosti`,
+  tooLarge: ({ zoom }) =>
+    zoom === null
+      ? 'Območje je za izvoz preveliko. Izvozite manjše območje.'
+      : `Območje je za to stopnjo povečave preveliko. Zmanjšajte povečavo na ${zoom} ali izvozite manjše območje.`,
   customLayerOrder: 'Postavitev podatkov zemljevida',
   orders: {
     natural: 'Naravno',

@@ -44,7 +44,21 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   lossless: 'Senza perdita',
   lossy: 'Con perdita',
   quality: 'Qualità',
+  sizeTitle: 'Dimensione e dettaglio',
+  zoom: 'Livello di zoom',
+  printScale: 'Scala',
   mapScale: 'Risoluzione mappa',
+  printSize: 'Dimensione di stampa',
+  imageSize: "Dimensione dell'immagine",
+  lock: 'Blocca',
+  unlock: 'Sblocca',
+  scaleFollowsZoom: 'Se non bloccata, la scala segue lo zoom.',
+  symbolSize: ({ percent }) =>
+    `Testi e simboli vengono stampati al ${percent} % della dimensione normale`,
+  tooLarge: ({ zoom }) =>
+    zoom === null
+      ? "L'area è troppo grande da esportare. Esporta un'area più piccola."
+      : `L'area è troppo grande per questo livello di zoom. Riduci lo zoom a ${zoom} o esporta un'area più piccola.`,
   customLayerOrder: 'Posizionamento dei dati mappa',
   orders: {
     natural: 'Naturale',

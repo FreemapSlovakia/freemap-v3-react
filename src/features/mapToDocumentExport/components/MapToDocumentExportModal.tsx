@@ -33,6 +33,7 @@ import {
   OSM_DATA_ATTR,
   OSRM_ROUTING_ATTR,
 } from '@shared/mapDefinitions.js';
+import outdoorBody from '@shared/mapLibrary/defs/outdoor.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { saveBlob } from '@shared/saveBlob.js';
 import {
@@ -63,8 +64,12 @@ import {
 } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import type { Messages } from '@/translations/messagesInterface.js';
-import type { MapToDocumentExportResult } from '../model/exportMapToDocument.js';
-import { exportMapToDocument } from '../model/exportMapToDocument.js';
+import {
+  ExportTooLargeError,
+  exportMapToDocument,
+  type MapToDocumentExportResult,
+} from '../model/exportMapToDocument.js';
+import { resolvePrint } from '../model/printScale.js';
 import {
   type CustomLayerOrder,
   type ExtraLayer,
@@ -79,8 +84,34 @@ import { useMapToDocumentExportMessages } from '../translations/useMapToDocument
 import { DataLayerStyleFields } from './DataLayerStyleFields.js';
 import { ExportLayersField } from './ExportLayersField.js';
 import { MapDecorationsField } from './MapDecorationsField.js';
+import {
+  type PrintDraft,
+  PrintSizeFields,
+  toNumber,
+} from './PrintSizeFields.js';
 
 type Props = { show: boolean };
+
+const MIN_ZOOM = outdoorBody.minZoom ?? 0;
+
+const MAX_ZOOM = outdoorBody.maxNativeZoom ?? 20;
+
+const PRINT_LIMITS = {
+  minZoom: MIN_ZOOM,
+  maxZoom: MAX_ZOOM,
+  minDpi: 60,
+  maxDpi: 960,
+  // What 960 DPI gives at the zoom's own scale.
+  maxPxPerMapPx: 10,
+};
+
+function mapZoom(state: RootState) {
+  return Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.round(state.map.zoom)));
+}
+
+function initialPrintDraft(state: RootState): PrintDraft {
+  return { zoom: mapZoom(state), paper: null, px: null, locked: [] };
+}
 
 /**
  * An attribution's display name; only `nameKey` ones are translated, and a
@@ -110,6 +141,8 @@ export default function MapToDocumentExportModal({
   const {
     area,
     setArea,
+    areaBbox,
+    bbox,
     selecting: selectingArea,
     startSelecting,
   } = useMapAreaSelection();
@@ -133,6 +166,13 @@ export default function MapToDocumentExportModal({
   // file the modal no longer owns — and so nothing left to lose by closing.
   const [opened, setOpened] = useState(false);
 
+  const store = useStore<RootState>();
+
+  // Not persisted: each export starts from the zoom the map is at.
+  const [printDraft, setPrintDraft] = useState(() =>
+    initialPrintDraft(store.getState()),
+  );
+
   // The modal outlives its own hiding by a second, so a reopen inside that
   // window would otherwise land on the last export's result.
   useEffect(() => {
@@ -140,8 +180,29 @@ export default function MapToDocumentExportModal({
       setResult(null);
 
       setOpened(false);
+
+      setPrintDraft(initialPrintDraft(store.getState()));
     }
-  }, [show]);
+  }, [show, store]);
+
+  // Drawing an area usually means moving the map first, so a newly drawn one
+  // takes the map's zoom again; the locks stay. A cancelled drawing changes
+  // nothing.
+  const lastAreaBbox = useRef(areaBbox);
+
+  useEffect(() => {
+    if (areaBbox === lastAreaBbox.current) {
+      return;
+    }
+
+    lastAreaBbox.current = areaBbox;
+
+    setPrintDraft((draft) => ({
+      ...draft,
+      zoom: mapZoom(store.getState()),
+      paper: draft.locked.includes('paper') ? draft.paper : null,
+    }));
+  }, [areaBbox, store]);
 
   const {
     scale,
@@ -191,8 +252,6 @@ export default function MapToDocumentExportModal({
 
   const dispatch = useDispatch();
 
-  const store = useStore<RootState>();
-
   const confirm = useConfirm();
 
   const [exporting, setExporting] = useState(false);
@@ -204,7 +263,19 @@ export default function MapToDocumentExportModal({
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  const invalidScale = isInvalidInt(scale, true, 60, 960);
+  const printResult = useMemo(
+    () =>
+      bbox
+        ? resolvePrint(
+            bbox,
+            { ...printDraft, dpi: toNumber(scale) },
+            PRINT_LIMITS,
+          )
+        : null,
+    [bbox, printDraft, scale],
+  );
+
+  const print = printResult?.ok ? printResult.print : null;
 
   const invalidGlowWidth = glow && isInvalidInt(glowWidth, true, 1, 50);
 
@@ -282,9 +353,9 @@ export default function MapToDocumentExportModal({
     [updateSettings, qualityKey],
   );
 
-  const handleScaleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      updateSettings({ scale: e.currentTarget.value });
+  const handleDpiChange = useCallback(
+    (value: string) => {
+      updateSettings({ scale: value });
     },
     [updateSettings],
   );
@@ -362,6 +433,10 @@ export default function MapToDocumentExportModal({
   );
 
   const handleExport = useCallback(async () => {
+    if (!print || !bbox) {
+      return;
+    }
+
     const ac = new AbortController();
 
     abortRef.current = ac;
@@ -372,10 +447,12 @@ export default function MapToDocumentExportModal({
       const file = await exportMapToDocument({
         getState: store.getState,
         signal: ac.signal,
-        area,
+        bbox,
+        zoom: print.zoom,
         format,
         quality: qualityKey ? parseInt(quality, 10) : null,
-        scale: parseInt(scale, 10) / 96,
+        scale: print.px.width / print.mapPx.width,
+        dpi: print.dpi,
         baseMap,
         layers: [...layers],
         omit: [...omit],
@@ -396,10 +473,6 @@ export default function MapToDocumentExportModal({
         },
       });
 
-      if (!file) {
-        return;
-      }
-
       // The modal stays open on the result: the credits the render reported are
       // an obligation the user has to be able to read and copy.
       setResult({ file, extras: extraDefs });
@@ -407,11 +480,15 @@ export default function MapToDocumentExportModal({
       setOpened(false);
     } catch (err) {
       if (!ac.signal.aborted) {
+        const tooLarge = err instanceof ExportTooLargeError;
+
         dispatch(
           toastsAdd({
-            style: 'danger',
-            messageKey: 'exportError',
-            messageParams: { err },
+            style: tooLarge ? 'warning' : 'danger',
+            messageKey: tooLarge ? 'tooLarge' : 'exportError',
+            messageParams: tooLarge
+              ? { zoom: err.fittingZoom >= MIN_ZOOM ? err.fittingZoom : null }
+              : { err },
             messageLoader: loadMapToDocumentExportMessages,
           }),
         );
@@ -425,12 +502,12 @@ export default function MapToDocumentExportModal({
     store,
     dispatch,
     mtde,
-    area,
+    bbox,
+    print,
     exportables,
     format,
     qualityKey,
     quality,
-    scale,
     baseMap,
     layers,
     omit,
@@ -776,25 +853,14 @@ export default function MapToDocumentExportModal({
                 )}
               </div>
 
-              <Form.Group controlId="mapScale" className="mt-3">
-                <Form.Label className="d-block">{mtde?.mapScale}</Form.Label>
-
-                <InputGroup className="d-inline-flex w-auto">
-                  <Form.Control
-                    type="number"
-                    value={scale}
-                    min={60}
-                    max={960}
-                    step={10}
-                    className="flex-grow-0"
-                    style={{ width: 'calc(3ch + 3rem)', minWidth: 0 }}
-                    isInvalid={invalidScale}
-                    onChange={handleScaleChange}
-                  />
-
-                  <InputGroup.Text>DPI</InputGroup.Text>
-                </InputGroup>
-              </Form.Group>
+              <PrintSizeFields
+                draft={printDraft}
+                onDraftChange={setPrintDraft}
+                dpi={scale}
+                onDpiChange={handleDpiChange}
+                result={printResult}
+                limits={PRINT_LIMITS}
+              />
 
               <ExportLayersField
                 baseMap={baseMap}
@@ -882,7 +948,7 @@ export default function MapToDocumentExportModal({
             disabled={
               !online ||
               exporting ||
-              invalidScale ||
+              !print ||
               invalidQuality ||
               (!wholeMap && OPAQUE_FORMATS.includes(format)) ||
               (!baseMap && layers.length === 0 && !exportables) ||

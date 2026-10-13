@@ -43,7 +43,21 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   lossless: 'Bezstratna',
   lossy: 'Stratna',
   quality: 'Jakość',
+  sizeTitle: 'Rozmiar i szczegółowość',
+  zoom: 'Poziom powiększenia',
+  printScale: 'Skala',
   mapScale: 'Rozdzielczość mapy',
+  printSize: 'Rozmiar wydruku',
+  imageSize: 'Rozmiar obrazu',
+  lock: 'Zablokuj',
+  unlock: 'Odblokuj',
+  scaleFollowsZoom: 'Niezablokowana skala podąża za powiększeniem.',
+  symbolSize: ({ percent }) =>
+    `Teksty i symbole zostaną wydrukowane w ${percent} % zwykłego rozmiaru`,
+  tooLarge: ({ zoom }) =>
+    zoom === null
+      ? 'Obszar jest za duży do eksportu. Wyeksportuj mniejszy obszar.'
+      : `Obszar jest za duży dla tego poziomu powiększenia. Zmniejsz powiększenie do ${zoom} lub wyeksportuj mniejszy obszar.`,
   customLayerOrder: 'Umiejscowienie danych mapy',
   orders: {
     natural: 'Naturalna',

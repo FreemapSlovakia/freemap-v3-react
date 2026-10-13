@@ -43,7 +43,21 @@ const fr: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   lossless: 'Sans perte',
   lossy: 'Avec perte',
   quality: 'Qualité',
+  sizeTitle: 'Taille et détail',
+  zoom: 'Niveau de zoom',
+  printScale: 'Échelle',
   mapScale: 'Résolution de la carte',
+  printSize: "Taille d'impression",
+  imageSize: "Taille de l'image",
+  lock: 'Verrouiller',
+  unlock: 'Déverrouiller',
+  scaleFollowsZoom: "Non verrouillée, l'échelle suit le zoom.",
+  symbolSize: ({ percent }) =>
+    `Textes et symboles imprimés à ${percent} % de leur taille normale`,
+  tooLarge: ({ zoom }) =>
+    zoom === null
+      ? 'La zone est trop grande pour être exportée. Exportez une zone plus petite.'
+      : `La zone est trop grande pour ce niveau de zoom. Réduisez le zoom à ${zoom} ou exportez une zone plus petite.`,
   customLayerOrder: 'Placement des données cartographiques',
   orders: {
     natural: 'Naturel',

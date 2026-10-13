@@ -25,7 +25,18 @@ export type MapToDocumentExportMessages = {
   lossless: string;
   lossy: string;
   quality: string;
+  sizeTitle: string;
+  zoom: string;
+  printScale: string;
+  printSize: string;
   mapScale: string;
+  imageSize: string;
+  lock: string;
+  unlock: string;
+  scaleFollowsZoom: string;
+  symbolSize: (props: { percent: number }) => string;
+  /** `zoom` is the highest that fits, or `null` when none does. */
+  tooLarge: (props: { zoom: number | null }) => string;
   customLayerOrder: string;
   orders: Record<CustomLayerOrder, string>;
   decorations: string;

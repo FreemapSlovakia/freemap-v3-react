@@ -6,6 +6,7 @@ import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import z from 'zod';
 import { type ExportCredits, resolveExportCredits } from './exportCredits.js';
+import { type Bbox, bboxPixelSize } from './printScale.js';
 import type {
   CustomLayerOrder,
   ExtraLayer,
@@ -19,12 +20,16 @@ export interface MapToDocumentExportParams {
   getState: () => RootState;
   /** Aborts the in-flight requests when the user cancels. */
   signal: AbortSignal;
-  area: 'visible' | 'area';
+  bbox: Bbox;
+  /** Tile zoom whose detail the map is drawn with. */
+  zoom: number;
   format: Format;
   /** Quality (0–100) for JPEG, and for WebP makes it lossy; `null` otherwise. */
   quality: number | null;
-  /** Resolution in CSS pixels per map pixel (DPI / 96). */
+  /** Output pixels per map pixel; DPI / 96 unless the print is enlarged. */
   scale: number;
+  /** Print density, which with `scale` sets the page's physical size. */
+  dpi: number;
   /** Whether to draw the map itself, or only `layers` over transparency. */
   baseMap: boolean;
   /** Server-rendered layers added on top. */
@@ -51,6 +56,21 @@ export interface MapToDocumentExportParams {
   label: { color: string; weight: number; size: number };
 }
 
+/** The area holds more pixels at the chosen zoom than the renderer accepts. */
+export class ExportTooLargeError extends Error {
+  constructor(
+    /** The highest zoom at which the area fits. */
+    readonly fittingZoom: number,
+  ) {
+    super('export too large');
+  }
+}
+
+const TooLargeSchema = z.object({
+  error: z.literal('export_too_large'),
+  maxPixels: z.number(),
+});
+
 export interface MapToDocumentExportResult extends ExportCredits {
   blob: Blob;
   suggestedName: string;
@@ -65,16 +85,17 @@ export interface MapToDocumentExportResult extends ExportCredits {
  * per-sample markers, POSTs the export request, polls until the server has
  * finished rendering, then downloads the result as a blob and releases the job.
  *
- * Resolves to `null` when there is no area to export. Throws on HTTP errors and
- * when aborted via `signal`.
+ * Throws on HTTP errors and when aborted via `signal`.
  */
 export async function exportMapToDocument({
   getState,
   signal,
-  area,
+  bbox,
+  zoom,
   format,
   quality,
   scale,
+  dpi,
   baseMap,
   layers,
   omit,
@@ -83,14 +104,7 @@ export async function exportMapToDocument({
   decorations,
   glow,
   label,
-}: MapToDocumentExportParams): Promise<MapToDocumentExportResult | null> {
-  const bbox =
-    area === 'visible' ? getState().map.bounds : getState().mapArea.bbox;
-
-  if (!bbox) {
-    return null;
-  }
-
+}: MapToDocumentExportParams): Promise<MapToDocumentExportResult> {
   const exportableSet = new Set(exportables);
 
   const fc = await buildExportFeatureCollection({
@@ -128,11 +142,11 @@ export async function exportMapToDocument({
     signal,
     body: JSON.stringify({
       bbox,
-      // The renderer picks tiles by this, so it has to name a tile zoom
-      zoom: Math.round(getState().map.zoom),
+      zoom,
       format: wireFormat,
       quality: quality ?? undefined,
       scale,
+      dpi,
       decorations: {
         scaleBar: decorations.scaleBar, // bottom-left, metric, cos(lat)-corrected
         // top-right, static up-arrow + localized letter; omitted, never `false`,
@@ -159,6 +173,28 @@ export async function exportMapToDocument({
       },
     }),
   });
+
+  // A body over the server's upload limit is a 413 too, without this JSON.
+  if (res.status === 413) {
+    const tooLarge = TooLargeSchema.safeParse(
+      await res.json().catch(() => null),
+    );
+
+    if (tooLarge.success) {
+      // Measured as the renderer does, as its rounding can push a zoom over.
+      let fitting = zoom - 1;
+
+      for (; fitting >= 0; fitting--) {
+        const size = bboxPixelSize(bbox, fitting);
+
+        if (size.width * size.height <= tooLarge.data.maxPixels) {
+          break;
+        }
+      }
+
+      throw new ExportTooLargeError(fitting);
+    }
+  }
 
   if (!res.ok) {
     throw new Error(`Unexpected HTTP response ${res.status}`);

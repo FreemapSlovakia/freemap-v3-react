@@ -42,7 +42,21 @@ const en: MapToDocumentExportMessages = {
   lossless: 'Lossless',
   lossy: 'Lossy',
   quality: 'Quality',
+  sizeTitle: 'Size and detail',
+  zoom: 'Zoom level',
+  printScale: 'Scale',
   mapScale: 'Map resolution',
+  printSize: 'Print size',
+  imageSize: 'Image size',
+  lock: 'Lock',
+  unlock: 'Unlock',
+  scaleFollowsZoom: 'Unlocked, the scale follows the zoom.',
+  symbolSize: ({ percent }) =>
+    `Text and symbols print at ${percent} % of their normal size`,
+  tooLarge: ({ zoom }) =>
+    zoom === null
+      ? 'The area is too large to export. Export a smaller area.'
+      : `The area is too large for this zoom level. Lower the zoom to ${zoom} or export a smaller area.`,
   customLayerOrder: 'Map data placement',
   orders: {
     natural: 'Natural',

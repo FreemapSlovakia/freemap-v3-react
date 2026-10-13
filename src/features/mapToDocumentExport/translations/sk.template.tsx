@@ -43,7 +43,21 @@ const sk: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   lossless: 'Bezstratová',
   lossy: 'Stratová',
   quality: 'Kvalita',
+  sizeTitle: 'Veľkosť a podrobnosť',
+  zoom: 'Úroveň priblíženia',
+  printScale: 'Mierka',
   mapScale: 'Rozlíšenie mapy',
+  printSize: 'Veľkosť výtlačku',
+  imageSize: 'Veľkosť obrázka',
+  lock: 'Zamknúť',
+  unlock: 'Odomknúť',
+  scaleFollowsZoom: 'Nezamknutá mierka sa riadi priblížením.',
+  symbolSize: ({ percent }) =>
+    `Texty a značky sa vytlačia na ${percent} % bežnej veľkosti`,
+  tooLarge: ({ zoom }) =>
+    zoom === null
+      ? 'Oblasť je na export príliš veľká. Exportujte menšiu oblasť.'
+      : `Oblasť je pre túto úroveň priblíženia príliš veľká. Znížte priblíženie na ${zoom} alebo exportujte menšiu oblasť.`,
   customLayerOrder: 'Umiestnenie mapových dát',
   orders: {
     natural: 'Prirodzené',

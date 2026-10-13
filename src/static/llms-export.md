@@ -55,7 +55,12 @@ Opens a modal to export the map as an image or document. Options:
 
 - Export area: visible area, or a rectangle drawn on the map
 - Format: JPEG, PNG, WebP, PDF, or SVG. JPEG and WebP take a quality (0–100), each remembering its own (JPEG 90, WebP 80); WebP's quality field is preceded by a joined **Lossless** / **Lossy** pair, defaulting to Lossless, which is a different codec and takes the number away — on a map render it is both exact and usually smaller than lossy at any quality
-- Map resolution (DPI)
+- **Size and detail** (a bordered group, its fields in one wrapping row):
+  - **Zoom level** (5–20) — what the map shows; nothing else changes it. It starts at the map's current zoom when the modal opens and again after an area is drawn
+  - **Scale** (1 : N, true at the area's centre) and **Print size** (width in cm; the height follows the area) — one value in two units
+  - **Map resolution** (DPI) and **Image size** (width in px; the height follows the area)
+  - Image size = print size × DPI, so two of scale, DPI and image size set the third. Each has a lock: a locked value never changes, and the others adjust around it. Typing a value locks it; the lock button unlocks it again (or locks the value shown). With two locked the third is read-only. With fewer locked, the scale holds before the DPI, so a typed image size changes the DPI. An unlocked scale follows the zoom; a locked one stays, and a zoom change then only makes text and symbols (lines, icons) print larger or smaller — a line under the fields gives their size in percent of normal, highlighted outside 50–200 %
+  - The files carry the DPI, so they print at the stated size. At most 10 image pixels per map pixel (what 960 DPI gives at the zoom's own scale); beyond that the computed field is marked invalid. The renderer caps the pixel count at the zoom (DPI aside), so a large area at a high zoom is refused with a message naming the highest zoom that fits
 - Server-rendered layers:
   - **Base map** toggle button — on, the whole map is drawn; off, only the selected optional layers are, over transparency
   - **Leave out** (with the base map on) — ground cover (land cover, sea, water, piers, bridges, solar plants, trees) and buildings, each dropped to transparency, for laying the map over an aerial image

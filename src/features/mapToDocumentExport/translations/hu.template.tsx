@@ -43,7 +43,21 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   lossless: 'Veszteségmentes',
   lossy: 'Veszteséges',
   quality: 'Minőség',
+  sizeTitle: 'Méret és részletesség',
+  zoom: 'Nagyítási szint',
+  printScale: 'Méretarány',
   mapScale: 'Térkép felbontása',
+  printSize: 'Nyomtatási méret',
+  imageSize: 'Képméret',
+  lock: 'Zárolás',
+  unlock: 'Feloldás',
+  scaleFollowsZoom: 'Zárolás nélkül a méretarány a nagyítást követi.',
+  symbolSize: ({ percent }) =>
+    `A szövegek és jelek a szokásos méretük ${percent} %-ában nyomtatódnak`,
+  tooLarge: ({ zoom }) =>
+    zoom === null
+      ? 'A terület túl nagy az exportáláshoz. Exportáljon kisebb területet.'
+      : `A terület túl nagy ehhez a nagyítási szinthez. Csökkentse a nagyítást ${zoom}. szintre, vagy exportáljon kisebb területet.`,
   customLayerOrder: 'Térképadatok elhelyezése',
   orders: {
     natural: 'Természetes',
