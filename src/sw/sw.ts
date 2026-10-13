@@ -42,6 +42,12 @@ const CACHED_TILE_MAPS_KEY = 'cachedTileMaps';
 // how long the app's page may take before the cached one is served instead
 const SHELL_TIMEOUT_MS = 3000;
 
+// how long the loading page's "start the saved version" holds for its reload
+const SHELL_FROM_CACHE_MS = 10_000;
+
+// The page whose next load skips the network, and until when; see index.ejs.
+let shellFromCache: { url: string; until: number } | null = null;
+
 // a build's content-hashed file name, as the nginx `immutable` rule matches it
 const HASHED_ASSET_RE = /\.[a-z0-9]{16}\.[^/]+$/;
 
@@ -165,6 +171,21 @@ async function cachedShell(): Promise<Response | undefined> {
  * fails, and would otherwise keep the app from starting at all.
  */
 async function serveShell(event: FetchEvent): Promise<Response> {
+  if (
+    shellFromCache &&
+    Date.now() < shellFromCache.until &&
+    // a reload's request keeps the page's `#…`; the page sends its URL without
+    shellFromCache.url === event.request.url.split('#')[0]
+  ) {
+    shellFromCache = null;
+
+    const cached = await cachedShell();
+
+    if (cached) {
+      return cached;
+    }
+  }
+
   const network = fetch(event.request);
 
   // the cached page may have answered already; this one then has no taker
@@ -457,9 +478,30 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  const type = (event.data as { type?: string } | undefined)?.type;
+  const data = event.data as
+    | { type?: string; main?: unknown; url?: unknown }
+    | undefined;
 
-  if (type === 'browse-cache-changed') {
+  const type = data?.type;
+
+  if (type === 'cached-shell-differs') {
+    // the loading page asks whether a build other than its own is held
+    const main = data?.main;
+
+    event.waitUntil(
+      cachedShell()
+        .then((cached) => cached?.text())
+        .then((html) =>
+          event.ports[0]?.postMessage(
+            typeof main === 'string' &&
+              main !== '' &&
+              html !== undefined &&
+              !html.includes(main),
+          ),
+        )
+        .catch(() => event.ports[0]?.postMessage(false)),
+    );
+  } else if (type === 'browse-cache-changed') {
     event.waitUntil(applyBrowseState());
   } else if (type === 'browse-cache-cleared') {
     dropIndex();
@@ -467,5 +509,10 @@ self.addEventListener('message', (event) => {
     tileSources = new Map();
 
     tileSourcesReadAt = 0;
+  } else if (type === 'shell-from-cache' && typeof data?.url === 'string') {
+    shellFromCache = { url: data.url, until: Date.now() + SHELL_FROM_CACHE_MS };
+
+    // the page reloads on this answer, so the flag is set before it navigates
+    event.ports[0]?.postMessage(true);
   }
 });

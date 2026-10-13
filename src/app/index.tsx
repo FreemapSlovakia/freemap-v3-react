@@ -210,6 +210,9 @@ createRoot(rootElement).render(
 // Tells the startup check in index.ejs that `main` ran.
 window.fmStarted = true;
 
+// index.ejs's offer of the cached build, for a slow start
+document.getElementById('fm-skip-network')?.remove();
+
 if (process.env['NODE_ENV'] === 'production') {
   await window.navigator.serviceWorker
     ?.register('/sw.js')

@@ -10,6 +10,81 @@
 
     <meta charset="UTF-8" />
 
+    <% if (prod) { %>
+    <!-- First in the document, so it runs even while the rest trickles in. -->
+    <script>
+      (function () {
+        if (!navigator.serviceWorker || !window.MessageChannel) {
+          return;
+        }
+
+        function ask(message, onAnswer) {
+          var sw = navigator.serviceWorker.controller;
+
+          if (!sw) {
+            return;
+          }
+
+          var channel = new MessageChannel();
+
+          channel.port1.onmessage = function (event) {
+            onAnswer(event.data);
+          };
+
+          sw.postMessage(message, [channel.port2]);
+        }
+
+        // matched by the worker without the fragment, which the app keeps changing
+        var url = location.href.split('#')[0];
+
+        // A slow start offers the build cached for offline use, if the worker
+        // holds one other than this — whose files would come from there anyway.
+        setTimeout(function () {
+          if (window.fmStarted) {
+            return;
+          }
+
+          ask(
+            {
+              type: 'cached-shell-differs',
+              main: <%= JSON.stringify(htmlWebpackPlugin.files.js.find((src) => src.startsWith('main.')) ?? '') %>,
+            },
+            function (differs) {
+              if (!differs || window.fmStarted) {
+                return;
+              }
+
+              // the app removes it on starting
+              var button = document.createElement('button');
+
+              button.id = 'fm-skip-network';
+
+              button.textContent = <%= JSON.stringify(skipNetworkMessage) %>;
+
+              button.style.cssText =
+                'position: fixed; left: 50%; bottom: 15vh; transform: translateX(-50%); z-index: 10000; padding: 8px 16px; border: 0; border-radius: 6px; background: #0d6efd; color: #fff; font: 16px Arial, Helvetica, sans-serif;';
+
+              button.onclick = function () {
+                button.disabled = true;
+
+                ask({ type: 'shell-from-cache', url: url }, function () {
+                  location.reload();
+                });
+
+                // a worker replaced meanwhile never answers
+                setTimeout(function () {
+                  location.reload();
+                }, 2000);
+              };
+
+              document.documentElement.appendChild(button);
+            },
+          );
+        }, 5000);
+      })();
+    </script>
+    <% } %>
+
     <meta
       name="copyright"
       content="OZ Freemap Slovakia, http://www.freemap.sk/"

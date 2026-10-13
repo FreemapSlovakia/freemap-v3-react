@@ -82,6 +82,8 @@ type EntryDoc = {
   errorHtml: string;
   nojsMessage: string;
   loadingMessage: string;
+  /** The button a slow start offers for the build cached for offline use. */
+  skipNetworkMessage: string;
   /** Web-manifest copy. Site-neutral — the portal name is added per site. */
   appDescription: string;
   /** Labels for the base manifest's `shortcuts`, in order. */
@@ -99,6 +101,7 @@ const enDoc: EntryDoc = {
   nojsMessage:
     'JavaScript enabled browser is required to run this application.',
   loadingMessage: 'Loading…',
+  skipNetworkMessage: 'Start the version saved on this device',
   appDescription:
     'Freemap is a free online outdoor map based on OpenStreetMap data',
   shortcutNames: ['My maps', 'Route finder', 'Objects'],
@@ -116,6 +119,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.',
     loadingMessage: 'Načítavam…',
+    skipNetworkMessage: 'Spustiť verziu uloženú v zariadení',
     appDescription:
       'Freemap je voľne dostupná online outdoorová mapa založená na dátach z OpenStreetMap',
     shortcutNames: ['Moje mapy', 'Vyhľadávač trás', 'Objekty'],
@@ -130,6 +134,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Aplikace vyžaduje prohlížeč se zapnutou podporou JavaScriptu.',
     loadingMessage: 'Načítám…',
+    skipNetworkMessage: 'Spustit verzi uloženou v zařízení',
     appDescription:
       'Freemap je volně dostupná online outdoorová mapa založená na datech z OpenStreetMap',
     shortcutNames: ['Moje mapy', 'Vyhledávač tras', 'Objekty'],
@@ -144,6 +149,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
     loadingMessage: 'Betöltés…',
+    skipNetworkMessage: 'Az eszközön tárolt verzió indítása',
     appDescription:
       'A Freemap szabadon elérhető online szabadidős térkép az OpenStreetMap adatai alapján',
     shortcutNames: ['Saját térképeim', 'Útvonaltervező', 'Objektumok'],
@@ -158,6 +164,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       "E' richiesto un browser con JavaScript abilitato per avviare questa applicazione.",
     loadingMessage: 'Caricamento…',
+    skipNetworkMessage: 'Avvia la versione salvata sul dispositivo',
     appDescription:
       'Freemap è una mappa outdoor online gratuita basata sui dati di OpenStreetMap',
     shortcutNames: ['Le mie mappe', 'Cerca percorso', 'Oggetti'],
@@ -172,6 +179,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Zum Ausführen dieser Anwendung ist ein Browser mit aktiviertem JavaScript erforderlich.',
     loadingMessage: 'Lade…',
+    skipNetworkMessage: 'Auf dem Gerät gespeicherte Version starten',
     appDescription:
       'Freemap ist eine frei zugängliche Outdoor-Onlinekarte auf Basis von OpenStreetMap-Daten',
     shortcutNames: ['Meine Karten', 'Routenplaner', 'Objekte'],
@@ -185,6 +193,7 @@ const entryDocs: EntryDoc[] = [
       '<p>Upewnij się, że używasz aktualnej wersji jednej ze współczesnych przeglądarek (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
     nojsMessage: 'Aplikacja wymaga przeglądarki z włączoną obsługą JavaScript.',
     loadingMessage: 'Ładowanie…',
+    skipNetworkMessage: 'Uruchom wersję zapisaną na urządzeniu',
     appDescription:
       'Freemap to bezpłatna mapa outdoorowa online oparta na danych OpenStreetMap',
     shortcutNames: ['Moje mapy', 'Wyszukiwarka tras', 'Obiekty'],
@@ -199,6 +208,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Za zagon te aplikacije potrebujete brskalnik z omogočenim JavaScriptom.',
     loadingMessage: 'Nalaganje…',
+    skipNetworkMessage: 'Zaženi različico, shranjeno v napravi',
     appDescription:
       'Freemap je prosto dostopen spletni zemljevid za dejavnosti v naravi, ki temelji na podatkih OpenStreetMap',
     shortcutNames: ['Moji zemljevidi', 'Iskalnik poti', 'Objekti'],
@@ -213,6 +223,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Un navigateur avec JavaScript activé est nécessaire pour exécuter cette application.',
     loadingMessage: 'Chargement…',
+    skipNetworkMessage: 'Lancer la version enregistrée sur l’appareil',
     appDescription:
       'Freemap est une carte outdoor en ligne gratuite basée sur les données OpenStreetMap',
     shortcutNames: ['Mes cartes', 'Planificateur d’itinéraire', 'Objets'],
@@ -377,6 +388,8 @@ function htmlPluginProps(doc: EntryDoc, site: Site, filename: string) {
       errorHtml: doc.errorHtml,
       nojsMessage: doc.nojsMessage,
       loadingMessage: doc.loadingMessage,
+      skipNetworkMessage: doc.skipNetworkMessage,
+      prod,
       splashScreens,
       faviconSizes,
       appleTouchSizes,
