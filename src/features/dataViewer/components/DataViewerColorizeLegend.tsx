@@ -23,8 +23,11 @@ export default function DataViewerColorizeLegend() {
     (state) => state.trackViewerSettings.colorizeLegend,
   );
 
+  // The line the map colorizes — the densified copy where there is one — or the
+  // scale would be the range of other values than the colours drawn.
   const trackGeojson = useAppSelector(
-    (state) => state.trackViewer.trackGeojson,
+    (state) =>
+      state.trackViewer.renderTrackGeojson ?? state.trackViewer.trackGeojson,
   );
 
   const lineFeatures = useMemo<Feature<LineString>[]>(

@@ -624,7 +624,8 @@ report, which is what `gone` is for.
 Imported via `@shared/colorizers/…`. One colorizer per visual variable lives in
 `modes/` (`elevation`, `steepness`, `speed`, `heading`, `time`, `heartRate`, `cadence`,
 `power`, `temperature`, `battery`, `gsmSignal`, plus the categorical `surface`,
-`smoothness`, `roadType`, `trackType`, `hikeRating`, `mtbRating`, `trailColor`);
+`smoothness`, `roadType`, `trackType`, `hikeRating`, `mtbRating`, `trailColor` and the
+scalar span modes `averageSpeed`, `curvature`, `maxSpeed`);
 `index.ts` aggregates them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`,
 `colorizerDetails`).
 
@@ -644,8 +645,8 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   planner, track viewer and tracking at once. `useZoomColorize` reads it and passes it in
   `ColorizeOptions` — one place, rather than threaded through three call sites — and it is
   part of that hook's cache-reset key, or a changed scale would redraw from the old colors.
-- `steepnessColor` and `steepnessGradeAt` are inverses; `ColorizeLegend` labels seven evenly
-  spaced ticks through the latter, so the line and its legend cannot drift apart. Even
+- `steepnessColor` and `steepnessGradeAt` are inverses; the colorizer's own `scale` labels
+  five evenly spaced ticks through the latter, so the line and its legend cannot drift apart. Even
   positions rather than round grades because round ones cannot be had at every scale — at
   ±5 % they collapse onto zero — and the labels closing up toward the middle is itself what
   shows the compression.
@@ -698,10 +699,11 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   instead of a blend across the segment spanning it. For the same reason a value no
   category claims is **not** a gap: `categoricalColorizer` appends an `unknown` category
   in `NO_DATA_COLOR` grey, so it reads like the no-data line without splitting the layer,
-  and the legend can say how much of the route nobody has mapped. One `covering()`
-  generator yields the stretches as painted — holes and unclaimed values already resolved
+  and the legend can say how much of the route nobody has mapped. One generator yields the stretches as painted — holes and unclaimed values already resolved
   to `unknown` — and both `compute` and the legend's `categories` consume it, so the
-  distances the legend lists cannot drift from the line drawn.
+  distances the legend lists cannot drift from the line drawn. That generator is
+  `categorized()` over the module's `covering()`, the hole walk the scalar span modes
+  share.
 - **Two fields carry all of that**, so no component asks "is this mode categorical":
   **`categories(features, messages)`** returns the legend's rows (key, label, color,
   metres) — the same shape of contract as the scalar `legend: { unit, values }`, which is
@@ -711,9 +713,10 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   `smoothFactor: 0` (simplification would collapse the coincident boundary pair — see the
   `react-leaflet-hotline` patch), `useZoomColorize` that one cache entry answers every
   zoom, and the data-viewer/tracking menus that the mode can never apply to a track. A
-  future _scalar_ span mode (`average_speed`, `curvature`) sets `spanBased` and a normal
-  `legend`. Beside it, **`detail`** names the GraphHopper path detail the mode reads, which
-  is what the route planner's menu matches against `pathDetailKeys` (through
+  _scalar_ span mode sets `spanBased` too, and either a `legend` read off the line's own
+  min and max or, on a fixed `colorAt` scale, a `scale` (see below). Beside it,
+  **`detail`** names the GraphHopper path detail the mode reads, which is what the
+  route planner's menu matches against `pathDetailKeys` (through
   `colorizerDetails`) — the two are separate because `spanBased` is about how the line
   renders, `detail` about where its values come from, and a future span mode need not come
   from a path detail at all. It may name **several** keys, for a mode the profile decides
@@ -736,6 +739,37 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   "never asked" (a car leg, an OSRM leg, a manual one) stay different. Off by default,
   because a surface changes hundreds of times per route and every gap is its own render
   layer; `trailColor` sets it, and its uncovered stretches are few and long.
+- **Scalar span modes** (`scalarSpanColorizer`, `modes/pathDetail.ts`) paint a _numeric_
+  path detail with the same hard edges, the colour taken off a scale instead of a category:
+  `averageSpeed` (`average_speed`, km/h — the profile's expected speed, all a planned
+  route has in place of the recorded Speed) runs from the line's own min to its max;
+  `curvature` (beeline over edge length, 1 straight down to the 0.25 GraphHopper stores
+  as its floor) is on a fixed reversed scale (`colorAt`) so a colour means the same on
+  every route, and its legend names the ends rather than numbering them. A number has no
+  category to fall back to, so a stretch no span covers is a gap (no data), and a line
+  with no spans at all is left to the plain route. These details change on nearly every
+  edge, which makes them the costly ones to ask for: ~11 % gzipped on a 200 km foot or
+  bike route, 3 % by car. `maxSpeed` (`max_speed`) is the legal limit on a fixed
+  `colorAt` scale that is not one straight line: 0–140 km/h runs over the first 90 % of
+  the palette, and 150 — GraphHopper's value for no limit — takes a purple band of its
+  own after a hard step. The server fills every untagged edge from country defaults, so
+  a forest path reads as the rural 90 km/h.
+- **A palette position reads back as a value** through `colorizeScale`
+  (`colorizeScale.ts`, hook `useColorizeScale`): the legend's ticks and unit, and
+  `valueAt(t)` as text. Each mode describes its own: a categorical one names the
+  category (`categoryAt`), a fixed scale labels itself (`Colorizer.scale`), and a
+  per-feature-normalized one is read off its `legend` series — with its `digits`, or
+  its `format` (time of day, with the date on a line spanning days) — only for a
+  single line, smoothed exactly as that line
+  was colorized, or its labels would not be the min and max it was scaled to.
+  Two readouts use it. The legend's bar (`LegendGradientBar`) shows it under the
+  pointer on hover, or touch and drag; its tooltip is popper-placed off a marker element
+  popper does not watch, so `FollowMarker` reschedules it on every move. And the
+  elevation chart's marker on the map adds it as a line: `stopAtDistance` takes the
+  nearest of the stops `useChartColorize` computes at the map's scale — not
+  interpolated, as heading wraps at north and a category has nothing in between. Each
+  stop records the line it came from, so a target of several lines is read by that
+  line's own scale, at the same power-of-two level its stops were smoothed at.
 - `colorizeByValues` (`colorize.ts`) maps values to a Hotline palette and flags missing
   values as gaps on `ColorizedPoint`; `splitOnGaps`/`noDataRuns` split a feature's points
   into gap-free runs so the Hotline render loop can break the line at gaps.

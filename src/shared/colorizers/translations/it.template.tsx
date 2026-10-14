@@ -5,11 +5,18 @@ const it: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Colora per',
   legend: 'Legenda',
   steepnessScale: 'Intervallo di pendenza',
+  curvatureEnds: {
+    straight: 'Rettilineo',
+    winding: 'Tortuoso',
+  },
   mode: {
     none: 'Inattivo',
     elevation: 'Elevazione',
     steepness: 'Ripidezza',
     speed: 'Velocità',
+    averageSpeed: 'Velocità prevista',
+    curvature: 'Tortuosità',
+    maxSpeed: 'Limite di velocità',
     heartRate: 'Frequenza cardiaca',
     cadence: 'Cadenza',
     power: 'Potenza',

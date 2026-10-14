@@ -3,11 +3,19 @@ export type ColorizerMessages = {
   legend: string;
   /** Label of the slider setting where the steepness palette ends. */
   steepnessScale: string;
+  /** The two ends of the curvature legend. */
+  curvatureEnds: {
+    straight: string;
+    winding: string;
+  };
   mode: {
     none: string;
     elevation: string;
     steepness: string;
     speed: string;
+    averageSpeed: string;
+    curvature: string;
+    maxSpeed: string;
     heartRate: string;
     cadence: string;
     power: string;

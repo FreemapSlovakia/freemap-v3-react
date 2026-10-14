@@ -5,11 +5,18 @@ const hu: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Színezés szerint',
   legend: 'Jelmagyarázat',
   steepnessScale: 'Meredekségi tartomány',
+  curvatureEnds: {
+    straight: 'Egyenes',
+    winding: 'Kanyargós',
+  },
   mode: {
     none: 'Inaktív',
     elevation: 'Magasság',
     steepness: 'Meredekség',
     speed: 'Sebesség',
+    averageSpeed: 'Várható sebesség',
+    curvature: 'Kanyargósság',
+    maxSpeed: 'Sebességkorlát',
     heartRate: 'Pulzusszám',
     cadence: 'Kadencia',
     power: 'Teljesítmény',

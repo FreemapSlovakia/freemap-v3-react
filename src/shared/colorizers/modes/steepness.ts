@@ -4,7 +4,7 @@ import {
   smoothElevations,
 } from '@shared/geoutils.js';
 import { getCoords } from '@turf/invariant';
-import type { Colorizer } from '../colorize.js';
+import { type Colorizer, formatScaleNumber } from '../colorize.js';
 import { featureSmoothingSpan } from '../smoothing.js';
 
 // Grade is measured over a fixed horizontal span rather than between adjacent
@@ -77,6 +77,32 @@ export const steepnessColorizer: Colorizer = {
     { r: 255, g: 0, b: 0, t: 0.75 },
     { r: 255, g: 0, b: 255, t: 1.0 },
   ],
+  scale: ({ language, steepnessScale }) => ({
+    unit: '%',
+    valueAt: (t) =>
+      formatScaleNumber(
+        steepnessGradeAt(t, steepnessScale) * 100,
+        1,
+        language,
+        '%',
+        { signDisplay: 'exceptZero' },
+      ),
+    // Evenly spaced, so the labels closing up toward the middle show the bend.
+    ticks: [0, 0.25, 0.5, 0.75, 1].map((t) => {
+      const v = steepnessGradeAt(t, steepnessScale) * 100;
+
+      return {
+        t,
+        label: formatScaleNumber(
+          v,
+          Math.abs(v) < 0.05 ? 0 : Math.abs(v) < 10 ? 1 : 0,
+          language,
+          undefined,
+          { signDisplay: 'exceptZero' },
+        ),
+      };
+    }),
+  }),
   compute: (features, options) =>
     features.map((feature) => {
       const coords = getCoords(feature);

@@ -1,17 +1,26 @@
-/* Width a legend with a scale is given; the gradient bar fills it. */
-.bar-width {
-  max-width: 400px;
+/* Where the pointer reads the bar. */
+.marker {
+  width: 2px;
+  margin-left: -1px;
+  background-color: var(--bs-body-color);
+  pointer-events: none;
 }
 
-/* A row of swatches takes what it needs instead — capping it would only make a
-   row of labels scroll. */
+/* The legend takes what its content needs: the bar's width, or a row of swatches. */
 .fit-width {
   width: fit-content;
 }
 
-/* Deep enough for the labels drawn over the bar, and about a button tall. */
+/* Deep enough for the labels drawn over the bar, and about a button tall. A
+   `width` rather than a `flex-basis`, as only it counts towards `fit-content`. */
 .bar {
   height: 34px;
+  width: 200px;
+  min-width: 0;
+}
+
+.bar-wide {
+  width: 260px;
 }
 
 /* The labels are outlined in the page background so they read over both ends of
@@ -23,11 +32,16 @@
 }
 
 /* Centred on the position the caller sets as `left`, so the outermost labels
-   sit centred on the bar's edges and overhang it. */
+   sit centred on the bar's edges and overhang it; the bar measures by how much. */
 .tick {
+  transform: translateX(-50%);
+}
+
+/* `.tick-inside` is an end label set within the bar, for a word too wide to
+   centre; it is not measured, as it does not overhang. */
+.tick,
+.tick-inside {
   top: 16%;
-  width: 40px;
-  margin-left: -20px;
 }
 
 .chip {

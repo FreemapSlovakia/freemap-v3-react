@@ -11,4 +11,5 @@ export const batteryColorizer = coordPropColorizerAbsolute(
   ],
   0,
   100,
+  '%',
 );

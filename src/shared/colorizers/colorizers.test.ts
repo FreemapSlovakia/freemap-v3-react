@@ -9,6 +9,11 @@ import {
 } from './colorize.js';
 import { colorizers } from './index.js';
 import { headingColorizer } from './modes/heading.js';
+import {
+  maxSpeedAt,
+  maxSpeedColorAt,
+  NO_SPEED_LIMIT,
+} from './modes/maxSpeed.js';
 import { speedColorizer } from './modes/speed.js';
 import {
   STEEPNESS_DEFAULT_SCALE,
@@ -433,6 +438,18 @@ describe('trailColorColorizer', () => {
     ).toEqual({ unknown: true });
   });
 
+  it('names the category painted at a palette position', () => {
+    const [point] = trailColorColorizer.compute([marked(...even(GREEN))])[0]!;
+
+    expect(
+      trailColorColorizer.categoryAt!(point!.color, colorizerMessages),
+    ).toBe('Green');
+
+    expect(trailColorColorizer.categoryAt!(1, colorizerMessages)).toBe(
+      'Unmarked',
+    );
+  });
+
   // Unmarked is an answer, so it must not wear the no-data grey (#808080). It
   // is `other`'s grey at 50 %, which the palette can only carry blended.
   it('paints Unmarked a grey of its own', () => {
@@ -475,6 +492,91 @@ describe('trailColorColorizer', () => {
       other: 19,
       red: 447,
     });
+  });
+});
+
+describe('scalar span modes', () => {
+  // The line runs ~223 m.
+  const valued = (key: string, ...spans: [number, number, string][]) =>
+    line(COORDS, {
+      [PATH_DETAILS_PROP]: [
+        {
+          [key]: spans.map(([start, end, value]) => ({ start, end, value })),
+        },
+      ],
+    });
+
+  it('scales a line from its own slowest to its fastest stretch', () => {
+    const colors = colorizers.averageSpeed
+      .compute([
+        valued(
+          'average_speed',
+          [0, 100, '4'],
+          [100, 150, '20'],
+          [150, 300, '12'],
+        ),
+      ])[0]!
+      .map((p) => p.color);
+
+    expect(colors[0]).toBe(0);
+    expect(colors).toContain(1);
+    expect(colors.at(-1)).toBe(0.5);
+  });
+
+  it('changes colour on the metre the value does', () => {
+    const points = colorizers.averageSpeed.compute([
+      valued('average_speed', [0, 100, '4'], [100, 300, '20']),
+    ])[0]!;
+
+    const change = points.findIndex((p) => p.color === 1);
+
+    expect(points[change]!.lon).toBe(points[change - 1]!.lon);
+  });
+
+  it('draws a stretch nothing valued as no data', () => {
+    const points = colorizers.averageSpeed.compute([
+      valued('average_speed', [0, 100, '4'], [150, 300, '20']),
+    ])[0]!;
+
+    expect(points.some((p) => p.gap)).toBe(true);
+
+    expect(colorizers.averageSpeed.compute([line(COORDS)])).toEqual([]);
+
+    expect(colorizers.averageSpeed.isAvailable?.([line(COORDS)])).toBe(false);
+  });
+
+  it('puts curvature on one scale for every route, straight first', () => {
+    const colors = colorizers.curvature
+      .compute([valued('curvature', [0, 100, '1'], [100, 300, '0.9'])])[0]!
+      .map((p) => p.color);
+
+    expect(colors[0]).toBe(0);
+    expect(colors.at(-1)).toBeCloseTo(0.1 / 0.75);
+  });
+
+  it('puts a speed limit on one scale for every route', () => {
+    const color = (value: string) =>
+      colorizers.maxSpeed.compute([
+        valued('max_speed', [0, 300, value]),
+      ])[0]![0]!.color;
+
+    expect(color('50')).toBe(maxSpeedColorAt(50));
+    expect(color('90')).toBeGreaterThan(color('50'));
+    expect(maxSpeedAt(maxSpeedColorAt(90))).toBeCloseTo(90);
+  });
+
+  it('gives no limit a colour of its own past the fastest', () => {
+    const { palette } = colorizers.maxSpeed;
+
+    expect(maxSpeedColorAt(NO_SPEED_LIMIT)).toBeGreaterThan(
+      maxSpeedColorAt(140),
+    );
+
+    expect(paletteColorAt(palette, maxSpeedColorAt(NO_SPEED_LIMIT))).toEqual([
+      125, 60, 152,
+    ]);
+
+    expect(maxSpeedAt(maxSpeedColorAt(NO_SPEED_LIMIT))).toBe(Infinity);
   });
 });
 

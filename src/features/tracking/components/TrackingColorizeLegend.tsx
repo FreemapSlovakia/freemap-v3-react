@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux';
 import { hasElevation } from '../chartTrack.js';
 import { trackingActions } from '../model/actions.js';
 import { trackPointsToFeature } from '../trackGeojson.js';
+import { resolveTracks, trackLineSegments } from '../tracks.js';
 import { TrackingToggleButton } from './TrackingToggleButton.js';
 
 /**
@@ -31,9 +32,18 @@ export default function TrackingColorizeLegend() {
 
   const tracks = useAppSelector((state) => state.tracking.tracks);
 
+  const trackedDevices = useAppSelector(
+    (state) => state.tracking.trackedDevices,
+  );
+
+  // The segments the map colorizes, each on its own scale — split by the
+  // device's thresholds, which only the resolved track carries.
   const lineFeatures = useMemo<Feature<LineString>[]>(
-    () => tracks.map((t) => trackPointsToFeature(t.trackPoints)),
-    [tracks],
+    () =>
+      resolveTracks(tracks, trackedDevices).flatMap((t) =>
+        trackLineSegments(t).map(trackPointsToFeature),
+      ),
+    [tracks, trackedDevices],
   );
 
   // Nothing is colorized where no watched track carries the mode's data, so the

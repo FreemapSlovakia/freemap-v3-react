@@ -1,4 +1,5 @@
 import { cumulativeDistances, lowerBound } from '@shared/geoutils.js';
+import { clamp } from '@shared/mathUtils.js';
 import { length } from '@turf/length';
 import type { Feature, LineString } from 'geojson';
 import {
@@ -9,6 +10,7 @@ import {
   type PathDetailSpan,
   readPathDetails,
   rgbCss,
+  span,
 } from '../colorize.js';
 import type { ColorizerMessages } from '../translations/ColorizerMessages.js';
 
@@ -66,6 +68,31 @@ type SourcedSpan = PathDetailSpan & { detail: string };
 
 /** Slack, in metres, before a hole between two stretches counts as one. */
 const coverageSlack = 0.5;
+
+/**
+ * A line's stretches in painting order, holes included: each span by its index
+ * in `spans`, and what none covers with no index.
+ */
+function* covering(
+  spans: { start: number; end: number }[],
+  total: number,
+): Generator<{ start: number; end: number; i?: number }> {
+  let covered = 0;
+
+  for (const [i, span] of spans.entries()) {
+    if (span.start > covered + coverageSlack) {
+      yield { start: covered, end: span.start };
+    }
+
+    yield { start: span.start, end: span.end, i };
+
+    covered = Math.max(covered, span.end);
+  }
+
+  if (total > covered + coverageSlack) {
+    yield { start: covered, end: total };
+  }
+}
 
 /**
  * Colorizes by a path detail: the line takes each stretch's color and changes it
@@ -139,12 +166,11 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
   }));
 
   /**
-   * The stretches of a line in painting order, holes included. A route need not
-   * be all the router's own — a manual leg carries no detail, and a leg ridden
-   * by another profile carries only what that one asked for — and what nothing
-   * covers is Unknown, or the line would go undrawn there.
+   * The stretches of a line by category. A route need not be all the router's
+   * own — a manual leg carries no detail — and what nothing covers is Unknown,
+   * or the line would go undrawn there.
    */
-  function* covering(
+  function* categorized(
     spans: SourcedSpan[],
     total: number,
   ): Generator<{
@@ -156,27 +182,22 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
   }> {
     const indices = categoriesOf(spans);
 
-    let covered = 0;
-
-    for (const [i, span] of spans.entries()) {
-      if (span.start > covered + coverageSlack) {
-        yield { start: covered, end: span.start, index: last, reported: false };
-      }
-
+    for (const { start, end, i } of covering(spans, total)) {
       yield {
-        start: span.start,
-        end: span.end,
-        index: indices[i] ?? last,
-        reported: true,
+        start,
+        end,
+        index: i === undefined ? last : (indices[i] ?? last),
+        reported: i !== undefined,
       };
-
-      covered = Math.max(covered, span.end);
-    }
-
-    if (total > covered + coverageSlack) {
-      yield { start: covered, end: total, index: last, reported: false };
     }
   }
+
+  // A mode may name the last category itself, where it means something more
+  // definite than the router having no value.
+  const labelsOf = (cm: ColorizerMessages): Record<string, string> => ({
+    unknown: cm.categories.unknown,
+    ...spec.labels(cm),
+  });
 
   /** Stretches nothing covered, where this mode draws those as no data. */
   const isNoData = (reported: boolean) =>
@@ -200,22 +221,23 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
           : false;
       }),
 
+    categoryAt: (color, cm) => {
+      const { key } = categories[Math.round(color * last)] ?? unknown;
+
+      return labelsOf(cm)[key] ?? key;
+    },
+
     categories: (features, cm) => {
-      // A mode may name the last category itself, where it means something
-      // more definite than the router having no value.
-      const labels: Record<string, string> = {
-        unknown: cm.categories.unknown,
-        ...spec.labels(cm),
-      };
+      const labels = labelsOf(cm);
 
       const meters = new Map<string, number>();
 
       for (const feature of features) {
         // A line the router valued nothing of is Unknown from end to end, which
-        // is what `covering` makes of no stretches at all.
+        // is what `categorized` makes of no stretches at all.
         const spans = spansOf(feature) ?? [];
 
-        for (const { start, end, index, reported } of covering(
+        for (const { start, end, index, reported } of categorized(
           spans,
           length(feature, { units: 'meters' }),
         )) {
@@ -272,7 +294,7 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
         // becomes its own canvas layer, and a route has hundreds of stretches.
         const points: ColorizedPoint[] = [];
 
-        for (const { start, end, index, reported } of covering(
+        for (const { start, end, index, reported } of categorized(
           spans,
           cum.at(-1) ?? 0,
         )) {
@@ -282,6 +304,121 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
 
           for (const point of spanPoints(coordinates, cum, start, end)) {
             points.push({ ...point, color, ...(gap && { gap }) });
+          }
+        }
+
+        return points.length < 2 ? [] : [points];
+      }),
+  };
+}
+
+/** What a scalar span mode reads and how it scales it. */
+type ScalarSpanSpec = {
+  /** The numeric path detail it reads, as GraphHopper names it. */
+  detail: string;
+  palette: HotlinePalette;
+} & (
+  | {
+      /** Each line runs from its own min to its max, labelled in this unit. */
+      unit?: string;
+      /** Decimals the legend labels it with; 0 when omitted. */
+      digits?: number;
+    }
+  | {
+      /** A fixed scale, so a colour means the same on every route: a value's place, 0 to 1. */
+      colorAt: (value: number) => number;
+      /** The legend of the fixed scale, labelled by the mode itself. */
+      scale: NonNullable<Colorizer['scale']>;
+    }
+);
+
+/**
+ * Colorizes by a numeric path detail. Like {@link categoricalColorizer} it
+ * changes colour at the exact metre the value does; a stretch no span covers
+ * is no data, since the detail is a number and has no category to fall to.
+ */
+export function scalarSpanColorizer(spec: ScalarSpanSpec): Colorizer {
+  /** A span's value, or undefined for one that is not a number. */
+  const spanValue = (span: PathDetailSpan) => {
+    const value = Number(span.value);
+
+    return Number.isFinite(value) ? value : undefined;
+  };
+
+  // In order, as `covering` walks them; an imported line need not be.
+  const spansOf = (feature: Feature<LineString>) =>
+    (readPathDetails(feature, spec.detail) ?? [])
+      .flatMap((span) => {
+        const value = spanValue(span);
+
+        return value === undefined
+          ? []
+          : [{ start: span.start, end: span.end, value }];
+      })
+      .sort((a, b) => a.start - b.start);
+
+  const scaleOf = (spans: { value: number }[]): ((value: number) => number) => {
+    if ('colorAt' in spec) {
+      return spec.colorAt;
+    }
+
+    const range = span(spans.map(({ value }) => value));
+
+    return (value) =>
+      range ? clamp((value - range.min) / (range.max - range.min), 0, 1) : 0.5;
+  };
+
+  return {
+    palette: spec.palette,
+    spanBased: true,
+    detail: spec.detail,
+    scale: 'scale' in spec ? spec.scale : undefined,
+
+    isAvailable: (features) =>
+      features.some((feature) =>
+        readPathDetails(feature, spec.detail)?.some(
+          (span) => spanValue(span) !== undefined,
+        ),
+      ),
+
+    legend:
+      'unit' in spec && spec.unit
+        ? {
+            unit: spec.unit,
+            digits: spec.digits,
+            values: (feature) => spansOf(feature).map(({ value }) => value),
+          }
+        : undefined,
+
+    compute: (features) =>
+      features.flatMap((feature) => {
+        const spans = spansOf(feature);
+
+        const coordinates = feature.geometry.coordinates;
+
+        // Nothing valued: the mode was never asked, so the plain route stands.
+        if (spans.length === 0 || coordinates.length < 2) {
+          return [];
+        }
+
+        const colorOf = scaleOf(spans);
+
+        const cum = cumulativeDistances(coordinates);
+
+        // One list for the whole line; see `categoricalColorizer`.
+        const points: ColorizedPoint[] = [];
+
+        for (const { start, end, i } of covering(spans, cum.at(-1) ?? 0)) {
+          const value = i === undefined ? undefined : spans[i]!.value;
+
+          const color = value === undefined ? 0.5 : colorOf(value);
+
+          for (const point of spanPoints(coordinates, cum, start, end)) {
+            points.push({
+              ...point,
+              color,
+              ...(value === undefined && { gap: true }),
+            });
           }
         }
 

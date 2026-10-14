@@ -70,6 +70,8 @@ export const speedColorizer: Colorizer = {
     colorizeByValues(features, (feature) => speedSpec(feature, options)),
   legend: {
     unit: 'km/h',
+    digits: 1,
+    smoothed: true,
     // m/s → km/h; the conversion is monotonic so it doesn't change the colors.
     values: (feature, options) =>
       smoothedValues(speedSpec(feature, options)).map((v) => v * 3.6),

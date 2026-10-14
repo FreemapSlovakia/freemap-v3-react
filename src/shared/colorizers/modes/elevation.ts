@@ -40,6 +40,7 @@ export const elevationColorizer: Colorizer = {
     colorizeByValues(features, (feature) => elevationSpec(feature, options)),
   legend: {
     unit: 'm',
+    smoothed: true,
     values: (feature, options) =>
       smoothedValues(elevationSpec(feature, options)),
   },

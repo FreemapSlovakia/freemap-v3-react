@@ -1,16 +1,19 @@
 import { pickingModeSelector } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { useColorizeScale } from '@shared/colorizers/colorizeScale.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
+import { metersPerPixel } from '@shared/geoutils.js';
 import { HALO_OVER_Z, HALO_PANE, HALO_WIDTH } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type LeafletMouseEvent, Point } from 'leaflet';
-import { type ReactElement, useEffect } from 'react';
-import { FaInfo } from 'react-icons/fa';
+import { type ReactElement, useEffect, useMemo } from 'react';
+import { FaInfo, FaPalette } from 'react-icons/fa';
 import { Pane, Tooltip, useMap, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gradeAt } from '../grade.js';
+import { stopAtDistance, useChartColorize } from '../hooks/useChartColorize.js';
 import { elevationChartSetActivePoint } from '../model/actions.js';
 import { gradeWindowMeters } from '../model/settingsReducer.js';
 import { projectOnProfile } from '../profilePoint.js';
@@ -125,6 +128,43 @@ function RangeHighlight(): ReactElement {
   );
 }
 
+/**
+ * What the colorize mode reads at a distance along the profile, as its legend
+ * would read it — off the line smoothed about as the map draws it. It colorizes
+ * the line itself, so it stays mounted to keep that between hovers.
+ */
+function useColorizedValue(distance: number | undefined): string | undefined {
+  const profileMeters = useAppSelector(
+    (state) => state.elevationChart.elevationProfilePoints?.at(-1)?.distance,
+  );
+
+  // The power of two the chart rounds to anyway, so a pan doesn't re-render.
+  const level = useAppSelector(({ map }) =>
+    Math.round(Math.log2(metersPerPixel(map.zoom, map.lat))),
+  );
+
+  const { stops, mode, features } = useChartColorize(
+    2 ** level,
+    profileMeters ?? 0,
+  );
+
+  const stop =
+    distance === undefined ? undefined : stopAtDistance(stops, distance);
+
+  const source = stop?.source === undefined ? undefined : features[stop.source];
+
+  // Each line was scaled by its own range; a stable array keeps the scale memo.
+  const sourceFeatures = useMemo(
+    () => (source ? [source] : undefined),
+    [source],
+  );
+
+  // Read at the stops' smoothing, so the values are what they were scaled by.
+  const { valueAt } = useColorizeScale(mode, sourceFeatures, 2 ** level);
+
+  return stop && valueAt?.(stop.color);
+}
+
 export function ElevationChartActivePoint(): ReactElement | null {
   const m = useMessages();
 
@@ -159,6 +199,8 @@ export function ElevationChartActivePoint(): ReactElement | null {
   });
 
   const language = useAppSelector((state) => state.l10n.language);
+
+  const colorized = useColorizedValue(elevationChartActivePoint?.distance);
 
   return (
     <>
@@ -199,6 +241,11 @@ export function ElevationChartActivePoint(): ReactElement | null {
                   {' ∡ '}
                   {nfSigned1.format(grade * 100)} % (
                   {nfSigned1.format((Math.atan(grade) * 180) / Math.PI)}°)
+                </>
+              )}
+              {colorized !== undefined && (
+                <>
+                  <br /> <FaPalette /> {colorized}
                 </>
               )}
             </span>
