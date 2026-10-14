@@ -22,6 +22,9 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     keyColOf: 'Przełęcz kluczowa szczytu',
     showOnMap: 'Pokaż na mapie',
     route: 'Droga do wyższego terenu',
+    summitElevation: 'Wysokość szczytu',
+    saddleElevation: 'Wysokość przełęczy',
+    fromMarker: ({ distance }) => `${distance} od znacznika`,
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas pobierania drogi', err),

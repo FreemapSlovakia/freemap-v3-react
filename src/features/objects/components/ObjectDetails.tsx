@@ -1,9 +1,11 @@
 import {
   type ElevationReading,
   ElevationValue,
+  hasElevationLine,
 } from '@features/elevationChart/components/ElevationValue.js';
 import { getOsmElementUrl } from '@features/openInExternalApp/externalUrlUtils.js';
 import type { SearchResult } from '@features/search/model/actions.js';
+import { resultCoords } from '@features/search/model/resultUtils.js';
 import {
   getNameFromOsmElement,
   resolveGenericName,
@@ -19,22 +21,25 @@ import {
 } from '@shared/types/featureId.js';
 import { type ReactElement, useState } from 'react';
 import { Table } from 'react-bootstrap';
-import type { TerrainFacts } from '../model/terrainFacts.js';
+import { hasTerrainValues, type TerrainFacts } from '../model/terrainFacts.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { GenericNameToggles } from './GenericNameToggles.js';
 import { SourceName } from './SourceName.js';
 import { TerrainFactsView } from './TerrainFactsView.js';
+import { TerrainPointOffset } from './TerrainPointOffset.js';
 
 type Props = {
   result: SearchResult;
   elevation: ElevationReading;
   terrain: TerrainFacts | null;
+  atTerrainPoint: boolean;
 };
 
 export function ObjectDetails({
   result,
   elevation,
   terrain,
+  atTerrainPoint,
 }: Props): ReactElement {
   const { id, geojson } = result;
 
@@ -54,6 +59,40 @@ export function ObjectDetails({
   const parsedId = OsmFeatureIdSchema.safeParse(id);
 
   const om = useObjectsMessages();
+
+  const facts = parsedId.success && terrain ? terrain : null;
+
+  const showFacts = facts !== null && hasTerrainValues(facts);
+
+  const inBracket = atTerrainPoint && showFacts;
+
+  // Named for where it was read: a node is often off its summit. Left out where
+  // `ElevationValue` renders nothing, so no empty margin is left.
+  const elevationLine = hasElevationLine(elevation) && (
+    <div key="elevation" className={showFacts ? undefined : 'mb-3'}>
+      <ElevationValue
+        {...elevation}
+        // The bracket's ⓘ credits it instead.
+        attributions={inBracket ? [] : elevation.attributions}
+        label={
+          !atTerrainPoint || !facts
+            ? om?.elevation
+            : facts.kind === 'peak'
+              ? om?.terrain.summitElevation
+              : om?.terrain.saddleElevation
+        }
+        offer={!atTerrainPoint}
+      />
+
+      {atTerrainPoint && facts && parsedId.success && (
+        <TerrainPointOffset
+          facts={facts}
+          osmId={parsedId.data.id}
+          marker={resultCoords(result)}
+        />
+      )}
+    </div>
+  );
 
   // Not only OSM tags land here: other sources' values can be numbers or objects.
   const properties = Object.entries(geojson.properties ?? {})
@@ -141,18 +180,16 @@ export function ObjectDetails({
         />
       </p>
 
-      <ElevationValue
-        {...elevation}
-        label={om?.elevation}
-        className={terrain && parsedId.success ? undefined : 'mb-3'}
-      />
+      {/* Under the facts' own ⓘ where they come with it, from the same service. */}
+      {!inBracket && elevationLine}
 
-      {terrain && parsedId.success && (
+      {showFacts && parsedId.success && (
         <div className="mb-3">
           <TerrainFactsView
-            facts={terrain}
+            facts={facts}
             osmId={parsedId.data.id}
             name={displayName}
+            elevationRow={inBracket && elevationLine}
           />
         </div>
       )}

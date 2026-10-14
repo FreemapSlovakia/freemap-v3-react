@@ -17,6 +17,9 @@ const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     keyColOf: 'Col clé de',
     showOnMap: 'Afficher sur la carte',
     route: 'Chemin vers un terrain plus haut',
+    summitElevation: 'Altitude du sommet',
+    saddleElevation: 'Altitude du col',
+    fromMarker: ({ distance }) => `à ${distance} du marqueur`,
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Erreur lors du chargement du chemin', err),

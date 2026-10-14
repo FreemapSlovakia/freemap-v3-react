@@ -55,13 +55,20 @@ export const objectsRouteSet = createAction<{
 
 export const objectsRouteClear = createAction('OBJECTS_ROUTE_CLEAR');
 
-/** A peak's key col, by the OSM node id of the peak. */
-export type KeyColMark = LatLon & { osmId: number };
+/**
+ * What the details toast can mark: a peak's key col, or the summit or saddle
+ * point the terrain shows near the node.
+ */
+export type TerrainMarkKind = 'keyCol' | 'point';
 
-/** Marks the details toast's key col on the map; `null` takes the mark off. */
-export const objectsKeyColShow = createAction<KeyColMark | null>(
-  'OBJECTS_KEY_COL_SHOW',
-);
+/** A mark, by the OSM node id of the peak or saddle it belongs to. */
+export type TerrainMark = LatLon & { osmId: number; poi: 'peak' | 'saddle' };
+
+/** Puts a mark on the map; `null` takes it off. */
+export const objectsTerrainMark = createAction<{
+  kind: TerrainMarkKind;
+  mark: TerrainMark | null;
+}>('OBJECTS_TERRAIN_MARK');
 
 /** Shows or hides the selected feature's details toast, until the next selecting. */
 export const setDetailsShown = createAction<boolean>('SET_DETAILS_SHOWN');

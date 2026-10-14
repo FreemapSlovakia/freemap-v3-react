@@ -2,17 +2,26 @@ import { HttpError, httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
 import { mergeAttributions } from '@shared/elevation.js';
+import { distanceTo } from '@shared/geoutils.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { LicenseDict } from '@shared/tileLicenses.js';
+import type { LatLon } from '@shared/types/common.js';
 import z from 'zod';
 import { GeoJSONLineStringSchema } from 'zod-geojson';
 
 /** What the terrain service measured for a peak or a saddle node. */
 export type TerrainFacts = {
-  /** At the summit or saddle point the DTM shows, which may lie off the node. */
+  /**
+   * At the summit or saddle point the DTM shows near the node; `null` where it
+   * shows none (the node on a slope, or another node's).
+   */
   ele: number | null;
   /** Dataset codes, as `/licenses` keys them without `shading:`. */
   eleSources: string[];
+  /** Where `ele` was read, where the service moved the point there. */
+  at: LatLon | null;
+  /** The service's metres from the node to where `ele` was read. */
+  distM: number | null;
 } & (
   | {
       kind: 'peak';
@@ -68,10 +77,67 @@ const Codes = z
   .nullish()
   .transform((s) => (s ? s.split(',') : []));
 
+// The point is the summit or saddle point found, else the node. Missing in an
+// older peaks file, which must cost only the point, not the other facts.
+const PointSchema = z
+  .object({ coordinates: z.tuple([z.number(), z.number()]) })
+  .nullish()
+  .catch(null);
+
+const NodeProps = {
+  ele: z.number().nullable(),
+  ele_source: Codes,
+  osm_lat: z.number().nullish(),
+  osm_lon: z.number().nullish(),
+};
+
+/**
+ * A terrain-service code naming a country's or a region's model (`sk`, `de_by`,
+ * `wls`); a global one (`gedtm30`) or one not known is not taken for national.
+ */
+const NATIONAL_CODE = /^[a-z]{2,3}(_[a-z0-9]+)?$/;
+
+export function isNational(codes: string[]): boolean {
+  return codes.length > 0 && codes.every((code) => NATIONAL_CODE.test(code));
+}
+
+/**
+ * Where `ele` was read, where there is a point to trust: a `found` one, or a
+ * `weak` summit — a weak saddle is the deepest notch around, not the node's.
+ */
+function nodePoint(
+  geometry: z.infer<typeof PointSchema>,
+  p: z.infer<z.ZodObject<typeof NodeProps>>,
+  trusted: boolean,
+  distM: number | null | undefined,
+): Pick<TerrainFacts, 'ele' | 'eleSources' | 'at' | 'distM'> {
+  const point = geometry && {
+    lat: geometry.coordinates[1],
+    lon: geometry.coordinates[0],
+  };
+
+  // The geometry stays on the node unless found on national data.
+  const moved =
+    point &&
+    p.osm_lat != null &&
+    p.osm_lon != null &&
+    distanceTo({ lat: p.osm_lat, lon: p.osm_lon }, point) > 0.5;
+
+  return {
+    ele: trusted ? p.ele : null,
+    eleSources: p.ele_source,
+    at: trusted && moved ? point : null,
+    // Off GEDTM30 the service doesn't trust the position, so neither do we.
+    distM: trusted && isNational(p.ele_source) ? (distM ?? null) : null,
+  };
+}
+
 const PeakSchema = z.object({
+  geometry: PointSchema,
   properties: z.object({
-    ele: z.number().nullable(),
-    ele_source: Codes,
+    ...NodeProps,
+    summit: z.string().nullish(),
+    prom_dist_m: z.number().nullish(),
     prominence: z.number().nullable(),
     isolation_m: z.number().nullable(),
     prominence_sources: Codes,
@@ -84,11 +150,12 @@ const PeakSchema = z.object({
 });
 
 const SaddleSchema = z.object({
+  geometry: PointSchema,
   properties: z.object({
-    ele: z.number().nullable(),
-    ele_source: Codes,
+    ...NodeProps,
     depth_m: z.number().nullable(),
     saddle: z.string(),
+    dist_m: z.number().nullish(),
     key_col_of_osm_id: z.number().nullable(),
     key_col_of_name: z.string().nullable(),
   }),
@@ -144,12 +211,18 @@ export async function fetchTerrainFacts(
   }
 
   if (kind === 'peak') {
-    const p = PeakSchema.parse(data).properties;
+    const peak = PeakSchema.parse(data);
+
+    const p = peak.properties;
 
     return {
       kind,
-      ele: p.ele,
-      eleSources: p.ele_source,
+      ...nodePoint(
+        peak.geometry,
+        p,
+        p.summit === 'found' || p.summit === 'weak',
+        p.prom_dist_m,
+      ),
       prominence: p.prominence,
       isolationM: p.isolation_m,
       sources: [...new Set([...p.prominence_sources, ...p.isolation_sources])],
@@ -166,12 +239,13 @@ export async function fetchTerrainFacts(
     };
   }
 
-  const s = SaddleSchema.parse(data).properties;
+  const saddle = SaddleSchema.parse(data);
+
+  const s = saddle.properties;
 
   return {
     kind,
-    ele: s.ele,
-    eleSources: s.ele_source,
+    ...nodePoint(saddle.geometry, s, s.saddle === 'found', s.dist_m),
     // Off a slope or a neighbour's saddle, the depth describes another point.
     depthM: s.saddle === 'found' || s.saddle === 'weak' ? s.depth_m : null,
     keyColOf:

@@ -341,11 +341,17 @@ reaching further than `MAX_ELEVATION_EXTENT_M` (200 m, taken as the bbox diagona
 the line is left out rather than naming one arbitrary point of it.
 
 For a peak or saddle node, the same processor also fetches the terrain service's
-`/peak/{id}` or `/saddle/{id}` (`objects/model/terrainFacts.ts`). Without premium the
-service's `ele` — read off the national model at the summit or saddle point — replaces
-the API's SRTM reading, its `ele_source` codes credited through the terrain `/licenses`
-dictionary; the API read runs alongside and stands only where the service has no value.
-Premium keeps the API's reading, which comes from the same national data.
+`/peak/{id}` or `/saddle/{id}` (`objects/model/terrainFacts.ts`). Its `ele` — read at
+the summit or saddle point it found near the node, since OSM nodes are often off them —
+replaces the API's reading at the node, labelled _Summit_ or _Saddle elevation_ rather
+than _Elevation_, with no premium offer (it is a fixed point, not a precision tier) and
+its `ele_source` codes credited through the terrain `/licenses` dictionary. Only a point
+the service trusts counts — a `found` or `weak` summit, a `found` saddle — and for
+premium only one off a national model, premium's own reading at the node being national.
+Where that point lies 3 m or more from the node, a line under it says how far; the toggle
+that marks it is offered only where the service moved the geometry onto it (a `found`
+point on national data). The API read runs alongside and stands, as plain _Elevation_,
+wherever the service's does not.
 
 #### The `?sources=1` contract
 

@@ -18,6 +18,9 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     keyColOf: 'Kľúčové sedlo vrcholu',
     showOnMap: 'Zobraziť na mape',
     route: 'Cesta k vyššiemu terénu',
+    summitElevation: 'Výška vrcholu',
+    saddleElevation: 'Výška sedla',
+    fromMarker: ({ distance }) => `${distance} od značky`,
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri získavaní cesty', err),

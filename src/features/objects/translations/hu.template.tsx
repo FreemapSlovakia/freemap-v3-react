@@ -22,6 +22,9 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     keyColOf: 'Kulcsnyerge ennek',
     showOnMap: 'Megjelenítés a térképen',
     route: 'Út a magasabb terephez',
+    summitElevation: 'Csúcs magassága',
+    saddleElevation: 'Nyereg magassága',
+    fromMarker: ({ distance }) => `${distance} a jelölőtől`,
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Hiba az út lekérésekor', err),

@@ -60,7 +60,18 @@ export type ElevationReading = {
 export type ElevationValueProps = ElevationReading & {
   label: string | undefined;
   className?: string;
+  /** Whether premium would read it finer; not for a reading of a fixed point. */
+  offer?: boolean;
 };
+
+/** Whether `ElevationValue` renders anything for the reading. */
+export function hasElevationLine({
+  loading,
+  elevation,
+  error,
+}: Pick<ElevationReading, 'loading' | 'elevation' | 'error'>): boolean {
+  return loading || elevation !== undefined || error !== undefined;
+}
 
 /**
  * The ⓘ naming the terrain models a value was read from. The tooltip is plain
@@ -118,6 +129,7 @@ export function ElevationValue({
   national = hasSubMeterPrecision(reportedSources),
   label,
   className,
+  offer = true,
 }: ElevationValueProps): ReactElement | null {
   // A decimal only where a national LiDAR model answered; off SRTM or GEDTM30 it
   // would be noise, and every other elevation readout writes whole metres.
@@ -137,7 +149,7 @@ export function ElevationValue({
   const errorText =
     m && ecm ? addError(m, ecm.fetchError, error) : String(error ?? '');
 
-  if (!loading && elevation === undefined && error === undefined) {
+  if (!hasElevationLine({ loading, elevation, error })) {
     return null;
   }
 
@@ -165,7 +177,7 @@ export function ElevationValue({
               and what premium would read it from instead, are two things. */}
           <ElevationSourcesInfo attributions={attributions} />
           {/* Nothing finer to offer for a value already off a national model. */}
-          {(premium || !national) && (
+          {offer && (premium || !national) && (
             <PremiumGem
               hint={premium ? undefined : prm?.higherPrecisionElevation}
             />

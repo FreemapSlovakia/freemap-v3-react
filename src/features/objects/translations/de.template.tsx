@@ -22,6 +22,9 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     keyColOf: 'Scharte von',
     showOnMap: 'Auf der Karte zeigen',
     route: 'Weg zu höherem Gelände',
+    summitElevation: 'Gipfelhöhe',
+    saddleElevation: 'Sattelhöhe',
+    fromMarker: ({ distance }) => `${distance} von der Markierung`,
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Abrufen des Weges', err),

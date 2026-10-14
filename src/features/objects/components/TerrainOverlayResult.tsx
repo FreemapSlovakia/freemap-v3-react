@@ -9,13 +9,13 @@ const ROUTE_STYLE = {
   dashArray: '6 6',
 } as const;
 
-/** The key col mark and the route the details toast's peak was asked to show. */
+/** The marks and the route the details toast was asked to show. */
 export function TerrainOverlayResult(): ReactElement {
   const coordinates = useAppSelector(
     (state) => state.objects.route?.coordinates,
   );
 
-  const keyCol = useAppSelector((state) => state.objects.keyCol);
+  const marks = useAppSelector((state) => state.objects.marks);
 
   return (
     <>
@@ -27,13 +27,14 @@ export function TerrainOverlayResult(): ReactElement {
         />
       )}
 
-      {keyCol && (
+      {Object.entries(marks).map(([kind, mark]) => (
         <RichMarker
-          position={{ lat: keyCol.lat, lng: keyCol.lon }}
-          poi="saddle"
+          key={kind}
+          position={{ lat: mark.lat, lng: mark.lon }}
+          poi={mark.poi}
           interactive={false}
         />
-      )}
+      ))}
     </>
   );
 }

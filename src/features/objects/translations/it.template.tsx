@@ -22,6 +22,9 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     keyColOf: 'Colle chiave di',
     showOnMap: 'Mostra sulla mappa',
     route: 'Percorso verso terreno più alto',
+    summitElevation: 'Quota della cima',
+    saddleElevation: 'Quota della sella',
+    fromMarker: ({ distance }) => `a ${distance} dal segnaposto`,
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Errore nel recupero del percorso', err),

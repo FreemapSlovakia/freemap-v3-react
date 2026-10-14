@@ -2,10 +2,6 @@ import { convertToDrawing } from '@app/store/actions.js';
 import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { ElevationSourcesInfo } from '@features/elevationChart/components/ElevationValue.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import {
-  GENEROUS_MARGIN_PX,
-  panToUncovered,
-} from '@features/map/panToUncovered.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { loadingResult } from '@features/search/model/resultUtils.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -20,23 +16,27 @@ import { Button, ButtonGroup, Dropdown, Spinner } from 'react-bootstrap';
 import { FaEllipsisV, FaMapMarkerAlt, FaPencilAlt } from 'react-icons/fa';
 import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import {
-  objectsKeyColShow,
-  objectsRouteClear,
-  objectsRouteRequest,
-} from '../model/actions.js';
+import { objectsRouteClear, objectsRouteRequest } from '../model/actions.js';
 import { type TerrainFacts, terrainCredits } from '../model/terrainFacts.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
+import { TerrainMarkToggle } from './TerrainMarkToggle.js';
 
 type Props = {
   facts: TerrainFacts;
   osmId: number;
   /** The peak's or saddle's own, for what is copied off it. */
   name: string | undefined;
+  /** The summit or saddle elevation, from the same service, so under one ⓘ. */
+  elevationRow?: ReactNode;
 };
 
 /** A peak's prominence, key col and isolation, or a saddle's depth. */
-export function TerrainFactsView({ facts, osmId, name }: Props): ReactElement {
+export function TerrainFactsView({
+  facts,
+  osmId,
+  name,
+  elevationRow,
+}: Props): ReactElement {
   const om = useObjectsMessages();
 
   const m = useMessages();
@@ -54,7 +54,7 @@ export function TerrainFactsView({ facts, osmId, name }: Props): ReactElement {
   );
 
   const keyColShown = useAppSelector(
-    (state) => state.objects.keyCol?.osmId === osmId,
+    (state) => state.objects.marks.keyCol?.osmId === osmId,
   );
 
   const licenses = useTerrainLicenses();
@@ -85,22 +85,11 @@ export function TerrainFactsView({ facts, osmId, name }: Props): ReactElement {
       }),
     );
 
-  /** A toggle where `active` is given, a plain button otherwise. */
-  const showOnMap = (
-    onClick: () => void,
-    { active, className }: { active?: boolean; className?: string } = {},
-  ) => (
+  const showOnMap = (onClick: () => void, className?: string) => (
     <LongPressTooltip label={om?.terrain.showOnMap}>
       {({ props }) => (
         <Button
-          variant={
-            active === undefined
-              ? 'secondary'
-              : active
-                ? 'primary'
-                : 'outline-primary'
-          }
-          active={active}
+          variant="secondary"
           size="sm"
           className={className}
           onClick={onClick}
@@ -147,6 +136,7 @@ export function TerrainFactsView({ facts, osmId, name }: Props): ReactElement {
 
     return bracketed(
       [
+        elevationRow,
         depthM !== null && (
           <div key="depth">
             {om?.terrain.depth}: {metres(depthM)}
@@ -156,9 +146,7 @@ export function TerrainFactsView({ facts, osmId, name }: Props): ReactElement {
           <div key="keyColOf">
             {om?.terrain.keyColOf}:{' '}
             <b>{keyColOf.name ?? `#${keyColOf.osmId}`}</b>
-            {showOnMap(() => selectNode(keyColOf.osmId), {
-              className: inLine,
-            })}
+            {showOnMap(() => selectNode(keyColOf.osmId), inLine)}
           </div>
         ),
       ],
@@ -202,9 +190,11 @@ export function TerrainFactsView({ facts, osmId, name }: Props): ReactElement {
     );
   };
 
-  // The bracket spans the values only, not the route control under them.
-  const values = bracketed(
+  const routeCoords = route?.coordinates;
+
+  return bracketed(
     [
+      elevationRow,
       prominence !== null && (
         <div key="prominence">
           {om?.terrain.prominence}: {metres(prominence)}
@@ -220,28 +210,12 @@ export function TerrainFactsView({ facts, osmId, name }: Props): ReactElement {
           )}
           <b>{nfM.format(col.ele)}</b>&nbsp;{m?.general.masl}
           <ButtonGroup size="sm" className={inLine}>
-            {showOnMap(
-              // Marked rather than selected: selecting the saddle would replace
-              // these details, and the mark with them.
-              () => {
-                if (keyColShown) {
-                  dispatch(objectsKeyColShow(null));
-
-                  return;
-                }
-
-                dispatch(
-                  objectsKeyColShow({ osmId, lat: col.lat, lon: col.lon }),
-                );
-
-                void panToUncovered(
-                  dispatch,
-                  { lat: col.lat, lon: col.lon },
-                  { ifHidden: true, margin: GENEROUS_MARGIN_PX },
-                );
-              },
-              { active: keyColShown },
-            )}
+            {/* Marked rather than selected: selecting the saddle would replace
+                these details, and the mark with them. */}
+            <TerrainMarkToggle
+              kind="keyCol"
+              mark={{ osmId, lat: col.lat, lon: col.lon, poi: 'saddle' }}
+            />
 
             {keyColShown &&
               copyMenu(() =>
@@ -259,19 +233,9 @@ export function TerrainFactsView({ facts, osmId, name }: Props): ReactElement {
           {om?.terrain.isolation}: {distance(isolationM)}
         </div>
       ),
-    ],
-    facts.sources,
-  );
-
-  const routeCoords = route?.coordinates;
-
-  return (
-    <>
-      {values}
-
-      {/* An island's col is the sea, and leaves no route. */}
-      {col && (
-        <ButtonGroup size="sm" className="mt-1">
+      // An island's col is the sea, and leaves no route.
+      col && (
+        <ButtonGroup key="route" size="sm" className="mt-1">
           <Button
             variant={route ? 'primary' : 'outline-primary'}
             active={Boolean(route)}
@@ -297,7 +261,8 @@ export function TerrainFactsView({ facts, osmId, name }: Props): ReactElement {
               ),
             )}
         </ButtonGroup>
-      )}
-    </>
+      ),
+    ],
+    elevationRow ? [...facts.eleSources, ...facts.sources] : facts.sources,
   );
 }

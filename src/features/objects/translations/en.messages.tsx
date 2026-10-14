@@ -17,6 +17,9 @@ const en: ObjectsMessages = {
     keyColOf: 'Key col of',
     showOnMap: 'Show on map',
     route: 'Route to higher ground',
+    summitElevation: 'Summit elevation',
+    saddleElevation: 'Saddle elevation',
+    fromMarker: ({ distance }) => `${distance} from the marker`,
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Error fetching the route', err),

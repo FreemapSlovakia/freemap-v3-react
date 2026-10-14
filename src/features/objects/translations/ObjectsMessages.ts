@@ -9,6 +9,8 @@ export type ObjectsMessages = {
     result: SearchResult;
     elevation: ElevationReading;
     terrain: TerrainFacts | null;
+    /** The elevation is the terrain's summit or saddle point's, not the node's. */
+    atTerrainPoint: boolean;
   }) => JSX.Element;
   elevation: string;
   terrain: {
@@ -25,6 +27,11 @@ export type ObjectsMessages = {
     showOnMap: string;
     /** Names the route once it is copied off the map. */
     route: string;
+    /** At the highest ground near a peak node, rather than at the node. */
+    summitElevation: string;
+    saddleElevation: string;
+    /** How far the summit or saddle point lies from the node's marker. */
+    fromMarker: (props: { distance: string }) => string;
   };
   routeFetchError: (props: { err: unknown }) => string;
   showDetails: string;

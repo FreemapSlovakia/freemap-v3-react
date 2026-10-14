@@ -18,9 +18,10 @@ import type { LatLon } from '@shared/types/common.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 import {
-  objectsKeyColShow,
   objectsRouteClear,
+  objectsTerrainMark,
   setDetailsShown,
+  type TerrainMarkKind,
 } from './actions.js';
 import {
   type DetailsTarget,
@@ -31,6 +32,7 @@ import {
 import {
   fetchTerrainFacts,
   hasTerrainValues,
+  isNational,
   type TerrainFacts,
   type TerrainFactsKind,
   terrainCredits,
@@ -39,7 +41,10 @@ import {
 
 const TOAST_ID = 'mapDetails.tags';
 
-/** A node's terrain facts (`null` where it has none to show) and its `ele`. */
+/**
+ * A node's terrain facts (`null` where the service holds none; values may still
+ * be missing, see `hasTerrainValues`) and its `ele` as a reading.
+ */
 type FactsEntry = {
   facts: TerrainFacts | null;
   reading: ElevationReading | null;
@@ -97,12 +102,6 @@ function factsFor(
   return slot;
 }
 
-/**
- * A terrain-service code naming a country's or a region's model (`sk`, `de_by`,
- * `wls`); a global one (`gedtm30`) or one not known is not taken for national.
- */
-const NATIONAL_CODE = /^[a-z]{2,3}(_[a-z0-9]+)?$/;
-
 /** `null` where the read failed or was cancelled. */
 async function readFacts(
   kind: TerrainFactsKind,
@@ -129,7 +128,7 @@ async function readFacts(
   }
 
   return {
-    facts: facts && hasTerrainValues(facts) ? facts : null,
+    facts,
     reading:
       facts?.ele != null
         ? {
@@ -137,9 +136,7 @@ async function readFacts(
             loading: false,
             sources: facts.eleSources,
             attributions: terrainCredits(facts.eleSources, await licenses),
-            national:
-              facts.eleSources.length > 0 &&
-              facts.eleSources.every((code) => NATIONAL_CODE.test(code)),
+            national: isNational(facts.eleSources),
           }
         : null,
   };
@@ -175,9 +172,9 @@ const MAX_ELEVATION_EXTENT_M = 200;
 let runSeq = 0;
 
 /**
- * The route and the col mark belong to the selected peak, whether or not its
- * details are open: closing them to look at the route keeps it, and anything
- * that selects something else takes them off.
+ * The route and the marks belong to the selected peak or saddle, whether or not
+ * its details are open: closing them to look at the route keeps it, and
+ * anything that selects something else takes them off.
  */
 export const objectsTerrainOverlayProcessor: Processor = {
   stateChangePredicate: (state) => state.main.selection,
@@ -190,8 +187,12 @@ export const objectsTerrainOverlayProcessor: Processor = {
       dispatch(objectsRouteClear());
     }
 
-    if (state.objects.keyCol && state.objects.keyCol.osmId !== ownerId) {
-      dispatch(objectsKeyColShow(null));
+    for (const [kind, mark] of Object.entries(state.objects.marks)) {
+      if (mark.osmId !== ownerId) {
+        dispatch(
+          objectsTerrainMark({ kind: kind as TerrainMarkKind, mark: null }),
+        );
+      }
     }
   },
 };
@@ -232,7 +233,12 @@ export const objectDetailsProcessor: Processor = {
           id: TOAST_ID,
           messageKey: 'detail',
           messageLoader: loadObjectsMessages,
-          messageParams: { result: target.result, elevation, terrain },
+          messageParams: {
+            result: target.result,
+            elevation,
+            terrain,
+            atTerrainPoint: serviceWon,
+          },
           onClose: setDetailsShown(false),
           style: 'info',
         }),
@@ -251,12 +257,17 @@ export const objectDetailsProcessor: Processor = {
 
     const slot = node && factsFor(node.kind, node.id, getState);
 
-    // Without premium the elevation API answers from SRTM, while the service
-    // reads the summit off the national DTM — so its value wins where it has
-    // one.
-    const preferService = node !== null && !isPremium(state.auth.user);
+    // A peak or saddle node is often off its summit or saddle, so the service's
+    // reading there wins where it has one; the API's is at the node. Not off
+    // GEDTM30 for premium, whose API reading at the node is national.
+    const wins = (reading: ElevationReading | null | undefined) =>
+      reading && (reading.national || !isPremium(getState().auth.user))
+        ? reading
+        : null;
 
-    const cachedReading = preferService ? slot?.entry?.reading : null;
+    const cachedReading = wins(slot?.entry?.reading);
+
+    let serviceWon = Boolean(cachedReading);
 
     // The details show at once; the elevation and the terrain facts read
     // separately and land in the same toast, so a slow API doesn't hold the
@@ -288,8 +299,6 @@ export const objectDetailsProcessor: Processor = {
       }
     };
 
-    let serviceWon = false;
-
     // Both at once: the service has no timeout, so the API's value shows
     // meanwhile and gives way to the service's when that lands.
     await Promise.all([
@@ -310,13 +319,18 @@ export const objectDetailsProcessor: Processor = {
 
           terrain = entry.facts;
 
-          if (preferService && entry.reading) {
+          const reading = wins(entry.reading);
+
+          if (reading) {
             serviceWon = true;
 
-            elevation = entry.reading;
+            elevation = reading;
           }
 
-          if (entry.facts || serviceWon) {
+          if (
+            serviceWon ||
+            (entry.facts !== null && hasTerrainValues(entry.facts))
+          ) {
             update();
           }
         }),

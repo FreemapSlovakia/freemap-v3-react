@@ -18,6 +18,9 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     keyColOf: 'Ključno sedlo vrha',
     showOnMap: 'Prikaži na zemljevidu',
     route: 'Pot do višjega terena',
+    summitElevation: 'Višina vrha',
+    saddleElevation: 'Višina sedla',
+    fromMarker: ({ distance }) => `${distance} od oznake`,
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri pridobivanju poti', err),

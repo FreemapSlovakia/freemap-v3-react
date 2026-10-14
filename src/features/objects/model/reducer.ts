@@ -3,14 +3,15 @@ import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { upgradeObjectFilter } from '@osm/taxon.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  type KeyColMark,
   type ObjectsResult,
-  objectsKeyColShow,
   objectsRouteClear,
   objectsRouteRequest,
   objectsRouteSet,
   objectsSetFilter,
   objectsSetResult,
+  objectsTerrainMark,
+  type TerrainMark,
+  type TerrainMarkKind,
 } from './actions.js';
 
 export interface ObjectsState {
@@ -18,15 +19,15 @@ export interface ObjectsState {
   active: string[];
   /** The details toast's peak route; `coordinates` is null while it loads. */
   route: { osmId: number; coordinates: [number, number][] | null } | null;
-  /** The details toast's key col, marked on the map. */
-  keyCol: KeyColMark | null;
+  /** What the details toast marks on the map. */
+  marks: Partial<Record<TerrainMarkKind, TerrainMark>>;
 }
 
 export const objectInitialState: ObjectsState = {
   objects: [],
   active: [],
   route: null,
-  keyCol: null,
+  marks: {},
 };
 
 export const objectsReducer = createReducer(objectInitialState, (builder) =>
@@ -43,8 +44,12 @@ export const objectsReducer = createReducer(objectInitialState, (builder) =>
     .addCase(objectsRouteClear, (state) => {
       state.route = null;
     })
-    .addCase(objectsKeyColShow, (state, { payload }) => {
-      state.keyCol = payload;
+    .addCase(objectsTerrainMark, (state, { payload: { kind, mark } }) => {
+      if (mark) {
+        state.marks[kind] = mark;
+      } else {
+        delete state.marks[kind];
+      }
     })
     .addCase(objectsSetFilter, (state, action) => {
       state.active = [...new Set(action.payload.map(upgradeObjectFilter))];
