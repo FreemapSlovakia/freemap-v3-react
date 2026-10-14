@@ -371,7 +371,7 @@ export const overlayStackSelector = createSelector(
     );
 
     return {
-      stack: overlayStack(items, [...layers].reverse()),
+      stack: overlayStack(items, layers.toReversed()),
       movable,
     };
   },

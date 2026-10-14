@@ -183,8 +183,8 @@ function featuresToLines(
       const closed =
         !isGeoJsonPolygon &&
         ring.length > 2 &&
-        ring[0][0] === ring[ring.length - 1][0] &&
-        ring[0][1] === ring[ring.length - 1][1];
+        ring[0][0] === ring.at(-1)![0] &&
+        ring[0][1] === ring.at(-1)![1];
 
       const style = lineStyleFromProperties(feature.properties, closed);
 

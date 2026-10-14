@@ -75,17 +75,7 @@ function continuousColors(stretches: Stretch[]): (string | undefined)[] {
 
   // By key, not by adjacency: a walk → ride → walk route is two networks, not
   // three, so the second walk resumes the trail the first was on.
-  const byNetwork = new Map<string, number[]>();
-
-  stretches.forEach(({ detail }, i) => {
-    const at = byNetwork.get(detail);
-
-    if (at) {
-      at.push(i);
-    } else {
-      byNetwork.set(detail, [i]);
-    }
-  });
+  const byNetwork = Map.groupBy(stretches.keys(), (i) => stretches[i]!.detail);
 
   for (const at of byNetwork.values()) {
     const colors = networkColors(at.map((i) => stretches[i]!));

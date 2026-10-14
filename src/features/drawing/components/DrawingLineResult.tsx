@@ -659,7 +659,7 @@ export function DrawingLineResult({ lineIndex }: Props): ReactElement {
 
     type PtDist = [number, Point];
 
-    const rev = [...points].reverse();
+    const rev = points.toReversed();
 
     const [sumDist] = rev.reduce(
       ([dist, prevPoint], nextPoint) =>

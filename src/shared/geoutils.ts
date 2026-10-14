@@ -733,7 +733,7 @@ export function stitchLines<T extends Geometry>(
 
         if (positionsEqual(g1.coordinates[0], g2.coordinates[0])) {
           merged = [
-            ...[...g2.coordinates].reverse().slice(0, -1),
+            ...g2.coordinates.toReversed().slice(0, -1),
             ...g1.coordinates,
           ];
         } else if (positionsEqual(g1.coordinates[0], g2.coordinates.at(-1))) {
@@ -743,10 +743,7 @@ export function stitchLines<T extends Geometry>(
         } else if (
           positionsEqual(g1.coordinates.at(-1), g2.coordinates.at(-1))
         ) {
-          merged = [
-            ...g1.coordinates,
-            ...[...g2.coordinates].reverse().slice(1),
-          ];
+          merged = [...g1.coordinates, ...g2.coordinates.toReversed().slice(1)];
         }
 
         if (merged) {

@@ -45,7 +45,7 @@ export const drawingPointsReducer = createReducer(initialState, (builder) =>
     .addCase(clearMapFeatures, () => initialState)
     .addCase(drawingPointDelete, (state, { payload }) => ({
       ...state,
-      points: state.points.filter((_, i) => i !== payload.index),
+      points: state.points.toSpliced(payload.index, 1),
     }))
     .addCase(applySettings, (state, { payload }) => {
       if (!payload.drawingApplyAll) {

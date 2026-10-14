@@ -115,7 +115,7 @@ export function createWorkerPool(workerFactory: () => Worker): WorkerPool {
    */
   function runNextJob(): void {
     while (!destroyed) {
-      const job = [...jobMap.values()].find((v) => !v.started);
+      const job = jobMap.values().find((v) => !v.started);
 
       if (!job) {
         return;

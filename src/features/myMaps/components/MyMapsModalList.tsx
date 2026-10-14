@@ -88,7 +88,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
   const sortedMaps = useMemo(() => {
     const byName = makeLabelComparator(language);
 
-    return [...maps].sort((a, b) =>
+    return maps.toSorted((a, b) =>
       byName(a.name || undefined, b.name || undefined),
     );
   }, [maps, language]);

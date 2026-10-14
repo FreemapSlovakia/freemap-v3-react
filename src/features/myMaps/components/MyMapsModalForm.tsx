@@ -126,7 +126,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   };
 
   const handleWriterDelete = (index: number) => {
-    setWriters((writers) => writers.filter((_, i) => i !== index));
+    setWriters((writers) => writers.toSpliced(index, 1));
   };
 
   const save = () => {

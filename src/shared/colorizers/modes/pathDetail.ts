@@ -274,7 +274,7 @@ export function categoricalColorizer(spec: CategoricalSpec): Colorizer {
 
         for (const { start, end, index, reported } of covering(
           spans,
-          cum[cum.length - 1] ?? 0,
+          cum.at(-1) ?? 0,
         )) {
           const color = colorOf(index);
 

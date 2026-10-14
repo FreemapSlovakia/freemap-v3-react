@@ -90,7 +90,7 @@ export function DrawingPointsResult(): ReactElement {
 
   const onSelects = useMemo(
     () =>
-      new Array(points.length).fill(0).map((_, id) => () => {
+      Array.from({ length: points.length }, (_, id) => () => {
         if (id !== activeIndex) {
           dispatch(selectFeature({ type: 'draw-points', id }));
 

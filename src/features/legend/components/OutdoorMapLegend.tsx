@@ -139,7 +139,7 @@ export default function OutdoorMapLegend({
     const names = (lm?.outdoorMap ?? {}) as Record<string, string>;
 
     // Alphabetical, except the catch-all, which belongs after the named ones.
-    return [...legend].sort(
+    return legend.toSorted(
       (a, b) =>
         Number(a.category === 'other') - Number(b.category === 'other') ||
         collator.compare(

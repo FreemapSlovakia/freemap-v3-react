@@ -819,15 +819,13 @@ export const PERSISTED_KEYS: (keyof RootState)[] = PERSIST.filter(
 ).map((entry) => entry.key);
 
 export function selectPersistedState(state: RootState): Partial<RootState> {
-  const out: Record<string, unknown> = {};
-
-  for (const entry of PERSIST) {
-    if (entry.persist) {
-      out[entry.key] = entry.persist(state[entry.key] as never);
-    }
-  }
-
-  return out as Partial<RootState>;
+  return Object.fromEntries(
+    PERSIST.flatMap((entry) =>
+      entry.persist
+        ? [[entry.key, entry.persist(state[entry.key] as never)]]
+        : [],
+    ),
+  ) as Partial<RootState>;
 }
 
 function parseWithFallback<T>(

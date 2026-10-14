@@ -61,8 +61,7 @@ export function DrawingLineStyleFields({
   }, [dashArray]);
 
   function handleInputChange(index: number, value: string) {
-    const newInputs = [...inputs];
-    newInputs[index] = value;
+    const newInputs = inputs.with(index, value);
     if (index === inputs.length - 1 && value !== '') {
       newInputs.push('');
     }
@@ -73,7 +72,7 @@ export function DrawingLineStyleFields({
 
   function handleInputBlur(index: number) {
     if (inputs[index] === '' && index !== inputs.length - 1) {
-      setInputs(inputs.filter((_, i) => i !== index));
+      setInputs(inputs.toSpliced(index, 1));
     }
   }
 

@@ -83,7 +83,7 @@ export function CachedMapsList(): ReactElement {
 
   const byName = makeLabelComparator(language);
 
-  const sortedMaps = [...cachedMaps].sort((a, b) =>
+  const sortedMaps = cachedMaps.toSorted((a, b) =>
     byName(a.name || undefined, b.name || undefined),
   );
 

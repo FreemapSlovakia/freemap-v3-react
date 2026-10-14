@@ -135,7 +135,7 @@ function pickSampledZooms(ranges: TileRange[]): TileRange[] {
   return [
     ranges[0]!,
     ranges[Math.floor((ranges.length - 1) / 2)]!,
-    ranges[ranges.length - 1]!,
+    ranges.at(-1)!,
   ];
 }
 

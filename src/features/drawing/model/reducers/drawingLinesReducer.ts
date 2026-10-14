@@ -384,19 +384,9 @@ export const drawingLinesReducer = createReducer(initialState, (builder) =>
       // one line must not renumber the rest. Matched on the id-free content
       // string the my-maps dirty check already treats as a line's identity,
       // and consumed as it matches, so two identical lines stay two lines.
-      const reusable = new Map<string, DrawnLine[]>();
-
-      for (const line of payload.merge ? [] : state.lines) {
-        const key = lineIdentity(line, line.holeOfId !== undefined);
-
-        const bucket = reusable.get(key);
-
-        if (bucket) {
-          bucket.push(line);
-        } else {
-          reusable.set(key, [line]);
-        }
-      }
+      const reusable = Map.groupBy(payload.merge ? [] : state.lines, (line) =>
+        lineIdentity(line, line.holeOfId !== undefined),
+      );
 
       // Hole membership is resolved after the matching, since a reused line
       // carries the id the incoming one's `holeOf` index has to land on.

@@ -62,7 +62,7 @@ export function OsmTagValue({
       target="_blank"
       rel="noreferrer"
       href={`https://sk.wikipedia.org/wiki/${encodeURIComponent(
-        value.replace(/ /g, '_'),
+        value.replaceAll(' ', '_'),
       )}`}
     >
       {text}
@@ -70,7 +70,11 @@ export function OsmTagValue({
   ) : ['contact:email', 'email'].includes(tag) ? (
     <a href={`mailto:${value}`}>{text}</a>
   ) : ['phone', 'contact:phone', 'contact:mobile'].includes(tag) ? (
-    <a target="_blank" rel="noreferrer" href={`tel:${value.replace(/ /g, '')}`}>
+    <a
+      target="_blank"
+      rel="noreferrer"
+      href={`tel:${value.replaceAll(' ', '')}`}
+    >
       {text}
     </a>
   ) : categoryKeys.has(tag) ? (

@@ -311,7 +311,7 @@ export async function syncStaticCache(): Promise<void> {
   const oldUrls = new Set(Object.values(oldManifest));
 
   const sameSize = newUrls.size === oldUrls.size;
-  const allMatch = sameSize && [...newUrls].every((u) => oldUrls.has(u));
+  const allMatch = sameSize && newUrls.isSubsetOf(oldUrls);
 
   // Unchanged manifest → the current snapshot is already complete (the sentinel
   // is only written after a verified-complete populate), so there's nothing to
@@ -332,10 +332,9 @@ export async function syncStaticCache(): Promise<void> {
 
   // Add newly-appearing best-effort (non-code) assets, leaving the old snapshot
   // otherwise untouched so a failed sync keeps the previous shell serviceable.
-  await cacheUrlsTolerant(
-    cache,
-    [...newUrls].filter((u) => !oldUrls.has(u) && !criticalSet.has(u)),
-  );
+  await cacheUrlsTolerant(cache, [
+    ...newUrls.difference(oldUrls).difference(criticalSet),
+  ]);
 
   // Fetch (and retry) every new code asset first, while the old shell still
   // points at the old chunks. The stable-named shell must not be advanced until
@@ -367,7 +366,10 @@ export async function syncStaticCache(): Promise<void> {
 
   // Fully cached and consistent — now safe to prune superseded URLs and commit.
   await Promise.all(
-    [...oldUrls].filter((u) => !newUrls.has(u)).map((u) => cache.delete(u)),
+    oldUrls
+      .difference(newUrls)
+      .values()
+      .map((u) => cache.delete(u)),
   );
 
   await set(STATIC_MANIFEST_KEY, newManifest);

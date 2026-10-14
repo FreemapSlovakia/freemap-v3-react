@@ -100,11 +100,7 @@ export function GalleryEditForm({
   };
 
   const handleTagDelete = (i: number) => {
-    const tags = [...model.tags];
-
-    tags.splice(i, 1);
-
-    changeModel('tags', tags);
+    changeModel('tags', model.tags.toSpliced(i, 1));
   };
 
   // hack to resize tags properly on modal re-appear

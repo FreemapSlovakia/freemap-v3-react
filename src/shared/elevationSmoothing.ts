@@ -34,8 +34,8 @@ function runningExtreme(
       while (
         deque.length > 0 &&
         (max
-          ? values[deque[deque.length - 1]!]! <= values[hi]!
-          : values[deque[deque.length - 1]!]! >= values[hi]!)
+          ? values[deque.at(-1)!]! <= values[hi]!
+          : values[deque.at(-1)!]! >= values[hi]!)
       ) {
         deque.pop();
       }

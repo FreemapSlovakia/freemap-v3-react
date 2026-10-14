@@ -266,17 +266,17 @@ function collectChannels(
 
   const multi = segments.length > 1;
 
-  const channels: Record<string, unknown> = {};
+  const channels: Record<string, unknown> = Object.fromEntries(
+    names.values().map((name) => {
+      const perSegment = segments.map(
+        (segment) =>
+          segment.channels.get(name) ??
+          new Array<null>(segment.positions.length).fill(null),
+      );
 
-  for (const name of names) {
-    const perSegment = segments.map(
-      (segment) =>
-        segment.channels.get(name) ??
-        new Array<null>(segment.positions.length).fill(null),
-    );
-
-    channels[name] = multi ? perSegment : perSegment[0];
-  }
+      return [name, multi ? perSegment : perSegment[0]];
+    }),
+  );
 
   return channels;
 }

@@ -92,7 +92,7 @@ export const steepnessColorizer: Colorizer = {
       // are spaced; the inward-shifting window below keeps that span constant.
       const cum = cumulativeDistances(smoothed);
 
-      const total = cum[cum.length - 1] ?? 0;
+      const total = cum.at(-1) ?? 0;
 
       const span = Math.min(baseline, total);
 

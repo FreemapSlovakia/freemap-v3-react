@@ -180,7 +180,7 @@ export const changesetsProcessor: Processor = {
         const allChangesetSoFarIDs = allChangesetsSoFar.map((ch) => ch.id);
 
         for (const ch of changesetsFromThisRequest) {
-          if (allChangesetSoFarIDs.indexOf(ch.id) < 0) {
+          if (!allChangesetSoFarIDs.includes(ch.id)) {
             // occasionally the changeset may already be here from previous ajax request
             allChangesetsSoFar.push(ch);
           }

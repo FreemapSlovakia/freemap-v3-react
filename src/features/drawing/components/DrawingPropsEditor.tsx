@@ -57,8 +57,7 @@ export function DrawingPropsEditor({
 }: Props): ReactElement {
   const m = useDrawingMessages();
 
-  const replace = (i: number, row: PropRow) =>
-    onChange(rows.map((old, j) => (i === j ? row : old)));
+  const replace = (i: number, row: PropRow) => onChange(rows.with(i, row));
 
   return (
     <>
@@ -154,7 +153,7 @@ export function DrawingPropsEditor({
               {({ props }) => (
                 <Button
                   variant="danger"
-                  onClick={() => onChange(rows.filter((_, j) => j !== i))}
+                  onClick={() => onChange(rows.toSpliced(i, 1))}
                   {...props}
                 >
                   <FaTrash />

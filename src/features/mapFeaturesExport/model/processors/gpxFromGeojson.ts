@@ -121,15 +121,13 @@ function addWaypoint(doc: Document, coord: number[], feature: Feature): void {
 function fmFields(feature: Feature): Record<string, string> {
   const properties = feature.properties;
 
-  const fields: Record<string, string> = {};
+  const fields: Record<string, string> = Object.fromEntries(
+    FM_TAGS.flatMap((tag) => {
+      const value = properties?.[`freemap:${tag}`];
 
-  for (const tag of FM_TAGS) {
-    const value = properties?.[`freemap:${tag}`];
-
-    if (typeof value === 'string' && value) {
-      fields[tag] = value;
-    }
-  }
+      return typeof value === 'string' && value ? [[tag, value]] : [];
+    }),
+  );
 
   const fallback = (tag: string, value: string | number | undefined) => {
     if (value !== undefined && !(tag in fields)) {

@@ -685,13 +685,11 @@ export function tagsToPoiIconName(
     return undefined;
   }
 
-  const strings: Record<string, string> = {};
-
-  for (const [key, value] of Object.entries(tags)) {
-    if (typeof value === 'string') {
-      strings[key] = value;
-    }
-  }
+  const strings: Record<string, string> = Object.fromEntries(
+    Object.entries(tags).filter(
+      (entry): entry is [string, string] => typeof entry[1] === 'string',
+    ),
+  );
 
   return resolveGenericName(osmTagToIconMapping, strings)[0];
 }

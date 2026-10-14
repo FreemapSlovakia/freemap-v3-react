@@ -787,7 +787,7 @@ export function resolveLayersSettingsAliases<T>(
     if (setting !== undefined) {
       delete out[from];
 
-      out[to[to.length - 1]] ??= setting;
+      out[to.at(-1)!] ??= setting;
     }
   }
 

@@ -118,7 +118,7 @@ function dropLeadingPoint(side: Side): Side {
 }
 
 const reversedRows = <T>(rows: T[][]): T[][] =>
-  rows.map((row) => [...row].reverse()).reverse();
+  rows.map((row) => row.toReversed()).reverse();
 
 /** Spans measured from the other end, so they still cover the same stretches. */
 function reversePathDetails(details: PathDetails, length: number): PathDetails {

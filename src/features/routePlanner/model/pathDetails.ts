@@ -238,7 +238,7 @@ function routedRuns(
 ): { from: number; to: number; coordinates: Position[] }[] {
   const cum = cumulativeDistances(coordinates);
 
-  const total = cum[cum.length - 1] ?? 0;
+  const total = cum.at(-1) ?? 0;
 
   if (unrouted.length === 0) {
     return [{ from: 0, to: total, coordinates }];

@@ -128,7 +128,7 @@ export function PictureLegend() {
     <LegendShell icon={ICON} label={gm?.legend}>
       <LegendGradientBar background={background} className="mx-2">
         {colorizeBy === 'rating'
-          ? new Array(5).fill(0).map((_, i) => (
+          ? Array.from({ length: 5 }, (_, i) => (
               <LegendTick key={i} t={i / 4}>
                 {i + 1}
               </LegendTick>
@@ -149,7 +149,7 @@ export function PictureLegend() {
                 </div>
               ))
             : colorizeBy === 'season'
-              ? new Array(13).fill(0).map((_, i) => (
+              ? Array.from({ length: 13 }, (_, i) => (
                   <LegendTick key={i} t={i / 12}>
                     {(i % 12) + 1}
                   </LegendTick>

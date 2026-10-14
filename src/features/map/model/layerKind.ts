@@ -24,15 +24,11 @@ export const canSwitchKind = (technology: string | undefined): boolean =>
 export function kindOverrides(
   layerSetups: Readonly<Record<string, LayerSetup>>,
 ): Record<string, LayerKind> {
-  const overrides: Record<string, LayerKind> = {};
-
-  for (const [type, setup] of Object.entries(layerSetups)) {
-    if (setup.kind) {
-      overrides[type] = setup.kind;
-    }
-  }
-
-  return overrides;
+  return Object.fromEntries(
+    Object.entries(layerSetups).flatMap(([type, { kind }]) =>
+      kind ? [[type, kind]] : [],
+    ),
+  );
 }
 
 /** A map with the kind it is switched to, if it may be; its opacity is untouched. */

@@ -99,7 +99,7 @@ const LABEL_SETTING_KEYS = Object.keys(
 ) as (keyof typeof LABEL_DEFAULTS)[];
 
 /** Narrowest first, the way a slider runs; a full turn is the far end. */
-const FOV_STOPS = [...PANORAMA_FOVS].reverse();
+const FOV_STOPS = PANORAMA_FOVS.toReversed();
 
 type Props = {
   fullscreen: boolean;

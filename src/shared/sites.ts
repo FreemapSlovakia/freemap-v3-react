@@ -32,5 +32,5 @@ export const currentSite: Site =
 
 /** Substitutes the `{site}` placeholder the SEO title strings are written with. */
 export function expandSite(text: string, site: Site): string {
-  return text.replace(/\{site\}/g, siteNames[site]);
+  return text.replaceAll('{site}', siteNames[site]);
 }

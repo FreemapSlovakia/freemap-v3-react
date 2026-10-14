@@ -133,7 +133,7 @@ export const wikiLayerProcessor: Processor = {
       const wikidata = item[1];
 
       if (wikipedia) {
-        wikipedia = decodeURIComponent(wikipedia.replace(/_/g, ' '));
+        wikipedia = decodeURIComponent(wikipedia.replaceAll('_', ' '));
       }
 
       if (wikipedia) {

@@ -14,9 +14,9 @@ export const mapTypeGaProcessor: Processor = {
       presetIdOf(item) === undefined ? item : '@',
     );
 
-    const joinedLayers = [...layers].sort().join(',');
+    const joinedLayers = layers.toSorted().join(',');
 
-    if ([...prevLayers].sort().join(',') !== joinedLayers) {
+    if (prevLayers.toSorted().join(',') !== joinedLayers) {
       trackMatomo(['trackEvent', 'Map', 'setLayers', joinedLayers]);
 
       prevLayers = layers;

@@ -54,7 +54,7 @@ export const exportMapFeaturesProcessor: Processor<typeof exportMapFeatures> = {
       new URLSearchParams({
         type,
         target,
-        exportables: [...exportables].sort().join(','),
+        exportables: exportables.toSorted().join(','),
       }).toString(),
     ]);
 

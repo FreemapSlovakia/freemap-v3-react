@@ -80,7 +80,7 @@ describe('panoramaGroundInk', () => {
     expect(
       panoramaGroundInk('#000000', {
         ...gradient,
-        stops: [...gradient.stops].reverse(),
+        stops: gradient.stops.toReversed(),
       }),
     ).toBe('#3a4a34');
   });

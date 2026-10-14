@@ -21,7 +21,7 @@ export function serializeQuery(parts: QueryPart[]): string {
         encodeURIComponent(qp[0]) +
         '=' +
         // FIXME replacing is nonstandard
-        encodeURIComponent(qp[1]).replace(/%2F/g, '/'),
+        encodeURIComponent(qp[1]).replaceAll('%2F', '/'),
     )
     .join('&');
 }
@@ -263,11 +263,11 @@ export function getMapContentParts(state: RootState): QueryPart[] {
     }
 
     if (color) {
-      deviceParts.push(`c:${color.replace(/\//g, '_')}`);
+      deviceParts.push(`c:${color.replaceAll('/', '_')}`);
     }
 
     if (label) {
-      deviceParts.push(`l:${label.replace(/\//g, '_')}`);
+      deviceParts.push(`l:${label.replaceAll('/', '_')}`);
     }
 
     parts.push(['track', deviceParts.join('/')]);

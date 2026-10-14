@@ -74,6 +74,6 @@ function rankOf(code: Language) {
 }
 
 /** The flags beside the menu's Language item, most used first. */
-export const flagItems = [...languageItems].sort(
+export const flagItems = languageItems.toSorted(
   (a, b) => rankOf(a.code) - rankOf(b.code),
 );

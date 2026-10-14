@@ -265,10 +265,8 @@ async function convertForeignFeatures(
       geom.type === 'MultiPolygon' ||
       (geom.type === 'LineString' &&
         geom.coordinates.length > 2 &&
-        geom.coordinates[0][0] ===
-          geom.coordinates[geom.coordinates.length - 1][0] &&
-        geom.coordinates[0][1] ===
-          geom.coordinates[geom.coordinates.length - 1][1]);
+        geom.coordinates[0][0] === geom.coordinates.at(-1)![0] &&
+        geom.coordinates[0][1] === geom.coordinates.at(-1)![1]);
 
     const style = lineStyleFromProperties(props, closed);
 

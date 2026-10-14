@@ -34,7 +34,7 @@ export const objectsChangePredicateProcessor: Processor = {
       'trackEvent',
       'Objects',
       'search',
-      [...getState().objects.active].sort().join(','),
+      getState().objects.active.toSorted().join(','),
     ]);
   },
 };

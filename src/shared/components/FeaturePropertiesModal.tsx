@@ -216,9 +216,9 @@ export function FeaturePropertiesModal({
       {
         touched,
         rows: editedRows,
-        keptKeys: new Set(
-          [...(batch?.mixedKeys ?? [])].filter((key) => !changedKeys.has(key)),
-        ),
+        keptKeys: batch
+          ? batch.mixedKeys.difference(changedKeys)
+          : new Set<string>(),
       },
     );
 
