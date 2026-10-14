@@ -50,12 +50,58 @@ export type ElevationReading = {
    * instead of by a danger toast beside it.
    */
   error?: unknown;
+  /**
+   * Whether a national model answered, where the reader knows it; otherwise
+   * told from the API's `sources`.
+   */
+  national?: boolean;
 };
 
 export type ElevationValueProps = ElevationReading & {
   label: string | undefined;
   className?: string;
 };
+
+/**
+ * The ⓘ naming the terrain models a value was read from. The tooltip is plain
+ * text, so the credits' links live only in the toast it opens — which is why it
+ * opens at any count, not just a long one.
+ */
+export function ElevationSourcesInfo({
+  attributions,
+}: {
+  attributions: AttributionDef[];
+}): ReactElement | null {
+  const ecm = useElevationChartMessages();
+
+  const sources = useElevationSources('terrain-model', attributions);
+
+  const tooMany = tooManyElevationSources(sources);
+
+  const showSources = useShowElevationSources(sources, SOURCES_TOAST_CANCEL);
+
+  // Only the short form writes the names out; past the threshold the count does.
+  const sourceNames = tooMany ? '' : elevationSourceNames(sources);
+
+  const hint = !ecm
+    ? undefined
+    : tooMany
+      ? `${ecm.elevationSource}: ${ecm.showAllSources} (${sources.length})`
+      : sourceNames
+        ? `${ecm.elevationSource}: ${sourceNames}`
+        : undefined;
+
+  return hint ? (
+    <GlyphMarker
+      hint={hint}
+      color="body-secondary"
+      className="ms-1"
+      onClick={showSources}
+    >
+      <FaInfoCircle />
+    </GlyphMarker>
+  ) : null;
+}
 
 /**
  * The single-point elevation line: a spinner while it is read, a warning
@@ -69,6 +115,7 @@ export function ElevationValue({
   sources: reportedSources,
   attributions,
   error,
+  national = hasSubMeterPrecision(reportedSources),
   label,
   className,
 }: ElevationValueProps): ReactElement | null {
@@ -76,7 +123,7 @@ export function ElevationValue({
   // would be noise, and every other elevation readout writes whole metres.
   const nfEle = useNumberFormat({
     minimumFractionDigits: 0,
-    maximumFractionDigits: hasSubMeterPrecision(reportedSources) ? 1 : 0,
+    maximumFractionDigits: national ? 1 : 0,
   });
 
   const m = useMessages();
@@ -87,31 +134,8 @@ export function ElevationValue({
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
-  // A point readout always comes from the elevation API, so it names the terrain
-  // model behind the number. Its own icon, not the gem's tooltip: the two say
-  // different things — what this reading came from, and what premium would read
-  // it from instead.
-  const sources = useElevationSources('terrain-model', attributions);
-
-  // The tooltip is plain text, so the credits' links live only in the toast the
-  // ⓘ opens — which is why it opens at any count, not just a long one.
-  const tooMany = tooManyElevationSources(sources);
-
-  const showSources = useShowElevationSources(sources, SOURCES_TOAST_CANCEL);
-
-  // Only the short form writes the names out; past the threshold the count does.
-  const sourceNames = tooMany ? '' : elevationSourceNames(sources);
-
   const errorText =
     m && ecm ? addError(m, ecm.fetchError, error) : String(error ?? '');
-
-  const sourceHint = !ecm
-    ? undefined
-    : tooMany
-      ? `${ecm.elevationSource}: ${ecm.showAllSources} (${sources.length})`
-      : sourceNames
-        ? `${ecm.elevationSource}: ${sourceNames}`
-        : undefined;
 
   if (!loading && elevation === undefined && error === undefined) {
     return null;
@@ -137,19 +161,15 @@ export function ElevationValue({
       ) : (
         <>
           <b>{nfEle.format(elevation)}</b>&nbsp;{m?.general.masl}
-          {sourceHint && (
-            <GlyphMarker
-              hint={sourceHint}
-              color="body-secondary"
-              className="ms-1"
-              onClick={showSources}
-            >
-              <FaInfoCircle />
-            </GlyphMarker>
+          {/* Its own icon, not the gem's tooltip: what this reading came from,
+              and what premium would read it from instead, are two things. */}
+          <ElevationSourcesInfo attributions={attributions} />
+          {/* Nothing finer to offer for a value already off a national model. */}
+          {(premium || !national) && (
+            <PremiumGem
+              hint={premium ? undefined : prm?.higherPrecisionElevation}
+            />
           )}
-          <PremiumGem
-            hint={premium ? undefined : prm?.higherPrecisionElevation}
-          />
         </>
       )}
     </div>

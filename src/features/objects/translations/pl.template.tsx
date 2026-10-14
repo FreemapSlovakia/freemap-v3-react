@@ -12,6 +12,19 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Źródło',
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Wysokość n.p.m.',
+  terrain: {
+    prominence: 'Wybitność',
+    keyCol: 'Przełęcz kluczowa',
+    isolation: 'Izolacja',
+    showRoute: 'Pokaż drogę do wyższego terenu',
+    hideRoute: 'Ukryj drogę',
+    depth: 'Głębokość przełęczy',
+    keyColOf: 'Przełęcz kluczowa szczytu',
+    showOnMap: 'Pokaż na mapie',
+    route: 'Droga do wyższego terenu',
+  },
+  routeFetchError: ({ err }) =>
+    addError(getMessages()!, 'Błąd podczas pobierania drogi', err),
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Aby zobaczyć obiekty według ich typu, powiększ co najmniej do poziomu ${minZoom}.`,

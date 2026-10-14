@@ -20,7 +20,7 @@ import type { MapPreset } from '@features/map/model/mapPreset.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import type { FeatureId, OsmFeatureId } from '@shared/types/featureId.js';
-import type { Feature } from 'geojson';
+import type { Feature, FeatureCollection } from 'geojson';
 import z from 'zod';
 import type { ActiveModal } from './activeModal.js';
 
@@ -226,6 +226,8 @@ export const convertToDrawing = createAction<
   | { type: 'tracking'; id?: string; tolerance: number }
   | { type: 'search-result'; tolerance: number; carry?: ConvertCarry }
   | { type: 'changesets' }
+  // geojson: features built by the caller, copied as they are
+  | { type: 'geojson'; geojson: FeatureCollection }
 >('CONVERT_TO_DRAWING');
 
 /** What a conversion to the track viewer takes its features from. */
@@ -237,7 +239,8 @@ export type DataViewerSource =
   | { type: 'changesets' }
   | { type: 'search-result' }
   | { type: 'drawing-point'; index: number }
-  | { type: 'drawing-line'; index: number };
+  | { type: 'drawing-line'; index: number }
+  | { type: 'geojson'; geojson: FeatureCollection };
 
 /**
  * Hands map features to the track viewer ("Tracks and data"), where they become

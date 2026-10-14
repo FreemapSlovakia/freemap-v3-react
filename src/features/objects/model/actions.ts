@@ -43,5 +43,25 @@ export const objectsShowAsLookup = createAction<{ id?: OsmFeatureId }>(
   'OBJECTS_SHOW_AS_LOOKUP',
 );
 
+/** Draws a peak's prominence route, fetched for the purpose. */
+export const objectsRouteRequest = createAction<{ osmId: number }>(
+  'OBJECTS_ROUTE_REQUEST',
+);
+
+export const objectsRouteSet = createAction<{
+  osmId: number;
+  coordinates: [number, number][];
+}>('OBJECTS_ROUTE_SET');
+
+export const objectsRouteClear = createAction('OBJECTS_ROUTE_CLEAR');
+
+/** A peak's key col, by the OSM node id of the peak. */
+export type KeyColMark = LatLon & { osmId: number };
+
+/** Marks the details toast's key col on the map; `null` takes the mark off. */
+export const objectsKeyColShow = createAction<KeyColMark | null>(
+  'OBJECTS_KEY_COL_SHOW',
+);
+
 /** Shows or hides the selected feature's details toast, until the next selecting. */
 export const setDetailsShown = createAction<boolean>('SET_DETAILS_SHOWN');

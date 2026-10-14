@@ -109,12 +109,17 @@ import {
 import { mapsRestoreProcessor } from '@features/myMaps/model/processors/mapsRestoreProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
 import { mapsWorkingCopyProcessor } from '@features/myMaps/model/processors/mapsWorkingCopyProcessor.js';
-import { objectDetailsProcessor } from '@features/objects/model/objectDetailsProcessor.js';
+import {
+  objectDetailsProcessor,
+  objectsTerrainOverlayProcessor,
+} from '@features/objects/model/objectDetailsProcessor.js';
 import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
+  objectsReleaseProcessor,
 } from '@features/objects/model/objectsFetchProcessor.js';
 import { objectsLookupProcessor } from '@features/objects/model/objectsLookupProcessor.js';
+import { objectsRouteProcessor } from '@features/objects/model/objectsRouteProcessor.js';
 import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadMapProcessor.js';
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
 import { osmLoadProcessor } from '@features/osm/model/processors/osmLoadProcessor.js';
@@ -219,8 +224,11 @@ export const processors = [
   elevationChartProcessor,
   elevationChartPendingTargetProcessor,
   objectsFetchProcessor,
+  objectsReleaseProcessor,
   objectsChangePredicateProcessor,
   objectDetailsProcessor,
+  objectsTerrainOverlayProcessor,
+  objectsRouteProcessor,
   objectsLookupProcessor,
   osmLoadProcessor,
   mapTypeGaProcessor,

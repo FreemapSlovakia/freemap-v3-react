@@ -141,6 +141,7 @@ const convertSourceTools: Record<
   'search-result': undefined,
   // The live feed goes on after the copy, so tracking keeps its toolbar.
   tracking: undefined,
+  geojson: undefined,
 };
 
 export const mainReducer = createReducer(mainInitialState, (builder) => {
@@ -283,8 +284,8 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     // An object that is no longer among the found ones can't be the selected
     // feature: nothing would render its toolbar, so the selection would sit
     // there with no way to reach it and no way to let it go. Reached by the
-    // filter being cleared, by the objects being handed to another feature, and
-    // by panning until the object drops out of what the search answers.
+    // filter being cleared and by the objects being handed to another feature;
+    // panning keeps the selected one (`keepSelected`).
     .addCase(objectsSetResult, (state, action) => {
       const { selection } = state;
 

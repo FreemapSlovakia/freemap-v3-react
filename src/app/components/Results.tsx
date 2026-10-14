@@ -5,6 +5,7 @@ import { DrawingPointsResult } from '@features/drawing/components/DrawingPointsR
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { ObjectsResult } from '@features/objects/components/ObjectsResult.js';
+import { TerrainOverlayResult } from '@features/objects/components/TerrainOverlayResult.js';
 import { RoutePlannerResult } from '@features/routePlanner/components/RoutePlannerResult.js';
 import { SearchResults } from '@features/search/components/SearchResults.js';
 import { TrackingResult } from '@features/tracking/components/TrackingResult.js';
@@ -100,6 +101,8 @@ export function Results(): ReactElement {
       <SearchResults />
 
       {hasObjects && <ObjectsResult />}
+
+      <TerrainOverlayResult />
 
       {showRoutePlanner && <RoutePlannerResult />}
 

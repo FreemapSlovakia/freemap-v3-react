@@ -1,6 +1,11 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
 import { layerInstancesSelector } from '@features/map/model/selectors.js';
+import {
+  fitOnceSettled,
+  fitToUncovered,
+  GENEROUS_MARGIN_PX,
+} from '@features/map/panToUncovered.js';
 import { integratedLayerDefMapSelector } from '@features/mapLibrary/model/selectors.js';
 import { osmLoad } from '@features/osm/model/osmActions.js';
 import {
@@ -44,7 +49,7 @@ export const searchHighlightTrafo: Processor<typeof searchSelectResult> = {
 export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
   actionCreator: searchSelectResult,
 
-  handle: async ({ action, dispatch, getState }) => {
+  handle: async ({ action, dispatch, getState, prevState }) => {
     if (!action.payload) {
       return;
     }
@@ -60,8 +65,9 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           // A result that is nothing but an id has nothing to fit to yet, so
           // the map is taken to the element once it lands instead.
           focus:
-            action.payload.focus !== false &&
-            !hasGeometry(action.payload.result),
+            action.payload.focus === false || hasGeometry(action.payload.result)
+              ? false
+              : (action.payload.focus ?? true),
         }),
       );
     }
@@ -77,15 +83,35 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
       selection?.type === 'search' &&
       featureIdsEqual(selection.id, id)
     ) {
-      let bounds;
+      let extent: [number, number, number, number] | undefined;
 
       try {
-        bounds = bbox(geojson);
+        const b = bbox(geojson);
+
+        extent = [b[0], b[1], b[2], b[3]];
       } catch {
         // ignore
       }
 
-      if (bounds) {
+      if (!extent) {
+        return;
+      }
+
+      // Only where it is out of sight, or behind a panel, and at the same zoom —
+      // measured once a selection toolbar coming with it is up, as it may cover it.
+      if (action.payload.focus === 'pan') {
+        const at = extent;
+
+        fitOnceSettled(
+          () =>
+            void fitToUncovered(dispatch, at, {
+              ifHidden: true,
+              margin: GENEROUS_MARGIN_PX,
+              keepZoom: true,
+            }),
+          prevState.main.selection?.type !== 'search',
+        );
+      } else {
         const defs = integratedLayerDefMapSelector(getState());
 
         // A preset's layer goes by its own kind, a loose map by its def's.
@@ -94,18 +120,14 @@ export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {
           .map((inst) => defs[inst.type])
           .find((def) => def !== undefined);
 
-        await fitMapToBbox(
-          dispatch,
-          [bounds[0], bounds[1], bounds[2], bounds[3]],
-          {
-            maxZoom: Math.min(
-              action.payload.result.zoom ?? 18,
-              (baseDef && 'maxNativeZoom' in baseDef
-                ? baseDef.maxNativeZoom
-                : undefined) ?? 16,
-            ),
-          },
-        );
+        await fitMapToBbox(dispatch, extent, {
+          maxZoom: Math.min(
+            action.payload.result.zoom ?? 18,
+            (baseDef && 'maxNativeZoom' in baseDef
+              ? baseDef.maxNativeZoom
+              : undefined) ?? 16,
+          ),
+        });
       }
     }
   },

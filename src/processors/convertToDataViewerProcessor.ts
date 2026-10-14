@@ -156,6 +156,9 @@ async function collect(
         ),
       );
 
+    case 'geojson':
+      return withTagIcons(source.geojson);
+
     case 'objects-geometry':
       // The one source that isn't on the map yet: the element's own geometry
       // comes from the OSM API.
@@ -281,6 +284,7 @@ export const convertToDataViewerProcessor: Processor<
         break;
 
       case 'objects-geometry':
+      case 'geojson':
         break;
     }
 

@@ -12,6 +12,19 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Quelle',
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Höhe',
+  terrain: {
+    prominence: 'Schartenhöhe',
+    keyCol: 'Scharte',
+    isolation: 'Dominanz',
+    showRoute: 'Weg zu höherem Gelände zeigen',
+    hideRoute: 'Weg ausblenden',
+    depth: 'Satteltiefe',
+    keyColOf: 'Scharte von',
+    showOnMap: 'Auf der Karte zeigen',
+    route: 'Weg zu höherem Gelände',
+  },
+  routeFetchError: ({ err }) =>
+    addError(getMessages()!, 'Fehler beim Abrufen des Weges', err),
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Um Objekte nach Typ anzuzeigen, müssen Sie mindestens auf Zoomstufe ${minZoom} heranzoomen.`,

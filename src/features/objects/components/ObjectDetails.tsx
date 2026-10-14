@@ -19,16 +19,23 @@ import {
 } from '@shared/types/featureId.js';
 import { type ReactElement, useState } from 'react';
 import { Table } from 'react-bootstrap';
+import type { TerrainFacts } from '../model/terrainFacts.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { GenericNameToggles } from './GenericNameToggles.js';
 import { SourceName } from './SourceName.js';
+import { TerrainFactsView } from './TerrainFactsView.js';
 
 type Props = {
   result: SearchResult;
   elevation: ElevationReading;
+  terrain: TerrainFacts | null;
 };
 
-export function ObjectDetails({ result, elevation }: Props): ReactElement {
+export function ObjectDetails({
+  result,
+  elevation,
+  terrain,
+}: Props): ReactElement {
   const { id, geojson } = result;
 
   const genericNameParts = useGenericNameParts(result);
@@ -134,7 +141,21 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
         />
       </p>
 
-      <ElevationValue {...elevation} label={om?.elevation} className="mb-3" />
+      <ElevationValue
+        {...elevation}
+        label={om?.elevation}
+        className={terrain && parsedId.success ? undefined : 'mb-3'}
+      />
+
+      {terrain && parsedId.success && (
+        <div className="mb-3">
+          <TerrainFactsView
+            facts={terrain}
+            osmId={parsedId.data.id}
+            name={displayName}
+          />
+        </div>
+      )}
 
       {/* An embed has no selection toolbar, so its ⋮ menu can't carry these. */}
       {window.fmEmbedded && parsedId.success && (

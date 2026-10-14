@@ -188,7 +188,8 @@ export type SearchResultTier = 'preview' | 'keep';
  */
 export const searchSelectResult = createAction<{
   result: SearchResult;
-  focus?: boolean;
+  /** `pan` brings the result into view at the zoom the map is at. */
+  focus?: boolean | 'pan';
   /** Defaults to `preview`. */
   tier?: SearchResultTier;
   /**

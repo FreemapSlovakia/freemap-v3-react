@@ -1,12 +1,18 @@
 import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { featureIdsEqual } from '@shared/types/featureId.js';
 import { fetchObjects } from '../objectsQuery.js';
 import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
-import { objectsSetFilter, objectsSetResult } from './actions.js';
+import {
+  type ObjectsResult,
+  objectsSetFilter,
+  objectsSetResult,
+} from './actions.js';
 
 /**
  * As many as the viewport can hold without turning into a wall of markers.
@@ -25,6 +31,74 @@ function objectLimit() {
 }
 
 const minZoom = 8;
+
+/** A fresh result, still holding the selected object wherever it fell out. */
+function keepSelected(
+  state: RootState,
+  objects: ObjectsResult[],
+): ObjectsResult[] {
+  const { selection } = state.main;
+
+  if (
+    selection?.type !== 'objects' ||
+    objects.some((o) => featureIdsEqual(o.id, selection.id))
+  ) {
+    return objects;
+  }
+
+  const selected = state.objects.objects.find((o) =>
+    featureIdsEqual(o.id, selection.id),
+  );
+
+  return selected ? [...objects, selected] : objects;
+}
+
+/**
+ * Lets go of an object kept only for being selected, once it no longer is and
+ * no search would show it: off the view, or below the zoom objects need.
+ */
+export const objectsReleaseProcessor: Processor = {
+  stateChangePredicate: (state) => state.main.selection,
+  handle: async ({ dispatch, getState, prevState }) => {
+    const prev = prevState.main.selection;
+
+    if (prev?.type !== 'objects') {
+      return;
+    }
+
+    const state = getState();
+
+    const { selection } = state.main;
+
+    if (
+      selection?.type === 'objects' &&
+      featureIdsEqual(selection.id, prev.id)
+    ) {
+      return;
+    }
+
+    const object = state.objects.objects.find((o) =>
+      featureIdsEqual(o.id, prev.id),
+    );
+
+    if (!object) {
+      return;
+    }
+
+    const map = await mapPromise;
+
+    if (
+      state.map.zoom >= minZoom &&
+      map.getBounds().contains([object.coords.lat, object.coords.lon])
+    ) {
+      return;
+    }
+
+    dispatch(
+      objectsSetResult(getState().objects.objects.filter((o) => o !== object)),
+    );
+  },
+};
 
 export const objectsChangePredicateProcessor: Processor = {
   actionCreator: objectsSetFilter,
@@ -47,7 +121,16 @@ export const objectsFetchProcessor: Processor = {
       state.map.zoom,
       ...state.objects.active,
     ].join('\n'),
-  handle: async ({ dispatch, getState, toastError }) => {
+  handle: async ({ dispatch, getState, prevState, toastError }) => {
+    // Only moving the map keeps the selected object: a filter that no longer
+    // asks for it lets it go.
+    const moved =
+      prevState.objects.active.join('\n') ===
+      getState().objects.active.join('\n');
+
+    const keep = (objects: ObjectsResult[]) =>
+      moved ? keepSelected(getState(), objects) : objects;
+
     try {
       const active = getState().objects.active;
 
@@ -85,7 +168,7 @@ export const objectsFetchProcessor: Processor = {
           );
         });
 
-        dispatch(objectsSetResult([]));
+        dispatch(objectsSetResult(keep([])));
 
         return;
       }
@@ -133,7 +216,7 @@ export const objectsFetchProcessor: Processor = {
         );
       }
 
-      dispatch(objectsSetResult(objects));
+      dispatch(objectsSetResult(keep(objects)));
     } catch (err) {
       // Coalesce the storm of identical failures while panning into one toast.
       await toastError(err, loadObjectsMessages, 'fetchingError', 'objects');

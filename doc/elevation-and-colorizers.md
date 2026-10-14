@@ -326,7 +326,11 @@ names in its ⓘ tooltip. A point readout is always `terrain-model` — which is
 the model the tooltip credits is the one that answered.
 
 `ElevationValue` (`src/features/elevationChart/components/`) is that readout — spinner,
-em dash for no data, or the value with its source tooltip and premium gem. Two toasts show
+em dash for no data, or the value with its source tooltip (`ElevationSourcesInfo`, also
+used by the details toast's terrain facts) and premium gem. The gem is left out for a
+non-premium reading off a national model — `ElevationReading.national` where the reader
+knows it (the terrain service, whose codes such as `de_by` name regions), else
+`hasSubMeterPrecision` of the API's tokens: there is nothing finer to offer. Two toasts show
 it: `ElevationInfo` (the measurement readout, which adds coordinates and tile links) and
 the search/objects details toast, whose `objectDetailsProcessor` reads one point of the
 selected feature once the details are already on screen — a line at its midpoint, anything
@@ -335,6 +339,13 @@ the read fails or the feature carries no geometry at all. It reads nothing for a
 reaching further than `MAX_ELEVATION_EXTENT_M` (200 m, taken as the bbox diagonal by
 `resultExtentM`): a street, a railway route or a whole forest has no single elevation, so
 the line is left out rather than naming one arbitrary point of it.
+
+For a peak or saddle node, the same processor also fetches the terrain service's
+`/peak/{id}` or `/saddle/{id}` (`objects/model/terrainFacts.ts`). Without premium the
+service's `ele` — read off the national model at the summit or saddle point — replaces
+the API's SRTM reading, its `ele_source` codes credited through the terrain `/licenses`
+dictionary; the API read runs alongside and stands only where the service has no value.
+Premium keeps the API's reading, which comes from the same national data.
 
 #### The `?sources=1` contract
 

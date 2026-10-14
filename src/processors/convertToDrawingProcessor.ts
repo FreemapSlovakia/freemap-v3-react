@@ -726,6 +726,16 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
       dispatch(searchUnselectResult(result.id));
 
       selectAfterConvert(dispatch, first, lineCount, pointCount);
+    } else if (payload.type === 'geojson') {
+      const first = firstIndexes(state);
+
+      const { lineCount, pointCount } = geojsonToDrawing(
+        payload.geojson,
+        getState,
+        dispatch,
+      );
+
+      selectAfterConvert(dispatch, first, lineCount, pointCount);
     }
 
     // The conversion is done here, but the action still has to reach the
