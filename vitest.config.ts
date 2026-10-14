@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 const src = path.resolve(import.meta.dirname, 'src');
 const assetStub = path.resolve(import.meta.dirname, 'test/stubs/asset.ts');
@@ -31,5 +31,7 @@ export default defineConfig({
     // `window.fmEmbedded`) and a real `localStorage`, which
     // `local-storage-fallback` then uses — letting tests drive the `store` key.
     environment: 'jsdom',
+    // Agent worktrees hold whole repo copies whose tests resolve `@`-aliases into this tree.
+    exclude: [...configDefaults.exclude, '.claude/**'],
   },
 });

@@ -32,5 +32,23 @@ minimumReleaseAgeExclude:
   - '@babel/parser@8.0.6'
   - '@babel/traverse@8.0.6'
   - '@babel/types@8.0.6'
+  - '@rspack/binding-darwin-arm64@2.2.9'
+  - '@rspack/binding-darwin-x64@2.2.9'
+  - '@rspack/binding-linux-arm64-gnu@2.2.9'
+  - '@rspack/binding-linux-arm64-musl@2.2.9'
+  - '@rspack/binding-linux-ppc64-gnu@2.2.9'
+  - '@rspack/binding-linux-riscv64-gnu@2.2.9'
+  - '@rspack/binding-linux-riscv64-musl@2.2.9'
+  - '@rspack/binding-linux-s390x-gnu@2.2.9'
+  - '@rspack/binding-linux-x64-gnu@2.2.9'
+  - '@rspack/binding-linux-x64-musl@2.2.9'
+  - '@rspack/binding-wasm32-wasi@2.2.9'
+  - '@rspack/binding-win32-arm64-msvc@2.2.9'
+  - '@rspack/binding-win32-ia32-msvc@2.2.9'
+  - '@rspack/binding-win32-x64-msvc@2.2.9'
+  - '@rspack/binding@2.2.9'
+  - '@rspack/cli@2.2.9'
+  - '@rspack/core@2.2.9'
+  - ts-proto@2.15.3
 
 # minimumReleaseAgeStrict: true
