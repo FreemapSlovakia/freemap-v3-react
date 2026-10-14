@@ -546,7 +546,7 @@ export function YourMapsList({
       ? 0
       : -(overlayZIndex[map.preset ? presetItem(map.type) : map.type] ?? 0);
 
-  const rows = [...visible].sort(
+  const rows = visible.toSorted(
     (a, b) =>
       (a.layer === 'base' ? 0 : 1) - (b.layer === 'base' ? 0 : 1) ||
       (a.preset ? 0 : 1) - (b.preset ? 0 : 1) ||

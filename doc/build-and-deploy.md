@@ -19,9 +19,17 @@ So `npx rspack build --mode production` does **not** produce a production build 
 
 Plain `.css` / `.module.css` files in `src/` use native CSS nesting (`&`). The rspack pipeline runs them through `css-loader` only — **no PostCSS/autoprefixer** — so nesting ships verbatim unless lowered. Browsers without nesting support (Firefox < 117 incl. **ESR 115**, Chrome < 112, Safari < 16.5) then drop those rules → broken layout (e.g. `&>*{pointer-events:auto}` on toolbars and `[data-bs-theme=dark] &` theming vanish).
 
-CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with a `cssTargets` browserslist array (`'firefox >= 115'`, …) in `rspack.config.ts`, **not** cssnano (`css-minimizer-webpack-plugin`), which does not downlevel nesting. LightningCSS flattens nesting and adds prefixes for those targets. JS is intentionally **not** downleveled — these browsers run the ES output fine; nesting was the only gap.
+CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with the `browserTargets` browserslist array (`'firefox >= 115'`, …) in `rspack.config.ts`, **not** cssnano (`css-minimizer-webpack-plugin`), which does not downlevel nesting. LightningCSS flattens nesting and adds prefixes for those targets.
 
-**Don't** revert to cssnano or remove `cssTargets`. Lowering only runs in the prod minifier, so dev (style-loader, modern browser) is unaffected — verify real output with `DEPLOYMENT=prod npx rspack build`, then grep `dist/*.css` for stray `&` (should be 0).
+**Don't** revert to cssnano or remove `browserTargets`. Lowering only runs in the prod minifier, so dev (style-loader, modern browser) is unaffected — verify real output with `DEPLOYMENT=prod npx rspack build`, then grep `dist/*.css` for stray `&` (should be 0).
+
+## JS built-ins are polyfilled per use
+
+The `builtin:swc-loader` rule sets `env: { targets: browserTargets, mode: 'usage', coreJs }`, so app code may use recent built-ins (`toSorted`, `findLast`, Set methods, …): SWC injects the core-js module for each one the targets lack, and lowers syntax only as far as they need. Without `env` SWC lowers everything to its default ES5-era target, a much larger bundle.
+
+- Only `src/` is covered — `node_modules` is excluded from the rule, so a dependency using a newer built-in is not polyfilled.
+- Detection is by method name, with one exception: SWC does not detect calls to the ES2025 Set methods (`union`, `difference`, `isSubsetOf`, …). They are polyfilled because any `new Set(` in `src/` injects all of them, and `main` and `sw` both construct Sets. A Set method called only on a Set some dependency created would not be covered.
+- Keep the `coreJs` version in step with the installed `core-js`; an older value omits newer polyfills.
 
 ## A stylesheet reached only from lazy chunks is emitted into every one of them
 

@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "allowArbitraryExtensions": true,
     "jsx": "react-jsx",
-    "lib": ["ES2023", "dom", "dom.iterable", "WebWorker"],
+    "lib": ["ES2025", "dom", "dom.iterable", "WebWorker"],
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "noPropertyAccessFromIndexSignature": true,

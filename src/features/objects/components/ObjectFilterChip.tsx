@@ -38,8 +38,7 @@ export function ObjectFilterChip({
 
   const index = active.findIndex((item) => sameFilter(item, filterKey));
 
-  const next =
-    index > -1 ? active.filter((_, i) => i !== index) : [...active, filterKey];
+  const next = index > -1 ? active.toSpliced(index, 1) : [...active, filterKey];
 
   // Nothing about a chip says it is a control, so the tooltip is where that is
   // said; a caller with something of its own to show takes the line above it.

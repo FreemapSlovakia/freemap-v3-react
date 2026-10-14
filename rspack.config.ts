@@ -57,12 +57,10 @@ const styleOrExtractLoader = prod
     }
   : 'style-loader';
 
-// Browser targets for CSS lowering. The `.css` files use native CSS nesting,
-// which `css-loader` does not transpile; without lowering it ships verbatim and
-// breaks on browsers lacking nesting support (Firefox < 117 incl. ESR 115,
-// Chrome < 112, Safari < 16.5). LightningCSS flattens nesting (and adds vendor
-// prefixes) for these targets. JS is left as-is — these browsers handle it.
-const cssTargets = [
+// Browser targets. LightningCSS flattens native CSS nesting for them, which
+// `css-loader` would ship verbatim (Firefox < 117, Chrome < 112, Safari < 16.5);
+// SWC lowers JS syntax and injects core-js polyfills for the built-ins used.
+const browserTargets = [
   '>= 0.5%',
   'last 2 versions',
   'Firefox ESR',
@@ -459,9 +457,9 @@ const config: Configuration = {
         exclude: /^maplibre-gl-worker\./,
       }),
       // LightningCSS (replaces cssnano) so it also downlevels native CSS
-      // nesting to flat selectors for the browsers in `cssTargets`.
+      // nesting to flat selectors for the browsers in `browserTargets`.
       new rspack.LightningCssMinimizerRspackPlugin({
-        minimizerOptions: { targets: cssTargets },
+        minimizerOptions: { targets: browserTargets },
       }),
     ],
   },
@@ -491,6 +489,13 @@ const config: Configuration = {
         exclude: /node_modules/,
         loader: 'builtin:swc-loader',
         options: {
+          // Only app code: node_modules is excluded above, so a dependency's own
+          // use of a newer built-in is not polyfilled.
+          env: {
+            targets: browserTargets,
+            mode: 'usage',
+            coreJs: '3.50',
+          },
           jsc: {
             parser: {
               syntax: 'typescript',
