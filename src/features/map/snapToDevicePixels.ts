@@ -6,7 +6,8 @@ import type { Map as LeafletMap } from 'leaflet';
 export function snapToDevicePixels(map: LeafletMap): () => void {
   const pane = map.getPane('mapPane');
 
-  if (!pane) {
+  // Without the CSS `translate` property (Chrome < 104) there is nothing to nudge.
+  if (!pane || !('translate' in pane.style)) {
     return () => {};
   }
 

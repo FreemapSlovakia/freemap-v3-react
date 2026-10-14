@@ -394,17 +394,18 @@ export type Messages = {
 };
 
 export function addError(
-  dpMessages: DeepPartial<Messages>,
+  dpMessages: DeepPartial<Messages> | undefined,
   message: string,
   err: unknown,
 ): string {
-  const messages = dpMessages as Messages; // our message compiler will make it non-partial
+  // The compiler makes them non-partial; undefined only before the global bundle loads.
+  const messages = dpMessages as Messages | undefined;
 
   return (
     message +
     ': ' +
     (err instanceof HttpError
-      ? (messages.errorStatus[err.status] ?? err.status) +
+      ? (messages?.errorStatus[err.status] ?? err.status) +
         (err.body ? `: ${err.body}` : '')
       : !(err instanceof Error)
         ? String(err)
@@ -415,8 +416,8 @@ export function addError(
           // `TypeError` mislabeled here is cosmetic, never a logic error.)
           err instanceof NetworkError || err instanceof TypeError
           ? ((window.navigator.onLine === false
-              ? messages.general.offline
-              : messages.general.connectionError) ?? err.message)
+              ? messages?.general.offline
+              : messages?.general.connectionError) ?? err.message)
           : err.message)
   );
 }

@@ -69,7 +69,9 @@ export default function ObjectSelection(): ReactElement | null {
               icon={<FaEyeSlash />}
               label={m?.general.hideObjectType({ name: text })}
               onClick={() => {
-                dispatch(objectsSetFilter(active.toSpliced(index, 1)));
+                dispatch(
+                  objectsSetFilter(active.filter((_, i) => i !== index)),
+                );
               }}
               showFrom="never"
             />

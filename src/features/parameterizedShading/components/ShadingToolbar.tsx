@@ -162,12 +162,14 @@ export function ShadingToolbar({
 
           <Dropdown.Header>{sm?.artisticPresetsHeader}</Dropdown.Header>
 
-          {ARTISTIC_PRESETS.toSorted((a, b) =>
-            (sm?.presetNames[a] ?? a).localeCompare(
-              sm?.presetNames[b] ?? b,
-              language,
-            ),
-          ).map(presetItem)}
+          {[...ARTISTIC_PRESETS]
+            .sort((a, b) =>
+              (sm?.presetNames[a] ?? a).localeCompare(
+                sm?.presetNames[b] ?? b,
+                language,
+              ),
+            )
+            .map(presetItem)}
         </FmDropdownMenu>
       </Dropdown>
     </FmModalFooter>

@@ -22,6 +22,8 @@ if (dsn && typeof Object.hasOwn !== 'undefined') {
       // and Android WebView), which break when their host view goes away
       /window\.webkit\.messageHandlers/,
       /Java object is gone/,
+      // Firefox for iOS injected scripts
+      /__firefox__/,
       // ubiquitous browser noise
       /ResizeObserver loop/,
       'Non-Error promise rejection captured',

@@ -18,10 +18,11 @@ export default function DrawingLinesTool(): null {
 
   const tool = useAppSelector(activeModeSelector);
 
+  // Undefined also when the selection addresses a line that is already gone.
   const linePoints = useAppSelector((state) =>
     state.main.selection?.type === 'draw-line-poly'
-      ? state.drawingLines.lines[state.main.selection.id].points
-      : EMPTY,
+      ? state.drawingLines.lines[state.main.selection.id]?.points
+      : undefined,
   );
 
   const drawing = useAppSelector((state) => state.drawingLines.drawing);
@@ -64,7 +65,10 @@ export default function DrawingLinesTool(): null {
 
       // Append to the current line only while a drawing is in progress; a click
       // on a merely-selected (stopped) line starts a fresh line instead.
-      const appending = drawing && selection?.type === 'draw-line-poly';
+      const appending =
+        drawing &&
+        selection?.type === 'draw-line-poly' &&
+        linePoints !== undefined;
 
       const lineIndex = appending ? selection.id : undefined;
 
@@ -78,7 +82,7 @@ export default function DrawingLinesTool(): null {
         return;
       }
 
-      const points = appending ? linePoints : EMPTY;
+      const points = (appending && linePoints) || EMPTY;
 
       const pos = points.length;
 

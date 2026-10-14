@@ -66,7 +66,12 @@ export function reportError(errDetails: ErrorDetails): string | undefined {
 
   console.error('Application error', rest, error);
 
-  const eventId = window.Sentry?.captureException(error);
+  // Sentry's own global handler reports an error event without an error object
+  // from its message; capturing the missing object would add a bare "null" event.
+  const eventId =
+    errDetails.kind === 'global' && error == null
+      ? undefined
+      : window.Sentry?.captureException(error);
 
   // Low-cardinality name (e.g. `TypeError`) makes the report diagnostic; the
   // full message is only used locally to dedupe, never sent.
@@ -103,9 +108,23 @@ export function sendError(errDetails: ErrorDetails): void {
   }
 }
 
+// Set while the ticket id is being dispatched: an error that dispatch raises is
+// still reported, but dispatching again would recurse until the stack overflows.
+let handling = false;
+
 function handle(id?: string) {
   if (store) {
-    store.dispatch(setErrorTicketId(id));
+    if (handling) {
+      return;
+    }
+
+    handling = true;
+
+    try {
+      store.dispatch(setErrorTicketId(id));
+    } finally {
+      handling = false;
+    }
   } else {
     document.body.innerHTML = `
       <h1>Application error</h1>

@@ -956,8 +956,8 @@ function ChangesetItems(): ReactElement {
   // Newest first; picked, one shows what its marker's click does.
   return (
     <ItemList
-      items={changesets
-        .toSorted((a, b) => b.closedAt.getTime() - a.closedAt.getTime())
+      items={[...changesets]
+        .sort((a, b) => b.closedAt.getTime() - a.closedAt.getTime())
         .map((changeset) => ({
           key: String(changeset.id),
           icon: <FaPencilAlt />,

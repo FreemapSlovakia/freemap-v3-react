@@ -346,7 +346,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         dispatch(
           objectsSetFilter(
             index > -1
-              ? objectsActive.toSpliced(index, 1)
+              ? objectsActive.filter((_, i) => i !== index)
               : [...objectsActive, key],
           ),
         );

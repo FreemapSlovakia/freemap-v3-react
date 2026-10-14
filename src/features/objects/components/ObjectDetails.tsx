@@ -48,9 +48,13 @@ export function ObjectDetails({ result, elevation }: Props): ReactElement {
 
   const om = useObjectsMessages();
 
-  const properties = Object.entries(geojson.properties ?? {}).filter(
-    ([k]) => k !== 'display_name',
-  );
+  // Not only OSM tags land here: other sources' values can be numbers or objects.
+  const properties = Object.entries(geojson.properties ?? {})
+    .filter(([k, v]) => k !== 'display_name' && v != null)
+    .map(([k, v]): [string, string] => [
+      k,
+      typeof v === 'string' ? v : JSON.stringify(v),
+    ]);
 
   const [stacked, setStacked] = useState(false);
 
