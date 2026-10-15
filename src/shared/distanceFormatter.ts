@@ -52,12 +52,26 @@ export function formatDistance(valueInMeters: number, locale: string): string {
     ? measurementFractionDigits(value)
     : meterDigits;
 
-  const formatter = new Intl.NumberFormat(locale, {
-    style: 'unit',
-    unit: useKilometers ? 'kilometer' : 'meter',
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits,
-  });
+  const unit = useKilometers ? 'kilometer' : 'meter';
+
+  // Cached: building one is far dearer than formatting, and label layouts call
+  // this per name.
+  const key = `${locale}|${unit}|${fractionDigits}`;
+
+  let formatter = formatters.get(key);
+
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      style: 'unit',
+      unit,
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    });
+
+    formatters.set(key, formatter);
+  }
 
   return formatter.format(value);
 }
+
+const formatters = new Map<string, Intl.NumberFormat>();
