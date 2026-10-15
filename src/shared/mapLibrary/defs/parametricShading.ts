@@ -12,7 +12,6 @@ const def: MapBody<'parametricShading'> = {
   // tiles on screen report (`tileAttribution.ts`).
   attribution: [FM_ATTR],
   premiumFromZoom: 16,
-  creditsPerMTile: 1000,
   zIndex: 2,
 };
 

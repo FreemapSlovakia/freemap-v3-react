@@ -34,7 +34,7 @@ import {
 } from 'react-icons/gi';
 import { IoAirplaneOutline } from 'react-icons/io5';
 import { LuLandPlot } from 'react-icons/lu';
-import { MdFormatColorFill } from 'react-icons/md';
+import { MdFormatColorFill, MdOutlineTerrain } from 'react-icons/md';
 import { SiOpenstreetmap } from 'react-icons/si';
 import aerialBody from './defs/aerial.js';
 import dataLayerBody from './defs/dataLayer.js';
@@ -380,6 +380,18 @@ export const mapIndex: MapIndexEntry[] = [
     icon: <FaHorse />,
     countries: OUTDOOR_COUNTRIES,
     load: () => import('./defs/horseTrails.js').then((m) => m.default),
+  }),
+  // before `xa`, which ties with it and so draws its labels above
+  entry({
+    layer: 'overlay',
+    type: 'xc',
+    technology: 'tile',
+    category: 'elevation',
+    defaultInMenu: true,
+    bbox: OUTDOOR_BBOX,
+    icon: <MdOutlineTerrain />,
+    countries: OUTDOOR_COUNTRIES,
+    load: () => import('./defs/contours.js').then((m) => m.default),
   }),
   entry({
     layer: 'overlay',

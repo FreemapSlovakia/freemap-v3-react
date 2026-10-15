@@ -1,4 +1,5 @@
 import type {
+  AttributionDef,
   CustomLayerDef,
   IsTileLayerDef,
   IsWmsLayerDef,
@@ -39,6 +40,12 @@ export type CachedTileMapDef = CustomLayerDef<
    * what was downloaded and nothing else. Absent counts as on.
    */
   networkFallback?: boolean;
+  /** The stand-in the map holds the tiles of, if any; see `exportedAs`. */
+  exportType?: string;
+  /** Where a stand-in's tiles have data. */
+  coverageUrl?: string;
+  /** The source's credit as downloaded, for when the source isn't loaded. */
+  attribution?: AttributionDef[];
 };
 
 /**

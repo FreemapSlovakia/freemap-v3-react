@@ -11,7 +11,6 @@ const def: MapBody<'tile'> = {
   minZoom: 5,
   maxNativeZoom: 20,
   premiumFromZoom: 19,
-  creditsPerMTile: 5000,
 };
 
 export default def;

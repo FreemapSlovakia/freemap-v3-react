@@ -404,6 +404,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xr': 'équitation, cheval, itinéraires, calque',
         'layer-xa':
           'hybride, aérienne, satellite, orthophoto, étiquettes, calque',
+        'layer-xc':
+          'courbe de niveau, isohypses, altitude, relief, contours, calque',
         'layer-WHC': "chimie de l'eau, hydrologie",
       },
     },
@@ -455,6 +457,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xl: 'Pistes de ski',
       xr: 'Sentiers équestres',
       xa: 'Carte Outdoor sans fond',
+      xc: 'Courbes de niveau',
       WHC: 'Hydrochimique',
     },
     type: {

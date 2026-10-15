@@ -57,6 +57,22 @@ menu filter, country flags and coverage hints. Instead:
 - The agent tool `list-map-layers` still lists uninstalled maps (an agent acts
   like a link).
 
+### Exported and downloaded maps
+
+- The API decides what can be exported or downloaded, and at what price: its
+  `src/downloadableMaps.ts`, served at `GET /downloadableMaps` and read by
+  `src/shared/exportPrices.ts` (kept in `localStorage` for offline). The app
+  holds no prices. `exportedAs` (`src/shared/mapLibrary/exportedLayer.ts`)
+  says what a layer is exported as — itself, or the stand-in its
+  `offlineExport` names — and `exportedLayer` offers it only where the API
+  prices that type. Third-party and custom maps are never listed:
+  downloading ahead of time is what their terms forbid.
+- A stand-in (aerial → its SK/CZ orthophoto) carries its own premium zoom,
+  credit and `coverageUrl`. An offline map made from it records the source
+  layer as `sourceType` and the stand-in's `exportType`, by which
+  `cachedMapSource` tells it from a map of the layer's own tiles; envelope,
+  premium gate and credit all read the source through it.
+
 ### The library modal
 
 `src/features/mapLibrary/components/MapLibraryModal.tsx`, one modal under two

@@ -402,6 +402,7 @@ const messages: Messages = {
         'layer-xl': 'skiing, cross-country, routes, overlay',
         'layer-xr': 'riding, equestrian, bridleway, routes, overlay',
         'layer-xa': 'hybrid, aerial, satellite, orthophoto, labels, overlay',
+        'layer-xc': 'contours, isolines, elevation, altitude, relief, overlay',
         'layer-WHC': 'water chemistry, hydrology',
       },
     },
@@ -458,6 +459,7 @@ const messages: Messages = {
       xl: 'Ski trails',
       xr: 'Horse trails',
       xa: 'Outdoor map without base',
+      xc: 'Contour lines',
     },
     customBase: 'Custom map',
     type: {

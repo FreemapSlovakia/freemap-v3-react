@@ -42,7 +42,10 @@ alike.
 - **Present and empty credits nothing; absent is unknown.**
 - **Only where CORS allows reading at all.** A layer with `cors: false` keeps
   the plain `<img src>` path, `srcset` and all; its response could not be read
-  anyway.
+  anyway. A downloaded map's tiles are same-origin, so there `Layers` sets the
+  flag to pick the path: on for a renderer source, off otherwise, since
+  `crossOrigin` on an `<img>` makes Chrome's `cache.match` miss the stored
+  entry; a fetch does not.
 - **The density is chosen here.** `srcset` used to pick the `@Nx` variant; one
   URL is fetched now, so `pickTileScale` reads the screen instead, falling back
   to the plain tile if the variant is missing.
@@ -153,9 +156,26 @@ area covers.
 
 ## Offline maps
 
-A downloaded map carries `attributionCodes` — the union over its tiles — and
-`attributionLicenses`, the slice of the dictionary those codes name, because
-offline there is nobody to ask. The rules that keep it honest:
+A downloaded aerial map holds only its orthophoto stand-in, which carries no
+codes; it is credited like the live map's orthophoto, by the coverage in view.
+`coverage.bin` is kept in Cache Storage (`src/shared/coverageCache.ts`) each
+time it is fetched — the download fetches it too — and read back when the
+fetch fails, which is also what credits the live aerial map from the browse
+cache offline.
+
+A downloaded map of a renderer layer is credited like the live one, by its
+painted tiles: they come from the service worker with the `X-Attribution` they
+were stored with, and `Layers` judges whether a map reports by its
+`sourceType`. The
+worker strips `fm-draw` before looking a tile up, the download having stored it
+bare.
+
+Where any painted tile has no codes, the map falls back to `attributionCodes` —
+the union over its tiles — read by `attributionLicenses`, the slice of the
+dictionary those codes name, because offline there may be nobody to ask. Painted
+codes are read by the live dictionary first, since a tile the network fallback
+fetched can name a dataset the slice lacks. The rules that keep the union
+honest:
 
 - **Only a pass that walked every tile may publish a union.** One cut short by a
   stop, or by a premium gate leaving stored tiles above its ceiling unvisited,

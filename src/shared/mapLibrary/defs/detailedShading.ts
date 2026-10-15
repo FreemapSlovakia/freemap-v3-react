@@ -16,7 +16,6 @@ const def: MapBody<'tile'> = {
   errorTileUrl: white1x1,
   scaleWithDpi: true,
   premiumFromZoom: 16,
-  creditsPerMTile: 1000,
 };
 
 export default def;

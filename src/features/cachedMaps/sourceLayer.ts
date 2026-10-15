@@ -5,6 +5,7 @@ import {
   type IntegratedLayerDef,
   RETIRED_SOURCE_LAYERS,
 } from '@shared/mapDefinitions.js';
+import { cachedMapSource } from '@shared/mapLibrary/exportedLayer.js';
 
 /** The loaded library maps by id; see `integratedLayerDefMapSelector`. */
 type SourceDefs = Readonly<Record<string, IntegratedLayerDef>>;
@@ -40,11 +41,13 @@ function findSourceLayerDef(
  * instead of lifting it.
  */
 export function sourceLayerEnvelope(
-  sourceType: string,
+  cm: { sourceType: string; exportType?: string },
   customLayers: CustomLayerDef[],
   sourceDefs: SourceDefs,
 ): SourceLayerEnvelope | undefined {
-  const def = findSourceLayerDef(sourceType, customLayers, sourceDefs);
+  const def =
+    cachedMapSource(cm, sourceDefs[cm.sourceType]) ??
+    findSourceLayerDef(cm.sourceType, customLayers, sourceDefs);
 
   if (!def) {
     return undefined;

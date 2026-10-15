@@ -156,6 +156,13 @@ export function Layers(): ReactNode {
   // for everyone else — which is exactly when the hook returns a function.
   const handlePremiumClick = useBecomePremium();
 
+  // A downloaded map's tiles carry its source layer's codes.
+  const rendererTypeOf = (type: string) => {
+    const ref = mapById[type];
+
+    return ref?.origin === 'cached' ? ref.def.sourceType : type;
+  };
+
   // `fixedScale` pins a tile layer to one `@Nx` variant — a cached map holds
   // exactly one, so the screen's DPI and the resolution/feature-scale
   // preferences must not be allowed to ask for another.
@@ -477,7 +484,7 @@ export function Layers(): ReactNode {
         zoomOffset: tileZoomOffset(scaleWithDpi, effectiveDpr, effFeatureScale),
         cors: layerDef.cors ?? true,
         reportsAttribution:
-          serverShading || RENDERER_LAYER_TYPES.includes(type),
+          serverShading || RENDERER_LAYER_TYPES.includes(rendererTypeOf(type)),
         // Every tile layer is counted; only the ones whose server reports its
         // datasets ever resolve to anything, the rest stay on their own list.
         eventHandlers: tileAttributionHandlers(
@@ -623,20 +630,23 @@ export function Layers(): ReactNode {
     // the network fallback off — it is only what was downloaded: its own
     // range, upscaled past the deepest zoom it holds rather than left blank.
     const envelope = fetchesMissing
-      ? sourceLayerEnvelope(
-          cm.sourceType,
-          customLayerDefs,
-          integratedLayerDefMap,
-        )
+      ? sourceLayerEnvelope(cm, customLayerDefs, integratedLayerDefMap)
       : undefined;
 
-    // cors: false — cached tiles are served same-origin by the service
-    // worker, so `crossOrigin` buys nothing, and the CORS-mode request it
-    // produces makes Chrome's `cache.match` miss the stored entry.
+    // The tiles are same-origin, so `cors` only picks the path: a fetch where
+    // they carry credits to read, else an `<img>` without `crossOrigin`, whose
+    // CORS-mode request makes Chrome's `cache.match` miss the stored entry.
     return getLayer(
       ofKind(
         cm.technology === 'tile'
-          ? { ...cm, url, ...envelope, cors: false }
+          ? {
+              ...cm,
+              url,
+              ...envelope,
+              cors: RENDERER_LAYER_TYPES.includes(cm.sourceType),
+              // a stand-in has no tiles where its coverage has no data
+              ...(cm.coverageUrl && { errorTileUrl: transparent1x1 }),
+            }
           : { ...cm, url, ...envelope },
         inst,
       ),

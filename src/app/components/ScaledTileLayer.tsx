@@ -328,12 +328,9 @@ class LScaledTileLayer extends TileLayer {
       return div;
     }
 
-    // What the tile credits is only on the response that carried it, and an
-    // `<img>` hands back none — so the bytes are fetched here and given to the
-    // element as an object URL, which keeps the browser's own decode. Only for
-    // the layers that report anything: a `fetch` asks with a different `Accept`
-    // and `Sec-Fetch-Dest` than an image does, which some providers answer
-    // differently or refuse outright, and it pins each tile's bytes in memory.
+    // What a tile credits is only on its response, which an `<img>` never
+    // exposes, so a reporting layer fetches the bytes and hands the element an
+    // object URL. Only those: a fetch's `Accept` is refused by some providers.
     if (this.reportsAttribution && this.cors) {
       const img = document.createElement('img');
 

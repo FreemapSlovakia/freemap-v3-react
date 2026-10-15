@@ -441,6 +441,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xl': 'lyže, bežky, trasa, prekrytie',
         'layer-xr': 'jazdectvo, kone, trasa, prekrytie',
         'layer-xa': 'hybrid, letecká, ortofoto, satelit, popisy, prekrytie',
+        'layer-xc':
+          'vrstevnica, izohypsy, výška, nadmorská výška, reliéf, contours, prekrytie',
         'layer-WHC': 'chémia vody, hydrológia',
       },
     },
@@ -496,6 +498,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xl: 'Lyžiarske trasy',
       xr: 'Jazdecké trasy',
       xa: 'Outdoorová mapa bez podkladu',
+      xc: 'Vrstevnice',
       WHC: 'Hydrochemická',
     },
     customBase: 'Vlastná mapa',

@@ -124,7 +124,7 @@ Opens a modal with instructions to get various maps for GPS devices:
 
 Opens a modal to download a map in offline formats (MBTiles or SQLiteDB).
 Selection can be the current visible map area or a rectangle drawn on the map.
-Multiple tile-based maps are supported for download, as are the parametric shading map and every custom shading map, each exported with its own shading.
+The maps offered are Freemap's own tile maps that have an export price (see the creditsPerMTile column in [Map Layers](/llms-layers.md)) — the Outdoor and KST maps and the outdoor overlays among them — as are the parametric shading map and every custom shading map, each exported with its own shading. The same tile maps, and only those, can be downloaded as offline maps.
 A map with data only in some countries (the aerial map exports only its Slovak and Czech orthophoto) shows a warning when the selected area reaches beyond them.
 Users can select the desired zoom range and, for maps offering hi-DPI variants, the tile scale.
 The modal summarizes the tile count, the estimated file size (sampled from real tiles of the selected map, area, zoom range and scale) and the price in credits.

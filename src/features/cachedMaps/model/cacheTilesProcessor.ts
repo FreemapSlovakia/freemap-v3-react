@@ -4,6 +4,7 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { RENDERER_LAYER_TYPES } from '@shared/mapDefinitions.js';
+import { cachedMapSource } from '@shared/mapLibrary/exportedLayer.js';
 import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
 import {
@@ -11,6 +12,7 @@ import {
   expandCode,
   readTileCodes,
 } from '@shared/tileAttribution.js';
+import { coverageStale, loadTileCoverage } from '@shared/tileCoverage.js';
 import {
   countCachedOf,
   coverageContains,
@@ -281,12 +283,22 @@ async function downloadTiles(
   // The one place premium zooms are kept out of the cache, whatever range a
   // resume or edit carries; a map gated this way stays incomplete. The source
   // is loaded rather than read from the store, where it may be missing.
+  const source = cachedMapSource(
+    def,
+    await loadIntegratedLayerDef(def.sourceType),
+  );
+
   const premiumLimit =
-    premiumZoomLimit(
-      def.sourceType,
-      user,
-      await loadIntegratedLayerDef(def.sourceType),
-    ) ?? Infinity;
+    premiumZoomLimit(def.sourceType, user, source) ?? Infinity;
+
+  // Where a stand-in has no data there is no tile to fetch — by a fresh copy
+  // only. The loader keeps it, so offline the map is still credited by it.
+  const coverage = def.coverageUrl
+    ? await loadTileCoverage(def.coverageUrl)
+    : undefined;
+
+  const skipsByCoverage =
+    def.coverageUrl !== undefined && !coverageStale(def.coverageUrl);
 
   const gatedMaxZoom = Math.min(maxZoom, premiumLimit);
 
@@ -384,6 +396,10 @@ async function downloadTiles(
 
     const results = await Promise.allSettled(
       batch.map(async ([x, y, z]) => {
+        if (skipsByCoverage && coverage?.(z, x, y) === 'none') {
+          return;
+        }
+
         const fetchUrl = withTileScale(
           buildTileUrl(meta.url, x, y, z, tileSubdomain(meta)),
           meta.tileScale,

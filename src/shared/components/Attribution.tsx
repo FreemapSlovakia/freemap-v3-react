@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import { sourceLayerEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import {
   DocumentSchema,
   documentShow,
@@ -9,10 +10,13 @@ import {
   integratedLayerDefMapSelector,
   integratedLayerDefsSelector,
   namedLayerDefsSelector,
+  resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { SONNY_ATTR } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
+import { cachedMapSource } from '@shared/mapLibrary/exportedLayer.js';
 import {
   licenseAttributions,
   resolveTileCodes,
@@ -199,13 +203,22 @@ function useCategorizedAttribution(
 
   const tileZoom = useTileZoom();
 
-  const coverages = useTileCoverages(
-    integratedLayerDefs.flatMap((def) =>
+  const online = useOnline();
+
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
+
+  const drawnCachedMaps = cachedMaps.filter((cm) => layers.includes(cm.type));
+
+  const coverages = useTileCoverages([
+    ...integratedLayerDefs.flatMap((def) =>
       layers.includes(def.type) && 'detail' in def && def.detail
         ? [def.detail.coverageUrl]
         : [],
     ),
-  );
+    ...drawnCachedMaps.flatMap((cm) =>
+      cm.coverageUrl ? [cm.coverageUrl] : [],
+    ),
+  ]);
 
   // Layers with a detail whose own tiles are all covered by it on screen.
   const coveredLayers = new Set<string>();
@@ -314,30 +327,51 @@ function useCategorizedAttribution(
     }
   }
 
-  // A cached map carries the codes of everything it downloaded, and the
-  // dictionary to read them by; a map from before that wears its source
-  // layer's credit instead.
-  for (const cm of cachedMaps) {
-    if (!layers.includes(cm.type)) {
+  // A cached map is credited by its painted tiles where they all carry codes,
+  // else by the union of everything it downloaded, with the dictionary it
+  // carries for offline; a map from before that wears its source layer's credit.
+  for (const cm of drawnCachedMaps) {
+    const source =
+      cachedMapSource(cm, integratedLayerDefMap[cm.sourceType]) ??
+      RETIRED_SOURCE_LAYERS[cm.sourceType];
+
+    // the map's own copy where the source isn't loaded
+    const attribution = source?.attribution ?? cm.attribution ?? [];
+
+    // a stand-in for part of its layer credits where its coverage has data
+    if (cm.coverageUrl && cm.technology === 'tile') {
+      creditDetail(cm, {
+        url: cm.url,
+        coverageUrl: cm.coverageUrl,
+        // the depth it is drawn from, as Layers draws it
+        maxNativeZoom:
+          (online && cm.networkFallback !== false
+            ? sourceLayerEnvelope(cm, customLayers, integratedLayerDefMap)
+            : undefined
+          )?.maxNativeZoom ??
+          cm.maxNativeZoom ??
+          20,
+        attribution,
+      });
+
       continue;
     }
 
     // Only the renderer's own layers report their datasets at all.
     const fromRenderer = RENDERER_LAYER_TYPES.includes(cm.sourceType);
 
+    const painted = fromPaintedTiles ? tileAttribution[cm.type] : null;
+
     const resolved = fromRenderer
-      ? resolveTileCodes(cm.attributionCodes, cm.attributionLicenses)
+      ? (resolveTileCodes(painted, licenses) ??
+        resolveTileCodes(painted, cm.attributionLicenses) ??
+        resolveTileCodes(cm.attributionCodes, cm.attributionLicenses))
       : null;
 
     if (resolved) {
       exact.push(...resolved);
     } else {
-      guessed.push(
-        ...((
-          integratedLayerDefMap[cm.sourceType] ??
-          RETIRED_SOURCE_LAYERS[cm.sourceType]
-        )?.attribution ?? []),
-      );
+      guessed.push(...attribution);
 
       // As for a layer on screen: a map that couldn't say what it drew credits
       // everything it could have drawn on, rather than the floor alone.

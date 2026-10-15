@@ -8,7 +8,6 @@ const def: MapBody<'tile'> = {
   maxNativeZoom: 15,
   zIndex: 3,
   errorTileUrl: transparent1x1,
-  creditsPerMTile: 1000,
 };
 
 export default def;

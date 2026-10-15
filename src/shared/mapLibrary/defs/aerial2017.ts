@@ -14,7 +14,6 @@ const def: MapBody<'tile'> = {
     },
   ],
   errorTileUrl: white1x1,
-  creditsPerMTile: 1000,
 };
 
 export default def;

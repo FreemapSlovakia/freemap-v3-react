@@ -11,6 +11,7 @@ import {
   type LayerVisibility,
   LayerVisibilityFields,
 } from '@features/mapSettings/components/LayerVisibilityFields.js';
+import { OutsideCoverageAlert } from '@features/offlineMapExport/components/OutsideCoverageAlert.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
@@ -24,6 +25,7 @@ import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { useExportPrices } from '@shared/exportPrices.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -37,6 +39,11 @@ import type {
   IntegratedLayerDef,
   IsTileLayerDef,
 } from '@shared/mapDefinitions.js';
+import {
+  cachedMapSource,
+  exportedAs,
+  exportedLayer,
+} from '@shared/mapLibrary/exportedLayer.js';
 import { isLayerOffered } from '@shared/mapLibrary/installed.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
@@ -123,15 +130,27 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
 
   const layers = useAppSelector(drawnTypesSelector);
 
+  const prices = useExportPrices();
+
+  // not the whole map, which a running download replaces at every progress step
+  const editedSourceType = editing?.sourceType;
+
+  const editedExportType = editing?.exportType;
+
   const mapDefs = useMemo(() => {
-    // Its own source stays pickable when editing, offered or not.
+    // Only what the offline export would hand out too: tiles of ours. A map
+    // being edited keeps the source it was downloaded from, whatever it was.
     const integrated = Object.values(integratedLayerDefMap)
-      .filter(
-        (def): def is CacheableLayerDef =>
-          def.technology === 'tile' &&
-          (def.type === editing?.sourceType ||
-            isLayerOffered(layersSettings, layers, def.type)),
-      )
+      .flatMap((def): CacheableLayerDef[] => {
+        const offered =
+          def.type === editedSourceType
+            ? cachedMapSource({ exportType: editedExportType }, def)
+            : isLayerOffered(layersSettings, layers, def.type)
+              ? exportedLayer(def, prices)
+              : undefined;
+
+        return offered?.technology === 'tile' ? [offered] : [];
+      })
       .map((layer) => {
         const url = layer.url.startsWith('//')
           ? `https:${layer.url}`
@@ -145,6 +164,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
     // for per-tile `?…&BBOX=…` URLs that are not in the cache. See TODO.md.
     const custom = customLayers
       .filter((def) => def.technology === 'tile')
+      .filter((def) => def.type === editedSourceType)
       .map((def) => ({
         ...def,
         icon: undefined as ReactElement | undefined,
@@ -159,7 +179,9 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
     customLayers,
     layersSettings,
     layers,
-    editing?.sourceType,
+    editedSourceType,
+    editedExportType,
+    prices,
   ]);
 
   const [pickedType, setMapType] = useState<string>();
@@ -194,7 +216,9 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
   const premiumLimit = premiumZoomLimit(
     sourceType,
     user,
-    integratedLayerDefMap[sourceType],
+    editing
+      ? cachedMapSource(editing, integratedLayerDefMap[sourceType])
+      : exportedAs(integratedLayerDefMap[sourceType]),
   );
 
   // The field keeps the range a map was given while premium: capping it below
@@ -218,9 +242,6 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
 
   const [iconSpec, setIconSpec] = useState(editing?.iconSpec);
 
-  /** Whether the icon is the user's to keep rather than the source layer's. */
-  const iconChanged = useRef(editing !== undefined);
-
   const [minZoom, setMinZoom] = useState(String(editing?.minZoom ?? 0));
 
   const [maxZoom, setMaxZoom] = useState(String(editing?.maxNativeZoom ?? 0));
@@ -232,9 +253,8 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
     String(editing ? getCachedTileScale(editing) : 1),
   );
 
-  const { area, setArea, bbox, startSelecting } = useMapAreaSelection(
-    editing?.bounds,
-  );
+  const { area, setArea, bbox, startSelecting, selecting } =
+    useMapAreaSelection(editing?.bounds);
 
   const [networkFallback, setNetworkFallback] = useState(
     editing?.networkFallback !== false,
@@ -282,14 +302,6 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
       ),
     );
   }, [mapDef, editing, limitMaxZoom]);
-
-  // A copy of a custom map starts out with that map's own icon, so the offline
-  // one is recognizable the same way.
-  useEffect(() => {
-    if (!iconChanged.current) {
-      setIconSpec(mapDef && 'iconSpec' in mapDef ? mapDef.iconSpec : undefined);
-    }
-  }, [mapDef]);
 
   const mapDefName = mapDef?.name;
 
@@ -491,6 +503,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
         premiumFromZoom: _p,
         detail: _detail,
         bbox: _bbox,
+        creditsPerMTile: _c,
         ...rest
       } = mapDef as Record<string, unknown> & typeof mapDef;
 
@@ -596,6 +609,12 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
           />
         </Form.Group>
 
+        <OutsideCoverageAlert
+          mapDef={mapDef}
+          bbox={bbox}
+          active={online && !selecting}
+        />
+
         <div className="d-flex gap-3 align-items-end mb-3">
           <Form.Group controlId="name" className="flex-grow-1 min-w-0">
             <Form.Label>{m?.general.name}</Form.Label>
@@ -619,11 +638,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
               id="cachedMapIcon"
               selected={iconSpec}
               placeholder={<CustomMapGlyph kind="cached" />}
-              onSelect={(spec) => {
-                iconChanged.current = true;
-
-                setIconSpec(spec);
-              }}
+              onSelect={setIconSpec}
             />
           </Form.Group>
         </div>

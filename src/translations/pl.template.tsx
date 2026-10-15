@@ -403,6 +403,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xr': 'jeździectwo, konie, nakładka',
         'layer-xa':
           'hybryda, lotnicza, satelita, ortofotomapa, podpisy, nakładka',
+        'layer-xc':
+          'poziomica, warstwice, wysokość, rzeźba terenu, contours, nakładka',
         'layer-WHC': 'chemia wody, hydrologia',
       },
     },
@@ -450,6 +452,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xl: 'Szlaki narciarskie',
       xr: 'Szlaki konne',
       xa: 'Outdoorowa mapa bez podkładu',
+      xc: 'Poziomice',
       WHC: 'Hydrochemiczna',
     },
     type: {

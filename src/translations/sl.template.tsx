@@ -408,6 +408,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xl': 'smučanje, tek na smučeh, prekrivanje',
         'layer-xr': 'jahanje, konji, prekrivanje',
         'layer-xa': 'hibrid, letalski, satelit, ortofoto, napisi, prekrivanje',
+        'layer-xc':
+          'plastnica, izohipse, višina, nadmorska višina, relief, contours, prekrivanje',
         'layer-WHC': 'kemija vode, hidrologija',
       },
     },
@@ -463,6 +465,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xl: 'Smučarske poti',
       xr: 'Konjeniške poti',
       xa: 'Outdoor zemljevid brez podlage',
+      xc: 'Plastnice',
       WHC: 'Hidrokemična',
     },
     customBase: 'Zemljevid po meri',

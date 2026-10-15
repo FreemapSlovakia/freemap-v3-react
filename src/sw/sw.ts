@@ -5,11 +5,13 @@ import {
   CACHED_TILE_PATH_PREFIX,
   parseCachedTilePath,
 } from '@features/cachedMaps/cachedTileUrl.js';
+import { COVERAGE_CACHE_NAME } from '@shared/coverageCache.js';
 import { isStaticCacheReady, SHELL_URL } from '@shared/offlineStaticCache.js';
 import {
   stripTileScale,
   TILE_DRAW_PARAM,
   tileSubdomains,
+  unmarkDrawnTile,
   withTileScale,
 } from '@shared/tileUrl.js';
 import { get } from 'idb-keyval';
@@ -373,7 +375,10 @@ function tileOrigins(
 }
 
 async function serveCachedTile(event: FetchEvent): Promise<Response> {
-  const url = new URL(event.request.url);
+  // the map fetches its tiles marked, the download stored them bare
+  const requestUrl = unmarkDrawnTile(event.request.url);
+
+  const url = new URL(requestUrl);
 
   const parsed = parseCachedTilePath(url.pathname);
 
@@ -391,7 +396,7 @@ async function serveCachedTile(event: FetchEvent): Promise<Response> {
   //
   // ignoreVary: the entries are keyed by a bare URL with no headers, so any
   // `Vary` on the stored response can never match the tile <img> request's own.
-  for (const variant of scaleVariants(event.request.url)) {
+  for (const variant of scaleVariants(requestUrl)) {
     const altCached = await cache.match(variant, { ignoreVary: true });
 
     if (altCached) {
@@ -468,6 +473,7 @@ self.addEventListener('activate', (event) => {
           cacheName !== FALLBACK_CACHE_NAME &&
           cacheName !== STATIC_CACHE_NAME &&
           cacheName !== BROWSE_CACHE_NAME &&
+          cacheName !== COVERAGE_CACHE_NAME &&
           !cacheName.startsWith(TILE_CACHE_PREFIX)
             ? caches.delete(cacheName)
             : undefined,

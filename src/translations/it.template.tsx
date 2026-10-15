@@ -421,6 +421,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xr': 'equitazione, cavallo, ippovia, sovrapposizione',
         'layer-xa':
           'ibrida, aerea, satellite, ortofoto, etichette, sovrapposizione',
+        'layer-xc':
+          'isoipse, curva di livello, altitudine, quota, rilievo, contours, sovrapposizione',
         'layer-WHC': 'chimica delle acque, idrologia',
       },
     },
@@ -481,6 +483,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xl: 'Percorsi sciistici',
       xr: 'Percorsi a cavallo',
       xa: 'Mappa Outdoor senza sfondo',
+      xc: 'Curve di livello',
       WHC: 'Idrochimica',
     },
     customBase: 'Mappa personalizzata',

@@ -47,14 +47,24 @@ const tileTemplatesSelector = createSelector(
             !bodies[type] &&
             isLayerOffered(layersSettings, layers, type),
         )
-        .map(({ type }) => [type, null]),
+        // its detail, if it has one, isn't known until the body is
+        .flatMap(({ type }) => [
+          [type, null],
+          [`${type}:detail`, null],
+        ]),
     ),
     ...Object.fromEntries(
       [...integrated, ...customLayers]
         .filter((def) => def.technology === 'tile')
-        .map((def) => [
-          def.type,
-          { url: def.url, subdomains: def.subdomains, tms: def.tms },
+        .flatMap((def) => [
+          [
+            def.type,
+            { url: def.url, subdomains: def.subdomains, tms: def.tms },
+          ],
+          // the sharper tiles drawn over the layer's own
+          ...('detail' in def && def.detail
+            ? [[`${def.type}:detail`, { url: def.detail.url }]]
+            : []),
         ]),
     ),
   }),

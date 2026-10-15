@@ -28,6 +28,7 @@ import {
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
+import { useExportPrices } from '@shared/exportPrices.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerLabel, layerName } from '@shared/layerName.js';
 import {
@@ -38,6 +39,7 @@ import {
   type StoredCustomLayerDef,
 } from '@shared/mapDefinitions.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
+import { exportedLayer } from '@shared/mapLibrary/exportedLayer.js';
 import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import type { Shortcut } from '@shared/types/common.js';
 import type { ReactElement, ReactNode, RefObject } from 'react';
@@ -651,6 +653,16 @@ function YourMapRow({
     return ref?.def ?? mapEntryOf(ref);
   });
 
+  const prices = useExportPrices();
+
+  const downloadable = useAppSelector((state) => {
+    const ref = mapByIdSelector(state)[map.type];
+
+    return (
+      ref?.origin === 'library' && exportedLayer(ref.def, prices) !== undefined
+    );
+  });
+
   const ownOpacity = useAppSelector(
     (state) => state.map.layerSetups[map.type]?.opacity,
   );
@@ -807,21 +819,20 @@ function YourMapRow({
             />
           )}
 
-          {/* Only image tiles can be downloaded; see `CacheTilesForm`. */}
-          {(map.kind === 'library' || map.kind === 'custom') &&
-            map.technology === 'tile' && (
-              <Action
-                icon={<FaDownload />}
-                label={msm?.downloadOffline}
-                onClick={() => {
-                  // Opening the modal resets it to its list, so the form after.
-                  dispatch(setActiveModal({ type: 'offline-maps' }));
+          {/* Only our own tiles can be downloaded; see `CacheTilesForm`. */}
+          {downloadable && (
+            <Action
+              icon={<FaDownload />}
+              label={msm?.downloadOffline}
+              onClick={() => {
+                // Opening the modal resets it to its list, so the form after.
+                dispatch(setActiveModal({ type: 'offline-maps' }));
 
-                  dispatch(cachedMapsSetView({ add: type }));
-                }}
-                showFrom="never"
-              />
-            )}
+                dispatch(cachedMapsSetView({ add: type }));
+              }}
+              showFrom="never"
+            />
+          )}
 
           {/* An offline map is deleted with its tiles, in Offline maps. */}
           {map.kind !== 'cached' && <ActionDivider />}

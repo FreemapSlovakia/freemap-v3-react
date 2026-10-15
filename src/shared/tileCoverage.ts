@@ -1,4 +1,5 @@
 import { useEffect, useSyncExternalStore } from 'react';
+import { storeCoverage, storedCoverage } from './coverageCache.js';
 import { tileRangesInBbox } from './tileEnumeration.js';
 
 export type TileCover = 'full' | 'partial' | 'none';
@@ -13,6 +14,8 @@ const FORMAT_VERSION = 1;
 
 const COVERAGE_TIMEOUT_MS = 5000;
 
+const STALE_RETRY_MS = 60_000;
+
 const cache = new Map<string, Promise<TileCoverage>>();
 
 /** Coverages loaded so far; replaced, not mutated, so it can be a store snapshot. */
@@ -24,6 +27,23 @@ const failing = new Set<string>();
 
 /** Whether the last load of `url` failed, so a new consumer need not wait for a retry. */
 export const coverageFailing = (url: string): boolean => failing.has(url);
+
+const stale = new Set<string>();
+
+/**
+ * Whether `url`'s coverage is the copy kept from an earlier session, fit to
+ * draw by but not to skip downloading by: the server may have more since.
+ */
+export const coverageStale = (url: string): boolean => stale.has(url);
+
+/** Once the connection is back, or after a while if it never left. */
+function whenOnline(retry: () => void): void {
+  if (navigator.onLine) {
+    setTimeout(retry, STALE_RETRY_MS);
+  } else {
+    window.addEventListener('online', retry, { once: true });
+  }
+}
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
@@ -90,12 +110,41 @@ export function loadTileCoverage(url: string): Promise<TileCoverage> {
       .then((buffer) => {
         const coverage = decodeTileCoverage(new Uint8Array(buffer));
 
+        // only a copy that decodes replaces the last good one
+        void storeCoverage(url, buffer);
+
+        stale.delete(url);
+
+        return coverage;
+      })
+      // offline, or a copy that won't decode: the one last kept
+      .catch(async (err: unknown) => {
+        const stored = await storedCoverage(url);
+
+        if (!stored) {
+          throw err;
+        }
+
+        stale.add(url);
+
+        whenOnline(() => {
+          cache.delete(url);
+
+          void loadTileCoverage(url);
+        });
+
+        // one already shown stays, with nothing new to announce
+        return loaded.get(url) ?? decodeTileCoverage(new Uint8Array(stored));
+      })
+      .then((coverage) => {
         failing.delete(url);
 
-        loaded = new Map([...loaded, [url, coverage]]);
+        if (loaded.get(url) !== coverage) {
+          loaded = new Map([...loaded, [url, coverage]]);
 
-        for (const listener of listeners) {
-          listener();
+          for (const listener of listeners) {
+            listener();
+          }
         }
 
         return coverage;

@@ -418,6 +418,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xl': 'sí, sífutás, útvonal, fedvény',
         'layer-xr': 'lovaglás, ló, útvonal, fedvény',
         'layer-xa': 'hibrid, műhold, légifotó, ortofotó, feliratok, fedvény',
+        'layer-xc':
+          'szintvonal, izovonal, magasság, domborzat, contours, fedvény',
         'layer-WHC': 'vízkémia, hidrológia',
       },
     },
@@ -473,6 +475,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xl: 'Síútvonalak',
       xr: 'Lovaglóútvonalak',
       xa: 'Outdoor-térkép háttér nélkül',
+      xc: 'Szintvonalak',
       WHC: 'Hidrokémiai',
     },
 

@@ -419,6 +419,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xr': 'reiten, pferd, routen, overlay',
         'layer-xa':
           'hybrid, satellit, luftbild, orthofoto, beschriftung, overlay',
+        'layer-xc': 'höhenlinie, isohypsen, höhe, relief, contours, overlay',
         'layer-WHC': 'wasserchemie, hydrologie',
       },
     },
@@ -466,6 +467,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xl: 'Skirouten',
       xr: 'Reitwege',
       xa: 'Outdoor-Karte ohne Hintergrund',
+      xc: 'Höhenlinien',
       WHC: 'Hydrochemisch',
     },
 

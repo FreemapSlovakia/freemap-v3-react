@@ -144,10 +144,11 @@ export const serverShadingUrl = (
   )}`;
 
 /**
- * The renderer's layers whose tiles name the datasets they drew. Its overlays
- * credit only Freemap and OSM, so they are left out and load as plain images.
+ * The renderer's layers whose tiles name the datasets they drew. Its other
+ * overlays credit only Freemap and OSM, so they are left out and load as plain
+ * images.
  */
-export const RENDERER_LAYER_TYPES = ['X', 'XK'];
+export const RENDERER_LAYER_TYPES = ['X', 'XK', 'xc'];
 
 const RENDERER_ROUTE_BY_TYPE = {
   X: '/',
@@ -160,6 +161,7 @@ const RENDERER_ROUTE_BY_TYPE = {
   xl: '/o/ski',
   xr: '/o/horse',
   xa: '/o/aerial',
+  xc: '/o/contours',
 } as const;
 
 /**
@@ -315,8 +317,6 @@ type IsParametricShadingLayerDef = HasUrl &
   HasZIndex &
   HasScaleWithDpi & {
     technology: 'parametricShading';
-    /** The offline export's; must match the API's `downloadableMaps`. */
-    creditsPerMTile?: number;
   };
 
 /** One colour all over: a blank base map, or a tint as an overlay. */
@@ -403,16 +403,19 @@ export type TileDetailDef = {
 };
 
 /**
- * What the offline export renders for a layer that isn't exported as itself:
- * the API's map `type`, covering only `countries`.
+ * What the offline export and the offline maps take for a layer that isn't
+ * exported as itself: the API's map `type`, covering only `countries`.
  */
 export type OfflineExportDef = {
   type: string;
   url: string;
   minZoom: number;
   maxNativeZoom: number;
-  creditsPerMTile: number;
   countries: string[];
+  premiumFromZoom?: number;
+  attribution: AttributionDef[];
+  /** Where the tiles have data; see `TileDetailDef`. */
+  coverageUrl?: string;
 };
 
 export type IsBaseLayerDef = {
@@ -505,7 +508,6 @@ export const isBaseLayerDef = <T extends { layer: string }>(
 
 export type IsAllTechnologiesLayerDef =
   | (IsTileLayerDef & {
-      creditsPerMTile?: number;
       detail?: TileDetailDef;
       offlineExport?: OfflineExportDef;
     })
