@@ -22,6 +22,11 @@ export function setStore(s: MyStore): void {
 };
 
 window.addEventListener('error', (evt) => {
+  // Benign: the browser only defers the notifications to the next frame.
+  if (evt.message.startsWith('ResizeObserver loop')) {
+    return;
+  }
+
   sendError({
     kind: 'global',
     message: evt.message,
