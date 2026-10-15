@@ -3,8 +3,8 @@ import type { PanoramaRenderInfo } from '../model/reducer.js';
 import { columnAt } from '../ray.js';
 
 /**
- * The skyline per column as true altitude: each row's lift comes off by its own
- * distance, so a near ridge can out-stand the lifted range drawn above it.
+ * The skyline per column: the top edge of its first terrain row. True altitude
+ * only for a true view — an unfolded picture's is drawn higher than it stands.
  */
 export type HorizonProfile = {
   altitudes: Float32Array;
@@ -14,10 +14,7 @@ export type HorizonProfile = {
   clippedBottom: Uint8Array;
 };
 
-type Frame = Pick<
-  PanoramaRenderInfo,
-  'altMax' | 'altMin' | 'stepDeg' | 'depthLift' | 'rangeM'
->;
+type Frame = Pick<PanoramaRenderInfo, 'altMax' | 'altMin' | 'stepDeg'>;
 
 const cache = new WeakMap<PanoramaDepth, HorizonProfile>();
 
@@ -39,45 +36,19 @@ export function horizonProfile(
 
   const clippedBottom = new Uint8Array(width);
 
-  const liftPerM = render.rangeM ? render.depthLift / render.rangeM : 0;
-
   for (let x = 0; x < width; x++) {
-    let best = -Infinity;
+    let top = 0;
 
-    let top = -1;
-
-    for (let y = 0; y < height; y++) {
-      // A row's top edge; the lift only lowers it, so once that is under the
-      // best so far nothing further down can beat it.
-      const drawn = render.altMax - y * render.stepDeg;
-
-      if (drawn <= best) {
-        break;
-      }
-
-      const distance = distanceAt(depth, x, y);
-
-      if (distance === null) {
-        continue;
-      }
-
-      if (top < 0) {
-        top = y;
-      }
-
-      best = Math.max(best, drawn - liftPerM * distance);
-
-      if (!liftPerM) {
-        break;
-      }
+    while (top < height && distanceAt(depth, x, top) === null) {
+      top++;
     }
 
-    if (top < 0) {
+    if (top === height) {
       altitudes[x] = render.altMin;
 
       clippedBottom[x] = 1;
     } else {
-      altitudes[x] = best;
+      altitudes[x] = render.altMax - top * render.stepDeg;
 
       clippedTop[x] = top === 0 ? 1 : 0;
     }

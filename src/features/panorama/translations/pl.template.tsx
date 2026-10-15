@@ -39,7 +39,7 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLift: 'Rozwiń dal',
     depthLiftOff: 'Widok wierny',
     depthLiftHint:
-      'Podnosi odległy teren, dzięki czemu dalekie pasma odrywają się od grani przed nimi — tak jak na panoramie rysowanej ręcznie. Do obrazu trafiają przez to również szczyty, których stąd naprawdę nie widać; ich nazwy są oznaczone.',
+      'Podnosi odległy teren, dzięki czemu dalekie pasma odrywają się od grani przed nimi — tak jak na panoramie rysowanej ręcznie. Do obrazu trafiają przez to również szczyty, których stąd naprawdę nie widać; ich nazwy są oznaczone. Drogi słońca i księżyca nie są na nim rysowane.',
     rangeHint:
       'Teren powyżej 300 km to funkcja premium. Każdy dodatkowy kilometr przechodzony jest wzdłuż każdego promienia obrazu, więc dalszy widok kosztuje renderer proporcjonalnie więcej.',
     look: 'Wygląd',
@@ -94,6 +94,14 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Godziny są w strefie czasowej tego urządzenia i oznaczają, kiedy za terenem znika ostatni skrawek tarczy lub pojawia się pierwszy. Teren to goła ziemia, więc drzewa i budynki mogą ją zasłonić wcześniej.',
     today: 'Dziś',
     lit: (percent) => `oświetlony w ${percent}`,
+    unfolded: (
+      <>
+        Nie na rozwiniętym obrazie: jego odległy teren jest narysowany wyżej,
+        niż stoi, więc drogi przecinałyby horyzont w złych miejscach. W
+        ustawieniach panoramy ustaw <i>Rozwiń dal</i> na <i>Widok wierny</i> i
+        zaktualizuj.
+      </>
+    ),
   },
   labels: {
     title: 'Nazwy szczytów',
@@ -120,12 +128,16 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Czyste powietrze',
     hazeHint:
       'Jak daleko musi być szczyt, żeby mgiełka znaczyła więcej niż sam szczyt. Powyżej trzykrotności tej odległości nie jest nazywane już nic.',
-    showEle: 'Pokaż wysokości',
-    showEleHint:
-      'Pod nazwą każdego szczytu wypisuje jego wysokość. Podpis ma wtedy dwa wiersze, więc mieści się ich na obrazie mniej.',
-    showDistance: 'Pokaż odległości',
-    showDistanceHint:
-      'Pod nazwą pisze, jak daleko jest szczyt — obok wysokości, gdy włączone są obie.',
+    subLine: 'Pod nazwą',
+    subLineHint:
+      'Co mówi drugi wiersz podpisu każdego szczytu. Gdy cokolwiek z tego jest włączone, każdy podpis ma dwa wiersze, więc mieści się ich mniej. Wybitność (W) to, o ile szczyt wznosi się nad najniższą przełęczą na drodze do wyższego terenu; izolacja (I) to, jak daleko jest ten wyższy teren.',
+    subLineParts: {
+      ele: 'Wysokość',
+      distance: 'Odległość',
+      prominence: 'Wybitność',
+      isolation: 'Izolacja',
+    },
+    subLineAbbr: { prominence: 'W', isolation: 'I' },
     showRevealed: 'Nazywaj odsłonięte szczyty',
     showRevealedHint:
       'Szczyty, które rozwinięcie dali wyciągnęło zza bliższej grani: są narysowane, ale stąd naprawdę ich nie widać. Ich nazwy są jaśniejsze, a gdy brakuje miejsca dla obu, pierwszeństwo ma szczyt widoczny.',

@@ -154,6 +154,8 @@ const PeakSchema = z.object({
    * match is still not a correct one; see the service's `docs/API.md`.
    */
   prom_dist_m: z.number().nullish(),
+  /** Ground metres to the nearest higher ground; absent where unknown. */
+  isolation_m: z.number().nullish(),
 });
 
 export type Peak = z.infer<typeof PeakSchema>;

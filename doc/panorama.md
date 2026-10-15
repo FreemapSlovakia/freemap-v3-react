@@ -1100,15 +1100,18 @@ over the full turn — so what really decides the count is how many lines they m
 stack into; raising the cap alone changes nothing while the climb is exhausted
 first.
 
-**Show elevations** writes each summit's height under its name in a smaller,
-dimmer face. It sits beside the count because it is the other half of the same
-question rather than a drawing detail: the box height (`labelHeight`) parts
-company with the climb step (`lineHeight`), every label becomes two lines tall,
-and fewer of them fit — hence the default off. The box is measured as the wider
-of its two lines, both centred on the subject, and the figures are formatted
-once per set of names rather than per frame, the way the compass ticks are. A
-summit the terrain model gave no height for keeps its one line in a box laid out
-for two.
+**Under the name** is a toggle group — elevation, distance, prominence and
+isolation (each after a localized letter, `subLineAbbr`), in `SUB_LINE_PARTS`
+order — writing a second line under each
+name in a smaller, dimmer face. It sits beside the count because it is the other
+half of the same question rather than a drawing detail: the box height
+(`labelHeight`) parts company with the climb step (`lineHeight`), every label
+becomes two lines tall, and fewer of them fit — hence all off by default. The
+box is measured as the wider of its two lines, both centred on the subject, and
+the figures are formatted once per set of names rather than per frame, the way
+the compass ticks are. A part the summit has no figure for — no terrain height,
+no matched prominence or isolation — is left out of its line, and a summit with
+none keeps its one line in a box laid out for two.
 
 The request **orders and then cuts**, which is the service's intended shape:
 `peak_rank` says what matters, `max_peaks` (5000) says how many survive. What a
@@ -1292,9 +1295,7 @@ Meeus, so changing the day costs no render.
 
 - **The skyline** (`horizonProfile`) is the topmost terrain row of each column,
   as true altitude: the picture's rows already carry curvature and terrestrial
-  refraction. Under a lift every row's own lift comes off by its distance and
-  the highest result wins — a near ridge lifted less can out-stand the range
-  drawn above it. A column clipped by the frame's top or bottom answers `null`
+  refraction. A column clipped by the frame's top or bottom answers `null`
   for anything past that edge rather than guessing. Cached per depth buffer.
 - **Positions** (`astro.ts`) are apparent and topocentric: atmospheric
   refraction is added (≈0.5° at the horizon, minutes of time), and the moon's
@@ -1311,8 +1312,9 @@ Meeus, so changing the day costs no render.
   zoomed in, so the split at a whole minute shows.
 - **Times are the browser's zone**; the day is local midnight to midnight, and
   `skyDate` `null` means today, so the paths follow the clock past midnight.
-- **A lifted picture draws no paths**, its skyline standing higher than it is;
-  the times in the footer still hold, being measured against the true one.
+- **A lifted picture gets no tracks at all** — no paths, no footer times — its
+  skyline standing higher than it is; the menu is disabled with a tooltip
+  saying so.
 
 ## Caveats to keep surfaced
 

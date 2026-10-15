@@ -38,7 +38,7 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLift: 'Ferne entfalten',
     depthLiftOff: 'Naturgetreu',
     depthLiftHint:
-      'Hebt entferntes Gelände an, sodass sich ferne Ketten von den Graten davor abheben — so wie es ein von Hand gezeichnetes Panorama tut. Dadurch kommen auch Gipfel ins Bild, die von hier aus gar nicht zu sehen wären; ihre Namen sind gekennzeichnet.',
+      'Hebt entferntes Gelände an, sodass sich ferne Ketten von den Graten davor abheben — so wie es ein von Hand gezeichnetes Panorama tut. Dadurch kommen auch Gipfel ins Bild, die von hier aus gar nicht zu sehen wären; ihre Namen sind gekennzeichnet. Sonnen- und Mondbahn werden darüber nicht gezeichnet.',
     rangeHint:
       'Gelände jenseits von 300 km ist eine Premium-Funktion. Jeder weitere Kilometer wird entlang jedes Strahls des Bildes abgeschritten, eine weitere Sicht kostet den Renderer also entsprechend mehr.',
     look: 'Stil',
@@ -93,6 +93,14 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Die Zeiten gelten in der Zeitzone dieses Geräts und markieren, wann der letzte Rand der Scheibe hinter dem Gelände verschwindet oder der erste auftaucht. Das Gelände ist nackter Boden, Bäume und Gebäude können sie also früher verdecken.',
     today: 'Heute',
     lit: (percent) => `${percent} beleuchtet`,
+    unfolded: (
+      <>
+        Nicht über einem entfalteten Bild: sein fernes Gelände ist höher
+        gezeichnet, als es steht, sodass die Bahnen den Horizont an falschen
+        Stellen kreuzen würden. Stellen Sie in den Panorama-Einstellungen{' '}
+        <i>Ferne entfalten</i> auf <i>Naturgetreu</i> und aktualisieren Sie.
+      </>
+    ),
   },
   labels: {
     title: 'Gipfelnamen',
@@ -113,12 +121,16 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Klare Luft',
     hazeHint:
       'Wie weit ein Gipfel entfernt sein muss, damit der Dunst mehr zählt als der Gipfel selbst. Jenseits des Dreifachen davon wird gar nichts mehr benannt.',
-    showEle: 'Höhen anzeigen',
-    showEleHint:
-      'Schreibt unter jeden Gipfelnamen seine Höhe. Jede Beschriftung ist dann zwei Zeilen hoch, sodass weniger davon ins Bild passen.',
-    showDistance: 'Entfernungen anzeigen',
-    showDistanceHint:
-      'Schreibt unter den Namen, wie weit der Gipfel entfernt ist — neben der Höhe, wenn beides an ist.',
+    subLine: 'Unter dem Namen',
+    subLineHint:
+      'Was die zweite Zeile jeder Gipfelbeschriftung sagt. Ist etwas davon an, ist jede Beschriftung zwei Zeilen hoch, sodass weniger ins Bild passen. Die Schartenhöhe (S) sagt, wie hoch der Gipfel über der tiefsten Scharte auf dem Weg zu höherem Gelände aufragt; die Dominanz (D), wie weit dieses höhere Gelände entfernt ist.',
+    subLineParts: {
+      ele: 'Höhe',
+      distance: 'Entfernung',
+      prominence: 'Schartenhöhe',
+      isolation: 'Dominanz',
+    },
+    subLineAbbr: { prominence: 'S', isolation: 'D' },
     showRevealed: 'Aufgedeckte Gipfel benennen',
     showRevealedHint:
       'Gipfel, die das Entfalten der Ferne hinter einem näheren Grat hervorgeholt hat: gezeichnet, aber von hier aus nicht wirklich sichtbar. Ihre Namen sind blasser und treten dort zurück, wo neben einem sichtbaren Gipfel kein Platz für beide ist.',

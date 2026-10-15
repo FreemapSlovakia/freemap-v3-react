@@ -297,6 +297,8 @@ const PersistedPanoramaSettingsSchema = z
     labelDensity: z.number().int().min(0).max(LABEL_DENSITY_MAX),
     showLabelEle: z.boolean(),
     showLabelDistance: z.boolean().catch(false),
+    showLabelProminence: z.boolean().catch(false),
+    showLabelIsolation: z.boolean().catch(false),
     minDominance: z.number(),
     // Bounded to what the sliders offer: all three reach `rankLabels`, where a
     // stored value from outside the range would order the names by something

@@ -38,7 +38,7 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLift: 'Dispiega la distanza',
     depthLiftOff: 'Vista reale',
     depthLiftHint:
-      'Solleva il terreno lontano, così le catene distanti si staccano dalle creste davanti a loro, come in un panorama disegnato a mano. Porta però nell’immagine anche cime che da qui non si vedrebbero davvero; i loro nomi sono contrassegnati.',
+      'Solleva il terreno lontano, così le catene distanti si staccano dalle creste davanti a loro, come in un panorama disegnato a mano. Porta però nell’immagine anche cime che da qui non si vedrebbero davvero; i loro nomi sono contrassegnati. I percorsi del sole e della luna non vi sono disegnati.',
     rangeHint:
       'Il terreno oltre i 300 km è una funzione premium. Ogni chilometro in più viene percorso lungo ogni raggio dell’immagine, quindi una vista più lontana costa al renderer proporzionalmente di più.',
     look: 'Aspetto',
@@ -93,6 +93,14 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Gli orari sono nel fuso orario di questo dispositivo e indicano quando l’ultimo spicchio del disco scompare dietro il terreno o il primo riappare. Il terreno è nudo, quindi alberi ed edifici possono nasconderlo prima.',
     today: 'Oggi',
     lit: (percent) => `illuminata al ${percent}`,
+    unfolded: (
+      <>
+        Non su un’immagine dispiegata: il terreno lontano è disegnato più in
+        alto di dove sta, quindi i percorsi taglierebbero l’orizzonte nei punti
+        sbagliati. Nelle impostazioni del panorama porta{' '}
+        <i>Dispiega la distanza</i> su <i>Vista reale</i> e aggiorna.
+      </>
+    ),
   },
   labels: {
     title: 'Nomi delle cime',
@@ -119,12 +127,16 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Aria tersa',
     hazeHint:
       'Quanto deve essere lontana una cima perché la foschia conti più della cima stessa. Oltre il triplo di quella distanza non viene nominato più nulla.',
-    showEle: 'Mostra le quote',
-    showEleHint:
-      'Scrive la quota sotto il nome di ogni cima. L’etichetta occupa allora due righe, così nell’immagine ne stanno di meno.',
-    showDistance: 'Mostra le distanze',
-    showDistanceHint:
-      'Scrive sotto il nome quanto è lontana la cima — accanto alla quota, se sono attive entrambe.',
+    subLine: 'Sotto il nome',
+    subLineHint:
+      'Cosa dice la seconda riga dell’etichetta di ogni cima. Con una qualsiasi di queste attiva, ogni etichetta occupa due righe, così ne stanno di meno. La prominenza (P) è quanto la cima si alza sopra la sella più bassa verso un terreno più alto; l’isolamento (I) è quanto dista quel terreno più alto.',
+    subLineParts: {
+      ele: 'Quota',
+      distance: 'Distanza',
+      prominence: 'Prominenza',
+      isolation: 'Isolamento',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Nomina le cime scoperte',
     showRevealedHint:
       'Cime che il dispiegamento della distanza ha tirato fuori da dietro una cresta più vicina: sono disegnate, ma da qui non si vedono davvero. I loro nomi sono più chiari e, quando non c’è spazio per entrambi, la precedenza va alla cima che si vede.',

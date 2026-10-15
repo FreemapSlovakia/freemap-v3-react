@@ -38,7 +38,7 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLift: 'Távolság kibontása',
     depthLiftOff: 'Hű kilátás',
     depthLiftHint:
-      'Megemeli a távoli terepet, így a messzi hegyláncok elválnak az előttük álló gerincektől — ahogy a kézzel rajzolt panorámákon. Ezzel olyan csúcsok is a képre kerülnek, amelyeket innen valójában nem látna; a nevük meg van jelölve.',
+      'Megemeli a távoli terepet, így a messzi hegyláncok elválnak az előttük álló gerincektől — ahogy a kézzel rajzolt panorámákon. Ezzel olyan csúcsok is a képre kerülnek, amelyeket innen valójában nem látna; a nevük meg van jelölve. A Nap és a Hold útja nem rajzolódik rá.',
     rangeHint:
       'A 300 km-en túli terep prémium funkció. Minden további kilométert a kép minden sugara mentén be kell járni, így a távolabbi kilátás arányosan többe kerül a renderelőnek.',
     look: 'Megjelenés',
@@ -93,6 +93,14 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Az időpontok az eszköz időzónájában értendők, és azt jelzik, mikor tűnik el a korong utolsó szelete a terep mögött, vagy mikor bukkan fel az első. A terep csupasz felszín, így a fák és az épületek korábban eltakarhatják.',
     today: 'Ma',
     lit: (percent) => `${percent}-ban megvilágítva`,
+    unfolded: (
+      <>
+        Kibontott képen nem: a távoli terep magasabban van rajzolva, mint ahol
+        áll, így az utak rossz helyen metszenék a látóhatárt. A panoráma
+        beállításaiban állítsa a <i>Távolság kibontása</i> értékét{' '}
+        <i>Hű kilátás</i> értékre, és frissítsen.
+      </>
+    ),
   },
   labels: {
     title: 'Csúcsnevek',
@@ -119,12 +127,16 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Tiszta levegő',
     hazeHint:
       'Milyen messze kell lennie egy csúcsnak, hogy a pára többet nyomjon a latban, mint maga a csúcs. Ennek háromszorosán túl semmi sem kap nevet.',
-    showEle: 'Magasságok megjelenítése',
-    showEleHint:
-      'Minden csúcs neve alá odaírja a magasságát. A felirat így kétsoros, ezért kevesebb fér el belőlük a képen.',
-    showDistance: 'Távolságok megjelenítése',
-    showDistanceHint:
-      'A név alá írja, milyen messze van a csúcs — a magasság mellé, ha mindkettő be van kapcsolva.',
+    subLine: 'A név alatt',
+    subLineHint:
+      'Mit mond minden csúcsfelirat második sora. Ha bármelyik be van kapcsolva, minden felirat kétsoros, így kevesebb fér el a képen. A prominencia (P) azt mondja meg, mennyivel emelkedik a csúcs a magasabb terep felé vezető legalacsonyabb nyereg fölé; az izoláció (I), hogy milyen messze van ez a magasabb terep.',
+    subLineParts: {
+      ele: 'Magasság',
+      distance: 'Távolság',
+      prominence: 'Prominencia',
+      isolation: 'Izoláció',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Feltárt csúcsok elnevezése',
     showRevealedHint:
       'Csúcsok, amelyeket a távolság kibontása húzott elő egy közelebbi gerinc mögül: meg vannak rajzolva, de innen valójában nem látszanak. A nevük halványabb, és ha nincs hely mindkettőnek, a látható csúcs kapja meg.',

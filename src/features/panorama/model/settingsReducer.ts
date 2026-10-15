@@ -367,6 +367,29 @@ export function panoramaLookOf(style: PanoramaStyle): PanoramaLook {
   );
 }
 
+/** What a summit's second line can say, in the order it says them. */
+export const SUB_LINE_PARTS = [
+  'ele',
+  'distance',
+  'prominence',
+  'isolation',
+] as const;
+
+export type SubLinePart = (typeof SUB_LINE_PARTS)[number];
+
+/** The setting that turns each part on. */
+export const SUB_LINE_KEY = {
+  ele: 'showLabelEle',
+  distance: 'showLabelDistance',
+  prominence: 'showLabelProminence',
+  isolation: 'showLabelIsolation',
+} as const satisfies Record<SubLinePart, keyof PanoramaSettingsState>;
+
+/** The parts switched on, in order. */
+export function subLineOf(settings: PanoramaSettingsState): SubLinePart[] {
+  return SUB_LINE_PARTS.filter((part) => settings[SUB_LINE_KEY[part]]);
+}
+
 export interface PanoramaSettingsState {
   /**
    * How fine a picture to ask for, pixels per degree, or `max` for whatever
@@ -415,15 +438,13 @@ export interface PanoramaSettingsState {
   /** How many names to draw, `0` for none; see {@link labelLayoutLimits}. */
   labelDensity: number;
   /**
-   * Whether each name carries its summit's elevation on a second line. Off by
+   * What each name's second line says; see {@link SUB_LINE_PARTS}. Off by
    * default: a two-line label is taller, so fewer names fit the picture.
    */
   showLabelEle: boolean;
-  /**
-   * Whether that second line also says how far off the summit is. Shares the
-   * line with the elevation rather than taking one of its own.
-   */
   showLabelDistance: boolean;
+  showLabelProminence: boolean;
+  showLabelIsolation: boolean;
   /** Metres of dominance a summit needs to be named; see {@link DOMINANCE_STEPS_M}. */
   minDominance: number;
   /**
@@ -486,6 +507,8 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   labelDensity: 5,
   showLabelEle: false,
   showLabelDistance: false,
+  showLabelProminence: false,
+  showLabelIsolation: false,
   minDominance: NO_DOMINANCE_FILTER,
   labelHazeKm: 120,
   labelDistanceWeight: 0.5,

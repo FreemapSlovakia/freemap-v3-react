@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { PanoramaLook } from '../model/settingsReducer.js';
+import type { PanoramaLook, SubLinePart } from '../model/settingsReducer.js';
 
 export type PanoramaMessages = {
   /**
@@ -108,6 +108,8 @@ export type PanoramaMessages = {
     today: string;
     /** The moon's lit fraction, `percent` already formatted. */
     lit: (percent: string) => string;
+    /** Why the menu is off under an unfolded picture; setting names in italics. */
+    unfolded: ReactNode;
   };
   labels: {
     /** Names the menu the four sliders share. */
@@ -134,14 +136,13 @@ export type PanoramaMessages = {
     /** The step with no falloff and no cut. */
     hazeOff: string;
     hazeHint: string;
-    /** Whether each name carries its summit's height on a second line. */
-    showEle: string;
-    /** Warns that a two-line label leaves room for fewer names. */
-    showEleHint: string;
-    /** Whether that second line also says how far off the summit is. */
-    showDistance: string;
-    /** Says it shares the line with the elevation rather than adding one. */
-    showDistanceHint: string;
+    /** Names the toggles that pick what each name's second line says. */
+    subLine: string;
+    /** Says what the parts mean, and that two lines fit fewer names. */
+    subLineHint: string;
+    subLineParts: Record<SubLinePart, string>;
+    /** Prefixes that tell the two parts with no unit of their own apart. */
+    subLineAbbr: { prominence: string; isolation: string };
     /** Whether summits only the unfolding brings into view are named at all. */
     showRevealed: string;
     /** Says what such a summit is, and how its name is marked. */

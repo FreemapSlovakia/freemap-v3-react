@@ -38,7 +38,7 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLift: 'Déplier la distance',
     depthLiftOff: 'Vue fidèle',
     depthLiftHint:
-      'Relève le relief lointain, de sorte que les chaînes éloignées se détachent des crêtes qui les précèdent, comme sur un panorama dessiné à la main. Cela fait aussi entrer dans l’image des sommets que vous ne verriez pas réellement d’ici ; leurs noms sont signalés.',
+      'Relève le relief lointain, de sorte que les chaînes éloignées se détachent des crêtes qui les précèdent, comme sur un panorama dessiné à la main. Cela fait aussi entrer dans l’image des sommets que vous ne verriez pas réellement d’ici ; leurs noms sont signalés. Les courses du soleil et de la lune n’y sont pas tracées.',
     rangeHint:
       'Le relief au-delà de 300 km est une fonction premium. Chaque kilomètre supplémentaire est parcouru le long de chaque rayon de l’image : une vue plus lointaine coûte donc proportionnellement plus au moteur de rendu.',
     look: 'Style',
@@ -93,6 +93,14 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Les heures sont dans le fuseau horaire de cet appareil et indiquent quand le dernier croissant du disque passe derrière le relief ou quand le premier réapparaît. Le relief est le sol nu : arbres et bâtiments peuvent le cacher plus tôt.',
     today: 'Aujourd’hui',
     lit: (percent) => `éclairée à ${percent}`,
+    unfolded: (
+      <>
+        Pas sur une image dépliée : son relief lointain est dessiné plus haut
+        qu’il ne se trouve, et les courses couperaient l’horizon aux mauvais
+        endroits. Dans les réglages du panorama, mettez{' '}
+        <i>Déplier la distance</i> sur <i>Vue fidèle</i> et mettez à jour.
+      </>
+    ),
   },
   labels: {
     title: 'Noms des sommets',
@@ -119,12 +127,16 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Air limpide',
     hazeHint:
       'À quelle distance un sommet doit se trouver pour que la brume compte plus que le sommet lui-même. Au-delà du triple de cette distance, plus rien n’est nommé.',
-    showEle: 'Afficher les altitudes',
-    showEleHint:
-      'Écrit l’altitude sous le nom de chaque sommet. L’étiquette fait alors deux lignes, si bien qu’il en tient moins dans l’image.',
-    showDistance: 'Afficher les distances',
-    showDistanceHint:
-      'Écrit sous le nom la distance du sommet — à côté de l’altitude si les deux sont activées.',
+    subLine: 'Sous le nom',
+    subLineHint:
+      'Ce que dit la deuxième ligne de l’étiquette de chaque sommet. Dès que l’un d’eux est activé, chaque étiquette fait deux lignes, si bien qu’il en tient moins. La proéminence (P) est la hauteur dont le sommet s’élève au-dessus du col le plus bas sur le chemin d’un relief plus haut ; l’isolement (I), la distance de ce relief plus haut.',
+    subLineParts: {
+      ele: 'Altitude',
+      distance: 'Distance',
+      prominence: 'Proéminence',
+      isolation: 'Isolement',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Nommer les sommets révélés',
     showRevealedHint:
       'Sommets que le dépliement de la distance a fait sortir de derrière une crête plus proche : ils sont dessinés, mais on ne les voit pas réellement d’ici. Leurs noms sont plus pâles et, quand la place manque pour les deux, la priorité va au sommet que l’on voit.',

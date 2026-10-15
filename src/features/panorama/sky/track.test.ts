@@ -38,8 +38,6 @@ const frame = {
   altMax: 4,
   altMin: -4,
   stepDeg: 1,
-  depthLift: 0,
-  rangeM: 100_000,
 };
 
 describe('horizonProfile', () => {
@@ -59,17 +57,6 @@ describe('horizonProfile', () => {
     expect([...profile.clippedBottom]).toEqual([1, 0, 0]);
 
     expect([...profile.clippedTop]).toEqual([0, 0, 1]);
-  });
-
-  it('takes the lift off each row by its own distance', () => {
-    // The far range is drawn a row above the near ridge, but its 2° of lift
-    // put it there: at 3° − 2° it stands under the near ridge's 2° − 0.02°.
-    const profile = horizonProfile(
-      { ...frame, depthLift: 2 },
-      depthOf([[0], [100_000], [1000], [900]]),
-    );
-
-    expect(profile.altitudes[0]).toBeCloseTo(2 - 0.02, 3);
   });
 });
 

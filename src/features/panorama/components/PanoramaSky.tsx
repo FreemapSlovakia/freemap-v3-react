@@ -39,10 +39,7 @@ const BELOW_FRAME_DEG = 2;
 /** Smallest a disc is drawn, so a fit view still shows one. */
 const MIN_DISC_PX = 3;
 
-/**
- * The crossings as times, beside the toolbar — the one place they still hold
- * under a lifted picture, which draws no paths.
- */
+/** The crossings as times, beside the toolbar, with the moon's phase. */
 export function PanoramaSkyTimes({
   tracks,
 }: {

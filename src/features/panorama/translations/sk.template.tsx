@@ -38,7 +38,7 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     depthLift: 'Rozvinúť diaľku',
     depthLiftOff: 'Verný pohľad',
     depthLiftHint:
-      'Nadvihne vzdialený terén, takže sa ďaleké pohoria oddelia od hrebeňov pred nimi — tak, ako to robia ručne kreslené panorámy. Zároveň tým do obrázka pribudnú vrchy, ktoré by ste odtiaľto v skutočnosti nevideli; ich názvy sú odlíšené.',
+      'Nadvihne vzdialený terén, takže sa ďaleké pohoria oddelia od hrebeňov pred nimi — tak, ako to robia ručne kreslené panorámy. Zároveň tým do obrázka pribudnú vrchy, ktoré by ste odtiaľto v skutočnosti nevideli; ich názvy sú odlíšené. Dráhy slnka a mesiaca sa cez ňu nekreslia.',
     rangeHint:
       'Terén nad 300 km je prémiová funkcia. Každý kilometer navyše sa prejde po každom lúči obrázka, takže vzdialenejší výhľad stojí vykresľovanie úmerne viac.',
     look: 'Vzhľad',
@@ -93,6 +93,14 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Časy sú v časovom pásme tohto zariadenia a označujú, kedy za terénom zmizne posledný kúsok disku, alebo sa objaví prvý. Terén je holá zem, takže stromy a budovy ho môžu zakryť skôr.',
     today: 'Dnes',
     lit: (percent) => `osvetlený na ${percent}`,
+    unfolded: (
+      <>
+        Nie cez rozvinutý obrázok: jeho vzdialený terén je nakreslený vyššie,
+        než v skutočnosti stojí, takže dráhy by pretínali obzor na nesprávnych
+        miestach. V nastaveniach panorámy nastavte <i>Rozvinúť diaľku</i> na{' '}
+        <i>Verný pohľad</i> a aktualizujte.
+      </>
+    ),
   },
   labels: {
     title: 'Názvy vrchov',
@@ -119,12 +127,16 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Čistý vzduch',
     hazeHint:
       'Ako ďaleko musí vrch byť, aby opar znamenal viac ako samotný vrch. Nad trojnásobkom tejto vzdialenosti sa už nepomenuje nič.',
-    showEle: 'Zobraziť nadmorské výšky',
-    showEleHint:
-      'Pod meno každého vrchu napíše jeho výšku. Menovka je potom dvojriadková, takže sa ich do obrázka zmestí menej.',
-    showDistance: 'Zobraziť vzdialenosti',
-    showDistanceHint:
-      'Pod meno píše, ako ďaleko štít je — vedľa nadmorskej výšky, ak sú zapnuté obe.',
+    subLine: 'Pod názvom',
+    subLineHint:
+      'Čo hovorí druhý riadok menovky každého vrchu. Ak je zapnuté čokoľvek z toho, každá menovka je dvojriadková, takže sa ich do obrázka zmestí menej. Prominencia (P) je, o koľko sa vrch týči nad najnižším sedlom na ceste k vyššiemu terénu; izolácia (I) je, ako ďaleko ten vyšší terén je.',
+    subLineParts: {
+      ele: 'Výška',
+      distance: 'Vzdialenosť',
+      prominence: 'Prominencia',
+      isolation: 'Izolácia',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Pomenovať odhalené vrchy',
     showRevealedHint:
       'Vrchy, ktoré rozvinutie diaľky vytiahlo spoza bližšieho hrebeňa: sú nakreslené, no odtiaľto ich v skutočnosti nevidno. Ich názvy sú svetlejšie a keď nie je miesto pre oba, prednosť dostane vrch, ktorý vidno.',

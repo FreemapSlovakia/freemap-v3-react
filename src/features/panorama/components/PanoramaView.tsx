@@ -19,9 +19,9 @@ import {
   useState,
 } from 'react';
 import { FaCrosshairs } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
 import { distanceAt } from '../depth.js';
-import { candidateLabels } from '../labels/fromPeaks.js';
+import { candidateLabels, matchDoubted } from '../labels/fromPeaks.js';
 import {
   type LabelAnchor,
   type LabelPlacement,
@@ -35,7 +35,12 @@ import {
   panoramaSetSettings,
 } from '../model/actions.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
-import { isFullTurn, labelLayoutLimits } from '../model/settingsReducer.js';
+import {
+  isFullTurn,
+  labelLayoutLimits,
+  type SubLinePart,
+  subLineOf,
+} from '../model/settingsReducer.js';
 import {
   clampPanoramaAzimuth,
   columnAt,
@@ -46,6 +51,7 @@ import {
 } from '../ray.js';
 import type { PanoramaRenderData } from '../renderHolder.js';
 import type { SkyTrack } from '../sky/useSky.js';
+import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import {
   setPanoramaHover,
   setPanoramaView,
@@ -213,6 +219,8 @@ export function PanoramaView({
   skyTracks,
 }: Props): ReactElement {
   const gm = useMessages();
+
+  const m = usePanoramaMessages();
 
   const dispatch = useDispatch();
 
@@ -1145,43 +1153,72 @@ export function PanoramaView({
   // What each summit's second line says, worked out once per set of names
   // rather than per frame: formatting a number is dear, and the layout below
   // asks for every one of them on every frame of a pan.
+  const subLine = useAppSelector(
+    (state) => subLineOf(state.panoramaSettings),
+    shallowEqual,
+  );
+
+  const subAbbr = m?.labels.subLineAbbr;
+
   const subTexts = useMemo(() => {
     const texts = new Map<string, string>();
 
-    if (settings.showLabelEle || settings.showLabelDistance) {
-      for (const label of named) {
-        const parts = [];
+    if (!subLine.length) {
+      return texts;
+    }
 
-        if (settings.showLabelEle && label.ele !== null) {
-          parts.push(nfEle.format(label.ele));
-        }
+    // `null` where the summit has no figure: the part is left out, not zeroed.
+    // The lettered ones wait for their letters, or they'd pass for elevations.
+    const lettered = (
+      label: PanoramaLabel,
+      letter: string | undefined,
+      value: string | undefined,
+    ) =>
+      value === undefined || letter === undefined
+        ? null
+        : `${letter} ${matchDoubted(label) ? '~' : ''}${value}`;
 
-        if (settings.showLabelDistance) {
-          const km = label.distance / 1000;
+    const format: Record<SubLinePart, (label: PanoramaLabel) => string | null> =
+      {
+        ele: (label) => (label.ele === null ? null : nfEle.format(label.ele)),
+        distance: (label) =>
+          (label.distance < 10_000 ? nfDistNear : nfDistFar).format(
+            label.distance / 1000,
+          ),
+        prominence: (label) =>
+          lettered(
+            label,
+            subAbbr?.prominence,
+            label.prominence === undefined
+              ? undefined
+              : nfEle.format(label.prominence),
+          ),
+        isolation: (label) =>
+          lettered(
+            label,
+            subAbbr?.isolation,
+            label.isolation === undefined
+              ? undefined
+              : formatDistance(label.isolation, language),
+          ),
+      };
 
-          parts.push((km < 10 ? nfDistNear : nfDistFar).format(km));
-        }
+    for (const label of named) {
+      const parts = subLine
+        .map((part) => format[part](label))
+        .filter((text) => text !== null);
 
-        if (parts.length) {
-          texts.set(label.id, parts.join(' · '));
-        }
+      if (parts.length) {
+        texts.set(label.id, parts.join(' · '));
       }
     }
 
     return texts;
-  }, [
-    named,
-    nfEle,
-    nfDistNear,
-    nfDistFar,
-    settings.showLabelEle,
-    settings.showLabelDistance,
-  ]);
+  }, [named, nfEle, nfDistNear, nfDistFar, subAbbr, subLine, language]);
 
-  const labelHeight =
-    settings.showLabelEle || settings.showLabelDistance
-      ? LINE_HEIGHT + ELE_LINE_HEIGHT
-      : LINE_HEIGHT;
+  const labelHeight = subLine.length
+    ? LINE_HEIGHT + ELE_LINE_HEIGHT
+    : LINE_HEIGHT;
 
   // No `limits` guard of its own: `named` is already empty without them.
   const placements = useMemo(
@@ -1296,10 +1333,7 @@ export function PanoramaView({
           exactly where most of them run. A summit the lift revealed fades its
           whole mark, the same as its name. */}
       <svg className={classes.overlay}>
-        {/* Not over a lifted picture: its skyline is drawn higher than it
-            stands, so a path in true altitudes would cross it in the wrong
-            places. The times below the picture still hold. */}
-        {render.depthLift === 0 && skyTracks.length > 0 && (
+        {skyTracks.length > 0 && (
           <PanoramaSky
             tracks={skyTracks}
             screenX={screenX}

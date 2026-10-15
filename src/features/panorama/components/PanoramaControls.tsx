@@ -7,6 +7,7 @@ import {
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   FloatingWindowControls,
   useFullscreenAction,
@@ -29,7 +30,7 @@ import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { nearestStep } from '@shared/mathUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useState } from 'react';
-import { Button, Form, InputGroup } from 'react-bootstrap';
+import { Button, Form, InputGroup, ToggleButton } from 'react-bootstrap';
 import {
   FaCog,
   FaCompass,
@@ -71,6 +72,10 @@ import {
   PROMINENCE_WEIGHT_STEP,
   panoramaSettingsInitialState,
   prominenceWeightStep,
+  SUB_LINE_KEY,
+  SUB_LINE_PARTS,
+  type SubLinePart,
+  subLineOf,
 } from '../model/settingsReducer.js';
 import {
   DETAIL_MAX,
@@ -81,7 +86,7 @@ import {
   panoramaRenderKey,
 } from '../quality.js';
 import { localDay, MIN_SKY_YEAR } from '../sky/track.js';
-import { useToday } from '../sky/useSky.js';
+import { skyHidden, useToday } from '../sky/useSky.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 
 /**
@@ -93,6 +98,8 @@ const LABEL_DEFAULTS = {
   labelDensity: panoramaSettingsInitialState.labelDensity,
   showLabelEle: panoramaSettingsInitialState.showLabelEle,
   showLabelDistance: panoramaSettingsInitialState.showLabelDistance,
+  showLabelProminence: panoramaSettingsInitialState.showLabelProminence,
+  showLabelIsolation: panoramaSettingsInitialState.showLabelIsolation,
   minDominance: panoramaSettingsInitialState.minDominance,
   labelDistanceWeight: panoramaSettingsInitialState.labelDistanceWeight,
   prominenceWeight: panoramaSettingsInitialState.prominenceWeight,
@@ -399,41 +406,50 @@ export function PanoramaControls({
           }
         />
 
-        {/* Beside the count, because it is the other half of the same
-            question: a second line makes every label taller, so fewer of them
-            fit the picture. */}
-        <div className="d-flex">
-          <Form.Check
-            id="fm-panorama-label-ele"
+        {/* Beside the count: a second line makes every label taller, so fewer
+            of them fit the picture. */}
+        <div>
+          <div className="mb-1">
+            {m?.labels.subLine}
+
+            <HintMark hint={m?.labels.subLineHint} />
+          </div>
+
+          <FitToggleButtonGroup
             type="checkbox"
-            label={m?.labels.showEle}
-            checked={settings.showLabelEle}
-            onChange={(e) =>
+            size="sm"
+            className="w-100"
+            value={subLineOf(settings)}
+            onChange={(parts: SubLinePart[]) => {
+              for (const part of parts) {
+                if (!settings[SUB_LINE_KEY[part]]) {
+                  trackMatomo(['trackEvent', 'Panorama', 'labelSubLine', part]);
+                }
+              }
+
               dispatch(
-                panoramaSetSettings({ showLabelEle: e.currentTarget.checked }),
-              )
-            }
-          />
-
-          <HintMark hint={m?.labels.showEleHint} />
-        </div>
-
-        <div className="d-flex">
-          <Form.Check
-            id="fm-panorama-label-distance"
-            type="checkbox"
-            label={m?.labels.showDistance}
-            checked={settings.showLabelDistance}
-            onChange={(e) =>
-              dispatch(
-                panoramaSetSettings({
-                  showLabelDistance: e.currentTarget.checked,
-                }),
-              )
-            }
-          />
-
-          <HintMark hint={m?.labels.showDistanceHint} />
+                panoramaSetSettings(
+                  Object.fromEntries(
+                    SUB_LINE_PARTS.map((part) => [
+                      SUB_LINE_KEY[part],
+                      parts.includes(part),
+                    ]),
+                  ),
+                ),
+              );
+            }}
+          >
+            {SUB_LINE_PARTS.map((part) => (
+              <ToggleButton
+                key={part}
+                id={`fm-panorama-label-${part}`}
+                value={part}
+                variant="outline-primary"
+              >
+                {m?.labels.subLineParts[part]}
+              </ToggleButton>
+            ))}
+          </FitToggleButtonGroup>
         </div>
 
         <LabeledSlider
@@ -565,6 +581,8 @@ export function PanoramaControls({
         }
         name={m?.sky.title}
         breakpoint="md"
+        disabled={skyHidden(render)}
+        toggleHint={skyHidden(render) ? m?.sky.unfolded : undefined}
       >
         <Form.Check
           id="fm-panorama-sun"

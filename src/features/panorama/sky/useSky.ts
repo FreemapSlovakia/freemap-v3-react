@@ -29,6 +29,13 @@ export type SkyTrack = {
   viewpoint: LatLon;
 };
 
+/** No sky over an unfolded picture: its skyline is drawn higher than it stands. */
+export function skyHidden(
+  render: Pick<PanoramaRenderInfo, 'depthLift'> | null,
+): boolean {
+  return Boolean(render?.depthLift);
+}
+
 const NOW_TICK_MS = 60_000;
 
 /** The current time, re-read once a minute. */
@@ -103,7 +110,7 @@ function bodyDay(
   depth: PanoramaDepth | null,
   date: string,
 ) {
-  if (!render || !depth) {
+  if (!render || !depth || skyHidden(render)) {
     return null;
   }
 

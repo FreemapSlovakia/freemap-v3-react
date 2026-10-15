@@ -42,7 +42,7 @@ const en: PanoramaMessages = {
     depthLift: 'Unfold distance',
     depthLiftOff: 'True view',
     depthLiftHint:
-      'Raises distant terrain so that far ranges separate from the ridges in front of them, the way a hand-drawn panorama does. It also brings into view summits you could not actually see from here; their names are marked.',
+      'Raises distant terrain so that far ranges separate from the ridges in front of them, the way a hand-drawn panorama does. It also brings into view summits you could not actually see from here; their names are marked. Sun and moon paths are not drawn over it.',
     rangeHint:
       'Terrain past 300 km is premium’s. Every extra kilometre is walked along every ray of the picture, so a farther view costs the renderer proportionally more.',
     look: 'Look',
@@ -97,6 +97,14 @@ const en: PanoramaMessages = {
       'Times are in this device’s time zone and mark when the last sliver of the disc goes behind the terrain or the first one comes out. The terrain is bare earth, so trees and buildings can hide it sooner.',
     today: 'Today',
     lit: (percent) => `${percent} lit`,
+    unfolded: (
+      <>
+        Not over an unfolded picture: its distant terrain is drawn higher than
+        it stands, so the paths would cross the skyline in the wrong places. Set{' '}
+        <i>Unfold distance</i> to <i>True view</i> in the panorama settings and
+        update.
+      </>
+    ),
   },
   labels: {
     title: 'Peak names',
@@ -123,12 +131,16 @@ const en: PanoramaMessages = {
     hazeOff: 'Clear air',
     hazeHint:
       'How far a summit must be before haze counts for more than the summit does. Past three times that, nothing is named at all.',
-    showEle: 'Show elevations',
-    showEleHint:
-      'Writes each summit’s height under its name. Every label is then two lines tall, so fewer of them fit the picture.',
-    showDistance: 'Show distances',
-    showDistanceHint:
-      'Writes how far each summit is under its name, beside the height where both are on.',
+    subLine: 'Under the name',
+    subLineHint:
+      'What each summit’s second line says. With any of them on, every label is two lines tall, so fewer fit the picture. Prominence (P) is how far the summit rises above the lowest col on the way to higher ground; isolation (I) is how far that higher ground is.',
+    subLineParts: {
+      ele: 'Elevation',
+      distance: 'Distance',
+      prominence: 'Prominence',
+      isolation: 'Isolation',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Name revealed peaks',
     showRevealedHint:
       'Summits that unfolding lifted out from behind a nearer ridge: drawn, but not actually visible from here. Their names are drawn faded, and rank below the ones that can be seen where there is no room for both.',
