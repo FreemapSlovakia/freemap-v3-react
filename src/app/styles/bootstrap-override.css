@@ -234,6 +234,8 @@ legend {
    in whole sentences. Bounded by the viewport so a phone keeps it on screen. */
 .tooltip {
   --bs-tooltip-max-width: min(24rem, calc(100vw - 2rem));
+  /* Over `.dropdown-menu`, whose hints would otherwise open behind it. */
+  --bs-tooltip-zindex: 10001;
 }
 
 .tooltip-inner {
