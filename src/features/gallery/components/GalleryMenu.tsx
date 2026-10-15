@@ -16,6 +16,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { useEffect, useState } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import type { IconType } from 'react-icons';
@@ -273,6 +274,13 @@ export default function GalleryMenu() {
 
                       return;
                     }
+
+                    trackMatomo([
+                      'trackEvent',
+                      'Gallery',
+                      'colorize',
+                      colorizeBy ?? 'none',
+                    ]);
 
                     dispatch(
                       galleryColorizeBy(

@@ -94,6 +94,10 @@ Source-language note: Slovak (native quality) and Czech are the best sibling hin
 - **`src/osm/osmTagToNameMapping-<lang>.template.ts`** — the `colorNames` export is NOT sync-managed; translate it by hand.
 - **Hardcoded language allowlists** — plain `string[]` gates that `tsc` will NOT catch, so grep for them. Known one: `getOsmMapping` in `src/osm/osmNameResolver.ts` (`['sk','cs','it','hu','de','pl',…]`) — omitting the new code silently leaves all OSM POI names in English even though the mapping file exists. Also `src/routers/gallery/postPictureCommentHandler.ts` in the **freemap-v3-api** repo has a `Lang` union + `acceptsLanguages([...])` list; the other API email handlers key off `Object.keys(translations)` and need only a new `translations` entry.
 
+## Matomo events
+
+**A new user-visible function needs a `trackMatomo(['trackEvent', <Category>, <action>, <name?>])` call** where the user acts (choosing a mode, showing something, starting an export) — not for what is only displayed. Reuse the feature's existing category (`grep -rn trackMatomo src`). Automatic outlink tracking counts only http(s) links, so an `intent:`/`geo:` link or a dispatched action needs its own event. Track a toggle on enabling, not on every state the UI restores.
+
 ## Settings slices
 
 Persisted **user preferences** (default styles, colorize modes, legend toggles, filter prefs) belong in a dedicated `*Settings` slice — e.g. `drawingSettings`, `objectsSettings`, `searchSettings`, `trackViewerSettings` — **not** in the feature's transient slice.

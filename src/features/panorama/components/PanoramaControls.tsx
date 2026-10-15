@@ -27,6 +27,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { nearestStep } from '@shared/mathUtils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useState } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import {
@@ -573,9 +574,13 @@ export function PanoramaControls({
           type="checkbox"
           label={m?.sky.sun}
           checked={settings.showSun}
-          onChange={(e) =>
-            dispatch(panoramaSetSettings({ showSun: e.currentTarget.checked }))
-          }
+          onChange={(e) => {
+            const { checked } = e.currentTarget;
+
+            trackMatomo(['trackEvent', 'Panorama', 'showSun', String(checked)]);
+
+            dispatch(panoramaSetSettings({ showSun: checked }));
+          }}
         />
 
         <Form.Check
@@ -583,9 +588,18 @@ export function PanoramaControls({
           type="checkbox"
           label={m?.sky.moon}
           checked={settings.showMoon}
-          onChange={(e) =>
-            dispatch(panoramaSetSettings({ showMoon: e.currentTarget.checked }))
-          }
+          onChange={(e) => {
+            const { checked } = e.currentTarget;
+
+            trackMatomo([
+              'trackEvent',
+              'Panorama',
+              'showMoon',
+              String(checked),
+            ]);
+
+            dispatch(panoramaSetSettings({ showMoon: checked }));
+          }}
         />
 
         <Form.Group controlId="fm-panorama-sky-date">

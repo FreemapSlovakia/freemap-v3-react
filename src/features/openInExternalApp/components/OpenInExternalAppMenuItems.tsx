@@ -5,6 +5,7 @@ import { Chord } from '@shared/components/Chord.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import { canShareFile } from '@shared/webShare.js';
 import type { ReactElement, ReactNode } from 'react';
@@ -100,6 +101,10 @@ interface TargetProps
 const noIcon = <svg width="1em" height="1em" />;
 
 const isAndroid = /Android/i.test(navigator.userAgent);
+
+// Matomo's outlink tracking sees only http(s) links, not `intent:` or `geo:`.
+const trackOpenApp = (where: string) =>
+  trackMatomo(['trackEvent', 'Share', 'openExternal', where]);
 
 export function openMenuItemProps(externalTarget: ExternalTarget) {
   return {
@@ -299,6 +304,7 @@ export function OpenInExternalTargetItems({
         <Dropdown.Item
           href={getFreemapAndroidUrl(lat, lon, zoom, includePoint)}
           eventKey="url"
+          onClick={() => trackOpenApp('freemap-android')}
         >
           <FaAndroid /> Freemap (Android)
         </Dropdown.Item>
@@ -356,6 +362,7 @@ export function OpenInExternalTargetItems({
         <Dropdown.Item
           href={getGeoUrl(lat, lon, zoom, includePoint)}
           eventKey="url"
+          onClick={() => trackOpenApp('geo-app')}
         >
           <FaMapMarkedAlt /> {oeam?.geoApp}
         </Dropdown.Item>

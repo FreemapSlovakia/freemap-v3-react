@@ -41,6 +41,7 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useSimplifyPrompt } from '@shared/simplifyDialog.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { Feature, LineString } from 'geojson';
 import {
@@ -986,6 +987,13 @@ export default function RoutePlannerMenu(): ReactElement {
 
               return;
             }
+
+            trackMatomo([
+              'trackEvent',
+              'RoutePlanner',
+              'colorize',
+              mode ?? 'none',
+            ]);
 
             dispatch(
               routePlannerColorizeBy(

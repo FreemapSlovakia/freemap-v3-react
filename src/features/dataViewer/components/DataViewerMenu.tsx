@@ -29,6 +29,7 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useMemo } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
@@ -297,6 +298,13 @@ export function DataViewerMenu(): ReactElement {
             const mode = ColorizingModeSchema.nullable().parse(
               approach === 'none' ? null : approach,
             );
+
+            trackMatomo([
+              'trackEvent',
+              'TrackViewer',
+              'colorize',
+              mode ?? 'none',
+            ]);
 
             // Elevation-derived modes route through the same fill prompt as
             // the chart, but only while elevation is missing and undecided;

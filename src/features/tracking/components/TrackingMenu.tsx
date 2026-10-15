@@ -23,6 +23,7 @@ import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
@@ -187,6 +188,8 @@ export function TrackingMenu(): ReactElement {
 
             return;
           }
+
+          trackMatomo(['trackEvent', 'Tracking', 'colorize', mode ?? 'none']);
 
           dispatch(
             trackingActions.setColorizeBy(

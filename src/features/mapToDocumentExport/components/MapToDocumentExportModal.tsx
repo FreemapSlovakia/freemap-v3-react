@@ -36,6 +36,7 @@ import {
 import outdoorBody from '@shared/mapLibrary/defs/outdoor.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { saveBlob } from '@shared/saveBlob.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   type ChangeEvent,
   Fragment,
@@ -443,6 +444,19 @@ export default function MapToDocumentExportModal({
 
     setExporting(true);
 
+    // How the size was set: the zoom against the map's, and what was locked.
+    trackMatomo([
+      'trackEvent',
+      'DocumentExport',
+      'print',
+      [
+        `zoom${print.zoom - mapZoom(store.getState())}`,
+        ...printDraft.locked.map((field) =>
+          field === 'paper' ? `paper-${printDraft.paper?.by}` : field,
+        ),
+      ].join(' '),
+    ]);
+
     try {
       const file = await exportMapToDocument({
         getState: store.getState,
@@ -504,6 +518,7 @@ export default function MapToDocumentExportModal({
     mtde,
     bbox,
     print,
+    printDraft,
     exportables,
     format,
     qualityKey,

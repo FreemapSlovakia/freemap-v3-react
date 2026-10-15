@@ -4,6 +4,7 @@ import {
 } from '@features/map/panToUncovered.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaMapMarkerAlt } from 'react-icons/fa';
@@ -47,6 +48,13 @@ export function TerrainMarkToggle({
             dispatch(objectsTerrainMark({ kind, mark: shown ? null : mark }));
 
             if (!shown) {
+              trackMatomo([
+                'trackEvent',
+                'Objects',
+                'showTerrainMark',
+                `${mark.poi}-${kind}`,
+              ]);
+
               void panToUncovered(dispatch, mark, {
                 ifHidden: true,
                 margin: GENEROUS_MARGIN_PX,

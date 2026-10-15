@@ -9,6 +9,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useTerrainLicenses } from '@shared/tileLicenses.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { featureCollection, lineString, point } from '@turf/helpers';
 import type { Feature } from 'geojson';
 import type { ReactElement, ReactNode } from 'react';
@@ -239,11 +240,15 @@ export function TerrainFactsView({
           <Button
             variant={route ? 'primary' : 'outline-primary'}
             active={Boolean(route)}
-            onClick={() =>
+            onClick={() => {
+              if (!route) {
+                trackMatomo(['trackEvent', 'Objects', 'showProminenceRoute']);
+              }
+
               dispatch(
                 route ? objectsRouteClear() : objectsRouteRequest({ osmId }),
-              )
-            }
+              );
+            }}
           >
             {route && !route.coordinates && (
               <Spinner animation="border" size="sm" className="me-1" />
