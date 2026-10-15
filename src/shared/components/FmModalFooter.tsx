@@ -165,28 +165,22 @@ function CollapsibleButton({
   const threshold = useContext(FooterCollapse);
 
   return (
-    <LongPressTooltip label={label} kbd={kbd} hideLabel={priority <= threshold}>
-      {({ props, label: content, labelClassName }) => {
-        const button = (tipProps?: typeof props) => (
-          <Button {...rest} {...tipProps}>
-            {icon}
+    // Disabled too, or a collapsed button would be a bare icon nothing names.
+    <LongPressTooltip
+      label={label}
+      kbd={kbd}
+      hideLabel={priority <= threshold}
+      disabled={rest.disabled}
+    >
+      {({ props, label: content, labelClassName }) => (
+        <Button {...rest} {...props}>
+          {icon}
 
-            <CollapsibleLabel priority={priority} className={labelClassName}>
-              {content}
-            </CollapsibleLabel>
-          </Button>
-        );
-
-        // A disabled button takes no pointer events, so a collapsed one would
-        // be a bare icon with no way to name it; the wrapper takes them instead.
-        return rest.disabled ? (
-          <span className="d-inline-block" {...props}>
-            {button()}
-          </span>
-        ) : (
-          button(props)
-        );
-      }}
+          <CollapsibleLabel priority={priority} className={labelClassName}>
+            {content}
+          </CollapsibleLabel>
+        </Button>
+      )}
     </LongPressTooltip>
   );
 }

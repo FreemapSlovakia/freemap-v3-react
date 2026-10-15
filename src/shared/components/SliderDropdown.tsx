@@ -20,6 +20,8 @@ type Props = {
   toggleClassName?: string;
   /** A line under the toggle's own tooltip, saying what `toggleClassName` means. */
   toggleHint?: ReactNode;
+  /** Disables the toggle; its tooltip still shows, so `toggleHint` can say why. */
+  disabled?: boolean;
   /** `LabeledSlider`s, and whatever else answers the same question. */
   children: ReactNode;
 };
@@ -36,9 +38,15 @@ export function SliderDropdown({
   breakpoint,
   toggleClassName,
   toggleHint,
+  disabled,
   children,
 }: Props): ReactElement {
   const [show, setShow] = useState(false);
+
+  // Closed with its toggle, which could no longer close it.
+  if (disabled && show) {
+    setShow(false);
+  }
 
   return (
     <Dropdown
@@ -65,12 +73,14 @@ export function SliderDropdown({
         label={toggleLabel ?? '…'}
         name={name}
         hint={toggleHint}
+        disabled={disabled}
       >
         {({ label: tipLabel, labelClassName, props }) => (
           <Dropdown.Toggle
             variant="secondary"
             bsPrefix="fm-dropdown-toggle-nocaret"
             className={toggleClassName}
+            disabled={disabled}
             {...props}
           >
             {icon}

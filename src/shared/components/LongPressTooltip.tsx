@@ -41,6 +41,17 @@ export type TooltipTargetProps = {
   onContextMenuCapture: (e: MouseEvent) => void;
 };
 
+const noop = () => {};
+
+/** What a disabled control is handed: its wrapper is the tooltip's target. */
+const INERT_TARGET: TooltipTargetProps = {
+  ref: noop,
+  onPointerEnter: noop,
+  onPointerLeave: noop,
+  onClickCapture: noop,
+  onContextMenuCapture: noop,
+};
+
 type Props = {
   label?: ReactNode;
   /**
@@ -67,6 +78,13 @@ type Props = {
    * else — on a control the same tap would activate it.
    */
   toggleOnClick?: boolean;
+  /**
+   * The control is disabled, so takes no pointer events: the tooltip hangs on a
+   * wrapper around it instead, and the control is handed inert props.
+   */
+  disabled?: boolean;
+  /** Classes for that wrapper; `d-inline-block` by default. */
+  wrapperClassName?: string;
   children: (props: {
     props: TooltipTargetProps;
     label: ReactNode;
@@ -83,6 +101,8 @@ export function LongPressTooltip({
   breakpoint,
   hideLabel,
   toggleOnClick,
+  disabled,
+  wrapperClassName = 'd-inline-block',
   children,
 }: Props) {
   const [show, setShow] = useState(false);
@@ -223,26 +243,36 @@ export function LongPressTooltip({
     [coarse],
   );
 
+  const targetProps: TooltipTargetProps = {
+    ref: attachTarget,
+    onPointerEnter: handleStart,
+    onPointerLeave: handleClear,
+    onClickCapture: handleClickCapture,
+    onContextMenuCapture: handleContextMenuCapture,
+  };
+
+  const control = children({
+    props: disabled ? INERT_TARGET : targetProps,
+    label: kbd ? (
+      <>
+        {label} {kbdEl}
+      </>
+    ) : (
+      label
+    ),
+    labelClassName: labelHidden ? 'd-none' : 'd-inline',
+  });
+
   return (
     <>
       <SuppressParent value={setChildActive}>
-        {children({
-          props: {
-            ref: attachTarget,
-            onPointerEnter: handleStart,
-            onPointerLeave: handleClear,
-            onClickCapture: handleClickCapture,
-            onContextMenuCapture: handleContextMenuCapture,
-          },
-          label: kbd ? (
-            <>
-              {label} {kbdEl}
-            </>
-          ) : (
-            label
-          ),
-          labelClassName: labelHidden ? 'd-none' : 'd-inline',
-        })}
+        {disabled ? (
+          <span className={wrapperClassName} {...targetProps}>
+            {control}
+          </span>
+        ) : (
+          control
+        )}
       </SuppressParent>
 
       {target && (labelHidden || name != null || hint != null) && (

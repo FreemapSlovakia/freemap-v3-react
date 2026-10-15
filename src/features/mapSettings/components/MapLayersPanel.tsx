@@ -790,26 +790,28 @@ function Stack({
       {!window.fmEmbedded && makesNew && (
         <div className="d-flex mt-2">
           {/* What a preset can't hold is named in the form it opens. */}
-          <LongPressTooltip label={msm?.saveLayersAsPresetHint}>
-            {/* The span takes the tooltip, which a disabled button can't. */}
+          <LongPressTooltip
+            label={msm?.saveLayersAsPresetHint}
+            disabled={!canSave}
+            wrapperClassName="ms-auto d-flex min-w-0"
+          >
             {({ props }) => (
-              <span className="ms-auto d-flex min-w-0" {...props}>
-                <Button
-                  variant="secondary"
-                  className="text-truncate"
-                  disabled={!canSave}
-                  onClick={() =>
-                    dispatch(
-                      setActiveModal({
-                        type: 'installed-maps',
-                        customMap: { addPreset: true, returnTo: null },
-                      }),
-                    )
-                  }
-                >
-                  <MdDashboardCustomize /> {msm?.saveLayersAsPreset}
-                </Button>
-              </span>
+              <Button
+                variant="secondary"
+                className="ms-auto text-truncate"
+                disabled={!canSave}
+                onClick={() =>
+                  dispatch(
+                    setActiveModal({
+                      type: 'installed-maps',
+                      customMap: { addPreset: true, returnTo: null },
+                    }),
+                  )
+                }
+                {...props}
+              >
+                <MdDashboardCustomize /> {msm?.saveLayersAsPreset}
+              </Button>
             )}
           </LongPressTooltip>
         </div>
