@@ -85,6 +85,16 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     label: 'Zakres poziomy',
     full: 'Dookoła',
   },
+  sky: {
+    title: 'Słońce i księżyc',
+    sun: 'Droga słońca',
+    moon: 'Droga księżyca',
+    date: 'Dzień',
+    dateHint:
+      'Godziny są w strefie czasowej tego urządzenia i oznaczają, kiedy za terenem znika ostatni skrawek tarczy lub pojawia się pierwszy. Teren to goła ziemia, więc drzewa i budynki mogą ją zasłonić wcześniej.',
+    today: 'Dziś',
+    lit: (percent) => `oświetlony w ${percent}`,
+  },
   labels: {
     title: 'Nazwy szczytów',
     density: 'Liczba nazw',

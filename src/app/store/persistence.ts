@@ -305,6 +305,8 @@ const PersistedPanoramaSettingsSchema = z
     labelDistanceWeight: z.number().min(0).max(LABEL_DISTANCE_WEIGHT_MAX),
     prominenceWeight: z.number().min(0).max(PROMINENCE_WEIGHT_MAX),
     autoPan: z.boolean(),
+    showSun: z.boolean(),
+    showMoon: z.boolean(),
   })
   .partial();
 

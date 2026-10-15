@@ -446,6 +446,9 @@ export interface PanoramaSettingsState {
    * picture by hand clears it, the same as the stop button does.
    */
   autoPan: boolean;
+  /** Whether the sun's and the moon's paths over the day are drawn. */
+  showSun: boolean;
+  showMoon: boolean;
 }
 
 /**
@@ -488,6 +491,8 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   labelDistanceWeight: 0.5,
   prominenceWeight: PROMINENCE_WEIGHT,
   autoPan: touchDevice(),
+  showSun: true,
+  showMoon: false,
 };
 
 export const panoramaSettingsReducer = createReducer(

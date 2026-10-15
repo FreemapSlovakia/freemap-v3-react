@@ -45,12 +45,14 @@ import {
   readAlong,
 } from '../ray.js';
 import type { PanoramaRenderData } from '../renderHolder.js';
+import type { SkyTrack } from '../sky/useSky.js';
 import {
   setPanoramaHover,
   setPanoramaView,
   usePanoramaAim,
 } from '../viewStore.js';
 import classes from './Panorama.module.css';
+import { PanoramaSky } from './PanoramaSky.js';
 
 /** Matches `.label` in the stylesheet, which is what `measure` measures. */
 const LABEL_FONT = '12px sans-serif';
@@ -199,6 +201,8 @@ type Props = {
   data: PanoramaRenderData;
   width: number;
   height: number;
+  /** Shared with the footer's times, so the day is worked out once. */
+  skyTracks: SkyTrack[];
 };
 
 export function PanoramaView({
@@ -206,6 +210,7 @@ export function PanoramaView({
   data,
   width,
   height,
+  skyTracks,
 }: Props): ReactElement {
   const gm = useMessages();
 
@@ -1043,6 +1048,12 @@ export function PanoramaView({
     );
   };
 
+  const screenY = useCallback(
+    (altitude: number) =>
+      ((render.altMax - altitude) / render.stepDeg - clampedOffsetY) * scale,
+    [clampedOffsetY, render.altMax, render.stepDeg, scale],
+  );
+
   const anchor = useCallback(
     (label: PanoramaLabel): LabelAnchor | null => {
       const y = (label.y - clampedOffsetY) * scale;
@@ -1285,6 +1296,19 @@ export function PanoramaView({
           exactly where most of them run. A summit the lift revealed fades its
           whole mark, the same as its name. */}
       <svg className={classes.overlay}>
+        {/* Not over a lifted picture: its skyline is drawn higher than it
+            stands, so a path in true altitudes would cross it in the wrong
+            places. The times below the picture still hold. */}
+        {render.depthLift === 0 && skyTracks.length > 0 && (
+          <PanoramaSky
+            tracks={skyTracks}
+            screenX={screenX}
+            screenY={screenY}
+            width={width}
+            altMin={render.altMin}
+          />
+        )}
+
         {placements.map((p) => (
           <g
             key={p.label.id}

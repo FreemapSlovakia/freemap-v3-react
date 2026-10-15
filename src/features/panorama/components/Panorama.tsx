@@ -22,12 +22,14 @@ import {
 import { useDispatch } from 'react-redux';
 import { type PanoramaProbe, panoramaCancel } from '../model/actions.js';
 import { usePanoramaRenderData } from '../renderHolder.js';
+import { useSkyTracks } from '../sky/useSky.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import { usePanoramaAim, usePanoramaProgress } from '../viewStore.js';
 import classes from './Panorama.module.css';
 import { PanoramaAbout } from './PanoramaAbout.js';
 import { PanoramaControls } from './PanoramaControls.js';
 import { PanoramaProbeReadout, readoutOf } from './PanoramaProbeReadout.js';
+import { PanoramaSkyTimes } from './PanoramaSky.js';
 import { PanoramaView, PICKED_INK } from './PanoramaView.js';
 
 export default function Panorama(): ReactElement {
@@ -50,6 +52,8 @@ export default function Panorama(): ReactElement {
   const nfEle = useNumberFormat({ maximumFractionDigits: 0 });
 
   const data = usePanoramaRenderData();
+
+  const skyTracks = useSkyTracks(render, data);
 
   const [showAbout, setShowAbout] = useState(false);
 
@@ -134,6 +138,7 @@ export default function Panorama(): ReactElement {
               data={data}
               width={size.width}
               height={size.height}
+              skyTracks={skyTracks}
             />
           ) : error ? (
             <Alert variant="danger" className="m-0">
@@ -300,6 +305,8 @@ export default function Panorama(): ReactElement {
             {render && error && (
               <span className="text-danger">{m?.errors[error]}</span>
             )}
+
+            <PanoramaSkyTimes tracks={skyTracks} />
           </div>
         </div>
       </div>

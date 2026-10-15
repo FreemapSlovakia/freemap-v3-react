@@ -118,6 +118,11 @@ export const panoramaSetProbe = createAction<PanoramaProbe | null>(
   'PANORAMA_SET_PROBE',
 );
 
+/** The day the sky paths are drawn for, `YYYY-MM-DD`; `null` is today. */
+export const panoramaSetSkyDate = createAction<string | null>(
+  'PANORAMA_SET_SKY_DATE',
+);
+
 export const panoramaSetSettings = createAction<Partial<PanoramaSettingsState>>(
   'PANORAMA_SET_SETTINGS',
 );

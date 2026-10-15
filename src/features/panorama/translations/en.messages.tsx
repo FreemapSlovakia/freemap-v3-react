@@ -88,6 +88,16 @@ const en: PanoramaMessages = {
     label: 'Horizontal view',
     full: 'All around',
   },
+  sky: {
+    title: 'Sun and moon',
+    sun: 'Sun path',
+    moon: 'Moon path',
+    date: 'Day',
+    dateHint:
+      'Times are in this device’s time zone and mark when the last sliver of the disc goes behind the terrain or the first one comes out. The terrain is bare earth, so trees and buildings can hide it sooner.',
+    today: 'Today',
+    lit: (percent) => `${percent} lit`,
+  },
   labels: {
     title: 'Peak names',
     density: 'Number of names',

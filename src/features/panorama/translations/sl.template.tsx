@@ -86,6 +86,16 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     label: 'Vodoravni obseg',
     full: 'Naokoli',
   },
+  sky: {
+    title: 'Sonce in luna',
+    sun: 'Pot sonca',
+    moon: 'Pot lune',
+    date: 'Dan',
+    dateHint:
+      'Časi so v časovem pasu te naprave in označujejo, kdaj za terenom izgine zadnji delček diska ali se prikaže prvi. Teren je gola zemlja, zato ga drevesa in stavbe lahko zakrijejo prej.',
+    today: 'Danes',
+    lit: (percent) => `osvetljena ${percent}`,
+  },
   labels: {
     title: 'Imena vrhov',
     density: 'Število imen',

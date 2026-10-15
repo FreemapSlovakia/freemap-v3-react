@@ -97,6 +97,18 @@ export type PanoramaMessages = {
     /** The whole horizon — the only fov with no direction to aim. */
     full: string;
   };
+  /** The sun's and moon's paths over the picture, and the day they are for. */
+  sky: {
+    title: string;
+    sun: string;
+    moon: string;
+    date: string;
+    /** Says the times are local to the device and the terrain is bare. */
+    dateHint: string;
+    today: string;
+    /** The moon's lit fraction, `percent` already formatted. */
+    lit: (percent: string) => string;
+  };
   labels: {
     /** Names the menu the four sliders share. */
     title: string;

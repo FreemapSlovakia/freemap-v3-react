@@ -84,6 +84,16 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     label: 'Ampiezza orizzontale',
     full: 'Tutto attorno',
   },
+  sky: {
+    title: 'Sole e luna',
+    sun: 'Percorso del sole',
+    moon: 'Percorso della luna',
+    date: 'Giorno',
+    dateHint:
+      'Gli orari sono nel fuso orario di questo dispositivo e indicano quando l’ultimo spicchio del disco scompare dietro il terreno o il primo riappare. Il terreno è nudo, quindi alberi ed edifici possono nasconderlo prima.',
+    today: 'Oggi',
+    lit: (percent) => `illuminata al ${percent}`,
+  },
   labels: {
     title: 'Nomi delle cime',
     density: 'Numero di nomi',

@@ -84,6 +84,16 @@ const cs: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     label: 'Vodorovný rozsah',
     full: 'Dokola',
   },
+  sky: {
+    title: 'Slunce a měsíc',
+    sun: 'Dráha slunce',
+    moon: 'Dráha měsíce',
+    date: 'Den',
+    dateHint:
+      'Časy jsou v časovém pásmu tohoto zařízení a označují, kdy za terénem zmizí poslední kousek disku, nebo se objeví první. Terén je holá země, takže stromy a budovy jej mohou zakrýt dříve.',
+    today: 'Dnes',
+    lit: (percent) => `osvětlen z ${percent}`,
+  },
   labels: {
     title: 'Názvy vrcholů',
     density: 'Počet názvů',

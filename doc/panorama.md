@@ -1283,6 +1283,37 @@ centred anywhere else would measure the new summits from a place the picture was
 not taken from — so the dialog says so: it re-aims rays that were already there,
 which "append" alone would not lead anyone to expect.
 
+## Sun and moon
+
+`sky/` draws a day's path of the sun and the moon over the picture and lists
+where each crosses the skyline. **All of it is client-side**: the distance
+buffer already holds the skyline, and positions are a few hundred lines of
+Meeus, so changing the day costs no render.
+
+- **The skyline** (`horizonProfile`) is the topmost terrain row of each column,
+  as true altitude: the picture's rows already carry curvature and terrestrial
+  refraction. Under a lift every row's own lift comes off by its distance and
+  the highest result wins — a near ridge lifted less can out-stand the range
+  drawn above it. A column clipped by the frame's top or bottom answers `null`
+  for anything past that edge rather than guessing. Cached per depth buffer.
+- **Positions** (`astro.ts`) are apparent and topocentric: atmospheric
+  refraction is added (≈0.5° at the horizon, minutes of time), and the moon's
+  parallax taken off (≈1°). A crossing is the **upper limb**: the last sliver
+  gone, the first one out.
+- **The path follows the centre, the crossing the limb**, so the solid/dashed
+  split sits a radius above the crossing. The crossing is drawn as the disc at
+  its true size, its top on the skyline — a ring at the centre alone reads as
+  sunk into the terrain.
+- **A minute per sample**, and both crossings — the limb's event and the
+  centre's solid/dashed split — bisected to the second between the two samples
+  they lie between. Not interpolated: the skyline is jagged, so only re-asking
+  the profile at each step lands on it. A minute of the moon is tens of pixels
+  zoomed in, so the split at a whole minute shows.
+- **Times are the browser's zone**; the day is local midnight to midnight, and
+  `skyDate` `null` means today, so the paths follow the clock past midnight.
+- **A lifted picture draws no paths**, its skyline standing higher than it is;
+  the times in the footer still hold, being measured against the true one.
+
 ## Caveats to keep surfaced
 
 The ⓘ panel says them, and they are the support mail this feature would
@@ -1317,4 +1348,4 @@ from.
 - Narrow-`fov` re-render for real optical zoom past the image's own pixels;
   the service says it is proportionally cheap.
 - Entry from a selected peak, and the toposcope's own way back to a panorama.
-- Sun path — the service hasn't implemented it either.
+- The sky date in the URL.

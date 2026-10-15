@@ -84,6 +84,16 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     label: 'Vízszintes tartomány',
     full: 'Körben',
   },
+  sky: {
+    title: 'Nap és Hold',
+    sun: 'A Nap útja',
+    moon: 'A Hold útja',
+    date: 'Nap',
+    dateHint:
+      'Az időpontok az eszköz időzónájában értendők, és azt jelzik, mikor tűnik el a korong utolsó szelete a terep mögött, vagy mikor bukkan fel az első. A terep csupasz felszín, így a fák és az épületek korábban eltakarhatják.',
+    today: 'Ma',
+    lit: (percent) => `${percent}-ban megvilágítva`,
+  },
   labels: {
     title: 'Csúcsnevek',
     density: 'Nevek száma',

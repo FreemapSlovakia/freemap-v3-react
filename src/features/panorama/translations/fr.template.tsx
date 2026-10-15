@@ -84,6 +84,16 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     label: 'Étendue horizontale',
     full: 'Tout autour',
   },
+  sky: {
+    title: 'Soleil et lune',
+    sun: 'Course du soleil',
+    moon: 'Course de la lune',
+    date: 'Jour',
+    dateHint:
+      'Les heures sont dans le fuseau horaire de cet appareil et indiquent quand le dernier croissant du disque passe derrière le relief ou quand le premier réapparaît. Le relief est le sol nu : arbres et bâtiments peuvent le cacher plus tôt.',
+    today: 'Aujourd’hui',
+    lit: (percent) => `éclairée à ${percent}`,
+  },
   labels: {
     title: 'Noms des sommets',
     density: 'Nombre de noms',

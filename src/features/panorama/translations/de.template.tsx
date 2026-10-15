@@ -84,6 +84,16 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     label: 'Waagerechter Ausschnitt',
     full: 'Rundum',
   },
+  sky: {
+    title: 'Sonne und Mond',
+    sun: 'Sonnenbahn',
+    moon: 'Mondbahn',
+    date: 'Tag',
+    dateHint:
+      'Die Zeiten gelten in der Zeitzone dieses Geräts und markieren, wann der letzte Rand der Scheibe hinter dem Gelände verschwindet oder der erste auftaucht. Das Gelände ist nackter Boden, Bäume und Gebäude können sie also früher verdecken.',
+    today: 'Heute',
+    lit: (percent) => `${percent} beleuchtet`,
+  },
   labels: {
     title: 'Gipfelnamen',
     density: 'Anzahl der Namen',

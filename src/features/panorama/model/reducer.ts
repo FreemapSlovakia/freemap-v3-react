@@ -22,6 +22,7 @@ import {
   panoramaSetRenderAz,
   panoramaSetRendering,
   panoramaSetSettings,
+  panoramaSetSkyDate,
 } from './actions.js';
 import { isFullTurn } from './settingsReducer.js';
 
@@ -83,6 +84,8 @@ export interface PanoramaState {
   probe: PanoramaProbe | null;
   /** What the map is waiting for a click to say, or `null` for nothing. */
   picking: PanoramaPicking | null;
+  /** See {@link panoramaSetSkyDate}. */
+  skyDate: string | null;
 }
 
 export const panoramaInitialState: PanoramaState = {
@@ -94,6 +97,7 @@ export const panoramaInitialState: PanoramaState = {
   renderAz: 0,
   probe: null,
   picking: null,
+  skyDate: null,
 };
 
 export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
@@ -191,6 +195,9 @@ export const panoramaReducer = createReducer(panoramaInitialState, (builder) =>
     })
     .addCase(panoramaSetProbe, (state, { payload }) => {
       state.probe = payload;
+    })
+    .addCase(panoramaSetSkyDate, (state, { payload }) => {
+      state.skyDate = payload;
     })
     .addCase(panoramaClear, () => panoramaInitialState)
     // Keyed on this tool going, not on any tool closing: another opening beside

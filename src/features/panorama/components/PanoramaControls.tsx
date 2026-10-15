@@ -24,10 +24,11 @@ import {
 } from '@shared/components/ResponsiveActions.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { nearestStep } from '@shared/mathUtils.js';
-import type { ReactElement } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { type ReactElement, useState } from 'react';
+import { Button, Form, InputGroup } from 'react-bootstrap';
 import {
   FaCog,
   FaCompass,
@@ -35,6 +36,7 @@ import {
   FaPlay,
   FaStop,
   FaStreetView,
+  FaSun,
   FaSync,
 } from 'react-icons/fa';
 import { PiCompassRoseBold } from 'react-icons/pi';
@@ -50,6 +52,7 @@ import {
   panoramaRender,
   panoramaSetPicking,
   panoramaSetSettings,
+  panoramaSetSkyDate,
   panoramaToToposcope,
 } from '../model/actions.js';
 import {
@@ -76,6 +79,8 @@ import {
   panoramaExpectedMs,
   panoramaRenderKey,
 } from '../quality.js';
+import { localDay } from '../sky/track.js';
+import { useToday } from '../sky/useSky.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 
 /**
@@ -97,6 +102,9 @@ const LABEL_DEFAULTS = {
 const LABEL_SETTING_KEYS = Object.keys(
   LABEL_DEFAULTS,
 ) as (keyof typeof LABEL_DEFAULTS)[];
+
+/** Earliest year the sky date takes; anything below is a year half typed. */
+const MIN_SKY_YEAR = 1000;
 
 /** Narrowest first, the way a slider runs; a full turn is the far end. */
 const FOV_STOPS = PANORAMA_FOVS.toReversed();
@@ -123,9 +131,16 @@ export function PanoramaControls({
 
   const settings = useAppSelector((state) => state.panoramaSettings);
 
-  const { viewpoint, render, rendering, renderAz } = useAppSelector(
+  const { viewpoint, render, rendering, renderAz, skyDate } = useAppSelector(
     (state) => state.panorama,
   );
+
+  const dateFormat = useDateTimeFormat({ dateStyle: 'medium' });
+
+  const today = useToday();
+
+  /** A year still being typed; see the date field. */
+  const [dateDraft, setDateDraft] = useState<string | null>(null);
 
   const hasDrawnPoints = useAppSelector(
     (state) => state.drawingPoints.points.length > 0,
@@ -540,6 +555,81 @@ export function PanoramaControls({
             (key) => settings[key] === LABEL_DEFAULTS[key],
           )}
         />
+      </SliderDropdown>
+
+      {/* Instant: the paths need no render. */}
+      <SliderDropdown
+        icon={<FaSun />}
+        toggleLabel={
+          skyDate === null
+            ? m?.sky.today
+            : dateFormat.format(localDay(skyDate)[0])
+        }
+        name={m?.sky.title}
+        breakpoint="md"
+      >
+        <Form.Check
+          id="fm-panorama-sun"
+          type="checkbox"
+          label={m?.sky.sun}
+          checked={settings.showSun}
+          onChange={(e) =>
+            dispatch(panoramaSetSettings({ showSun: e.currentTarget.checked }))
+          }
+        />
+
+        <Form.Check
+          id="fm-panorama-moon"
+          type="checkbox"
+          label={m?.sky.moon}
+          checked={settings.showMoon}
+          onChange={(e) =>
+            dispatch(panoramaSetSettings({ showMoon: e.currentTarget.checked }))
+          }
+        />
+
+        <Form.Group controlId="fm-panorama-sky-date">
+          <Form.Label className="d-flex align-items-center">
+            {m?.sky.date}
+
+            <HintMark hint={m?.sky.dateHint} />
+          </Form.Label>
+
+          <InputGroup size="sm">
+            <Form.Control
+              type="date"
+              value={dateDraft ?? skyDate ?? today}
+              onBlur={() => setDateDraft(null)}
+              // Today is stored as `null` however it is picked, so the paths
+              // move on with the clock past midnight.
+              onChange={(e) => {
+                const { value } = e.currentTarget;
+
+                // Chromium reports a year as it is typed — 0002, 0020, 0202 —
+                // held here rather than refused, or React would write it back.
+                if (value && Number(value.slice(0, 4)) < MIN_SKY_YEAR) {
+                  setDateDraft(value);
+
+                  return;
+                }
+
+                setDateDraft(null);
+
+                dispatch(
+                  panoramaSetSkyDate(!value || value === today ? null : value),
+                );
+              }}
+            />
+
+            <Button
+              variant="secondary"
+              disabled={skyDate === null}
+              onClick={() => dispatch(panoramaSetSkyDate(null))}
+            >
+              {m?.sky.today}
+            </Button>
+          </InputGroup>
+        </Form.Group>
       </SliderDropdown>
 
       {outdated && !rendering && (
