@@ -1,5 +1,5 @@
 import type { RootState } from '@app/store/store.js';
-import { sourceLayerEnvelope } from '@features/cachedMaps/sourceLayer.js';
+import { drawnEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import {
   DocumentSchema,
   documentShow,
@@ -33,8 +33,8 @@ import {
   type IsTileLayerDef,
   OSM_DATA_ATTR,
   OSRM_ROUTING_ATTR,
-  RENDERER_LAYER_TYPES,
   RETIRED_SOURCE_LAYERS,
+  reportsTileCodes,
   type TileDetailDef,
 } from '../mapDefinitions.js';
 import { coversInBounds, useTileCoverages } from '../tileCoverage.js';
@@ -223,35 +223,52 @@ function useCategorizedAttribution(
   // Layers with a detail whose own tiles are all covered by it on screen.
   const coveredLayers = new Set<string>();
 
+  // What a coverage says of the tiles on screen, each source judged at the zoom
+  // it draws at; nothing for an export or a coverage not known yet.
+  const coversAt = (
+    coverageUrl: string,
+    scaleWithDpi: boolean | undefined,
+    maxNativeZoom: number | undefined,
+  ) => {
+    const coverage = coverages.get(coverageUrl);
+
+    return fromPaintedTiles && coverage && bounds
+      ? coversInBounds(coverage, bounds, tileZoom(scaleWithDpi, maxNativeZoom))
+      : undefined;
+  };
+
+  // A source with a coverage is credited only where it has data on screen.
+  const creditWhereCovered = (
+    coverageUrl: string,
+    scaleWithDpi: boolean | undefined,
+    maxNativeZoom: number | undefined,
+    attribution: AttributionDef[],
+  ) => {
+    const covers = coversAt(coverageUrl, scaleWithDpi, maxNativeZoom);
+
+    if (!covers?.size || covers.has('partial') || covers.has('full')) {
+      guessed.push(...attribution);
+    }
+  };
+
   // A layer with a detail credits each of its two sources only where its tiles
-  // are on screen; an export, or a coverage not known yet, credits both.
+  // are on screen.
   const creditDetail = (
     def: IsTileLayerDef & { type: string },
     detail: TileDetailDef,
   ) => {
-    const coverage = coverages.get(detail.coverageUrl);
+    creditWhereCovered(
+      detail.coverageUrl,
+      def.scaleWithDpi,
+      detail.maxNativeZoom,
+      detail.attribution,
+    );
 
-    // each source judged at the zoom it draws at
-    const coversAt = (maxNativeZoom: number | undefined) =>
-      fromPaintedTiles && coverage && bounds
-        ? coversInBounds(
-            coverage,
-            bounds,
-            tileZoom(def.scaleWithDpi, maxNativeZoom),
-          )
-        : undefined;
-
-    const detailCovers = coversAt(detail.maxNativeZoom);
-
-    if (
-      !detailCovers?.size ||
-      detailCovers.has('partial') ||
-      detailCovers.has('full')
-    ) {
-      guessed.push(...detail.attribution);
-    }
-
-    const baseCovers = coversAt(def.maxNativeZoom);
+    const baseCovers = coversAt(
+      detail.coverageUrl,
+      def.scaleWithDpi,
+      def.maxNativeZoom,
+    );
 
     if (
       baseCovers?.size &&
@@ -317,11 +334,7 @@ function useCategorizedAttribution(
       // Only an export credits every dataset the renderer could have drawn on,
       // narrowed by the countries in view. On screen a dataset is named by the
       // tiles that drew it or not at all.
-      if (
-        !fromPaintedTiles &&
-        licenses &&
-        RENDERER_LAYER_TYPES.includes(def.type)
-      ) {
+      if (!fromPaintedTiles && licenses && reportsTileCodes(def)) {
         guessed.push(...licenseAttributions(licenses));
       }
     }
@@ -340,25 +353,20 @@ function useCategorizedAttribution(
 
     // a stand-in for part of its layer credits where its coverage has data
     if (cm.coverageUrl && cm.technology === 'tile') {
-      creditDetail(cm, {
-        url: cm.url,
-        coverageUrl: cm.coverageUrl,
-        // the depth it is drawn from, as Layers draws it
-        maxNativeZoom:
-          (online && cm.networkFallback !== false
-            ? sourceLayerEnvelope(cm, customLayers, integratedLayerDefMap)
-            : undefined
-          )?.maxNativeZoom ??
-          cm.maxNativeZoom ??
-          20,
+      creditWhereCovered(
+        cm.coverageUrl,
+        cm.scaleWithDpi,
+        // the depth it is drawn from
+        drawnEnvelope(cm, online, customLayers, integratedLayerDefMap)
+          ?.maxNativeZoom ?? cm.maxNativeZoom,
         attribution,
-      });
+      );
 
       continue;
     }
 
     // Only the renderer's own layers report their datasets at all.
-    const fromRenderer = RENDERER_LAYER_TYPES.includes(cm.sourceType);
+    const fromRenderer = reportsTileCodes(cm);
 
     const painted = fromPaintedTiles ? tileAttribution[cm.type] : null;
 

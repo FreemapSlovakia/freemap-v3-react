@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import type z from 'zod';
+import { whenOnline } from './whenOnline.js';
 
 const RETRY_MS = 30_000;
 
@@ -77,19 +78,13 @@ export function rememberedJson<T>(
         retryAt = Date.now() + RETRY_MS;
 
         // and anything still showing it would otherwise wait to be reopened
-        const retry = () => {
+        whenOnline(() => {
           if (listeners.size) {
             retryAt = 0;
 
             void load();
           }
-        };
-
-        if (navigator.onLine) {
-          setTimeout(retry, RETRY_MS);
-        } else {
-          window.addEventListener('online', retry, { once: true });
-        }
+        }, RETRY_MS);
 
         return value;
       });

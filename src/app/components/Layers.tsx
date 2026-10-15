@@ -1,7 +1,10 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { getCachedTileScale } from '@features/cachedMaps/cachedTileMaps.js';
 import { toCachedLayerUrl } from '@features/cachedMaps/cachedTileUrl.js';
-import { sourceLayerEnvelope } from '@features/cachedMaps/sourceLayer.js';
+import {
+  drawnEnvelope,
+  fetchesMissing,
+} from '@features/cachedMaps/sourceLayer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { withMemberKind } from '@features/map/model/layerKind.js';
 import {
@@ -31,7 +34,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   type LayerDef,
-  RENDERER_LAYER_TYPES,
+  reportsTileCodes,
   resolveLayerOpacity,
   serverShadingUrl,
 } from '@shared/mapDefinitions.js';
@@ -155,13 +158,6 @@ export function Layers(): ReactNode {
   // Only ever wired for a non-premium user — `effPremiumFromZoom` is undefined
   // for everyone else — which is exactly when the hook returns a function.
   const handlePremiumClick = useBecomePremium();
-
-  // A downloaded map's tiles carry its source layer's codes.
-  const rendererTypeOf = (type: string) => {
-    const ref = mapById[type];
-
-    return ref?.origin === 'cached' ? ref.def.sourceType : type;
-  };
 
   // `fixedScale` pins a tile layer to one `@Nx` variant — a cached map holds
   // exactly one, so the screen's DPI and the resolution/feature-scale
@@ -483,8 +479,8 @@ export function Layers(): ReactNode {
         tileSize: isHdpi ? 128 : 256 * effFeatureScale,
         zoomOffset: tileZoomOffset(scaleWithDpi, effectiveDpr, effFeatureScale),
         cors: layerDef.cors ?? true,
-        reportsAttribution:
-          serverShading || RENDERER_LAYER_TYPES.includes(rendererTypeOf(type)),
+        // an offline map's def carries its `sourceType`
+        reportsAttribution: serverShading || reportsTileCodes(layerDef),
         // Every tile layer is counted; only the ones whose server reports its
         // datasets ever resolve to anything, the rest stay on their own list.
         eventHandlers: tileAttributionHandlers(
@@ -612,13 +608,15 @@ export function Layers(): ReactNode {
 
     const cm = ref.def;
 
-    const fetchesMissing = online && cm.networkFallback !== false;
-
     // Without its source's envelope the network fallback would skip the
     // premium gate, so wait for a library source still loading.
     const source = mapById[cm.sourceType];
 
-    if (fetchesMissing && source?.origin === 'library' && !source.def) {
+    if (
+      fetchesMissing(cm, online) &&
+      source?.origin === 'library' &&
+      !source.def
+    ) {
       return null;
     }
 
@@ -629,9 +627,12 @@ export function Layers(): ReactNode {
     // as the layer itself would, checkerboard included. Offline — or with
     // the network fallback off — it is only what was downloaded: its own
     // range, upscaled past the deepest zoom it holds rather than left blank.
-    const envelope = fetchesMissing
-      ? sourceLayerEnvelope(cm, customLayerDefs, integratedLayerDefMap)
-      : undefined;
+    const envelope = drawnEnvelope(
+      cm,
+      online,
+      customLayerDefs,
+      integratedLayerDefMap,
+    );
 
     // The tiles are same-origin, so `cors` only picks the path: a fetch where
     // they carry credits to read, else an `<img>` without `crossOrigin`, whose
@@ -643,7 +644,7 @@ export function Layers(): ReactNode {
               ...cm,
               url,
               ...envelope,
-              cors: RENDERER_LAYER_TYPES.includes(cm.sourceType),
+              cors: reportsTileCodes(cm),
               // a stand-in has no tiles where its coverage has no data
               ...(cm.coverageUrl && { errorTileUrl: transparent1x1 }),
             }

@@ -39,7 +39,7 @@ import {
   type StoredCustomLayerDef,
 } from '@shared/mapDefinitions.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
-import { exportedLayer } from '@shared/mapLibrary/exportedLayer.js';
+import { isExportable } from '@shared/mapLibrary/exportedLayer.js';
 import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import type { Shortcut } from '@shared/types/common.js';
 import type { ReactElement, ReactNode, RefObject } from 'react';
@@ -658,9 +658,7 @@ function YourMapRow({
   const downloadable = useAppSelector((state) => {
     const ref = mapByIdSelector(state)[map.type];
 
-    return (
-      ref?.origin === 'library' && exportedLayer(ref.def, prices) !== undefined
-    );
+    return ref?.origin === 'library' && isExportable(ref.def, prices);
   });
 
   const ownOpacity = useAppSelector(

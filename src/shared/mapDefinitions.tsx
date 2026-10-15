@@ -150,6 +150,12 @@ export const serverShadingUrl = (
  */
 export const RENDERER_LAYER_TYPES = ['X', 'XK', 'xc'];
 
+/** Whether a layer's tiles report their datasets; an offline map's by its source. */
+export const reportsTileCodes = (def: {
+  type: string;
+  sourceType?: string;
+}): boolean => RENDERER_LAYER_TYPES.includes(def.sourceType ?? def.type);
+
 const RENDERER_ROUTE_BY_TYPE = {
   X: '/',
   XK: '/kst',

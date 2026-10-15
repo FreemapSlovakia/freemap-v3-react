@@ -48,6 +48,14 @@ export function exportedLayer(
     : undefined;
 }
 
+/** Whether {@link exportedLayer} offers it, without building it. */
+export const isExportable = (
+  def: IntegratedLayerDef | undefined,
+  prices: ExportPrices | null,
+): boolean =>
+  def?.technology === 'tile' &&
+  prices?.[def.offlineExport?.type ?? def.type] !== undefined;
+
 /**
  * What an offline map was downloaded from: its source layer, or that layer's
  * stand-in where the map recorded the stand-in's `exportType`. A map without

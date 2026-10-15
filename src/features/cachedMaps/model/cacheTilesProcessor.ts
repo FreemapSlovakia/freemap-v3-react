@@ -3,7 +3,7 @@ import type { User } from '@features/auth/model/types.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
-import { RENDERER_LAYER_TYPES } from '@shared/mapDefinitions.js';
+import { reportsTileCodes } from '@shared/mapDefinitions.js';
 import { cachedMapSource } from '@shared/mapLibrary/exportedLayer.js';
 import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
@@ -283,20 +283,18 @@ async function downloadTiles(
   // The one place premium zooms are kept out of the cache, whatever range a
   // resume or edit carries; a map gated this way stays incomplete. The source
   // is loaded rather than read from the store, where it may be missing.
-  const source = cachedMapSource(
-    def,
-    await loadIntegratedLayerDef(def.sourceType),
-  );
+  // Where a stand-in has no data there is no tile to fetch. The loader keeps
+  // the coverage, so offline the map is still credited by it.
+  const [sourceDef, coverage] = await Promise.all([
+    loadIntegratedLayerDef(def.sourceType),
+    def.coverageUrl ? loadTileCoverage(def.coverageUrl) : undefined,
+  ]);
 
   const premiumLimit =
-    premiumZoomLimit(def.sourceType, user, source) ?? Infinity;
+    premiumZoomLimit(def.sourceType, user, cachedMapSource(def, sourceDef)) ??
+    Infinity;
 
-  // Where a stand-in has no data there is no tile to fetch — by a fresh copy
-  // only. The loader keeps it, so offline the map is still credited by it.
-  const coverage = def.coverageUrl
-    ? await loadTileCoverage(def.coverageUrl)
-    : undefined;
-
+  // only by a fresh copy: the one kept from before may lack newer data
   const skipsByCoverage =
     def.coverageUrl !== undefined && !coverageStale(def.coverageUrl);
 
@@ -312,8 +310,7 @@ async function downloadTiles(
 
   // Only the renderer's own layers report their datasets, and only a pass that
   // can publish what it finds is worth the reading — a gated one discards it.
-  const capturesAttribution =
-    RENDERER_LAYER_TYPES.includes(def.sourceType) && !gated;
+  const capturesAttribution = reportsTileCodes(def) && !gated;
 
   // A pass that walked every tile and published a union answered for all of
   // them, so its verdict stands and the stored tiles need not be read back —
@@ -348,7 +345,13 @@ async function downloadTiles(
   const tileArray: TileCoord[] = [];
 
   for (const tile of tiles) {
-    tileArray.push(tile);
+    // dropped before batching, so a batch never waits on empty slots;
+    // counted as visited, there being nothing to fetch
+    if (skipsByCoverage && coverage?.(tile[2], tile[0], tile[1]) === 'none') {
+      visited++;
+    } else {
+      tileArray.push(tile);
+    }
   }
 
   // Pin the scale into the metadata: the render side reads it back to ask for
@@ -396,10 +399,6 @@ async function downloadTiles(
 
     const results = await Promise.allSettled(
       batch.map(async ([x, y, z]) => {
-        if (skipsByCoverage && coverage?.(z, x, y) === 'none') {
-          return;
-        }
-
         const fetchUrl = withTileScale(
           buildTileUrl(meta.url, x, y, z, tileSubdomain(meta)),
           meta.tileScale,

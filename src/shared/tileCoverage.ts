@@ -1,6 +1,7 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { storeCoverage, storedCoverage } from './coverageCache.js';
 import { tileRangesInBbox } from './tileEnumeration.js';
+import { whenOnline } from './whenOnline.js';
 
 export type TileCover = 'full' | 'partial' | 'none';
 
@@ -35,15 +36,6 @@ const stale = new Set<string>();
  * draw by but not to skip downloading by: the server may have more since.
  */
 export const coverageStale = (url: string): boolean => stale.has(url);
-
-/** Once the connection is back, or after a while if it never left. */
-function whenOnline(retry: () => void): void {
-  if (navigator.onLine) {
-    setTimeout(retry, STALE_RETRY_MS);
-  } else {
-    window.addEventListener('online', retry, { once: true });
-  }
-}
 
 function subscribe(listener: () => void) {
   listeners.add(listener);
@@ -119,22 +111,32 @@ export function loadTileCoverage(url: string): Promise<TileCoverage> {
       })
       // offline, or a copy that won't decode: the one last kept
       .catch(async (err: unknown) => {
-        const stored = await storedCoverage(url);
+        // one already shown stays, with nothing new to announce
+        let coverage = loaded.get(url);
 
-        if (!stored) {
-          throw err;
+        if (!coverage) {
+          const stored = await storedCoverage(url);
+
+          if (!stored) {
+            throw err;
+          }
+
+          coverage = decodeTileCoverage(new Uint8Array(stored));
         }
 
         stale.add(url);
 
+        // asked again once the connection may be back; refetched now only
+        // for something still showing it, else by the next call
         whenOnline(() => {
           cache.delete(url);
 
-          void loadTileCoverage(url);
-        });
+          if (listeners.size) {
+            void loadTileCoverage(url);
+          }
+        }, STALE_RETRY_MS);
 
-        // one already shown stays, with nothing new to announce
-        return loaded.get(url) ?? decodeTileCoverage(new Uint8Array(stored));
+        return coverage;
       })
       .then((coverage) => {
         failing.delete(url);

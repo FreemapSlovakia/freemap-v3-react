@@ -17,17 +17,27 @@ export type SourceLayerEnvelope = {
   premiumFromZoom: number | undefined;
 };
 
+type CachedMapRef = {
+  sourceType: string;
+  exportType?: string;
+  networkFallback?: boolean;
+};
+
 function findSourceLayerDef(
-  sourceType: string,
+  cm: CachedMapRef,
   customLayers: CustomLayerDef[],
   sourceDefs: SourceDefs,
 ) {
   return (
-    sourceDefs[sourceType] ??
-    customLayers.find((def) => def.type === sourceType) ??
-    RETIRED_SOURCE_LAYERS[sourceType]
+    cachedMapSource(cm, sourceDefs[cm.sourceType]) ??
+    customLayers.find((def) => def.type === cm.sourceType) ??
+    RETIRED_SOURCE_LAYERS[cm.sourceType]
   );
 }
+
+/** Whether the map fills what it lacks from its source's server right now. */
+export const fetchesMissing = (cm: CachedMapRef, online: boolean): boolean =>
+  online && cm.networkFallback !== false;
 
 /**
  * The zoom range and premium gate a cached map wears while it can reach the
@@ -41,13 +51,11 @@ function findSourceLayerDef(
  * instead of lifting it.
  */
 export function sourceLayerEnvelope(
-  cm: { sourceType: string; exportType?: string },
+  cm: CachedMapRef,
   customLayers: CustomLayerDef[],
   sourceDefs: SourceDefs,
 ): SourceLayerEnvelope | undefined {
-  const def =
-    cachedMapSource(cm, sourceDefs[cm.sourceType]) ??
-    findSourceLayerDef(cm.sourceType, customLayers, sourceDefs);
+  const def = findSourceLayerDef(cm, customLayers, sourceDefs);
 
   if (!def) {
     return undefined;
@@ -59,6 +67,20 @@ export function sourceLayerEnvelope(
     premiumFromZoom: 'premiumFromZoom' in def ? def.premiumFromZoom : undefined,
   };
 }
+
+/**
+ * The envelope a cached map is drawn with: its source's while it fills from
+ * the network, else none, leaving its own range.
+ */
+export const drawnEnvelope = (
+  cm: CachedMapRef,
+  online: boolean,
+  customLayers: CustomLayerDef[],
+  sourceDefs: SourceDefs,
+): SourceLayerEnvelope | undefined =>
+  fetchesMissing(cm, online)
+    ? sourceLayerEnvelope(cm, customLayers, sourceDefs)
+    : undefined;
 
 /**
  * The deepest zoom a cached map of `sourceType` may be given for this user, or

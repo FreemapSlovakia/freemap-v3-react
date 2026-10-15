@@ -40,7 +40,10 @@ export type CachedTileMapDef = CustomLayerDef<
    * what was downloaded and nothing else. Absent counts as on.
    */
   networkFallback?: boolean;
-  /** The stand-in the map holds the tiles of, if any; see `exportedAs`. */
+  /**
+   * The API type its tiles are of — a stand-in's, where it differs from
+   * `sourceType`; see `exportedAs`.
+   */
   exportType?: string;
   /** Where a stand-in's tiles have data. */
   coverageUrl?: string;

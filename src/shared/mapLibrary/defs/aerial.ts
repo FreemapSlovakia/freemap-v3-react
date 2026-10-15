@@ -1,31 +1,27 @@
 import { CUZK_ATTR, type MapBody, OFM_ATTR } from '@shared/mapDefinitions.js';
 
-const ORTHOPHOTO_COVERAGE_URL =
-  'https://ortofoto.tiles.freemap.sk/coverage.bin';
+const ORTHOPHOTO_TILES = 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg';
 
-const ORTHOPHOTO_ATTRIBUTION = [OFM_ATTR, CUZK_ATTR];
+// what the drawn detail and the downloaded stand-in share
+const orthophoto = {
+  coverageUrl: 'https://ortofoto.tiles.freemap.sk/coverage.bin',
+  maxNativeZoom: 20,
+  premiumFromZoom: 20,
+  attribution: [OFM_ATTR, CUZK_ATTR],
+};
 
 const def: MapBody<'tile'> = {
   url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   subdomains: ['server', 'services'],
-  detail: {
-    url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg?alpha',
-    coverageUrl: ORTHOPHOTO_COVERAGE_URL,
-    maxNativeZoom: 20,
-    premiumFromZoom: 20,
-    attribution: ORTHOPHOTO_ATTRIBUTION,
-  },
+  detail: { ...orthophoto, url: `${ORTHOPHOTO_TILES}?alpha` },
   // only the orthophoto is exported and downloaded; Esri's tiles aren't ours
   // to hand out
   offlineExport: {
+    ...orthophoto,
     type: 'Z',
-    url: 'https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    url: ORTHOPHOTO_TILES,
     minZoom: 0,
-    maxNativeZoom: 20,
     countries: ['sk', 'cz'],
-    premiumFromZoom: 20,
-    attribution: ORTHOPHOTO_ATTRIBUTION,
-    coverageUrl: ORTHOPHOTO_COVERAGE_URL,
   },
   minZoom: 0,
   maxNativeZoom: 19,
