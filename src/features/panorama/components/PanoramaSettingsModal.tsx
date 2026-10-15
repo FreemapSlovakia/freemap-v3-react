@@ -281,11 +281,11 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               left, where the view angle and the detail are changed for every
               other picture. The presets are one press and what most views want;
               the sliders under them are the same setting said exactly. */}
-          <Form.Group className="mb-3">
-            <Form.Label>
+          <fieldset className="mb-3 border rounded p-3">
+            <legend>
               {m?.tilt.label}
               <HintMark hint={m?.settings.tiltHint} />
-            </Form.Label>
+            </legend>
 
             <FitButtonGroup className="mb-2">
               {TILT_PRESETS.map((preset) => {
@@ -328,7 +328,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               value={-draft.altMin}
               onChange={(below) => patch({ altMin: -below })}
             />
-          </Form.Group>
+          </fieldset>
 
           {/* Beside the band because it moves it: the horizon rises by exactly
               the lift, and the request adds the same on top so the far ridges

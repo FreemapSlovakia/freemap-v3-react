@@ -16,6 +16,7 @@ import {
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
 import { isFullTurn } from '@features/panorama/model/settingsReducer.js';
 import {
+  serializePanoramaSky,
   serializePanoramaTilt,
   serializePanoramaViewpoint,
 } from '@features/panorama/panoramaUrl.js';
@@ -57,12 +58,13 @@ const VIEW_COALESCE_GAP_MS = 60_000;
 
 // Params that must not cost a history entry each. A change confined to these
 // replaces the current entry instead of pushing one, and is rate-limited below.
-// Two kinds qualify, for opposite reasons: the map's own viewport and the
-// panorama's bearing move as fast as a gesture, and the colorize params are
-// reader preferences a URL without them does not undo.
+// Three kinds qualify: what moves as fast as a gesture (the map's viewport, the
+// panorama's bearing), what is stepped through (the sky date), and reader
+// preferences a URL without them does not undo (the colorize params).
 const COALESCED_KEYS = new Set([
   'map',
   'panorama-az',
+  'panorama-date',
   // Not gesture-speed, but the same reason applies from the other end: a URL
   // without these does not turn colorizing off (see `handleColorize`), so an
   // entry standing for one would be an entry Back cannot honour.
@@ -357,6 +359,9 @@ function updateUrl(state: RootState, forced: boolean): void {
     panoramaSettings.altMin,
     panoramaSettings.altMax,
     panoramaSettings.fovDeg,
+    panoramaSettings.showSun,
+    panoramaSettings.showMoon,
+    panorama.skyDate,
     // The direction a slice faces, which is the whole of what changes when the
     // wedge is swung — without it the swing writes no URL at all and waits to
     // be noticed by an unrelated change.
@@ -574,6 +579,16 @@ function updateUrl(state: RootState, forced: boolean): void {
 
     if (!full) {
       historyParts.push(['panorama-fov', String(panoramaSettings.fovDeg)]);
+    }
+
+    const sky = serializePanoramaSky(panoramaSettings);
+
+    if (sky) {
+      historyParts.push(['panorama-sky', sky]);
+    }
+
+    if (panorama.skyDate) {
+      historyParts.push(['panorama-date', panorama.skyDate]);
     }
   }
 

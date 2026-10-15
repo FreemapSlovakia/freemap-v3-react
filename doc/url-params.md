@@ -129,8 +129,11 @@ Nothing about the toposcope is kept in localStorage, and it is deliberately **no
 | `panorama` | Viewpoint | r/w | `lat,lon` (6 decimals) |
 | `panorama-az` | Bearing the view faces | r/w | whole degrees |
 | `panorama-tilt` | Vertical band framed | r/w | preset name (`standard` / `wide` / `flat`), or `altMin,altMax` degrees for a custom band |
+| `panorama-fov` | Horizontal view of a slice | r/w | degrees; written only for a slice, absent is the full turn — and under a slice `panorama-az` is the direction the slice faces |
+| `panorama-sky` | Which sky paths are drawn | r/w | `sun`, `moon`, `sun,moon` or `none`; not written for the default (sun only), which absent means; an invalid value is ignored |
+| `panorama-date` | Day the sky paths are drawn for | r/w | `YYYY-MM-DD`; absent is the reader's today, and today is never written; an invalid value is ignored |
 
-The picture itself is not in the link: arriving with a viewpoint renders it again, which is why the param is acted on only while `tools=panorama` is open — a render is seconds of somebody else's server, and without the panel there is nothing to render into. Everything else about the view (quality, vertical range, label density, whether it turns by itself) is a standing preference in the `panoramaSettings` slice, so it is in localStorage rather than in the link. The bearing is in `VIEWPORT_KEYS` in `urlProcessor.ts`, alongside `map`: params listed there are kept out of the content signature, so a change confined to them replaces the current history entry rather than pushing one. Anything that moves at gesture speed belongs there.
+The picture itself is not in the link: arriving with a viewpoint renders it again, which is why the params are acted on only while `tools=panorama` is open — a render is seconds of somebody else's server, and without the panel there is nothing to render into. The framing params override the reader's standing preferences in the `panoramaSettings` slice, since what the sender framed is part of what they show; the rest of the view (quality, label density, whether it turns by itself) stays in localStorage. `panorama-az` and `panorama-date` are in `COALESCED_KEYS` in `urlProcessor.ts`, alongside `map`: a change confined to them replaces the current history entry rather than pushing one.
 
 
 ## Style codec

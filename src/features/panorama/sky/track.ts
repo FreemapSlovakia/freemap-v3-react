@@ -25,6 +25,9 @@ export type SkyEvent = {
   radius: number;
 };
 
+/** Earliest year the sky date takes; anything below is a year half typed. */
+export const MIN_SKY_YEAR = 1000;
+
 /** Local midnight to midnight of an ISO `YYYY-MM-DD` date, in this browser's zone. */
 export function localDay(date: string): [number, number] {
   const [y = 1970, m = 1, d = 1] = date.split('-').map(Number);

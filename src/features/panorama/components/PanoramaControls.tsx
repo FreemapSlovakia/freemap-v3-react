@@ -80,7 +80,7 @@ import {
   panoramaExpectedMs,
   panoramaRenderKey,
 } from '../quality.js';
-import { localDay } from '../sky/track.js';
+import { localDay, MIN_SKY_YEAR } from '../sky/track.js';
 import { useToday } from '../sky/useSky.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 
@@ -103,9 +103,6 @@ const LABEL_DEFAULTS = {
 const LABEL_SETTING_KEYS = Object.keys(
   LABEL_DEFAULTS,
 ) as (keyof typeof LABEL_DEFAULTS)[];
-
-/** Earliest year the sky date takes; anything below is a year half typed. */
-const MIN_SKY_YEAR = 1000;
 
 /** Narrowest first, the way a slider runs; a full turn is the far end. */
 const FOV_STOPS = PANORAMA_FOVS.toReversed();

@@ -82,18 +82,23 @@ import {
   panoramaSetAzimuth,
   panoramaSetRenderAz,
   panoramaSetSettings,
+  panoramaSetSkyDate,
 } from '@features/panorama/model/actions.js';
 import {
   FOV_FULL,
   isFullTurn,
 } from '@features/panorama/model/settingsReducer.js';
 import {
+  DEFAULT_PANORAMA_SKY,
+  parsePanoramaDate,
   parsePanoramaFov,
+  parsePanoramaSky,
   parsePanoramaTilt,
   parsePanoramaViewpoint,
   serializePanoramaTilt,
   serializePanoramaViewpoint,
 } from '@features/panorama/panoramaUrl.js';
+import { localToday } from '@features/panorama/sky/track.js';
 import { parseShading } from '@features/parameterizedShading/model/Shading.js';
 import { isPremium } from '@features/premium/premium.js';
 import {
@@ -1657,7 +1662,8 @@ function handleToposcope(
 
 /**
  * `panorama=` the viewpoint, `panorama-az=` the bearing, `panorama-tilt=` the
- * vertical band, `panorama-fov=` how much horizon; see `panoramaUrl.ts` for the
+ * vertical band, `panorama-fov=` how much horizon, `panorama-sky=` and
+ * `panorama-date=` the sky paths and their day; see `panoramaUrl.ts` for the
  * formats. The picture is not in the link: arriving with a viewpoint renders it
  * again, which is the same explicit action a click on the map is.
  *
@@ -1731,6 +1737,35 @@ function handlePanorama(
       serializePanoramaTilt(settings)
   ) {
     dispatch(panoramaSetSettings(tilt));
+  }
+
+  // Absent is the default and invalid is ignored, for the sky and its date alike.
+  const skyParam = query['panorama-sky'];
+
+  const sky =
+    skyParam === undefined
+      ? DEFAULT_PANORAMA_SKY
+      : parsePanoramaSky(typeof skyParam === 'string' ? skyParam : '');
+
+  const { showSun, showMoon } = getState().panoramaSettings;
+
+  if (sky && (sky.showSun !== showSun || sky.showMoon !== showMoon)) {
+    dispatch(panoramaSetSettings(sky));
+  }
+
+  const dateParam = query['panorama-date'];
+
+  const date =
+    dateParam === undefined
+      ? null
+      : parsePanoramaDate(typeof dateParam === 'string' ? dateParam : '');
+
+  if (dateParam === undefined || date) {
+    const skyDate = date === localToday() ? null : date;
+
+    if (skyDate !== getState().panorama.skyDate) {
+      dispatch(panoramaSetSkyDate(skyDate));
+    }
   }
 
   if (
