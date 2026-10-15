@@ -234,6 +234,40 @@ export function skyPosition(
   };
 }
 
+/**
+ * The moon's age as its ecliptic longitude past the sun's: 0 new, 90 first
+ * quarter, 180 full, 270 last quarter. Waxing below 180.
+ */
+export function moonAge(time: number): number {
+  const age = moonEcliptic(time).lambda - sunLongitude(centuries(time));
+
+  return ((age % 360) + 360) % 360;
+}
+
+/**
+ * Which way the moon's lit side faces, in degrees clockwise from straight up
+ * towards rising azimuth: the direction of the sun from the moon across the sky.
+ */
+export function brightLimbAngle(
+  time: number,
+  lat: number,
+  lon: number,
+): number {
+  const moon = skyPosition('moon', time, lat, lon);
+
+  const sun = skyPosition('sun', time, lat, lon);
+
+  const dA = sun.azimuth - moon.azimuth;
+
+  return (
+    Math.atan2(
+      sin(dA) * cos(sun.altitude),
+      cos(moon.altitude) * sin(sun.altitude) -
+        sin(moon.altitude) * cos(sun.altitude) * cos(dA),
+    ) / RAD
+  );
+}
+
 /** Lit fraction of the moon's disc, 0 (new) to 1 (full). */
 export function moonIllumination(time: number): number {
   const t = centuries(time);

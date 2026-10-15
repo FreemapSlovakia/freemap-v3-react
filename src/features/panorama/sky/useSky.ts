@@ -1,4 +1,5 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import type { LatLon } from '@shared/types/common.js';
 import { useEffect, useMemo, useState } from 'react';
 import type { PanoramaDepth } from '../depth.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
@@ -24,6 +25,8 @@ export type SkyTrack = {
   dayStart: number;
   /** Where it stands now, while the day shown is today. */
   now: TrackSample | null;
+  /** Where it is seen from, which turns the moon's lit side. */
+  viewpoint: LatLon;
 };
 
 const NOW_TICK_MS = 60_000;
@@ -118,6 +121,7 @@ function bodyDay(
   return {
     body,
     observe,
+    viewpoint: render.viewpoint,
     dayStart: day[0],
     samples: withCentreCrossings(samples, observe),
     events: skyEvents(samples, observe),

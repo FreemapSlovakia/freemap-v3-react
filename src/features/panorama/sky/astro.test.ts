@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  brightLimbAngle,
+  moonAge,
   moonEcliptic,
   moonIllumination,
   refraction,
@@ -62,6 +64,41 @@ describe('refraction', () => {
     expect(refraction(0)).toBeCloseTo(0.48, 1);
 
     expect(refraction(89)).toBeLessThan(0.001);
+  });
+});
+
+describe('moonAge', () => {
+  it('is about 180 at a full moon and 0 at a new one', () => {
+    expect(moonAge(Date.UTC(2024, 3, 23, 23, 49))).toBeCloseTo(180, 0);
+
+    const atNew = moonAge(Date.UTC(2024, 3, 8, 18, 21));
+
+    expect(Math.min(atNew, 360 - atNew)).toBeLessThan(1);
+  });
+
+  it('is waxing a week after a new moon', () => {
+    expect(moonAge(Date.UTC(2024, 3, 15, 18))).toBeGreaterThan(60);
+
+    expect(moonAge(Date.UTC(2024, 3, 15, 18))).toBeLessThan(120);
+  });
+});
+
+describe('brightLimbAngle', () => {
+  const { lat, lon } = BRATISLAVA;
+
+  it('points down at an evening crescent over the set sun', () => {
+    // Three days after new moon, an hour past sunset: the sun is below the moon.
+    const angle = brightLimbAngle(Date.UTC(2024, 3, 11, 18, 30), lat, lon);
+
+    expect(Math.abs(angle)).toBeGreaterThan(120);
+  });
+
+  it('points left at a morning last quarter, the sun rising in the east', () => {
+    const angle = brightLimbAngle(Date.UTC(2024, 4, 1, 6), lat, lon);
+
+    expect(angle).toBeLessThan(-30);
+
+    expect(angle).toBeGreaterThan(-150);
   });
 });
 

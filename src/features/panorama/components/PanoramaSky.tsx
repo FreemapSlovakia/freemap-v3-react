@@ -1,11 +1,18 @@
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import type { LatLon } from '@shared/types/common.js';
 import { type ReactElement, useMemo } from 'react';
-import { FaMoon, FaSun } from 'react-icons/fa';
-import { moonIllumination, type SkyBody } from '../sky/astro.js';
+import { FaSun } from 'react-icons/fa';
+import {
+  brightLimbAngle,
+  moonAge,
+  moonIllumination,
+  type SkyBody,
+} from '../sky/astro.js';
 import type { TrackSample } from '../sky/track.js';
 import type { SkyTrack } from '../sky/useSky.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
+import { MoonPhase, moonLitPath } from './MoonPhase.js';
 
 const SKY_INK: Record<SkyBody, string> = {
   sun: '#ffd34d',
@@ -13,6 +20,18 @@ const SKY_INK: Record<SkyBody, string> = {
 };
 
 const HALO = 'rgba(0, 0, 0, 0.55)';
+
+const RAD = Math.PI / 180;
+
+/** A crossing's disc stays see-through: the skyline across it is the point. */
+const CROSSING_FILL: Record<SkyBody, number> = {
+  sun: 0.35,
+  moon: 0.45,
+};
+
+const NOW_FILL = 0.8;
+
+const MOON_DARK_FILL = 0.3;
 
 /** How far under the frame a path is still followed before it is dropped. */
 const BELOW_FRAME_DEG = 2;
@@ -42,13 +61,27 @@ export function PanoramaSkyTimes({
     <>
       {tracks.map(
         // The moon's phase is worth saying on a day it crosses nothing.
-        (track) =>
-          (track.events.length > 0 || track.body === 'moon') && (
+        (track) => {
+          if (track.events.length === 0 && track.body !== 'moon') {
+            return null;
+          }
+
+          // Noon of the day shown, which is near enough for a phase.
+          const noon = track.dayStart + 12 * 3_600_000;
+
+          return (
             <span
               key={track.body}
               className="d-inline-flex align-items-center gap-1"
             >
-              {track.body === 'sun' ? <FaSun /> : <FaMoon />}
+              {track.body === 'sun' ? (
+                <FaSun />
+              ) : (
+                <MoonPhase
+                  age={moonAge(noon)}
+                  south={track.viewpoint.lat < 0}
+                />
+              )}
 
               {track.events.map((event) => (
                 <span key={event.time}>
@@ -57,23 +90,48 @@ export function PanoramaSkyTimes({
                 </span>
               ))}
 
-              {/* At noon of the day shown, which is near enough for a phase. */}
               {track.body === 'moon' && (
                 <span className="text-body-secondary">
-                  (
-                  {m?.sky.lit(
-                    nfPercent.format(
-                      moonIllumination(track.dayStart + 12 * 3_600_000),
-                    ),
-                  )}
-                  )
+                  ({m?.sky.lit(nfPercent.format(moonIllumination(noon)))})
                 </span>
               )}
             </span>
-          ),
+          );
+        },
       )}
     </>
   );
+}
+
+/** Lit fraction below which the moon is left as its outline alone. */
+const MIN_LIT = 0.01;
+
+type MoonFace = { d: string; rotate: number };
+
+/**
+ * The moon's lit part as the picture draws it, or `null` near new moon, where
+ * the terminator's stroke would trace a crescent that isn't there.
+ */
+function moonFace(
+  time: number,
+  altitude: number,
+  { lat, lon }: LatLon,
+): MoonFace | null {
+  const age = moonAge(time);
+
+  if ((1 - Math.cos(age * RAD)) / 2 < MIN_LIT) {
+    return null;
+  }
+
+  const limb = brightLimbAngle(time, lat, lon) * RAD;
+
+  // The picture is equirectangular: east-west is stretched by 1/cos(altitude).
+  const onScreen = Math.atan2(
+    Math.sin(limb) / Math.cos(altitude * RAD),
+    Math.cos(limb),
+  );
+
+  return { d: moonLitPath(age), rotate: onScreen / RAD - 90 };
 }
 
 /** A stretch of path in one style, keyed by when it starts. */
@@ -162,7 +220,15 @@ export function PanoramaSky({
         events: track.events.map((event) => ({
           ...event,
           text: timeFormat.format(event.time),
+          moon:
+            track.body === 'moon'
+              ? moonFace(event.time, event.altitude, track.viewpoint)
+              : null,
         })),
+        nowMoon:
+          track.body === 'moon' && track.now
+            ? moonFace(track.now.time, track.now.altitude, track.viewpoint)
+            : null,
       })),
     [altMin, hourFormat, timeFormat, tracks],
   );
@@ -172,10 +238,48 @@ export function PanoramaSky({
 
   return (
     <g>
-      {layout.map(({ track, segments, hours, events }) => {
+      {layout.map(({ track, segments, hours, events, nowMoon }) => {
         const ink = SKY_INK[track.body];
 
         const now = track.now;
+
+        // The lit face: the whole disc for the sun, the phase for the moon.
+        // `ring` is the disc's outline colour, which the terminator matches.
+        const face = (
+          moon: MoonFace | null,
+          x: number,
+          y: number,
+          r: number,
+          fillOpacity: number,
+          ring: string,
+        ) =>
+          track.body === 'sun' ? (
+            <circle cx={x} cy={y} r={r} fill={ink} fillOpacity={fillOpacity} />
+          ) : (
+            <>
+              {/* The dark side, which hides the sky behind it as the real one does. */}
+              <circle
+                cx={x}
+                cy={y}
+                r={r}
+                fill="black"
+                fillOpacity={MOON_DARK_FILL}
+              />
+
+              {moon && (
+                <path
+                  d={moon.d}
+                  transform={`translate(${x} ${y}) rotate(${moon.rotate}) scale(${r})`}
+                  fill={ink}
+                  fillOpacity={fillOpacity}
+                  // The terminator drawn like the ring, or a pale phase is lost.
+                  stroke={ring}
+                  strokeWidth={1.5}
+                  vectorEffect="non-scaling-stroke"
+                />
+              )}
+            </>
+          );
 
         return (
           <g key={track.body} fill="none">
@@ -230,6 +334,8 @@ export function PanoramaSky({
 
               return (
                 <g key={event.time}>
+                  {face(event.moon, x, y, r, CROSSING_FILL[track.body], ink)}
+
                   <circle cx={x} cy={y} r={r} stroke={ink} strokeWidth={1.5} />
 
                   <text
@@ -249,17 +355,28 @@ export function PanoramaSky({
               );
             })}
 
-            {/* Solid only where the path is: the centre over a readable skyline. */}
+            {/* Filled only where the path is solid: the centre over a readable
+                skyline. */}
             {now && (
-              <circle
-                cx={screenX(now.azimuth)}
-                cy={screenY(now.altitude)}
-                r={disc(now.altitude, now.radius)}
-                fill={now.centreVisible ? ink : 'none'}
-                stroke={now.centreVisible ? HALO : ink}
-                strokeWidth={1.5}
-                opacity={now.centreVisible ? 1 : 0.5}
-              />
+              <g opacity={now.centreVisible ? 1 : 0.5}>
+                {now.centreVisible &&
+                  face(
+                    nowMoon,
+                    screenX(now.azimuth),
+                    screenY(now.altitude),
+                    disc(now.altitude, now.radius),
+                    NOW_FILL,
+                    HALO,
+                  )}
+
+                <circle
+                  cx={screenX(now.azimuth)}
+                  cy={screenY(now.altitude)}
+                  r={disc(now.altitude, now.radius)}
+                  stroke={now.centreVisible ? HALO : ink}
+                  strokeWidth={1.5}
+                />
+              </g>
             )}
           </g>
         );
