@@ -93,7 +93,6 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Pokaż na mapie',
   addMap: 'Dodaj mapę',
   presetEmpty: 'Brak warstw.',
-  searchResults: 'Wyniki wyszukiwania',
   filterItems: 'Filtruj',
   nothingInView: 'Na tym fragmencie mapy nic nie znaleziono.',
   presetHint:

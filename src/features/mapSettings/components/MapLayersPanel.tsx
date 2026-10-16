@@ -271,7 +271,7 @@ export default function MapLayersPanel(): ReactElement {
               {({ props }) => (
                 <Button
                   variant="secondary"
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 me-1"
                   onClick={() => setPlace(up)}
                   {...props}
                 >

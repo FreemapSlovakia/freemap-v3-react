@@ -84,7 +84,6 @@ const en: MapSettingsMessages = {
   openPreset: 'Show on map',
   addMap: 'Add map',
   presetEmpty: 'No layers.',
-  searchResults: 'Search results',
   filterItems: 'Filter',
   nothingInView: 'Nothing found in this part of the map.',
   presetHint:

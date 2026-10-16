@@ -94,7 +94,6 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Prikaži na zemljevidu',
   addMap: 'Dodaj zemljevid',
   presetEmpty: 'Ni slojev.',
-  searchResults: 'Rezultati iskanja',
   filterItems: 'Filtriraj',
   nothingInView: 'V tem delu zemljevida ni bilo nič najdeno.',
   presetHint:

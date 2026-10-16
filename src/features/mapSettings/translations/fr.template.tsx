@@ -98,7 +98,6 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Afficher sur la carte',
   addMap: 'Ajouter une carte',
   presetEmpty: 'Aucune couche.',
-  searchResults: 'Résultats de recherche',
   filterItems: 'Filtrer',
   nothingInView: 'Rien trouvé dans cette partie de la carte.',
   presetHint:

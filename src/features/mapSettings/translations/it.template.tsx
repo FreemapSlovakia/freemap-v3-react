@@ -94,7 +94,6 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Mostra sulla mappa',
   addMap: 'Aggiungi mappa',
   presetEmpty: 'Nessun livello.',
-  searchResults: 'Risultati della ricerca',
   filterItems: 'Filtra',
   nothingInView: 'Nessun risultato in questa parte della mappa.',
   presetHint:

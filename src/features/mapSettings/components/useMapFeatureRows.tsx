@@ -25,7 +25,6 @@ import { FaPencilRuler, FaSearch } from 'react-icons/fa';
 import { TbMapPins } from 'react-icons/tb';
 import { useDispatch, useStore } from 'react-redux';
 import { type MapFeatureId, mapFeatureCount } from '../mapFeatureCounts.js';
-import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 
 export type MapFeatureRow = {
   id: MapFeatureId;
@@ -50,8 +49,6 @@ type DrawTool = Extract<Tool, 'draw-points' | 'draw-lines' | 'draw-polygons'>;
 /** The tools' features on the map, top first; only those holding anything. */
 export function useMapFeatureRows(): MapFeatureRow[] {
   const m = useMessages();
-
-  const msm = useMapSettingsMessages();
 
   const dispatch = useDispatch();
 
@@ -147,7 +144,7 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     pinned !== undefined && {
       id: 'search',
       icon: <FaSearch />,
-      label: msm?.searchResults,
+      label: m?.search.result,
       count: pinned,
       onRemove: () => {
         for (const result of keptSearchResultsSelector(store.getState())) {

@@ -93,7 +93,6 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   openPreset: 'Zobrazit na mapě',
   addMap: 'Přidat mapu',
   presetEmpty: 'Žádné vrstvy.',
-  searchResults: 'Výsledky hledání',
   filterItems: 'Filtrovat',
   nothingInView: 'V této části mapy se nic nenašlo.',
   presetHint:
