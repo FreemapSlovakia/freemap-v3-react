@@ -11,6 +11,7 @@ import {
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMemo } from 'react';
 import { FaCamera, FaPalette } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import {
   AGE_YEAR_S,
   ageColor,
@@ -24,7 +25,10 @@ import {
 import { LICENSE_COLORS } from '../licenseColors.js';
 import { PHOTO_LICENSES } from '../licenses.js';
 import { GALLERY_COLOR, MUTED_COLOR } from '../marbleColors.js';
-import type { GalleryColorizeBy } from '../model/actions.js';
+import {
+  type GalleryColorizeBy,
+  galleryToggleLegend,
+} from '../model/actions.js';
 import type { GalleryMessages } from '../translations/GalleryMessages.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
@@ -155,6 +159,10 @@ export function pictureLegendApplies(
 }
 
 export function PictureLegend() {
+  const dispatch = useDispatch();
+
+  const onClose = () => dispatch(galleryToggleLegend(false));
+
   const colorizeBy = useAppSelector(
     (state) =>
       state.map.layers.includes('I') && state.gallerySettings.colorizeBy,
@@ -177,6 +185,7 @@ export function PictureLegend() {
       <LegendShell
         icon={ICON}
         label={gm?.legend}
+        onClose={onClose}
         className="flex-wrap align-items-center gap-2"
       >
         {swatches.map(({ color, label, title }) => (
@@ -191,7 +200,7 @@ export function PictureLegend() {
   }
 
   return (
-    <LegendShell icon={ICON} label={gm?.legend}>
+    <LegendShell icon={ICON} label={gm?.legend} onClose={onClose}>
       <LegendGradientBar
         background={scale.background}
         valueAt={scale.valueAt}

@@ -29,8 +29,7 @@ type ShellProps = {
    * belongs to, for legends that outlive that tool's toolbar.
    */
   control?: ReactNode;
-  /** Adds a close button; omitted where the legend is toggled from elsewhere. */
-  onClose?: () => void;
+  onClose: () => void;
   /** Extra toolbar classes, for a legend laying its body out in the toolbar. */
   className?: string;
   children: ReactNode;
@@ -71,15 +70,13 @@ export function LegendShell({
 
         {children}
 
-        {onClose && (
-          <LongPressTooltip label={m?.general.close}>
-            {({ props }) => (
-              <Button variant="dark" onClick={onClose} {...props}>
-                <FaTimes />
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
+        <LongPressTooltip label={m?.general.close}>
+          {({ props }) => (
+            <Button variant="dark" onClick={onClose} {...props}>
+              <FaTimes />
+            </Button>
+          )}
+        </LongPressTooltip>
       </Toolbar>
     </div>
   );
