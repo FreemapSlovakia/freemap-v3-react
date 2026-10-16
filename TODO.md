@@ -165,6 +165,36 @@ split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
       line, which is the remaining per-fix cost over the whole track now that the
       statistics are folded incrementally. Only worth doing if a long recording
       actually feels slow — measure first.
+- [ ] **One primitive for state kept outside Redux.** About a dozen modules
+      hand-roll the same store — a module-level value, a listener `Set`, a
+      `useSyncExternalStore` hook — each with its own subscribe/notify code.
+      Write `createStore<T>(initial, { equal?, onObserved? })` in `src/shared/`
+      returning `{ get, set, subscribe, use(selector?) }`; `onObserved` runs on
+      the first subscriber and returns a teardown for the last. Not zustand: what
+      varies here is lazy start/stop and equality, which zustand doesn't cover
+      either. Migrate in phases:
+      1. Single values: `makeSlot` in `panorama/viewStore.ts` (becomes the
+         primitive), `pictureCacheBust`, `messagesStore`, `renderHolder` (keeps
+         closing the old bitmap in its own setter), `useDocumentTitle`. Move
+         the hovered changeset (`changesets.hovered`, `changesetsHover`) and the
+         hovered search result (`search.hoverResult`) out of Redux onto it:
+         pointer state dispatched per row crossed runs every reducer, processor
+         predicate and selector for nothing persisted or in the URL. Clearing it
+         on `changesetsInspect` then moves from the reducer to the code that
+         inspects.
+      2. `mapLayersPanelStore`: its per-field hooks become `use(selector)`;
+         conditional persistence stays its own.
+      3. Caches: `rememberedJson`, `tileCoverage`, `drawingIcons`, then
+         `tileAttribution` (tuned, see
+         [`doc/tile-attribution.md`](./doc/tile-attribution.md)). Their loading,
+         rAF/microtask batching and `listeners.size` checks move onto
+         `onObserved`; only the plumbing goes.
+      4. Optional: `breakpoints` (fits `onObserved`, works as is).
+      Out of scope: `useBsTheme`/`useOnline` (stateless DOM adapters), `compass`
+      (an event stream), `leafletElementHolder` (listeners take the value,
+      replay on subscribe, and ~20 modules use its promise). Document the
+      primitive in `doc/architecture.md` as the one way to keep state outside
+      Redux.
 - [ ] **Adopt React 19 hooks codebase-wide** (own session — it's a cross-cutting
       decision, not a local cleanup). The app uses zero Suspense today; all async
       loading goes through `useLazy` (`src/app/hooks/useLazy.ts`) + effects
