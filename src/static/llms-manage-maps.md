@@ -2,7 +2,7 @@
 
 - Access: Manage maps button (the gear in the map toolbar, see [Map Layers](/llms-layers.md))
 
-A menu of five items in three groups: **Map manager**, the modal whose two tabs are **Installed maps**, where each map the user has is configured, and **Available maps**, where more maps are found and installed, with **New custom map** in its footer (see **Custom maps**); then the two that keep copies of maps, **Offline maps** (suffixed with the total cache size) and **Caching while browsing**; then **Map preferences** and **Elevation preferences**.
+A menu of five items in three groups: **Map manager**, the modal whose two tabs are **Installed maps**, where each map the user has is configured, and **Available maps**, where more maps are found and installed, with **New custom map** in its footer (see **Custom maps**); then the two that keep copies of maps, **Offline maps** (suffixed with the total cache size) and **Caching while browsing**; then **Map preferences** and **Elevation preferences**. Under them, a **Map brightness** slider darkens or lightens every map layer in eight steps each way, each a like ratio (centred is the map as it comes), leaving the features drawn on the map — drawings, routes, tracks, changes being inspected — as they are, so they stand out; the choice is remembered.
 
 ### Installed maps and Available maps
 

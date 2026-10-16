@@ -509,6 +509,7 @@ const messages: Messages = {
       overlay: 'Overlay',
     },
     preferences: 'Map preferences',
+    brightness: 'Map brightness',
     maxZoom: 'Max zoom',
     zoomSnap: 'Zoom step',
     zoomSnapFree: 'Free',

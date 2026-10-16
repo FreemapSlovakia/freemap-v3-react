@@ -517,6 +517,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiledHelp:
       'Per impostazione predefinita un WMS viene richiesto come un’unica immagine dell’intera vista: una sola richiesta invece di decine, ed etichette non tagliate ai bordi dei riquadri. Attiva i riquadri per un server che limita la dimensione dell’immagine o che li memorizza nella cache, al prezzo di una raffica di richieste per ogni vista.',
     preferences: 'Preferenze della mappa',
+    brightness: 'Luminosità della mappa',
     maxZoom: 'Zoom massimo',
     zoomSnap: 'Passo dello zoom',
     zoomSnapFree: 'Libero',

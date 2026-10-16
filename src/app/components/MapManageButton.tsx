@@ -1,4 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { BRIGHTNESS_STEPS } from '@features/map/brightness.js';
+import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -11,8 +13,9 @@ import {
   modalMenuItemProps,
   useMenuHandler,
 } from '@shared/hooks/useMenuHandler.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { ReactElement } from 'react';
-import { ButtonGroup, Dropdown } from 'react-bootstrap';
+import { ButtonGroup, Dropdown, Form } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaChartArea,
@@ -21,6 +24,26 @@ import {
   FaLayerGroup,
   FaSlidersH,
 } from 'react-icons/fa';
+import { MdBrightness6 } from 'react-icons/md';
+import { useDispatch } from 'react-redux';
+
+/**
+ * The native `change`, which React's `onChange` isn't: it fires once a drag or
+ * a key press has moved the slider, wherever the pointer is let go. Module
+ * level, so the ref stays one function and doesn't re-attach on each render.
+ */
+function trackOnCommit(el: HTMLInputElement | null) {
+  if (!el) {
+    return;
+  }
+
+  const track = () =>
+    trackMatomo(['trackEvent', 'MapSettings', 'brightness', Number(el.value)]);
+
+  el.addEventListener('change', track);
+
+  return () => el.removeEventListener('change', track);
+}
 
 /**
  * Everything about the maps other than which one is shown: the layer and
@@ -38,6 +61,10 @@ export function MapManageButton(): ReactElement {
     (sum, cm) => sum + cm.sizeBytes,
     0,
   );
+
+  const brightness = useAppSelector((state) => state.map.brightness);
+
+  const dispatch = useDispatch();
 
   const { handleSelect, menuShown, handleMenuToggle } = useMenuHandler();
 
@@ -106,6 +133,29 @@ export function MapManageButton(): ReactElement {
             <Chord modal="elevation-settings" />
           </MenuGutter>
         </Dropdown.Item>
+
+        <Dropdown.Divider />
+
+        {/* Centred, as the map comes; darker to the left, lighter to the right. */}
+        <Dropdown.ItemText className="d-flex align-items-center gap-2">
+          <MdBrightness6 className="flex-shrink-0" />
+
+          <span className="text-nowrap">{m?.mapLayers.brightness}</span>
+
+          <Form.Range
+            min={-BRIGHTNESS_STEPS}
+            max={BRIGHTNESS_STEPS}
+            step={1}
+            value={brightness}
+            style={{ minWidth: '6rem' }}
+            onChange={(e) => {
+              const step = Number(e.currentTarget.value);
+
+              dispatch(mapSetLocalPrefs({ brightness: step }));
+            }}
+            ref={trackOnCommit}
+          />
+        </Dropdown.ItemText>
       </FmDropdownMenu>
     </Dropdown>
   );

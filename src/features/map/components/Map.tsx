@@ -1,5 +1,6 @@
 import { useMouseCursor } from '@app/hooks/useMouseCursor.js';
 import { pickingModeSelector } from '@app/store/selectors.js';
+import { brightnessFilter } from '@features/map/brightness.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { snapToDevicePixels } from '@features/map/snapToDevicePixels.js';
@@ -67,6 +68,18 @@ export function TheMap({ children }: Props): ReactElement {
       style.backgroundSize = checkerboard ? '16px 16px' : '';
     }
   }, [map, backgroundColor, checkerboard]);
+
+  const brightness = useAppSelector((state) => state.map.brightness);
+
+  // `tilePane` holds every map layer, and only them: the features on top keep
+  // their own colours.
+  useEffect(() => {
+    const pane = map?.getPane('tilePane');
+
+    if (pane) {
+      pane.style.filter = brightnessFilter(brightness);
+    }
+  }, [map, brightness]);
 
   // Leaflet consults `zoomSnap` on each gesture rather than at construction, so
   // the live map can be retuned in place. Only react-leaflet's own props are

@@ -86,6 +86,11 @@ export interface MapState extends MapStateBase {
   backgroundColor: string;
   /** Draws the background as a checkerboard of its colour, so transparency shows. */
   backgroundCheckerboard: boolean;
+  /**
+   * The map layers darkened (below 0) or lightened (above) by steps, up to
+   * `BRIGHTNESS_STEPS`, so the features on them stand out.
+   */
+  brightness: number;
   /** Edits of shading maps' setups not applied yet, while the server renders them. */
   shadingDrafts: Record<string, Shading>;
   shadingOnServer: boolean;
@@ -126,6 +131,7 @@ export const mapInitialState: MapState = {
   // Leaflet's own.
   backgroundColor: '#dddddd',
   backgroundCheckerboard: true,
+  brightness: 0,
   shadingDrafts: {},
   shadingOnServer: true,
   presets: [],
@@ -1027,6 +1033,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
       if (payload.backgroundCheckerboard !== undefined) {
         state.backgroundCheckerboard = payload.backgroundCheckerboard;
+      }
+
+      if (payload.brightness !== undefined) {
+        state.brightness = payload.brightness;
       }
     })
     .addCase(processGeoipResult, (state, { payload }) => {

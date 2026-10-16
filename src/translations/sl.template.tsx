@@ -515,6 +515,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       overlay: 'Prekrivni',
     },
     preferences: 'Nastavitve zemljevida',
+    brightness: 'Svetlost zemljevida',
     maxZoom: 'Največja povečava',
     zoomSnap: 'Korak povečave',
     zoomSnapFree: 'Prosto',

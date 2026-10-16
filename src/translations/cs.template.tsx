@@ -512,6 +512,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiledHelp:
       'WMS se ve výchozím nastavení vyžádá jako jeden obrázek celého výřezu: jeden požadavek místo desítek a popisky nepřeříznuté na hranicích dlaždic. Dlaždice zapněte pro server, který omezuje velikost obrázku nebo který dlaždice ukládá do mezipaměti — za cenu dávky požadavků na každý výřez.',
     preferences: 'Předvolby mapy',
+    brightness: 'Jas mapy',
     maxZoom: 'Maximální přiblížení',
     zoomSnap: 'Krok přiblížení',
     zoomSnapFree: 'Volně',

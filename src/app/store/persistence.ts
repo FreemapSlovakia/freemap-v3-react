@@ -26,6 +26,7 @@ import {
   HeadingSourceSchema,
   locationSettingsInitialState,
 } from '@features/location/model/settingsReducer.js';
+import { BRIGHTNESS_STEPS } from '@features/map/brightness.js';
 import { LayersSettingsCompatSchema } from '@features/map/model/actions.js';
 import { LayerSetupsCompatSchema } from '@features/map/model/layerSetup.js';
 import {
@@ -127,6 +128,14 @@ export const PersistedMapSchema = z
     zoomSnap: z.number(),
     backgroundColor: z.string(),
     backgroundCheckerboard: z.boolean(),
+    // Out of range after a change of steps, it alone falls back.
+    brightness: z
+      .number()
+      .int()
+      .min(-BRIGHTNESS_STEPS)
+      .max(BRIGHTNESS_STEPS)
+      .optional()
+      .catch(undefined),
   })
   .partial();
 
@@ -536,6 +545,7 @@ const PERSIST: PersistEntry[] = [
       zoomSnap: m.zoomSnap,
       backgroundColor: m.backgroundColor,
       backgroundCheckerboard: m.backgroundCheckerboard,
+      brightness: m.brightness,
     }),
   }),
   defineEntry({
