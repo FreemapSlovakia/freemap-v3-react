@@ -1,5 +1,6 @@
 import { isToolOpen } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
+import { listedChangesetsSelector } from '@features/changesets/model/selectors.js';
 import { selectRecorderLines } from '@features/gpsRecorder/model/selectors.js';
 import { keptSearchResultsSelector } from '@features/search/model/selectors.js';
 
@@ -74,7 +75,12 @@ export function mapFeatureCount(
         ),
       );
 
-    case 'changesets':
-      return some(state.changesets.changesets.length);
+    case 'changesets': {
+      const listed = listedChangesetsSelector(state).length;
+
+      // Inspecting keeps the row, whose page lists the elements, also while
+      // the changeset loads.
+      return state.changesets.inspected ? Math.max(listed, 1) : some(listed);
+    }
   }
 }

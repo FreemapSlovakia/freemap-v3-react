@@ -18,12 +18,14 @@ const WIDE = `(min-width: ${getMinWidthForBreakpoint('sm')}px)`;
 /**
  * Where the panel is: the stack, a preset in it (`{ preset }`), the settings
  * of a map (`{ type }`, with `preset` a preset's copy of it), or the items of
- * a tool's features (`{ feature }`, a `useMapFeatureRows` id).
+ * a tool's features (`{ feature }`, a `useMapFeatureRows` id), or the elements
+ * of the inspected changeset (`{ feature: 'changesets', elements: true }`).
  */
 export type PanelPlace = {
   preset?: string;
   type?: string;
   feature?: MapFeatureId;
+  elements?: boolean;
 };
 
 /** Whether the panel leaves the map in view beside it. */
@@ -193,6 +195,17 @@ export function useRevealEditableMaps(enabled: boolean): void {
       reveal(added);
     }
   }, [layers, enabled, reveal, setOpen, store]);
+}
+
+/** Goes to the elements of each changeset inspected, from wherever it was. */
+export function useFollowInspectedChangeset(): void {
+  const inspected = useAppSelector((state) => state.changesets.inspected?.id);
+
+  useEffect(() => {
+    if (inspected !== undefined) {
+      update({ place: { feature: 'changesets', elements: true } }, false);
+    }
+  }, [inspected]);
 }
 
 /**

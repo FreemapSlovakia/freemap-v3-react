@@ -19,7 +19,8 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { isMapClickTool, toolDefinitions } from '../toolDefinitions.js';
+import { useEscapeKbd } from '../hooks/useEscapeKbd.js';
+import { toolDefinitions } from '../toolDefinitions.js';
 
 type Props = {
   tool: Tool;
@@ -62,6 +63,8 @@ export function ToolMenu({
   const sc = useScrollClasses('horizontal');
 
   const dispatch = useDispatch();
+
+  const closeKbd = useEscapeKbd(closeTool(tool));
 
   const m = useMessages();
 
@@ -181,14 +184,8 @@ export function ToolMenu({
                 </LongPressTooltip>
               )}
 
-              {/* Escape closes the tool that owns map clicks — it is what leaves
-                  a mode — so only there does it name the same gesture as this
-                  button. */}
               {!noClose && (
-                <LongPressTooltip
-                  label={m?.general.close}
-                  kbd={isMapClickTool(tool) ? 'Esc' : undefined}
-                >
+                <LongPressTooltip label={m?.general.close} kbd={closeKbd}>
                   {({ props }) => (
                     <Button
                       variant="dark"

@@ -1,3 +1,4 @@
+import { changesetsInspect } from '@features/changesets/model/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
@@ -17,6 +18,7 @@ import {
 } from 'leaflet';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { handleEvent, handleMapKey } from './keyboardHandler.js';
+import { closeTool, selectFeature } from './store/actions.js';
 import type { RootState } from './store/store.js';
 
 /**
@@ -65,6 +67,7 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     elevationChart: { target: null },
     drawingLines: { joinWith: undefined, drawing: false },
     trackViewer: { joinWith: null, splitting: false },
+    changesets: { inspected: null },
     ...overrides,
   } as unknown as RootState;
 }
@@ -315,6 +318,50 @@ describe('handleEvent — Escape', () => {
         }),
       ),
     ).toEqual(mapAreaSelectCancel());
+  });
+
+  describe('in an inspected changeset, steps back one level per press', () => {
+    const inspected = { inspected: { id: 1, changeset: null, diff: [] } };
+
+    it('deselects the selected element first', () => {
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesets: inspected,
+            main: {
+              activeModal: null,
+              selection: { type: 'changeset-element', id: 'way/2' },
+              mapTool: 'draw-lines',
+            },
+          }),
+        ),
+      ).toEqual(selectFeature(null));
+    });
+
+    it('then closes the map-click tool beside it', () => {
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesets: inspected,
+            main: { activeModal: null, selection: null, mapTool: 'draw-lines' },
+          }),
+        ),
+      ).toEqual(closeTool('draw-lines'));
+    });
+
+    it('then ends the inspection', () => {
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesets: inspected,
+            main: { activeModal: null, selection: null, mapTool: null },
+          }),
+        ),
+      ).toEqual(changesetsInspect(null));
+    });
   });
 
   it('ends a library preview, back to the library it hides', () => {

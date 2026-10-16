@@ -51,9 +51,7 @@ export default function DrawingLinePointSelection(): ReactElement | null {
     return (
       <PromptToolbar
         prompt={dm?.selectPointToJoin}
-        onCancel={() => {
-          dispatch(drawingLineJoinStart(undefined));
-        }}
+        cancel={drawingLineJoinStart(undefined)}
       />
     );
   }

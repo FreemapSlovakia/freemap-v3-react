@@ -1,18 +1,21 @@
+import { selectingModeSelector } from '@app/store/selectors.js';
+import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { Point } from 'leaflet';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
-import { Tooltip } from 'react-leaflet';
+import { Rectangle, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import type { Changeset } from '../model/actions.js';
-import { changesetDetail } from '../model/changesetDetail.js';
+import { type Changeset, changesetsInspect } from '../model/actions.js';
+import { changesetCenter } from '../model/changesetDiff.js';
 import classes from './ChangesetsResult.module.css';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
-export function ChangesetsResult(): ReactElement {
+export function ChangesetsResult(): ReactElement | null {
   const changesets = useAppSelector((state) => state.changesets.changesets);
 
   const days = useAppSelector((state) => state.changesets.days);
@@ -35,12 +38,43 @@ export function ChangesetsResult(): ReactElement {
     [days],
   );
 
+  const inspecting = useAppSelector(
+    (state) => state.changesets.inspected !== null,
+  );
+
+  // Not while a map-click tool takes the clicks.
+  const interactive = useAppSelector(selectingModeSelector);
+
+  const [hovered, setHovered] = useState<Changeset | null>(null);
+
   const now = new Date();
 
   const dispatch = useDispatch();
 
+  // A marker gone without a mouseout (tool closed, list refreshed) takes its
+  // outline along.
+  const outlined =
+    interactive && changesets.some((changeset) => changeset === hovered)
+      ? hovered
+      : null;
+
+  if (inspecting) {
+    return null;
+  }
+
   return (
     <>
+      {outlined && (
+        <Rectangle
+          bounds={[
+            [outlined.bbox[1], outlined.bbox[0]],
+            [outlined.bbox[3], outlined.bbox[2]],
+          ]}
+          interactive={false}
+          pathOptions={{ color: COLORS.normal, weight: 2, fillOpacity: 0.1 }}
+        />
+      )}
+
       {changesets.map((changeset) => {
         const opacity = opacityOf(changeset, now);
 
@@ -49,10 +83,30 @@ export function ChangesetsResult(): ReactElement {
             faIcon={<FaPencilAlt color={COLORS.normal} />}
             opacity={opacity}
             key={changeset.id}
-            position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
+            interactive={interactive}
+            position={{
+              lat: changesetCenter(changeset).lat,
+              lng: changesetCenter(changeset).lon,
+            }}
             eventHandlers={{
               click() {
-                dispatch(changesetDetail(changeset));
+                // Inspecting hides the markers, so no mouseout follows.
+                setHovered(null);
+
+                dispatch(changesetsInspect(changeset.id));
+
+                trackMatomo(['trackEvent', 'Changesets', 'inspect']);
+
+                fitMapToBbox(dispatch, changeset.bbox, {
+                  padding: 40,
+                  maxZoom: 17,
+                });
+              },
+              mouseover() {
+                setHovered(changeset);
+              },
+              mouseout() {
+                setHovered(null);
               },
             }}
           >

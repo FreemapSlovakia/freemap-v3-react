@@ -302,6 +302,7 @@ function updateUrl(state: RootState, forced: boolean): void {
   const rest = [
     changesets.authorName,
     changesets.days,
+    changesets.inspected?.id,
     drawingLines.lines,
     gallery.activeImageId,
     gallery.filter,
@@ -641,6 +642,10 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   if (changesets.authorName) {
     queryParts.push(['changesets-author', changesets.authorName]);
+  }
+
+  if (changesets.inspected) {
+    queryParts.push(['changeset', changesets.inspected.id]);
   }
 
   {

@@ -169,7 +169,14 @@ export interface DataViewerSelection {
   id: number;
 }
 
+export interface ChangesetElementSelection {
+  type: 'changeset-element';
+  /** `node/123`, an element of the inspected changeset. */
+  id: string;
+}
+
 export type Selection =
+  | ChangesetElementSelection
   | LinePointSelection
   | DrawPointSelection
   | ObjectsSelection

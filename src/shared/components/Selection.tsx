@@ -4,6 +4,7 @@ import { toolbarMounted } from '@features/map/panToUncovered.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
+import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
@@ -39,6 +40,8 @@ export function Selection({
 
   const m = useMessages();
 
+  const escapeKbd = useEscapeKbd(selectFeature(null));
+
   return (
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
@@ -63,7 +66,7 @@ export function Selection({
 
           {!window.fmEmbedded && deletable && <DeleteButton />}
 
-          <LongPressTooltip label={m?.general.close} kbd="Esc">
+          <LongPressTooltip label={m?.general.close} kbd={escapeKbd}>
             {({ props }) => (
               <Button
                 variant="dark"

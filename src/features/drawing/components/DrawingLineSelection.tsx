@@ -12,6 +12,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
 import { useSimplifyPrompt } from '@shared/simplifyDialog.js';
 import { area } from '@turf/area';
 import { booleanContains } from '@turf/boolean-contains';
@@ -96,6 +97,9 @@ export default function DrawingLineSelection(): ReactElement | null {
   const preventCutHoleHint = useAppSelector(
     (state) => state.drawingSettings.preventCutHoleHint,
   );
+
+  // The cancel of a hole and the stop of a drawing are the same action.
+  const stopKbd = useEscapeKbd(drawingLineStopDrawing());
 
   // Offering "don't show next time" only once the pref can outlive the session.
   const canRememberHintPref = useAppSelector(
@@ -359,7 +363,11 @@ export default function DrawingLineSelection(): ReactElement | null {
         deletable
       >
         {cuttingHole && (
-          <LongPressTooltip breakpoint="sm" label={m?.general.cancel} kbd="Esc">
+          <LongPressTooltip
+            breakpoint="sm"
+            label={m?.general.cancel}
+            kbd={stopKbd}
+          >
             {({ label, labelClassName, props }) => (
               <Button
                 variant="secondary"
@@ -374,7 +382,11 @@ export default function DrawingLineSelection(): ReactElement | null {
         )}
 
         {drawing && (
-          <LongPressTooltip breakpoint="sm" label={dm?.stopDrawing} kbd="Esc">
+          <LongPressTooltip
+            breakpoint="sm"
+            label={dm?.stopDrawing}
+            kbd={stopKbd}
+          >
             {({ label, labelClassName, props }) => (
               <Button
                 variant="secondary"

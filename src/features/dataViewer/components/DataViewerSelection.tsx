@@ -115,9 +115,7 @@ export default function DataViewerSelection(): ReactElement | null {
     return (
       <PromptToolbar
         prompt={dvm?.join.pick}
-        onCancel={() => {
-          dispatch(dataViewerSetJoining(null));
-        }}
+        cancel={dataViewerSetJoining(null)}
       />
     );
   }
@@ -126,9 +124,7 @@ export default function DataViewerSelection(): ReactElement | null {
     return (
       <PromptToolbar
         prompt={dvm?.split.pick}
-        onCancel={() => {
-          dispatch(dataViewerSetSplitting(false));
-        }}
+        cancel={dataViewerSetSplitting(false)}
       >
         {/* Only a finger ever gets this far: a pointer that can hover cuts
             where it points, and leaves nothing to confirm. */}

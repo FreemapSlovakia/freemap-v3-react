@@ -8,6 +8,7 @@ import {
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { changesetsSet } from '@features/changesets/model/actions.js';
+import { changesetCenter } from '@features/changesets/model/changesetDiff.js';
 import {
   dataViewerSetData,
   dataViewerSetTrackUID,
@@ -124,12 +125,15 @@ async function collect(
       // the id, the author and when it was closed.
       return featureCollection(
         getState().changesets.changesets.map((changeset) =>
-          point([changeset.centerLon, changeset.centerLat], {
-            ...(changeset.description && { title: changeset.description }),
-            changeset: String(changeset.id),
-            user: changeset.userName,
-            closed_at: changeset.closedAt.toISOString(),
-          }),
+          point(
+            [changesetCenter(changeset).lon, changesetCenter(changeset).lat],
+            {
+              ...(changeset.description && { title: changeset.description }),
+              changeset: String(changeset.id),
+              user: changeset.userName,
+              closed_at: changeset.closedAt.toISOString(),
+            },
+          ),
         ),
       );
 

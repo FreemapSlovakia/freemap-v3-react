@@ -8,6 +8,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
+import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
 import { layerLabel } from '@shared/layerName.js';
 import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
 import type { ReactElement } from 'react';
@@ -54,6 +55,8 @@ export default function MapLibraryPreviewMenu(): ReactElement | null {
   );
 
   const canSaveSettings = useCanSaveSettings();
+
+  const backKbd = useEscapeKbd(mapLibraryPreviewEnd({ keep: false }));
 
   if (!type || (!entry && !own)) {
     return null;
@@ -118,7 +121,11 @@ export default function MapLibraryPreviewMenu(): ReactElement | null {
           )}
         </LongPressTooltip>
 
-        <LongPressTooltip breakpoint="sm" label={msm?.backToLibrary} kbd="Esc">
+        <LongPressTooltip
+          breakpoint="sm"
+          label={msm?.backToLibrary}
+          kbd={backKbd}
+        >
           {({ label, labelClassName, props }) => (
             <Button
               variant="secondary"

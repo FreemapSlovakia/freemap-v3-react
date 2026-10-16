@@ -29,6 +29,12 @@ const panoramaResultFactory = () =>
     '@features/panorama/components/PanoramaResult.js'
   );
 
+const changesetDiffResultFactory = () =>
+  import(
+    /* webpackChunkName: "changeset-diff-result" */
+    '@features/changesets/components/ChangesetDiffResult.js'
+  );
+
 const gpsRecorderResultFactory = () =>
   import(
     /* webpackChunkName: "gps-recorder-result" */
@@ -70,6 +76,10 @@ export function Results(): ReactElement {
   const hasPanorama = useAppSelector(
     (state) =>
       state.panorama.viewpoint !== null && isToolOpen(state, 'panorama'),
+  );
+
+  const hasChangesetDiff = useAppSelector((state) =>
+    Boolean(state.changesets.inspected?.diff),
   );
 
   const opacity = useAppSelector(
@@ -118,6 +128,10 @@ export function Results(): ReactElement {
       )}
 
       <ChangesetsResult />
+
+      {hasChangesetDiff && (
+        <AsyncComponent factory={changesetDiffResultFactory} />
+      )}
 
       {hasPanorama && <AsyncComponent factory={panoramaResultFactory} />}
 

@@ -7,6 +7,7 @@ import {
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { changesetsSet } from '@features/changesets/model/actions.js';
+import { changesetCenter } from '@features/changesets/model/changesetDiff.js';
 import {
   dataViewerDelete,
   dataViewerDeleteFeature,
@@ -688,7 +689,7 @@ export const convertToDrawingProcessor: Processor<typeof convertToDrawing> = {
         dispatch(
           drawingPointAdd({
             ...state.drawingSettings.style,
-            coords: { lat: changeset.centerLat, lon: changeset.centerLon },
+            coords: changesetCenter(changeset),
             label: changeset.description,
             color: state.drawingSettings.style.color,
             id: getState().drawingPoints.points.length,

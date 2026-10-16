@@ -181,13 +181,26 @@ export default function MapLayersPanel(): ReactElement {
           ? layers.includes(place.type)
           : Boolean(preset?.layers.some((layer) => layer.type === place.type));
 
-  const at: PanelPlace = stillThere ? place : {};
+  const inspectedChangeset = useAppSelector(
+    (state) => state.changesets.inspected?.id,
+  );
+
+  // A changeset's elements while one is inspected; then the changesets.
+  const at: PanelPlace = !stillThere
+    ? {}
+    : place.elements && inspectedChangeset === undefined
+      ? { feature: place.feature }
+      : place;
 
   const feature = at.feature === undefined ? undefined : featureRow;
 
   const target = at.type === undefined ? undefined : { ...at, type: at.type };
 
-  const up: PanelPlace = at.type === undefined ? {} : { preset: at.preset };
+  const up: PanelPlace = at.elements
+    ? { feature: at.feature }
+    : at.type === undefined
+      ? {}
+      : { preset: at.preset };
 
   const [panel, setPanel] = useState<HTMLDivElement | null>(null);
 
@@ -268,7 +281,11 @@ export default function MapLayersPanel(): ReactElement {
 
           <span className="flex-grow-1 min-w-0 d-flex">
             {feature ? (
-              <TruncatedText>{feature.label}</TruncatedText>
+              <TruncatedText>
+                {at.elements
+                  ? `${feature.label} #${inspectedChangeset}`
+                  : feature.label}
+              </TruncatedText>
             ) : target ? (
               <TargetName target={target} />
             ) : at.preset !== undefined && preset ? (
@@ -294,7 +311,7 @@ export default function MapLayersPanel(): ReactElement {
 
         <div className={clsx(classes.list, 'px-2 pb-2')}>
           {feature ? (
-            <MapFeatureItems feature={feature.id} />
+            <MapFeatureItems feature={feature.id} elements={at.elements} />
           ) : target ? (
             <PanelHeaderSlotContext value={headerSlot}>
               <LayerSettings key={setupKey(target)} target={target} />

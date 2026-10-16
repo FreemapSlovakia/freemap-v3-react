@@ -6,7 +6,17 @@ import {
 } from '@app/store/actions.js';
 import { openToolsSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
-import { changesetDetail } from '@features/changesets/model/changesetDetail.js';
+import { ELEMENT_ICONS } from '@features/changesets/components/elementIcons.js';
+import { changesetsInspect } from '@features/changesets/model/actions.js';
+import {
+  currentVersion,
+  DIFF_ACTIONS,
+  DIFF_COLORS,
+  elementKey,
+  listedElements,
+} from '@features/changesets/model/changesetDiff.js';
+import { listedChangesetsSelector } from '@features/changesets/model/selectors.js';
+import { useChangesetsMessages } from '@features/changesets/translations/useChangesetsMessages.js';
 import { dataViewerBatchCounts } from '@features/dataViewer/featureEditing.js';
 import { drawingBatchCounts } from '@features/drawing/featureProperties.js';
 import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
@@ -60,6 +70,7 @@ import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
@@ -93,7 +104,11 @@ import { MdPolyline } from 'react-icons/md';
 import { TbMapPin } from 'react-icons/tb';
 import { useDispatch, useStore } from 'react-redux';
 import type { MapFeatureId } from '../mapFeatureCounts.js';
-import { isWideScreen, useMapLayersPanel } from '../mapLayersPanelStore.js';
+import {
+  isWideScreen,
+  type PanelPlace,
+  useMapLayersPanel,
+} from '../mapLayersPanelStore.js';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './MapLayersPanel.module.css';
 import { RowRemoveButton } from './RowRemoveButton.js';
@@ -118,7 +133,14 @@ type Item = {
   /** The selection it is, highlighted while current, and made by a tap. */
   selects?: Selection;
   /** Dispatched by a tap instead, where selecting it on the map does more. */
-  actions?: UnknownAction[] /** Worked out only when it is picked: a long line has many points. */;
+  actions?: UnknownAction[];
+  /** Highlighted as current, where that isn't the selection's to say. */
+  current?: boolean;
+  /** What a pick does beside dispatching, such as counting it. */
+  onPick?: () => void;
+  /** A page of its own, which picking it opens beside its other effects. */
+  opens?: PanelPlace;
+  /** Worked out only when it is picked: a long line has many points. */
   bbox: () => Bbox | undefined;
 };
 
@@ -158,8 +180,11 @@ function geojsonBbox(geojson: GeoJSON | null | undefined): Bbox | undefined {
 /** The items of one of the tools' features, each selected on the map by a tap. */
 export function MapFeatureItems({
   feature,
+  elements,
 }: {
   feature: MapFeatureId;
+  /** The inspected changeset's elements in place of the changesets. */
+  elements?: boolean;
 }): ReactElement {
   switch (feature) {
     case 'search':
@@ -184,7 +209,7 @@ export function MapFeatureItems({
       return <DrawingItems />;
 
     case 'changesets':
-      return <ChangesetItems />;
+      return elements ? <ChangesetElementItems /> : <ChangesetListItems />;
   }
 }
 
@@ -210,7 +235,7 @@ function ItemList({
   // Read here alone, so selecting doesn't rebuild every list's items.
   const selection = useAppSelector((state) => state.main.selection);
 
-  const { setOpen } = useMapLayersPanel();
+  const { setOpen, setPlace } = useMapLayersPanel();
 
   const [filter, setFilter] = useState('');
 
@@ -244,6 +269,8 @@ function ItemList({
       dispatch(action);
     }
 
+    item.onPick?.();
+
     const after = store.getState();
 
     const openBefore = openToolsSelector(state);
@@ -257,8 +284,12 @@ function ItemList({
 
     const bbox = item.bbox();
 
-    // On a phone the panel covers what was just selected.
-    const closing = !isWideScreen();
+    if (item.opens) {
+      setPlace(item.opens);
+    }
+
+    // On a phone the panel covers what was just selected; not a page opened.
+    const closing = !item.opens && !isWideScreen();
 
     if (closing) {
       setOpen(false);
@@ -294,63 +325,74 @@ function ItemList({
         />
       )}
 
-      {shown.map((item) => (
-        <div
-          key={item.key}
-          className={clsx(
-            classes.row,
-            item.selects &&
-              sameSelection(selection, item.selects) &&
-              classes.rowSelected,
-            'd-flex align-items-center gap-1 mx-n2 px-3',
-          )}
-        >
-          <button
-            type="button"
-            className={clsx(
-              classes.rowToggle,
-              'flex-grow-1 d-flex align-items-center gap-1 text-start',
-            )}
-            onClick={() => pick(item)}
-          >
-            <span
-              className="d-inline-flex flex-shrink-0"
-              style={item.color ? { color: item.color } : undefined}
-            >
-              {item.icon}
-            </span>
+      {shown.map((item) => {
+        const selected =
+          item.current ??
+          (item.selects !== undefined &&
+            sameSelection(selection, item.selects));
 
-            <span className="d-flex flex-column min-w-0">
-              <TruncatedText
-                className={clsx(item.muted && 'text-muted')}
-                // Muted grey is lost on the tooltip's dark background.
-                tooltip={
-                  item.detail ? `${item.label} · ${item.detail}` : undefined
+        // Selected, the row is Bootstrap's `.active`: all of it white, the
+        // muted parts a fainter white, as grey is lost on the blue.
+        const muted = selected ? 'opacity-75' : 'text-muted';
+
+        return (
+          <div
+            key={item.key}
+            className={clsx(
+              classes.row,
+              selected && classes.rowSelected,
+              'd-flex align-items-center gap-1 mx-n2 px-3',
+            )}
+          >
+            <button
+              type="button"
+              className={clsx(
+                classes.rowToggle,
+                'flex-grow-1 d-flex align-items-center gap-1 text-start',
+              )}
+              onClick={() => pick(item)}
+            >
+              <span
+                className="d-inline-flex flex-shrink-0"
+                style={
+                  item.color && !selected ? { color: item.color } : undefined
                 }
               >
-                {item.display ?? item.label}
+                {item.icon}
+              </span>
 
-                {item.detail && (
-                  <span className="text-muted"> · {item.detail}</span>
-                )}
-              </TruncatedText>
+              <span className="d-flex flex-column min-w-0">
+                <TruncatedText
+                  className={clsx(item.muted && muted)}
+                  // Muted grey is lost on the tooltip's dark background.
+                  tooltip={
+                    item.detail ? `${item.label} · ${item.detail}` : undefined
+                  }
+                >
+                  {item.display ?? item.label}
 
-              {item.subline && (
-                <TruncatedText className="small text-muted">
-                  {item.subline}
+                  {item.detail && (
+                    <span className={muted}> · {item.detail}</span>
+                  )}
                 </TruncatedText>
-              )}
-            </span>
-          </button>
 
-          {/* The selection stays, unless it is this item. */}
-          {item.selects && DELETABLE_SELECTIONS.has(item.selects.type) && (
-            <RowRemoveButton
-              onClick={() => dispatch(deleteFeature(item.selects))}
-            />
-          )}
-        </div>
-      ))}
+                {item.subline && (
+                  <TruncatedText className={clsx('small', muted)}>
+                    {item.subline}
+                  </TruncatedText>
+                )}
+              </span>
+            </button>
+
+            {/* The selection stays, unless it is this item. */}
+            {item.selects && DELETABLE_SELECTIONS.has(item.selects.type) && (
+              <RowRemoveButton
+                onClick={() => dispatch(deleteFeature(item.selects))}
+              />
+            )}
+          </div>
+        );
+      })}
 
       {matching.length > shown.length && (
         <p className="text-muted mt-1 mb-0">
@@ -944,8 +986,57 @@ function BatchFooter(
   );
 }
 
-function ChangesetItems(): ReactElement {
-  const changesets = useAppSelector((state) => state.changesets.changesets);
+function ChangesetElementItems(): ReactElement {
+  const diff = useAppSelector((state) => state.changesets.inspected?.diff);
+
+  const language = useEffectiveChosenLanguage();
+
+  const mapping = useOsmMapping(language);
+
+  const cm = useChangesetsMessages();
+
+  return (
+    <ItemList
+      items={listedElements(diff ?? [])
+        .toSorted(
+          (a, b) =>
+            DIFF_ACTIONS.indexOf(a.action) - DIFF_ACTIONS.indexOf(b.action),
+        )
+        .map((element): Item => {
+          const { tags = {}, coords = [] } = currentVersion(element) ?? {};
+
+          const key = elementKey(element);
+
+          const Icon = ELEMENT_ICONS[element.type];
+
+          const osm = osmKind(
+            { type: 'osm', elementType: element.type, id: element.id },
+            tags,
+            mapping,
+          );
+
+          return {
+            ...nameAndKind(
+              getNameFromOsmElement(tags, language),
+              osm.generic,
+              `${cm?.element.types[element.type] ?? element.type} ${element.id}`,
+            ),
+            key,
+            icon: osm.icon ?? <Icon />,
+            color: DIFF_COLORS[element.action],
+            subline: cm?.actions[element.action],
+            selects: { type: 'changeset-element', id: key },
+            bbox: () => latLonBbox(coords.map(([lat, lon]) => ({ lat, lon }))),
+          };
+        })}
+    />
+  );
+}
+
+function ChangesetListItems(): ReactElement {
+  const changesets = useAppSelector(listedChangesetsSelector);
+
+  const inspectedId = useAppSelector((state) => state.changesets.inspected?.id);
 
   // As the detail the pick opens dates it.
   const dateFormat = useDateTimeFormat({
@@ -953,23 +1044,30 @@ function ChangesetItems(): ReactElement {
     timeStyle: 'short',
   });
 
-  // Newest first; picked, one shows what its marker's click does.
+  // Newest first; picked, one is inspected as its marker's click does, and its
+  // elements listed. The inspected one isn't loaded again.
   return (
     <ItemList
       items={changesets
         .toSorted((a, b) => b.closedAt.getTime() - a.closedAt.getTime())
-        .map((changeset) => ({
-          key: String(changeset.id),
-          icon: <FaPencilAlt />,
-          label: changeset.userName,
-          detail: changeset.description || undefined,
-          subline: dateFormat.format(changeset.closedAt),
-          actions: [changesetDetail(changeset)],
-          bbox: () =>
-            latLonBbox([
-              { lat: changeset.centerLat, lon: changeset.centerLon },
-            ]),
-        }))}
+        .map((changeset) => {
+          const current = inspectedId === changeset.id;
+
+          return {
+            key: String(changeset.id),
+            icon: <FaPencilAlt />,
+            label: changeset.userName,
+            detail: changeset.description || undefined,
+            subline: dateFormat.format(changeset.closedAt),
+            actions: current ? [] : [changesetsInspect(changeset.id)],
+            onPick: current
+              ? undefined
+              : () => trackMatomo(['trackEvent', 'Changesets', 'inspect']),
+            opens: { feature: 'changesets', elements: true },
+            current,
+            bbox: () => changeset.bbox,
+          };
+        })}
     />
   );
 }

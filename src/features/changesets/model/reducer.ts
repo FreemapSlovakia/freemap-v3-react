@@ -2,16 +2,25 @@ import { clearMapFeatures, closeTool, openTool } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type Changeset,
+  changesetsInspect,
   changesetsSet,
+  changesetsSetInspected,
   changesetsSetLastFetchedBBox,
   changesetsSetParams,
 } from './actions.js';
+import type { DiffElement } from './changesetDiff.js';
 
 export interface ChangesetsState {
   changesets: Changeset[];
   days: number | null;
   authorName: string | null;
   lastFetchedBBox: string | null;
+  /** The changeset whose changes are on the map; `null`s while loading. */
+  inspected: {
+    id: number;
+    changeset: Changeset | null;
+    diff: DiffElement[] | null;
+  } | null;
 }
 
 export const initialState: ChangesetsState = {
@@ -19,6 +28,7 @@ export const initialState: ChangesetsState = {
   days: null,
   authorName: null,
   lastFetchedBBox: null,
+  inspected: null,
 };
 
 export const changesetReducer = createReducer(initialState, (builder) =>
@@ -43,5 +53,16 @@ export const changesetReducer = createReducer(initialState, (builder) =>
     })
     .addCase(changesetsSetLastFetchedBBox, (state, action) => {
       state.lastFetchedBBox = action.payload;
+    })
+    .addCase(changesetsInspect, (state, action) => {
+      state.inspected =
+        action.payload === null
+          ? null
+          : { id: action.payload, changeset: null, diff: null };
+    })
+    .addCase(changesetsSetInspected, (state, { payload }) => {
+      if (state.inspected?.id === payload.changeset.id) {
+        Object.assign(state.inspected, payload);
+      }
     }),
 );

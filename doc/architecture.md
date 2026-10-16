@@ -39,9 +39,10 @@ elsewhere:
   (`/v1/features/at`) and the geometry of an element a link or a pin names by id
   (`/v1/features/by-id`). Holds Europe only, and only tagged objects — as do
   Photon and GraphHopper, so the app is Europe-wide throughout.
-- **`OSM_API_URL`** — the public OSM API, used only for changeset listings
-  (`src/features/changesets/model/processor.ts`). Element geometry comes from
-  the own API above.
+- **`OSM_API_URL`** — the public OSM API, used only for changeset listings and
+  metadata (`src/features/changesets/model/`). Element geometry comes from the
+  own API above; a changeset's changes come from OSMCha's public augmented
+  diffs (`adiffs.osmcha.org`, hardcoded in `inspectProcessor.ts`).
 - **`PHOTON_URL`** — geocoding; see [photon-geocoder.md](./photon-geocoder.md).
 - **`FM_MAPSERVER_URL`** — the outdoor map renderer: tiles and the legend.
 - **`API_URL`** — the app's own backend (`freemap-v3-api`): accounts, gallery,

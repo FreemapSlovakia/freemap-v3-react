@@ -25,6 +25,7 @@ import { MapAreaSelectionResult } from '@features/mapArea/components/MapAreaSele
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
 import { drawnTypesSelector } from '@features/mapLibrary/model/selectors.js';
 import {
+  useFollowInspectedChangeset,
   useForgetEmptiedFeaturePage,
   useMapLayersPanel,
   useRevealEditableMaps,
@@ -205,6 +206,12 @@ const objectSelectionFactory = () =>
   import(
     /* webpackChunkName: "object-selection" */
     '@features/objects/components/ObjectSelection.js'
+  );
+
+const changesetElementSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "changeset-element-selection" */
+    '@features/changesets/components/ChangesetElementSelection.js'
   );
 
 const galleryPositionPickingMenuFactory = () =>
@@ -567,6 +574,9 @@ function selectionMenu(type: Selection['type']): ReactNode {
     case 'objects':
       return <AsyncComponent factory={objectSelectionFactory} />;
 
+    case 'changeset-element':
+      return <AsyncComponent factory={changesetElementSelectionFactory} />;
+
     case 'tracking':
       return <TrackingSelection />;
 
@@ -633,6 +643,8 @@ export function Main(): ReactElement {
   useRevealEditableMaps(layersPanelAllowed);
 
   useForgetEmptiedFeaturePage();
+
+  useFollowInspectedChangeset();
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 

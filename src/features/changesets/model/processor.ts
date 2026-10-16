@@ -20,6 +20,7 @@ import {
   changesetsSetLastFetchedBBox,
   changesetsSetParams,
 } from './actions.js';
+import { hasBbox, parseChangeset } from './changesetDiff.js';
 
 export const changesetsTrackProcessor: Processor = {
   stateChangePredicate: (state) =>
@@ -39,8 +40,10 @@ export const changesetsTrackProcessor: Processor = {
   },
 };
 
+// Its own toast id: the inspected changeset's details are `changeset.detail`,
+// and this refetches whenever any tool opens.
 export const changesetsProcessor: Processor = {
-  id: 'changeset.detail',
+  id: 'changesets.list',
   actionCreator: [changesetsSetParams, changesetsRefresh, openTool],
   statePredicate: (state) => isToolOpen(state, 'changesets'),
   handle: async ({ dispatch, getState, toastError }) => {
@@ -67,7 +70,7 @@ export const changesetsProcessor: Processor = {
 
         dispatch(
           toastsAdd({
-            id: 'changeset.detail',
+            id: 'changesets.list',
             messageKey: 'tooBig',
             messageLoader: loadChangesetsMessages,
             cancelType: [
@@ -84,7 +87,7 @@ export const changesetsProcessor: Processor = {
         return;
       }
 
-      dispatch(toastsRemove('changeset.detail'));
+      dispatch(toastsRemove('changesets.list'));
 
       const t = new Date();
 
@@ -117,7 +120,6 @@ export const changesetsProcessor: Processor = {
           cancelActions: [
             changesetsSetParams,
             changesetsRefresh,
-            selectFeature,
             clearMapFeatures,
           ],
           statePredicate: changesetsClosed,
@@ -133,47 +135,9 @@ export const changesetsProcessor: Processor = {
         const arrayOfrawChangesets = Array.from(rawChangesets);
 
         const changesetsFromThisRequest = arrayOfrawChangesets
-          .map((rawChangeset) => {
-            const minLat = parseFloat(
-              rawChangeset.getAttribute('min_lat') ?? '',
-            );
-
-            const maxLat = parseFloat(
-              rawChangeset.getAttribute('max_lat') ?? '',
-            );
-
-            const minLon = parseFloat(
-              rawChangeset.getAttribute('min_lon') ?? '',
-            );
-
-            const maxLon = parseFloat(
-              rawChangeset.getAttribute('max_lon') ?? '',
-            );
-
-            const descriptionTag = Array.from(
-              rawChangeset.getElementsByTagName('tag'),
-            ).find((tag) => tag.getAttribute('k') === 'comment');
-
-            const changeset: Changeset = {
-              userName: rawChangeset.getAttribute('user') ?? '???',
-              id: Number(rawChangeset.getAttribute('id') ?? '???'),
-              centerLat: (minLat + maxLat) / 2.0,
-              centerLon: (minLon + maxLon) / 2.0,
-              closedAt: new Date(
-                rawChangeset.getAttribute('closed_at') ?? '???',
-              ),
-              description: descriptionTag?.getAttribute('v') ?? '???',
-            };
-
-            return changeset;
-          })
-          .filter(
-            (changeset) =>
-              changeset.centerLat > 47.63617 &&
-              changeset.centerLat < 49.66746 &&
-              changeset.centerLon > 16.69965 &&
-              changeset.centerLon < 22.67475,
-          );
+          .map(parseChangeset)
+          // An empty changeset has no bbox to place it by.
+          .filter(hasBbox);
 
         const allChangesetsSoFar = [...changesetsFromPreviousRequest];
 
@@ -201,7 +165,7 @@ export const changesetsProcessor: Processor = {
         if (allChangesetsSoFar.length === 0) {
           dispatch(
             toastsAdd({
-              id: 'changeset.detail',
+              id: 'changesets.list',
               messageKey: 'notFound',
               messageLoader: loadChangesetsMessages,
               cancelType: [

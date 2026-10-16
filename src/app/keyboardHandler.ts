@@ -1,4 +1,5 @@
 import { hasRole } from '@features/auth/model/types.js';
+import { changesetsInspect } from '@features/changesets/model/actions.js';
 import {
   dataViewerSetJoining,
   dataViewerSetSplitting,
@@ -31,6 +32,7 @@ import { mapLayersPanelToggle } from '@features/mapSettings/model/actions.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
+import type { UnknownAction } from '@reduxjs/toolkit';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
 import {
   effectiveShortcut,
@@ -57,121 +59,135 @@ let keyTimer: number | null = null;
 /** The key that started a chord, while the next one is awaited. */
 let initCode: string | null = null;
 
+const isSuspendedModal = (state: RootState) =>
+  state.homeLocation.selectingHomeLocation !== false ||
+  Boolean(state.gallery.pickingPositionForId) ||
+  state.gallery.showPosition ||
+  Boolean(state.mapArea.selecting) ||
+  Boolean(state.mapLibrary.preview) ||
+  state.toposcope.pickingCenter;
+
+// Overlays that own their open-state outside main.activeModal: the gallery
+// viewer (own + Wikimedia Commons photos), and the Wikipedia preview (shown
+// while loading or once previewed). The picking/selecting overlays are tracked
+// by `isSuspendedModal` instead.
+const isShowingModal = (state: RootState) =>
+  Boolean(state.main.activeModal) ||
+  Boolean(state.gallery.activeImageId) ||
+  Boolean(state.wiki.preview) ||
+  Boolean(state.wiki.loading);
+
+/**
+ * What Escape does now: the one action, of all the controls offering a way
+ * out, that it dispatches — and so the one control to show it on.
+ */
+export function escapeAction(state: RootState): UnknownAction | undefined {
+  const suspendedModal = isSuspendedModal(state);
+
+  const showingModal = isShowingModal(state);
+
+  if (state.gallery.pickingPositionForId) {
+    return gallerySetItemForPositionPicking(null);
+  }
+
+  if (showGalleryViewerSelector(state)) {
+    return state.gallery.editModel ? galleryEditPicture() : galleryClear();
+  }
+
+  // A modal in the foreground closes itself on its own listener, which fires
+  // only while this handler (registered first) leaves the key unclaimed. The
+  // picking overlays hide theirs and leave the map live, so they go on.
+  if (showingModal && !suspendedModal) {
+    return undefined;
+  }
+
+  // Before the panels and the selection: the map is in a mode of its own,
+  // and leaving it is what Escape is for here.
+  if (state.toposcope.pickingCenter) {
+    return toposcopeSetPickingCenter(false);
+  }
+
+  if (state.panorama.picking) {
+    return panoramaSetPicking(null);
+  }
+
+  if (state.viewshed.pickingViewpoint) {
+    return viewshedSetPickingViewpoint(false);
+  }
+
+  // Before the chart and the panels below it: a mode waiting on a click has
+  // put them away, so Escape has to be about the mode itself.
+  if (state.drawingLines.joinWith) {
+    return drawingLineJoinStart(undefined);
+  }
+
+  if (state.trackViewer.joinWith) {
+    return dataViewerSetJoining(null);
+  }
+
+  if (state.trackViewer.splitting) {
+    return dataViewerSetSplitting(false);
+  }
+
+  if (state.mapArea.selecting) {
+    return mapAreaSelectCancel();
+  }
+
+  if (state.mapLibrary.preview) {
+    return mapLibraryPreviewEnd({ keep: false });
+  }
+
+  if (state.homeLocation.selectingHomeLocation !== false) {
+    return setSelectingHomeLocation(false);
+  }
+
+  if (state.elevationChart.target) {
+    return elevationChartClose();
+  }
+
+  // Waiting for a hole to be drawn is a mode of its own — no line is being
+  // drawn yet — so leaving it must not fall through to clearing the
+  // selection, which would drop the polygon the hole was meant for.
+  if (state.drawingLines.drawing || state.drawingLines.holeFor !== undefined) {
+    return drawingLineStopDrawing();
+  }
+
+  if (state.gallery.showPosition) {
+    return galleryCancelShowOnTheMap();
+  }
+
+  if (!showingModal && !suspendedModal && state.main.selection) {
+    return selectFeature(null);
+  }
+
+  // Only the tool that owns map clicks, the one holding the map in a mode; the
+  // toolbar-only tools close by their own button.
+  if (!showingModal && !suspendedModal && state.main.mapTool) {
+    return closeTool(state.main.mapTool);
+  }
+
+  // The one drill-in of a toolbar-only tool: Escape is its Back, after its
+  // selected element and the map-click tool beside it.
+  if (!showingModal && !suspendedModal && state.changesets.inspected) {
+    return changesetsInspect(null);
+  }
+
+  return undefined;
+}
+
 export function handleEvent(event: KeyboardEvent, state: RootState) {
   const withModifiers =
     event.ctrlKey || event.altKey || event.metaKey || event.isComposing;
 
-  const suspendedModal =
-    state.homeLocation.selectingHomeLocation !== false ||
-    state.gallery.pickingPositionForId ||
-    state.gallery.showPosition ||
-    state.mapArea.selecting ||
-    state.mapLibrary.preview ||
-    state.toposcope.pickingCenter;
+  const suspendedModal = isSuspendedModal(state);
 
-  // Overlays that own their open-state outside main.activeModal: the gallery
-  // viewer (own + Wikimedia Commons photos), and the Wikipedia preview (shown
-  // while loading or once previewed). The picking/selecting overlays are tracked
-  // by `suspendedModal` instead.
-  const showingModal =
-    Boolean(state.main.activeModal) ||
-    Boolean(state.gallery.activeImageId) ||
-    Boolean(state.wiki.preview) ||
-    Boolean(state.wiki.loading);
+  const showingModal = isShowingModal(state);
 
   if (!withModifiers && event.code === 'Escape') {
-    if (document.querySelector('*[aria-expanded=true]') !== null) {
-      return undefined;
-    }
-
-    if (state.gallery.pickingPositionForId) {
-      return gallerySetItemForPositionPicking(null);
-    }
-
-    if (showGalleryViewerSelector(state)) {
-      return state.gallery.editModel ? galleryEditPicture() : galleryClear();
-    }
-
-    // A modal in the foreground owns Escape: it closes itself on its own
-    // document listener, which only fires while the key is not already claimed
-    // — and this handler, registered first, would claim it. The picking
-    // overlays hide their modal and leave the map live, so they keep the
-    // dismissals below.
-    if (showingModal && !suspendedModal) {
-      return undefined;
-    }
-
-    // Before the panels and the selection: the map is in a mode of its own,
-    // and leaving it is what Escape is for here.
-    if (state.toposcope.pickingCenter) {
-      return toposcopeSetPickingCenter(false);
-    }
-
-    if (state.panorama.picking) {
-      return panoramaSetPicking(null);
-    }
-
-    if (state.viewshed.pickingViewpoint) {
-      return viewshedSetPickingViewpoint(false);
-    }
-
-    // Before the chart and the panels below it: a mode waiting on a click has
-    // put them away, so Escape has to be about the mode itself.
-    if (state.drawingLines.joinWith) {
-      return drawingLineJoinStart(undefined);
-    }
-
-    if (state.trackViewer.joinWith) {
-      return dataViewerSetJoining(null);
-    }
-
-    if (state.trackViewer.splitting) {
-      return dataViewerSetSplitting(false);
-    }
-
-    if (state.mapArea.selecting) {
-      return mapAreaSelectCancel();
-    }
-
-    if (state.mapLibrary.preview) {
-      return mapLibraryPreviewEnd({ keep: false });
-    }
-
-    if (state.homeLocation.selectingHomeLocation !== false) {
-      return setSelectingHomeLocation(false);
-    }
-
-    if (state.elevationChart.target) {
-      return elevationChartClose();
-    }
-
-    // Waiting for a hole to be drawn is a mode of its own — no line is being
-    // drawn yet — so leaving it must not fall through to clearing the
-    // selection, which would drop the polygon the hole was meant for.
-    if (
-      state.drawingLines.drawing ||
-      state.drawingLines.holeFor !== undefined
-    ) {
-      return drawingLineStopDrawing();
-    }
-
-    if (state.gallery.showPosition) {
-      return galleryCancelShowOnTheMap();
-    }
-
-    if (!showingModal && !suspendedModal && state.main.selection) {
-      return selectFeature(null);
-    }
-
-    // Only the tool that owns map clicks: it is the one holding the map in a
-    // mode, and Escape is for leaving a mode. The toolbar-only tools sit there
-    // passively, several at a time, and are closed by their own button — one of
-    // them going on an Escape aimed at something else would be a surprise.
-    if (!showingModal && !suspendedModal && state.main.mapTool) {
-      return closeTool(state.main.mapTool);
-    }
-
-    return undefined;
+    // An open dropdown closes itself on Escape.
+    return document.querySelector('*[aria-expanded=true]') === null
+      ? escapeAction(state)
+      : undefined;
   }
 
   if (
@@ -426,13 +442,7 @@ export function handleMapKey(event: KeyboardEvent, state: RootState) {
     state.mapArea.selecting ||
     state.mapLibrary.preview;
 
-  const showingModal =
-    Boolean(state.main.activeModal) ||
-    Boolean(state.gallery.activeImageId) ||
-    Boolean(state.wiki.preview) ||
-    Boolean(state.wiki.loading);
-
-  if (showingModal && !suspendedModal) {
+  if (isShowingModal(state) && !suspendedModal) {
     return undefined;
   }
 

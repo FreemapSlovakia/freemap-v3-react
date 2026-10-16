@@ -47,9 +47,17 @@
   background-color: var(--bs-tertiary-bg);
 }
 
-/* The item selected on the map. */
-.row-selected {
-  background-color: var(--bs-secondary-bg);
+/* The item selected on the map: Bootstrap's `.list-group-item.active`. After
+   the hover rule, of equal specificity, so a hovered one stays selected. */
+.row-selected,
+.row-selected:has(.row-toggle:not(:disabled):hover) {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+
+  /* Its Remove too, which `text-body` (an !important utility) keeps dark. */
+  & :global(.btn) {
+    color: inherit !important;
+  }
 }
 
 /* Where a drag handle would be, so names line up. */

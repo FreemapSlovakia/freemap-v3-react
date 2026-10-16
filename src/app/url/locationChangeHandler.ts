@@ -1,5 +1,6 @@
 import {
   type ChangesetParams,
+  changesetsInspect,
   changesetsSet,
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
@@ -553,6 +554,17 @@ export function handleLocationChange(store: MyStore): void {
 
   if (Object.keys(changesetParams).length) {
     dispatch(changesetsSetParams(changesetParams));
+  }
+
+  const inspectedChangeset = Number(query['changeset']) || null;
+
+  if (inspectedChangeset !== (getState().changesets.inspected?.id ?? null)) {
+    // The inspection lives in the changesets tool.
+    if (inspectedChangeset !== null && !isToolOpen(getState(), 'changesets')) {
+      dispatch(openTool('changesets'));
+    }
+
+    dispatch(changesetsInspect(inspectedChangeset));
   }
 
   const lines: Line[] = [];
