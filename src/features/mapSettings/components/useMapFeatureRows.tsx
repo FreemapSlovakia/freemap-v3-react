@@ -1,6 +1,9 @@
 import { closeTool, selectFeature, type Tool } from '@app/store/actions.js';
 import { activeMapToolSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
+import { ChangesetLabel } from '@features/changesets/components/ChangesetLabel.js';
+import { changesetsEndInspection } from '@features/changesets/model/inspectorToast.js';
+import { loneInspectionSelector } from '@features/changesets/model/selectors.js';
 import { DataViewerToggleButton } from '@features/dataViewer/components/DataViewerToggleButton.js';
 import { dataViewerDelete } from '@features/dataViewer/model/actions.js';
 import { DrawingToggleButton } from '@features/drawing/components/DrawingToggleButton.js';
@@ -17,7 +20,7 @@ import { TrackingToggleButton } from '@features/tracking/components/TrackingTogg
 import { trackingActions } from '@features/tracking/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isDrawTool, toolDefinitions } from '@shared/toolDefinitions.js';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { FaPencilRuler, FaSearch } from 'react-icons/fa';
 import { TbMapPins } from 'react-icons/tb';
 import { useDispatch, useStore } from 'react-redux';
@@ -28,6 +31,10 @@ export type MapFeatureRow = {
   id: MapFeatureId;
   icon: ReactElement;
   label: string | undefined;
+  /** Shown in place of the label, which stays the text naming the row. */
+  display?: ReactNode;
+  /** Muted under the label, in its row only. */
+  subline?: string;
   count?: number;
   /**
    * In its page's header in place of the icon: the button opening its tool, as
@@ -75,6 +82,16 @@ export function useMapFeatureRows(): MapFeatureRow[] {
 
   const changesets = useAppSelector((state) =>
     mapFeatureCount(state, 'changesets'),
+  );
+
+  const loneInspection = useAppSelector(loneInspectionSelector);
+
+  const inspectedId = useAppSelector(
+    (state) => state.changesetInspector.inspected?.id,
+  );
+
+  const inspectedChangeset = useAppSelector(
+    (state) => state.changesetInspector.inspected?.changeset,
   );
 
   const drawingHasLine = useAppSelector((state) =>
@@ -184,9 +201,29 @@ export function useMapFeatureRows(): MapFeatureRow[] {
     changesets !== undefined && {
       id: 'changesets',
       ...ofTool('changesets'),
-      count: changesets,
-      // Closing the tool takes its changesets off the map.
-      onRemove: () => dispatch(closeTool('changesets')),
+      ...(loneInspection
+        ? {
+            // Named as the inspector's breadcrumb names it.
+            display:
+              inspectedId === undefined ? undefined : (
+                <ChangesetLabel id={inspectedId} />
+              ),
+            subline: inspectedChangeset
+              ? [inspectedChangeset.userName, inspectedChangeset.description]
+                  .filter(Boolean)
+                  .join(' · ')
+              : undefined,
+            onRemove: () => {
+              for (const action of changesetsEndInspection()) {
+                dispatch(action);
+              }
+            },
+          }
+        : {
+            count: changesets,
+            // Closing the tool takes its changesets off the map.
+            onRemove: () => dispatch(closeTool('changesets')),
+          }),
     },
   ];
 

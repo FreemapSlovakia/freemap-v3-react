@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { usePaged } from '@shared/components/LoadMoreSentinel.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { LayerKindMark } from '@shared/components/MapLayerItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -495,32 +496,7 @@ function LibraryResults({
   nameOf,
   canSave,
 }: ResultsProps): ReactElement {
-  const [limit, setLimit] = useState(pageSize);
-
-  const matches = ranked.slice(0, limit);
-
-  // Keyed by `limit`, so a sentinel still in view after a page is a new
-  // element, observed anew, and loads the next one too.
-  const observeMore = (el: HTMLDivElement | null) => {
-    if (!el) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          observer.disconnect();
-
-          setLimit((limit) => limit + pageSize);
-        }
-      },
-      { rootMargin: '300px' },
-    );
-
-    observer.observe(el);
-
-    return () => observer.disconnect();
-  };
+  const { shown: matches, more } = usePaged(ranked, pageSize);
 
   // One table, as Installed maps; each row's icon tells the kind.
   return (
@@ -538,7 +514,7 @@ function LibraryResults({
         </tbody>
       </Table>
 
-      {ranked.length > limit && <div key={limit} ref={observeMore} />}
+      {more}
     </>
   );
 }

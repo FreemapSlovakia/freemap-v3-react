@@ -5,11 +5,15 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { Point } from 'leaflet';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { Rectangle, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { type Changeset, changesetsInspect } from '../model/actions.js';
+import {
+  type Changeset,
+  changesetsHover,
+  changesetsInspect,
+} from '../model/actions.js';
 import { changesetCenter } from '../model/changesetDiff.js';
 import classes from './ChangesetsResult.module.css';
 
@@ -39,13 +43,14 @@ export function ChangesetsResult(): ReactElement | null {
   );
 
   const inspecting = useAppSelector(
-    (state) => state.changesets.inspected !== null,
+    (state) => state.changesetInspector.inspected !== null,
   );
 
   // Not while a map-click tool takes the clicks.
   const interactive = useAppSelector(selectingModeSelector);
 
-  const [hovered, setHovered] = useState<Changeset | null>(null);
+  // Its marker or its row in the Map layers panel.
+  const hovered = useAppSelector((state) => state.changesets.hovered);
 
   const now = new Date();
 
@@ -54,9 +59,8 @@ export function ChangesetsResult(): ReactElement | null {
   // A marker gone without a mouseout (tool closed, list refreshed) takes its
   // outline along.
   const outlined =
-    interactive && changesets.some((changeset) => changeset === hovered)
-      ? hovered
-      : null;
+    (interactive && changesets.find((changeset) => changeset.id === hovered)) ||
+    null;
 
   if (inspecting) {
     return null;
@@ -90,9 +94,7 @@ export function ChangesetsResult(): ReactElement | null {
             }}
             eventHandlers={{
               click() {
-                // Inspecting hides the markers, so no mouseout follows.
-                setHovered(null);
-
+                // Clears the hover too: the markers go, so no mouseout follows.
                 dispatch(changesetsInspect(changeset.id));
 
                 trackMatomo(['trackEvent', 'Changesets', 'inspect']);
@@ -103,10 +105,10 @@ export function ChangesetsResult(): ReactElement | null {
                 });
               },
               mouseover() {
-                setHovered(changeset);
+                dispatch(changesetsHover(changeset.id));
               },
               mouseout() {
-                setHovered(null);
+                dispatch(changesetsHover(null));
               },
             }}
           >

@@ -1,4 +1,7 @@
+import { type OsmFeatureId, osmElementTypes } from '@shared/types/featureId.js';
 import type { Changeset } from './actions.js';
+
+export const OSM_API = `${process.env['OSM_API_URL']}/api/0.6`;
 
 export type DiffAction = 'create' | 'modify' | 'delete';
 
@@ -11,7 +14,7 @@ export const DIFF_COLORS: Record<DiffAction, string> = {
   delete: '#d00000',
 };
 
-export type ElementType = 'node' | 'way' | 'relation';
+export type ElementType = OsmFeatureId['elementType'];
 
 export type LatLon = [lat: number, lon: number];
 
@@ -33,8 +36,29 @@ export interface DiffElement {
 }
 
 /** `node/123`: what selects the element. */
-export function elementKey(element: DiffElement): string {
-  return `${element.type}/${element.id}`;
+export function elementKey({
+  type,
+  id,
+}: {
+  type: ElementType;
+  id: number | string;
+}): string {
+  return `${type}/${id}`;
+}
+
+/** The `elementKey` of an element named by its feature id. */
+export function osmIdKey(id: OsmFeatureId): string {
+  return elementKey({ type: id.elementType, id: id.id });
+}
+
+export function osmIdOf({
+  type,
+  id,
+}: {
+  type: ElementType;
+  id: number;
+}): OsmFeatureId {
+  return { type: 'osm', elementType: type, id };
 }
 
 /** The version the element ends up as, or the deleted one. */
@@ -73,6 +97,17 @@ export function hasMoved(element: DiffElement): boolean {
     (a.length !== b.length ||
       a.some(([lat, lon], i) => lat !== b[i][0] || lon !== b[i][1]))
   );
+}
+
+/**
+ * About where adiffs.osmcha.org starts (closed 2024-11-26). It has none before,
+ * and some missing after, so this only spares a request certain to 404.
+ */
+const FIRST_ADIFF_CHANGESET = 159_637_340;
+
+/** Whether OSMCha may hold the changeset's diff. */
+export function hasAdiff(changesetId: number): boolean {
+  return changesetId >= FIRST_ADIFF_CHANGESET;
 }
 
 /** Whether the changeset has a place: an empty one has no bbox. */
@@ -141,13 +176,18 @@ export function parseChangeset(el: Element): Changeset {
     userName: el.getAttribute('user') ?? '???',
     id: Number(el.getAttribute('id') ?? '???'),
     bbox: [attr('min_lon'), attr('min_lat'), attr('max_lon'), attr('max_lat')],
-    closedAt: new Date(el.getAttribute('closed_at') ?? '???'),
-    description: comment ?? '???',
+    // Still open, it has no `closed_at`; an invalid date throws when formatted.
+    closedAt: new Date(
+      el.getAttribute('closed_at') ?? el.getAttribute('created_at') ?? 0,
+    ),
+    // Empty, the details say it has none.
+    description: comment ?? '',
     tags,
   };
 }
 
-function parseVersion(el: Element): ElementVersion {
+/** An element of OSM XML; a way's coords only where its `nd`s carry them. */
+export function parseVersion(el: Element): ElementVersion {
   const coords: LatLon[] = [];
 
   const members: string[] = [];
@@ -200,6 +240,6 @@ function childNamed(el: Element, name: string) {
   return Array.from(el.children).find((child) => child.tagName === name);
 }
 
-function isElementType(name: string): name is ElementType {
-  return name === 'node' || name === 'way' || name === 'relation';
+export function isElementType(name: string): name is ElementType {
+  return (osmElementTypes as readonly string[]).includes(name);
 }

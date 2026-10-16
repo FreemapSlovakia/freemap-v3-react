@@ -1,4 +1,7 @@
-import { changesetsInspect } from '@features/changesets/model/actions.js';
+import {
+  changesetsInspect,
+  changesetsShowHistory,
+} from '@features/changesets/model/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
@@ -67,7 +70,7 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     elevationChart: { target: null },
     drawingLines: { joinWith: undefined, drawing: false },
     trackViewer: { joinWith: null, splitting: false },
-    changesets: { inspected: null },
+    changesetInspector: { inspected: null, history: null },
     ...overrides,
   } as unknown as RootState;
 }
@@ -321,14 +324,17 @@ describe('handleEvent — Escape', () => {
   });
 
   describe('in an inspected changeset, steps back one level per press', () => {
-    const inspected = { inspected: { id: 1, changeset: null, diff: [] } };
+    const inspected = {
+      inspected: { id: 1, changeset: null, diff: [] },
+      history: null,
+    };
 
     it('deselects the selected element first', () => {
       expect(
         handleEvent(
           esc(),
           makeState({
-            changesets: inspected,
+            changesetInspector: inspected,
             main: {
               activeModal: null,
               selection: { type: 'changeset-element', id: 'way/2' },
@@ -344,7 +350,7 @@ describe('handleEvent — Escape', () => {
         handleEvent(
           esc(),
           makeState({
-            changesets: inspected,
+            changesetInspector: inspected,
             main: { activeModal: null, selection: null, mapTool: 'draw-lines' },
           }),
         ),
@@ -356,11 +362,71 @@ describe('handleEvent — Escape', () => {
         handleEvent(
           esc(),
           makeState({
-            changesets: inspected,
+            changesetInspector: inspected,
             main: { activeModal: null, selection: null, mapTool: null },
           }),
         ),
       ).toEqual(changesetsInspect(null));
+    });
+  });
+
+  describe('in an element history', () => {
+    const history = {
+      id: { type: 'osm', elementType: 'node', id: 2 },
+      name: 'Hut',
+      selection: {
+        type: 'search',
+        id: { type: 'osm', elementType: 'node', id: 2 },
+      },
+    };
+
+    it('returns from a changeset to the history, after the map-click tool', () => {
+      const changesetInspector = {
+        inspected: { id: 1, changeset: null, diff: [] },
+        history,
+      };
+
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesetInspector,
+            main: { activeModal: null, selection: null, mapTool: 'draw-lines' },
+          }),
+        ),
+      ).toEqual(closeTool('draw-lines'));
+
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesetInspector,
+            main: { activeModal: null, selection: null, mapTool: null },
+          }),
+        ),
+      ).toEqual(changesetsInspect(null));
+    });
+
+    const shownIn = (selectedResults: unknown[]) =>
+      makeState({
+        changesetInspector: { inspected: null, history },
+        main: {
+          activeModal: null,
+          selection: history.selection,
+          mapTool: null,
+          detailsShown: true,
+        },
+        search: { selectedResults },
+      });
+
+    it('closes the history before its element is deselected', () => {
+      expect(
+        handleEvent(esc(), shownIn([{ id: history.id, loading: false }])),
+      ).toEqual(changesetsShowHistory(null));
+    });
+
+    it('leaves a history its element’s details no longer show', () => {
+      expect(handleEvent(esc(), shownIn([]))).toEqual(selectFeature(null));
     });
   });
 

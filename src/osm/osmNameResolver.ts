@@ -1,3 +1,5 @@
+import type { OsmFeatureId } from '@shared/types/featureId.js';
+import type { Messages } from '@/translations/messagesInterface.js';
 import { normalizeTaxonTags } from './taxon.js';
 import type { Node, OsmMapping } from './types.js';
 
@@ -407,3 +409,12 @@ export const categoryKeys = new Set([
   'water',
   'waterway',
 ]);
+
+/** An element named by its type and id, as `Node 123`. */
+export function osmTypeAndId(
+  m: Messages | undefined,
+  elementType: OsmFeatureId['elementType'],
+  id: number,
+): string {
+  return `${m?.search.osmElementTypes[elementType] ?? elementType} ${id}`;
+}

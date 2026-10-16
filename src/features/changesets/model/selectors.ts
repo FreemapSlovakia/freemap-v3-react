@@ -1,3 +1,4 @@
+import { isToolOpen } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { createSelector } from 'reselect';
 import { type DiffElement, elementKey, hasBbox } from './changesetDiff.js';
@@ -8,7 +9,7 @@ import { type DiffElement, elementKey, hasBbox } from './changesetDiff.js';
  */
 export const listedChangesetsSelector = createSelector(
   (state: RootState) => state.changesets.changesets,
-  (state: RootState) => state.changesets.inspected?.changeset,
+  (state: RootState) => state.changesetInspector.inspected?.changeset,
   (changesets, inspected) =>
     inspected &&
     hasBbox(inspected) &&
@@ -19,7 +20,7 @@ export const listedChangesetsSelector = createSelector(
 
 /** The inspected changeset's elements by `elementKey`, built once per diff. */
 const diffByKeySelector = createSelector(
-  (state: RootState) => state.changesets.inspected?.diff,
+  (state: RootState) => state.changesetInspector.inspected?.diff,
   (diff) =>
     new Map<string, DiffElement>(
       diff?.map((element) => [elementKey(element), element]),
@@ -36,3 +37,8 @@ export const selectedDiffElementSelector = (
     ? diffByKeySelector(state).get(selection.id)
     : undefined;
 };
+
+/** Inspected without the tool open, the one changeset there is of it. */
+export const loneInspectionSelector = (state: RootState): boolean =>
+  state.changesetInspector.inspected !== null &&
+  !isToolOpen(state, 'changesets');

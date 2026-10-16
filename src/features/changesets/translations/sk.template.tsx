@@ -1,13 +1,17 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ChangesetDetails } from '../components/ChangesetDetails.js';
-import { ChangesetElementDetails } from '../components/ChangesetElementDetails.js';
+import { ChangesetInspector } from '../components/ChangesetInspector.js';
 import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
-  detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  elementDetail: ({ element }) => <ChangesetElementDetails element={element} />,
+  inspector: () => <ChangesetInspector />,
+  history: {
+    title: 'História',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Nastala chyba pri získavaní histórie', err),
+  },
+  changeset: 'Sada zmien',
   allAuthors: 'Všetci autori',
   refresh: 'Stiahnuť sady zmien pre aktuálny výrez mapy',
   tooBig:
@@ -17,8 +21,6 @@ const sk: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   notFound: 'Neboli nájdené žiadne zmeny.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri získavaní zmien', err),
-  diffNotReady:
-    'Zmeny tejto sady ešte nie sú k dispozícii. Pripravené sú niekoľko minút po jej uzavretí.',
   inspectError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri získavaní zmien sady', err),
   actions: {
@@ -27,13 +29,8 @@ const sk: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
     delete: 'zmazané',
   },
   element: {
-    types: {
-      node: 'Bod',
-      way: 'Cesta',
-      relation: 'Relácia',
-    },
     onlyNodesMoved: 'Posunuli sa len jej body.',
-    geometryChanged: 'Zmenila sa geometria.',
+    geometryChanged: 'Geometria zmenená.',
     tagsUnchanged: 'Tagy bez zmeny.',
     key: 'Kľúč',
     before: 'Predtým',
@@ -49,6 +46,10 @@ const sk: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
     noDescription: 'bez popisu',
     closedAt: 'Čas:',
     openOnOsm: 'Otvoriť na osm.org',
+    tooBig:
+      'OSMCha túto sadu nemá a je príliš veľká na zostavenie z OSM API; jej zmeny pozrite na osm.org.',
+    rebuilt:
+      'Zostavené z OSM API, lebo OSMCha túto sadu nemá: neupravené body ciest sú zobrazené na dnešnom mieste a cesty, ktorým sa len posunuli body, chýbajú.',
   },
 };
 

@@ -19,7 +19,12 @@ import {
   cacheTilesStartProcessor,
   cacheTilesStopProcessor,
 } from '@features/cachedMaps/model/cacheTilesProcessor.js';
-import { changesetElementDetailProcessor } from '@features/changesets/model/changesetDetail.js';
+import {
+  changesetsHistoryProcessor,
+  changesetsHistorySelectionProcessor,
+  changesetsReturnToHistoryProcessor,
+} from '@features/changesets/model/historyProcessor.js';
+import { changesetInspectorProcessor } from '@features/changesets/model/inspectorToast.js';
 import { changesetsInspectProcessor } from '@features/changesets/model/inspectProcessor.js';
 import {
   changesetsProcessor,
@@ -221,7 +226,10 @@ export const processors = [
   changesetsProcessor,
   changesetsTrackProcessor,
   changesetsInspectProcessor,
-  changesetElementDetailProcessor,
+  changesetInspectorProcessor,
+  changesetsHistoryProcessor,
+  changesetsHistorySelectionProcessor,
+  changesetsReturnToHistoryProcessor,
   authInitProcessor,
   authTrackProcessor,
   l10nSetLanguageProcessor,

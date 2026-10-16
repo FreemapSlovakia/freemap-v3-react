@@ -19,6 +19,10 @@ export function getOsmElementUrl(
   return `https://www.openstreetmap.org/${elementType}/${id}${history ? '/history' : ''}`;
 }
 
+export function getOsmChangesetUrl(id: number): string {
+  return `https://www.openstreetmap.org/changeset/${id}`;
+}
+
 /** The element itself open in iD, as opposed to whatever is at a position. */
 export function getIdElementUrl({ elementType, id }: OsmFeatureId): string {
   return `https://www.openstreetmap.org/edit?editor=id&${elementType}=${id}`;

@@ -1,15 +1,20 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ChangesetDetails } from '../components/ChangesetDetails.js';
-import { ChangesetElementDetails } from '../components/ChangesetElementDetails.js';
+import { ChangesetInspector } from '../components/ChangesetInspector.js';
 import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
-  detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  elementDetail: ({ element }) => <ChangesetElementDetails element={element} />,
-  diffNotReady:
-    'Les modifications de cet ensemble ne sont pas encore disponibles. Elles le sont quelques minutes après sa fermeture.',
+  inspector: () => <ChangesetInspector />,
+  history: {
+    title: 'Historique',
+    error: ({ err }) =>
+      addError(
+        getMessages()!,
+        "Erreur lors de la récupération de l'historique",
+        err,
+      ),
+  },
   inspectError: ({ err }) =>
     addError(
       getMessages()!,
@@ -22,13 +27,8 @@ const fr: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
     delete: 'supprimés',
   },
   element: {
-    types: {
-      node: 'Nœud',
-      way: 'Chemin',
-      relation: 'Relation',
-    },
     onlyNodesMoved: 'Seuls ses nœuds ont été déplacés.',
-    geometryChanged: 'Sa géométrie a changé.',
+    geometryChanged: 'Géométrie modifiée.',
     tagsUnchanged: 'Attributs inchangés.',
     key: 'Clé',
     before: 'Avant',
@@ -38,6 +38,7 @@ const fr: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
       `Membres : ${added} ajoutés, ${removed} retirés.`,
     history: 'Historique sur osm.org',
   },
+  changeset: 'Ensemble de modifications',
   allAuthors: 'Tous les auteurs',
   refresh:
     'Télécharger les ensembles de modifications pour la vue actuelle de la carte',
@@ -58,6 +59,10 @@ const fr: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
     noDescription: 'sans description',
     closedAt: 'Heure :',
     openOnOsm: 'Ouvrir sur osm.org',
+    tooBig:
+      "OSMCha n'a pas cet ensemble, et il est trop grand pour être reconstitué depuis l'API OSM ; ses modifications sont sur osm.org.",
+    rebuilt:
+      "Reconstitué depuis l'API OSM, car OSMCha n'a pas cet ensemble : les nœuds non modifiés des chemins sont à leur position actuelle, et les chemins dont seuls les nœuds ont bougé manquent.",
   },
 };
 

@@ -5,26 +5,26 @@
   box-shadow: var(--fm-shadow-2);
   max-width: calc(max(380px, 25dvw));
 
-  /* Nudged into the corner, past the alert's own padding. Relative, so the
-     message text still wraps around where the icons would have sat. */
+  /* In the corner, nudged past the alert's own padding, and out of the flow:
+     only the message's first line makes room for it, below which the content
+     has the full width. */
   .corner {
-    position: relative;
-    top: -0.25rem;
-    left: 0.25rem;
+    position: absolute;
+    top: calc(var(--bs-alert-padding-y) - 0.25rem);
+    right: calc(var(--bs-alert-padding-x) - 0.25rem);
   }
 
-  /* Block content inside the inline span is sized without the floated ×, so the
-     toast comes out too narrow and it wraps; a new BFC is sized beside the float. */
-  .message:has(> :is(div, ul, ol, p)) {
-    display: flow-root;
+  .message {
+    display: block;
   }
 
-  /* The flow-root stays beside the × all the way down; a scrolling table below
-     it reclaims that column (the .btn-close box plus its ms-2). */
-  :global(.btn-close)
-    ~ .message
-    > :global(.table-responsive):not(:first-child) {
-    margin-right: calc(-1.5em - 0.5rem);
+  /* The room, whatever the message starts with: a float the size of the
+     .btn-close box (1.5em) and a gap, which only the first line wraps around. */
+  .corner ~ .message::before {
+    content: "";
+    float: right;
+    width: calc(1.5em + 0.25rem);
+    height: 1.5em;
   }
 
   /* The button makes this row far taller than the 2px bar it carries, so it

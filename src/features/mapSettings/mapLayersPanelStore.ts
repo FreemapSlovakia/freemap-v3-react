@@ -199,7 +199,9 @@ export function useRevealEditableMaps(enabled: boolean): void {
 
 /** Goes to the elements of each changeset inspected, from wherever it was. */
 export function useFollowInspectedChangeset(): void {
-  const inspected = useAppSelector((state) => state.changesets.inspected?.id);
+  const inspected = useAppSelector(
+    (state) => state.changesetInspector.inspected?.id,
+  );
 
   useEffect(() => {
     if (inspected !== undefined) {

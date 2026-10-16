@@ -1,13 +1,14 @@
 import type { JSX } from 'react';
-import type { Changeset } from '../model/actions.js';
-import type {
-  DiffAction,
-  DiffElement,
-  ElementType,
-} from '../model/changesetDiff.js';
+import type { DiffAction } from '../model/changesetDiff.js';
 
 export type ChangesetsMessages = {
-  detail: ({ changeset }: { changeset: Changeset }) => JSX.Element;
+  inspector: () => JSX.Element;
+  history: {
+    title: string;
+    error: (props: { err: unknown }) => string;
+  };
+  /** Names the inspected one where nothing above it in the breadcrumb does. */
+  changeset: string;
   allAuthors: string;
   refresh: string;
   tooBig: string;
@@ -15,12 +16,9 @@ export type ChangesetsMessages = {
   olderThan: (props: { days: number }) => string;
   notFound: string;
   fetchError: (props: { err: unknown }) => string;
-  diffNotReady: string;
   inspectError: (props: { err: unknown }) => string;
-  elementDetail: ({ element }: { element: DiffElement }) => JSX.Element;
   actions: Record<DiffAction, string>;
   element: {
-    types: Record<ElementType, string>;
     onlyNodesMoved: string;
     geometryChanged: string;
     tagsUnchanged: string;
@@ -37,5 +35,9 @@ export type ChangesetsMessages = {
     noDescription: string;
     closedAt: string;
     openOnOsm: string;
+    /** The diff is rebuilt from the OSM API, so is approximate. */
+    rebuilt: string;
+    /** Why no changes are drawn for a changeset too big to rebuild. */
+    tooBig: string;
   };
 };

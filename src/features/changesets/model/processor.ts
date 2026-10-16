@@ -20,7 +20,8 @@ import {
   changesetsSetLastFetchedBBox,
   changesetsSetParams,
 } from './actions.js';
-import { hasBbox, parseChangeset } from './changesetDiff.js';
+import { hasBbox, OSM_API, parseChangeset } from './changesetDiff.js';
+import { DEFAULT_DAYS } from './reducer.js';
 
 export const changesetsTrackProcessor: Processor = {
   stateChangePredicate: (state) =>
@@ -40,8 +41,8 @@ export const changesetsTrackProcessor: Processor = {
   },
 };
 
-// Its own toast id: the inspected changeset's details are `changeset.detail`,
-// and this refetches whenever any tool opens.
+// Its own toast id, apart from the inspector's `changeset.inspector`; this
+// refetches whenever any tool opens.
 export const changesetsProcessor: Processor = {
   id: 'changesets.list',
   actionCreator: [changesetsSetParams, changesetsRefresh, openTool],
@@ -56,7 +57,7 @@ export const changesetsProcessor: Processor = {
 
     const { days, authorName } = state.changesets;
 
-    const days2 = days ?? 3;
+    const days2 = days ?? DEFAULT_DAYS;
 
     try {
       if (
@@ -91,7 +92,7 @@ export const changesetsProcessor: Processor = {
 
       const t = new Date();
 
-      t.setDate(t.getDate() - (state.changesets.days ?? 3));
+      t.setDate(t.getDate() - (state.changesets.days ?? DEFAULT_DAYS));
 
       const fromTime = `${t.getFullYear()}/${
         t.getMonth() + 1
@@ -110,7 +111,7 @@ export const changesetsProcessor: Processor = {
         const res = await httpRequest({
           getState,
           url:
-            `${process.env['OSM_API_URL']}/api/0.6/changesets?` +
+            `${OSM_API}/changesets?` +
             objectToURLSearchParams({
               bbox,
               time: fromTime + (toTime0 ? `,${toTime0}` : ''),

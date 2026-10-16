@@ -1,11 +1,16 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ChangesetDetails } from '../components/ChangesetDetails.js';
-import { ChangesetElementDetails } from '../components/ChangesetElementDetails.js';
+import { ChangesetInspector } from '../components/ChangesetInspector.js';
 import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const en: ChangesetsMessages = {
-  detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+  inspector: () => <ChangesetInspector />,
+  history: {
+    title: 'History',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Error fetching the history', err),
+  },
+  changeset: 'Changeset',
   allAuthors: 'All authors',
   refresh: 'Download changesets for current map view',
   tooBig:
@@ -15,24 +20,16 @@ const en: ChangesetsMessages = {
   notFound: 'No changesets found.',
   fetchError: ({ err }) =>
     addError(getMessages()!, 'Error fetching changesets', err),
-  diffNotReady:
-    'The changes of this changeset are not available yet. They are ready a few minutes after the changeset is closed.',
   inspectError: ({ err }) =>
     addError(getMessages()!, 'Error fetching changeset changes', err),
-  elementDetail: ({ element }) => <ChangesetElementDetails element={element} />,
   actions: {
     create: 'created',
     modify: 'modified',
     delete: 'deleted',
   },
   element: {
-    types: {
-      node: 'Node',
-      way: 'Way',
-      relation: 'Relation',
-    },
     onlyNodesMoved: 'Only its nodes moved.',
-    geometryChanged: 'Its geometry changed.',
+    geometryChanged: 'Geometry changed.',
     tagsUnchanged: 'Tags unchanged.',
     key: 'Key',
     before: 'Before',
@@ -48,6 +45,10 @@ const en: ChangesetsMessages = {
     noDescription: 'without description',
     closedAt: 'Time:',
     openOnOsm: 'Open on osm.org',
+    tooBig:
+      'OSMCha has no diff of this changeset, and it is too big to rebuild from the OSM API; see its changes on osm.org.',
+    rebuilt:
+      'Rebuilt from the OSM API, as OSMCha lacks this changeset: the untouched nodes of ways are shown where they are today, and ways whose only change was moved nodes are missing.',
   },
 };
 

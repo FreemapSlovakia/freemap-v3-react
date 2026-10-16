@@ -6,14 +6,19 @@ import {
 } from '@app/store/actions.js';
 import { openToolsSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
-import { ELEMENT_ICONS } from '@features/changesets/components/elementIcons.js';
-import { changesetsInspect } from '@features/changesets/model/actions.js';
+import { diffElementIcon } from '@features/changesets/components/ElementTypeIcon.js';
+import { useElementName } from '@features/changesets/components/useElementName.js';
+import {
+  changesetsHover,
+  changesetsInspect,
+} from '@features/changesets/model/actions.js';
 import {
   currentVersion,
   DIFF_ACTIONS,
   DIFF_COLORS,
   elementKey,
   listedElements,
+  osmIdOf,
 } from '@features/changesets/model/changesetDiff.js';
 import { listedChangesetsSelector } from '@features/changesets/model/selectors.js';
 import { useChangesetsMessages } from '@features/changesets/translations/useChangesetsMessages.js';
@@ -58,6 +63,7 @@ import { formatArea, naturalAreaUnit } from '@shared/areaFormatter.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { BatchPropertiesDropdown } from '@shared/components/BatchPropertiesItems.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
+import { usePaged } from '@shared/components/LoadMoreSentinel.js';
 import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { formatDuration } from '@shared/durationFormatter.js';
@@ -86,6 +92,7 @@ import {
   type ComponentProps,
   type ReactElement,
   type ReactNode,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -138,6 +145,8 @@ type Item = {
   current?: boolean;
   /** What a pick does beside dispatching, such as counting it. */
   onPick?: () => void;
+  /** The pointer entering (`true`) or leaving the row. */
+  onHover?: (hovering: boolean) => void;
   /** A page of its own, which picking it opens beside its other effects. */
   opens?: PanelPlace;
   /** Worked out only when it is picked: a long line has many points. */
@@ -147,7 +156,7 @@ type Item = {
 // A filter box from this many items on.
 const FILTER_FROM = 10;
 
-const MAX_ROWS = 200;
+const PAGE_ROWS = 100;
 
 // A loop: spreading a long track into `Math.min` overflows the stack.
 function latLonBbox(points: Iterable<LatLon>): Bbox | undefined {
@@ -252,9 +261,9 @@ function ItemList({
       )
     : items;
 
-  // Rendered rows are costly (a tooltip and an observer each); the filter
-  // reaches the rest.
-  const shown = matching.slice(0, MAX_ROWS);
+  // Rendered rows are costly (a tooltip and an observer each), so they come a
+  // page at a time as the list scrolls.
+  const { shown, more, reset } = usePaged(matching, PAGE_ROWS);
 
   const pick = (item: Item) => {
     const state = store.getState();
@@ -321,7 +330,11 @@ function ItemList({
           className="mb-1"
           placeholder={msm?.filterItems}
           value={filter}
-          onChange={(e) => setFilter(e.currentTarget.value)}
+          onChange={(e) => {
+            setFilter(e.currentTarget.value);
+
+            reset();
+          }}
         />
       )}
 
@@ -343,6 +356,8 @@ function ItemList({
               selected && classes.rowSelected,
               'd-flex align-items-center gap-1 mx-n2 px-3',
             )}
+            onMouseEnter={item.onHover && (() => item.onHover?.(true))}
+            onMouseLeave={item.onHover && (() => item.onHover?.(false))}
           >
             <button
               type="button"
@@ -394,11 +409,7 @@ function ItemList({
         );
       })}
 
-      {matching.length > shown.length && (
-        <p className="text-muted mt-1 mb-0">
-          +{matching.length - shown.length}
-        </p>
-      )}
+      {more}
 
       {(items.length === 0 ? empty : shown.length === 0) && (
         <p className="text-muted mt-1 mb-0">
@@ -987,7 +998,9 @@ function BatchFooter(
 }
 
 function ChangesetElementItems(): ReactElement {
-  const diff = useAppSelector((state) => state.changesets.inspected?.diff);
+  const diff = useAppSelector(
+    (state) => state.changesetInspector.inspected?.diff,
+  );
 
   const language = useEffectiveChosenLanguage();
 
@@ -995,8 +1008,16 @@ function ChangesetElementItems(): ReactElement {
 
   const cm = useChangesetsMessages();
 
+  const { name, typeAndId } = useElementName();
+
+  const inspectedId = useAppSelector(
+    (state) => state.changesetInspector.inspected?.id,
+  );
+
   return (
     <ItemList
+      // Each changeset's list paged from its start, and filtered afresh.
+      key={inspectedId}
       items={listedElements(diff ?? [])
         .toSorted(
           (a, b) =>
@@ -1007,24 +1028,26 @@ function ChangesetElementItems(): ReactElement {
 
           const key = elementKey(element);
 
-          const Icon = ELEMENT_ICONS[element.type];
+          const Icon = diffElementIcon(element);
 
-          const osm = osmKind(
-            { type: 'osm', elementType: element.type, id: element.id },
-            tags,
-            mapping,
-          );
+          const osm = osmKind(osmIdOf(element), tags, mapping);
 
           return {
             ...nameAndKind(
-              getNameFromOsmElement(tags, language),
+              name(element) ?? '',
               osm.generic,
-              `${cm?.element.types[element.type] ?? element.type} ${element.id}`,
+              typeAndId(element),
             ),
             key,
             icon: osm.icon ?? <Icon />,
             color: DIFF_COLORS[element.action],
-            subline: cm?.actions[element.action],
+            // The kind of element, which a POI icon doesn't tell; no tooltip,
+            // as rows are costly and the row itself is the button.
+            subline: (
+              <>
+                <Icon /> {cm?.actions[element.action]}
+              </>
+            ),
             selects: { type: 'changeset-element', id: key },
             bbox: () => latLonBbox(coords.map(([lat, lon]) => ({ lat, lon }))),
           };
@@ -1036,7 +1059,24 @@ function ChangesetElementItems(): ReactElement {
 function ChangesetListItems(): ReactElement {
   const changesets = useAppSelector(listedChangesetsSelector);
 
-  const inspectedId = useAppSelector((state) => state.changesets.inspected?.id);
+  const inspectedId = useAppSelector(
+    (state) => state.changesetInspector.inspected?.id,
+  );
+
+  const dispatch = useDispatch();
+
+  const store = useStore<RootState>();
+
+  // A list gone from under the pointer (the panel closed or moved on) leaves
+  // no mouseleave, so takes its outline along.
+  useEffect(
+    () => () => {
+      if (store.getState().changesets.hovered !== null) {
+        dispatch(changesetsHover(null));
+      }
+    },
+    [dispatch, store],
+  );
 
   // As the detail the pick opens dates it.
   const dateFormat = useDateTimeFormat({
@@ -1065,6 +1105,9 @@ function ChangesetListItems(): ReactElement {
               : () => trackMatomo(['trackEvent', 'Changesets', 'inspect']),
             opens: { feature: 'changesets', elements: true },
             current,
+            // Outlined on the map, as hovering its marker does.
+            onHover: (hovering) =>
+              dispatch(changesetsHover(hovering ? changeset.id : null)),
             bbox: () => changeset.bbox,
           };
         })}

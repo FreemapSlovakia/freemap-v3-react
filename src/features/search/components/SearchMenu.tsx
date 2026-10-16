@@ -7,6 +7,7 @@ import { sameFilter } from '@features/objects/useMatchedCategories.js';
 import { usePoiMatches } from '@features/objects/usePoiMatches.js';
 import { isLocalSearchQuery } from '@features/search/localQuery.js';
 import { pickShowsDetailsSelector } from '@features/search/model/selectors.js';
+import { elementTypeIcon } from '@osm/elementTypeIcons.js';
 import {
   getOsmAddress,
   getOsmName,
@@ -28,6 +29,7 @@ import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useModalLink } from '@shared/components/ShowModalLink.js';
+import { isClosedGeometry } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -38,6 +40,7 @@ import {
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import clsx from 'clsx';
+import type { Geometry } from 'geojson';
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
@@ -114,12 +117,20 @@ const minQueryLength = 3;
 /** Long enough that a typed word is one lookup rather than one per letter. */
 const suggestDelayMs = 300;
 
-const typeSymbol: Record<OsmFeatureId['elementType'], ReactNode> = {
-  node: <GoDotFill />,
-  way: <MdPolyline />,
-  relation: <FaDrawPolygon />,
-};
+/** An OSM element's type; a way that came closed as such. */
+function typeSymbol(
+  elementType: OsmFeatureId['elementType'],
+  geometry: Geometry | null | undefined,
+): ReactNode {
+  const Icon = elementTypeIcon(
+    elementType,
+    Boolean(geometry && isClosedGeometry(geometry)),
+  );
 
+  return <Icon />;
+}
+
+// Not the OSM element icons: a WMS feature is no OSM element.
 const wmsShapeSymbol: Record<string, ReactNode> = {
   Point: <GoDotFill />,
   MultiPoint: <GoDotFill />,
@@ -1020,7 +1031,12 @@ function Result({ value }: { value: SearchResult }) {
 
         <div className="flex-shrink-0" style={{ opacity: 0.25 }}>
           {value.id.type === 'osm'
-            ? typeSymbol[value.id.elementType]
+            ? typeSymbol(
+                value.id.elementType,
+                value.geojson.type === 'Feature'
+                  ? value.geojson.geometry
+                  : undefined,
+              )
             : value.id.type === 'wms' && tags['Shape']
               ? (wmsShapeSymbol[tags['Shape'] as string] ?? null)
               : null}

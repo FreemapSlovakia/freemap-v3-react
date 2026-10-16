@@ -80,7 +80,9 @@ export function mapFeatureCount(
 
       // Inspecting keeps the row, whose page lists the elements, also while
       // the changeset loads.
-      return state.changesets.inspected ? Math.max(listed, 1) : some(listed);
+      return state.changesetInspector.inspected
+        ? Math.max(listed, 1)
+        : some(listed);
     }
   }
 }

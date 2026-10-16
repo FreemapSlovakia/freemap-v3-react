@@ -1,14 +1,18 @@
 import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
+import { inAppLink } from '@shared/inAppLink.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { CSSProperties, ReactElement } from 'react';
 import { AlertLink, Table } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 import {
   DIFF_COLORS,
   type DiffElement,
   hasMoved,
   isIndirect,
 } from '../model/changesetDiff.js';
+import { changesetElementOpen } from '../model/inspectorToast.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
-import { useElementName } from './useElementName.js';
+import { ElementTypeIcon } from './ElementTypeIcon.js';
 
 type Props = { element: DiffElement };
 
@@ -51,8 +55,6 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
 
   const tagsChanged = rows.some((row) => row.change !== 'same');
 
-  const { label } = useElementName();
-
   const oldMembers = new Set(element.old?.members);
 
   const newMembers = new Set(element.new?.members);
@@ -61,10 +63,31 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
 
   const removedMembers = oldMembers.difference(newMembers).size;
 
+  const dispatch = useDispatch();
+
   return (
     <>
+      {/* Named by the breadcrumb above, as the panel lists it; here what it
+          is in OSM. */}
       <p className="mb-2">
-        <b>{label(element)}</b>{' '}
+        <ElementTypeIcon element={element} />{' '}
+        {element.action === 'delete' ? (
+          // No more, so nothing to open.
+          element.id
+        ) : (
+          <AlertLink
+            {...inAppLink(`#osm-${element.type}=${element.id}`, () => {
+              for (const action of changesetElementOpen(element)) {
+                dispatch(action);
+              }
+
+              trackMatomo(['trackEvent', 'Changesets', 'openElement']);
+            })}
+          >
+            {element.id}
+          </AlertLink>
+        )}{' '}
+        ·{' '}
         <span style={{ color: DIFF_COLORS[element.action] }}>
           {cm?.actions[element.action]}
         </span>{' '}

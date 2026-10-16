@@ -1,0 +1,15 @@
+/* Inline rather than Bootstrap's flex, so that in a toast the crumbs wrap
+   around the × like text instead of the whole row narrowing beside it. */
+.crumbs {
+  display: block;
+
+  > li {
+    display: inline;
+  }
+
+  /* Outranks Bootstrap's `.breadcrumb-item + .breadcrumb-item::before`: left
+     floating, the separator would jump to the start of the line. */
+  > :global(.breadcrumb-item) + :global(.breadcrumb-item)::before {
+    float: none;
+  }
+}

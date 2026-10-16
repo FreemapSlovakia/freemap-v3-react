@@ -79,7 +79,7 @@ export function Results(): ReactElement {
   );
 
   const hasChangesetDiff = useAppSelector((state) =>
-    Boolean(state.changesets.inspected?.diff),
+    Boolean(state.changesetInspector.inspected?.diff),
   );
 
   const opacity = useAppSelector(

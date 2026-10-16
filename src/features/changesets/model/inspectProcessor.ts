@@ -1,16 +1,21 @@
 import { httpRequest } from '@app/httpRequest.js';
-import { clearMapFeatures } from '@app/store/actions.js';
+import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { isToolOpen } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { fitLoadedMap, mapToFit } from '@features/map/fitMapToBbox.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { latLngBounds } from 'leaflet';
 import { loadChangesetsMessages } from '../translations/loadChangesetsMessages.js';
 import { changesetsInspect, changesetsSetInspected } from './actions.js';
-import { changesetDetail } from './changesetDetail.js';
-import { parseAdiff, parseChangeset } from './changesetDiff.js';
+import {
+  type DiffElement,
+  hasAdiff,
+  OSM_API,
+  parseAdiff,
+  parseChangeset,
+} from './changesetDiff.js';
+import { DiffTooBigError, fetchOsmApiDiff } from './osmApiDiff.js';
+import { selectedDiffElementSelector } from './selectors.js';
 
 export const changesetsInspectProcessor: Processor<typeof changesetsInspect> = {
   actionCreator: changesetsInspect,
@@ -24,17 +29,60 @@ export const changesetsInspectProcessor: Processor<typeof changesetsInspect> = {
     const cancel = {
       getState,
       cancelActions: [changesetsInspect, clearMapFeatures],
-      statePredicate: (s: RootState) => !isToolOpen(s, 'changesets'),
+      // Ended or replaced, by whatever means.
+      statePredicate: (s: RootState) =>
+        s.changesetInspector.inspected?.id !== id,
     };
 
     const parser = new DOMParser();
 
-    // OSMCha computes the diff some minutes after the changeset closes.
-    const diffPromise = httpRequest({
-      ...cancel,
-      url: `https://adiffs.osmcha.org/changesets/${id}.adiff`,
-      expectedStatus: [200, 404],
-    });
+    // Selected ahead of the diff, as from a history, an element it lacks would
+    // be an invisible level for Esc to clear.
+    const dropUnshownElement = () => {
+      const state = getState();
+
+      if (
+        state.main.selection?.type === 'changeset-element' &&
+        !selectedDiffElementSelector(state)
+      ) {
+        dispatch(selectFeature(null));
+      }
+    };
+
+    // Beside the metadata. OSMCha computes the diff some minutes after the
+    // changeset closes, and misses some; the OSM API stands in for those, and
+    // for OSMCha down or failing.
+    const diffPromise = (async () => {
+      if (hasAdiff(id)) {
+        try {
+          const res = await httpRequest({
+            ...cancel,
+            url: `https://adiffs.osmcha.org/changesets/${id}.adiff`,
+            expectedStatus: [200, 404],
+          });
+
+          if (res.status === 200) {
+            return {
+              diff: parseAdiff(
+                parser.parseFromString(await res.text(), 'text/xml'),
+              ),
+              source: 'osmcha' as const,
+            };
+          }
+        } catch (err) {
+          if (isAbortError(err)) {
+            throw err;
+          }
+
+          console.warn(err);
+        }
+      }
+
+      return {
+        diff: await fetchOsmApiDiff(id, cancel),
+        source: 'osmApi' as const,
+      };
+    })();
 
     // Awaited below; this only keeps it from going unhandled should the
     // metadata fail first.
@@ -43,7 +91,7 @@ export const changesetsInspectProcessor: Processor<typeof changesetsInspect> = {
     try {
       const metaRes = await httpRequest({
         ...cancel,
-        url: `${process.env['OSM_API_URL']}/api/0.6/changeset/${id}`,
+        url: `${OSM_API}/changeset/${id}`,
       });
 
       const metaEl = parser
@@ -57,40 +105,57 @@ export const changesetsInspectProcessor: Processor<typeof changesetsInspect> = {
       const changeset = parseChangeset(metaEl);
 
       // The details while the diff, which may be megabytes, loads.
-      dispatch(changesetDetail(changeset));
+      dispatch(changesetsSetInspected({ changeset, diff: null, source: null }));
 
-      const diffRes = await diffPromise;
+      let result: Awaited<typeof diffPromise>;
 
-      if (diffRes.status === 404) {
-        dispatch(changesetsInspect(null));
+      try {
+        result = await diffPromise;
+      } catch (err) {
+        if (isAbortError(err)) {
+          throw err;
+        }
 
-        // Ending the inspection took the details; they hold without it.
-        dispatch(changesetDetail(changeset));
-
+        // Its details stand, with a word on why no changes are drawn.
         dispatch(
-          toastsAdd({
-            id: 'changeset.diffNotReady',
-            messageKey: 'diffNotReady',
-            messageLoader: loadChangesetsMessages,
-            cancelType: changesetsInspect.type,
-            style: 'warning',
-          }),
+          changesetsSetInspected(
+            err instanceof DiffTooBigError
+              ? { changeset, diff: null, source: 'tooBig' }
+              : {
+                  changeset,
+                  diff: null,
+                  source: 'failed',
+                  error: err instanceof Error ? err.message : String(err),
+                },
+          ),
         );
+
+        dropUnshownElement();
 
         return;
       }
 
-      const diff = parseAdiff(
-        parser.parseFromString(await diffRes.text(), 'text/xml'),
-      );
+      dispatch(changesetsSetInspected({ changeset, ...result }));
 
-      dispatch(changesetsSetInspected({ changeset, diff }));
+      dropUnshownElement();
 
-      const bounds = latLngBounds(
-        diff.flatMap((element) => [
+      const { diff } = result;
+
+      const coordsOf = (elements: DiffElement[]) =>
+        elements.flatMap((element) => [
           ...(element.old?.coords ?? []),
           ...(element.new?.coords ?? []),
-        ]),
+        ]);
+
+      // An element selected already, as from a history, is what is being
+      // looked at; the whole changeset where it has no place of its own, as a
+      // relation has none.
+      const focus = selectedDiffElementSelector(getState());
+
+      const focusCoords = focus ? coordsOf([focus]) : [];
+
+      const bounds = latLngBounds(
+        focusCoords.length ? focusCoords : coordsOf(diff),
       );
 
       if (!bounds.isValid()) {
@@ -110,10 +175,10 @@ export const changesetsInspectProcessor: Processor<typeof changesetsInspect> = {
       // there; and not once another inspection took over while the map loaded.
       if (
         map &&
-        getState().changesets.inspected?.id === id &&
+        getState().changesetInspector.inspected?.id === id &&
         !map.getBounds().contains(bounds)
       ) {
-        fitLoadedMap(map, dispatch, bbox, { padding: 40 });
+        fitLoadedMap(map, dispatch, bbox, { padding: 40, maxZoom: 17 });
       }
     } catch (err) {
       // An abort means something else took over the inspection.

@@ -1,5 +1,9 @@
 import { hasRole } from '@features/auth/model/types.js';
-import { changesetsInspect } from '@features/changesets/model/actions.js';
+import {
+  changesetsInspect,
+  changesetsShowHistory,
+} from '@features/changesets/model/actions.js';
+import { historyHosted } from '@features/changesets/model/inspectorToast.js';
 import {
   dataViewerSetJoining,
   dataViewerSetSplitting,
@@ -156,6 +160,14 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
     return galleryCancelShowOnTheMap();
   }
 
+  const { inspected } = state.changesetInspector;
+
+  // Listed in its element's details, a history closes before they do; not one
+  // they no longer show, their object reloaded out of the layer.
+  if (!showingModal && !suspendedModal && !inspected && historyHosted(state)) {
+    return changesetsShowHistory(null);
+  }
+
   if (!showingModal && !suspendedModal && state.main.selection) {
     return selectFeature(null);
   }
@@ -166,9 +178,8 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
     return closeTool(state.main.mapTool);
   }
 
-  // The one drill-in of a toolbar-only tool: Escape is its Back, after its
-  // selected element and the map-click tool beside it.
-  if (!showingModal && !suspendedModal && state.changesets.inspected) {
+  // An inspection, after its selected element and the map-click tool beside it.
+  if (!showingModal && !suspendedModal && inspected) {
     return changesetsInspect(null);
   }
 

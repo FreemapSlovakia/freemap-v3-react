@@ -38,6 +38,7 @@ export type ObjectsMessages = {
   moreGeneralTypes: string;
   openInOsm: string;
   osmHistory: string;
+  history: string;
   lowZoomAlert: {
     message: (props: { minZoom: number }) => string;
     zoom: string;

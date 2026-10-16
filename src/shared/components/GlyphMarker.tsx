@@ -17,8 +17,11 @@ type Props = Omit<HTMLAttributes<HTMLElement>, 'children' | 'color'> & {
   hint?: ReactNode;
   /** Bootstrap text-colour suffix for the glyph; `null` keeps the surrounding colour. */
   color?: string | null;
-  /** Step off the icon scale. `md` is what a button's own icon comes out at. */
-  size?: 'sm' | 'md' | 'lg';
+  /**
+   * Step off the icon scale. `md` is what a button's own icon comes out at;
+   * `inherit` is the surrounding text's size, for a glyph in a line of it.
+   */
+  size?: 'sm' | 'md' | 'lg' | 'inherit';
   /**
    * Text rendered before the glyph as part of the same mark — for inline use in
    * running text. It keeps the mark wrappable, so the glyph is not held on the
@@ -36,7 +39,12 @@ type Props = Omit<HTMLAttributes<HTMLElement>, 'children' | 'color'> & {
   toggleOnClick?: boolean;
 };
 
-const sizeClass = { sm: 'small', md: 'fs-6', lg: 'fs-5' };
+const sizeClass = {
+  sm: 'small',
+  md: 'fs-6',
+  lg: 'fs-5',
+  inherit: undefined,
+};
 
 /**
  * A glyph that stands for a state or an offer — offline, premium, experimental,

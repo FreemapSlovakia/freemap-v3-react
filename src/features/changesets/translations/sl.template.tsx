@@ -1,15 +1,16 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ChangesetDetails } from '../components/ChangesetDetails.js';
-import { ChangesetElementDetails } from '../components/ChangesetElementDetails.js';
+import { ChangesetInspector } from '../components/ChangesetInspector.js';
 import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
-  detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  elementDetail: ({ element }) => <ChangesetElementDetails element={element} />,
-  diffNotReady:
-    'Spremembe tega nabora še niso na voljo. Pripravljene so nekaj minut po njegovem zaprtju.',
+  inspector: () => <ChangesetInspector />,
+  history: {
+    title: 'Zgodovina',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Napaka pri pridobivanju zgodovine', err),
+  },
   inspectError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri pridobivanju sprememb nabora', err),
   actions: {
@@ -18,13 +19,8 @@ const sl: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
     delete: 'izbrisano',
   },
   element: {
-    types: {
-      node: 'Točka',
-      way: 'Pot',
-      relation: 'Relacija',
-    },
     onlyNodesMoved: 'Premaknile so se le njene točke.',
-    geometryChanged: 'Geometrija se je spremenila.',
+    geometryChanged: 'Geometrija spremenjena.',
     tagsUnchanged: 'Oznake nespremenjene.',
     key: 'Ključ',
     before: 'Prej',
@@ -34,6 +30,7 @@ const sl: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
       `Člani: ${added} dodanih, ${removed} odstranjenih.`,
     history: 'Zgodovina na osm.org',
   },
+  changeset: 'Nabor sprememb',
   allAuthors: 'Vsi avtorji',
   refresh: 'Prenesi nabore sprememb za trenutni izsek zemljevida',
   tooBig:
@@ -49,6 +46,10 @@ const sl: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
     noDescription: 'brez opisa',
     closedAt: 'Čas:',
     openOnOsm: 'Odpri na osm.org',
+    tooBig:
+      'OSMCha tega nabora nima, za obnovo iz API-ja OSM pa je prevelik; njegove spremembe so na osm.org.',
+    rebuilt:
+      'Obnovljeno iz API-ja OSM, ker OSMCha tega nabora nima: nespremenjena vozlišča poti so na današnjem mestu, poti, ki so se jim le premaknila vozlišča, pa manjkajo.',
   },
 };
 

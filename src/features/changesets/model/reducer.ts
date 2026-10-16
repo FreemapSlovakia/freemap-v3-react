@@ -2,44 +2,44 @@ import { clearMapFeatures, closeTool, openTool } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type Changeset,
+  changesetsHover,
   changesetsInspect,
   changesetsSet,
-  changesetsSetInspected,
   changesetsSetLastFetchedBBox,
   changesetsSetParams,
 } from './actions.js';
-import type { DiffElement } from './changesetDiff.js';
 
+/** The Map changes tool's list; an inspection is `changesetInspector`'s. */
 export interface ChangesetsState {
   changesets: Changeset[];
   days: number | null;
   authorName: string | null;
   lastFetchedBBox: string | null;
-  /** The changeset whose changes are on the map; `null`s while loading. */
-  inspected: {
-    id: number;
-    changeset: Changeset | null;
-    diff: DiffElement[] | null;
-  } | null;
+  /** The id of the changeset pointed at, outlined on the map. */
+  hovered: number | null;
 }
+
+/** What the tool queries where no `days` is set. */
+export const DEFAULT_DAYS = 3;
 
 export const initialState: ChangesetsState = {
   changesets: [],
   days: null,
   authorName: null,
   lastFetchedBBox: null,
-  inspected: null,
+  hovered: null,
 };
 
 export const changesetReducer = createReducer(initialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => initialState)
-    // Opening the tool starts a fresh 3-day query when none is set.
-    .addCase(openTool, (state, action) =>
-      action.payload === 'changesets' && state.days === null
-        ? { ...initialState, days: 3 }
-        : state,
-    )
+    // Opening the tool starts a default query when none is set; closing it, or
+    // clearing the map, left the rest at its initial state.
+    .addCase(openTool, (state, action) => {
+      if (action.payload === 'changesets') {
+        state.days ??= DEFAULT_DAYS;
+      }
+    })
     // Closing the tool clears the changesets off the map. Keyed on this tool's
     // own close: another tool opening beside it says nothing about them.
     .addCase(closeTool, (state, action) =>
@@ -54,15 +54,11 @@ export const changesetReducer = createReducer(initialState, (builder) =>
     .addCase(changesetsSetLastFetchedBBox, (state, action) => {
       state.lastFetchedBBox = action.payload;
     })
-    .addCase(changesetsInspect, (state, action) => {
-      state.inspected =
-        action.payload === null
-          ? null
-          : { id: action.payload, changeset: null, diff: null };
+    .addCase(changesetsHover, (state, action) => {
+      state.hovered = action.payload;
     })
-    .addCase(changesetsSetInspected, (state, { payload }) => {
-      if (state.inspected?.id === payload.changeset.id) {
-        Object.assign(state.inspected, payload);
-      }
+    // The markers and the list go, so no pointer leaves them.
+    .addCase(changesetsInspect, (state) => {
+      state.hovered = null;
     }),
 );

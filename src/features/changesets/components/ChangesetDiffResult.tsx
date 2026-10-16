@@ -7,7 +7,6 @@ import { canvas } from 'leaflet';
 import { type ReactElement, useEffect, useState } from 'react';
 import { CircleMarker, Pane, Polyline } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { changesetElementSelect } from '../model/changesetDetail.js';
 import {
   currentVersion,
   DIFF_COLORS,
@@ -17,11 +16,10 @@ import {
   isIndirect,
   isTagged,
 } from '../model/changesetDiff.js';
+import { changesetElementSelect } from '../model/inspectorToast.js';
 import { selectedDiffElementSelector } from '../model/selectors.js';
 
 const OLD_COLOR = '#707070';
-
-const MAP_BRIGHTNESS = 0.6;
 
 // Its own pane, as leaflet.css makes canvases in the overlay pane
 // click-through; under that pane, or the canvas would take every SVG path's
@@ -31,7 +29,9 @@ const PANE = 'fm-changeset-diff';
 const HALO = 'fm-changeset-diff-halo';
 
 export default function ChangesetDiffResult(): ReactElement | null {
-  const diff = useAppSelector((state) => state.changesets.inspected?.diff);
+  const diff = useAppSelector(
+    (state) => state.changesetInspector.inspected?.diff,
+  );
 
   const opacity = useAppSelector(
     (state) => state.map.layerSetups[FEATURES_LAYER]?.opacity ?? 1,
@@ -49,22 +49,6 @@ export default function ChangesetDiffResult(): ReactElement | null {
       pane.style.opacity = String(opacity);
     }
   }, [map, opacity, hasDiff]);
-
-  // Every map layer, presets and vector maps included, renders into
-  // `tilePane`: dimmed whole, the changes stand out over any stack of them.
-  useEffect(() => {
-    const pane = hasDiff ? map?.getPane('tilePane') : undefined;
-
-    if (!pane) {
-      return;
-    }
-
-    pane.style.filter = `brightness(${MAP_BRIGHTNESS})`;
-
-    return () => {
-      pane.style.filter = '';
-    };
-  }, [map, hasDiff]);
 
   // Not while a map-click tool takes the clicks. In `pathOptions`, as its
   // `setStyle` is what carries a change of it to a path already drawn.

@@ -5,7 +5,10 @@ import {
   authWithGoogle,
   authWithPopupOAuth,
 } from '@features/auth/model/actions.js';
-import { changesetsInspect } from '@features/changesets/model/actions.js';
+import {
+  changesetsInspect,
+  changesetsReturnToHistory,
+} from '@features/changesets/model/actions.js';
 import {
   dataViewerDelete,
   dataViewerDeleteFeature,
@@ -183,14 +186,6 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       if (state.panelTools.includes(tool)) {
         state.panelTools = state.panelTools.filter((t) => t !== tool);
       }
-
-      // Closing it takes the changes off the map; tracked devices, say, stay.
-      if (
-        tool === 'changesets' &&
-        state.selection?.type === 'changeset-element'
-      ) {
-        state.selection = null;
-      }
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;
@@ -200,6 +195,14 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       if (state.selection?.type === 'changeset-element') {
         state.selection = null;
       }
+    })
+    // Back from a history's changeset to its element, selected and detailed.
+    .addCase(changesetsReturnToHistory, (state, { payload }) => {
+      state.selection = payload.selection;
+
+      state.detailsShown = true;
+
+      state.detailsOnRequest = false;
     })
     .addCase(setActiveModal, (state, action) => {
       state.activeModal = action.payload;

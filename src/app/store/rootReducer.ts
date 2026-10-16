@@ -1,6 +1,7 @@
 import { authReducer } from '@features/auth/model/reducer.js';
 import { cachedMapsReducer } from '@features/cachedMaps/model/reducer.js';
 import { cachedMapsSettingsReducer } from '@features/cachedMaps/model/settingsReducer.js';
+import { changesetInspectorReducer } from '@features/changesets/model/inspectorReducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import { cookieConsentReducer } from '@features/cookieConsent/model/reducer.js';
 import { dataViewerReducer } from '@features/dataViewer/model/reducer.js';
@@ -52,6 +53,7 @@ export const reducers = {
   cachedMaps: cachedMapsReducer,
   cachedMapsSettings: cachedMapsSettingsReducer,
   changesets: changesetReducer,
+  changesetInspector: changesetInspectorReducer,
   cookieConsent: cookieConsentReducer,
   drawingSettings: drawingSettingsReducer,
   drawingLines: drawingLinesReducer,

@@ -57,7 +57,9 @@ export default function ChangesetsMenu(): ReactElement {
     (state) => state.changesets.changesets.length > 0,
   );
 
-  const inspected = useAppSelector((state) => state.changesets.inspected);
+  const inspected = useAppSelector(
+    (state) => state.changesetInspector.inspected,
+  );
 
   const dispatch = useDispatch();
 

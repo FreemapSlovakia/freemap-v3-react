@@ -1,15 +1,16 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ChangesetDetails } from '../components/ChangesetDetails.js';
-import { ChangesetElementDetails } from '../components/ChangesetElementDetails.js';
+import { ChangesetInspector } from '../components/ChangesetInspector.js';
 import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
-  detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
-  elementDetail: ({ element }) => <ChangesetElementDetails element={element} />,
-  diffNotReady:
-    'Die Änderungen dieses Changesets sind noch nicht verfügbar. Sie stehen einige Minuten nach dem Schließen des Changesets bereit.',
+  inspector: () => <ChangesetInspector />,
+  history: {
+    title: 'Verlauf',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Fehler beim Abrufen des Verlaufs', err),
+  },
   inspectError: ({ err }) =>
     addError(
       getMessages()!,
@@ -22,13 +23,8 @@ const de: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
     delete: 'gelöscht',
   },
   element: {
-    types: {
-      node: 'Knoten',
-      way: 'Weg',
-      relation: 'Relation',
-    },
     onlyNodesMoved: 'Nur seine Knoten wurden verschoben.',
-    geometryChanged: 'Die Geometrie wurde geändert.',
+    geometryChanged: 'Geometrie geändert.',
     tagsUnchanged: 'Tags unverändert.',
     key: 'Schlüssel',
     before: 'Vorher',
@@ -44,7 +40,12 @@ const de: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
     noDescription: 'keine Beschreibung',
     closedAt: 'Zeit:',
     openOnOsm: 'Auf osm.org öffnen',
+    tooBig:
+      'OSMCha hat dieses Changeset nicht, und es ist zu groß, um es aus der OSM-API zu rekonstruieren; seine Änderungen gibt es auf osm.org.',
+    rebuilt:
+      'Aus der OSM-API rekonstruiert, da OSMCha dieses Changeset nicht hat: unveränderte Knoten von Wegen stehen an ihrer heutigen Position, und Wege, an denen sich nur Knoten verschoben haben, fehlen.',
   },
+  changeset: 'Changeset',
   allAuthors: 'Alle Autoren',
   refresh: 'Changesets für aktuellen Kartenausschnitt herunterladen',
   tooBig:

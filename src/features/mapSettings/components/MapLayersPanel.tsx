@@ -19,6 +19,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { ChangesetLabel } from '@features/changesets/components/ChangesetLabel.js';
+import { loneInspectionSelector } from '@features/changesets/model/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   mapLayerRemove,
@@ -182,22 +184,30 @@ export default function MapLayersPanel(): ReactElement {
           : Boolean(preset?.layers.some((layer) => layer.type === place.type));
 
   const inspectedChangeset = useAppSelector(
-    (state) => state.changesets.inspected?.id,
+    (state) => state.changesetInspector.inspected?.id,
   );
+
+  // Inspected without the tool, the changeset is all there is of the feature,
+  // so its elements are the feature's page.
+  const loneInspection = useAppSelector(loneInspectionSelector);
 
   // A changeset's elements while one is inspected; then the changesets.
   const at: PanelPlace = !stillThere
     ? {}
     : place.elements && inspectedChangeset === undefined
       ? { feature: place.feature }
-      : place;
+      : place.feature === 'changesets' && loneInspection
+        ? { feature: place.feature, elements: true }
+        : place;
 
   const feature = at.feature === undefined ? undefined : featureRow;
 
   const target = at.type === undefined ? undefined : { ...at, type: at.type };
 
   const up: PanelPlace = at.elements
-    ? { feature: at.feature }
+    ? loneInspection
+      ? {}
+      : { feature: at.feature }
     : at.type === undefined
       ? {}
       : { preset: at.preset };
@@ -282,9 +292,11 @@ export default function MapLayersPanel(): ReactElement {
           <span className="flex-grow-1 min-w-0 d-flex">
             {feature ? (
               <TruncatedText>
-                {at.elements
-                  ? `${feature.label} #${inspectedChangeset}`
-                  : feature.label}
+                {at.elements && inspectedChangeset !== undefined ? (
+                  <ChangesetLabel id={inspectedChangeset} />
+                ) : (
+                  feature.label
+                )}
               </TruncatedText>
             ) : target ? (
               <TargetName target={target} />
@@ -369,7 +381,15 @@ function FeatureRowLabel({ row }: { row: MapFeatureRow }): ReactElement {
     >
       <span className="d-inline-flex flex-shrink-0">{row.icon}</span>
 
-      <TruncatedText>{row.label}</TruncatedText>
+      <span className="d-flex flex-column min-w-0">
+        <TruncatedText>{row.display ?? row.label}</TruncatedText>
+
+        {row.subline && (
+          <TruncatedText className="small text-muted">
+            {row.subline}
+          </TruncatedText>
+        )}
+      </span>
 
       {row.count !== undefined && (
         <Badge pill bg="secondary" className="flex-shrink-0">

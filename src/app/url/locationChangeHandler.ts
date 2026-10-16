@@ -558,12 +558,9 @@ export function handleLocationChange(store: MyStore): void {
 
   const inspectedChangeset = Number(query['changeset']) || null;
 
-  if (inspectedChangeset !== (getState().changesets.inspected?.id ?? null)) {
-    // The inspection lives in the changesets tool.
-    if (inspectedChangeset !== null && !isToolOpen(getState(), 'changesets')) {
-      dispatch(openTool('changesets'));
-    }
-
+  if (
+    inspectedChangeset !== (getState().changesetInspector.inspected?.id ?? null)
+  ) {
     dispatch(changesetsInspect(inspectedChangeset));
   }
 
