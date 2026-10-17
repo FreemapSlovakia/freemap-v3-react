@@ -141,6 +141,16 @@ export const mapIndex: MapIndexEntry[] = [
   }),
   entry({
     layer: 'base',
+    type: 'J3',
+    technology: 'tile',
+    category: 'historicphoto',
+    icon: <FaPlane />,
+    countries: ['cz'],
+    superseededBy: 'S',
+    load: () => import('./defs/aerial2022.js').then((m) => m.default),
+  }),
+  entry({
+    layer: 'base',
     type: 'd',
     technology: 'tile',
     category: 'map',
