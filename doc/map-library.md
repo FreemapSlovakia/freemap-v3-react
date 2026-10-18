@@ -180,7 +180,7 @@ for each tab, and switching tabs changes
   the user's own, overlay presets on the map) and says which may move: the
   non-pinned ones on the map.
   `overlayStack` (`map/model/overlayStack.ts`) puts pinned ones
-  (`isPinnedOverlay`: photos, Wikipedia, the data layer, which draw partly in
+  (`isPinnedOverlay`: photos and Wikipedia, which draw partly in
   panes above every tile overlay) on top, then the order, then any overlay not
   on the map by its default `zIndex` (a custom map's, if set), the later one
   above on a tie, on the map or not, so turning one on doesn't move its row

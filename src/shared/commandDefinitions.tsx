@@ -45,7 +45,6 @@ import { getDocuments } from '@/documents/index.js';
 import type { Messages } from '../translations/messagesInterface.js';
 import { layerName } from './layerName.js';
 import type { CustomLayerDef, MapIndexEntry } from './mapDefinitions.js';
-import { FEATURES_LAYER } from './mapLibrary/mapIndex.js';
 import { isToolAvailable, toolDefinitions } from './toolDefinitions.js';
 
 /**
@@ -296,11 +295,8 @@ export function getCommands(ctx: CommandContext): Command[] {
     for (const def of ctx.libraryIndex) {
       const label = layerName(def, m);
 
-      // `i` is the one layer that hides rather than shows what it names, so
-      // switching it on here would read as the opposite of what it does.
       if (
         !label ||
-        def.type === FEATURES_LAYER ||
         (def.layerPreview && !ctx.canPreviewLayers) ||
         !isLayerInstalled(ctx.layersSettings, def.type)
       ) {

@@ -22,6 +22,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { ChangesetLabel } from '@features/changesets/components/ChangesetLabel.js';
 import { loneInspectionSelector } from '@features/changesets/model/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
 import {
   mapLayerRemove,
   mapLayerSetupChange,
@@ -370,7 +371,9 @@ function PresetName({
 }
 
 function FeatureRowLabel({ row }: { row: MapFeatureRow }): ReactElement {
-  const hidden = useAppSelector((state) => state.map.featuresHidden);
+  const hidden = useAppSelector((state) =>
+    areFeaturesHidden(state.map.featuresOpacity),
+  );
 
   return (
     <span

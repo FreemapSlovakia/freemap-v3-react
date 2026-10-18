@@ -16,7 +16,6 @@ import {
   FaHiking,
   FaHorse,
   FaMap,
-  FaPencilAlt,
   FaPlane,
   FaSkiing,
   FaTractor,
@@ -37,7 +36,6 @@ import { LuLandPlot } from 'react-icons/lu';
 import { MdFormatColorFill, MdOutlineTerrain } from 'react-icons/md';
 import { SiOpenstreetmap } from 'react-icons/si';
 import aerialBody from './defs/aerial.js';
-import dataLayerBody from './defs/dataLayer.js';
 import openStreetMapBody from './defs/openStreetMap.js';
 import outdoorBody from './defs/outdoor.js';
 import parametricShadingBody from './defs/parametricShading.js';
@@ -65,9 +63,6 @@ function entry<T extends LayerTechnology>(
 
   return { ...spec, load: () => Promise.resolve(body) };
 }
-
-/** The data layer: on, it hides the tools' features (`map.featuresHidden`). */
-export const FEATURES_LAYER = 'i';
 
 /**
  * Every library map, in the order the menus list them. A map's body is in its
@@ -264,14 +259,6 @@ export const mapIndex: MapIndexEntry[] = [
     shortcut: { code: 'KeyW' },
     countries: ['sk'],
     load: () => import('./defs/hydrochemistry.js').then((m) => m.default),
-  }),
-  entry({
-    layer: 'overlay',
-    type: FEATURES_LAYER,
-    technology: 'interactive',
-    icon: <FaPencilAlt />,
-    shortcut: { code: 'KeyD', shift: true },
-    bundled: dataLayerBody,
   }),
   entry({
     layer: 'overlay',

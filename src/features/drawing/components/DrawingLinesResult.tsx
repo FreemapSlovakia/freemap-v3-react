@@ -1,3 +1,4 @@
+import { FEATURES_PANE_CLASS } from '@features/map/hooks/featuresPane.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -29,7 +30,11 @@ export function DrawingLinesResult(): ReactElement {
 
   return (
     <>
-      <Pane name="fm-drawing-polygons" style={{ zIndex: 399 }} />
+      <Pane
+        name="fm-drawing-polygons"
+        className={FEATURES_PANE_CLASS}
+        style={{ zIndex: 399 }}
+      />
 
       {lines.map((_, i) => (
         <DrawingLineResult key={i} lineIndex={i} />

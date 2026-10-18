@@ -1,6 +1,7 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
+import { FEATURES_PANE_CLASS } from '@features/map/hooks/featuresPane.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import {
   availableColorizer,
@@ -399,7 +400,11 @@ export default function DataViewerResult({
 
   return (
     <Fragment key={keyToAssureProperRefresh}>
-      <Pane name="fm-trackviewer-polygons" style={{ zIndex: 399 }} />
+      <Pane
+        name="fm-trackviewer-polygons"
+        className={FEATURES_PANE_CLASS}
+        style={{ zIndex: 399 }}
+      />
 
       {/* Above the hotline canvas (default overlayPane, zIndex 400) so the
           invisible outline below catches clicks even when the track is

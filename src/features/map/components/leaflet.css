@@ -12,6 +12,15 @@
     cursor: grab;
   }
 
+  /* The tools' features, faded together; `Map` sets the variable. */
+  & .leaflet-shadow-pane,
+  & .leaflet-marker-pane,
+  & .leaflet-overlay-pane,
+  & .leaflet-tooltip-pane,
+  & .fm-features-pane {
+    opacity: calc(var(--fm-features-opacity, 1) * var(--fm-pane-opacity, 1));
+  }
+
   /* On for the map's whole life, not just the gesture: the one-finger zoom
      suspends dragging, which takes Leaflet's own `touch-action` with it, and the
      browser latches this when the finger goes down — too late to set per gesture. */
@@ -71,6 +80,19 @@
   .leaflet-fm-active-overlay-pane
   .leaflet-interactive {
   pointer-events: auto !important;
+}
+
+/* Features faded below seeing take no clicks; `Map` sets the class. */
+.fm-features-faint
+  :is(
+    .leaflet-shadow-pane,
+    .leaflet-marker-pane,
+    .leaflet-overlay-pane,
+    .leaflet-tooltip-pane,
+    .fm-features-pane
+  )
+  .leaflet-interactive {
+  pointer-events: none !important;
 }
 
 /* preventing some defaults on L.divIcon */

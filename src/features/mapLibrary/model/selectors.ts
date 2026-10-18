@@ -165,7 +165,7 @@ export const integratedLayerDefsSelector = createSelector(
 );
 
 // Partly markers and shapes, in panes above every tile overlay.
-const PINNED_TECHNOLOGIES = new Set(['gallery', 'wikipedia', 'interactive']);
+const PINNED_TECHNOLOGIES = new Set(['gallery', 'wikipedia']);
 
 /** Whether an overlay of this technology stays on top, out of the reordering. */
 const isPinnedOverlay = (technology: string | undefined): boolean =>

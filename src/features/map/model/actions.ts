@@ -193,9 +193,9 @@ export const mapToggleLayer = createAction<{ type: string; enable?: boolean }>(
   'MAP_TOGGLE_LAYER',
 );
 
-/** Hides the tools' features, or shows them; the data layer toggles the same. */
-export const mapSetFeaturesHidden = createAction<boolean>(
-  'MAP_SET_FEATURES_HIDDEN',
+/** The tools' features' opacity, 0 hiding them. */
+export const mapSetFeaturesOpacity = createAction<number>(
+  'MAP_SET_FEATURES_OPACITY',
 );
 
 /**

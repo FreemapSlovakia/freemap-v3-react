@@ -3,6 +3,10 @@ import {
   activeMapToolSelector,
   selectingModeSelector,
 } from '@app/store/selectors.js';
+import {
+  FEATURES_PANE_CLASS,
+  useOwnPaneOpacity,
+} from '@features/map/hooks/featuresPane.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import {
   colorizeGeometrySource,
@@ -405,20 +409,19 @@ export function RoutePlannerResult(): ReactElement {
 
   const map = useMap();
 
-  // Keep both route panes' opacity in sync with `lineOpacity` as it changes.
-  // Applying it per pane (not per-layer) composites each as one group, so the
+  // `lineOpacity` per pane (not per layer) composites each as one group, so the
   // slices making up the line — and those making up its casing — never double
-  // up where they meet. The panes themselves are created by the `<Pane>`s below
-  // (whose `style` seeds the initial value); this only handles later changes.
+  // up where they meet. The casing's pane is inside the halo pane, which
+  // already carries the features' opacity.
   useEffect(() => {
-    for (const name of [routePaneName, casingPaneName]) {
-      const pane = map?.getPane(name);
+    const pane = map?.getPane(casingPaneName);
 
-      if (pane) {
-        pane.style.opacity = String(lineOpacity);
-      }
+    if (pane) {
+      pane.style.opacity = String(lineOpacity);
     }
   }, [map, lineOpacity]);
+
+  const routePaneRef = useOwnPaneOpacity(lineOpacity);
 
   const setPointDraggingUi = useCallback(
     (isDragging: boolean) => {
@@ -855,14 +858,14 @@ export function RoutePlannerResult(): ReactElement {
         style={{ zIndex: HALO_UNDER_Z, opacity: lineOpacity }}
       />
 
-      {/*
-       * Route line and colorize canvas share this pane so `lineOpacity` (seeded
-       * here, kept live by the effect above) composites them as one group.
-       * `<Pane>` portals its children in only once the pane exists, so the
-       * layers never attach to a missing pane. Overlay z-level, below the
-       * markers.
-       */}
-      <Pane name={routePaneName} style={{ zIndex: 400, opacity: lineOpacity }}>
+      {/* Line and colorize canvas share one pane, so its opacity composites
+          them as one group; overlay level, below the markers. */}
+      <Pane
+        name={routePaneName}
+        ref={routePaneRef}
+        className={FEATURES_PANE_CLASS}
+        style={{ zIndex: 400 }}
+      >
         {paths}
 
         {noDataRunsList.map((run, i) => (

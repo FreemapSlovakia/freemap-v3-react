@@ -34,7 +34,8 @@ import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActi
 import { selectRecorderLines } from '@features/gpsRecorder/model/selectors.js';
 import { recorderLineLength } from '@features/gpsRecorder/segments.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { mapSetFeaturesHidden } from '@features/map/model/actions.js';
+import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
+import { mapSetFeaturesOpacity } from '@features/map/model/actions.js';
 import {
   fitOnceSettled,
   fitToUncovered,
@@ -269,8 +270,8 @@ function ItemList({
     const state = store.getState();
 
     // A picked item has to be drawn to be seen.
-    if (state.map.featuresHidden) {
-      dispatch(mapSetFeaturesHidden(false));
+    if (areFeaturesHidden(state.map.featuresOpacity)) {
+      dispatch(mapSetFeaturesOpacity(1));
     }
 
     for (const action of item.actions ??

@@ -46,7 +46,6 @@ import {
   outsideBoxes,
 } from '@shared/mapLibrary/coverage.js';
 import { effectiveShortcut } from '@shared/mapLibrary/installed.js';
-import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
 import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import type { Shortcut } from '@shared/types/common.js';
 import clsx from 'clsx';
@@ -65,7 +64,6 @@ import {
 import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap';
 import {
   FaEllipsisV,
-  FaEyeSlash,
   FaFilter,
   FaGem,
   FaGlobeEurope,
@@ -124,8 +122,6 @@ export function MapSwitchButton(): ReactElement {
   const lon = useAppSelector((state) => state.map.lon);
 
   const activeLayers = useAppSelector((state) => state.map.layers);
-
-  const featuresHidden = useAppSelector((state) => state.map.featuresHidden);
 
   const pictureFilterIsActive = useAppSelector((state) =>
     Object.values(state.gallery.filter).some((x) => x !== undefined),
@@ -519,40 +515,20 @@ export function MapSwitchButton(): ReactElement {
           </Badge>
         )}
 
-        {place !== 'tooltip' &&
-          featuresHidden &&
-          def.type === FEATURES_LAYER && (
-            <Badge label={m?.mapLayers.interactiveLayerWarning}>
-              <FaEyeSlash />
-            </Badge>
-          )}
-
         {/* The shortcut sits at the row's edge the way a menu writes it. */}
         {place !== 'toolbar' &&
           getKbdShortcut(effectiveShortcut(layersSettings, def))}
 
         {/* All but a downloaded map or a colour draw nothing offline.
             Outermost, so a transient badge doesn't shift the shortcut's column. */}
-        {place !== 'toolbar' &&
-          !def.cached &&
-          def.technology !== 'interactive' &&
-          def.technology !== 'color' && (
-            <OfflineBadge hint={m?.mapLayers.offlineWarning} />
-          )}
+        {place !== 'toolbar' && !def.cached && def.technology !== 'color' && (
+          <OfflineBadge hint={m?.mapLayers.offlineWarning} />
+        )}
       </>
     );
   }
 
-  /** A layer's check; the data layer's is checked while features show. */
-  const isLayerOn = (def: { type: string }) =>
-    def.type === FEATURES_LAYER
-      ? !featuresHidden
-      : activeLayers.includes(def.type);
-
-  // Whether a layer is listed as on wherever only those on are: the data layer
-  // while it hides the features, so its row stays offered to show them again.
-  const isOnMap = (type: string) =>
-    type === FEATURES_LAYER ? featuresHidden : activeLayers.includes(type);
+  const isOnMap = (type: string) => activeLayers.includes(type);
 
   /** Whether a layer or preset is listed at the menu's filter and expand level. */
   const isListed = (
@@ -610,7 +586,7 @@ export function MapSwitchButton(): ReactElement {
           return null;
         }
 
-        const active = isLayerOn(def);
+        const active = isOnMap(def.type);
 
         return (
           <Dropdown.Item
@@ -742,7 +718,7 @@ export function MapSwitchButton(): ReactElement {
       return null;
     }
 
-    const active = isLayerOn(def);
+    const active = isOnMap(def.type);
 
     // Accessories are buttons joined to the layer button, each with its
     // own fix-up action, so clicking the layer button itself only toggles
@@ -916,13 +892,6 @@ export function MapSwitchButton(): ReactElement {
           >
             <FaEllipsisV className="d-none d-sm-block" />
             <FaRegMap className="d-sm-none" />
-
-            {/* Narrow screens have no toolbar button to carry it. */}
-            {!isWide && featuresHidden && (
-              <Badge label={m?.mapLayers.interactiveLayerWarning}>
-                <FaEyeSlash />
-              </Badge>
-            )}
           </Dropdown.Toggle>
 
           <FmDropdownMenu>

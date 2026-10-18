@@ -22,10 +22,12 @@ import {
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
 } from '@features/gallery/model/actions.js';
+import { toggledFeaturesOpacity } from '@features/map/featuresOpacity.js';
 import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import {
   mapPresetToggle,
   mapRefocus,
+  mapSetFeaturesOpacity,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
@@ -43,6 +45,7 @@ import {
   isLayerInstalled,
 } from '@shared/mapLibrary/installed.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Shortcut } from '@shared/types/common.js';
 import {
   clearMapFeatures,
@@ -249,6 +252,23 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     if (event.code === 'ArrowRight') {
       return galleryRequestImage('next');
     }
+  }
+
+  // Before the maps' shortcuts, which a user could otherwise bind it to.
+  if (
+    !keyTimer &&
+    (!showingModal || suspendedModal) &&
+    event.code === 'KeyD' &&
+    event.shiftKey &&
+    !event.ctrlKey &&
+    !event.altKey &&
+    !event.metaKey
+  ) {
+    const opacity = toggledFeaturesOpacity(state.map.featuresOpacity);
+
+    trackMatomo(['trackEvent', 'MapSettings', 'featuresOpacity', opacity]);
+
+    return mapSetFeaturesOpacity(opacity);
   }
 
   if (

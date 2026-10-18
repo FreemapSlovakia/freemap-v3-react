@@ -16,7 +16,8 @@ import { createReducer } from '@reduxjs/toolkit';
 import { isNamedMapDef } from '@shared/mapDefinitions.js';
 import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
 import { isUninstalledByDefault } from '@shared/mapLibrary/installed.js';
-import { FEATURES_LAYER, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
+import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
+import { areFeaturesHidden } from '../featuresOpacity.js';
 import {
   type LayerSettings,
   type MapStateBase,
@@ -41,7 +42,7 @@ import {
   mapSetCountries,
   mapSetCustomLayers,
   mapSetEsriAttribution,
-  mapSetFeaturesHidden,
+  mapSetFeaturesOpacity,
   mapSetLocalPrefs,
   mapSetShadingDraft,
   mapSetShadingOnServer,
@@ -99,13 +100,22 @@ export interface MapState extends MapStateBase {
   linkPresets: MapPreset[];
   /** The catalog maps wanted so far: installed, on the map or an offline map's source. */
   catalogMaps: CatalogMap[];
-  /** What the data layer toggles; neither persisted nor linked. */
-  featuresHidden: boolean;
+  /** Of the tools' features, 0 to 1; never linked. */
+  featuresOpacity: number;
 }
 
-/** Drops the data layer that stored state, a link or a saved map still names. */
+/** Drops `i`, which stored state, a link or a saved map may name; it is no map. */
 export const withoutFeaturesLayer = (layers: string[]) =>
-  layers.filter((item) => item !== FEATURES_LAYER);
+  layers.filter((item) => item !== 'i');
+
+/** Drops the settings or setup stored state still keeps for `i`. */
+export function withoutFeaturesLayerKey<T>(
+  byType: Record<string, T>,
+): Record<string, T> {
+  const { i: _, ...rest } = byType;
+
+  return rest;
+}
 
 const LAT = 48.70714112;
 const LON = 19.49950112;
@@ -137,7 +147,7 @@ export const mapInitialState: MapState = {
   presets: [],
   linkPresets: [],
   catalogMaps: [],
-  featuresHidden: false,
+  featuresOpacity: 1,
   // undefined = not yet fetched (unknown coverage); [] would wrongly mean
   // "covers no country" and flash out-of-coverage warnings during initial load
   countries: undefined,
@@ -849,16 +859,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       settleBase(state);
     })
     .addCase(mapToggleLayer, (state, { payload: { type, enable } }) => {
-      if (type === FEATURES_LAYER) {
-        state.featuresHidden = enable ?? !state.featuresHidden;
-
-        return;
-      }
-
       toggleItem(state, type, kindsOf(state).get(type) === 'base', enable);
     })
-    .addCase(mapSetFeaturesHidden, (state, { payload }) => {
-      state.featuresHidden = payload;
+    .addCase(mapSetFeaturesOpacity, (state, { payload }) => {
+      state.featuresOpacity = payload;
     })
     .addCase(
       mapRefocus,
@@ -923,7 +927,9 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
     .addCase(authLogout, resetAccountSettings)
     .addCase(mapsLoaded, (state, { payload: { data } }) => {
       // A map opened is opened to be seen.
-      state.featuresHidden = false;
+      if (areFeaturesHidden(state.featuresOpacity)) {
+        state.featuresOpacity = 1;
+      }
 
       const { map } = data;
 

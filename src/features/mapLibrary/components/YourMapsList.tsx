@@ -69,7 +69,7 @@ import {
   type TechnologyGroup,
   technologyGroup,
 } from '../filters.js';
-import { canPreview, mapLibraryPreviewStart } from '../model/actions.js';
+import { mapLibraryPreviewStart } from '../model/actions.js';
 import {
   installedLibraryIndexSelector,
   mapByIdSelector,
@@ -783,14 +783,12 @@ function YourMapRow({
               showFrom="never"
             />
           ) : (
-            canPreview(type) && (
-              <Action
-                icon={<FaEye />}
-                label={msm?.preview}
-                onClick={() => dispatch(mapLibraryPreviewStart({ type }))}
-                showFrom="never"
-              />
-            )
+            <Action
+              icon={<FaEye />}
+              label={msm?.preview}
+              onClick={() => dispatch(mapLibraryPreviewStart({ type }))}
+              showFrom="never"
+            />
           )}
 
           {map.kind !== 'library' && (

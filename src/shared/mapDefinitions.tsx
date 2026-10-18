@@ -340,10 +340,6 @@ type IsWikipediaLayerDef = HasZIndex & {
   technology: 'wikipedia';
 };
 
-type IsInteractiveLayerDef = {
-  technology: 'interactive';
-};
-
 /**
  * Animated precipitation radar. Its own technology because a frame's timestamp
  * is part of the tile URL, so the layer is a series of tile layers the feature
@@ -522,7 +518,6 @@ export type IsAllTechnologiesLayerDef =
   | IsParametricShadingLayerDef
   | IsColorLayerDef
   | IsGalleryLayerDef
-  | IsInteractiveLayerDef
   | IsWikipediaLayerDef
   | IsRadarLayerDef
   | IsViewshedLayerDef;

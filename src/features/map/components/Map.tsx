@@ -1,6 +1,11 @@
 import { useMouseCursor } from '@app/hooks/useMouseCursor.js';
 import { pickingModeSelector } from '@app/store/selectors.js';
 import { brightnessFilter } from '@features/map/brightness.js';
+import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
+import {
+  FEATURES_PANE_CLASS,
+  useOwnPaneOpacity,
+} from '@features/map/hooks/featuresPane.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { snapToDevicePixels } from '@features/map/snapToDevicePixels.js';
@@ -81,6 +86,25 @@ export function TheMap({ children }: Props): ReactElement {
     }
   }, [map, brightness]);
 
+  const featuresOpacity = useAppSelector((state) => state.map.featuresOpacity);
+
+  useEffect(() => {
+    const container = map?.getContainer();
+
+    container?.style.setProperty(
+      '--fm-features-opacity',
+      String(featuresOpacity),
+    );
+
+    // Too faint to see, too faint to take a click meant for the map.
+    container?.classList.toggle(
+      'fm-features-faint',
+      areFeaturesHidden(featuresOpacity),
+    );
+  }, [map, featuresOpacity]);
+
+  const haloRef = useOwnPaneOpacity(HALO_OPACITY);
+
   // Leaflet consults `zoomSnap` on each gesture rather than at construction, so
   // the live map can be retuned in place. Only react-leaflet's own props are
   // fixed at creation, and remounting to change one would refetch every tile and
@@ -123,7 +147,9 @@ export function TheMap({ children }: Props): ReactElement {
           group. Declared before the features, which name it. */}
       <Pane
         name={HALO_PANE}
-        style={{ zIndex: HALO_PANE_Z, opacity: HALO_OPACITY }}
+        ref={haloRef}
+        className={FEATURES_PANE_CLASS}
+        style={{ zIndex: HALO_PANE_Z }}
       />
 
       {children}

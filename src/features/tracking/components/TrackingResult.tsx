@@ -1,5 +1,6 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import { FEATURES_PANE_CLASS } from '@features/map/hooks/featuresPane.js';
 import {
   availableColorizer,
   type ColorizedPoint,
@@ -189,7 +190,11 @@ export function TrackingResult(): ReactElement {
       {/* The points and the line's hit area, above the colorize canvas (default
           overlayPane, zIndex 400) — which would otherwise cover the points and
           take every pointer event meant for them. */}
-      <Pane name={POINTS_PANE} style={{ zIndex: 450 }} />
+      <Pane
+        name={POINTS_PANE}
+        className={FEATURES_PANE_CLASS}
+        style={{ zIndex: 450 }}
+      />
 
       {tracks1.map((track) => {
         const color = track.color || DEFAULT_TRACK_COLOR;

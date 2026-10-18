@@ -1,8 +1,10 @@
 import { selectingModeSelector } from '@app/store/selectors.js';
-import { useMap } from '@features/map/hooks/useMap.js';
+import {
+  FEATURES_PANE_CLASS,
+  useOwnPaneOpacity,
+} from '@features/map/hooks/featuresPane.js';
 import { HALO_OPACITY, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
 import { canvas } from 'leaflet';
 import { type ReactElement, useEffect, useState } from 'react';
 import { CircleMarker, Pane, Polyline } from 'react-leaflet';
@@ -32,23 +34,6 @@ export default function ChangesetDiffResult(): ReactElement | null {
   const diff = useAppSelector(
     (state) => state.changesetInspector.inspected?.diff,
   );
-
-  const opacity = useAppSelector(
-    (state) => state.map.layerSetups[FEATURES_LAYER]?.opacity ?? 1,
-  );
-
-  const map = useMap();
-
-  const hasDiff = Boolean(diff);
-
-  // Pane's `style` is applied only when the pane is created, with the diff.
-  useEffect(() => {
-    const pane = hasDiff ? map?.getPane(PANE) : undefined;
-
-    if (pane) {
-      pane.style.opacity = String(opacity);
-    }
-  }, [map, opacity, hasDiff]);
 
   // Not while a map-click tool takes the clicks. In `pathOptions`, as its
   // `setStyle` is what carries a change of it to a path already drawn.
@@ -94,7 +79,7 @@ export default function ChangesetDiffResult(): ReactElement | null {
     <>
       <SelectedHalo />
 
-      <Pane name={PANE} style={{ zIndex: 397 }}>
+      <Pane name={PANE} className={FEATURES_PANE_CLASS} style={{ zIndex: 397 }}>
         {moved.map((element) =>
           element.type === 'way' ? (
             <Polyline
@@ -180,8 +165,15 @@ function SelectedHalo(): ReactElement {
 
   const coords = element && currentVersion(element)?.coords;
 
+  const ref = useOwnPaneOpacity(HALO_OPACITY);
+
   return (
-    <Pane name={HALO} style={{ zIndex: 396, opacity: HALO_OPACITY }}>
+    <Pane
+      name={HALO}
+      ref={ref}
+      className={FEATURES_PANE_CLASS}
+      style={{ zIndex: 396 }}
+    >
       {coords &&
         coords.length > 0 &&
         (element?.type === 'way' ? (

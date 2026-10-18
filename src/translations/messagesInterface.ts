@@ -336,6 +336,8 @@ export type Messages = {
     preferences: string;
     /** Darker or lighter map layers, under the features. */
     brightness: string;
+    /** Of the tools' features drawn over the map. */
+    featuresOpacity: string;
     maxZoom: string;
     zoomSnap: string;
     zoomSnapFree: string;

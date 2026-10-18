@@ -41,7 +41,6 @@ import {
   searchLibrary,
 } from '../librarySearch.js';
 import {
-  canPreview,
   mapLibraryCatalogMapsLoaded,
   mapLibraryPreviewStart,
 } from '../model/actions.js';
@@ -194,24 +193,22 @@ function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
       </td>
 
       <td>
-        {canPreview(type) && (
-          <LongPressTooltip label={msm?.preview}>
-            {({ props }) => (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => {
-                  makeKnown();
+        <LongPressTooltip label={msm?.preview}>
+          {({ props }) => (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                makeKnown();
 
-                  dispatch(mapLibraryPreviewStart({ type }));
-                }}
-                {...props}
-              >
-                <FaEye />
-              </Button>
-            )}
-          </LongPressTooltip>
-        )}
+                dispatch(mapLibraryPreviewStart({ type }));
+              }}
+              {...props}
+            >
+              <FaEye />
+            </Button>
+          )}
+        </LongPressTooltip>
       </td>
 
       <td>

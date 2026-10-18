@@ -750,7 +750,7 @@ export function Main(): ReactElement {
     (state) => state.mapArea.selecting !== null,
   );
 
-  const showResults = useAppSelector((state) => !state.map.featuresHidden);
+  const showResults = useAppSelector((state) => state.map.featuresOpacity > 0);
 
   const showPictures = useAppSelector((state) =>
     state.map.layers.includes('I'),
@@ -1222,13 +1222,10 @@ export function Main(): ReactElement {
 
             <Tools />
 
-            {/* Features always render; in dedicated map modes (picking a
-                home/photo location, showing a photo location, selecting an
-                export/cache area) they stay visible but non-interactive — see
-                pickingModeSelector / Map.tsx / leaflet.css. */}
+            {/* Faded to nothing, not rendered; in a picking mode visible but
+                non-interactive (pickingModeSelector, Map.tsx, leaflet.css). */}
             {showResults && <Results />}
 
-            {/* Own position stays on screen with the data layer hidden. */}
             <LocationResult />
 
             <WikiLayer />

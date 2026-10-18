@@ -1,10 +1,9 @@
 import { openTool } from '@app/store/actions.js';
 import { drawingStyleToPathOptions } from '@features/drawing/drawingStyleToPathOptions.js';
-import { useMap } from '@features/map/hooks/useMap.js';
+import { FEATURES_PANE_CLASS } from '@features/map/hooks/featuresPane.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
-import { type ReactElement, useCallback, useEffect, useMemo } from 'react';
+import { type ReactElement, useCallback, useMemo } from 'react';
 import { CircleMarker, Pane, Polyline } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { useRecorderLocationFeed } from '../hooks/useRecorderLocationFeed.js';
@@ -77,27 +76,16 @@ export default function GpsRecorderResult(): ReactElement | null {
     };
   }, [style.color]);
 
-  const map = useMap();
-
-  // The interactive-overlay opacity dims the default panes; ours needs it too.
-  const opacity = useAppSelector(
-    (state) => state.map.layerSetups[FEATURES_LAYER]?.opacity ?? 1,
-  );
-
-  useEffect(() => {
-    const pane = map?.getPane(paneName);
-
-    if (pane) {
-      pane.style.opacity = String(opacity);
-    }
-  }, [map, opacity]);
-
   if (positions.length === 0 && !latest) {
     return null;
   }
 
   return (
-    <Pane name={paneName} style={{ zIndex: 500, opacity }}>
+    <Pane
+      name={paneName}
+      className={FEATURES_PANE_CLASS}
+      style={{ zIndex: 500 }}
+    >
       {positions.map((segment, i) => (
         <Polyline
           key={i}

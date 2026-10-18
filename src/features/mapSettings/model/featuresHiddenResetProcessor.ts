@@ -1,13 +1,14 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { mapSetFeaturesHidden } from '@features/map/model/actions.js';
+import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
+import { mapSetFeaturesOpacity } from '@features/map/model/actions.js';
 import { anyFeatureDrawn } from '../mapFeatureCounts.js';
 
-// Hidden with nothing to hide — none left, or none to begin with — they show:
-// a warning about hidden features would be about nothing.
+// Hidden when the map gets its first feature or loses its last one, they show.
+// Only on that change, so the slider still goes low on an empty map.
 export const featuresHiddenResetProcessor: Processor = {
-  statePredicate: (state) =>
-    state.map.featuresHidden && !anyFeatureDrawn(state),
+  stateChangePredicate: anyFeatureDrawn,
+  statePredicate: (state) => areFeaturesHidden(state.map.featuresOpacity),
   handle: ({ dispatch }) => {
-    dispatch(mapSetFeaturesHidden(false));
+    dispatch(mapSetFeaturesOpacity(1));
   },
 };

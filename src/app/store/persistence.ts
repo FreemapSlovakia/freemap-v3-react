@@ -27,6 +27,7 @@ import {
   locationSettingsInitialState,
 } from '@features/location/model/settingsReducer.js';
 import { BRIGHTNESS_STEPS } from '@features/map/brightness.js';
+import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
 import { LayersSettingsCompatSchema } from '@features/map/model/actions.js';
 import { LayerSetupsCompatSchema } from '@features/map/model/layerSetup.js';
 import {
@@ -37,6 +38,7 @@ import {
 import {
   mapInitialState,
   withoutFeaturesLayer,
+  withoutFeaturesLayerKey,
 } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
@@ -136,6 +138,7 @@ export const PersistedMapSchema = z
       .max(BRIGHTNESS_STEPS)
       .optional()
       .catch(undefined),
+    featuresOpacity: z.number().min(0).max(1).optional().catch(undefined),
   })
   .partial();
 
@@ -517,8 +520,12 @@ const PERSIST: PersistEntry[] = [
             return id === undefined ? !item.startsWith('_') : presetIds.has(id);
           }),
         ),
-        layersSettings: resolveLayersSettingsAliases(merged.layersSettings),
-        layerSetups: resolveLayersSettingsAliases(merged.layerSetups),
+        layersSettings: withoutFeaturesLayerKey(
+          resolveLayersSettingsAliases(merged.layersSettings),
+        ),
+        layerSetups: withoutFeaturesLayerKey(
+          resolveLayersSettingsAliases(merged.layerSetups),
+        ),
         zoom: merged.zoomSnap
           ? Math.round(merged.zoom / merged.zoomSnap) * merged.zoomSnap
           : merged.zoom,
@@ -546,6 +553,10 @@ const PERSIST: PersistEntry[] = [
       backgroundColor: m.backgroundColor,
       backgroundCheckerboard: m.backgroundCheckerboard,
       brightness: m.brightness,
+      // A reload must not open on features nobody can see.
+      featuresOpacity: areFeaturesHidden(m.featuresOpacity)
+        ? undefined
+        : m.featuresOpacity,
     }),
   }),
   defineEntry({

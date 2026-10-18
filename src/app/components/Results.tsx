@@ -3,15 +3,13 @@ import { ChangesetsResult } from '@features/changesets/components/ChangesetsResu
 import { DrawingLinesResult } from '@features/drawing/components/DrawingLinesResult.js';
 import { DrawingPointsResult } from '@features/drawing/components/DrawingPointsResult.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
-import { useMap } from '@features/map/hooks/useMap.js';
 import { ObjectsResult } from '@features/objects/components/ObjectsResult.js';
 import { TerrainOverlayResult } from '@features/objects/components/TerrainOverlayResult.js';
 import { RoutePlannerResult } from '@features/routePlanner/components/RoutePlannerResult.js';
 import { SearchResults } from '@features/search/components/SearchResults.js';
 import { TrackingResult } from '@features/tracking/components/TrackingResult.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { FEATURES_LAYER } from '@shared/mapLibrary/mapIndex.js';
-import { type ReactElement, useEffect } from 'react';
+import type { ReactElement } from 'react';
 import { AsyncComponent } from './AsyncComponent.js';
 
 // Module scope so each keeps one identity: `useLazy` re-runs its effect when
@@ -81,26 +79,6 @@ export function Results(): ReactElement {
   const hasChangesetDiff = useAppSelector((state) =>
     Boolean(state.changesetInspector.inspected?.diff),
   );
-
-  const opacity = useAppSelector(
-    (state) => state.map.layerSetups[FEATURES_LAYER]?.opacity ?? 1,
-  );
-
-  const map = useMap();
-
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-
-    for (const name of ['shadowPane', 'markerPane', 'overlayPane']) {
-      const pane = map.getPane(name);
-
-      if (pane) {
-        pane.style.opacity = String(opacity ?? 1);
-      }
-    }
-  }, [map, opacity]);
 
   return (
     <>
