@@ -420,6 +420,26 @@
       }
     },
     {
+      "type": "0EX6R",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2021)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2021_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "0EY3P",
       "layer": "base",
       "name": "imagico.de: Kirwan Escarpment evening",
@@ -810,7 +830,6 @@
         "url": "https://orto1.tile.openstreetmap.hu/fomi_2016_lombtalan_20cm/{z}/{x}/{y}.webp",
         "minZoom": 8,
         "maxNativeZoom": 19,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -1416,7 +1435,6 @@
         "url": "https://tms.cadastre.openstreetmap.fr/*/tout/{z}/{x}/{y}.png",
         "minZoom": 2,
         "maxNativeZoom": 22,
-        "cors": false,
         "attribution": [
           {
             "type": "map",
@@ -1719,6 +1737,26 @@
           {
             "type": "map",
             "name": "AGIS OF2014"
+          }
+        ]
+      }
+    },
+    {
+      "type": "1Q57I",
+      "layer": "base",
+      "name": "Kanton Zug Menzingen 2021 6.5 cm",
+      "countries": ["ch"],
+      "bbox": [8.5537, 47.147, 8.6669, 47.2058],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2021_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -2390,6 +2428,28 @@
             "type": "map",
             "name": "Vermont Imagery Program, Vermont Center for Geographic Information",
             "url": "https://vcgi.vermont.gov/data-and-programs/imagery-program"
+          }
+        ]
+      }
+    },
+    {
+      "type": "2GUK7",
+      "layer": "base",
+      "name": "Ukraine - Vinnytsia TG 2021",
+      "countries": ["ua"],
+      "bbox": [28.3615, 49.1769, 28.7567, 49.319],
+      "category": "photo",
+      "body": {
+        "url": "https://maps2.vmr.gov.ua/OpenData/ofp/2021-03/GoogleMapsCompatible/{z}/{y}/{x}.png?ver=03082021",
+        "minZoom": 14,
+        "maxNativeZoom": 19,
+        "cors": false,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Вінницька міська рада",
+            "url": "https://www.vmr.gov.ua/"
           }
         ]
       }
@@ -3138,6 +3198,26 @@
       }
     },
     {
+      "type": "37QHG",
+      "layer": "base",
+      "name": "Kanton Zug 2011",
+      "countries": ["ch"],
+      "bbox": [8.3872, 47.0801, 8.7049, 47.2531],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2011_kt_zg"],
+        "minZoom": 4,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
+          }
+        ]
+      }
+    },
+    {
       "type": "3AL97",
       "layer": "base",
       "name": "GeoSN TK25 DDR Ausgabe Staat (Sachsen)",
@@ -3730,6 +3810,7 @@
         "url": "https://gisportal.fnsb.gov/image/rest/services/Imagery_2023_Pict_Fairbanks/MapServer/tile/{z}/{y}/{x}",
         "minZoom": 5,
         "maxNativeZoom": 21,
+        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -3984,6 +4065,25 @@
             "type": "map",
             "name": "Urząd Miasta Gliwice",
             "url": "https://msip.gliwice.eu/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "4D2Q6",
+      "layer": "base",
+      "name": "Saint Johns County Basemap",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "map",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Basemap/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 23,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -5640,7 +5740,6 @@
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1980/MapServer/tile/{z}/{y}/{x}",
         "minZoom": 1,
         "maxNativeZoom": 21,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -9361,6 +9460,26 @@
       }
     },
     {
+      "type": "A6MWN",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2026)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "photo",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2026_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "A6W49",
       "layer": "overlay",
       "name": "Bayern Orthophotos 2015-2019",
@@ -10219,6 +10338,26 @@
             "type": "map",
             "name": "© Landesamt GeoInformation Bremen, CC BY",
             "url": "https://www.geo.bremen.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "B6CJZ",
+      "layer": "base",
+      "name": "Kanton Zug Gemeinde Zug Süd 2018",
+      "countries": ["ch"],
+      "bbox": [8.4945, 47.1129, 8.5653, 47.1592],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2018_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -14837,7 +14976,6 @@
         "url": "https://orto1.tile.openstreetmap.hu/fomi_2015-2020_lombtalan_20cm/{z}/{x}/{y}.webp",
         "minZoom": 8,
         "maxNativeZoom": 19,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -14941,6 +15079,7 @@
       "body": {
         "url": "https://mapservices.gis.saccounty.gov/ArcGIS/rest/services/Cache/IMAGERY_2022_WEB_MERCATOR/MapServer/tile/{z}/{y}/{x}",
         "maxNativeZoom": 23,
+        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -16084,6 +16223,26 @@
       }
     },
     {
+      "type": "IKI5T",
+      "layer": "base",
+      "name": "Ludwigshafen 2019",
+      "countries": ["de"],
+      "bbox": [8.2967, 49.4056, 8.4785, 49.5679],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodaten.ludwigshafen.de/wms/luftbild_historisch",
+        "layers": ["C7F0E141BD264811A166B9D478C0E20F"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Stadt Ludwigshafen am Rhein",
+            "url": "https://ludwigshafen.de/impressum/ludwigshafende"
+          }
+        ]
+      }
+    },
+    {
       "type": "IKSVR",
       "layer": "overlay",
       "name": "VoGIS BWV flood hazard zones",
@@ -17161,6 +17320,26 @@
       }
     },
     {
+      "type": "JS2ZD",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2025)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2025_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "JT049",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1990",
@@ -17175,7 +17354,6 @@
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1990/MapServer/tile/{z}/{y}/{x}",
         "minZoom": 1,
         "maxNativeZoom": 21,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -17767,6 +17945,26 @@
       }
     },
     {
+      "type": "KK670",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2025)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2025_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "KKX4Y",
       "layer": "overlay",
       "name": "APPRRR ARKOD agricultural land parcels",
@@ -17933,6 +18131,26 @@
             "type": "map",
             "name": "© Staatsbibliothek zu Berlin – Preußischer Kulturbesitz, dl-de/by-2-0",
             "url": "https://geobasis-bb.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "KU4UN",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2026)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "photo",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2026_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -18883,6 +19101,27 @@
       }
     },
     {
+      "type": "M3O06",
+      "layer": "base",
+      "name": "Oregon Statewide Imagery Program (2024)",
+      "countries": ["us"],
+      "bbox": [-124.9434, 41.9344, -116.4346, 46.3149],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.oregonexplorer.info/arcgis/services/OSIP_2024/OSIP_2024_WM/ImageServer/WMSServer",
+        "layers": ["OSIP_2024_WM"],
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "State of Oregon",
+            "url": "https://geohub.oregon.gov/"
+          }
+        ]
+      }
+    },
+    {
       "type": "M3OAC",
       "layer": "base",
       "name": "Bordeaux - 2012",
@@ -19177,6 +19416,26 @@
             "type": "map",
             "name": "© swisstopo",
             "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ME0CB",
+      "layer": "base",
+      "name": "Ludwigshafen 2022",
+      "countries": ["de"],
+      "bbox": [8.2974, 49.4007, 8.4778, 49.576],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodaten.ludwigshafen.de/wms/luftbild_2022",
+        "layers": ["4B1281A1EBD54D74897B3DDA16F00006"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Stadt Ludwigshafen am Rhein",
+            "url": "https://ludwigshafen.de/impressum/ludwigshafende"
           }
         ]
       }
@@ -21066,6 +21325,26 @@
       }
     },
     {
+      "type": "OSGM2",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2024)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2024_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "OSSE7",
       "layer": "base",
       "name": "UrbIS-Ortho 2018",
@@ -21644,7 +21923,6 @@
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1998/MapServer/tile/{z}/{y}/{x}",
         "minZoom": 1,
         "maxNativeZoom": 21,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -23009,6 +23287,7 @@
       "body": {
         "url": "https://cache.gis.lacounty.gov/cache/rest/services/LACounty_Cache/LACounty_StreetMap/MapServer/tile/{z}/{y}/{x}",
         "maxNativeZoom": 23,
+        "cors": false,
         "attribution": [
           {
             "type": "map",
@@ -23036,6 +23315,26 @@
             "type": "map",
             "name": "© Riksantikvarieämbetet, CC0",
             "url": "https://www.raa.se/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "R3NRY",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2021)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2021_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -25168,6 +25467,27 @@
       }
     },
     {
+      "type": "U3E51",
+      "layer": "base",
+      "name": "DC From Above Orthophoto 2023",
+      "countries": ["us"],
+      "bbox": [-77.1198, 38.7971, -76.9092, 38.996],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.dcgis.dc.gov/dcgis/services/Ortho/Ortho_2023/ImageServer/WMSServer",
+        "layers": ["Ortho_2023"],
+        "maxNativeZoom": 21,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "OCTO, DCGIS",
+            "url": "https://opendata.dc.gov/datasets/DCGIS::aerial-photography-orthophoto-2023/about"
+          }
+        ]
+      }
+    },
+    {
       "type": "U3GDH",
       "layer": "base",
       "name": "Kanton Aargau 20cm (AGIS 2020)",
@@ -25433,6 +25753,26 @@
             "type": "map",
             "name": "© OpenStreetMap contributors, CC-BY-SA; Tiles courtesy of GEO-6",
             "url": "https://openstreetmap.org/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "UEUEY",
+      "layer": "base",
+      "name": "Oregon Statewide Imagery Program (2022)",
+      "countries": ["us"],
+      "bbox": [-124.9434, 41.9344, -116.4346, 46.3149],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://imagery.oregonexplorer.info/arcgis/rest/services/OSIP_2022/OSIP_2022_WM/ImageServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 19,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "State of Oregon",
+            "url": "https://geohub.oregon.gov/"
           }
         ]
       }
@@ -26978,6 +27318,26 @@
       }
     },
     {
+      "type": "WG455",
+      "layer": "base",
+      "name": "Kanton Zug (Walchwil und Zug (Alpli)) 2019",
+      "countries": ["ch"],
+      "bbox": [8.4938, 47.0763, 8.5866, 47.1338],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2019_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
+          }
+        ]
+      }
+    },
+    {
       "type": "WG6F0",
       "layer": "base",
       "name": "Nancy - Orthophoto - 2024",
@@ -27359,6 +27719,26 @@
             "type": "map",
             "name": "© Nibelungenstadt Worms",
             "url": "https://www.worms.de"
+          }
+        ]
+      }
+    },
+    {
+      "type": "WRA6D",
+      "layer": "base",
+      "name": "Kanton Zug Nord 2016",
+      "countries": ["ch"],
+      "bbox": [8.4075, 47.1492, 8.5796, 47.2373],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2016_kt_zg"],
+        "minZoom": 4,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -28231,6 +28611,26 @@
       }
     },
     {
+      "type": "XRG1Z",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2024)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2024_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "XS5UR",
       "layer": "base",
       "name": "Lorain County Orthoimagery (2024)",
@@ -28395,6 +28795,27 @@
             "type": "map",
             "name": "© Agentschap Natuur en Bos",
             "url": "https://www.natuurenbos.be/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Y0NP1",
+      "layer": "base",
+      "name": "DC From Above Orthophoto 2025",
+      "countries": ["us"],
+      "bbox": [-77.1198, 38.7971, -76.9092, 38.996],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.dcgis.dc.gov/dcgis/services/Ortho/Ortho_2025/ImageServer/WMSServer",
+        "layers": ["Ortho_2025"],
+        "maxNativeZoom": 21,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "OCTO, DCGIS",
+            "url": "https://opendata.dc.gov/datasets/DCGIS::aerial-photography-orthophoto-2025/about"
           }
         ]
       }
@@ -29270,6 +29691,26 @@
       }
     },
     {
+      "type": "Z5MWQ",
+      "layer": "base",
+      "name": "Kanton Zug Neuheim 2020 3.5 cm",
+      "countries": ["ch"],
+      "bbox": [8.5574, 47.1848, 8.6119, 47.219],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2020_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
+          }
+        ]
+      }
+    },
+    {
       "type": "Z63K4",
       "layer": "base",
       "name": "Rennes orthophotographie 2021 (5 cm)",
@@ -29478,6 +29919,27 @@
             "type": "map",
             "name": "Delaware Valley Regional Planning Commission",
             "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3214"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ZM06L",
+      "layer": "base",
+      "name": "DC From Above Orthophoto 2021",
+      "countries": ["us"],
+      "bbox": [-77.1198, 38.7971, -76.9092, 38.996],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.dcgis.dc.gov/dcgis/services/Ortho/Ortho_2021/ImageServer/WMSServer",
+        "layers": ["Ortho_2021"],
+        "maxNativeZoom": 21,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "OCTO, DCGIS",
+            "url": "https://opendata.dc.gov/datasets/DCGIS::aerial-photography-orthophoto-2021/about"
           }
         ]
       }
