@@ -236,6 +236,7 @@ export const mapSetLocalPrefs = createAction<{
   resolutionScale?: number | null;
   featureScale?: number;
   zoomSnap?: number;
+  pixelExact?: boolean;
   backgroundColor?: string;
   backgroundCheckerboard?: boolean;
   brightness?: number;

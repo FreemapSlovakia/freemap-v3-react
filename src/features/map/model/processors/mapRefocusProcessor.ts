@@ -1,6 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '../../hooks/leafletElementHolder.js';
 import { duringProgrammaticMove, isMapSync } from '../../moveOrigin.js';
+import { mapZoomOf } from '../../shiftZoomGrid.js';
 import { mapRefocus } from '../actions.js';
 
 export const mapRefocusProcessor: Processor = {
@@ -36,8 +37,11 @@ export const mapRefocusProcessor: Processor = {
       return;
     }
 
+    // The store's zoom is a whole level where Leaflet's is shifted.
+    const mapZoom = mapZoomOf(map, zoom);
+
     if (
-      map.getZoom() !== zoom ||
+      Math.abs(map.getZoom() - mapZoom) > 1e-9 ||
       map.getCenter().lat !== lat ||
       map.getCenter().lng !== fixedLon
     ) {
@@ -51,7 +55,7 @@ export const mapRefocusProcessor: Processor = {
       duringProgrammaticMove(() =>
         map.setView(
           [lat, fixedLon],
-          zoom,
+          mapZoom,
           fixing ? { animate: false } : undefined,
         ),
       );

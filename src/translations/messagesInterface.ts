@@ -346,6 +346,8 @@ export type Messages = {
     resolutionScale: string;
     resolutionScaleAuto: string;
     resolutionScaleHelp: string;
+    pixelExact: string;
+    pixelExactHelp: string;
     featureScale: string;
     featureScaleHelp: string;
     background: string;

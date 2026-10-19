@@ -1,3 +1,4 @@
+import { storeZoomOf } from '@features/map/shiftZoomGrid.js';
 import { createLayerComponent, type LayerProps } from '@react-leaflet/core';
 import { wmsBaseUrl } from '@shared/wms.js';
 import {
@@ -269,7 +270,7 @@ class LWmsImageLayer extends Layer {
 
     const { minZoom, zIndex } = this.props;
 
-    if (minZoom !== undefined && map.getZoom() < minZoom) {
+    if (minZoom !== undefined && storeZoomOf(map) < minZoom) {
       this.clear();
 
       return;

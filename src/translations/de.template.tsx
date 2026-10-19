@@ -529,6 +529,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automatisch (Gerätestandard)',
     resolutionScaleHelp:
       'Simuliert die Pixeldichte des Displays. Beeinflusst, welche Kachelvariante geladen wird. Wenn eine Ebene die angeforderte Variante nicht anbietet, wird stattdessen die höchste verfügbare verwendet.',
+    pixelExact: 'Pixelgenaue Kacheln',
+    pixelExactHelp:
+      'Legt jedes Kachelpixel auf genau ein Bildschirmpixel, sodass Kacheln auch bei einem gebrochenen Pixelverhältnis wie 1,25 oder 1,75 scharf bleiben. Die Karte wirkt dann etwas größer oder kleiner. Ersetzt die Auflösungsskala und ist auf den Zoomstufen exakt, auf denen der Zoomschritt landet.',
     featureScale: 'Objektgröße',
     featureScaleHelp:
       'Vergrößert gerenderte Beschriftungen und Linien. Hat keine Auswirkung auf Satelliten-, Schattierungs-, WMS- oder Vektor-Ebenen (MapLibre).',

@@ -528,6 +528,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Samodejno (privzeto za napravo)',
     resolutionScaleHelp:
       'Simulira gostoto pikslov zaslona. Vpliva na to, kateri variant ploščic se naloži. Če sloj ne ponuja zahtevanega varianta, se uporabi najvišji razpoložljivi.',
+    pixelExact: 'Ploščice natančno na piksle',
+    pixelExactHelp:
+      'Vsak piksel ploščice pade na natanko en piksel zaslona, zato ploščice ostanejo ostre tudi na zaslonu z neceloštevilskim razmerjem pikslov, npr. 1,25 ali 1,75. Zemljevid je nato videti nekoliko večji ali manjši. Nadomesti lestvico ločljivosti in je natančen na ravneh povečave, na katerih se ustavi korak povečave.',
     featureScale: 'Velikost elementov',
     featureScaleHelp:
       'Poveča izrisane oznake in črte. Ne vpliva na satelitske, senčene, WMS ali vektorske (MapLibre) sloje.',

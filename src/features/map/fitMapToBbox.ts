@@ -2,6 +2,7 @@ import type { Dispatch } from '@reduxjs/toolkit';
 import { type Map as LeafletMap, latLngBounds, point } from 'leaflet';
 import { mapPromise } from './hooks/leafletElementHolder.js';
 import { mapRefocus } from './model/actions.js';
+import { mapZoomOf, storeZoomOf } from './shiftZoomGrid.js';
 
 export interface FitOptions {
   /** Free space to leave around the extent, in pixels on every side. */
@@ -94,9 +95,10 @@ export function fitLoadedMap(
               size.y - area.height + padding * 2,
             ),
           ),
-          options?.maxZoom ?? Number.POSITIVE_INFINITY,
+          // the options' zooms are the store's
+          mapZoomOf(map, options?.maxZoom ?? Number.POSITIVE_INFINITY),
         ),
-        options?.minZoom ?? Number.NEGATIVE_INFINITY,
+        mapZoomOf(map, options?.minZoom ?? Number.NEGATIVE_INFINITY),
       );
 
   // The extent's middle in projected pixels (Mercator puts it off the middle of
@@ -118,7 +120,12 @@ export function fitLoadedMap(
     mapRefocus(
       options?.keepZoom
         ? { lat, lon: lng, gpsTracked: false }
-        : { lat, lon: lng, zoom, gpsTracked: false },
+        : {
+            lat,
+            lon: lng,
+            zoom: storeZoomOf(map, zoom),
+            gpsTracked: false,
+          },
     ),
   );
 }

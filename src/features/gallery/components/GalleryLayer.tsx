@@ -1,3 +1,4 @@
+import { zoomOffsetOf } from '@features/map/shiftZoomGrid.js';
 import { createTileLayerComponent, updateGridLayer } from '@react-leaflet/core';
 import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
@@ -100,7 +101,8 @@ class LGalleryLayer extends LGridLayer {
 
     const tile = document.createElement('canvas');
 
-    const dpr = window.devicePixelRatio || 1;
+    // Pixel-exact shows the tile scaled by 2^offset; drawn for that, it maps 1:1.
+    const dpr = (window.devicePixelRatio || 1) * 2 ** zoomOffsetOf(map);
 
     tile.width = size.x * dpr;
 

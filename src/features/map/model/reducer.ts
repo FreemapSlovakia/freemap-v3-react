@@ -83,6 +83,8 @@ export interface MapState extends MapStateBase {
   resolutionScale: number | null;
   featureScale: number;
   zoomSnap: number;
+  /** Tiles drawn one tile pixel per device pixel; see `shiftZoomGrid`. */
+  pixelExact: boolean;
   /** Behind every layer, showing wherever none draws. */
   backgroundColor: string;
   /** Draws the background as a checkerboard of its colour, so transparency shows. */
@@ -138,6 +140,7 @@ export const mapInitialState: MapState = {
   resolutionScale: null,
   featureScale: 1,
   zoomSnap: 1,
+  pixelExact: false,
   // Leaflet's own.
   backgroundColor: '#dddddd',
   backgroundCheckerboard: true,
@@ -1031,6 +1034,10 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
         // A coarser grid leaves the map between two of its levels, which the
         // store may no longer hold.
         state.zoom = acceptZoom(state, state.zoom);
+      }
+
+      if (payload.pixelExact !== undefined) {
+        state.pixelExact = payload.pixelExact;
       }
 
       if (payload.backgroundColor !== undefined) {

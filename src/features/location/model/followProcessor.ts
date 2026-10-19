@@ -1,6 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
+import { mapZoomOf } from '@features/map/shiftZoomGrid.js';
 import { LatLng } from 'leaflet';
 import { setLocation } from './actions.js';
 
@@ -18,10 +19,10 @@ export const followLocationProcessor: Processor<typeof setLocation> = {
   handle: async ({ getState, dispatch, action }) => {
     const map = await mapPromise;
 
-    const { zoom } = getState().map;
+    const zoom = mapZoomOf(map, getState().map.zoom);
 
-    // Snap to whole pixels at this zoom, so a fix that moved by less than one
-    // does not nudge the map on every update.
+    // Snap to whole pixels at the zoom on screen, so a fix that moved by less
+    // than one does not nudge the map on every update.
     const latLng = map.unproject(
       map
         .project(new LatLng(action.payload.lat, action.payload.lon), zoom)

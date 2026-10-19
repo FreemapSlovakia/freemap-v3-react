@@ -89,11 +89,12 @@ A link or a My maps document carries the presets on the map as copies, so it ope
 - **Max zoom** — global maximum zoom level
 - **Zoom step** — the smallest zoom change scroll-wheel, pinch, box zoom and the one-finger double-tap drag can settle on: `1` (whole zoom levels, the default), `½`, `¼`, or *Free* (no snapping at all). The <kbd>+</kbd>/<kbd>−</kbd> buttons and keys always go to the next whole level whatever this says
 - **Resolution scale** — simulates display pixel density and affects which tile variant is fetched (Auto by default)
+- **Pixel-exact tiles** — off by default; puts each tile pixel on exactly one screen pixel, so tiles stay sharp on a display with a fractional pixel ratio (such as 1.25 or 1.75). The tile variant then follows the nearest whole ratio and the resolution scale is ignored; the map looks slightly larger or smaller, and the map's zoom levels shift off whole numbers (by about 0.19 at 1.75), though `map=` in the URL still carries the whole level
 - **Feature size** — enlarges rendered labels and lines (no effect on satellite, shading, WMS, or vector (MapLibre) layers)
 - **Map background** — the colour wherever no layer draws: with no base map on, beside a base map with partial coverage or transparency, and under tiles still loading (Leaflet's grey by default); with **Checkerboard** (on by default) it is drawn as a checkerboard of that colour, so transparency shows; this browser's own
 - **Direction indicator** — source of the direction beam on the located position: *Hidden*, *Direction of travel* (GPS course over ground, visible only while moving) or *Device compass* (magnetometer, works standing still, offered only where orientation sensors exist). Defaults to the compass except on iOS, where enabling it costs a permission prompt, so direction of travel is the default there
 - **Distance and bearing** — while locating, draws a line between the located position and a crosshair in the middle of the map, labelled with the distance and the bearing from the position to the crosshair; visible only once the map is panned away from that position. On by default
-- **Reset to default** — fills this modal's fields (max zoom, zoom step, resolution scale, feature size, map background, direction indicator, distance and bearing) with their defaults; apply with Save or close without saving
+- **Reset to default** — fills this modal's fields (max zoom, zoom step, resolution scale, pixel-exact tiles, feature size, map background, direction indicator, distance and bearing) with their defaults; apply with Save or close without saving
 
 ### Elevation preferences
 

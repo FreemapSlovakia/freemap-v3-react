@@ -2,6 +2,7 @@ import type { MyStore } from '@app/store/store.js';
 import { onMap } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus, mapSetBounds } from './model/actions.js';
 import { duringMapSync, isProgrammaticMove } from './moveOrigin.js';
+import { storeZoomOf } from './shiftZoomGrid.js';
 
 export function attachMapStateHandler(store: MyStore) {
   // re-binds to every map instance; a max-zoom change recreates the map
@@ -40,7 +41,7 @@ export function attachMapStateHandler(store: MyStore) {
 
       const { lat: newLat, lng: newLon } = map.getCenter();
 
-      const newZoom = map.getZoom();
+      const newZoom = storeZoomOf(map);
 
       const before = centerBeforeZoom;
 

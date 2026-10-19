@@ -522,6 +522,9 @@ const messages: Messages = {
     resolutionScaleAuto: 'Auto (device default)',
     resolutionScaleHelp:
       "Simulates display pixel density. Affects which tile variant is fetched. If a layer doesn't offer the requested variant, the highest available one is used instead.",
+    pixelExact: 'Pixel-exact tiles',
+    pixelExactHelp:
+      'Puts each tile pixel on exactly one screen pixel, so tiles stay sharp on a display with a fractional pixel ratio such as 1.25 or 1.75. The map then looks slightly larger or smaller. Replaces the resolution scale, and is exact on the zoom levels the zoom step lands on.',
     featureScale: 'Feature size',
     featureScaleHelp:
       'Enlarges rendered labels and lines. Has no effect on satellite, shading, WMS, or vector (MapLibre) layers.',

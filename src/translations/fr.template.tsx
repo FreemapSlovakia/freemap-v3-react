@@ -539,6 +539,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Auto (valeur par défaut de l’appareil)',
     resolutionScaleHelp:
       'Simule la densité de pixels de l’écran. Détermine quelle variante de tuiles est chargée. Si une couche n’offre pas la variante demandée, la plus élevée disponible est utilisée à la place.',
+    pixelExact: 'Tuiles au pixel près',
+    pixelExactHelp:
+      'Place chaque pixel de tuile sur exactement un pixel de l’écran, pour que les tuiles restent nettes sur un écran au rapport de pixels fractionnaire, comme 1,25 ou 1,75. La carte paraît alors un peu plus grande ou plus petite. Remplace l’échelle de résolution, et n’est exact qu’aux niveaux de zoom où s’arrête le pas du zoom.',
     featureScale: 'Taille des éléments',
     featureScaleHelp:
       'Agrandit les étiquettes et les lignes affichées. N’a aucun effet sur les couches satellite, d’ombrage, WMS ou vectorielles (MapLibre).',

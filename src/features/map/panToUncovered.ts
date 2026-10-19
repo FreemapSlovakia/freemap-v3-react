@@ -4,6 +4,7 @@ import { type Map as LeafletMap, type Point, point } from 'leaflet';
 import { fitLoadedMap, mapToFit } from './fitMapToBbox.js';
 import { getMapLeafletElement } from './hooks/leafletElementHolder.js';
 import { mapRefocus } from './model/actions.js';
+import { storeZoomOf } from './shiftZoomGrid.js';
 
 // Grid the map is probed on: fine enough to find the gaps between the toolbars,
 // and no finer than the margins the answer is measured against — the cell size
@@ -371,7 +372,9 @@ export async function fitToUncovered(
     map,
     dispatch,
     bbox,
-    keepZoom ? { area, keepZoom } : { area, maxZoom: maxZoom ?? map.getZoom() },
+    keepZoom
+      ? { area, keepZoom }
+      : { area, maxZoom: maxZoom ?? storeZoomOf(map) },
   );
 }
 

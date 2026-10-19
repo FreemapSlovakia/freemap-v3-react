@@ -1,4 +1,6 @@
+import { watchDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 import type { Map as LeafletMap } from 'leaflet';
+import { storeZoomOf } from './shiftZoomGrid.js';
 
 // At a fractional devicePixelRatio tile edges fall between device pixels, and
 // `plus-lighter` overshoots where four meet: a bright dot on mid tones. A
@@ -14,12 +16,10 @@ export function snapToDevicePixels(map: LeafletMap): () => void {
   const snap = () => {
     const dpr = window.devicePixelRatio || 1;
 
-    // Only a container at rest: one mid-zoom is scaled off the grid.
-    const tile = Array.from(
-      pane.querySelectorAll<HTMLElement>('.leaflet-tile-container'),
-    )
-      .find((c) => c.style.transform.endsWith('scale(1)'))
-      ?.querySelector<HTMLElement>('.leaflet-tile');
+    // Only at rest on a level: mid-zoom, tiles are scaled off the grid.
+    const tile = Number.isInteger(storeZoomOf(map))
+      ? currentTile(pane)
+      : undefined;
 
     if (Number.isInteger(dpr) || !tile) {
       pane.style.translate = '';
@@ -49,25 +49,7 @@ export function snapToDevicePixels(map: LeafletMap): () => void {
     });
   };
 
-  let dprQuery: MediaQueryList | undefined;
-
-  const watchDpr = () => {
-    dprQuery?.removeEventListener('change', onDprChange);
-
-    dprQuery = window.matchMedia(
-      `(resolution: ${window.devicePixelRatio || 1}dppx)`,
-    );
-
-    dprQuery.addEventListener('change', onDprChange);
-  };
-
-  const onDprChange = () => {
-    watchDpr();
-
-    snap();
-  };
-
-  watchDpr();
+  const unwatchDpr = watchDevicePixelRatio(snap);
 
   map.on('move zoomend viewreset resize', snap);
 
@@ -81,10 +63,36 @@ export function snapToDevicePixels(map: LeafletMap): () => void {
 
     map.off('layeradd', snapSoon);
 
-    dprQuery?.removeEventListener('change', onDprChange);
+    unwatchDpr();
 
     cancelAnimationFrame(frame);
 
     pane.style.translate = '';
   };
+}
+
+// A tile of the first layer's current level: the one with the layer's highest
+// z-index (they compare only within a layer), as one fading out is offset apart.
+function currentTile(pane: HTMLElement): HTMLElement | undefined {
+  for (const layer of pane.querySelectorAll('.leaflet-layer')) {
+    let top: HTMLElement | undefined;
+
+    for (const c of layer.children) {
+      if (
+        c instanceof HTMLElement &&
+        c.classList.contains('leaflet-tile-container') &&
+        (!top || Number(c.style.zIndex) > Number(top.style.zIndex))
+      ) {
+        top = c;
+      }
+    }
+
+    const tile = top?.querySelector<HTMLElement>('.leaflet-tile');
+
+    if (tile) {
+      return tile;
+    }
+  }
+
+  return undefined;
 }

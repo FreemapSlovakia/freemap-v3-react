@@ -24,6 +24,7 @@ import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   type ChangeEvent,
   type ReactElement,
@@ -76,6 +77,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   const initialZoomSnap = useAppSelector((state) => String(state.map.zoomSnap));
 
   const [zoomSnap, setZoomSnap] = useState(initialZoomSnap);
+
+  const initialPixelExact = useAppSelector((state) => state.map.pixelExact);
+
+  const [pixelExact, setPixelExact] = useState(initialPixelExact);
 
   const initialBackground = useAppSelector(
     (state) => state.map.backgroundColor,
@@ -130,6 +135,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
     setZoomSnap(String(mapInitialState.zoomSnap));
 
+    setPixelExact(mapInitialState.pixelExact);
+
     setBackground(mapInitialState.backgroundColor);
 
     setCheckerboard(mapInitialState.backgroundCheckerboard);
@@ -154,6 +161,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       resolutionScale !== initialResolutionScale ||
       featureScale !== initialFeatureScale ||
       zoomSnap !== initialZoomSnap ||
+      pixelExact !== initialPixelExact ||
       background !== initialBackground ||
       checkerboard !== initialCheckerboard
     ) {
@@ -163,10 +171,15 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
             resolutionScale === '' ? null : Number(resolutionScale),
           featureScale: Number(featureScale),
           zoomSnap: Number(zoomSnap),
+          pixelExact,
           backgroundColor: background,
           backgroundCheckerboard: checkerboard,
         }),
       );
+    }
+
+    if (pixelExact && !initialPixelExact) {
+      trackMatomo(['trackEvent', 'MapSettings', 'pixelExact']);
     }
 
     if (headingSource !== initialHeadingSource) {
@@ -211,6 +224,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     resolutionScale !== initialResolutionScale ||
     featureScale !== initialFeatureScale ||
     zoomSnap !== initialZoomSnap ||
+    pixelExact !== initialPixelExact ||
     background !== initialBackground ||
     checkerboard !== initialCheckerboard ||
     headingSource !== initialHeadingSource ||
@@ -226,6 +240,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
         : String(mapInitialState.resolutionScale)) &&
     featureScale === String(mapInitialState.featureScale) &&
     zoomSnap === String(mapInitialState.zoomSnap) &&
+    pixelExact === mapInitialState.pixelExact &&
     background === mapInitialState.backgroundColor &&
     checkerboard === mapInitialState.backgroundCheckerboard &&
     headingSource === locationSettingsInitialState.headingSource &&
@@ -302,7 +317,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               value={resolutionScale}
               onChange={setResolutionScale}
             >
-              <ToggleButton id="rs-auto" value="" variant="outline-primary">
+              <ToggleButton
+                id="rs-auto"
+                value=""
+                variant="outline-primary"
+                disabled={pixelExact}
+              >
                 {m?.mapLayers.resolutionScaleAuto}
               </ToggleButton>
 
@@ -312,11 +332,23 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                   id={`rs-${scale}`}
                   value={scale}
                   variant="outline-primary"
+                  disabled={pixelExact}
                 >
                   {scale}×
                 </ToggleButton>
               ))}
             </FitToggleButtonGroup>
+
+            <div className="mt-2 d-flex">
+              <Form.Check
+                id="chk-pixel-exact"
+                label={m?.mapLayers.pixelExact}
+                checked={pixelExact}
+                onChange={(e) => setPixelExact(e.currentTarget.checked)}
+              />
+
+              <HintMark hint={m?.mapLayers.pixelExactHelp} />
+            </div>
           </Form.Group>
 
           <Form.Group className="mt-3">

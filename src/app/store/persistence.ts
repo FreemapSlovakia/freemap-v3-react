@@ -128,6 +128,7 @@ export const PersistedMapSchema = z
     resolutionScale: z.number().nullable(),
     featureScale: z.number(),
     zoomSnap: z.number(),
+    pixelExact: z.boolean(),
     backgroundColor: z.string(),
     backgroundCheckerboard: z.boolean(),
     // Out of range after a change of steps, it alone falls back.
@@ -550,6 +551,7 @@ const PERSIST: PersistEntry[] = [
       resolutionScale: m.resolutionScale,
       featureScale: m.featureScale,
       zoomSnap: m.zoomSnap,
+      pixelExact: m.pixelExact,
       backgroundColor: m.backgroundColor,
       backgroundCheckerboard: m.backgroundCheckerboard,
       brightness: m.brightness,

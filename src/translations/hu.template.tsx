@@ -530,6 +530,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automatikus (eszköz alapértelmezett)',
     resolutionScaleHelp:
       'Szimulálja a kijelző pixelsűrűségét. Befolyásolja, hogy melyik csempe-változat töltődik be. Ha egy réteg nem kínálja a kért változatot, helyette a legmagasabb elérhető kerül felhasználásra.',
+    pixelExact: 'Pixelpontos csempék',
+    pixelExactHelp:
+      'A csempe minden pixele pontosan egy képernyőpixelre esik, így a csempék törtszámú pixelarányú kijelzőn (pl. 1,25 vagy 1,75) is élesek maradnak. A térkép ekkor kissé nagyobbnak vagy kisebbnek látszik. Felülírja a felbontási skálát, és azokon a nagyítási szinteken pontos, ahová a nagyítási lépték érkezik.',
     featureScale: 'Elemek mérete',
     featureScaleHelp:
       'Megnöveli a megjelenített feliratokat és vonalakat. Nincs hatással a műholdas, árnyékolt, WMS és vektoros (MapLibre) rétegekre.',

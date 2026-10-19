@@ -530,6 +530,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automatica (predefinita del dispositivo)',
     resolutionScaleHelp:
       'Simula la densità di pixel del display. Influisce su quale variante di tile viene caricata. Se un livello non offre la variante richiesta, viene utilizzata la più alta disponibile.',
+    pixelExact: 'Tile al pixel esatto',
+    pixelExactHelp:
+      'Fa corrispondere ogni pixel della tile a esattamente un pixel dello schermo, così le tile restano nitide anche su un display con un rapporto di pixel frazionario come 1,25 o 1,75. La mappa appare allora leggermente più grande o più piccola. Sostituisce la scala di risoluzione ed è esatto sui livelli di zoom su cui si ferma il passo dello zoom.',
     featureScale: 'Dimensione degli elementi',
     featureScaleHelp:
       'Ingrandisce etichette e linee renderizzate. Non ha effetto sui livelli satellitari, di ombreggiatura, WMS o vettoriali (MapLibre).',

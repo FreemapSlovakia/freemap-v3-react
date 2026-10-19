@@ -1,3 +1,4 @@
+import { storeZoomOf } from '@features/map/shiftZoomGrid.js';
 import { createLayerComponent, type LayerProps } from '@react-leaflet/core';
 import { DomUtil, Layer, type Map as LeafletMap } from 'leaflet';
 
@@ -79,7 +80,7 @@ class LColorLayer extends Layer {
       return;
     }
 
-    const zoom = map.getZoom();
+    const zoom = storeZoomOf(map);
 
     const { minZoom = 0, maxZoom = Infinity } = this.props;
 

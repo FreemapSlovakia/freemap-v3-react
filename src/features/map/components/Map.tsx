@@ -8,12 +8,17 @@ import {
 } from '@features/map/hooks/featuresPane.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { useMap } from '@features/map/hooks/useMap.js';
+import { shiftZoomGrid } from '@features/map/shiftZoomGrid.js';
 import { snapToDevicePixels } from '@features/map/snapToDevicePixels.js';
 import { initialWheelPxPerZoomLevel } from '@features/map/wheelZoomCalibration.js';
+import { zoomGridOffset } from '@features/map/zoomGrid.js';
 import { HALO_OPACITY, HALO_PANE, HALO_PANE_Z } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 // Imported for its side effect, before any layer can bind a tooltip.
 import '../leafletTooltipFocusFix.js';
+// Imported for its side effect, before any tile layer can redraw.
+import '../leafletRedrawZoomFix.js';
 // Imported for its side effect: registers the `doubleTapDragZoom` map handler.
 import '../doubleTapDragZoom.js';
 import 'leaflet/dist/leaflet.css';
@@ -114,6 +119,16 @@ export function TheMap({ children }: Props): ReactElement {
       map.options.zoomSnap = zoomSnap;
     }
   }, [map, zoomSnap]);
+
+  const zoomOffset = zoomGridOffset(
+    useAppSelector((state) => state.map.pixelExact),
+    useDevicePixelRatio(),
+  );
+
+  useEffect(
+    () => (map ? shiftZoomGrid(map, zoomOffset) : undefined),
+    [map, zoomOffset],
+  );
 
   useEffect(() => (map ? snapToDevicePixels(map) : undefined), [map]);
 

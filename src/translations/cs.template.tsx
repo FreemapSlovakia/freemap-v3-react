@@ -525,6 +525,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automaticky (podle zařízení)',
     resolutionScaleHelp:
       'Simuluje hustotu pixelů displeje. Ovlivňuje, který variant dlaždic se načte. Pokud vrstva nenabízí požadovaný variant, použije se nejvyšší dostupný.',
+    pixelExact: 'Dlaždice přesně na pixely',
+    pixelExactHelp:
+      'Každý pixel dlaždice připadne právě na jeden pixel obrazovky, takže dlaždice zůstanou ostré i na displeji s neceločíselným poměrem pixelů, např. 1,25 nebo 1,75. Mapa pak vypadá o něco větší nebo menší. Nahrazuje škálu rozlišení a přesná je na úrovních přiblížení, na kterých končí krok přiblížení.',
     featureScale: 'Velikost prvků',
     featureScaleHelp:
       'Zvětšuje vykreslené popisky a čáry. Nemá vliv na satelitní, stínované, WMS ani vektorové (MapLibre) vrstvy.',

@@ -510,6 +510,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automatycznie (domyślna urządzenia)',
     resolutionScaleHelp:
       'Symuluje gęstość pikseli wyświetlacza. Wpływa na to, który wariant kafelków jest pobierany. Jeśli warstwa nie oferuje żądanego wariantu, używany jest najwyższy dostępny.',
+    pixelExact: 'Kafelki co do piksela',
+    pixelExactHelp:
+      'Każdy piksel kafelka trafia dokładnie na jeden piksel ekranu, dzięki czemu kafelki pozostają ostre także na wyświetlaczu o ułamkowym współczynniku pikseli, np. 1,25 lub 1,75. Mapa wygląda wtedy nieco większa lub mniejsza. Zastępuje skalę rozdzielczości i jest dokładne na poziomach powiększenia, na których zatrzymuje się krok powiększenia.',
     featureScale: 'Rozmiar elementów',
     featureScaleHelp:
       'Powiększa renderowane etykiety i linie. Nie ma wpływu na warstwy satelitarne, cieniowania, WMS ani wektorowe (MapLibre).',

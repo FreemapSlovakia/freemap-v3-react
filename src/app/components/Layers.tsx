@@ -17,6 +17,7 @@ import {
   layerInstancesSelector,
   resolvedCustomLayersSelector,
 } from '@features/map/model/selectors.js';
+import { tileDensity, zoomGridOffset } from '@features/map/zoomGrid.js';
 import {
   integratedLayerDefMapSelector,
   mapByIdSelector,
@@ -31,6 +32,7 @@ import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import {
   type LayerDef,
@@ -147,7 +149,17 @@ export function Layers(): ReactNode {
 
   const featureScale = useAppSelector((state) => state.map.featureScale);
 
-  const effectiveDpr = resolutionScale ?? (window.devicePixelRatio || 1);
+  const dpr = useDevicePixelRatio();
+
+  // Where it applies, pixel-exact ignores the resolution scale: raster tiles at
+  // a whole density, vector at the screen's own, as it draws unscaled.
+  const pixelExact =
+    useAppSelector((state) => state.map.pixelExact) &&
+    zoomGridOffset(true, dpr) !== 0;
+
+  const vectorDpr = pixelExact ? dpr : (resolutionScale ?? dpr);
+
+  const effectiveDpr = tileDensity(pixelExact, resolutionScale, dpr);
 
   const m = useMessages();
 
@@ -416,14 +428,14 @@ export function Layers(): ReactNode {
       return (
         <AsyncComponent
           factory={maplibreLayerFactory}
-          key={`${id}-${effectiveDpr}`}
+          key={`${id}-${vectorDpr}`}
           style={layerDef.url}
           zIndex={zIndex}
           opacity={opacity}
           maxZoom={maxZoom}
           minZoom={minZoom}
           language={language}
-          pixelRatio={effectiveDpr}
+          pixelRatio={vectorDpr}
         />
       );
     }
@@ -431,16 +443,22 @@ export function Layers(): ReactNode {
     if (layerDef.technology === 'tile') {
       const effFeatureScale = isHdpi || serverShading ? 1 : featureScale;
 
-      const autoTileScale = (window.devicePixelRatio || 1) * effFeatureScale;
+      const autoTileScale = dpr * effFeatureScale;
 
       let effForcedScale: number | undefined;
 
       if (fixedScale !== undefined) {
         effForcedScale = fixedScale;
-      } else if (resolutionScale === null && effFeatureScale === 1) {
+      } else if (
+        resolutionScale === null &&
+        effFeatureScale === 1 &&
+        !pixelExact
+      ) {
         effForcedScale = undefined;
       } else {
-        const requested = resolutionScale ?? autoTileScale;
+        const requested = pixelExact
+          ? effectiveDpr * effFeatureScale
+          : (resolutionScale ?? autoTileScale);
 
         if (requested <= 1 || !layerDef.extraScales?.length) {
           effForcedScale = 1;
