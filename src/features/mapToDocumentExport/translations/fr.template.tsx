@@ -67,6 +67,11 @@ const fr: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   scaleBar: 'Échelle',
   northArrow: 'Flèche du nord',
   attribution: 'Attribution',
+  legend: 'Légende',
+  legendWidens:
+    'La légende se place à côté de la carte : le document sera plus large que le papier choisi.',
+  webpTooLarge:
+    'WebP autorise au plus 16383 px par côté, ce que cet export peut dépasser. Choisissez PNG ou une résolution plus basse.',
   northArrowLetter: 'N',
   glow: 'Halo',
   labelTitle: 'Étiquettes',

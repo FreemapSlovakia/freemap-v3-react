@@ -67,6 +67,11 @@ const sk: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   scaleBar: 'Mierka',
   northArrow: 'Smerová šípka',
   attribution: 'Uvedenie zdroja',
+  legend: 'Legenda',
+  legendWidens:
+    'Legenda je vedľa mapy, takže dokument bude širší ako zvolený papier.',
+  webpTooLarge:
+    'WebP dovoľuje najviac 16383 px na stranu, čo tento export môže prekročiť. Zvoľte PNG alebo nižšie DPI.',
   northArrowLetter: 'S',
   glow: 'Žiara',
   ready: 'Mapa je pripravená',

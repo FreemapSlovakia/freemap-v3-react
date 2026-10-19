@@ -66,6 +66,11 @@ const en: MapToDocumentExportMessages = {
   scaleBar: 'Scale bar',
   northArrow: 'North arrow',
   attribution: 'Attribution',
+  legend: 'Legend',
+  legendWidens:
+    'The legend goes beside the map, so the document comes out wider than the chosen paper.',
+  webpTooLarge:
+    'WebP allows at most 16383 px per side, which this export may exceed. Choose PNG or a lower DPI.',
   northArrowLetter: 'N',
   glow: 'Glow',
   labelTitle: 'Labels',

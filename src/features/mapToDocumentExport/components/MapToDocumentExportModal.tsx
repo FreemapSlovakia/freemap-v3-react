@@ -84,7 +84,7 @@ import { loadMapToDocumentExportMessages } from '../translations/loadMapToDocume
 import { useMapToDocumentExportMessages } from '../translations/useMapToDocumentExportMessages.js';
 import { DataLayerStyleFields } from './DataLayerStyleFields.js';
 import { ExportLayersField } from './ExportLayersField.js';
-import { MapDecorationsField } from './MapDecorationsField.js';
+import { type Decoration, MapDecorationsField } from './MapDecorationsField.js';
 import {
   type PrintDraft,
   PrintSizeFields,
@@ -96,6 +96,9 @@ type Props = { show: boolean };
 const MIN_ZOOM = outdoorBody.minZoom ?? 0;
 
 const MAX_ZOOM = outdoorBody.maxNativeZoom ?? 20;
+
+/** libwebp's limit; the renderer fails a larger WebP. */
+const WEBP_MAX_SIDE = 16383;
 
 const PRINT_LIMITS = {
   minZoom: MIN_ZOOM,
@@ -212,6 +215,7 @@ export default function MapToDocumentExportModal({
     scaleBar,
     northArrow,
     attribution: attributionEnabled,
+    legend: legendEnabled,
     glow,
     glowColor,
     glowWidth,
@@ -390,14 +394,21 @@ export default function MapToDocumentExportModal({
   );
 
   const handleDecorationsChange = useCallback(
-    (values: ('scaleBar' | 'northArrow' | 'attribution')[]) => {
+    (values: Decoration[]) => {
+      const legend = values.includes('legend');
+
+      if (legend && !legendEnabled) {
+        trackMatomo(['trackEvent', 'DocumentExport', 'legend']);
+      }
+
       updateSettings({
         scaleBar: values.includes('scaleBar'),
         northArrow: values.includes('northArrow'),
         attribution: values.includes('attribution'),
+        legend,
       });
     },
-    [updateSettings],
+    [updateSettings, legendEnabled],
   );
 
   // The routers' credit belongs to the drawn route, so it rides on that
@@ -476,6 +487,7 @@ export default function MapToDocumentExportModal({
           scaleBar,
           northArrow: northArrow ? (mtde?.northArrowLetter ?? 'N') : false,
           attribution: attributionEnabled && attributionParts,
+          legend: legendEnabled && { title: mtde?.legend ?? 'Legend' },
         },
         glow: glow
           ? { color: glowColor, width: parseInt(glowWidth, 10) }
@@ -531,6 +543,7 @@ export default function MapToDocumentExportModal({
     northArrow,
     attributionEnabled,
     attributionParts,
+    legendEnabled,
     extraDefs,
     glow,
     glowColor,
@@ -868,6 +881,18 @@ export default function MapToDocumentExportModal({
                 )}
               </div>
 
+              {webp &&
+                print &&
+                Math.max(
+                  // the legend panel is at most the map's width
+                  print.px.width * (legendEnabled ? 2 : 1),
+                  print.px.height,
+                ) > WEBP_MAX_SIDE && (
+                  <Form.Text className="d-block text-warning">
+                    {mtde?.webpTooLarge}
+                  </Form.Text>
+                )}
+
               <PrintSizeFields
                 draft={printDraft}
                 onDraftChange={setPrintDraft}
@@ -925,6 +950,7 @@ export default function MapToDocumentExportModal({
                 scaleBar={scaleBar}
                 northArrow={northArrow}
                 attribution={attributionEnabled}
+                legend={legendEnabled}
                 onChange={handleDecorationsChange}
               />
             </fieldset>

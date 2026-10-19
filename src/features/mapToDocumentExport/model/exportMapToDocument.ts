@@ -6,6 +6,7 @@ import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import z from 'zod';
 import { type ExportCredits, resolveExportCredits } from './exportCredits.js';
+import { legendLabels, truncatedLabel } from './legendLabels.js';
 import { type Bbox, bboxPixelSize } from './printScale.js';
 import type {
   CustomLayerOrder,
@@ -50,6 +51,8 @@ export interface MapToDocumentExportParams {
      * features earn, and `titles`, the credits the app words itself.
      */
     attribution: { extra: string[]; titles: Record<string, string> } | false;
+    /** The legend panel's title, or `false` to omit the panel. */
+    legend: { title: string } | false;
   };
   /** Glow/shadow around all custom-layer markers and lines, or `null`. */
   glow: { color: string; width: number } | null;
@@ -107,7 +110,7 @@ export async function exportMapToDocument({
 }: MapToDocumentExportParams): Promise<MapToDocumentExportResult> {
   const exportableSet = new Set(exportables);
 
-  const fc = await buildExportFeatureCollection({
+  const fcPromise = buildExportFeatureCollection({
     getState,
     include: {
       pictures: exportableSet.has('pictures'),
@@ -128,6 +131,19 @@ export async function exportMapToDocument({
       lineWidthFallback: 4,
     },
   });
+
+  const [fc, legendLabelsResult] = await Promise.all([
+    fcPromise,
+    decorations.legend && legendLabels(getState().l10n.language, signal),
+  ]);
+
+  signal.throwIfAborted();
+
+  const legend = decorations.legend &&
+    legendLabelsResult && {
+      title: truncatedLabel(decorations.legend.title),
+      ...legendLabelsResult,
+    };
 
   // WebP's two are separate codecs rather than one with a knob, and the
   // renderer names them apart.
@@ -154,6 +170,8 @@ export async function exportMapToDocument({
         northArrow: decorations.northArrow || undefined,
         // bottom-right, right-aligned; the renderer appends its own datasets
         attribution: decorations.attribution || undefined,
+        // beside the map, widening the image; lists only what was drawn
+        legend: legend || undefined,
       },
       features: {
         baseMap,
@@ -181,13 +199,16 @@ export async function exportMapToDocument({
     );
 
     if (tooLarge.success) {
+      // The renderer counts a legend as a second map's width.
+      const factor = legend ? 2 : 1;
+
       // Measured as the renderer does, as its rounding can push a zoom over.
       let fitting = zoom - 1;
 
       for (; fitting >= 0; fitting--) {
         const size = bboxPixelSize(bbox, fitting);
 
-        if (size.width * size.height <= tooLarge.data.maxPixels) {
+        if (size.width * size.height * factor <= tooLarge.data.maxPixels) {
           break;
         }
       }

@@ -67,6 +67,11 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   scaleBar: 'Podziałka',
   northArrow: 'Strzałka północy',
   attribution: 'Atrybucja',
+  legend: 'Legenda',
+  legendWidens:
+    'Legenda jest obok mapy, więc dokument będzie szerszy niż wybrany papier.',
+  webpTooLarge:
+    'WebP pozwala na najwyżej 16383 px na bok, co ten eksport może przekroczyć. Wybierz PNG lub niższe DPI.',
   northArrowLetter: 'N',
   glow: 'Poświata',
   ready: 'Mapa jest gotowa',

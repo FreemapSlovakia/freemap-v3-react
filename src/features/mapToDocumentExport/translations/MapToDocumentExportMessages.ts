@@ -43,6 +43,9 @@ export type MapToDocumentExportMessages = {
   scaleBar: string;
   northArrow: string;
   attribution: string;
+  legend: string;
+  legendWidens: string;
+  webpTooLarge: string;
   northArrowLetter: string;
   glow: string;
   labelTitle: string;

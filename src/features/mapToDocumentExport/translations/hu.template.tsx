@@ -67,6 +67,11 @@ const hu: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   scaleBar: 'Aránymérték',
   northArrow: 'Iránytű',
   attribution: 'Forrásmegjelölés',
+  legend: 'Jelmagyarázat',
+  legendWidens:
+    'A jelmagyarázat a térkép mellé kerül, ezért a dokumentum szélesebb lesz a választott papírnál.',
+  webpTooLarge:
+    'A WebP oldalanként legfeljebb 16383 px-t enged, amit ez az exportálás túlléphet. Válasszon PNG-t vagy kisebb DPI-t.',
   northArrowLetter: 'É',
   glow: 'Ragyogás',
   ready: 'A térkép elkészült',

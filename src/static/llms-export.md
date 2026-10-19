@@ -73,6 +73,7 @@ Opens a modal to export the map as an image or document. Options:
 - Marker size: configurable pixel size of own map-feature point markers
 - Labels: configurable color (no opacity), size, and weight of own map-feature labels
 - Drawing order: Topmost or Natural
+- Map decorations, each a toggle: scale bar (bottom left), north arrow (top right), attribution line (bottom right, composed by the renderer from the datasets it drew), and **Legend** — a panel beside the map, widening the image past the chosen paper size at the same DPI, listing in the user's language the outdoor-map symbols the exported area shows, by section; with it the area's pixel limit counts double
 
 While the export runs the modal stays open with its controls disabled and a spinner on the export button; only Cancel stays active (cancelling asks for confirmation and aborts the request).
 

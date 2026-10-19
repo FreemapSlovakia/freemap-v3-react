@@ -1,7 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ObjectFilterChip } from '@features/objects/components/ObjectFilterChip.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { getGenericNameFromOsmElementSync } from '@osm/osmNameResolver.js';
 import { useOsmMapping } from '@osm/useOsmMapping.js';
 import { fuzzyMatch } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -16,7 +15,11 @@ import {
 import { Accordion, Form, InputGroup, Table } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import z from 'zod';
+import {
+  LegendCatalogueSchema,
+  legendTagsName,
+  strippedName,
+} from '../legendCatalogue.js';
 import { useLegendMessages } from '../translations/useLegendMessages.js';
 
 type Item = {
@@ -27,22 +30,10 @@ type Item = {
   }[];
 };
 
-/** The mapping marks the spot a value would go with `*`; it reads as noise. */
-const strippedName = (name: string | undefined) =>
-  name?.replace(/\s*\*\s*/g, '') ?? '';
-
 /** Shorter than this a fuzzy query keeps most of the legend, so it isn't run. */
 const minQueryLength = 2;
 
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
-
-const ResSchema = z.array(
-  z.object({
-    id: z.string(),
-    category: z.string(),
-    tags: z.array(z.record(z.string(), z.string())),
-  }),
-);
 
 type Props = {
   /** The renderer route the legend is scoped to, as `RENDERER_ROUTES` has it. */
@@ -85,7 +76,7 @@ export default function OutdoorMapLegend({
           return;
         }
 
-        const items = ResSchema.parse(data);
+        const items = LegendCatalogueSchema.parse(data);
 
         const catMap = new Map<string, Item>();
 
@@ -100,12 +91,7 @@ export default function OutdoorMapLegend({
           i.items.push({
             id: item.id,
             name_w_tags: item.tags.map((tags) => ({
-              name: getGenericNameFromOsmElementSync(
-                tags,
-                'relation',
-                osmMapping.osmTagToNameMapping,
-                osmMapping.colorNames,
-              ),
+              name: legendTagsName(tags, osmMapping),
               tags,
             })),
           });

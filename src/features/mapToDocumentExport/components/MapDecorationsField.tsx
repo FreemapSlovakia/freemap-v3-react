@@ -1,14 +1,20 @@
 import type { ReactElement } from 'react';
 import { Form, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
-import { FaCompass, FaCopyright, FaRulerHorizontal } from 'react-icons/fa';
+import {
+  FaCompass,
+  FaCopyright,
+  FaList,
+  FaRulerHorizontal,
+} from 'react-icons/fa';
 import { useMapToDocumentExportMessages } from '../translations/useMapToDocumentExportMessages.js';
 
-export type Decoration = 'scaleBar' | 'northArrow' | 'attribution';
+export type Decoration = 'scaleBar' | 'northArrow' | 'attribution' | 'legend';
 
 type Props = {
   scaleBar: boolean;
   northArrow: boolean;
   attribution: boolean;
+  legend: boolean;
   onChange: (values: Decoration[]) => void;
 };
 
@@ -16,6 +22,7 @@ export function MapDecorationsField({
   scaleBar,
   northArrow,
   attribution,
+  legend,
   onChange,
 }: Props): ReactElement {
   const m = useMapToDocumentExportMessages();
@@ -30,6 +37,7 @@ export function MapDecorationsField({
           ...(scaleBar ? (['scaleBar'] as const) : []),
           ...(northArrow ? (['northArrow'] as const) : []),
           ...(attribution ? (['attribution'] as const) : []),
+          ...(legend ? (['legend'] as const) : []),
         ]}
         onChange={onChange}
         className="d-flex flex-wrap gap-2"
@@ -60,7 +68,18 @@ export function MapDecorationsField({
         >
           <FaCopyright /> {m?.attribution}
         </ToggleButton>
+
+        <ToggleButton
+          id="exportLegend"
+          value="legend"
+          variant="outline-primary"
+          className="rounded flex-grow-0"
+        >
+          <FaList /> {m?.legend}
+        </ToggleButton>
       </ToggleButtonGroup>
+
+      {legend && <Form.Text>{m?.legendWidens}</Form.Text>}
     </Form.Group>
   );
 }

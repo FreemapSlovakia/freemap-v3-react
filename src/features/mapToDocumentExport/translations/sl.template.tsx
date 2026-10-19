@@ -67,6 +67,11 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   scaleBar: 'Merilo',
   northArrow: 'Smerna puščica',
   attribution: 'Navedba vira',
+  legend: 'Legenda',
+  legendWidens:
+    'Legenda je ob zemljevidu, zato bo dokument širši od izbranega papirja.',
+  webpTooLarge:
+    'WebP dovoli največ 16383 px na stranico, kar lahko ta izvoz preseže. Izberite PNG ali nižji DPI.',
   northArrowLetter: 'S',
   glow: 'Sij',
   ready: 'Zemljevid je pripravljen',

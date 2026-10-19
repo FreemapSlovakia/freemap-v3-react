@@ -21,6 +21,7 @@ export const ExportSettingsSchema = z.object({
   scaleBar: z.boolean().catch(true),
   northArrow: z.boolean().catch(true),
   attribution: z.boolean().catch(true),
+  legend: z.boolean().catch(false),
   glow: z.boolean().catch(true),
   glowColor: z.string().catch('#ffffff80'),
   glowWidth: z.string().catch('2'),

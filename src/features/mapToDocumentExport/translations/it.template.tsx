@@ -68,6 +68,11 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   scaleBar: 'Barra della scala',
   northArrow: 'Freccia del nord',
   attribution: 'Attribuzione',
+  legend: 'Legenda',
+  legendWidens:
+    'La legenda va accanto alla mappa, quindi il documento risulta più largo della carta scelta.',
+  webpTooLarge:
+    'WebP consente al massimo 16383 px per lato, che questa esportazione può superare. Scegli PNG o un DPI più basso.',
   northArrowLetter: 'N',
   glow: 'Alone',
   ready: 'La mappa è pronta',
