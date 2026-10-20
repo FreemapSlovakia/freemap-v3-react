@@ -115,7 +115,7 @@ export function ChangesetInspector({ root }: Props): ReactElement {
         {crumbs.map((crumb, i) =>
           i === crumbs.length - 1 ? (
             <li key={crumb.key} className="breadcrumb-item active fw-bold">
-              {crumb.label}
+              <span>{crumb.label}</span>
             </li>
           ) : (
             <li key={crumb.key} className="breadcrumb-item">
