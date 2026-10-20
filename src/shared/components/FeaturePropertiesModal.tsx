@@ -19,6 +19,7 @@ import type {
 import type { DrawingProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
 import type { Batch, BatchEdit, BatchField } from '@shared/batchProperties.js';
 import { COLORS } from '@shared/colors.js';
@@ -258,7 +259,9 @@ export function FeaturePropertiesModal({
 
         <Modal.Body>
           <Form.Group controlId="label">
-            <Form.Label>{dm?.edit.label}</Form.Label>
+            <Form.Label>
+              <Text m={dm} k="edit.label" />
+            </Form.Label>
 
             {/* A textarea because a label may run to several lines — which
                 also means Enter breaks the line instead of submitting, and the
@@ -275,7 +278,7 @@ export function FeaturePropertiesModal({
             </MixedField>
 
             <Form.Text muted>
-              {dm?.edit.hint}{' '}
+              <Text m={dm} k="edit.hint" />{' '}
               {(batch
                 ? [
                     batch.has.points > 0 && dm?.edit.pointKeys,
@@ -338,7 +341,9 @@ export function FeaturePropertiesModal({
 
           {kind === 'line-poly' && !batch && (
             <Form.Group controlId="type" className="mt-3">
-              <Form.Label>{dm?.edit.type}</Form.Label>
+              <Form.Label>
+                <Text m={dm} k="edit.type" />
+              </Form.Label>
 
               <Form.Select
                 value={editedType}
@@ -356,7 +361,9 @@ export function FeaturePropertiesModal({
 
           {kind === 'point' && (
             <Form.Group controlId="color" className="mt-3">
-              <Form.Label>{dm?.edit.color}</Form.Label>
+              <Form.Label>
+                <Text m={dm} k="edit.color" />
+              </Form.Label>
 
               <MixedField field="color" mixed={mixed}>
                 <RgbaColorPicker
@@ -370,7 +377,9 @@ export function FeaturePropertiesModal({
           {kind !== 'line-poly' && (
             <>
               <Form.Group controlId="markerType" className="mt-3">
-                <Form.Label>{dm?.edit.shape}</Form.Label>
+                <Form.Label>
+                  <Text m={dm} k="edit.shape" />
+                </Form.Label>
 
                 <MixedField field="markerType" mixed={mixed}>
                   <MarkerTypeSelect
@@ -384,13 +393,15 @@ export function FeaturePropertiesModal({
               <Form.Group className="mt-3">
                 {/* Kept, the grid with its own labels gives way to the button. */}
                 {mixed?.differs('icon') && mixed.kept('icon') && (
-                  <Form.Label>{m?.general.icon}</Form.Label>
+                  <Form.Label>
+                    <Text k="general.icon" />
+                  </Form.Label>
                 )}
 
                 <MixedField field="icon" mixed={mixed}>
                   <div className={classes.iconTextGrid}>
                     <Form.Label htmlFor="icon" className={classes.iconLabel}>
-                      {m?.general.icon}
+                      <Text k="general.icon" />
                     </Form.Label>
 
                     <div className={classes.icon}>
@@ -408,10 +419,12 @@ export function FeaturePropertiesModal({
                       />
                     </div>
 
-                    <span className={classes.or}>{dm?.edit.or}</span>
+                    <span className={classes.or}>
+                      <Text m={dm} k="edit.or" />
+                    </span>
 
                     <Form.Label htmlFor="text" className={classes.textLabel}>
-                      {dm?.edit.text}
+                      <Text m={dm} k="edit.text" />
                     </Form.Label>
 
                     <Form.Control
@@ -430,7 +443,9 @@ export function FeaturePropertiesModal({
                     />
                   </div>
 
-                  <Form.Text muted>{dm?.edit.textHint}</Form.Text>
+                  <Form.Text muted>
+                    <Text m={dm} k="edit.textHint" />
+                  </Form.Text>
                 </MixedField>
               </Form.Group>
             </>

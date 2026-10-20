@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { hasGeometry } from '@features/search/model/resultUtils.js';
 import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
@@ -215,7 +216,7 @@ export function ExportablesSelector({
           disabled={!available.includes(`|${type}|`)}
           onChange={() => toggle(type)}
         >
-          <Icon /> {em?.what[type]}
+          <Icon /> <Text m={em} k={`what.${type}`} />
           {type === 'pictures' && <OfflineBadge />}
         </ToggleButton>
       ))}

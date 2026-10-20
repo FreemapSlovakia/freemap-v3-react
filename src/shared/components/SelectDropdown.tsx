@@ -174,7 +174,7 @@ export function SelectDropdown({
       ) : (
         <LongPressTooltip
           breakpoint={breakpoint}
-          label={label ?? '…'}
+          label={label ?? undefined}
           name={name}
           kbd={kbd}
           hint={toggleHint}

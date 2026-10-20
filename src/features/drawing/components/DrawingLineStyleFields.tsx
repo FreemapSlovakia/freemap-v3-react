@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
@@ -106,7 +107,9 @@ export function DrawingLineStyleFields({
   return (
     <>
       <Form.Group controlId="color" className="mt-3">
-        <Form.Label>{dm?.edit.color}</Form.Label>
+        <Form.Label>
+          <Text m={dm} k="edit.color" />
+        </Form.Label>
 
         <MixedField field="color" mixed={mixed}>
           <RgbaColorPicker value={color} onChange={onColorChange} />
@@ -115,7 +118,9 @@ export function DrawingLineStyleFields({
 
       {onFillColorChange && (
         <Form.Group controlId="fillColor" className="mt-3">
-          <Form.Label>{dm?.edit.fillColor}</Form.Label>
+          <Form.Label>
+            <Text m={dm} k="edit.fillColor" />
+          </Form.Label>
 
           <MixedField field="fillColor" mixed={mixed}>
             <RgbaColorPicker
@@ -127,7 +132,9 @@ export function DrawingLineStyleFields({
       )}
 
       <Form.Group controlId="width" className="mt-3">
-        <Form.Label>{dm?.edit.width}</Form.Label>
+        <Form.Label>
+          <Text m={dm} k="edit.width" />
+        </Form.Label>
 
         <MixedField field="width" mixed={mixed}>
           <Form.Control
@@ -144,7 +151,9 @@ export function DrawingLineStyleFields({
 
       {onLineCapChange && (
         <Form.Group controlId="lineCap" className="mt-3">
-          <Form.Label>{dm?.edit.lineCap}</Form.Label>
+          <Form.Label>
+            <Text m={dm} k="edit.lineCap" />
+          </Form.Label>
 
           <MixedField field="lineCap" mixed={mixed}>
             <Form.Select
@@ -163,7 +172,9 @@ export function DrawingLineStyleFields({
 
       {onLineJoinChange && (
         <Form.Group controlId="lineJoin" className="mt-3">
-          <Form.Label>{dm?.edit.lineJoin}</Form.Label>
+          <Form.Label>
+            <Text m={dm} k="edit.lineJoin" />
+          </Form.Label>
 
           <MixedField field="lineJoin" mixed={mixed}>
             <Form.Select
@@ -183,7 +194,9 @@ export function DrawingLineStyleFields({
       <Form.Group controlId="dashArray" className="mt-3">
         {onDashArrayChange && (
           <>
-            <Form.Label>{dm?.edit.dashArray}</Form.Label>
+            <Form.Label>
+              <Text m={dm} k="edit.dashArray" />
+            </Form.Label>
 
             <div className="mb-2">
               <MixedField field="dashArray" mixed={mixed}>

@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   mapLayerSetupChange,
   type SetupTarget,
@@ -23,8 +23,6 @@ export function LayerKindSwitch({
   className,
   style,
 }: Props): ReactElement {
-  const m = useMessages();
-
   const kind = useTargetDef(target)?.layer;
 
   const dispatch = useDispatch();
@@ -50,7 +48,7 @@ export function LayerKindSwitch({
           variant="outline-primary"
           className="flex-grow-1 text-nowrap"
         >
-          {LAYER_KIND_ICONS[value]} {m?.mapLayers.layer[value]}
+          {LAYER_KIND_ICONS[value]} <Text k={`mapLayers.layer.${value}`} />
         </ToggleButton>
       ))}
     </FitToggleButtonGroup>

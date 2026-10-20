@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
@@ -22,7 +23,9 @@ export function LanguageSubmenu(): JSX.Element {
         eventKey="lang-"
         active={chosenLanguage === null}
       >
-        <MenuLabel>{m?.mainMenu.automaticLanguage}</MenuLabel>
+        <MenuLabel>
+          <Text k="mainMenu.automaticLanguage" />
+        </MenuLabel>
       </Dropdown.Item>
 
       {languageItems.map(({ code, name, flag }) => (

@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type CSSProperties, type ReactElement, useState } from 'react';
@@ -194,11 +195,15 @@ export function PrintSizeFields({
 
   return (
     <fieldset className="mt-3 border rounded p-3">
-      <legend>{m?.sizeTitle}</legend>
+      <legend>
+        <Text m={m} k="sizeTitle" />
+      </legend>
 
       <div className="d-flex flex-wrap gap-3">
         <Form.Group controlId="mapZoom">
-          <Form.Label className="d-block">{m?.zoom}</Form.Label>
+          <Form.Label className="d-block">
+            <Text m={m} k="zoom" />
+          </Form.Label>
 
           <NumberField
             value={Number.isNaN(draft.zoom) ? '' : String(draft.zoom)}
@@ -220,7 +225,9 @@ export function PrintSizeFields({
         </Form.Group>
 
         <Form.Group controlId="printScale">
-          <Form.Label className="d-block">{m?.printScale}</Form.Label>
+          <Form.Label className="d-block">
+            <Text m={m} k="printScale" />
+          </Form.Label>
 
           <InputGroup className="d-inline-flex w-auto flex-nowrap">
             <InputGroup.Text>1 :</InputGroup.Text>
@@ -253,7 +260,9 @@ export function PrintSizeFields({
         </Form.Group>
 
         <Form.Group controlId="printSize">
-          <Form.Label className="d-block">{m?.printSize}</Form.Label>
+          <Form.Label className="d-block">
+            <Text m={m} k="printSize" />
+          </Form.Label>
 
           <InputGroup className="d-inline-flex w-auto flex-nowrap">
             <NumberField
@@ -281,7 +290,9 @@ export function PrintSizeFields({
         </Form.Group>
 
         <Form.Group controlId="mapScale">
-          <Form.Label className="d-block">{m?.mapScale}</Form.Label>
+          <Form.Label className="d-block">
+            <Text m={m} k="mapScale" />
+          </Form.Label>
 
           <InputGroup className="d-inline-flex w-auto flex-nowrap">
             <NumberField
@@ -306,7 +317,9 @@ export function PrintSizeFields({
         </Form.Group>
 
         <Form.Group controlId="imageSize">
-          <Form.Label className="d-block">{m?.imageSize}</Form.Label>
+          <Form.Label className="d-block">
+            <Text m={m} k="imageSize" />
+          </Form.Label>
 
           <InputGroup className="d-inline-flex w-auto flex-nowrap">
             <NumberField
@@ -343,7 +356,7 @@ export function PrintSizeFields({
               : 'mt-2 mb-0'
           }
         >
-          {m?.symbolSize({ percent })}
+          <Text m={m}>{(m) => m.symbolSize({ percent })}</Text>
         </Form.Text>
       )}
     </fieldset>

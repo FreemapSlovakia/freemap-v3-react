@@ -1,5 +1,6 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -135,7 +136,7 @@ export function MyMapsMenu(): ReactElement {
                 m?.tools.myMaps
               ) : (
                 <>
-                  {m?.tools.myMaps} ({mapName})
+                  <Text k="tools.myMaps" /> ({mapName})
                 </>
               )
             }
@@ -157,7 +158,7 @@ export function MyMapsMenu(): ReactElement {
           <LongPressTooltip
             label={
               <>
-                {m?.tools.myMap}: {mapName}
+                <Text k="tools.myMap" />: {mapName}
               </>
             }
           >
@@ -166,7 +167,9 @@ export function MyMapsMenu(): ReactElement {
                 className={`${classes['name']} ps-1 align-self-center d-none d-sm-inline-block text-truncate`}
                 {...props}
               >
-                <span className="d-none d-md-inline">{m?.tools.myMap}: </span>
+                <span className="d-none d-md-inline">
+                  <Text k="tools.myMap" />:{' '}
+                </span>
 
                 <b>{mapName}</b>
               </span>
@@ -235,7 +238,9 @@ export function MyMapsMenu(): ReactElement {
                       }}
                     >
                       <FaEraser />
-                      <MenuLabel>{mm?.disconnectAndClear}</MenuLabel>
+                      <MenuLabel>
+                        <Text m={mm} k="disconnectAndClear" />
+                      </MenuLabel>
                     </Dropdown.Item>
                   </FmDropdownMenu>
                 </Dropdown>

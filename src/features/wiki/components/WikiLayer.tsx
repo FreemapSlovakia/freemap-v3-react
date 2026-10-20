@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmModalFooter,
@@ -144,7 +145,7 @@ export function WikiLayer(): ReactElement {
               <div dangerouslySetInnerHTML={{ __html: effPreview.extract }} />
             </>
           ) : (
-            m?.general.loading
+            <Text k="general.loading" />
           )}
         </Modal.Body>
 

@@ -1,6 +1,6 @@
 import { openTool } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { requestCompassPermission } from '@features/location/compass.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import {
@@ -45,8 +45,6 @@ export function ViewFromHereItems({
   divider,
   omit,
 }: Props): ReactElement | null {
-  const m = useMessages();
-
   const dispatch = useDispatch();
 
   // Nothing to turn where no picture has been rendered — the tool may even be
@@ -88,7 +86,9 @@ export function ViewFromHereItems({
           }}
         >
           <PiMountains />
-          <MenuLabel>{m?.general.panoramaFromHere}</MenuLabel>
+          <MenuLabel>
+            <Text k="general.panoramaFromHere" />
+          </MenuLabel>
         </OnlineOnlyItem>
       )}
 
@@ -104,7 +104,9 @@ export function ViewFromHereItems({
           }}
         >
           <FaCrosshairs />
-          <MenuLabel>{m?.general.lookAtInPanorama}</MenuLabel>
+          <MenuLabel>
+            <Text k="general.lookAtInPanorama" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -122,7 +124,9 @@ export function ViewFromHereItems({
           }}
         >
           <FaBinoculars />
-          <MenuLabel>{m?.general.viewshedFromHere}</MenuLabel>
+          <MenuLabel>
+            <Text k="general.viewshedFromHere" />
+          </MenuLabel>
         </OnlineOnlyItem>
       )}
 
@@ -138,7 +142,9 @@ export function ViewFromHereItems({
           }}
         >
           <PiCompassRoseBold />
-          <MenuLabel>{m?.general.toposcopeFromHere}</MenuLabel>
+          <MenuLabel>
+            <Text k="general.toposcopeFromHere" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
     </>

@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -26,14 +27,18 @@ export function TrackedDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaEye /> {tm?.trackedDevices.modalTitle}
+          <FaEye /> <Text m={tm} k="trackedDevices.modalTitle" />
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <p>{tm?.trackedDevices.desc}</p>
+        <p>
+          <Text m={tm} k="trackedDevices.desc" />
+        </p>
 
-        <Alert variant="warning">{tm?.trackedDevices.storageWarning}</Alert>
+        <Alert variant="warning">
+          <Text m={tm} k="trackedDevices.storageWarning" />
+        </Alert>
 
         {devices.length > 0 && (
           <ListGroup>

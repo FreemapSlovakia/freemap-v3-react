@@ -1,5 +1,6 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -441,12 +442,20 @@ export function LibraryTab({
       </FilterPanel>
 
       {!catalog ? (
-        <p className="text-muted text-center">{m?.general.loading}</p>
+        <p className="text-muted text-center">
+          <Text k="general.loading" />
+        </p>
       ) : ranked.length === 0 ? (
         <>
-          <p className="text-muted text-center">{m?.mapLayers.noMapsFound}</p>
+          <p className="text-muted text-center">
+            <Text k="mapLayers.noMapsFound" />
+          </p>
 
-          {unknownMap && <Alert variant="info">{msm?.suggestMap}</Alert>}
+          {unknownMap && (
+            <Alert variant="info">
+              <Text m={msm}>{(msm) => msm.suggestMap}</Text>
+            </Alert>
+          )}
         </>
       ) : (
         <LibraryResults
@@ -459,7 +468,7 @@ export function LibraryTab({
 
       {/* The catalog is derived from ELI, whose licence asks for this. */}
       <div className="text-muted small mt-3">
-        {msm?.catalogCredit}{' '}
+        <Text m={msm} k="catalogCredit" />{' '}
         <a
           href="https://github.com/osmlab/editor-layer-index"
           target="_blank"

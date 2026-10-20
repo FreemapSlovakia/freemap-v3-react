@@ -34,6 +34,7 @@ import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActi
 import { selectRecorderLines } from '@features/gpsRecorder/model/selectors.js';
 import { recorderLineLength } from '@features/gpsRecorder/segments.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
 import { mapSetFeaturesOpacity } from '@features/map/model/actions.js';
 import {
@@ -782,7 +783,11 @@ function RouteItems(): ReactElement {
       {figures(alternative.distance, alternative.duration)}
 
       {tolled > 0 && (
-        <div>{rpm?.tolled({ value: formatDistance(tolled, language) })}</div>
+        <div>
+          <Text m={rpm}>
+            {(rpm) => rpm.tolled({ value: formatDistance(tolled, language) })}
+          </Text>
+        </div>
       )}
     </>
   );
@@ -1046,7 +1051,7 @@ function ChangesetElementItems(): ReactElement {
             // as rows are costly and the row itself is the button.
             subline: (
               <>
-                <Icon /> {cm?.actions[element.action]}
+                <Icon /> <Text m={cm} k={`actions.${element.action}`} />
               </>
             ),
             selects: { type: 'changeset-element', id: key },

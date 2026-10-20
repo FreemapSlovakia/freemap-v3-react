@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   FmDismissButton,
@@ -264,7 +265,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCamera /> <FaUpload /> {gm?.uploadModal.title}
+          <FaCamera /> <FaUpload /> <Text m={gm} k="uploadModal.title" />
         </Modal.Title>
       </Modal.Header>
 
@@ -341,7 +342,9 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
             />
 
             <Form.Group controlId="upload-license" className="mt-2 mb-1">
-              <Form.Label>{gm?.license.label}</Form.Label>
+              <Form.Label>
+                <Text m={gm} k="license.label" />
+              </Form.Label>
 
               <GalleryLicenseSelect
                 value={license}
@@ -366,9 +369,13 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
             >
               <input {...getInputProps()} />
 
-              <p className={classes.dropHint}>{gm?.uploadModal.hint.drop}</p>
+              <p className={classes.dropHint}>
+                <Text m={gm} k="uploadModal.hint.drop" />
+              </p>
 
-              <p className={classes.tapHint}>{gm?.uploadModal.hint.tap}</p>
+              <p className={classes.tapHint}>
+                <Text m={gm} k="uploadModal.hint.tap" />
+              </p>
 
               {m && (
                 <div

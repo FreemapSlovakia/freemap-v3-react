@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { hasLegend } from '@features/legend/legendLayers.js';
 import {
   drawnTypesSelector,
@@ -44,13 +45,17 @@ export function HelpSubmenu(): JSX.Element {
       {hasLegend(layers, libraryIndex, customLayers) && (
         <OnlineOnlyItem {...modalMenuItemProps('legend')}>
           <FaList />
-          <MenuLabel>{m?.mainMenu.mapLegend}</MenuLabel>
+          <MenuLabel>
+            <Text k="mainMenu.mapLegend" />
+          </MenuLabel>
         </OnlineOnlyItem>
       )}
 
       <Dropdown.Item {...modalMenuItemProps('about')}>
         <FaRegAddressCard />
-        <MenuLabel>{m?.mainMenu.contacts}</MenuLabel>
+        <MenuLabel>
+          <Text k="mainMenu.contacts" />
+        </MenuLabel>
       </Dropdown.Item>
 
       <OnlineOnlyItem
@@ -59,7 +64,9 @@ export function HelpSubmenu(): JSX.Element {
         target="_blank"
       >
         <FaBook />
-        <MenuLabel>{m?.mainMenu.osmWiki}</MenuLabel>
+        <MenuLabel>
+          <Text k="mainMenu.osmWiki" />
+        </MenuLabel>
       </OnlineOnlyItem>
 
       {skCs && (
@@ -90,7 +97,9 @@ export function HelpSubmenu(): JSX.Element {
 
       <Dropdown.Item as="button" eventKey="reset-app" className="text-danger">
         <FaPowerOff />
-        <MenuLabel>{m?.mapLayers.resetApp}</MenuLabel>
+        <MenuLabel>
+          <Text k="mapLayers.resetApp" />
+        </MenuLabel>
       </Dropdown.Item>
     </>
   );

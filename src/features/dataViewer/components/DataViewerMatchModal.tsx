@@ -2,6 +2,7 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import {
   FmDismissButton,
@@ -79,17 +80,19 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaMagic /> {dvm?.match.title}
+            <FaMagic /> <Text m={dvm} k="match.title" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Text muted className="d-block mb-3">
-            {dvm?.match.help}
+            <Text m={dvm} k="match.help" />
           </Form.Text>
 
           <Form.Group controlId="matchTransport">
-            <Form.Label>{dvm?.match.transport}</Form.Label>
+            <Form.Label>
+              <Text m={dvm} k="match.transport" />
+            </Form.Label>
 
             <Form.Select
               value={transport}
@@ -110,7 +113,7 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
 
           {loses && (
             <Alert variant="warning" className="mt-3 mb-0">
-              {dvm?.match.dataLoss}
+              <Text m={dvm} k="match.dataLoss" />
             </Alert>
           )}
         </Modal.Body>

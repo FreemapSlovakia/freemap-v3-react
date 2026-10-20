@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { toastsRemove } from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -262,7 +263,9 @@ export default function DataViewerSelection(): ReactElement | null {
                   }}
                 >
                   <TbArrowsSplit />
-                  <MenuLabel>{dvm?.split.segments ?? '…'}</MenuLabel>
+                  <MenuLabel>
+                    <Text m={dvm} k="split.segments" />
+                  </MenuLabel>
                 </Dropdown.Item>,
               ]
             }
@@ -290,7 +293,9 @@ export default function DataViewerSelection(): ReactElement | null {
                 }}
               >
                 <TbArrowsJoin />
-                <MenuLabel>{dvm?.join.asLine ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={dvm} k="join.asLine" />
+                </MenuLabel>
               </Dropdown.Item>,
 
               <Dropdown.Item
@@ -306,7 +311,9 @@ export default function DataViewerSelection(): ReactElement | null {
                 }}
               >
                 <TbArrowsJoin2 />
-                <MenuLabel>{dvm?.join.asSegments ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={dvm} k="join.asSegments" />
+                </MenuLabel>
               </Dropdown.Item>,
             ]}
           />
@@ -366,7 +373,9 @@ export default function DataViewerSelection(): ReactElement | null {
                   }}
                 >
                   <FaPencilAlt />
-                  <MenuLabel>{m?.general.convertToDrawing}</MenuLabel>
+                  <MenuLabel>
+                    <Text k="general.convertToDrawing" />
+                  </MenuLabel>
                 </Dropdown.Item>
               }
             >

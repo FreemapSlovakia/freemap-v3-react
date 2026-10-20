@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
@@ -544,19 +545,26 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>
           <BiWifiOff />{' '}
-          {editing
-            ? cm?.modifyOfflineMap(layerLabel(editing, m))
-            : cm?.newOfflineMap}
+          {editing ? (
+            <Text m={cm}>
+              {(cm) => cm.modifyOfflineMap(layerLabel(editing, m))}
+            </Text>
+          ) : (
+            <Text m={cm} k="newOfflineMap" />
+          )}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Alert variant="info">
-          <BiWifiOff /> {cm?.deviceOnly} <HintMark hint={cm?.deviceOnlyHint} />
+          <BiWifiOff /> <Text m={cm} k="deviceOnly" />{' '}
+          <HintMark hint={cm?.deviceOnlyHint} />
         </Alert>
 
         <Form.Group controlId="mapType">
-          <Form.Label>{ome?.map}</Form.Label>
+          <Form.Label>
+            <Text m={ome} k="map" />
+          </Form.Label>
 
           {editing ? (
             <div className="form-control-plaintext mb-3">
@@ -595,7 +603,9 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="downloadArea">
-          <Form.Label className="d-block">{ome?.downloadArea}</Form.Label>
+          <Form.Label className="d-block">
+            <Text m={ome} k="downloadArea" />
+          </Form.Label>
 
           <MapAreaToggle
             className="mb-3"
@@ -613,7 +623,9 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
 
         <div className="d-flex gap-3 align-items-end mb-3">
           <Form.Group controlId="name" className="flex-grow-1 min-w-0">
-            <Form.Label>{m?.general.name}</Form.Label>
+            <Form.Label>
+              <Text k="general.name" />
+            </Form.Label>
 
             <Form.Control
               type="text"
@@ -627,7 +639,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
 
           <Form.Group>
             <Form.Label className="d-block" htmlFor="cachedMapIcon">
-              {m?.general.icon}
+              <Text k="general.icon" />
             </Form.Label>
 
             <IconPicker
@@ -642,7 +654,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
         {urlTemplate && (
           <Form.Group controlId="zoomRange" className="mb-3">
             <Form.Label className="required">
-              {ome?.zoomRange}
+              <Text m={ome} k="zoomRange" />
 
               {/* the range stops short of the layer's premium zooms; the gem
                   says why, there being no checkerboard on a cached map */}
@@ -678,7 +690,9 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
         {editing
           ? editing.tileScale !== undefined && (
               <Form.Group className="mb-3">
-                <Form.Label>{ome?.scale}</Form.Label>
+                <Form.Label>
+                  <Text m={ome} k="scale" />
+                </Form.Label>
 
                 <div className="form-control-plaintext">
                   {editing.tileScale}×
@@ -687,7 +701,9 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
             )
           : scales && (
               <Form.Group controlId="scale" className="mb-3">
-                <Form.Label className="d-block">{ome?.scale}</Form.Label>
+                <Form.Label className="d-block">
+                  <Text m={ome} k="scale" />
+                </Form.Label>
 
                 <FitToggleButtonGroup
                   type="radio"
@@ -737,24 +753,32 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
               {/* the quota alert says the same thing more urgently */}
               {largeDownload && !overQuota && (
                 <Alert variant="warning" className="mt-3 mb-0">
-                  {cm?.largeDownload({
-                    tiles: cnf.format(tilesToAdd),
-                    size: sampling ? (
-                      <Spinner animation="border" size="sm" />
-                    ) : (
-                      formatSize(estimatedSize!)
-                    ),
-                  })}
+                  <Text m={cm}>
+                    {(cm) =>
+                      cm.largeDownload({
+                        tiles: cnf.format(tilesToAdd),
+                        size: sampling ? (
+                          <Spinner animation="border" size="sm" />
+                        ) : (
+                          formatSize(estimatedSize!)
+                        ),
+                      })
+                    }
+                  </Text>
                 </Alert>
               )}
 
               {/* only once measured — the fallback is too crude to alarm with */}
               {overQuota && !sampling && (
                 <Alert variant="danger" className="mt-3 mb-0">
-                  {cm?.notEnoughSpace({
-                    size: formatSize(estimatedSize!),
-                    free: formatSize(freeSpace!),
-                  })}
+                  <Text m={cm}>
+                    {(cm) =>
+                      cm.notEnoughSpace({
+                        size: formatSize(estimatedSize!),
+                        free: formatSize(freeSpace!),
+                      })
+                    }
+                  </Text>
                 </Alert>
               )}
             </>
@@ -762,7 +786,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
 
         {premiumWiden && (
           <Alert variant="warning" className="mt-3 mb-0">
-            {cm?.premiumWiden}
+            <Text m={cm} k="premiumWiden" />
           </Alert>
         )}
 
@@ -771,7 +795,11 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
             {/* A new map is nothing but a download, so the narrowing advice
                 the edit form gives would make no sense here. */}
             <BiWifiOff />{' '}
-            {editing ? cm?.offlineWiden : m?.general.offlineNotice}
+            {editing ? (
+              <Text m={cm} k="offlineWiden" />
+            ) : (
+              <Text k="general.offlineNotice" />
+            )}
           </Alert>
         )}
       </Modal.Body>
@@ -779,17 +807,18 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
       <FmModalFooter className="flex-wrap">
         {tileCount !== undefined && (
           <div className="w-100 text-end">
-            {cm?.tiles}: <b>{cnf.format(tileCount)}</b>
+            <Text m={cm} k="tiles" />: <b>{cnf.format(tileCount)}</b>
             {editing && tilesToAdd !== undefined && (
               <>
                 {' '}
-                | {cm?.toDownload}: <b>{cnf.format(tilesToAdd)}</b>
+                | <Text m={cm} k="toDownload" />:{' '}
+                <b>{cnf.format(tilesToAdd)}</b>
               </>
             )}
             {estimatedSize !== undefined && (
               <>
                 {' '}
-                | {cm?.estSize}:{' '}
+                | <Text m={cm} k="estSize" />:{' '}
                 {sampling ? (
                   <Spinner animation="border" size="sm" />
                 ) : (

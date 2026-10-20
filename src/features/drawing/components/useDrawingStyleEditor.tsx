@@ -2,6 +2,7 @@ import {
   type DrawingStyle,
   drawingStyleEquals,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
+import { Text } from '@features/l10n/Text.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { type ReactElement, useCallback, useState } from 'react';
 import { Form } from 'react-bootstrap';
@@ -74,7 +75,9 @@ export function useDrawingStyleEditor(
       />
 
       <Form.Group controlId="markerType" className="mt-3">
-        <Form.Label>{dm?.edit.shape}</Form.Label>
+        <Form.Label>
+          <Text m={dm} k="edit.shape" />
+        </Form.Label>
 
         <MarkerTypeSelect
           asSelect

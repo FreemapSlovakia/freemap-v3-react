@@ -22,6 +22,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { ChangesetLabel } from '@features/changesets/components/ChangesetLabel.js';
 import { loneInspectionSelector } from '@features/changesets/model/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
 import {
   mapLayerRemove,
@@ -304,7 +305,9 @@ export default function MapLayersPanel(): ReactElement {
             ) : at.preset !== undefined && preset ? (
               <PresetName id={at.preset} />
             ) : (
-              <span className="text-truncate">{m?.mapLayers.layersPanel}</span>
+              <span className="text-truncate">
+                <Text k="mapLayers.layersPanel" />
+              </span>
             )}
           </span>
 
@@ -850,7 +853,7 @@ function Stack({
                 }
                 {...props}
               >
-                <MdDashboardCustomize /> {msm?.saveLayersAsPreset}
+                <MdDashboardCustomize /> <Text m={msm} k="saveLayersAsPreset" />
               </Button>
             )}
           </LongPressTooltip>
@@ -916,11 +919,11 @@ function PresetLayers({
           >
             {isLinkPreset(id) ? (
               <>
-                <MdDashboardCustomize /> {msm?.saveAsPreset}
+                <MdDashboardCustomize /> <Text m={msm} k="saveAsPreset" />
               </>
             ) : (
               <>
-                <FaCopy /> {msm?.duplicatePreset}
+                <FaCopy /> <Text m={msm} k="duplicatePreset" />
               </>
             )}
           </Button>
@@ -936,7 +939,9 @@ function PresetLayers({
       />
 
       {preset.layers.length === 0 ? (
-        <p className="text-muted">{msm?.presetEmpty}</p>
+        <p className="text-muted">
+          <Text m={msm} k="presetEmpty" />
+        </p>
       ) : (
         <SortableRows
           items={overlays}
@@ -956,8 +961,6 @@ function PresetLayers({
 
 /** Picks an installed map to add to a preset. */
 function AddMap({ id }: { id: string }): ReactElement {
-  const m = useMessages();
-
   const msm = useMapSettingsMessages();
 
   const dispatch = useDispatch();
@@ -982,7 +985,7 @@ function AddMap({ id }: { id: string }): ReactElement {
         className="ms-auto"
         disabled={candidates.length === 0}
       >
-        <FaPlus /> {msm?.addMap}
+        <FaPlus /> <Text m={msm} k="addMap" />
       </Dropdown.Toggle>
 
       <FmDropdownMenu>
@@ -1003,7 +1006,9 @@ function AddMap({ id }: { id: string }): ReactElement {
         )}
 
         {candidates.length === 0 && (
-          <Dropdown.ItemText>{m?.mapLayers.noMapsFound}</Dropdown.ItemText>
+          <Dropdown.ItemText>
+            <Text k="mapLayers.noMapsFound" />
+          </Dropdown.ItemText>
         )}
       </FmDropdownMenu>
     </Dropdown>

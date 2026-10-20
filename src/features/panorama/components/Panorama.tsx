@@ -1,5 +1,6 @@
 import { closeTool } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { BreakpointsProvider } from '@shared/components/BreakpointsProvider.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import { FloatingWindowGrips } from '@shared/components/FloatingWindowControls.js';
@@ -142,7 +143,7 @@ export default function Panorama(): ReactElement {
             />
           ) : error ? (
             <Alert variant="danger" className="m-0">
-              {m?.errors[error]}
+              <Text m={m} k={`errors.${error}`} />
             </Alert>
           ) : (
             // While a render is on, the one general line — what stage it is at
@@ -171,11 +172,12 @@ export default function Panorama(): ReactElement {
                 {render && (
                   <div className="p-2 rounded bg-dark bg-opacity-50 small text-white">
                     <div>
-                      <FaStreetView /> {gm?.general.viewpoint}
+                      <FaStreetView /> <Text k="general.viewpoint" />
                     </div>
 
                     <div>
-                      {nfEle.format(render.eyeElevation)} {gm?.general.masl}
+                      {nfEle.format(render.eyeElevation)}{' '}
+                      <Text k="general.masl" />
                     </div>
 
                     {/* Where the eye stands is a place like any other. The pin
@@ -280,7 +282,7 @@ export default function Panorama(): ReactElement {
                   size="sm"
                   onClick={() => dispatch(panoramaCancel())}
                 >
-                  {m?.cancel}
+                  <Text m={m} k="cancel" />
                 </Button>
               </div>
             </div>
@@ -303,7 +305,9 @@ export default function Panorama(): ReactElement {
             rather than as an alert, which would take away a good picture over
             a failed attempt to replace it. */}
             {render && error && (
-              <span className="text-danger">{m?.errors[error]}</span>
+              <span className="text-danger">
+                <Text m={m} k={`errors.${error}`} />
+              </span>
             )}
 
             <PanoramaSkyTimes tracks={skyTracks} />

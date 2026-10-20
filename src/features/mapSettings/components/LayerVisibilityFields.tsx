@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import type { Shortcut } from '@shared/types/common.js';
@@ -38,7 +39,7 @@ export function LayerVisibilityFields({
           id="layer-show-in-toolbar"
           label={
             <>
-              <ToolbarIcon /> {msm?.showInToolbar}
+              <ToolbarIcon /> <Text m={msm} k="showInToolbar" />
               <OfflineBadge offline={disabled} />
             </>
           }
@@ -53,7 +54,7 @@ export function LayerVisibilityFields({
           id="layer-show-in-menu"
           label={
             <>
-              <FaRegListAlt /> {msm?.showInMenu}
+              <FaRegListAlt /> <Text m={msm} k="showInMenu" />
               <OfflineBadge offline={disabled} />
             </>
           }
@@ -70,7 +71,7 @@ export function LayerVisibilityFields({
         // that on the same element.
         <div className="fm-should-have-keyboard">
           <div className="d-flex align-items-center gap-2">
-            <FaKeyboard /> {msm?.keyboardShortcut}
+            <FaKeyboard /> <Text m={msm} k="keyboardShortcut" />
             <ShortcutRecorder
               value={value.shortcut}
               onChange={(shortcut) =>

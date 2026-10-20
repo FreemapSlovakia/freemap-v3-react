@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   type LabelVisibility,
@@ -17,7 +18,9 @@ export function LabelVisibilityField({ value, onChange }: Props): ReactElement {
 
   return (
     <Form.Group className="mt-3">
-      <Form.Label className="d-block">{dm?.edit.showLabel}</Form.Label>
+      <Form.Label className="d-block">
+        <Text m={dm} k="edit.showLabel" />
+      </Form.Label>
 
       <FitButtonGroup>
         {LabelVisibilitySchema.options.map((option) => (
@@ -31,7 +34,7 @@ export function LabelVisibilityField({ value, onChange }: Props): ReactElement {
             checked={value === option}
             onChange={() => onChange(option)}
           >
-            {dm?.edit.labelVisibility[option]}
+            <Text m={dm} k={`edit.labelVisibility.${option}`} />
           </ToggleButton>
         ))}
       </FitButtonGroup>

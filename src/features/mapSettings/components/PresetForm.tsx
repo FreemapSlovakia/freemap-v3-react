@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import type { ReactElement, ReactNode } from 'react';
@@ -21,15 +21,15 @@ export function PresetForm<T extends { name: string; iconSpec?: string }>({
   hint,
   placeholder,
 }: Props<T>): ReactElement {
-  const m = useMessages();
-
   const msm = useMapSettingsMessages();
 
   return (
     <div>
       <div className="d-flex gap-2 align-items-end">
         <Form.Group controlId="presetName" className="flex-grow-1 min-w-0">
-          <Form.Label className="required">{m?.general.name}</Form.Label>
+          <Form.Label className="required">
+            <Text k="general.name" />
+          </Form.Label>
 
           <Form.Control
             type="text"
@@ -42,7 +42,7 @@ export function PresetForm<T extends { name: string; iconSpec?: string }>({
 
         <Form.Group>
           <Form.Label className="d-block" htmlFor="presetIcon">
-            {m?.general.icon}
+            <Text k="general.icon" />
           </Form.Label>
 
           <IconPicker

@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   isCompassSupported,
   requestCompassPermission,
@@ -361,7 +362,7 @@ export function PanoramaControls({
           id="fm-panorama-detail"
           label={
             <>
-              {m?.quality.detail}
+              <Text m={m} k="quality.detail" />
 
               {!premium && <PremiumGem hint={prm?.higherDetail} />}
             </>
@@ -410,7 +411,7 @@ export function PanoramaControls({
             of them fit the picture. */}
         <div>
           <div className="mb-1">
-            {m?.labels.subLine}
+            <Text m={m} k="labels.subLine" />
 
             <HintMark hint={m?.labels.subLineHint} />
           </div>
@@ -446,7 +447,7 @@ export function PanoramaControls({
                 value={part}
                 variant="outline-primary"
               >
-                {m?.labels.subLineParts[part]}
+                <Text m={m} k={`labels.subLineParts.${part}`} />
               </ToggleButton>
             ))}
           </FitToggleButtonGroup>
@@ -619,7 +620,7 @@ export function PanoramaControls({
 
         <Form.Group controlId="fm-panorama-sky-date">
           <Form.Label className="d-flex align-items-center">
-            {m?.sky.date}
+            <Text m={m} k="sky.date" />
 
             <HintMark hint={m?.sky.dateHint} />
           </Form.Label>
@@ -655,7 +656,7 @@ export function PanoramaControls({
               disabled={skyDate === null}
               onClick={() => dispatch(panoramaSetSkyDate(null))}
             >
-              {m?.sky.today}
+              <Text m={m} k="sky.today" />
             </Button>
           </InputGroup>
         </Form.Group>
@@ -669,7 +670,7 @@ export function PanoramaControls({
               onClick={() => dispatch(panoramaRender())}
               {...props}
             >
-              <FaSync /> {m?.update}
+              <FaSync /> <Text m={m} k="update" />
             </Button>
           )}
         </LongPressTooltip>

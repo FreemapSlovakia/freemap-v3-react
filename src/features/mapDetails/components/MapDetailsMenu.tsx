@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   drawnTypesSelector,
   integratedLayerDefsSelector,
@@ -92,7 +93,7 @@ export function MapDetailsMenu(): ReactElement | null {
         <LongPressTooltip
           label={
             <>
-              {mdm?.sources}:{' '}
+              <Text m={mdm} k="sources" />:{' '}
               {selectedNames.length
                 ? selectedNames.flatMap((n, i) => (i ? [', ', n] : [n]))
                 : '—'}
@@ -102,7 +103,10 @@ export function MapDetailsMenu(): ReactElement | null {
           {({ props }) => (
             <Dropdown.Toggle variant="secondary" {...props}>
               <FaDatabase />
-              <span className="d-none d-sm-inline"> {mdm?.sources}:</span>{' '}
+              <span className="d-none d-sm-inline">
+                {' '}
+                <Text m={mdm} k="sources" />:
+              </span>{' '}
               {selectedNames.length}
             </Dropdown.Toggle>
           )}

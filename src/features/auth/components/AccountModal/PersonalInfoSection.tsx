@@ -2,7 +2,7 @@ import { saveSettings } from '@app/store/actions.js';
 import { usePictureCacheBust } from '@features/auth/pictureCacheBust.js';
 import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -22,8 +22,6 @@ const MAX_PICTURE_BYTES = 5 * 1024 * 1024;
 
 export function PersonalInfoSection(): ReactElement | null {
   const dispatch = useDispatch();
-
-  const m = useMessages();
 
   const online = useOnline();
 
@@ -153,7 +151,9 @@ export function PersonalInfoSection(): ReactElement | null {
       }}
     >
       <Form.Group className="mb-3">
-        <Form.Label>{am?.account.picture}</Form.Label>
+        <Form.Label>
+          <Text m={am} k="account.picture" />
+        </Form.Label>
 
         <div className="d-flex align-items-center gap-3">
           {showsPicture && avatarSrc ? (
@@ -175,7 +175,7 @@ export function PersonalInfoSection(): ReactElement | null {
               disabled={!online}
               onClick={() => fileInputRef.current?.click()}
             >
-              <FaUpload /> {am?.account.choosePicture}
+              <FaUpload /> <Text m={am} k="account.choosePicture" />
             </Button>
 
             {canRemovePicture && (
@@ -185,7 +185,7 @@ export function PersonalInfoSection(): ReactElement | null {
                 disabled={!online}
                 onClick={handleRemovePicture}
               >
-                <FaTimes /> {m?.general.remove}
+                <FaTimes /> <Text k="general.remove" />
               </Button>
             )}
           </div>
@@ -201,7 +201,9 @@ export function PersonalInfoSection(): ReactElement | null {
       </Form.Group>
 
       <Form.Group controlId="name" className="mb-3">
-        <Form.Label className="required">{am?.account.name}</Form.Label>
+        <Form.Label className="required">
+          <Text m={am} k="account.name" />
+        </Form.Label>
 
         <Form.Control
           value={name}
@@ -215,7 +217,9 @@ export function PersonalInfoSection(): ReactElement | null {
       </Form.Group>
 
       <Form.Group controlId="email" className="mb-3">
-        <Form.Label>{am?.account.email}</Form.Label>
+        <Form.Label>
+          <Text m={am} k="account.email" />
+        </Form.Label>
 
         <Form.Control
           type="email"
@@ -229,7 +233,9 @@ export function PersonalInfoSection(): ReactElement | null {
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="description">
-        <Form.Label>{am?.account.description}</Form.Label>
+        <Form.Label>
+          <Text m={am} k="account.description" />
+        </Form.Label>
 
         <Form.Control
           as="textarea"
@@ -247,7 +253,7 @@ export function PersonalInfoSection(): ReactElement | null {
         type="submit"
         disabled={!online || !userMadeChanges || invalidName || invalidEmail}
       >
-        <FaCheck /> {m?.general.save}
+        <FaCheck /> <Text k="general.save" />
       </Button>
     </Form>
   );

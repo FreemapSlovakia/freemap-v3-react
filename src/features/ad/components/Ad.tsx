@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '@shared/hooks/useLeftMarginAdjuster.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -35,8 +35,6 @@ const adViews = new Map<AdItem['id'], number>();
 
 export default function Ad(): ReactElement | null {
   const [closed, setClosed] = useState(false);
-
-  const m = useMessages();
 
   const adm = useAdMessages();
 
@@ -181,7 +179,8 @@ export default function Ad(): ReactElement | null {
             onClick={() => setClosed(true)}
             disabled={closeTime > 0}
           >
-            {m?.general.close} {closeTime > 0 ? ` (${closeTime})` : null}
+            <Text k="general.close" />{' '}
+            {closeTime > 0 ? ` (${closeTime})` : null}
           </Button>
         )}
 
@@ -192,7 +191,7 @@ export default function Ad(): ReactElement | null {
           size="sm"
           onClick={becomePremium}
         >
-          {m?.general.remove}
+          <Text k="general.remove" />
         </Button>
       </div>
     </div>

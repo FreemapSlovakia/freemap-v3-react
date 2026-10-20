@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import type { ReactElement } from 'react';
 import { ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { FaDrawPolygon, FaEye } from 'react-icons/fa';
@@ -34,7 +35,7 @@ export function MapAreaToggle({
         value="visible"
         onClick={onSelectVisible}
       >
-        <FaEye /> {m?.visible}
+        <FaEye /> <Text m={m} k="visible" />
       </ToggleButton>
 
       <ToggleButton
@@ -44,7 +45,7 @@ export function MapAreaToggle({
         value="area"
         onClick={onSelectArea}
       >
-        <FaDrawPolygon /> {m?.byArea}
+        <FaDrawPolygon /> <Text m={m} k="byArea" />
       </ToggleButton>
     </ToggleButtonGroup>
   );

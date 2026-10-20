@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { ObjectFilterChip } from '@features/objects/components/ObjectFilterChip.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useOsmMapping } from '@osm/useOsmMapping.js';
@@ -135,8 +135,6 @@ export default function OutdoorMapLegend({
     );
   }, [collator, legend, lm]);
 
-  const m = useMessages();
-
   const [query, setQuery] = useState('');
 
   const categoryName = (category: string) =>
@@ -213,7 +211,9 @@ export default function OutdoorMapLegend({
           ))}
         </Accordion>
       ) : filteredLegend.length === 0 ? (
-        <p className="text-body-secondary">{m?.search.noResults}</p>
+        <p className="text-body-secondary">
+          <Text k="search.noResults" />
+        </p>
       ) : (
         filteredLegend.map((c: Item) => (
           <div key={c.category} className="mb-3">

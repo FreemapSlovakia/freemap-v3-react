@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import {
   mapLayerSetupChange,
   mapSetShadingDraft,
@@ -224,7 +225,7 @@ export default function ShadingSection({ target }: Props): ReactElement {
           variant="outline-primary"
           className="flex-grow-1 text-nowrap"
         >
-          <FaCloud /> {sm?.onServer}
+          <FaCloud /> <Text m={sm} k="onServer" />
         </ToggleButton>
 
         <ToggleButton
@@ -234,7 +235,7 @@ export default function ShadingSection({ target }: Props): ReactElement {
           className="flex-grow-1 text-nowrap"
           disabled={!hasWebGpu}
         >
-          <FaDesktop /> {sm?.inBrowser} <ExperimentalFunction />
+          <FaDesktop /> <Text m={sm} k="inBrowser" /> <ExperimentalFunction />
         </ToggleButton>
       </FitToggleButtonGroup>
 

@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import type { LayerKind } from '@features/map/model/layerKind.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -54,7 +55,9 @@ export function LayerKindButton({ value, onChange }: Props): ReactElement {
             active={kind === value}
           >
             {LAYER_KIND_ICONS[kind]}
-            <MenuLabel>{m?.mapLayers.layer[kind]}</MenuLabel>
+            <MenuLabel>
+              <Text k={`mapLayers.layer.${kind}`} />
+            </MenuLabel>
           </Dropdown.Item>
         ))}
       </FmDropdownMenu>

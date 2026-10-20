@@ -3,6 +3,7 @@ import {
   activeMapToolSelector,
   selectingModeSelector,
 } from '@app/store/selectors.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FEATURES_PANE_CLASS,
   useOwnPaneOpacity,
@@ -227,32 +228,44 @@ export function RoutePlannerResult(): ReactElement {
       return (
         <div>
           <div>
-            {rpm?.distance({
-              value: formatDistance(distanceSum, language),
-              diff:
-                distanceDiff === undefined
-                  ? undefined
-                  : formatDistance(distanceDiff, language),
-            })}
+            <Text m={rpm}>
+              {(rpm) =>
+                rpm.distance({
+                  value: formatDistance(distanceSum, language),
+                  diff:
+                    distanceDiff === undefined
+                      ? undefined
+                      : formatDistance(distanceDiff, language),
+                })
+              }
+            </Text>
           </div>
           {!Number.isNaN(durationSum) && (
             <div>
-              {rpm?.duration({
-                h: Math.floor(Math.round(durationSum / 60) / 60),
-                m: Math.round(durationSum / 60) % 60,
-                diff:
-                  durationDiff === undefined || Number.isNaN(durationDiff)
-                    ? undefined
-                    : {
-                        h: Math.floor(Math.round(durationDiff / 60) / 60),
-                        m: Math.round(durationDiff / 60) % 60,
-                      },
-              })}
+              <Text m={rpm}>
+                {(rpm) =>
+                  rpm.duration({
+                    h: Math.floor(Math.round(durationSum / 60) / 60),
+                    m: Math.round(durationSum / 60) % 60,
+                    diff:
+                      durationDiff === undefined || Number.isNaN(durationDiff)
+                        ? undefined
+                        : {
+                            h: Math.floor(Math.round(durationDiff / 60) / 60),
+                            m: Math.round(durationDiff / 60) % 60,
+                          },
+                  })
+                }
+              </Text>
             </div>
           )}
           {showToll && tolled > 0 && (
             <div>
-              {rpm?.tolled({ value: formatDistance(tolled, language) })}
+              <Text m={rpm}>
+                {(rpm) =>
+                  rpm.tolled({ value: formatDistance(tolled, language) })
+                }
+              </Text>
             </div>
           )}
         </div>

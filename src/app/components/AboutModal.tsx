@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmModalFooter,
@@ -33,12 +34,14 @@ export default function AboutModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaRegAddressCard /> {m?.mainMenu.contacts}
+          <FaRegAddressCard /> <Text k="mainMenu.contacts" />
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <h3>{lm?.ngo}</h3>
+        <h3>
+          <Text m={lm} k="ngo" />
+        </h3>
 
         <address>
           Freemap Slovakia
@@ -49,7 +52,9 @@ export default function AboutModal({ show }: Props): ReactElement {
           <br />
         </address>
 
-        <p>{lm?.registered}</p>
+        <p>
+          <Text m={lm} k="registered" />
+        </p>
 
         <p>
           {'IČO: '}
@@ -65,7 +70,7 @@ export default function AboutModal({ show }: Props): ReactElement {
         </p>
 
         <p>
-          {lm?.bankAccount}: VÚB 2746389453/0200
+          <Text m={lm} k="bankAccount" />: VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
@@ -75,33 +80,37 @@ export default function AboutModal({ show }: Props): ReactElement {
           <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
         </p>
 
-        <h3>{lm?.generalContact}</h3>
+        <h3>
+          <Text m={lm} k="generalContact" />
+        </h3>
 
         <ul>
           <li>
-            {lm?.board}: <a href="oz@freemap.sk">oz@freemap.sk</a>
+            <Text m={lm} k="board" />: <a href="oz@freemap.sk">oz@freemap.sk</a>
           </li>
         </ul>
 
-        <h3>{lm?.boardMemebers}</h3>
+        <h3>
+          <Text m={lm} k="boardMemebers" />
+        </h3>
 
         <ul>
           <li>
-            {lm?.president}
+            <Text m={lm} k="president" />
             {': '}
             <a href="mailto:michal.bellovic@freemap.sk">Michal Bellovič</a>{' '}
             (Prievidza)
           </li>
 
           <li>
-            {lm?.vicepresident}
+            <Text m={lm} k="vicepresident" />
             {': '}
             <a href="mailto:martin.zdila@freemap.sk">Ing. Martin Ždila</a>{' '}
             (Košice)
           </li>
 
           <li>
-            {lm?.secretary}
+            <Text m={lm} k="secretary" />
             {': '}
             <a href="mailto:tibor.jamecny@freemap.sk">Ing. Tibor Jamečný</a>{' '}
             (Žilina)

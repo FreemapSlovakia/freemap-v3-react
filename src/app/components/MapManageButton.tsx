@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { BRIGHTNESS_STEPS } from '@features/map/brightness.js';
 import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
 import {
@@ -122,7 +123,9 @@ export function MapManageButton(): ReactElement {
           {...modalMenuItemProps('installed-maps')}
         >
           <FaLayerGroup />
-          <MenuLabel>{m?.mapLayers.mapManager}</MenuLabel>
+          <MenuLabel>
+            <Text k="mapLayers.mapManager" />
+          </MenuLabel>
           <MenuGutter>
             <Chord modal="installed-maps" />
           </MenuGutter>
@@ -132,7 +135,9 @@ export function MapManageButton(): ReactElement {
 
         <Dropdown.Item {...modalMenuItemProps('offline-maps')}>
           <BiWifiOff />
-          <MenuLabel>{m?.mapLayers.offlineMaps}</MenuLabel>
+          <MenuLabel>
+            <Text k="mapLayers.offlineMaps" />
+          </MenuLabel>
           {cachedMapsTotalSize > 0 && (
             <span>· {formatSize(cachedMapsTotalSize)}</span>
           )}
@@ -143,7 +148,9 @@ export function MapManageButton(): ReactElement {
 
         <Dropdown.Item {...modalMenuItemProps('browse-cache')}>
           <FaDatabase />
-          <MenuLabel>{m?.mapLayers.browseCache}</MenuLabel>
+          <MenuLabel>
+            <Text k="mapLayers.browseCache" />
+          </MenuLabel>
           <MenuGutter>
             <Chord modal="browse-cache" />
           </MenuGutter>
@@ -153,7 +160,9 @@ export function MapManageButton(): ReactElement {
 
         <Dropdown.Item {...modalMenuItemProps('map-preferences')}>
           <FaSlidersH />
-          <MenuLabel>{m?.mapLayers.preferences}</MenuLabel>
+          <MenuLabel>
+            <Text k="mapLayers.preferences" />
+          </MenuLabel>
           <MenuGutter>
             <Chord modal="map-preferences" />
           </MenuGutter>
@@ -161,7 +170,9 @@ export function MapManageButton(): ReactElement {
 
         <Dropdown.Item {...modalMenuItemProps('elevation-settings')}>
           <FaChartArea />
-          <MenuLabel>{m?.elevationChart.settings}</MenuLabel>
+          <MenuLabel>
+            <Text k="elevationChart.settings" />
+          </MenuLabel>
           <MenuGutter>
             <Chord modal="elevation-settings" />
           </MenuGutter>
@@ -178,7 +189,9 @@ export function MapManageButton(): ReactElement {
         >
           <MdBrightness6 />
 
-          <span className="text-truncate">{m?.mapLayers.brightness}</span>
+          <span className="text-truncate">
+            <Text k="mapLayers.brightness" />
+          </span>
 
           {/* Centred, as the map comes; darker to the left, lighter to the right. */}
           <Form.Range
@@ -196,7 +209,9 @@ export function MapManageButton(): ReactElement {
 
           <MdOpacity />
 
-          <span className="text-truncate">{m?.mapLayers.featuresOpacity}</span>
+          <span className="text-truncate">
+            <Text k="mapLayers.featuresOpacity" />
+          </span>
 
           <Form.Range
             min={0}

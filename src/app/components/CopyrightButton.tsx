@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { hasLegend } from '@features/legend/legendLayers.js';
 import {
   drawnTypesSelector,
@@ -44,7 +45,7 @@ export function CopyrightButton(): ReactElement {
   return (
     <Toolbar className="me-2 mb-2">
       <Dropdown>
-        <LongPressTooltip label={m?.general.infoAndLegal ?? '…'}>
+        <LongPressTooltip label={m?.general.infoAndLegal}>
           {({ props }) => (
             <Dropdown.Toggle
               bsPrefix="fm-dropdown-toggle-nocaret"
@@ -64,13 +65,17 @@ export function CopyrightButton(): ReactElement {
             onClick={() => showAttribution()}
           >
             <FaRegCopyright />
-            <MenuLabel>{m?.main.copyright}</MenuLabel>
+            <MenuLabel>
+              <Text k="main.copyright" />
+            </MenuLabel>
           </Dropdown.Item>
 
           {showLegendButton && (
             <OnlineOnlyItem {...modalLink({ type: 'legend' })}>
               <FaList />
-              <MenuLabel>{m?.mainMenu.mapLegend}</MenuLabel>
+              <MenuLabel>
+                <Text k="mainMenu.mapLegend" />
+              </MenuLabel>
               <MenuGutter>
                 <Chord modal="legend" />
               </MenuGutter>
@@ -82,7 +87,9 @@ export function CopyrightButton(): ReactElement {
             {...modalLink({ type: 'document', key: 'privacyPolicy' })}
           >
             <FaLock />
-            <MenuLabel>{m?.general.privacyPolicy}</MenuLabel>
+            <MenuLabel>
+              <Text k="general.privacyPolicy" />
+            </MenuLabel>
           </Dropdown.Item>
 
           <Dropdown.Item
@@ -90,7 +97,9 @@ export function CopyrightButton(): ReactElement {
             {...modalLink({ type: 'document', key: 'termsOfService' })}
           >
             <FaFileContract />
-            <MenuLabel>{m?.general.termsOfService}</MenuLabel>
+            <MenuLabel>
+              <Text k="general.termsOfService" />
+            </MenuLabel>
           </Dropdown.Item>
 
           {/* Terms of a purchase, and an embed sells nothing — its premium gem
@@ -103,7 +112,9 @@ export function CopyrightButton(): ReactElement {
               {...modalLink({ type: 'document', key: 'refundPolicy' })}
             >
               <FaMoneyBillWave />
-              <MenuLabel>{m?.general.refundPolicy}</MenuLabel>
+              <MenuLabel>
+                <Text k="general.refundPolicy" />
+              </MenuLabel>
             </Dropdown.Item>
           )}
         </FmDropdownMenu>

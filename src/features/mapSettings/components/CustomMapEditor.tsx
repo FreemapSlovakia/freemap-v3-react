@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { CustomMapRequest } from '@app/store/activeModal.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   mapCustomLayerSave,
   mapNamedMapCreate,
@@ -83,7 +84,9 @@ function LeftOutOfPreset(): ReactElement | null {
   ];
 
   return leftOut.length > 0 ? (
-    <Alert variant="warning">{msm?.leftOutOfPreset(leftOut.join(', '))}</Alert>
+    <Alert variant="warning">
+      <Text m={msm}>{(msm) => msm.leftOutOfPreset(leftOut.join(', '))}</Text>
+    </Alert>
   ) : null;
 }
 

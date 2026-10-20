@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   CATEGORY_GROUPS,
   type CategoryGroup,
@@ -375,7 +376,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   const layerField = (
     <div className="d-flex gap-3 mt-3">
       <Form.Group>
-        <Form.Label className="d-block">{m?.mapLayers.layer.layer}</Form.Label>
+        <Form.Label className="d-block">
+          <Text k="mapLayers.layer.layer" />
+        </Form.Label>
 
         <ButtonGroup>
           {(['base', 'overlay'] as const).map((layer) => (
@@ -391,7 +394,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
                 setModelWithVersion((model) => ({ ...model, layer }))
               }
             >
-              {m?.mapLayers.layer[layer]}
+              <Text k={`mapLayers.layer.${layer}`} />
             </ToggleButton>
           ))}
         </ButtonGroup>
@@ -406,7 +409,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           <Form.Label
             className={clsx('d-flex', 'align-items-end', classes.gridSpan)}
           >
-            {m?.general.name}
+            <Text k="general.name" />
           </Form.Label>
 
           <Form.Control
@@ -419,7 +422,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
         <Form.Group>
           <Form.Label className="d-block" htmlFor="customMapIcon">
-            {m?.general.icon}
+            <Text k="general.icon" />
           </Form.Label>
 
           <IconPicker
@@ -439,7 +442,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       />
 
       <Form.Group controlId="category" className="mt-3">
-        <Form.Label>{msm?.filters.category}</Form.Label>
+        <Form.Label>
+          <Text m={msm} k="filters.category" />
+        </Form.Label>
 
         <Form.Select
           value={model.category}
@@ -459,7 +464,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       </Form.Group>
 
       <Form.Group controlId="url" className="mt-3">
-        <Form.Label className="required">{m?.mapLayers.url}</Form.Label>
+        <Form.Label className="required">
+          <Text k="mapLayers.url" />
+        </Form.Label>
 
         <Form.Control
           className={classes.gridSpan}
@@ -470,7 +477,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         />
 
         <Form.Control.Feedback type="invalid">
-          {m?.general.invalidUrl}
+          <Text k="general.invalidUrl" />
         </Form.Control.Feedback>
       </Form.Group>
 
@@ -483,7 +490,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           >
             <Spinner className="invisible" size="sm" />
 
-            <span className="mx-2">{m?.mapLayers.loadWmsLayers}</span>
+            <span className="mx-2">
+              <Text k="mapLayers.loadWmsLayers" />
+            </span>
 
             <Spinner
               className={loadingLayers ? 'visible' : 'invisible'}
@@ -515,7 +524,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       <Row className="align-items-end gx-3">
         <Col xs={12} sm={6}>
           <Form.Group controlId="minZoom" className="mt-3">
-            <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
+            <Form.Label>
+              <Text k="mapLayers.minZoom" />
+            </Form.Label>
 
             <Form.Control
               type="number"
@@ -528,7 +539,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
         <Col xs={12} sm={6}>
           <Form.Group controlId="maxNativeZoom" className="mt-3">
-            <Form.Label>{m?.mapLayers.maxNativeZoom}</Form.Label>
+            <Form.Label>
+              <Text k="mapLayers.maxNativeZoom" />
+            </Form.Label>
 
             <Form.Control
               type="number"
@@ -543,7 +556,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       {/* Extra scales + checkbox */}
       {model.technology === 'tile' && (
         <div className="mt-3">
-          <Form.Label>{m?.mapLayers.extraScales}</Form.Label>
+          <Form.Label>
+            <Text k="mapLayers.extraScales" />
+          </Form.Label>
 
           <div className="d-flex gap-2 flex-wrap">
             {model.technology === 'tile' &&

@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { useElevationChartMessages } from '../translations/useElevationChartMessages.js';
@@ -39,7 +40,7 @@ export function ElevationSourcesList({ sources }: Props): ReactElement {
 
   return (
     <>
-      {m?.elevationSource}:
+      <Text m={m} k="elevationSource" />:
       <ul className="ps-4 mb-0">
         {sources.map((attr) => (
           <li key={keyOf(attr)}>

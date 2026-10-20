@@ -1,5 +1,6 @@
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import type { ObjectCategory } from '@features/objects/objectCategories.js';
@@ -672,7 +673,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         >
           {functionMatches.length > 0 && (
             <div className="dropdown-caption-divider">
-              {m?.search.commands.caption}
+              <Text k="search.commands.caption" />
             </div>
           )}
 
@@ -682,7 +683,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
           {mapMatches.length > 0 && (
             <div className="dropdown-caption-divider">
-              {m?.mapLayers.layers}
+              <Text k="mapLayers.layers" />
             </div>
           )}
 
@@ -691,7 +692,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           ))}
 
           {poiMatches.length > 0 && (
-            <div className="dropdown-caption-divider">{m?.tools.objects}</div>
+            <div className="dropdown-caption-divider">
+              <Text k="tools.objects" />
+            </div>
           )}
 
           {poiMatches.map(({ category, positions }) => (
@@ -790,7 +793,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 }
               }}
             >
-              <small>{m?.search.showMore}</small>
+              <small>
+                <Text k="search.showMore" />
+              </small>
 
               {inputFocused && <kbd>Enter</kbd>}
             </Dropdown.Item>
@@ -813,7 +818,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 }}
               >
                 <FaPaintBrush />
-                <MenuLabel>{m?.mapLayers.lookupStyle}</MenuLabel>
+                <MenuLabel>
+                  <Text k="mapLayers.lookupStyle" />
+                </MenuLabel>
               </Dropdown.Item>
             </>
           )}
@@ -945,8 +952,6 @@ function Highlight({ text, at }: { text: string; at: number[] }) {
 }
 
 function Result({ value }: { value: SearchResult }) {
-  const m = useMessages();
-
   const tags = value.geojson.properties ?? {};
 
   const kinds = useGenericNameParts(value);
@@ -1022,7 +1027,7 @@ function Result({ value }: { value: SearchResult }) {
           {genericName ? (
             <span className={clsx(name && 'ms-2')}>{genericName}</span>
           ) : (
-            !name && m?.general.unknown
+            !name && <Text k="general.unknown" />
           )}
         </div>
 

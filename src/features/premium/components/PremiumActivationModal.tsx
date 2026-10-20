@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   FmDismissButton,
@@ -74,14 +75,16 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaGem /> {prm?.title}
+          <FaGem /> <Text m={prm} k="title" />
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <OfflineAlert />
 
-        {prm?.commonHeader(PREMIUM_PRICE_EUR, dtmCountries)}
+        <Text m={prm}>
+          {(prm) => prm.commonHeader(PREMIUM_PRICE_EUR, dtmCountries)}
+        </Text>
 
         {premiumExpiration && (
           <Alert variant="info" className="mt-3 mb-0">
@@ -96,13 +99,19 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
             {/* Only where it can't be read as describing premium already held. */}
             {!premiumExpiration && (
               <p className="mt-3 mb-0 text-body-secondary">
-                {prm?.subscriptionReassurance({ price: PREMIUM_PRICE_EUR })}
+                <Text m={prm}>
+                  {(prm) =>
+                    prm.subscriptionReassurance({ price: PREMIUM_PRICE_EUR })
+                  }
+                </Text>
               </p>
             )}
 
             <hr />
 
-            <p className="mb-0 text-body-secondary">{prm?.chronsHint}</p>
+            <p className="mb-0 text-body-secondary">
+              <Text m={prm} k="chronsHint" />
+            </p>
           </>
         )}
       </Modal.Body>
@@ -115,7 +124,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
               disabled={!online}
               onClick={() => buy({ recurring: true })}
             >
-              <FaGem /> {prm?.paySubscription}
+              <FaGem /> <Text m={prm} k="paySubscription" />
             </Button>
 
             <Dropdown.Toggle
@@ -132,7 +141,9 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
                 onClick={() => buy({ recurring: false })}
               >
                 <FaRegGem />
-                <MenuLabel>{prm?.payOnce}</MenuLabel>
+                <MenuLabel>
+                  <Text m={prm} k="payOnce" />
+                </MenuLabel>
               </Dropdown.Item>
 
               <Dropdown.Item
@@ -141,7 +152,9 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
                 onClick={() => buy({ via: 'rovas' })}
               >
                 <FaStopwatch />
-                <MenuLabel>{prm?.payWithChrons}</MenuLabel>
+                <MenuLabel>
+                  <Text m={prm} k="payWithChrons" />
+                </MenuLabel>
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>

@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import type { ReactElement } from 'react';
 import { Form, OverlayTrigger, Popover } from 'react-bootstrap';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
@@ -20,7 +21,9 @@ export function OpacityButton({ value, onChange }: Props): ReactElement {
       rootClose
       overlay={
         <Popover>
-          <Popover.Header as="h3">{msm?.overlayOpacity}</Popover.Header>
+          <Popover.Header as="h3">
+            <Text m={msm} k="overlayOpacity" />
+          </Popover.Header>
 
           <Popover.Body>
             <Form.Range

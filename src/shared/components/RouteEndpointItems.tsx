@@ -1,5 +1,5 @@
 import { openTool } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
@@ -29,8 +29,6 @@ export function RouteEndpointItems({
   onAct,
   divider,
 }: Props): ReactElement | null {
-  const m = useMessages();
-
   const dispatch = useDispatch();
 
   // An embed opens no tools, so the item would answer with nothing.
@@ -53,7 +51,9 @@ export function RouteEndpointItems({
         }}
       >
         <FaPlay color="#32CD32" />
-        <MenuLabel>{m?.search.routeFrom}</MenuLabel>
+        <MenuLabel>
+          <Text k="search.routeFrom" />
+        </MenuLabel>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -67,7 +67,9 @@ export function RouteEndpointItems({
         }}
       >
         <FaStop color="#FF6347" />
-        <MenuLabel>{m?.search.routeTo}</MenuLabel>
+        <MenuLabel>
+          <Text k="search.routeTo" />
+        </MenuLabel>
       </OnlineOnlyItem>
     </>
   );

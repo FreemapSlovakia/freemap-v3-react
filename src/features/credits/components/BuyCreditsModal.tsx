@@ -1,5 +1,6 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   FmDismissButton,
@@ -76,7 +77,7 @@ export default function CurrentDrawingPropertiesModal({
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCoins /> {cm?.buyCredits}
+            <FaCoins /> <Text m={cm} k="buyCredits" />
           </Modal.Title>
         </Modal.Header>
 
@@ -86,7 +87,9 @@ export default function CurrentDrawingPropertiesModal({
           <CreditsAlert explainCredits />
 
           <Form.Group controlId="amount">
-            <Form.Label className="required">{cm?.amount}</Form.Label>
+            <Form.Label className="required">
+              <Text m={cm} k="amount" />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -99,14 +102,17 @@ export default function CurrentDrawingPropertiesModal({
               />
 
               <InputGroup.Text>
-                {cm?.credits} = {nf.format(Number(credits) / 100)} €
+                <Text m={cm} k="credits" /> = {nf.format(Number(credits) / 100)}{' '}
+                €
               </InputGroup.Text>
             </InputGroup>
           </Form.Group>
 
           <hr className="mt-4" />
 
-          <p className="mt-3 mb-0 text-body-secondary">{cm?.chronsHint}</p>
+          <p className="mt-3 mb-0 text-body-secondary">
+            <Text m={cm} k="chronsHint" />
+          </p>
         </Modal.Body>
 
         <FmModalFooter>
@@ -116,7 +122,7 @@ export default function CurrentDrawingPropertiesModal({
               disabled={invalidCredits || !online}
               onClick={buyPolar}
             >
-              <FaCheck /> {cm?.buy}
+              <FaCheck /> <Text m={cm} k="buy" />
             </Button>
 
             <Dropdown.Toggle
@@ -134,7 +140,9 @@ export default function CurrentDrawingPropertiesModal({
                 onClick={buyWithChrons}
               >
                 <FaStopwatch />
-                <MenuLabel>{cm?.payWithChrons}</MenuLabel>
+                <MenuLabel>
+                  <Text m={cm} k="payWithChrons" />
+                </MenuLabel>
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>

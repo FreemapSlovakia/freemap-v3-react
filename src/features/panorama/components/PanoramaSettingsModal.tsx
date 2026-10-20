@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
@@ -237,14 +238,14 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents" noValidate>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCog /> {m?.settings.title}
+            <FaCog /> <Text m={m} k="settings.title" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="fm-panorama-eye">
-              {gm?.general.eyeHeight}
+              <Text k="general.eyeHeight" />
               <HintMark hint={gm?.general.eyeHeightHint} />
             </Form.Label>
 
@@ -269,10 +270,14 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               <InputGroup.Text>m</InputGroup.Text>
 
               <Form.Control.Feedback type="invalid">
-                {gm?.general.valueRange({
-                  min: `${EYE_MIN}\u00a0m`,
-                  max: `${EYE_MAX}\u00a0m`,
-                })}
+                <Text>
+                  {(m) =>
+                    m.general.valueRange({
+                      min: `${EYE_MIN}\u00a0m`,
+                      max: `${EYE_MAX}\u00a0m`,
+                    })
+                  }
+                </Text>
               </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
@@ -283,7 +288,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               the sliders under them are the same setting said exactly. */}
           <fieldset className="mb-3 border rounded p-3">
             <legend>
-              {m?.tilt.label}
+              <Text m={m} k="tilt.label" />
               <HintMark hint={m?.settings.tiltHint} />
             </legend>
 
@@ -301,7 +306,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
                     }
                     onClick={() => patch({ altMin: lo, altMax: hi })}
                   >
-                    {m?.tilt[preset]}
+                    <Text m={m} k={`tilt.${preset}`} />
                   </Button>
                 );
               })}
@@ -359,7 +364,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               id="fm-panorama-range"
               label={
                 <>
-                  {gm?.general.maxVisibleDistance}
+                  <Text k="general.maxVisibleDistance" />
 
                   {!premium && <PremiumGem hint={m?.settings.rangeHint} />}
                 </>
@@ -376,7 +381,9 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
           <hr />
 
           <Form.Group className="mb-3">
-            <Form.Label>{m?.settings.look}</Form.Label>
+            <Form.Label>
+              <Text m={m} k="settings.look" />
+            </Form.Label>
 
             <div>
               <SelectDropdown
@@ -427,7 +434,9 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="mb-0">{m?.settings.ridgeColor}</Form.Label>
+            <Form.Label className="mb-0">
+              <Text m={m} k="settings.ridgeColor" />
+            </Form.Label>
 
             <div>
               <RgbaColorPicker
@@ -443,7 +452,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               are ready-made ramps. */}
           <Form.Group className={gradient ? 'mb-3' : undefined}>
             <Form.Label className="mb-0">
-              {m?.settings.ground}
+              <Text m={m} k="settings.ground" />
               <HintMark hint={m?.settings.groundHint} />
             </Form.Label>
 

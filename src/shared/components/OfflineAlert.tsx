@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import type { ReactElement } from 'react';
 import { Alert } from 'react-bootstrap';
@@ -13,8 +13,6 @@ export function OfflineAlert({
 }: {
   className?: string;
 }): ReactElement | null {
-  const m = useMessages();
-
   const online = useOnline();
 
   if (online) {
@@ -23,7 +21,7 @@ export function OfflineAlert({
 
   return (
     <Alert variant="warning" className={className}>
-      <BiWifiOff /> {m?.general.offlineNotice}
+      <BiWifiOff /> <Text k="general.offlineNotice" />
     </Alert>
   );
 }

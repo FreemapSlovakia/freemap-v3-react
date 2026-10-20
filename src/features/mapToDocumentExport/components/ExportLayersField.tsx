@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import type { ReactElement } from 'react';
 import { Form, ToggleButton } from 'react-bootstrap';
 import {
@@ -57,7 +58,9 @@ export function ExportLayersField({
 
   return (
     <fieldset className="mt-3 border rounded p-3">
-      <legend>{m?.mapTitle}</legend>
+      <legend>
+        <Text m={m} k="mapTitle" />
+      </legend>
 
       <ToggleButton
         id="exportBaseMap"
@@ -68,12 +71,14 @@ export function ExportLayersField({
         checked={baseMap}
         onChange={(e) => onBaseMapChange(e.currentTarget.checked)}
       >
-        <GiTreasureMap /> {m?.baseMap}
+        <GiTreasureMap /> <Text m={m} k="baseMap" />
       </ToggleButton>
 
       {baseMap && (
         <>
-          <Form.Label className="d-block mt-3">{m?.omitTitle}</Form.Label>
+          <Form.Label className="d-block mt-3">
+            <Text m={m} k="omitTitle" />
+          </Form.Label>
 
           <div className="d-flex flex-wrap gap-2">
             {OMITTABLE_LAYERS.map((layer) => (
@@ -87,18 +92,22 @@ export function ExportLayersField({
                 checked={omit.includes(layer)}
                 onChange={() => onToggleOmit(layer)}
               >
-                {LAYER_ICONS[layer]} {m?.omit[layer]}
+                {LAYER_ICONS[layer]} <Text m={m} k={`omit.${layer}`} />
               </ToggleButton>
             ))}
           </div>
 
           {omit.length > 0 && (
-            <Form.Text className="d-block">{m?.omitHint}</Form.Text>
+            <Form.Text className="d-block">
+              <Text m={m} k="omitHint" />
+            </Form.Text>
           )}
         </>
       )}
 
-      <Form.Label className="d-block mt-3">{m?.layersTitle}</Form.Label>
+      <Form.Label className="d-block mt-3">
+        <Text m={m} k="layersTitle" />
+      </Form.Label>
 
       <div className="d-flex flex-wrap gap-2">
         {EXTRA_LAYERS.map((layer) => (
@@ -112,13 +121,15 @@ export function ExportLayersField({
             checked={layers.includes(layer)}
             onChange={() => onToggleLayer(layer)}
           >
-            {LAYER_ICONS[layer]} {m?.layers[layer]}
+            {LAYER_ICONS[layer]} <Text m={m} k={`layers.${layer}`} />
           </ToggleButton>
         ))}
       </div>
 
       {!baseMap && (
-        <Form.Text className="d-block">{m?.noBaseMapHint}</Form.Text>
+        <Form.Text className="d-block">
+          <Text m={m} k="noBaseMapHint" />
+        </Form.Text>
       )}
     </fieldset>
   );

@@ -1,5 +1,5 @@
 import { pickingModeSelector } from '@app/store/selectors.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useColorizeScale } from '@shared/colorizers/colorizeScale.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
@@ -166,8 +166,6 @@ function useColorizedValue(distance: number | undefined): string | undefined {
 }
 
 export function ElevationChartActivePoint(): ReactElement | null {
-  const m = useMessages();
-
   useProfileHover();
 
   const elevationChartActivePoint = useAppSelector(
@@ -225,7 +223,8 @@ export function ElevationChartActivePoint(): ReactElement | null {
             <span>
               → {formatDistance(elevationChartActivePoint.distance, language)}
               {' ▴ '}
-              {nf0.format(elevationChartActivePoint.ele)} {m?.general.masl}
+              {nf0.format(elevationChartActivePoint.ele)}{' '}
+              <Text k="general.masl" />
               {typeof elevationChartActivePoint.climbUp === 'number' &&
                 typeof elevationChartActivePoint.climbDown === 'number' && (
                   <>

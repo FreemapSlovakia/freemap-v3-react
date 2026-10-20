@@ -1,6 +1,7 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   mapFitBbox,
   mapPresetToggle,
@@ -781,7 +782,8 @@ export function MapSwitchButton(): ReactElement {
         icon: <FaGem className="text-warning" />,
         tooltip: (
           <>
-            {prm?.premiumOnly} {prm?.clickToActivate}
+            <Text m={prm} k="premiumOnly" />{' '}
+            <Text m={prm} k="clickToActivate" />
           </>
         ),
         onClick: (e) => becomePremium(e),
@@ -864,7 +866,9 @@ export function MapSwitchButton(): ReactElement {
 
   return (
     <>
-      <div className="px-1 d-none d-sm-block">{m?.mapLayers.switch}</div>
+      <div className="px-1 d-none d-sm-block">
+        <Text k="mapLayers.switch" />
+      </div>
 
       <ButtonGroup>
         {toolbarButtons.flatMap(({ kind, button }, i) =>
@@ -904,7 +908,7 @@ export function MapSwitchButton(): ReactElement {
 
             {normalizedFilter && !baseHasItems && !overlayHasItems && (
               <Dropdown.ItemText className="text-muted text-center">
-                {m?.mapLayers.noMapsFound}
+                <Text k="mapLayers.noMapsFound" />
               </Dropdown.ItemText>
             )}
 
@@ -918,11 +922,15 @@ export function MapSwitchButton(): ReactElement {
                   eventKey="show-more"
                   className="mb-2"
                 >
-                  <MenuLabel>{m?.mapLayers.showMore}</MenuLabel>
+                  <MenuLabel>
+                    <Text k="mapLayers.showMore" />
+                  </MenuLabel>
                 </Dropdown.Item>
               ) : (
                 <Dropdown.Item as="button" eventKey="show-all" className="mb-2">
-                  <MenuLabel>{m?.mapLayers.showAll}</MenuLabel>
+                  <MenuLabel>
+                    <Text k="mapLayers.showAll" />
+                  </MenuLabel>
                 </Dropdown.Item>
               ))}
 

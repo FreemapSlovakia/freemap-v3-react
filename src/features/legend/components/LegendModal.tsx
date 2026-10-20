@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { withTickedLayers } from '@features/map/model/layerSetup.js';
 import { drawnSetupsSelector } from '@features/map/model/selectors.js';
 import {
@@ -89,7 +90,7 @@ export default function LegendModal({ show }: Props): ReactElement {
 
     return externalUrl ? (
       <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-        <FaExternalLinkAlt /> {lm?.external}
+        <FaExternalLinkAlt /> <Text m={lm} k="external" />
       </a>
     ) : variant ? (
       <OutdoorMapLegend key={variant} variant={variant} />
@@ -108,7 +109,7 @@ export default function LegendModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaList /> {m?.mainMenu.mapLegend}
+          <FaList /> <Text k="mainMenu.mapLegend" />
         </Modal.Title>
       </Modal.Header>
 
@@ -118,7 +119,9 @@ export default function LegendModal({ show }: Props): ReactElement {
         {activeLegendLayers.length === 1 ? (
           <>
             <div className="mb-3">
-              {lm?.body({ name: getHeader(activeLegendLayers[0]) })}
+              <Text m={lm}>
+                {(lm) => lm.body({ name: getHeader(activeLegendLayers[0]) })}
+              </Text>
             </div>
 
             {getSingleLegend(activeLegendLayers[0])}

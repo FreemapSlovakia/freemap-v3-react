@@ -6,6 +6,7 @@ import {
   hasElevationLine,
 } from '@features/elevationChart/components/ElevationValue.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { getOsmElementUrl } from '@features/openInExternalApp/externalUrlUtils.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import { resultCoords } from '@features/search/model/resultUtils.js';
@@ -223,13 +224,13 @@ export function ObjectDetails({
               trackMatomo(['trackEvent', 'Objects', 'history']);
             }}
           >
-            <FaHistory /> {om?.history}
+            <FaHistory /> <Text m={om} k="history" />
           </Button>
         </p>
       )}
 
       <span>
-        {om?.source}:{' '}
+        <Text m={om} k="source" />:{' '}
         {/* An OSM element's source opens it there, as the ⋮ menu does. */}
         {parsedId.success ? (
           <AlertLink

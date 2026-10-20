@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   type LayerSettings,
   mapLayerSettingsChange,
@@ -535,11 +536,19 @@ export function YourMapsList({
   );
 
   if (maps.length === 0) {
-    return <p className="text-muted text-center">{msm?.noInstalledMaps}</p>;
+    return (
+      <p className="text-muted text-center">
+        <Text m={msm} k="noInstalledMaps" />
+      </p>
+    );
   }
 
   if (visible.length === 0) {
-    return <p className="text-muted text-center">{m?.mapLayers.noMapsFound}</p>;
+    return (
+      <p className="text-muted text-center">
+        <Text k="mapLayers.noMapsFound" />
+      </p>
+    );
   }
 
   // Base maps, then overlays as they stack, top first; presets first in each.

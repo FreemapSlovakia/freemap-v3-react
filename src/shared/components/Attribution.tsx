@@ -5,6 +5,7 @@ import {
   documentShow,
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   drawnTypesSelector,
   integratedLayerDefMapSelector,
@@ -441,7 +442,7 @@ export function useResolvedAttribution(
           [
             type,
             <>
-              {m?.mapLayers.type[type]}{' '}
+              <Text k={`mapLayers.type.${type}`} />{' '}
               {attributions.map((a, j) => [
                 j > 0 ? ', ' : '',
                 // Inline blocks: a line breaks between credits, inside one only

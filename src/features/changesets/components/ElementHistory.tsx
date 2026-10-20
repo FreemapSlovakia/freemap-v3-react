@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { getOsmChangesetUrl } from '@features/openInExternalApp/externalUrlUtils.js';
 import { usePaged } from '@shared/components/LoadMoreSentinel.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -46,7 +47,7 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
   };
 
   if (error !== undefined) {
-    return <>{cm?.history.error({ err: error })}</>;
+    return <Text m={cm}>{(cm) => cm.history.error({ err: error })}</Text>;
   }
 
   if (!versions) {

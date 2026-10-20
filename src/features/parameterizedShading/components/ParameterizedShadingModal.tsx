@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
@@ -201,14 +202,18 @@ export function ParameterizedShadingModal({
         }}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{kind && sm?.presetNames[kind]}</Modal.Title>
+          <Modal.Title>
+            {kind && <Text m={sm} k={`presetNames.${kind}`} />}
+          </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           {isBand && (
             <>
               <Form.Group className="mb-3" controlId="ps-elevation">
-                <Form.Label>{sm?.elevation}</Form.Label>
+                <Form.Label>
+                  <Text m={sm} k="elevation" />
+                </Form.Label>
 
                 <InputGroup hasValidation>
                   <Form.Control
@@ -231,7 +236,9 @@ export function ParameterizedShadingModal({
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="ps-width">
-                <Form.Label>{sm?.elevationBandWidth}</Form.Label>
+                <Form.Label>
+                  <Text m={sm} k="elevationBandWidth" />
+                </Form.Label>
 
                 <InputGroup hasValidation>
                   <Form.Control
@@ -257,13 +264,17 @@ export function ParameterizedShadingModal({
           {kind === 'fog' && (
             <>
               <Form.Group className="mb-3">
-                <Form.Label>{sm?.belowColor}</Form.Label>
+                <Form.Label>
+                  <Text m={sm} k="belowColor" />
+                </Form.Label>
 
                 <RgbaColorPicker value={belowColor} onChange={setBelowColor} />
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>{sm?.aboveColor}</Form.Label>
+                <Form.Label>
+                  <Text m={sm} k="aboveColor" />
+                </Form.Label>
 
                 <RgbaColorPicker value={aboveColor} onChange={setAboveColor} />
               </Form.Group>
@@ -272,7 +283,9 @@ export function ParameterizedShadingModal({
 
           {kind === 'contour' && (
             <Form.Group className="mb-3">
-              <Form.Label>{sm?.color}</Form.Label>
+              <Form.Label>
+                <Text m={sm} k="color" />
+              </Form.Label>
 
               <RgbaColorPicker
                 value={contourColor}
@@ -283,7 +296,9 @@ export function ParameterizedShadingModal({
 
           {kind === 'hypsometric' && (
             <Form.Group className="mb-3" controlId="ps-min-elevation">
-              <Form.Label>{sm?.minElevation}</Form.Label>
+              <Form.Label>
+                <Text m={sm} k="minElevation" />
+              </Form.Label>
 
               <InputGroup hasValidation>
                 <Form.Control
@@ -308,7 +323,9 @@ export function ParameterizedShadingModal({
 
           {kind === 'hypsometric' && (
             <Form.Group className="mb-3" controlId="ps-max-elevation">
-              <Form.Label>{sm?.maxElevation}</Form.Label>
+              <Form.Label>
+                <Text m={sm} k="maxElevation" />
+              </Form.Label>
 
               <InputGroup hasValidation>
                 <Form.Control
@@ -324,10 +341,14 @@ export function ParameterizedShadingModal({
                 <InputGroup.Text>m</InputGroup.Text>
 
                 <Form.Control.Feedback type="invalid">
-                  {m?.general.valueRange({
-                    min: `${maxFloor} m`,
-                    max: `${colorReliefMax} m`,
-                  })}
+                  <Text>
+                    {(m) =>
+                      m.general.valueRange({
+                        min: `${maxFloor} m`,
+                        max: `${colorReliefMax} m`,
+                      })
+                    }
+                  </Text>
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
@@ -336,7 +357,9 @@ export function ParameterizedShadingModal({
           {kind === 'metallic' && (
             <>
               <Form.Group className="mb-3" controlId="ps-repeats">
-                <Form.Label>{sm?.repeats}</Form.Label>
+                <Form.Label>
+                  <Text m={sm} k="repeats" />
+                </Form.Label>
 
                 <Form.Control
                   type="number"
@@ -350,15 +373,21 @@ export function ParameterizedShadingModal({
                 />
 
                 <Form.Control.Feedback type="invalid">
-                  {m?.general.valueRange({
-                    min: '1',
-                    max: String(MAX_REPEATS),
-                  })}
+                  <Text>
+                    {(m) =>
+                      m.general.valueRange({
+                        min: '1',
+                        max: String(MAX_REPEATS),
+                      })
+                    }
+                  </Text>
                 </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>{sm?.highlightColor}</Form.Label>
+                <Form.Label>
+                  <Text m={sm} k="highlightColor" />
+                </Form.Label>
 
                 <RgbaColorPicker
                   value={metallicColor}
@@ -368,7 +397,9 @@ export function ParameterizedShadingModal({
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>{sm?.darkColor}</Form.Label>
+                <Form.Label>
+                  <Text m={sm} k="darkColor" />
+                </Form.Label>
 
                 <RgbaColorPicker
                   value={darkColor}
@@ -382,11 +413,11 @@ export function ParameterizedShadingModal({
 
         <Modal.Footer>
           <Button variant="secondary" onClick={onClose}>
-            {m?.general.cancel}
+            <Text k="general.cancel" />
           </Button>
 
           <Button type="submit" variant="primary" disabled={invalid}>
-            {sm?.apply}
+            <Text m={sm} k="apply" />
           </Button>
         </Modal.Footer>
       </Form>

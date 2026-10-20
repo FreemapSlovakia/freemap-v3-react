@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
@@ -179,7 +180,9 @@ export default function WeatherRadarMenu() {
                     ) : (
                       <FaGem className="text-warning" />
                     )}
-                    <MenuLabel>{wm?.showNowcast ?? '…'}</MenuLabel>
+                    <MenuLabel>
+                      <Text m={wm} k="showNowcast" />
+                    </MenuLabel>
                   </Dropdown.Item>
                 </FmDropdownMenu>
               </Dropdown>

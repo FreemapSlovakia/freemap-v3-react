@@ -1,5 +1,6 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   FmDismissButton,
@@ -248,7 +249,9 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
             </Dropdown.Toggle>
 
             <FmDropdownMenu>
-              <Dropdown.Header>{mm?.offline}</Dropdown.Header>
+              <Dropdown.Header>
+                <Text m={mm} k="offline" />
+              </Dropdown.Header>
 
               <OnlineOnlyItem
                 as="button"
@@ -256,7 +259,9 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 onClick={() => dispatch(mapsSetAllOffline(true))}
               >
                 <BiWifiOff />
-                <MenuLabel>{mm?.makeAllOffline}</MenuLabel>
+                <MenuLabel>
+                  <Text m={mm} k="makeAllOffline" />
+                </MenuLabel>
               </OnlineOnlyItem>
 
               <Dropdown.Item
@@ -265,7 +270,9 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 onClick={() => dispatch(mapsSetAllOffline(false))}
               >
                 <FaTimes />
-                <MenuLabel>{mm?.removeAllOffline}</MenuLabel>
+                <MenuLabel>
+                  <Text m={mm} k="removeAllOffline" />
+                </MenuLabel>
               </Dropdown.Item>
 
               <Dropdown.Item
@@ -276,14 +283,18 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 onClick={() => dispatch(mapsSyncOutbox({ manual: true }))}
               >
                 <FaCloudUploadAlt />
-                <MenuLabel>{mm?.syncNow}</MenuLabel>
+                <MenuLabel>
+                  <Text m={mm} k="syncNow" />
+                </MenuLabel>
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>
         </div>
 
         {filteredMaps.length === 0 && orphans.length === 0 ? (
-          <p className="text-muted mb-0">{mm?.noMapFound}</p>
+          <p className="text-muted mb-0">
+            <Text m={mm} k="noMapFound" />
+          </p>
         ) : (
           <ListGroup>
             {filteredMaps.map((map) => {
@@ -308,7 +319,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                       {map.name}
                       {isOffline && (
                         <Badge bg="secondary" className="ms-1">
-                          <BiWifiOff /> {mm?.offline}
+                          <BiWifiOff /> <Text m={mm} k="offline" />
                         </Badge>
                       )}
                       <MapSyncStatus mapId={map.id} className="ms-1" />
@@ -316,12 +327,12 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
                     <small className="text-muted">
                       <span className="text-nowrap">
-                        {m?.general.createdAt}:{' '}
+                        <Text k="general.createdAt" />:{' '}
                         <strong>{dateFormat.format(map.createdAt)}</strong>
                       </span>
                       {' · '}
                       <span className="text-nowrap">
-                        {m?.general.modifiedAt}:{' '}
+                        <Text k="general.modifiedAt" />:{' '}
                         <strong>{dateFormat.format(map.modifiedAt)}</strong>
                       </span>
                     </small>
@@ -351,7 +362,9 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                             onClick={() => handleLoad(map.id, false)}
                           >
                             <FaShapes />
-                            <MenuLabel>{mm?.loadExclMapAndPosition}</MenuLabel>
+                            <MenuLabel>
+                              <Text m={mm} k="loadExclMapAndPosition" />
+                            </MenuLabel>
                           </Dropdown.Item>
                         }
                         showFrom="sm"

@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
@@ -28,26 +28,34 @@ function SourceName({ attr }: { attr: AttributionDef }): ReactNode {
 export function PanoramaAbout({ depthLift, terrain }: Props): ReactElement {
   const m = usePanoramaMessages();
 
-  const gm = useMessages();
-
   return (
     <>
-      <p className="mb-1">{gm?.general.terrain.bareEarth}</p>
+      <p className="mb-1">
+        <Text k="general.terrain.bareEarth" />
+      </p>
 
-      <p className="mb-1">{gm?.general.terrain.coverage}</p>
+      <p className="mb-1">
+        <Text k="general.terrain.coverage" />
+      </p>
 
-      <p className="mb-1">{m?.caveats.viewpoint}</p>
+      <p className="mb-1">
+        <Text m={m} k="caveats.viewpoint" />
+      </p>
 
       {/* Of the render, not of the setting: this says what the picture on
           screen is, and a lift only staged has not drawn it yet. */}
-      {depthLift > 0 && <p className="mb-1">{m?.caveats.depthLift}</p>}
+      {depthLift > 0 && (
+        <p className="mb-1">
+          <Text m={m} k="caveats.depthLift" />
+        </p>
+      )}
 
       <ul className="m-0 ps-3">
         {/* Omitted rather than left dangling when the render named no model:
             a label with nothing after the colon credits nobody either. */}
         {terrain.length > 0 && (
           <li>
-            {m?.terrainSource}:{' '}
+            <Text m={m} k="terrainSource" />:{' '}
             {terrain.map((attr, i) => (
               <Fragment key={keyOf(attr)}>
                 {i > 0 ? ', ' : null}
@@ -62,13 +70,13 @@ export function PanoramaAbout({ depthLift, terrain }: Props): ReactElement {
             elevation comes from the terrain model above, but what it is called
             does not. */}
         <li>
-          {m?.peakSource}:{' '}
+          <Text m={m} k="peakSource" />:{' '}
           <a
             href="https://osm.org/copyright"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {gm?.mapLayers.attr['osmData']}
+            <Text k="mapLayers.attr.osmData" />
           </a>
         </li>
       </ul>

@@ -9,6 +9,7 @@ import {
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -197,7 +198,7 @@ function MenuToggleGroup({
 
       <Dropdown.Header>
         {icon}
-        &nbsp;{title ?? '…'}
+        &nbsp;{title}
       </Dropdown.Header>
 
       <div className="px-3 pb-2">
@@ -216,7 +217,7 @@ function MenuToggleGroup({
               variant="outline-primary"
               size="sm"
             >
-              {label ?? '…'}
+              {label}
             </ToggleButton>
           ))}
         </FitToggleButtonGroup>
@@ -255,21 +256,23 @@ function TripSettings() {
 
   const rpm = useRoutePlannerMessages();
 
-  const ghParams = rpm?.ghParams;
-
   return (
     <>
       <hr />
 
       <fieldset className="mx-4 mb-4 w-auto">
-        <legend>{ghParams?.tripParameters}</legend>
+        <legend>
+          <Text m={rpm} k="ghParams.tripParameters" />
+        </legend>
 
         <Form.Group
           controlId="distance"
           as="form"
           onSubmit={handleDistanceSubmit}
         >
-          <Form.Label>{ghParams?.distance}</Form.Label>
+          <Form.Label>
+            <Text m={rpm} k="ghParams.distance" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -286,7 +289,9 @@ function TripSettings() {
         </Form.Group>
 
         <Form.Group controlId="seed" as="form" onSubmit={handleSeedSubmit}>
-          <Form.Label className="mt-2">{ghParams?.seed}</Form.Label>
+          <Form.Label className="mt-2">
+            <Text m={rpm} k="ghParams.seed" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -374,8 +379,6 @@ function IsochroneSettings() {
     );
   };
 
-  const m = useMessages();
-
   const rpm = useRoutePlannerMessages();
 
   const ghParams = rpm?.ghParams;
@@ -385,14 +388,18 @@ function IsochroneSettings() {
       <hr />
 
       <fieldset className="mx-4 mb-4 w-auto">
-        <legend>{ghParams?.isochroneParameters}</legend>
+        <legend>
+          <Text m={rpm} k="ghParams.isochroneParameters" />
+        </legend>
 
         <Form.Group
           controlId="timeLimit"
           as="form"
           onSubmit={handleTimeLimitSubmit}
         >
-          <Form.Label>{ghParams?.timeLimit}</Form.Label>
+          <Form.Label>
+            <Text m={rpm} k="ghParams.timeLimit" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -405,7 +412,9 @@ function IsochroneSettings() {
               disabled={distanceLimit !== '0'}
             />
 
-            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            <InputGroup.Text>
+              <Text k="general.minutes" />
+            </InputGroup.Text>
           </InputGroup>
         </Form.Group>
 
@@ -414,7 +423,9 @@ function IsochroneSettings() {
           as="form"
           onSubmit={handleDistanceLimitSubmit}
         >
-          <Form.Label className="mt-2">{ghParams?.distanceLimit}</Form.Label>
+          <Form.Label className="mt-2">
+            <Text m={rpm} k="ghParams.distanceLimit" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -435,7 +446,9 @@ function IsochroneSettings() {
           as="form"
           onSubmit={handleBucketsSubmit}
         >
-          <Form.Label className="mt-2">{ghParams?.buckets}</Form.Label>
+          <Form.Label className="mt-2">
+            <Text m={rpm} k="ghParams.buckets" />
+          </Form.Label>
 
           <Form.Control
             type="number"
@@ -800,7 +813,7 @@ export default function RoutePlannerMenu(): ReactElement {
           options={(['route', 'trip', 'roundtrip'] satisfies RoutingMode[]).map(
             (mode) => ({
               value: mode,
-              label: rpm?.mode[mode] ?? '…',
+              label: <Text m={rpm} k={`mode.${mode}`} />,
               icon: modeIcons[mode],
               title: rpm?.mode[mode],
             }),
@@ -846,17 +859,23 @@ export default function RoutePlannerMenu(): ReactElement {
           <FmDropdownMenu>
             <Dropdown.Item as="button" eventKey="pick">
               <FaMapMarkerAlt />
-              <MenuLabel>{rpm?.point.pick ?? '…'}</MenuLabel>
+              <MenuLabel>
+                <Text m={rpm} k="point.pick" />
+              </MenuLabel>
             </Dropdown.Item>
 
             <Dropdown.Item as="button" eventKey="current">
               <FaBullseye />
-              <MenuLabel>{rpm?.point.current ?? '…'}</MenuLabel>
+              <MenuLabel>
+                <Text m={rpm} k="point.current" />
+              </MenuLabel>
             </Dropdown.Item>
 
             <Dropdown.Item as="button" eventKey="home">
               <FaHome />
-              <MenuLabel>{rpm?.point.home ?? '…'}</MenuLabel>
+              <MenuLabel>
+                <Text m={rpm} k="point.home" />
+              </MenuLabel>
               <Button
                 size="sm"
                 variant="secondary"
@@ -872,7 +891,9 @@ export default function RoutePlannerMenu(): ReactElement {
               activeMode !== 'isochrone' && (
                 <Dropdown.Item as="button" eventKey="from-finish">
                   <FaStop color="#d9534f" />
-                  <MenuLabel>{rpm?.point.fromFinish ?? '…'}</MenuLabel>
+                  <MenuLabel>
+                    <Text m={rpm} k="point.fromFinish" />
+                  </MenuLabel>
                 </Dropdown.Item>
               )}
           </FmDropdownMenu>
@@ -930,17 +951,23 @@ export default function RoutePlannerMenu(): ReactElement {
               <FmDropdownMenu>
                 <Dropdown.Item as="button" eventKey="pick">
                   <FaMapMarkerAlt />
-                  <MenuLabel>{rpm?.point.pick ?? '…'}</MenuLabel>
+                  <MenuLabel>
+                    <Text m={rpm} k="point.pick" />
+                  </MenuLabel>
                 </Dropdown.Item>
 
                 <Dropdown.Item as="button" eventKey="current">
                   <FaBullseye />
-                  <MenuLabel>{rpm?.point.current ?? '…'}</MenuLabel>
+                  <MenuLabel>
+                    <Text m={rpm} k="point.current" />
+                  </MenuLabel>
                 </Dropdown.Item>
 
                 <Dropdown.Item as="button" eventKey="home">
                   <FaHome />
-                  <MenuLabel>{rpm?.point.home ?? '…'}</MenuLabel>
+                  <MenuLabel>
+                    <Text m={rpm} k="point.home" />
+                  </MenuLabel>
                   <Button
                     size="sm"
                     variant="secondary"
@@ -954,7 +981,9 @@ export default function RoutePlannerMenu(): ReactElement {
                 {startPoint && (
                   <Dropdown.Item as="button" eventKey="from-start">
                     <FaPlay color="#409a40" />
-                    <MenuLabel>{rpm?.point.fromStart ?? '…'}</MenuLabel>
+                    <MenuLabel>
+                      <Text m={rpm} k="point.fromStart" />
+                    </MenuLabel>
                   </Dropdown.Item>
                 )}
               </FmDropdownMenu>
@@ -1085,13 +1114,13 @@ export default function RoutePlannerMenu(): ReactElement {
             {routeFound && (
               <MenuToggleGroup
                 icon={<FaMapMarkerAlt />}
-                title={rpm?.milestones}
+                title={<Text m={rpm} k="milestones" />}
                 name="milestones"
                 // A group's value is a string, so the off state is spelled
                 // rather than being the `false` the setting holds.
                 value={milestones || 'off'}
                 options={[
-                  ['off', rpm?.milestonesOff],
+                  ['off', <Text key="off" m={rpm} k="milestonesOff" />],
                   ['abs', 'km'],
                   ['rel', '%'],
                 ]}
@@ -1110,7 +1139,7 @@ export default function RoutePlannerMenu(): ReactElement {
             {alternativesApplicable && !storedRouteShowing && (
               <MenuToggleGroup
                 icon={<FaRoute />}
-                title={rpm?.maxAlternatives}
+                title={<Text m={rpm} k="maxAlternatives" />}
                 name="maxAlternatives"
                 value={String(maxAlternatives)}
                 options={Array.from(
@@ -1130,25 +1159,29 @@ export default function RoutePlannerMenu(): ReactElement {
                 {/* A row, so the label truncates and not the gem. */}
                 <Dropdown.Header className="d-flex align-items-center gap-1">
                   <FaRandom className="flex-shrink-0" />
-                  <MenuLabel>{rpm?.optimize.label ?? '…'}</MenuLabel>
+                  <MenuLabel>
+                    <Text m={rpm} k="optimize.label" />
+                  </MenuLabel>
                   <PremiumGem nested />
                 </Dropdown.Header>
 
                 {(
                   [
-                    ['optimize-fixed-start', rpm?.optimize.fixedStart],
-                    ['optimize-fixed-start-end', rpm?.optimize.fixedStartEnd],
-                    ['optimize-roundtrip', rpm?.optimize.roundtrip],
-                    ['optimize-free', rpm?.optimize.free],
+                    ['optimize-fixed-start', 'fixedStart'],
+                    ['optimize-fixed-start-end', 'fixedStartEnd'],
+                    ['optimize-roundtrip', 'roundtrip'],
+                    ['optimize-free', 'free'],
                   ] as const
-                ).map(([eventKey, label]) => (
+                ).map(([eventKey, key]) => (
                   <Dropdown.Item
                     as="button"
                     key={eventKey}
                     eventKey={eventKey}
                     disabled={optimizeBlocked || Boolean(becomePremium)}
                   >
-                    <MenuLabel>{label ?? '…'}</MenuLabel>
+                    <MenuLabel>
+                      <Text m={rpm} k={`optimize.${key}`} />
+                    </MenuLabel>
                   </Dropdown.Item>
                 ))}
               </>

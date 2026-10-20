@@ -2,6 +2,7 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import {
@@ -744,7 +745,7 @@ export default function MapToDocumentExportModal({
     >
       <Modal.Header closeButton={!exporting}>
         <Modal.Title>
-          <FaPrint /> {m?.mainMenu.mapToDocumentExport}
+          <FaPrint /> <Text k="mainMenu.mapToDocumentExport" />
         </Modal.Title>
       </Modal.Header>
 
@@ -752,12 +753,14 @@ export default function MapToDocumentExportModal({
         {result ? (
           <>
             <p className="fs-5">
-              {mtde?.ready} — {result.file.suggestedName} (
+              <Text m={mtde} k="ready" /> — {result.file.suggestedName} (
               {formatSize(result.file.blob.size)})
             </p>
 
             <Alert variant="warning">
-              <p>{mtde?.readyCredits}</p>
+              <p>
+                <Text m={mtde} k="readyCredits" />
+              </p>
 
               <p className="user-select-all mb-0">
                 {credits.map(({ def, name }, i) => (
@@ -775,12 +778,14 @@ export default function MapToDocumentExportModal({
               </p>
 
               {!result.file.reported && (
-                <p className="mb-0 mt-2 small">{mtde?.readyCreditsNone}</p>
+                <p className="mb-0 mt-2 small">
+                  <Text m={mtde} k="readyCreditsNone" />
+                </p>
               )}
 
               {result.file.unresolved.length > 0 && (
                 <p className="mb-0 mt-2 small">
-                  {mtde?.readyUnknownSources}{' '}
+                  <Text m={mtde} k="readyUnknownSources" />{' '}
                   {result.file.unresolved.join(', ')}
                 </p>
               )}
@@ -791,10 +796,14 @@ export default function MapToDocumentExportModal({
             <OfflineAlert />
 
             <fieldset disabled={exporting}>
-              <Alert variant="warning">{mtde?.alert()}</Alert>
+              <Alert variant="warning">
+                <Text m={mtde}>{(mtde) => mtde.alert()}</Text>
+              </Alert>
 
               <Form.Group>
-                <Form.Label className="d-block">{mtde?.area}</Form.Label>
+                <Form.Label className="d-block">
+                  <Text m={mtde} k="area" />
+                </Form.Label>
 
                 <MapAreaToggle
                   area={area}
@@ -805,7 +814,10 @@ export default function MapToDocumentExportModal({
 
               <div className="d-flex flex-wrap align-items-end gap-2">
                 <Form.Group className="mt-3">
-                  <Form.Label className="d-block"> {mtde?.format}</Form.Label>
+                  <Form.Label className="d-block">
+                    {' '}
+                    <Text m={mtde} k="format" />
+                  </Form.Label>
 
                   <FitToggleButtonGroup
                     type="radio"
@@ -831,7 +843,9 @@ export default function MapToDocumentExportModal({
 
                 {(webp || qualityKey) && (
                   <Form.Group className="w-auto mt-2">
-                    <Form.Label>{mtde?.quality}</Form.Label>
+                    <Form.Label>
+                      <Text m={mtde} k="quality" />
+                    </Form.Label>
 
                     <InputGroup>
                       {/* Plain buttons rather than a nested `ToggleButtonGroup`:
@@ -845,7 +859,7 @@ export default function MapToDocumentExportModal({
                             aria-pressed={lossless}
                             onClick={handleLosslessClick}
                           >
-                            {mtde?.lossless}
+                            <Text m={mtde} k="lossless" />
                           </Button>
 
                           <Button
@@ -854,7 +868,7 @@ export default function MapToDocumentExportModal({
                             aria-pressed={!lossless}
                             onClick={handleLossyClick}
                           >
-                            {mtde?.lossy}
+                            <Text m={mtde} k="lossy" />
                           </Button>
                         </>
                       )}
@@ -889,7 +903,7 @@ export default function MapToDocumentExportModal({
                   print.px.height,
                 ) > WEBP_MAX_SIDE && (
                   <Form.Text className="d-block text-warning">
-                    {mtde?.webpTooLarge}
+                    <Text m={mtde} k="webpTooLarge" />
                   </Form.Text>
                 )}
 
@@ -912,7 +926,9 @@ export default function MapToDocumentExportModal({
               />
 
               <fieldset className="mt-3 border rounded p-3">
-                <legend>{mtde?.mapDataTitle}</legend>
+                <legend>
+                  <Text m={mtde} k="mapDataTitle" />
+                </legend>
 
                 <ExportablesSelector
                   value={exportables}

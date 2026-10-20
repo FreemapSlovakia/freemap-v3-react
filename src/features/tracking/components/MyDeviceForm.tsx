@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -75,17 +76,23 @@ export function MyDeviceForm(): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}
-          {device
-            ? tm?.devices.modifyTitle({
-                name: device.name,
-              })
-            : tm?.devices.createTitle}
+          <Text m={tm}>
+            {(tm) =>
+              device
+                ? tm.devices.modifyTitle({
+                    name: device.name,
+                  })
+                : tm.devices.createTitle
+            }
+          </Text>
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form.Group controlId="deviceName" className="mb-3">
-          <Form.Label className="required">{tm?.device.name}</Form.Label>
+          <Form.Label className="required">
+            <Text m={tm} k="device.name" />
+          </Form.Label>
 
           <Form.Control
             type="text"
@@ -110,7 +117,9 @@ export function MyDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="maxCount" className="mb-3">
-          <Form.Label>{tm?.device.maxCount}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="device.maxCount" />
+          </Form.Label>
 
           <Form.Control
             type="number"
@@ -123,7 +132,9 @@ export function MyDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="maxAge" className="mb-3">
-          <Form.Label>{tm?.device.maxAge}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="device.maxAge" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -135,7 +146,9 @@ export function MyDeviceForm(): ReactElement {
               onChange={setMaxAge}
             />
 
-            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            <InputGroup.Text>
+              <Text k="general.minutes" />
+            </InputGroup.Text>
           </InputGroup>
         </Form.Group>
       </Modal.Body>

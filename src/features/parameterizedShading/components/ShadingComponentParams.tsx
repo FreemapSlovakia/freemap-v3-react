@@ -1,4 +1,5 @@
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
+import { Text } from '@features/l10n/Text.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { produce } from 'immer';
 import {
@@ -174,7 +175,9 @@ export function ShadingComponentParams({
     // As wide as the rest of the panel and never wider.
     <Accordion className="mt-3" style={{ width: 0, minWidth: '100%' }}>
       <Accordion.Item eventKey="params">
-        <Accordion.Header>{sm?.parameters}</Accordion.Header>
+        <Accordion.Header>
+          <Text m={sm} k="parameters" />
+        </Accordion.Header>
 
         <Accordion.Body className="d-flex flex-column gap-3 p-2">
           {'exaggeration' in component && (
@@ -218,7 +221,9 @@ export function ShadingComponentParams({
                   className={FIELD}
                   style={FIELD_STYLE}
                 >
-                  <Form.Label>{sm?.azimuth}</Form.Label>
+                  <Form.Label>
+                    <Text m={sm} k="azimuth" />
+                  </Form.Label>
 
                   <NumberField
                     min={0}
@@ -239,7 +244,9 @@ export function ShadingComponentParams({
                   className={FIELD}
                   style={FIELD_STYLE}
                 >
-                  <Form.Label>{sm?.lightElevation}</Form.Label>
+                  <Form.Label>
+                    <Text m={sm} k="lightElevation" />
+                  </Form.Label>
 
                   <NumberField
                     min={0}

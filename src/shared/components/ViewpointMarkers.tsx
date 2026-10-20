@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -19,15 +19,14 @@ export function ViewpointElevationTooltip({
 }: {
   elevation: number;
 }): ReactElement {
-  const m = useMessages();
-
   // Plain, not the `meter` unit style: `general.masl` follows it and says both
   // the unit and what it is measured from.
   const nf = useNumberFormat({ maximumFractionDigits: 0 });
 
   return (
     <Tooltip direction="top">
-      {m?.general.viewpoint}: {nf.format(elevation)} {m?.general.masl}
+      <Text k="general.viewpoint" />: {nf.format(elevation)}{' '}
+      <Text k="general.masl" />
     </Tooltip>
   );
 }

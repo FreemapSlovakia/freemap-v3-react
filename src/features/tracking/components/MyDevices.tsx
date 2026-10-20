@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -35,14 +36,16 @@ export function MyDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaMobileAlt /> {tm?.devices.modalTitle}
+          <FaMobileAlt /> <Text m={tm} k="devices.modalTitle" />
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <OfflineAlert />
 
-        <Alert variant="secondary">{tm?.devices.desc()}</Alert>
+        <Alert variant="secondary">
+          <Text m={tm}>{(tm) => tm.devices.desc()}</Text>
+        </Alert>
 
         {devices.length > 0 && (
           <ListGroup>

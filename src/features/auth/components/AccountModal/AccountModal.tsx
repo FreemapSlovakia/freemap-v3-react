@@ -8,6 +8,7 @@ import {
 import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { loadMyMapsMessages } from '@features/myMaps/translations/loadMyMapsMessages.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { PurchasesSection } from '@features/purchases/components/PurchasesSection.js';
@@ -128,7 +129,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaUser /> {m?.mainMenu.account}
+          <FaUser /> <Text k="mainMenu.account" />
         </Modal.Title>
       </Modal.Header>
 
@@ -139,7 +140,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="payments">
             <Accordion.Header>
               <span>
-                <FaShoppingBasket /> {pm?.purchases}
+                <FaShoppingBasket /> <Text m={pm} k="purchases" />
               </span>
             </Accordion.Header>
 
@@ -151,7 +152,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="personal">
             <Accordion.Header>
               <span>
-                <FaAddressCard /> {am?.account.personalInfo}
+                <FaAddressCard /> <Text m={am} k="account.personalInfo" />
               </span>
             </Accordion.Header>
 
@@ -163,7 +164,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="accounts">
             <Accordion.Header>
               <span>
-                <FaUserCircle /> {am?.account.authProviders}
+                <FaUserCircle /> <Text m={am} k="account.authProviders" />
               </span>
             </Accordion.Header>
 

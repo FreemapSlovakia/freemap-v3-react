@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmFooterButton,
   FmModalFooter,
@@ -42,14 +43,17 @@ export function AccessTokens(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaBullseye /> {tm?.accessTokens.modalTitle(deviceName)}
+          <FaBullseye />{' '}
+          <Text m={tm}>{(tm) => tm.accessTokens.modalTitle(deviceName)}</Text>
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <OfflineAlert />
 
-        <Alert variant="secondary">{tm?.accessTokens.desc(deviceName)}</Alert>
+        <Alert variant="secondary">
+          <Text m={tm}>{(tm) => tm.accessTokens.desc(deviceName)}</Text>
+        </Alert>
 
         {accessTokens.length > 0 && (
           <ListGroup>

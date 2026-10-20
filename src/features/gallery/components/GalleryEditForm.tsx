@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { DateTime } from '@shared/components/DateTime.js';
 import '@shared/styles/react-tags.scss';
 import {
@@ -167,7 +168,7 @@ export function GalleryEditForm({
           />
 
           <Button onClick={onPositionPick}>
-            <FaRegDotCircle /> {gm?.editForm.setLocation}
+            <FaRegDotCircle /> <Text m={gm} k="editForm.setLocation" />
           </Button>
         </InputGroup>
       </Form.Group>
@@ -218,7 +219,9 @@ export function GalleryEditForm({
       </Form.Group>
 
       <Form.Group controlId={`license-${id ?? 'x'}`} className="mb-3">
-        <Form.Label>{gm?.license.label}</Form.Label>
+        <Form.Label>
+          <Text m={gm} k="license.label" />
+        </Form.Label>
 
         <GalleryLicenseSelect
           value={model.license}
@@ -226,7 +229,7 @@ export function GalleryEditForm({
         />
 
         <Form.Text className="text-muted lh-sm d-block">
-          {gm?.license.descriptions[model.license]}
+          <Text m={gm} k={`license.descriptions.${model.license}`} />
           {id === undefined && gm?.license.changeNote
             ? ` ${gm.license.changeNote}`
             : ''}

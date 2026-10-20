@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   mapCustomLayerDelete,
   mapPresetDelete,
@@ -35,10 +36,12 @@ export function useCustomMapActions() {
       title: mm?.deleteTitle,
       message: (
         <>
-          {mm?.deleteConfirm(name)}
+          <Text m={mm}>{(mm) => mm.deleteConfirm(name)}</Text>
           {alsoNamed.length > 0 && (
             <p className="mt-2 mb-0">
-              {msm?.deleteAlsoNamed(alsoNamed.join(', '))}
+              <Text m={msm}>
+                {(msm) => msm.deleteAlsoNamed(alsoNamed.join(', '))}
+              </Text>
             </p>
           )}
         </>

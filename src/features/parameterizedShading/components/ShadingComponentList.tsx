@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import Color from 'color';
 import type { ReactElement } from 'react';
 import { ListGroup } from 'react-bootstrap';
@@ -33,7 +34,9 @@ export function ShadingComponentList({
             className={`rounded border ${classes.shadingColor}`}
             style={{ backgroundColor: Color(shading.backgroundColor).hexa() }}
           />
-          <span>{sm?.background}</span>
+          <span>
+            <Text m={sm} k="background" />
+          </span>
         </ListGroup.Item>
       )}
 
@@ -52,7 +55,9 @@ export function ShadingComponentList({
               style={{ visibility: 'hidden' }}
             />
           )}
-          <span>{sm?.types[component.type]}</span>
+          <span>
+            <Text m={sm} k={`types.${component.type}`} />
+          </span>
           <small>
             {(component.type === 'hillshade-classic' ||
               component.type === 'hillshade-igor') &&

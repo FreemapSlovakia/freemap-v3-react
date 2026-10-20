@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   mapLayerSetupChange,
   type SetupTarget,
@@ -32,8 +32,6 @@ type Props = { def: WmsLayerDef; target: SetupTarget };
 
 /** Ticks the layers a WMS map on the map draws, in its setup. */
 export function WmsSection({ def, target }: Props): ReactElement {
-  const m = useMessages();
-
   const own = useTargetSetup(target)?.wmsLayers;
 
   const [tree, setTree] = useState<{
@@ -74,7 +72,7 @@ export function WmsSection({ def, target }: Props): ReactElement {
     />
   ) : (
     <div className="text-center">
-      <Spinner size="sm" /> {m?.general.loading}
+      <Spinner size="sm" /> <Text k="general.loading" />
     </div>
   );
 }

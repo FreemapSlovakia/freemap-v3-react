@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
@@ -19,11 +19,11 @@ type Props = {
 
 /** What kind of server a custom map is. */
 export function CustomMapTypeField({ value, onChange }: Props): ReactElement {
-  const m = useMessages();
-
   return (
     <Form.Group className="mt-3">
-      <Form.Label>{m?.mapLayers.technology}</Form.Label>
+      <Form.Label>
+        <Text k="mapLayers.technology" />
+      </Form.Label>
 
       <Dropdown
         onSelect={(technology) =>
@@ -31,7 +31,8 @@ export function CustomMapTypeField({ value, onChange }: Props): ReactElement {
         }
       >
         <Dropdown.Toggle as={SelectToggle} className="w-100">
-          {CUSTOM_MAP_ICONS[value]} {m?.mapLayers.technologies[value]}
+          {CUSTOM_MAP_ICONS[value]}{' '}
+          <Text k={`mapLayers.technologies.${value}`} />
         </Dropdown.Toggle>
 
         <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
@@ -44,7 +45,9 @@ export function CustomMapTypeField({ value, onChange }: Props): ReactElement {
               active={value === technology}
             >
               {CUSTOM_MAP_ICONS[technology]}
-              <MenuLabel>{m?.mapLayers.technologies[technology]}</MenuLabel>
+              <MenuLabel>
+                <Text k={`mapLayers.technologies.${technology}`} />
+              </MenuLabel>
             </Dropdown.Item>
           ))}
         </FmDropdownMenu>

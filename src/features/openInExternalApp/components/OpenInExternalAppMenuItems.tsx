@@ -1,5 +1,5 @@
 import type { ExternalTarget } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Chord } from '@shared/components/Chord.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
@@ -144,8 +144,6 @@ export function SharePageItems({
   showKbdShortcut,
   ...props
 }: PageProps): ReactElement {
-  const m = useMessages();
-
   const oeam = useOpenInExternalAppMessages();
 
   const { canCopy, hasShare, canShareImage } = pageItemFlags(props);
@@ -155,7 +153,9 @@ export function SharePageItems({
       {canCopy && (
         <Dropdown.Item as="button" {...openMenuItemProps('copy')}>
           <FaClipboard />
-          <MenuLabel>{m?.general.copyPageUrl}</MenuLabel>
+          <MenuLabel>
+            <Text k="general.copyPageUrl" />
+          </MenuLabel>
           {showKbdShortcut && (
             <MenuGutter>
               <Chord external="copy" />
@@ -167,14 +167,18 @@ export function SharePageItems({
       {hasShare && (
         <Dropdown.Item as="button" {...openMenuItemProps('url')}>
           <FaLink />
-          <MenuLabel>{oeam?.url}</MenuLabel>
+          <MenuLabel>
+            <Text m={oeam} k="url" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
 
       {canShareImage && (
         <Dropdown.Item as="button" {...openMenuItemProps('image')}>
           <FaShareAlt />
-          <MenuLabel>{oeam?.image}</MenuLabel>
+          <MenuLabel>
+            <Text m={oeam} k="image" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
     </>
@@ -243,7 +247,9 @@ export function OpenInExternalTargetItems({
       {url && (
         <Dropdown.Item href={url} target="_blank" eventKey="url">
           <FaWindowMaximize />
-          <MenuLabel>{oeam?.window}</MenuLabel>
+          <MenuLabel>
+            <Text m={oeam} k="window" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -258,7 +264,9 @@ export function OpenInExternalTargetItems({
         eventKey="url"
       >
         <SiOpenstreetmap />
-        <MenuLabel>{oeam?.osm}</MenuLabel>
+        <MenuLabel>
+          <Text m={oeam} k="osm" />
+        </MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="osm.org" />
@@ -271,7 +279,9 @@ export function OpenInExternalTargetItems({
         <>
           <Dropdown.Item as="button" {...openMenuItemProps('josm')}>
             {noIcon}
-            <MenuLabel>{oeam?.josm}</MenuLabel>
+            <MenuLabel>
+              <Text m={oeam} k="josm" />
+            </MenuLabel>
             {showKbdShortcut && (
               <MenuGutter>
                 <Chord external="josm" />
@@ -285,7 +295,9 @@ export function OpenInExternalTargetItems({
             eventKey="url"
           >
             {noIcon}
-            <MenuLabel>{oeam?.id}</MenuLabel>
+            <MenuLabel>
+              <Text m={oeam} k="id" />
+            </MenuLabel>
             {showKbdShortcut && (
               <MenuGutter>
                 <Chord external="osm.org/id" />
@@ -326,7 +338,9 @@ export function OpenInExternalTargetItems({
         eventKey="url"
       >
         {noIcon}
-        <MenuLabel>{oeam?.mapy_cz}</MenuLabel>
+        <MenuLabel>
+          <Text m={oeam} k="mapy_cz" />
+        </MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="mapy.com" />
@@ -340,7 +354,9 @@ export function OpenInExternalTargetItems({
         eventKey="url"
       >
         <SiGooglemaps />
-        <MenuLabel>{oeam?.googleMaps}</MenuLabel>
+        <MenuLabel>
+          <Text m={oeam} k="googleMaps" />
+        </MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="google" />
@@ -354,7 +370,9 @@ export function OpenInExternalTargetItems({
         eventKey="url"
       >
         <SiApple />
-        <MenuLabel>{oeam?.appleMaps}</MenuLabel>
+        <MenuLabel>
+          <Text m={oeam} k="appleMaps" />
+        </MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="apple" />
@@ -379,7 +397,9 @@ export function OpenInExternalTargetItems({
           onClick={() => trackOpenApp('geo-app')}
         >
           <FaMapMarkedAlt />
-          <MenuLabel>{oeam?.geoApp}</MenuLabel>
+          <MenuLabel>
+            <Text m={oeam} k="geoApp" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -514,7 +534,9 @@ export function OpenInExternalTargetItems({
           eventKey="url"
         >
           {noIcon}
-          <MenuLabel>{oeam?.oma}</MenuLabel>
+          <MenuLabel>
+            <Text m={oeam} k="oma" />
+          </MenuLabel>
           <CountryFlag country="sk" />
         </OnlineOnlyItem>
       )}
@@ -526,7 +548,9 @@ export function OpenInExternalTargetItems({
           eventKey="url"
         >
           {noIcon}
-          <MenuLabel>{oeam?.hiking_sk}</MenuLabel>
+          <MenuLabel>
+            <Text m={oeam} k="hiking_sk" />
+          </MenuLabel>
           <CountryFlag country="sk" />
           <CountryFlag country="cz" />
           {showKbdShortcut && (
@@ -544,7 +568,9 @@ export function OpenInExternalTargetItems({
           eventKey="url"
         >
           {noIcon}
-          <MenuLabel>{oeam?.zbgis}</MenuLabel>
+          <MenuLabel>
+            <Text m={oeam} k="zbgis" />
+          </MenuLabel>
           <CountryFlag country="sk" />
           {showKbdShortcut && (
             <MenuGutter>

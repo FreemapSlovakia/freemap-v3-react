@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { askingCookieConsentSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   endKeep,
   type KeepGesture,
@@ -1450,7 +1451,8 @@ export default function ElevationChart(): ReactElement | null {
               Number.isFinite(rangeStats.min) && (
                 <>
                   ▴ {nf0.format(rangeStats.min)}–{nf0.format(rangeStats.max)}
-                  &nbsp;{gm?.general.masl}
+                  &nbsp;
+                  <Text k="general.masl" />
                 </>
               ),
 
@@ -1481,8 +1483,8 @@ export default function ElevationChart(): ReactElement | null {
           typeof climbUp === 'number' &&
           typeof climbDown === 'number' && (
             <p className="m-0">
-              {m?.uphill}: {nf0.format(climbUp)}&nbsp;m, {m?.downhill}:{' '}
-              {nf0.format(climbDown)}&nbsp;m
+              <Text m={m} k="uphill" />: {nf0.format(climbUp)}&nbsp;m,{' '}
+              <Text m={m} k="downhill" />: {nf0.format(climbDown)}&nbsp;m
             </p>
           )
         )}
@@ -1491,7 +1493,7 @@ export default function ElevationChart(): ReactElement | null {
           // Pushed against the buttons at the right end of its line, so the one
           // auto margin belongs here rather than to them.
           <p className="m-0 ms-auto small text-body-secondary">
-            {m?.elevationSource}:{' '}
+            <Text m={m} k="elevationSource" />:{' '}
             {tooMany ? (
               <Button
                 variant="link"
@@ -1501,7 +1503,7 @@ export default function ElevationChart(): ReactElement | null {
                 className="p-0 align-baseline"
                 onClick={showSources}
               >
-                {m?.showAllSources} ({sources.length})
+                <Text m={m} k="showAllSources" /> ({sources.length})
               </Button>
             ) : (
               <ElevationSourcesInline sources={sources} />

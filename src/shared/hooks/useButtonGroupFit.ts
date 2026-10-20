@@ -81,7 +81,16 @@ export function useButtonGroupFit(): ButtonGroupFit {
 
     ro.observe(parent);
 
-    return () => ro.disconnect();
+    // A label can change without the group re-rendering (`<Text>` re-renders alone).
+    const mo = new MutationObserver(measure);
+
+    mo.observe(el, { childList: true, characterData: true, subtree: true });
+
+    return () => {
+      ro.disconnect();
+
+      mo.disconnect();
+    };
   }, [el, measure]);
 
   return {

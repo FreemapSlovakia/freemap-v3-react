@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
@@ -30,9 +31,11 @@ export function RoutePlannerTransportType({
 
   const activeTTDef = value && transportTypeDefs[value];
 
-  const ttLabel = activeTTDef
-    ? rpm?.transportType[activeTTDef.msgKey]
-    : rpm?.default;
+  const ttLabel = activeTTDef ? (
+    <Text m={rpm} k={`transportType.${activeTTDef.msgKey}`} />
+  ) : (
+    <Text m={rpm} k="default" />
+  );
 
   const becomePremium = useBecomePremium();
 
@@ -49,7 +52,7 @@ export function RoutePlannerTransportType({
         label={
           activeTTDef ? (
             <>
-              {ttLabel ?? '…'}
+              {ttLabel}
 
               {activeTTDef.api !== 'manual' && (
                 <>
@@ -61,7 +64,7 @@ export function RoutePlannerTransportType({
               )}
             </>
           ) : (
-            (ttLabel ?? '…')
+            ttLabel
           )
         }
       >
@@ -80,7 +83,9 @@ export function RoutePlannerTransportType({
         {withDefault && (
           <Dropdown.Item as="button" eventKey="" active={!value}>
             <FaEquals />
-            <MenuLabel>{rpm?.default}</MenuLabel>
+            <MenuLabel>
+              <Text m={rpm} k="default" />
+            </MenuLabel>
           </Dropdown.Item>
         )}
 
@@ -107,7 +112,9 @@ export function RoutePlannerTransportType({
                   {['car', 'car-toll', 'bikesharing'].includes(type) && (
                     <FaMoneyBill />
                   )}
-                  <MenuLabel>{rpm?.transportType[key] ?? '…'}</MenuLabel>
+                  <MenuLabel>
+                    <Text m={rpm} k={`transportType.${key}`} />
+                  </MenuLabel>
                   {(experimental || withDefault || api === 'osrm') && (
                     <MenuGutter>
                       {experimental && <ExperimentalFunction />}

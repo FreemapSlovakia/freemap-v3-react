@@ -1,7 +1,7 @@
 import { convertToDrawing } from '@app/store/actions.js';
 import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { ElevationSourcesInfo } from '@features/elevationChart/components/ElevationValue.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { loadingResult } from '@features/search/model/resultUtils.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -40,8 +40,6 @@ export function TerrainFactsView({
   elevationRow,
 }: Props): ReactElement {
   const om = useObjectsMessages();
-
-  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -141,12 +139,12 @@ export function TerrainFactsView({
         elevationRow,
         depthM !== null && (
           <div key="depth">
-            {om?.terrain.depth}: {metres(depthM)}
+            <Text m={om} k="terrain.depth" />: {metres(depthM)}
           </div>
         ),
         keyColOf && (
           <div key="keyColOf">
-            {om?.terrain.keyColOf}:{' '}
+            <Text m={om} k="terrain.keyColOf" />:{' '}
             <b>{keyColOf.name ?? `#${keyColOf.osmId}`}</b>
             {showOnMap(() => selectNode(keyColOf.osmId), inLine)}
           </div>
@@ -178,7 +176,9 @@ export function TerrainFactsView({
             }
           >
             <FaPencilAlt />
-            <MenuLabel>{m?.general.copyToDrawing}</MenuLabel>
+            <MenuLabel>
+              <Text k="general.copyToDrawing" />
+            </MenuLabel>
           </Dropdown.Item>
 
           <Dropdown.Item
@@ -188,7 +188,9 @@ export function TerrainFactsView({
           >
             <MdShapeLine />
             <MenuLabel>
-              {m?.general.copyTo({ tool: m.tools.dataViewer })}
+              <Text>
+                {(m) => m.general.copyTo({ tool: m.tools.dataViewer })}
+              </Text>
             </MenuLabel>
           </Dropdown.Item>
         </FmDropdownMenu>
@@ -203,18 +205,19 @@ export function TerrainFactsView({
       elevationRow,
       prominence !== null && (
         <div key="prominence">
-          {om?.terrain.prominence}: {metres(prominence)}
+          <Text m={om} k="terrain.prominence" />: {metres(prominence)}
         </div>
       ),
       col && (
         <div key="col">
-          {om?.terrain.keyCol}:{' '}
+          <Text m={om} k="terrain.keyCol" />:{' '}
           {col.name !== null && (
             <>
               <b>{col.name}</b>,{' '}
             </>
           )}
-          <b>{nfM.format(col.ele)}</b>&nbsp;{m?.general.masl}
+          <b>{nfM.format(col.ele)}</b>&nbsp;
+          <Text k="general.masl" />
           <ButtonGroup size="sm" className={inLine}>
             {/* Marked rather than selected: selecting the saddle would replace
                 these details, and the mark with them. */}
@@ -236,7 +239,7 @@ export function TerrainFactsView({
       ),
       isolationM !== null && (
         <div key="isolation">
-          {om?.terrain.isolation}: {distance(isolationM)}
+          <Text m={om} k="terrain.isolation" />: {distance(isolationM)}
         </div>
       ),
       // An island's col is the sea, and leaves no route.

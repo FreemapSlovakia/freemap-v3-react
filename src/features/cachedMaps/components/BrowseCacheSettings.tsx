@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -65,15 +66,19 @@ export function BrowseCacheSettings(): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaDatabase /> {m?.mapLayers.browseCache}
+          <FaDatabase /> <Text k="mapLayers.browseCache" />
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <p className="text-muted">{cmm?.browse.intro}</p>
+        <p className="text-muted">
+          <Text m={cmm} k="browse.intro" />
+        </p>
 
         <Form.Group controlId="browseMode" className="mb-3">
-          <Form.Label>{cmm?.browse.mode}</Form.Label>
+          <Form.Label>
+            <Text m={cmm} k="browse.mode" />
+          </Form.Label>
 
           <Form.Select
             value={draft.mode}
@@ -118,7 +123,9 @@ export function BrowseCacheSettings(): ReactElement {
         <Row>
           <Col xs={12} sm={6}>
             <Form.Group controlId="browseMaxAge" className="mb-3">
-              <Form.Label>{cmm?.browse.maxAge}</Form.Label>
+              <Form.Label>
+                <Text m={cmm} k="browse.maxAge" />
+              </Form.Label>
 
               <Form.Select
                 value={draft.maxAgeDays}
@@ -141,7 +148,9 @@ export function BrowseCacheSettings(): ReactElement {
 
           <Col xs={12} sm={6}>
             <Form.Group controlId="browseMaxSize" className="mb-3">
-              <Form.Label>{cmm?.browse.maxSize}</Form.Label>
+              <Form.Label>
+                <Text m={cmm} k="browse.maxSize" />
+              </Form.Label>
 
               <Form.Select
                 value={draft.maxSizeMb}
@@ -165,15 +174,21 @@ export function BrowseCacheSettings(): ReactElement {
           </Col>
         </Row>
 
-        <Form.Text>{cmm?.browse.retentionHint}</Form.Text>
+        <Form.Text>
+          <Text m={cmm} k="browse.retentionHint" />
+        </Form.Text>
       </Modal.Body>
 
       <FmModalFooter className="flex-wrap">
         <div className="w-100 text-end">
-          {cmm?.browse.cached({
-            tiles: nf.format(stats?.tiles ?? 0),
-            size: formatSize(stats?.bytes ?? 0),
-          })}
+          <Text m={cmm}>
+            {(cmm) =>
+              cmm.browse.cached({
+                tiles: nf.format(stats?.tiles ?? 0),
+                size: formatSize(stats?.bytes ?? 0),
+              })
+            }
+          </Text>
         </div>
 
         <FmFooterButton

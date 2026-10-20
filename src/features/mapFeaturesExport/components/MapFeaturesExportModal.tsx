@@ -2,6 +2,7 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
@@ -377,16 +378,20 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
       <form onSubmit={runExport} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaFileExport /> {m?.mainMenu.mapFeaturesExport}
+            <FaFileExport /> <Text k="mainMenu.mapFeaturesExport" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <fieldset disabled={exporting}>
-            <Alert variant="warning">{em?.licenseAlert}</Alert>
+            <Alert variant="warning">
+              <Text m={em} k="licenseAlert" />
+            </Alert>
 
             <Form.Group controlId="target" className="mb-3">
-              <Form.Label>{em?.target}</Form.Label>
+              <Form.Label>
+                <Text m={em} k="target" />
+              </Form.Label>
 
               <div>
                 <FitButtonGroup>
@@ -409,12 +414,12 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                           {
                             download: (
                               <>
-                                <FaDownload /> {em?.download}
+                                <FaDownload /> <Text m={em} k="download" />
                               </>
                             ),
                             share: (
                               <>
-                                <FaShareAlt /> {em?.share}
+                                <FaShareAlt /> <Text m={em} k="share" />
                               </>
                             ),
                             gdrive: (
@@ -458,7 +463,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               <>
                 <Form.Group controlId="courseName" className="mb-3">
                   <Form.Label className="required">
-                    {em?.garmin.courseName}
+                    <Text m={em} k="garmin.courseName" />
                   </Form.Label>
 
                   <Form.Control
@@ -469,7 +474,9 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 </Form.Group>
 
                 <Form.Group controlId="description" className="mb-3">
-                  <Form.Label>{em?.garmin.description}</Form.Label>
+                  <Form.Label>
+                    <Text m={em} k="garmin.description" />
+                  </Form.Label>
 
                   <Form.Control
                     as="textarea"
@@ -482,7 +489,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 {/* Too many options with too long labels for a joined group. */}
                 <Form.Group controlId="activityType" className="mb-3">
                   <Form.Label className="required">
-                    {em?.garmin.activityType}
+                    <Text m={em} k="garmin.activityType" />
                   </Form.Label>
 
                   <Form.Select
@@ -502,7 +509,9 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               </>
             ) : (
               <Form.Group controlId="format" className="mb-3">
-                <Form.Label>{em?.format}</Form.Label>
+                <Form.Label>
+                  <Text m={em} k="format" />
+                </Form.Label>
 
                 <div>
                   <FitButtonGroup>
@@ -526,7 +535,9 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             )}
 
             <Form.Group controlId="download" className="mb-3">
-              <Form.Label>{m?.general.export}</Form.Label>
+              <Form.Label>
+                <Text k="general.export" />
+              </Form.Label>
 
               {target === 'garmin' ? (
                 <>
@@ -560,7 +571,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                             disabled={!value}
                             onChange={() => handleCheckboxChange(type)}
                           >
-                            <Icon /> {em?.what[type]}
+                            <Icon /> <Text m={em} k={`what.${type}`} />
                           </ToggleButton>
                         );
                       })}
@@ -578,7 +589,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                         key={type}
                         className="d-block text-danger mt-2"
                       >
-                        <Icon /> {em?.what[type]}{' '}
+                        <Icon /> <Text m={em} k={`what.${type}`} />{' '}
                         {garminExportables?.[type] as string}
                       </Form.Text>
                     ))}
@@ -612,14 +623,16 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
               {!effectiveOnlySelected && (
                 <Form.Text muted className="d-block mt-1">
-                  {em?.disabledAlert}
+                  <Text m={em} k="disabledAlert" />
                 </Form.Text>
               )}
             </Form.Group>
 
             {!isGarmin && (
               <Form.Group controlId="elevation" className="mb-3">
-                <Form.Label>{em?.elevation.label}</Form.Label>
+                <Form.Label>
+                  <Text m={em} k="elevation.label" />
+                </Form.Label>
 
                 <div>
                   <FitButtonGroup>
@@ -641,7 +654,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                           (option === 'all' && !hasRecorded)
                         }
                       >
-                        {em?.elevation[option]}
+                        <Text m={em} k={`elevation.${option}`} />
                       </ToggleButton>
                     ))}
                   </FitButtonGroup>

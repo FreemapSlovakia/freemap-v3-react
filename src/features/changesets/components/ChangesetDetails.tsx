@@ -1,6 +1,6 @@
 import { openTool } from '@app/store/actions.js';
 import { isToolOpen } from '@app/store/selectors.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { getOsmChangesetUrl } from '@features/openInExternalApp/externalUrlUtils.js';
 import { LinkButton } from '@shared/components/LinkButton.js';
 import { OsmTagsTable } from '@shared/components/OsmTagsTable.js';
@@ -23,8 +23,6 @@ const MAX_RELATIONS = 20;
 
 export function ChangesetDetails({ changeset }: Props): ReactElement {
   const cm = useChangesetsMessages();
-
-  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -58,7 +56,9 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
   return (
     <>
       <dl className={clsx(classes.kvGrid, 'mb-2')}>
-        <dt>{cm?.details.author}</dt>
+        <dt>
+          <Text m={cm} k="details.author" />
+        </dt>
         <dd>
           {/* A button: the author's list is of the area in view, which a URL
               of the filter alone can't reproduce. */}
@@ -76,9 +76,19 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
             {changeset.userName}
           </LinkButton>
         </dd>
-        <dt>{cm?.details.description}</dt>
-        <dd>{changeset.description || <i>{cm?.details.noDescription}</i>}</dd>
-        <dt>{cm?.details.closedAt}</dt>
+        <dt>
+          <Text m={cm} k="details.description" />
+        </dt>
+        <dd>
+          {changeset.description || (
+            <i>
+              <Text m={cm} k="details.noDescription" />
+            </i>
+          )}
+        </dd>
+        <dt>
+          <Text m={cm} k="details.closedAt" />
+        </dt>
         <dd>{timeFormat.format(changeset.closedAt)}</dd>
       </dl>
 
@@ -86,13 +96,19 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
 
       {inspected?.source === 'tooBig' && (
         <p className="mb-2">
-          <small>{cm?.details.tooBig}</small>
+          <small>
+            <Text m={cm} k="details.tooBig" />
+          </small>
         </p>
       )}
 
       {inspected?.source === 'failed' && (
         <p className="mb-2 text-danger">
-          <small>{cm?.inspectError({ err: inspected.error })}</small>
+          <small>
+            <Text m={cm}>
+              {(cm) => cm.inspectError({ err: inspected.error })}
+            </Text>
+          </small>
         </p>
       )}
 
@@ -105,7 +121,7 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
                 className="me-2"
                 style={{ color: DIFF_COLORS[action] }}
               >
-                {cm?.actions[action]}:{' '}
+                <Text m={cm} k={`actions.${action}`} />:{' '}
                 {diff.filter((element) => element.action === action).length}
               </span>
             ))}
@@ -113,14 +129,16 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
 
           {inspected?.source === 'osmApi' && (
             <p className="mb-2">
-              <small>{cm?.details.rebuilt}</small>
+              <small>
+                <Text m={cm} k="details.rebuilt" />
+              </small>
             </p>
           )}
 
           {/* Relations aren't drawn, so they are reached from here. */}
           {relations.length > 0 && (
             <p className="mb-2">
-              {m?.search.osmElementTypes.relation}:{' '}
+              <Text k="search.osmElementTypes.relation" />:{' '}
               {relations.slice(0, MAX_RELATIONS).map((relation, i) => (
                 <Fragment key={relation.id}>
                   {i > 0 && ' '}
@@ -155,7 +173,7 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
         target="_blank"
         rel="noopener noreferrer"
       >
-        {cm?.details.openOnOsm}
+        <Text m={cm} k="details.openOnOsm" />
       </AlertLink>
     </>
   );

@@ -1,6 +1,7 @@
 import type { RootState } from '@app/store/store.js';
 import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
@@ -779,7 +780,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const statusOverlay = commonsError ? (
     <div className="text-center text-body-secondary">
       <FaImage size={48} className="opacity-50" />
-      <div>{gm?.viewer.imageUnavailable}</div>
+      <div>
+        <Text m={gm} k="viewer.imageUnavailable" />
+      </div>
     </div>
   ) : (
     <Spinner animation="border" role="status" variant="primary" />
@@ -795,7 +798,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCamera /> {gm?.viewer.title}{' '}
+          <FaCamera /> <Text m={gm} k="viewer.title" />{' '}
           {imageIds && (
             <Form.Select
               value={index}
@@ -839,13 +842,13 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   />
                 ) : liveDisabledPremium ? (
                   <Alert variant="warning" className="text-center mb-0">
-                    {gm?.viewer.premiumOnly}
+                    <Text m={gm} k="viewer.premiumOnly" />
 
                     {becomePremium && (
                       <>
                         <br />
                         <Button onClick={becomePremium} className="mt-3">
-                          <FaGem /> {prm?.becomePremium}
+                          <FaGem /> <Text m={prm} k="becomePremium" />
                         </Button>
                       </>
                     )}
@@ -1026,11 +1029,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               {isWikimedia && createdAt && (
                 <>
                   {divider}
-                  {gm?.viewer.uploadedOn(
-                    <b key={createdAt.getTime()}>
-                      {dateFormat.format(createdAt)}
-                    </b>,
-                  )}
+                  <Text m={gm}>
+                    {(gm) =>
+                      gm.viewer.uploadedOn(
+                        <b key={createdAt.getTime()}>
+                          {dateFormat.format(createdAt)}
+                        </b>,
+                      )
+                    }
+                  </Text>
                 </>
               )}
 
@@ -1084,7 +1091,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   <LongPressTooltip
                     label={
                       <>
-                        {gm?.license.descriptions[badgeLicense]}
+                        <Text
+                          m={gm}
+                          k={`license.descriptions.${badgeLicense}`}
+                        />
                         {!isWikimedia &&
                           image.licenseSince &&
                           gm?.license.since && (
@@ -1140,7 +1150,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <Form id="gallery-edit-form" onSubmit={handleSave}>
                   <hr />
 
-                  <h5>{gm?.viewer.modify}</h5>
+                  <h5>
+                    <Text m={gm} k="viewer.modify" />
+                  </h5>
 
                   <fieldset disabled={!online}>
                     <GalleryEditForm
@@ -1158,7 +1170,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <>
                   <hr />
 
-                  <h5>{gm?.viewer.comments}</h5>
+                  <h5>
+                    <Text m={gm} k="viewer.comments" />
+                  </h5>
 
                   {!comments ? null : comments.length ? (
                     comments.map((c) => (
@@ -1169,7 +1183,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     ))
                   ) : (
                     <p>
-                      <i>{gm?.viewer.noComments}</i>
+                      <i>
+                        <Text m={gm} k="viewer.noComments" />
+                      </i>
                     </p>
                   )}
 
@@ -1200,14 +1216,17 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                               comment.length < 1 || disabledPremium || !online
                             }
                           >
-                            {gm?.viewer.addComment}
+                            <Text m={gm} k="viewer.addComment" />
                           </Button>
                         </InputGroup>
 
                         {isWikimedia && commentFocused && (
                           <Alert variant="warning" className="mt-2 mb-0">
                             <SiWikimediacommons />{' '}
-                            {gm?.viewer.wikimediaCommentNotNotified}
+                            <Text
+                              m={gm}
+                              k="viewer.wikimediaCommentNotNotified"
+                            />
                           </Alert>
                         )}
                       </Form.Group>
@@ -1217,7 +1236,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   {user && (
                     <div className="d-flex flex-wrap gap-1 align-items-center mb-3">
                       <span className="flex-shrink-0">
-                        {gm?.viewer.yourRating}
+                        <Text m={gm} k="viewer.yourRating" />
                       </span>
 
                       {disabledPremium ? null : (
@@ -1271,7 +1290,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               form="gallery-edit-form"
               disabled={!online}
             >
-              <FaSave /> {m?.general.save}
+              <FaSave /> <Text k="general.save" />
             </Button>
           ) : (
             <LongPressTooltip breakpoint="sm" label={m?.general.modify} kbd="m">
@@ -1396,7 +1415,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         }}
                       >
                         <FaPencilAlt />
-                        <MenuLabel>{m?.general.copyToDrawing}</MenuLabel>
+                        <MenuLabel>
+                          <Text k="general.copyToDrawing" />
+                        </MenuLabel>
                       </Dropdown.Item>
                     }
                   >
@@ -1416,7 +1437,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               dispatch(galleryEditPicture());
             }}
           >
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+            <FaTimes /> <Text k="general.cancel" /> <kbd>Esc</kbd>
           </Button>
         ) : (
           <LongPressTooltip label={m?.general.close} breakpoint="md" kbd="Esc">

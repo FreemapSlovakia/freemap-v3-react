@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
@@ -241,7 +242,9 @@ export function MapContextMenu(): ReactElement {
                       eventKey="submenu-openExternally"
                     >
                       <FaExternalLinkAlt />
-                      <MenuLabel>{oeam?.openIn}</MenuLabel>
+                      <MenuLabel>
+                        <Text m={oeam} k="openIn" />
+                      </MenuLabel>
                       <MenuGutter>
                         <FaChevronRight />
                       </MenuGutter>

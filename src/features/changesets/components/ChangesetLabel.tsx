@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import type { ReactElement } from 'react';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 
@@ -12,7 +13,7 @@ export function ChangesetLabel({ id }: Props): ReactElement {
 
   return (
     <>
-      {cm?.changeset} #{id}
+      <Text m={cm} k="changeset" /> #{id}
     </>
   );
 }

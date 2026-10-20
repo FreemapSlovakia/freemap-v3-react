@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import {
   FmDismissButton,
@@ -43,7 +44,7 @@ export default function LoginModal({ show }: Props): ReactElement {
   const renderPremiumInfo = () =>
     purchaseOnLogin?.type === 'premium' ? (
       <Alert variant="primary">
-        <FaGem /> {prm?.purchaseAfterLogin}
+        <FaGem /> <Text m={prm} k="purchaseAfterLogin" />
       </Alert>
     ) : null;
 
@@ -51,7 +52,7 @@ export default function LoginModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaSignInAlt /> {m?.mainMenu.logIn}
+          <FaSignInAlt /> <Text k="mainMenu.logIn" />
         </Modal.Title>
       </Modal.Header>
 
@@ -60,13 +61,16 @@ export default function LoginModal({ show }: Props): ReactElement {
 
         {cookieConsentResult === null && (
           <Alert variant="warning">
-            <FaExclamationTriangle /> {m?.general.noCookies()}
+            <FaExclamationTriangle />{' '}
+            <Text>{(m) => m.general.noCookies()}</Text>
           </Alert>
         )}
 
         {renderPremiumInfo()}
 
-        <p>{am?.logInWith}:</p>
+        <p>
+          <Text m={am} k="logInWith" />:
+        </p>
 
         <AuthProviders mode="login" />
       </Modal.Body>

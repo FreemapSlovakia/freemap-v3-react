@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import {
   type ReactElement,
@@ -115,7 +116,7 @@ export function GalleryUploadItem({
     <div key={id}>
       {!previewSupported ? (
         <Button className="mb-3 d-block mx-auto" disabled>
-          {gm?.uploadModal.loadPreview}
+          <Text m={gm} k="uploadModal.loadPreview" />
         </Button>
       ) : showPreview2 && !previewKey ? (
         <div className="gallery-image gallery-image-upload d-flex justify-content-center align-items-center">
@@ -128,7 +129,7 @@ export function GalleryUploadItem({
           className="mb-3 d-block mx-auto"
           onClick={handleLoadPreviewClick}
         >
-          {gm?.uploadModal.loadPreview}
+          <Text m={gm} k="uploadModal.loadPreview" />
         </Button>
       )}
 
@@ -142,7 +143,7 @@ export function GalleryUploadItem({
 
         <div className="d-flex justify-content-between align-items-end">
           <Button onClick={handleRemove} variant="danger">
-            <FaTimes /> {m?.general.remove}
+            <FaTimes /> <Text m={m} k="general.remove" />
           </Button>
 
           <small className="text-muted lh-1">{file.name}</small>

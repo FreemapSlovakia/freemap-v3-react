@@ -5,6 +5,7 @@ import {
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { josmRemote } from '@features/openInExternalApp/josmRemote.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
@@ -435,21 +436,27 @@ export default function DrawingLineSelection(): ReactElement | null {
                 active={cuttingHole}
               >
                 <RiScissorsFill />
-                <MenuLabel>{dm?.cutHole ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={dm} k="cutHole" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
             {enclosingIndex !== undefined && (
               <Dropdown.Item as="button" eventKey="make-hole">
                 <FaObjectGroup />
-                <MenuLabel>{dm?.makeHole ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={dm} k="makeHole" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
             {isHole && (
               <Dropdown.Item as="button" eventKey="detach-hole">
                 <FaObjectUngroup />
-                <MenuLabel>{dm?.detachHole ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={dm} k="detachHole" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
@@ -460,28 +467,36 @@ export default function DrawingLineSelection(): ReactElement | null {
                 active={showElevationChart}
               >
                 <FaChartArea />
-                <MenuLabel>{m?.general.elevationProfile ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text k="general.elevationProfile" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
             {line.points.length > 0 && (
               <Dropdown.Item as="button" eventKey="project-point">
                 <TbAngle />
-                <MenuLabel>{dm?.projection.projectPoint ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={dm} k="projection.projectPoint" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
             {line.points.length > 2 && (
               <Dropdown.Item as="button" eventKey="simplify">
                 <FaCompressAlt />
-                <MenuLabel>{dm?.simplify ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={dm} k="simplify" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
             {line.points.length > 1 && (
               <Dropdown.Item as="button" eventKey="reverse">
                 <FaExchangeAlt />
-                <MenuLabel>{dm?.reverse ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={dm} k="reverse" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
@@ -491,7 +506,9 @@ export default function DrawingLineSelection(): ReactElement | null {
               <Dropdown.Item as="button" eventKey="data-viewer">
                 <MdShapeLine />
                 <MenuLabel>
-                  {m?.general.convertTo({ tool: m?.tools.dataViewer }) ?? '…'}
+                  <Text>
+                    {(m) => m.general.convertTo({ tool: m.tools.dataViewer })}
+                  </Text>
                 </MenuLabel>
               </Dropdown.Item>
             )}
@@ -500,7 +517,13 @@ export default function DrawingLineSelection(): ReactElement | null {
               <Dropdown.Item as="button" eventKey="josm">
                 <FaEdit />
                 <MenuLabel>
-                  {m?.general.openIn({ what: oeam?.josm }) ?? '…'}
+                  <Text m={oeam}>
+                    {(oeam) => (
+                      <Text>
+                        {(m) => m.general.openIn({ what: oeam.josm })}
+                      </Text>
+                    )}
+                  </Text>
                 </MenuLabel>
               </Dropdown.Item>
             )}

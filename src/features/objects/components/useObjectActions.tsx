@@ -1,4 +1,5 @@
 import { openInExternalApp } from '@app/store/actions.js';
+import { Text } from '@features/l10n/Text.js';
 import { OpenInExternalTargetItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import {
   getIdElementUrl,
@@ -117,7 +118,9 @@ export function useObjectActions({ result }: Props): {
         target="_blank"
         eventKey="url"
       >
-        <MenuLabel>{om?.openInOsm}</MenuLabel>
+        <MenuLabel>
+          <Text m={om} k="openInOsm" />
+        </MenuLabel>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -125,13 +128,17 @@ export function useObjectActions({ result }: Props): {
         target="_blank"
         eventKey="url"
       >
-        <MenuLabel>{om?.osmHistory}</MenuLabel>
+        <MenuLabel>
+          <Text m={om} k="osmHistory" />
+        </MenuLabel>
       </OnlineOnlyItem>
 
       {!window.fmEmbedded && (
         <>
           <Dropdown.Item as="button" onClick={() => editInJosm(parsedId.data)}>
-            <MenuLabel>{oeam?.josm}</MenuLabel>
+            <MenuLabel>
+              <Text m={oeam} k="josm" />
+            </MenuLabel>
           </Dropdown.Item>
 
           <OnlineOnlyItem
@@ -139,7 +146,9 @@ export function useObjectActions({ result }: Props): {
             target="_blank"
             eventKey="url"
           >
-            <MenuLabel>{oeam?.id}</MenuLabel>
+            <MenuLabel>
+              <Text m={oeam} k="id" />
+            </MenuLabel>
           </OnlineOnlyItem>
         </>
       )}

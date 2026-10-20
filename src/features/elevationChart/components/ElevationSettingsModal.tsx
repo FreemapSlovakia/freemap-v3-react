@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -180,13 +181,13 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaChartArea /> {m?.elevationChart.settings}
+            <FaChartArea /> <Text k="elevationChart.settings" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Text muted className="d-block mb-3">
-            {m?.elevationChart.settingsHelp}
+            <Text k="elevationChart.settingsHelp" />
           </Form.Text>
 
           <WindowSlider

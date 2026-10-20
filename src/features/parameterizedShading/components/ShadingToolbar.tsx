@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   FmFooterButton,
@@ -67,7 +68,9 @@ export function ShadingToolbar({
         ) : (
           <BsTransparency className="text-secondary" />
         )}
-        <MenuLabel>{sm?.presetNames[preset]}</MenuLabel>
+        <MenuLabel>
+          <Text m={sm} k={`presetNames.${preset}`} />
+        </MenuLabel>
       </Dropdown.Item>
     );
   };
@@ -80,7 +83,7 @@ export function ShadingToolbar({
     >
       <Dropdown onSelect={onAdd}>
         <Dropdown.Toggle id="add-shading-button" variant="success">
-          <FaPlus /> {sm?.add}
+          <FaPlus /> <Text m={sm} k="add" />
         </Dropdown.Toggle>
 
         {/* Fixed, so the panel's own scroller doesn't clip it. */}
@@ -88,7 +91,9 @@ export function ShadingToolbar({
           {canAddBackground && (
             <>
               <Dropdown.Item as="button" eventKey="background">
-                <MenuLabel>{sm?.background}</MenuLabel>
+                <MenuLabel>
+                  <Text m={sm} k="background" />
+                </MenuLabel>
               </Dropdown.Item>
 
               <Dropdown.Divider />
@@ -97,7 +102,9 @@ export function ShadingToolbar({
 
           {SHADING_COMPONENT_TYPES.map((st) => (
             <Dropdown.Item as="button" key={st} eventKey={st}>
-              <MenuLabel>{sm?.types[st]}</MenuLabel>
+              <MenuLabel>
+                <Text m={sm} k={`types.${st}`} />
+              </MenuLabel>
             </Dropdown.Item>
           ))}
         </FmDropdownMenu>
@@ -145,13 +152,17 @@ export function ShadingToolbar({
 
           <Dropdown.Divider />
 
-          <Dropdown.Header>{sm?.mapPresetsHeader}</Dropdown.Header>
+          <Dropdown.Header>
+            <Text m={sm} k="mapPresetsHeader" />
+          </Dropdown.Header>
 
           {MAP_PRESETS.map(presetItem)}
 
           <Dropdown.Divider />
 
-          <Dropdown.Header>{sm?.artisticPresetsHeader}</Dropdown.Header>
+          <Dropdown.Header>
+            <Text m={sm} k="artisticPresetsHeader" />
+          </Dropdown.Header>
 
           {ARTISTIC_PRESETS.toSorted((a, b) =>
             (sm?.presetNames[a] ?? a).localeCompare(

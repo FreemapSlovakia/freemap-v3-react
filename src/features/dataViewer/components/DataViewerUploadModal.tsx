@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmModalFooter,
@@ -57,7 +58,7 @@ export default function DataViewerUploadModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <MdShapeLine /> <FaUpload /> {tvm?.uploadModal.title}
+          <MdShapeLine /> <FaUpload /> <Text m={tvm} k="uploadModal.title" />
         </Modal.Title>
       </Modal.Header>
 
@@ -70,7 +71,7 @@ export default function DataViewerUploadModal({ show }: Props): ReactElement {
               rather than raw MIME labels; validation still uses the prop. */}
           <input {...getInputProps({ accept: TRACK_FILE_EXTENSIONS })} />
 
-          {tvm?.uploadModal.drop}
+          <Text m={tvm} k="uploadModal.drop" />
         </div>
       </Modal.Body>
 

@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
+import { Text } from '@features/l10n/Text.js';
 import type { BatchCounts, BatchKind } from '@shared/batchProperties.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
@@ -45,7 +46,9 @@ export function BatchPropertiesItems({
     <>
       {divided && <Dropdown.Divider />}
 
-      <Dropdown.Header>{dm?.batch.title}</Dropdown.Header>
+      <Dropdown.Header>
+        <Text m={dm} k="batch.title" />
+      </Dropdown.Header>
 
       {kinds.map((kind) => (
         <Dropdown.Item
@@ -54,7 +57,9 @@ export function BatchPropertiesItems({
           onClick={() => dispatch(setActiveModal({ type: modal, kind }))}
         >
           {ICONS[kind]}
-          <MenuLabel>{dm?.batch[kind] ?? '…'}</MenuLabel>
+          <MenuLabel>
+            <Text m={dm} k={`batch.${kind}`} />
+          </MenuLabel>
         </Dropdown.Item>
       ))}
     </>

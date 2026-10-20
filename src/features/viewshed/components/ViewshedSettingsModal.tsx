@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -95,8 +96,6 @@ function HeightField({
   invalid,
   onChange,
 }: HeightFieldProps): ReactElement {
-  const m = useMessages();
-
   return (
     <Form.Group className="mb-3">
       <Form.Label htmlFor={id}>
@@ -119,7 +118,11 @@ function HeightField({
         <InputGroup.Text>m</InputGroup.Text>
 
         <Form.Control.Feedback type="invalid">
-          {m?.general.valueRange({ min: '0\u00a0m', max: `${max}\u00a0m` })}
+          <Text>
+            {(m) =>
+              m.general.valueRange({ min: '0\u00a0m', max: `${max}\u00a0m` })
+            }
+          </Text>
         </Form.Control.Feedback>
       </InputGroup>
     </Form.Group>
@@ -209,7 +212,7 @@ export default function ViewshedSettingsModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents" noValidate>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCog /> {vm?.settings}
+            <FaCog /> <Text m={vm} k="settings" />
           </Modal.Title>
         </Modal.Header>
 
@@ -274,7 +277,9 @@ export default function ViewshedSettingsModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group>
-            <Form.Label className="mb-0">{vm?.color}</Form.Label>
+            <Form.Label className="mb-0">
+              <Text m={vm} k="color" />
+            </Form.Label>
 
             <RgbaColorPicker
               value={draft.color}

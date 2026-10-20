@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   FmDismissButton,
@@ -227,7 +228,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
         <Form>
           {isOwnMap && (
             <Form.Group controlId="mapName" className="mb-3">
-              <Form.Label className="required">{m?.general.name}</Form.Label>
+              <Form.Label className="required">
+                <Text k="general.name" />
+              </Form.Label>
 
               <Form.Control
                 disabled={!online}
@@ -239,7 +242,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
 
           {isOwnMap && (
             <Form.Group controlId="writers" className="mb-3">
-              <Form.Label>{mm?.writers}</Form.Label>
+              <Form.Label>
+                <Text m={mm} k="writers" />
+              </Form.Label>
 
               <ReactTags
                 placeholderText={mm?.addWriter}

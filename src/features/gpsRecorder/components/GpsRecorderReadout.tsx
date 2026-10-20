@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
@@ -343,7 +344,10 @@ export function GpsRecorderReadout({ collapsedIcon }: Props): ReactNode {
           {/* The details view is where spelling it out belongs, so the state and
               the live view are named here even when they are nominal. */}
           <div>
-            {status?.recording ? m?.state.recording : m?.state.stopped}
+            <Text
+              m={m}
+              k={status?.recording ? 'state.recording' : 'state.stopped'}
+            />
             <span className="text-body-secondary">
               {' · '}
               {connection === 'live'
@@ -359,7 +363,9 @@ export function GpsRecorderReadout({ collapsedIcon }: Props): ReactNode {
           </div>
 
           {pinnable && (
-            <div className="small text-body-secondary">{m?.pinHint}</div>
+            <div className="small text-body-secondary">
+              <Text m={m} k="pinHint" />
+            </div>
           )}
         </div>
 

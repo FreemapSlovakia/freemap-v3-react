@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -89,7 +90,11 @@ export function PanoramaSkyTimes({
 
               {track.body === 'moon' && (
                 <span className="text-body-secondary">
-                  ({m?.sky.lit(nfPercent.format(moonIllumination(noon)))})
+                  (
+                  <Text m={m}>
+                    {(m) => m.sky.lit(nfPercent.format(moonIllumination(noon)))}
+                  </Text>
+                  )
                 </span>
               )}
             </span>

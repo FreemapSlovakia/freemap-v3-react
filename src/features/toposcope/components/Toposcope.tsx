@@ -1,6 +1,7 @@
 import { closeTool, selectFeature } from '@app/store/actions.js';
 import { drawingPointLabel } from '@features/drawing/labelValues.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   GENEROUS_MARGIN_PX,
   panToUncovered,
@@ -251,7 +252,7 @@ export default function Toposcope(): ReactElement {
           />
         ) : (
           <p className="m-0 text-center text-body-secondary">
-            {m?.pickCenterHint}
+            <Text m={m} k="pickCenterHint" />
           </p>
         )}
       </div>
@@ -272,7 +273,9 @@ export default function Toposcope(): ReactElement {
           )}
         >
           {center && rays.length === 0 && (
-            <p className="m-0 small text-body-secondary">{m?.addPointsHint}</p>
+            <p className="m-0 small text-body-secondary">
+              <Text m={m} k="addPointsHint" />
+            </p>
           )}
         </div>
       </div>

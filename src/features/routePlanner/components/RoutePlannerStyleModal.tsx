@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -74,14 +75,14 @@ export default function RoutePlannerStyleModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaPaintBrush /> {rpm?.style.title}
+            <FaPaintBrush /> <Text m={rpm} k="style.title" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group className="mb-3">
             <Form.Label>
-              {rpm?.style.lineWidth}: {style.lineWidth} px
+              <Text m={rpm} k="style.lineWidth" />: {style.lineWidth} px
             </Form.Label>
 
             <Form.Range
@@ -99,7 +100,8 @@ export default function RoutePlannerStyleModal({ show }: Props): ReactElement {
 
           <Form.Group className="mb-3">
             <Form.Label>
-              {rpm?.style.lineOpacity}: {Math.round(style.lineOpacity * 100)} %
+              <Text m={rpm} k="style.lineOpacity" />:{' '}
+              {Math.round(style.lineOpacity * 100)} %
             </Form.Label>
 
             <Form.Range
@@ -117,7 +119,7 @@ export default function RoutePlannerStyleModal({ show }: Props): ReactElement {
 
           <Form.Group>
             <Form.Label>
-              {rpm?.style.markerOpacity}:{' '}
+              <Text m={rpm} k="style.markerOpacity" />:{' '}
               {Math.round(style.markerOpacity * 100)} %
             </Form.Label>
 

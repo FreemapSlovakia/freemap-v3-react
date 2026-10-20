@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
 import { inAppLink } from '@shared/inAppLink.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -89,7 +90,7 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
         )}{' '}
         ·{' '}
         <span style={{ color: DIFF_COLORS[element.action] }}>
-          {cm?.actions[element.action]}
+          <Text m={cm} k={`actions.${element.action}`} />
         </span>{' '}
         <small>
           {element.old && `v${element.old.version}`}
@@ -100,19 +101,27 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
 
       {element.action === 'modify' &&
         (isIndirect(element) ? (
-          <p className="mb-2">{cm?.element.onlyNodesMoved}</p>
+          <p className="mb-2">
+            <Text m={cm} k="element.onlyNodesMoved" />
+          </p>
         ) : (
           <>
             {hasMoved(element) && (
-              <p className="mb-2">{cm?.element.geometryChanged}</p>
+              <p className="mb-2">
+                <Text m={cm} k="element.geometryChanged" />
+              </p>
             )}
 
             {(addedMembers > 0 || removedMembers > 0) && (
               <p className="mb-2">
-                {cm?.element.members({
-                  added: addedMembers,
-                  removed: removedMembers,
-                })}
+                <Text m={cm}>
+                  {(cm) =>
+                    cm.element.members({
+                      added: addedMembers,
+                      removed: removedMembers,
+                    })
+                  }
+                </Text>
               </p>
             )}
           </>
@@ -120,19 +129,29 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
 
       {rows.length > 0 &&
         (element.action === 'modify' && !tagsChanged ? (
-          <p className="mb-2">{cm?.element.tagsUnchanged}</p>
+          <p className="mb-2">
+            <Text m={cm} k="element.tagsUnchanged" />
+          </p>
         ) : (
           <Table size="sm" className="mb-2">
             <thead>
               <tr className="text-nowrap">
-                <th>{cm?.element.key}</th>
+                <th>
+                  <Text m={cm} k="element.key" />
+                </th>
                 {element.old && element.new ? (
                   <>
-                    <th>{cm?.element.before}</th>
-                    <th>{cm?.element.after}</th>
+                    <th>
+                      <Text m={cm} k="element.before" />
+                    </th>
+                    <th>
+                      <Text m={cm} k="element.after" />
+                    </th>
                   </>
                 ) : (
-                  <th>{cm?.element.value}</th>
+                  <th>
+                    <Text m={cm} k="element.value" />
+                  </th>
                 )}
               </tr>
             </thead>
@@ -168,7 +187,7 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
         target="_blank"
         rel="noopener noreferrer"
       >
-        {cm?.element.history}
+        <Text m={cm} k="element.history" />
       </AlertLink>
     </>
   );

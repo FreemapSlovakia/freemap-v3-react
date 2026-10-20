@@ -2,6 +2,7 @@ import { openTool, setActiveModal, ToolSchema } from '@app/store/actions.js';
 import { openDrawToolSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { BatchPropertiesDropdown } from '@shared/components/BatchPropertiesItems.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
@@ -53,7 +54,7 @@ export default function DrawingMenu(): ReactElement | undefined {
             .filter((td) => td.draw)
             .map(({ tool, icon, msgKey: key, kbd }) => ({
               value: tool,
-              label: m?.selections[key as 'drawPoints'] ?? '…',
+              label: <Text k={`selections.${key as 'drawPoints'}`} />,
               icon,
               kbd: `g ${kbd?.slice(3).toLowerCase()}`,
             }))}

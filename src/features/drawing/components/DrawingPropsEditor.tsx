@@ -1,4 +1,5 @@
 import type { DrawingProps } from '@features/drawing/model/actions/drawingPointActions.js';
+import { Text } from '@features/l10n/Text.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import type { ReactElement } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
@@ -63,7 +64,9 @@ export function DrawingPropsEditor({
     <>
       {/* A block, so the button below starts its own line whether or not there
           are rows between them. */}
-      <Form.Label className="d-block mb-1">{m?.edit.properties}</Form.Label>
+      <Form.Label className="d-block mb-1">
+        <Text m={m} k="edit.properties" />
+      </Form.Label>
 
       {rows.map(([key, value, origin], i) => {
         // By the key the row was opened with, which renaming leaves alone.
@@ -104,7 +107,7 @@ export function DrawingPropsEditor({
             {differing?.mixed.kept(differing.origin) ? (
               <>
                 <InputGroup.Text className="flex-grow-1 text-body-secondary">
-                  {m?.edit.different}
+                  <Text m={m} k="edit.different" />
                 </InputGroup.Text>
 
                 <LongPressTooltip label={m?.edit.change}>
@@ -165,7 +168,7 @@ export function DrawingPropsEditor({
       })}
 
       <Button variant="secondary" onClick={() => onChange([...rows, ['', '']])}>
-        <FaPlus /> {m?.edit.addProperty}
+        <FaPlus /> <Text m={m} k="edit.addProperty" />
       </Button>
     </>
   );

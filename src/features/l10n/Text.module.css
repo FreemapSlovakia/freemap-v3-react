@@ -1,0 +1,33 @@
+/* Hidden for the first 150 ms so a fast load doesn't flash; settles to a static
+   box if the messages never arrive. */
+.loading {
+  display: inline-block;
+  width: 4em;
+  height: 0.8em;
+  vertical-align: -0.05em;
+  border-radius: 0.2em;
+  background: currentColor;
+  opacity: 0.15;
+  animation:
+    hidden 150ms step-end,
+    pulse 1.2s ease-in-out 150ms 6;
+}
+
+@keyframes hidden {
+  from,
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading {
+    animation: hidden 150ms step-end;
+  }
+}

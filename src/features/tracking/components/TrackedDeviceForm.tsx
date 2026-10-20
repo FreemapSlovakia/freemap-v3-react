@@ -1,5 +1,6 @@
 import { selectFeature, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { DateTime } from '@shared/components/DateTime.js';
 import {
   FmDismissButton,
@@ -130,9 +131,13 @@ export function TrackedDeviceForm(): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}
-          {device && !forceNew
-            ? tm?.trackedDevices.modifyTitle(device.label || device.token)
-            : tm?.trackedDevices.createTitle(device?.label ?? device?.token)}
+          <Text m={tm}>
+            {(tm) =>
+              device && !forceNew
+                ? tm.trackedDevices.modifyTitle(device.label || device.token)
+                : tm.trackedDevices.createTitle(device?.label ?? device?.token)
+            }
+          </Text>
         </Modal.Title>
       </Modal.Header>
 
@@ -140,7 +145,7 @@ export function TrackedDeviceForm(): ReactElement {
         <Form.Group controlId="token" className="mb-3 ">
           {/* TODD: or ID */}
           <Form.Label className="required">
-            {tm?.trackedDevice.token}
+            <Text m={tm} k="trackedDevice.token" />
           </Form.Label>
 
           <Form.Control
@@ -152,17 +157,23 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="label" className="mb-3">
-          <Form.Label>{tm?.trackedDevice.label}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="trackedDevice.label" />
+          </Form.Label>
           <Form.Control value={label} onChange={setLabel} />
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>{tm?.trackedDevice.color}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="trackedDevice.color" />
+          </Form.Label>
           <RgbaColorPicker alpha={false} value={color} onChange={setColor} />
         </Form.Group>
 
         <Form.Group controlId="width" className="mb-3">
-          <Form.Label>{tm?.trackedDevice.width}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="trackedDevice.width" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -177,13 +188,17 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="fromTime" className="mb-3">
-          <Form.Label>{tm?.trackedDevice.fromTime}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="trackedDevice.fromTime" />
+          </Form.Label>
 
           <DateTime value={fromTime} onChange={setFromTime} />
         </Form.Group>
 
         <Form.Group controlId="maxAge" className="mb-3">
-          <Form.Label>{tm?.trackedDevice.maxAge}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="trackedDevice.maxAge" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -194,12 +209,16 @@ export function TrackedDeviceForm(): ReactElement {
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            <InputGroup.Text>
+              <Text k="general.minutes" />
+            </InputGroup.Text>
           </InputGroup>
         </Form.Group>
 
         <Form.Group controlId="maxCount" className="mb-3">
-          <Form.Label>{tm?.trackedDevice.maxCount}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="trackedDevice.maxCount" />
+          </Form.Label>
 
           <Form.Control
             type="number"
@@ -212,7 +231,9 @@ export function TrackedDeviceForm(): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="splitDistance" className="mb-3">
-          <Form.Label>{tm?.trackedDevice.splitDistance}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="trackedDevice.splitDistance" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -223,12 +244,16 @@ export function TrackedDeviceForm(): ReactElement {
               onChange={setSplitDistance}
             />
 
-            <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
+            <InputGroup.Text>
+              <Text k="general.meters" />
+            </InputGroup.Text>
           </InputGroup>
         </Form.Group>
 
         <Form.Group controlId="splitDuration" className="mb-3">
-          <Form.Label>{tm?.trackedDevice.splitDuration}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="trackedDevice.splitDuration" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -240,7 +265,9 @@ export function TrackedDeviceForm(): ReactElement {
               onChange={setSplitDuration}
             />
 
-            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            <InputGroup.Text>
+              <Text k="general.minutes" />
+            </InputGroup.Text>
           </InputGroup>
         </Form.Group>
       </Modal.Body>

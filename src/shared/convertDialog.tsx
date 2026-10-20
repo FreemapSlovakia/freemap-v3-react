@@ -7,6 +7,7 @@ import { withProps } from '@features/drawing/labelValues.js';
 import type { DrawingProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   type ModalAnswer,
   type ModalBodyProps,
@@ -351,7 +352,7 @@ function ConvertBody({
       {request.geometry && (
         <Form.Group className="mb-3">
           <Form.Label className="d-block">
-            {m?.general.convert.geometry}
+            <Text k="general.convert.geometry" />
           </Form.Label>
 
           <ToggleButtonGroup
@@ -369,9 +370,11 @@ function ConvertBody({
                   setValue((previous) => ({ ...previous, geometry }))
                 }
               >
-                {geometry === 'point'
-                  ? m?.general.convert.pointOnly
-                  : m?.general.convert.fullGeometry}
+                {geometry === 'point' ? (
+                  <Text k="general.convert.pointOnly" />
+                ) : (
+                  <Text k="general.convert.fullGeometry" />
+                )}
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
@@ -382,7 +385,7 @@ function ConvertBody({
         <>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="convert-label">
-              {m?.general.convert.label}
+              <Text k="general.convert.label" />
             </Form.Label>
 
             <Form.Control
@@ -405,7 +408,7 @@ function ConvertBody({
 
           <Form.Group className="mb-3">
             <Form.Label className="d-block">
-              {m?.general.convert.labelMode}
+              <Text k="general.convert.labelMode" />
             </Form.Label>
 
             <ToggleButtonGroup
@@ -426,9 +429,11 @@ function ConvertBody({
                     }))
                   }
                 >
-                  {mode === 'resolved'
-                    ? m?.general.convert.labelResolved
-                    : m?.general.convert.labelTemplate}
+                  {mode === 'resolved' ? (
+                    <Text k="general.convert.labelResolved" />
+                  ) : (
+                    <Text k="general.convert.labelTemplate" />
+                  )}
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
@@ -436,19 +441,19 @@ function ConvertBody({
             {/* What the label comes out as — the very text "Plain text" stores. */}
             {preview && (
               <Form.Text className="d-block text-truncate">
-                {m?.general.convert.preview}: {preview}
+                <Text k="general.convert.preview" />: {preview}
               </Form.Text>
             )}
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label className="d-block">
-              {m?.general.convert.properties}
+              <Text k="general.convert.properties" />
             </Form.Label>
 
             {counts.length === 0 ? (
               <Form.Text className="d-block">
-                {m?.general.convert.noProperties}
+                <Text k="general.convert.noProperties" />
               </Form.Text>
             ) : (
               <div className={classes.properties}>
@@ -510,7 +515,7 @@ function ConvertBody({
 
             {locked.size > 0 && (
               <Form.Text className="d-block">
-                {m?.general.convert.labelKeysKept}
+                <Text k="general.convert.labelKeysKept" />
               </Form.Text>
             )}
           </Form.Group>

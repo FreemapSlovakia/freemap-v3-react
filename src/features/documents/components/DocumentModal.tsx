@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { decodeActiveModal } from '@app/store/activeModal.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmModalFooter,
@@ -139,7 +140,7 @@ function DocumentModal({ show }: Props): ReactElement | null {
               {icon} {title}
             </>
           ) : (
-            m?.general.loading
+            <Text k="general.loading" />
           )}
         </Modal.Title>
       </Modal.Header>
@@ -153,7 +154,7 @@ function DocumentModal({ show }: Props): ReactElement | null {
             dangerouslySetInnerHTML={{ __html: content }}
           />
         ) : (
-          m?.general.loading
+          <Text k="general.loading" />
         )}
       </Modal.Body>
 

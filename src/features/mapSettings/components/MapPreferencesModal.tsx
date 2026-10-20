@@ -6,6 +6,7 @@ import {
   setActiveModal,
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { isCompassSupported } from '@features/location/compass.js';
 import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
 import { locationSettingsInitialState } from '@features/location/model/settingsReducer.js';
@@ -256,7 +257,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaSlidersH /> {m?.mapLayers.preferences}
+            <FaSlidersH /> <Text k="mapLayers.preferences" />
           </Modal.Title>
         </Modal.Header>
 
@@ -265,7 +266,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               are this browser's own and save with no connection. */}
           <Form.Group controlId="maxZoom">
             <Form.Label>
-              {m?.mapLayers.maxZoom}
+              <Text k="mapLayers.maxZoom" />
               <OfflineBadge offline={!canSaveSettings} />
             </Form.Label>
 
@@ -282,7 +283,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
-              {m?.mapLayers.zoomSnap}
+              <Text k="mapLayers.zoomSnap" />
               <HintMark hint={m?.mapLayers.zoomSnapHelp} />
             </Form.Label>
 
@@ -307,7 +308,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
-              {m?.mapLayers.resolutionScale}
+              <Text k="mapLayers.resolutionScale" />
               <HintMark hint={m?.mapLayers.resolutionScaleHelp} />
             </Form.Label>
 
@@ -323,7 +324,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                 variant="outline-primary"
                 disabled={pixelExact}
               >
-                {m?.mapLayers.resolutionScaleAuto}
+                <Text k="mapLayers.resolutionScaleAuto" />
               </ToggleButton>
 
               {['1', '2', '3', '4'].map((scale) => (
@@ -353,7 +354,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
-              {m?.mapLayers.featureScale}
+              <Text k="mapLayers.featureScale" />
               <HintMark hint={m?.mapLayers.featureScaleHelp} />
             </Form.Label>
 
@@ -378,7 +379,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
-              {m?.mapLayers.background}
+              <Text k="mapLayers.background" />
               <HintMark hint={m?.mapLayers.backgroundHelp} />
             </Form.Label>
 
@@ -399,7 +400,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
-              {m?.main.headingSource}
+              <Text k="main.headingSource" />
               <HintMark hint={m?.main.headingSourceHelp} />
             </Form.Label>
 
@@ -428,7 +429,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                     value={source}
                     variant="outline-primary"
                   >
-                    {m?.main.headingSources[source]}
+                    <Text k={`main.headingSources.${source}`} />
                   </ToggleButton>
                 ))}
             </FitToggleButtonGroup>

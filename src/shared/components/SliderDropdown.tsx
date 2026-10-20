@@ -70,7 +70,7 @@ export function SliderDropdown({
     >
       <LongPressTooltip
         breakpoint={breakpoint}
-        label={toggleLabel ?? '…'}
+        label={toggleLabel ?? undefined}
         name={name}
         hint={toggleHint}
         disabled={disabled}

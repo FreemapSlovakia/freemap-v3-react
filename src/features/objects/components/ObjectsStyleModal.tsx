@@ -3,6 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { LabelVisibilityField } from '@features/drawing/components/LabelVisibilityField.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -95,13 +96,15 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaPaintBrush /> {om?.style.title}
+            <FaPaintBrush /> <Text m={om} k="style.title" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group controlId="markerType">
-            <Form.Label>{om?.markerShape}</Form.Label>
+            <Form.Label>
+              <Text m={om} k="markerShape" />
+            </Form.Label>
 
             <MarkerTypeSelect
               asSelect
@@ -111,7 +114,9 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group controlId="color" className="mt-3">
-            <Form.Label>{dm?.edit.color}</Form.Label>
+            <Form.Label>
+              <Text m={dm} k="edit.color" />
+            </Form.Label>
 
             <RgbaColorPicker value={editedColor} onChange={setEditedColor} />
           </Form.Group>

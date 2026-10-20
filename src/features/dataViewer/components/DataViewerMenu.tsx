@@ -1,6 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
@@ -64,8 +64,6 @@ import { useDataViewerMessages } from '../translations/useDataViewerMessages.js'
 export default DataViewerMenu;
 
 export function DataViewerMenu(): ReactElement {
-  const m = useMessages();
-
   const tvm = useDataViewerMessages();
 
   const cm = useColorizerMessages();
@@ -347,33 +345,43 @@ export function DataViewerMenu(): ReactElement {
           <FmDropdownMenu>
             <Dropdown.Item as="button" eventKey="edit-style">
               <FaPaintBrush />
-              <MenuLabel>{tvm?.style.title ?? '…'}</MenuLabel>
+              <MenuLabel>
+                <Text m={tvm} k="style.title" />
+              </MenuLabel>
             </Dropdown.Item>
 
             {hasLines && canUpdateElevation && (
               <Dropdown.Item as="button" eventKey="update-elevation">
                 <FaMountain />
-                <MenuLabel>{tvm?.elevationFill.update ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={tvm} k="elevationFill.update" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
             {canSimplify && (
               <Dropdown.Item as="button" eventKey="simplify">
                 <FaCompressAlt />
-                <MenuLabel>{tvm?.simplifyAll ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={tvm} k="simplifyAll" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
             {!hasActiveMap && (
               <Dropdown.Item as="button" eventKey="save-as-map">
                 <FaSave />
-                <MenuLabel>{tvm?.saveAsMap ?? '…'}</MenuLabel>
+                <MenuLabel>
+                  <Text m={tvm} k="saveAsMap" />
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
             <Dropdown.Item as="button" eventKey="convert-to-drawing">
               <FaPencilAlt />
-              <MenuLabel>{m?.general.convertAllToDrawing ?? '…'}</MenuLabel>
+              <MenuLabel>
+                <Text k="general.convertAllToDrawing" />
+              </MenuLabel>
             </Dropdown.Item>
 
             <BatchPropertiesItems

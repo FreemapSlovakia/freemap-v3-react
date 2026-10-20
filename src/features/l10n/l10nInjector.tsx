@@ -22,7 +22,7 @@ export function useMessages(): Messages | undefined {
   return useSyncExternalStore(subscribeMessages, getMessages, getMessages);
 }
 
-export function getMessageByKey(m: Messages | undefined, key: string): unknown {
+export function getMessageByKey(m: unknown, key: string): unknown {
   if (m === undefined) {
     return;
   }

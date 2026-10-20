@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
@@ -93,13 +94,15 @@ export function CachedMapsList(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <BiWifiOff /> {m?.mapLayers.offlineMaps}
+          <BiWifiOff /> <Text k="mapLayers.offlineMaps" />
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         {cachedMaps.length === 0 ? (
-          <p className="text-muted mb-0">{cmm?.emptyMessage}</p>
+          <p className="text-muted mb-0">
+            <Text m={cmm} k="emptyMessage" />
+          </p>
         ) : (
           <>
             <ListGroup>
@@ -134,14 +137,14 @@ export function CachedMapsList(): ReactElement {
                       <div className="d-flex flex-wrap align-items-center gap-2">
                         <small className="text-muted">
                           <span className="text-nowrap">
-                            {cmm?.zoom}:{' '}
+                            <Text m={cmm} k="zoom" />:{' '}
                             <strong>
                               {cm.minZoom}&ndash;{cm.maxNativeZoom}
                             </strong>
                             {' · '}
                           </span>{' '}
                           <span className="text-nowrap">
-                            {cmm?.tiles}:{' '}
+                            <Text m={cmm} k="tiles" />:{' '}
                             <strong>{nf.format(cm.tileCount)}</strong>
                             {' · '}
                           </span>{' '}
@@ -149,12 +152,13 @@ export function CachedMapsList(): ReactElement {
                               for the rest it would be a guess from this screen */}
                           {cm.tileScale !== undefined && (
                             <span className="text-nowrap">
-                              {ome?.scale}: <strong>{cm.tileScale}×</strong>
+                              <Text m={ome} k="scale" />:{' '}
+                              <strong>{cm.tileScale}×</strong>
                               {' · '}
                             </span>
                           )}{' '}
                           <span className="text-nowrap">
-                            {cmm?.size}:{' '}
+                            <Text m={cmm} k="size" />:{' '}
                             <strong>
                               {formatSize(dl?.sizeBytes ?? cm.sizeBytes)}
                             </strong>
@@ -175,10 +179,14 @@ export function CachedMapsList(): ReactElement {
                             style={{ minWidth: 80 }}
                           />
                         ) : isComplete ? (
-                          <small className="text-success">{cmm?.ready}</small>
+                          <small className="text-success">
+                            <Text m={cmm} k="ready" />
+                          </small>
                         ) : (
                           <small className="text-warning">
-                            {cmm?.incomplete({ pct })}
+                            <Text m={cmm}>
+                              {(cmm) => cmm.incomplete({ pct })}
+                            </Text>
                           </small>
                         )}
                       </div>
@@ -316,7 +324,7 @@ export function CachedMapsList(): ReactElement {
             </ListGroup>
 
             <div className="text-muted text-end mt-2">
-              {cmm?.total}: {formatSize(totalSize)}
+              <Text m={cmm} k="total" />: {formatSize(totalSize)}
             </div>
           </>
         )}
@@ -326,7 +334,7 @@ export function CachedMapsList(): ReactElement {
         {/* a real link, so it can be opened or copied like the menu entries
             that address a modal; the click itself is handled here */}
         <Button variant="link" {...modalLink({ type: 'browse-cache' })}>
-          <FaDatabase /> {m?.mapLayers.browseCache}
+          <FaDatabase /> <Text k="mapLayers.browseCache" />
         </Button>
 
         {/* Gated as the menu's item is: offline its settings can't be saved. */}
@@ -335,7 +343,7 @@ export function CachedMapsList(): ReactElement {
           disabled={!canSaveSettings}
           {...modalLink({ type: 'installed-maps' })}
         >
-          <FaLayerGroup /> {m?.mapLayers.installedMaps}
+          <FaLayerGroup /> <Text k="mapLayers.installedMaps" />
         </Button>
 
         <FmFooterButton

@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { Text } from '@features/l10n/Text.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
@@ -28,10 +29,14 @@ export function CreditsAlert({
     >
       <div className="d-flex justify-content-between  gap-4">
         <span>
-          {cm?.youHaveCredits(
-            <b>{nf.format(Math.floor(user.credits))}</b>,
-            explainCredits,
-          )}
+          <Text m={cm}>
+            {(cm) =>
+              cm.youHaveCredits(
+                <b>{nf.format(Math.floor(user.credits))}</b>,
+                explainCredits,
+              )
+            }
+          </Text>
         </span>
 
         {buy && (
@@ -41,7 +46,7 @@ export function CreditsAlert({
               dispatch(setActiveModal({ type: 'credits-purchase' }))
             }
           >
-            <FaCoins /> {cm?.buyCredits}
+            <FaCoins /> <Text m={cm} k="buyCredits" />
           </Button>
         )}
       </div>

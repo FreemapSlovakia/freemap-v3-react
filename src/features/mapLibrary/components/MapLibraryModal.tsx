@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapLayersSettingsReset } from '@features/map/model/actions.js';
 import { CustomMapEditor } from '@features/mapSettings/components/CustomMapEditor.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
@@ -145,7 +146,7 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaLayerGroup /> {m?.mapLayers.mapManager}
+          <FaLayerGroup /> <Text k="mapLayers.mapManager" />
         </Modal.Title>
       </Modal.Header>
 
@@ -177,13 +178,14 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
           >
             <Nav.Item>
               <Nav.Link eventKey="installed">
-                <FaLayerGroup /> {m?.mapLayers.installedMaps} ({yourMapsCount})
+                <FaLayerGroup /> <Text k="mapLayers.installedMaps" /> (
+                {yourMapsCount})
               </Nav.Link>
             </Nav.Item>
 
             <Nav.Item>
               <Nav.Link eventKey="available">
-                <FaBookOpen /> {m?.mapLayers.availableMaps}
+                <FaBookOpen /> <Text k="mapLayers.availableMaps" />
                 {catalog && ` (${entries.length})`}
               </Nav.Link>
             </Nav.Item>

@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmModalFooter,
@@ -62,13 +63,15 @@ export function ProjectPointModal({
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <TbAngle /> {dm?.projection.projectPoint}
+            <TbAngle /> <Text m={dm} k="projection.projectPoint" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group controlId="distance" className="mb-3">
-            <Form.Label>{dm?.projection.distance}</Form.Label>
+            <Form.Label>
+              <Text m={dm} k="projection.distance" />
+            </Form.Label>
 
             <InputGroup hasValidation>
               <Form.Control
@@ -82,13 +85,15 @@ export function ProjectPointModal({
               <InputGroup.Text>m</InputGroup.Text>
 
               <Form.Control.Feedback type="invalid">
-                {m?.general.valueAbove({ min: '0\u00a0m' })}
+                <Text>{(m) => m.general.valueAbove({ min: '0\u00a0m' })}</Text>
               </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 
           <Form.Group controlId="azimuth">
-            <Form.Label>{dm?.projection.azimuth}</Form.Label>
+            <Form.Label>
+              <Text m={dm} k="projection.azimuth" />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -104,7 +109,7 @@ export function ProjectPointModal({
 
         <FmModalFooter>
           <Button type="submit" disabled={!isValid()}>
-            {dm?.projection.add}
+            <Text m={dm} k="projection.add" />
           </Button>
 
           <FmDismissButton label={m?.general.close} onClick={onClose} />

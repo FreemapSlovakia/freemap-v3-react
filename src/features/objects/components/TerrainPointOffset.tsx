@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { distanceTo } from '@shared/geoutils.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -42,7 +43,11 @@ export function TerrainPointOffset({
   return (
     <div>
       <span className="text-body-secondary">
-        {om?.terrain.fromMarker({ distance: `${nf.format(offsetM)} m` })}
+        <Text m={om}>
+          {(om) =>
+            om.terrain.fromMarker({ distance: `${nf.format(offsetM)} m` })
+          }
+        </Text>
       </span>
 
       {at && (

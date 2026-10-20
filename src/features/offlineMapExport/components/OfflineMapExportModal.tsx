@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { DEFAULT_SHADING } from '@features/map/model/layerSetup.js';
 import { drawnSetupsSelector } from '@features/map/model/selectors.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
@@ -342,7 +343,7 @@ export default function OfflineMapExportModal({
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaDatabase /> {m?.mainMenu.offlineMapExport}{' '}
+            <FaDatabase /> <Text k="mainMenu.offlineMapExport" />{' '}
             <ExperimentalFunction />
           </Modal.Title>
         </Modal.Header>
@@ -352,11 +353,15 @@ export default function OfflineMapExportModal({
 
           <div>
             <p>
-              <strong>{ome?.usageIntro}</strong>
+              <strong>
+                <Text m={ome} k="usageIntro" />
+              </strong>
             </p>
             <ul>
               <li>
-                <strong>{ome?.usageDesktop}</strong>{' '}
+                <strong>
+                  <Text m={ome} k="usageDesktop" />
+                </strong>{' '}
                 <a href="https://qgis.org/" target="_blank" rel="noopener">
                   QGIS
                 </a>{' '}
@@ -371,7 +376,9 @@ export default function OfflineMapExportModal({
               </li>
 
               <li>
-                <strong>{ome?.usageAndroid}</strong>{' '}
+                <strong>
+                  <Text m={ome} k="usageAndroid" />
+                </strong>{' '}
                 <a
                   href="https://play.google.com/store/apps/details?id=menion.android.locus"
                   target="_blank"
@@ -406,7 +413,9 @@ export default function OfflineMapExportModal({
               </li>
 
               <li>
-                <strong>{ome?.usageIos}</strong>{' '}
+                <strong>
+                  <Text m={ome} k="usageIos" />
+                </strong>{' '}
                 <a
                   href="https://apps.apple.com/app/guru-maps-offline-maps-gps/id1032458712"
                   target="_blank"
@@ -433,7 +442,10 @@ export default function OfflineMapExportModal({
               </li>
 
               <li>
-                <strong>{ome?.usageWeb}</strong> {ome?.usageWebLead}{' '}
+                <strong>
+                  <Text m={ome} k="usageWeb" />
+                </strong>{' '}
+                <Text m={ome} k="usageWebLead" />{' '}
                 <a
                   href="https://github.com/consbio/mbtileserver"
                   target="_blank"
@@ -441,7 +453,7 @@ export default function OfflineMapExportModal({
                 >
                   mbtileserver
                 </a>{' '}
-                {ome?.usageWebMid}{' '}
+                <Text m={ome} k="usageWebMid" />{' '}
                 <a
                   href="https://github.com/maptiler/tileserver-gl"
                   target="_blank"
@@ -449,7 +461,7 @@ export default function OfflineMapExportModal({
                 >
                   TileServer GL
                 </a>
-                {ome?.usageWebTrail}
+                <Text m={ome} k="usageWebTrail" />
               </li>
             </ul>
           </div>
@@ -459,7 +471,9 @@ export default function OfflineMapExportModal({
           <hr />
 
           <Form.Group controlId="mapType">
-            <Form.Label>{ome?.map}</Form.Label>
+            <Form.Label>
+              <Text m={ome} k="map" />
+            </Form.Label>
 
             <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
               <Dropdown.Toggle as={SelectToggle} className="w-100">
@@ -482,7 +496,9 @@ export default function OfflineMapExportModal({
           </Form.Group>
 
           <Form.Group controlId="downloadArea">
-            <Form.Label className="d-block">{ome?.downloadArea}</Form.Label>
+            <Form.Label className="d-block">
+              <Text m={ome} k="downloadArea" />
+            </Form.Label>
 
             <MapAreaToggle
               className="mb-3"
@@ -495,7 +511,9 @@ export default function OfflineMapExportModal({
           <OutsideCoverageAlert mapDef={mapDef} bbox={bbox} active={show} />
 
           <Form.Group controlId="name" className="mb-3">
-            <Form.Label>{ome?.name}</Form.Label>
+            <Form.Label>
+              <Text m={ome} k="name" />
+            </Form.Label>
 
             <Form.Control
               type="text"
@@ -508,7 +526,9 @@ export default function OfflineMapExportModal({
           </Form.Group>
 
           <Form.Group controlId="format" className="mb-3">
-            <Form.Label className="d-block">{ome?.format}</Form.Label>
+            <Form.Label className="d-block">
+              <Text m={ome} k="format" />
+            </Form.Label>
 
             <FitButtonGroup>
               <LongPressTooltip label={ome?.formatMbtilesTooltip}>
@@ -523,7 +543,7 @@ export default function OfflineMapExportModal({
                     onChange={() => setFormat('mbtiles')}
                     {...props}
                   >
-                    {ome?.formatMbtiles}
+                    <Text m={ome} k="formatMbtiles" />
                   </ToggleButton>
                 )}
               </LongPressTooltip>
@@ -540,7 +560,7 @@ export default function OfflineMapExportModal({
                     onChange={() => setFormat('sqlitedb')}
                     {...props}
                   >
-                    {ome?.formatSqlitedb}
+                    <Text m={ome} k="formatSqlitedb" />
                   </ToggleButton>
                 )}
               </LongPressTooltip>
@@ -549,7 +569,9 @@ export default function OfflineMapExportModal({
 
           {mapDef && (
             <Form.Group controlId="zoomRange" className="mb-3">
-              <Form.Label className="required">{ome?.zoomRange}</Form.Label>
+              <Form.Label className="required">
+                <Text m={ome} k="zoomRange" />
+              </Form.Label>
 
               <InputGroup>
                 <Form.Control
@@ -577,7 +599,9 @@ export default function OfflineMapExportModal({
 
           {mapDef?.extraScales && (
             <Form.Group controlId="scale" className="mb-3">
-              <Form.Label className="d-block">{ome?.scale}</Form.Label>
+              <Form.Label className="d-block">
+                <Text m={ome} k="scale" />
+              </Form.Label>
 
               <FitToggleButtonGroup
                 type="radio"
@@ -600,7 +624,9 @@ export default function OfflineMapExportModal({
           )}
 
           <Form.Group controlId="email" className="mb-3">
-            <Form.Label className="required">{ome?.email}</Form.Label>
+            <Form.Label className="required">
+              <Text m={ome} k="email" />
+            </Form.Label>
 
             <Form.Control
               type="email"
@@ -610,18 +636,20 @@ export default function OfflineMapExportModal({
               onChange={(e) => setEmail(e.currentTarget.value)}
             />
 
-            <Form.Text className="text-muted">{ome?.emailInfo}</Form.Text>
+            <Form.Text className="text-muted">
+              <Text m={ome} k="emailInfo" />
+            </Form.Text>
           </Form.Group>
         </Modal.Body>
 
         <FmModalFooter className="flex-wrap">
           {tileCount !== undefined && mapDef && (
             <div className="w-100 text-end">
-              {ome?.summaryTiles}: <b>{cnf.format(tileCount)}</b>
+              <Text m={ome} k="summaryTiles" />: <b>{cnf.format(tileCount)}</b>
               {estimatedSize !== undefined && (
                 <>
                   {' '}
-                  ｜ {ome?.summarySize}:{' '}
+                  ｜ <Text m={ome} k="summarySize" />:{' '}
                   {sampling ? (
                     <Spinner animation="border" size="sm" />
                   ) : (
@@ -635,7 +663,9 @@ export default function OfflineMapExportModal({
                   price >= Math.floor(user?.credits ?? 0) ? 'text-danger' : ''
                 }
               >
-                {ome?.summaryPrice(<b>{cnf.format(price)}</b>)}
+                <Text m={ome}>
+                  {(ome) => ome.summaryPrice(<b>{cnf.format(price)}</b>)}
+                </Text>
               </span>
             </div>
           )}

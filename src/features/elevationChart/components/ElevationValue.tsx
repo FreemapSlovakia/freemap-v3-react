@@ -5,6 +5,7 @@ import {
   selectFeature,
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
@@ -172,7 +173,8 @@ export function ElevationValue({
         <span className="text-muted">—</span>
       ) : (
         <>
-          <b>{nfEle.format(elevation)}</b>&nbsp;{m?.general.masl}
+          <b>{nfEle.format(elevation)}</b>&nbsp;
+          <Text k="general.masl" />
           {/* Its own icon, not the gem's tooltip: what this reading came from,
               and what premium would read it from instead, are two things. */}
           <ElevationSourcesInfo attributions={attributions} />

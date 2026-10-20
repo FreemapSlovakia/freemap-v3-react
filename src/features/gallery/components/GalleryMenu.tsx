@@ -1,5 +1,6 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { LEGEND_ITEM } from '@shared/colorizers/components/legendToggleOption.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
@@ -314,7 +315,9 @@ export default function GalleryMenu() {
                           active={showLegend}
                         >
                           {showLegend ? <FaRegCheckSquare /> : <FaRegSquare />}
-                          <MenuLabel>{gm?.legend ?? '…'}</MenuLabel>
+                          <MenuLabel>
+                            <Text m={gm} k="legend" />
+                          </MenuLabel>
                         </Dropdown.Item>
 
                         <Dropdown.Divider />
@@ -327,7 +330,9 @@ export default function GalleryMenu() {
                       active={!colorizeBy}
                     >
                       <FaBan />
-                      <MenuLabel>{gm?.noColorize ?? '…'}</MenuLabel>
+                      <MenuLabel>
+                        <Text m={gm} k="noColorize" />
+                      </MenuLabel>
                     </Dropdown.Item>
 
                     {GalleryColorizeBySchema.options.map((by) => {
@@ -342,7 +347,9 @@ export default function GalleryMenu() {
                           active={colorizeBy === by}
                         >
                           <Icon />
-                          <MenuLabel>{gm?.c[by] ?? '…'}</MenuLabel>
+                          <MenuLabel>
+                            <Text m={gm} k={`c.${by}`} />
+                          </MenuLabel>
                         </Dropdown.Item>
                       );
                     })}
@@ -448,7 +455,9 @@ export default function GalleryMenu() {
                         <Dropdown.Item as="button" eventKey="direction">
                           <Checkbox value={showDirection} />
                           <FaLocationArrow />
-                          <MenuLabel>{gm?.showDirection}</MenuLabel>
+                          <MenuLabel>
+                            <Text m={gm} k="showDirection" />
+                          </MenuLabel>
                         </Dropdown.Item>
 
                         {sendGalleryEmails !== undefined && (
@@ -456,19 +465,25 @@ export default function GalleryMenu() {
                             <OnlineOnlyItem as="button" eventKey="emails">
                               <Checkbox value={sendGalleryEmails} />
                               <FaEnvelope />
-                              <MenuLabel>{gm?.sendGalleryEmails}</MenuLabel>
+                              <MenuLabel>
+                                <Text m={gm} k="sendGalleryEmails" />
+                              </MenuLabel>
                             </OnlineOnlyItem>
 
                             <Dropdown.Divider />
 
                             <OnlineOnlyItem as="button" eventKey="all-premium">
                               <FaGem />
-                              <MenuLabel>{gm?.allMyPhotos.premium}</MenuLabel>
+                              <MenuLabel>
+                                <Text m={gm} k="allMyPhotos.premium" />
+                              </MenuLabel>
                             </OnlineOnlyItem>
 
                             <OnlineOnlyItem as="button" eventKey="all-free">
                               <FaDove />
-                              <MenuLabel>{gm?.allMyPhotos.free}</MenuLabel>
+                              <MenuLabel>
+                                <Text m={gm} k="allMyPhotos.free" />
+                              </MenuLabel>
                             </OnlineOnlyItem>
 
                             <OnlineOnlyItem
@@ -476,7 +491,9 @@ export default function GalleryMenu() {
                               eventKey="submenu-license"
                             >
                               <FaCreativeCommons />
-                              <MenuLabel>{gm?.license.chooseForAll}</MenuLabel>
+                              <MenuLabel>
+                                <Text m={gm} k="license.chooseForAll" />
+                              </MenuLabel>
                               <MenuGutter>
                                 <FaChevronRight />
                               </MenuGutter>

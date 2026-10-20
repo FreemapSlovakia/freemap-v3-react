@@ -2,6 +2,7 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -97,19 +98,23 @@ export default function GpsRecorderSettingsModal({
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCog /> {grm?.settingsModal.title}
+            <FaCog /> <Text m={grm} k="settingsModal.title" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          <h6>{grm?.settingsModal.recorderSection}</h6>
+          <h6>
+            <Text m={grm} k="settingsModal.recorderSection" />
+          </h6>
 
           <p className="text-body-secondary small">
-            {grm?.settingsModal.recorderIntro}
+            <Text m={grm} k="settingsModal.recorderIntro" />
           </p>
 
           <Form.Group className="mb-3">
-            <Form.Label>{grm?.settingsModal.intervalMs}</Form.Label>
+            <Form.Label>
+              <Text m={grm} k="settingsModal.intervalMs" />
+            </Form.Label>
 
             <InputGroup>
               {/* The field keeps its own text while it is being edited, so clearing
@@ -137,12 +142,16 @@ export default function GpsRecorderSettingsModal({
                 }}
               />
 
-              <InputGroup.Text>{m?.general.seconds}</InputGroup.Text>
+              <InputGroup.Text>
+                <Text k="general.seconds" />
+              </InputGroup.Text>
             </InputGroup>
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>{grm?.settingsModal.minDistanceM}</Form.Label>
+            <Form.Label>
+              <Text m={grm} k="settingsModal.minDistanceM" />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -154,12 +163,16 @@ export default function GpsRecorderSettingsModal({
                 onChange={(e) => set({ minDistanceM: Number(e.target.value) })}
               />
 
-              <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
+              <InputGroup.Text>
+                <Text k="general.meters" />
+              </InputGroup.Text>
             </InputGroup>
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>{grm?.settingsModal.maxAccuracyM}</Form.Label>
+            <Form.Label>
+              <Text m={grm} k="settingsModal.maxAccuracyM" />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -178,13 +191,15 @@ export default function GpsRecorderSettingsModal({
                 }
               />
 
-              <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
+              <InputGroup.Text>
+                <Text k="general.meters" />
+              </InputGroup.Text>
             </InputGroup>
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>
-              {grm?.settingsModal.source}
+              <Text m={grm} k="settingsModal.source" />
               <HintMark hint={grm?.settingsModal.sourceHint} />
             </Form.Label>
 
@@ -206,7 +221,9 @@ export default function GpsRecorderSettingsModal({
               ignores this under the other one — so the field says so rather than
               taking a choice that would go nowhere. */}
           <Form.Group className="mb-3">
-            <Form.Label>{grm?.settingsModal.priority}</Form.Label>
+            <Form.Label>
+              <Text m={grm} k="settingsModal.priority" />
+            </Form.Label>
 
             <Form.Select
               disabled={draft.source === 'gps'}
@@ -228,17 +245,21 @@ export default function GpsRecorderSettingsModal({
             </Form.Select>
 
             {draft.source === 'gps' && (
-              <Form.Text>{grm?.settingsModal.priorityFusedOnly}</Form.Text>
+              <Form.Text>
+                <Text m={grm} k="settingsModal.priorityFusedOnly" />
+              </Form.Text>
             )}
           </Form.Group>
 
           <hr />
 
-          <h6>{grm?.settingsModal.displaySection}</h6>
+          <h6>
+            <Text m={grm} k="settingsModal.displaySection" />
+          </h6>
 
           <Form.Group className="mb-3">
             <Form.Label>
-              {grm?.settingsModal.splitGapS}
+              <Text m={grm} k="settingsModal.splitGapS" />
               <HintMark hint={grm?.settingsModal.splitGapHint} />
             </Form.Label>
 
@@ -262,7 +283,9 @@ export default function GpsRecorderSettingsModal({
                 }
               />
 
-              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+              <InputGroup.Text>
+                <Text k="general.minutes" />
+              </InputGroup.Text>
             </InputGroup>
           </Form.Group>
 

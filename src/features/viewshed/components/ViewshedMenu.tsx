@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -146,11 +147,17 @@ export default function ViewshedMenu(): ReactElement {
             <HintMark
               hint={
                 <>
-                  <p className="mb-1">{gm?.general.terrain.bareEarth}</p>
+                  <p className="mb-1">
+                    <Text k="general.terrain.bareEarth" />
+                  </p>
 
-                  <p className="mb-1">{gm?.general.terrain.coverage}</p>
+                  <p className="mb-1">
+                    <Text k="general.terrain.coverage" />
+                  </p>
 
-                  <p className="mb-0">{m?.caveats.viewpoint}</p>
+                  <p className="mb-0">
+                    <Text m={m} k="caveats.viewpoint" />
+                  </p>
                 </>
               }
             />
@@ -201,7 +208,7 @@ export default function ViewshedMenu(): ReactElement {
                   id="fm-viewshed-radius"
                   label={
                     <>
-                      {gm?.general.maxVisibleDistance}
+                      <Text k="general.maxVisibleDistance" />
 
                       {!premium && <PremiumGem hint={m?.rangeHint} />}
                     </>
@@ -223,7 +230,7 @@ export default function ViewshedMenu(): ReactElement {
                   id="fm-viewshed-detail"
                   label={
                     <>
-                      {m?.detail}
+                      <Text m={m} k="detail" />
 
                       {!premium && <PremiumGem hint={prm?.higherDetail} />}
                     </>
@@ -281,7 +288,7 @@ export default function ViewshedMenu(): ReactElement {
                     variant="secondary"
                     onClick={() => dispatch(viewshedCancel())}
                   >
-                    {gm?.general.cancel}
+                    <Text k="general.cancel" />
                   </Button>
                 </>
               ) : (
@@ -293,7 +300,7 @@ export default function ViewshedMenu(): ReactElement {
                         onClick={() => dispatch(viewshedRender())}
                         {...props}
                       >
-                        <FaSync /> {m?.update}
+                        <FaSync /> <Text m={m} k="update" />
                       </Button>
                     )}
                   </LongPressTooltip>

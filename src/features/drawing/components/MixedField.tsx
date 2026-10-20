@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import type { BatchField } from '@shared/batchProperties.js';
 import type { ReactElement, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
@@ -32,10 +33,12 @@ export function MixedField({
 
   return mixed.kept(field) ? (
     <div className="d-flex align-items-center gap-2">
-      <span className="text-body-secondary">{dm?.edit.different}</span>
+      <span className="text-body-secondary">
+        <Text m={dm} k="edit.different" />
+      </span>
 
       <Button variant="secondary" onClick={() => mixed.setKept(field, false)}>
-        <FaPen /> {dm?.edit.change}
+        <FaPen /> <Text m={dm} k="edit.change" />
       </Button>
     </div>
   ) : (
@@ -43,7 +46,7 @@ export function MixedField({
       <div className="flex-grow-1">{children}</div>
 
       <Button variant="secondary" onClick={() => mixed.setKept(field, true)}>
-        <FaUndo /> {dm?.edit.keep}
+        <FaUndo /> <Text m={dm} k="edit.keep" />
       </Button>
     </div>
   );

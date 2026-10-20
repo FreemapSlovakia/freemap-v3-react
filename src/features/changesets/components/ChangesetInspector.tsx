@@ -1,4 +1,5 @@
 import { selectFeature } from '@app/store/actions.js';
+import { Text } from '@features/l10n/Text.js';
 import { LinkButton } from '@shared/components/LinkButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { inAppLink } from '@shared/inAppLink.js';
@@ -73,7 +74,7 @@ export function ChangesetInspector({ root }: Props): ReactElement {
         key: 'history',
         label: (
           <>
-            <FaHistory /> {cm?.history.title}
+            <FaHistory /> <Text m={cm} k="history.title" />
           </>
         ),
         // Back through the history, so its element's details are what remain.

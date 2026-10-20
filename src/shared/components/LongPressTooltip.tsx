@@ -1,3 +1,4 @@
+import { TextPlaceholder } from '@features/l10n/Text.js';
 import { type Breakpoint, useBreakpointMatches } from '@shared/breakpoints.js';
 import {
   createContext,
@@ -93,7 +94,7 @@ type Props = {
 };
 
 export function LongPressTooltip({
-  label = '…',
+  label = <TextPlaceholder />,
   name,
   kbd,
   hint,

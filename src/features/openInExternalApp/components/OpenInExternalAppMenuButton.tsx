@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
@@ -152,7 +153,9 @@ export function OpenInExternalAppMenuButton({
 
             <Dropdown.Item as="button" eventKey="submenu-openExternally">
               <FaExternalLinkAlt />
-              <MenuLabel>{oeam?.openIn}</MenuLabel>
+              <MenuLabel>
+                <Text m={oeam} k="openIn" />
+              </MenuLabel>
               <MenuGutter>
                 <FaChevronRight />
               </MenuGutter>

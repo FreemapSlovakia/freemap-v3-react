@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -215,7 +216,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCode /> {m?.mainMenu.embedMap}
+          <FaCode /> <Text k="mainMenu.embedMap" />
         </Modal.Title>
       </Modal.Header>
 
@@ -225,11 +226,15 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
           className="mb-3"
           style={{ maxWidth: '542px' }}
         >
-          <Form.Label className="required">{lm?.dimensions}</Form.Label>
+          <Form.Label className="required">
+            <Text m={lm} k="dimensions" />
+          </Form.Label>
 
           <div className="d-flex gap-2">
             <InputGroup hasValidation>
-              <InputGroup.Text>{lm?.width}</InputGroup.Text>
+              <InputGroup.Text>
+                <Text m={lm} k="width" />
+              </InputGroup.Text>
 
               <Form.Control
                 type="number"
@@ -243,15 +248,21 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
               />
 
               <Form.Control.Feedback type="invalid">
-                {m?.general.valueRange({
-                  min: `${SIZE_MIN}\u00a0px`,
-                  max: `${WIDTH_MAX}\u00a0px`,
-                })}
+                <Text>
+                  {(m) =>
+                    m.general.valueRange({
+                      min: `${SIZE_MIN}\u00a0px`,
+                      max: `${WIDTH_MAX}\u00a0px`,
+                    })
+                  }
+                </Text>
               </Form.Control.Feedback>
             </InputGroup>
 
             <InputGroup hasValidation>
-              <InputGroup.Text>{lm?.height}</InputGroup.Text>
+              <InputGroup.Text>
+                <Text m={lm} k="height" />
+              </InputGroup.Text>
 
               <Form.Control
                 type="number"
@@ -265,16 +276,22 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
               />
 
               <Form.Control.Feedback type="invalid">
-                {m?.general.valueRange({
-                  min: `${SIZE_MIN}\u00a0px`,
-                  max: `${HEIGHT_MAX}\u00a0px`,
-                })}
+                <Text>
+                  {(m) =>
+                    m.general.valueRange({
+                      min: `${SIZE_MIN}\u00a0px`,
+                      max: `${HEIGHT_MAX}\u00a0px`,
+                    })
+                  }
+                </Text>
               </Form.Control.Feedback>
             </InputGroup>
           </div>
         </Form.Group>
 
-        <Form.Label className="d-block">{lm?.enableFeatures}</Form.Label>
+        <Form.Label className="d-block">
+          <Text m={lm} k="enableFeatures" />
+        </Form.Label>
 
         <div className="d-flex flex-wrap gap-2">
           <ToggleButton
@@ -285,7 +302,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             checked={features.has('search')}
             onChange={handleFeaturesChange}
           >
-            {lm?.enableSearch}
+            <Text m={lm} k="enableSearch" />
           </ToggleButton>
 
           <ToggleButton
@@ -296,7 +313,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             checked={features.has('mapSwitch')}
             onChange={handleFeaturesChange}
           >
-            {lm?.enableMapSwitch}
+            <Text m={lm} k="enableMapSwitch" />
           </ToggleButton>
 
           <ToggleButton
@@ -307,13 +324,15 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             checked={features.has('locateMe')}
             onChange={handleFeaturesChange}
           >
-            {lm?.enableLocateMe}
+            <Text m={lm} k="enableLocateMe" />
           </ToggleButton>
         </div>
 
         <hr />
 
-        <Form.Label>{lm?.code}</Form.Label>
+        <Form.Label>
+          <Text m={lm} k="code" />
+        </Form.Label>
 
         <Form.Control
           ref={setFormControl}
@@ -332,7 +351,9 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
 
         {!(invalidWidth || invalidHeight) && (
           <div className="mt-3">
-            <Form.Label>{lm?.example}</Form.Label>
+            <Form.Label>
+              <Text m={lm} k="example" />
+            </Form.Label>
 
             <div style={{ overflowX: 'auto' }}>
               <iframe
