@@ -26,6 +26,7 @@ import {
 } from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useModalLink } from '@shared/components/ShowModalLink.js';
@@ -791,12 +792,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             >
               <small>{m?.search.showMore}</small>
 
-              {inputFocused && (
-                <>
-                  {' '}
-                  <kbd>Enter</kbd>
-                </>
-              )}
+              {inputFocused && <kbd>Enter</kbd>}
             </Dropdown.Item>
           )}
 
@@ -816,7 +812,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   setOpen(false);
                 }}
               >
-                <FaPaintBrush /> {m?.mapLayers.lookupStyle}
+                <FaPaintBrush />
+                <MenuLabel>{m?.mapLayers.lookupStyle}</MenuLabel>
               </Dropdown.Item>
             </>
           )}
@@ -890,12 +887,12 @@ function CommandItem({ match }: { match: CommandMatch }) {
   const label = (
     <>
       {command.layerDef ? (
-        <MapLayerItem def={command.layerDef} label={highlighted} />
+        <MapLayerItem def={command.layerDef} label={highlighted} truncate />
       ) : (
         <>
           {command.icon}
 
-          {highlighted}
+          <MenuLabel>{highlighted}</MenuLabel>
         </>
       )}
 

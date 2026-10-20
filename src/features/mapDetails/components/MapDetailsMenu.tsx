@@ -7,6 +7,7 @@ import {
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerLabel } from '@shared/layerName.js';
@@ -115,7 +116,8 @@ export function MapDetailsMenu(): ReactElement | null {
               eventKey={source.key}
               active={source.selected}
             >
-              <Checkbox value={source.selected} /> {source.name}
+              <Checkbox value={source.selected} />
+              <MenuLabel>{source.name}</MenuLabel>
             </Dropdown.Item>
           ))}
         </FmDropdownMenu>

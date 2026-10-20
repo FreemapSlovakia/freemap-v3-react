@@ -997,7 +997,7 @@ function AddMap({ id }: { id: string }): ReactElement {
                   dispatch(mapPresetLayerAdd({ id, type: def.type }))
                 }
               >
-                <MapLayerItem def={def} />
+                <MapLayerItem def={def} truncate />
               </Dropdown.Item>
             )),
         )}

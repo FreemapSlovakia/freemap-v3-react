@@ -539,10 +539,6 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
     }
   };
 
-  function getItem(def: (typeof mapDefs)[number]) {
-    return <MapLayerItem def={def} />;
-  }
-
   return (
     <form onSubmit={handleSubmit} className="d-contents">
       <Modal.Header closeButton>
@@ -565,7 +561,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
           {editing ? (
             <div className="form-control-plaintext mb-3">
               {mapDef ? (
-                getItem(mapDef)
+                <MapLayerItem def={mapDef} />
               ) : (
                 <MapLayerItem
                   def={{
@@ -579,7 +575,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
           ) : (
             <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
               <Dropdown.Toggle as={SelectToggle} className="w-100">
-                {mapDef ? getItem(mapDef) : '???'}
+                {mapDef ? <MapLayerItem def={mapDef} /> : '???'}
               </Dropdown.Toggle>
 
               <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
@@ -590,7 +586,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
                     key={def.type}
                     eventKey={def.type}
                   >
-                    {getItem(def)}
+                    <MapLayerItem def={def} truncate />
                   </Dropdown.Item>
                 ))}
               </FmDropdownMenu>

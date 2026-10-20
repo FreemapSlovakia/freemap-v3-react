@@ -6,6 +6,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import {
   useConfirm,
   useConfirmChoice,
@@ -254,7 +255,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 disabled={maps.length === 0}
                 onClick={() => dispatch(mapsSetAllOffline(true))}
               >
-                <BiWifiOff /> {mm?.makeAllOffline}
+                <BiWifiOff />
+                <MenuLabel>{mm?.makeAllOffline}</MenuLabel>
               </OnlineOnlyItem>
 
               <Dropdown.Item
@@ -262,7 +264,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 disabled={offlineIds.length === 0}
                 onClick={() => dispatch(mapsSetAllOffline(false))}
               >
-                <FaTimes /> {mm?.removeAllOffline}
+                <FaTimes />
+                <MenuLabel>{mm?.removeAllOffline}</MenuLabel>
               </Dropdown.Item>
 
               <Dropdown.Item
@@ -272,7 +275,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 disabled={!outbox.some((entry) => !entry.blocked)}
                 onClick={() => dispatch(mapsSyncOutbox({ manual: true }))}
               >
-                <FaCloudUploadAlt /> {mm?.syncNow}
+                <FaCloudUploadAlt />
+                <MenuLabel>{mm?.syncNow}</MenuLabel>
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>
@@ -346,7 +350,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                             as="button"
                             onClick={() => handleLoad(map.id, false)}
                           >
-                            <FaShapes /> {mm?.loadExclMapAndPosition}
+                            <FaShapes />
+                            <MenuLabel>{mm?.loadExclMapAndPosition}</MenuLabel>
                           </Dropdown.Item>
                         }
                         showFrom="sm"

@@ -1,5 +1,6 @@
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
@@ -370,8 +371,9 @@ export function GpsRecorderReadout({ collapsedIcon }: Props): ReactNode {
               eventKey={row.id}
               className="d-flex justify-content-between gap-4"
             >
-              <span className="text-body-secondary">
-                <Checkbox value={pinned.includes(row.id)} /> {row.label}
+              <span className="d-flex align-items-center gap-1 min-w-0 text-body-secondary">
+                <Checkbox value={pinned.includes(row.id)} />
+                <MenuLabel>{row.label}</MenuLabel>
               </span>
 
               <strong>{row.value}</strong>

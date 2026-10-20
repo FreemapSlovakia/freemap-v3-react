@@ -10,6 +10,7 @@ import {
 import { placeToposcopeCenter } from '@features/toposcope/centerPoint.js';
 import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
 import { viewshedPick } from '@features/viewshed/model/actions.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -86,7 +87,8 @@ export function ViewFromHereItems({
             onAct?.();
           }}
         >
-          <PiMountains /> {m?.general.panoramaFromHere}
+          <PiMountains />
+          <MenuLabel>{m?.general.panoramaFromHere}</MenuLabel>
         </OnlineOnlyItem>
       )}
 
@@ -101,7 +103,8 @@ export function ViewFromHereItems({
             onAct?.();
           }}
         >
-          <FaCrosshairs /> {m?.general.lookAtInPanorama}
+          <FaCrosshairs />
+          <MenuLabel>{m?.general.lookAtInPanorama}</MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -118,7 +121,8 @@ export function ViewFromHereItems({
             onAct?.();
           }}
         >
-          <FaBinoculars /> {m?.general.viewshedFromHere}
+          <FaBinoculars />
+          <MenuLabel>{m?.general.viewshedFromHere}</MenuLabel>
         </OnlineOnlyItem>
       )}
 
@@ -133,7 +137,8 @@ export function ViewFromHereItems({
             onAct?.();
           }}
         >
-          <PiCompassRoseBold /> {m?.general.toposcopeFromHere}
+          <PiCompassRoseBold />
+          <MenuLabel>{m?.general.toposcopeFromHere}</MenuLabel>
         </Dropdown.Item>
       )}
     </>

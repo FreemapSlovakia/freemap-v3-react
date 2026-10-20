@@ -3,6 +3,7 @@ import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToD
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { destination } from '@turf/destination';
@@ -126,7 +127,8 @@ export default function DrawingPointSelection(): ReactElement | null {
                     as="button"
                     onClick={() => setProjectPointDialogVisible(true)}
                   >
-                    <TbAngle /> {dm?.projection.projectPoint}
+                    <TbAngle />
+                    <MenuLabel>{dm?.projection.projectPoint}</MenuLabel>
                   </Dropdown.Item>
 
                   <Dropdown.Item
@@ -135,8 +137,10 @@ export default function DrawingPointSelection(): ReactElement | null {
                       convertToDataViewer({ type: 'drawing-point', index });
                     }}
                   >
-                    <MdShapeLine />{' '}
-                    {m?.general.convertTo({ tool: m?.tools.dataViewer })}
+                    <MdShapeLine />
+                    <MenuLabel>
+                      {m?.general.convertTo({ tool: m?.tools.dataViewer })}
+                    </MenuLabel>
                   </Dropdown.Item>
                 </>
               }

@@ -8,6 +8,7 @@ import { Chord } from '@shared/components/Chord.js';
 import { Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useFullscreen } from '@shared/hooks/useFullscreen.js';
@@ -69,7 +70,8 @@ export function MainMenu(): ReactElement {
   return (
     <>
       <Dropdown.Item as="button" eventKey="submenu-language">
-        <IoLanguage /> {m?.mainMenu.language}
+        <IoLanguage />
+        <MenuLabel>{m?.mainMenu.language}</MenuLabel>
         <span className={classes.flags}>
           {flagItems.map(({ code, name, flag }) => (
             <span key={code} title={name}>
@@ -84,23 +86,27 @@ export function MainMenu(): ReactElement {
 
       {user ? (
         <OnlineOnlyItem {...modalMenuItemProps('account')}>
-          <FaUser /> {m?.mainMenu.account}
+          <FaUser />
+          <MenuLabel>{m?.mainMenu.account}</MenuLabel>
           <MenuGutter>
             <Chord modal="account" />
           </MenuGutter>
         </OnlineOnlyItem>
       ) : (
         <OnlineOnlyItem {...modalMenuItemProps('login')}>
-          <FaSignInAlt /> {m?.mainMenu.logIn}
+          <FaSignInAlt />
+          <MenuLabel>{m?.mainMenu.logIn}</MenuLabel>
         </OnlineOnlyItem>
       )}
 
       {fullscreen.available && (
         <Dropdown.Item as="button" eventKey="fullscreen">
-          {fullscreen.active ? <RiFullscreenExitLine /> : <RiFullscreenLine />}{' '}
-          {fullscreen.active
-            ? m?.general.exitFullscreen
-            : m?.general.fullscreen}
+          {fullscreen.active ? <RiFullscreenExitLine /> : <RiFullscreenLine />}
+          <MenuLabel>
+            {fullscreen.active
+              ? m?.general.exitFullscreen
+              : m?.general.fullscreen}
+          </MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -111,7 +117,8 @@ export function MainMenu(): ReactElement {
         eventKey="clear-map-features"
         disabled={!hasClearableMapFeatures}
       >
-        <FaEraser /> {m?.main.clearMap}
+        <FaEraser />
+        <MenuLabel>{m?.main.clearMap}</MenuLabel>
         <MenuGutter>
           <Chord command="clear-map-features" />
         </MenuGutter>
@@ -125,14 +132,16 @@ export function MainMenu(): ReactElement {
         eventKey="gallery"
         active={galleryActive}
       >
-        <FaCamera /> {m?.tools.photos}
+        <FaCamera />
+        <MenuLabel>{m?.tools.photos}</MenuLabel>
         <MenuGutter>
           <kbd>⇧f</kbd>
         </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('my-maps')}>
-        <FaRegMap /> {m?.tools.myMaps}
+        <FaRegMap />
+        <MenuLabel>{m?.tools.myMaps}</MenuLabel>
         <MenuGutter>
           <Chord modal="my-maps" />
         </MenuGutter>
@@ -143,7 +152,8 @@ export function MainMenu(): ReactElement {
         eventKey="drawing"
         active={openTools.some(isDrawTool)}
       >
-        <FaPencilRuler /> {m?.tools.measurement}
+        <FaPencilRuler />
+        <MenuLabel>{m?.tools.measurement}</MenuLabel>
       </Dropdown.Item>
 
       {toolDefinitions
@@ -157,7 +167,8 @@ export function MainMenu(): ReactElement {
                 eventKey={`tool-${newTool}`}
                 active={openTools.includes(newTool)}
               >
-                {icon} {m?.tools[msgKey]}
+                {icon}
+                <MenuLabel>{m?.tools[msgKey]}</MenuLabel>
                 <MenuGutter>
                   {experimental && <ExperimentalFunction />}
                   <Chord tool={newTool} />
@@ -170,39 +181,45 @@ export function MainMenu(): ReactElement {
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" eventKey="submenu-openExternally">
-        <FaExternalLinkAlt /> {oeam?.openInExternal}
+        <FaExternalLinkAlt />
+        <MenuLabel>{oeam?.openInExternal}</MenuLabel>
         <MenuGutter>
           <FaChevronRight />
         </MenuGutter>
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('map-features-export')}>
-        <FaFileExport /> {m?.mainMenu.mapFeaturesExport}
+        <FaFileExport />
+        <MenuLabel>{m?.mainMenu.mapFeaturesExport}</MenuLabel>
         <MenuGutter>
           <Chord modal="map-features-export" />
         </MenuGutter>
       </Dropdown.Item>
 
       <OnlineOnlyItem {...modalMenuItemProps('map-to-document-export')}>
-        <FaPrint /> {m?.mainMenu.mapToDocumentExport}
+        <FaPrint />
+        <MenuLabel>{m?.mainMenu.mapToDocumentExport}</MenuLabel>
         <MenuGutter>
           <Chord modal="map-to-document-export" />
         </MenuGutter>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem {...modalMenuItemProps('offline-map-export')}>
-        <FaDatabase /> {m?.mainMenu.offlineMapExport}
+        <FaDatabase />
+        <MenuLabel>{m?.mainMenu.offlineMapExport}</MenuLabel>
         <MenuGutter>
           <Chord modal="offline-map-export" />
         </MenuGutter>
       </OnlineOnlyItem>
 
       <Dropdown.Item {...documentMenuItemProps('exports')}>
-        <FaMobileAlt /> {m?.mainMenu.gpsDevicesMapExports}
+        <FaMobileAlt />
+        <MenuLabel>{m?.mainMenu.gpsDevicesMapExports}</MenuLabel>
       </Dropdown.Item>
 
       <Dropdown.Item {...modalMenuItemProps('embed')}>
-        <FaCode /> {m?.mainMenu.embedMap}
+        <FaCode />
+        <MenuLabel>{m?.mainMenu.embedMap}</MenuLabel>
         <MenuGutter>
           <Chord modal="embed" />
         </MenuGutter>
@@ -211,14 +228,17 @@ export function MainMenu(): ReactElement {
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" eventKey="submenu-help">
-        <FaBook /> {m?.mainMenu.help}
+        <FaBook />
+        <MenuLabel>{m?.mainMenu.help}</MenuLabel>
         <MenuGutter>
           <FaChevronRight />
         </MenuGutter>
       </Dropdown.Item>
 
       <OnlineOnlyItem {...modalMenuItemProps('support-us')}>
-        <FaHeart color="red" /> {m?.mainMenu.supportUs} <FaHeart color="red" />
+        <FaHeart color="red" />
+        <MenuLabel>{m?.mainMenu.supportUs}</MenuLabel>
+        <FaHeart color="red" />
       </OnlineOnlyItem>
     </>
   );

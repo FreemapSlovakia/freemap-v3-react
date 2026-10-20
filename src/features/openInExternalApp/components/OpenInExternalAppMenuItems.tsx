@@ -4,6 +4,7 @@ import { useOpenInExternalAppMessages } from '@features/openInExternalApp/transl
 import { Chord } from '@shared/components/Chord.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -153,7 +154,8 @@ export function SharePageItems({
     <>
       {canCopy && (
         <Dropdown.Item as="button" {...openMenuItemProps('copy')}>
-          <FaClipboard /> {m?.general.copyPageUrl}
+          <FaClipboard />
+          <MenuLabel>{m?.general.copyPageUrl}</MenuLabel>
           {showKbdShortcut && (
             <MenuGutter>
               <Chord external="copy" />
@@ -164,13 +166,15 @@ export function SharePageItems({
 
       {hasShare && (
         <Dropdown.Item as="button" {...openMenuItemProps('url')}>
-          <FaLink /> {oeam?.url}
+          <FaLink />
+          <MenuLabel>{oeam?.url}</MenuLabel>
         </Dropdown.Item>
       )}
 
       {canShareImage && (
         <Dropdown.Item as="button" {...openMenuItemProps('image')}>
-          <FaShareAlt /> {oeam?.image}
+          <FaShareAlt />
+          <MenuLabel>{oeam?.image}</MenuLabel>
         </Dropdown.Item>
       )}
     </>
@@ -238,7 +242,8 @@ export function OpenInExternalTargetItems({
     <>
       {url && (
         <Dropdown.Item href={url} target="_blank" eventKey="url">
-          <FaWindowMaximize /> {oeam?.window}
+          <FaWindowMaximize />
+          <MenuLabel>{oeam?.window}</MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -252,7 +257,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiOpenstreetmap /> {oeam?.osm}
+        <SiOpenstreetmap />
+        <MenuLabel>{oeam?.osm}</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="osm.org" />
@@ -264,7 +270,8 @@ export function OpenInExternalTargetItems({
       {editors && (
         <>
           <Dropdown.Item as="button" {...openMenuItemProps('josm')}>
-            {noIcon} {oeam?.josm}
+            {noIcon}
+            <MenuLabel>{oeam?.josm}</MenuLabel>
             {showKbdShortcut && (
               <MenuGutter>
                 <Chord external="josm" />
@@ -277,7 +284,8 @@ export function OpenInExternalTargetItems({
             target="_blank"
             eventKey="url"
           >
-            {noIcon} {oeam?.id}
+            {noIcon}
+            <MenuLabel>{oeam?.id}</MenuLabel>
             {showKbdShortcut && (
               <MenuGutter>
                 <Chord external="osm.org/id" />
@@ -292,7 +300,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {noIcon} Osmose
+        {noIcon}
+        <MenuLabel>Osmose</MenuLabel>
       </OnlineOnlyItem>
 
       <Dropdown.Divider />
@@ -306,7 +315,8 @@ export function OpenInExternalTargetItems({
           eventKey="url"
           onClick={() => trackOpenApp('freemap-android')}
         >
-          <FaAndroid /> Freemap (Android)
+          <FaAndroid />
+          <MenuLabel>Freemap (Android)</MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -315,7 +325,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {noIcon} {oeam?.mapy_cz}
+        {noIcon}
+        <MenuLabel>{oeam?.mapy_cz}</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="mapy.com" />
@@ -328,7 +339,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiGooglemaps /> {oeam?.googleMaps}
+        <SiGooglemaps />
+        <MenuLabel>{oeam?.googleMaps}</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="google" />
@@ -341,7 +353,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiApple /> {oeam?.appleMaps}
+        <SiApple />
+        <MenuLabel>{oeam?.appleMaps}</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="apple" />
@@ -354,7 +367,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiWaze /> Waze
+        <SiWaze />
+        <MenuLabel>Waze</MenuLabel>
       </OnlineOnlyItem>
 
       {/* Whichever map app the user picks; Android only, as above. */}
@@ -364,7 +378,8 @@ export function OpenInExternalTargetItems({
           eventKey="url"
           onClick={() => trackOpenApp('geo-app')}
         >
-          <FaMapMarkedAlt /> {oeam?.geoApp}
+          <FaMapMarkedAlt />
+          <MenuLabel>{oeam?.geoApp}</MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -376,7 +391,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiGooglestreetview /> Google Street View
+        <SiGooglestreetview />
+        <MenuLabel>Google Street View</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="streetview" />
@@ -389,7 +405,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiMapillary /> Mapillary
+        <SiMapillary />
+        <MenuLabel>Mapillary</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="mapillary" />
@@ -402,7 +419,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {noIcon} Panoramax
+        {noIcon}
+        <MenuLabel>Panoramax</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="panoramax" />
@@ -415,7 +433,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {noIcon} F4Map
+        {noIcon}
+        <MenuLabel>F4Map</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="f4map" />
@@ -428,7 +447,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {noIcon} Peakfinder
+        {noIcon}
+        <MenuLabel>Peakfinder</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="peakfinder" />
@@ -444,7 +464,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiStrava /> Strava
+        <SiStrava />
+        <MenuLabel>Strava</MenuLabel>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -452,7 +473,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiGeocaching /> Geocaching
+        <SiGeocaching />
+        <MenuLabel>Geocaching</MenuLabel>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -460,7 +482,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <TbBrandWindy /> Windy
+        <TbBrandWindy />
+        <MenuLabel>Windy</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="windy" />
@@ -490,7 +513,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} {oeam?.oma} <CountryFlag country="sk" />
+          {noIcon}
+          <MenuLabel>{oeam?.oma}</MenuLabel>
+          <CountryFlag country="sk" />
         </OnlineOnlyItem>
       )}
 
@@ -500,7 +525,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} {oeam?.hiking_sk} <CountryFlag country="sk" />{' '}
+          {noIcon}
+          <MenuLabel>{oeam?.hiking_sk}</MenuLabel>
+          <CountryFlag country="sk" />
           <CountryFlag country="cz" />
           {showKbdShortcut && (
             <MenuGutter>
@@ -516,7 +543,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} {oeam?.zbgis} <CountryFlag country="sk" />
+          {noIcon}
+          <MenuLabel>{oeam?.zbgis}</MenuLabel>
+          <CountryFlag country="sk" />
           {showKbdShortcut && (
             <MenuGutter>
               <Chord external="zbgis" />
@@ -531,7 +560,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} ČÚZK <CountryFlag country="cz" />
+          {noIcon}
+          <MenuLabel>ČÚZK</MenuLabel>
+          <CountryFlag country="cz" />
         </OnlineOnlyItem>
       )}
 
@@ -541,7 +572,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} basemap.at <CountryFlag country="at" />
+          {noIcon}
+          <MenuLabel>basemap.at</MenuLabel>
+          <CountryFlag country="at" />
         </OnlineOnlyItem>
       )}
 
@@ -551,7 +584,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Geoportal <CountryFlag country="pl" />
+          {noIcon}
+          <MenuLabel>Geoportal</MenuLabel>
+          <CountryFlag country="pl" />
         </OnlineOnlyItem>
       )}
 
@@ -561,7 +596,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Atlas okolja <CountryFlag country="si" />
+          {noIcon}
+          <MenuLabel>Atlas okolja</MenuLabel>
+          <CountryFlag country="si" />
         </OnlineOnlyItem>
       )}
 
@@ -571,7 +608,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Geoportale Nazionale <CountryFlag country="it" />
+          {noIcon}
+          <MenuLabel>Geoportale Nazionale</MenuLabel>
+          <CountryFlag country="it" />
         </OnlineOnlyItem>
       )}
 
@@ -581,7 +620,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Géoportail <CountryFlag country="fr" />
+          {noIcon}
+          <MenuLabel>Géoportail</MenuLabel>
+          <CountryFlag country="fr" />
         </OnlineOnlyItem>
       )}
 
@@ -591,7 +632,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} ARKOD <CountryFlag country="hr" />
+          {noIcon}
+          <MenuLabel>ARKOD</MenuLabel>
+          <CountryFlag country="hr" />
         </OnlineOnlyItem>
       )}
 
@@ -601,7 +644,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Iberpix <CountryFlag country="es" />
+          {noIcon}
+          <MenuLabel>Iberpix</MenuLabel>
+          <CountryFlag country="es" />
         </OnlineOnlyItem>
       )}
 
@@ -611,7 +656,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} MapasPT <CountryFlag country="pt" />
+          {noIcon}
+          <MenuLabel>MapasPT</MenuLabel>
+          <CountryFlag country="pt" />
         </OnlineOnlyItem>
       )}
 
@@ -621,7 +668,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Topomapviewer <CountryFlag country="be" />
+          {noIcon}
+          <MenuLabel>Topomapviewer</MenuLabel>
+          <CountryFlag country="be" />
         </OnlineOnlyItem>
       )}
 
@@ -631,7 +680,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} PDOK <CountryFlag country="nl" />
+          {noIcon}
+          <MenuLabel>PDOK</MenuLabel>
+          <CountryFlag country="nl" />
         </OnlineOnlyItem>
       )}
 
@@ -641,7 +692,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Norgeskart <CountryFlag country="no" />
+          {noIcon}
+          <MenuLabel>Norgeskart</MenuLabel>
+          <CountryFlag country="no" />
         </OnlineOnlyItem>
       )}
 
@@ -651,7 +704,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Min karta <CountryFlag country="se" />
+          {noIcon}
+          <MenuLabel>Min karta</MenuLabel>
+          <CountryFlag country="se" />
         </OnlineOnlyItem>
       )}
 
@@ -661,7 +716,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Karttapaikka <CountryFlag country="fi" />
+          {noIcon}
+          <MenuLabel>Karttapaikka</MenuLabel>
+          <CountryFlag country="fi" />
         </OnlineOnlyItem>
       )}
     </>

@@ -1,6 +1,7 @@
 import type { Breakpoint } from '@shared/breakpoints.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
@@ -130,7 +131,7 @@ export function SelectDropdown({
         title={opt.title}
       >
         {opt.icon}
-        {opt.label}
+        <MenuLabel>{opt.label}</MenuLabel>
 
         {(opt.kbd || opt.extra) && (
           <MenuGutter>

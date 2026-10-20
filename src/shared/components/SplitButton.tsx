@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import { FmDropdownMenu } from './FmDropdownMenu.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { MenuLabel } from './MenuLabel.js';
 
 export type SplitButtonItem = {
   icon?: ReactNode;
@@ -74,7 +75,8 @@ export function SplitButton({
             eventKey={String(i)}
             disabled={item.disabled}
           >
-            {item.icon} {item.label}
+            {item.icon}
+            <MenuLabel>{item.label}</MenuLabel>
           </Dropdown.Item>
         ))}
       </FmDropdownMenu>

@@ -329,10 +329,6 @@ export default function OfflineMapExportModal({
     );
   }, [m, mapType, mapDefName, nameChanged]);
 
-  function getItem(def: MapLayerItemDef) {
-    return <MapLayerItem def={def} />;
-  }
-
   return (
     <Modal
       show={show}
@@ -467,7 +463,7 @@ export default function OfflineMapExportModal({
 
             <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
               <Dropdown.Toggle as={SelectToggle} className="w-100">
-                {mapDef ? getItem(mapDef) : ome?.unknownMapType}
+                {mapDef ? <MapLayerItem def={mapDef} /> : ome?.unknownMapType}
               </Dropdown.Toggle>
 
               <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
@@ -478,7 +474,7 @@ export default function OfflineMapExportModal({
                     key={def.type}
                     eventKey={def.type}
                   >
-                    {getItem(def)}
+                    <MapLayerItem def={def} truncate />
                   </Dropdown.Item>
                 ))}
               </FmDropdownMenu>

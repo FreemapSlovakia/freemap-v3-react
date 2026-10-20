@@ -8,6 +8,7 @@ import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { FmDropdownMenu } from './FmDropdownMenu.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { MenuLabel } from './MenuLabel.js';
 
 type Props = {
   modal: 'drawing-batch-properties' | 'data-viewer-batch-properties';
@@ -52,7 +53,8 @@ export function BatchPropertiesItems({
           as="button"
           onClick={() => dispatch(setActiveModal({ type: modal, kind }))}
         >
-          {ICONS[kind]} &nbsp;{dm?.batch[kind] ?? '…'}
+          {ICONS[kind]}
+          <MenuLabel>{dm?.batch[kind] ?? '…'}</MenuLabel>
         </Dropdown.Item>
       ))}
     </>

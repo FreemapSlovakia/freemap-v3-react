@@ -20,6 +20,7 @@ import { BatchPropertiesItems } from '@shared/components/BatchPropertiesItems.js
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import {
   useConfirm,
   useConfirmCancel,
@@ -345,29 +346,34 @@ export function DataViewerMenu(): ReactElement {
 
           <FmDropdownMenu>
             <Dropdown.Item as="button" eventKey="edit-style">
-              <FaPaintBrush /> &nbsp;{tvm?.style.title ?? '…'}
+              <FaPaintBrush />
+              <MenuLabel>{tvm?.style.title ?? '…'}</MenuLabel>
             </Dropdown.Item>
 
             {hasLines && canUpdateElevation && (
               <Dropdown.Item as="button" eventKey="update-elevation">
-                <FaMountain /> &nbsp;{tvm?.elevationFill.update ?? '…'}
+                <FaMountain />
+                <MenuLabel>{tvm?.elevationFill.update ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
             {canSimplify && (
               <Dropdown.Item as="button" eventKey="simplify">
-                <FaCompressAlt /> &nbsp;{tvm?.simplifyAll ?? '…'}
+                <FaCompressAlt />
+                <MenuLabel>{tvm?.simplifyAll ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
             {!hasActiveMap && (
               <Dropdown.Item as="button" eventKey="save-as-map">
-                <FaSave /> &nbsp;{tvm?.saveAsMap ?? '…'}
+                <FaSave />
+                <MenuLabel>{tvm?.saveAsMap ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
             <Dropdown.Item as="button" eventKey="convert-to-drawing">
-              <FaPencilAlt /> &nbsp;{m?.general.convertAllToDrawing ?? '…'}
+              <FaPencilAlt />
+              <MenuLabel>{m?.general.convertAllToDrawing ?? '…'}</MenuLabel>
             </Dropdown.Item>
 
             <BatchPropertiesItems

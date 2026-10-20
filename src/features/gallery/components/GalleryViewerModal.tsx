@@ -9,6 +9,7 @@ import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { getMinWidthForBreakpoint } from '@shared/breakpoints.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -1394,7 +1395,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                           close();
                         }}
                       >
-                        <FaPencilAlt /> {m?.general.copyToDrawing}
+                        <FaPencilAlt />
+                        <MenuLabel>{m?.general.copyToDrawing}</MenuLabel>
                       </Dropdown.Item>
                     }
                   >

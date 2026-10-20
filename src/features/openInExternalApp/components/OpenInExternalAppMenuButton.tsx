@@ -3,6 +3,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
 import type { TooltipTargetProps } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
@@ -150,7 +151,8 @@ export function OpenInExternalAppMenuButton({
             <Dropdown.Divider />
 
             <Dropdown.Item as="button" eventKey="submenu-openExternally">
-              <FaExternalLinkAlt /> {oeam?.openIn}
+              <FaExternalLinkAlt />
+              <MenuLabel>{oeam?.openIn}</MenuLabel>
               <MenuGutter>
                 <FaChevronRight />
               </MenuGutter>

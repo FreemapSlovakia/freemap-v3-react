@@ -5,6 +5,7 @@ import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -129,11 +130,11 @@ export default function CurrentDrawingPropertiesModal({
               <Dropdown.Item
                 as="button"
                 type="button"
-                className="text-nowrap"
                 disabled={invalidCredits || !online}
                 onClick={buyWithChrons}
               >
-                <FaStopwatch /> {cm?.payWithChrons}
+                <FaStopwatch />
+                <MenuLabel>{cm?.payWithChrons}</MenuLabel>
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>

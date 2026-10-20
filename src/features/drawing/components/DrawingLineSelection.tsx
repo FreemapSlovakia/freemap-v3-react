@@ -10,6 +10,7 @@ import { useOpenInExternalAppMessages } from '@features/openInExternalApp/transl
 import { type ToastAction, toastsAdd } from '@features/toasts/model/actions.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
@@ -434,21 +435,21 @@ export default function DrawingLineSelection(): ReactElement | null {
                 active={cuttingHole}
               >
                 <RiScissorsFill />
-                &nbsp;{dm?.cutHole ?? '…'}
+                <MenuLabel>{dm?.cutHole ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
             {enclosingIndex !== undefined && (
               <Dropdown.Item as="button" eventKey="make-hole">
                 <FaObjectGroup />
-                &nbsp;{dm?.makeHole ?? '…'}
+                <MenuLabel>{dm?.makeHole ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
             {isHole && (
               <Dropdown.Item as="button" eventKey="detach-hole">
                 <FaObjectUngroup />
-                &nbsp;{dm?.detachHole ?? '…'}
+                <MenuLabel>{dm?.detachHole ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
@@ -459,28 +460,28 @@ export default function DrawingLineSelection(): ReactElement | null {
                 active={showElevationChart}
               >
                 <FaChartArea />
-                &nbsp;{m?.general.elevationProfile ?? '…'}
+                <MenuLabel>{m?.general.elevationProfile ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
             {line.points.length > 0 && (
               <Dropdown.Item as="button" eventKey="project-point">
                 <TbAngle />
-                &nbsp;{dm?.projection.projectPoint ?? '…'}
+                <MenuLabel>{dm?.projection.projectPoint ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
             {line.points.length > 2 && (
               <Dropdown.Item as="button" eventKey="simplify">
                 <FaCompressAlt />
-                &nbsp;{dm?.simplify ?? '…'}
+                <MenuLabel>{dm?.simplify ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
             {line.points.length > 1 && (
               <Dropdown.Item as="button" eventKey="reverse">
                 <FaExchangeAlt />
-                &nbsp;{dm?.reverse ?? '…'}
+                <MenuLabel>{dm?.reverse ?? '…'}</MenuLabel>
               </Dropdown.Item>
             )}
 
@@ -489,15 +490,18 @@ export default function DrawingLineSelection(): ReactElement | null {
             {!isHole && line.points.length > 1 && (
               <Dropdown.Item as="button" eventKey="data-viewer">
                 <MdShapeLine />
-                &nbsp;
-                {m?.general.convertTo({ tool: m?.tools.dataViewer }) ?? '…'}
+                <MenuLabel>
+                  {m?.general.convertTo({ tool: m?.tools.dataViewer }) ?? '…'}
+                </MenuLabel>
               </Dropdown.Item>
             )}
 
             {!window.fmEmbedded && line.points.length > 1 && (
               <Dropdown.Item as="button" eventKey="josm">
                 <FaEdit />
-                &nbsp;{m?.general.openIn({ what: oeam?.josm }) ?? '…'}
+                <MenuLabel>
+                  {m?.general.openIn({ what: oeam?.josm }) ?? '…'}
+                </MenuLabel>
               </Dropdown.Item>
             )}
           </FmDropdownMenu>

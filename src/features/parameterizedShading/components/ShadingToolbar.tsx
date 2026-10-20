@@ -5,6 +5,7 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useState } from 'react';
 import { Dropdown, Form } from 'react-bootstrap';
@@ -59,15 +60,14 @@ export function ShadingToolbar({
         as="button"
         key={preset}
         eventKey={preset}
-        className="text-nowrap"
         disabled={append && alwaysOpaque}
       >
         {opaque ? (
           <BsCircleFill className="text-secondary" />
         ) : (
           <BsTransparency className="text-secondary" />
-        )}{' '}
-        {sm?.presetNames[preset]}
+        )}
+        <MenuLabel>{sm?.presetNames[preset]}</MenuLabel>
       </Dropdown.Item>
     );
   };
@@ -87,12 +87,8 @@ export function ShadingToolbar({
         <FmDropdownMenu>
           {canAddBackground && (
             <>
-              <Dropdown.Item
-                as="button"
-                eventKey="background"
-                className="text-nowrap"
-              >
-                {sm?.background}
+              <Dropdown.Item as="button" eventKey="background">
+                <MenuLabel>{sm?.background}</MenuLabel>
               </Dropdown.Item>
 
               <Dropdown.Divider />
@@ -100,13 +96,8 @@ export function ShadingToolbar({
           )}
 
           {SHADING_COMPONENT_TYPES.map((st) => (
-            <Dropdown.Item
-              as="button"
-              key={st}
-              eventKey={st}
-              className="text-nowrap"
-            >
-              {sm?.types[st]}
+            <Dropdown.Item as="button" key={st} eventKey={st}>
+              <MenuLabel>{sm?.types[st]}</MenuLabel>
             </Dropdown.Item>
           ))}
         </FmDropdownMenu>

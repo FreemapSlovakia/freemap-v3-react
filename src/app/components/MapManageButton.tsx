@@ -11,6 +11,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -120,7 +121,8 @@ export function MapManageButton(): ReactElement {
           offline={!canSaveSettings}
           {...modalMenuItemProps('installed-maps')}
         >
-          <FaLayerGroup /> {m?.mapLayers.mapManager}
+          <FaLayerGroup />
+          <MenuLabel>{m?.mapLayers.mapManager}</MenuLabel>
           <MenuGutter>
             <Chord modal="installed-maps" />
           </MenuGutter>
@@ -129,15 +131,19 @@ export function MapManageButton(): ReactElement {
         <Dropdown.Divider />
 
         <Dropdown.Item {...modalMenuItemProps('offline-maps')}>
-          <BiWifiOff /> {m?.mapLayers.offlineMaps}
-          {cachedMapsTotalSize > 0 && ` · ${formatSize(cachedMapsTotalSize)}`}
+          <BiWifiOff />
+          <MenuLabel>{m?.mapLayers.offlineMaps}</MenuLabel>
+          {cachedMapsTotalSize > 0 && (
+            <span>· {formatSize(cachedMapsTotalSize)}</span>
+          )}
           <MenuGutter>
             <Chord modal="offline-maps" />
           </MenuGutter>
         </Dropdown.Item>
 
         <Dropdown.Item {...modalMenuItemProps('browse-cache')}>
-          <FaDatabase /> {m?.mapLayers.browseCache}
+          <FaDatabase />
+          <MenuLabel>{m?.mapLayers.browseCache}</MenuLabel>
           <MenuGutter>
             <Chord modal="browse-cache" />
           </MenuGutter>
@@ -146,14 +152,16 @@ export function MapManageButton(): ReactElement {
         <Dropdown.Divider />
 
         <Dropdown.Item {...modalMenuItemProps('map-preferences')}>
-          <FaSlidersH /> {m?.mapLayers.preferences}
+          <FaSlidersH />
+          <MenuLabel>{m?.mapLayers.preferences}</MenuLabel>
           <MenuGutter>
             <Chord modal="map-preferences" />
           </MenuGutter>
         </Dropdown.Item>
 
         <Dropdown.Item {...modalMenuItemProps('elevation-settings')}>
-          <FaChartArea /> {m?.elevationChart.settings}
+          <FaChartArea />
+          <MenuLabel>{m?.elevationChart.settings}</MenuLabel>
           <MenuGutter>
             <Chord modal="elevation-settings" />
           </MenuGutter>
@@ -164,11 +172,13 @@ export function MapManageButton(): ReactElement {
         {/* A grid, so both sliders start at one column. */}
         <Dropdown.ItemText
           className="d-grid align-items-center column-gap-2 row-gap-2"
-          style={{ gridTemplateColumns: 'auto auto minmax(6rem, 1fr)' }}
+          style={{
+            gridTemplateColumns: 'auto minmax(0, auto) minmax(6rem, 1fr)',
+          }}
         >
           <MdBrightness6 />
 
-          <span className="text-nowrap">{m?.mapLayers.brightness}</span>
+          <span className="text-truncate">{m?.mapLayers.brightness}</span>
 
           {/* Centred, as the map comes; darker to the left, lighter to the right. */}
           <Form.Range
@@ -186,7 +196,7 @@ export function MapManageButton(): ReactElement {
 
           <MdOpacity />
 
-          <span className="text-nowrap">{m?.mapLayers.featuresOpacity}</span>
+          <span className="text-truncate">{m?.mapLayers.featuresOpacity}</span>
 
           <Form.Range
             min={0}

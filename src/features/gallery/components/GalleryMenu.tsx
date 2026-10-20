@@ -7,6 +7,7 @@ import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
@@ -312,8 +313,8 @@ export default function GalleryMenu() {
                           eventKey={LEGEND_ITEM}
                           active={showLegend}
                         >
-                          {showLegend ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
-                          {gm?.legend ?? '…'}
+                          {showLegend ? <FaRegCheckSquare /> : <FaRegSquare />}
+                          <MenuLabel>{gm?.legend ?? '…'}</MenuLabel>
                         </Dropdown.Item>
 
                         <Dropdown.Divider />
@@ -325,7 +326,8 @@ export default function GalleryMenu() {
                       eventKey="none"
                       active={!colorizeBy}
                     >
-                      <FaBan /> {gm?.noColorize ?? '…'}
+                      <FaBan />
+                      <MenuLabel>{gm?.noColorize ?? '…'}</MenuLabel>
                     </Dropdown.Item>
 
                     {GalleryColorizeBySchema.options.map((by) => {
@@ -339,7 +341,8 @@ export default function GalleryMenu() {
                           title={gm?.c[by]}
                           active={colorizeBy === by}
                         >
-                          <Icon /> {gm?.c[by] ?? '…'}
+                          <Icon />
+                          <MenuLabel>{gm?.c[by] ?? '…'}</MenuLabel>
                         </Dropdown.Item>
                       );
                     })}
@@ -371,7 +374,8 @@ export default function GalleryMenu() {
 
                         return (
                           <Dropdown.Item key={key} as="button" eventKey={key}>
-                            <Icon /> {gm?.f[key]}
+                            <Icon />
+                            <MenuLabel>{gm?.f[key]}</MenuLabel>
                             {key === '-createdAt' && (
                               <MenuGutter>
                                 <Chord command="gallery-list" />
@@ -434,40 +438,45 @@ export default function GalleryMenu() {
                             eventKey={`lic:${id}`}
                             key={id}
                           >
-                            <LicenseBadge licenseId={id} />{' '}
-                            {gm?.license.names[id] ?? id}
+                            <LicenseBadge licenseId={id} />
+                            <MenuLabel>{gm?.license.names[id] ?? id}</MenuLabel>
                           </OnlineOnlyItem>
                         ))}
                       </>
                     ) : (
                       <>
                         <Dropdown.Item as="button" eventKey="direction">
-                          <Checkbox value={showDirection} /> <FaLocationArrow />{' '}
-                          {gm?.showDirection}
+                          <Checkbox value={showDirection} />
+                          <FaLocationArrow />
+                          <MenuLabel>{gm?.showDirection}</MenuLabel>
                         </Dropdown.Item>
 
                         {sendGalleryEmails !== undefined && (
                           <>
                             <OnlineOnlyItem as="button" eventKey="emails">
-                              <Checkbox value={sendGalleryEmails} />{' '}
-                              <FaEnvelope /> {gm?.sendGalleryEmails}
+                              <Checkbox value={sendGalleryEmails} />
+                              <FaEnvelope />
+                              <MenuLabel>{gm?.sendGalleryEmails}</MenuLabel>
                             </OnlineOnlyItem>
 
                             <Dropdown.Divider />
 
                             <OnlineOnlyItem as="button" eventKey="all-premium">
-                              <FaGem /> {gm?.allMyPhotos.premium}
+                              <FaGem />
+                              <MenuLabel>{gm?.allMyPhotos.premium}</MenuLabel>
                             </OnlineOnlyItem>
 
                             <OnlineOnlyItem as="button" eventKey="all-free">
-                              <FaDove /> {gm?.allMyPhotos.free}
+                              <FaDove />
+                              <MenuLabel>{gm?.allMyPhotos.free}</MenuLabel>
                             </OnlineOnlyItem>
 
                             <OnlineOnlyItem
                               as="button"
                               eventKey="submenu-license"
                             >
-                              <FaCreativeCommons /> {gm?.license.chooseForAll}
+                              <FaCreativeCommons />
+                              <MenuLabel>{gm?.license.chooseForAll}</MenuLabel>
                               <MenuGutter>
                                 <FaChevronRight />
                               </MenuGutter>

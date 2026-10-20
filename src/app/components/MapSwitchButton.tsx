@@ -29,6 +29,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
@@ -594,7 +595,6 @@ export function MapSwitchButton(): ReactElement {
             href={`#layers=${type}`}
             eventKey={`layer-${type}`}
             active={active}
-            className="flex-nowrap"
             // A long press for the name's tooltip would start dragging the link.
             draggable={false}
           >
@@ -637,7 +637,6 @@ export function MapSwitchButton(): ReactElement {
         as="button"
         eventKey={`preset-${id}`}
         active={active}
-        className="flex-nowrap"
       >
         {layer === 'base' ? (
           <Radio value={active} />
@@ -919,11 +918,11 @@ export function MapSwitchButton(): ReactElement {
                   eventKey="show-more"
                   className="mb-2"
                 >
-                  {m?.mapLayers.showMore}
+                  <MenuLabel>{m?.mapLayers.showMore}</MenuLabel>
                 </Dropdown.Item>
               ) : (
                 <Dropdown.Item as="button" eventKey="show-all" className="mb-2">
-                  {m?.mapLayers.showAll}
+                  <MenuLabel>{m?.mapLayers.showAll}</MenuLabel>
                 </Dropdown.Item>
               ))}
 

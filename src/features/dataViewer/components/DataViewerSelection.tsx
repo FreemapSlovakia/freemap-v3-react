@@ -4,6 +4,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { toastsRemove } from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { PromptToolbar } from '@shared/components/PromptToolbar.js';
 import {
   Action,
@@ -260,7 +261,8 @@ export default function DataViewerSelection(): ReactElement | null {
                     dispatch(dataViewerExplodeTrack(index));
                   }}
                 >
-                  <TbArrowsSplit /> &nbsp;{dvm?.split.segments ?? '…'}
+                  <TbArrowsSplit />
+                  <MenuLabel>{dvm?.split.segments ?? '…'}</MenuLabel>
                 </Dropdown.Item>,
               ]
             }
@@ -287,7 +289,8 @@ export default function DataViewerSelection(): ReactElement | null {
                   );
                 }}
               >
-                <TbArrowsJoin /> &nbsp;{dvm?.join.asLine ?? '…'}
+                <TbArrowsJoin />
+                <MenuLabel>{dvm?.join.asLine ?? '…'}</MenuLabel>
               </Dropdown.Item>,
 
               <Dropdown.Item
@@ -302,7 +305,8 @@ export default function DataViewerSelection(): ReactElement | null {
                   );
                 }}
               >
-                <TbArrowsJoin2 /> &nbsp;{dvm?.join.asSegments ?? '…'}
+                <TbArrowsJoin2 />
+                <MenuLabel>{dvm?.join.asSegments ?? '…'}</MenuLabel>
               </Dropdown.Item>,
             ]}
           />
@@ -361,7 +365,8 @@ export default function DataViewerSelection(): ReactElement | null {
                     void convertToDrawing(index);
                   }}
                 >
-                  <FaPencilAlt /> {m?.general.convertToDrawing}
+                  <FaPencilAlt />
+                  <MenuLabel>{m?.general.convertToDrawing}</MenuLabel>
                 </Dropdown.Item>
               }
             >

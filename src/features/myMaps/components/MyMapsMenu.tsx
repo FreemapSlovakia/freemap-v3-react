@@ -4,6 +4,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
@@ -233,7 +234,8 @@ export function MyMapsMenu(): ReactElement {
                         dispatch(clearMapFeatures());
                       }}
                     >
-                      <FaEraser /> {mm?.disconnectAndClear}
+                      <FaEraser />
+                      <MenuLabel>{mm?.disconnectAndClear}</MenuLabel>
                     </Dropdown.Item>
                   </FmDropdownMenu>
                 </Dropdown>

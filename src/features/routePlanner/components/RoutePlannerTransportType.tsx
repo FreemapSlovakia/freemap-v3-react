@@ -5,6 +5,7 @@ import { ExternalService } from '@shared/components/ExternalService.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import {
   type TransportType,
   transportTypeDefs,
@@ -78,7 +79,8 @@ export function RoutePlannerTransportType({
       <FmDropdownMenu>
         {withDefault && (
           <Dropdown.Item as="button" eventKey="" active={!value}>
-            <FaEquals /> {rpm?.default}
+            <FaEquals />
+            <MenuLabel>{rpm?.default}</MenuLabel>
           </Dropdown.Item>
         )}
 
@@ -101,11 +103,11 @@ export function RoutePlannerTransportType({
                   active={value === type}
                   disabled={withDefault && Boolean(becomePremium)}
                 >
-                  {icon}{' '}
+                  {icon}
                   {['car', 'car-toll', 'bikesharing'].includes(type) && (
                     <FaMoneyBill />
-                  )}{' '}
-                  {rpm?.transportType[key] ?? '…'}
+                  )}
+                  <MenuLabel>{rpm?.transportType[key] ?? '…'}</MenuLabel>
                   {(experimental || withDefault || api === 'osrm') && (
                     <MenuGutter>
                       {experimental && <ExperimentalFunction />}

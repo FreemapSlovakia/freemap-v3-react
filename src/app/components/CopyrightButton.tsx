@@ -9,6 +9,7 @@ import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
@@ -62,12 +63,14 @@ export function CopyrightButton(): ReactElement {
             as="button"
             onClick={() => showAttribution()}
           >
-            <FaRegCopyright /> {m?.main.copyright}
+            <FaRegCopyright />
+            <MenuLabel>{m?.main.copyright}</MenuLabel>
           </Dropdown.Item>
 
           {showLegendButton && (
             <OnlineOnlyItem {...modalLink({ type: 'legend' })}>
-              <FaList /> {m?.mainMenu.mapLegend}
+              <FaList />
+              <MenuLabel>{m?.mainMenu.mapLegend}</MenuLabel>
               <MenuGutter>
                 <Chord modal="legend" />
               </MenuGutter>
@@ -78,14 +81,16 @@ export function CopyrightButton(): ReactElement {
             key="privacyPolicy"
             {...modalLink({ type: 'document', key: 'privacyPolicy' })}
           >
-            <FaLock /> {m?.general.privacyPolicy}
+            <FaLock />
+            <MenuLabel>{m?.general.privacyPolicy}</MenuLabel>
           </Dropdown.Item>
 
           <Dropdown.Item
             key="termsOfService"
             {...modalLink({ type: 'document', key: 'termsOfService' })}
           >
-            <FaFileContract /> {m?.general.termsOfService}
+            <FaFileContract />
+            <MenuLabel>{m?.general.termsOfService}</MenuLabel>
           </Dropdown.Item>
 
           {/* Terms of a purchase, and an embed sells nothing — its premium gem
@@ -97,7 +102,8 @@ export function CopyrightButton(): ReactElement {
               key="refundPolicy"
               {...modalLink({ type: 'document', key: 'refundPolicy' })}
             >
-              <FaMoneyBillWave /> {m?.general.refundPolicy}
+              <FaMoneyBillWave />
+              <MenuLabel>{m?.general.refundPolicy}</MenuLabel>
             </Dropdown.Item>
           )}
         </FmDropdownMenu>

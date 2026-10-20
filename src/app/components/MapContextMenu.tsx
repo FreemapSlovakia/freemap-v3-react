@@ -5,6 +5,7 @@ import type { Modifier, Obj } from '@popperjs/core';
 import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { MenuPortal } from '@shared/components/MenuPortal.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -239,7 +240,8 @@ export function MapContextMenu(): ReactElement {
                       as="button"
                       eventKey="submenu-openExternally"
                     >
-                      <FaExternalLinkAlt /> {oeam?.openIn}
+                      <FaExternalLinkAlt />
+                      <MenuLabel>{oeam?.openIn}</MenuLabel>
                       <MenuGutter>
                         <FaChevronRight />
                       </MenuGutter>

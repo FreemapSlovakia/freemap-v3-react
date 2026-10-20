@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import type { IsCustomLayerTechnologiesDef } from '@shared/mapDefinitions.js';
@@ -20,12 +21,6 @@ type Props = {
 export function CustomMapTypeField({ value, onChange }: Props): ReactElement {
   const m = useMessages();
 
-  const label = (technology: CustomMapTechnology) => (
-    <>
-      {CUSTOM_MAP_ICONS[technology]} {m?.mapLayers.technologies[technology]}
-    </>
-  );
-
   return (
     <Form.Group className="mt-3">
       <Form.Label>{m?.mapLayers.technology}</Form.Label>
@@ -36,7 +31,7 @@ export function CustomMapTypeField({ value, onChange }: Props): ReactElement {
         }
       >
         <Dropdown.Toggle as={SelectToggle} className="w-100">
-          {label(value)}
+          {CUSTOM_MAP_ICONS[value]} {m?.mapLayers.technologies[value]}
         </Dropdown.Toggle>
 
         <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
@@ -48,7 +43,8 @@ export function CustomMapTypeField({ value, onChange }: Props): ReactElement {
               eventKey={technology}
               active={value === technology}
             >
-              {label(technology)}
+              {CUSTOM_MAP_ICONS[technology]}
+              <MenuLabel>{m?.mapLayers.technologies[technology]}</MenuLabel>
             </Dropdown.Item>
           ))}
         </FmDropdownMenu>

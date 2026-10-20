@@ -6,6 +6,7 @@ import { searchSelectResult } from '@features/search/model/actions.js';
 import { loadingResult } from '@features/search/model/resultUtils.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useTerrainLicenses } from '@shared/tileLicenses.js';
@@ -176,7 +177,8 @@ export function TerrainFactsView({
               )
             }
           >
-            <FaPencilAlt /> {m?.general.copyToDrawing}
+            <FaPencilAlt />
+            <MenuLabel>{m?.general.copyToDrawing}</MenuLabel>
           </Dropdown.Item>
 
           <Dropdown.Item
@@ -184,7 +186,10 @@ export function TerrainFactsView({
               convertToDataViewer({ type: 'geojson', geojson: geojson() })
             }
           >
-            <MdShapeLine /> {m?.general.copyTo({ tool: m.tools.dataViewer })}
+            <MdShapeLine />
+            <MenuLabel>
+              {m?.general.copyTo({ tool: m.tools.dataViewer })}
+            </MenuLabel>
           </Dropdown.Item>
         </FmDropdownMenu>
       </Dropdown>

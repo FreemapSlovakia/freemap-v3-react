@@ -34,6 +34,7 @@ import {
   type TooltipTargetProps,
 } from './LongPressTooltip.js';
 import { MenuGutter } from './MenuGutter.js';
+import { MenuLabel } from './MenuLabel.js';
 import { OfflineBadge } from './OfflineBadge.js';
 
 export type ActionProps = {
@@ -700,7 +701,8 @@ export function ResponsiveActions({
                     as="button"
                     eventKey={`${SUBMENU_PREFIX}${entry.index}`}
                   >
-                    {entry.icon} {entry.label}
+                    {entry.icon}
+                    <MenuLabel>{entry.label}</MenuLabel>
                     <MenuGutter>
                       <FaChevronRight />
                     </MenuGutter>
@@ -712,7 +714,8 @@ export function ResponsiveActions({
                     disabled={isOff(entry.props)}
                     eventKey={`${SUBMENU_PREFIX}${entry.index}`}
                   >
-                    {entry.props.icon} {entry.props.label}
+                    {entry.props.icon}
+                    <MenuLabel>{entry.props.label}</MenuLabel>
                     <MenuGutter>
                       <FaChevronRight />
                       {entry.props.requiresOnline && <OfflineBadge />}
@@ -738,13 +741,8 @@ export function ResponsiveActions({
                       title={entry.props.title}
                       aria-label={entry.props['aria-label']}
                     >
-                      {entry.props.icon ? (
-                        <>
-                          {entry.props.icon} {entry.props.label}
-                        </>
-                      ) : (
-                        entry.props.label
-                      )}
+                      {entry.props.icon}
+                      <MenuLabel>{entry.props.label}</MenuLabel>
 
                       {entry.props.requiresOnline && (
                         <MenuGutter>

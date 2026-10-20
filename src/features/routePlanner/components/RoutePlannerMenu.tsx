@@ -30,6 +30,7 @@ import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { MenuPortal } from '@shared/components/MenuPortal.js';
 import {
   Action,
@@ -775,9 +776,11 @@ export default function RoutePlannerMenu(): ReactElement {
                   title={rpm?.mode[mode]}
                   active={activeMode === mode}
                 >
-                  {modeIcons[mode]}{' '}
-                  {rpm?.mode[mode === 'roundtrip' ? 'routndtrip-gh' : mode] ??
-                    '…'}
+                  {modeIcons[mode]}
+                  <MenuLabel>
+                    {rpm?.mode[mode === 'roundtrip' ? 'routndtrip-gh' : mode] ??
+                      '…'}
+                  </MenuLabel>
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>
@@ -843,27 +846,21 @@ export default function RoutePlannerMenu(): ReactElement {
           <FmDropdownMenu>
             <Dropdown.Item as="button" eventKey="pick">
               <FaMapMarkerAlt />
-              &nbsp;{rpm?.point.pick ?? '…'}
+              <MenuLabel>{rpm?.point.pick ?? '…'}</MenuLabel>
             </Dropdown.Item>
 
             <Dropdown.Item as="button" eventKey="current">
               <FaBullseye />
-              &nbsp;{rpm?.point.current ?? '…'}
+              <MenuLabel>{rpm?.point.current ?? '…'}</MenuLabel>
             </Dropdown.Item>
 
-            <Dropdown.Item
-              as="button"
-              className="d-flex align-items-center justify-content-between"
-              eventKey="home"
-            >
-              <span>
-                <FaHome />
-                &nbsp;{rpm?.point.home ?? '…'}
-              </span>
+            <Dropdown.Item as="button" eventKey="home">
+              <FaHome />
+              <MenuLabel>{rpm?.point.home ?? '…'}</MenuLabel>
               <Button
                 size="sm"
                 variant="secondary"
-                className="my-n1 ms-2"
+                className="my-n1 ms-auto flex-shrink-0"
                 title={rpm?.selectHomeLocation}
               >
                 <FaCrosshairs className="pe-none" />
@@ -875,7 +872,7 @@ export default function RoutePlannerMenu(): ReactElement {
               activeMode !== 'isochrone' && (
                 <Dropdown.Item as="button" eventKey="from-finish">
                   <FaStop color="#d9534f" />
-                  &nbsp;{rpm?.point.fromFinish ?? '…'}
+                  <MenuLabel>{rpm?.point.fromFinish ?? '…'}</MenuLabel>
                 </Dropdown.Item>
               )}
           </FmDropdownMenu>
@@ -933,29 +930,21 @@ export default function RoutePlannerMenu(): ReactElement {
               <FmDropdownMenu>
                 <Dropdown.Item as="button" eventKey="pick">
                   <FaMapMarkerAlt />
-                  &nbsp;
-                  {rpm?.point.pick ?? '…'}
+                  <MenuLabel>{rpm?.point.pick ?? '…'}</MenuLabel>
                 </Dropdown.Item>
 
                 <Dropdown.Item as="button" eventKey="current">
                   <FaBullseye />
-                  &nbsp;
-                  {rpm?.point.current ?? '…'}
+                  <MenuLabel>{rpm?.point.current ?? '…'}</MenuLabel>
                 </Dropdown.Item>
 
-                <Dropdown.Item
-                  as="button"
-                  className="d-flex align-items-center justify-content-between"
-                  eventKey="home"
-                >
-                  <span>
-                    <FaHome />
-                    &nbsp;{rpm?.point.home ?? '…'}
-                  </span>
+                <Dropdown.Item as="button" eventKey="home">
+                  <FaHome />
+                  <MenuLabel>{rpm?.point.home ?? '…'}</MenuLabel>
                   <Button
                     size="sm"
                     variant="secondary"
-                    className="my-n1 ms-2"
+                    className="my-n1 ms-auto flex-shrink-0"
                     title={rpm?.selectHomeLocation}
                   >
                     <FaCrosshairs className="pe-none" />
@@ -965,7 +954,7 @@ export default function RoutePlannerMenu(): ReactElement {
                 {startPoint && (
                   <Dropdown.Item as="button" eventKey="from-start">
                     <FaPlay color="#409a40" />
-                    &nbsp;{rpm?.point.fromStart ?? '…'}
+                    <MenuLabel>{rpm?.point.fromStart ?? '…'}</MenuLabel>
                   </Dropdown.Item>
                 )}
               </FmDropdownMenu>
@@ -1138,10 +1127,10 @@ export default function RoutePlannerMenu(): ReactElement {
               <>
                 <Dropdown.Divider />
 
-                <Dropdown.Header>
-                  <FaRandom />
-                  &nbsp;{rpm?.optimize.label ?? '…'}
-                  &nbsp;
+                {/* A row, so the label truncates and not the gem. */}
+                <Dropdown.Header className="d-flex align-items-center gap-1">
+                  <FaRandom className="flex-shrink-0" />
+                  <MenuLabel>{rpm?.optimize.label ?? '…'}</MenuLabel>
                   <PremiumGem nested />
                 </Dropdown.Header>
 
@@ -1159,7 +1148,7 @@ export default function RoutePlannerMenu(): ReactElement {
                     eventKey={eventKey}
                     disabled={optimizeBlocked || Boolean(becomePremium)}
                   >
-                    {label ?? '…'}
+                    <MenuLabel>{label ?? '…'}</MenuLabel>
                   </Dropdown.Item>
                 ))}
               </>

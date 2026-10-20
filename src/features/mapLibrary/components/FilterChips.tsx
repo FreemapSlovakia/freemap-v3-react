@@ -5,6 +5,7 @@ import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useRegionNames } from '@shared/hooks/useRegionNames.js';
@@ -305,23 +306,24 @@ export function FilterCountry({
     .map((code) => ({ code, name: nameOf(code) }))
     .sort((a, b) => a.name.localeCompare(b.name, language));
 
-  const flagged = (code: string) => (
-    <>
-      <Emoji className="me-1">{countryCodeToFlag(code)}</Emoji>
-      {nameOf(code)}
-    </>
-  );
+  const flag = (code: string) => <Emoji>{countryCodeToFlag(code)}</Emoji>;
 
   return (
     <FilterRow label={label}>
       <Dropdown onSelect={(code) => onChange(code ?? '')}>
         <Dropdown.Toggle as={SelectToggle} className="form-select-sm w-auto">
-          {value ? flagged(value) : anyLabel}
+          {value ? (
+            <>
+              {flag(value)} {nameOf(value)}
+            </>
+          ) : (
+            anyLabel
+          )}
         </Dropdown.Toggle>
 
         <FmDropdownMenu>
           <Dropdown.Item as="button" type="button" eventKey="" active={!value}>
-            {anyLabel}
+            <MenuLabel>{anyLabel}</MenuLabel>
           </Dropdown.Item>
 
           {countries.map(({ code }) => (
@@ -332,7 +334,8 @@ export function FilterCountry({
               eventKey={code}
               active={value === code}
             >
-              {flagged(code)}
+              {flag(code)}
+              <MenuLabel>{nameOf(code)}</MenuLabel>
             </Dropdown.Item>
           ))}
         </FmDropdownMenu>

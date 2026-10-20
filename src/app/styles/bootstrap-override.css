@@ -1,5 +1,9 @@
 .dropdown-menu {
   z-index: 10000;
+
+  /* Rows don't wrap, so this bounds a menu. Popper sizes it from the viewport's
+     left edge before shifting it; the gap is `fixedPopperConfig`'s padding. */
+  max-width: calc(100vw - 2 * var(--fm-space-2));
 }
 
 /* Popper writes the real `position` only on its second render — its instance is
@@ -107,20 +111,18 @@ kbd {
 }
 
 /* A menu row decides the rhythm between the icon, the label and the badges that
-   follow it, so nothing in the row carries a margin of its own. It still wraps
-   on a narrow screen: `white-space: normal` lets a long label wrap inside its own
-   flex item, and the row wraps between items. */
+   follow it, so nothing in the row carries a margin of its own. It is one line:
+   a label too long for it ends in an ellipsis, which takes a `MenuLabel` — bare
+   text in a flex row can't carry one. */
 .dropdown-item {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--fm-space-1);
-  white-space: normal;
 
   /* A glyph in the row never gives up width to the label — a squashed icon
-     reads as a different icon. */
-  & > svg,
-  & > img {
+     reads as a different icon. At any depth: a row may group a glyph with its
+     label in a flex span of its own. */
+  & :is(svg, img) {
     flex-shrink: 0;
   }
 
@@ -129,6 +131,12 @@ kbd {
     --bs-dropdown-item-padding-y: var(--fm-space-2);
     --bs-dropdown-item-padding-x: var(--fm-space-4);
   }
+}
+
+/* A block, unlike a row, so its own text takes the ellipsis. */
+.dropdown-header {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 legend {

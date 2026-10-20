@@ -6,6 +6,7 @@ import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -128,19 +129,19 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
               <Dropdown.Item
                 as="button"
                 disabled={!online}
-                className="text-nowrap"
                 onClick={() => buy({ recurring: false })}
               >
-                <FaRegGem /> {prm?.payOnce}
+                <FaRegGem />
+                <MenuLabel>{prm?.payOnce}</MenuLabel>
               </Dropdown.Item>
 
               <Dropdown.Item
                 as="button"
                 disabled={!online}
-                className="text-nowrap"
                 onClick={() => buy({ via: 'rovas' })}
               >
-                <FaStopwatch /> {prm?.payWithChrons}
+                <FaStopwatch />
+                <MenuLabel>{prm?.payWithChrons}</MenuLabel>
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>

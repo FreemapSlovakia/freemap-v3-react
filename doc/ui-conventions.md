@@ -384,7 +384,7 @@ These containers own the gap; nothing inside them carries a margin:
 | --- | --- | --- |
 | `.fm-toolbar` | `0.25rem` | `index.css` |
 | `.btn-toolbar` | `0.25rem` | `bootstrap-override.css` — a `gap-*` utility overrides it where a toolbar wants more air (see `Toast`) |
-| `.dropdown-item` | `0.25rem` | `bootstrap-override.css`; a wrapping flex row, so a long label still wraps inside its own item |
+| `.dropdown-item` | `0.25rem` | `bootstrap-override.css`; a one-line flex row, its label text in a `MenuLabel` so that it, and only it, ends in an ellipsis where the row doesn't fit |
 | `ResponsiveActions` | `gap` prop | its own `d-inline-flex` |
 | A button row in a floating panel | `gap-1` | the panel's header, toolbar and footer rows (`MapLayersPanel`) — a panel over the map takes the toolbars' rhythm, not a modal's |
 

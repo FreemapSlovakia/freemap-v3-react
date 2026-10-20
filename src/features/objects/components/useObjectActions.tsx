@@ -14,6 +14,7 @@ import {
 } from '@osm/osmNameResolver.js';
 import type { SelectCallback } from '@restart/ui/types';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import {
   ActionDivider,
@@ -116,7 +117,7 @@ export function useObjectActions({ result }: Props): {
         target="_blank"
         eventKey="url"
       >
-        {om?.openInOsm}
+        <MenuLabel>{om?.openInOsm}</MenuLabel>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -124,13 +125,13 @@ export function useObjectActions({ result }: Props): {
         target="_blank"
         eventKey="url"
       >
-        {om?.osmHistory}
+        <MenuLabel>{om?.osmHistory}</MenuLabel>
       </OnlineOnlyItem>
 
       {!window.fmEmbedded && (
         <>
           <Dropdown.Item as="button" onClick={() => editInJosm(parsedId.data)}>
-            {oeam?.josm}
+            <MenuLabel>{oeam?.josm}</MenuLabel>
           </Dropdown.Item>
 
           <OnlineOnlyItem
@@ -138,7 +139,7 @@ export function useObjectActions({ result }: Props): {
             target="_blank"
             eventKey="url"
           >
-            {oeam?.id}
+            <MenuLabel>{oeam?.id}</MenuLabel>
           </OnlineOnlyItem>
         </>
       )}

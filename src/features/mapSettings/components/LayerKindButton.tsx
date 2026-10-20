@@ -6,6 +6,7 @@ import {
   LAYER_KIND_ICONS,
   LayerKindMark,
 } from '@shared/components/MapLayerItem.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 
@@ -52,7 +53,8 @@ export function LayerKindButton({ value, onChange }: Props): ReactElement {
             eventKey={kind}
             active={kind === value}
           >
-            {LAYER_KIND_ICONS[kind]} {m?.mapLayers.layer[kind]}
+            {LAYER_KIND_ICONS[kind]}
+            <MenuLabel>{m?.mapLayers.layer[kind]}</MenuLabel>
           </Dropdown.Item>
         ))}
       </FmDropdownMenu>

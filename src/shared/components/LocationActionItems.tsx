@@ -10,6 +10,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
 import {
@@ -84,7 +85,8 @@ export function LocationActionItems({
             onAct?.();
           }}
         >
-          <FaInfo /> {m?.mapCtxMenu.queryFeatures}
+          <FaInfo />
+          <MenuLabel>{m?.mapCtxMenu.queryFeatures}</MenuLabel>
         </OnlineOnlyItem>
       )}
 
@@ -96,7 +98,8 @@ export function LocationActionItems({
           onAct?.();
         }}
       >
-        <FaRuler /> {m?.mapCtxMenu.measurePosition}
+        <FaRuler />
+        <MenuLabel>{m?.mapCtxMenu.measurePosition}</MenuLabel>
       </Dropdown.Item>
 
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
@@ -108,7 +111,8 @@ export function LocationActionItems({
             onAct?.();
           }}
         >
-          <FaCamera /> {m?.mapCtxMenu.showPhotos}
+          <FaCamera />
+          <MenuLabel>{m?.mapCtxMenu.showPhotos}</MenuLabel>
         </OnlineOnlyItem>
       )}
 
@@ -120,7 +124,8 @@ export function LocationActionItems({
           onAct?.();
         }}
       >
-        <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
+        <FaRegDotCircle />
+        <MenuLabel>{m?.mapCtxMenu.centerMap}</MenuLabel>
       </Dropdown.Item>
 
       {!window.fmEmbedded && (
@@ -146,7 +151,8 @@ export function LocationActionItems({
               onAct?.();
             }}
           >
-            <FaMapMarkerAlt /> {m?.mapCtxMenu.addPoint}
+            <FaMapMarkerAlt />
+            <MenuLabel>{m?.mapCtxMenu.addPoint}</MenuLabel>
           </Dropdown.Item>
 
           <Dropdown.Item
@@ -172,7 +178,8 @@ export function LocationActionItems({
               onAct?.();
             }}
           >
-            <MdTimeline /> {m?.mapCtxMenu.startLine}
+            <MdTimeline />
+            <MenuLabel>{m?.mapCtxMenu.startLine}</MenuLabel>
           </Dropdown.Item>
 
           <RouteEndpointItems divider lat={lat} lon={lon} onAct={onAct} />
@@ -210,7 +217,8 @@ export function LocationActionItems({
               onAct?.();
             }}
           >
-            <FaLink /> {oeam?.url}
+            <FaLink />
+            <MenuLabel>{oeam?.url}</MenuLabel>
           </Dropdown.Item>
         </>
       )}
