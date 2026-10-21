@@ -20,6 +20,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     asSegments: 'Unisci mantenendo i segmenti',
     pick: 'Clicca la traccia da unire',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Aggancia ai percorsi',
     title: 'Aggancia ai percorsi',

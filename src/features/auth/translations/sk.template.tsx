@@ -18,9 +18,14 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     pictureTooLarge: 'Obrázok je príliš veľký. Maximálna veľkosť je 5 MB.',
   },
   connectLabel: 'Pripojiť',
-  connectSuccess: 'Pripojené',
+  connectSuccess: ({ provider }) =>
+    `Tvoj účet ${provider} bol pripojený k tvojmu účtu Freemap. Odteraz sa môžeš prihlasovať aj ním.`,
+  differentAccount: ({ provider }) =>
+    `Povolil si iný účet ${provider}, než aký je pripojený k tvojmu účtu Freemap. Odhlás sa z ${provider}, prihlás sa pripojeným účtom a skús to znova.`,
   disconnectLabel: 'Odpojiť',
   disconnectSuccess: 'Odpojené',
+  lastProvider:
+    'Toto je posledný spôsob prihlásenia do tvojho účtu, preto ho nemožno odpojiť. Aktuálny stav uvidíš po obnovení stránky.',
   logInWith: 'Vyberte poskytovateľa prihlásenia',
   logInSuccess: 'Boli ste úspešne prihlásený.',
   logInError: ({ err }) =>

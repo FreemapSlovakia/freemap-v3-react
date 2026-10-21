@@ -30,6 +30,7 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     asSegments: 'Fusionner en gardant les segments',
     pick: 'Cliquez sur la trace à fusionner',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Caler sur les chemins',
     title: 'Caler sur les chemins',

@@ -18,7 +18,8 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     description: 'Rólam',
   },
   connectLabel: 'Csatlakozás',
-  connectSuccess: 'Csatlakoztatva',
+  connectSuccess: ({ provider }) =>
+    `A(z) ${provider}-fiókját összekapcsoltuk a Freemap-fiókjával. Mostantól ezzel is bejelentkezhet.`,
   disconnectLabel: 'Kapcsolat bontása',
   disconnectSuccess: 'Lecsatlakoztatva',
   logInWith: 'Válasszon bejelentkezési szolgáltatót',

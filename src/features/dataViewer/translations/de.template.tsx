@@ -20,6 +20,7 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     asSegments: 'Verbinden, Abschnitte behalten',
     pick: 'Klicke auf die Spur zum Verbinden',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'An Wege anpassen',
     title: 'An Wege anpassen',

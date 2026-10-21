@@ -18,7 +18,8 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
     description: 'Su di me',
   },
   connectLabel: 'Connetti',
-  connectSuccess: 'Connesso',
+  connectSuccess: ({ provider }) =>
+    `Il tuo account ${provider} è stato collegato al tuo account Freemap. Ora puoi accedere anche con esso.`,
   disconnectLabel: 'Disconnetti',
   disconnectSuccess: 'Disconnesso',
   logInWith: 'Scegli un provider di accesso',

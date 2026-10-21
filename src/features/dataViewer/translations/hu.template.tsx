@@ -20,6 +20,7 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     asSegments: 'Összefűzés szakaszok megtartásával',
     pick: 'Kattintson a nyomvonalra, amellyel összefűzi',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Utakhoz illesztés',
     title: 'Utakhoz illesztés',

@@ -51,6 +51,7 @@ import {
   utf8ToBase64,
 } from '@shared/markerSvg.js';
 import { escapeHtml } from '@shared/stringUtils.js';
+import type { Feature } from 'geojson';
 import { iconSpecToGarminSym } from '../../garminSymMapping.js';
 import {
   iconSpecToOsmAndIcon,
@@ -94,6 +95,40 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   action,
   dispatch,
 }) => {
+  const gpx = await buildGpx(getState, action.payload);
+
+  const { target } = action.payload;
+
+  if (
+    await upload(
+      'gpx',
+      exportBlob([gpx], 'application/gpx+xml', target),
+      target,
+      getState,
+      dispatch,
+    )
+  ) {
+    dispatch(setActiveModal(null));
+  }
+};
+
+export default handle;
+
+export async function buildGpx(
+  getState: () => RootState,
+  {
+    exportables,
+    only,
+    elevation,
+    importFilter,
+  }: Pick<
+    ReturnType<typeof exportMapFeatures>['payload'],
+    'exportables' | 'only' | 'elevation'
+  > & {
+    /** Which of the loaded data's features to include; all when unset. */
+    importFilter?: (feature: Feature) => boolean;
+  },
+): Promise<string> {
   const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
 
   doc.documentElement.setAttributeNS(
@@ -155,7 +190,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 
   createElement(meta, 'time', new Date().toISOString());
 
-  createElement(meta, 'keywords', action.payload.exportables.join(' '));
+  createElement(meta, 'keywords', exportables.join(' '));
 
   const {
     drawingLines,
@@ -169,9 +204,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     l10n: { language },
   } = getState();
 
-  const set = new Set(action.payload.exportables);
-
-  const { only } = action.payload;
+  const set = new Set(exportables);
 
   if (set.has('pictures')) {
     addPictures(
@@ -213,7 +246,7 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('import')) {
-    addImportedTrack(doc, trackViewer);
+    addImportedTrack(doc, trackViewer, importFilter);
   }
 
   if (set.has('search')) {
@@ -223,8 +256,6 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
       addGeojson(doc, geojson);
     }
   }
-
-  const { elevation } = action.payload;
 
   if (elevation === 'missing' || elevation === 'all') {
     await fillGpxElevations(doc, elevation, getState);
@@ -256,26 +287,8 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     }
   }
 
-  const { target } = action.payload;
-
-  if (
-    await upload(
-      'gpx',
-      exportBlob(
-        [new XMLSerializer().serializeToString(doc)],
-        'application/gpx+xml',
-        target,
-      ),
-      target,
-      getState,
-      dispatch,
-    )
-  ) {
-    dispatch(setActiveModal(null));
-  }
-};
-
-export default handle;
+  return new XMLSerializer().serializeToString(doc);
+}
 
 // Fills `<ele>` into `<wpt>`/`<trkpt>`/`<rtept>` elements via the elevation
 // API. `missing` adds it only where absent; `all` also overwrites existing
@@ -1186,13 +1199,17 @@ function addTracking(
   }
 }
 
-function addImportedTrack(doc: Document, { trackGeojson }: DataViewerState) {
+function addImportedTrack(
+  doc: Document,
+  { trackGeojson }: DataViewerState,
+  filter: (feature: Feature) => boolean = () => true,
+) {
   if (trackGeojson) {
     addGeojson(doc, {
       ...trackGeojson,
-      features: trackGeojson.features.map((feature) =>
-        withRenderedLabel(feature, 'name'),
-      ),
+      features: trackGeojson.features
+        .filter(filter)
+        .map((feature) => withRenderedLabel(feature, 'name')),
     });
   }
 }

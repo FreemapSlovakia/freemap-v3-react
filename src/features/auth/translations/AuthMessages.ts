@@ -1,8 +1,11 @@
 export type AuthMessages = {
   connectLabel: string;
-  connectSuccess: string;
+  connectSuccess: (props: { provider: string }) => string;
+  /** Re-authorizing as another remote user than the one connected. */
+  differentAccount: (props: { provider: string }) => string;
   disconnectLabel: string;
   disconnectSuccess: string;
+  lastProvider: string;
   logInWith: string;
   logInSuccess: string;
   logInError: (props: { err: unknown }) => string;

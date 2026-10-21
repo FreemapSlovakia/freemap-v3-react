@@ -1,6 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { authLogout, authSetUser } from './actions.js';
+import { authLogout, authSetOsmGpxAuthorized, authSetUser } from './actions.js';
 import { purchaseOnLogin } from './purchaseActions.js';
 import type { Purchase, User } from './types.js';
 
@@ -34,9 +34,15 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         credits: action.payload.credits,
         coordinates: action.payload.coordinates,
         hasPicture: action.payload.hasPicture,
+        osmGpxAuthorized: action.payload.osmGpxAuthorized,
       },
       validated: true,
     }))
+    .addCase(authSetOsmGpxAuthorized, (state, action) => {
+      if (state.user) {
+        state.user.osmGpxAuthorized = action.payload;
+      }
+    })
     .addCase(authLogout, () => authInitialState)
     .addCase(purchaseOnLogin, (state, action) => {
       state.purchaseOnLogin = action.payload;

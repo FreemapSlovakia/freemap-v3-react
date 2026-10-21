@@ -20,6 +20,48 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     asSegments: 'Spojit se zachováním úseků',
     pick: 'Klikněte na trasu, se kterou spojit',
   },
+  osmUpload: {
+    menuItem: 'Nahrát GPS stopu na OpenStreetMap',
+    title: 'Nahrát GPS stopu na OpenStreetMap',
+    help: 'Nahraje načtené trasy do vašeho účtu OpenStreetMap jako GPS stopu, podle které mohou mapovači zakreslit cesty. Nahrají se jen trasy se zaznamenanými časy – jiné OpenStreetMap neuchovává. Nahrávejte jen trasy, které jste sami zaznamenali.',
+    description: 'Popis',
+    tags: 'Štítky',
+    tagsHint: 'Oddělené čárkami.',
+    tagsInvalid:
+      'OpenStreetMap ve štítku nepřijme . ; / ? % ani # a ani štítek delší než 255 znaků.',
+    visibility: 'Viditelnost',
+    visibilities: {
+      identifiable: 'Identifikovatelná',
+      public: 'Veřejná',
+      trackable: 'Sledovatelná',
+      private: 'Soukromá',
+    },
+    visibilityHints: {
+      identifiable:
+        'Zobrazená v seznamu stop s vaším jménem, jako seřazené body s časovými značkami.',
+      public:
+        'Zobrazená v seznamu stop s vaším jménem, jako anonymní neseřazené body.',
+      trackable: 'Sdílená jen jako anonymní seřazené body s časovými značkami.',
+      private: 'Sdílená jen jako anonymní neseřazené body.',
+    },
+    upload: 'Nahrát',
+    loginPrompt:
+      'Pro nahrání se musíte přihlásit přes OpenStreetMap a povolit Freemapu nahrávat GPS stopy. Pokračovat?',
+    connectPrompt:
+      'Pro nahrání musíte k účtu Freemap připojit účet OpenStreetMap a povolit Freemapu do něj nahrávat GPS stopy. Pokud už máte jiný účet Freemap, do kterého se přihlašujete tímto účtem OpenStreetMap, oba účty se sloučí do jednoho. Pokračovat?',
+    authorizePrompt:
+      'Pro nahrání musíte povolit Freemapu nahrávat GPS stopy do vašeho účtu OpenStreetMap. Pokračovat?',
+    reauthorize:
+      'Povolení Freemapu nahrávat GPS stopy do vašeho účtu OpenStreetMap bylo právě odvoláno. Klikněte znovu na Nahrát a povolte ho.',
+    success: ({ url }) => (
+      <>
+        Trasa byla nahrána. OpenStreetMap ji zpracuje během několika minut.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Zobrazit stopu na OpenStreetMap
+        </a>
+      </>
+    ),
+  },
   match: {
     menuItem: 'Přiřadit k cestám',
     title: 'Přiřadit k cestám',
@@ -109,6 +151,12 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     addError(getMessages()!, 'Nastala chyba při získávání záznamu trasy', err),
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při přiřazování trasy', err),
+  osmUploadError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Nastala chyba při nahrávání na OpenStreetMap',
+      err,
+    ),
   loadingError: 'Soubor se nepodařilo načíst.',
   onlyOne: 'Očekává se pouze jeden soubor.',
   invalidFormat: 'Soubor není v podporovaném formátu nebo je neplatný.',

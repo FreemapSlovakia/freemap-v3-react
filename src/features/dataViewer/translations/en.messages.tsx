@@ -31,6 +31,49 @@ const en: DataViewerMessages = {
     asSegments: 'Join keeping segments',
     pick: 'Click the track to join with',
   },
+  osmUpload: {
+    menuItem: 'Upload GPS trace to OpenStreetMap',
+    title: 'Upload GPS trace to OpenStreetMap',
+    help: 'Uploads the loaded tracks to your OpenStreetMap account as a GPS trace, which mappers can trace paths from. Only tracks with recorded times go, as OpenStreetMap keeps nothing else. Upload only tracks you recorded yourself.',
+    description: 'Description',
+    tags: 'Tags',
+    tagsHint: 'Separated by commas.',
+    tagsInvalid:
+      'OpenStreetMap does not accept . ; / ? % or # in a tag, nor a tag longer than 255 characters.',
+    visibility: 'Visibility',
+    visibilities: {
+      identifiable: 'Identifiable',
+      public: 'Public',
+      trackable: 'Trackable',
+      private: 'Private',
+    },
+    visibilityHints: {
+      identifiable:
+        'Shown in the trace list with your name, as ordered points with timestamps.',
+      public:
+        'Shown in the trace list with your name, as anonymous unordered points.',
+      trackable: 'Shared only as anonymous ordered points with timestamps.',
+      private: 'Shared only as anonymous unordered points.',
+    },
+    upload: 'Upload',
+    loginPrompt:
+      'Uploading needs you to log in with OpenStreetMap and allow Freemap to upload GPS traces. Continue?',
+    connectPrompt:
+      'Uploading needs your OpenStreetMap account connected to your Freemap account and allowed to receive GPS traces from Freemap. If you already have another Freemap account logged in with that OpenStreetMap account, the two accounts will be merged into one. Continue?',
+    authorizePrompt:
+      'Uploading needs you to allow Freemap to upload GPS traces to your OpenStreetMap account. Continue?',
+    reauthorize:
+      'Freemap’s permission to upload GPS traces to your OpenStreetMap account has just been withdrawn. Click Upload again to allow it.',
+    success: ({ url }) => (
+      <>
+        The track has been uploaded. OpenStreetMap processes it within a few
+        minutes.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Show trace on OpenStreetMap
+        </a>
+      </>
+    ),
+  },
   match: {
     menuItem: 'Match to paths',
     title: 'Match to paths',
@@ -112,6 +155,8 @@ const en: DataViewerMessages = {
     addError(getMessages()!, 'Error fetching track data', err),
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Error matching the track', err),
+  osmUploadError: ({ err }) =>
+    addError(getMessages()!, 'Error uploading to OpenStreetMap', err),
   loadingError: 'Error loading file.',
   onlyOne: 'Only a single file is expected.',
   invalidFormat: 'The file is not in a supported format or is invalid.',

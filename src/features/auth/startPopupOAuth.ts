@@ -1,22 +1,65 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
+import {
+  startProgress,
+  stopProgress,
+} from '@features/progress/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isBroadcastChannelSupported } from '@shared/broadcastChannelSupport.js';
 import type { Action, Dispatch } from 'redux';
 import {
+  OAUTH_PROGRESS_ID,
   type PopupOAuthProvider,
   pendingOAuthLogins,
   popupOAuthProviders,
+  releaseOAuthProgress,
 } from './popupOAuthProviders.js';
 
+const clientIds = new Map<PopupOAuthProvider, Promise<string>>();
+
 /**
- * Opens the provider's OAuth2 authorize page in a popup. The popup posts the
- * resulting `code` back through `/authCallback.html`, which the
- * `oauthLoginMessageHandler` turns into an `authWithOAuthCode` action. This
- * promise resolves once the popup is closed.
- *
- * Must be called synchronously from a user-gesture handler so `window.open`
- * is not blocked — the API `GET` happens after, but the window is opened first.
+ * The provider's OAuth client id, fetched once. Prefetch it where a popup is
+ * about to be offered: a fetch between the click and `window.open` can outlast
+ * the click's user activation, and the popup is then blocked.
+ */
+export function getOAuthClientId(
+  provider: PopupOAuthProvider,
+  getState: () => RootState,
+): Promise<string> {
+  let clientId = clientIds.get(provider);
+
+  if (!clientId) {
+    clientId = httpRequest({
+      getState,
+      method: 'GET',
+      url: popupOAuthProviders[provider].loginPath,
+      expectedStatus: 200,
+    })
+      .then((res) => res.json())
+      .then((body: { clientId: string }) => body.clientId);
+
+    // A failure is not remembered, so the next attempt asks again.
+    clientId.catch(() => clientIds.delete(provider));
+
+    clientIds.set(provider, clientId);
+  }
+
+  return clientId;
+}
+
+/** Fetches the client id ahead of a click that may open the provider's popup. */
+export function prefetchOAuthClientId(
+  provider: PopupOAuthProvider,
+  getState: () => RootState,
+): void {
+  // A failure is retried on the click.
+  getOAuthClientId(provider, getState).catch(() => {});
+}
+
+/**
+ * Opens the provider's authorize page in a popup, whose code comes back through
+ * `oauthLoginMessageHandler`. Call it from a click with the client id
+ * prefetched, or the popup is blocked.
  */
 export async function startPopupOAuth(
   provider: PopupOAuthProvider,
@@ -24,6 +67,7 @@ export async function startPopupOAuth(
   getState: () => RootState,
   dispatch: Dispatch,
   successAction?: Action,
+  scope?: string,
 ): Promise<void> {
   if (!isBroadcastChannelSupported()) {
     // The popup relays the OAuth code back over a BroadcastChannel; without it
@@ -42,25 +86,32 @@ export async function startPopupOAuth(
 
   const cfg = popupOAuthProviders[provider];
 
-  const res = await httpRequest({
-    getState,
-    method: 'GET',
-    url: cfg.loginPath,
-    expectedStatus: 200,
-  });
-
-  const { clientId } = await res.json();
-
-  // Scope this login to the current tab so the shared-channel callback is only
-  // redeemed once (see `pendingOAuthLogins`). The handler clears the nonce when
-  // it consumes the callback. We must NOT clear it on popup close — under COOP
-  // the cross-origin popup handle is unreliable (`w.closed` can read true
-  // early), which would drop the nonce before the callback arrives.
+  // Not cleared on popup close: under COOP `w.closed` reads true early.
   const nonce = crypto.randomUUID();
 
-  pendingOAuthLogins.set(nonce, successAction);
+  // Held by this call until the login is registered below.
+  dispatch(startProgress(OAUTH_PROGRESS_ID));
 
-  // open window within user gesture handler (before further awaits)
+  let clientId: string;
+
+  try {
+    clientId = await getOAuthClientId(provider, getState);
+  } catch (err) {
+    dispatch(stopProgress(OAUTH_PROGRESS_ID));
+
+    throw err;
+  }
+
+  // After the await, so a second click during it supersedes this one too. The
+  // provider's popup window is reused, so only the latest login can answer.
+  for (const [earlier, login] of pendingOAuthLogins) {
+    if (login.provider === provider) {
+      pendingOAuthLogins.delete(earlier);
+
+      releaseOAuthProgress(login, dispatch);
+    }
+  }
+
   const w = window.open(
     cfg.authorizeUrl +
       '?' +
@@ -68,7 +119,7 @@ export async function startPopupOAuth(
         response_type: 'code',
         client_id: clientId,
         redirect_uri: `${location.origin}/authCallback.html`,
-        scope: cfg.scope,
+        scope: scope ?? cfg.scope,
         state: `${provider}:${connect}:${nonce}`,
         ...cfg.extraParams,
       }).toString(),
@@ -79,6 +130,8 @@ export async function startPopupOAuth(
   );
 
   if (!w) {
+    dispatch(stopProgress(OAUTH_PROGRESS_ID));
+
     dispatch(
       toastsAdd({
         id: 'enablePopup',
@@ -91,6 +144,26 @@ export async function startPopupOAuth(
     return;
   }
 
+  // Only now: no callback can arrive before the synchronous `window.open`.
+  const login = { provider, successAction, holdsProgress: true };
+
+  pendingOAuthLogins.set(nonce, login);
+
+  // `w.closed` can't tell a cancelled popup (see above), so the user being back
+  // in this window with the callback still unanswered counts as the cancel.
+  // Focus alone may never come (a popup that didn't take it), hence the press.
+  const onBack = () => {
+    window.removeEventListener('focus', onBack);
+
+    document.removeEventListener('pointerdown', onBack, true);
+
+    window.setTimeout(() => releaseOAuthProgress(login, dispatch), 1000);
+  };
+
+  window.addEventListener('focus', onBack);
+
+  document.addEventListener('pointerdown', onBack, true);
+
   await new Promise<void>((resolve) => {
     const ref = window.setInterval(() => {
       if (w.closed) {
@@ -98,6 +171,6 @@ export async function startPopupOAuth(
 
         resolve();
       }
-    });
+    }, 500);
   });
 }

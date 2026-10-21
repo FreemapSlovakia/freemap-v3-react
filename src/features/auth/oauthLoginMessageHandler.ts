@@ -1,8 +1,10 @@
 import type { MyStore } from '@app/store/store.js';
+import { startProgress } from '@features/progress/model/actions.js';
 import { authWithOAuthCode } from './model/actions.js';
 import {
+  OAUTH_PROGRESS_ID,
   pendingOAuthLogins,
-  popupOAuthProviders,
+  releaseOAuthProgress,
 } from './popupOAuthProviders.js';
 
 // Receives the OAuth callback relayed by `/authCallback.html`. The popup encodes
@@ -33,27 +35,38 @@ export function attachOAuthLoginMessageHandler(store: MyStore): void {
 
     const code = sp.get('code');
 
-    const [provider, connect, nonce] = (sp.get('state') ?? '').split(':');
+    const [, connect, nonce] = (sp.get('state') ?? '').split(':');
 
-    if (!nonce || !pendingOAuthLogins.has(nonce)) {
+    const login = nonce ? pendingOAuthLogins.get(nonce) : undefined;
+
+    if (!login) {
       return; // not started by this tab, or already handled
     }
-
-    const successAction = pendingOAuthLogins.get(nonce);
 
     pendingOAuthLogins.delete(nonce);
 
     bc.postMessage({ ok: true }); // tell the popup it can close
 
-    if (code && provider && provider in popupOAuthProviders) {
+    if (code) {
+      // The code exchange owns exactly one hold, which its processor stops: the
+      // popup's, handed over, or a new one if a focus-guessed cancel released it.
+      if (login.holdsProgress) {
+        login.holdsProgress = false;
+      } else {
+        store.dispatch(startProgress(OAUTH_PROGRESS_ID));
+      }
+
       store.dispatch(
         authWithOAuthCode({
-          provider: provider as keyof typeof popupOAuthProviders,
+          provider: login.provider,
           code,
           connect: connect === 'true',
-          successAction,
+          successAction: login.successAction,
         }),
       );
+    } else {
+      // Denied on the provider's page: no code exchange will end the login.
+      releaseOAuthProgress(login, store.dispatch);
     }
   };
 }

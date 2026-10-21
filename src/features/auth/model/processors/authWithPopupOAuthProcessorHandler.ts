@@ -7,9 +7,16 @@ const handle: ProcessorHandler<typeof authWithPopupOAuth> = async ({
   dispatch,
   getState,
 }) => {
-  const { provider, connect, successAction } = action.payload;
+  const { provider, connect, successAction, scope } = action.payload;
 
-  await startPopupOAuth(provider, connect, getState, dispatch, successAction);
+  await startPopupOAuth(
+    provider,
+    connect,
+    getState,
+    dispatch,
+    successAction,
+    scope,
+  );
 };
 
 export default handle;

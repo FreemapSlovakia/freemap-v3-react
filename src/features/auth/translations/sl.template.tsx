@@ -18,7 +18,8 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
     pictureTooLarge: 'Slika je prevelika. Največja velikost je 5 MB.',
   },
   connectLabel: 'Poveži',
-  connectSuccess: 'Povezano',
+  connectSuccess: ({ provider }) =>
+    `Vaš račun ${provider} je bil povezan z vašim računom Freemap. Zdaj se lahko prijavite tudi z njim.`,
   disconnectLabel: 'Prekini povezavo',
   disconnectSuccess: 'Povezava prekinjena',
   logInWith: 'Izberite ponudnika prijave',

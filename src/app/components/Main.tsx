@@ -523,6 +523,12 @@ const dataViewerMatchModalFactory = () =>
     '@features/dataViewer/components/DataViewerMatchModal.js'
   );
 
+const dataViewerOsmUploadModalFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-osm-upload-modal" */
+    '@features/dataViewer/components/DataViewerOsmUploadModal.js'
+  );
+
 const dataViewerPropertiesModalFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-properties-modal" */
@@ -1407,6 +1413,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'track-viewer-match'}
         factory={dataViewerMatchModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'track-viewer-osm-upload'}
+        factory={dataViewerOsmUploadModalFactory}
       />
 
       <AsyncModal

@@ -46,6 +46,10 @@ import {
   dataViewerStoreProcessor,
 } from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
 import { dataViewerToggleElevationChartProcessor } from '@features/dataViewer/model/processors/dataViewerToggleElevationChartProcessor.js';
+import {
+  dataViewerCheckOsmAuthorizationProcessor,
+  dataViewerUploadToOsmProcessor,
+} from '@features/dataViewer/model/processors/dataViewerUploadToOsmProcessor.js';
 import { drawingDiscardPartialLineProcessor } from '@features/drawing/model/processors/drawingDiscardPartialLineProcessor.js';
 import { elevationChartPendingTargetProcessor } from '@features/elevationChart/model/pendingTargetProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
@@ -256,6 +260,8 @@ export const processors = [
   dataViewerDownloadTrackProcessor,
   dataViewerGpxLoadProcessor,
   dataViewerMatchTrackProcessor,
+  dataViewerUploadToOsmProcessor,
+  dataViewerCheckOsmAuthorizationProcessor,
   dataViewerToggleElevationChartProcessor,
   dataViewerResolveElevationPromptProcessor,
   dataViewerSelectProcessor,

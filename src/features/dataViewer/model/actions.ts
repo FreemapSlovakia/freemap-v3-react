@@ -9,6 +9,7 @@ import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { TransportType } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { FeatureCollection, GeoJsonProperties } from 'geojson';
+import z from 'zod';
 import type { TrackJoinMode } from '../joinTracks.js';
 import type { TrackSplitPoint } from '../splitTrack.js';
 
@@ -153,6 +154,36 @@ export const dataViewerSetRenderGeojson = createAction<FeatureCollection>(
 export const dataViewerMatchTrack = createAction<{
   transport: TransportType;
 }>('DATA_VIEWER_MATCH_TRACK');
+
+export const OsmGpxVisibilitySchema = z.enum([
+  'identifiable',
+  'public',
+  'trackable',
+  'private',
+]);
+
+export type OsmGpxVisibility = z.infer<typeof OsmGpxVisibilitySchema>;
+
+/** Progress id held while the upload runs; the upload modal shows it as busy. */
+export const OSM_GPX_UPLOAD_PROGRESS_ID = 'dataViewerOsmUpload';
+
+/** The same while the stored OSM authorization is being checked. */
+export const OSM_GPX_CHECK_PROGRESS_ID = 'dataViewerOsmCheck';
+
+/**
+ * Asks OSM whether the stored upload authorization still holds, so a revoked
+ * one is found before the Upload click, which can still open the popup.
+ */
+export const dataViewerCheckOsmAuthorization = createAction(
+  'DATA_VIEWER_CHECK_OSM_AUTHORIZATION',
+);
+
+/** Uploads the loaded tracks as a GPS trace to the user's OpenStreetMap account. */
+export const dataViewerUploadToOsm = createAction<{
+  description: string;
+  tags: string[];
+  visibility: OsmGpxVisibility;
+}>('DATA_VIEWER_UPLOAD_TO_OSM');
 
 /** Records the source URL without re-fetching, when the track is already here. */
 export const dataViewerSetGpxUrl = createAction<string | null>(

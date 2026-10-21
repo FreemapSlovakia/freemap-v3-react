@@ -24,13 +24,7 @@ const handle: ProcessorHandler<typeof authWithOAuthCode> = async ({
     expectedStatus: 200,
   });
 
-  await handleLoginResponse(res, getState, dispatch);
-
-  // Runs after handleLoginResponse, so it overrides its default modal switch
-  // (e.g. the connect flow's jump to the account modal).
-  if (successAction) {
-    dispatch(successAction);
-  }
+  await handleLoginResponse(res, getState, dispatch, provider, successAction);
 };
 
 export default handle;

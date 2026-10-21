@@ -20,6 +20,7 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     asSegments: 'Połącz z zachowaniem odcinków',
     pick: 'Kliknij ślad, z którym połączyć',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Dopasuj do dróg',
     title: 'Dopasuj do dróg',

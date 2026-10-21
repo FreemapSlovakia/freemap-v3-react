@@ -17,9 +17,14 @@ const en: AuthMessages = {
     pictureTooLarge: 'Picture is too large. Maximum size is 5 MB.',
   },
   connectLabel: 'Connect',
-  connectSuccess: 'Connected',
+  connectSuccess: ({ provider }) =>
+    `Your ${provider} account has been connected to your Freemap account. You can now also log in with it.`,
+  differentAccount: ({ provider }) =>
+    `You authorized a different ${provider} account than the one connected to your Freemap account. Log out of ${provider}, log in with the connected account and try again.`,
   disconnectLabel: 'Disconnect',
   disconnectSuccess: 'Disconnected',
+  lastProvider:
+    'This is the last way to log in to your account, so it cannot be disconnected. Reload the page to see the current state.',
   logInWith: 'Choose a login provider',
   logInSuccess: 'You have been successfully logged in.',
   logInError: ({ err }) => addError(getMessages()!, 'Error logging in', err),

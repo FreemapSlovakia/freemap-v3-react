@@ -17,10 +17,15 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
     pictureTooLarge: 'Obrázek je příliš velký. Maximální velikost je 5 MB.',
     description: 'O mně',
   },
-  connectLabel: 'Pripojit',
-  connectSuccess: 'Pripojené',
+  connectLabel: 'Připojit',
+  connectSuccess: ({ provider }) =>
+    `Váš účet ${provider} byl připojen k vašemu účtu Freemap. Nyní se můžete přihlašovat i jím.`,
+  differentAccount: ({ provider }) =>
+    `Povolili jste jiný účet ${provider}, než jaký je připojen k vašemu účtu Freemap. Odhlaste se z ${provider}, přihlaste se připojeným účtem a zkuste to znovu.`,
   disconnectLabel: 'Odpojit',
-  disconnectSuccess: 'Odpojené',
+  disconnectSuccess: 'Odpojeno',
+  lastProvider:
+    'Toto je poslední způsob přihlášení do vašeho účtu, proto ho nelze odpojit. Aktuální stav uvidíte po obnovení stránky.',
   logInWith: 'Vyberte poskytovatele přihlášení',
   logInSuccess: 'Byli jste úspěšně přihlášen.',
   logInError: ({ err }) =>

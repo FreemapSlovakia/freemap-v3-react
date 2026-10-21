@@ -31,6 +31,18 @@ export const AuthProviderSchema = z.enum([
 
 export type AuthProvider = z.infer<typeof AuthProviderSchema>;
 
+/** Brand names, the same in every language. */
+export const AUTH_PROVIDER_LABELS: Record<AuthProvider, string> = {
+  facebook: 'Facebook',
+  osm: 'OpenStreetMap',
+  garmin: 'Garmin',
+  google: 'Google',
+  apple: 'Apple',
+  github: 'GitHub',
+  strava: 'Strava',
+  microsoft: 'Microsoft',
+};
+
 export const RoleSchema = z.enum([
   'userManager',
   'galleryModerator',
@@ -144,6 +156,8 @@ export const UserSchema = z.object({
     .default('none'),
   sendGalleryEmails: z.boolean(),
   hasPicture: z.boolean(),
+  // Whether the API holds an OSM token that may upload GPS traces.
+  osmGpxAuthorized: z.boolean().default(false),
   settings: UserSettingsSchema.optional(),
 });
 

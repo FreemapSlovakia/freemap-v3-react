@@ -37,6 +37,7 @@ const URL_MODAL_IDS = [
   'toposcope-settings',
   'track-viewer-style',
   'track-viewer-match',
+  'track-viewer-osm-upload',
   'tracking-my',
   'tracking-watched',
   'viewshed-settings',
@@ -79,6 +80,7 @@ const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
   'map-preferences',
   'offline-maps',
   'premium',
+  'track-viewer-osm-upload',
 ]);
 
 // The two that name no id of their own: they edit whatever is selected, which

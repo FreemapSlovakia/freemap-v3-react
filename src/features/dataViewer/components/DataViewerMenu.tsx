@@ -44,6 +44,7 @@ import {
   FaSave,
   FaUpload,
 } from 'react-icons/fa';
+import { SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { dataViewerBatchCounts } from '../featureEditing.js';
 import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
@@ -56,6 +57,7 @@ import {
   dataViewerSetColorizeLegend,
   dataViewerSetElevationPrompt,
 } from '../model/actions.js';
+import { hasOsmTraceLine } from '../osmTrace.js';
 import { isSimplifiable } from '../simplifyTrack.js';
 import { trackLineParts } from '../trackLineParts.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
@@ -160,6 +162,11 @@ export function DataViewerMenu(): ReactElement {
     [trackGeojson],
   );
 
+  const canUploadToOsm = useMemo(
+    () => hasOsmTraceLine(trackGeojson),
+    [trackGeojson],
+  );
+
   // Points alone have nothing a tolerance could thin.
   const canSimplify = useMemo(
     () => (trackGeojson?.features ?? []).some(isSimplifiable),
@@ -246,6 +253,11 @@ export function DataViewerMenu(): ReactElement {
 
       case 'edit-style':
         dispatch(setActiveModal({ type: 'track-viewer-style' }));
+
+        break;
+
+      case 'upload-to-osm':
+        dispatch(setActiveModal({ type: 'track-viewer-osm-upload' }));
 
         break;
     }
@@ -373,6 +385,15 @@ export function DataViewerMenu(): ReactElement {
                 <FaSave />
                 <MenuLabel>
                   <Text m={tvm} k="saveAsMap" />
+                </MenuLabel>
+              </Dropdown.Item>
+            )}
+
+            {canUploadToOsm && (
+              <Dropdown.Item as="button" eventKey="upload-to-osm">
+                <SiOpenstreetmap />
+                <MenuLabel>
+                  <Text m={tvm} k="osmUpload.menuItem" />
                 </MenuLabel>
               </Dropdown.Item>
             )}

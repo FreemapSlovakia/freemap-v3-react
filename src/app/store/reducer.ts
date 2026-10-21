@@ -401,16 +401,20 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
           ? { type: 'draw-line-poly', id: state.selection.lineIndex }
           : null;
     })
+    .addMatcher(authWithPopupOAuth.match, (state, action) => {
+      // A modal that started the authorization for its own follow-up stays
+      // open, showing it as its busy state (`OAUTH_PROGRESS_ID`).
+      if (
+        !action.payload.successAction ||
+        state.activeModal?.type === 'login'
+      ) {
+        state.activeModal = null;
+      }
+    })
     .addMatcher(
-      isAnyOf(
-        authWithFacebook,
-        authWithGoogle,
-        authWithPopupOAuth,
-        authWithGarmin,
-        authWithApple,
-      ),
+      isAnyOf(authWithFacebook, authWithGoogle, authWithGarmin, authWithApple),
       (state) => {
-        state.activeModal = null; // state.activeModal === 'login' ? null : state.activeModal
+        state.activeModal = null;
       },
     );
 });

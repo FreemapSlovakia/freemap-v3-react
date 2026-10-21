@@ -30,6 +30,7 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     asSegments: 'Združi z ohranitvijo odsekov',
     pick: 'Kliknite sled, s katero želite združiti',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Pripni na poti',
     title: 'Pripni na poti',

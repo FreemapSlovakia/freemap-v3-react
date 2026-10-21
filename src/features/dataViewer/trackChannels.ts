@@ -3,7 +3,7 @@ import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import type { TrackLine } from './trackSelection.js';
 
 /** Per-point channels live under this property, one array per channel. */
-const COORD_PROPERTIES = 'coordinateProperties';
+export const COORD_PROPERTIES = 'coordinateProperties';
 
 /** Live tracking writes its times here instead. */
 export const COORD_TIMES = 'coordTimes';

@@ -10,6 +10,8 @@ export const authWithPopupOAuth = createAction<{
   connect: boolean;
   // Dispatched once the login/connect succeeds (e.g. to reopen a modal).
   successAction?: Action;
+  // Overrides the provider's default scope.
+  scope?: string;
 }>('AUTH_WITH_POPUP_OAUTH');
 
 // Second stage shared by all popup OAuth providers: the callback relayed a
@@ -54,6 +56,10 @@ export const authLogout = createAction('AUTH_LOGOUT');
 export const authStartLogout = createAction('AUTH_START_LOGOUT');
 
 export const authSetUser = createAction<User | null>('AUTH_SET_USER');
+
+export const authSetOsmGpxAuthorized = createAction<boolean>(
+  'AUTH_SET_OSM_GPX_AUTHORIZED',
+);
 
 export const authInit = createAction('AUTH_INIT');
 

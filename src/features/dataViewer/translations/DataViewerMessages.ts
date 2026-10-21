@@ -1,4 +1,5 @@
 import type { JSX, ReactNode } from 'react';
+import type { OsmGpxVisibility } from '../model/actions.js';
 
 export type DataViewerMessages = {
   info: () => JSX.Element;
@@ -31,6 +32,26 @@ export type DataViewerMessages = {
     asSegments: string;
     /** Stands in for the track's name while the other one is being picked. */
     pick: string;
+  };
+  /** Uploading the loaded data as a GPS trace to the user's OSM account. */
+  osmUpload: {
+    menuItem: string;
+    title: string;
+    help: string;
+    description: string;
+    tags: string;
+    tagsHint: string;
+    tagsInvalid: string;
+    visibility: string;
+    visibilities: Record<OsmGpxVisibility, string>;
+    visibilityHints: Record<OsmGpxVisibility, string>;
+    upload: string;
+    loginPrompt: string;
+    connectPrompt: string;
+    authorizePrompt: string;
+    /** The permission was withdrawn between the modal's check and the upload. */
+    reauthorize: string;
+    success: (props: { url: string }) => JSX.Element;
   };
   /** Snapping a recorded track onto the routing graph. */
   match: {
@@ -93,6 +114,7 @@ export type DataViewerMessages = {
   fetchingError: (props: { err: unknown }) => string;
   /** Matching a track to the routing graph failed for a reason worth showing. */
   matchingError: (props: { err: unknown }) => string;
+  osmUploadError: (props: { err: unknown }) => string;
   loadingError: string;
   onlyOne: string;
   invalidFormat: string;
