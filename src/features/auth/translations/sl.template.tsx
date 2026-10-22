@@ -17,6 +17,7 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
     choosePicture: 'Izberi sliko',
     pictureTooLarge: 'Slika je prevelika. Največja velikost je 5 MB.',
   },
+  appTokens: { scopeNames: {} },
   connectLabel: 'Poveži',
   connectSuccess: ({ provider }) =>
     `Vaš račun ${provider} je bil povezan z vašim računom Freemap. Zdaj se lahko prijavite tudi z njim.`,

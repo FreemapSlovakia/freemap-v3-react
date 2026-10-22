@@ -25,7 +25,7 @@ Searches the map by place name, category, or coordinates. Suggestions appear as 
 
 Available only to logged-in users. Logged-out users instead see a **Log in** item in the same place, which opens the login provider chooser (see Login providers below).
 
-The Account modal has three collapsible sections (below); from the buttons at the bottom the user can also log out or delete their account.
+The Account modal has four collapsible sections (below); from the buttons at the bottom the user can also log out or delete their account.
 
 #### Purchases
 
@@ -67,6 +67,16 @@ Supported login providers:
 - Strava — login and connect work only on `www.freemap.sk`, because Strava's API app accepts only that callback domain; disconnecting works everywhere
 
 For each provider the modal shows either a **Connect** button (to link it) or a **Disconnect** button (if already linked), so multiple providers can be linked to a single Freemap account.
+
+#### App tokens
+
+Lets another application or a script use the Freemap API as the user, without a login. Any logged-in user can create any number of tokens, premium or not.
+
+- **New token** asks for a note, the permissions and an expiry (never, 30, 90 or 365 days, or a chosen date). The token (`fm_…`) is shown once, with a copy button; only its hash is kept.
+- Permissions: view photos (including premium photos, when the account has premium), upload/edit/rate/comment photos, view My maps, change My maps, view tracked devices, manage tracked devices.
+- A token never reaches the account itself: not the profile, login providers, purchases, logout, account deletion or other tokens.
+- The list shows each token's note, permissions, creation date, expiry and last use with the client's user agent; **Revoke** deletes it at once.
+- Usage: send `Authorization: Bearer fm_…` with each request to `https://backend.freemap.sk`; a WebSocket connection takes it as the `authToken` query parameter. Even on endpoints that also work without login, an unknown, deleted or expired token gets HTTP 401, and a request needing a permission the token lacks gets HTTP 403.
 
 ### Fullscreen
 

@@ -383,7 +383,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'tool-toposcope': 'vrcholy, kopce, obzor, ružica, toposkop, toposcope',
         'tool-panorama': '360, pohľad, vrcholy, obzor, terén',
         'tool-gps-recorder': 'záznam trasy, nahrávanie, logger',
-        'modal-account': 'profil, môj účet, nastavenia, odhlásenie',
+        'modal-account':
+          'profil, môj účet, nastavenia, odhlásenie, token, api kľúč',
         'modal-login': 'prihlásenie, účet',
         'modal-my-maps': 'uložené mapy, uložiť mapu, zdieľať mapu',
         'modal-map-features-export':

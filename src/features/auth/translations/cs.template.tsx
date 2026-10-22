@@ -17,6 +17,7 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
     pictureTooLarge: 'Obrázek je příliš velký. Maximální velikost je 5 MB.',
     description: 'O mně',
   },
+  appTokens: { scopeNames: {} },
   connectLabel: 'Připojit',
   connectSuccess: ({ provider }) =>
     `Váš účet ${provider} byl připojen k vašemu účtu Freemap. Nyní se můžete přihlašovat i jím.`,

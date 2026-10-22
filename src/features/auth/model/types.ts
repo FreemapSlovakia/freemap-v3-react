@@ -108,6 +108,35 @@ export const PurchasesResponseSchema = z.object({
 
 export type PurchasesResponse = z.infer<typeof PurchasesResponseSchema>;
 
+// Tile scopes exist on the API but are left out until the tile servers check them.
+export const AppTokenScopeSchema = z.enum([
+  'gallery:read',
+  'gallery:write',
+  'maps:read',
+  'maps:write',
+  'tracking:read',
+  'tracking:write',
+]);
+
+export type AppTokenScope = z.infer<typeof AppTokenScopeSchema>;
+
+export const AppTokenSchema = z.object({
+  id: z.number(),
+  note: z.string().nullable(),
+  scopes: z.array(z.string()),
+  createdAt: IsoDateSchema,
+  expiresAt: IsoDateSchema.nullable(),
+  lastUsedAt: IsoDateSchema.nullable(),
+  lastUserAgent: z.string().nullable(),
+});
+
+export type AppToken = z.infer<typeof AppTokenSchema>;
+
+export const CreatedAppTokenSchema = z.object({
+  ...AppTokenSchema.shape,
+  token: z.string(),
+});
+
 export const UserSettingsSchema = z.object({
   layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
   layerSetups: z.record(z.string(), LayerSetupSchema).optional(),

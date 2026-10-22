@@ -345,7 +345,8 @@ const messages: Messages = {
         'tool-toposcope': 'peaks, summits, horizon, view board',
         'tool-panorama': '360, terrain view, peaks, horizon',
         'tool-gps-recorder': 'record track, logger, recording',
-        'modal-account': 'profile, my account, settings, log out',
+        'modal-account':
+          'profile, my account, settings, log out, app token, api key',
         'modal-login': 'sign in, account',
         'modal-my-maps': 'saved maps, save map, share map',
         'modal-map-features-export':

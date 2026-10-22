@@ -27,12 +27,14 @@ import { Accordion, Modal } from 'react-bootstrap';
 import {
   FaAddressCard,
   FaEraser,
+  FaKey,
   FaShoppingBasket,
   FaSignOutAlt,
   FaUser,
   FaUserCircle,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { AppTokensSection } from './AppTokensSection.js';
 import { AuthProvidersSection } from './AuthProvidersSection.js';
 import { PersonalInfoSection } from './PersonalInfoSection.js';
 
@@ -136,7 +138,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
       <Modal.Body className="bg-body-tertiary">
         <OfflineAlert />
 
-        <Accordion defaultActiveKey="payments">
+        <Accordion>
           <Accordion.Item eventKey="payments">
             <Accordion.Header>
               <span>
@@ -170,6 +172,18 @@ export default function AccountModal({ show }: Props): ReactElement | null {
 
             <Accordion.Body>
               <AuthProvidersSection />
+            </Accordion.Body>
+          </Accordion.Item>
+
+          <Accordion.Item eventKey="appTokens">
+            <Accordion.Header>
+              <span>
+                <FaKey /> <Text m={am} k="appTokens.title" />
+              </span>
+            </Accordion.Header>
+
+            <Accordion.Body>
+              <AppTokensSection />
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>

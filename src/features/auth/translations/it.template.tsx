@@ -17,6 +17,7 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
     pictureTooLarge: 'La foto è troppo grande. La dimensione massima è 5 MB.',
     description: 'Su di me',
   },
+  appTokens: { scopeNames: {} },
   connectLabel: 'Connetti',
   connectSuccess: ({ provider }) =>
     `Il tuo account ${provider} è stato collegato al tuo account Freemap. Ora puoi accedere anche con esso.`,

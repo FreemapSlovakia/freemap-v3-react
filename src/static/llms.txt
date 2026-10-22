@@ -57,7 +57,7 @@ For every URL parameter and the full style codec, see [`doc/url-params.md`](http
 
 Each is a Markdown fragment of this document, continuing its heading levels. Together they describe every function and map layer. The functions are reached from the main menu, under a button with a "hamburger" icon at the top left of the page.
 
-- [Interface, search and account](/llms-interface.md): the search box (places, coordinates, OSM elements, the app's own functions), the UI language and theme switchers, the account with purchases, premium, credits and login providers, clearing the map, the help documents and legend, and the map context menu.
+- [Interface, search and account](/llms-interface.md): the search box (places, coordinates, OSM elements, the app's own functions), the UI language and theme switchers, the account with purchases, premium, credits, login providers and app tokens, clearing the map, the help documents and legend, and the map context menu.
 - [Photos and personal maps](/llms-photos-maps.md): the community photo layer, uploading and rating photos, the leaderboard, and saved personal maps (sharing, offline flagging, writing back).
 - [Drawing and measurement](/llms-drawing.md): drawing points, lines and polygons, their styles and labels, distance, area, elevation and position measurement, and the elevation profile of a drawn line.
 - [Routes and tracks](/llms-routes-tracks.md): the route finder (transport modes, waypoints, alternatives, isochrones, colorizing, elevation profile) and imported tracks and data files (GPX, GeoJSON, KML/KMZ, TCX, …).
