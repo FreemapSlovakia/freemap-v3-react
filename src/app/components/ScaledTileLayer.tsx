@@ -243,7 +243,9 @@ class LScaledTileLayer extends TileLayer {
             throw new Error(`tile ${response.status}`);
           }
 
-          noteTileCodes(url, response.headers);
+          if (this.reportsAttribution) {
+            noteTileCodes(url, response.headers);
+          }
 
           return response.blob();
         })
@@ -345,10 +347,16 @@ class LScaledTileLayer extends TileLayer {
       return div;
     }
 
+    const authorization =
+      this.tileAuth && urlZoom >= this.tileAuth.fromZoom
+        ? `Bearer ${this.tileAuth.token}`
+        : undefined;
+
     // What a tile credits is only on its response, which an `<img>` never
     // exposes, so a reporting layer fetches the bytes and hands the element an
-    // object URL. Only those: a fetch's `Accept` is refused by some providers.
-    if (this.reportsAttribution && this.cors) {
+    // object URL — as does one sending a token. Only those: a fetch's `Accept`
+    // is refused by some providers.
+    if ((this.reportsAttribution || authorization) && this.cors) {
       const img = document.createElement('img');
 
       img.alt = '';
@@ -362,9 +370,7 @@ class LScaledTileLayer extends TileLayer {
         this.getTileUrl(coords),
         this.forcedScale ?? pickTileScale(this.extraScales),
         done,
-        this.tileAuth && urlZoom >= this.tileAuth.fromZoom
-          ? `Bearer ${this.tileAuth.token}`
-          : undefined,
+        authorization,
       );
 
       return img;

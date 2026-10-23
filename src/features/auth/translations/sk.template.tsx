@@ -50,6 +50,8 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
       'tracking:write': 'Spravovať moje sledované zariadenia a ich zdieľanie',
       'tiles:outdoor':
         'Prémiové priblíženia (19+) turistickej mapy v aplikáciách ako JOSM či Locus, ak máte prémiový prístup',
+      'tiles:shading':
+        'Prémiové priblíženia (16+) tieňovaní terénu v aplikáciách ako JOSM či Locus, ak máte prémiový prístup',
     },
     expiration: 'Platnosť do',
     never: 'Bez obmedzenia',

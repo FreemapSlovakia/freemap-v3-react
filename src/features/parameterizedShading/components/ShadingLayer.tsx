@@ -30,6 +30,8 @@ type ShadingLayerOptions = GridLayerOptions & {
   shading: Shading;
   premiumFromZoom: number | undefined;
   premiumOnlyText: string | undefined;
+  /** Sent as a bearer token with tiles from this URL zoom up. */
+  tileAuth?: { fromZoom: number; token: string };
   gpuMessages?: Messages['gpu'];
   onPremiumClick?: () => void;
 };
@@ -303,7 +305,15 @@ class LShadingLayer extends LGridLayer {
     let res;
 
     try {
-      res = await fetch(url, { signal });
+      const { tileAuth } = this._options;
+
+      res = await fetch(url, {
+        signal,
+        ...(tileAuth &&
+          zoom >= tileAuth.fromZoom && {
+            headers: { authorization: `Bearer ${tileAuth.token}` },
+          }),
+      });
     } catch {
       if (signal.aborted) {
         throw new TileAbortedError();

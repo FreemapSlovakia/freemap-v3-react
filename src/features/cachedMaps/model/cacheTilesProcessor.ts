@@ -4,7 +4,7 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { isPremium } from '@features/premium/premium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
-import { reportsTileCodes } from '@shared/mapDefinitions.js';
+import { gatesPremiumTiles, reportsTileCodes } from '@shared/mapDefinitions.js';
 import { cachedMapSource } from '@shared/mapLibrary/exportedLayer.js';
 import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
@@ -301,9 +301,9 @@ async function downloadTiles(
 
   const gatedMaxZoom = Math.min(maxZoom, premiumLimit);
 
-  // The renderer serves its premium zooms only to a premium account's token.
+  // Its tile server serves premium zooms only to a premium account's token.
   const authFromZoom =
-    user && isPremium(user) && reportsTileCodes(def)
+    user && isPremium(user) && gatesPremiumTiles(def)
       ? cachedMapSource(def, sourceDef)?.premiumFromZoom
       : undefined;
 

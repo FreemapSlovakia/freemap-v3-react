@@ -35,6 +35,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import {
+  gatesPremiumTiles,
   type LayerDef,
   reportsTileCodes,
   resolveLayerOpacity,
@@ -284,11 +285,11 @@ export function Layers(): ReactNode {
       'premiumFromZoom' in layerDef ? layerDef.premiumFromZoom : undefined,
     );
 
-    // The renderer serves its premium zooms only to a premium account's token.
+    // Their tile servers serve premium zooms only to a premium account's token.
     const tileAuth =
       user &&
       isPremium(user) &&
-      reportsTileCodes(layerDef) &&
+      gatesPremiumTiles(layerDef) &&
       'premiumFromZoom' in layerDef &&
       layerDef.premiumFromZoom !== undefined
         ? { fromZoom: layerDef.premiumFromZoom, token: user.authToken }
@@ -405,9 +406,11 @@ export function Layers(): ReactNode {
             id,
             effPremiumFromZoom ?? 99,
             effPremiumFromZoom ? prm?.premiumOnly : '',
+            tileAuth?.token ?? '',
           ].join('-')}
           url={layerDef.url}
           factory={shadingLayerFactory}
+          tileAuth={tileAuth}
           opacity={opacity}
           zIndex={zIndex}
           tileSize={isHdpi ? 128 : 256}

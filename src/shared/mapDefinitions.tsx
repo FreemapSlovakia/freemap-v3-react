@@ -177,6 +177,22 @@ const RENDERER_ROUTE_BY_TYPE = {
 export const RENDERER_ROUTES: Readonly<Record<string, string>> =
   RENDERER_ROUTE_BY_TYPE;
 
+/**
+ * Whether the layer's tile server serves its premium zooms only to a premium
+ * account's token: the renderer's layers and both terrain shadings. Others must
+ * not get the header, which their servers would refuse in the CORS preflight.
+ */
+export const gatesPremiumTiles = (def: {
+  type: string;
+  sourceType?: string;
+}): boolean => {
+  const type = def.sourceType ?? def.type;
+
+  return (
+    Object.hasOwn(RENDERER_ROUTE_BY_TYPE, type) || ['h', '7'].includes(type)
+  );
+};
+
 export const rendererTileUrl = (type: keyof typeof RENDERER_ROUTE_BY_TYPE) => {
   const route = RENDERER_ROUTE_BY_TYPE[type];
 
