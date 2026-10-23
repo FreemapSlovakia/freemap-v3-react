@@ -10,6 +10,7 @@ const def: MapBody<'tile'> = {
   attribution: OUTDOOR_ATTRIBUTION,
   minZoom: 5,
   maxNativeZoom: 20,
+  premiumFromZoom: 19,
 };
 
 export default def;
