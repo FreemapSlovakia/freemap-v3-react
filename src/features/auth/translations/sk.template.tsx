@@ -28,6 +28,12 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
         požiadavky na Freemap API:
       </>
     ),
+    tiles: (
+      <>
+        Aplikácia ako JOSM či Locus načíta turistickú mapu s tokenom v adrese
+        dlaždíc:
+      </>
+    ),
     keepSecret:
       'Token uchovávajte v tajnosti, rovnako ako heslo. Ak sa mohol dostať k niekomu inému, zmažte ho a vytvorte nový.',
     none: 'Nemáte žiadne aplikačné tokeny.',
@@ -42,6 +48,8 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
       'maps:write': 'Vytvárať, meniť a mazať moje mapy',
       'tracking:read': 'Prezerať moje sledované zariadenia',
       'tracking:write': 'Spravovať moje sledované zariadenia a ich zdieľanie',
+      'tiles:outdoor':
+        'Prémiové priblíženia (19+) turistickej mapy v aplikáciách ako JOSM či Locus, ak máte prémiový prístup',
     },
     expiration: 'Platnosť do',
     never: 'Bez obmedzenia',

@@ -30,6 +30,11 @@ type Props = TileLayerProps & {
    * with `reportsAttribution`, whose fetch handles its own errors.
    */
   fallbackUrl?: (z: number, x: number, y: number) => string | undefined;
+  /**
+   * Sent as a bearer token with tiles from this URL zoom up, on the fetch path
+   * only. Lower zooms go without: the header costs a CORS preflight per tile.
+   */
+  tileAuth?: { fromZoom: number; token: string };
 };
 
 /** What one tile's load owns, and how far it has got. */
@@ -87,6 +92,7 @@ class LScaledTileLayer extends TileLayer {
   private onPremiumClick;
   private skipTile;
   private fallbackUrl;
+  private tileAuth;
 
   constructor(
     urlTemplate: string,
@@ -99,6 +105,7 @@ class LScaledTileLayer extends TileLayer {
     onPremiumClick?: () => void,
     skipTile?: (z: number, x: number, y: number) => boolean,
     fallbackUrl?: (z: number, x: number, y: number) => string | undefined,
+    tileAuth?: { fromZoom: number; token: string },
     options?: TileLayerOptions,
   ) {
     super(urlTemplate, options);
@@ -121,6 +128,8 @@ class LScaledTileLayer extends TileLayer {
 
     this.fallbackUrl = fallbackUrl;
 
+    this.tileAuth = tileAuth;
+
     this.handlePremiumClick = this.handlePremiumClick.bind(this);
 
     // `tileabort` as well as `tileunload`: a zoom away from a tile still
@@ -129,6 +138,12 @@ class LScaledTileLayer extends TileLayer {
     this.on('tileunload tileabort', (event) => {
       release((event as TileEvent).tile as HTMLImageElement);
     });
+  }
+
+  setTileAuth(tileAuth: { fromZoom: number; token: string } | undefined) {
+    this.tileAuth = tileAuth;
+
+    this.redraw();
   }
 
   handlePremiumClick(e: MouseEvent) {
@@ -152,6 +167,7 @@ class LScaledTileLayer extends TileLayer {
     base: string,
     scale: number,
     done: DoneCallback,
+    authorization: string | undefined,
   ): void {
     const load: TileLoad = {
       controller: new AbortController(),
@@ -220,6 +236,7 @@ class LScaledTileLayer extends TileLayer {
         // a tile is not what anyone is waiting on; the app's own calls are
         priority: 'low',
         ...(typeof referrerPolicy === 'string' && { referrerPolicy }),
+        ...(authorization && { headers: { authorization } }),
       } as RequestInit)
         .then((response) => {
           if (!response.ok) {
@@ -345,6 +362,9 @@ class LScaledTileLayer extends TileLayer {
         this.getTileUrl(coords),
         this.forcedScale ?? pickTileScale(this.extraScales),
         done,
+        this.tileAuth && urlZoom >= this.tileAuth.fromZoom
+          ? `Bearer ${this.tileAuth.token}`
+          : undefined,
       );
 
       return img;
@@ -389,7 +409,10 @@ class LScaledTileLayer extends TileLayer {
   }
 }
 
-export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
+export const ScaledTileLayer = createTileLayerComponent<
+  LScaledTileLayer,
+  Props
+>(
   (props, context) => {
     const {
       url,
@@ -402,6 +425,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
       onPremiumClick,
       skipTile,
       fallbackUrl,
+      tileAuth,
       // strict-origin-when-cross-origin (the modern browser default) so tile
       // providers that require a Referer header — e.g. OSM's usage policy —
       // aren't blocked even if a stricter document-level policy is in effect.
@@ -421,6 +445,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
         onPremiumClick,
         skipTile,
         fallbackUrl,
+        tileAuth,
         { ...rest, referrerPolicy },
       ),
       context,
@@ -430,6 +455,11 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
   (instance, props, prevProps) => {
     // The stack order moves a mounted layer's z-index.
     updateGridLayer(instance, props, prevProps);
+
+    // Logging in or out, or premium starting, changes what the tiles may show.
+    if (JSON.stringify(props.tileAuth) !== JSON.stringify(prevProps.tileAuth)) {
+      instance.setTileAuth(props.tileAuth);
+    }
 
     if (
       (

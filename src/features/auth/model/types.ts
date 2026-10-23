@@ -108,7 +108,7 @@ export const PurchasesResponseSchema = z.object({
 
 export type PurchasesResponse = z.infer<typeof PurchasesResponseSchema>;
 
-// Tile scopes exist on the API but are left out until the tile servers check them.
+// tiles:shading exists on the API but is left out until its tile server checks it.
 export const AppTokenScopeSchema = z.enum([
   'gallery:read',
   'gallery:write',
@@ -116,6 +116,7 @@ export const AppTokenScopeSchema = z.enum([
   'maps:write',
   'tracking:read',
   'tracking:write',
+  'tiles:outdoor',
 ]);
 
 export type AppTokenScope = z.infer<typeof AppTokenScopeSchema>;

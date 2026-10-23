@@ -27,6 +27,12 @@ const en: AuthMessages = {
         request to the Freemap API:
       </>
     ),
+    tiles: (
+      <>
+        An app such as JOSM or Locus takes the outdoor map with the token in the
+        tile URL:
+      </>
+    ),
     keepSecret:
       'Keep the token secret, like a password. If someone else may have got hold of it, delete it and create a new one.',
     none: 'You have no app tokens.',
@@ -40,6 +46,8 @@ const en: AuthMessages = {
       'maps:write': 'Create, change and delete my maps',
       'tracking:read': 'View my tracked devices',
       'tracking:write': 'Manage my tracked devices and their sharing',
+      'tiles:outdoor':
+        'Premium zooms (19+) of the outdoor map in apps such as JOSM or Locus, if you have premium',
     },
     expiration: 'Expires',
     never: 'Never',

@@ -33,6 +33,7 @@ export type AuthMessages = {
     about: string;
     intro: string;
     usage: ReactNode;
+    tiles: ReactNode;
     keepSecret: string;
     none: string;
     create: string;

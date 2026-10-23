@@ -284,6 +284,16 @@ export function Layers(): ReactNode {
       'premiumFromZoom' in layerDef ? layerDef.premiumFromZoom : undefined,
     );
 
+    // The renderer serves its premium zooms only to a premium account's token.
+    const tileAuth =
+      user &&
+      isPremium(user) &&
+      reportsTileCodes(layerDef) &&
+      'premiumFromZoom' in layerDef &&
+      layerDef.premiumFromZoom !== undefined
+        ? { fromZoom: layerDef.premiumFromZoom, token: user.authToken }
+        : undefined;
+
     if (layerDef.technology === 'wms') {
       // As ticked in its setup, else the map's own.
       const picked = setup?.wmsLayers;
@@ -499,6 +509,7 @@ export function Layers(): ReactNode {
         cors: layerDef.cors ?? true,
         // an offline map's def carries its `sourceType`
         reportsAttribution: serverShading || reportsTileCodes(layerDef),
+        tileAuth,
         // Every tile layer is counted; only the ones whose server reports its
         // datasets ever resolve to anything, the rest stay on their own list.
         eventHandlers: tileAttributionHandlers(

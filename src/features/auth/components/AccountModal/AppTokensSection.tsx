@@ -313,6 +313,16 @@ export function AppTokensSection(): ReactElement | null {
               </code>
             </pre>
 
+            <p className="mb-1">
+              <Text m={am}>{(m) => m.appTokens.tiles}</Text>
+            </p>
+
+            <pre className="small bg-body p-2 rounded">
+              <code>
+                {process.env['FM_MAPSERVER_URL']}/{'{z}/{x}/{y}'}?token=fm_…
+              </code>
+            </pre>
+
             <p className="mb-0">
               <Text m={am} k="appTokens.keepSecret" />
             </p>

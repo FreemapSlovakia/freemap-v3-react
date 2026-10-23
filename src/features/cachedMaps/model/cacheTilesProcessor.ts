@@ -1,6 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { User } from '@features/auth/model/types.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
+import { isPremium } from '@features/premium/premium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { reportsTileCodes } from '@shared/mapDefinitions.js';
@@ -271,7 +272,7 @@ async function downloadTiles(
   def: CachedTileMapDef,
   dispatch: Dispatch,
   language: string,
-  user: Pick<User, 'premiumExpiration'> | null,
+  user: Pick<User, 'premiumExpiration' | 'authToken'> | null,
   abortController: AbortController = beginDownload(def.type),
 ) {
   const id = def.type;
@@ -299,6 +300,12 @@ async function downloadTiles(
     def.coverageUrl !== undefined && !coverageStale(def.coverageUrl);
 
   const gatedMaxZoom = Math.min(maxZoom, premiumLimit);
+
+  // The renderer serves its premium zooms only to a premium account's token.
+  const authFromZoom =
+    user && isPremium(user) && reportsTileCodes(def)
+      ? cachedMapSource(def, sourceDef)?.premiumFromZoom
+      : undefined;
 
   const gated = gatedMaxZoom < maxZoom;
 
@@ -424,6 +431,11 @@ async function downloadTiles(
           // require a Referer header — e.g. OSM's usage policy — aren't blocked
           // (and 403s aren't silently counted as downloaded) during caching.
           referrerPolicy: 'strict-origin-when-cross-origin',
+          ...(user &&
+            authFromZoom !== undefined &&
+            z >= authFromZoom && {
+              headers: { authorization: `Bearer ${user.authToken}` },
+            }),
         });
 
         if (response.ok) {
