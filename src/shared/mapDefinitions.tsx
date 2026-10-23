@@ -177,21 +177,20 @@ const RENDERER_ROUTE_BY_TYPE = {
 export const RENDERER_ROUTES: Readonly<Record<string, string>> =
   RENDERER_ROUTE_BY_TYPE;
 
-/**
- * Whether the layer's tile server serves its premium zooms only to a premium
- * account's token: the renderer's layers and both terrain shadings. Others must
- * not get the header, which their servers would refuse in the CORS preflight.
- */
-export const gatesPremiumTiles = (def: {
-  type: string;
-  sourceType?: string;
-}): boolean => {
-  const type = def.sourceType ?? def.type;
+const PREMIUM_GATED_TILE_HOSTS = [
+  process.env['FM_MAPSERVER_URL'],
+  process.env['FM_TERRAIN_TILES_URL'],
+  'https://sk-hires-shading.tiles.freemap.sk',
+];
 
-  return (
-    Object.hasOwn(RENDERER_ROUTE_BY_TYPE, type) || ['h', '7'].includes(type)
-  );
-};
+/**
+ * Whether a tile URL's server serves premium zooms only to a premium account's
+ * token: the renderer and both terrain shadings. Decided by host, as a saved map
+ * keeps its source's URL under an id of its own. Other servers must not get the
+ * header, which they would refuse in the CORS preflight.
+ */
+export const gatesPremiumTiles = (url: string): boolean =>
+  PREMIUM_GATED_TILE_HOSTS.some((host) => host && url.startsWith(`${host}/`));
 
 export const rendererTileUrl = (type: keyof typeof RENDERER_ROUTE_BY_TYPE) => {
   const route = RENDERER_ROUTE_BY_TYPE[type];

@@ -1,10 +1,10 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { User } from '@features/auth/model/types.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
-import { isPremium } from '@features/premium/premium.js';
+import { premiumTileAuth } from '@features/premium/premium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
-import { gatesPremiumTiles, reportsTileCodes } from '@shared/mapDefinitions.js';
+import { reportsTileCodes } from '@shared/mapDefinitions.js';
 import { cachedMapSource } from '@shared/mapLibrary/exportedLayer.js';
 import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
@@ -301,11 +301,11 @@ async function downloadTiles(
 
   const gatedMaxZoom = Math.min(maxZoom, premiumLimit);
 
-  // Its tile server serves premium zooms only to a premium account's token.
-  const authFromZoom =
-    user && isPremium(user) && gatesPremiumTiles(def)
-      ? cachedMapSource(def, sourceDef)?.premiumFromZoom
-      : undefined;
+  const tileAuth = premiumTileAuth(
+    def.url,
+    cachedMapSource(def, sourceDef)?.premiumFromZoom,
+    user,
+  );
 
   const gated = gatedMaxZoom < maxZoom;
 
@@ -431,10 +431,9 @@ async function downloadTiles(
           // require a Referer header — e.g. OSM's usage policy — aren't blocked
           // (and 403s aren't silently counted as downloaded) during caching.
           referrerPolicy: 'strict-origin-when-cross-origin',
-          ...(user &&
-            authFromZoom !== undefined &&
-            z >= authFromZoom && {
-              headers: { authorization: `Bearer ${user.authToken}` },
+          ...(tileAuth &&
+            z >= tileAuth.fromZoom && {
+              headers: { authorization: `Bearer ${tileAuth.token}` },
             }),
         });
 

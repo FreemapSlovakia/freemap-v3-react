@@ -16,6 +16,7 @@ import {
   isOpaqueShading,
   serializeShading,
 } from '@features/parameterizedShading/model/Shading.js';
+import { premiumTileAuth } from '@features/premium/premium.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import {
   FitButtonGroup,
@@ -269,10 +270,21 @@ export default function OfflineMapExportModal({
   // screen's DPR; `1` means the plain tile URL
   const exportScale = parseInt(scale, 10) || 1;
 
+  // the server gets the `http:` form, but sampling from this page must stay on
+  // https or the browser blocks it as mixed content
+  const sampleUrl = mapDef?.url.replace(/^http:/, 'https:');
+
   const { bytes: estimatedSize, sampling } = useTilesSizeEstimate({
-    // the server gets the `http:` form, but sampling from this page must stay
-    // on https or the browser blocks it as mixed content
-    urlTemplate: mapDef?.url.replace(/^http:/, 'https:'),
+    urlTemplate: sampleUrl,
+    tileAuth: premiumTileAuth(
+      sampleUrl,
+      mapDef &&
+        'premiumFromZoom' in mapDef &&
+        typeof mapDef.premiumFromZoom === 'number'
+        ? mapDef.premiumFromZoom
+        : undefined,
+      user,
+    ),
     bbox,
     minZoom: Number(minZoom),
     maxZoom: Number(maxZoom),

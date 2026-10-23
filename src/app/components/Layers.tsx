@@ -28,14 +28,17 @@ import {
 } from '@features/mapLibrary/model/selectors.js';
 import { colorToHexa } from '@features/parameterizedShading/model/Shading.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
-import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
+import {
+  isPremium,
+  premiumMapZoom,
+  premiumTileAuth,
+} from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import {
-  gatesPremiumTiles,
   type LayerDef,
   reportsTileCodes,
   resolveLayerOpacity,
@@ -285,15 +288,11 @@ export function Layers(): ReactNode {
       'premiumFromZoom' in layerDef ? layerDef.premiumFromZoom : undefined,
     );
 
-    // Their tile servers serve premium zooms only to a premium account's token.
-    const tileAuth =
-      user &&
-      isPremium(user) &&
-      gatesPremiumTiles(layerDef) &&
-      'premiumFromZoom' in layerDef &&
-      layerDef.premiumFromZoom !== undefined
-        ? { fromZoom: layerDef.premiumFromZoom, token: user.authToken }
-        : undefined;
+    const tileAuth = premiumTileAuth(
+      'url' in layerDef ? layerDef.url : undefined,
+      'premiumFromZoom' in layerDef ? layerDef.premiumFromZoom : undefined,
+      user,
+    );
 
     if (layerDef.technology === 'wms') {
       // As ticked in its setup, else the map's own.

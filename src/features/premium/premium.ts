@@ -1,4 +1,5 @@
 import type { User } from '@features/auth/model/types.js';
+import { gatesPremiumTiles } from '@shared/mapDefinitions.js';
 
 export function isPremium(
   user: Pick<User, 'premiumExpiration'> | null,
@@ -15,6 +16,24 @@ export function premiumMapZoom(
   scaleWithDpi: boolean | undefined,
 ): number {
   return premiumFromZoom - (scaleWithDpi ? 1 : 0);
+}
+
+/**
+ * The bearer token a premium account sends with a gated layer's tiles from its
+ * `premiumFromZoom` up (a URL zoom); see `gatesPremiumTiles`.
+ */
+export function premiumTileAuth(
+  url: string | undefined,
+  premiumFromZoom: number | undefined,
+  user: Pick<User, 'premiumExpiration' | 'authToken'> | null,
+): { fromZoom: number; token: string } | undefined {
+  return user &&
+    isPremium(user) &&
+    url !== undefined &&
+    premiumFromZoom !== undefined &&
+    gatesPremiumTiles(url)
+    ? { fromZoom: premiumFromZoom, token: user.authToken }
+    : undefined;
 }
 
 /** Any live Polar subscription, whether or not it's set to auto-renew. */

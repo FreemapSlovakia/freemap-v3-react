@@ -15,6 +15,7 @@ import {
 import { OutsideCoverageAlert } from '@features/offlineMapExport/components/OutsideCoverageAlert.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { premiumTileAuth } from '@features/premium/premium.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -214,13 +215,11 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
 
   const sourceType = editing?.sourceType ?? mapType;
 
-  const premiumLimit = premiumZoomLimit(
-    sourceType,
-    user,
-    editing
-      ? cachedMapSource(editing, integratedLayerDefMap[sourceType])
-      : exportedAs(integratedLayerDefMap[sourceType]),
-  );
+  const sourceDef = editing
+    ? cachedMapSource(editing, integratedLayerDefMap[sourceType])
+    : exportedAs(integratedLayerDefMap[sourceType]);
+
+  const premiumLimit = premiumZoomLimit(sourceType, user, sourceDef);
 
   // The field keeps the range a map was given while premium: capping it below
   // what is already downloaded would make even a rename delete tiles. Growing it
@@ -438,6 +437,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
     tileCount,
     estimateForCount: tilesToAdd,
     scale: Number(scale),
+    tileAuth: premiumTileAuth(urlTemplate, sourceDef?.premiumFromZoom, user),
     enabled: !invalidMinZoom && !invalidMaxZoom,
   });
 

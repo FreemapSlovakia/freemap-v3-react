@@ -46,6 +46,8 @@ export type SampleTilesSizeParams = {
   maxZoom: number;
   /** The `@Nx` variant that will really be downloaded; see `pickTileScale`. */
   scale?: number;
+  /** A premium account's token for gated zooms; see `premiumTileAuth`. */
+  tileAuth?: { fromZoom: number; token: string };
   signal?: AbortSignal;
 };
 
@@ -61,6 +63,7 @@ export async function sampleTilesSize({
   minZoom,
   maxZoom,
   scale,
+  tileAuth,
   signal,
 }: SampleTilesSizeParams): Promise<TileSizeEstimate | undefined> {
   const ranges = tileRangesInBbox(bbox, minZoom, maxZoom);
@@ -86,6 +89,10 @@ export async function sampleTilesSize({
               // <img> requests send — providers that authenticate by `Referer`
               // would otherwise answer 403 and skew the estimate
               referrerPolicy: 'strict-origin-when-cross-origin',
+              ...(tileAuth &&
+                range.zoom >= tileAuth.fromZoom && {
+                  headers: { authorization: `Bearer ${tileAuth.token}` },
+                }),
             });
 
             return response.ok ? (await response.blob()).size : undefined;
