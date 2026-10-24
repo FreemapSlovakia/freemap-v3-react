@@ -34,13 +34,15 @@ export function serializeDrawingProps(props: DrawingProps | undefined): string {
   return entries.length ? `\x1eP${entries.flat().join('\x1f')}` : '';
 }
 
+/** A data value `P` can't say as text: it would read back as a string. */
+export type TypedValue = number | boolean | null;
+
 /**
- * Data values that are numbers or booleans, as `Q`: key/value pairs like `P`'s,
- * each value as JSON so it reads back with its type. JSON of a number or a
- * boolean holds neither separator.
+ * Typed data values as `Q`: key/value pairs like `P`'s, each value as JSON so
+ * it reads back with its type. That JSON holds neither separator.
  */
 export function serializeTypedProps(
-  typed: Readonly<Record<string, number | boolean>> | undefined,
+  typed: Readonly<Record<string, TypedValue>> | undefined,
 ): string {
   const entries = Object.entries(typed ?? {});
 
@@ -58,7 +60,7 @@ export function serializeDrawingPoint(
   point: DrawingPoint & {
     ele?: number;
     kind?: string;
-    typed?: Record<string, number | boolean>;
+    typed?: Record<string, TypedValue>;
   },
 ): string {
   return `${serializeLatLon(point.coords)}${
@@ -132,7 +134,7 @@ export function serializeDrawingLine(
     breaks?: number[];
     kind?: string;
     gpxType?: string;
-    typed?: Record<string, number | boolean>;
+    typed?: Record<string, TypedValue>;
   },
   holeOf?: number,
 ): string {

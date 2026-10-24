@@ -13,6 +13,7 @@ import {
 import { isoInstant } from '@shared/dateUtils.js';
 import {
   featureDataProps,
+  isDataKey,
   mergeFeatureDataProps,
   ownLabel,
   withEditedLabel,
@@ -26,6 +27,7 @@ import {
   pointStyleFromProperties,
   pointStyleToProperties,
 } from '@shared/styleFromProperties.js';
+import type { TypedValue } from '@shared/urlSerialization.js';
 import type { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
 import { COORD_PROPERTIES, readChannels, TIMES } from './trackChannels.js';
 import type { TrackLine } from './trackSelection.js';
@@ -49,26 +51,28 @@ export type WireLine = Omit<Line, 'points'> & {
   /** `fm:kind` and togeojson's `_gpxType`, as an import stamped them. */
   kind?: string;
   gpxType?: string;
-  /** Data values that are numbers or booleans, which `props` holds as text. */
-  typed?: Record<string, number | boolean>;
+  /** Data values that are numbers, booleans or null; `props` has the text. */
+  typed?: Record<string, TypedValue>;
 };
 
 export type WirePoint = DrawingPoint & {
   ele?: number;
   kind?: string;
-  typed?: Record<string, number | boolean>;
+  typed?: Record<string, TypedValue>;
 };
 
 /** The table a label template reads: the text values and the typed ones. */
 function labelTable(
   props: DrawingProps | undefined,
-  typed: Readonly<Record<string, number | boolean>> | undefined,
+  typed: Readonly<Record<string, TypedValue>> | undefined,
 ): DrawingProps | undefined {
   return typed
     ? {
         ...props,
         ...Object.fromEntries(
-          Object.entries(typed).map(([key, value]) => [key, String(value)]),
+          Object.entries(typed).flatMap(([key, value]) =>
+            value === null ? [] : [[key, String(value)]],
+          ),
         ),
       }
     : props;
@@ -256,21 +260,23 @@ function labelOf(properties: GeoJsonProperties): string | undefined {
   return ownLabel(properties) ?? (typeof name === 'string' ? name : undefined);
 }
 
-/** The data values that are numbers or booleans, which the table has as text. */
+/**
+ * The data values the text table can't type: numbers and booleans, which it
+ * has as text, and nulls, which it leaves out.
+ */
 function typedOf(
   properties: GeoJsonProperties,
-): Record<string, number | boolean> | undefined {
+): Record<string, TypedValue> | undefined {
   const table = featureDataProps(properties);
 
   const typed = Object.fromEntries(
-    Object.keys(table).flatMap((key) => {
-      const value = properties?.[key];
-
-      return (typeof value === 'number' || typeof value === 'boolean') &&
-        table[key] === String(value)
+    Object.entries(properties ?? {}).flatMap(([key, value]) =>
+      (value === null && isDataKey(key) && !Object.hasOwn(table, key)) ||
+      ((typeof value === 'number' || typeof value === 'boolean') &&
+        table[key] === String(value))
         ? [[key, value]]
-        : [];
-    }),
+        : [],
+    ),
   );
 
   return Object.keys(typed).length ? typed : undefined;

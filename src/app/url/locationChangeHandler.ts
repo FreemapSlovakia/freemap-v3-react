@@ -167,6 +167,7 @@ import {
   type OsmFeatureId,
   osmElementTypes,
 } from '@shared/types/featureId.js';
+import type { TypedValue } from '@shared/urlSerialization.js';
 import type { Dispatch } from 'redux';
 import {
   closeTool,
@@ -1561,7 +1562,7 @@ export function parseStyleFields(s: string): {
   markerType?: 'pin' | 'square' | 'ring';
   icon?: string;
   props?: DrawingProps;
-  typed?: Record<string, number | boolean>;
+  typed?: Record<string, TypedValue>;
   columns?: string[];
   kind?: string;
   gpxType?: string;
@@ -1610,16 +1611,21 @@ export function parseStyleFields(s: string): {
 
       out.props = normalizeProps(props);
     } else if (field[0] === 'Q') {
-      // As `P`, each value JSON; anything but a number or a boolean is skipped.
+      // As `P`, each value JSON; anything but a number, a boolean or null is
+      // skipped.
       const parts = field.slice(1).split('\x1f');
 
-      const typed: Record<string, number | boolean> = {};
+      const typed: Record<string, TypedValue> = {};
 
       for (let i = 0; i + 1 < parts.length; i += 2) {
         try {
           const value: unknown = JSON.parse(parts[i + 1]!);
 
-          if (typeof value === 'number' || typeof value === 'boolean') {
+          if (
+            value === null ||
+            typeof value === 'number' ||
+            typeof value === 'boolean'
+          ) {
             typed[parts[i]!] = value;
           }
         } catch {

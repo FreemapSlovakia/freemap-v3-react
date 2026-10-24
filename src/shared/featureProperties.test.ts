@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   defaultLabel,
   featureLabel,
+  mergeFeatureDataProps,
   withEditedLabel,
   withRenderedLabel,
 } from './featureProperties.js';
@@ -309,5 +310,29 @@ describe('a label rendered for export', () => {
     const plain = { ...point, properties: { name: 'Spring' } };
 
     expect(withRenderedLabel(plain, 'name')).toBe(plain);
+  });
+});
+
+describe('an edited data table', () => {
+  const before = { ele: 1234, open: true, zip: '0123' };
+
+  it('keeps a number or boolean in its type while it still reads as one', () => {
+    expect(
+      mergeFeatureDataProps(before, {
+        ele: '1240',
+        open: 'false',
+        zip: '0124',
+      }),
+    ).toEqual({ ele: 1240, open: false, zip: '0124' });
+  });
+
+  it('turns a value into text once it no longer reads as its type', () => {
+    expect(
+      mergeFeatureDataProps(before, { ele: 'high', open: 'yes', zip: '0123' }),
+    ).toEqual({ ele: 'high', open: 'yes', zip: '0123' });
+  });
+
+  it('never guesses a type for a new row', () => {
+    expect(mergeFeatureDataProps({}, { beds: '12' })).toEqual({ beds: '12' });
   });
 });

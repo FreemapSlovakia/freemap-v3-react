@@ -255,6 +255,26 @@ describe('urlWire', () => {
       ).toMatchObject({ number: 3, flag: true });
     });
 
+    it('nulls, beside text, numbers and booleans', () => {
+      const properties = {
+        name: 'Hut',
+        note: 'ok',
+        beds: 12,
+        open: false,
+        x: null,
+      };
+
+      expect(
+        roundTrip({
+          type: 'Feature',
+          properties,
+          geometry: { type: 'Point', coordinates: [17, 48] },
+        }).properties,
+      ).toEqual(properties);
+
+      expect(roundTrip(track(properties)).properties).toMatchObject(properties);
+    });
+
     it('a style given in simplestyle alone', () => {
       expect(
         roundTrip(track({ stroke: '#ff0000', 'stroke-width': 5 })).properties,

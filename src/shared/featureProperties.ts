@@ -44,7 +44,7 @@ const RESERVED_KEYS = new Set([
 /** Ours: the style the editor writes, and the provenance the parser stamps. */
 const RESERVED_PREFIXES = ['freemap:', 'fm:', 'osmand:', 'gpx_style:'];
 
-function isDataKey(key: string): boolean {
+export function isDataKey(key: string): boolean {
   return (
     !RESERVED_KEYS.has(key) &&
     !RESERVED_PREFIXES.some((prefix) => key.startsWith(prefix))
@@ -318,10 +318,30 @@ export function featureExportTable(
   };
 }
 
+/** An edited row's value in the type it had, when the text still reads as one. */
+function retyped(before: unknown, value: string): unknown {
+  if (isScalar(before) && String(before) === value) {
+    return before;
+  }
+
+  if (typeof before === 'number') {
+    const n = Number(value);
+
+    if (value.trim() !== '' && Number.isFinite(n)) {
+      return n;
+    }
+  }
+
+  if (typeof before === 'boolean' && (value === 'true' || value === 'false')) {
+    return value === 'true';
+  }
+
+  return value;
+}
+
 /**
- * Puts the edited table back, keeping everything the table never showed. A row
- * that reads the same as before keeps the value it had, so a GeoJSON `"ele":
- * 1234` stays a number unless the user actually retyped it.
+ * Puts the edited table back, keeping everything the table never showed. A
+ * number or boolean stays one while its row still reads as one.
  */
 export function mergeFeatureDataProps(
   properties: Record<string, unknown> | null | undefined,
@@ -342,9 +362,7 @@ export function mergeFeatureDataProps(
       continue;
     }
 
-    const before = properties?.[key];
-
-    out[key] = isScalar(before) && String(before) === value ? before : value;
+    out[key] = retyped(properties?.[key], value);
   }
 
   // Both statements stay the same, or the edit shows on screen while every
