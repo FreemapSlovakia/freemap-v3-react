@@ -12,7 +12,6 @@ const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     drawingAreas: 'rysowanie – poligony',
     drawingPoints: 'rysowanie – punkty',
     tracking: 'śledzenie na żywo',
-    import: 'trasy i dane',
     search: 'wynik',
   },
   garmin: {

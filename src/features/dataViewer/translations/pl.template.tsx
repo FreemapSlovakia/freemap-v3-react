@@ -6,9 +6,6 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   vertex: { channels: {} },
-  style: {
-    title: 'Domyślny styl',
-  },
   split: {
     action: 'Podziel',
     pick: 'Kliknij ślad w miejscu podziału',
@@ -101,8 +98,6 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   upload: 'Prześlij',
   unnamedTrack: ({ n }) => `Ślad ${n}`,
-  convertLossWarning:
-    'Konwersja na rysunek zastępuje ślad i odrzuca jego zarejestrowane dane (wysokość, tętno, prędkość, czas).',
   simplifyAll: 'Uprość wszystko',
   moreInfo: 'Więcej informacji',
   saveAsMap: 'Zapisz w moich mapach',

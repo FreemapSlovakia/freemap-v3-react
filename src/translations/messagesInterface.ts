@@ -71,9 +71,7 @@ export type Messages = {
     hideObjectType: (props: { name: ReactNode }) => JSX.Element;
     copyToDrawing: string;
     copyTo: (props: { tool: ReactNode }) => JSX.Element;
-    convertTo: (props: { tool: ReactNode }) => JSX.Element;
     convertAllToDrawing: string;
-    convertAllTo: (props: { tool: ReactNode }) => JSX.Element;
     /** Names an app the feature is handed to, where nothing else says so. */
     openIn: (props: { what: ReactNode }) => JSX.Element;
     panoramaFromHere: string;
@@ -191,7 +189,6 @@ export type Messages = {
     routePlanner: string;
     objects: string;
     photos: string;
-    measurement: string;
     drawPoints: string;
     drawLines: string;
     drawPolygons: string;

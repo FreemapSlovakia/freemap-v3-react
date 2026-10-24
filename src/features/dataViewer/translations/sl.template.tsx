@@ -8,17 +8,12 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Naloži',
   unnamedTrack: ({ n }) => `Sled ${n}`,
-  convertLossWarning:
-    'Pretvorba v risbo nadomesti sled in zavrže njene zabeležene podatke (nadmorska višina, srčni utrip, hitrost, čas).',
   simplifyAll: 'Poenostavi vse',
   moreInfo: 'Več informacij',
   saveAsMap: 'Shrani med moje zemljevide',
   loginToSaveMap:
     'Za shranjevanje sledi med vaše zemljevide se najprej prijavite.',
   vertex: { channels: {} },
-  style: {
-    title: 'Privzeti slog',
-  },
   split: {
     action: 'Razdeli',
     pick: 'Kliknite sled na mestu razdelitve',

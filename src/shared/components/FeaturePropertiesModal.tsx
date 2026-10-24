@@ -3,9 +3,13 @@ import { setActiveModal } from '@app/store/actions.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import {
   DrawingPropsEditor,
+  isValidRow,
+  keptOf,
+  keyProblems,
   type PropRow,
   propsToRows,
   rowsToProps,
+  rowsToTypes,
 } from '@features/drawing/components/DrawingPropsEditor.js';
 import {
   type Mixed,
@@ -27,7 +31,10 @@ import type { Batch, BatchEdit, BatchField } from '@shared/batchProperties.js';
 import { COLORS } from '@shared/colors.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
-import { PlaceholderHint } from '@shared/components/PlaceholderHint.js';
+import {
+  InsertToken,
+  PlaceholderHint,
+} from '@shared/components/PlaceholderHint.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { MarkerIcon } from '@shared/components/RichMarker.js';
 import { parseIconSpec, useIconContentProps } from '@shared/drawingIcons.js';
@@ -41,6 +48,12 @@ import {
   isValidDetailNumber,
   LINE_DETAIL_KEYS,
 } from '@shared/featureDetails.js';
+import {
+  type PropTypes,
+  textRows,
+  typedValue,
+  valueText,
+} from '@shared/featureProperties.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useInsertAtCaret } from '@shared/hooks/useInsertAtCaret.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
@@ -77,6 +90,8 @@ import {
 export type FeatureProperties = {
   label: string;
   props: DrawingProps | undefined;
+  /** Each row's type, where the holder keeps typed values; else all are text. */
+  propTypes?: PropTypes;
   color: string;
   markerType: MarkerType;
   icon: string;
@@ -189,8 +204,10 @@ export function FeaturePropertiesModal({
   const [editedLabel, setEditedLabel] = useState(initial.label);
 
   const [editedRows, setEditedRows] = useState(() =>
-    propsToRows(initial.props),
+    propsToRows(initial.props, initial.propTypes),
   );
+
+  const typed = initial.propTypes !== undefined;
 
   const [editedColor, setEditedColor] = useState(initial.color);
 
@@ -243,17 +260,30 @@ export function FeaturePropertiesModal({
         setEditedRows([
           ...editedRows,
           ...LINE_DETAIL_KEYS.filter((key) => editedDetails[key]).map(
-            (key): PropRow => [key, editedDetails[key]],
+            (key): PropRow => [
+              key,
+              editedDetails[key],
+              // Opened as this key, though shown as a detail till now.
+              key,
+              key === 'number'
+                ? 'number'
+                : editedDetails[key].includes('\n')
+                  ? 'multiline'
+                  : undefined,
+            ],
           ),
         ]);
 
-        setEditedDetails({ ...emptyDetails(), links: editedDetails.links });
+        setEditedDetails(emptyDetails());
       } else {
         const details = { ...editedDetails };
 
-        for (const [key, value] of editedRows) {
+        for (const [key, text, , type] of editedRows) {
           if (isDetail(key) && !details[key.trim() as DetailKey]) {
-            details[key.trim() as DetailKey] = value;
+            const value = typedValue(text, type ?? 'text');
+
+            details[key.trim() as DetailKey] =
+              value === undefined ? text : valueText(value);
           }
         }
 
@@ -296,6 +326,11 @@ export function FeaturePropertiesModal({
       ? !isValidDetailEle(editedDetails.ele)
       : !isValidDetailNumber(editedDetails.number));
 
+  // A row without a key is dropped on save, so nothing to refuse it for.
+  const invalidRows =
+    (typed && editedRows.some((row) => row[0].trim() && !isValidRow(row))) ||
+    keyProblems(editedRows, mixedKeys && keptOf(mixedKeys)).some(Boolean);
+
   const optionOf = (key: string) =>
     channelOptions.find((option) => option.key === key);
 
@@ -313,9 +348,12 @@ export function FeaturePropertiesModal({
   // A kept label is nothing to write into: an insert would replace them all.
   const labelKept = mixed?.differs('label') && mixed.kept('label');
 
-  const handleInsertKey = (key: string) => {
-    insertExpression(`{${PROPERTY_PREFIX}${key}}`);
-  };
+  // What a label can read: no nulls or nested values.
+  const labelKeys = Object.keys(
+    typed
+      ? textRows(rowsToProps(editedRows), rowsToTypes(editedRows))
+      : rowsToProps(editedRows),
+  );
 
   const dispatch = useDispatch();
 
@@ -330,6 +368,7 @@ export function FeaturePropertiesModal({
       {
         label: editedLabel,
         props: rowsToProps(editedRows),
+        propTypes: typed ? rowsToTypes(editedRows) : undefined,
         color: editedColor,
         markerType: editedMarkerType,
         icon: editedIcon,
@@ -433,6 +472,21 @@ export function FeaturePropertiesModal({
                 text={dm?.edit.optionalKeys}
                 onInsert={labelKept ? undefined : insertExpression}
               />
+              {!labelKept && labelKeys.length > 0 && (
+                <>
+                  {' '}
+                  <Text m={dm} k="edit.labelProperties" />
+                  {labelKeys.map((key) => (
+                    <Fragment key={key}>
+                      {' '}
+                      <InsertToken
+                        expression={`{${PROPERTY_PREFIX}${key}}`}
+                        onInsert={insertExpression}
+                      />
+                    </Fragment>
+                  ))}
+                </>
+              )}
             </Form.Text>
           </Form.Group>
 
@@ -722,8 +776,8 @@ export function FeaturePropertiesModal({
           <Form.Group className="mt-3">
             <DrawingPropsEditor
               rows={editedRows}
+              typed={typed}
               onChange={setEditedRows}
-              onInsertKey={labelKept ? undefined : handleInsertKey}
               mixed={mixedKeys}
             />
           </Form.Group>
@@ -786,7 +840,7 @@ export function FeaturePropertiesModal({
           <FmFooterButton
             type="submit"
             variant="primary"
-            disabled={invalidWidth || invalidDetails}
+            disabled={invalidWidth || invalidDetails || invalidRows}
             icon={<FaCheck />}
             label={m?.general.save}
           />

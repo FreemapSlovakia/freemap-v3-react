@@ -159,7 +159,8 @@ Fields are joined by the record-separator character `\x1e` (URL-encoded `%1E`). 
 | `I` | Marker icon spec — `poi:<name>` (bundled POI icon) or `fa:<name>` (Font Awesome) | `Ipoi%3Aanimal_shelter` → `poi:animal_shelter` (`%3A` = `:`) |
 | `L` | Label (drawing geometry only) | `LMy point` |
 | `P` | Properties — key/value pairs joined by the unit separator `\x1f` (URL-encoded `%1F`), drawing geometry only | `Pname%1FSitno%1Fele%1F1009` |
-| `Q` | Properties whose values are numbers, booleans or `null` — key/JSON pairs joined by `\x1f`, so they read back with their type (links only; a saved map's `lines` keep the plain shape) | `Qnumber%1F3%1Fflag%1Ftrue%1Fx%1Fnull` |
+| `M` | Keys the editor owns but can't always reproduce, written back verbatim: a point's `sym`, `marker-symbol` or `icon` that no icon of ours says (an unmapped Garmin symbol, a KML image URL), simplestyle `marker-size`, and a `title` beside the `name` — key/value pairs like `P`'s (links only) | `Msym%1FFlag, Blue` |
+| `Q` | Properties whose values aren't strings — numbers, booleans, `null`, objects and arrays — as key/JSON pairs joined by `\x1f`, so they read back with their type; JSON escapes both separators inside a string (links only; a saved map's `lines` keep the plain shape) | `Qnumber%1F3%1Fflag%1Ftrue%1Fx%1Fnull` |
 | `H` | Hole of the polygon at this position among the `line`/`polygon` params | `H0` |
 | `V` | Columns of the vertex values, joined by `\x1f` (lines only) | `Vele%1Ftime%1Fheart` |
 | `Y` | `fm:kind` — what the feature is (`track`, `route`, …) | `Ytrack` |

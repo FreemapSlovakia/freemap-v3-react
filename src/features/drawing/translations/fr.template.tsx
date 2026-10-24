@@ -15,9 +15,7 @@ const fr: DeepPartialWithRequiredObjects<DrawingMessages> = {
     properties: 'Propriétés',
     propertyKey: 'Nom',
     propertyValue: 'Valeur',
-    addProperty: 'Ajouter une propriété',
     removeProperty: 'Supprimer la propriété',
-    insertIntoLabel: "Insérer dans l'étiquette",
     showLabel: "Afficher l'étiquette",
     labelVisibility: {
       always: 'Toujours',
@@ -62,7 +60,6 @@ const fr: DeepPartialWithRequiredObjects<DrawingMessages> = {
   join: 'Joindre',
   split: 'Diviser',
   stopDrawing: 'Arrêter le dessin',
-  selectPointToJoin: 'Sélectionnez un point pour joindre les lignes',
   defProps: {
     menuItem: 'Définir le style par défaut',
     title: 'Réglages de style de dessin par défaut',
@@ -75,7 +72,6 @@ const fr: DeepPartialWithRequiredObjects<DrawingMessages> = {
     add: 'Ajouter',
   },
   reverse: 'Inverser le sens',
-  simplify: 'Simplifier',
   cutHole: 'Découper un trou',
   cutHoleHint: 'Dessinez le trou à l’intérieur de ce polygone.',
   makeHole: 'Transformer en trou du polygone englobant',

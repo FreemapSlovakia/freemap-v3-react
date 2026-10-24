@@ -11,7 +11,6 @@ import type {
 import { isoInstant } from '@shared/dateUtils.js';
 import {
   type DetailKind,
-  type DetailLink,
   detailKeysOf,
   emptyDetails,
   type FeatureDetails,
@@ -22,6 +21,8 @@ import {
   featureDataProps,
   mergeFeatureDataProps,
   ownLabel,
+  textRows,
+  typedDataTable,
   withEditedLabel,
 } from '@shared/featureProperties.js';
 import { isClosedGeometry } from '@shared/geoutils.js';
@@ -94,11 +95,13 @@ function lineType(feature: Feature): 'line' | 'polygon' {
 
 /**
  * A loaded feature as the properties editor shows it. One with no style of its
- * own shows the `defaults` it is drawn with.
+ * own shows the `defaults` it is drawn with. `typed` gives the table its row
+ * types, nulls and nested values; a batch edit has the text rows alone.
  */
 export function featureEditValues(
   feature: Feature,
   defaults: DrawingStyle,
+  typed = true,
 ): FeatureProperties {
   const { properties } = feature;
 
@@ -122,7 +125,9 @@ export function featureEditValues(
   const named =
     detailKind === 'point' || lineKind === 'track' || lineKind === 'route';
 
-  const data = featureDataProps(properties);
+  const { props: data, types } = typed
+    ? typedDataTable(properties)
+    : { props: featureDataProps(properties), types: undefined };
 
   return {
     label: ownLabel(properties) ?? String(properties?.['name'] ?? ''),
@@ -134,6 +139,7 @@ export function featureEditValues(
             ),
           )
         : data,
+    propTypes: types,
     color: (point ? pointStyle.color : lineStyle.color) ?? defaults.color,
     markerType: pointStyle.markerType ?? defaults.markerType,
     icon: pointStyle.icon ?? '',
@@ -165,7 +171,6 @@ export function featureEditValues(
         feature.geometry.type === 'Point'
           ? String(feature.geometry.coordinates[2] ?? '')
           : '',
-      links: readLinks(properties),
     },
   };
 }
@@ -177,20 +182,6 @@ export function detailKindOf(feature: Feature): DetailKind | undefined {
     : isTrackLine(feature)
       ? 'line'
       : undefined;
-}
-
-function readLinks(properties: GeoJsonProperties): DetailLink[] {
-  const links = properties?.['links'];
-
-  return Array.isArray(links)
-    ? links.flatMap((link) => {
-        const { href, text, ...rest } = (link ?? {}) as Record<string, unknown>;
-
-        return typeof href === 'string'
-          ? [{ ...rest, href, text: typeof text === 'string' ? text : '' }]
-          : [];
-      })
-    : [];
 }
 
 /**
@@ -249,25 +240,6 @@ function withDetails(
     }
   }
 
-  // Untouched, the links stay exactly as the file had them.
-  if (JSON.stringify(details.links) === JSON.stringify(readLinks(properties))) {
-    return out;
-  }
-
-  const links = details.links
-    .filter(({ href }) => href.trim())
-    .map(({ href, text, ...rest }) => ({
-      ...rest,
-      href: href.trim(),
-      ...(text.trim() && { text: text.trim() }),
-    }));
-
-  if (links.length) {
-    out['links'] = links;
-  } else {
-    delete out['links'];
-  }
-
   return out;
 }
 
@@ -278,7 +250,9 @@ export function editedProperties(
 ): GeoJsonProperties {
   const rows = values.props ?? {};
 
-  const merged = mergeFeatureDataProps(feature.properties, rows);
+  const types = values.propTypes;
+
+  const merged = mergeFeatureDataProps(feature.properties, rows, types);
 
   // Styled first: the line↔polygon switch decides what `{area}` answers.
   const styled = isPoint(feature.geometry)
@@ -323,10 +297,11 @@ export function editedProperties(
         )
       : channelled;
 
+  // A label reads what an import's would: no nulls or nested values.
   return withEditedLabel(
     { geometry: feature.geometry, properties: detailed },
     values.label.trim(),
-    rows,
+    types ? textRows(rows, types) : rows,
   );
 }
 

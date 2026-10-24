@@ -6,6 +6,8 @@ import {
 } from '@features/changesets/model/actions.js';
 import {
   fromWire,
+  VERBATIM_KEYS,
+  type Verbatim,
   type WireItem,
   type WireVertex,
 } from '@features/dataViewer/drawingWire.js';
@@ -146,6 +148,7 @@ import {
   type ColorizingMode,
   ColorizingModeSchema,
 } from '@shared/colorizers/index.js';
+import { isDataKey } from '@shared/featureProperties.js';
 import { isLanguage } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
@@ -1526,6 +1529,24 @@ function handleGallery(
   }
 }
 
+/**
+ * A pair field's pairs (`P`, `Q`, `M`). A trailing key with no value is dropped,
+ * so a truncated link invents nothing; so is `__proto__`, a prototype setter.
+ */
+function parsePairs(field: string): [string, string][] {
+  const parts = field.slice(1).split('\x1f');
+
+  const pairs: [string, string][] = [];
+
+  for (let i = 0; i + 1 < parts.length; i += 2) {
+    if (parts[i] !== '__proto__') {
+      pairs.push([parts[i]!, parts[i + 1]!]);
+    }
+  }
+
+  return pairs;
+}
+
 function parseColorAndLabel(m: string): ReturnType<typeof parseStyleFields> {
   // compatibility
   if (m.startsWith(',') || m.startsWith(';')) {
@@ -1546,7 +1567,8 @@ function parseColorAndLabel(m: string): ReturnType<typeof parseStyleFields> {
  * geometry params and the per-feature default-style params (`track-style`,
  * `objects-style`, `search-style`). Field codes: `L`abel, `C`olor,
  * `F`illColor, `W`idth, `D`ashArray, line`K`ap, line`J`oin, `S`hape
- * (markerType), `I`con, `P`roperties and their typed values (`Q`), and for
+ * (markerType), `I`con, `P`roperties and their typed values (`Q`), keys kept
+ * verbatim (`M`), and for
  * recorded data the `V`alue columns,
  * the import's `fm:kind` (`Y`) and its `_gpxType` (`G`). A leading separator is
  * tolerated. Only present fields are returned.
@@ -1563,6 +1585,7 @@ export function parseStyleFields(s: string): {
   icon?: string;
   props?: DrawingProps;
   typed?: Record<string, TypedValue>;
+  verbatim?: Verbatim;
   columns?: string[];
   kind?: string;
   gpxType?: string;
@@ -1598,43 +1621,33 @@ export function parseStyleFields(s: string): {
     } else if (field[0] === 'I') {
       out.icon = field.slice(1) || undefined;
     } else if (field[0] === 'P') {
-      // Key/value pairs, unit-separated. A trailing key with no value is
-      // dropped rather than read as empty, so a truncated link can't invent a
-      // property nobody wrote.
-      const parts = field.slice(1).split('\x1f');
-
-      const props: DrawingProps = {};
-
-      for (let i = 0; i + 1 < parts.length; i += 2) {
-        props[parts[i]!] = parts[i + 1]!;
-      }
-
-      out.props = normalizeProps(props);
+      out.props = normalizeProps(Object.fromEntries(parsePairs(field)));
     } else if (field[0] === 'Q') {
-      // As `P`, each value JSON; anything but a number, a boolean or null is
-      // skipped.
-      const parts = field.slice(1).split('\x1f');
-
-      const typed: Record<string, TypedValue> = {};
-
-      for (let i = 0; i + 1 < parts.length; i += 2) {
+      // Each value JSON; a string is `P`'s, and a key the editor owns
+      // (`coordinateProperties`, `freemap:*`) no datum, so both are skipped.
+      const typed = parsePairs(field).flatMap(([key, text]) => {
         try {
-          const value: unknown = JSON.parse(parts[i + 1]!);
+          const value: unknown = JSON.parse(text);
 
-          if (
-            value === null ||
-            typeof value === 'number' ||
-            typeof value === 'boolean'
-          ) {
-            typed[parts[i]!] = value;
-          }
+          return typeof value !== 'string' && isDataKey(key)
+            ? [[key, value as TypedValue] as const]
+            : [];
         } catch {
           // Not JSON: a hand-edited link.
+          return [];
         }
-      }
+      });
 
-      if (Object.keys(typed).length) {
-        out.typed = typed;
+      if (typed.length) {
+        out.typed = Object.fromEntries(typed);
+      }
+    } else if (field[0] === 'M') {
+      const verbatim = parsePairs(field).filter(([key]) =>
+        (VERBATIM_KEYS as readonly string[]).includes(key),
+      );
+
+      if (verbatim.length) {
+        out.verbatim = Object.fromEntries(verbatim) as Verbatim;
       }
     } else if (field[0] === 'V') {
       out.columns = field.slice(1).split('\x1f');
@@ -1983,7 +1996,7 @@ export function parseDrawingPointParam(value: string | undefined) {
     return undefined;
   }
 
-  const { label, color, markerType, icon, props, typed, kind } =
+  const { label, color, markerType, icon, props, typed, verbatim, kind } =
     parseColorAndLabel(m[4] ?? '');
 
   return {
@@ -1995,6 +2008,7 @@ export function parseDrawingPointParam(value: string | undefined) {
     icon,
     props,
     typed,
+    verbatim,
     kind,
   };
 }

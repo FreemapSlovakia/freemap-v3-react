@@ -275,6 +275,52 @@ describe('urlWire', () => {
       expect(roundTrip(track(properties)).properties).toMatchObject(properties);
     });
 
+    it('but nothing that would split its field', () => {
+      for (const properties of [
+        { name: 'a\x1fb' },
+        { note: 'a\x1eb' },
+        { 'a\x1fb': 1 },
+        JSON.parse('{"__proto__": "x"}'),
+        { stroke: 'red\x1eLHacked' },
+        {
+          'fm:kind': 'track',
+          coordinateProperties: { 'he\x1fart': [1, 2] },
+        },
+      ]) {
+        expect(urlWire(fc(track(properties)))).toBeUndefined();
+      }
+    });
+
+    it('but no typed value under a key the editor owns', () => {
+      const [back] = fromWire(
+        parseFeatureParams(
+          new URLSearchParams(
+            serializeQuery([
+              [
+                'line',
+                '48/17,48.1/17.1\x1eQcoordinateProperties\x1f{"times":"x"}\x1f__proto__\x1f{"a":1}\x1fok\x1f1',
+              ],
+            ]),
+          ),
+        ),
+      );
+
+      expect(back?.properties).not.toHaveProperty('coordinateProperties');
+
+      expect(Object.hasOwn(back?.properties ?? {}, '__proto__')).toBe(false);
+
+      expect(back?.properties).toMatchObject({ ok: 1 });
+    });
+
+    it('objects and arrays, separators inside them included', () => {
+      const properties = {
+        tags: ['a', 'b\x1ec'],
+        meta: { depth: { m: 3 }, note: 'x\x1fy' },
+      };
+
+      expect(roundTrip(track(properties)).properties).toMatchObject(properties);
+    });
+
     it('a style given in simplestyle alone', () => {
       expect(
         roundTrip(track({ stroke: '#ff0000', 'stroke-width': 5 })).properties,
@@ -289,6 +335,36 @@ describe('urlWire', () => {
       });
 
       expect(back.properties).toMatchObject({ sym: 'Summit' });
+    });
+
+    it('a title beside the name, and a marker size', () => {
+      expect(
+        roundTrip(track({ name: 'Ride', title: 'Ride' })).properties,
+      ).toMatchObject({ name: 'Ride', title: 'Ride' });
+
+      expect(
+        roundTrip({
+          type: 'Feature',
+          properties: { title: 'Hut', name: 'Hut', 'marker-size': 'large' },
+          geometry: { type: 'Point', coordinates: [17, 48] },
+        }).properties,
+      ).toMatchObject({ title: 'Hut', 'marker-size': 'large' });
+    });
+
+    it('a symbol no icon says, verbatim', () => {
+      const properties = {
+        name: 'Top',
+        sym: 'Flag, Blue',
+        icon: 'https://example.com/pin.png',
+      };
+
+      const back = roundTrip({
+        type: 'Feature',
+        properties,
+        geometry: { type: 'Point', coordinates: [17, 48] },
+      });
+
+      expect(back.properties).toMatchObject(properties);
     });
   });
 

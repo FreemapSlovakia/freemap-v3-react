@@ -21,34 +21,51 @@ export function serializeLatLon(point: LatLon | null): string {
 }
 
 /**
- * The data table as one style field: `P` followed by key/value pairs joined by
- * the unit separator, which nests inside the record-separated field list the
- * same way a unit nests inside a record. A key or value carrying either
- * separator can't be typed, and the URL encoder escapes both on the way out.
- *
- * Empty is no field at all, so a feature with no properties adds nothing.
+ * Whether text can stand in a field as written: it holds neither the record
+ * nor the unit separator, which delimit the fields and their pairs.
  */
-export function serializeDrawingProps(props: DrawingProps | undefined): string {
-  const entries = Object.entries(props ?? {});
-
-  return entries.length ? `\x1eP${entries.flat().join('\x1f')}` : '';
-}
-
-/** A data value `P` can't say as text: it would read back as a string. */
-export type TypedValue = number | boolean | null;
+export const fieldSafe = (text: string) =>
+  // biome-ignore lint/suspicious/noControlCharactersInRegex: the field separators
+  !/[\x1e\x1f]/.test(text);
 
 /**
- * Typed data values as `Q`: key/value pairs like `P`'s, each value as JSON so
- * it reads back with its type. That JSON holds neither separator.
+ * A field of key/value pairs: `code`, then the pairs joined by the unit
+ * separator; empty is no field. Keys and values must be {@link fieldSafe}.
+ */
+function serializePairs(
+  code: string,
+  record: Readonly<Record<string, string>> | undefined,
+): string {
+  const entries = Object.entries(record ?? {});
+
+  return entries.length ? `\x1e${code}${entries.flat().join('\x1f')}` : '';
+}
+
+/** The data table, as `P`. */
+export function serializeDrawingProps(props: DrawingProps | undefined): string {
+  return serializePairs('P', props);
+}
+
+/** A data value `P` can't say as text: any JSON value but a string. */
+export type TypedValue = number | boolean | null | object;
+
+/**
+ * Typed data values as `Q`, each as JSON so it reads back with its type. JSON
+ * escapes both separators inside a string.
  */
 export function serializeTypedProps(
   typed: Readonly<Record<string, TypedValue>> | undefined,
 ): string {
-  const entries = Object.entries(typed ?? {});
-
-  return entries.length
-    ? `\x1eQ${entries.flatMap(([key, value]) => [key, JSON.stringify(value)]).join('\x1f')}`
-    : '';
+  return serializePairs(
+    'Q',
+    typed &&
+      Object.fromEntries(
+        Object.entries(typed).map(([key, value]) => [
+          key,
+          JSON.stringify(value),
+        ]),
+      ),
+  );
 }
 
 /** A point's provenance stamp, as a field: `Y` the import's `fm:kind`. */
@@ -61,6 +78,7 @@ export function serializeDrawingPoint(
     ele?: number;
     kind?: string;
     typed?: Record<string, TypedValue>;
+    verbatim?: Record<string, string>;
   },
 ): string {
   return `${serializeLatLon(point.coords)}${
@@ -73,7 +91,7 @@ export function serializeDrawingPoint(
       : point.markerType === 'ring'
         ? '\x1eSr'
         : ''
-  }${point.icon ? `\x1eI${point.icon}` : ''}${serializeDrawingProps(point.props)}${serializeTypedProps(point.typed)}${serializeKind(point.kind)}`;
+  }${point.icon ? `\x1eI${point.icon}` : ''}${serializeDrawingProps(point.props)}${serializeTypedProps(point.typed)}${serializePairs('M', point.verbatim)}${serializeKind(point.kind)}`;
 }
 
 /**
@@ -135,6 +153,7 @@ export function serializeDrawingLine(
     kind?: string;
     gpxType?: string;
     typed?: Record<string, TypedValue>;
+    verbatim?: Record<string, string>;
   },
   holeOf?: number,
 ): string {
@@ -158,7 +177,7 @@ export function serializeDrawingLine(
       : line.lineJoin === 'bevel'
         ? '\x1eJb'
         : ''
-  }${holeOf === undefined ? '' : `\x1eH${holeOf}`}${serializeDrawingProps(line.props)}${serializeTypedProps(line.typed)}${
+  }${holeOf === undefined ? '' : `\x1eH${holeOf}`}${serializeDrawingProps(line.props)}${serializeTypedProps(line.typed)}${serializePairs('M', line.verbatim)}${
     line.columns?.length ? `\x1eV${line.columns.join('\x1f')}` : ''
   }${serializeKind(line.kind)}${line.gpxType === undefined ? '' : `\x1eG${line.gpxType}`}`;
 }

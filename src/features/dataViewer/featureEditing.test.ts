@@ -38,7 +38,10 @@ describe('a track’s details', () => {
   it('shows them as named fields, not as table rows', () => {
     const values = featureEditValues(recorded(), style);
 
-    expect(values.props).toEqual({ color: 'red' });
+    expect(values.props).toEqual({
+      color: 'red',
+      links: '[{"href":"https://example.com","text":"Ride","type":null}]',
+    });
 
     expect(values.details).toMatchObject({ desc: 'Morning ride', number: '3' });
   });
@@ -54,7 +57,6 @@ describe('a track’s details', () => {
         ...values.details!,
         desc: '',
         number: '4',
-        links: [...values.details!.links, { href: 'https://x.test', text: '' }],
       },
     });
 
@@ -63,10 +65,7 @@ describe('a track’s details', () => {
     expect(properties).toMatchObject({
       number: 4,
       color: 'red',
-      links: [
-        { href: 'https://example.com', text: 'Ride', type: null },
-        { href: 'https://x.test' },
-      ],
+      links: [{ href: 'https://example.com', text: 'Ride', type: null }],
     });
   });
 
@@ -155,6 +154,49 @@ describe('a waypoint’s details', () => {
     expect(edited?.['time']).toBe(
       new Date('2026-06-01T12:00').toISOString().replace('.000Z', 'Z'),
     );
+  });
+});
+
+describe('typed rows', () => {
+  const style = makeDrawingStyle('#ff0000', 4);
+
+  it('leave nulls and nested values exactly as they were when untouched', () => {
+    const feature = line({ x: null, meta: { a: [1, 2] }, n: 4 });
+
+    const values = featureEditValues(feature, style);
+
+    expect(values.propTypes).toMatchObject({ x: 'null', meta: 'json' });
+
+    expect(editedProperties(feature, values)).toMatchObject(
+      feature.properties!,
+    );
+  });
+
+  it('show a plain line’s links as a JSON row, edited there', () => {
+    const feature = line({ links: [{ href: 'https://a.test' }] });
+
+    const values = featureEditValues(feature, style);
+
+    expect(values.props).toEqual({ links: '[{"href":"https://a.test"}]' });
+
+    expect(
+      editedProperties(feature, {
+        ...values,
+        props: { links: '[{"href":"https://b.test"}]' },
+      }),
+    ).toMatchObject({ links: [{ href: 'https://b.test' }] });
+  });
+
+  it('keep a track’s links exactly when untouched', () => {
+    const links = [{ href: 'https://example.com', text: ' Ride ' }];
+
+    const feature = line({ 'fm:kind': 'track', _gpxType: 'trk', links });
+
+    const values = featureEditValues(feature, style);
+
+    expect(values.propTypes).toMatchObject({ links: 'json' });
+
+    expect(editedProperties(feature, values)).toMatchObject({ links });
   });
 });
 

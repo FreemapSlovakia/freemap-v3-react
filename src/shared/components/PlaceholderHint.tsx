@@ -7,13 +7,32 @@ type Props = {
   /**
    * Writes an expression into the field the hint is about. Only the computed
    * keys are offered: a `{p:key}` here is an example naming a property the
-   * feature may not have, and the ones it does have have buttons of their own.
+   * feature may not have.
    */
   onInsert?: (expression: string) => void;
 };
 
 /** An unbroken run of `{token}` and `[optional]` parts, as written in a label. */
 const EXPRESSION = /((?:\{[^{}]*\}|\[[^[\]]*\])+)/;
+
+/** An expression the user clicks to write it into the field. */
+export function InsertToken({
+  expression,
+  onInsert,
+}: {
+  expression: string;
+  onInsert: (expression: string) => void;
+}): ReactNode {
+  return (
+    <button
+      type="button"
+      className={classes.token}
+      onClick={() => onInsert(expression)}
+    >
+      <code>{expression}</code>
+    </button>
+  );
+}
 
 /**
  * Renders a hint whose label expressions are set in `<code>`, so every locale
@@ -28,14 +47,7 @@ export function PlaceholderHint({ text, onInsert }: Props): ReactNode {
     }
 
     return onInsert && !part.includes(`{${PROPERTY_PREFIX}`) ? (
-      <button
-        key={i}
-        type="button"
-        className={classes.token}
-        onClick={() => onInsert(part)}
-      >
-        <code>{part}</code>
-      </button>
+      <InsertToken key={i} expression={part} onInsert={onInsert} />
     ) : (
       <code key={i}>{part}</code>
     );

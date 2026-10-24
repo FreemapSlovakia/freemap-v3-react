@@ -1,11 +1,10 @@
-/** The GPX `<link>`, as the reader keeps it. */
-export type DetailLink = { href: string; text: string; type?: unknown };
+import { parseDecimal } from './numberValidator.js';
 
 /**
  * What GPX says of a track, a route or a waypoint besides its geometry, as
  * typed. Each kind uses its own keys (`LINE_DETAIL_KEYS`, `POINT_DETAIL_KEYS`);
  * `ele` is a point's elevation, which lives in its coordinate, not its
- * properties. `links` is kept for a plain line too, as the table cannot show it.
+ * properties. `links` is an ordinary JSON row of the table.
  */
 export type FeatureDetails = {
   desc: string;
@@ -15,7 +14,6 @@ export type FeatureDetails = {
   number: string;
   time: string;
   ele: string;
-  links: DetailLink[];
 };
 
 /** A track's or a route's details shown as named fields, not as table rows. */
@@ -48,7 +46,7 @@ export const detailKeysOf = (kind: DetailKind): readonly DetailKey[] =>
 export const isDetailKey = (key: string, kind: DetailKind): key is DetailKey =>
   (detailKeysOf(kind) as readonly string[]).includes(key);
 
-/** No details at all: every field empty, no links. */
+/** No details at all: every field empty. */
 export const emptyDetails = (): FeatureDetails => ({
   desc: '',
   cmt: '',
@@ -57,7 +55,6 @@ export const emptyDetails = (): FeatureDetails => ({
   number: '',
   time: '',
   ele: '',
-  links: [],
 });
 
 /** GPX `<number>` is a non-negative integer; empty means none. */
@@ -66,4 +63,4 @@ export const isValidDetailNumber = (text: string): boolean =>
 
 /** An elevation in metres; empty means none. */
 export const isValidDetailEle = (text: string): boolean =>
-  text.trim() === '' || Number.isFinite(Number(text.trim().replace(',', '.')));
+  text.trim() === '' || parseDecimal(text) !== undefined;

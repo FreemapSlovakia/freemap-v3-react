@@ -6,9 +6,6 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   vertex: { channels: {} },
-  style: {
-    title: 'Standardstil',
-  },
   split: {
     action: 'Teilen',
     pick: 'Klicke auf die Spur an der Trennstelle',
@@ -102,8 +99,6 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   upload: 'Hochladen',
   unnamedTrack: ({ n }) => `Track ${n}`,
-  convertLossWarning:
-    'Beim Umwandeln in eine Zeichnung wird der Track ersetzt und seine aufgezeichneten Daten (Höhe, Herzfrequenz, Geschwindigkeit, Zeit) verworfen.',
   simplifyAll: 'Alles vereinfachen',
   moreInfo: 'Mehr Infos',
   saveAsMap: 'In meinen Karten speichern',

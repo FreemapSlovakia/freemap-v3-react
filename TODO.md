@@ -319,13 +319,12 @@ can't be made exclusive + optics). Keep the free/open core intact.
 
 Bugs and feature requests are issues under `area: drawing`.
 
-- [ ] **No coverage for the hole wire formats.** The reducer's linking, cascade
-      delete and stale-index tolerance are tested, but nothing exercises the
-      round-trips the design leans on: URL `H` field ↔ store, document
-      `holeOf` ↔ `holeOfId` (and the my-maps fingerprint agreeing across both),
-      the GeoJSON interior rings, the GPX `fm:polygonId` / `fm:holeOf` pairing,
-      and KML `innerBoundaryIs`. These are pure functions over small fixtures —
-      cheap to pin, and the place a regression would go unnoticed longest.
+- [ ] **No coverage for holes in the file formats.** The link's `H` field ↔
+      polygon rings is pinned (`drawingWire.test.ts`); nothing exercises the GPX
+      `fm:polygonId` / `fm:holeOf` pairing, KML `innerBoundaryIs`, or a saved
+      map's `holeOf` agreeing with its fingerprint. Pure functions over small
+      fixtures — cheap to pin, and where a regression would go unnoticed
+      longest.
 
 ## Track viewer: generic geodata vs. recorded tracks
 
@@ -373,12 +372,10 @@ gpxUrl }`, which are in every saved map on the server;
       discriminated `mode: { type: 'split'; … } | { type: 'join'; … } | null`
       makes it structural, and a `useTrackModes` hook then gives the map one
       `{ armed, handleClick, handleMove, handleOut, halos }` instead of a
-      per-mode fan-out. Do it when a third mode lands, or sooner. Two details
+      per-mode fan-out. Do it when a third mode lands, or sooner. One detail
       to fold in: `joinWith.featureIndex` duplicates `main.selection.id` (pass
       `selectedIndex` in, as `useTrackSplit` already does — but note the
-      selection is cleared by paths that don't dispatch `selectFeature`), and
-      the drawing/dataViewer slices spell "not armed" as `undefined` vs `null`,
-      which is why the Delete guard reads as two conditions.
+      selection is cleared by paths that don't dispatch `selectFeature`).
 
 ## Drawing + data viewer merge: one collection, storage by size
 
@@ -401,10 +398,10 @@ editor; where it is stored follows from its size, not from the tool that made it
       `fm:kind`/`_gpxType`, a point takes `/ele`.
 - [ ] **One index remap for the collection.** Feature indices are shifted in
       `replaceFeature`, by hand in join, in the main reducer for hole edits,
-      in `deleteProcessor`, and cleaned up after by the stale-selection
-      processor; split and explode don't move `main.selection` at all. Make
-      `replaceFeature` the only length-changing primitive and apply its
-      `old → new | null` map to every index holder, the selection included.
+      in `deleteProcessor` and `dataViewerSplitSelectionProcessor`, and cleaned
+      up after by the stale-selection processor. Make `replaceFeature` the only
+      length-changing primitive and apply its `old → new | null` map to every
+      index holder, the selection included.
 - [ ] **Per-feature caches on the hot path.** A drag move remounts every layer
       (`DataViewerResult`'s Fragment is keyed on the collection's revision),
       and each edit re-hashes the whole collection (`snapshotKey`, the
@@ -415,22 +412,12 @@ editor; where it is stored follows from its size, not from the tool that made it
       and `getMapContentParts` each asking; and turn an old build's
       `tr: true` entry into a string key once, in `handleFeatures`, so the
       store and the restore see one format.
-- [ ] **Leftovers.** Unused message keys (`general.convertTo`,
-      `convertAllTo`, `convertLossWarning`, `tools.measurement`,
-      `mapFeaturesExport.what.import`, `drawing.selectPointToJoin`,
-      `drawing.simplify`, `dataViewer.style.title`); the SEO hub page
-      still says "Drawing and measurement" (`sitemap-generator/hubs.ts`).
 - [ ] **Chart identity across reloads.** `elevation-chart=track-viewer` reopens
       on the first line, not the one charted; naming the line by index in the
       param would fix it.
 - [ ] **A link with both `track-uid=` and drawing params** loads the track
       and ignores the params; drawing beside such a track makes the whole
       collection local.
-- [ ] **Split the collection between link and snapshot.** One feature the link
-      can't say (a MultiPolygon, a text channel, an array property such as
-      GPX `links`) keeps every feature out of it, so a shared link or embed
-      loses even the drawn markers. Put what fits in the link and the rest in
-      a snapshot, merged in order on load.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 

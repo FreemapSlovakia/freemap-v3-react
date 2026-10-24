@@ -1,3 +1,4 @@
+import { KML_IMPORT_KEYS, withoutKeys } from '@shared/featureProperties.js';
 import * as toGeoJSON from '@tmcw/togeojson';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { extractKmlFromKmz } from './kmz.js';
@@ -161,6 +162,20 @@ export function normalizeName<G extends Geometry | null>(
     : { ...feature, properties: { ...props, name: label } };
 }
 
+/** A KML import without the keys that mean nothing once imported. */
+function withoutKmlKeys<G extends Geometry | null>(
+  fc: FeatureCollection<G>,
+): FeatureCollection<G> {
+  return {
+    ...fc,
+    features: fc.features.map((f) =>
+      KML_IMPORT_KEYS.some((key) => f.properties?.[key] !== undefined)
+        ? { ...f, properties: withoutKeys(f.properties, KML_IMPORT_KEYS) }
+        : f,
+    ),
+  };
+}
+
 // The single finalizer every format funnels through: drop null-geometry
 // features (togeojson can emit them), normalize labels and the times spelling,
 // and stamp each feature's source provenance (`fm:kind`). Returns null when
@@ -224,7 +239,7 @@ export function parseDataFile(
               : 'gpx';
 
   if (format === 'kml') {
-    return toGeojson(toGeoJSON.kml(doc), 'kml');
+    return toGeojson(withoutKmlKeys(toGeoJSON.kml(doc)), 'kml');
   }
 
   if (format === 'tcx') {

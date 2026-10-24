@@ -1,8 +1,11 @@
 import { setActiveModal } from '@app/store/actions.js';
+import type { PropRow } from '@features/drawing/components/DrawingPropsEditor.js';
 import { drawingAddRecentColors } from '@features/drawing/model/actions/drawingPointActions.js';
 import { FeaturePropertiesModal } from '@shared/components/FeaturePropertiesModal.js';
 import { detailKeysOf } from '@shared/featureDetails.js';
+import type { PropTypes } from '@shared/featureProperties.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { parseDecimal } from '@shared/numberValidator.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Feature, GeoJsonProperties, Position } from 'geojson';
 import { type ReactElement, useEffect } from 'react';
@@ -44,11 +47,9 @@ function pointElevation(
 
   const [lon, lat, ele] = feature.geometry.coordinates;
 
-  const trimmed = text.trim().replace(',', '.');
+  const typed = text.trim() === '' ? undefined : parseDecimal(text);
 
-  const typed = trimmed === '' ? undefined : Number(trimmed);
-
-  if (typed !== undefined && !Number.isFinite(typed)) {
+  if (text.trim() !== '' && typed === undefined) {
     return undefined;
   }
 
@@ -59,13 +60,33 @@ function pointElevation(
       : [lon, lat, typed];
 }
 
+/** Each type a save gave a property row it didn't have; a new row was text. */
+function trackTypeChanges(
+  before: PropTypes | undefined,
+  rows: readonly PropRow[],
+) {
+  // By the row a key was opened as, so renaming a row is no type set.
+  const changed = new Set(
+    rows.flatMap(([key, , origin, type = 'text']) =>
+      !key.trim() ||
+      type === (origin === undefined ? 'text' : (before?.[origin] ?? 'text'))
+        ? []
+        : [type],
+    ),
+  );
+
+  for (const type of changed) {
+    trackMatomo(['trackEvent', 'DataViewer', 'setPropertyType', type]);
+  }
+}
+
 /** What a save changed of a feature's GPX details, and a line's kind and channels. */
 function trackLineEdits(feature: Feature, properties: GeoJsonProperties) {
   const detailKind = detailKindOf(feature);
 
   if (
     detailKind &&
-    [...detailKeysOf(detailKind), 'links'].some(
+    detailKeysOf(detailKind).some(
       (key) => !sameValue(feature.properties?.[key], properties?.[key]),
     )
   ) {
@@ -137,11 +158,13 @@ export default function DataViewerPropertiesModal({
       ? feature.geometry.coordinates[0]
       : undefined;
 
+  const initial = featureEditValues(feature, defaults);
+
   return (
     <FeaturePropertiesModal
       show={show}
       kind={isPoint(feature.geometry) ? 'point' : 'line-poly'}
-      initial={featureEditValues(feature, defaults)}
+      initial={initial}
       channelOptions={
         isTrackLine(feature)
           ? [
@@ -162,7 +185,7 @@ export default function DataViewerPropertiesModal({
         (feature.geometry.type === 'LineString' &&
           feature.geometry.coordinates.length > 2)
       }
-      onSave={(values) => {
+      onSave={(values, { rows }) => {
         if (ring && runDeveloperCommand(values.label, ring, dispatch)) {
           return true;
         }
@@ -170,6 +193,10 @@ export default function DataViewerPropertiesModal({
         const properties = editedProperties(feature, values);
 
         trackLineEdits(feature, properties);
+
+        if (values.propTypes) {
+          trackTypeChanges(initial.propTypes, rows);
+        }
 
         // One action, so one history step: a waypoint's elevation is its
         // coordinate's, not a property.

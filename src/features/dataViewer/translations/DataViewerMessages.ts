@@ -7,7 +7,6 @@ export type DataViewerMessages = {
   upload: string;
   /** Label for a selected line without one: its kind, numbered among its kind. */
   unnamedTrack: (props: { n: number; kind: LineKind }) => string;
-  convertLossWarning: string;
   /** The tool menu's simplification, which takes every loaded feature. */
   simplifyAll: string;
   moreInfo: string;
@@ -49,9 +48,6 @@ export type DataViewerMessages = {
       battery: string;
       gsmSignal: string;
     };
-  };
-  style: {
-    title: string;
   };
   /** Cutting a track in two, or into the segments a paused recording left. */
   split: {

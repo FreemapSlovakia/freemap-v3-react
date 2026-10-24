@@ -5,9 +5,6 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  style: {
-    title: 'Výchozí styl',
-  },
   split: {
     action: 'Rozdělit',
     pick: 'Klikněte na trasu v místě rozdělení',
@@ -83,8 +80,6 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   upload: 'Nahrát',
   unnamedTrack: ({ n, kind }) =>
     `${kind === 'track' ? 'Záznam trasy' : kind === 'route' ? 'Plánovaná trasa' : 'Čára'} ${n}`,
-  convertLossWarning:
-    'Převod na kresbu nahradí trasu a zahodí její zaznamenaná data (nadmořská výška, tep, rychlost, čas).',
   simplifyAll: 'Zjednodušit vše',
   moreInfo: 'Více info',
   saveAsMap: 'Uložit do mých map',

@@ -8,8 +8,6 @@ const en: DataViewerMessages = {
   upload: 'Upload',
   unnamedTrack: ({ n, kind }) =>
     `${kind === 'track' ? 'Recorded track' : kind === 'route' ? 'Planned route' : 'Line'} ${n}`,
-  convertLossWarning:
-    'Converting to a drawing replaces the track and discards its recorded data (elevation, heart rate, speed, time).',
   simplifyAll: 'Simplify all',
   moreInfo: 'More info',
   saveAsMap: 'Save to my maps',
@@ -48,9 +46,6 @@ const en: DataViewerMessages = {
       battery: 'Battery',
       gsmSignal: 'GSM signal',
     },
-  },
-  style: {
-    title: 'Default style',
   },
   split: {
     action: 'Split',

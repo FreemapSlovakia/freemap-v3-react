@@ -49,10 +49,6 @@ export type DrawingMessages = {
     sourceHint: string;
     number: string;
     numberInvalid: string;
-    links: string;
-    linkText: string;
-    addLink: string;
-    removeLink: string;
     /** How many of the details have a value, beside the collapsed panel's title. */
     detailsFilled: (props: { n: number }) => string;
     /** The line's per-point channels: heart rate, time, … */
@@ -71,13 +67,19 @@ export type DrawingMessages = {
     lineJoinBevel: string;
     /** Heading over the feature's own data table. */
     properties: string;
+    /** Leads the property names a label can use, under the label field. */
+    labelProperties: string;
     /** Column placeholders for one row of it. */
     propertyKey: string;
     propertyValue: string;
-    addProperty: string;
+    propertyTypeText: string;
+    propertyTypeNumber: string;
+    propertyTypeMultiline: string;
+    propertyKeyMissing: string;
+    propertyKeyDuplicate: string;
+    propertyNumberInvalid: string;
+    propertyJsonInvalid: string;
     removeProperty: string;
-    /** Writes `{key}` into the label being edited. */
-    insertIntoLabel: string;
     showLabel: string;
     labelVisibility: Record<LabelVisibility, string>;
     /** Marks a field whose value differs between features edited together. */
@@ -101,7 +103,6 @@ export type DrawingMessages = {
   join: string;
   continue: string;
   stopDrawing: string;
-  selectPointToJoin: string;
   defProps: {
     menuItem: string;
     title: string;
@@ -115,7 +116,6 @@ export type DrawingMessages = {
     add: string;
   };
   reverse: string;
-  simplify: string;
   cutHole: string;
   cutHoleHint: string;
   makeHole: string;

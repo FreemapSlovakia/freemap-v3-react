@@ -6,9 +6,6 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   vertex: { channels: {} },
-  style: {
-    title: 'Alapértelmezett stílus',
-  },
   split: {
     action: 'Felosztás',
     pick: 'Kattintson a nyomvonalra a felosztás helyén',
@@ -42,8 +39,6 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Feltöltés',
   unnamedTrack: ({ n }) => `${n}. nyomvonal`,
-  convertLossWarning:
-    'A rajzzá alakítás lecseréli a nyomvonalat, és eldobja a rögzített adatait (magasság, pulzusszám, sebesség, idő).',
   simplifyAll: 'Összes egyszerűsítése',
   moreInfo: 'További információ',
   saveAsMap: 'Mentés a térképeim közé',

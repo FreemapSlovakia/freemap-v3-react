@@ -9,8 +9,6 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   upload: 'Nahrať',
   unnamedTrack: ({ n, kind }) =>
     `${kind === 'track' ? 'Záznam trasy' : kind === 'route' ? 'Plánovaná trasa' : 'Čiara'} ${n}`,
-  convertLossWarning:
-    'Prevod na kresbu nahradí trasu a zahodí jej zaznamenané údaje (nadmorská výška, tep, rýchlosť, čas).',
   simplifyAll: 'Zjednodušiť všetko',
   moreInfo: 'Viac info',
   saveAsMap: 'Uložiť do mojich máp',
@@ -47,9 +45,6 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
       battery: 'Batéria',
       gsmSignal: 'Signál GSM',
     },
-  },
-  style: {
-    title: 'Predvolený štýl',
   },
   split: {
     action: 'Rozdeliť',

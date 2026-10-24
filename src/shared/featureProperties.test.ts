@@ -4,6 +4,9 @@ import {
   defaultLabel,
   featureLabel,
   mergeFeatureDataProps,
+  textRows,
+  typedDataTable,
+  typedValue,
   withEditedLabel,
   withRenderedLabel,
 } from './featureProperties.js';
@@ -334,5 +337,78 @@ describe('an edited data table', () => {
 
   it('never guesses a type for a new row', () => {
     expect(mergeFeatureDataProps({}, { beds: '12' })).toEqual({ beds: '12' });
+  });
+});
+
+describe('a typed data table', () => {
+  const properties = {
+    name: 'Hut',
+    note: 'ok',
+    beds: 12,
+    open: false,
+    x: null,
+    tags: ['a'],
+  };
+
+  it('shows every datum with its type', () => {
+    expect(typedDataTable(properties)).toEqual({
+      props: { note: 'ok', beds: '12', open: 'false', x: '', tags: '["a"]' },
+      types: {
+        note: 'text',
+        beds: 'number',
+        open: 'false',
+        x: 'null',
+        tags: 'json',
+      },
+    });
+  });
+
+  it('writes each row as its type, and drops a removed one', () => {
+    expect(
+      mergeFeatureDataProps(
+        properties,
+        { note: '7', beds: ' 13', open: '', tags: '{"b":1}' },
+        { note: 'text', beds: 'number', open: 'true', tags: 'json' },
+      ),
+    ).toEqual({ name: 'Hut', note: '7', beds: 13, open: true, tags: { b: 1 } });
+  });
+
+  it('gives a label the text an import’s would read', () => {
+    expect(
+      textRows(
+        { beds: ' 13', open: 'x', x: '', tags: '[]' },
+        { beds: 'number', open: 'true', x: 'null', tags: 'json' },
+      ),
+    ).toEqual({ beds: '13', open: 'true' });
+  });
+});
+
+describe('a typed row', () => {
+  it('reads a number in decimal only, with a point', () => {
+    expect(
+      ['12', ' 1.5 ', '-.5e2', '0x10', '0b11', '', '1,000'].map((text) =>
+        typedValue(text, 'number'),
+      ),
+    ).toEqual([12, 1.5, -50, undefined, undefined, undefined, undefined]);
+  });
+
+  it('as JSON may hold a string, which a text table keeps', () => {
+    expect(textRows({ ref: '"6"' }, { ref: 'json' })).toEqual({ ref: '6' });
+  });
+
+  it('from our own table is never taken for a null or a nested value', () => {
+    expect(
+      typedDataTable({
+        note: null,
+        tags: [1],
+        'freemap:props': { note: '', tags: '[1]' },
+      }).types,
+    ).toEqual({ note: 'text', tags: 'text' });
+  });
+
+  it('from our own table is multi-line where its text runs to two lines', () => {
+    expect(typedDataTable({ 'freemap:props': { note: 'a\nb' } }).types).toEqual(
+      { note: 'multiline' },
+    );
   });
 });

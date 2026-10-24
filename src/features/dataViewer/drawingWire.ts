@@ -14,9 +14,11 @@ import { isoInstant } from '@shared/dateUtils.js';
 import {
   featureDataProps,
   isDataKey,
+  KML_IMPORT_KEYS,
   mergeFeatureDataProps,
   ownLabel,
   withEditedLabel,
+  withoutKeys,
 } from '@shared/featureProperties.js';
 import { isClosedGeometry, lineSegments } from '@shared/geoutils.js';
 import {
@@ -27,7 +29,7 @@ import {
   pointStyleFromProperties,
   pointStyleToProperties,
 } from '@shared/styleFromProperties.js';
-import type { TypedValue } from '@shared/urlSerialization.js';
+import { fieldSafe, type TypedValue } from '@shared/urlSerialization.js';
 import type { Feature, GeoJsonProperties, Geometry, Position } from 'geojson';
 import { COORD_PROPERTIES, readChannels, TIMES } from './trackChannels.js';
 import type { TrackLine } from './trackSelection.js';
@@ -51,15 +53,34 @@ export type WireLine = Omit<Line, 'points'> & {
   /** `fm:kind` and togeojson's `_gpxType`, as an import stamped them. */
   kind?: string;
   gpxType?: string;
-  /** Data values that are numbers, booleans or null; `props` has the text. */
+  /** Data values that aren't strings; `props` has the text. */
   typed?: Record<string, TypedValue>;
+  verbatim?: Verbatim;
 };
 
 export type WirePoint = DrawingPoint & {
   ele?: number;
   kind?: string;
   typed?: Record<string, TypedValue>;
+  verbatim?: Verbatim;
 };
+
+/**
+ * Keys the editor owns yet can't always reproduce — a symbol no icon of ours
+ * says, simplestyle's `marker-size`, a `title` beside the `name` — which the
+ * link then carries as they are (`M`).
+ */
+export const VERBATIM_KEYS = [
+  'sym',
+  'marker-symbol',
+  'icon',
+  'marker-size',
+  'title',
+] as const;
+
+export type VerbatimKey = (typeof VERBATIM_KEYS)[number];
+
+export type Verbatim = Partial<Record<VerbatimKey, string>>;
 
 /** The table a label template reads: the text values and the typed ones. */
 function labelTable(
@@ -71,7 +92,9 @@ function labelTable(
         ...props,
         ...Object.fromEntries(
           Object.entries(typed).flatMap(([key, value]) =>
-            value === null ? [] : [[key, String(value)]],
+            value === null || typeof value === 'object'
+              ? []
+              : [[key, String(value)]],
           ),
         ),
       }
@@ -143,23 +166,27 @@ export function pointToFeature(point: WirePoint): Feature {
   return {
     type: 'Feature',
     geometry,
-    properties: labelled(
-      geometry,
-      {
-        ...pointStyleToProperties(
-          mergeFeatureDataProps({}, point.props ?? {}),
-          {
-            color: point.color,
-            markerType: point.markerType,
-            icon: point.icon,
-          },
-        ),
-        ...point.typed,
-        ...(point.kind !== undefined && { 'fm:kind': point.kind }),
-      },
-      point.label,
-      labelTable(point.props, point.typed),
-    ),
+    properties: {
+      ...labelled(
+        geometry,
+        {
+          ...pointStyleToProperties(
+            mergeFeatureDataProps({}, point.props ?? {}),
+            {
+              color: point.color,
+              markerType: point.markerType,
+              icon: point.icon,
+            },
+          ),
+          ...point.typed,
+          ...(point.kind !== undefined && { 'fm:kind': point.kind }),
+        },
+        point.label,
+        labelTable(point.props, point.typed),
+      ),
+      // After the label, which would take a `title` for one of its own.
+      ...point.verbatim,
+    },
   };
 }
 
@@ -229,28 +256,35 @@ export function lineToFeature(line: WireLine, holes: WireLine[] = []): Feature {
   return {
     type: 'Feature',
     geometry,
-    properties: labelled(
-      geometry,
-      {
-        ...lineStyleToProperties(mergeFeatureDataProps({}, line.props ?? {}), {
-          type: line.type,
-          color: line.color,
-          fillColor: line.fillColor,
-          width: line.width,
-          dashArray: line.dashArray,
-          lineCap: line.lineCap,
-          lineJoin: line.lineJoin,
-        }),
-        ...(Object.keys(channels).length > 0 && {
-          [COORD_PROPERTIES]: channels,
-        }),
-        ...line.typed,
-        ...(line.kind !== undefined && { 'fm:kind': line.kind }),
-        ...(line.gpxType !== undefined && { _gpxType: line.gpxType }),
-      },
-      line.label,
-      labelTable(line.props, line.typed),
-    ),
+    properties: {
+      ...labelled(
+        geometry,
+        {
+          ...lineStyleToProperties(
+            mergeFeatureDataProps({}, line.props ?? {}),
+            {
+              type: line.type,
+              color: line.color,
+              fillColor: line.fillColor,
+              width: line.width,
+              dashArray: line.dashArray,
+              lineCap: line.lineCap,
+              lineJoin: line.lineJoin,
+            },
+          ),
+          ...(Object.keys(channels).length > 0 && {
+            [COORD_PROPERTIES]: channels,
+          }),
+          ...line.typed,
+          ...(line.kind !== undefined && { 'fm:kind': line.kind }),
+          ...(line.gpxType !== undefined && { _gpxType: line.gpxType }),
+        },
+        line.label,
+        labelTable(line.props, line.typed),
+      ),
+      // After the label, which would take a `title` for one of its own.
+      ...line.verbatim,
+    },
   };
 }
 
@@ -262,7 +296,7 @@ function labelOf(properties: GeoJsonProperties): string | undefined {
 
 /**
  * The data values the text table can't type: numbers and booleans, which it
- * has as text, and nulls, which it leaves out.
+ * has as text, and nulls and nested values, which it leaves out.
  */
 function typedOf(
   properties: GeoJsonProperties,
@@ -271,7 +305,9 @@ function typedOf(
 
   const typed = Object.fromEntries(
     Object.entries(properties ?? {}).flatMap(([key, value]) =>
-      (value === null && isDataKey(key) && !Object.hasOwn(table, key)) ||
+      ((value === null || typeof value === 'object') &&
+        isDataKey(key) &&
+        !Object.hasOwn(table, key)) ||
       ((typeof value === 'number' || typeof value === 'boolean') &&
         table[key] === String(value))
         ? [[key, value]]
@@ -297,6 +333,27 @@ function propsOf(
 }
 
 /**
+ * The verbatim keys the feature holds that its style doesn't reproduce: for a
+ * point, an unmapped Garmin `sym` or a KML image URL among them.
+ */
+function verbatimOf(
+  properties: GeoJsonProperties,
+  point: boolean,
+): Verbatim | undefined {
+  const style = new Set(point ? pointStyleKeys(properties) : []);
+
+  const verbatim = Object.fromEntries(
+    VERBATIM_KEYS.flatMap((key) => {
+      const value = properties?.[key];
+
+      return typeof value === 'string' && !style.has(key) ? [[key, value]] : [];
+    }),
+  );
+
+  return Object.keys(verbatim).length ? verbatim : undefined;
+}
+
+/**
  * Keys that say only what the resolved style already does: an `icon` that is
  * an icon spec (a KML image URL is data), and a Garmin `sym` that maps to an
  * icon and back to itself — an unmapped one would be lost.
@@ -318,19 +375,6 @@ function pointStyleKeys(properties: GeoJsonProperties): string[] {
     ...(sym === undefined || reproduced(sym) ? ['sym'] : []),
     ...(symbol === undefined || reproduced(symbol) ? ['marker-symbol'] : []),
   ];
-}
-
-function withoutKeys(
-  properties: GeoJsonProperties,
-  keys: readonly string[],
-): Record<string, unknown> {
-  const out = { ...properties };
-
-  for (const key of keys) {
-    delete out[key];
-  }
-
-  return out;
 }
 
 /** Times as instants: a re-spelling (`.000Z`, an offset) names the same one. */
@@ -362,7 +406,10 @@ function withInstants(properties: Record<string, unknown>) {
 /** A point's properties as compared; see {@link comparable}. */
 function comparablePoint(properties: GeoJsonProperties) {
   return {
-    ...withoutKeys(properties, pointStyleKeys(properties)),
+    ...withoutKeys(properties, [
+      ...pointStyleKeys(properties),
+      ...KML_IMPORT_KEYS,
+    ]),
     '#style': pointStyleFromProperties(properties),
   };
 }
@@ -396,7 +443,7 @@ function comparable(
       (geometry.type === 'LineString' || geometry.type === 'MultiLineString'));
 
   return withInstants({
-    ...withoutKeys(properties, LINE_STYLE_KEYS),
+    ...withoutKeys(properties, [...LINE_STYLE_KEYS, ...KML_IMPORT_KEYS]),
     '#style': natural ? { ...style, type: undefined } : style,
   });
 }
@@ -517,6 +564,10 @@ function encodeFeature(feature: Feature, extended: boolean): FeatureWire {
 
   const kind = extended ? stamp(properties, 'fm:kind') : undefined;
 
+  const verbatim = extended
+    ? verbatimOf(properties, geometry.type === 'Point')
+    : undefined;
+
   if (geometry.type === 'Point') {
     const [lon, lat, ele] = geometry.coordinates;
 
@@ -539,13 +590,15 @@ function encodeFeature(feature: Feature, extended: boolean): FeatureWire {
       ...(style.icon !== undefined && { icon: style.icon }),
       ...(props && { props }),
       ...(typed && { typed }),
+      ...(verbatim && { verbatim }),
       ...(kind !== undefined && { kind }),
     };
 
-    return sameValue(
-      comparablePoint(pointToFeature(point).properties),
-      comparablePoint(properties),
-    )
+    return (!extended || linkSafe(point)) &&
+      sameValue(
+        comparablePoint(pointToFeature(point).properties),
+        comparablePoint(properties),
+      )
       ? { point }
       : undefined;
   }
@@ -617,6 +670,7 @@ function encodeFeature(feature: Feature, extended: boolean): FeatureWire {
     ...(label !== undefined && { label }),
     ...(props && { props }),
     ...(typed && { typed }),
+    ...(verbatim && { verbatim }),
     ...(style.color !== undefined && { color: style.color }),
     ...(style.fillColor !== undefined && { fillColor: style.fillColor }),
     ...(style.width !== undefined && { width: style.width }),
@@ -627,13 +681,41 @@ function encodeFeature(feature: Feature, extended: boolean): FeatureWire {
 
   const back = lineToFeature(line, holes);
 
-  return sameValue(back.geometry, geometry) &&
+  return (!extended || linkSafe(line)) &&
+    sameValue(back.geometry, geometry) &&
     sameValue(
       comparable(back.properties, geometry),
       comparable(properties, geometry),
     )
     ? { lines: [line, ...holes] }
     : undefined;
+}
+
+/**
+ * Whether the link can write the item: it writes its text fields raw, so a
+ * separator in one would split it, and its parser drops a `__proto__` key.
+ */
+function linkSafe(item: WirePoint | WireLine): boolean {
+  const pairKeys = [
+    ...Object.keys(item.props ?? {}),
+    ...Object.keys(item.typed ?? {}),
+  ];
+
+  return (
+    pairKeys.every((key) => key !== '__proto__') &&
+    [
+      ...pairKeys,
+      ...Object.values(item.props ?? {}),
+      ...Object.values(item.verbatim ?? {}),
+      ...('columns' in item ? (item.columns ?? []) : []),
+      ...('gpxType' in item ? [item.gpxType] : []),
+      ...('fillColor' in item ? [item.fillColor] : []),
+      ...('icon' in item ? [item.icon] : []),
+      item.label,
+      item.color,
+      item.kind,
+    ].every((text) => typeof text !== 'string' || fieldSafe(text))
+  );
 }
 
 export type WireForm = { points: DrawingPoint[]; lines: Line[] };

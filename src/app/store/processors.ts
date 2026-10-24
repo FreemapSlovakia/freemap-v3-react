@@ -44,6 +44,7 @@ import {
   dataViewerAddFeaturesProcessor,
   dataViewerSetTrackDataProcessor,
 } from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
+import { dataViewerSplitSelectionProcessor } from '@features/dataViewer/model/processors/dataViewerSplitSelectionProcessor.js';
 import { dataViewerStaleSelectionProcessor } from '@features/dataViewer/model/processors/dataViewerStaleSelectionProcessor.js';
 import {
   dataViewerRestoreStoredProcessor,
@@ -270,6 +271,7 @@ export const processors = [
   dataViewerResolveElevationPromptProcessor,
   dataViewerSelectProcessor,
   dataViewerDeleteFeatureProcessor,
+  dataViewerSplitSelectionProcessor,
   dataViewerJoinTracksProcessor,
   dataViewerDensifyProcessor,
   routePlannerFindRouteProcessor,

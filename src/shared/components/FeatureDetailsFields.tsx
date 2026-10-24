@@ -1,6 +1,4 @@
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
-import { Text } from '@features/l10n/Text.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
   type DetailKind,
   detailKeysOf,
@@ -8,9 +6,9 @@ import {
   isValidDetailEle,
   isValidDetailNumber,
 } from '@shared/featureDetails.js';
+import { isInputNumber } from '@shared/numberValidator.js';
 import type { ReactElement } from 'react';
-import { Button, Form, InputGroup } from 'react-bootstrap';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { Form, InputGroup } from 'react-bootstrap';
 
 /** What other software writes into `<type>`, by kind; any text is allowed. */
 const TYPE_SUGGESTIONS: Record<DetailKind, string[]> = {
@@ -85,9 +83,6 @@ export function FeatureDetailsFields({
   const set = (key: Field['key'], value: string) =>
     onChange({ ...details, [key]: value });
 
-  const setLinks = (links: FeatureDetails['links']) =>
-    onChange({ ...details, links });
-
   return (
     <>
       {fields.map(({ key, label, as, unit, hint, invalid }) => (
@@ -98,12 +93,35 @@ export function FeatureDetailsFields({
             <Form.Control
               as={as === 'textarea' ? 'textarea' : undefined}
               rows={as === 'textarea' ? 2 : undefined}
-              type={as === 'datetime' ? 'datetime-local' : 'text'}
-              step={as === 'datetime' ? 0.001 : undefined}
-              inputMode={as === 'number' ? 'decimal' : undefined}
+              type={
+                as === 'datetime'
+                  ? 'datetime-local'
+                  : // A number input blanks what it can't show, so other text
+                    // stays a text input, to be seen and fixed.
+                    as === 'number' &&
+                      (details[key] === '' || isInputNumber(details[key]))
+                    ? 'number'
+                    : 'text'
+              }
+              step={
+                as === 'datetime'
+                  ? 0.001
+                  : as === 'number'
+                    ? key === 'number'
+                      ? 1
+                      : 'any'
+                    : undefined
+              }
+              min={key === 'number' ? 0 : undefined}
               list={key === 'type' ? `detail-type-${kind}` : undefined}
               value={details[key]}
               onChange={(event) => set(key, event.currentTarget.value)}
+              // Wheeling a focused number input steps it; let it scroll.
+              onWheel={
+                as === 'number'
+                  ? (event) => event.currentTarget.blur()
+                  : undefined
+              }
               isInvalid={invalid !== undefined}
             />
 
@@ -129,65 +147,6 @@ export function FeatureDetailsFields({
           )}
         </Form.Group>
       ))}
-
-      <Form.Group className="mt-3">
-        <Form.Label>
-          <Text m={dm} k="edit.links" />
-        </Form.Label>
-
-        {details.links.map((link, i) => (
-          <InputGroup key={i} className="mb-2">
-            <Form.Control
-              type="url"
-              placeholder="https://…"
-              value={link.href}
-              onChange={(event) =>
-                setLinks(
-                  details.links.with(i, {
-                    ...link,
-                    href: event.currentTarget.value,
-                  }),
-                )
-              }
-            />
-
-            <Form.Control
-              placeholder={e?.linkText}
-              value={link.text}
-              onChange={(event) =>
-                setLinks(
-                  details.links.with(i, {
-                    ...link,
-                    text: event.currentTarget.value,
-                  }),
-                )
-              }
-            />
-
-            <LongPressTooltip label={e?.removeLink}>
-              {({ props }) => (
-                <Button
-                  variant="danger"
-                  onClick={() => setLinks(details.links.toSpliced(i, 1))}
-                  {...props}
-                >
-                  <FaTrash />
-                </Button>
-              )}
-            </LongPressTooltip>
-          </InputGroup>
-        ))}
-
-        <div>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setLinks([...details.links, { href: '', text: '' }])}
-          >
-            <FaPlus /> <Text m={dm} k="edit.addLink" />
-          </Button>
-        </div>
-      </Form.Group>
     </>
   );
 }
@@ -202,8 +161,5 @@ export function filledDetailCount(
     ...(kind === 'point' ? (['ele'] as const) : []),
   ];
 
-  return (
-    keys.filter((key) => details[key].trim()).length +
-    details.links.filter(({ href }) => href.trim()).length
-  );
+  return keys.filter((key) => details[key].trim()).length;
 }

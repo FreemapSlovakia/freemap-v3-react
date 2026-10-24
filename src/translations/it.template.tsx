@@ -91,9 +91,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     hideObjectType: ({ name }) => <>Nascondi il tipo «{name}»</>,
     copyToDrawing: 'Copia nel disegno',
     copyTo: ({ tool }) => <>Copia in {tool}</>,
-    convertTo: ({ tool }) => <>Converti in {tool}</>,
     convertAllToDrawing: 'Converti tutto in disegno',
-    convertAllTo: ({ tool }) => <>Converti tutto in {tool}</>,
     openIn: ({ what }) => <>Apri in {what}</>,
 
     panoramaFromHere: 'Panorama da qui',
@@ -226,7 +224,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routePlanner: 'Cerca percorso',
     objects: 'Oggetti (POI)',
     photos: 'Foto',
-    measurement: 'Disegno e misurazione',
     drawPoints: 'Disegno a punti',
     drawLines: 'Disegno a linee',
     drawPolygons: 'Disegno a poligoni',

@@ -6,9 +6,6 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   vertex: { channels: {} },
-  style: {
-    title: 'Stile predefinito',
-  },
   split: {
     action: 'Dividi',
     pick: 'Clicca la traccia nel punto di divisione',
@@ -42,8 +39,6 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Carica',
   unnamedTrack: ({ n }) => `Traccia ${n}`,
-  convertLossWarning:
-    'La conversione in disegno sostituisce la traccia e ne scarta i dati registrati (quota, frequenza cardiaca, velocità, tempo).',
   simplifyAll: 'Semplifica tutto',
   moreInfo: 'Maggiori info',
   saveAsMap: 'Salva nelle mie mappe',
