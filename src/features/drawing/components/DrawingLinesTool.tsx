@@ -1,57 +1,31 @@
 import { activeModeSelector } from '@app/store/selectors.js';
+import {
+  dataViewerDrawAppend,
+  dataViewerDrawStart,
+} from '@features/dataViewer/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isEventOnMap } from '@shared/mapUtils.js';
+import { lineStyleToProperties } from '@shared/styleFromProperties.js';
 import type { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import {
-  drawingLineAddPoint,
-  type Point,
-} from '../model/actions/drawingLineActions.js';
 import { drawingMeasure } from '../model/actions/drawingPointActions.js';
 
-const EMPTY: Point[] = [];
-
 export default function DrawingLinesTool(): null {
-  const selection = useAppSelector((state) => state.main.selection);
-
   const tool = useAppSelector(activeModeSelector);
 
-  // Undefined also when the selection addresses a line that is already gone.
-  const linePoints = useAppSelector((state) =>
-    state.main.selection?.type === 'draw-line-poly'
-      ? state.drawingLines.lines[state.main.selection.id]?.points
-      : undefined,
+  const drawing = useAppSelector((state) => state.trackViewer.drawing);
+
+  const holeFor = useAppSelector((state) => state.trackViewer.holeFor);
+
+  const count = useAppSelector(
+    (state) => state.trackViewer.trackGeojson?.features.length ?? 0,
   );
 
-  const drawing = useAppSelector((state) => state.drawingLines.drawing);
+  const style = useAppSelector((state) => state.drawingSettings.style);
 
   const dispatch = useDispatch();
-
-  const color = useAppSelector((state) => state.drawingSettings.style.color);
-
-  const fillColor = useAppSelector(
-    (state) => state.drawingSettings.style.fillColor,
-  );
-
-  const width = useAppSelector((state) => state.drawingSettings.style.width);
-
-  const dashArray = useAppSelector(
-    (state) => state.drawingSettings.style.dashArray,
-  );
-
-  const lineCap = useAppSelector(
-    (state) => state.drawingSettings.style.lineCap,
-  );
-
-  const lineJoin = useAppSelector(
-    (state) => state.drawingSettings.style.lineJoin,
-  );
-
-  const linesLength = useAppSelector(
-    (state) => state.drawingLines.lines.length,
-  );
 
   const handleMapClick = useCallback(
     ({ latlng, originalEvent }: LeafletMouseEvent) => {
@@ -63,73 +37,31 @@ export default function DrawingLinesTool(): null {
         return;
       }
 
-      // Append to the current line only while a drawing is in progress; a click
-      // on a merely-selected (stopped) line starts a fresh line instead.
-      const appending =
-        drawing &&
-        selection?.type === 'draw-line-poly' &&
-        linePoints !== undefined;
+      const position = [latlng.lng, latlng.lat];
 
-      const lineIndex = appending ? selection.id : undefined;
+      if (drawing) {
+        // Appending needs no open tool: a "continue" never opened one.
+        dispatch(dataViewerDrawAppend(position));
+      } else if (holeFor !== null) {
+        dispatch(dataViewerDrawStart({ ring: holeFor, position }));
+      } else if (tool === 'draw-lines' || tool === 'draw-polygons') {
+        const type = tool === 'draw-lines' ? 'line' : 'polygon';
 
-      // Starting a new line needs an active draw tool; appending does not (the
-      // tool may have been deactivated, or a "continue" never activated one).
-      if (
-        lineIndex === undefined &&
-        tool !== 'draw-lines' &&
-        tool !== 'draw-polygons'
-      ) {
+        dispatch(
+          dataViewerDrawStart({
+            type,
+            position,
+            index: count,
+            properties: lineStyleToProperties({}, { ...style, type }),
+          }),
+        );
+      } else {
         return;
       }
 
-      const points = (appending && linePoints) || EMPTY;
-
-      const pos = points.length;
-
-      const id = pos === 0 ? 0 : points[pos - 1].id + 1;
-
-      dispatch(
-        lineIndex === undefined
-          ? drawingLineAddPoint({
-              lineProps: {
-                type: tool === 'draw-lines' ? 'line' : 'polygon',
-                color,
-                fillColor: tool === 'draw-lines' ? undefined : fillColor,
-                width,
-                dashArray: dashArray,
-                lineCap,
-                lineJoin,
-              },
-              point: { lat: latlng.lat, lon: latlng.lng, id },
-              position: pos,
-              indexOfLineToSelect: linesLength,
-              drawing: true,
-            })
-          : drawingLineAddPoint({
-              lineIndex,
-              point: { lat: latlng.lat, lon: latlng.lng, id },
-              position: pos,
-              indexOfLineToSelect: lineIndex,
-              drawing: true,
-            }),
-      );
-
       dispatch(drawingMeasure({}));
     },
-    [
-      linePoints,
-      drawing,
-      dispatch,
-      selection,
-      tool,
-      color,
-      fillColor,
-      width,
-      dashArray,
-      lineCap,
-      lineJoin,
-      linesLength,
-    ],
+    [drawing, holeFor, tool, count, style, dispatch],
   );
 
   useMapEvent('click', handleMapClick);

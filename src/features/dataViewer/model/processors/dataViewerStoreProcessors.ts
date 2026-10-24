@@ -1,153 +1,131 @@
-import { clearMapFeatures } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import type { RootState } from '@app/store/store.js';
-import { mapsSetMeta } from '@features/myMaps/model/actions.js';
+import { isUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { getSnapshot, snapshotKey, storeSnapshot } from '../../trackStore.js';
+import { loadDataViewerMessages } from '../../translations/loadDataViewerMessages.js';
 import {
-  deleteStoredTrack,
-  getStoredTrack,
-  storeTrack,
-} from '../../trackStore.js';
-import {
-  dataViewerDelete,
-  dataViewerDeleteFeature,
-  dataViewerDownloadTrack,
-  dataViewerExplodeTrack,
-  dataViewerGpxLoad,
+  dataViewerAddFeatures,
   dataViewerRestoreStored,
   dataViewerRestoreStoredDone,
   dataViewerSetData,
-  dataViewerSetElevation,
-  dataViewerSetFeatureProperties,
-  dataViewerSetGpxUrl,
   dataViewerSetTrackUID,
-  dataViewerSimplify,
-  dataViewerSplitTrack,
 } from '../actions.js';
+import { homedElsewhere, localTrack } from '../localTrack.js';
 
-/**
- * Whether the track on screen already has somewhere to come back from, in which
- * case storing it again would be a second copy of the same thing:
- *
- * - a **map** carries its track in the my-maps working copy (`mapStore.ts`) and
- *   restores it itself,
- * - a **`track-uid=`** or **`import-url=`** track is named by the URL and is
- *   re-fetched from it.
- *
- * Only a track with none of those — a file import, a conversion, a finished
- * recording — has nothing but this browser, which is the case the store exists
- * for. It is the same condition `DataViewerMenu` warns about.
- */
-function homedElsewhere(state: RootState): boolean {
-  return Boolean(
-    state.myMaps.activeMap ||
-      state.myMaps.loadMeta ||
-      state.myMaps.restoring ||
-      state.trackViewer.trackUID ||
-      state.trackViewer.gpxUrl,
-  );
+/** The version last handed to the store, so each one is written once. */
+let lastStored: object | undefined;
+
+function forgetEntrySnapshot() {
+  try {
+    history.replaceState(
+      { ...(history.state ?? {}), tr: undefined },
+      '',
+      window.location.href,
+    );
+  } catch {
+    // A document opened from a URL `replaceState` refuses (see `index.tsx`).
+  }
 }
 
 /**
- * Keeps the browser's copy of the loaded track in step with what is on screen, so
- * a reload puts back what the user was looking at.
- *
- * Driven off state rather than the action's payload, and off every action that can
- * change the answer, so the outcome does not depend on the order a loader happens
- * to dispatch in — `mapsRestore` sets the map's meta before the track, while an
- * `import-url=` track arrives after its URL was recorded.
+ * Snapshots every version of the local data, so the history entry the URL
+ * writes for it (`urlProcessor`) can put it back.
  *
  * Best effort by design: for an imported file this only saves the user from
  * re-opening it, and a failed write is not worth interrupting them over. The one
  * caller that needs the guarantee — the GPS recorder finishing a ride, which then
- * deletes the phone's copy — calls `storeTrack` itself and reads the answer.
+ * deletes the phone's copy — calls `storeTrackDurably` itself and reads the answer.
  */
 export const dataViewerStoreProcessor: Processor = {
-  actionCreator: [
-    dataViewerSetData,
-    // Re-enriched elevation replaces the whole track, and the copy has to follow
-    // it — otherwise a reload puts back the values the user just overrode.
-    dataViewerSetElevation,
-    // Deleting one feature edits the data in place, and takes `trackUID` /
-    // `gpxUrl` with it — what is left is this browser's, so it is stored.
-    dataViewerDeleteFeature,
-    // The same for cutting a track up, for thinning it, and for editing a
-    // feature's properties.
-    dataViewerSplitTrack,
-    dataViewerExplodeTrack,
-    dataViewerSimplify,
-    dataViewerSetFeatureProperties,
-    dataViewerSetTrackUID,
-    dataViewerSetGpxUrl,
-    // The URL's own loaders: their reducer cases are what set `trackUID` and
-    // `gpxUrl`, and listening for them drops the stored copy as soon as the URL
-    // names a track — rather than only if its fetch succeeds. A fetch that fails
-    // would otherwise leave the copy and its flag behind, for the next reload to
-    // race against the download.
-    dataViewerDownloadTrack,
-    dataViewerGpxLoad,
-    mapsSetMeta,
-  ],
-  handle: async ({ getState }) => {
-    const state = getState();
+  handle: async ({ getState, dispatch }) => {
+    // Not while a drag holds the URL back: a snapshot per pointer move would
+    // evict the ones earlier history entries name. Its dragend writes the last.
+    if (!isUrlUpdatingEnabled()) {
+      return;
+    }
 
-    const trackGeojson = state.trackViewer.trackGeojson;
+    const geojson = localTrack(getState());
+
+    if (!geojson || geojson === lastStored) {
+      return;
+    }
+
+    lastStored = geojson;
 
     try {
-      if (!trackGeojson || homedElsewhere(state)) {
-        await deleteStoredTrack();
-      } else {
-        await storeTrack(trackGeojson);
-      }
+      await storeSnapshot(geojson);
     } catch (err) {
       console.warn('Storing the loaded track failed:', err);
+
+      // The entry already names the snapshot, so a reload would find nothing:
+      // said now, while saving it to a map can still keep it.
+      dispatch(
+        toastsAdd({
+          id: 'dataViewer.snapshotFailed',
+          messageKey: 'snapshotFailed',
+          messageLoader: loadDataViewerMessages,
+          style: 'warning',
+        }),
+      );
     }
   },
 };
 
 /**
- * Drops the copy when the track goes. Deleting the track is the user saying they
- * are done with it, and a copy that outlived it would come back on the next
- * reload as a track they had already thrown away.
+ * Puts back the snapshot a history entry names. Stands down for data the URL or
+ * a map names, which is the thing the user actually asked for.
  */
-export const dataViewerForgetStoredProcessor: Processor = {
-  actionCreator: [dataViewerDelete, clearMapFeatures],
-  handle: async () => {
-    try {
-      await deleteStoredTrack();
-    } catch (err) {
-      console.warn('Discarding the stored track failed:', err);
-    }
-  },
-};
-
-/**
- * Puts the stored track back, for a history entry that says it was holding one.
- * A no-op when something else already owns the viewer — a map named in the URL, a
- * shared track — because that is the thing the user actually asked for.
- */
-export const dataViewerRestoreStoredProcessor: Processor = {
+export const dataViewerRestoreStoredProcessor: Processor<
+  typeof dataViewerRestoreStored
+> = {
   actionCreator: dataViewerRestoreStored,
-  handle: async ({ dispatch, getState }) => {
+  handle: async ({ action, dispatch, getState }) => {
+    const key = action.payload;
+
+    if (key === null) {
+      return;
+    }
+
     // However it ends, it must say so: anything waiting for the track — the
     // elevation chart a URL asked to reopen — cannot otherwise tell an empty
     // viewer from one whose track is still on its way out of IndexedDB.
     try {
-      const record = await getStoredTrack();
+      const record = await getSnapshot(key);
 
-      if (!record) {
-        // The entry outlived the copy — cleared storage, or a record too old to
-        // read. Take the flag off so the next reload doesn't ask again.
-        await deleteStoredTrack();
-
+      // A later history step has asked for something else meanwhile.
+      if (getState().trackViewer.restoringStored !== key) {
         return;
       }
 
-      // Both halves matter. A track already in the viewer is the one the user asked
-      // for — but so is one still being fetched because the URL names it, and that
-      // fetch has nothing in the viewer yet to say so. Restoring over it would win
-      // the race (IndexedDB beats the network) and then declare a server-hosted
-      // track local, taking `track-uid=` out of the URL with it.
-      if (getState().trackViewer.trackGeojson || homedElsewhere(getState())) {
+      // A track still being fetched because the URL names it has nothing in the
+      // viewer yet to say so, and IndexedDB would win that race — as it would
+      // against a saved map being opened, whose own copy is the one to show.
+      const { myMaps } = getState();
+
+      if (homedElsewhere(getState()) || myMaps.loadMeta || myMaps.restoring) {
+        return;
+      }
+
+      if (!record) {
+        // Off the entry first, so the state no longer matching it doesn't read
+        // as a new step and push over the Forward history.
+        forgetEntrySnapshot();
+
+        // An older build's track is gone, but the drawings its params gave stay.
+        if (key !== true && getState().trackViewer.trackGeojson) {
+          dispatch(dataViewerRestoreStored(null));
+
+          dispatch(
+            toastsAdd({
+              id: 'dataViewer.snapshotGone',
+              messageKey: 'snapshotGone',
+              messageLoader: loadDataViewerMessages,
+              style: 'warning',
+              timeout: 5000,
+            }),
+          );
+        }
+
         return;
       }
 
@@ -155,9 +133,32 @@ export const dataViewerRestoreStoredProcessor: Processor = {
       // track now.
       dispatch(dataViewerSetTrackUID(null));
 
-      dispatch(dataViewerSetData({ trackGeojson: record.geojson }));
+      if (key === true) {
+        // The older build's track, beside the drawings its entry's params put
+        // on the map.
+        dispatch(dataViewerAddFeatures({ features: record.geojson.features }));
+
+        // Named by its key from now on — before the URL resumes, so the
+        // changed `tr` isn't taken for a new step and pushed.
+        const local = localTrack(getState());
+
+        try {
+          history.replaceState(
+            {
+              ...(history.state ?? {}),
+              tr: local ? snapshotKey(local) : undefined,
+            },
+            '',
+            window.location.href,
+          );
+        } catch {
+          // As in `forgetEntrySnapshot`.
+        }
+      } else {
+        dispatch(dataViewerSetData({ trackGeojson: record.geojson }));
+      }
     } finally {
-      dispatch(dataViewerRestoreStoredDone());
+      dispatch(dataViewerRestoreStoredDone(key));
     }
   },
 };

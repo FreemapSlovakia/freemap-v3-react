@@ -21,7 +21,7 @@ export const dataViewerJoinTracksProcessor: Processor<
 
     dispatch(
       selectFeature({
-        type: 'data-viewer',
+        type: 'feature',
         id: target - (action.payload < target ? 1 : 0),
       }),
     );

@@ -6,7 +6,8 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 const en: DataViewerMessages = {
   info: () => <DataViewerDetails />,
   upload: 'Upload',
-  unnamedTrack: ({ n }) => `Track ${n}`,
+  unnamedTrack: ({ n, kind }) =>
+    `${kind === 'track' ? 'Recorded track' : kind === 'route' ? 'Planned route' : 'Line'} ${n}`,
   convertLossWarning:
     'Converting to a drawing replaces the track and discards its recorded data (elevation, heart rate, speed, time).',
   simplifyAll: 'Simplify all',
@@ -14,8 +15,40 @@ const en: DataViewerMessages = {
   saveAsMap: 'Save to my maps',
   unsaved: 'Unsaved',
   unsavedTooltip:
-    'This track is not in any saved map and is not part of the link — it is kept only in this browser, so sharing the link will not share it. Save it to your maps to keep it.',
+    'This data is too large for the link and is not in any saved map — it is kept only in this browser, so sharing the link will not share it. Save it to your maps to keep it.',
   loginToSaveMap: 'Log in first to save the track to your maps.',
+  snapshotGone:
+    'The data shown at this step is no longer kept in this browser.',
+  snapshotFailed:
+    'This browser could not keep the data, so reloading the page will lose it. Save it to your maps to keep it.',
+  vertex: {
+    menuItem: 'Point data',
+    latitude: 'Latitude',
+    longitude: 'Longitude',
+    elevation: 'Elevation',
+    time: 'Time',
+    filled: ({ filled, total }) => `${filled} of ${total} points`,
+    emptyHint:
+      'An empty field leaves the point without that value. Which values the line has is set in its Properties.',
+    notANumber: 'Enter a number.',
+    outOfRange: 'Out of range.',
+    timeOrder:
+      "The time must lie between the previous and the next point's times.",
+    channels: {
+      heart: 'Heart rate',
+      cads: 'Cadence',
+      atemps: 'Air temperature',
+      wtemps: 'Water temperature',
+      depths: 'Depth',
+      speeds: 'Speed',
+      courses: 'Heading',
+      bearings: 'Bearing',
+      powers: 'Power',
+      accuracies: 'Accuracy',
+      battery: 'Battery',
+      gsmSignal: 'GSM signal',
+    },
+  },
   style: {
     title: 'Default style',
   },

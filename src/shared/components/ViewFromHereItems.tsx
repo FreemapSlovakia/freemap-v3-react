@@ -7,7 +7,10 @@ import {
   panoramaLookAt,
   panoramaPick,
 } from '@features/panorama/model/actions.js';
-import { placeToposcopeCenter } from '@features/toposcope/centerPoint.js';
+import {
+  placeToposcopeCenter,
+  pointFeaturesSelector,
+} from '@features/toposcope/centerPoint.js';
 import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
 import { viewshedPick } from '@features/viewshed/model/actions.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
@@ -54,7 +57,7 @@ export function ViewFromHereItems({
   // The dial's rays are the points already drawn, so with none it is an empty
   // dial; the toposcope's own ◎ button is the way in from nothing.
   const hasDrawnPoints = useAppSelector(
-    (state) => state.drawingPoints.points.length > 0,
+    (state) => pointFeaturesSelector(state).length > 0,
   );
 
   // Read as the click comes: the centre is placed against the whole drawing,

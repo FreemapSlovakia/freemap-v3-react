@@ -1,23 +1,21 @@
 import { applySettings } from '@app/store/actions.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
-import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import { createReducer } from '@reduxjs/toolkit';
 import { LabelVisibilitySchema } from '@shared/labelVisibility.js';
 import z from 'zod';
-import { drawingChangePropertiesBatch } from '../actions/drawingBatchActions.js';
 import {
-  drawingLineChangeProperties,
   drawingPreventCutHoleHint,
   LineCapSchema,
   LineJoinSchema,
 } from '../actions/drawingLineActions.js';
 import {
-  drawingPointChangeProperties,
+  drawingAddRecentColors,
   drawingSetLabelVisibility,
+  drawingSetSectionOpen,
 } from '../actions/drawingPointActions.js';
 
-// The default style applied to newly drawn points/lines/polygons. Spread
-// directly onto `drawingPointAdd`/`drawingLineAdd` payloads, so it must hold
-// only style fields — `recentColors` (UI history) lives one level up.
+// The default style applied to newly drawn points/lines/polygons. Only style
+// fields — `recentColors` (UI history) lives one level up.
 export const DrawingStyleSchema = z.object({
   color: z.string(),
   width: z.number(),
@@ -72,6 +70,8 @@ export const DrawingSettingsSchema = z.object({
   labelVisibility: LabelVisibilitySchema,
   recentColors: z.array(z.string()),
   preventCutHoleHint: z.boolean(),
+  /** The properties dialog's panels left open or closed, by `PropertiesSection`. */
+  openSections: z.record(z.string(), z.boolean()),
 });
 
 export type DrawingSettings = z.infer<typeof DrawingSettingsSchema>;
@@ -125,6 +125,7 @@ export const DrawingSettingsCompatSchema = z.preprocess(
     labelVisibility: LabelVisibilitySchema.optional(),
     recentColors: z.array(z.string()).optional(),
     preventCutHoleHint: z.boolean().optional(),
+    openSections: z.record(z.string(), z.boolean()).optional(),
   }),
 );
 
@@ -133,6 +134,7 @@ export const drawingSettingsInitialState: DrawingSettings = {
   labelVisibility: 'always',
   recentColors: [],
   preventCutHoleHint: false,
+  openSections: {},
 };
 
 export const drawingSettingsReducer = createReducer(
@@ -185,33 +187,17 @@ export const drawingSettingsReducer = createReducer(
       .addCase(drawingPreventCutHoleHint, (state) => {
         state.preventCutHoleHint = true;
       })
+      .addCase(drawingSetSectionOpen, (state, { payload }) => {
+        state.openSections[payload.section] = payload.open;
+      })
       .addCase(drawingSetLabelVisibility, (state, { payload }) => {
         state.labelVisibility = payload;
       })
-      .addCase(drawingChangePropertiesBatch, (state, { payload }) => {
-        for (const color of payload.pickedColors) {
+      .addCase(drawingAddRecentColors, (state, { payload }) => {
+        for (const color of payload) {
           updateRecentDrawingColors(state, color);
         }
-      })
-      .addMatcher(
-        isAnyOf(drawingLineChangeProperties, drawingPointChangeProperties),
-        (state, { payload }) => {
-          const color = payload.properties.color;
-
-          if (color) {
-            updateRecentDrawingColors(state, color);
-          }
-
-          if (
-            'fillColor' in payload.properties &&
-            payload.properties.fillColor
-          ) {
-            updateRecentDrawingColors(state, payload.properties.fillColor);
-          }
-
-          return state;
-        },
-      ),
+      }),
 );
 
 function updateRecentDrawingColors(

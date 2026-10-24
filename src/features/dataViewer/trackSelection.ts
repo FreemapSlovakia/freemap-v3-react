@@ -62,6 +62,43 @@ export function resolveActiveTrack(
   return lines[0];
 }
 
+/**
+ * The geometry of the line {@link resolveActiveTrack} answers, found without
+ * listing every line — this is asked twice per dispatched action.
+ */
+export function activeTrackGeometry({
+  trackGeojson,
+  activeTrackIndex,
+}: {
+  trackGeojson: FeatureCollection | null;
+  activeTrackIndex: number | null;
+}): object | undefined {
+  const features = trackGeojson?.features ?? [];
+
+  const selected =
+    activeTrackIndex === null ? undefined : features[activeTrackIndex];
+
+  return (
+    (selected && isTrackLine(selected) ? selected : firstLine(features))
+      ?.geometry ?? undefined
+  );
+}
+
+// Per feature list, as the chart asks on every action, twice.
+const firstLines = new WeakMap<Feature[], TrackLine | null>();
+
+function firstLine(features: Feature[]): TrackLine | undefined {
+  let line = firstLines.get(features);
+
+  if (line === undefined) {
+    line = features.find(isTrackLine) ?? null;
+
+    firstLines.set(features, line);
+  }
+
+  return line ?? undefined;
+}
+
 /** Standalone points (GPX `<wpt>`) to mark along the elevation profile. */
 export function trackWaypoints(
   fc: FeatureCollection | null | undefined,

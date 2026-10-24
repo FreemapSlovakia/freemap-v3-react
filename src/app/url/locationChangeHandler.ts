@@ -5,23 +5,28 @@ import {
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
+  fromWire,
+  type WireItem,
+  type WireVertex,
+} from '@features/dataViewer/drawingWire.js';
+import {
   dataViewerColorizeTrackBy,
   dataViewerDownloadTrack,
   dataViewerGpxLoad,
   dataViewerRestoreStored,
   dataViewerSetColorizeLegend,
+  dataViewerSetData,
   dataViewerSetStyle,
 } from '@features/dataViewer/model/actions.js';
-import {
-  drawingLineSetLines,
-  type Line,
-  type LineCap,
-  type LineJoin,
-  toWireHoleIndexes,
+import { localTrack } from '@features/dataViewer/model/localTrack.js';
+import { urlWire, wireParams } from '@features/dataViewer/model/urlForm.js';
+import { snapshotKey } from '@features/dataViewer/trackStore.js';
+import type {
+  LineCap,
+  LineJoin,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import {
   type DrawingProps,
-  drawingPointSetAll,
   normalizeProps,
 } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
@@ -162,10 +167,6 @@ import {
   type OsmFeatureId,
   osmElementTypes,
 } from '@shared/types/featureId.js';
-import {
-  serializeDrawingLine,
-  serializeDrawingPoint,
-} from '@shared/urlSerialization.js';
 import type { Dispatch } from 'redux';
 import {
   closeTool,
@@ -180,6 +181,7 @@ import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
 import { isToolOpen, openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
+import { serializeQuery } from './mapContentParts.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 import { setUrlUpdatingEnabled } from './urlUpdating.js';
@@ -214,7 +216,7 @@ export function handleLocationChange(store: MyStore): void {
 
   const { sq, tr } = (history.state as {
     sq?: string;
-    tr?: true;
+    tr?: string | true;
   } | null) ?? { sq: undefined, tr: undefined };
 
   const parsedQuery = parseQuery(search);
@@ -511,7 +513,7 @@ export function handleLocationChange(store: MyStore): void {
     trackingActions.setColorizeLegend,
   );
 
-  handleInfoPoint(getState, dispatch, query);
+  handleSearchQuery(dispatch, query);
 
   handleFeatureStyles(getState, dispatch, query);
 
@@ -564,75 +566,9 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(changesetsInspect(inspectedChangeset));
   }
 
-  const lines: Line[] = [];
-
-  for (const [key, value] of new URLSearchParams(
-    id === undefined ? search : sq,
-  )) {
-    if (
-      key === 'distance-measurement-points' ||
-      key === 'area-measurement-points' ||
-      key === 'line' ||
-      key === 'polygon'
-    ) {
-      // `s` so the style fields survive a label written on several lines: a
-      // bare `.` stops at a newline and would drop every field after it.
-      // biome-ignore lint/suspicious/noControlCharactersInRegex: I am aware of this
-      const m = /([^;\x1e]*)([;\x1e][\s\S]*)?/.exec(value);
-
-      if (!m) {
-        continue;
-      }
-
-      const points = m[1]!
-        .split(',')
-        .map((point) =>
-          point
-            .split('/')
-            .map((coord) => parseFloat(coord))
-            .filter((x) => !Number.isNaN(x)),
-        )
-        .filter((pair): pair is [number, number] => pair.length === 2)
-        .map(([lat, lon], id) => ({ lat, lon, id }));
-
-      if (points.length > 0) {
-        // `H` is geometry-only (the index of the polygon this ring is a hole
-        // of), so it stays out of the style-field codec the point params share.
-        // biome-ignore lint/suspicious/noControlCharactersInRegex: the field separator
-        const holeOf = /\x1eH(\d+)/.exec(m[2] ?? '');
-
-        lines.push({
-          type:
-            key === 'distance-measurement-points' || key === 'line'
-              ? 'line'
-              : 'polygon',
-          points,
-          ...parseColorAndLabel(m[2] ?? ''),
-          holeOf: holeOf ? Number(holeOf[1]) : undefined,
-        });
-      }
-    }
-  }
-
-  const stateLines = getState().drawingLines.lines;
-
-  const stateHoleIndexes = toWireHoleIndexes(stateLines);
-
-  // The type prefixes the digest because it is the URL's parameter *name*
-  // (`line=` / `polygon=`) rather than one of the fields the serializer writes,
-  // so without it a polygon and a line of the same shape read alike and a
-  // history entry that only changed the type never arrives.
-  const digestLine = (line: Line, holeOf: number | undefined) =>
-    `${line.type}${serializeDrawingLine(line, holeOf)}`;
-
-  if (
-    lines.map((line) => digestLine(line, line.holeOf)).join('\x1d') !==
-    stateLines
-      .map((line, i) => digestLine(line, stateHoleIndexes[i]))
-      .join('\x1d')
-  ) {
-    dispatch(drawingLineSetLines(lines));
-  }
+  const urlFeatures = parseFeatureParams(
+    new URLSearchParams(id === undefined ? search : sq),
+  );
 
   const gpxUrl =
     query['import-url'] ||
@@ -1045,20 +981,166 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(mapsRestore(restore));
   }
 
-  // The track this browser stored for this history entry. Dispatched last, and a
-  // no-op when something else already owns the track viewer, so a map or a shared
-  // track named in the URL wins.
-  //
-  // A load carrying no flag deliberately does *not* evict the store. The record is
-  // one per origin while the flag is one per history entry, so a second tab — a
-  // fresh load with no flag of its own — would delete the only durable copy of a
-  // ride the first tab is still holding. Hygiene is left to the store being a
-  // single entry that its own delete and the next write reclaim.
-  if (tr) {
-    dispatch(dataViewerRestoreStored());
-  }
+  handleFeatures(
+    getState,
+    dispatch,
+    urlFeatures,
+    tr,
+    typeof trackUID === 'string' || typeof gpxUrl === 'string',
+  );
 
   setUrlUpdatingEnabled(true);
+}
+
+/**
+ * The map's features as this history entry has them: the snapshot it names, or
+ * else the ones its params write out. Last, and neither applies to a track the
+ * URL names by `track-uid=` / `import-url=`, which is fetched instead.
+ */
+function handleFeatures(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  items: WireItem[],
+  tr: string | true | undefined,
+  /** The entry names a `track-uid=` / `import-url=`, which is fetched instead. */
+  remote: boolean,
+) {
+  const showParams = () =>
+    dispatch(
+      dataViewerSetData({
+        trackGeojson: { type: 'FeatureCollection', features: fromWire(items) },
+      }),
+    );
+
+  // An older build's entry: its drawings are these params, and the record it
+  // names holds the imported track alone, which is added to them.
+  if (tr === true) {
+    showParams();
+
+    dispatch(dataViewerRestoreStored(true));
+
+    return;
+  }
+
+  if (tr) {
+    const local = localTrack(getState());
+
+    if (!local || snapshotKey(local) !== tr) {
+      dispatch(dataViewerRestoreStored(tr));
+    }
+
+    return;
+  }
+
+  // The entry opened, not the one left: Back from a shared track to drawn
+  // lines brings the lines back, the reset below dropping the track's source.
+  if (remote) {
+    return;
+  }
+
+  const { trackGeojson, restoringStored } = getState().trackViewer;
+
+  // Compared as the URL writes them, so a round trip's rounding is no change.
+  const have = urlWire(trackGeojson);
+
+  if (
+    !restoringStored &&
+    have &&
+    serializeQuery(have) === serializeQuery(wireParams(items))
+  ) {
+    return;
+  }
+
+  // Also cancels a snapshot still being read for the entry left.
+  dispatch(dataViewerRestoreStored(null));
+
+  if (items.length) {
+    showParams();
+  }
+}
+
+/**
+ * The `point=`, `line=` and `polygon=` params in the order written, with the
+ * legacy measurement and info-point spellings.
+ */
+export function parseFeatureParams(params: URLSearchParams): WireItem[] {
+  const items: WireItem[] = [];
+
+  for (const [key, value] of params) {
+    if (
+      key === 'point' ||
+      key === 'info-point' ||
+      key === 'elevation-measurement-point'
+    ) {
+      const point = parseDrawingPointParam(value);
+
+      if (point) {
+        items.push({ kind: 'point', point: withoutUndefined(point) });
+      }
+
+      continue;
+    }
+
+    if (
+      key !== 'distance-measurement-points' &&
+      key !== 'area-measurement-points' &&
+      key !== 'line' &&
+      key !== 'polygon'
+    ) {
+      continue;
+    }
+
+    // `s` so the style fields survive a label written on several lines: a bare
+    // `.` stops at a newline and would drop every field after it.
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: I am aware of this
+    const m = /([^;\x1e]*)([;\x1e][\s\S]*)?/.exec(value);
+
+    if (!m) {
+      continue;
+    }
+
+    const fields = parseColorAndLabel(m[2] ?? '');
+
+    const { points, breaks } = parseVertices(m[1]!, fields.columns);
+
+    if (points.length > 0) {
+      // `H` is geometry-only (the index of the polygon this ring is a hole
+      // of), so it stays out of the style-field codec the point params share.
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: the field separator
+      const holeOf = /\x1eH(\d+)/.exec(m[2] ?? '');
+
+      items.push({
+        kind: 'line',
+        line: withoutUndefined({
+          type:
+            key === 'distance-measurement-points' || key === 'line'
+              ? 'line'
+              : 'polygon',
+          points,
+          ...fields,
+          breaks: breaks.length ? breaks : undefined,
+          holeOf: holeOf ? Number(holeOf[1]) : undefined,
+        }),
+      });
+    }
+  }
+
+  // An old link's label for its single info point.
+  const ipl = params.get('info-point-label');
+
+  const first = items.find((item) => item.kind === 'point');
+
+  if (ipl && first?.kind === 'point') {
+    first.point = { ...first.point, label: decodeURIComponent(ipl) };
+  }
+
+  return items;
+}
+
+function withoutUndefined<T extends object>(o: T): T {
+  return Object.fromEntries(
+    Object.entries(o).filter(([, v]) => v !== undefined),
+  ) as T;
 }
 
 /**
@@ -1134,11 +1216,11 @@ function parseChartTarget(
     case 'tracking':
       return key ? { type: 'tracking', token: key } : null;
 
-    case 'drawing': {
-      const line = getState().drawingLines.lines[Number(key ?? Number.NaN)];
-
-      return line ? { type: 'drawing', lineId: line.id } : null;
-    }
+    // An older link's drawn line, now one of the map's features.
+    case 'drawing':
+      return getState().trackViewer.trackGeojson
+        ? { type: 'track-viewer' }
+        : null;
 
     default:
       return null;
@@ -1463,8 +1545,10 @@ function parseColorAndLabel(m: string): ReturnType<typeof parseStyleFields> {
  * geometry params and the per-feature default-style params (`track-style`,
  * `objects-style`, `search-style`). Field codes: `L`abel, `C`olor,
  * `F`illColor, `W`idth, `D`ashArray, line`K`ap, line`J`oin, `S`hape
- * (markerType), `I`con, `P`roperties. A leading separator is tolerated. Only
- * present fields are returned.
+ * (markerType), `I`con, `P`roperties and their typed values (`Q`), and for
+ * recorded data the `V`alue columns,
+ * the import's `fm:kind` (`Y`) and its `_gpxType` (`G`). A leading separator is
+ * tolerated. Only present fields are returned.
  */
 export function parseStyleFields(s: string): {
   label?: string;
@@ -1477,6 +1561,10 @@ export function parseStyleFields(s: string): {
   markerType?: 'pin' | 'square' | 'ring';
   icon?: string;
   props?: DrawingProps;
+  typed?: Record<string, number | boolean>;
+  columns?: string[];
+  kind?: string;
+  gpxType?: string;
 } {
   const out: ReturnType<typeof parseStyleFields> = {};
 
@@ -1521,6 +1609,33 @@ export function parseStyleFields(s: string): {
       }
 
       out.props = normalizeProps(props);
+    } else if (field[0] === 'Q') {
+      // As `P`, each value JSON; anything but a number or a boolean is skipped.
+      const parts = field.slice(1).split('\x1f');
+
+      const typed: Record<string, number | boolean> = {};
+
+      for (let i = 0; i + 1 < parts.length; i += 2) {
+        try {
+          const value: unknown = JSON.parse(parts[i + 1]!);
+
+          if (typeof value === 'number' || typeof value === 'boolean') {
+            typed[parts[i]!] = value;
+          }
+        } catch {
+          // Not JSON: a hand-edited link.
+        }
+      }
+
+      if (Object.keys(typed).length) {
+        out.typed = typed;
+      }
+    } else if (field[0] === 'V') {
+      out.columns = field.slice(1).split('\x1f');
+    } else if (field[0] === 'Y') {
+      out.kind = field.slice(1);
+    } else if (field[0] === 'G') {
+      out.gpxType = field.slice(1);
     }
   }
 
@@ -1852,68 +1967,103 @@ function handleViewshed(
  */
 export function parseDrawingPointParam(value: string | undefined) {
   const m = value
-    ? /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)([\s\S]*)$/.exec(value)
+    ? // The elevation as JS writes a number, which may be in exponent form.
+      /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)(?:\/(-?\d+(?:\.\d+)?(?:e[-+]?\d+)?))?([\s\S]*)$/.exec(
+        value,
+      )
     : null;
 
   if (!m) {
     return undefined;
   }
 
-  const { label, color, markerType, icon, props } = parseColorAndLabel(
-    m[3] ?? '',
-  );
+  const { label, color, markerType, icon, props, typed, kind } =
+    parseColorAndLabel(m[4] ?? '');
 
   return {
     coords: { lat: parseFloat(m[1]!), lon: parseFloat(m[2]!) },
+    ...(m[3] !== undefined && { ele: parseFloat(m[3]) }),
     label,
     color,
     markerType,
     icon,
     props,
+    typed,
+    kind,
   };
 }
 
-function handleInfoPoint(
-  getState: () => RootState,
+/**
+ * A line param's vertices: `lat/lon` and its values in `columns` order, empty
+ * where missing; an empty vertex between two segments. `time` comes as the
+ * seconds since the previous one, after an absolute first.
+ */
+function parseVertices(
+  text: string,
+  columns: string[] | undefined,
+): { points: WireVertex[]; breaks: number[] } {
+  const time = columns?.indexOf('time') ?? -1;
+
+  const points: WireVertex[] = [];
+
+  const breaks: number[] = [];
+
+  let previousMs: number | undefined;
+
+  for (const item of text.split(',')) {
+    if (item === '') {
+      if (points.length && breaks.at(-1) !== points.length) {
+        breaks.push(points.length);
+      }
+
+      continue;
+    }
+
+    const [lat, lon, ...rest] = item.split('/');
+
+    const latLon = [parseFloat(lat ?? ''), parseFloat(lon ?? '')];
+
+    if (latLon.some(Number.isNaN)) {
+      continue;
+    }
+
+    const v = (columns ?? []).map((_, i): number | null => {
+      const value = rest[i] ? Number(rest[i]) : Number.NaN;
+
+      if (!Number.isFinite(value)) {
+        return null;
+      }
+
+      if (i !== time) {
+        return value;
+      }
+
+      const ms = Math.round(value * 1000) + (previousMs ?? 0);
+
+      previousMs = ms;
+
+      return ms / 1000;
+    });
+
+    points.push({
+      lat: latLon[0]!,
+      lon: latLon[1]!,
+      id: points.length,
+      ...(columns?.length && { v }),
+    });
+  }
+
+  // A break after the last vertex starts nothing.
+  return {
+    points,
+    breaks: breaks.filter((at) => at < points.length),
+  };
+}
+
+function handleSearchQuery(
   dispatch: Dispatch,
   query: Record<string, string | string[]>,
 ) {
-  const drawingPoint =
-    query['point'] || query['info-point']; /* compatibility */
-
-  const emp = query['elevation-measurement-point']; // for compatibility
-
-  const ips = (
-    !drawingPoint
-      ? []
-      : Array.isArray(drawingPoint)
-        ? drawingPoint
-        : [drawingPoint]
-  )
-    .concat(typeof emp === 'string' ? [emp] : [])
-    .map(parseDrawingPointParam)
-    .filter((point) => point !== undefined);
-
-  // backward compatibility
-  const ipl = query['info-point-label'];
-
-  if (ipl && ips.length) {
-    ips[0]!.label = typeof ipl === 'string' ? decodeURIComponent(ipl) : '';
-  }
-
-  // Compared through the very serializer that wrote the URL, so the comparison
-  // can't overlook a field the way a hand-rolled list of them did. Joined on a
-  // separator no label can contain, so two different sets can't digest alike.
-  if (
-    ips.map(serializeDrawingPoint).sort().join('\x1d') !==
-    getState()
-      .drawingPoints.points.map(serializeDrawingPoint)
-      .sort()
-      .join('\x1d')
-  ) {
-    dispatch(drawingPointSetAll(ips));
-  }
-
   if (typeof query['q'] === 'string') {
     dispatch(searchSetQuery({ query: query['q'], fromUrl: true }));
   }

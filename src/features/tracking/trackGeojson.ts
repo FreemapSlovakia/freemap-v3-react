@@ -1,7 +1,12 @@
 import { FM_KIND, type FmKind } from '@features/dataViewer/provenance.js';
+import { lineStyleToProperties } from '@shared/styleFromProperties.js';
 import type { Feature, FeatureCollection, LineString, Position } from 'geojson';
 import type { Track, TrackPoint } from './model/types.js';
-import { trackLineSegments } from './tracks.js';
+import {
+  DEFAULT_TRACK_COLOR,
+  DEFAULT_TRACK_WIDTH,
+  trackLineSegments,
+} from './tracks.js';
 
 // Altitude is omitted where the device reported none, so elevation-derived
 // colorizers and the profile treat it as a gap rather than as sea level.
@@ -45,17 +50,22 @@ export function trackPointsToFeature(
  * recording, named after the device, and carrying the per-point series under
  * togeojson's plural names — that is what the GPX writer reads back out into
  * `<time>` and the trackpoint extensions. `battery` and `gsmSignal` have no GPX
- * home and stay for the colorizers alone.
+ * home and stay for the colorizers alone. Drawn in the device's own style.
  */
 function segmentToTrackFeature(
   points: TrackPoint[],
-  label: string | null | undefined,
+  track: Track,
 ): Feature<LineString> {
   return {
     type: 'Feature',
     properties: {
+      ...lineStyleToProperties(null, {
+        type: 'line',
+        color: track.color || DEFAULT_TRACK_COLOR,
+        width: track.width || DEFAULT_TRACK_WIDTH,
+      }),
       [FM_KIND]: 'track' satisfies FmKind,
-      ...(label ? { name: label } : null),
+      ...(track.label ? { name: track.label } : null),
       coordinateProperties: {
         times: points.map((p) => p.ts.toISOString()),
         speeds: points.map((p) => p.speed ?? null),
@@ -83,7 +93,7 @@ export function tracksToFeatureCollection(tracks: Track[]): FeatureCollection {
     type: 'FeatureCollection',
     features: tracks.flatMap((track) =>
       trackLineSegments(track).map((segment) =>
-        segmentToTrackFeature(segment, track.label),
+        segmentToTrackFeature(segment, track),
       ),
     ),
   };

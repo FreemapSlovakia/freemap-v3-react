@@ -7,14 +7,10 @@ import {
 } from '@features/myMaps/model/actions.js';
 
 /**
- * Applies an `elevation-chart=drawing/N` the URL asked for but that could not be
- * resolved when it was parsed, once the lines it names exist.
- *
- * A drawn line is named in the URL by position and has no id until it is in the
- * store, and the lines can arrive by several routes — a saved map loading over
- * the network or out of the offline cache, a merge, a later `line=` parse. So
- * this waits on the lines themselves rather than on any one of the dispatches
- * that install them: whichever route ran, the retry is the same.
+ * Applies an `elevation-chart=` the URL asked for but that could not be
+ * resolved when it was parsed, once there is a line for it. Waits on the
+ * features themselves, as they arrive by several routes (a map load, a merge,
+ * a snapshot read back).
  */
 export const elevationChartPendingTargetProcessor: Processor = {
   predicatesOperation: 'OR',
@@ -22,7 +18,7 @@ export const elevationChartPendingTargetProcessor: Processor = {
   // it clears what the request was waiting for, and without this the request
   // would stay armed and latch onto the next line drawn by hand.
   actionCreator: [mapsLoadFailed, mapsDisconnect, mapsRestoreEnded],
-  stateChangePredicate: (state) => state.drawingLines.lines,
+  stateChangePredicate: (state) => state.trackViewer.trackGeojson,
   handle: async ({ getState, dispatch }) => {
     applyElevationChartFromUrl(getState, dispatch);
   },

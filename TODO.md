@@ -380,20 +380,57 @@ gpxUrl }`, which are in every saved map on the server;
       the drawing/dataViewer slices spell "not armed" as `undefined` vs `null`,
       which is why the Delete guard reads as two conditions.
 
-## Drawing vs. data viewer: one model, two storage budgets
+## Drawing + data viewer merge: one collection, storage by size
 
-The two features hold the same kind of thing — a named, styled point, line or
-polygon with a property table — and keep converging: the style modal, the
-simplify dialog and now the properties editor are literally the same component.
-The only real difference is where the features live: drawing rides in the URL,
-so it cannot carry per-point data (elevation, heart rate, cadence, times);
-loaded data lives in IndexedDB, so it cannot be shared by link. Both differences
-disappear once the user saves a map, which is why "why are there two of these?"
-is a fair question from anyone who hasn't hit either limit.
+Drawing and the data viewer become one collection of map features with one
+editor; where it is stored follows from its size, not from the tool that made it.
 
-Not a merge — the URL budget is real and doesn't go away. The aim is to stop
-presenting one model as two kinds of object. Open items are issues under
-`area: drawing` and `area: data-viewer`.
+- [x] **History for local data.** Per-entry content-hashed snapshots in
+      IndexedDB (`trackStore.ts`), `history.state.tr` naming one; Back/Forward
+      step through edits.
+- [x] **One model.** `trackViewer.trackGeojson` holds every point, line and
+      polygon; `drawingLines`/`drawingPoints` are gone. Features are addressed
+      by index (`feature`/`vertex` selections), vertex editing works per part
+      with channels kept, one toolbar (`import-file`) holds the draw modes,
+      and only "convert to drawing" remains as "add to the map".
+- [x] **Storage by size.** `urlWire`: the URL when every feature round-trips
+      and the params fit 8000 characters, else a snapshot. My Maps documents
+      keep `points`/`lines` for what those can say.
+- [x] **Richer URL codec.** `V` names per-vertex columns (`ele`, `time`
+      delta-encoded, numeric channels), `,,` breaks segments, `Y`/`G` carry
+      `fm:kind`/`_gpxType`, a point takes `/ele`.
+- [ ] **One index remap for the collection.** Feature indices are shifted in
+      `replaceFeature`, by hand in join, in the main reducer for hole edits,
+      in `deleteProcessor`, and cleaned up after by the stale-selection
+      processor; split and explode don't move `main.selection` at all. Make
+      `replaceFeature` the only length-changing primitive and apply its
+      `old → new | null` map to every index holder, the selection included.
+- [ ] **Per-feature caches on the hot path.** A drag move remounts every layer
+      (`DataViewerResult`'s Fragment is keyed on the collection's revision),
+      and each edit re-hashes the whole collection (`snapshotKey`, the
+      saved-map fingerprint), re-validates it (`storeSnapshot`) and
+      re-serializes it (`urlWire`). Key, hash, validate and encode per feature.
+- [ ] **One answer to "where do the features live"** (link, remote file,
+      snapshot) instead of `featuresInLink`, `homedElsewhere`, `localTrack`
+      and `getMapContentParts` each asking; and turn an old build's
+      `tr: true` entry into a string key once, in `handleFeatures`, so the
+      store and the restore see one format.
+- [ ] **Leftovers.** Unused message keys (`general.convertTo`,
+      `convertAllTo`, `convertLossWarning`, `tools.measurement`,
+      `mapFeaturesExport.what.import`, `drawing.selectPointToJoin`,
+      `drawing.simplify`, `dataViewer.style.title`); the SEO hub page
+      still says "Drawing and measurement" (`sitemap-generator/hubs.ts`).
+- [ ] **Chart identity across reloads.** `elevation-chart=track-viewer` reopens
+      on the first line, not the one charted; naming the line by index in the
+      param would fix it.
+- [ ] **A link with both `track-uid=` and drawing params** loads the track
+      and ignores the params; drawing beside such a track makes the whole
+      collection local.
+- [ ] **Split the collection between link and snapshot.** One feature the link
+      can't say (a MultiPolygon, a text channel, an array property such as
+      GPX `links`) keeps every feature out of it, so a shared link or embed
+      loses even the drawn markers. Put what fits in the link and the rest in
+      a snapshot, merged in order on load.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 

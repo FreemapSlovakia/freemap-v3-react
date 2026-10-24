@@ -51,6 +51,11 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
         credits,
       );
 
+      // Edited while the fetch ran: writing this back would undo the edit.
+      if (getState().trackViewer.trackGeojson !== trackGeojson) {
+        return;
+      }
+
       let i = 0;
 
       const features = trackGeojson.features.map((f) =>

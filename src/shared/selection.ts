@@ -10,8 +10,12 @@ export function sameSelection(
     return false;
   }
 
-  if (a.type === 'line-point' && b.type === 'line-point') {
-    return a.lineIndex === b.lineIndex && a.pointId === b.pointId;
+  if (a.type === 'vertex' && b.type === 'vertex') {
+    return a.id === b.id && a.part === b.part && a.vertex === b.vertex;
+  }
+
+  if (a.type === 'feature' && b.type === 'feature') {
+    return a.id === b.id && a.part === b.part;
   }
 
   if (!('id' in a) || !('id' in b)) {
@@ -27,12 +31,6 @@ export function sameSelection(
  * The kinds `deleteFeature` removes one of; a route leg, an object or a
  * changeset is nothing of the user's to remove.
  */
-export const DELETABLE_SELECTIONS: ReadonlySet<Selection['type']> = new Set([
-  'line-point',
-  'draw-line-poly',
-  'draw-points',
-  'route-point',
-  'data-viewer',
-  'tracking',
-  'search',
-]);
+export const DELETABLE_SELECTIONS: ReadonlySet<Selection['type']> = new Set<
+  Selection['type']
+>(['vertex', 'feature', 'route-point', 'tracking', 'search']);

@@ -78,6 +78,60 @@ describe('geojsonToGpxDoc round-trip', () => {
     expect(f!.geometry).toMatchObject({ type: 'LineString', coordinates });
   });
 
+  it('preserves a track’s own metadata, links and number', () => {
+    const properties = {
+      name: 'Ride',
+      cmt: 'a comment',
+      desc: 'a description',
+      src: 'Garmin eTrex',
+      number: 3,
+      type: 'cycling',
+      links: [{ href: 'https://example.com/ride', text: 'Ride', type: null }],
+    };
+
+    const [f] = roundTrip(
+      fc([
+        {
+          type: 'Feature',
+          properties,
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [17.0, 48.0],
+              [17.001, 48.0],
+            ],
+          },
+        },
+      ]),
+    );
+
+    expect(f!.properties).toMatchObject({
+      ...properties,
+      links: [{ href: 'https://example.com/ride', text: 'Ride' }],
+    });
+  });
+
+  it('preserves a waypoint’s source and links', () => {
+    const [f] = roundTrip(
+      fc([
+        {
+          type: 'Feature',
+          properties: {
+            name: 'WP',
+            src: 'survey',
+            links: [{ href: 'https://example.com/wp' }],
+          },
+          geometry: { type: 'Point', coordinates: [17.0, 48.0] },
+        },
+      ]),
+    );
+
+    expect(f!.properties).toMatchObject({
+      src: 'survey',
+      links: [{ href: 'https://example.com/wp' }],
+    });
+  });
+
   it('preserves waypoint metadata and elevation', () => {
     const properties = {
       name: 'WP',

@@ -548,21 +548,20 @@ what to show:
 ```ts
 type ElevationChartTarget =
   | { type: "route-planner" } // the active alternative
-  | { type: "track-viewer" } // the active imported track
+  | { type: "track-viewer" } // the active line of the collection
   | { type: "gps-recorder" } // the recording in progress
-  | { type: "drawing"; lineId: number }
   | { type: "tracking"; token: string };
 ```
 
 `elevationChartProcessor` is the only thing that draws it, and `chartIdentity(state)`
 (`resolve.ts`) is its whole redraw rule: one cheap reference naming _what the profile is
-derived from_ — the render line, the active track feature, the drawn line, the device's
-track, the recorder's fixes. A re-route, a switched alternative, a densified line, a
-reshaped drawn line, a refilled elevation or an arriving position each replace that object;
+derived from_ — the render line, the active line's geometry (`activeTrackGeometry`), the
+device's track, the recorder's fixes. A re-route, a switched alternative, a densified line,
+a reshaped line, a refilled elevation or an arriving position each replace that object;
 nothing else does. So
 there is no list of actions to keep in step with, and an action that changes anything else
 leaves it identical and draws nothing. Cheap rather than free: the identity is a lookup
-(for a track viewer target, a scan for the active line feature), evaluated against both the
+(for a `track-viewer` target, the active line feature), evaluated against both the
 new and the previous state on every dispatched action.
 
 That price is also what keeps a derived value out of the identity. A recording's profile is
@@ -573,25 +572,21 @@ alongside `dataViewerSetActiveTrack`. (Calling the memoized `selectRecorderSegme
 would be worse than recomputing: alternating it between the new and the previous state
 thrashes its one-entry cache, and the map's own consumer of it re-renders on every action.)
 
-A drawn line is the one target sampled from the elevation API rather than read off the
-feature, and a vertex drag replaces its geometry on every pointer move — so its redraws are
-coalesced by a timer that dispatches `elevationChartRedraw`. The wait is deliberately not an
-`await` inside the processor, which would hold a progress indicator open for the whole
-gesture.
+A `track-viewer` line that carries no elevation is sampled from the elevation API rather
+than read off the feature (`keepRecorded: false`), and a vertex drag replaces its geometry
+on every pointer move — so `track-viewer` redraws are coalesced by a timer that dispatches
+`elevationChartRedraw`. The wait is deliberately not an `await` inside the processor, which
+would hold a progress indicator open for the whole gesture.
 
 Each target resolves through a small per-feature `resolveElevationChart.ts`, loaded on
 demand (a resolver may densify, and pulls the sampling path in with it). A resolver
 returns the line, whether to keep its recorded elevation, its waypoints, and the
 `ElevationCredit` only it can know — or `null` when there is nothing to chart.
 
-**Identity, not position.** A drawn line is named by an `id` (`DrawnLine`, assigned in
-`drawingLinesReducer`), a device by its token. An array index is not an identity: deleting,
-splitting and joining renumber lines, and a chart holding an index would quietly come to
-draw a different one. The id is deliberately absent from `LineSchema`, so it reaches
-neither the URL (`line=`/`polygon=` are positional) nor a persisted map — existing saved
-documents carry none, and requiring one would fail their parse. The URL therefore names the
-line by position and the id is resolved at that boundary, in `locationChangeHandler` and
-`urlProcessor`.
+**The target names no line.** A `track-viewer` chart follows `activeTrackIndex`, which the
+reducer shifts as deleting, splitting and joining renumber the features, so the chart stays
+on its line; a device is named by its token. `elevation-chart=track-viewer` in the URL
+therefore reopens on the first line after a reload.
 
 **Staleness.** Resolving can take seconds. The processor re-checks that the target is still
 the one it resolved for, and that `chartIdentity` hasn't moved on, before drawing — so a
@@ -860,7 +855,7 @@ provenance tagged at parse time — never re-derived from density/timestamps:
 - **Operate on a chosen track, not `features[0]`.** `activeTrackIndex`
   (`trackSelection.ts`) picks the active line among loaded line-like features; the chart,
   "more info" and matching act on it. Clicking a line selects it
-  (`main.selection.type === 'data-viewer'`, blue halo pane below the foreground) and
+  (`main.selection.type === 'feature'`, blue halo pane below the foreground) and
   `dataViewerSelectProcessor` aims the active index at it; deselecting leaves the index
   alone, so an open chart doesn't jump to another track. Resets on load —
   `dataViewerSetData({ select: true })` (an import, a saved recording, a conversion, not a
@@ -871,13 +866,6 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   within `WAYPOINT_SNAP_METERS` (100 m); among candidates, the one closest in **time**
   when both waypoint and track carry timestamps (disambiguates a self-crossing track),
   else nearest in space.
-- **Convert-to-drawing replaces.** Drawing state lives in the URL hash, so per-vertex
-  HR/cadence/elevation can't be carried. Only a dense `fm:kind === 'track'` has rich
-  per-vertex data to lose, so it gets the shared simplify dialog
-  (`src/shared/simplifyDialog.tsx`) with that warning as its preamble (Cancel aborts);
-  routes/generic geometry convert straight away, and are asked at all only when dense
-  enough to be worth thinning.
-
 - **Simplify in place.** The dataViewer's own **Simplify** / **Simplify all**
   (`dataViewerSimplify` → `simplifyTrack.ts`) thins the loaded data without converting it.
   The tolerance is a **maximum deviation in metres**: `src/shared/simplifyGeo.ts` scales
@@ -1047,44 +1035,52 @@ fetch directly rather than the per-feature `enrichElevations` wrapper:
 - GPX: `fillElevations.ts` filling/replacing `<ele>` on wpt/trkpt/rtept.
 - Polygons (and `fm:type=polygon` GPX tracks) are always skipped.
 
-## The loaded track survives a reload
+## Local data has history
 
-The track viewer's track is the one thing the URL cannot carry, so
-[`dataViewer/trackStore.ts`](../src/features/dataViewer/trackStore.ts) keeps it —
-a **single entry** in its own `idb-keyval` database, validated on read like the
-my-maps working copy (`myMaps/mapStore.ts`).
+The collection goes into the URL while it fits (`urlWire`, `model/urlForm.ts`: every
+feature lossless in the `point=`/`line=`/`polygon=` form and the whole at most
+`URL_FEATURES_BUDGET` characters — see [`url-params.md`](./url-params.md)). When it
+doesn't, [`dataViewer/trackStore.ts`](../src/features/dataViewer/trackStore.ts) keeps
+**snapshots** of it in its own `idb-keyval` database, validated on read like the
+my-maps working copy (`myMaps/mapStore.ts`). A history entry names the version it
+showed by key in `history.state.tr`, so a reload puts that version back and
+Back/Forward step through the edits as they do through anything else.
 
-**Only a track with no other home.** A map's track already lives in the my-maps
-working copy and is restored from there; a `track-uid=` or `import-url=` track is
-named by the URL and re-fetched from it. Storing either would be a second copy of
-the same thing, so `dataViewerStoreProcessor` checks `homedElsewhere` and deletes
-the entry instead. What is left is the case the store exists for: a file import, a
-conversion, a finished recording — the same condition `DataViewerMenu` warns
-about. The check runs off state, on every action that can change the answer, so it
-does not depend on whether a loader sets the track before or after the thing that
-gives it a home.
+**Only data with no other home** (`localTrack`, `model/localTrack.ts`): the URL cannot
+carry it, and it is not a `track-uid=` or `import-url=` track, which the URL names and
+re-fetches. That is the condition `DataViewerMenu` warns about unless a map is open.
 
-**The history entry decides whether it comes back.** `storeTrack` `replaceState`s a
-`tr: true` flag onto the current entry as it writes; `urlProcessor` carries the flag
-onto the entries it writes afterwards; `handleLocationChange` dispatches
-`dataViewerRestoreStored` when it sees it. So reloading the page you were on puts
-the track back, while a fresh visit or a shared link is never ambushed by a track
-from a previous session.
-
-A load carrying no flag deliberately **does not evict** the record. The record is one
-per origin and the flag is one per history entry, so a second tab — a fresh load
-with no flag of its own — would delete the only durable copy of a ride the first tab
-is still holding. Hygiene comes from the store being a single entry that the next
-write and its own delete reclaim.
+- **The key is the content's hash** (`snapshotKey`, cached per object). Any edit
+  replaces `trackGeojson`, so `urlProcessor` reads a new key and pushes an entry;
+  `dataViewerStoreProcessor` writes the snapshot under the same key. Data read
+  back adopts the key it was asked for, so a restore never reads as a new step.
+- **`handleLocationChange` puts the entry's version back**: a different key
+  dispatches `dataViewerRestoreStored(key)`, an entry without one takes local
+  data off the map (`null`). `restoringStored` holds the key being read, so a
+  read that a quicker history step overtook is dropped. The restore stands down
+  for data the URL or a map names: a fetch still in flight would lose the race
+  to IndexedDB.
+- **Eviction, not deletion.** Deleting the data doesn't touch its snapshots —
+  the entries before the delete still show it. The store keeps at most
+  `MAX_SNAPSHOTS` and `MAX_TOTAL_CHARS` of JSON, dropping the oldest. An entry
+  whose snapshot has gone takes its key off (`replaceState`), clears the map, and
+  says so in a toast.
+- An entry carrying `tr: true` reads the record under the key `track`, which the
+  next snapshot write deletes.
+- **Large data shares one key.** Past `LARGE_POSITIONS` vertices every version is
+  stored under `latest`, overwritten on each edit: hashing and copying all of it
+  per edit stalled the page and evicted other entries' snapshots. Its edits are
+  therefore not history steps; a reload shows the latest version.
+- **A saved map being opened wins.** The restore stands down while
+  `myMaps.loadMeta` or `myMaps.restoring` is set, as for a `track-uid=` track.
+- **The URL waits for the read.** `urlProcessor` treats `restoringStored` as a
+  suspension, so the previous step's features are never written with this
+  step's view. A write that fails says so in a toast: the entry already names
+  the snapshot, so a reload would find nothing.
 
 The write is validated with the same schema the read uses, so a record that would
 be discarded on the way back is refused on the way in rather than counted as a
-copy. Otherwise it is best effort (`dataViewerStoreProcessor` logs and moves on),
-and the copy is dropped on `dataViewerDelete` and `clearMapFeatures` — one that
-outlived the track would come back as something the user had already thrown away.
-The restore also stands down for a track the URL merely _names_: `homedElsewhere`
-covers a fetch that is still in flight, which IndexedDB would otherwise beat, and
-declaring a server-hosted track local would take `track-uid=` out of the URL.
+copy. Otherwise it is best effort (`dataViewerStoreProcessor` logs and moves on).
 `navigator.storage.persist()` is asked for by `storeTrackDurably` **only** — the GPS
 recorder finishing a ride, which then deletes the phone's copy, so `false` (stored,
 but evictable) is its cue to leave that copy alone. The ordinary path never asks:

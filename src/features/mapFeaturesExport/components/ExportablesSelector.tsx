@@ -15,9 +15,10 @@ import {
   FaRoute,
   FaSearch,
 } from 'react-icons/fa';
-import { MdShapeLine, MdTimeline } from 'react-icons/md';
+import { MdTimeline } from 'react-icons/md';
 import { TbMapPins } from 'react-icons/tb';
 import type { Exportable } from '../model/actions.js';
+import { featureExportable } from '../model/selectionFilter.js';
 import { useMapFeaturesExportMessages } from '../translations/useMapFeaturesExportMessages.js';
 
 // The selectable map-feature sources, in display order, with their icon and
@@ -34,7 +35,6 @@ export const exportableDefinitions: readonly [
   ['drawingAreas', FaDrawPolygon, false],
   ['drawingPoints', FaMapMarkerAlt, false],
   ['tracking', FaBullseye, true],
-  ['import', MdShapeLine, true],
   ['search', FaSearch, true],
 ];
 
@@ -50,11 +50,10 @@ export const elevationCapabilities: Record<Exportable, ElevationCapability> = {
   plannedRoute: 'recorded',
   objects: 'recorded',
   pictures: 'fillable',
-  drawingLines: 'fillable',
+  drawingLines: 'recorded',
   drawingAreas: 'none',
-  drawingPoints: 'fillable',
+  drawingPoints: 'recorded',
   tracking: 'recorded',
-  import: 'recorded',
   search: 'recorded',
 };
 
@@ -86,24 +85,24 @@ export function useAvailableExportables(): string {
       exportables.push('pictures');
     }
 
-    if (state.drawingLines.lines.some((line) => line.type === 'line')) {
-      exportables.push('drawingLines');
-    }
+    const kinds = new Set(
+      state.trackViewer.trackGeojson?.features.map(({ geometry }) =>
+        featureExportable(geometry),
+      ),
+    );
 
-    if (state.drawingLines.lines.some((line) => line.type === 'polygon')) {
-      exportables.push('drawingAreas');
-    }
-
-    if (state.drawingPoints.points.length) {
-      exportables.push('drawingPoints');
+    for (const kind of [
+      'drawingLines',
+      'drawingAreas',
+      'drawingPoints',
+    ] as const) {
+      if (kinds.has(kind)) {
+        exportables.push(kind);
+      }
     }
 
     if (state.tracking.tracks.length) {
       exportables.push('tracking');
-    }
-
-    if (state.trackViewer.trackGeojson) {
-      exportables.push('import');
     }
 
     return `|${exportables.map((e) => `${e}|`).join('')}`;
@@ -122,25 +121,11 @@ export function useSelectedExportable(): Exportable | null {
     }
 
     switch (selection.type) {
-      case 'draw-points':
-        return state.drawingPoints.points[selection.id]
-          ? 'drawingPoints'
-          : null;
+      case 'feature':
+      case 'vertex': {
+        const feature = state.trackViewer.trackGeojson?.features[selection.id];
 
-      case 'draw-line-poly':
-      case 'line-point': {
-        const index =
-          selection.type === 'draw-line-poly'
-            ? selection.id
-            : selection.lineIndex;
-
-        const line = state.drawingLines.lines[index];
-
-        return line
-          ? line.type === 'polygon'
-            ? 'drawingAreas'
-            : 'drawingLines'
-          : null;
+        return feature ? featureExportable(feature.geometry) : null;
       }
 
       case 'objects':

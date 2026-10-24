@@ -23,6 +23,8 @@ type Props = {
   onDashArrayChange?: (dashArray: number[]) => void;
   /** Fields that features edited together differ in. */
   mixed?: Mixed;
+  /** Off where the holder shows one of its own. */
+  preview?: boolean;
 };
 
 // Each field is shown only when its change handler is given, so a consumer that
@@ -43,6 +45,7 @@ export function DrawingLineStyleFields({
   dashArray,
   onDashArrayChange,
   mixed,
+  preview = true,
 }: Props): ReactElement {
   const dm = useDrawingMessages();
 
@@ -220,40 +223,42 @@ export function DrawingLineStyleFields({
           </>
         )}
 
-        <svg
-          ref={svgRef}
-          width="100%"
-          height={previewHeight}
-          style={{ display: 'block' }}
-        >
-          {svgWidth > 0 &&
-            (onFillColorChange ? (
-              <rect
-                x={inset}
-                y={inset}
-                width={svgWidth - 2 * inset}
-                height={previewHeight - 2 * inset}
-                fill={fillColor || color}
-                stroke={color}
-                strokeWidth={widthNum}
-                strokeLinecap={lineCap}
-                strokeLinejoin={lineJoin}
-                strokeDasharray={dashArrayValue}
-              />
-            ) : (
-              <line
-                x1={inset}
-                y1={previewHeight / 2}
-                x2={svgWidth - inset}
-                y2={previewHeight / 2}
-                stroke={color}
-                strokeWidth={widthNum}
-                strokeLinecap={lineCap}
-                strokeLinejoin={lineJoin}
-                strokeDasharray={dashArrayValue}
-              />
-            ))}
-        </svg>
+        {preview && (
+          <svg
+            ref={svgRef}
+            width="100%"
+            height={previewHeight}
+            style={{ display: 'block' }}
+          >
+            {svgWidth > 0 &&
+              (onFillColorChange ? (
+                <rect
+                  x={inset}
+                  y={inset}
+                  width={svgWidth - 2 * inset}
+                  height={previewHeight - 2 * inset}
+                  fill={fillColor || color}
+                  stroke={color}
+                  strokeWidth={widthNum}
+                  strokeLinecap={lineCap}
+                  strokeLinejoin={lineJoin}
+                  strokeDasharray={dashArrayValue}
+                />
+              ) : (
+                <line
+                  x1={inset}
+                  y1={previewHeight / 2}
+                  x2={svgWidth - inset}
+                  y2={previewHeight / 2}
+                  stroke={color}
+                  strokeWidth={widthNum}
+                  strokeLinecap={lineCap}
+                  strokeLinejoin={lineJoin}
+                  strokeDasharray={dashArrayValue}
+                />
+              ))}
+          </svg>
+        )}
       </Form.Group>
     </>
   );

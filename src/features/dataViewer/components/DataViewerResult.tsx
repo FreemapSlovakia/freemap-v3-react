@@ -1,5 +1,7 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
+import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { FEATURES_PANE_CLASS } from '@features/map/hooks/featuresPane.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
@@ -43,17 +45,31 @@ import type {
   GeoJsonProperties,
   Position,
 } from 'geojson';
-import { type LeafletMouseEvent, Point as LPoint } from 'leaflet';
-import { Fragment, type ReactElement, useMemo } from 'react';
+import {
+  type DragEndEvent,
+  type LatLngLiteral,
+  type LeafletMouseEvent,
+  Point as LPoint,
+} from 'leaflet';
+import {
+  type ComponentProps,
+  Fragment,
+  type ReactElement,
+  useMemo,
+} from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { RiScissorsFill } from 'react-icons/ri';
 import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
+import { isPoint } from '../featureEditing.js';
 import { useStartFinishPoints } from '../hooks/useStartFinishPoints.js';
 import { useTrackJoin } from '../hooks/useTrackJoin.js';
 import { useTrackSplit } from '../hooks/useTrackSplit.js';
+import { dataViewerMoveVertex } from '../model/actions.js';
 import { trackLineParts } from '../trackLineParts.js';
+import { editableParts } from '../vertexEditing.js';
+import { VertexHandles } from './VertexHandles.js';
 
 // The selection halo, and the colour the far half of a pending cut is told
 // apart by. Whole objects, so a re-render hands Leaflet the same options back
@@ -198,11 +214,20 @@ export default function DataViewerResult({
 
   const interactive = useAppSelector(selectingModeSelector);
 
-  const selectedIndex = useAppSelector((state) =>
-    state.main.selection?.type === 'data-viewer'
-      ? state.main.selection.id
-      : undefined,
-  );
+  const selection = useAppSelector((state) => state.main.selection);
+
+  const selectedIndex =
+    selection?.type === 'feature' || selection?.type === 'vertex'
+      ? selection.id
+      : undefined;
+
+  // A selected hole wears the halo instead of its polygon.
+  const selectedHole =
+    selection?.type === 'feature' && selection.part
+      ? selection.part
+      : undefined;
+
+  const drawing = useAppSelector((state) => state.trackViewer.drawing);
 
   const labelVisibility = useAppSelector(
     (state) => state.trackViewerSettings.labelVisibility,
@@ -229,8 +254,10 @@ export default function DataViewerResult({
   // Clicking a feature gives it its own toolbar, which reaches the tool's panel
   // by a button of its own; a line also becomes the one the chart / "more info"
   // act on (`dataViewerSelectProcessor`).
-  const select = (featureIndex: number) => {
-    dispatch(selectFeature({ type: 'data-viewer', id: featureIndex }));
+  const select = (featureIndex: number, part?: number) => {
+    dispatch(selectFeature({ type: 'feature', id: featureIndex, part }));
+
+    dispatch(drawingMeasure({}));
   };
 
   // Remounts the layers below on new data, which some of them need to redraw.
@@ -309,13 +336,17 @@ export default function DataViewerResult({
   // GeometryCollection, and the source feature index rides along so a click
   // selects the whole feature a part came from.
   const [polygons, points] = useMemo(() => {
-    const polygons: ReturnType<typeof polygonEntry>[] = [];
+    const polygons: (ReturnType<typeof polygonEntry> & {
+      editable: boolean;
+    })[] = [];
 
     const points: {
       lat: number;
       lon: number;
       featureIndex: number;
       properties: GeoJsonProperties;
+      /** A point of its own rather than one of a multi-point. */
+      movable: boolean;
     }[] = [];
 
     for (const [featureIndex, feature] of trackGeojson.features.entries()) {
@@ -328,15 +359,22 @@ export default function DataViewerResult({
             lon: geom.coordinates[0]!,
             featureIndex,
             properties: feature.properties,
+            movable: feature.geometry.type === 'Point',
           });
 
           continue;
         }
 
         if (geom.type === 'Polygon') {
-          polygons.push(
-            polygonEntry(feature, geom.coordinates, featureIndex, defaultStyle),
-          );
+          polygons.push({
+            ...polygonEntry(
+              feature,
+              geom.coordinates,
+              featureIndex,
+              defaultStyle,
+            ),
+            editable: feature.geometry.type === 'Polygon',
+          });
         }
       }
     }
@@ -398,7 +436,76 @@ export default function DataViewerResult({
     minute: '2-digit',
   });
 
-  return (
+  // The vertices as stored, not the densified render copy the lines are drawn
+  // from: a handle addresses a vertex by index.
+  const stored = useAppSelector((state) => state.trackViewer.trackGeojson);
+
+  // The selected feature's handles, and those of whatever is being drawn. Not
+  // while a split or a join is aimed: the click is theirs.
+  const handles = useMemo(() => {
+    const out: ComponentProps<typeof VertexHandles>[] = [];
+
+    if (window.fmEmbedded || split.armed || join.armed || !stored) {
+      return out;
+    }
+
+    for (const index of new Set([selectedIndex, drawing?.index])) {
+      const feature = index === undefined ? undefined : stored.features[index];
+
+      const parts = feature && editableParts(feature.geometry);
+
+      if (
+        index === undefined ||
+        !feature ||
+        !parts ||
+        isPoint(feature.geometry)
+      ) {
+        continue;
+      }
+
+      const ring = feature.geometry.type === 'Polygon';
+
+      const style = lineStyleFromProperties(feature.properties, ring);
+
+      const stroke = splitColorAlpha(style.color ?? defaultStyle.color);
+
+      for (const [part, vertices] of parts.entries()) {
+        out.push({
+          index,
+          part,
+          vertices,
+          ring,
+          color: stroke.color,
+          previewStyle: {
+            weight: style.width ?? defaultStyle.width,
+            opacity: stroke.opacity,
+            dashArray: style.dashArray ?? defaultStyle.dashArray,
+            lineCap: style.lineCap ?? 'round',
+            lineJoin: style.lineJoin ?? 'round',
+          },
+          selectedVertex:
+            selection?.type === 'vertex' &&
+            selection.id === index &&
+            selection.part === part
+              ? selection.vertex
+              : undefined,
+          drawing: drawing?.index === index && drawing.part === part,
+        });
+      }
+    }
+
+    return out;
+  }, [
+    stored,
+    selectedIndex,
+    selection,
+    drawing,
+    defaultStyle,
+    split.armed,
+    join.armed,
+  ]);
+
+  const layers = (
     <Fragment key={keyToAssureProperRefresh}>
       <Pane
         name="fm-trackviewer-polygons"
@@ -429,7 +536,12 @@ export default function DataViewerResult({
             key={`poly-highlight-${i}`}
             pane={HALO_PANE}
             weight={style.width + HALO_WIDTH}
-            positions={positions}
+            // A picked hole is the ring the toolbar acts on.
+            positions={
+              selectedHole === undefined
+                ? positions
+                : [positions[selectedHole] ?? []]
+            }
             pathOptions={{
               color: SELECTION_COLOR,
               opacity: 1,
@@ -583,19 +695,26 @@ export default function DataViewerResult({
         </Polygon>
       ))}
 
-      {points.map(({ lat, lon, properties, featureIndex }, i) => (
-        <WaypointMarker
-          key={`point-${i}`}
-          lat={lat}
-          lon={lon}
-          name={labels[featureIndex]}
-          properties={properties}
-          interactive={interactive}
-          labelMode={labelModeOf(featureIndex)}
-          selected={featureIndex === selectedIndex}
-          onClick={() => select(featureIndex)}
-        />
-      ))}
+      {/* The fill punches the holes out and lets clicks through them, so
+          each hole has an outline of its own to be picked by. */}
+      {polygons.flatMap(({ positions, style, featureIndex, editable }, i) =>
+        editable
+          ? positions.slice(1).map((ring, j) => (
+              <Polyline
+                key={`hole-${i}-${j}-${interactive ? 'a' : 'b'}`}
+                pane="fm-trackviewer-hit"
+                weight={style.width + 8}
+                opacity={0}
+                interactive={interactive}
+                bubblingMouseEvents={false}
+                eventHandlers={{
+                  click: () => select(featureIndex, j + 1),
+                }}
+                positions={ring}
+              />
+            ))
+          : [],
+      )}
 
       {startPoints.map((p, i) => (
         <RichMarker
@@ -692,6 +811,51 @@ export default function DataViewerResult({
       )}
     </Fragment>
   );
+
+  // Outside the remounting key above: a marker remounted mid-drag drops the
+  // gesture, and a drag changes the data on every move.
+  return (
+    <>
+      {layers}
+
+      {points.map(({ lat, lon, properties, featureIndex, movable }, i) => (
+        <WaypointMarker
+          key={`point-${i}`}
+          lat={lat}
+          lon={lon}
+          name={labels[featureIndex]}
+          properties={properties}
+          interactive={interactive || featureIndex === selectedIndex}
+          labelMode={labelModeOf(featureIndex)}
+          selected={featureIndex === selectedIndex}
+          draggable={
+            movable && featureIndex === selectedIndex && !window.fmEmbedded
+          }
+          onClick={() => {
+            if (featureIndex !== selectedIndex) {
+              select(featureIndex);
+            }
+          }}
+          onMove={(position, done) => {
+            dispatch(
+              dataViewerMoveVertex({
+                index: featureIndex,
+                part: 0,
+                vertex: 0,
+                position,
+              }),
+            );
+
+            dispatch(drawingMeasure({ elevation: done }));
+          }}
+        />
+      ))}
+
+      {handles.map((props) => (
+        <VertexHandles key={`${props.index}-${props.part}`} {...props} />
+      ))}
+    </>
+  );
 }
 
 function WaypointMarker({
@@ -702,7 +866,9 @@ function WaypointMarker({
   interactive,
   labelMode,
   selected,
+  draggable,
   onClick,
+  onMove,
 }: {
   lat: number;
   lon: number;
@@ -711,7 +877,10 @@ function WaypointMarker({
   interactive: boolean;
   labelMode: LabelTooltipMode | undefined;
   selected: boolean;
+  draggable: boolean;
   onClick: () => void;
+  /** `done` on the drop, which is when the elevation is worth reading. */
+  onMove: (position: Position, done: boolean) => void;
 }): ReactElement {
   const style = pointStyleFromProperties(properties);
 
@@ -724,23 +893,48 @@ function WaypointMarker({
 
   const color = style.color ?? defaultStyle.color;
 
-  // No icon spec resolved → fall back to the legacy flag glyph.
-  const hasIconContent =
-    contentProps.poi ?? contentProps.iconSvg ?? contentProps.label;
+  // An imported waypoint with no icon spec wears the flag glyph; a drawn point
+  // is the plain marker.
+  const flag =
+    !(contentProps.poi ?? contentProps.iconSvg ?? contentProps.label) &&
+    properties?.['fm:kind'] !== undefined;
+
+  // The label fades with the marker (0.9 is Leaflet's own tooltip opacity).
+  const { opacity } = splitColorAlpha(color);
 
   return (
     <RichMarker
       position={{ lat, lng: lon }}
       color={color}
       // Selection is the ring, so the waypoint keeps its own color, as a
-      // selected drawing point does.
+      // selected line does.
       halo={selected ? SELECTION_COLOR : undefined}
       markerType={style.markerType ?? defaultStyle.markerType}
       interactive={interactive}
-      eventHandlers={{ click: onClick }}
-      {...(hasIconContent
-        ? contentProps
-        : { faIcon: <FaFlag color={color} /> })}
+      draggable={draggable}
+      eventHandlers={{
+        click: onClick,
+        dragstart() {
+          // One history entry for the whole gesture, written on the drop.
+          setUrlUpdatingEnabled(false);
+        },
+        move(e) {
+          // see https://github.com/PaulLeCam/react-leaflet/issues/981
+          const { latlng } = e as unknown as { latlng: LatLngLiteral };
+
+          if (draggable) {
+            onMove([latlng.lng, latlng.lat], false);
+          }
+        },
+        dragend(e) {
+          setUrlUpdatingEnabled(true);
+
+          const { lat, lng } = (e as DragEndEvent).target.getLatLng();
+
+          onMove([lng, lat], true);
+        },
+      }}
+      {...(flag ? { faIcon: <FaFlag color={color} /> } : contentProps)}
     >
       {name && labelMode && (
         <Tooltip
@@ -748,6 +942,7 @@ function WaypointMarker({
           className="compact multiline"
           direction="top"
           permanent={labelMode === 'permanent'}
+          opacity={0.9 * opacity}
         >
           <span>{name}</span>
         </Tooltip>

@@ -165,6 +165,85 @@ export function readChannels(feature: TrackLine): Channel[] {
   });
 }
 
+/** A channel as the line's properties editor lists it. */
+export type ChannelSummary = { key: string; filled: number; total: number };
+
+export function channelSummaries(feature: TrackLine): ChannelSummary[] {
+  return readChannels(feature).map(({ key, segments }) => ({
+    key,
+    filled: segments.flat().filter((v) => v !== null && v !== undefined).length,
+    total: segments.flat().length,
+  }));
+}
+
+/** Whether the line stores this channel, lined up with it or not. */
+export function hasChannel(feature: TrackLine, key: string): boolean {
+  return (
+    Object.hasOwn(
+      asRecord(feature.properties?.[COORD_PROPERTIES]) ?? {},
+      key,
+    ) || readChannels(feature).some((channel) => channel.key === key)
+  );
+}
+
+/**
+ * The properties with the line's channels made `keys`: one it lacks starts
+ * empty at every point, one not named goes. A stored array that doesn't line
+ * up with the geometry is no channel here, and stays as it is.
+ */
+export function withChannelKeys(
+  feature: TrackLine,
+  properties: Record<string, unknown>,
+  keys: readonly string[],
+): Record<string, unknown> {
+  const existing = readChannels(feature);
+
+  const lengths = lineSegments(feature.geometry).map((s) => s.length);
+
+  const created: Channel[] = keys
+    .filter((key) => !existing.some((channel) => channel.key === key))
+    .map((key) => ({
+      key,
+      segments: lengths.map((length) => new Array<unknown>(length).fill(null)),
+    }));
+
+  const out = { ...properties };
+
+  if (created.length > 0) {
+    writeChannels(
+      out,
+      created,
+      feature.geometry.type === 'LineString',
+      ({ segments }) => segments,
+    );
+  }
+
+  const gone = existing.filter(({ key }) => !keys.includes(key));
+
+  if (gone.length === 0) {
+    return out;
+  }
+
+  const cp = { ...asRecord(out[COORD_PROPERTIES]) };
+
+  for (const { key } of gone) {
+    delete cp[key];
+
+    // Times may be spelled at the root instead.
+    if (key === TIMES) {
+      delete out[COORD_TIMES];
+    }
+  }
+
+  if (Object.keys(cp).length > 0) {
+    out[COORD_PROPERTIES] = cp;
+  } else {
+    delete out[COORD_PROPERTIES];
+  }
+
+  return out;
+}
+
 /**
  * Writes the channels back, `take` picking the points each output segment
  * keeps. `flat` must say what the geometry being written does: togeojson nests

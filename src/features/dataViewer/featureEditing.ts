@@ -4,7 +4,20 @@ import type {
   BatchKind,
   BatchPatch,
 } from '@shared/batchProperties.js';
-import type { FeatureProperties } from '@shared/components/FeaturePropertiesModal.js';
+import type {
+  FeatureProperties,
+  LineKind,
+} from '@shared/components/FeaturePropertiesModal.js';
+import { isoInstant } from '@shared/dateUtils.js';
+import {
+  type DetailKind,
+  type DetailLink,
+  detailKeysOf,
+  emptyDetails,
+  type FeatureDetails,
+  isDetailKey,
+  isValidDetailNumber,
+} from '@shared/featureDetails.js';
 import {
   featureDataProps,
   mergeFeatureDataProps,
@@ -19,6 +32,10 @@ import {
   pointStyleToProperties,
 } from '@shared/styleFromProperties.js';
 import type { Feature, GeoJsonProperties, Geometry } from 'geojson';
+import { FM_KIND, type FmKind } from './provenance.js';
+import { readChannels, withChannelKeys } from './trackChannels.js';
+import { isTrackLine } from './trackSelection.js';
+import { toLocalInput } from './vertexValues.js';
 
 export const isPoint = (geometry: Geometry) =>
   geometry.type === 'Point' || geometry.type === 'MultiPoint';
@@ -32,6 +49,38 @@ export function closable(geometry: Geometry): boolean {
     (geometry.type === 'LineString' || geometry.type === 'MultiLineString') &&
     isClosedGeometry(geometry)
   );
+}
+
+/** What a line is: drawn, a recorded track or a planned route. */
+export function lineKindOf(properties: GeoJsonProperties): LineKind {
+  const kind = properties?.[FM_KIND];
+
+  return kind === 'track' || kind === 'route'
+    ? kind
+    : properties?.['_gpxType'] === 'rte'
+      ? 'route'
+      : properties?.['_gpxType'] === 'trk'
+        ? 'track'
+        : 'line';
+}
+
+/**
+ * The properties stamped as `kind`: `fm:kind` decides the start/finish markers,
+ * `_gpxType` the GPX element it exports as. A plain line carries neither.
+ */
+export function withLineKind(
+  properties: GeoJsonProperties,
+  kind: LineKind,
+): GeoJsonProperties {
+  const { [FM_KIND]: _kind, _gpxType, ...rest } = properties ?? {};
+
+  return kind === 'line'
+    ? rest
+    : {
+        ...rest,
+        [FM_KIND]: kind satisfies FmKind,
+        _gpxType: kind === 'route' ? 'rte' : 'trk',
+      };
 }
 
 function lineType(feature: Feature): 'line' | 'polygon' {
@@ -64,9 +113,27 @@ export function featureEditValues(
 
   const type = lineType(feature);
 
+  const lineKind = isTrackLine(feature) ? lineKindOf(properties) : undefined;
+
+  const detailKind = detailKindOf(feature);
+
+  // A waypoint's, a track's or a route's details are named fields, so not
+  // table rows too; a plain line's stay rows.
+  const named =
+    detailKind === 'point' || lineKind === 'track' || lineKind === 'route';
+
+  const data = featureDataProps(properties);
+
   return {
     label: ownLabel(properties) ?? String(properties?.['name'] ?? ''),
-    props: featureDataProps(properties),
+    props:
+      named && detailKind
+        ? Object.fromEntries(
+            Object.entries(data).filter(
+              ([key]) => !isDetailKey(key, detailKind),
+            ),
+          )
+        : data,
     color: (point ? pointStyle.color : lineStyle.color) ?? defaults.color,
     markerType: pointStyle.markerType ?? defaults.markerType,
     icon: pointStyle.icon ?? '',
@@ -79,7 +146,129 @@ export function featureEditValues(
     dashArray: lineStyle.dashArray ?? defaults.dashArray,
     lineCap: lineStyle.lineCap ?? defaults.lineCap,
     lineJoin: lineStyle.lineJoin ?? defaults.lineJoin,
+    lineKind,
+    channels: isTrackLine(feature)
+      ? readChannels(feature).map(({ key }) => key)
+      : undefined,
+    details: detailKind && {
+      ...emptyDetails(),
+      ...(named &&
+        Object.fromEntries(
+          detailKeysOf(detailKind).map((key) => [
+            key,
+            key === 'time'
+              ? toLocalInput(properties?.[key])
+              : (data[key] ?? ''),
+          ]),
+        )),
+      ele:
+        feature.geometry.type === 'Point'
+          ? String(feature.geometry.coordinates[2] ?? '')
+          : '',
+      links: readLinks(properties),
+    },
   };
+}
+
+/** Which details a feature has: a waypoint's, a line's, or none (a polygon). */
+export function detailKindOf(feature: Feature): DetailKind | undefined {
+  return feature.geometry.type === 'Point'
+    ? 'point'
+    : isTrackLine(feature)
+      ? 'line'
+      : undefined;
+}
+
+function readLinks(properties: GeoJsonProperties): DetailLink[] {
+  const links = properties?.['links'];
+
+  return Array.isArray(links)
+    ? links.flatMap((link) => {
+        const { href, text, ...rest } = (link ?? {}) as Record<string, unknown>;
+
+        return typeof href === 'string'
+          ? [{ ...rest, href, text: typeof text === 'string' ? text : '' }]
+          : [];
+      })
+    : [];
+}
+
+/**
+ * The details written over the properties. A detail left empty goes, unless
+ * the table still states it — as a plain line's do, the fields being empty.
+ */
+function withDetails(
+  properties: Record<string, unknown>,
+  details: FeatureDetails,
+  kind: DetailKind,
+  rows: Readonly<Record<string, string>>,
+  before: GeoJsonProperties,
+): Record<string, unknown> {
+  const out = { ...properties };
+
+  // As it was — from `before`, as the table merge has already let it go.
+  const keep = (key: string) => {
+    if (before?.[key] === undefined) {
+      delete out[key];
+    } else {
+      out[key] = before[key];
+    }
+  };
+
+  for (const key of detailKeysOf(kind)) {
+    const value = details[key].trim();
+
+    // Refused while shown; hidden (the line made a polygon), left as it was.
+    if (key === 'number' && !isValidDetailNumber(value)) {
+      keep(key);
+
+      continue;
+    }
+
+    // Shown in local time; untouched, written back exactly as it was — one the
+    // field couldn't show (an epoch number, free text) included.
+    if (key === 'time' && value === toLocalInput(before?.[key])) {
+      keep(key);
+
+      continue;
+    }
+
+    const ms = key === 'time' && value ? Date.parse(value) : undefined;
+
+    if (ms !== undefined && Number.isNaN(ms)) {
+      keep(key);
+    } else if (value) {
+      out[key] =
+        key === 'number'
+          ? Number(value)
+          : ms !== undefined
+            ? isoInstant(ms)
+            : value;
+    } else if (!Object.hasOwn(rows, key)) {
+      delete out[key];
+    }
+  }
+
+  // Untouched, the links stay exactly as the file had them.
+  if (JSON.stringify(details.links) === JSON.stringify(readLinks(properties))) {
+    return out;
+  }
+
+  const links = details.links
+    .filter(({ href }) => href.trim())
+    .map(({ href, text, ...rest }) => ({
+      ...rest,
+      href: href.trim(),
+      ...(text.trim() && { text: text.trim() }),
+    }));
+
+  if (links.length) {
+    out['links'] = links;
+  } else {
+    delete out['links'];
+  }
+
+  return out;
 }
 
 /** The feature's properties as edited. */
@@ -96,8 +285,46 @@ export function editedProperties(
     ? pointStyleToProperties(merged, values)
     : lineStyleToProperties(merged, values);
 
+  // A closed track turned polygon is no track any more.
+  const kind =
+    values.lineKind === undefined
+      ? undefined
+      : values.type === 'polygon'
+        ? 'line'
+        : values.lineKind;
+
+  // Left alone unless changed, so a KML line's `fm:kind: feature` stays.
+  const kinded =
+    kind === undefined || kind === lineKindOf(feature.properties)
+      ? styled
+      : withLineKind(styled, kind);
+
+  const { channels } = values;
+
+  const channelled =
+    channels !== undefined &&
+    isTrackLine(feature) &&
+    new Set(channels).symmetricDifference(
+      new Set(readChannels(feature).map(({ key }) => key)),
+    ).size > 0
+      ? withChannelKeys(feature, kinded ?? {}, channels)
+      : kinded;
+
+  const detailKind = detailKindOf(feature);
+
+  const detailed =
+    values.details && detailKind
+      ? withDetails(
+          channelled ?? {},
+          values.details,
+          detailKind,
+          rows,
+          feature.properties,
+        )
+      : channelled;
+
   return withEditedLabel(
-    { geometry: feature.geometry, properties: styled },
+    { geometry: feature.geometry, properties: detailed },
     values.label.trim(),
     rows,
   );

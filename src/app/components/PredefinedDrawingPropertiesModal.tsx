@@ -1,3 +1,7 @@
+import {
+  dataViewerSetLabelVisibility,
+  dataViewerSetStyle,
+} from '@features/dataViewer/model/actions.js';
 import { DrawingStyleSettingsModal } from '@features/drawing/components/DrawingStyleSettingsModal.js';
 import { drawingSetLabelVisibility } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
@@ -27,6 +31,8 @@ export default function PredefinedDrawingPropertiesModal({
 
   const dispatch = useDispatch();
 
+  // One default for what is drawn and for what arrives unstyled, so the map
+  // features follow one style whichever way they came.
   const save = (
     drawing: DrawingStyle,
     labelVisibility: LabelVisibility,
@@ -35,6 +41,10 @@ export default function PredefinedDrawingPropertiesModal({
     dispatch(applySettings({ drawing, drawingApplyAll }));
 
     dispatch(drawingSetLabelVisibility(labelVisibility));
+
+    dispatch(dataViewerSetStyle(drawing));
+
+    dispatch(dataViewerSetLabelVisibility(labelVisibility));
   };
 
   return (

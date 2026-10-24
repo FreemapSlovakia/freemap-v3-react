@@ -28,15 +28,15 @@ export const dataViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    // Prompt only when elevation is actually missing and the user hasn't
-    // decided yet. A track with full elevation (from any source) opens the
-    // chart straight away — overriding it is the explicit "update" button's
-    // job. The chart renders the recorded coordinates as-is, so a track the
-    // user chose to keep partial shows its gaps instead of a fabricated
-    // server profile.
+    // Prompt only when some elevation is missing and the user hasn't decided
+    // yet. A track with full elevation opens the chart straight away —
+    // overriding it is the explicit "update" button's job — and so does one with
+    // none, which the chart samples from the API. The chart renders recorded
+    // coordinates as-is, so a track the user chose to keep partial shows its
+    // gaps instead of a fabricated server profile.
     if (
       elevationDecision !== 'undecided' ||
-      elevationCoverage([active.feature]) === 'full'
+      elevationCoverage([active.feature]) !== 'partial'
     ) {
       // `elevationChartProcessor` draws it from here — it densifies a sparse
       // line and states the credit, so the toggle and a URL-restored chart take

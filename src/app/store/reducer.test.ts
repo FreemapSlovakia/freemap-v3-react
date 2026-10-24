@@ -4,8 +4,12 @@ import {
   openTool,
   selectFeature,
 } from '@app/store/actions.js';
-import { dataViewerSetData } from '@features/dataViewer/model/actions.js';
-import { drawingLineStopDrawing } from '@features/drawing/model/actions/drawingLineActions.js';
+import {
+  dataViewerDetachHole,
+  dataViewerDrawStop,
+  dataViewerMakeHole,
+  dataViewerSetData,
+} from '@features/dataViewer/model/actions.js';
 import {
   objectsSetResult,
   setDetailsShown,
@@ -31,7 +35,7 @@ import { type MainState, mainInitialState, mainReducer } from './reducer.js';
 const run = (...actions: Action[]): MainState =>
   actions.reduce(mainReducer, mainInitialState);
 
-const aLine = { type: 'draw-line-poly', id: 0 } as const;
+const aLine = { type: 'feature', id: 0 } as const;
 
 const aResult = {
   id: { type: 'osm', elementType: 'node', id: 1 },
@@ -391,25 +395,72 @@ describe('dataViewerSetData', () => {
   });
 
   // What a fresh load selects instead is `dataViewerSetTrackDataProcessor`.
-  it('drops a stale data-viewer selection but leaves another feature selected', () => {
+  it('drops a stale feature selection but leaves anything else selected', () => {
     expect(
       run(
-        selectFeature({ type: 'data-viewer', id: 3 }),
+        selectFeature({ type: 'feature', id: 3 }),
         dataViewerSetData({ trackGeojson: fc(line) }),
       ).selection,
     ).toBe(null);
 
+    const tracked = { type: 'tracking', id: 'tok' } as const;
+
     expect(
-      run(selectFeature(aLine), dataViewerSetData({ trackGeojson: fc(line) }))
+      run(selectFeature(tracked), dataViewerSetData({ trackGeojson: fc(line) }))
         .selection,
-    ).toEqual(aLine);
+    ).toEqual(tracked);
   });
 });
 
-describe('drawingLineStopDrawing', () => {
-  it('keeps the draw tool open — stopping only clears the drawing flag in the drawingLines slice', () => {
-    const s = run(openTool('draw-lines'), drawingLineStopDrawing());
+describe('dataViewerDrawStop', () => {
+  it('keeps the draw tool open — stopping only ends the drawing', () => {
+    const s = run(openTool('draw-lines'), dataViewerDrawStop());
 
     expect(s.mapTool).toBe('draw-lines');
+  });
+});
+
+describe('the selection across hole edits', () => {
+  it('follows a polygon made a hole into its parent, which moves up', () => {
+    const s = run(
+      selectFeature({ type: 'feature', id: 1 }),
+      dataViewerMakeHole({ index: 1, parent: 3 }),
+    );
+
+    expect(s.selection).toEqual({ type: 'feature', id: 2 });
+  });
+
+  it('moves a later feature up past the one that went', () => {
+    const s = run(
+      selectFeature({ type: 'feature', id: 4 }),
+      dataViewerMakeHole({ index: 1, parent: 0 }),
+    );
+
+    expect(s.selection).toEqual({ type: 'feature', id: 3 });
+  });
+
+  it('follows a detached hole to the polygon it became', () => {
+    const s = run(
+      selectFeature({ type: 'feature', id: 2, part: 1 }),
+      dataViewerDetachHole({ index: 2, part: 1 }),
+    );
+
+    expect(s.selection).toEqual({ type: 'feature', id: 3 });
+  });
+
+  it('renumbers a later hole and a later feature', () => {
+    expect(
+      run(
+        selectFeature({ type: 'feature', id: 2, part: 2 }),
+        dataViewerDetachHole({ index: 2, part: 1 }),
+      ).selection,
+    ).toEqual({ type: 'feature', id: 2, part: 1 });
+
+    expect(
+      run(
+        selectFeature({ type: 'feature', id: 5 }),
+        dataViewerDetachHole({ index: 2, part: 1 }),
+      ).selection,
+    ).toEqual({ type: 'feature', id: 6 });
   });
 });

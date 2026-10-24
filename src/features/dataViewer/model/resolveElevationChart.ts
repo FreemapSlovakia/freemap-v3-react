@@ -1,4 +1,5 @@
 import type { ProfileResolver } from '@features/elevationChart/model/resolve.js';
+import { elevationCoverage } from '@shared/geoutils.js';
 import {
   isTrackLine,
   resolveActiveTrack,
@@ -37,15 +38,21 @@ const resolve: ProfileResolver = async (getState, dispatch) => {
 
   const drawn = rendered && isTrackLine(rendered) ? rendered : active.feature;
 
+  // A line with no elevation of its own — a drawn one, typically — is sampled
+  // from the elevation API, and nothing is written into it.
+  const sampled = elevationCoverage([drawn]) === 'none';
+
   return {
     status: 'ok',
     source: {
       trackGeojson: drawn,
       // Recorded elevation is shown as-is, gaps included; a fill or override has
       // already written the server's values into these same coordinates.
-      keepRecorded: true,
+      keepRecorded: !sampled,
       waypoints: trackWaypoints(trackGeojson),
-      credit: elevationCredit(trackViewer, drawn),
+      credit: sampled
+        ? { provenance: 'terrain-model' }
+        : elevationCredit(trackViewer, drawn),
     },
   };
 };

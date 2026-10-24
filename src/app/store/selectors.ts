@@ -50,7 +50,7 @@ export const galleryShowPositionSelector = (state: RootState): boolean =>
   state.gallery.showPosition;
 
 export const drawingLineSelector = (state: RootState): boolean =>
-  state.drawingLines.drawing;
+  state.trackViewer.drawing !== null;
 
 export const mapAreaSelectingSelector = (state: RootState): boolean =>
   state.mapArea.selecting !== null;
@@ -91,11 +91,10 @@ export const pickingModeSelector = (state: RootState): boolean =>
  * The armed mode's own toolbar says what it wants and cancels it.
  */
 export const armedModeSelector = (state: RootState): boolean =>
-  state.drawingLines.joinWith !== undefined ||
-  // The data viewer's toolbar rides its selection, so a mode can never take
-  // the chrome away without it.
-  (state.main.selection?.type === 'data-viewer' &&
-    (state.trackViewer.joinWith !== null || state.trackViewer.splitting));
+  // The feature's toolbar rides its selection, so a mode can never take the
+  // chrome away without it.
+  state.main.selection?.type === 'feature' &&
+  (state.trackViewer.joinWith !== null || state.trackViewer.splitting);
 
 /** Whether the map is in a mode of its own, whichever kind. */
 export const mapModeSelector = (state: RootState): boolean =>
@@ -133,7 +132,7 @@ export const mouseCursorSelector = createSelector(
   routePlannerPickModeSelector,
   showGalleryPickerSelector,
   galleryShowPositionSelector,
-  (state: RootState) => state.drawingLines.drawing,
+  drawingLineSelector,
   toposcopePickingCenterSelector,
   panoramaPickingSelector,
   viewshedPickingViewpointSelector,
@@ -215,7 +214,7 @@ export const selectingModeSelector = (state: RootState): boolean => {
   return (
     !window.fmEmbedded &&
     !pickingModeSelector(state) &&
-    !state.drawingLines.drawing &&
+    state.trackViewer.drawing === null &&
     // selection works when no map-click tool captures the click, except a
     // route-planner that is actively picking points
     (mode === null ||
@@ -234,7 +233,7 @@ export const drawingLinePolys = (state: RootState): boolean => {
     tool === 'draw-polygons' ||
     // A picking mode owns the map, so an in-progress drawing must go inert there
     // too — mirror the masking `activeMapToolSelector` already applies.
-    (state.drawingLines.drawing && !pickingModeSelector(state))
+    (state.trackViewer.drawing !== null && !pickingModeSelector(state))
   );
 };
 
@@ -254,8 +253,6 @@ export const askingCookieConsentSelector = (state: RootState): boolean =>
 // user-visible features on the map.
 export const hasClearableMapFeaturesSelector = (state: RootState): boolean =>
   state.main.selection !== null ||
-  state.drawingPoints.points.length > 0 ||
-  state.drawingLines.lines.length > 0 ||
   state.routePlanner.points.length > 0 ||
   state.objects.objects.length > 0 ||
   state.changesets.changesets.length > 0 ||

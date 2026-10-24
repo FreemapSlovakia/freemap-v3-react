@@ -5,6 +5,7 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
+  vertex: { channels: {} },
   style: {
     title: 'Domyślny styl',
   },

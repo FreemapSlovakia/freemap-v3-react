@@ -1,9 +1,21 @@
-import { setActiveModal } from '@app/store/actions.js';
+import { openTool, setActiveModal } from '@app/store/actions.js';
+import { ProjectPointModal } from '@features/drawing/components/ProjectPointModal.js';
+import { featureToOsmXml } from '@features/drawing/josmXml.js';
+import { drawingPreventCutHoleHint } from '@features/drawing/model/actions/drawingLineActions.js';
+import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
+import { featureOsmTags } from '@features/drawing/osmTags.js';
+import { loadDrawingMessages } from '@features/drawing/translations/loadDrawingMessages.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
-import { toastsRemove } from '@features/toasts/model/actions.js';
+import { josmRemote } from '@features/openInExternalApp/josmRemote.js';
+import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
+import {
+  type ToastAction,
+  toastsAdd,
+  toastsRemove,
+} from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { PromptToolbar } from '@shared/components/PromptToolbar.js';
@@ -15,33 +27,54 @@ import { Selection } from '@shared/components/Selection.js';
 import { featureLabel } from '@shared/featureProperties.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { Feature } from 'geojson';
-import type { ReactElement } from 'react';
+import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
+import {
+  pointStyleFromProperties,
+  pointStyleToProperties,
+} from '@shared/styleFromProperties.js';
+import { area } from '@turf/area';
+import { booleanContains } from '@turf/boolean-contains';
+import { destination } from '@turf/destination';
+import type { Feature, Polygon } from 'geojson';
+import { type ReactElement, useMemo, useState } from 'react';
 import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaChartArea,
   FaCheck,
   FaCompressAlt,
   FaDrawPolygon,
+  FaEdit,
   FaEllipsisV,
+  FaExchangeAlt,
   FaInfoCircle,
   FaMagic,
   FaMapMarkerAlt,
-  FaPencilAlt,
+  FaObjectGroup,
+  FaObjectUngroup,
+  FaRegStopCircle,
   FaTag,
+  FaTimes,
 } from 'react-icons/fa';
 import { RiScissorsFill } from 'react-icons/ri';
 import {
+  TbAngle,
   TbArrowsJoin,
   TbArrowsJoin2,
   TbArrowsSplit,
   TbTimeline,
 } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
-import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
+import { isPoint, lineKindOf } from '../featureEditing.js';
 import { useSimplifyData } from '../hooks/useSimplifyData.js';
 import {
+  dataViewerAddFeatures,
+  dataViewerCutHole,
+  dataViewerDetachHole,
+  dataViewerDrawStop,
   dataViewerExplodeTrack,
+  dataViewerInsertVertex,
+  dataViewerMakeHole,
+  dataViewerReverse,
   dataViewerSetElevationPrompt,
   dataViewerSetJoining,
   dataViewerSetSplitting,
@@ -56,27 +89,76 @@ import { isSimplifiable } from '../simplifyTrack.js';
 import { isExplodable, isSplittable } from '../splitTrack.js';
 import { isTrackLine, trackLineFeatures } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
+import { editableParts } from '../vertexEditing.js';
 import { DataViewerToggleButton } from './DataViewerToggleButton.js';
+
+/**
+ * The polygon a "make this a hole" would attach `inner` to: the smallest one
+ * that fully contains it, so a ring inside nested polygons joins the one it
+ * visually sits in.
+ */
+function enclosingPolygon(
+  features: readonly Feature[],
+  index: number,
+): number | undefined {
+  const inner = features[index];
+
+  if (inner?.geometry.type !== 'Polygon') {
+    return undefined;
+  }
+
+  let best: number | undefined;
+
+  let bestArea = Number.POSITIVE_INFINITY;
+
+  for (const [i, other] of features.entries()) {
+    if (i === index || other.geometry.type !== 'Polygon') {
+      continue;
+    }
+
+    const outer: Polygon = {
+      type: 'Polygon',
+      coordinates: [other.geometry.coordinates[0] ?? []],
+    };
+
+    if (!booleanContains(outer, inner.geometry)) {
+      continue;
+    }
+
+    const a = area(outer);
+
+    if (a < bestArea) {
+      bestArea = a;
+
+      best = i;
+    }
+  }
+
+  return best;
+}
 
 export default function DataViewerSelection(): ReactElement | null {
   const m = useMessages();
 
   const dvm = useDataViewerMessages();
 
-  // The properties editor is the drawing tool's, labels and all.
   const dm = useDrawingMessages();
+
+  const oeam = useOpenInExternalAppMessages();
 
   const dispatch = useDispatch();
 
-  const convertToDrawing = useConvertTrackToDrawing();
-
   const simplify = useSimplifyData();
 
-  const index = useAppSelector((state) =>
-    state.main.selection?.type === 'data-viewer'
-      ? state.main.selection.id
-      : undefined,
-  );
+  const selection = useAppSelector((state) => state.main.selection);
+
+  const index = selection?.type === 'feature' ? selection.id : undefined;
+
+  // A hole of the polygon, where one is picked rather than the shape.
+  const hole =
+    selection?.type === 'feature' && selection.part
+      ? selection.part
+      : undefined;
 
   const trackGeojson = useAppSelector(
     (state) => state.trackViewer.trackGeojson,
@@ -90,7 +172,9 @@ export default function DataViewerSelection(): ReactElement | null {
   );
 
   const elevationChartActive = useAppSelector(
-    (state) => state.elevationChart.target?.type === 'track-viewer',
+    (state) =>
+      state.elevationChart.target?.type === 'track-viewer' &&
+      state.trackViewer.activeTrackIndex === index,
   );
 
   const trackInfoActive = useAppSelector(
@@ -99,11 +183,50 @@ export default function DataViewerSelection(): ReactElement | null {
 
   const splitting = useAppSelector((state) => state.trackViewer.splitting);
 
-  const language = useAppSelector((state) => state.l10n.language);
-
   const splitPoint = useAppSelector((state) => state.trackViewer.splitPoint);
 
   const joinWith = useAppSelector((state) => state.trackViewer.joinWith);
+
+  const drawing = useAppSelector(
+    (state) =>
+      state.trackViewer.drawing !== null &&
+      state.trackViewer.drawing.index === index,
+  );
+
+  const cuttingHole = useAppSelector(
+    (state) => index !== undefined && state.trackViewer.holeFor === index,
+  );
+
+  const preventCutHoleHint = useAppSelector(
+    (state) => state.drawingSettings.preventCutHoleHint,
+  );
+
+  // Offering "don't show next time" only once the pref can outlive the session.
+  const canRememberHintPref = useAppSelector(
+    (state) => state.cookieConsent.cookieConsentResult !== null,
+  );
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const stopKbd = useEscapeKbd(
+    cuttingHole ? dataViewerCutHole(null) : dataViewerDrawStop(),
+  );
+
+  const [projecting, setProjecting] = useState(false);
+
+  // Tested against every polygon, so only for a polygon without holes.
+  const enclosing = useMemo(() => {
+    const geometry =
+      index === undefined ? undefined : trackGeojson?.features[index]?.geometry;
+
+    return index !== undefined &&
+      trackGeojson &&
+      hole === undefined &&
+      geometry?.type === 'Polygon' &&
+      geometry.coordinates.length === 1
+      ? enclosingPolygon(trackGeojson.features, index)
+      : undefined;
+  }, [index, trackGeojson, hole]);
 
   const line =
     feature !== undefined && isTrackLine(feature) ? feature : undefined;
@@ -155,24 +278,117 @@ export default function DataViewerSelection(): ReactElement | null {
   // A join needs a second line to aim at.
   const joinable = line !== undefined && lines.length > 1;
 
-  const geometryType = feature.geometry.type;
+  const point = isPoint(feature.geometry);
 
-  const isPoint = geometryType === 'Point' || geometryType === 'MultiPoint';
+  const polygon = feature.geometry.type === 'Polygon';
+
+  const lastVertex =
+    feature.geometry.type === 'Point'
+      ? feature.geometry.coordinates
+      : feature.geometry.type === 'LineString'
+        ? feature.geometry.coordinates.at(-1)
+        : undefined;
+
+  const projectPoint = (distance: number, azimuth: number) => {
+    setProjecting(false);
+
+    if (!lastVertex) {
+      return;
+    }
+
+    const { coordinates } = destination(lastVertex, distance, azimuth, {
+      units: 'meters',
+    }).geometry;
+
+    if (feature.geometry.type === 'LineString') {
+      dispatch(
+        dataViewerInsertVertex({
+          index,
+          part: 0,
+          vertex: feature.geometry.coordinates.length,
+          position: coordinates,
+        }),
+      );
+
+      dispatch(drawingMeasure({}));
+    } else {
+      // A point projects a new point, styled as the one it was taken from —
+      // its style alone, not its description, time or data.
+      dispatch(
+        dataViewerAddFeatures({
+          features: [
+            {
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates },
+              properties: pointStyleToProperties(
+                {},
+                pointStyleFromProperties(feature.properties),
+              ),
+            },
+          ],
+        }),
+      );
+    }
+  };
+
+  const cutHole = () => {
+    // Opening a map-click tool disarms hole mode, so arm it once it is open.
+    dispatch(openTool('draw-polygons'));
+
+    dispatch(dataViewerCutHole(index));
+
+    if (preventCutHoleHint) {
+      return;
+    }
+
+    const actions: ToastAction[] = [{ nameKey: 'general.ok' }];
+
+    if (canRememberHintPref) {
+      actions.push({
+        nameKey: 'general.preventShowingAgain',
+        action: drawingPreventCutHoleHint(),
+        variant: 'dark',
+      });
+    }
+
+    dispatch(
+      toastsAdd({
+        id: 'drawing.cutHoleHint',
+        messageKey: 'cutHoleHint',
+        messageLoader: loadDrawingMessages,
+        style: 'info',
+        actions,
+        // Spent once the hole's first point lands, dropped when cancelled.
+        statePredicate: (state) => state.trackViewer.holeFor === null,
+      }),
+    );
+  };
 
   // The place's title for "Open in…", which only a point offers.
-  const name = isPoint
+  const name = point
     ? featureLabel(feature, { locale: language, singleLine: true })
     : undefined;
 
-  // The kind of the selected feature, a line additionally by its position among
-  // the loaded lines — not its name, which the properties dialog shows.
-  const label = line
-    ? dvm?.unnamedTrack({
-        n: lines.findIndex((candidate) => candidate.index === index) + 1,
-      })
-    : isPoint
-      ? m?.selections.drawPoints
-      : m?.selections.drawPolygons;
+  const kind = lineKindOf(feature.properties);
+
+  const label =
+    hole !== undefined
+      ? m?.selections.drawPolygonHole
+      : line
+        ? (featureLabel(feature, { locale: language, singleLine: true }) ??
+          dvm?.unnamedTrack({
+            kind,
+            n:
+              lines
+                .filter(
+                  (candidate) =>
+                    lineKindOf(candidate.feature.properties) === kind,
+                )
+                .findIndex((candidate) => candidate.index === index) + 1,
+          }))
+        : point
+          ? m?.selections.drawPoints
+          : m?.selections.drawPolygons;
 
   // A MultiPoint has no single position; its first stands for the feature the
   // toolbar acts on.
@@ -183,207 +399,314 @@ export default function DataViewerSelection(): ReactElement | null {
         ? (feature.geometry.coordinates[0] ?? [])
         : [];
 
-  // A point's own menu carries what the packed menu would otherwise hold, so it
-  // takes the conversion with it.
-  const placeMenu = isPoint && lat !== undefined && lon !== undefined;
+  const placeMenu = point && lat !== undefined && lon !== undefined;
+
+  const parts = editableParts(feature.geometry);
 
   return (
-    <Selection
-      control={<DataViewerToggleButton />}
-      icon={
-        line ? <TbTimeline /> : isPoint ? <FaMapMarkerAlt /> : <FaDrawPolygon />
-      }
-      label={label}
-      deletable
-    >
-      <ResponsiveActions gap={1} align="start" toggleLabel={m?.general.actions}>
-        <Action
-          icon={<FaTag />}
-          label={dm?.modify}
-          showLabelFrom="md"
-          onClick={() => {
-            dispatch(setActiveModal({ type: 'data-viewer-properties' }));
-          }}
-        />
+    <>
+      <ProjectPointModal
+        show={projecting}
+        onClose={() => setProjecting(false)}
+        onAdd={projectPoint}
+      />
 
-        {line && (
-          <Action
-            icon={<FaChartArea />}
-            label={m?.general.elevationProfile}
-            showLabelFrom="md"
-            active={elevationChartActive}
-            onClick={() => {
-              dispatch(dataViewerToggleElevationChart());
-            }}
-          />
+      <Selection
+        control={<DataViewerToggleButton />}
+        icon={
+          line ? <TbTimeline /> : point ? <FaMapMarkerAlt /> : <FaDrawPolygon />
+        }
+        label={label}
+        deletable
+      >
+        {(drawing || cuttingHole) && (
+          <LongPressTooltip
+            breakpoint="sm"
+            label={cuttingHole ? m?.general.cancel : dm?.stopDrawing}
+            kbd={stopKbd}
+          >
+            {({ label, labelClassName, props }) => (
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  dispatch(
+                    cuttingHole
+                      ? dataViewerCutHole(null)
+                      : dataViewerDrawStop(),
+                  )
+                }
+                {...props}
+              >
+                {cuttingHole ? <FaTimes /> : <FaRegStopCircle />}
+                <span className={labelClassName}> {label}</span>
+              </Button>
+            )}
+          </LongPressTooltip>
         )}
 
-        {line && (
-          <Action
-            icon={<FaInfoCircle />}
-            label={dvm?.moreInfo}
-            showFrom="sm"
-            showLabelFrom="md"
-            active={trackInfoActive}
-            onClick={() => {
-              // The stats depend on elevation, so settle it first when some is
-              // missing and the user hasn't decided yet. Measured here rather
-              // than per render: it walks every coordinate.
-              if (trackInfoActive) {
-                dispatch(toastsRemove(TRACK_INFO_TOAST_ID));
-              } else if (
-                elevationDecision === 'undecided' &&
-                elevationCoverage([line]) !== 'full'
-              ) {
-                dispatch(dataViewerSetElevationPrompt({ type: 'info' }));
-              } else {
-                dispatch(trackInfoToast);
+        <ResponsiveActions
+          gap={1}
+          align="start"
+          toggleLabel={m?.general.actions}
+        >
+          {/* A hole has no label or style of its own: it is part of its polygon. */}
+          {hole === undefined && (
+            <Action
+              icon={<FaTag />}
+              label={dm?.modify}
+              showLabelFrom="md"
+              onClick={() => {
+                dispatch(setActiveModal({ type: 'data-viewer-properties' }));
+              }}
+            />
+          )}
+
+          {line && (
+            <Action
+              icon={<FaChartArea />}
+              label={m?.general.elevationProfile}
+              showLabelFrom="md"
+              active={elevationChartActive}
+              onClick={() => {
+                dispatch(dataViewerToggleElevationChart());
+              }}
+            />
+          )}
+
+          {line && (
+            <Action
+              icon={<FaInfoCircle />}
+              label={dvm?.moreInfo}
+              showFrom="sm"
+              showLabelFrom="md"
+              active={trackInfoActive}
+              onClick={() => {
+                // The stats depend on elevation, so settle it first when some
+                // is missing and the user hasn't decided yet.
+                if (trackInfoActive) {
+                  dispatch(toastsRemove(TRACK_INFO_TOAST_ID));
+                } else if (
+                  elevationDecision === 'undecided' &&
+                  elevationCoverage([line]) !== 'full'
+                ) {
+                  dispatch(dataViewerSetElevationPrompt({ type: 'info' }));
+                } else {
+                  dispatch(trackInfoToast);
+                }
+              }}
+            />
+          )}
+
+          {line && isSplittable(line) && (
+            <Action
+              icon={<RiScissorsFill />}
+              label={dvm?.split.action}
+              showFrom="sm"
+              // Later than the buttons beside them: both carry a caret as well.
+              showLabelFrom="lg"
+              onClick={() => {
+                dispatch(dataViewerSetSplitting(true));
+              }}
+              menu={
+                isExplodable(line) && [
+                  <Dropdown.Item
+                    key="segments"
+                    as="button"
+                    onClick={() => {
+                      dispatch(dataViewerExplodeTrack(index));
+                    }}
+                  >
+                    <TbArrowsSplit />
+                    <MenuLabel>
+                      <Text m={dvm} k="split.segments" />
+                    </MenuLabel>
+                  </Dropdown.Item>,
+                ]
               }
-            }}
-          />
-        )}
+            />
+          )}
 
-        {line && isSplittable(line) && (
-          <Action
-            icon={<RiScissorsFill />}
-            label={dvm?.split.action}
-            showFrom="sm"
-            // Later than the buttons beside them: both carry a caret as well.
-            showLabelFrom="lg"
-            onClick={() => {
-              dispatch(dataViewerSetSplitting(true));
-            }}
-            menu={
-              isExplodable(line) && [
+          {joinable && (
+            <Action
+              icon={<TbArrowsJoin />}
+              label={dvm?.join.action}
+              showFrom="md"
+              showLabelFrom="lg"
+              // The two ways of joining differ in the result, so neither is the
+              // one a press means: the button asks which before it arms.
+              menuOnly
+              menu={[
+                <Dropdown.Item
+                  key="line"
+                  as="button"
+                  onClick={() => {
+                    dispatch(
+                      dataViewerSetJoining({
+                        featureIndex: index,
+                        mode: 'line',
+                      }),
+                    );
+                  }}
+                >
+                  <TbArrowsJoin />
+                  <MenuLabel>
+                    <Text m={dvm} k="join.asLine" />
+                  </MenuLabel>
+                </Dropdown.Item>,
+
                 <Dropdown.Item
                   key="segments"
                   as="button"
                   onClick={() => {
-                    dispatch(dataViewerExplodeTrack(index));
+                    dispatch(
+                      dataViewerSetJoining({
+                        featureIndex: index,
+                        mode: 'segments',
+                      }),
+                    );
                   }}
                 >
-                  <TbArrowsSplit />
+                  <TbArrowsJoin2 />
                   <MenuLabel>
-                    <Text m={dvm} k="split.segments" />
+                    <Text m={dvm} k="join.asSegments" />
                   </MenuLabel>
                 </Dropdown.Item>,
-              ]
-            }
-          />
-        )}
-
-        {joinable && (
-          <Action
-            icon={<TbArrowsJoin />}
-            label={dvm?.join.action}
-            showFrom="md"
-            // Later than the buttons beside it: it carries a caret as well.
-            showLabelFrom="lg"
-            // The two ways of joining differ in the result, so neither is the
-            // one a press means: the button asks which before it arms anything.
-            menuOnly
-            menu={[
-              <Dropdown.Item
-                key="line"
-                as="button"
-                onClick={() => {
-                  dispatch(
-                    dataViewerSetJoining({ featureIndex: index, mode: 'line' }),
-                  );
-                }}
-              >
-                <TbArrowsJoin />
-                <MenuLabel>
-                  <Text m={dvm} k="join.asLine" />
-                </MenuLabel>
-              </Dropdown.Item>,
-
-              <Dropdown.Item
-                key="segments"
-                as="button"
-                onClick={() => {
-                  dispatch(
-                    dataViewerSetJoining({
-                      featureIndex: index,
-                      mode: 'segments',
-                    }),
-                  );
-                }}
-              >
-                <TbArrowsJoin2 />
-                <MenuLabel>
-                  <Text m={dvm} k="join.asSegments" />
-                </MenuLabel>
-              </Dropdown.Item>,
-            ]}
-          />
-        )}
-
-        {line && (
-          <Action
-            icon={<FaMagic />}
-            label={dvm?.match.menuItem}
-            showFrom="never"
-            onClick={() => {
-              dispatch(setActiveModal({ type: 'track-viewer-match' }));
-            }}
-          />
-        )}
-
-        {isSimplifiable(feature) && (
-          <Action
-            icon={<FaCompressAlt />}
-            label={m?.general.simplify.title}
-            showFrom="never"
-            onClick={() => {
-              void simplify(index);
-            }}
-          />
-        )}
-
-        {!placeMenu && (
-          <Action
-            icon={<FaPencilAlt />}
-            label={m?.general.convertToDrawing}
-            showFrom="never"
-            onClick={() => {
-              void convertToDrawing(index);
-            }}
-          />
-        )}
-      </ResponsiveActions>
-
-      {placeMenu && (
-        // Not only "open in": the menu also carries what the map's context
-        // menu does with the place.
-        <LongPressTooltip label={m?.general.actions}>
-          {({ props }) => (
-            <OpenInExternalAppMenuButton
-              lat={lat}
-              lon={lon}
-              includePoint
-              pointTitle={name}
-              url={`/?point=${lat}/${lon}`}
-              toggleProps={props}
-              menuItems={
-                <Dropdown.Item
-                  as="button"
-                  onClick={() => {
-                    void convertToDrawing(index);
-                  }}
-                >
-                  <FaPencilAlt />
-                  <MenuLabel>
-                    <Text k="general.convertToDrawing" />
-                  </MenuLabel>
-                </Dropdown.Item>
-              }
-            >
-              <FaEllipsisV />
-            </OpenInExternalAppMenuButton>
+              ]}
+            />
           )}
-        </LongPressTooltip>
-      )}
-    </Selection>
+
+          {line && (
+            <Action
+              icon={<FaMagic />}
+              label={dvm?.match.menuItem}
+              showFrom="never"
+              onClick={() => {
+                dispatch(setActiveModal({ type: 'track-viewer-match' }));
+              }}
+            />
+          )}
+
+          {isSimplifiable(feature) && hole === undefined && (
+            <Action
+              icon={<FaCompressAlt />}
+              label={m?.general.simplify.title}
+              showFrom="never"
+              onClick={() => {
+                void simplify(index);
+              }}
+            />
+          )}
+
+          {feature.geometry.type === 'LineString' && (
+            <Action
+              icon={<FaExchangeAlt />}
+              label={dm?.reverse}
+              showFrom="never"
+              onClick={() => {
+                dispatch(dataViewerReverse(index));
+              }}
+            />
+          )}
+
+          {feature.geometry.type === 'LineString' && (
+            <Action
+              icon={<TbAngle />}
+              label={dm?.projection.projectPoint}
+              showFrom="never"
+              onClick={() => setProjecting(true)}
+            />
+          )}
+
+          {polygon && hole === undefined && parts && (
+            <Action
+              icon={<RiScissorsFill />}
+              label={dm?.cutHole}
+              showFrom="never"
+              active={cuttingHole}
+              onClick={cutHole}
+            />
+          )}
+
+          {enclosing !== undefined && (
+            <Action
+              icon={<FaObjectGroup />}
+              label={dm?.makeHole}
+              showFrom="never"
+              onClick={() => {
+                dispatch(dataViewerMakeHole({ index, parent: enclosing }));
+              }}
+            />
+          )}
+
+          {hole !== undefined && (
+            <Action
+              icon={<FaObjectUngroup />}
+              label={dm?.detachHole}
+              showFrom="never"
+              onClick={() => {
+                dispatch(dataViewerDetachHole({ index, part: hole }));
+              }}
+            />
+          )}
+
+          {!window.fmEmbedded && !point && hole === undefined && (
+            <Action
+              icon={<FaEdit />}
+              label={
+                oeam &&
+                m?.general.openIn({
+                  what: oeam.josm,
+                })
+              }
+              showFrom="never"
+              onClick={() => {
+                const data = featureToOsmXml(feature);
+
+                if (data) {
+                  // The geometry itself, as a new layer of unsaved data — the
+                  // editor has nothing to download it from.
+                  josmRemote(dispatch, 'load_data', {
+                    new_layer: 'true',
+                    layer_name: name || label || 'Freemap',
+                    data,
+                  });
+                }
+              }}
+            />
+          )}
+        </ResponsiveActions>
+
+        {placeMenu && (
+          // Not only "open in": the menu also carries what the map's context
+          // menu does with the place.
+          <LongPressTooltip label={m?.general.actions}>
+            {({ props }) => (
+              <OpenInExternalAppMenuButton
+                lat={lat}
+                lon={lon}
+                includePoint
+                pointTitle={name}
+                pointTags={featureOsmTags(feature.properties)}
+                url={`/?point=${lat}/${lon}`}
+                toggleProps={props}
+                menuItems={
+                  <Dropdown.Item
+                    as="button"
+                    onClick={() => setProjecting(true)}
+                  >
+                    <TbAngle />
+                    <MenuLabel>
+                      <Text m={dm} k="projection.projectPoint" />
+                    </MenuLabel>
+                  </Dropdown.Item>
+                }
+              >
+                <FaEllipsisV />
+              </OpenInExternalAppMenuButton>
+            )}
+          </LongPressTooltip>
+        )}
+      </Selection>
+    </>
   );
 }

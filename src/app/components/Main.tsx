@@ -49,7 +49,6 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOpenOrder } from '@shared/hooks/useOpenOrder.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
-import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogoEu from '@/images/freemap-logo-eu.svg';
 import fmLogoSk from '@/images/freemap-logo-sk.svg';
 import 'leaflet/dist/leaflet.css';
@@ -172,34 +171,16 @@ const gpsRecorderNoticesFactory = () =>
     '@features/gpsRecorder/components/GpsRecorderNotices.js'
   );
 
-const drawingMenuFactory = () =>
-  import(
-    /* webpackChunkName: "drawing-menu" */
-    '@features/drawing/components/DrawingMenu.js'
-  );
-
-const drawingLineSelectionFactory = () =>
-  import(
-    /* webpackChunkName: "drawing-line-selection" */
-    '@features/drawing/components/DrawingLineSelection.js'
-  );
-
-const drawingLinePointSelectionFactory = () =>
-  import(
-    /* webpackChunkName: "drawing-line-point-selection" */
-    '@features/drawing/components/DrawingLinePointSelection.js'
-  );
-
-const drawingPointSelectionFactory = () =>
-  import(
-    /* webpackChunkName: "drawing-point-selection" */
-    '@features/drawing/components/DrawingPointSelection.js'
-  );
-
 const dataViewerSelectionFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-selection" */
     '@features/dataViewer/components/DataViewerSelection.js'
+  );
+
+const dataViewerVertexSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-vertex-selection" */
+    '@features/dataViewer/components/DataViewerVertexSelection.js'
   );
 
 const objectSelectionFactory = () =>
@@ -445,18 +426,6 @@ const legendModalFactory = () =>
     '@features/legend/components/LegendModal.js'
   );
 
-const currentDrawingPropertiesModalFactory = () =>
-  import(
-    /* webpackChunkName: "current-drawing-properties-modal" */
-    '../../features/drawing/components/CurrentDrawingPropertiesModal.js'
-  );
-
-const drawingBatchPropertiesModalFactory = () =>
-  import(
-    /* webpackChunkName: "drawing-batch-properties-modal" */
-    '@features/drawing/components/DrawingBatchPropertiesModal.js'
-  );
-
 const dataViewerBatchPropertiesModalFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-batch-properties-modal" */
@@ -511,12 +480,6 @@ const gpsRecorderSettingsModalFactory = () =>
     '@features/gpsRecorder/components/GpsRecorderSettingsModal.js'
   );
 
-const dataViewerStyleModalFactory = () =>
-  import(
-    /* webpackChunkName: "data-viewer-style-modal" */
-    '@features/dataViewer/components/DataViewerStyleModal.js'
-  );
-
 const dataViewerMatchModalFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-match-modal" */
@@ -533,6 +496,12 @@ const dataViewerPropertiesModalFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-properties-modal" */
     '@features/dataViewer/components/DataViewerPropertiesModal.js'
+  );
+
+const dataViewerVertexModalFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-vertex-modal" */
+    '@features/dataViewer/components/DataViewerVertexModal.js'
   );
 
 const dataViewerElevationPromptModalFactory = () =>
@@ -565,17 +534,11 @@ function selectionMenu(type: Selection['type']): ReactNode {
     case 'search':
       return <SearchSelection />;
 
-    case 'draw-line-poly':
-      return <AsyncComponent factory={drawingLineSelectionFactory} />;
-
-    case 'line-point':
-      return <AsyncComponent factory={drawingLinePointSelectionFactory} />;
-
-    case 'draw-points':
-      return <AsyncComponent factory={drawingPointSelectionFactory} />;
-
-    case 'data-viewer':
+    case 'feature':
       return <AsyncComponent factory={dataViewerSelectionFactory} />;
+
+    case 'vertex':
+      return <AsyncComponent factory={dataViewerVertexSelectionFactory} />;
 
     case 'objects':
       return <AsyncComponent factory={objectSelectionFactory} />;
@@ -607,16 +570,12 @@ function toolMenu(tool: Tool): ReactNode {
     case 'route-planner':
       return <AsyncComponent factory={routePlannerMenuFactory} />;
 
+    // The draw tools are modes of this one's toolbar, which opens with them.
     case 'import-file':
       return <AsyncComponent factory={dataViewerMenuFactory} />;
 
     case 'changesets':
       return <AsyncComponent factory={changesetsMenuFactory} />;
-
-    case 'draw-lines':
-    case 'draw-points':
-    case 'draw-polygons':
-      return <AsyncComponent factory={drawingMenuFactory} />;
 
     case 'map-details':
       return <MapDetailsMenu />;
@@ -961,15 +920,11 @@ export function Main(): ReactElement {
         hidden: inMode,
         node: <AsyncComponent factory={objectsMenuFactory} />,
       },
-      // The three draw-* tools share one menu, so they share one id too: keying
-      // them apart would unmount and re-mount it on every switch between them,
-      // and its lazy chunk re-renders as nothing until the import settles — a
-      // toolbar that blinks away for a frame.
       ...openTools.map((tool) => {
         const node = toolMenu(tool);
 
         return {
-          id: isDrawTool(tool) ? 'drawing' : tool,
+          id: tool,
           open: node !== null,
           hidden: inMode,
           node,
@@ -1351,16 +1306,6 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal?.type === 'current-drawing-properties'}
-        factory={currentDrawingPropertiesModalFactory}
-      />
-
-      <AsyncModal
-        show={activeModal?.type === 'drawing-batch-properties'}
-        factory={drawingBatchPropertiesModalFactory}
-      />
-
-      <AsyncModal
         show={activeModal?.type === 'data-viewer-batch-properties'}
         factory={dataViewerBatchPropertiesModalFactory}
       />
@@ -1406,11 +1351,6 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal?.type === 'track-viewer-style'}
-        factory={dataViewerStyleModalFactory}
-      />
-
-      <AsyncModal
         show={activeModal?.type === 'track-viewer-match'}
         factory={dataViewerMatchModalFactory}
       />
@@ -1423,6 +1363,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'data-viewer-properties'}
         factory={dataViewerPropertiesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'data-viewer-vertex'}
+        factory={dataViewerVertexModalFactory}
       />
 
       {/* Not in the tool's panel: the selection toolbar asks for elevation too,

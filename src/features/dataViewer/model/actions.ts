@@ -8,7 +8,12 @@ import type { LabelVisibility } from '@shared/labelVisibility.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { TransportType } from '@shared/transportTypeDefs.js';
 import type { LatLon } from '@shared/types/common.js';
-import type { FeatureCollection, GeoJsonProperties } from 'geojson';
+import type {
+  Feature,
+  FeatureCollection,
+  GeoJsonProperties,
+  Position,
+} from 'geojson';
 import z from 'zod';
 import type { TrackJoinMode } from '../joinTracks.js';
 import type { TrackSplitPoint } from '../splitTrack.js';
@@ -49,11 +54,10 @@ export const dataViewerSetTrackUID = createAction<string | null>(
 );
 
 /**
- * Puts back the track this browser stored for the current history entry. See
- * `trackStore.ts`: the flag on the entry is what says there is one, and a load
- * that carries no flag evicts the store instead.
+ * Puts back the snapshot the current history entry names (`trackStore.ts`), or
+ * with `null` takes away local data the entry doesn't hold.
  */
-export const dataViewerRestoreStored = createAction(
+export const dataViewerRestoreStored = createAction<string | true | null>(
   'DATA_VIEWER_RESTORE_STORED',
 );
 
@@ -63,7 +67,7 @@ export const dataViewerRestoreStored = createAction(
  * viewer from one whose track is still coming — the elevation chart being the
  * one that has to (`resolveElevationChart`).
  */
-export const dataViewerRestoreStoredDone = createAction(
+export const dataViewerRestoreStoredDone = createAction<string | true>(
   'DATA_VIEWER_RESTORE_STORED_DONE',
 );
 
@@ -210,8 +214,9 @@ export const dataViewerDeleteFeature = createAction<number>(
  * {@link dataViewerDeleteFeature} this edits the loaded data, so the result is
  * no longer the file it came from.
  */
+/** `position` moves a point too — its elevation is its coordinate's. */
 export const dataViewerSetFeatureProperties = createAction<
-  { index: number; properties: GeoJsonProperties }[]
+  { index: number; properties: GeoJsonProperties; position?: Position }[]
 >('DATA_VIEWER_SET_FEATURE_PROPERTIES');
 
 /**
@@ -277,3 +282,98 @@ export const dataViewerSimplify = createAction<{
   tolerance: number;
   id?: number;
 }>('DATA_VIEWER_SIMPLIFY');
+
+/**
+ * The collection rewritten by an edit, unlike a load: a feature kept as the
+ * same object keeps being the active line, and the data stops being its file.
+ */
+export const dataViewerEditFeatures = createAction<Feature[]>(
+  'DATA_VIEWER_EDIT_FEATURES',
+);
+
+/** Adds features after the ones on the map, as they are. */
+export const dataViewerAddFeatures = createAction<{
+  features: Feature[];
+  /** Select the first one added. */
+  select?: boolean;
+}>('DATA_VIEWER_ADD_FEATURES');
+
+/**
+ * Addresses one vertex: the feature by index, its part (the segment of a
+ * multi-segment line, the ring of a polygon, else 0) and the vertex within it.
+ */
+export type VertexAddress = { index: number; part: number; vertex: number };
+
+export const dataViewerMoveVertex = createAction<
+  VertexAddress & { position: Position }
+>('DATA_VIEWER_MOVE_VERTEX');
+
+export const dataViewerInsertVertex = createAction<
+  VertexAddress & { position: Position }
+>('DATA_VIEWER_INSERT_VERTEX');
+
+/** A vertex's position and values as typed; `values` names the channels set. */
+export const dataViewerSetVertexValues = createAction<
+  VertexAddress & { position: Position; values: Record<string, unknown> }
+>('DATA_VIEWER_SET_VERTEX_VALUES');
+
+export const dataViewerDeleteVertex = createAction<VertexAddress>(
+  'DATA_VIEWER_DELETE_VERTEX',
+);
+
+/** Removes a polygon's hole, by ring index. */
+export const dataViewerDeleteHole = createAction<{
+  index: number;
+  part: number;
+}>('DATA_VIEWER_DELETE_HOLE');
+
+/**
+ * Starts drawing: a new line or polygon at its first vertex, carrying
+ * `properties`, or — with `ring` — a hole of that polygon. Later clicks append
+ * through {@link dataViewerDrawAppend}.
+ */
+export const dataViewerDrawStart = createAction<
+  | {
+      type: 'line' | 'polygon';
+      position: Position;
+      properties: GeoJsonProperties;
+      /** Where it lands: after every feature there is, which it is selected as. */
+      index: number;
+    }
+  | { ring: number; position: Position }
+>('DATA_VIEWER_DRAW_START');
+
+/** Appends a vertex to what is being drawn. */
+export const dataViewerDrawAppend = createAction<Position>(
+  'DATA_VIEWER_DRAW_APPEND',
+);
+
+/** Ends drawing; a line or a ring left too short to be one goes. */
+export const dataViewerDrawStop = createAction('DATA_VIEWER_DRAW_STOP');
+
+/** Draws on from an end vertex of a line, the line turned round if need be. */
+export const dataViewerDrawContinue = createAction<VertexAddress>(
+  'DATA_VIEWER_DRAW_CONTINUE',
+);
+
+export const dataViewerReverse = createAction<number>('DATA_VIEWER_REVERSE');
+
+/**
+ * Arms hole cutting on a polygon: the next drawing click starts a new ring of
+ * it. `null` disarms. Dispatch it after opening the draw tool, which disarms it.
+ */
+export const dataViewerCutHole = createAction<number | null>(
+  'DATA_VIEWER_CUT_HOLE',
+);
+
+/** Moves a polygon into another as a hole of it. */
+export const dataViewerMakeHole = createAction<{
+  index: number;
+  parent: number;
+}>('DATA_VIEWER_MAKE_HOLE');
+
+/** Turns a hole into a polygon of its own, after the one it was cut from. */
+export const dataViewerDetachHole = createAction<{
+  index: number;
+  part: number;
+}>('DATA_VIEWER_DETACH_HOLE');

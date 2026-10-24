@@ -8,6 +8,8 @@ import {
   dataViewerSetGpxUrl,
   dataViewerSetTrackUID,
 } from '@features/dataViewer/model/actions.js';
+import { documentFeatures } from '@features/dataViewer/model/collection.js';
+import { featuresInLink } from '@features/dataViewer/model/urlForm.js';
 import {
   routePlannerFindRoute,
   routePlannerSetSavedRoute,
@@ -105,8 +107,9 @@ export const mapsRestoreProcessor: Processor = {
         return;
       }
 
-      // This map has no track, so drop one left over from the map before it.
-      if (current) {
+      // No features of the copy's own: they came with the URL, or the ones on
+      // screen are left over from the map before this one.
+      if (current && !featuresInLink(getState().trackViewer)) {
         dispatch(dataViewerDelete());
       }
 
@@ -223,7 +226,20 @@ export const mapsRestoreProcessor: Processor = {
         if (record && !navigator.onLine) {
           dispatch(mapsSetMeta(record.meta));
 
-          restoreTrack(record.track, record.trackUID, record.gpxUrl);
+          // An older build's copy holds the imported track alone, the drawings
+          // having come with the URL — so it joins them rather than replacing them.
+          const current = getState().trackViewer.trackGeojson;
+
+          restoreTrack(
+            stored?.trackOnly && record.track && current
+              ? {
+                  type: 'FeatureCollection',
+                  features: [...current.features, ...record.track.features],
+                }
+              : record.track,
+            record.trackUID,
+            record.gpxUrl,
+          );
 
           dispatch(routePlannerSetSavedRoute(null));
 
@@ -263,10 +279,33 @@ export const mapsRestoreProcessor: Processor = {
         routePlannerSetSavedRoute(document.data.routePlanner?.result ?? null),
       );
 
+      // All of the map's features, not only the ones the drawing form can't
+      // say — and none where they fit the link, which has already shown them.
+      const saved: FeatureCollection = {
+        type: 'FeatureCollection',
+        features: documentFeatures(
+          document.data.points,
+          document.data.lines,
+          document.data.trackViewer?.trackGeojson,
+          document.data.trackViewer?.order,
+        ),
+      };
+
+      const savedUID = document.data.trackViewer?.trackUID ?? null;
+
+      const savedUrl = document.data.trackViewer?.gpxUrl ?? null;
+
       restoreTrack(
-        document.data.trackViewer?.trackGeojson ?? null,
-        document.data.trackViewer?.trackUID ?? null,
-        document.data.trackViewer?.gpxUrl ?? null,
+        saved.features.length &&
+          !featuresInLink({
+            trackGeojson: saved,
+            trackUID: savedUID,
+            gpxUrl: savedUrl,
+          })
+          ? saved
+          : null,
+        savedUID,
+        savedUrl,
       );
 
       dispatch(

@@ -1268,7 +1268,9 @@ pitch: the busiest step, which asks for all the picture holds, and "none", which
 turns names off in the picture — not an answer to a button pressed for a dial of
 them. It caps the dial at 72 rays.
 
-**Every point goes in one `drawingPointSetAll`.** Adding them one at a time
+**Every point goes in one `dataViewerEditFeatures`** — an edit, not a load, so
+the data stops being its `track-uid=` file and keeps its elevation decision and
+active line. Adding them one at a time
 pushes a history entry per summit — a `point=` param is a content change, and
 `urlProcessor` never holds a push back — which WebKit refuses past a hundred in
 ten seconds.

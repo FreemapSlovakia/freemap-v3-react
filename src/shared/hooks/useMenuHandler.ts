@@ -28,7 +28,6 @@ import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Language } from '@shared/langUtils.js';
 import type { LatLon } from '@shared/types/common.js';
-import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { afterPrefix } from '../types/typeUtils.js';
@@ -215,16 +214,6 @@ export function useMenuHandler({
           // whatever else is.
           dispatch(openTools.includes(t) ? closeTool(t) : openTool(t));
         }
-
-        setShow(false);
-
-        return;
-      }
-
-      if (key === 'drawing') {
-        const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
-
-        dispatch(openTool(parsed.success ? parsed.data : 'draw-points'));
 
         setShow(false);
 

@@ -25,6 +25,41 @@ export type DrawingMessages = {
     or: string;
     textHint: string;
     type: string;
+    /** Whether a line is drawn, a recorded track or a planned route. */
+    kind: string;
+    kindLine: string;
+    kindTrack: string;
+    kindRoute: string;
+    kindHint: string;
+    /** The fieldset of how the feature is drawn. */
+    style: string;
+    /** A track's or a route's own GPX fields. */
+    trackDetails: string;
+    routeDetails: string;
+    /** A waypoint's own GPX fields. */
+    pointDetails: string;
+    pointType: string;
+    time: string;
+    elevation: string;
+    eleInvalid: string;
+    desc: string;
+    cmt: string;
+    activityType: string;
+    source: string;
+    sourceHint: string;
+    number: string;
+    numberInvalid: string;
+    links: string;
+    linkText: string;
+    addLink: string;
+    removeLink: string;
+    /** How many of the details have a value, beside the collapsed panel's title. */
+    detailsFilled: (props: { n: number }) => string;
+    /** The line's per-point channels: heart rate, time, … */
+    channels: string;
+    addChannel: string;
+    removeChannel: string;
+    channelsHint: string;
     dashArray: string;
     lineCap: string;
     lineCapRound: string;

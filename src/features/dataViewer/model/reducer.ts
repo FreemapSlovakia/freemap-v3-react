@@ -1,4 +1,5 @@
 import {
+  applySettings,
   clearMapFeatures,
   closeTool,
   openTool,
@@ -7,11 +8,25 @@ import {
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
 import { affectsElevationSmoothing } from '@features/elevationChart/model/settingsReducer.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { createReducer, isAnyOf } from '@reduxjs/toolkit';
+import {
+  createReducer,
+  type Draft,
+  isAnyOf,
+  isDraft,
+  original,
+} from '@reduxjs/toolkit';
 import { ELEVATION_ATTRIBUTIONS_PROP } from '@shared/elevation.js';
 import { withoutPerPointData } from '@shared/geoutils.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
-import type { FeatureCollection } from 'geojson';
+import { lineStyleFromProperties } from '@shared/styleFromProperties.js';
+import { isDrawTool, isMapClickTool } from '@shared/toolDefinitions.js';
+import type {
+  Feature,
+  FeatureCollection,
+  GeoJsonProperties,
+  Position,
+} from 'geojson';
+import { patchedProperties } from '../featureEditing.js';
 import {
   canJoinTracks,
   joinTrackFeatures,
@@ -26,15 +41,40 @@ import {
 import { withCanonicalTimesAll } from '../trackChannels.js';
 import { isTrackLine, type TrackLine } from '../trackSelection.js';
 import {
+  completed,
+  deletePart,
+  deleteVertex,
+  editableParts,
+  insertVertex,
+  isCompleteFeature,
+  moveVertex,
+  reverseFeature,
+  setVertexValues,
+} from '../vertexEditing.js';
+import {
+  dataViewerAddFeatures,
+  dataViewerCutHole,
   dataViewerDelete,
   dataViewerDeleteFeature,
+  dataViewerDeleteHole,
+  dataViewerDeleteVertex,
+  dataViewerDetachHole,
   dataViewerDownloadTrack,
+  dataViewerDrawAppend,
+  dataViewerDrawContinue,
+  dataViewerDrawStart,
+  dataViewerDrawStop,
+  dataViewerEditFeatures,
   dataViewerExplodeTrack,
   dataViewerGpxLoad,
+  dataViewerInsertVertex,
   dataViewerJoinTracks,
+  dataViewerMakeHole,
+  dataViewerMoveVertex,
   dataViewerResolveElevationPrompt,
   dataViewerRestoreStored,
   dataViewerRestoreStoredDone,
+  dataViewerReverse,
   dataViewerSetActiveTrack,
   dataViewerSetData,
   dataViewerSetElevation,
@@ -46,11 +86,13 @@ import {
   dataViewerSetSplitPoint,
   dataViewerSetSplitting,
   dataViewerSetTrackUID,
+  dataViewerSetVertexValues,
   dataViewerSimplify,
   dataViewerSplitTrack,
   type ElevationConsumer,
   type ElevationFillMode,
 } from './actions.js';
+import { documentFeatures, ingest, withTypedGeometry } from './collection.js';
 
 export interface DataViewerStateBase {
   trackGeojson: FeatureCollection | null;
@@ -89,9 +131,14 @@ export interface DataViewerState extends DataViewerStateBase {
   // The track a join is armed on, and how the two are put together; the next
   // line clicked is joined onto it.
   joinWith: { featureIndex: number; mode: TrackJoinMode } | null;
-  // Whether this browser's stored track is still being read back. Transient, and
-  // the only way to tell "nothing loaded" from "not loaded yet" on a reload.
-  restoringStored: boolean;
+  // The snapshot still being read back, if any. The only way to tell "nothing
+  // loaded" from "not loaded yet" on a reload, and which of several quick
+  // history steps a finished read still stands for.
+  restoringStored: string | true | null;
+  // The line or ring map clicks append to while drawing.
+  drawing: { index: number; part: number } | null;
+  // The polygon the next drawing click starts a hole of.
+  holeFor: number | null;
 }
 
 export type ElevationDecision = 'undecided' | ElevationFillMode;
@@ -111,7 +158,9 @@ export const dataViewerInitialState: DataViewerState = {
   splitting: false,
   splitPoint: null,
   joinWith: null,
-  restoringStored: false,
+  restoringStored: null,
+  drawing: null,
+  holeFor: null,
   ...cleanState,
 };
 
@@ -131,6 +180,59 @@ function markEdited(state: DataViewerState) {
   state.gpxUrl = null;
 }
 
+/** New properties for features, the drawn render copy restyled with them. */
+function writeProperties(
+  state: DataViewerState,
+  edits: readonly {
+    index: number;
+    properties: GeoJsonProperties;
+    position?: Position;
+  }[],
+) {
+  for (const { index, properties, position } of edits) {
+    const feature = baseFeature(state, index);
+
+    if (!feature) {
+      continue;
+    }
+
+    const restyled = withProperties(feature, properties);
+
+    const edited =
+      position && restyled.geometry.type === 'Point'
+        ? {
+            ...restyled,
+            geometry: { type: 'Point' as const, coordinates: position },
+          }
+        : restyled;
+
+    state.trackGeojson!.features[index] = edited;
+
+    if (edited.geometry !== feature.geometry) {
+      markGeometryEdited(state);
+
+      continue;
+    }
+
+    // The densified copy is what gets drawn where it exists, so it needs the
+    // new style — but not the properties wholesale: its coordinates are not the
+    // recorded ones, and the models its sampling credited are stamped on it alone.
+    const rendered = state.renderTrackGeojson?.features[index];
+
+    if (rendered) {
+      const credits = rendered.properties?.[ELEVATION_ATTRIBUTIONS_PROP];
+
+      rendered.properties = withoutPerPointData(properties);
+
+      if (credits !== undefined && rendered.properties) {
+        rendered.properties[ELEVATION_ATTRIBUTIONS_PROP] = credits;
+      }
+    }
+  }
+
+  markEdited(state);
+}
+
 /** The same, plus everything derived from the geometry as it was. */
 function markGeometryEdited(state: DataViewerState) {
   markEdited(state);
@@ -142,23 +244,105 @@ function markGeometryEdited(state: DataViewerState) {
 
 /**
  * Puts the given features in the place of one, shifting whatever a later index
- * names.
+ * names. Nothing left takes the collection with it.
  */
 function replaceFeature(
-  state: DataViewerState,
+  state: Draft<DataViewerState>,
   index: number,
-  replacement: TrackLine[],
+  replacement: Feature[],
 ) {
-  state.trackGeojson?.features.splice(index, 1, ...replacement);
+  const features = state.trackGeojson?.features;
+
+  if (!features) {
+    return;
+  }
+
+  features.splice(index, 1, ...replacement);
 
   markGeometryEdited(state);
 
-  const active = state.activeTrackIndex;
+  if (features.length === 0) {
+    state.trackGeojson = null;
+  }
 
   // The first piece keeps the original index, so only what came after moves.
-  if (active !== null && active > index) {
-    state.activeTrackIndex = active + replacement.length - 1;
+  const shift = (at: number) =>
+    at === index && replacement.length === 0
+      ? null
+      : at > index
+        ? at + replacement.length - 1
+        : at;
+
+  if (state.activeTrackIndex !== null) {
+    state.activeTrackIndex = shift(state.activeTrackIndex);
   }
+
+  if (state.drawing) {
+    const at = shift(state.drawing.index);
+
+    state.drawing = at === null ? null : { ...state.drawing, index: at };
+  }
+
+  if (state.holeFor !== null) {
+    state.holeFor = shift(state.holeFor);
+  }
+}
+
+/**
+ * The feature as the store held it before this action, outside the draft, so
+ * an edit of a long track copies plain arrays rather than proxying each vertex.
+ */
+function baseFeature(
+  state: Draft<DataViewerState>,
+  index: number,
+): Feature | undefined {
+  const feature = state.trackGeojson?.features[index];
+
+  return (
+    feature && (isDraft(feature) ? (original(feature) as Feature) : feature)
+  );
+}
+
+function setFeature(
+  state: Draft<DataViewerState>,
+  index: number,
+  feature: Feature,
+) {
+  if (state.trackGeojson?.features[index]) {
+    state.trackGeojson.features[index] = feature;
+
+    markGeometryEdited(state);
+  }
+}
+
+/** Ends drawing; what was being drawn goes if it never became a line or ring. */
+function endDrawing(state: Draft<DataViewerState>) {
+  const { drawing } = state;
+
+  state.drawing = null;
+
+  state.holeFor = null;
+
+  const feature = drawing && baseFeature(state, drawing.index);
+
+  if (!drawing || !feature) {
+    return;
+  }
+
+  const kept = completed(feature);
+
+  if (!kept) {
+    replaceFeature(state, drawing.index, []);
+  } else if (kept !== feature) {
+    state.trackGeojson!.features[drawing.index] = kept;
+  }
+}
+
+function withProperties(
+  feature: Feature,
+  properties: GeoJsonProperties,
+): Feature {
+  return withTypedGeometry({ ...feature, properties });
 }
 
 export const dataViewerReducer = createReducer(
@@ -167,14 +351,319 @@ export const dataViewerReducer = createReducer(
     builder
       .addCase(clearMapFeatures, () => dataViewerInitialState)
       .addCase(dataViewerDelete, () => dataViewerInitialState)
+      .addCase(dataViewerEditFeatures, (state, { payload }) => {
+        // Not a draft when there is no collection yet.
+        const before =
+          state.trackGeojson && isDraft(state.trackGeojson)
+            ? original(state.trackGeojson)!.features
+            : [];
+
+        const active =
+          state.activeTrackIndex === null
+            ? undefined
+            : before[state.activeTrackIndex];
+
+        endDrawing(state);
+
+        // The payload was built before the drawing ended, so a line still too
+        // short to be one is in it; dropped here as `endDrawing` drops it.
+        const kept = payload.flatMap((feature) => completed(feature) ?? []);
+
+        const features = ingest(kept);
+
+        state.trackGeojson =
+          features.length === 0
+            ? null
+            : { type: 'FeatureCollection', features };
+
+        const at = active ? kept.indexOf(active) : -1;
+
+        state.activeTrackIndex = at === -1 ? null : at;
+
+        markGeometryEdited(state);
+      })
+      .addCase(dataViewerAddFeatures, (state, { payload }) => {
+        const added = ingest(payload.features);
+
+        if (added.length === 0) {
+          return;
+        }
+
+        endDrawing(state);
+
+        if (state.trackGeojson) {
+          state.trackGeojson.features.push(...added);
+        } else {
+          state.trackGeojson = { type: 'FeatureCollection', features: added };
+        }
+
+        markGeometryEdited(state);
+      })
+      .addCase(dataViewerMoveVertex, (state, { payload }) => {
+        const feature = baseFeature(state, payload.index);
+
+        if (feature) {
+          setFeature(
+            state,
+            payload.index,
+            moveVertex(feature, payload.part, payload.vertex, payload.position),
+          );
+        }
+      })
+      .addCase(dataViewerSetVertexValues, (state, { payload }) => {
+        const feature = baseFeature(state, payload.index);
+
+        if (feature) {
+          setFeature(
+            state,
+            payload.index,
+            setVertexValues(
+              feature,
+              payload.part,
+              payload.vertex,
+              payload.position,
+              payload.values,
+            ),
+          );
+        }
+      })
+      .addCase(dataViewerInsertVertex, (state, { payload }) => {
+        const feature = baseFeature(state, payload.index);
+
+        if (feature) {
+          setFeature(
+            state,
+            payload.index,
+            insertVertex(
+              feature,
+              payload.part,
+              payload.vertex,
+              payload.position,
+            ),
+          );
+        }
+      })
+      .addCase(dataViewerDeleteVertex, (state, { payload }) => {
+        const feature = baseFeature(state, payload.index);
+
+        if (!feature) {
+          return;
+        }
+
+        const edited = deleteVertex(feature, payload.part, payload.vertex);
+
+        // The last vertex of a hole takes the hole along; of a line, the line.
+        const kept =
+          payload.part > 0 && feature.geometry.type === 'Polygon'
+            ? completed(edited)
+            : isCompleteFeature(edited)
+              ? edited
+              : undefined;
+
+        if (kept) {
+          setFeature(state, payload.index, kept);
+        } else {
+          replaceFeature(state, payload.index, []);
+        }
+      })
+      .addCase(dataViewerDeleteHole, (state, { payload }) => {
+        const feature = baseFeature(state, payload.index);
+
+        if (feature) {
+          setFeature(state, payload.index, deletePart(feature, payload.part));
+        }
+      })
+      .addCase(dataViewerDrawStart, (state, { payload }) => {
+        endDrawing(state);
+
+        if ('ring' in payload) {
+          const feature = baseFeature(state, payload.ring);
+
+          const rings = feature && editableParts(feature.geometry);
+
+          if (feature?.geometry.type !== 'Polygon' || !rings) {
+            return;
+          }
+
+          setFeature(
+            state,
+            payload.ring,
+            insertVertex(feature, rings.length, 0, payload.position),
+          );
+
+          state.drawing = { index: payload.ring, part: rings.length };
+
+          return;
+        }
+
+        const feature: Feature = {
+          type: 'Feature',
+          properties: payload.properties,
+          geometry:
+            payload.type === 'line'
+              ? { type: 'LineString', coordinates: [payload.position] }
+              : {
+                  type: 'Polygon',
+                  coordinates: [[payload.position, payload.position]],
+                },
+        };
+
+        if (state.trackGeojson) {
+          state.trackGeojson.features.push(feature);
+        } else {
+          state.trackGeojson = {
+            type: 'FeatureCollection',
+            features: [feature],
+          };
+        }
+
+        markGeometryEdited(state);
+
+        state.drawing = {
+          index: state.trackGeojson.features.length - 1,
+          part: 0,
+        };
+      })
+      .addCase(dataViewerDrawAppend, (state, { payload }) => {
+        const { drawing } = state;
+
+        const feature = drawing && baseFeature(state, drawing.index);
+
+        const vertices =
+          feature && editableParts(feature.geometry)?.[drawing.part];
+
+        if (drawing && feature && vertices) {
+          setFeature(
+            state,
+            drawing.index,
+            insertVertex(feature, drawing.part, vertices.length, payload),
+          );
+        }
+      })
+      .addCase(dataViewerDrawStop, endDrawing)
+      .addCase(dataViewerDrawContinue, (state, { payload }) => {
+        endDrawing(state);
+
+        const feature = baseFeature(state, payload.index);
+
+        if (feature?.geometry.type !== 'LineString') {
+          return;
+        }
+
+        // Drawing appends at the end, so a line continued from its start turns.
+        if (payload.vertex === 0) {
+          setFeature(state, payload.index, reverseFeature(feature));
+        }
+
+        state.drawing = { index: payload.index, part: 0 };
+      })
+      .addCase(dataViewerReverse, (state, { payload }) => {
+        const feature = baseFeature(state, payload);
+
+        if (feature) {
+          setFeature(state, payload, reverseFeature(feature));
+        }
+      })
+      .addCase(dataViewerCutHole, (state, { payload }) => {
+        endDrawing(state);
+
+        state.holeFor = payload;
+      })
+      .addCase(dataViewerMakeHole, (state, { payload }) => {
+        const hole = baseFeature(state, payload.index);
+
+        const parent = baseFeature(state, payload.parent);
+
+        if (
+          hole?.geometry.type !== 'Polygon' ||
+          parent?.geometry.type !== 'Polygon' ||
+          payload.index === payload.parent
+        ) {
+          return;
+        }
+
+        setFeature(state, payload.parent, {
+          ...parent,
+          geometry: {
+            ...parent.geometry,
+            coordinates: [
+              ...parent.geometry.coordinates,
+              hole.geometry.coordinates[0] ?? [],
+            ],
+          },
+        });
+
+        replaceFeature(state, payload.index, []);
+      })
+      .addCase(dataViewerDetachHole, (state, { payload }) => {
+        const feature = baseFeature(state, payload.index);
+
+        const ring =
+          feature?.geometry.type === 'Polygon' && payload.part > 0
+            ? feature.geometry.coordinates[payload.part]
+            : undefined;
+
+        if (feature?.geometry.type !== 'Polygon' || !ring) {
+          return;
+        }
+
+        replaceFeature(state, payload.index, [
+          {
+            ...feature,
+            geometry: {
+              ...feature.geometry,
+              coordinates: feature.geometry.coordinates.toSpliced(
+                payload.part,
+                1,
+              ),
+            },
+          },
+          {
+            type: 'Feature',
+            properties: patchedProperties(
+              { ...feature, properties: {} },
+              lineStyleFromProperties(feature.properties, true),
+            ),
+            geometry: { type: 'Polygon', coordinates: [ring] },
+          },
+        ]);
+      })
+      .addCase(applySettings, (state, { payload }) => {
+        const { drawing } = payload;
+
+        if (!payload.drawingApplyAll || !drawing || !state.trackGeojson) {
+          return;
+        }
+
+        writeProperties(
+          state,
+          state.trackGeojson.features.map((feature, index) => ({
+            index,
+            properties: patchedProperties(feature, drawing),
+          })),
+        );
+      })
       .addCase(dataViewerSetData, (state, action) => {
         // A new track is a fresh elevation decision.
         if (action.payload.trackGeojson) {
+          const { trackGeojson } = action.payload;
+
+          const features = ingest(trackGeojson.features);
+
           // Not only imports land here: a saved map and the IndexedDB restore
           // hand back whatever they stored, root-spelled times included.
-          state.trackGeojson = withCanonicalTimesAll(
-            action.payload.trackGeojson,
-          );
+          state.trackGeojson =
+            features.length === 0
+              ? null
+              : withCanonicalTimesAll(
+                  features.every((f, i) => f === trackGeojson.features[i])
+                    ? trackGeojson
+                    : { ...trackGeojson, features },
+                );
+
+          state.drawing = null;
+
+          state.holeFor = null;
 
           // Invalidate the densified render cache for the new track.
           state.renderTrackGeojson = null;
@@ -200,44 +689,11 @@ export const dataViewerReducer = createReducer(
           return dataViewerInitialState;
         }
 
-        const wasActive = state.activeTrackIndex === payload;
-
-        // A delete is a replacement with nothing, but the active line cannot
-        // fall through to the piece that took its place — there is none.
+        // A replacement with nothing, which leaves no active line behind.
         replaceFeature(state, payload, []);
-
-        if (wasActive) {
-          state.activeTrackIndex = null;
-        }
       })
       .addCase(dataViewerSetFeatureProperties, (state, { payload }) => {
-        for (const { index, properties } of payload) {
-          const feature = state.trackGeojson?.features[index];
-
-          if (!feature) {
-            continue;
-          }
-
-          feature.properties = properties;
-
-          // The densified copy is what gets drawn where it exists, so it needs
-          // the new style — but not the properties wholesale: its coordinates
-          // are not the recorded ones, and the models its sampling credited are
-          // stamped on it alone.
-          const rendered = state.renderTrackGeojson?.features[index];
-
-          if (rendered) {
-            const credits = rendered.properties?.[ELEVATION_ATTRIBUTIONS_PROP];
-
-            rendered.properties = withoutPerPointData(properties);
-
-            if (credits !== undefined && rendered.properties) {
-              rendered.properties[ELEVATION_ATTRIBUTIONS_PROP] = credits;
-            }
-          }
-        }
-
-        markEdited(state);
+        writeProperties(state, payload);
       })
       .addCase(dataViewerSetElevation, (state, action) => {
         state.trackGeojson = action.payload.trackGeojson;
@@ -284,7 +740,12 @@ export const dataViewerReducer = createReducer(
       // selection going) leaves it aimed at nothing. Reaching for a tool takes
       // the selection away without saying so, and the armed click would
       // otherwise stay live on a map that no longer offers a way to cancel it.
-      .addCase(selectFeature, clearModes)
+      // Drawing ends the same way.
+      .addCase(selectFeature, (state) => {
+        clearModes(state);
+
+        endDrawing(state);
+      })
       .addCase(dataViewerSplitTrack, (state, { payload }) => {
         const feature = state.trackGeojson?.features[payload.featureIndex];
 
@@ -398,11 +859,15 @@ export const dataViewerReducer = createReducer(
 
         state.elevationDecision = action.payload.mode;
       })
-      .addCase(dataViewerRestoreStored, (state) => {
-        state.restoringStored = true;
-      })
-      .addCase(dataViewerRestoreStoredDone, (state) => {
-        state.restoringStored = false;
+      .addCase(dataViewerRestoreStored, (state, { payload }) =>
+        payload === null
+          ? dataViewerInitialState
+          : { ...state, restoringStored: payload },
+      )
+      .addCase(dataViewerRestoreStoredDone, (state, { payload }) => {
+        if (state.restoringStored === payload) {
+          state.restoringStored = null;
+        }
       })
       .addCase(dataViewerSetGpxUrl, (state, { payload }) => {
         state.gpxUrl = payload;
@@ -413,22 +878,49 @@ export const dataViewerReducer = createReducer(
       .addCase(
         mapsLoaded,
         (
-          _state,
+          state,
           {
             payload: {
-              data: { trackViewer },
+              merge,
+              data: { trackViewer, points, lines },
             },
           },
         ) => {
-          const restored = { ...dataViewerInitialState, ...trackViewer };
+          const features = [
+            ...(merge ? (state.trackGeojson?.features ?? []) : []),
+            ...documentFeatures(
+              points,
+              lines,
+              trackViewer?.trackGeojson,
+              trackViewer?.order,
+            ),
+          ];
 
-          return restored.trackGeojson
+          const restored: DataViewerState = {
+            ...dataViewerInitialState,
+            ...(!merge && {
+              trackUID: trackViewer?.trackUID ?? null,
+              gpxUrl: trackViewer?.gpxUrl ?? null,
+            }),
+            trackGeojson: null,
+          };
+
+          return features.length
             ? {
                 ...restored,
-                trackGeojson: withCanonicalTimesAll(restored.trackGeojson),
+                trackGeojson: { type: 'FeatureCollection', features },
               }
             : restored;
         },
       )
-      .addMatcher(isAnyOf(openTool, closeTool), clearModes),
+      .addMatcher(isAnyOf(openTool, closeTool), clearModes)
+      // Reaching for another tool that takes map clicks ends the drawing, as
+      // does closing the drawing tool. A toolbar-only tool takes no clicks.
+      .addMatcher(
+        (action) =>
+          (openTool.match(action) && isMapClickTool(action.payload)) ||
+          (closeTool.match(action) &&
+            (isDrawTool(action.payload) || action.payload === 'import-file')),
+        endDrawing,
+      ),
 );

@@ -12,12 +12,9 @@ import { chartIdentity, loadResolver } from './resolve.js';
 import { affectsElevationSmoothing } from './settingsReducer.js';
 import type { ElevationChartTargetType } from './target.js';
 
-// A drawn line is the one target whose profile is sampled from the elevation
-// API rather than read off the feature, and its geometry changes on every
-// pointer move of a vertex drag — so its redraws are coalesced. The wait is a
-// timer that dispatches `elevationChartRedraw`, not an `await` inside `handle`:
-// awaiting there would hold `startProgress`/`stopProgress` open, and cost a
-// processor pass, for the whole gesture.
+// A vertex drag changes the line on every move, and one without elevation is
+// sampled from the API: redraws are coalesced by a timer dispatching
+// `elevationChartRedraw` — an `await` here would hold the progress bar open.
 const SETTLE_MS = 250;
 
 let settleTimer: ReturnType<typeof setTimeout> | undefined;
@@ -26,7 +23,6 @@ const matomoFeature: Record<ElevationChartTargetType, string> = {
   'route-planner': 'RoutePlanner',
   'track-viewer': 'TrackViewer',
   'gps-recorder': 'GpsRecorder',
-  drawing: 'Drawing',
   tracking: 'Tracking',
 };
 
@@ -96,9 +92,10 @@ export const elevationChartProcessor: Processor = {
     // draws at once — waiting a quarter second to show a chart the user just
     // asked for would read as lag.
     if (
-      target.type === 'drawing' &&
+      target.type === 'track-viewer' &&
       !elevationChartRedraw.match(action) &&
-      !elevationChartOpen.match(action)
+      !elevationChartOpen.match(action) &&
+      !dataViewerSetActiveTrack.match(action)
     ) {
       clearTimeout(settleTimer);
 

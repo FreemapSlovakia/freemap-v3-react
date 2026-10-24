@@ -1,7 +1,5 @@
 import { activeMapToolSelector, isToolOpen } from '@app/store/selectors.js';
 import { ChangesetsResult } from '@features/changesets/components/ChangesetsResult.js';
-import { DrawingLinesResult } from '@features/drawing/components/DrawingLinesResult.js';
-import { DrawingPointsResult } from '@features/drawing/components/DrawingPointsResult.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
 import { ObjectsResult } from '@features/objects/components/ObjectsResult.js';
 import { TerrainOverlayResult } from '@features/objects/components/TerrainOverlayResult.js';
@@ -93,10 +91,6 @@ export function Results(): ReactElement {
       <TerrainOverlayResult />
 
       {showRoutePlanner && <RoutePlannerResult />}
-
-      <DrawingLinesResult />
-
-      <DrawingPointsResult />
 
       {trackGeojson && (
         <AsyncComponent

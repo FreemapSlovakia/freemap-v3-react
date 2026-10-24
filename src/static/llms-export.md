@@ -68,7 +68,7 @@ Opens a modal to export the map as an image or document. Options:
   - **Leave out** (with the base map on) — ground cover (land cover, sea, water, piers, bridges, solar plants, trees) and buildings, each dropped to transparency, for laying the map over an aerial image
   - **Optional layers** added on top: contours, shaded relief, hiking/bicycle/ski/horse trails, hiking difficulty (SAC scale), MTB difficulty (S0–S6), road smoothness, guideposts
   - Anything short of the whole map needs a format with transparency (PNG, WebP or SVG); JPEG and PDF are disabled then, and a chosen one gives way to WebP — switched to lossy when it replaces JPEG, so the compression the user picked is kept
-- Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (always with its start/finish/stop markers), objects (POIs), photos, drawing lines/areas/points, live tracking, imported GPX track, highlighted map feature
+- Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (always with its start/finish/stop markers), objects (POIs), photos, drawing and data lines/polygons/points, live tracking, highlighted map feature
 - Glow: optional glow/shadow drawn around all own map-feature markers and lines, with configurable color (incl. opacity) and width
 - Marker size: configurable pixel size of own map-feature point markers
 - Labels: configurable color (no opacity), size, and weight of own map-feature labels
@@ -90,12 +90,11 @@ Opens a modal to export the user's own map data as a GPX, GeoJSON or KML file. T
 - found (planned) route, optionally including stops
 - objects (POIs)
 - photos (in the visible map area)
-- drawing — points, lines, polygons
+- drawing and data — points, lines, polygons (each its own toggle)
 - live tracking
-- tracks and data
 - highlighted map feature
 
-When a single map feature is selected (a drawing point/line/polygon, an object, a track, the planned route, or a lookup result), an **Only the selected item** toggle appears (on by default) that narrows the export to just that one feature instead of its whole source.
+When a single map feature is selected (a point, line or polygon of Drawing and data, an object, a live track, the planned route, or a lookup result), an **Only the selected item** toggle appears (on by default) that narrows the export to just that one feature instead of its whole source.
 
 For the file/share/Google Drive/Dropbox targets an **Elevation** control chooses whether to fill elevation from the elevation API into exported points, lines and the planned route: *Keep recorded* (leave as-is), *Fill missing* (only coordinates lacking elevation), or *Override all* (replace every elevation). Polygons are always skipped.
 

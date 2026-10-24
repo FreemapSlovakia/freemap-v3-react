@@ -35,7 +35,6 @@ const URL_MODAL_IDS = [
   'search-result-style',
   'support-us',
   'toposcope-settings',
-  'track-viewer-style',
   'track-viewer-match',
   'track-viewer-osm-upload',
   'tracking-my',
@@ -47,6 +46,7 @@ export const UrlModalIdSchema = z.enum(URL_MODAL_IDS);
 
 /** Legacy modal ids (from old shared links) mapped to their current name. */
 const MODAL_RENAMES: Record<string, string> = {
+  'track-viewer-style': 'drawing-properties',
   'export-map': 'map-to-document-export',
   'export-gpx': 'map-features-export',
   'export-map-features': 'map-features-export',
@@ -83,12 +83,12 @@ const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
   'track-viewer-osm-upload',
 ]);
 
-// The two that name no id of their own: they edit whatever is selected, which
-// a `show=` in a shared link knows nothing about.
+// One that names no id of its own: it edits whatever is selected, which a
+// `show=` in a shared link knows nothing about.
 export const ModalIdSchema = z.enum([
   ...URL_MODAL_IDS,
-  'current-drawing-properties',
   'data-viewer-properties',
+  'data-viewer-vertex',
 ]);
 
 export type ModalId = z.infer<typeof ModalIdSchema>;
@@ -128,11 +128,8 @@ export type ActiveModal =
       highlight?: string;
     }
   | { type: 'tracking-watched'; token?: string }
-  /** The properties of every drawn or loaded feature of a kind at once. */
-  | {
-      type: 'drawing-batch-properties' | 'data-viewer-batch-properties';
-      kind: BatchKind;
-    }
+  /** The properties of every feature of a kind at once. */
+  | { type: 'data-viewer-batch-properties'; kind: BatchKind }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
   | { type: 'wiki'; key: string };
@@ -159,7 +156,7 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
     case 'wiki':
       return `wiki/${modal.key}`;
     default:
-      // Only URL-serializable ids go in `show=`; current-drawing-properties doesn't.
+      // Only URL-serializable ids go in `show=`; data-viewer-properties doesn't.
       return UrlModalIdSchema.safeParse(modal.type).success ? modal.type : null;
   }
 }

@@ -129,6 +129,7 @@ const messages: Messages = {
     saved: 'Saved.',
     visual: 'Display',
     drawingTool: 'Drawing tool',
+    noDrawingTool: 'Select',
     copyOk: 'Copied to clipboard.',
     noCookies: () => (
       <>
@@ -216,7 +217,7 @@ const messages: Messages = {
     drawPoints: 'Point drawing',
     drawLines: 'Line drawing',
     drawPolygons: 'Polygon drawing',
-    dataViewer: 'Tracks and data',
+    dataViewer: 'Drawing and data',
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: 'Live tracking',
@@ -338,7 +339,8 @@ const messages: Messages = {
         'tool-draw-points': 'drawing, marker, pin, annotate, note',
         'tool-draw-lines': 'drawing, measure distance, length, ruler, path',
         'tool-draw-polygons': 'drawing, measure area, region',
-        'tool-import-file': 'gpx, kml, kmz, tcx, geojson, import, upload, open',
+        'tool-import-file':
+          'tracks, gpx, kml, kmz, tcx, geojson, import, upload, open',
         'tool-map-details': 'identify, inspect, what is here, wms',
         'tool-changesets': 'osm edits, editors, contributions, mappers',
         'tool-tracking': 'share position, watch device, real time, locator',

@@ -15,6 +15,7 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   saveAsMap: 'Shrani med moje zemljevide',
   loginToSaveMap:
     'Za shranjevanje sledi med vaše zemljevide se najprej prijavite.',
+  vertex: { channels: {} },
   style: {
     title: 'Privzeti slog',
   },

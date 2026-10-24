@@ -1,4 +1,8 @@
 import type { RootState } from '@app/store/store.js';
+import { fromWire, wireItems } from '@features/dataViewer/drawingWire.js';
+import { documentFeatures } from '@features/dataViewer/model/collection.js';
+import type { Line } from '@features/drawing/model/actions/drawingLineActions.js';
+import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
 import { routeKey } from '@features/routePlanner/model/actions.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import { alternative } from '@features/routePlanner/model/routeFixtures.js';
@@ -10,22 +14,48 @@ import {
   mapContentString,
 } from './mapDocument.js';
 
+// A fixed last point, so a line given one point still is one.
 const line = (
   points: { lat: number; lon: number; id: number }[],
   rest: Record<string, unknown> = {},
-) => ({ type: 'line', points, ...rest });
+) => ({
+  type: 'line',
+  points: [...points, { lat: 47, lon: 16, id: 99 }],
+  ...rest,
+});
 
-/** A state holding only what the map document and its serialization read. */
-function state(over: Record<string, unknown> = {}): RootState {
+/**
+ * A state holding only what the map document and its serialization read. Drawn
+ * `lines` and `points` are given in their wire form and become map features.
+ */
+function state({
+  drawingLines,
+  drawingPoints,
+  ...over
+}: Record<string, unknown> & {
+  drawingLines?: { lines: unknown[] };
+  drawingPoints?: { points: unknown[] };
+} = {}): RootState {
+  const features = fromWire(
+    wireItems({
+      points: (drawingPoints?.points ?? []) as DrawingPoint[],
+      lines: (drawingLines?.lines ?? []) as Line[],
+    }),
+  );
+
   return {
-    drawingLines: { lines: [] },
-    drawingPoints: { points: [] },
     tracking: { trackedDevices: [] },
     routePlanner: { points: [], transportType: 'car', mode: 'route' },
     objects: { active: [] },
     search: { selectedResults: [], previewId: null },
     gallery: { filter: {} },
-    trackViewer: { trackGeojson: null, trackUID: null, gpxUrl: null },
+    trackViewer: {
+      trackGeojson: features.length
+        ? { type: 'FeatureCollection', features }
+        : null,
+      trackUID: null,
+      gpxUrl: null,
+    },
     // Saved with the document but deliberately outside the comparison, so the
     // values only have to exist.
     map: { lat: 48, lon: 17, zoom: 12, layers: ['X'], layerSetups: {} },
@@ -187,6 +217,61 @@ function routePlanner(over: Record<string, unknown> = {}) {
 // against its own document. That only holds while every field the content
 // serialization emits survives the round trip through `MapData`, so these pin
 // the fields most easily left out of it.
+describe('the order of a map’s features', () => {
+  const [aLine, aPoint, another] = fromWire([
+    { kind: 'line', line: line([{ lat: 48, lon: 17, id: 0 }]) as Line },
+    { kind: 'point', point: { coords: { lat: 48.5, lon: 17.5 } } },
+    { kind: 'line', line: line([{ lat: 49, lon: 18, id: 0 }]) as Line },
+  ]);
+
+  const mixed = () =>
+    state({
+      routePlanner: routePlanner({}),
+      trackViewer: {
+        trackGeojson: {
+          type: 'FeatureCollection',
+          features: [aLine, aPoint, another],
+        },
+        trackUID: null,
+        gpxUrl: null,
+      },
+    });
+
+  it('comes back as drawn, though the document groups them', () => {
+    const data = getMapDataFromState(mixed());
+
+    expect(data.trackViewer?.order).toEqual([1, 0, 2]);
+
+    expect(
+      documentFeatures(
+        data.points,
+        data.lines,
+        data.trackViewer?.trackGeojson,
+        data.trackViewer?.order,
+      ).map(({ geometry }) => geometry.type),
+    ).toEqual(['LineString', 'Point', 'LineString']);
+  });
+
+  it('leaves a map loaded from it unchanged', () => {
+    const current = mixed();
+
+    expect(fingerprintDocument(getMapDataFromState(current), current)).toBe(
+      fingerprintState(current),
+    );
+  });
+
+  it('is not written where the grouping is the order', () => {
+    expect(
+      getMapDataFromState(
+        state({
+          routePlanner: routePlanner({}),
+          drawingPoints: { points: [{ coords: { lat: 48, lon: 17 } }] },
+        }),
+      ).trackViewer,
+    ).not.toHaveProperty('order');
+  });
+});
+
 describe('fingerprintDocument — a saved map matches its own document', () => {
   const matchesItsDocument = (over: Record<string, unknown>) => {
     const current = state(over);

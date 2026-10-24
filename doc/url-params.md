@@ -49,7 +49,7 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | `iso-buckets`, `iso-distance-limit`, `iso-time-limit` | Isochrone params | r/w | integer |
 | `route-params-hash` | Premium route validation hash | r/w | string |
 
-## Track viewer
+## Drawing and data: sources and display
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
@@ -95,9 +95,13 @@ These place standalone map annotations — markers, lines, filled areas — not 
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `point` (repeatable), `info-point` | Drawing point(s) / markers | r/w | `lat/lon[<style fields>]` |
-| `line`, `polygon` (repeatable) | Drawing line / polygon | r/w | `lat/lon,lat/lon,…[<style fields>]` |
+| `point` (repeatable), `info-point` | Point(s) / markers | r/w | `lat/lon[/ele][<style fields>]` |
+| `line`, `polygon` (repeatable) | Line / polygon | r/w | `vertex,vertex,…[<style fields>]` |
 | `distance-measurement-points`, `area-measurement-points`, `elevation-measurement-point` | Legacy measurement aliases | read-only | coords |
+
+These params carry the whole Drawing and data collection, in order, whenever it fits: every feature must read back meaning the same (`featureToWire` round-trips it and compares — times as instants, a style as the one it resolves to, so `.000Z`, an offset or a simplestyle-only style still fit; coordinates at the link's 6 decimals), and the encoded params must stay within `URL_FEATURES_BUDGET` (8000 characters, `model/urlForm.ts`). Otherwise none of them are written and the collection lives in a browser snapshot named by `history.state.tr` (see [elevation-and-colorizers.md](./elevation-and-colorizers.md#local-data-has-history)). A `track-uid` or `import-url` source wins over these params.
+
+**Vertices with values.** A vertex is `lat/lon` followed by `/value` per column the `V` field names — `ele`, `time`, or any per-point channel key (`heart`, `cad`, …); an empty value is a gap, and trailing gaps are dropped. `time` is epoch seconds: the first value is absolute and each later one the difference from the previous one, in whole milliseconds. An empty vertex (`,,`) starts a new segment, making the line a `MultiLineString`. A channel holding anything but numbers cannot be written, which sends the collection to a snapshot.
 
 ## Toposcope
 
@@ -155,6 +159,11 @@ Fields are joined by the record-separator character `\x1e` (URL-encoded `%1E`). 
 | `I` | Marker icon spec — `poi:<name>` (bundled POI icon) or `fa:<name>` (Font Awesome) | `Ipoi%3Aanimal_shelter` → `poi:animal_shelter` (`%3A` = `:`) |
 | `L` | Label (drawing geometry only) | `LMy point` |
 | `P` | Properties — key/value pairs joined by the unit separator `\x1f` (URL-encoded `%1F`), drawing geometry only | `Pname%1FSitno%1Fele%1F1009` |
+| `Q` | Properties whose values are numbers or booleans — key/JSON pairs joined by `\x1f`, so they read back with their type (links only; a saved map's `lines` keep the plain shape) | `Qnumber%1F3%1Fflag%1Ftrue` |
+| `H` | Hole of the polygon at this position among the `line`/`polygon` params | `H0` |
+| `V` | Columns of the vertex values, joined by `\x1f` (lines only) | `Vele%1Ftime%1Fheart` |
+| `Y` | `fm:kind` — what the feature is (`track`, `route`, …) | `Ytrack` |
+| `G` | GPX element it came from (`_gpxType`, lines only) | `Gtrk` |
 
 Colors are RGBA hex; the alpha channel carries the opacity (e.g. `#3388ff33` ≈ 20 % opacity).
 

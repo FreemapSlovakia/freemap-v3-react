@@ -43,7 +43,6 @@ function makeState(o: Overrides = {}): RootState {
       activeImageId: null,
       ...o.gallery,
     },
-    drawingLines: { drawing: false, joinWith: undefined, ...o.drawingLines },
     mapArea: { selecting: null, ...o.mapArea },
     mapLibrary: { preview: null, ...o.mapLibrary },
     toposcope: { pickingCenter: false, ...o.toposcope },
@@ -54,6 +53,7 @@ function makeState(o: Overrides = {}): RootState {
       trackGeojson: null,
       joinWith: null,
       splitting: false,
+      drawing: null,
       ...o.trackViewer,
     },
     toasts: { toasts: {}, ...o.toasts },
@@ -132,12 +132,11 @@ describe('armedModeSelector', () => {
     expect(mapModeSelector(makeState())).toBe(false);
   });
 
-  // The data viewer's own modes are armed on a selected feature, and its
-  // toolbar — the only way to cancel them — rides that selection.
-  const selected = { selection: { type: 'data-viewer', id: 0 } };
+  // The modes are armed on a selected feature, and its toolbar — the only way
+  // to cancel them — rides that selection.
+  const selected = { selection: { type: 'feature', id: 0 } };
 
   it.each([
-    ['a drawing line join', { drawingLines: { joinWith: { lineIndex: 0 } } }],
     [
       'a track join',
       { main: selected, trackViewer: { joinWith: { featureIndex: 0 } } },
@@ -257,7 +256,9 @@ describe('mouseCursorSelector', () => {
   });
 
   it('returns the pencil cursor while actively drawing a line', () => {
-    const state = makeState({ drawingLines: { drawing: true } });
+    const state = makeState({
+      trackViewer: { drawing: { index: 0, part: 0 } },
+    });
 
     expect(mouseCursorSelector(state)).toContain('1.5 20'); // pencil offset
   });
@@ -301,7 +302,7 @@ describe('tracking selectors', () => {
 
   it('trackingActiveTrackIdSelector is undefined for a non-tracking selection', () => {
     const state = makeState({
-      main: { selection: { type: 'draw-points', id: 0 } },
+      main: { selection: { type: 'feature', id: 0 } },
     });
 
     expect(trackingActiveTrackIdSelector(state)).toBeUndefined();
@@ -373,7 +374,9 @@ describe('drawingLinePolys', () => {
     // Continuing an existing line keeps capturing clicks so points can still be
     // appended.
     expect(
-      drawingLinePolys(makeState({ drawingLines: { drawing: true } })),
+      drawingLinePolys(
+        makeState({ trackViewer: { drawing: { index: 0, part: 0 } } }),
+      ),
     ).toBe(true);
   });
 
@@ -390,7 +393,7 @@ describe('drawingLinePolys', () => {
     // The in-progress drawing must go inert while picking, otherwise the pick
     // click would also append a point to the line.
     const state = makeState({
-      drawingLines: { drawing: true },
+      trackViewer: { drawing: { index: 0, part: 0 } },
       homeLocation: { selectingHomeLocation: true },
     });
 

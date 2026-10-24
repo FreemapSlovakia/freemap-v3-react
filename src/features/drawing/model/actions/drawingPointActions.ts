@@ -1,7 +1,4 @@
-import {
-  type MarkerType,
-  MarkerTypeSchema,
-} from '@features/objects/model/actions.js';
+import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { LabelVisibility } from '@shared/labelVisibility.js';
 import { type LatLon, LatLonSchema } from '@shared/types/common.js';
@@ -64,41 +61,22 @@ export const DrawingPointCompatSchema = z.preprocess((v) => {
   return v;
 }, DrawingPointSchema);
 
-export const drawingPointAdd = createAction<DrawingPoint & { id: number }>(
-  'DRAWING_POINT_ADD',
-);
-
-export const drawingPointChangePosition = createAction<{
-  index: number;
-  coords: LatLon;
-}>('DRAWING_POINT_CHANGE_POSITION');
-
-export const drawingPointChangeProperties = createAction<{
-  index: number;
-  properties: {
-    label: string | undefined;
-    color: string | undefined;
-    markerType: MarkerType | undefined;
-    icon: string | undefined;
-    /** Empty clears the data table. */
-    props: DrawingProps | undefined;
-  };
-}>('DRAWING_POINT_CHANGE_PROPERTIES');
-
-export const drawingPointSetAll = createAction<DrawingPoint[]>(
-  'DRAWING_POINT_SET_ALL',
-);
-
-// NOTE used also for lines and polygons
-
+/** Refreshes the measurement readout of the selected feature, or of `position`. */
 export const drawingMeasure = createAction<{
   elevation?: boolean;
   position?: LatLon;
 }>('DRAWING_MEASURE');
 
-export const drawingPointDelete = createAction<{
-  index: number;
-}>('DRAWING_POINT_DELETE');
+/** Colors the user picked, for the color pickers' recent list. */
+export const drawingAddRecentColors = createAction<string[]>(
+  'DRAWING_ADD_RECENT_COLORS',
+);
+
+/** A properties dialog panel opened or closed, remembered for the next time. */
+export const drawingSetSectionOpen = createAction<{
+  section: string;
+  open: boolean;
+}>('DRAWING_SET_SECTION_OPEN');
 
 /** When the labels of drawn points, lines and polygons show. */
 export const drawingSetLabelVisibility = createAction<LabelVisibility>(

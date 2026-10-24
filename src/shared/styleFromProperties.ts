@@ -218,6 +218,52 @@ function patched(
 }
 
 /**
+ * The keys a line's style is read from and written to, in every dialect. Keep
+ * in step with the readers and writers here: whoever compares features by the
+ * style they resolve to (the link's round trip) leaves exactly these out.
+ */
+export const LINE_STYLE_KEYS = [
+  'freemap:type',
+  'freemap:color',
+  'freemap:fillColor',
+  'freemap:width',
+  'freemap:lineCap',
+  'freemap:lineJoin',
+  'freemap:dashArray',
+  'stroke',
+  'stroke-opacity',
+  'stroke-width',
+  'stroke-linecap',
+  'stroke-linejoin',
+  'stroke-dasharray',
+  'fill',
+  'fill-opacity',
+  'osmand:color',
+  'osmand:fill_color',
+  'osmand:width',
+  'gpx_style:hasFill',
+] as const;
+
+/**
+ * The same for a point. `icon`, `sym` and `marker-symbol` are left to the
+ * caller: they can say more than the resolved style (a KML image URL, a
+ * Garmin symbol with no icon).
+ */
+export const POINT_STYLE_KEYS = [
+  'freemap:color',
+  'marker-color',
+  'marker-color-opacity',
+  'osmand:color',
+  'icon-color',
+  'icon-opacity',
+  'freemap:markerType',
+  'markerType',
+  'osmand:background',
+  'freemap:icon',
+  'osmand:icon',
+] as const;
+
+/**
  * The inverse of {@link lineStyleFromProperties}: `freemap:*` for our own
  * lossless read-back, mirrored into simplestyle for everyone else, and the
  * lower-priority dialects dropped so nothing stale contradicts what is written.

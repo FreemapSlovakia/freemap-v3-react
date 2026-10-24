@@ -1,10 +1,11 @@
 import { openInExternalApp, openTool } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
-import { drawingLineAddPoint } from '@features/drawing/model/actions/drawingLineActions.js';
+import { pointToFeature } from '@features/dataViewer/drawingWire.js';
 import {
-  drawingMeasure,
-  drawingPointAdd,
-} from '@features/drawing/model/actions/drawingPointActions.js';
+  dataViewerAddFeatures,
+  dataViewerDrawStart,
+} from '@features/dataViewer/model/actions.js';
+import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import { galleryRequestImages } from '@features/gallery/model/actions.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapRefocus } from '@features/map/model/actions.js';
@@ -18,6 +19,7 @@ import {
   ViewFromHereItems,
 } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { lineStyleToProperties } from '@shared/styleFromProperties.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
@@ -141,14 +143,15 @@ export function LocationActionItems({
           <Dropdown.Item
             as="button"
             onClick={() => {
-              const { drawingSettings, drawingPoints } = store.getState();
+              const { color, markerType } =
+                store.getState().drawingSettings.style;
 
               dispatch(
-                drawingPointAdd({
-                  coords: { lat, lon },
-                  color: drawingSettings.style.color,
-                  markerType: drawingSettings.style.markerType,
-                  id: drawingPoints.points.length,
+                dataViewerAddFeatures({
+                  features: [
+                    pointToFeature({ coords: { lat, lon }, color, markerType }),
+                  ],
+                  select: true,
                 }),
               );
 
@@ -166,20 +169,20 @@ export function LocationActionItems({
           <Dropdown.Item
             as="button"
             onClick={() => {
-              const { drawingSettings, drawingLines } = store.getState();
-
               dispatch(openTool('draw-lines'));
 
+              // After the tool opens, which ends a drawing and can drop its line.
+              const { drawingSettings, trackViewer } = store.getState();
+
               dispatch(
-                drawingLineAddPoint({
-                  lineProps: {
-                    type: 'line',
-                    color: drawingSettings.style.color,
-                    width: drawingSettings.style.width,
-                  },
-                  point: { id: 0, lat, lon },
-                  indexOfLineToSelect: drawingLines.lines.length,
-                  drawing: true,
+                dataViewerDrawStart({
+                  type: 'line',
+                  position: [lon, lat],
+                  index: trackViewer.trackGeojson?.features.length ?? 0,
+                  properties: lineStyleToProperties(
+                    {},
+                    { ...drawingSettings.style, type: 'line' },
+                  ),
                 }),
               );
 

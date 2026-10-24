@@ -15,6 +15,7 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   saveAsMap: 'Enregistrer dans mes cartes',
   loginToSaveMap:
     'Connectez-vous d’abord pour enregistrer la trace dans vos cartes.',
+  vertex: { channels: {} },
   style: {
     title: 'Style par défaut',
   },

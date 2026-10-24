@@ -1,6 +1,12 @@
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
-import type { Feature, LineString, MultiLineString } from 'geojson';
+import { activeTrackGeometry } from '@features/dataViewer/trackSelection.js';
+import type {
+  Feature,
+  FeatureCollection,
+  LineString,
+  MultiLineString,
+} from 'geojson';
 import type { Dispatch } from 'redux';
 import type { ElevationCredit, ElevationWaypoint } from './actions.js';
 import type {
@@ -44,6 +50,67 @@ export type ProfileResolver = (
   dispatch: Dispatch<RootAction>,
 ) => Promise<ChartResolution>;
 
+// Per collection, scanned once. The list last made is handed back while the
+// points are the same objects, so an edit elsewhere leaves the identity alone.
+const pointsOf = new WeakMap<FeatureCollection, Feature[]>();
+
+let lastPoints: Feature[] = [];
+
+function pointFeatures(fc: FeatureCollection | null): Feature[] {
+  if (!fc) {
+    if (lastPoints.length > 0) {
+      lastPoints = [];
+    }
+
+    return lastPoints;
+  }
+
+  let points = pointsOf.get(fc);
+
+  if (!points) {
+    const found = fc.features.filter(
+      ({ geometry }) => geometry?.type === 'Point',
+    );
+
+    points =
+      found.length === lastPoints.length &&
+      found.every((point, i) => point === lastPoints[i])
+        ? lastPoints
+        : found;
+
+    lastPoints = points;
+
+    pointsOf.set(fc, points);
+  }
+
+  return points;
+}
+
+const NONE = {};
+
+const pairs = new WeakMap<object, WeakMap<object, object>>();
+
+/** One object per pair, so `!==` tells whether either changed. */
+function pairOf(a: object | undefined, b: object): object {
+  let byB = pairs.get(a ?? NONE);
+
+  if (!byB) {
+    byB = new WeakMap();
+
+    pairs.set(a ?? NONE, byB);
+  }
+
+  let pair = byB.get(b);
+
+  if (!pair) {
+    pair = {};
+
+    byB.set(b, pair);
+  }
+
+  return pair;
+}
+
 /**
  * What the target's profile is derived from, as a single reference — cheap
  * enough to run on every action, since it is the chart processor's trigger.
@@ -71,12 +138,14 @@ export function chartIdentity(state: RootState): unknown {
     }
 
     case 'track-viewer':
-      // The whole collection, not the active feature within it: resolving that
-      // means scanning every imported feature, and this runs for both the new
-      // and the previous state on every dispatched action. Which track is
-      // active is caught by `dataViewerSetActiveTrack` instead.
-      return (
-        state.trackViewer.renderTrackGeojson ?? state.trackViewer.trackGeojson
+      // The active line's geometry, which a restyle leaves as it is — a line
+      // with no elevation is sampled from the API, and a colour change must not
+      // pay for that again. The densified copy replaces the lot when it lands.
+      // The points too: they are the profile's waypoint markers.
+      return pairOf(
+        state.trackViewer.renderTrackGeojson ??
+          activeTrackGeometry(state.trackViewer),
+        pointFeatures(state.trackViewer.trackGeojson),
       );
 
     case 'gps-recorder':
@@ -85,14 +154,6 @@ export function chartIdentity(state: RootState): unknown {
       // dispatched action. The split's own input — `splitGapS` — is listened
       // for instead, through `gpsRecorderSetSettings`.
       return state.gpsRecorder.points;
-
-    case 'drawing':
-      // The points, not the line: restyling replaces the line object, and
-      // keying on that would re-sample the whole profile from the elevation API
-      // for a colour change. `drawingLineChangeProperties` assigns onto the
-      // line, so the points array survives a restyle untouched.
-      return state.drawingLines.lines.find((line) => line.id === target.lineId)
-        ?.points;
 
     case 'tracking':
       return state.tracking.tracks.find(
@@ -128,12 +189,6 @@ export function loadResolver(
       return import(
         /* webpackChunkName: "gps-recorder-elevation-chart-resolver" */
         '@features/gpsRecorder/resolveElevationChart.js'
-      ).then((m) => m.default);
-
-    case 'drawing':
-      return import(
-        /* webpackChunkName: "drawing-elevation-chart-resolver" */
-        '@features/drawing/model/resolveElevationChart.js'
       ).then((m) => m.default);
 
     case 'tracking':

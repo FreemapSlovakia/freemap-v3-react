@@ -20,15 +20,7 @@ import { area as turfArea } from '@turf/area';
 import { feature } from '@turf/helpers';
 import { length as turfLength } from '@turf/length';
 import type { Geometry, Position } from 'geojson';
-import { interpolateLabel, PROPERTY_PREFIX } from './interpolateLabel.js';
-import {
-  lineLength,
-  measuredRings,
-  ringsArea,
-  ringsPerimeter,
-} from './measureLine.js';
-import type { DrawnLine, Line } from './model/actions/drawingLineActions.js';
-import type { DrawingPoint } from './model/actions/drawingPointActions.js';
+import { PROPERTY_PREFIX } from './interpolateLabel.js';
 
 /**
  * What a `{key}` in a label can name. The bare namespace is what the app works
@@ -72,56 +64,18 @@ export function withProps(
   );
 }
 
-export function pointLabelValues(
-  point: Pick<DrawingPoint, 'coords' | 'props'>,
+function pointLabelValues(
+  coords: LatLon,
+  props: Record<string, string> | undefined,
 ): LabelValues {
-  const values = withProps(point.props);
+  const values = withProps(props);
 
-  lazy(values, 'location', () => formatLocationLines(point.coords));
+  lazy(values, 'location', () => formatLocationLines(coords));
 
   return values;
 }
 
-/**
- * A line's or polygon's computed values. `lines` is the whole collection, which
- * a polygon needs to find the holes belonging to it; without it a polygon is
- * measured as its outline alone.
- */
-export function lineLabelValues(
-  line: Pick<Line, 'props' | 'points' | 'type'> &
-    Partial<Pick<DrawnLine, 'id' | 'holeOfId'>>,
-  lines: readonly DrawnLine[] = [],
-): LabelValues {
-  const values = withProps(line.props);
-
-  // Each measurement is taken at most once however many keys name it.
-  let rings: ReturnType<typeof measuredRings> | undefined;
-
-  const measured = () =>
-    (rings ??= measuredRings(
-      { id: line.id ?? -1, points: line.points, holeOfId: line.holeOfId },
-      lines,
-    ));
-
-  const polygonish = line.type === 'polygon';
-
-  addMeasures(
-    values,
-    () => (polygonish ? ringsPerimeter(measured()) : lineLength(line)),
-    polygonish ? () => ringsArea(measured()) : undefined,
-    !polygonish && line.points.length === 2
-      ? [line.points[0]!, line.points[1]!]
-      : undefined,
-    getLanguage(),
-  );
-
-  return values;
-}
-
-/**
- * An imported feature's values: the keys a drawn one answers, measured from its
- * GeoJSON geometry.
- */
+/** A feature's values, measured from its GeoJSON geometry. */
 export function geometryLabelValues(
   geometry: Geometry | null,
   props: Record<string, string> | undefined,
@@ -130,7 +84,7 @@ export function geometryLabelValues(
   if (geometry?.type === 'Point') {
     const [lon, lat] = geometry.coordinates;
 
-    return pointLabelValues({ coords: { lat: lat!, lon: lon! }, props });
+    return pointLabelValues({ lat: lat!, lon: lon! }, props);
   }
 
   const values = withProps(props);
@@ -206,20 +160,4 @@ function addMeasures(
       formatAzimuth(bearingTo(ends[0], ends[1]), locale),
     );
   }
-}
-
-/** A drawn point's label as it should read, wherever it is being read. */
-export function drawingPointLabel(
-  point: Pick<DrawingPoint, 'coords' | 'label' | 'props'>,
-): string {
-  return interpolateLabel(point.label ?? '', pointLabelValues(point));
-}
-
-/** The same for a line or a polygon. */
-export function drawingLineLabel(
-  line: Pick<Line, 'label' | 'props' | 'points' | 'type'> &
-    Partial<Pick<DrawnLine, 'id' | 'holeOfId'>>,
-  lines: readonly DrawnLine[] = [],
-): string {
-  return interpolateLabel(line.label ?? '', lineLabelValues(line, lines));
 }

@@ -120,7 +120,6 @@ export async function exportMapToDocument({
       objects: exportableSet.has('objects'),
       plannedRoute: exportableSet.has('plannedRoute'),
       tracking: exportableSet.has('tracking'),
-      import: exportableSet.has('import'),
       search: exportableSet.has('search'),
     },
     pointMode: { svgMarker: true },

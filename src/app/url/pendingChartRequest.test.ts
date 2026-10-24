@@ -8,12 +8,12 @@ import {
 
 /**
  * When a held `elevation-chart=` expires. Held too briefly it never restores a
- * saved map's drawing — the line it names has no id until the map arrives. Held
- * too long it lies in wait and opens a profile on a line the user draws minutes
- * later, unasked. Both have shipped, hence these.
+ * saved map's line, which isn't there until the map arrives. Held too long it
+ * lies in wait and opens a profile on a line the user draws minutes later,
+ * unasked. Both have shipped, hence these.
  */
 
-const line: ElevationChartTarget = { type: 'drawing', lineId: 4 };
+const line: ElevationChartTarget = { type: 'track-viewer' };
 
 const never = () => null;
 

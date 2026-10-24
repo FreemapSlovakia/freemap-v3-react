@@ -7,7 +7,8 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Nahrať',
-  unnamedTrack: ({ n }) => `Trasa ${n}`,
+  unnamedTrack: ({ n, kind }) =>
+    `${kind === 'track' ? 'Záznam trasy' : kind === 'route' ? 'Plánovaná trasa' : 'Čiara'} ${n}`,
   convertLossWarning:
     'Prevod na kresbu nahradí trasu a zahodí jej zaznamenané údaje (nadmorská výška, tep, rýchlosť, čas).',
   simplifyAll: 'Zjednodušiť všetko',
@@ -15,8 +16,38 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   saveAsMap: 'Uložiť do mojich máp',
   unsaved: 'Neuložené',
   unsavedTooltip:
-    'Táto trasa nie je v žiadnej uloženej mape ani v odkaze – zostáva len v tomto prehliadači, takže zdieľaním odkazu ju nezdieľate. Uložte ju do svojich máp, aby ste ju zachovali.',
+    'Tieto dáta sú na odkaz príliš veľké a nie sú v žiadnej uloženej mape – zostávajú len v tomto prehliadači, takže zdieľaním odkazu ich nezdieľate. Uložte ich do svojich máp, aby ste ich zachovali.',
   loginToSaveMap: 'Pre uloženie trasy do vašich máp sa najprv prihláste.',
+  snapshotGone: 'Dáta z tohto kroku už tento prehliadač neuchováva.',
+  snapshotFailed:
+    'Tento prehliadač nedokázal dáta uchovať, takže po opätovnom načítaní stránky sa stratia. Ak ich chcete zachovať, uložte ich do svojich máp.',
+  vertex: {
+    menuItem: 'Údaje bodu',
+    latitude: 'Zemepisná šírka',
+    longitude: 'Zemepisná dĺžka',
+    elevation: 'Nadmorská výška',
+    time: 'Čas',
+    filled: ({ filled, total }) => `${filled} z ${total} bodov`,
+    emptyHint:
+      'Prázdne pole nechá bod bez tejto hodnoty. Aké hodnoty čiara má, sa nastavuje v jej vlastnostiach.',
+    notANumber: 'Zadajte číslo.',
+    outOfRange: 'Mimo rozsahu.',
+    timeOrder: 'Čas musí ležať medzi časmi predchádzajúceho a ďalšieho bodu.',
+    channels: {
+      heart: 'Tep',
+      cads: 'Kadencia',
+      atemps: 'Teplota vzduchu',
+      wtemps: 'Teplota vody',
+      depths: 'Hĺbka',
+      speeds: 'Rýchlosť',
+      courses: 'Smer pohybu',
+      bearings: 'Azimut',
+      powers: 'Výkon',
+      accuracies: 'Presnosť',
+      battery: 'Batéria',
+      gsmSignal: 'Signál GSM',
+    },
+  },
   style: {
     title: 'Predvolený štýl',
   },

@@ -6,8 +6,6 @@ import { changesetReducer } from '@features/changesets/model/reducer.js';
 import { cookieConsentReducer } from '@features/cookieConsent/model/reducer.js';
 import { dataViewerReducer } from '@features/dataViewer/model/reducer.js';
 import { dataViewerSettingsReducer } from '@features/dataViewer/model/settingsReducer.js';
-import { drawingLinesReducer } from '@features/drawing/model/reducers/drawingLinesReducer.js';
-import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import { drawingSettingsReducer } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { elevationChartReducer } from '@features/elevationChart/model/reducer.js';
 import { elevationSettingsReducer } from '@features/elevationChart/model/settingsReducer.js';
@@ -56,8 +54,6 @@ export const reducers = {
   changesetInspector: changesetInspectorReducer,
   cookieConsent: cookieConsentReducer,
   drawingSettings: drawingSettingsReducer,
-  drawingLines: drawingLinesReducer,
-  drawingPoints: drawingPointsReducer,
   elevationChart: elevationChartReducer,
   elevationSettings: elevationSettingsReducer,
   geoip: geoIpReducer,

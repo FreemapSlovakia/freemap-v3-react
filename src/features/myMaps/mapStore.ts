@@ -55,7 +55,7 @@ export const KEEP = 5;
 // having unsaved changes on every reload. Such a record is still read — its
 // track is the one part of a map nothing else holds offline — but it is reported
 // as not comparable, and the restore lets the stored document decide instead.
-const VERSION = 1;
+const VERSION = 2;
 
 const RecordSchema = z.object({
   // Absent in copies written before the digest carried a version.
@@ -87,7 +87,9 @@ export type MapRecord = Omit<z.infer<typeof RecordSchema>, 'version'>;
  */
 export async function getMapRecord(
   mapId: string,
-): Promise<{ record: MapRecord; comparable: boolean } | undefined> {
+): Promise<
+  { record: MapRecord; comparable: boolean; trackOnly: boolean } | undefined
+> {
   const entries = (await storedKeys()).filter((entry) => entry.mapId === mapId);
 
   if (entries.length === 0) {
@@ -109,6 +111,9 @@ export async function getMapRecord(
   return {
     record: parsed.data,
     comparable: parsed.data.version === VERSION,
+    // Before version 2 the drawings rode in the URL alone, and the copy held
+    // only the imported track.
+    trackOnly: (parsed.data.version ?? 1) < 2,
   };
 }
 

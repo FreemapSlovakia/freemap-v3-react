@@ -128,6 +128,11 @@ const DataViewerMapDataSchema = z.object({
   trackGeojson: GeoJSONFeatureCollectionSchema.nullable().optional(),
   trackUID: z.string().nullable().optional(),
   gpxUrl: z.string().nullable().optional(),
+  /**
+   * Where each feature stood on the map, taken in document order — `points`,
+   * then `lines`, then `trackGeojson`. Absent when that order is the map's.
+   */
+  order: z.array(z.number().int().nonnegative()).optional(),
 });
 
 export const MapsLoadResponseSchema = z.object({

@@ -116,6 +116,8 @@ export type Messages = {
     deleted: string;
     visual: string;
     drawingTool: string;
+    /** The drawing tool's choice that draws nothing: clicks select instead. */
+    noDrawingTool: string;
     copyOk: string;
     noCookies: () => JSX.Element;
     name: string;

@@ -29,7 +29,12 @@ export interface MapData<LT = Line, PT = DrawingPoint> {
   tracking?: Partial<Pick<TrackingState, 'trackedDevices'>>;
   routePlanner?: RoutePlannerMapData;
   galleryFilter?: GalleryFilter;
-  trackViewer?: Partial<DataViewerState>;
+  trackViewer?: Partial<
+    Pick<DataViewerState, 'trackGeojson' | 'trackUID' | 'gpxUrl'>
+  > & {
+    /** See `DataViewerMapDataSchema`. */
+    order?: number[];
+  };
   map?: Partial<
     Pick<
       MapState,

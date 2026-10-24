@@ -3,7 +3,6 @@ import {
   setActiveModal,
   setSelectingHomeLocation,
 } from '@app/store/actions.js';
-import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -85,7 +84,7 @@ import {
   FaStop,
   FaSync,
 } from 'react-icons/fa';
-import { MdShapeLine, MdTimeline } from 'react-icons/md';
+import { MdTimeline } from 'react-icons/md';
 import { PiGraph } from 'react-icons/pi';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
@@ -563,8 +562,6 @@ export default function RoutePlannerMenu(): ReactElement {
   const isochrones = useAppSelector((state) => state.routePlanner.isochrones);
 
   const askSimplification = useSimplifyPrompt();
-
-  const convertToDataViewer = useConvertToDataViewer();
 
   const resultFound = routeFound || isochronesFound;
 
@@ -1077,15 +1074,6 @@ export default function RoutePlannerMenu(): ReactElement {
             showFrom="never"
             onClick={() => {
               void convertRouteToDrawing();
-            }}
-          />
-
-          <Action
-            label={m?.general.convertTo({ tool: m?.tools.dataViewer })}
-            icon={<MdShapeLine />}
-            showFrom="never"
-            onClick={() => {
-              convertToDataViewer({ type: 'planned-route' });
             }}
           />
 
