@@ -63,7 +63,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     comments: 'Commenti',
     newComment: 'Nuovo commento',
     addComment: 'Aggiungi',
-    yourRating: 'La tua valutazione:',
+    yourRating: 'La sua valutazione:',
     showOnTheMap: 'Mostra sulla mappa',
     uploaded: ({ username, createdAt }) => (
       <>
@@ -87,7 +87,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumPhoto: 'Questa foto è un contenuto premium.',
     noComments: 'Nessun commento',
     wikimediaCommentNotNotified:
-      'Questa foto proviene da Wikimedia Commons. Il suo autore non riceverà una notifica del tuo commento: notifichiamo solo gli autori delle foto caricate su Freemap.',
+      'Questa foto proviene da Wikimedia Commons. Il suo autore non riceverà una notifica del suo commento: notifichiamo solo gli autori delle foto caricate su Freemap.',
   },
 
   editForm: {
@@ -109,16 +109,16 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     uploading: (n) => `Uploading (${n})`,
     upload: 'Carica',
     hint: {
-      drop: 'Trascina qui le tue foto o clicca qui per selezionarle.',
-      tap: 'Tocca qui per aggiungere foto.',
+      drop: 'Trascini qui le sue foto o clicchi qui per selezionarle.',
+      tap: 'Tocchi qui per aggiungere foto.',
     },
     rules: `
       <ul>
-        <li>Non caricare foto troppo piccole (diapositive). La risoluzione massima non è limitata. La dimensione massima del file è limitata a 10 MB. I file più grandi saranno respinti.</li>
-        <li>Carica soltanto foto di panorami o di documentazione. I ritratti e le macro non sono accettate e saranno eliminate senza preavviso.</li>
-        <li>Carica soltanto foto scattate da te e di tua proprietà.</li>
+        <li>Non carichi foto troppo piccole (diapositive). La risoluzione massima non è limitata. La dimensione massima del file è limitata a 10 MB. I file più grandi saranno respinti.</li>
+        <li>Carichi soltanto foto di panorami o di documentazione. I ritratti e le macro non sono accettate e saranno eliminate senza preavviso.</li>
+        <li>Carichi soltanto foto scattate personalmente e di sua proprietà.</li>
         <li>Didascalie o commenti che non si riferiscono direttamente al contenuto delle foto caricate o che contraddicono i principi generalmente accettati di convivenza civile verranno rimossi. I trasgressori di questa regola saranno avvisati e, in caso di ripetute violazioni, il loro account nell'applicazione potrà essere cancellato.</li>
-        <li>Caricando le foto, accetti che esse saranno distribuite secondo i termini della licenza che scegli per ciascuna di esse (CC BY-SA 4.0 per impostazione predefinita).</li>
+        <li>Caricando le foto, accetta che esse saranno distribuite secondo i termini della licenza che sceglie per ciascuna di esse (CC BY-SA 4.0 per impostazione predefinita).</li>
         <li>L'operatore (Freemap.sk) declina ogni responsabilità e non risponde per danni diretti o indiretti derivanti dalla pubblicazione di una foto in galleria. La persona che ha caricato l'immagine sul server è pienamente responsabile della foto.</li>
         <li>L'operatore si riserva il diritto di modificare la descrizione, il nome, la posizione e i tag della foto, o di eliminare la foto se il contenuto è inappropriato (in violazione di queste regole).</li>
         <li>L'operatore si riserva il diritto di eliminare l'account nel caso in cui l'utente violi ripetutamente la politica della galleria pubblicando contenuti inappropriati.</li>
@@ -147,7 +147,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     },
     descriptions: {
       'CC0-1.0':
-        'Rinunci a tutti i diritti e rilasci la foto nel pubblico dominio — chiunque può usarla per qualsiasi scopo senza attribuzione.',
+        'Rinuncia a tutti i diritti e rilascia la foto nel pubblico dominio — chiunque può usarla per qualsiasi scopo senza attribuzione.',
       'CC-BY-4.0':
         "Altri possono condividere e modificare la foto, anche a fini commerciali, purché citino l'autore.",
       'CC-BY-SA-4.0':
@@ -211,10 +211,10 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium: 'Includi tutte le mie foto nei contenuti premium',
     free: 'Rendi tutte le mie foto accessibili a tutti',
     confirmPremium:
-      'Includere tutte le tue foto nei contenuti premium? Solo gli utenti con accesso premium potranno vederle.',
-    confirmFree: 'Rendere tutte le tue foto accessibili a tutti?',
+      'Includere tutte le sue foto nei contenuti premium? Solo gli utenti con accesso premium potranno vederle.',
+    confirmFree: 'Rendere tutte le sue foto accessibili a tutti?',
     confirmLicense: (license) =>
-      `Impostare la licenza di tutte le tue foto su ${license}? Le foto che usano già un'altra licenza saranno rilicenziate d'ora in poi.`,
+      `Impostare la licenza di tutte le sue foto su ${license}? Le foto che usano già un'altra licenza saranno rilicenziate d'ora in poi.`,
   },
 
   recentTags: 'Tag recenti da assegnare:',

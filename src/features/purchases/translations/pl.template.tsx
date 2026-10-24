@@ -3,14 +3,14 @@ import type { PurchasesMessages } from './PurchasesMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   purchases: 'Zakupy',
-  premiumExpired: (at) => <>Twój dostęp premium wygasł {at}</>,
+  premiumExpired: (at) => <>Dostęp premium wygasł {at}</>,
   date: 'Data',
   item: 'Pozycja',
-  notPremiumYet: 'Nie masz jeszcze dostępu premium.',
+  notPremiumYet: 'Brak dostępu premium.',
   awaitingBankPayment:
     'Czekamy na potwierdzenie przelewu bankowego. Premium aktywuje się po otrzymaniu płatności.',
   bankPaymentFailed:
-    'Niektóre przelewy bankowe zostały odrzucone lub wygasły. Jeśli uważasz, że to pomyłka, skontaktuj się z pomocą.',
+    'Niektóre przelewy bankowe zostały odrzucone lub wygasły. Jeśli to pomyłka, prosimy o kontakt z pomocą.',
   bankIntentStatus: {
     pending_settlement:
       'Przelew bankowy został utworzony i oczekuje na rozliczenie.',
@@ -29,7 +29,7 @@ const pl: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   credits: (amount) => <>Kredyty ({amount})</>,
   managePayments: 'Zarządzaj płatnościami',
   managePaymentsHint:
-    'Otwiera portal klienta Polar, naszego dostawcy płatności, gdzie możesz anulować subskrypcję, zmienić metodę płatności i pobrać faktury. Dotyczy tylko tego, co zostało opłacone przez Polar, a nie przez Rovas.',
+    'Otwiera portal klienta Polar, naszego dostawcy płatności, gdzie można anulować subskrypcję, zmienić metodę płatności i pobrać faktury. Dotyczy tylko tego, co zostało opłacone przez Polar, a nie przez Rovas.',
 };
 
 export default pl;

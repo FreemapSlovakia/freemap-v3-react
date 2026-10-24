@@ -53,7 +53,7 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     comments: 'Kommentare',
     newComment: 'Neuer Kommentar',
     addComment: 'Hinzufügen',
-    yourRating: 'Deine Bewertung:',
+    yourRating: 'Ihre Bewertung:',
     showOnTheMap: 'Auf der Karte anzeigen',
     uploaded: ({ username, createdAt }) => (
       <>
@@ -99,15 +99,15 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     uploading: (n) => `Wird hochgeladen (${n})`,
     upload: 'Hochladen',
     hint: {
-      drop: 'Ziehe deine Fotos hierher oder klicke hier, um sie auszuwählen.',
-      tap: 'Tippe hier, um Fotos hinzuzufügen.',
+      drop: 'Ziehen Sie Ihre Fotos hierher oder klicken Sie hier, um sie auszuwählen.',
+      tap: 'Tippen Sie hier, um Fotos hinzuzufügen.',
     },
     rules: `
       <ul>
-        <li>Lade keine zu kleinen Bilder hoch (Thumbnails). Die maximale Auflösung ist nicht begrenzt, die maximale Dateigröße beträgt jedoch 10 MB. Größere Dateien werden abgelehnt.</li>
-        <li>Lade nur Landschafts- oder Dokumentationsfotos hoch. Porträts und Makroaufnahmen gelten als unangemessener Inhalt und werden ohne Vorwarnung gelöscht.</li>
-        <li>Lade nur eigene Fotos hoch oder solche, für die du eine Freigabe zur Veröffentlichung hast.</li>
-        <li>Beschreibungen oder Kommentare, die nicht direkt mit dem Inhalt der hochgeladenen Fotos zusammenhängen oder den allgemein anerkannten Regeln des zivilisierten Zusammenlebens widersprechen, werden entfernt. Verstöße gegen diese Regel führen zu einer Verwarnung, bei wiederholtem Verstoß kann dein Konto gelöscht werden.</li>
+        <li>Laden Sie keine zu kleinen Bilder hoch (Thumbnails). Die maximale Auflösung ist nicht begrenzt, die maximale Dateigröße beträgt jedoch 10 MB. Größere Dateien werden abgelehnt.</li>
+        <li>Laden Sie nur Landschafts- oder Dokumentationsfotos hoch. Porträts und Makroaufnahmen gelten als unangemessener Inhalt und werden ohne Vorwarnung gelöscht.</li>
+        <li>Laden Sie nur eigene Fotos hoch oder solche, für die Sie eine Freigabe zur Veröffentlichung haben.</li>
+        <li>Beschreibungen oder Kommentare, die nicht direkt mit dem Inhalt der hochgeladenen Fotos zusammenhängen oder den allgemein anerkannten Regeln des zivilisierten Zusammenlebens widersprechen, werden entfernt. Verstöße gegen diese Regel führen zu einer Verwarnung, bei wiederholtem Verstoß kann Ihr Konto gelöscht werden.</li>
         <li>Die Fotos werden unter der Lizenz weitergegeben, die Sie für jedes einzelne wählen (standardmäßig CC BY-SA 4.0).</li>
         <li>Der Betreiber (Freemap.sk) übernimmt keine Verantwortung und haftet nicht für direkte oder indirekte Schäden, die durch die Veröffentlichung eines Fotos in der Galerie entstehen. Die volle Verantwortung trägt die Person, die das Foto auf den Server hochgeladen hat.</li>
         <li>Der Betreiber behält sich das Recht vor, die Beschreibung, den Namen, die Position und die Tags eines Fotos zu ändern oder das Foto zu löschen, wenn dessen Inhalt unangemessen ist (diese Regeln verletzt).</li>

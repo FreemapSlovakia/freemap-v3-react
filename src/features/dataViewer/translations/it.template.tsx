@@ -10,7 +10,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   split: {
     action: 'Dividi',
-    pick: 'Clicca la traccia nel punto di divisione',
+    pick: 'Clicchi la traccia nel punto di divisione',
     here: 'Dividi qui',
     segments: 'Dividi in segmenti',
   },
@@ -18,7 +18,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Unisci',
     asLine: 'Unisci in una sola linea',
     asSegments: 'Unisci mantenendo i segmenti',
-    pick: 'Clicca la traccia da unire',
+    pick: 'Clicchi la traccia da unire',
   },
   osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
@@ -32,9 +32,9 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     tooLong: 'Questa traccia ha troppi punti per essere agganciata.',
     tooShort: 'La traccia è troppo corta per essere agganciata.',
     brokenSequence:
-      'La traccia esce da qualche parte dalla rete mappata, quindi non può essere agganciata. Prova un altro mezzo oppure lascia la traccia com’è.',
+      'La traccia esce da qualche parte dalla rete mappata, quindi non può essere agganciata. Provi un altro mezzo oppure lasci la traccia com’è.',
     offNetwork:
-      'Il percorso agganciato è risultato molto più lungo della traccia, il che significa che la traccia non seguiva percorsi mappati — attraverso un prato, ad esempio. L’aggancio può rispondere solo con percorsi esistenti, quindi il risultato non sarebbe dove sei passato. La traccia resta invariata.',
+      'Il percorso agganciato è risultato molto più lungo della traccia, il che significa che la traccia non seguiva percorsi mappati — attraverso un prato, ad esempio. L’aggancio può rispondere solo con percorsi esistenti, quindi il risultato non sarebbe dove è passato. La traccia resta invariata.',
     partial:
       'Alcune parti della traccia non sono state agganciate — restano come registrate. Una traccia che cambia mezzo a metà strada (una camminata, poi il rientro in auto) va prima divisa.',
   },
@@ -46,7 +46,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   simplifyAll: 'Semplifica tutto',
   moreInfo: 'Maggiori info',
   saveAsMap: 'Salva nelle mie mappe',
-  loginToSaveMap: 'Accedi prima per salvare la traccia nelle tue mappe.',
+  loginToSaveMap: 'Acceda prima per salvare la traccia nelle sue mappe.',
   details: {
     startTime: 'Ora inizio',
     finishTime: 'Ora fine',
@@ -66,7 +66,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   uploadModal: {
     title: 'Importa file',
-    drop: 'Trascina qui un file GPX, KML, KMZ, TCX o GeoJSON oppure clicca per selezionarlo.',
+    drop: 'Trascini qui un file GPX, KML, KMZ, TCX o GeoJSON oppure clicchi per selezionarlo.',
     mergeTitle: 'Dati già caricati',
     mergeMessage:
       'Alcuni geodati sono già visualizzati. Aggiungere i dati importati o sostituirli?',
@@ -88,14 +88,14 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
         Slovacchia (DMR 5.0: ÚGKK SR), altri in arrivo.
       </>
     ),
-    question: 'Cosa vuoi fare?',
+    question: 'Cosa vuole fare?',
     overrideAll: 'Sovrascrivi tutto',
     overrideAllDesc:
-      'sostituisci ogni punto con il modello del terreno — un profilo ' +
+      'sostituisce ogni punto con il modello del terreno — un profilo ' +
       'uniforme e coerente',
     fillMissing: 'Riempi mancanti',
     fillMissingDesc:
-      'mantieni i valori registrati e riempi solo le lacune (potrebbero ' +
+      'mantiene i valori registrati e riempie solo le lacune (potrebbero ' +
       'esserci scalini dove i due dati si incontrano)',
     keep: 'Non modificare',
     keepDesc: 'usa la quota memorizzata nella traccia',
@@ -120,7 +120,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   someFilesFailed: ({ names }) => `Impossibile caricare alcuni file: ${names}.`,
   unsaved: 'Non salvata',
   unsavedTooltip:
-    'Questa traccia non si trova in nessuna mappa salvata e non fa parte del collegamento: resta solo in questo browser, quindi condividere il collegamento non la condivide. Salvala nelle tue mappe per conservarla.',
+    'Questa traccia non si trova in nessuna mappa salvata e non fa parte del collegamento: resta solo in questo browser, quindi condividere il collegamento non la condivide. La salvi nelle sue mappe per conservarla.',
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Errore durante l’aggancio della traccia', err),
 };

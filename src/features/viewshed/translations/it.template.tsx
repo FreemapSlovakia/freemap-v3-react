@@ -4,7 +4,7 @@ import type { ViewshedMessages } from './ViewshedMessages.js';
 const it: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Scegli sulla mappa',
   locate: 'Visibilità dalla mia posizione',
-  pickViewpointPrompt: 'Clicca sulla mappa il punto da cui vuoi guardare',
+  pickViewpointPrompt: 'Clicchi sulla mappa il punto da cui vuole guardare',
   extent: 'Portata e dettaglio',
   rangeHint:
     'Guardare oltre i 20 km è una funzione premium: la distanza è ciò che costa di più a una visibilità — i raggi crescono con il perimetro e ciascuno arriva fino al bordo.',
@@ -19,15 +19,15 @@ const it: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   settings: 'Impostazioni della visibilità',
   targetHeight: 'Altezza del bersaglio',
   targetHeightHint:
-    'Quanto è alto ciò che stai guardando — alzalo per vedere da dove sarebbero visibili un traliccio o una persona su una cresta.',
+    'Quanto è alto ciò che sta guardando — lo alzi per vedere da dove sarebbero visibili un traliccio o una persona su una cresta.',
   color: 'Colore',
   strength: 'Intensità',
   strengthMeasured: 'Come misurata',
   strengthHint:
-    'Il livello è sfumato in base a quanto terreno vedi, perciò le superfici viste quasi di taglio risultano molto pallide. Aumentandola si solleva l’estremo pallido senza appiattire il resto.',
+    'Il livello è sfumato in base a quanto terreno si vede, perciò le superfici viste quasi di taglio risultano molto pallide. Aumentandola si solleva l’estremo pallido senza appiattire il resto.',
   minOpacity: 'Opacità minima',
   minOpacityHint:
-    'Con quanta intensità è disegnato il terreno visibile, anche se lo vedi quasi di taglio. Al 100% il livello è una semplice maschera: visibile o no, niente in mezzo.',
+    'Con quanta intensità è disegnato il terreno visibile, anche se visto quasi di taglio. Al 100% il livello è una semplice maschera: visibile o no, niente in mezzo.',
   caveats: {
     viewpoint:
       'La visibilità è molto più sensibile al punto di vista esatto di quanto lo sia un panorama: pochi metri accanto alla cima possono far perdere interi quadranti.',
@@ -41,14 +41,14 @@ const it: DeepPartialWithRequiredObjects<ViewshedMessages> = {
         ? 'In attesa — c’è un calcolo prima.'
         : `In attesa — ci sono ${ahead} calcoli prima.`,
   errors: {
-    offline: 'La visibilità è calcolata dal server e tu sei offline.',
+    offline: 'La visibilità è calcolata dal server e il dispositivo è offline.',
     unreachable:
-      'Non è stato possibile raggiungere il servizio di rendering. Potrebbe non essere attivo, oppure qualcosa fra te e lui blocca la richiesta.',
-    busy: 'Il servizio di rendering non è disponibile in questo momento. Riprova fra poco.',
+      'Non è stato possibile raggiungere il servizio di rendering. Potrebbe non essere attivo, oppure qualcosa lungo il percorso blocca la richiesta.',
+    busy: 'Il servizio di rendering non è disponibile in questo momento. Riprovi fra poco.',
     tooMany:
-      'Ultimamente sono stati fatti troppi calcoli. Riprova più tardi oppure passa al premium.',
+      'Ultimamente sono stati fatti troppi calcoli. Riprovi più tardi oppure passi al premium.',
     noData:
-      'Per questo punto di osservazione non ci sono dati del terreno. Prova a cliccare altrove.',
+      'Per questo punto di osservazione non ci sono dati del terreno. Provi a cliccare altrove.',
     failed: 'Non è stato possibile calcolare la visibilità.',
   },
 };

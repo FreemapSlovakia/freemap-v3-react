@@ -11,8 +11,8 @@ const hu: DeepPartialWithRequiredObjects<AdMessages> = {
   },
   rovas: () => (
     <RovasAd rovasDesc="gazdaság, amely jutalmazza a munkát">
-      Rögzítsd az önkéntes tevékenységedet, ellenőriztesd a közösséggel, és
-      keress chronokat.
+      Rögzítse önkéntes tevékenységét, ellenőriztesse a közösséggel, és
+      keressen chronokat.
     </RovasAd>
   ),
   zdilaAuthorship: () => (

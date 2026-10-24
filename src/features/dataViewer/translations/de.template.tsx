@@ -10,7 +10,7 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   split: {
     action: 'Teilen',
-    pick: 'Klicke auf die Spur an der Trennstelle',
+    pick: 'Klicken Sie auf die Spur an der Trennstelle',
     here: 'Hier teilen',
     segments: 'In Abschnitte teilen',
   },
@@ -18,7 +18,7 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Verbinden',
     asLine: 'Zu einer Linie verbinden',
     asSegments: 'Verbinden, Abschnitte behalten',
-    pick: 'Klicke auf die Spur zum Verbinden',
+    pick: 'Klicken Sie auf die Spur zum Verbinden',
   },
   osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
@@ -107,7 +107,7 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   moreInfo: 'Mehr Infos',
   saveAsMap: 'In meinen Karten speichern',
   loginToSaveMap:
-    'Melde dich zuerst an, um die Strecke in deinen Karten zu speichern.',
+    'Melden Sie sich zuerst an, um die Strecke in Ihren Karten zu speichern.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Streckendaten', err),
   matchingError: ({ err }) =>

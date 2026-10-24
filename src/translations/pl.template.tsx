@@ -16,7 +16,7 @@ const getErrorMarkup = (ticketId?: string) => `
       ? `Błąd został automatycznie zgłoszony pod identyfikatorem <b>${ticketId}</b>.`
       : ''
   }
-  Błąd możesz zgłosić ${
+  Błąd można zgłosić ${
     ticketId ? 'także ' : ''
   }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHubie</a>,
   lub wysłać nam szczegóły na adres <a href="mailto:freemap@freemap.sk?subject=Zgłoszenie%20błędu%20na%20www.freemap.sk">freemap@freemap.sk</a>.
@@ -49,7 +49,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     viewpoint: 'Punkt obserwacji',
     eyeHeight: 'Wysokość oczu',
     eyeHeightHint:
-      'Jak wysoko nad ziemią stoisz — wieża albo dron, a nie wysokość nad poziomem morza.',
+      'Jak wysoko nad ziemią jest punkt obserwacji — wieża albo dron, a nie wysokość nad poziomem morza.',
     maxVisibleDistance: 'Maks. widoczna odległość',
     info: 'Informacje',
     terrain: {
@@ -148,7 +148,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     unknown: 'Nieznane',
     enablePopup: 'Włącz wyskakujące okna dla tej strony w swojej przeglądarce.',
     broadcastChannelUnsupported:
-      'Ta czynność nie jest obsługiwana w Twojej przeglądarce (BroadcastChannel jest niedostępny, np. w trybie prywatnym lub w przeglądarce wbudowanej w aplikację). Użyj zwykłego okna w nowoczesnej przeglądarce.',
+      'Ta czynność nie jest obsługiwana w tej przeglądarce (BroadcastChannel jest niedostępny, np. w trybie prywatnym lub w przeglądarce wbudowanej w aplikację). Użyj zwykłego okna w nowoczesnej przeglądarce.',
     componentLoadingError:
       'Błąd ładowania komponentu. Sprawdź swoje połączenie z internetem.',
     offline: 'Brak połączenia z internetem.',
@@ -263,7 +263,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Zamknij',
     closeTool: 'Zamknij narzędzie',
     locateMe: 'Pokaż moją pozycję',
-    pickHomeLocationPrompt: 'Kliknij na mapie miejsce, w którym mieszkasz',
+    pickHomeLocationPrompt: 'Kliknij na mapie miejsce zamieszkania',
     locationError: 'Błąd pobierania pozycji.',
     locationNoSignal: 'Nadal brak sygnału GPS.',
     headingSource: 'Wskaźnik kierunku',
@@ -276,10 +276,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Kierunek ruchu pochodzi z GPS i jest widoczny tylko podczas ruchu. Kompas urządzenia działa też w bezruchu, ale wymaga zgody i bywa niedokładny.',
     bearingLine: 'Odległość i azymut',
     bearingLineHelp:
-      'Podczas lokalizowania rysuje linię między Twoją pozycją a celownikiem na środku mapy, opisaną odległością i azymutem z Twojej pozycji do celownika. Pojawia się, gdy przesuniesz mapę poza swoją pozycję.',
+      'Podczas lokalizowania rysuje linię między bieżącą pozycją a celownikiem na środku mapy, opisaną odległością i azymutem z bieżącej pozycji do celownika. Pojawia się po przesunięciu mapy poza bieżącą pozycję.',
     compassPermissionDenied: 'Odmówiono dostępu do kompasu.',
     compassUnavailable:
-      'Brak danych kompasu. Twoje urządzenie może go nie mieć lub dostęp jest zablokowany.',
+      'Brak danych kompasu. Urządzenie może go nie mieć lub dostęp jest zablokowany.',
     zoomIn: 'Powiększ',
     zoomOut: 'Pomniejsz',
     devInfo: () => (
@@ -574,13 +574,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Szczegółowe krajowe modele terenu, dostępne w niektórych krajach, są zwykle dostosowane do hydrologii: przy każdym przepuście przecinają drogę rowem. Zagłębienia węższe niż ta wartość są wypełniane; szersze pozostają, bo to rzeczywisty teren. Zero wyłącza tę funkcję i nic nie zmienia tam, gdzie używany jest model globalny.',
     gradeWindow: 'Okno nachylenia',
     gradeWindowHelp:
-      'Gdy wskażesz profil wysokości, miejsce zostaje zaznaczone na mapie wraz z panującym tam nachyleniem. Nachylenie jest uśredniane na odcinku tej długości wokół danego punktu, aby kilka metrów szumu GPS nie wyglądało jak ściana. Zero mierzy je między sąsiednimi punktami profilu.',
+      'Po wskazaniu profilu wysokości miejsce zostaje zaznaczone na mapie wraz z panującym tam nachyleniem. Nachylenie jest uśredniane na odcinku tej długości wokół danego punktu, aby kilka metrów szumu GPS nie wyglądało jak ściana. Zero mierzy je między sąsiednimi punktami profilu.',
   },
 
   errorCatcher: {
     html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
-        Możesz spróbować:
+        Można spróbować:
       </p>
       <ul>
         <li><a href="">ponownie załadować ostatnią stronę</a></li>

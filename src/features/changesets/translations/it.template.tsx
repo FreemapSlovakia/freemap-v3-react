@@ -38,7 +38,7 @@ const it: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   allAuthors: 'Tutti gli autori',
   refresh: 'Scarica i changeset per la vista corrente della mappa',
   tooBig:
-    'La richiesta dei changeset potrebbe restituire troppi risultati. Per favore aumenta lo zoom, scegli meno giorni o inserici un autore specifico.',
+    'La richiesta dei changeset potrebbe restituire troppi risultati. Per favore aumenti lo zoom, scelga meno giorni o inserisca un autore specifico.',
   olderThan: ({ days }) => `${days} giorni`,
   notFound: 'Nessun changeset trovato.',
   fetchError: ({ err }) =>

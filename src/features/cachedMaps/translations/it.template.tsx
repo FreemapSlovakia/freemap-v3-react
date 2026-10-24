@@ -16,7 +16,7 @@ const it: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   addOfflineMap: 'Aggiungi mappa offline',
   showInInstalledMaps: 'Mostra nelle mappe installate',
   emptyMessage:
-    'Nessuna mappa offline ancora salvata. Aggiungine una per usare le mappe senza connessione a internet.',
+    'Nessuna mappa offline ancora salvata. Ne aggiunga una per usare le mappe senza connessione a internet.',
   zoom: 'Zoom',
   tiles: 'Riquadri',
   size: 'Dimensione',

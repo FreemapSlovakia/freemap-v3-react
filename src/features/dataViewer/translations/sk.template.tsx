@@ -35,7 +35,7 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   osmUpload: {
     menuItem: 'Nahrať GPS stopu na OpenStreetMap',
     title: 'Nahrať GPS stopu na OpenStreetMap',
-    help: 'Nahrá načítané trasy do tvojho účtu OpenStreetMap ako GPS stopu, podľa ktorej môžu mapovatelia zakresliť cesty. Nahrajú sa len trasy so zaznamenanými časmi – iné OpenStreetMap neuchováva. Nahrávaj len trasy, ktoré si sám nahral.',
+    help: 'Nahrá načítané trasy do vášho účtu OpenStreetMap ako GPS stopu, podľa ktorej môžu mapovatelia zakresliť cesty. Nahrajú sa len trasy so zaznamenanými časmi – iné OpenStreetMap neuchováva. Nahrávajte len trasy, ktoré ste sami nahrali.',
     description: 'Popis',
     tags: 'Značky',
     tagsHint: 'Oddelené čiarkami.',
@@ -50,22 +50,22 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     },
     visibilityHints: {
       identifiable:
-        'Zobrazená v zozname stôp s tvojím menom, ako usporiadané body s časovými značkami.',
+        'Zobrazená v zozname stôp s vaším menom, ako usporiadané body s časovými značkami.',
       public:
-        'Zobrazená v zozname stôp s tvojím menom, ako anonymné neusporiadané body.',
+        'Zobrazená v zozname stôp s vaším menom, ako anonymné neusporiadané body.',
       trackable:
         'Zdieľaná len ako anonymné usporiadané body s časovými značkami.',
       private: 'Zdieľaná len ako anonymné neusporiadané body.',
     },
     upload: 'Nahrať',
     loginPrompt:
-      'Na nahranie sa musíš prihlásiť cez OpenStreetMap a povoliť Freemapu nahrávať GPS stopy. Pokračovať?',
+      'Na nahranie sa musíte prihlásiť cez OpenStreetMap a povoliť Freemapu nahrávať GPS stopy. Pokračovať?',
     connectPrompt:
-      'Na nahranie musíš k účtu Freemap pripojiť účet OpenStreetMap a povoliť Freemapu nahrávať doň GPS stopy. Ak už máš iný účet Freemap, do ktorého sa prihlasuješ týmto účtom OpenStreetMap, oba účty sa zlúčia do jedného. Pokračovať?',
+      'Na nahranie musíte k účtu Freemap pripojiť účet OpenStreetMap a povoliť Freemapu nahrávať doň GPS stopy. Ak už máte iný účet Freemap, do ktorého sa prihlasujete týmto účtom OpenStreetMap, oba účty sa zlúčia do jedného. Pokračovať?',
     authorizePrompt:
-      'Na nahranie musíš povoliť Freemapu nahrávať GPS stopy do tvojho účtu OpenStreetMap. Pokračovať?',
+      'Na nahranie musíte povoliť Freemapu nahrávať GPS stopy do vášho účtu OpenStreetMap. Pokračovať?',
     reauthorize:
-      'Povolenie Freemapu nahrávať GPS stopy do tvojho účtu OpenStreetMap bolo práve odvolané. Klikni znova na Nahrať a povoľ ho.',
+      'Povolenie Freemapu nahrávať GPS stopy do vášho účtu OpenStreetMap bolo práve odvolané. Kliknite znova na Nahrať a povoľte ho.',
     success: ({ url }) => (
       <>
         Trasa bola nahraná. OpenStreetMap ju spracuje do niekoľkých minút.{' '}

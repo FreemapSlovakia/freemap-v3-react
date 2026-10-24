@@ -154,19 +154,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     load: 'Betöltés',
     unknown: 'Ismeretlen',
     componentLoadingError:
-      'Nem sikerült betölteni a komponenst. Kérlek, ellenőrizd az internetkapcsolatodat.',
-    offline: 'Nincs internetkapcsolatod.',
+      'Nem sikerült betölteni a komponenst. Kérjük, ellenőrizze az internetkapcsolatát.',
+    offline: 'Nincs internetkapcsolata.',
     offlineUnavailable: 'Internetkapcsolat nélkül nem érhető el.',
     offlineToolUnavailable:
       'Ez az eszköz internetkapcsolat nélkül semmit sem tud betölteni.',
     offlineNotice:
-      'Nincs internetkapcsolatod, ezért itt semmit sem lehet betölteni vagy elküldeni.',
+      'Nincs internetkapcsolata, ezért itt semmit sem lehet betölteni vagy elküldeni.',
     connectionError: 'Hiba a szerverhez való csatlakozáskor.',
     experimentalFunction: 'Kísérleti funkció',
     attribution: () => (
       <Attribution unknown="A térkép licence nincs megadva." />
     ),
-    unauthenticatedError: 'A funkció használatához előbb jelentkezz be.',
+    unauthenticatedError: 'A funkció használatához előbb jelentkezzen be.',
     confirmation: 'Megerősítés',
     success: 'Kész!',
     privacyPolicy: 'Adatvédelmi irányelvek',
@@ -175,7 +175,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     infoAndLegal: 'Térképinformációk és jogi tudnivalók',
     newOptionText: '%value% hozzáadása',
     deleteButtonText: '%value% eltávolítása a listáról',
-    accept: 'Elfogadod',
+    accept: 'Elfogadás',
     externalService: 'Külső szolgáltatás, használati korlátozásokkal',
   },
 
@@ -569,7 +569,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     legacyMapWarning: ({ from, to }) => (
       <>
         A megjelenített térkép <b>{messages.mapLayers.letters[from]}</b>{' '}
-        elavult. Átváltasz a modern <b>{messages.mapLayers.letters[to]}</b>?
+        elavult. Átvált a modern <b>{messages.mapLayers.letters[to]}</b>?
       </>
     ),
     layersPanel: 'Térképrétegek',

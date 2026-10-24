@@ -13,7 +13,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
         App erweitert.
       </p>
       <p className="mb-1">
-        Für <b>{price} €</b> pro Jahr erhältst du:
+        Für <b>{price} €</b> pro Jahr erhalten Sie:
       </p>
       <ul>
         <li>entferntes Werbebanner</li>
@@ -59,26 +59,26 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   dtmAreaNames: { gb: 'England' },
   purchaseAfterLogin: (
     <>
-      Mit der Wahl eines Anmeldeanbieters meldest du dich an oder erstellst ein
+      Mit der Wahl eines Anmeldeanbieters melden Sie sich an oder erstellen ein
       kostenloses Freemap-Konto. Anschließend geht es weiter zur Zahlung für{' '}
       <strong>Freemap Premium</strong>.
     </>
   ),
-  success: 'Glückwunsch, du hast Premium-Zugang erhalten!',
+  success: 'Glückwunsch, Sie haben Premium-Zugang erhalten!',
   becomePremium: 'Premium-Zugang erhalten',
   youArePremium: (date) => (
     <>
-      Du hast Premium-Zugang bis <b>{date}</b>.
+      Sie haben Premium-Zugang bis <b>{date}</b>.
     </>
   ),
   premiumOnly: 'Nur mit Premium-Zugang verfügbar.',
-  noPremium: 'Du hast keinen Premium-Zugang.',
+  noPremium: 'Sie haben keinen Premium-Zugang.',
   clickToActivate: 'Zum Aktivieren klicken.',
   higherPrecisionElevation:
     'Höhendaten mit höherer Genauigkeit mit Premium-Zugang verfügbar.',
   higherDetail: 'Feinere Details mit Premium-Zugang verfügbar.',
-  alreadyPremium: 'Du hast bereits Premium-Zugang.',
-  alreadySubscribed: 'Du hast bereits ein aktives Abo.',
+  alreadyPremium: 'Sie haben bereits Premium-Zugang.',
+  alreadySubscribed: 'Sie haben bereits ein aktives Abo.',
   premiumUser: 'Nutzer mit Premium-Zugang',
   payOnce: 'Einmalig für ein Jahr zahlen',
   paySubscription: 'Jährliches Abo (verlängert sich automatisch)',
@@ -92,7 +92,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
   subscriptionReassurance: ({ price }) =>
     `Der Preis von ${price}\xa0€ pro Jahr bleibt Ihnen, solange das Abo aktiv ist. Sie können es jederzeit kündigen — der Premium-Zugang läuft dann bis zum Ende des bezahlten Jahres.`,
   youArePremiumRenews: (
-    <>Du hast Premium-Zugang. Dein Abonnement verlängert sich automatisch.</>
+    <>Sie haben Premium-Zugang. Ihr Abonnement verlängert sich automatisch.</>
   ),
 };
 

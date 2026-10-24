@@ -9,10 +9,10 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Błąd eksportu mapy', err),
   cancelExportTitle: 'Anuluj eksport',
   labelTitle: 'Etykiety',
-  cancelExportQuestion: 'Czy na pewno chcesz anulować trwający eksport?',
+  cancelExportQuestion: 'Czy na pewno anulować trwający eksport?',
   discardExportTitle: 'Odrzuć eksport',
   discardExportQuestion:
-    'Wyeksportowana mapa nie została jeszcze zapisana. Czy chcesz ją odrzucić?',
+    'Wyeksportowana mapa nie została jeszcze zapisana. Odrzucić ją?',
   area: 'Obszar eksportu',
   format: 'Format',
   layersTitle: 'Opcjonalne warstwy',

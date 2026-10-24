@@ -9,7 +9,7 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     email: 'E-mail',
     delete: 'Fiók törlése',
     deleteWarning:
-      'Biztosan törölni szeretnéd a fiókodat? Ez eltávolítja az összes fotódat, fotómegjegyzésedet és értékelésedet, a térképeidet és a követett eszközeidet.',
+      'Biztosan törölni szeretné a fiókját? Ez eltávolítja az összes fotóját, fotómegjegyzését és értékelését, a térképeit és a követett eszközeit.',
     personalInfo: 'Személyes adatok',
     authProviders: 'Bejelentkezési szolgáltatók',
     picture: 'Profilkép',

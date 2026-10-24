@@ -40,7 +40,7 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   uninstallMap: 'Odinstaluj',
   suggestMap: (
     <>
-      Znasz mapę, której nie mamy? Napisz do nas na{' '}
+      Brakuje tu jakiejś mapy? Prosimy o wiadomość na{' '}
       <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
     </>
   ),

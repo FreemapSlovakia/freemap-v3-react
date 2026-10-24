@@ -59,7 +59,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     comments: 'Komentarji',
     newComment: 'Nov komentar',
     addComment: 'Dodaj',
-    yourRating: 'Tvoja ocena:',
+    yourRating: 'Vaša ocena:',
     showOnTheMap: 'Prikaži na zemljevidu',
     uploaded: ({ username, createdAt }) => (
       <>

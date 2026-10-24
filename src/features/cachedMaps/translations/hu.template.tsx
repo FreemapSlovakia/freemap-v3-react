@@ -16,7 +16,7 @@ const hu: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
   addOfflineMap: 'Offline térkép hozzáadása',
   showInInstalledMaps: 'Megjelenítés a telepített térképek között',
   emptyMessage:
-    'Még nincsenek offline térképek mentve. Adj hozzá egyet, hogy internetkapcsolat nélkül is használhasd a térképeket.',
+    'Még nincsenek offline térképek mentve. Adjon hozzá egyet, hogy internetkapcsolat nélkül is használhassa a térképeket.',
   zoom: 'Nagyítás',
   tiles: 'Csempék',
   size: 'Méret',

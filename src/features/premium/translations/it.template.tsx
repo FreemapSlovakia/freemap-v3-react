@@ -12,7 +12,7 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
         che potenzia l’app.
       </p>
       <p>
-        Con <b>{price} €</b> all’anno ottieni:
+        Con <b>{price} €</b> all’anno ottiene:
       </p>
       <ul>
         <li>rimozione del banner pubblicitario</li>
@@ -56,40 +56,40 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
   dtmAreaNames: { gb: 'Inghilterra' },
   purchaseAfterLogin: (
     <>
-      Scegliendo un provider di accesso accedi o crei un account Freemap
-      gratuito. Proseguirai poi con il pagamento di{' '}
+      Scegliendo un provider di accesso accede o crea un account Freemap
+      gratuito. Proseguirà poi con il pagamento di{' '}
       <strong>Freemap Premium</strong>.
     </>
   ),
-  success: 'Congratulazioni, hai ottenuto l’accesso premium!',
+  success: 'Congratulazioni, ha ottenuto l’accesso premium!',
   becomePremium: 'Ottieni accesso premium',
   youArePremium: (date) => (
     <>
-      Hai accesso premium fino al <b>{date}</b>.
+      Ha accesso premium fino al <b>{date}</b>.
     </>
   ),
   premiumOnly: 'Disponibile solo con accesso premium.',
-  noPremium: 'Non hai accesso premium.',
-  clickToActivate: 'Clicca per attivare.',
+  noPremium: 'Non ha accesso premium.',
+  clickToActivate: 'Clicchi per attivare.',
   higherPrecisionElevation:
     'Dati di quota a maggiore precisione disponibili con accesso premium.',
   higherDetail: 'Dettaglio più fine disponibile con accesso premium.',
-  alreadyPremium: 'Hai già accesso premium.',
-  alreadySubscribed: 'Hai già un abbonamento attivo.',
+  alreadyPremium: 'Ha già accesso premium.',
+  alreadySubscribed: 'Ha già un abbonamento attivo.',
   premiumUser: 'Utente con accesso premium',
   payOnce: 'Paga una volta per un anno',
   paySubscription: 'Abbonamento annuale (rinnovo automatico)',
   payWithChrons: 'Paga con i Chron',
   chronsHint: (
     <>
-      Se desideri ottenere l&apos;accesso premium per il lavoro di volontariato
-      segnalato in <RovasLink>Rovas</RovasLink>, scegli di pagare con i Chron.
+      Se desidera ottenere l&apos;accesso premium per il lavoro di volontariato
+      segnalato in <RovasLink>Rovas</RovasLink>, scelga di pagare con i Chron.
     </>
   ),
   subscriptionReassurance: ({ price }) =>
-    `Il prezzo di ${price}\xa0€ all’anno resta tuo finché l’abbonamento è attivo. Puoi annullarlo in qualsiasi momento — l’accesso premium prosegue poi fino alla fine dell’anno pagato.`,
+    `Il prezzo di ${price}\xa0€ all’anno resta garantito finché l’abbonamento è attivo. Può annullarlo in qualsiasi momento — l’accesso premium prosegue poi fino alla fine dell’anno pagato.`,
   youArePremiumRenews: (
-    <>Hai accesso premium. L’abbonamento si rinnova automaticamente.</>
+    <>Ha accesso premium. L’abbonamento si rinnova automaticamente.</>
   ),
 };
 

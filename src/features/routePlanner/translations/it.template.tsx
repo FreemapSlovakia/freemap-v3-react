@@ -40,7 +40,7 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Inverti inizio e fine',
   point: {
     pick: 'Seleziona sulla mappa',
-    current: 'La tua posizione',
+    current: 'La sua posizione',
     home: 'Posizione casa',
     fromStart: 'Posizione di partenza',
     fromFinish: 'Posizione di arrivo',
@@ -103,14 +103,14 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     </>
   ),
   noHomeAlert: {
-    msg: 'Devi prima impostare la tua posizione di casa nelle Opzioni.',
+    msg: 'Deve prima impostare la sua posizione di casa nelle Opzioni.',
     setHome: 'Imposta',
   },
   showMidpointHint:
-    'Per aggiungere un punto intermedio, trascina un punto della linea.',
-  gpsError: 'Errore nel determinare la tua posizione corrente.',
+    'Per aggiungere un punto intermedio, trascini un punto della linea.',
+  gpsError: 'Errore nel determinare la sua posizione corrente.',
   routeNotFound:
-    'Nessun percorso trovato. Prova a cambiare i parametri o sposta i punti della rotta.',
+    'Nessun percorso trovato. Provi a cambiare i parametri o sposti i punti della rotta.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Error finding the route:', err),
   manualTooltip: 'Collega il segmento successivo con una linea retta',

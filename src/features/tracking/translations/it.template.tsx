@@ -17,7 +17,7 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
   trackedDevices: {
     button: 'Visto',
     modalTitle: 'Dispositivi visti',
-    desc: 'Gestisci i dispositivi viti per vedere la posizione dei tuoi amici.',
+    desc: 'Gestisca i dispositivi visti per vedere la posizione dei suoi amici.',
     modifyTitle: (name) => (
       <>
         Modifica dispositivo osservato <i>{name}</i>
@@ -29,7 +29,7 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
       </>
     ),
     storageWarning:
-      "Tieni presente che l'elenco dei dispositivi si riflette solo nell'URL della pagina. Se vuoi salvarlo, usa la funzione 'Le mie mappe'.",
+      "Tenga presente che l'elenco dei dispositivi si riflette solo nell'URL della pagina. Se vuole salvarlo, usi la funzione 'Le mie mappe'.",
   },
   accessToken: {
     token: 'Watch Token',
@@ -39,7 +39,7 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     note: 'Note',
     delete: (token) => (
       <>
-        Vuoi davvero eliminare il token <i>{token}</i>?
+        Vuole davvero eliminare il token <i>{token}</i>?
       </>
     ),
     deleteTitle: 'Eliminazione del token',
@@ -52,8 +52,8 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     desc: (deviceName) => (
       <>
-        Definisci gli watch token per condividere la posizione del tuo
-        dispositivo <i>{deviceName}</i> con i tuoi amici.
+        Definisca gli watch token per condividere la posizione del suo
+        dispositivo <i>{deviceName}</i> con i suoi amici.
       </>
     ),
     createTitle: (deviceName) => (
@@ -88,7 +88,7 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     watch: 'Guarda',
     delete: (name) => (
       <>
-        Vuoi davvero eliminare il dispositivo <i>{name}</i>?
+        Vuole davvero eliminare il dispositivo <i>{name}</i>?
       </>
     ),
     deleteTitle: 'Eliminazione dispositivo',
@@ -100,8 +100,8 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     desc: () => (
       <>
         <p>
-          Gestisci i tuoi dispositivi in modo che gli altri possano vedere la
-          tua posizione se loro il token (puoi crearlo tramite <FaKey /> ).
+          Gestisca i suoi dispositivi in modo che gli altri possano vedere la
+          sua posizione se loro il token (può crearlo tramite <FaKey /> ).
         </p>
         <hr />
         <DocumentLink doc="tracking">

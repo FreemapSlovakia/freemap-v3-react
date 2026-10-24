@@ -7,7 +7,7 @@ const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Download',
   share: 'Condividi',
   shareAsText:
-    'Il tuo browser condivide solo file di testo, quindi al file viene aggiunta l’estensione «.txt». L’app di destinazione potrebbe richiederne la rimozione.',
+    'Il suo browser condivide solo file di testo, quindi al file viene aggiunta l’estensione «.txt». L’app di destinazione potrebbe richiederne la rimozione.',
   sharedAsDownload:
     'Non è stato possibile aprire il pannello di condivisione, quindi il file è stato scaricato.',
   format: 'Formato',
@@ -27,15 +27,15 @@ const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   disabledAlert:
     'Sono abilitate solo le opzioni che hanno qualcosa da esportare nella mappa.',
   licenseAlert:
-    'Possono essere applicate varie licenze, come OpenStreetMap. Aggiungi le attribuzioni mancanti durante la condivisione del file esportato.',
+    'Possono essere applicate varie licenze, come OpenStreetMap. Aggiunga le attribuzioni mancanti durante la condivisione del file esportato.',
   exportedToDropbox: 'Il file è stato salvato su Dropbox.',
   exportedToGdrive: 'Il file è stato salvato su Google Drive.',
   garmin: {
     exportError: 'Errore durante l’esportazione su Garmin.',
     multipleLineStrings: 'La selezione contiene più di una linea continua.',
     noLineString: 'La selezione non contiene alcuna linea continua.',
-    multipleTracks: 'Più tracce non sono supportate. Selezionane una sola.',
-    multipleLines: 'Più linee non sono supportate. Selezionane una sola.',
+    multipleTracks: 'Più tracce non sono supportate. Ne selezioni una sola.',
+    multipleLines: 'Più linee non sono supportate. Ne selezioni una sola.',
     courseName: 'Nome del corso',
     description: 'Descrizione',
     activityType: 'Tipo di attività',
@@ -50,9 +50,9 @@ const it: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     },
     revoked: "L'esportazione del corso su Garmin è stata revocata.",
     connectPrompt:
-      'Non hai ancora collegato il tuo account Garmin. Vuoi collegarlo ora?',
+      'Non ha ancora collegato il suo account Garmin. Vuole collegarlo ora?',
     authPrompt:
-      "Non hai ancora effettuato l'accesso a Garminon. Vuoi accedere questa volta?",
+      "Non ha ancora effettuato l'accesso a Garminon. Vuole accedere questa volta?",
   },
   target: 'Destinazione',
   elevation: {

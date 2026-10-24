@@ -7,13 +7,13 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   addNew: 'Aggiungi nuova mappa',
   noMapFound: 'Nessuna mappa trovata',
   save: 'Salva',
-  loginToSave: 'Accedi prima per salvare la mappa nelle tue mappe.',
+  loginToSave: 'Acceda prima per salvare la mappa nelle sue mappe.',
   reload: 'Ricarica la mappa',
   reloadConfirm:
-    'Vuoi scartare le modifiche non salvate e ricaricare la mappa salvata?',
+    'Vuole scartare le modifiche non salvate e ricaricare la mappa salvata?',
   unsaved: 'Modifiche non salvate',
   unsavedTooltip:
-    'La mappa contiene modifiche non salvate che non si riflettono nel collegamento. Salva la mappa per conservarle.',
+    'La mappa contiene modifiche non salvate che non si riflettono nel collegamento. Salvi la mappa per conservarle.',
   disconnect: 'Disconnetti',
   disconnectAndClear: 'Disconnetti e svuota',
   deleteConfirm: (name) => (
@@ -30,7 +30,7 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ),
   mapCreated: ({ name }) => (
     <>
-      La mappa <i>{name}</i> è stata salvata nelle tue mappe.
+      La mappa <i>{name}</i> è stata salvata nelle sue mappe.
     </>
   ),
   mapUpdated: ({ name }) => (
@@ -40,7 +40,7 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ),
   mapDeleted: ({ name }) => (
     <>
-      La mappa <i>{name}</i> è stata eliminata dalle tue mappe.
+      La mappa <i>{name}</i> è stata eliminata dalle sue mappe.
     </>
   ),
   fetchError: ({ err }) =>
@@ -100,19 +100,19 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   outboxConflict: ({ name }) => (
     <>
       La mappa <i>{name}</i> è stata modificata altrove nel frattempo, quindi le
-      tue modifiche non inviate non possono essere inviate. Scegli cosa farne.
+      sue modifiche non inviate non possono essere inviate. Scelga cosa farne.
     </>
   ),
   outboxForbidden: ({ name }) => (
     <>
-      Non hai più il permesso di scrivere sulla mappa <i>{name}</i>, quindi le
-      tue modifiche non inviate non possono essere inviate. Scegli cosa farne.
+      Non ha più il permesso di scrivere sulla mappa <i>{name}</i>, quindi le
+      sue modifiche non inviate non possono essere inviate. Scelga cosa farne.
     </>
   ),
   outboxGone: ({ name }) => (
     <>
-      La mappa <i>{name}</i> non esiste più, quindi le tue modifiche non inviate
-      non possono essere inviate. Scegli cosa farne.
+      La mappa <i>{name}</i> non esiste più, quindi le sue modifiche non inviate
+      non possono essere inviate. Scelga cosa farne.
     </>
   ),
   outboxUnreadable: ({ name }) => (

@@ -3,13 +3,13 @@ import type { ToposcopeMessages } from './ToposcopeMessages.js';
 
 const it: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   pickCenterHint:
-    'Colloca il centro della tavola con il pulsante ◎ nella barra degli strumenti.',
+    'Collochi il centro della tavola con il pulsante ◎ nella barra degli strumenti.',
   addCenter: 'Colloca il centro',
   moveCenter: 'Sposta il centro',
   centerAtMyPosition: 'Centra sulla mia posizione',
-  pickCenterPrompt: 'Fai clic sulla mappa dove si trova la tavola',
+  pickCenterPrompt: 'Faccia clic sulla mappa dove si trova la tavola',
   addPointsHint:
-    'Aggiungi punti disegnati; ognuno diventa un raggio della tavola. Anche il centro è un punto disegnato: etichettalo e spostalo nello strumento di disegno.',
+    'Aggiunga punti disegnati; ognuno diventa un raggio della tavola. Anche il centro è un punto disegnato: lo etichetti e lo sposti nello strumento di disegno.',
   downloadAsSvg: 'Scarica come SVG',
   osmAttribution: '© OpenStreetMap contributors',
   credit: ({ site }) => `Tavola d'orientamento di ${site}`,

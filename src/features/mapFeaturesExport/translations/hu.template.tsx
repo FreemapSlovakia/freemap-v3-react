@@ -7,7 +7,7 @@ const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   download: 'Letöltés',
   share: 'Megosztás',
   shareAsText:
-    'A böngésződ csak szöveges fájlokat oszt meg, ezért a fájl „.txt” kiterjesztést kap. A fogadó alkalmazásnak lehet, hogy el kell távolítani.',
+    'A böngészője csak szöveges fájlokat oszt meg, ezért a fájl „.txt” kiterjesztést kap. A fogadó alkalmazásnak lehet, hogy el kell távolítani.',
   sharedAsDownload:
     'A megosztási ablakot nem sikerült megnyitni, ezért a fájl letöltésre került.',
   exportError: ({ err }) =>
@@ -50,9 +50,9 @@ const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     },
     revoked: 'A kurzus Garmin-ba való exportálása vissza lett vonva.',
     connectPrompt:
-      'Még nincs csatlakoztatva Garmin fiókod. Szeretné most csatlakoztatni?',
+      'Még nincs csatlakoztatva Garmin-fiókja. Szeretné most csatlakoztatni?',
     authPrompt:
-      'Még nem vagy bejelentkezve a Garminonba. Szeretnél ez alkalommal bejelentkezni?',
+      'Még nincs bejelentkezve a Garminba. Szeretne most bejelentkezni?',
   },
   format: 'Formátum',
   target: 'Cél',

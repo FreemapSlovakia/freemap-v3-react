@@ -35,7 +35,7 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   history: 'Storia',
   lowZoomAlert: {
     message: ({ minZoom }) =>
-      `Per vedere gli oggetti in base al loro tipo, devi ingrandire almeno al livello ${minZoom}.`,
+      `Per vedere gli oggetti in base al loro tipo, deve ingrandire almeno al livello ${minZoom}.`,
     zoom: 'Zoom-in',
   },
   tooManyPoints: ({ limit }) => `Risultato limitato a ${limit} oggetti.`,
@@ -47,7 +47,7 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     square: 'Quadrata',
   },
   tooManyForLookup: ({ count, limit }) =>
-    `Troppi oggetti da mostrare come risultati (${count}, al massimo ${limit}). Ingrandisci o restringi il filtro.`,
+    `Troppi oggetti da mostrare come risultati (${count}, al massimo ${limit}). Ingrandisca o restringa il filtro.`,
   showAsLookup: 'Mostra come Risultato',
   markerShape: 'Forma del marcatore',
   showAllAsLookup: 'Mostra tutti come Risultato',

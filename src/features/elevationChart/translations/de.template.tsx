@@ -13,13 +13,13 @@ const de: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   fetchError: 'Die Höhe konnte nicht gelesen werden',
   rangeHint: () => (
     <>
-      Mit dem Mausrad zoomst du das Diagramm, das gezoomte verschiebst du durch
-      Ziehen. Um einen Teil der Linie zu vermessen, halte <kbd>Umschalt</kbd>{' '}
-      gedrückt und ziehe.
+      Mit dem Mausrad zoomen Sie das Diagramm, das gezoomte verschieben Sie
+      durch Ziehen. Um einen Teil der Linie zu vermessen, halten Sie{' '}
+      <kbd>Umschalt</kbd> gedrückt und ziehen.
     </>
   ),
   rangeHintTouch:
-    'Mit zwei Fingern zoomst du das Diagramm, das gezoomte verschiebst du durch Ziehen. Um einen Teil der Linie zu vermessen, halte den Finger gedrückt und ziehe dann.',
+    'Mit zwei Fingern zoomen Sie das Diagramm, das gezoomte verschieben Sie durch Ziehen. Um einen Teil der Linie zu vermessen, halten Sie den Finger gedrückt und ziehen dann.',
 };
 
 export default de;

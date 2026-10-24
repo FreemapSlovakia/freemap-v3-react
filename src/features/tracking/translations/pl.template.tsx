@@ -39,7 +39,7 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     note: 'Notatka',
     delete: (token) => (
       <>
-        Czy na pewno chcesz usunąć token dostępu <i>{token}</i>?
+        Czy na pewno usunąć token dostępu <i>{token}</i>?
       </>
     ),
     deleteTitle: 'Usunięcie tokenu dostępu',
@@ -88,7 +88,7 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     watch: 'Śledź',
     delete: (name) => (
       <>
-        Czy na pewno chcesz usunąć urządzenie <i>{name}</i>?
+        Czy na pewno usunąć urządzenie <i>{name}</i>?
       </>
     ),
     deleteTitle: 'Usunięcie urządzenia',
@@ -100,8 +100,8 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     desc: () => (
       <>
         <p>
-          Zarządzaj swoimi urządzeniami, aby inni mogli śledzić Twoją pozycję,
-          jeśli przekażesz im token śledzenia (można go utworzyć za pomocą ikony{' '}
+          Zarządzaj swoimi urządzeniami, aby inni mogli śledzić moją pozycję,
+          jeśli otrzymają token śledzenia (można go utworzyć za pomocą ikony{' '}
           <FaKey />
           ).
         </p>

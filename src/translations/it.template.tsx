@@ -16,7 +16,7 @@ const getErrorMarkup = (ticketId?: string) => `
       ? `L'errore è stato automaticamente segnalato con il Ticket numero (ID) <b>${ticketId}</b>.`
       : ''
   }
-  Puoi segnalare il problema a <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+  Può segnalare il problema a <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   oppure inviare una email con i dettagli a <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
 <p>
@@ -47,7 +47,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     viewpoint: 'Punto di osservazione',
     eyeHeight: 'Altezza dell’occhio',
     eyeHeightHint:
-      'Quanto sei in alto rispetto al terreno — una torre o un drone, non la quota sul livello del mare.',
+      'L’altezza dell’occhio rispetto al terreno — una torre o un drone, non la quota sul livello del mare.',
     maxVisibleDistance: 'Distanza max. visibile',
     info: 'Informazioni',
     terrain: {
@@ -65,11 +65,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     back: 'Indietro',
     valueRange: ({ min, max }) => (
       <>
-        Inserisci un valore compreso tra {min} e {max}.
+        Inserisca un valore compreso tra {min} e {max}.
       </>
     ),
-    valueAbove: ({ min }) => <>Inserisci un valore maggiore di {min}.</>,
-    invalidUrl: 'Inserisci un URL che inizia con http:// o https://.',
+    valueAbove: ({ min }) => <>Inserisca un valore maggiore di {min}.</>,
+    invalidUrl: 'Inserisca un URL che inizia con http:// o https://.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),
@@ -87,7 +87,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     clear: 'Pulisci',
     convertToDrawing: 'Converti in disegno',
     toggleObjectType:
-      'Clicca per mostrare o nascondere gli oggetti di questo tipo',
+      'Clicchi per mostrare o nascondere gli oggetti di questo tipo',
     hideObjectType: ({ name }) => <>Nascondi il tipo «{name}»</>,
     copyToDrawing: 'Copia nel disegno',
     copyTo: ({ tool }) => <>Copia in {tool}</>,
@@ -106,7 +106,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       pointOnly: 'Solo punto',
       fullGeometry: 'Geometria propria',
       label: 'Etichetta',
-      labelHint: 'Scrivi {p:name} per disegnare una proprietà chiamata name.',
+      labelHint: 'Scriva {p:name} per disegnare una proprietà chiamata name.',
       labelMode: 'Salva etichetta come',
       preview: 'Anteprima',
       labelTemplate: 'Modello',
@@ -155,17 +155,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconSearch: 'Cerca icone',
     load: 'Carica',
     unknown: 'Sconosciuto',
-    enablePopup: 'Per favore abilita i popup nel tuo browser per questo sito.',
+    enablePopup: 'Per favore abiliti i popup nel suo browser per questo sito.',
     broadcastChannelUnsupported:
-      'Questa azione non è supportata dal tuo browser (BroadcastChannel non è disponibile, ad es. in modalità privata o in un browser integrato in un’app). Usa una finestra normale in un browser moderno.',
+      'Questa azione non è supportata dal suo browser (BroadcastChannel non è disponibile, ad es. in modalità privata o in un browser integrato in un’app). Usi una finestra normale in un browser moderno.',
     componentLoadingError:
-      'Errore di caricamento. Per favore verifica la tua connessione internet.',
-    offline: 'Non sei connesso a internet.',
+      'Errore di caricamento. Per favore verifichi la sua connessione internet.',
+    offline: 'Nessuna connessione a internet.',
     offlineUnavailable: 'Non disponibile senza una connessione a internet.',
     offlineToolUnavailable:
       'Senza una connessione a internet questo strumento non può caricare nulla.',
     offlineNotice:
-      'Non sei connesso a internet, quindi qui non è possibile caricare né inviare nulla.',
+      'Nessuna connessione a internet, quindi qui non è possibile caricare né inviare nulla.',
     connectionError: 'Errore di collegamento al server.',
     experimentalFunction: 'Funzione sperimentale',
     attribution: () => (
@@ -173,7 +173,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     export: 'Esporta',
     expiration: 'Scadenza',
-    unauthenticatedError: 'Accedi per utilizzare questa funzione.',
+    unauthenticatedError: 'Acceda per utilizzare questa funzione.',
     confirmation: 'Conferma',
     success: 'Fatto!',
     privacyPolicy: 'Informativa sulla privacy',
@@ -277,7 +277,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Chiudi',
     closeTool: 'Chiudi lo strumento',
     locateMe: 'Localizzami',
-    pickHomeLocationPrompt: 'Clicca sulla mappa il punto in cui abiti',
+    pickHomeLocationPrompt: 'Clicchi sulla mappa il punto in cui abita',
     locationError: 'Errore nel determinare la locazione.',
     locationNoSignal: 'Ancora nessun segnale GPS.',
     headingSource: 'Indicatore di direzione',
@@ -287,10 +287,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       compass: 'Bussola del dispositivo',
     },
     headingSourceHelp:
-      'La direzione di marcia proviene dal GPS e appare solo mentre ti muovi. La bussola del dispositivo funziona anche da fermo, ma richiede un permesso e può essere imprecisa.',
+      'La direzione di marcia proviene dal GPS e appare solo durante il movimento. La bussola del dispositivo funziona anche da fermo, ma richiede un permesso e può essere imprecisa.',
     bearingLine: 'Distanza e rilevamento',
     bearingLineHelp:
-      'Durante la localizzazione traccia una linea tra la tua posizione e un mirino al centro della mappa, con l’indicazione della distanza e del rilevamento dalla tua posizione al mirino. Appare quando sposti la mappa lontano dalla tua posizione.',
+      'Durante la localizzazione traccia una linea tra la sua posizione e un mirino al centro della mappa, con l’indicazione della distanza e del rilevamento dalla sua posizione al mirino. Appare quando sposta la mappa lontano dalla sua posizione.',
     compassPermissionDenied: 'Accesso alla bussola negato.',
     compassUnavailable:
       'Nessun dato dalla bussola. Il dispositivo potrebbe non averla, oppure l’accesso è bloccato.',
@@ -299,7 +299,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     devInfo: () => (
       <div>
         Questa è una versione di test di Freemap Slovakia. Per la versione
-        effettiva vai a <a href="https://www.freemap.sk/">www.freemap.sk</a>.
+        effettiva vada a <a href="https://www.freemap.sk/">www.freemap.sk</a>.
       </div>
     ),
     copyright: 'Copyright',
@@ -319,7 +319,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Senza una connessione a internet è possibile trovare solo coordinate, un riquadro di delimitazione, numeri di tassello (z/x/y) o GeoJSON incollato.',
     inProgress: 'Ricerca in corso…',
     noResults: 'Nessun risultato trovato',
-    prompt: 'Inserisci il luogo',
+    prompt: 'Inserisca il luogo',
     routeFrom: 'Percorso da qui',
     routeTo: 'Percorso fino a qui',
     fetchingError: ({ err }) => addError(messages, 'Searching error:', err),
@@ -433,7 +433,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     lookupStyle: 'Stile del risultato',
     resetApp: 'Reimposta applicazione',
     resetAppConfirm:
-      'Ripristinare tutte le impostazioni dell’applicazione ai valori predefiniti e ricaricare la pagina? Verrai disconnesso.',
+      'Ripristinare tutte le impostazioni dell’applicazione ai valori predefiniti e ricaricare la pagina? Verrà effettuata la disconnessione.',
     showAll: 'Mostra tutti i livelli',
     filterMaps: 'Filtra mappe',
     noMapsFound: 'Nessuna mappa trovata',
@@ -516,7 +516,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     scaleWithDpi: 'Scala con DPI',
     tiled: 'Carica a riquadri',
     tiledHelp:
-      'Per impostazione predefinita un WMS viene richiesto come un’unica immagine dell’intera vista: una sola richiesta invece di decine, ed etichette non tagliate ai bordi dei riquadri. Attiva i riquadri per un server che limita la dimensione dell’immagine o che li memorizza nella cache, al prezzo di una raffica di richieste per ogni vista.',
+      'Per impostazione predefinita un WMS viene richiesto come un’unica immagine dell’intera vista: una sola richiesta invece di decine, ed etichette non tagliate ai bordi dei riquadri. Attivi i riquadri per un server che limita la dimensione dell’immagine o che li memorizza nella cache, al prezzo di una raffica di richieste per ogni vista.',
     preferences: 'Preferenze della mappa',
     brightness: 'Luminosità della mappa',
     featuresOpacity: 'Opacità del livello dati',
@@ -603,7 +603,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   errorCatcher: {
     html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
-        Puoi provare:
+        Può provare:
       </p>
       <ul>
         <li><a href="">ricaricare ultima pagina</a></li>

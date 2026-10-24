@@ -35,14 +35,13 @@ const pl: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     activityType: 'Typ aktywności',
     revoked: 'Eksport trasy do Garmin został anulowany.',
     connectPrompt:
-      'Twoje konto Garmin nie jest jeszcze podłączone. Chcesz je teraz połączyć?',
-    authPrompt:
-      'Nie jesteś jeszcze zalogowany do Garmin. Chcesz się teraz zalogować?',
+      'Konto Garmin nie jest jeszcze podłączone. Połączyć je teraz?',
+    authPrompt: 'Brak zalogowania do Garmin. Zalogować się teraz?',
   },
   download: 'Pobierz',
   share: 'Udostępnij',
   shareAsText:
-    'Twoja przeglądarka udostępnia tylko pliki tekstowe, dlatego plik otrzyma rozszerzenie „.txt”. Aplikacja docelowa może wymagać jego usunięcia.',
+    'Ta przeglądarka udostępnia tylko pliki tekstowe, dlatego plik otrzyma rozszerzenie „.txt”. Aplikacja docelowa może wymagać jego usunięcia.',
   sharedAsDownload:
     'Nie udało się otworzyć okna udostępniania, więc plik został pobrany.',
   format: 'Format',

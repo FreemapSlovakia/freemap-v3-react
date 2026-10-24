@@ -29,7 +29,7 @@ const de: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   credits: (amount) => <>Credits ({amount})</>,
   managePayments: 'Zahlungen verwalten',
   managePaymentsHint:
-    'Öffnet das Kundenportal von Polar, unserem Zahlungsanbieter, wo du dein Abonnement kündigen, die Zahlungsmethode ändern und Rechnungen herunterladen kannst. Es umfasst nur das, was über Polar bezahlt wurde, nicht über Rovas.',
+    'Öffnet das Kundenportal von Polar, unserem Zahlungsanbieter, wo Sie Ihr Abonnement kündigen, die Zahlungsmethode ändern und Rechnungen herunterladen können. Es umfasst nur das, was über Polar bezahlt wurde, nicht über Rovas.',
 };
 
 export default de;

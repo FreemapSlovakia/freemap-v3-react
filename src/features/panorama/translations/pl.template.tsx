@@ -13,18 +13,18 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     ahead === 0
       ? 'Czekanie na renderer…'
       : ahead === 1
-        ? 'Czekanie — przed tobą 1 panorama.'
+        ? 'Czekanie — w kolejce przed nią 1 panorama.'
         : ahead < 5
-          ? `Czekanie — przed tobą ${ahead} panoramy.`
-          : `Czekanie — przed tobą ${ahead} panoram.`,
+          ? `Czekanie — w kolejce przed nią ${ahead} panoramy.`
+          : `Czekanie — w kolejce przed nią ${ahead} panoram.`,
   cancel: 'Anuluj',
   update: 'Aktualizuj',
   outdated: 'Obraz jest z poprzedniego punktu obserwacji.',
   locate: 'Widok z mojej pozycji',
   pickViewpoint: 'Wybierz na mapie',
-  pickViewpointPrompt: 'Kliknij na mapie miejsce, z którego chcesz patrzeć',
+  pickViewpointPrompt: 'Kliknij na mapie miejsce obserwacji',
   lookAt: 'Spójrz na miejsce na mapie',
-  pickTargetPrompt: 'Kliknij na mapie miejsce, na które chcesz spojrzeć',
+  pickTargetPrompt: 'Kliknij na mapie miejsce, na które ma być skierowany widok',
   createToposcope: 'Utwórz tablicę panoramiczną z tego widoku',
   toposcopeMergeModal: {
     title: 'Mapa nie jest pusta',
@@ -123,7 +123,7 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     prominence: 'Preferuj prawdziwe góry',
     prominenceOff: 'Wyłączone',
     prominenceHint:
-      'Szczyt dostaje nazwę za to, że sam w sobie jest górą, a nie tylko za to, jak wybija się z miejsca, w którym stoisz — dzięki temu również słynny szczyt wciśnięty między wyższych sąsiadów zasłuży na nazwę. Przy wielu szczytach jest nieznana i te oceniane są jak dotąd.',
+      'Szczyt dostaje nazwę za to, że sam w sobie jest górą, a nie tylko za to, jak wybija się z miejsca obserwacji — dzięki temu również słynny szczyt wciśnięty między wyższych sąsiadów zasłuży na nazwę. Przy wielu szczytach jest nieznana i te oceniane są jak dotąd.',
     haze: 'Jak daleko sięgają nazwy',
     hazeOff: 'Czyste powietrze',
     hazeHint:
@@ -157,9 +157,9 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     figures: ({ distance, azimuth }) => `${distance}\xa0· ${azimuth}`,
   },
   errors: {
-    offline: 'Panoramę renderuje serwer, a ty jesteś offline.',
+    offline: 'Panoramę renderuje serwer, a urządzenie jest offline.',
     unreachable:
-      'Nie udało się połączyć z usługą renderującą. Może być wyłączona albo coś między tobą a nią blokuje żądanie.',
+      'Nie udało się połączyć z usługą renderującą. Może być wyłączona albo coś po drodze blokuje żądanie.',
     busy: 'Usługa renderująca jest teraz niedostępna. Spróbuj za chwilę.',
     tooMany:
       'Ostatnio wyrenderowano zbyt wiele panoram. Spróbuj później albo wykup premium.',

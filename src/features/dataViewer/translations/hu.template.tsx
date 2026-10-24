@@ -47,7 +47,7 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   moreInfo: 'További információ',
   saveAsMap: 'Mentés a térképeim közé',
   loginToSaveMap:
-    'A nyomvonal a térképeid közé mentéséhez először jelentkezz be.',
+    'A nyomvonal a térképei közé mentéséhez először jelentkezzen be.',
   details: {
     startTime: 'Indulási idő',
     finishTime: 'Érkezési idő',

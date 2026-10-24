@@ -38,9 +38,9 @@ const de: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     activityType: 'Aktivitätstyp',
     revoked: 'Export des Kurses zu Garmin wurde widerrufen.',
     connectPrompt:
-      'Dein Garmin-Konto ist noch nicht verbunden. Möchtest du es jetzt verbinden?',
+      'Ihr Garmin-Konto ist noch nicht verbunden. Möchten Sie es jetzt verbinden?',
     authPrompt:
-      'Du bist noch nicht bei Garmin angemeldet. Möchtest du dich jetzt anmelden?',
+      'Sie sind noch nicht bei Garmin angemeldet. Möchten Sie sich jetzt anmelden?',
   },
   download: 'Download',
   share: 'Teilen',
@@ -62,7 +62,7 @@ const de: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
   disabledAlert:
     'Nur Optionen mit exportierbaren Elementen auf der Karte sind aktiviert.',
   licenseAlert:
-    'Es können verschiedene Lizenzen gelten – z. B. OpenStreetMap. Bitte beachte fehlende Quellenangaben beim Teilen der exportierten Datei.',
+    'Es können verschiedene Lizenzen gelten – z. B. OpenStreetMap. Bitte beachten Sie fehlende Quellenangaben beim Teilen der exportierten Datei.',
   exportedToDropbox: 'Datei wurde in Dropbox gespeichert.',
   exportedToGdrive: 'Datei wurde in Google Drive gespeichert.',
 };

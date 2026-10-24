@@ -19,7 +19,7 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   point: {
     pick: 'Wybierz na mapie',
-    current: 'Twoja pozycja',
+    current: 'Moja pozycja',
     home: 'Pozycja domowa',
     fromStart: 'Pozycja startu',
     fromFinish: 'Pozycja mety',
@@ -49,7 +49,7 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     isochrone: 'Izoliny czasu',
   },
   noHomeAlert: {
-    msg: 'Najpierw musisz ustawić pozycję domową w ustawieniach.',
+    msg: 'Najpierw należy ustawić pozycję domową w ustawieniach.',
     setHome: 'Ustaw',
   },
   milestones: 'Słupki kilometrowe',

@@ -10,10 +10,10 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     addError(getMessages()!, 'Error exporting map:', err),
   cancelExportTitle: 'Annulla esportazione',
   labelTitle: 'Etichette',
-  cancelExportQuestion: "Vuoi davvero annullare l'esportazione in corso?",
+  cancelExportQuestion: "Vuole davvero annullare l'esportazione in corso?",
   discardExportTitle: 'Scarta l’esportazione',
   discardExportQuestion:
-    'La mappa esportata non è ancora stata salvata. Vuoi scartarla?',
+    'La mappa esportata non è ancora stata salvata. Vuole scartarla?',
   area: 'Esporta area',
   format: 'Formato',
   layersTitle: 'Livelli opzionali',
@@ -57,8 +57,8 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     `Testi e simboli vengono stampati al ${percent} % della dimensione normale`,
   tooLarge: ({ zoom }) =>
     zoom === null
-      ? "L'area è troppo grande da esportare. Esporta un'area più piccola."
-      : `L'area è troppo grande per questo livello di zoom. Riduci lo zoom a ${zoom} o esporta un'area più piccola.`,
+      ? "L'area è troppo grande da esportare. Esporti un'area più piccola."
+      : `L'area è troppo grande per questo livello di zoom. Riduca lo zoom a ${zoom} o esporti un'area più piccola.`,
   customLayerOrder: 'Posizionamento dei dati mappa',
   orders: {
     natural: 'Naturale',
@@ -72,17 +72,17 @@ const it: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   legendWidens:
     'La legenda va accanto alla mappa, quindi il documento risulta più largo della carta scelta.',
   webpTooLarge:
-    'WebP consente al massimo 16383 px per lato, che questa esportazione può superare. Scegli PNG o un DPI più basso.',
+    'WebP consente al massimo 16383 px per lato, che questa esportazione può superare. Scelga PNG o un DPI più basso.',
   northArrowLetter: 'N',
   glow: 'Alone',
   ready: 'La mappa è pronta',
-  readyCredits: 'Quando pubblichi o condividi la mappa, indica queste fonti:',
+  readyCredits: 'Quando pubblica o condivide la mappa, indichi queste fonti:',
   readyCreditsNone: 'Il renderer non ha indicato quali fonti ha usato.',
   readyUnknownSources: 'Fonti che non è stato possibile identificare:',
   copyCredits: 'Copia le fonti',
   openInNewTab: 'Apri in una nuova scheda',
   savedCredits: ({ credits }) =>
-    `Mappa salvata. Quando la pubblichi o la condividi, indica: ${credits}`,
+    `Mappa salvata. Quando la pubblica o la condivide, indichi: ${credits}`,
   alert: () => (
     <>
       Sarà esportata la mappa <i>{outdoorMap()}</i>. L’operazione potrebbe

@@ -16,8 +16,8 @@ const hu: DeepPartialWithRequiredObjects<CreditsMessages> = {
   payWithChrons: 'Fizetés chronnal',
   chronsHint: (
     <>
-      Ha kreditet szeretnél önkéntes munkáért, amelyet a{' '}
-      <RovasLink>Rovasban</RovasLink> jelentettél be, válaszd a chronokkal
+      Ha kreditet szeretne önkéntes munkáért, amelyet a{' '}
+      <RovasLink>Rovasban</RovasLink> jelentett be, válassza a chronokkal
       történő fizetést.
     </>
   ),
@@ -31,11 +31,11 @@ const hu: DeepPartialWithRequiredObjects<CreditsMessages> = {
       Van {amount}{' '}
       {explainCredits ? (
         <CreditsText
-          credits="kreditjeid"
-          help="A krediteket felhasználhatod [offline térképek exportjára]."
+          credits="kreditje"
+          help="A krediteket felhasználhatja [offline térképek exportjára]."
         />
       ) : (
-        'kredited'
+        'kreditje'
       )}
       .
     </>

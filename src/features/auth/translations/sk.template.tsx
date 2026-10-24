@@ -68,13 +68,13 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
   },
   connectLabel: 'Pripojiť',
   connectSuccess: ({ provider }) =>
-    `Tvoj účet ${provider} bol pripojený k tvojmu účtu Freemap. Odteraz sa môžeš prihlasovať aj ním.`,
+    `Váš účet ${provider} bol pripojený k vášmu účtu Freemap. Odteraz sa môžete prihlasovať aj ním.`,
   differentAccount: ({ provider }) =>
-    `Povolil si iný účet ${provider}, než aký je pripojený k tvojmu účtu Freemap. Odhlás sa z ${provider}, prihlás sa pripojeným účtom a skús to znova.`,
+    `Povolili ste iný účet ${provider}, než aký je pripojený k vášmu účtu Freemap. Odhláste sa z ${provider}, prihláste sa pripojeným účtom a skúste to znova.`,
   disconnectLabel: 'Odpojiť',
   disconnectSuccess: 'Odpojené',
   lastProvider:
-    'Toto je posledný spôsob prihlásenia do tvojho účtu, preto ho nemožno odpojiť. Aktuálny stav uvidíš po obnovení stránky.',
+    'Toto je posledný spôsob prihlásenia do vášho účtu, preto ho nemožno odpojiť. Aktuálny stav uvidíte po obnovení stránky.',
   logInWith: 'Vyberte poskytovateľa prihlásenia',
   logInSuccess: 'Boli ste úspešne prihlásený.',
   logInError: ({ err }) =>

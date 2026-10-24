@@ -5,11 +5,11 @@ const it: DeepPartialWithRequiredObjects<DrawingMessages> = {
   modify: 'Proprietà',
   edit: {
     pointKeys:
-      'Scrivi {p:nome} per una proprietà chiamata nome e {location} per la posizione.',
+      'Scriva {p:nome} per una proprietà chiamata nome e {location} per la posizione.',
     lineKeys:
-      'Scrivi {p:nome} per una proprietà chiamata nome, {length} per la lunghezza ({length_m}, {length_km}, {length_mi}) e {azimuth} per una linea dritta di due punti.',
+      'Scriva {p:nome} per una proprietà chiamata nome, {length} per la lunghezza ({length_m}, {length_km}, {length_mi}) e {azimuth} per una linea dritta di due punti.',
     polygonKeys:
-      'Scrivi {p:nome} per una proprietà chiamata nome, {area} per l’area ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) e {perimeter} per il perimetro ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
+      'Scriva {p:nome} per una proprietà chiamata nome, {area} per l’area ({area_m2}, {area_a}, {area_ha}, {area_km2}, {area_ac}) e {perimeter} per il perimetro ({perimeter_m}, {perimeter_km}, {perimeter_mi}).',
     optionalKeys:
       'Una parte tra [parentesi quadre] viene scritta solo se tutto ciò che contiene ha un valore: {p:nome}[, {p:ele} m] omette la quota quando manca.',
     properties: 'Proprietà',
@@ -33,7 +33,7 @@ const it: DeepPartialWithRequiredObjects<DrawingMessages> = {
     fillColor: 'Colore di riempimento',
     label: 'Etichetta',
     width: 'Larghezza',
-    hint: "Invio va a capo. Per rimuovere l'etichetta lascia il campo vuoto.",
+    hint: "Invio va a capo. Per rimuovere l'etichetta lasci il campo vuoto.",
     shape: 'Forma',
     text: 'Testo',
     or: 'o',
@@ -62,11 +62,11 @@ const it: DeepPartialWithRequiredObjects<DrawingMessages> = {
   join: 'Unisci',
   split: 'Separa',
   stopDrawing: 'Ferma il disegno',
-  selectPointToJoin: 'Seleziona un punto per unire le linee',
+  selectPointToJoin: 'Selezioni un punto per unire le linee',
   reverse: 'Inverti direzione',
   simplify: 'Semplifica',
   cutHole: 'Ritaglia un buco',
-  cutHoleHint: 'Disegna il buco all’interno di questo poligono.',
+  cutHoleHint: 'Disegni il buco all’interno di questo poligono.',
   makeHole: 'Trasforma in un buco del poligono che lo racchiude',
   detachHole: 'Stacca il buco',
   defProps: {

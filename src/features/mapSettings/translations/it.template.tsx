@@ -4,9 +4,9 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
-  install: 'Installa — proponi questa mappa nei menu delle mappe',
+  install: 'Installa — la mappa verrà proposta nei menu delle mappe',
   noInstalledMaps:
-    'Nessuna mappa installata. Aggiungine dalle mappe disponibili.',
+    'Nessuna mappa installata. Ne aggiunga dalle mappe disponibili.',
   searchLibrary: ({ count }) => `Cerca tra ${count} mappe`,
   catalogCredit: 'L’elenco delle mappe della libreria attinge da',
   filters: {
@@ -41,7 +41,7 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   uninstallMap: 'Disinstalla',
   suggestMap: (
     <>
-      Conosci una mappa che non abbiamo? Scrivici a{' '}
+      Conosce una mappa che non abbiamo? Ci scriva a{' '}
       <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
     </>
   ),
@@ -90,14 +90,14 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     "L'ombreggiatura, i livelli WMS o il colore si impostano nel pannello Livelli della mappa, e una modifica vale ovunque la mappa sia usata.",
   newNamedMap: 'Nuova mappa con nome',
   unappliedShading:
-    "Modifiche all'ombreggiatura non ancora applicate: fai clic sul nome della mappa, poi su Applica.",
+    "Modifiche all'ombreggiatura non ancora applicate: faccia clic sul nome della mappa, poi su Applica.",
   openPreset: 'Mostra sulla mappa',
   addMap: 'Aggiungi mappa',
   presetEmpty: 'Nessun livello.',
   filterItems: 'Filtra',
   nothingInView: 'Nessun risultato in questa parte della mappa.',
   presetHint:
-    'I suoi livelli si modificano sulla mappa: apri la preimpostazione nel pannello Livelli della mappa. Ogni modifica si salva subito.',
+    'I suoi livelli si modificano sulla mappa: apra la preimpostazione nel pannello Livelli della mappa. Ogni modifica si salva subito.',
   baseMaps: 'Mappe di base',
   overlays: 'Livelli sovrapposti',
 };

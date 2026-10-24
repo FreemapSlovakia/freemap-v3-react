@@ -3,7 +3,7 @@ import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
-    <>Scegli da dove guardare con il pulsante {icon} qui sotto.</>
+    <>Scelga da dove guardare con il pulsante {icon} qui sotto.</>
   ),
   preparing: 'Il panorama è in preparazione…',
   rendering: 'Rendering del panorama…',
@@ -20,9 +20,9 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   outdated: 'L’immagine è del punto di osservazione precedente.',
   locate: 'Vista dalla mia posizione',
   pickViewpoint: 'Scegli sulla mappa',
-  pickViewpointPrompt: 'Clicca sulla mappa il punto da cui vuoi guardare',
+  pickViewpointPrompt: 'Clicchi sulla mappa il punto da cui vuole guardare',
   lookAt: 'Guarda un luogo sulla mappa',
-  pickTargetPrompt: 'Clicca sulla mappa il luogo che vuoi guardare',
+  pickTargetPrompt: 'Clicchi sulla mappa il luogo che vuole guardare',
   createToposcope: 'Crea una tavola d’orientamento da questa vista',
   toposcopeMergeModal: {
     title: 'La mappa non è vuota',
@@ -97,8 +97,8 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       <>
         Non su un’immagine dispiegata: il terreno lontano è disegnato più in
         alto di dove sta, quindi i percorsi taglierebbero l’orizzonte nei punti
-        sbagliati. Nelle impostazioni del panorama porta{' '}
-        <i>Dispiega la distanza</i> su <i>Vista reale</i> e aggiorna.
+        sbagliati. Nelle impostazioni del panorama porti{' '}
+        <i>Dispiega la distanza</i> su <i>Vista reale</i> e aggiorni.
       </>
     ),
   },
@@ -122,7 +122,7 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     prominence: 'Privilegia le montagne vere',
     prominenceOff: 'Disattivato',
     prominenceHint:
-      'Una cima riceve il nome per essere una montagna in sé, non solo per quanto spicca da dove ti trovi — così anche una vetta famosa stretta fra vicine più alte si guadagna il nome. Per molte cime è sconosciuta e queste vengono valutate come prima.',
+      'Una cima riceve il nome per essere una montagna in sé, non solo per quanto spicca dal punto di osservazione — così anche una vetta famosa stretta fra vicine più alte si guadagna il nome. Per molte cime è sconosciuta e queste vengono valutate come prima.',
     haze: 'Fin dove arrivano i nomi',
     hazeOff: 'Aria tersa',
     hazeHint:
@@ -156,19 +156,19 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     figures: ({ distance, azimuth }) => `${distance}\xa0· ${azimuth}`,
   },
   errors: {
-    offline: 'Il panorama viene reso dal server e tu sei offline.',
+    offline: 'Il panorama viene reso dal server e il dispositivo è offline.',
     unreachable:
-      'Non è stato possibile raggiungere il servizio di rendering. Potrebbe non essere attivo, oppure qualcosa fra te e lui blocca la richiesta.',
-    busy: 'Il servizio di rendering non è disponibile in questo momento. Riprova fra poco.',
+      'Non è stato possibile raggiungere il servizio di rendering. Potrebbe non essere attivo, oppure qualcosa lungo il percorso blocca la richiesta.',
+    busy: 'Il servizio di rendering non è disponibile in questo momento. Riprovi fra poco.',
     tooMany:
-      'Ultimamente sono stati resi troppi panorami. Riprova più tardi oppure passa al premium.',
+      'Ultimamente sono stati resi troppi panorami. Riprovi più tardi oppure passi al premium.',
     noData:
-      'Per questo punto di osservazione non ci sono dati del terreno. Prova a cliccare altrove.',
+      'Per questo punto di osservazione non ci sono dati del terreno. Provi a cliccare altrove.',
     failed: 'Non è stato possibile rendere il panorama.',
   },
   caveats: {
     viewpoint:
-      'L’occhio viene posto sul punto più alto entro pochi metri dal tuo clic, così la vista dalla cima non è rovinata dalla roccia lì accanto.',
+      'L’occhio viene posto sul punto più alto entro pochi metri dal punto cliccato, così la vista dalla cima non è rovinata dalla roccia lì accanto.',
     depthLift:
       'La distanza è dispiegata, quindi questa immagine è un disegno e non una fotografia: le cime dal nome più chiaro sono in realtà coperte da una cresta davanti a loro, e una distanza letta dall’immagine non significa più una linea di vista libera.',
   },

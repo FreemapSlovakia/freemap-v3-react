@@ -34,7 +34,7 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     brokenSequence:
       'Ślad gdzieś opuszcza sieć zmapowanych dróg, więc nie można go dopasować. Spróbuj innego środka transportu albo zostaw ślad bez zmian.',
     offNetwork:
-      'Dopasowana trasa wyszła znacznie dłuższa niż ślad, co oznacza, że ślad nie prowadził po zmapowanych drogach — na przykład przez łąkę. Dopasowanie może odpowiedzieć tylko istniejącymi drogami, więc wynik nie byłby tam, gdzie szedłeś. Ślad pozostaje bez zmian.',
+      'Dopasowana trasa wyszła znacznie dłuższa niż ślad, co oznacza, że ślad nie prowadził po zmapowanych drogach — na przykład przez łąkę. Dopasowanie może odpowiedzieć tylko istniejącymi drogami, więc wynik nie byłby tam, gdzie prowadzi ślad. Ślad pozostaje bez zmian.',
     partial:
       'Niektórych części śladu nie udało się dopasować — pozostają takie, jakie zostały zapisane. Ślad zmieniający środek transportu w połowie (wędrówka, a potem powrót samochodem) trzeba najpierw podzielić.',
   },
@@ -80,7 +80,7 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
         Słowacja (DMR 5.0: ÚGKK SR), kolejne wkrótce.
       </>
     ),
-    question: 'Co chcesz zrobić?',
+    question: 'Co zrobić?',
     overrideAll: 'Zastąp wszystkie',
     overrideAllDesc:
       'zastąp każdy punkt modelem terenu — gładki, spójny profil',

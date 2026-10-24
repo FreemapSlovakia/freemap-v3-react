@@ -9,7 +9,7 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
     email: 'Email',
     delete: 'Usuń konto',
     deleteWarning:
-      'Czy na pewno chcesz usunąć swoje konto? Zostaną usunięte wszystkie Twoje zdjęcia, komentarze i oceny, własne mapy i śledzone urządzenia.',
+      'Czy na pewno usunąć konto? Zostaną usunięte wszystkie zdjęcia, komentarze i oceny, własne mapy i śledzone urządzenia.',
     personalInfo: 'Dane osobowe',
     authProviders: 'Dostawcy logowania',
     picture: 'Zdjęcie profilowe',
@@ -20,7 +20,7 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
   appTokens: { scopeNames: {} },
   connectLabel: 'Połącz',
   connectSuccess: ({ provider }) =>
-    `Twoje konto ${provider} zostało połączone z kontem Freemap. Teraz możesz logować się również za jego pomocą.`,
+    `Konto ${provider} zostało połączone z kontem Freemap. Teraz można logować się również za jego pomocą.`,
   disconnectLabel: 'Odłącz',
   disconnectSuccess: 'Odłączono',
   logInWith: 'Wybierz dostawcę logowania',

@@ -45,7 +45,7 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   point: {
     point: 'Točka poti',
     pick: 'Izberi na zemljevidu',
-    current: 'Tvoj položaj',
+    current: 'Vaš položaj',
     home: 'Domači položaj',
     fromStart: 'Začetni položaj',
     fromFinish: 'Ciljni položaj',

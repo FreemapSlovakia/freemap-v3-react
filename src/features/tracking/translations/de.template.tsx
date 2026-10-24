@@ -17,7 +17,7 @@ const de: DeepPartialWithRequiredObjects<TrackingMessages> = {
   trackedDevices: {
     button: 'Beobachtet',
     modalTitle: 'Beobachtete Geräte',
-    desc: 'Verwalte beobachtete Geräte, um die Position deiner Freunde zu sehen.',
+    desc: 'Verwalten Sie beobachtete Geräte, um die Position Ihrer Freunde zu sehen.',
     modifyTitle: (name) => (
       <>
         Beobachtetes Gerät bearbeiten <i>{name}</i>
@@ -29,7 +29,7 @@ const de: DeepPartialWithRequiredObjects<TrackingMessages> = {
       </>
     ),
     storageWarning:
-      'Bitte beachte, dass die Geräteliste nur in der Seiten-URL enthalten ist. Wenn du sie speichern möchtest, nutze die Funktion „Meine Karten“.',
+      'Bitte beachten Sie, dass die Geräteliste nur in der Seiten-URL enthalten ist. Wenn Sie sie speichern möchten, nutzen Sie die Funktion „Meine Karten“.',
   },
   accessToken: {
     token: 'Beobachtungs-Token',

@@ -38,7 +38,7 @@ const hu: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   allAuthors: 'Minden szerző',
   refresh: 'Változáskészletek letöltése az aktuális térképnézethez',
   tooBig:
-    'A változáskérések túl sok elemet adhatnak vissza. Kérlek, nagyíts rá, válassz kevesebb napot, vagy adj meg egy konkrét szerzőt.',
+    'A változáskérések túl sok elemet adhatnak vissza. Kérjük, nagyítson rá, válasszon kevesebb napot, vagy adjon meg egy konkrét szerzőt.',
   olderThan: ({ days }) => `${days} nap`,
   notFound: 'Nincs módosításkészlet.',
   fetchError: ({ err }) =>

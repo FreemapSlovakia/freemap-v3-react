@@ -11,7 +11,7 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
     authProviders: 'Provider di accesso',
     delete: 'Elimina account',
     deleteWarning:
-      'Sei sicuro di voler eliminare il tuo account? Verranno rimossi tutte le tue foto, i commenti e le valutazioni delle foto, le tue mappe e i dispositivi monitorati.',
+      'È sicuro di voler eliminare il suo account? Verranno rimossi tutte le sue foto, i commenti e le valutazioni delle foto, le sue mappe e i dispositivi monitorati.',
     picture: 'Foto del profilo',
     choosePicture: 'Scegli foto',
     pictureTooLarge: 'La foto è troppo grande. La dimensione massima è 5 MB.',
@@ -20,10 +20,10 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
   appTokens: { scopeNames: {} },
   connectLabel: 'Connetti',
   connectSuccess: ({ provider }) =>
-    `Il tuo account ${provider} è stato collegato al tuo account Freemap. Ora puoi accedere anche con esso.`,
+    `Il suo account ${provider} è stato collegato al suo account Freemap. Ora può accedere anche con esso.`,
   disconnectLabel: 'Disconnetti',
   disconnectSuccess: 'Disconnesso',
-  logInWith: 'Scegli un provider di accesso',
+  logInWith: 'Scelga un provider di accesso',
   logInSuccess: 'Accesso eseguito correttamente.',
   logInError: ({ err }) => addError(getMessages()!, 'Error logging in:', err),
   logInError2: 'Error logging in.',

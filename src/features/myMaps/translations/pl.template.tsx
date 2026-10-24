@@ -18,7 +18,7 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   disconnectAndClear: 'Odłącz i wyczyść',
   deleteConfirm: (name) => (
     <>
-      Czy na pewno chcesz usunąć mapę <i>{name}</i>?
+      Czy na pewno usunąć mapę <i>{name}</i>?
     </>
   ),
   deleteTitle: 'Usunięcie mapy',
@@ -30,7 +30,7 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ),
   mapCreated: ({ name }) => (
     <>
-      Mapa <i>{name}</i> została zapisana w Twoich mapach.
+      Mapa <i>{name}</i> została zapisana w moich mapach.
     </>
   ),
   mapUpdated: ({ name }) => (
@@ -40,7 +40,7 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ),
   mapDeleted: ({ name }) => (
     <>
-      Mapa <i>{name}</i> została usunięta z Twoich map.
+      Mapa <i>{name}</i> została usunięta z moich map.
     </>
   ),
   fetchError: ({ err }) =>
@@ -94,19 +94,19 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   outboxConflict: ({ name }) => (
     <>
       Mapa <i>{name}</i> została w międzyczasie zmieniona gdzie indziej, więc
-      Twoich niewysłanych zmian nie można wysłać. Wybierz, co z nimi zrobić.
+      niewysłanych zmian nie można wysłać. Wybierz, co z nimi zrobić.
     </>
   ),
   outboxForbidden: ({ name }) => (
     <>
-      Nie masz już prawa zapisu do mapy <i>{name}</i>, więc Twoich niewysłanych
-      zmian nie można wysłać. Wybierz, co z nimi zrobić.
+      Brak już prawa zapisu do mapy <i>{name}</i>, więc niewysłanych zmian nie
+      można wysłać. Wybierz, co z nimi zrobić.
     </>
   ),
   outboxGone: ({ name }) => (
     <>
-      Mapa <i>{name}</i> już nie istnieje, więc Twoich niewysłanych zmian nie
-      można wysłać. Wybierz, co z nimi zrobić.
+      Mapa <i>{name}</i> już nie istnieje, więc niewysłanych zmian nie można
+      wysłać. Wybierz, co z nimi zrobić.
     </>
   ),
   outboxUnreadable: ({ name }) => (

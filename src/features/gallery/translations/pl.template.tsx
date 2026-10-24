@@ -52,7 +52,7 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     comments: 'Komentarze',
     newComment: 'Nowy komentarz',
     addComment: 'Dodaj',
-    yourRating: 'Twoja ocena:',
+    yourRating: 'Moja ocena:',
     showOnTheMap: 'Pokaż na mapie',
     uploaded: ({ username, createdAt }) => (
       <>
@@ -64,10 +64,10 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     deletePrompt: (title) =>
       title ? (
         <>
-          Czy na pewno chcesz usunąć zdjęcie <i>{title}</i>?
+          Czy na pewno usunąć zdjęcie <i>{title}</i>?
         </>
       ) : (
-        <>Czy na pewno chcesz usunąć to zdjęcie?</>
+        <>Czy na pewno usunąć to zdjęcie?</>
       ),
     deleteTitle: 'Usunięcie zdjęcia',
     modify: 'Edytuj',
@@ -76,7 +76,7 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumPhoto: 'To zdjęcie to treść premium.',
     noComments: 'Brak komentarzy',
     wikimediaCommentNotNotified:
-      'To zdjęcie pochodzi z Wikimedia Commons. Jego autor nie zostanie powiadomiony o Twoim komentarzu – powiadamiamy tylko autorów zdjęć przesłanych do Freemap.',
+      'To zdjęcie pochodzi z Wikimedia Commons. Jego autor nie zostanie powiadomiony o tym komentarzu – powiadamiamy tylko autorów zdjęć przesłanych do Freemap.',
   },
 
   editForm: {
@@ -105,9 +105,9 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
       <ul>
         <li>Nie przesyłaj zbyt małych zdjęć (miniaturek). Maksymalne wymiary nie są ograniczone. Maksymalny rozmiar pliku to 10 MB. Większe pliki zostaną odrzucone.</li>
         <li>Przesyłaj tylko zdjęcia krajobrazów lub zdjęcia dokumentacyjne. Portrety i zdjęcia makro są niepożądane i będą usuwane bez ostrzeżenia.</li>
-        <li>Przesyłaj tylko własne zdjęcia lub takie, do których posiadasz zgodę na udostępnienie.</li>
+        <li>Przesyłaj tylko własne zdjęcia lub takie, do których posiada się zgodę na udostępnienie.</li>
         <li>Podpisy lub komentarze, które nie odnoszą się bezpośrednio do treści przesłanych zdjęć lub są sprzeczne z ogólnie przyjętymi zasadami współżycia społecznego, będą usuwane. Osoby naruszające te zasady będą ostrzegane, a w przypadku powtórzenia – ich konto może zostać usunięte.</li>
-        <li>Przesyłając zdjęcia, wyrażasz zgodę na ich rozpowszechnianie na licencji, którą wybierzesz dla każdego z nich (domyślnie CC BY-SA 4.0).</li>
+        <li>Przesłanie zdjęć oznacza zgodę na ich rozpowszechnianie na licencji wybranej dla każdego z nich (domyślnie CC BY-SA 4.0).</li>
         <li>Operator (Freemap.sk) zrzeka się wszelkiej odpowiedzialności i nie odpowiada za szkody bezpośrednie ani pośrednie wynikające z publikacji zdjęcia w galerii. Pełną odpowiedzialność ponosi osoba, która przesłała zdjęcie na serwer.</li>
         <li>Operator zastrzega sobie prawo do edycji opisu, nazwy, lokalizacji i tagów zdjęcia lub jego usunięcia, jeśli jego treść jest nieodpowiednia (narusza te zasady).</li>
         <li>Operator zastrzega sobie prawo do usunięcia konta użytkownika, który wielokrotnie narusza zasady galerii publikując nieodpowiednie treści.</li>
@@ -136,7 +136,7 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     },
     descriptions: {
       'CC0-1.0':
-        'Zrzekasz się wszelkich praw i przekazujesz zdjęcie do domeny publicznej — każdy może z niego korzystać w dowolnym celu bez podawania autora.',
+        'Autor zrzeka się wszelkich praw i przekazuje zdjęcie do domeny publicznej — każdy może z niego korzystać w dowolnym celu bez podawania autora.',
       'CC-BY-4.0':
         'Inni mogą udostępniać i modyfikować zdjęcie, również komercyjnie, o ile podadzą autora.',
       'CC-BY-SA-4.0':
@@ -172,10 +172,10 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium: 'Uwzględnij wszystkie moje zdjęcia w treściach premium',
     free: 'Udostępnij wszystkie moje zdjęcia dla wszystkich',
     confirmPremium:
-      'Uwzględnić wszystkie Twoje zdjęcia w treściach premium? Zobaczą je tylko użytkownicy z dostępem premium.',
-    confirmFree: 'Udostępnić wszystkie Twoje zdjęcia dla wszystkich?',
+      'Uwzględnić wszystkie moje zdjęcia w treściach premium? Zobaczą je tylko użytkownicy z dostępem premium.',
+    confirmFree: 'Udostępnić wszystkie moje zdjęcia dla wszystkich?',
     confirmLicense: (license) =>
-      `Ustawić licencję wszystkich Twoich zdjęć na ${license}? Zdjęcia, które używają już innej licencji, zostaną odtąd przelicencjonowane.`,
+      `Ustawić licencję wszystkich moich zdjęć na ${license}? Zdjęcia, które używają już innej licencji, zostaną odtąd przelicencjonowane.`,
   },
 
   legend: 'Legenda',

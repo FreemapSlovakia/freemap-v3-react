@@ -4,7 +4,7 @@ import type { ViewshedMessages } from './ViewshedMessages.js';
 const pl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Wybierz na mapie',
   locate: 'Widoczność z mojej pozycji',
-  pickViewpointPrompt: 'Kliknij na mapie miejsce, z którego chcesz patrzeć',
+  pickViewpointPrompt: 'Kliknij na mapie miejsce obserwacji',
   extent: 'Zasięg i szczegółowość',
   rangeHint:
     'Patrzenie dalej niż 20 km to funkcja premium: odległość kosztuje widoczność najwięcej — promieni przybywa wraz z obwodem, a każdy idzie aż do krawędzi.',
@@ -19,12 +19,12 @@ const pl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   settings: 'Ustawienia widoczności',
   targetHeight: 'Wysokość celu',
   targetHeightHint:
-    'Jak wysokie jest to, na co patrzysz — podnieś, by zobaczyć, skąd byłby widoczny maszt albo człowiek na grani.',
+    'Jak wysoki jest obserwowany obiekt — podniesienie pokaże, skąd byłby widoczny maszt albo człowiek na grani.',
   color: 'Kolor',
   strength: 'Nasycenie',
   strengthMeasured: 'Zgodnie z pomiarem',
   strengthHint:
-    'Warstwa jest cieniowana tym, jaką część terenu widzisz, więc powierzchnie oglądane niemal z boku wychodzą bardzo blado. Zwiększenie podnosi blady koniec, nie spłaszczając reszty.',
+    'Warstwa jest cieniowana tym, jaka część terenu jest widoczna, więc powierzchnie oglądane niemal z boku wychodzą bardzo blado. Zwiększenie podnosi blady koniec, nie spłaszczając reszty.',
   minOpacity: 'Najniższe krycie',
   minOpacityHint:
     'Jak mocno rysowany jest widoczny teren, nawet oglądany niemal z boku. Przy 100% warstwa jest zwykłym szablonem: widać albo nie widać, nic pomiędzy.',
@@ -38,14 +38,14 @@ const pl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
     ahead === 0
       ? 'Czekanie na renderer…'
       : ahead === 1
-        ? 'Czekanie — przed tobą 1 obliczenie.'
+        ? 'Czekanie — w kolejce przed nim 1 obliczenie.'
         : ahead < 5
-          ? `Czekanie — przed tobą ${ahead} obliczenia.`
-          : `Czekanie — przed tobą ${ahead} obliczeń.`,
+          ? `Czekanie — w kolejce przed nim ${ahead} obliczenia.`
+          : `Czekanie — w kolejce przed nim ${ahead} obliczeń.`,
   errors: {
-    offline: 'Widoczność liczy serwer, a ty jesteś offline.',
+    offline: 'Widoczność liczy serwer, a urządzenie jest offline.',
     unreachable:
-      'Nie udało się połączyć z usługą renderującą. Może być wyłączona albo coś między tobą a nią blokuje żądanie.',
+      'Nie udało się połączyć z usługą renderującą. Może być wyłączona albo coś po drodze blokuje żądanie.',
     busy: 'Usługa renderująca jest teraz niedostępna. Spróbuj za chwilę.',
     tooMany:
       'Ostatnio wykonano zbyt wiele obliczeń. Spróbuj później albo wykup premium.',

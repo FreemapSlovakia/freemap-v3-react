@@ -35,7 +35,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'from last comment',
   },
 
-  showDirection: 'Mutasd a fényképezés irányát',
+  showDirection: 'A fényképezés irányának megjelenítése',
 
   legendCategory: {
     mine: 'Sajátok',
@@ -45,7 +45,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
 
   c: {
-    mine: 'Különítsd el a sajátjaimat',
+    mine: 'A sajátjaim elkülönítése',
     userId: 'Szerző',
     rating: 'Értékelés',
     takenAt: 'Készítés dátuma',

@@ -12,7 +12,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
         kibővíti az alkalmazást.
       </p>
       <p className="mb-1">
-        <b>{price} €</b> összegért évente a következőket kapod:
+        <b>{price} €</b> összegért évente a következőket kapja:
       </p>
       <ul>
         <li>reklámszalag eltávolítása</li>
@@ -62,36 +62,36 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       fizetésével folytatja.
     </>
   ),
-  success: 'Gratulálunk, megszerezted a prémium hozzáférést!',
+  success: 'Gratulálunk, megszerezte a prémium hozzáférést!',
   becomePremium: 'Prémium hozzáférés megszerzése',
   youArePremium: (date) => (
     <>
-      Prémium hozzáférésed érvényes eddig: <b>{date}</b>.
+      Prémium hozzáférése érvényes eddig: <b>{date}</b>.
     </>
   ),
   premiumOnly: 'Csak prémium hozzáféréssel érhető el.',
-  noPremium: 'Nincs prémium hozzáférésed.',
+  noPremium: 'Nincs prémium hozzáférése.',
   clickToActivate: 'Kattintson az aktiváláshoz.',
   higherPrecisionElevation:
     'Nagyobb pontosságú magassági adatok prémium hozzáféréssel érhetők el.',
   higherDetail: 'Finomabb részletesség prémium hozzáféréssel érhető el.',
-  alreadyPremium: 'Már rendelkezel prémium hozzáféréssel.',
-  alreadySubscribed: 'Már van aktív előfizetésed.',
+  alreadyPremium: 'Már rendelkezik prémium hozzáféréssel.',
+  alreadySubscribed: 'Már van aktív előfizetése.',
   premiumUser: 'Prémium hozzáféréssel rendelkező felhasználó',
   payOnce: 'Egyszeri fizetés egy évre',
   paySubscription: 'Éves előfizetés (automatikus megújítás)',
   payWithChrons: 'Fizetés chronnal',
   chronsHint: (
     <>
-      Ha prémium hozzáférést szeretnél önkéntes munkáért, amelyet a{' '}
-      <RovasLink>Rovasban</RovasLink> jelentettél be, válaszd a chronokkal
+      Ha prémium hozzáférést szeretne önkéntes munkáért, amelyet a{' '}
+      <RovasLink>Rovasban</RovasLink> jelentett be, válassza a chronokkal
       történő fizetést.
     </>
   ),
   subscriptionReassurance: ({ price }) =>
     `Az évi ${price}\xa0€-s ár mindaddig megmarad, amíg az előfizetés aktív. Bármikor lemondhatja — a prémium hozzáférés ilyenkor a kifizetett év végéig tart.`,
   youArePremiumRenews: (
-    <>Prémium hozzáférésed van. Az előfizetés automatikusan megújul.</>
+    <>Prémium hozzáférése van. Az előfizetés automatikusan megújul.</>
   ),
 };
 

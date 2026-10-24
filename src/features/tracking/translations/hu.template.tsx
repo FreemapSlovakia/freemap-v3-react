@@ -29,7 +29,7 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
       </>
     ),
     storageWarning:
-      'Figyelem, az eszközök listája csak az oldal URL-jében jelenik meg. Ha el szeretnéd menteni, használd a „Saját térképek” funkciót.',
+      'Figyelem, az eszközök listája csak az oldal URL-jében jelenik meg. Ha el szeretné menteni, használja a „Saját térképek” funkciót.',
   },
   accessToken: {
     token: 'Figyelőkód',

@@ -13,13 +13,13 @@ const it: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   fetchError: "Non è stato possibile leggere l'altitudine",
   rangeHint: () => (
     <>
-      Con la rotellina ingrandisci il grafico, quello ingrandito si sposta
-      trascinandolo. Per misurare una parte della linea, tieni premuto{' '}
-      <kbd>Maiusc</kbd> e trascina.
+      Con la rotellina si ingrandisce il grafico, quello ingrandito si sposta
+      trascinandolo. Per misurare una parte della linea, tenga premuto{' '}
+      <kbd>Maiusc</kbd> e trascini.
     </>
   ),
   rangeHintTouch:
-    'Avvicina le dita per ingrandire il grafico, quello ingrandito si sposta trascinandolo. Per misurare una parte della linea, tieni premuto il dito e poi trascina.',
+    'Avvicini le dita per ingrandire il grafico, quello ingrandito si sposta trascinandolo. Per misurare una parte della linea, tenga premuto il dito e poi trascini.',
 };
 
 export default it;

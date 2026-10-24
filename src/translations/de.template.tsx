@@ -15,7 +15,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Anwendungsfehler</h1>
       ? `Der Fehler wurde uns automatisch unter der ID <b>${ticketId}</b> gemeldet.`
       : ''
   }
-  Du kannst den Fehler ${
+  Sie können den Fehler ${
     ticketId ? 'auch ' : ''
   }auf <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a> melden
   oder uns Details per E-Mail an <a href="mailto:freemap@freemap.sk?subject=Fehlermeldung%20auf%20www.freemap.sk">freemap@freemap.sk</a> senden.

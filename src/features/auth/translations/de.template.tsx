@@ -20,17 +20,17 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
   appTokens: { scopeNames: {} },
   connectLabel: 'Verbinden',
   connectSuccess: ({ provider }) =>
-    `Dein ${provider}-Konto wurde mit deinem Freemap-Konto verbunden. Du kannst dich jetzt auch damit anmelden.`,
+    `Ihr ${provider}-Konto wurde mit Ihrem Freemap-Konto verbunden. Sie können sich jetzt auch damit anmelden.`,
   disconnectLabel: 'Trennen',
   disconnectSuccess: 'Getrennt',
-  logInWith: 'Wähle einen Anmeldeanbieter',
-  logInSuccess: 'Du wurdest erfolgreich angemeldet.',
+  logInWith: 'Wählen Sie einen Anmeldeanbieter',
+  logInSuccess: 'Sie wurden erfolgreich angemeldet.',
   logInError: ({ err }) =>
     addError(getMessages()!, 'Fehler bei der Anmeldung', err),
   logInError2: 'Fehler bei der Anmeldung.',
   verifyError: ({ err }) =>
     addError(getMessages()!, 'Fehler bei der Authentifizierungsprüfung', err),
-  logOutSuccess: 'Du wurdest erfolgreich abgemeldet.',
+  logOutSuccess: 'Sie wurden erfolgreich abgemeldet.',
   logOutError: ({ err }) =>
     addError(getMessages()!, 'Fehler bei der Abmeldung', err),
 };
