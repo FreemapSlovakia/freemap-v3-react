@@ -139,6 +139,8 @@ export default function DataViewerPropertiesModal({
 
   const dvm = useDataViewerMessages();
 
+  const language = useAppSelector((state) => state.l10n.language);
+
   const gone = !feature || index === undefined;
 
   // Its feature gone, as after a Back that rebuilt the data: no modal to stay open.
@@ -173,9 +175,10 @@ export default function DataViewerPropertiesModal({
                 label: channelLabel(key, dvm),
                 note: dvm?.vertex.filled({ filled, total }),
               })),
-              ...KNOWN_CHANNELS.filter((key) => !hasChannel(feature, key)).map(
-                (key) => ({ key, label: channelLabel(key, dvm) }),
-              ),
+              // Offered by name, as read in the user's language.
+              ...KNOWN_CHANNELS.filter((key) => !hasChannel(feature, key))
+                .map((key) => ({ key, label: channelLabel(key, dvm) }))
+                .toSorted((a, b) => a.label.localeCompare(b.label, language)),
             ]
           : undefined
       }

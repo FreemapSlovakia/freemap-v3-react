@@ -41,10 +41,12 @@
   height: 100%;
 }
 
-/* Upwards: the section ends the dialog, whose scrolling body clips what drops below it. */
+/* Upwards: the section ends the dialog, whose scrolling body clips what drops
+   below it. Over the property rows, whose input groups lift theirs up to 5. */
 .tags :global(.react-tags__listbox) {
   top: auto;
   bottom: calc(100% + 5px);
+  z-index: 6;
 }
 
 /* The fields inside space themselves with `mt-3`; the panel's padding is gap enough. */

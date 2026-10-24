@@ -365,9 +365,12 @@ export default function DataViewerSelection(): ReactElement | null {
   };
 
   // The place's title for "Open in…", which only a point offers.
-  const name = point
-    ? featureLabel(feature, { locale: language, singleLine: true })
-    : undefined;
+  const labelText = featureLabel(feature, {
+    locale: language,
+    singleLine: true,
+  });
+
+  const name = point ? labelText : undefined;
 
   const kind = lineKindOf(feature.properties);
 
@@ -375,7 +378,7 @@ export default function DataViewerSelection(): ReactElement | null {
     hole !== undefined
       ? m?.selections.drawPolygonHole
       : line
-        ? (featureLabel(feature, { locale: language, singleLine: true }) ??
+        ? (labelText ??
           dvm?.unnamedTrack({
             kind,
             n:
@@ -386,9 +389,8 @@ export default function DataViewerSelection(): ReactElement | null {
                 )
                 .findIndex((candidate) => candidate.index === index) + 1,
           }))
-        : point
-          ? m?.selections.drawPoints
-          : m?.selections.drawPolygons;
+        : (labelText ??
+          (point ? m?.selections.drawPoints : m?.selections.drawPolygons));
 
   // A MultiPoint has no single position; its first stands for the feature the
   // toolbar acts on.

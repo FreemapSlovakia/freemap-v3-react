@@ -152,6 +152,12 @@ export function DrawingPropsEditor({
   // The row whose type menu is open.
   const [openMenu, setOpenMenu] = useState<number | null>(null);
 
+  const typeNames: Partial<Record<PropType, string>> = {
+    text: m?.edit.propertyTypeText,
+    multiline: m?.edit.propertyTypeMultiline,
+    number: m?.edit.propertyTypeNumber,
+  };
+
   // An empty row at the end is where a property is added; typing into it makes
   // it a row of its own, and another empty one appears.
   const lastRow = rows.at(-1);
@@ -273,14 +279,15 @@ export function DrawingPropsEditor({
                     <Dropdown.Menu>
                       {(Object.keys(TYPE_SYMBOLS) as PropType[]).map((t) => (
                         <Dropdown.Item key={t} eventKey={t} active={t === type}>
-                          <code>{TYPE_SYMBOLS[t]}</code>
-                          {t === 'text'
-                            ? ` ${m?.edit.propertyTypeText ?? ''}`
-                            : t === 'multiline'
-                              ? ` ${m?.edit.propertyTypeMultiline ?? ''}`
-                              : t === 'number'
-                                ? ` ${m?.edit.propertyTypeNumber ?? ''}`
-                                : ''}
+                          {/* `true`, `false`, `null` and `JSON` are their own
+                              names; the rest name their symbol. */}
+                          {typeNames[t] === undefined ? (
+                            TYPE_SYMBOLS[t]
+                          ) : (
+                            <>
+                              <code>{TYPE_SYMBOLS[t]}</code> {typeNames[t]}
+                            </>
+                          )}
                         </Dropdown.Item>
                       ))}
                     </Dropdown.Menu>
