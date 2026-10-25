@@ -421,6 +421,15 @@ editor; where it is stored follows from its size, not from the tool that made it
       `trackViewerSettings` and `drawingSettings` are localStorage keys
       (`persistence.ts`), so renaming them needs a migration; map documents keep
       `trackViewer` / `points` / `lines` on the wire.
+- [ ] **Edit a multi-polygon's vertices in place** — a step towards a full
+      GeoJSON editor; today Break apart is the way. `editableParts` would list
+      its rings flat and `withPart` write them back to their polygon. The work
+      is that "part > 0 is a hole" is assumed by hole selection, Detach hole,
+      Cut a hole, Make a hole and the delete rule: they need one helper saying
+      what a part is (outer or hole, of which polygon). Deleting an outer
+      ring's last usable vertex should drop that member, holes and all. Then
+      `MultiPoint` the same way (each point a part), and grouping features into
+      a multi geometry if anyone asks.
 - [ ] **Chart identity: what it draws, not the whole collection.** The
       track-viewer target's identity is the active line's geometry paired with
       every point, so a property-only edit of the line (removing its `times`

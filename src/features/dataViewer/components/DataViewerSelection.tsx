@@ -586,8 +586,12 @@ export default function DataViewerSelection(): ReactElement | null {
             />
           )}
 
-          {/* A point has it in its place menu, which is its only ⋮. */}
-          {line && (
+          {/* A point has it in its place menu, which is its only ⋮; a picked
+              hole is the polygon's, which takes it whole. */}
+          {(line ||
+            (hole === undefined &&
+              (feature.geometry.type === 'Polygon' ||
+                feature.geometry.type === 'MultiPolygon'))) && (
             <Action
               icon={<FaMountain />}
               label={dvm?.elevationFill.update}

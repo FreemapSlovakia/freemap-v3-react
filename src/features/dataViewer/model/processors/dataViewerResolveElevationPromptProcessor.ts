@@ -21,7 +21,12 @@ import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Feature, LineString, Point } from 'geojson';
 import { isRecording } from '../../trackChannels.js';
 import { isTrackLine, resolveActiveTrack } from '../../trackSelection.js';
-import { elevationTargets, withoutElevation } from '../elevationTargets.js';
+import {
+  elevationTargets,
+  polygonRings,
+  withoutElevation,
+  withPolygonRings,
+} from '../elevationTargets.js';
 import { markOverridden } from '../renderLines.js';
 
 export const dataViewerResolveElevationPromptProcessor: Processor<
@@ -46,17 +51,21 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
       ]);
     }
 
-    // The update fills points too, and may be of one feature; the others are
-    // about the lines.
-    const { lines: lineAt, points: pointAt } =
-      consumer.type === 'update'
-        ? elevationTargets(trackGeojson, consumer.index)
-        : {
-            lines: trackGeojson.features.flatMap((f, i) =>
-              isTrackLine(f) ? [i] : [],
-            ),
-            points: [],
-          };
+    // The update fills points and polygons too, and may be of one feature; the
+    // others are about the lines.
+    const {
+      lines: lineAt,
+      points: pointAt,
+      polygons: polygonAt,
+    } = consumer.type === 'update'
+      ? elevationTargets(trackGeojson, consumer.index)
+      : {
+          lines: trackGeojson.features.flatMap((f, i) =>
+            isTrackLine(f) ? [i] : [],
+          ),
+          points: [],
+          polygons: [],
+        };
 
     // What answered, kept in the slice: this write is the only place the models
     // behind an overridden track are named, and the chart crediting them opens
@@ -66,7 +75,7 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
     const single = consumer.type === 'update' && consumer.index !== undefined;
 
     if (mode === 'clear') {
-      const targets = new Set([...lineAt, ...pointAt]);
+      const targets = new Set([...lineAt, ...pointAt, ...polygonAt]);
 
       dispatch(
         dataViewerSetElevation({
@@ -91,12 +100,35 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
     if (mode === 'missing' || mode === 'all') {
       const { features } = trackGeojson;
 
-      const lines = await enrichElevations(
-        lineAt.map((i) => features[i] as Feature<LineString>),
+      // A polygon's rings go along as lines, in the same request.
+      const ringsOf = polygonAt.map((i) => polygonRings(features[i]!.geometry));
+
+      const enriched = await enrichElevations(
+        [
+          ...lineAt.map((i) => features[i] as Feature<LineString>),
+          ...ringsOf.flat().map(
+            (coordinates): Feature<LineString> => ({
+              type: 'Feature',
+              properties: null,
+              geometry: { type: 'LineString', coordinates },
+            }),
+          ),
+        ],
         mode,
         getState,
         undefined,
         credits,
+      );
+
+      const lines = enriched.slice(0, lineAt.length);
+
+      let ringAt = lineAt.length;
+
+      const polygons = polygonAt.map((i, k) =>
+        withPolygonRings(
+          features[i]!,
+          ringsOf[k]!.map(() => enriched[ringAt++]!.geometry.coordinates),
+        ),
       );
 
       const pending = pointAt.filter(
@@ -120,9 +152,10 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
         return;
       }
 
-      const updated = new Map<number, Feature>(
-        lineAt.map((at, i) => [at, lines[i]!]),
-      );
+      const updated = new Map<number, Feature>([
+        ...lineAt.map((at, i) => [at, lines[i]!] as const),
+        ...polygonAt.map((at, i) => [at, polygons[i]!] as const),
+      ]);
 
       for (const [k, at] of pending.entries()) {
         const ele = eles[k];
