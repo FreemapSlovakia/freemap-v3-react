@@ -80,20 +80,13 @@ export function urlWire(
   return params ?? undefined;
 }
 
-/**
- * Whether the link carries the map's features, all of them: they fit, and no
- * `track-uid=`/`import-url=` names them instead (`getMapContentParts`).
- */
+/** Whether the link carries the map's features, all of them (`getMapContentParts`). */
 export function featuresInLink({
   trackGeojson,
-  trackUID,
-  gpxUrl,
 }: {
   trackGeojson: FeatureCollection | null;
-  trackUID: string | null;
-  gpxUrl: string | null;
 }): boolean {
-  return !trackUID && !gpxUrl && urlWire(trackGeojson) !== undefined;
+  return urlWire(trackGeojson) !== undefined;
 }
 
 export function inLinkSelector(state: RootState): boolean {

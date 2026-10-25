@@ -55,7 +55,7 @@ export const KEEP = 5;
 // having unsaved changes on every reload. Such a record is still read — its
 // track is the one part of a map nothing else holds offline — but it is reported
 // as not comparable, and the restore lets the stored document decide instead.
-const VERSION = 2;
+const VERSION = 3;
 
 const RecordSchema = z.object({
   // Absent in copies written before the digest carried a version.
@@ -65,7 +65,7 @@ const RecordSchema = z.object({
   savedFingerprint: z.string(),
   /** The track on screen — the one part of a map the URL can't carry. */
   track: GeoJSONFeatureCollectionSchema.nullable(),
-  /** Where that track came from, so restoring it doesn't re-fetch or read dirty. */
+  /** A source an older copy names instead of holding its track. */
   trackUID: z.string().nullable(),
   gpxUrl: z.string().nullable(),
 });
@@ -87,9 +87,7 @@ export type MapRecord = Omit<z.infer<typeof RecordSchema>, 'version'>;
  */
 export async function getMapRecord(
   mapId: string,
-): Promise<
-  { record: MapRecord; comparable: boolean; trackOnly: boolean } | undefined
-> {
+): Promise<{ record: MapRecord; comparable: boolean } | undefined> {
   const entries = (await storedKeys()).filter((entry) => entry.mapId === mapId);
 
   if (entries.length === 0) {
@@ -108,13 +106,7 @@ export async function getMapRecord(
     return undefined;
   }
 
-  return {
-    record: parsed.data,
-    comparable: parsed.data.version === VERSION,
-    // Before version 2 the drawings rode in the URL alone, and the copy held
-    // only the imported track.
-    trackOnly: (parsed.data.version ?? 1) < 2,
-  };
+  return { record: parsed.data, comparable: parsed.data.version === VERSION };
 }
 
 export function putMapRecord(record: MapRecord, now: number): Promise<void> {

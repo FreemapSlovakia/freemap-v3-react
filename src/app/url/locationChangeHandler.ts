@@ -5,7 +5,6 @@ import {
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
-  fromWire,
   VERBATIM_KEYS,
   type Verbatim,
   type WireItem,
@@ -13,16 +12,9 @@ import {
 } from '@features/dataViewer/drawingWire.js';
 import {
   dataViewerColorizeTrackBy,
-  dataViewerDownloadTrack,
-  dataViewerGpxLoad,
-  dataViewerRestoreStored,
   dataViewerSetColorizeLegend,
-  dataViewerSetData,
   dataViewerSetStyle,
 } from '@features/dataViewer/model/actions.js';
-import { localTrack } from '@features/dataViewer/model/localTrack.js';
-import { urlWire, wireParams } from '@features/dataViewer/model/urlForm.js';
-import { snapshotKey } from '@features/dataViewer/trackStore.js';
 import type {
   LineCap,
   LineJoin,
@@ -185,7 +177,7 @@ import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
 import { isToolOpen, openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
-import { serializeQuery } from './mapContentParts.js';
+import { type EntryRequest, hasOwnContent, openEntry } from './entryContent.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 import { setUrlUpdatingEnabled } from './urlUpdating.js';
@@ -229,18 +221,21 @@ export function handleLocationChange(store: MyStore): void {
     (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
     undefined;
 
-  // Set when the URL names a map, and dispatched at the end — once any
-  // `track-uid=` / `import-url=` is known, so the restore owns the track instead
-  // of racing a fetch started here. Whether the map continues from the browser's
-  // working copy or is re-read from the backend is decided there.
+  // Set when the URL names a map, and dispatched at the end, after `openEntry`.
+  // Whether the map continues from the browser's working copy or is re-read
+  // from the backend is decided there. A load standing in for the lost snapshot
+  // of the entry left is that entry's, so it never counts as this map opening.
   let restore: MapRestore | null = null;
+
+  const { loadMeta } = getState().myMaps;
 
   if (
     id !== undefined &&
-    id !==
-      (getState().myMaps.loadMeta?.id ??
-        getState().myMaps.restoring?.mapId ??
-        getState().myMaps.activeMap?.id)
+    (loadMeta?.replaceEntry ||
+      id !==
+        (loadMeta?.id ??
+          getState().myMaps.restoring?.mapId ??
+          getState().myMaps.activeMap?.id))
   ) {
     restore = {
       mapId: id,
@@ -470,17 +465,6 @@ export function handleLocationChange(store: MyStore): void {
 
   const trackUID = query['track-uid'];
 
-  if (
-    typeof trackUID === 'string' &&
-    getState().trackViewer.trackUID !== trackUID
-  ) {
-    if (restore) {
-      restore.trackUID = trackUID;
-    } else {
-      dispatch(dataViewerDownloadTrack(trackUID));
-    }
-  }
-
   handleColorize(
     dispatch,
     query,
@@ -578,14 +562,6 @@ export function handleLocationChange(store: MyStore): void {
     query['import-url'] ||
     query['gpx-url'] ||
     query['load']; /* `gpx-url` and `load` kept for backward compatibility */
-
-  if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
-    if (restore) {
-      restore.gpxUrl = gpxUrl;
-    } else {
-      dispatch(dataViewerGpxLoad(gpxUrl));
-    }
-  }
 
   const focus = !parsedQuery['map'];
 
@@ -981,86 +957,28 @@ export function handleLocationChange(store: MyStore): void {
 
   handleElevationChart(getState, dispatch, query, restore !== null);
 
-  if (restore) {
-    dispatch(mapsRestore(restore));
-  }
-
-  handleFeatures(
-    getState,
-    dispatch,
-    urlFeatures,
+  // A `track-uid=` / `import-url=` link is nothing but its track.
+  const request: EntryRequest = {
+    items: urlFeatures,
     tr,
-    typeof trackUID === 'string' || typeof gpxUrl === 'string',
-  );
+    remote:
+      typeof trackUID === 'string'
+        ? { trackUID }
+        : typeof gpxUrl === 'string'
+          ? { gpxUrl }
+          : undefined,
+    mapId: id,
+  };
+
+  const entry = openEntry(store, request);
+
+  if (restore) {
+    dispatch(
+      mapsRestore({ ...restore, entry, ownContent: hasOwnContent(request) }),
+    );
+  }
 
   setUrlUpdatingEnabled(true);
-}
-
-/**
- * The map's features as this history entry has them: the snapshot it names, or
- * else the ones its params write out. Last, and neither applies to a track the
- * URL names by `track-uid=` / `import-url=`, which is fetched instead.
- */
-function handleFeatures(
-  getState: () => RootState,
-  dispatch: Dispatch<RootAction>,
-  items: WireItem[],
-  tr: string | true | undefined,
-  /** The entry names a `track-uid=` / `import-url=`, which is fetched instead. */
-  remote: boolean,
-) {
-  const showParams = () =>
-    dispatch(
-      dataViewerSetData({
-        trackGeojson: { type: 'FeatureCollection', features: fromWire(items) },
-      }),
-    );
-
-  // An older build's entry: its drawings are these params, and the record it
-  // names holds the imported track alone, which is added to them.
-  if (tr === true) {
-    showParams();
-
-    dispatch(dataViewerRestoreStored(true));
-
-    return;
-  }
-
-  if (tr) {
-    const local = localTrack(getState());
-
-    if (!local || snapshotKey(local) !== tr) {
-      dispatch(dataViewerRestoreStored(tr));
-    }
-
-    return;
-  }
-
-  // The entry opened, not the one left: Back from a shared track to drawn
-  // lines brings the lines back, the reset below dropping the track's source.
-  if (remote) {
-    return;
-  }
-
-  const { trackGeojson, restoringStored } = getState().trackViewer;
-
-  // Compared as the URL writes them, so a round trip's rounding is no change.
-  const have = urlWire(trackGeojson);
-
-  if (
-    !restoringStored &&
-    have &&
-    serializeQuery(have) === serializeQuery(wireParams(items))
-  ) {
-    return;
-  }
-
-  // Also cancels a snapshot still being read for the entry left.
-  dispatch(dataViewerRestoreStored(null));
-
-  if (items.length) {
-    showParams();
-  }
 }
 
 /**
@@ -1611,13 +1529,31 @@ export function parseStyleFields(s: string): {
         : undefined;
     } else if (field[0] === 'K') {
       out.lineCap =
-        field[1] === 'b' ? 'butt' : field[1] === 's' ? 'square' : undefined;
+        field[1] === 'b'
+          ? 'butt'
+          : field[1] === 's'
+            ? 'square'
+            : field[1] === 'r'
+              ? 'round'
+              : undefined;
     } else if (field[0] === 'J') {
       out.lineJoin =
-        field[1] === 'm' ? 'miter' : field[1] === 'b' ? 'bevel' : undefined;
+        field[1] === 'm'
+          ? 'miter'
+          : field[1] === 'b'
+            ? 'bevel'
+            : field[1] === 'r'
+              ? 'round'
+              : undefined;
     } else if (field[0] === 'S') {
       out.markerType =
-        field[1] === 's' ? 'square' : field[1] === 'r' ? 'ring' : undefined;
+        field[1] === 's'
+          ? 'square'
+          : field[1] === 'r'
+            ? 'ring'
+            : field[1] === 'p'
+              ? 'pin'
+              : undefined;
     } else if (field[0] === 'I') {
       out.icon = field.slice(1) || undefined;
     } else if (field[0] === 'P') {

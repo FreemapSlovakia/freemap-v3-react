@@ -40,6 +40,7 @@ import {
   trackGeojsonIsSuitableForElevationChart,
 } from '../store/selectors.js';
 import type { RootState } from '../store/store.js';
+import { entryLoading } from './entryContent.js';
 import {
   getMapContentParts,
   type QueryPart,
@@ -47,7 +48,7 @@ import {
 } from './mapContentParts.js';
 import { stashUrl } from './sessionStash.js';
 import { serializeZoom } from './urlMapUtils.js';
-import { isUrlUpdatingEnabled } from './urlUpdating.js';
+import { isReplacingEntry, isUrlUpdatingEnabled } from './urlUpdating.js';
 
 // Browser-history policy for map viewport changes (pan/zoom): a contiguous run
 // of viewport-only changes collapses into a single history entry via
@@ -257,9 +258,13 @@ function updateUrl(state: RootState, forced: boolean): void {
     auth,
   } = state;
 
-  // A snapshot still being read back belongs to the popstate restore: written
-  // now, the URL would pair the previous step's features with this one's view.
-  if (!isUrlUpdatingEnabled() || state.trackViewer.restoringStored !== null) {
+  // The entry's content still being read (a snapshot, an import) belongs to it:
+  // written now, the URL would pair the previous step's features with its view.
+  if (
+    !isUrlUpdatingEnabled() ||
+    state.trackViewer.restoringStored !== null ||
+    entryLoading()
+  ) {
     // URL updating is suspended while the store is mutated programmatically
     // (a feature drag, or restoring state on popstate). End any in-progress
     // viewport-coalescing session so the first write after we resume starts a
@@ -722,6 +727,9 @@ function updateUrl(state: RootState, forced: boolean): void {
     return;
   }
 
+  // The entry's own content arriving, which becomes the entry, not a step.
+  const replacing = isReplacingEntry();
+
   // A change confined to the coalesced params replaces the current entry when
   // it continues a recent run of them (last write was also one, and within the
   // gap); otherwise it starts a fresh entry. Any other change (map type,
@@ -753,6 +761,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     now - lastWriteTs < SETUP_COALESCE_GAP_MS;
 
   const method =
+    replacing ||
     setupRun ||
     (viewOnly &&
       (!viewChanged ||
@@ -760,7 +769,8 @@ function updateUrl(state: RootState, forced: boolean): void {
       ? 'replaceState'
       : 'pushState';
 
-  if (method === 'replaceState' && !forced) {
+  // Not deferred: a rerun would no longer know to replace, and would push.
+  if (method === 'replaceState' && !forced && !replacing) {
     // Clamped because the clock can go backwards (an NTP correction mid-pan):
     // a negative age would schedule the rewrite further out than the interval
     // and `??=` never shortens a timer, freezing viewport updates until the

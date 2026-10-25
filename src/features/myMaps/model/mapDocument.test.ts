@@ -99,10 +99,8 @@ describe('mapContentString — what counts as a change', () => {
     );
   });
 
-  it('ignores style defaults the URL leaves out', () => {
-    // `urlProcessor` writes only non-default cap/join/marker, so a restore comes
-    // back without them. Reading that as a change would mark every map holding a
-    // drawn feature as unsaved forever after a reload.
+  it('tells an explicit round cap or pin marker from an unset one', () => {
+    // The link writes both, so a restore keeps them; unset is the viewer's own.
     const explicit = state({
       drawingLines: {
         lines: [line([{ lat: 48, lon: 17, id: 1 }], { lineCap: 'round' })],
@@ -112,12 +110,12 @@ describe('mapContentString — what counts as a change', () => {
       },
     });
 
-    const restored = state({
+    const unset = state({
       drawingLines: { lines: [line([{ lat: 48, lon: 17, id: 2 }])] },
       drawingPoints: { points: [{ coords: { lat: 48, lon: 17 } }] },
     });
 
-    expect(mapContentString(restored)).toBe(mapContentString(explicit));
+    expect(mapContentString(unset)).not.toBe(mapContentString(explicit));
   });
 
   it('ignores an empty dash array, which means the same as none', () => {
@@ -197,14 +195,14 @@ describe('mapContentString — what counts as a change', () => {
     );
   });
 
-  it('notices the track source changing', () => {
+  it('ignores a download under way, which the URL never names', () => {
     expect(
       mapContentString(
         state({
           trackViewer: { trackGeojson: null, trackUID: 'abc', gpxUrl: null },
         }),
       ),
-    ).not.toBe(mapContentString(state()));
+    ).toBe(mapContentString(state()));
   });
 });
 

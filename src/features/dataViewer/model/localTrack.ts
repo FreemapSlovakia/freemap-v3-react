@@ -3,9 +3,8 @@ import type { FeatureCollection } from 'geojson';
 import { completeCollection, urlWire } from './urlForm.js';
 
 /**
- * Whether the loaded data is named by the URL — a **`track-uid=`** or
- * **`import-url=`** track, re-fetched from it — so a snapshot would be a second
- * copy of the same thing.
+ * Whether a **`track-uid=`** or **`import-url=`** download is still under way,
+ * so the data is not yet the entry's own.
  */
 export function homedElsewhere(state: RootState): boolean {
   return Boolean(state.trackViewer.trackUID || state.trackViewer.gpxUrl);

@@ -120,19 +120,9 @@ export function getMapContentParts(state: RootState): QueryPart[] {
     }
   }
 
-  if (trackViewer.trackUID) {
-    parts.push(['track-uid', trackViewer.trackUID]);
-  }
-
-  if (trackViewer.gpxUrl) {
-    parts.push(['import-url', trackViewer.gpxUrl]);
-  }
-
-  // Only while the link can carry every feature and names no file holding them;
-  // otherwise a snapshot or that file does (`localTrack`).
-  if (!trackViewer.trackUID && !trackViewer.gpxUrl) {
-    parts.push(...(urlWire(trackViewer.trackGeojson) ?? []));
-  }
+  // Only while the link can carry every feature; otherwise a snapshot does
+  // (`localTrack`). `track-uid=` / `import-url=` are read, never written.
+  parts.push(...(urlWire(trackViewer.trackGeojson) ?? []));
 
   if (galleryFilter.userId) {
     parts.push(['gallery-user-id', galleryFilter.userId]);

@@ -1,5 +1,6 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import { entryLoading } from '@app/url/entryContent.js';
 import { isUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { authLogout } from '@features/auth/model/actions.js';
 import {
@@ -82,8 +83,9 @@ function persist(state: RootState): void {
   // for that whole pass the screen belongs to no single map. Writing then would
   // file the torn state under the map being left, and a dirty map's track has
   // nowhere else to come back from. URL updating is suspended for exactly that
-  // window (and for a drag, which likewise commits at its end).
-  if (!isUrlUpdatingEnabled()) {
+  // window (and for a drag, which likewise commits at its end), and an entry
+  // whose content is still being read is torn the same way.
+  if (!isUrlUpdatingEnabled() || entryLoading()) {
     return;
   }
 

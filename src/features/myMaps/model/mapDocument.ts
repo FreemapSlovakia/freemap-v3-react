@@ -255,8 +255,9 @@ export function fingerprintDocument(data: MapData, base: RootState): string {
       trackGeojson: features.length
         ? { type: 'FeatureCollection', features }
         : null,
-      trackUID: data.trackViewer?.trackUID ?? null,
-      gpxUrl: data.trackViewer?.gpxUrl ?? null,
+      // A source the document names is downloaded into features, not kept.
+      trackUID: null,
+      gpxUrl: null,
     },
   } as RootState);
 }

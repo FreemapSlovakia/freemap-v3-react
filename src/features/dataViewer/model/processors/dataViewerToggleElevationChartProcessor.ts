@@ -28,12 +28,9 @@ export const dataViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    // Prompt only when some elevation is missing and the user hasn't decided
-    // yet. A track with full elevation opens the chart straight away —
-    // overriding it is the explicit "update" button's job — and so does one with
-    // none, which the chart samples from the API. The chart renders recorded
-    // coordinates as-is, so a track the user chose to keep partial shows its
-    // gaps instead of a fabricated server profile.
+    // Prompt only for partial elevation not yet decided on; full or none opens
+    // the chart at once (none sampled from the API), and a track kept partial
+    // shows its gaps.
     if (
       elevationDecision !== 'undecided' ||
       elevationCoverage([active.feature]) !== 'partial'

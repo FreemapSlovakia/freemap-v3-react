@@ -60,6 +60,8 @@ export type MapLoadMeta = {
   ignoreMap?: boolean;
   ignoreLayers?: boolean;
   merge?: boolean;
+  /** The map stands in for the content of the entry shown, so is no new step. */
+  replaceEntry?: boolean;
 };
 
 export const mapsLoad = createAction<MapLoadMeta>('MAPS_LOAD');
@@ -135,10 +137,13 @@ export type MapRestore = {
    * holds a working copy from an earlier visit in another tab.
    */
   hasRestoredContent: boolean;
-  /** `track-uid=` from the URL, deferred so it can't race the restore. */
-  trackUID?: string;
-  /** `import-url=` from the URL, deferred for the same reason. */
-  gpxUrl?: string;
+  /** The history entry it was asked for (`entryContent.ts`). */
+  entry?: number;
+  /**
+   * Whether that entry carries features of its own — params or a snapshot —
+   * which are the newer edit, and so never replaced by the map's.
+   */
+  ownContent?: boolean;
 };
 
 export const mapsRestore = createAction<MapRestore>('MAPS_RESTORE');

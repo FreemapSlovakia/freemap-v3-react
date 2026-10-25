@@ -1,4 +1,5 @@
 import { isoInstant, toDatetimeLocal, toEpochMs } from '@shared/dateUtils.js';
+import { parseDecimal } from '@shared/numberValidator.js';
 import type { Feature, Position } from 'geojson';
 import { readChannels, TIMES } from './trackChannels.js';
 import { isTrackLine } from './trackSelection.js';
@@ -192,9 +193,11 @@ export function parseVertexField(
     }
 
     case 'number': {
-      const shown = Number(trimmed.replace(',', '.'));
+      // A comma is the decimal point a phone's decimal keypad types in many
+      // languages; a text field takes it as one.
+      const shown = parseDecimal(trimmed.replace(',', '.'));
 
-      if (!Number.isFinite(shown)) {
+      if (shown === undefined) {
         return { error: 'notANumber' };
       }
 

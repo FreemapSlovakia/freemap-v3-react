@@ -33,9 +33,7 @@ import {
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
 import { dataViewerDeleteFeatureProcessor } from '@features/dataViewer/model/processors/dataViewerDeleteFeatureProcessor.js';
 import { dataViewerDensifyProcessor } from '@features/dataViewer/model/processors/dataViewerDensifyProcessor.js';
-import { dataViewerDownloadTrackProcessor } from '@features/dataViewer/model/processors/dataViewerDownloadTrackProcessor.js';
 import { dataViewerDrawSelectProcessor } from '@features/dataViewer/model/processors/dataViewerDrawSelectProcessor.js';
-import { dataViewerGpxLoadProcessor } from '@features/dataViewer/model/processors/dataViewerGpxLoadProcessor.js';
 import { dataViewerJoinTracksProcessor } from '@features/dataViewer/model/processors/dataViewerJoinTracksProcessor.js';
 import { dataViewerMatchTrackProcessor } from '@features/dataViewer/model/processors/dataViewerMatchTrackProcessor.js';
 import { dataViewerResolveElevationPromptProcessor } from '@features/dataViewer/model/processors/dataViewerResolveElevationPromptProcessor.js';
@@ -46,10 +44,7 @@ import {
 } from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
 import { dataViewerSplitSelectionProcessor } from '@features/dataViewer/model/processors/dataViewerSplitSelectionProcessor.js';
 import { dataViewerStaleSelectionProcessor } from '@features/dataViewer/model/processors/dataViewerStaleSelectionProcessor.js';
-import {
-  dataViewerRestoreStoredProcessor,
-  dataViewerStoreProcessor,
-} from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
+import { dataViewerStoreProcessor } from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
 import { dataViewerToggleElevationChartProcessor } from '@features/dataViewer/model/processors/dataViewerToggleElevationChartProcessor.js';
 import {
   dataViewerCheckOsmAuthorizationProcessor,
@@ -261,9 +256,6 @@ export const processors = [
   dataViewerSetTrackDataProcessor,
   dataViewerAddFeaturesProcessor,
   dataViewerStoreProcessor,
-  dataViewerRestoreStoredProcessor,
-  dataViewerDownloadTrackProcessor,
-  dataViewerGpxLoadProcessor,
   dataViewerMatchTrackProcessor,
   dataViewerUploadToOsmProcessor,
   dataViewerCheckOsmAuthorizationProcessor,

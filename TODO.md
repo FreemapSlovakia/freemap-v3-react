@@ -402,16 +402,39 @@ editor; where it is stored follows from its size, not from the tool that made it
       up after by the stale-selection processor. Make `replaceFeature` the only
       length-changing primitive and apply its `old → new | null` map to every
       index holder, the selection included.
-- [ ] **Per-feature caches on the hot path.** A drag move remounts every layer
-      (`DataViewerResult`'s Fragment is keyed on the collection's revision),
-      and each edit re-hashes the whole collection (`snapshotKey`, the
+- [ ] **Per-feature caches on the hot path.** Each edit re-hashes the whole
+      collection (`snapshotKey`, the
       saved-map fingerprint), re-validates it (`storeSnapshot`) and
       re-serializes it (`urlWire`). Key, hash, validate and encode per feature.
 - [ ] **One answer to "where do the features live"** (link, remote file,
       snapshot) instead of `featuresInLink`, `homedElsewhere`, `localTrack`
-      and `getMapContentParts` each asking; and turn an old build's
-      `tr: true` entry into a string key once, in `handleFeatures`, so the
-      store and the restore see one format.
+      and `getMapContentParts` each asking. Restoring an entry is already one
+      place (`entryContent.ts`); deciding where to write it is not.
+- [ ] **One feature folder, one name.** The tool is "Drawing and data", but its
+      code is split over `src/features/drawing/` (the point/line tools, styles
+      and `drawingSettings`, the property editor, labels, JOSM export, and the
+      `DrawingPoint`/`Line` document types in `model/actions/`, which hold no
+      actions any more) and `src/features/dataViewer/`, under the slice name
+      `trackViewer`. Step 1: move `drawing/` into `dataViewer/` and merge the
+      two translation bundles — mechanical, about 70 importers, all caught by
+      `tsc`. Step 2, optional: rename `dataViewer` / `trackViewer` to one name.
+      `trackViewerSettings` and `drawingSettings` are localStorage keys
+      (`persistence.ts`), so renaming them needs a migration; map documents keep
+      `trackViewer` / `points` / `lines` on the wire.
+- [ ] **Chart identity: what it draws, not the whole collection.** The
+      track-viewer target's identity is the active line's geometry paired with
+      every point, so a property-only edit of the line (removing its `times`
+      channel) leaves a stale chart, while any point edit refetches a 2D
+      line's profile. Key it on the line's geometry and the channels it draws.
+- [ ] **Converting a route, a search result or an object loses data.** Only the
+      2D drawing conversion is left: a planned route arrives without its
+      elevation, per-mode stretches or `fm:kind: route` (so it exports as a
+      `<trk>`), and objects keep only the carried-tag allowlist. The collection
+      can hold all of it; convert with the export builder the removed path
+      used.
+- [ ] **A line's label beside it by its angle.** Leaflet's `auto` puts it left
+      or right by which half of the map the line's centre is in. Better: above
+      a steep line, beside a flat one, from the bearing at the label's anchor.
 - [ ] **Chart identity across reloads.** `elevation-chart=track-viewer` reopens
       on the first line, not the one charted; naming the line by index in the
       param would fix it.

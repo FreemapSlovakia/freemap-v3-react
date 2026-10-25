@@ -651,31 +651,34 @@ export default function DataViewerSelection(): ReactElement | null {
             />
           )}
 
-          {!window.fmEmbedded && !point && hole === undefined && (
-            <Action
-              icon={<FaEdit />}
-              label={
-                oeam &&
-                m?.general.openIn({
-                  what: oeam.josm,
-                })
-              }
-              showFrom="never"
-              onClick={() => {
-                const data = featureToOsmXml(feature);
-
-                if (data) {
-                  // The geometry itself, as a new layer of unsaved data — the
-                  // editor has nothing to download it from.
-                  josmRemote(dispatch, 'load_data', {
-                    new_layer: 'true',
-                    layer_name: name || label || 'Freemap',
-                    data,
-                  });
+          {/* A line or a polygon: the OSM XML says no other shape. */}
+          {!window.fmEmbedded &&
+            (feature.geometry.type === 'LineString' || polygon) &&
+            hole === undefined && (
+              <Action
+                icon={<FaEdit />}
+                label={
+                  oeam &&
+                  m?.general.openIn({
+                    what: oeam.josm,
+                  })
                 }
-              }}
-            />
-          )}
+                showFrom="never"
+                onClick={() => {
+                  const data = featureToOsmXml(feature);
+
+                  if (data) {
+                    // The geometry itself, as a new layer of unsaved data — the
+                    // editor has nothing to download it from.
+                    josmRemote(dispatch, 'load_data', {
+                      new_layer: 'true',
+                      layer_name: name || label || 'Freemap',
+                      data,
+                    });
+                  }
+                }}
+              />
+            )}
         </ResponsiveActions>
 
         {placeMenu && (
@@ -692,15 +695,18 @@ export default function DataViewerSelection(): ReactElement | null {
                 url={`/?point=${lat}/${lon}`}
                 toggleProps={props}
                 menuItems={
-                  <Dropdown.Item
-                    as="button"
-                    onClick={() => setProjecting(true)}
-                  >
-                    <TbAngle />
-                    <MenuLabel>
-                      <Text m={dm} k="projection.projectPoint" />
-                    </MenuLabel>
-                  </Dropdown.Item>
+                  // A MultiPoint has no one point to project from.
+                  feature.geometry.type === 'Point' && (
+                    <Dropdown.Item
+                      as="button"
+                      onClick={() => setProjecting(true)}
+                    >
+                      <TbAngle />
+                      <MenuLabel>
+                        <Text m={dm} k="projection.projectPoint" />
+                      </MenuLabel>
+                    </Dropdown.Item>
+                  )
                 }
               >
                 <FaEllipsisV />

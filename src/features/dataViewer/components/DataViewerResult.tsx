@@ -98,14 +98,14 @@ const revisions = new WeakMap<object, number>();
 
 let lastRevision = 0;
 
-/** A number standing for this collection, the same one every time it is asked. */
-function revisionOf(fc: object): number {
-  let revision = revisions.get(fc);
+/** A number standing for this object — a feature — the same every time asked. */
+function revisionOf(object: object): number {
+  let revision = revisions.get(object);
 
   if (revision === undefined) {
     revision = ++lastRevision;
 
-    revisions.set(fc, revision);
+    revisions.set(object, revision);
   }
 
   return revision;
@@ -260,11 +260,14 @@ export default function DataViewerResult({
     dispatch(drawingMeasure({}));
   };
 
-  // Remounts the layers below on new data, which some of them need to redraw.
-  // A revision per collection rather than a hash of one: the store replaces the
-  // object on every edit, and serializing a 100k-point track to measure it cost
-  // more than everything else here put together.
-  const keyToAssureProperRefresh = `${revisionOf(trackGeojson)}-${displayingElevationChart}`;
+  // Remounts a feature's layers when it changes, which some of them need to
+  // redraw — only its own, so a drag doesn't rebuild every label. A revision
+  // per object, not a hash: an edit replaces just the features it touches.
+  const featureKey = (featureIndex: number) => {
+    const feature = trackGeojson?.features[featureIndex];
+
+    return feature ? revisionOf(feature) : 0;
+  };
 
   // Flatten line-like features into per-segment render entries, keeping each
   // segment's source feature index so a click selects that whole track and the
@@ -422,7 +425,7 @@ export default function DataViewerResult({
         return options
           ? [
               {
-                key: `line-${i}`,
+                key: `line-${featureKey(featureIndex)}-${i}`,
                 positions: lineData,
                 options,
                 width: style.width,
@@ -506,7 +509,7 @@ export default function DataViewerResult({
   ]);
 
   const layers = (
-    <Fragment key={keyToAssureProperRefresh}>
+    <Fragment key={String(displayingElevationChart)}>
       <Pane
         name="fm-trackviewer-polygons"
         className={FEATURES_PANE_CLASS}
@@ -531,9 +534,9 @@ export default function DataViewerResult({
 
       {polygons
         .filter(({ featureIndex }) => featureIndex === selectedIndex)
-        .map(({ positions, style }, i) => (
+        .map(({ positions, style, featureIndex }, i) => (
           <Polygon
-            key={`poly-highlight-${i}`}
+            key={`poly-highlight-${featureKey(featureIndex)}-${i}`}
             pane={HALO_PANE}
             weight={style.width + HALO_WIDTH}
             // A picked hole is the ring the toolbar acts on.
@@ -554,7 +557,7 @@ export default function DataViewerResult({
 
       {features.map(({ lineData, style, featureIndex, labelled }, i) => (
         <Polyline
-          key={`outline-${i}-${interactive ? 'a' : 'b'}`}
+          key={`outline-${featureKey(featureIndex)}-${i}-${interactive ? 'a' : 'b'}`}
           pane="fm-trackviewer-hit"
           weight={style.width + 8}
           interactive={interactive}
@@ -601,8 +604,8 @@ export default function DataViewerResult({
       ))}
 
       {activeColorizer &&
-        colorizedRuns.flatMap(({ noData, runs }, i) => [
-          ...noData.map((run, j) => (
+        colorizedRuns.flatMap((colorized, i) => [
+          ...colorized.noData.map((run, j) => (
             <Polyline
               key={`nodata-${colorizeTrackBy}-${i}-${j}`}
               positions={run.map((p): [number, number] => [p.lat, p.lon])}
@@ -615,8 +618,9 @@ export default function DataViewerResult({
               interactive={false}
             />
           )),
-          ...runs.map((run, j) => (
+          ...colorized.runs.map((run, j) => (
             <Hotline
+              // Not remounted on new data: the hotline redraws for a new `data`.
               key={`${colorizeTrackBy}-${i}-${j}`}
               data={run}
               getVal={(p) => p.point.color}
@@ -641,7 +645,7 @@ export default function DataViewerResult({
 
           return style.type === 'polygon' ? (
             <Polygon
-              key={`poly-${i}-${interactive ? 'a' : 'b'}`}
+              key={`poly-${featureKey(featureIndex)}-${i}-${interactive ? 'a' : 'b'}`}
               pane="fm-trackviewer-polygons"
               weight={style.width}
               pathOptions={pathOptions}
@@ -654,7 +658,7 @@ export default function DataViewerResult({
             />
           ) : (
             <Polyline
-              key={`poly-${i}-${interactive ? 'a' : 'b'}`}
+              key={`poly-${featureKey(featureIndex)}-${i}-${interactive ? 'a' : 'b'}`}
               weight={style.width}
               pathOptions={pathOptions}
               positions={lineData}
@@ -669,7 +673,7 @@ export default function DataViewerResult({
 
       {polygons.map(({ positions, style, featureIndex }, i) => (
         <Polygon
-          key={`mpoly-${i}-${interactive ? 'a' : 'b'}`}
+          key={`mpoly-${featureKey(featureIndex)}-${i}-${interactive ? 'a' : 'b'}`}
           pane="fm-trackviewer-polygons"
           weight={style.width}
           pathOptions={{
@@ -691,6 +695,7 @@ export default function DataViewerResult({
           <LabelTooltip
             mode={labelModeOf(featureIndex)}
             label={labels[featureIndex]}
+            polygon
           />
         </Polygon>
       ))}
@@ -701,7 +706,7 @@ export default function DataViewerResult({
         editable
           ? positions.slice(1).map((ring, j) => (
               <Polyline
-                key={`hole-${i}-${j}-${interactive ? 'a' : 'b'}`}
+                key={`hole-${featureKey(featureIndex)}-${i}-${j}-${interactive ? 'a' : 'b'}`}
                 pane="fm-trackviewer-hit"
                 weight={style.width + 8}
                 opacity={0}
@@ -719,7 +724,7 @@ export default function DataViewerResult({
       {startPoints.map((p, i) => (
         <RichMarker
           faIcon={<FaPlay color="#409a40" />}
-          key={`sp-${i}`}
+          key={`sp-${featureKey(p.featureIndex)}-${i}`}
           color="#409a40"
           interactive={interactive}
           position={{ lat: p.lat, lng: p.lon }}
@@ -743,7 +748,7 @@ export default function DataViewerResult({
       {finishPoints.map((p, i) => (
         <RichMarker
           faIcon={<FaStop color="#d9534f" />}
-          key={`fp-${i}`}
+          key={`fp-${featureKey(p.featureIndex)}-${i}`}
           color="#d9534f"
           interactive={interactive}
           position={{ lat: p.lat, lng: p.lon }}
@@ -812,8 +817,8 @@ export default function DataViewerResult({
     </Fragment>
   );
 
-  // Outside the remounting key above: a marker remounted mid-drag drops the
-  // gesture, and a drag changes the data on every move.
+  // Outside the keyed group above: a marker remounted mid-drag drops the
+  // gesture, and the chart opening or closing remounts that group.
   return (
     <>
       {layers}
@@ -955,15 +960,20 @@ function WaypointMarker({
 function LabelTooltip({
   mode,
   label,
+  polygon,
 }: {
   mode: LabelTooltipMode | undefined;
   label: string | undefined;
+  /** A permanent one centred on the area, with no pointer to it. */
+  polygon?: boolean;
 }): ReactElement | null {
   return mode && label ? (
     <Tooltip
       key={mode}
       className="compact multiline"
-      direction="top"
+      // A hover one follows the pointer, so centred it would cover it.
+      {...(polygon &&
+        mode === 'permanent' && { direction: 'center', offset: [-4, 0] })}
       permanent={mode === 'permanent'}
       sticky={mode === 'hover'}
     >

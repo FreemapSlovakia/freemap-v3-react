@@ -86,11 +86,14 @@ export function serializeDrawingPoint(
   }${point.color ? `\x1eC${point.color}` : ''}${
     point.label ? `\x1eL${point.label}` : ''
   }${
+    // Each value its code, `pin` too: unset means the viewer's default style.
     point.markerType === 'square'
       ? '\x1eSs'
       : point.markerType === 'ring'
         ? '\x1eSr'
-        : ''
+        : point.markerType === 'pin'
+          ? '\x1eSp'
+          : ''
   }${point.icon ? `\x1eI${point.icon}` : ''}${serializeDrawingProps(point.props)}${serializeTypedProps(point.typed)}${serializePairs('M', point.verbatim)}${serializeKind(point.kind)}`;
 }
 
@@ -166,17 +169,22 @@ export function serializeDrawingLine(
     // no value would read back as unset and so make the round trip lossy.
     line.dashArray?.length ? `\x1eD${line.dashArray}` : ''
   }${
+    // Each value its code, `round` too: unset means the viewer's default style.
     line.lineCap === 'butt'
       ? '\x1eKb'
       : line.lineCap === 'square'
         ? '\x1eKs'
-        : ''
+        : line.lineCap === 'round'
+          ? '\x1eKr'
+          : ''
   }${
     line.lineJoin === 'miter'
       ? '\x1eJm'
       : line.lineJoin === 'bevel'
         ? '\x1eJb'
-        : ''
+        : line.lineJoin === 'round'
+          ? '\x1eJr'
+          : ''
   }${holeOf === undefined ? '' : `\x1eH${holeOf}`}${serializeDrawingProps(line.props)}${serializeTypedProps(line.typed)}${serializePairs('M', line.verbatim)}${
     line.columns?.length ? `\x1eV${line.columns.join('\x1f')}` : ''
   }${serializeKind(line.kind)}${line.gpxType === undefined ? '' : `\x1eG${line.gpxType}`}`;

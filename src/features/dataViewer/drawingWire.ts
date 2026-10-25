@@ -195,8 +195,15 @@ const ring = (points: Point[]): Position[] => [
   ...(points[0] ? [[points[0].lon, points[0].lat]] : []),
 ];
 
-/** Seconds since the epoch as the ISO time a GPX file writes. */
-const isoTime = (seconds: number) => isoInstant(Math.round(seconds * 1000));
+/**
+ * Seconds since the epoch as the ISO time a GPX file writes; `null` past what
+ * a `Date` holds, where `toISOString` would throw on a hand-edited link.
+ */
+const isoTime = (seconds: number) => {
+  const ms = Math.round(seconds * 1000);
+
+  return Math.abs(ms) <= 8.64e15 ? isoInstant(ms) : null;
+};
 
 /** The line's vertices in segments, at its breaks. */
 function segmentsOf<T>(items: T[], breaks: number[] | undefined): T[][] {

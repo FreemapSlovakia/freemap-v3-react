@@ -17,6 +17,7 @@ import {
   dataViewerEditFeatures,
   dataViewerExplodeTrack,
   dataViewerGpxLoad,
+  dataViewerInsertVertex,
   dataViewerJoinTracks,
   dataViewerSetData,
   dataViewerSetFeatureProperties,
@@ -363,6 +364,38 @@ describe('dataViewerReducer — joining', () => {
     expect(next.trackUID).toBeNull();
     expect(next.renderTrackGeojson).toBeNull();
     expect(next.joinWith).toBeNull();
+  });
+
+  describe('a full elevation override', () => {
+    const credits = [{ type: 'data' as const, name: 'DMR 5.0' }];
+
+    const overridden = {
+      ...dataViewerInitialState,
+      trackGeojson: {
+        type: 'FeatureCollection' as const,
+        features: [track('a', [straight(3)])],
+      },
+      elevationDecision: 'all' as const,
+      elevationAttributions: credits,
+    };
+
+    // The values are still the model's, so are their credits; a point added
+    // without one is what "Update elevation" is then offered for.
+    it('holds, credits and all, once a point is added', () => {
+      const next = dataViewerReducer(
+        overridden,
+        dataViewerInsertVertex({
+          index: 0,
+          part: 0,
+          vertex: 1,
+          position: [17.05, 48],
+        }),
+      );
+
+      expect(next.elevationDecision).toBe('all');
+
+      expect(next.elevationAttributions).toEqual(credits);
+    });
   });
 
   it('reopens the elevation decision, which was one track’s', () => {

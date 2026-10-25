@@ -53,8 +53,8 @@ Params are read from `document.location.hash || document.location.search` (so `?
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `track-uid` | Saved track id | r/w | UUID |
-| `import-url` | External GPX/KML/TCX/GeoJSON to load | r/w | URL-encoded URL |
+| `track-uid` | Saved track id to import once; never written back | read-only | UUID |
+| `import-url` | External GPX/KML/TCX/GeoJSON to import once; never written back | read-only | URL-encoded URL |
 | `gpx-url`, `load` | Legacy aliases of `import-url` | read-only | URL |
 | `track-colorize-by` | Track colorization mode | r/w | mode id |
 | `track-style` | **Default style for unstyled imported features** | read-only | [style codec](#style-codec) |
@@ -99,7 +99,7 @@ These place standalone map annotations — markers, lines, filled areas — not 
 | `line`, `polygon` (repeatable) | Line / polygon | r/w | `vertex,vertex,…[<style fields>]` |
 | `distance-measurement-points`, `area-measurement-points`, `elevation-measurement-point` | Legacy measurement aliases | read-only | coords |
 
-These params carry the whole Drawing and data collection, in order, whenever it fits: every feature must read back meaning the same (`featureToWire` round-trips it and compares — times as instants, a style as the one it resolves to, so `.000Z`, an offset or a simplestyle-only style still fit; coordinates at the link's 6 decimals), and the encoded params must stay within `URL_FEATURES_BUDGET` (8000 characters, `model/urlForm.ts`). Otherwise none of them are written and the collection lives in a browser snapshot named by `history.state.tr` (see [elevation-and-colorizers.md](./elevation-and-colorizers.md#local-data-has-history)). A `track-uid` or `import-url` source wins over these params.
+These params carry the whole Drawing and data collection, in order, whenever it fits: every feature must read back meaning the same (`featureToWire` round-trips it and compares — times as instants, a style as the one it resolves to, so `.000Z`, an offset or a simplestyle-only style still fit; coordinates at the link's 6 decimals), and the encoded params must stay within `URL_FEATURES_BUDGET` (8000 characters, `model/urlForm.ts`). Otherwise none of them are written and the collection lives in a browser snapshot named by `history.state.tr` (see [elevation-and-colorizers.md](./elevation-and-colorizers.md#local-data-has-history)). A `track-uid` or `import-url` link is read on its own; once its track is here, the entry is replaced by these params or a snapshot ([entry-content.md](./entry-content.md)).
 
 **Vertices with values.** A vertex is `lat/lon` followed by `/value` per column the `V` field names — `ele`, `time`, or any per-point channel key (`heart`, `cad`, …); an empty value is a gap, and trailing gaps are dropped. `time` is epoch seconds: the first value is absolute and each later one the difference from the previous one, in whole milliseconds. An empty vertex (`,,`) starts a new segment, making the line a `MultiLineString`. A channel holding anything but numbers cannot be written, which sends the collection to a snapshot.
 
@@ -153,9 +153,9 @@ Fields are joined by the record-separator character `\x1e` (URL-encoded `%1E`). 
 | `F` | Fill color (RGBA hex) | `F%2300ff0033` |
 | `W` | Line width (number) | `W6` |
 | `D` | Dash array (comma-separated numbers) | `D4,4` |
-| `K` | Line cap — `b`utt / `s`quare (default round) | `Kb` |
-| `J` | Line join — `m`iter / `b`evel (default round) | `Jm` |
-| `S` | Marker shape — `s`quare / `r`ing (default pin) | `Sr` |
+| `K` | Line cap — `b`utt / `s`quare / `r`ound; absent, the viewer's default style decides | `Kb` |
+| `J` | Line join — `m`iter / `b`evel / `r`ound; absent, the viewer's default style decides | `Jm` |
+| `S` | Marker shape — `s`quare / `r`ing / `p`in; absent, the viewer's default style decides | `Sr` |
 | `I` | Marker icon spec — `poi:<name>` (bundled POI icon) or `fa:<name>` (Font Awesome) | `Ipoi%3Aanimal_shelter` → `poi:animal_shelter` (`%3A` = `:`) |
 | `L` | Label (drawing geometry only) | `LMy point` |
 | `P` | Properties — key/value pairs joined by the unit separator `\x1f` (URL-encoded `%1F`), drawing geometry only | `Pname%1FSitno%1Fele%1F1009` |

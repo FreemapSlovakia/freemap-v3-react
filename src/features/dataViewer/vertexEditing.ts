@@ -14,12 +14,9 @@ import { readChannels, writeChannels } from './trackChannels.js';
 import { isTrackLine } from './trackSelection.js';
 
 /**
- * The parts of a geometry whose vertices can be edited one by one, each as a
- * list of positions: the point itself, a line, each segment of a multi-segment
- * track, each ring of a polygon. A ring is listed **open** — its closing
- * position is implied — and written back closed.
- *
- * Collections and multi-polygons are not edited vertex by vertex.
+ * A geometry's vertex-editable parts — the point, a line, each segment, each
+ * ring — or none for collections and multi-polygons. A ring is listed **open**
+ * and written back closed.
  */
 export function editableParts(geometry: Geometry): Position[][] | undefined {
   switch (geometry.type) {

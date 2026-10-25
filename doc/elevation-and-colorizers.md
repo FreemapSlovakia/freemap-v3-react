@@ -1047,36 +1047,30 @@ showed by key in `history.state.tr`, so a reload puts that version back and
 Back/Forward step through the edits as they do through anything else.
 
 **Only data with no other home** (`localTrack`, `model/localTrack.ts`): the URL cannot
-carry it, and it is not a `track-uid=` or `import-url=` track, which the URL names and
-re-fetches. That is the condition `DataViewerMenu` warns about unless a map is open.
+carry it, and it is not a `track-uid=` or `import-url=` track still being downloaded.
+That is the condition `DataViewerMenu` warns about unless a map is open.
 
 - **The key is the content's hash** (`snapshotKey`, cached per object). Any edit
   replaces `trackGeojson`, so `urlProcessor` reads a new key and pushes an entry;
   `dataViewerStoreProcessor` writes the snapshot under the same key. Data read
   back adopts the key it was asked for, so a restore never reads as a new step.
-- **`handleLocationChange` puts the entry's version back**: a different key
-  dispatches `dataViewerRestoreStored(key)`, an entry without one takes local
-  data off the map (`null`). `restoringStored` holds the key being read, so a
-  read that a quicker history step overtook is dropped. The restore stands down
-  for data the URL or a map names: a fetch still in flight would lose the race
-  to IndexedDB.
+- **The entry's version is put back by `src/app/url/entryContent.ts`** — the
+  rules, the map and remote-track cases and the scenarios are in
+  [`entry-content.md`](./entry-content.md). `restoringStored` holds the key
+  being read, which is what the elevation chart a URL asked for waits on.
 - **Eviction, not deletion.** Deleting the data doesn't touch its snapshots —
   the entries before the delete still show it. The store keeps at most
   `MAX_SNAPSHOTS` and `MAX_TOTAL_CHARS` of JSON, dropping the oldest. An entry
-  whose snapshot has gone takes its key off (`replaceState`), clears the map, and
-  says so in a toast.
-- An entry carrying `tr: true` reads the record under the key `track`, which the
-  next snapshot write deletes.
-- **Large data shares one key.** Past `LARGE_POSITIONS` vertices every version is
-  stored under `latest`, overwritten on each edit: hashing and copying all of it
-  per edit stalled the page and evicted other entries' snapshots. Its edits are
-  therefore not history steps; a reload shows the latest version.
-- **A saved map being opened wins.** The restore stands down while
-  `myMaps.loadMeta` or `myMaps.restoring` is set, as for a `track-uid=` track.
-- **The URL waits for the read.** `urlProcessor` treats `restoringStored` as a
-  suspension, so the previous step's features are never written with this
-  step's view. A write that fails says so in a toast: the entry already names
-  the snapshot, so a reload would find nothing.
+  whose snapshot has gone takes its key off (`replaceState`) and says so in a
+  toast.
+- An entry carrying `tr: true` reads the record under the key `track`.
+- **Large data has one key per page.** Past `LARGE_POSITIONS` vertices every
+  version is stored under `latest-<random>`, overwritten on each edit: hashing and
+  copying all of it per edit stalled the page and evicted other entries'
+  snapshots. Its edits are therefore not history steps; a reload shows the
+  latest version.
+- **A write that fails says so in a toast**: the entry already names the
+  snapshot, so a reload would find nothing.
 
 The write is validated with the same schema the read uses, so a record that would
 be discarded on the way back is refused on the way in rather than counted as a

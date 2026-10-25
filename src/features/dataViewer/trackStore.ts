@@ -32,7 +32,41 @@ const MAX_TOTAL_CHARS = 50_000_000;
  */
 const LARGE_POSITIONS = 50_000;
 
-const LATEST_KEY = 'latest';
+const LATEST_PREFIX = 'latest';
+
+/**
+ * The key large data shares across its versions: this page's own, or that of
+ * the large snapshot it put back, so a reload writes on instead of copying.
+ */
+let latestKey = `${LATEST_PREFIX}-${Math.random().toString(36).slice(2, 10)}`;
+
+/** Has this page write its large data on under a large snapshot just put back. */
+export function continueSnapshot(key: string): void {
+  if (key.startsWith(LATEST_PREFIX)) {
+    latestKey = key;
+  }
+}
+
+/** Its JSON length, near enough: ~40 chars a vertex, ~15 more per channel. */
+function estimatedSize(geojson: object): number {
+  const { features } = geojson as { features?: Feature[] };
+
+  let size = 0;
+
+  for (const { geometry, properties } of features ?? []) {
+    const channels = properties?.['coordinateProperties'];
+
+    size +=
+      positionCount(geometry) *
+      (40 +
+        15 *
+          (channels && typeof channels === 'object'
+            ? Object.keys(channels).length
+            : 0));
+  }
+
+  return size;
+}
 
 function isLarge(geojson: object): boolean {
   const { features } = geojson as { features?: Feature[] };
@@ -110,7 +144,7 @@ export function snapshotKey(geojson: object): string {
   let key = keyCache.get(geojson);
 
   if (key === undefined) {
-    key = isLarge(geojson) ? LATEST_KEY : hash53(serialized(geojson));
+    key = isLarge(geojson) ? latestKey : hash53(serialized(geojson));
 
     keyCache.set(geojson, key);
   }
@@ -149,9 +183,11 @@ export async function storeSnapshot(geojson: object): Promise<string> {
 
   await set(SNAPSHOT_PREFIX + key, record, store);
 
-  // Large data is not serialized only to be measured; a vertex is ~40 chars.
-  const size =
-    key === LATEST_KEY ? LARGE_POSITIONS * 40 : serialized(geojson).length;
+  // Large data is not serialized only to be measured. Estimated rather than
+  // fixed, so the bound evicts the records past pages left behind.
+  const size = key.startsWith(LATEST_PREFIX)
+    ? estimatedSize(geojson)
+    : serialized(geojson).length;
 
   const evicted: string[] = [];
 

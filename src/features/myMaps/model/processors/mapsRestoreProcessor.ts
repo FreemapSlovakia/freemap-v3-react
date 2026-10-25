@@ -1,15 +1,21 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import {
+  currentEntry,
+  entrySettled,
+  importRemote,
+  isCurrentEntry,
+} from '@app/url/entryContent.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import {
   dataViewerDelete,
-  dataViewerDownloadTrack,
-  dataViewerGpxLoad,
   dataViewerSetData,
-  dataViewerSetGpxUrl,
-  dataViewerSetTrackUID,
 } from '@features/dataViewer/model/actions.js';
 import { documentFeatures } from '@features/dataViewer/model/collection.js';
 import { featuresInLink } from '@features/dataViewer/model/urlForm.js';
+import {
+  type RemoteSource,
+  remoteSourceOf,
+} from '@features/dataViewer/remoteTrack.js';
 import {
   routePlannerFindRoute,
   routePlannerSetSavedRoute,
@@ -46,8 +52,8 @@ import {
  * nothing to preserve and the map is read from the backend, even when this
  * browser holds a copy from an earlier visit.
  *
- * Owns the track for this restore: `handleLocationChange` defers the fetch a
- * `track-uid=` / `import-url=` would start, so nothing can race it.
+ * The map's features stand in only where the entry has none of its own, and
+ * only while it is shown (`doc/entry-content.md`).
  */
 export const mapsRestoreProcessor: Processor = {
   // Re-runs on the auth actions, like `mapsLoadProcessor`: bootstrap decodes the
@@ -68,8 +74,8 @@ export const mapsRestoreProcessor: Processor = {
       ignoreMap,
       ignoreLayers,
       hasRestoredContent,
-      trackUID,
-      gpxUrl,
+      entry = currentEntry(),
+      ownContent,
     } = restoring;
 
     // Another restore, a plain load or a disconnect has taken over while this
@@ -85,14 +91,18 @@ export const mapsRestoreProcessor: Processor = {
       dispatch(mapsLoad({ id: mapId, ignoreMap, ignoreLayers }));
     };
 
-    // Restores the track and where it came from, so the map matches what it was
-    // saved as and its URL keeps `track-uid=` / `import-url=`. Set directly: the
-    // track is already here and must not be re-fetched over.
+    // Restores the map's features, set directly: they are already here. An older
+    // copy or document naming its track rather than holding it downloads it.
     const restoreTrack = (
       track: FeatureCollection | null,
-      uid: string | null,
-      url: string | null,
+      source: RemoteSource | undefined,
     ) => {
+      // The entry's own features are the newer edit; an entry left meanwhile
+      // has no claim to the map at all.
+      if (ownContent || !isCurrentEntry(entry)) {
+        return;
+      }
+
       const current = getState().trackViewer.trackGeojson;
 
       if (track) {
@@ -100,51 +110,31 @@ export const mapsRestoreProcessor: Processor = {
           dispatch(dataViewerSetData({ trackGeojson: track }));
         }
 
-        dispatch(dataViewerSetTrackUID(uid));
-
-        dispatch(dataViewerSetGpxUrl(url));
-
         return;
       }
 
-      // No features of the copy's own: they came with the URL, or the ones on
-      // screen are left over from the map before this one.
+      // No features of the copy's own: the ones on screen are left over from
+      // the map before this one.
       if (current && !featuresInLink(getState().trackViewer)) {
         dispatch(dataViewerDelete());
       }
 
-      // No geometry, but a source names one — the map's own, or failing that
-      // the one the URL asked for.
-      const sourceUid = uid ?? trackUID;
-
-      const sourceUrl = url ?? gpxUrl;
-
-      // Both, when the URL names both — as the two independent `track-uid=` /
-      // `import-url=` fetches `handleLocationChange` deferred would have done.
-      if (sourceUid) {
-        dispatch(dataViewerDownloadTrack(sourceUid));
-      }
-
-      if (sourceUrl) {
-        dispatch(dataViewerGpxLoad(sourceUrl));
+      if (source) {
+        importRemote({ getState, dispatch }, entry, source);
       }
     };
+
+    // Whether this restore still decides: `mapsSetMeta` releases `restoring`.
+    const stillOpening = () =>
+      isCurrentEntry(entry) &&
+      !getState().myMaps.loadMeta &&
+      getState().myMaps.activeMap?.id === mapId;
 
     try {
       // The history entry carries the content; the browser copy is per-tab and
       // says nothing about what a fresh tab is showing.
       if (!hasRestoredContent) {
         load();
-
-        // `handleLocationChange` deferred the track the URL names to this
-        // processor, so it has to be started here or it never loads at all.
-        if (trackUID !== undefined) {
-          dispatch(dataViewerDownloadTrack(trackUID));
-        }
-
-        if (gpxUrl !== undefined) {
-          dispatch(dataViewerGpxLoad(gpxUrl));
-        }
 
         return;
       }
@@ -169,7 +159,7 @@ export const mapsRestoreProcessor: Processor = {
       if (record && stored?.comparable) {
         dispatch(mapsSetMeta(record.meta));
 
-        restoreTrack(record.track, record.trackUID, record.gpxUrl);
+        restoreTrack(record.track, remoteSourceOf(record));
 
         dispatch(mapsSetSavedFingerprint(record.savedFingerprint));
 
@@ -177,8 +167,14 @@ export const mapsRestoreProcessor: Processor = {
         // below reads one — and the map being left must not lend it its own.
         dispatch(routePlannerSetSavedRoute(null));
 
-        // Nothing unsaved to protect, so take a fresh copy from the backend.
-        if (fingerprintState(getState()) === record.savedFingerprint) {
+        // Nothing unsaved to protect, so take a fresh copy from the backend —
+        // judged only once the entry's content is all here.
+        await entrySettled();
+
+        if (
+          stillOpening() &&
+          fingerprintState(getState()) === record.savedFingerprint
+        ) {
           load();
         }
 
@@ -226,20 +222,7 @@ export const mapsRestoreProcessor: Processor = {
         if (record && !navigator.onLine) {
           dispatch(mapsSetMeta(record.meta));
 
-          // An older build's copy holds the imported track alone, the drawings
-          // having come with the URL — so it joins them rather than replacing them.
-          const current = getState().trackViewer.trackGeojson;
-
-          restoreTrack(
-            stored?.trackOnly && record.track && current
-              ? {
-                  type: 'FeatureCollection',
-                  features: [...current.features, ...record.track.features],
-                }
-              : record.track,
-            record.trackUID,
-            record.gpxUrl,
-          );
+          restoreTrack(record.track, remoteSourceOf(record));
 
           dispatch(routePlannerSetSavedRoute(null));
 
@@ -250,7 +233,7 @@ export const mapsRestoreProcessor: Processor = {
           return;
         }
 
-        restoreTrack(null, null, null);
+        restoreTrack(null, undefined);
 
         if (getState().myMaps.activeMap?.id === mapId) {
           // A reload of the map that is already connected: it stays, but nothing
@@ -291,21 +274,13 @@ export const mapsRestoreProcessor: Processor = {
         ),
       };
 
-      const savedUID = document.data.trackViewer?.trackUID ?? null;
-
-      const savedUrl = document.data.trackViewer?.gpxUrl ?? null;
-
       restoreTrack(
-        saved.features.length &&
-          !featuresInLink({
-            trackGeojson: saved,
-            trackUID: savedUID,
-            gpxUrl: savedUrl,
-          })
+        saved.features.length && !featuresInLink({ trackGeojson: saved })
           ? saved
           : null,
-        savedUID,
-        savedUrl,
+        saved.features.length
+          ? undefined
+          : remoteSourceOf(document.data.trackViewer),
       );
 
       dispatch(

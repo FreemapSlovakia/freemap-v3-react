@@ -896,12 +896,10 @@ export const dataViewerReducer = createReducer(
             ),
           ];
 
+          // A source the document names is downloaded once and kept as features
+          // (`mapsLoadProcessor`); a map never re-reads it.
           const restored: DataViewerState = {
             ...dataViewerInitialState,
-            ...(!merge && {
-              trackUID: trackViewer?.trackUID ?? null,
-              gpxUrl: trackViewer?.gpxUrl ?? null,
-            }),
             trackGeojson: null,
           };
 

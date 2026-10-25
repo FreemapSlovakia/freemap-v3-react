@@ -118,13 +118,10 @@ export function DataViewerMenu(): ReactElement {
     Boolean(state.myMaps.activeMap),
   );
 
-  const gpxUrl = useAppSelector((state) => state.trackViewer.gpxUrl);
-
-  // Data that is in no saved map and that the link doesn't carry — neither
-  // written into it nor named by `track-uid=` / `import-url=` — exists nowhere
+  // Data that is in no saved map and that the link doesn't carry exists nowhere
   // but this browser. A reload does put it back (`trackStore.ts`), but that copy
   // goes with the browser's storage, so it still deserves saying.
-  const unsaved = hasTrack && !hasActiveMap && canUpload && !gpxUrl && !inLink;
+  const unsaved = hasTrack && !hasActiveMap && canUpload && !inLink;
 
   const handleSaveAsMap = () => {
     if (loggedIn) {
@@ -197,9 +194,10 @@ export function DataViewerMenu(): ReactElement {
 
   const coverage = elevationCoverage(lineFeatures);
 
-  // Overriding from the server makes sense only while the track still has some
-  // recorded elevation to replace and hasn't already been fully overridden.
-  const canUpdateElevation = coverage !== 'none' && elevationDecision !== 'all';
+  // Overriding from the server makes sense while the track still has some
+  // recorded elevation to replace, or, fully overridden, points added since.
+  const canUpdateElevation =
+    coverage !== 'none' && (elevationDecision !== 'all' || coverage !== 'full');
 
   // Only ask how to fill elevation when some is actually missing and the user
   // hasn't decided yet. Tracks that already have full elevation proceed

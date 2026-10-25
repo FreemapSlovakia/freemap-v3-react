@@ -27,14 +27,8 @@ const fc = (...features: Feature[]): FeatureCollection => ({
 describe('featuresInLink', () => {
   const small = fc(pointToFeature({ coords: { lat: 48, lon: 17 } }));
 
-  it('holds while they fit and nothing else names them', () => {
-    expect(
-      featuresInLink({ trackGeojson: small, trackUID: null, gpxUrl: null }),
-    ).toBe(true);
-
-    expect(
-      featuresInLink({ trackGeojson: small, trackUID: 'x', gpxUrl: null }),
-    ).toBe(false);
+  it('holds while they fit', () => {
+    expect(featuresInLink({ trackGeojson: small })).toBe(true);
   });
 });
 
@@ -275,6 +269,21 @@ describe('urlWire', () => {
       expect(roundTrip(track(properties)).properties).toMatchObject(properties);
     });
 
+    it('but a time past what a date holds as missing, not as a crash', () => {
+      const [back] = fromWire(
+        parseFeatureParams(
+          new URLSearchParams(
+            serializeQuery([['line', '48/17/1e20,48.1/17.1/1\x1eVtime']]),
+          ),
+        ),
+      );
+
+      // The second is a delta from the first, so as far out of range.
+      expect(back?.properties?.['coordinateProperties']).toMatchObject({
+        times: [null, null],
+      });
+    });
+
     it('but nothing that would split its field', () => {
       for (const properties of [
         { name: 'a\x1fb' },
@@ -319,6 +328,25 @@ describe('urlWire', () => {
       };
 
       expect(roundTrip(track(properties)).properties).toMatchObject(properties);
+    });
+
+    it('a round cap and join and a pin marker, which a viewer’s default may not be', () => {
+      expect(
+        roundTrip(
+          track({ 'freemap:lineCap': 'round', 'freemap:lineJoin': 'round' }),
+        ).properties,
+      ).toMatchObject({
+        'freemap:lineCap': 'round',
+        'freemap:lineJoin': 'round',
+      });
+
+      expect(
+        roundTrip({
+          type: 'Feature',
+          properties: { 'freemap:markerType': 'pin' },
+          geometry: { type: 'Point', coordinates: [17, 48] },
+        }).properties,
+      ).toMatchObject({ 'freemap:markerType': 'pin' });
     });
 
     it('a style given in simplestyle alone', () => {
