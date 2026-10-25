@@ -78,7 +78,7 @@ Lets another application or a script use the Freemap API as the user, without a 
 - The list shows each token's note, permissions, creation date, expiry and last use with the client's user agent; **Revoke** deletes it at once.
 - Usage: send `Authorization: Bearer fm_…` with each request to `https://backend.freemap.sk`; a WebSocket connection takes it as the `authToken` query parameter. Even on endpoints that also work without login, an unknown, deleted or expired token gets HTTP 401, and a request needing a permission the token lacks gets HTTP 403.
 - Outdoor map zooms 19+ (the base map, KST and the overlays): served to the Freemap web app — the free quarter of tiles to anyone, the rest to premium accounts — and to other apps such as JOSM or Locus only with the token of a premium account holding that permission, as `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}?token=fm_…` or an `Authorization` header. Other websites get them in no case. A refused tile is an image: for an app, how to add a token; for another website, freemap@freemap.sk to contact.
-- Terrain shading zooms 16+ (parametric shading at `https://terrain.tiles.freemap.sk`, and the detailed Slovak shading at `https://sk-hires-shading.tiles.freemap.sk`): the same, with the terrain-shading permission. The detailed shading is also open to iD on openstreetmap.org.
+- Terrain shading zooms 16+ (parametric shading at `https://terrain.tiles.freemap.sk`, and the detailed Slovak shading at `https://sk-hires-shading.tiles.freemap.sk`): the same, with the terrain-shading permission. The detailed shading is also open to mappers: iD on openstreetmap.org and JOSM, without a token.
 
 ### Fullscreen
 
