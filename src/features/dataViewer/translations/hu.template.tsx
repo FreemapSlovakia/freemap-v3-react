@@ -10,7 +10,6 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Felosztás',
     pick: 'Kattintson a nyomvonalra a felosztás helyén',
     here: 'Felosztás itt',
-    segments: 'Felosztás szakaszokra',
   },
   join: {
     action: 'Összefűzés',
@@ -42,6 +41,7 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `${n}. nyomvonal`,
   simplifyAll: 'Összes egyszerűsítése',
   moreInfo: 'További információ',
+  breakApart: 'Szétbontás részekre',
   saveAsMap: 'Mentés a térképeim közé',
   loginToSaveMap:
     'A nyomvonal a térképei közé mentéséhez először jelentkezzen be.',

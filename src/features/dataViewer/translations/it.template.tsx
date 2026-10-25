@@ -10,7 +10,6 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Dividi',
     pick: 'Clicchi la traccia nel punto di divisione',
     here: 'Dividi qui',
-    segments: 'Dividi in segmenti',
   },
   join: {
     action: 'Unisci',
@@ -42,6 +41,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Traccia ${n}`,
   simplifyAll: 'Semplifica tutto',
   moreInfo: 'Maggiori info',
+  breakApart: 'Separa in parti',
   saveAsMap: 'Salva nelle mie mappe',
   loginToSaveMap: 'Acceda prima per salvare la traccia nelle sue mappe.',
   details: {

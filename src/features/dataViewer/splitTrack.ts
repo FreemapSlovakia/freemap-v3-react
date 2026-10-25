@@ -9,7 +9,13 @@ import {
   lineSegments,
   segmentDistances,
 } from '@shared/geoutils.js';
-import type { LineString, MultiLineString, Position } from 'geojson';
+import type {
+  Feature,
+  Geometry,
+  LineString,
+  MultiLineString,
+  Position,
+} from 'geojson';
 import { type Channel, readChannels, writeChannels } from './trackChannels.js';
 import type { TrackLine } from './trackSelection.js';
 
@@ -247,6 +253,34 @@ export function trackSegmentFeatures(feature: TrackLine): TrackLine[] {
 
     return part ? [part] : [];
   });
+}
+
+/**
+ * A multi-point, multi-polygon or geometry collection as one feature per
+ * member, each keeping the original's properties. `null` for anything else, or
+ * when there is only one member to give.
+ */
+export function breakApart(feature: Feature): Feature[] | null {
+  const { geometry } = feature;
+
+  const members: Geometry[] =
+    geometry?.type === 'MultiPoint'
+      ? geometry.coordinates.map((coordinates) => ({
+          type: 'Point',
+          coordinates,
+        }))
+      : geometry?.type === 'MultiPolygon'
+        ? geometry.coordinates.map((coordinates) => ({
+            type: 'Polygon',
+            coordinates,
+          }))
+        : geometry?.type === 'GeometryCollection'
+          ? geometry.geometries
+          : [];
+
+  return members.length > 1
+    ? members.map((member) => ({ ...feature, geometry: member }))
+    : null;
 }
 
 /**

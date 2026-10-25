@@ -10,6 +10,7 @@ const en: DataViewerMessages = {
     `${kind === 'track' ? 'Recorded track' : kind === 'route' ? 'Planned route' : 'Line'} ${n}`,
   simplifyAll: 'Simplify all',
   moreInfo: 'More info',
+  breakApart: 'Break apart',
   saveAsMap: 'Save to my maps',
   unsaved: 'Unsaved',
   unsavedTooltip:
@@ -51,7 +52,6 @@ const en: DataViewerMessages = {
     action: 'Split',
     pick: 'Click the track where to cut it',
     here: 'Split here',
-    segments: 'Split into segments',
   },
   join: {
     action: 'Join',

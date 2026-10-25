@@ -10,7 +10,6 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Podziel',
     pick: 'Kliknij ślad w miejscu podziału',
     here: 'Podziel tutaj',
-    segments: 'Podziel na odcinki',
   },
   join: {
     action: 'Połącz',
@@ -102,6 +101,7 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Ślad ${n}`,
   simplifyAll: 'Uprość wszystko',
   moreInfo: 'Więcej informacji',
+  breakApart: 'Rozdziel na części',
   saveAsMap: 'Zapisz w moich mapach',
   loginToSaveMap: 'Zaloguj się, aby zapisać trasę w swoich mapach.',
   fetchingError: ({ err }) =>

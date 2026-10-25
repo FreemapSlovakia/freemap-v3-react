@@ -10,6 +10,8 @@ export type DataViewerMessages = {
   /** The tool menu's simplification, which takes every loaded feature. */
   simplifyAll: string;
   moreInfo: string;
+  /** Splits a multi-point, multi-polygon or collection into its members. */
+  breakApart: string;
   saveAsMap: string;
   unsaved: string;
   unsavedTooltip: string;
@@ -55,7 +57,6 @@ export type DataViewerMessages = {
     /** Stands in for the track's name while the cut is being aimed. */
     pick: string;
     here: string;
-    segments: string;
   };
   /** Joining the selected track with another loaded one. */
   join: {

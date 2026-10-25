@@ -32,6 +32,7 @@ import {
   pointStyleFromProperties,
   pointStyleToProperties,
 } from '@shared/styleFromProperties.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { area } from '@turf/area';
 import { booleanContains } from '@turf/boolean-contains';
 import { destination } from '@turf/destination';
@@ -61,7 +62,6 @@ import {
   TbAngle,
   TbArrowsJoin,
   TbArrowsJoin2,
-  TbArrowsSplit,
   TbTimeline,
 } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
@@ -87,7 +87,7 @@ import {
   trackInfoToast,
 } from '../model/trackInfoToast.js';
 import { isSimplifiable } from '../simplifyTrack.js';
-import { isExplodable, isSplittable } from '../splitTrack.js';
+import { breakApart, isExplodable, isSplittable } from '../splitTrack.js';
 import { isRecording } from '../trackChannels.js';
 import { isTrackLine, trackLineFeatures } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
@@ -284,6 +284,26 @@ export default function DataViewerSelection(): ReactElement | null {
 
   const updateElevation = () => {
     dispatch(dataViewerSetElevationPrompt({ type: 'update', index }));
+  };
+
+  // A gapped line, a polygon with holes, a multi-point, multi-polygon or
+  // collection, into a feature per segment, ring or member.
+  // A picked hole is offered Detach hole instead.
+  const breakable = line
+    ? isExplodable(line)
+    : feature.geometry.type === 'Polygon'
+      ? hole === undefined && feature.geometry.coordinates.length > 1
+      : breakApart(feature) !== null;
+
+  const doBreakApart = () => {
+    trackMatomo([
+      'trackEvent',
+      'DataViewer',
+      'breakApart',
+      feature.geometry.type,
+    ]);
+
+    dispatch(dataViewerExplodeTrack(index));
   };
 
   const polygon = feature.geometry.type === 'Polygon';
@@ -510,28 +530,10 @@ export default function DataViewerSelection(): ReactElement | null {
             <Action
               icon={<RiScissorsFill />}
               label={dvm?.split.action}
-              showFrom="sm"
-              // Later than the buttons beside them: both carry a caret as well.
-              showLabelFrom="lg"
+              showFrom="never"
               onClick={() => {
                 dispatch(dataViewerSetSplitting(true));
               }}
-              menu={
-                isExplodable(line) && [
-                  <Dropdown.Item
-                    key="segments"
-                    as="button"
-                    onClick={() => {
-                      dispatch(dataViewerExplodeTrack(index));
-                    }}
-                  >
-                    <TbArrowsSplit />
-                    <MenuLabel>
-                      <Text m={dvm} k="split.segments" />
-                    </MenuLabel>
-                  </Dropdown.Item>,
-                ]
-              }
             />
           )}
 
@@ -602,6 +604,16 @@ export default function DataViewerSelection(): ReactElement | null {
               onClick={() => {
                 dispatch(setActiveModal({ type: 'track-viewer-match' }));
               }}
+            />
+          )}
+
+          {/* A multi-point has it in its place menu, its only ⋮. */}
+          {breakable && !placeMenu && (
+            <Action
+              icon={<FaObjectUngroup />}
+              label={dvm?.breakApart}
+              showFrom="never"
+              onClick={doBreakApart}
             />
           )}
 
@@ -713,7 +725,7 @@ export default function DataViewerSelection(): ReactElement | null {
                 toggleProps={props}
                 menuItems={
                   // A MultiPoint has no one point to project from.
-                  feature.geometry.type === 'Point' && (
+                  feature.geometry.type === 'Point' ? (
                     <>
                       <Dropdown.Item
                         as="button"
@@ -732,6 +744,15 @@ export default function DataViewerSelection(): ReactElement | null {
                         </MenuLabel>
                       </Dropdown.Item>
                     </>
+                  ) : (
+                    breakable && (
+                      <Dropdown.Item as="button" onClick={doBreakApart}>
+                        <FaObjectUngroup />
+                        <MenuLabel>
+                          <Text m={dvm} k="breakApart" />
+                        </MenuLabel>
+                      </Dropdown.Item>
+                    )
                   )
                 }
               >

@@ -11,6 +11,7 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `${kind === 'track' ? 'Záznam trasy' : kind === 'route' ? 'Plánovaná trasa' : 'Čiara'} ${n}`,
   simplifyAll: 'Zjednodušiť všetko',
   moreInfo: 'Viac info',
+  breakApart: 'Rozdeliť na časti',
   saveAsMap: 'Uložiť do mojich máp',
   unsaved: 'Neuložené',
   unsavedTooltip:
@@ -50,7 +51,6 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Rozdeliť',
     pick: 'Kliknite na trasu v mieste rozdelenia',
     here: 'Rozdeliť tu',
-    segments: 'Rozdeliť na úseky',
   },
   join: {
     action: 'Spojiť',

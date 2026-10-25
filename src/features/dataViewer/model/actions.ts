@@ -275,9 +275,9 @@ export const dataViewerJoinTracks = createAction(
 );
 
 /**
- * Breaks a multi-segment recording (a `MultiLineString`, one segment per
- * recording pause) into a feature per segment, by index into
- * `trackGeojson.features`.
+ * Breaks a feature into one per part, by index into `trackGeojson.features`: a
+ * multi-segment recording into its segments, a multi-point, multi-polygon or
+ * geometry collection into its members.
  */
 export const dataViewerExplodeTrack = createAction<number>(
   'DATA_VIEWER_EXPLODE_TRACK',

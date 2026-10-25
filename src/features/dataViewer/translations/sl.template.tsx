@@ -10,6 +10,7 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Sled ${n}`,
   simplifyAll: 'Poenostavi vse',
   moreInfo: 'Več informacij',
+  breakApart: 'Razdeli na dele',
   saveAsMap: 'Shrani med moje zemljevide',
   loginToSaveMap:
     'Za shranjevanje sledi med vaše zemljevide se najprej prijavite.',
@@ -18,7 +19,6 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Razdeli',
     pick: 'Kliknite sled na mestu razdelitve',
     here: 'Razdeli tukaj',
-    segments: 'Razdeli na odseke',
   },
   join: {
     action: 'Združi',

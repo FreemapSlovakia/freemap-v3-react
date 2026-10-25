@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  breakApart,
   explodeTrackFeature,
   isExplodable,
   isSplittable,
@@ -279,5 +280,83 @@ describe('splitTrackFeature — router path details', () => {
     expect(tail.properties?.['fm:pathDetails']).toEqual([
       { surface: [{ start: 0, end: spans[4]! - spans[3]!, value: 'gravel' }] },
     ]);
+  });
+});
+
+describe('breakApart', () => {
+  const props = { name: 'Group', color: '#f00' };
+
+  it('gives a point per member of a multi-point, each with its properties', () => {
+    const parts = breakApart({
+      type: 'Feature',
+      properties: props,
+      geometry: {
+        type: 'MultiPoint',
+        coordinates: [
+          [17, 48],
+          [18, 49],
+        ],
+      },
+    });
+
+    expect(parts).toEqual([
+      {
+        type: 'Feature',
+        properties: props,
+        geometry: { type: 'Point', coordinates: [17, 48] },
+      },
+      {
+        type: 'Feature',
+        properties: props,
+        geometry: { type: 'Point', coordinates: [18, 49] },
+      },
+    ]);
+  });
+
+  it('keeps a polygon its holes', () => {
+    const outer = [
+      [0, 0],
+      [3, 0],
+      [3, 3],
+      [0, 0],
+    ];
+
+    const hole = [
+      [1, 1],
+      [2, 1],
+      [2, 2],
+      [1, 1],
+    ];
+
+    const parts = breakApart({
+      type: 'Feature',
+      properties: props,
+      geometry: { type: 'MultiPolygon', coordinates: [[outer, hole], [outer]] },
+    });
+
+    expect(parts?.map((p) => p.geometry)).toEqual([
+      { type: 'Polygon', coordinates: [outer, hole] },
+      { type: 'Polygon', coordinates: [outer] },
+    ]);
+  });
+
+  it("gives a collection's members, and nothing for a single one", () => {
+    const point = { type: 'Point' as const, coordinates: [17, 48] };
+
+    expect(
+      breakApart({
+        type: 'Feature',
+        properties: props,
+        geometry: { type: 'GeometryCollection', geometries: [point, point] },
+      }),
+    ).toHaveLength(2);
+
+    expect(
+      breakApart({
+        type: 'Feature',
+        properties: props,
+        geometry: { type: 'GeometryCollection', geometries: [point] },
+      }),
+    ).toBeNull();
   });
 });

@@ -9,7 +9,6 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Rozdělit',
     pick: 'Klikněte na trasu v místě rozdělení',
     here: 'Rozdělit zde',
-    segments: 'Rozdělit na úseky',
   },
   join: {
     action: 'Spojit',
@@ -83,6 +82,7 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `${kind === 'track' ? 'Záznam trasy' : kind === 'route' ? 'Plánovaná trasa' : 'Čára'} ${n}`,
   simplifyAll: 'Zjednodušit vše',
   moreInfo: 'Více info',
+  breakApart: 'Rozdělit na části',
   saveAsMap: 'Uložit do mých map',
   loginToSaveMap: 'Pro uložení trasy do vašich map se nejprve přihlaste.',
   snapshotGone: 'Data z tohoto kroku už tento prohlížeč neuchovává.',

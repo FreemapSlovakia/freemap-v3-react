@@ -629,6 +629,54 @@ describe('dataViewerReducer — drawing', () => {
   });
 });
 
+describe('dataViewerReducer — breaking a polygon apart', () => {
+  const outer = [
+    [0, 0],
+    [3, 0],
+    [3, 3],
+    [0, 0],
+  ];
+
+  const hole = [
+    [1, 1],
+    [2, 1],
+    [2, 2],
+    [1, 1],
+  ];
+
+  it('gives a polygon per ring, the holes wearing its style alone', () => {
+    const next = dataViewerReducer(
+      {
+        ...dataViewerInitialState,
+        trackGeojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              properties: { name: 'Meadow', stroke: '#ff0000' },
+              geometry: { type: 'Polygon', coordinates: [outer, hole] },
+            },
+          ],
+        },
+      },
+      dataViewerExplodeTrack(0),
+    );
+
+    const [kept, detached] = next.trackGeojson!.features;
+
+    expect(kept!.geometry).toEqual({ type: 'Polygon', coordinates: [outer] });
+
+    expect(kept!.properties?.['name']).toBe('Meadow');
+
+    expect(detached!.geometry).toEqual({
+      type: 'Polygon',
+      coordinates: [hole],
+    });
+
+    expect(detached!.properties?.['name']).toBeUndefined();
+  });
+});
+
 describe('dataViewerReducer — continuing a gapped line', () => {
   const gapped = {
     ...dataViewerInitialState,

@@ -35,6 +35,7 @@ import {
 } from '../joinTracks.js';
 import { simplifyDataFeature } from '../simplifyTrack.js';
 import {
+  breakApart,
   explodeTrackFeature,
   splitTrackFeature,
   type TrackSplitPoint,
@@ -341,6 +342,18 @@ function endDrawing(state: Draft<DataViewerState>) {
   }
 }
 
+/** A hole of `feature` as a polygon of its own, wearing its style alone. */
+function holeAsPolygon(feature: Feature, ring: Position[]): Feature {
+  return {
+    type: 'Feature',
+    properties: patchedProperties(
+      { ...feature, properties: {} },
+      lineStyleFromProperties(feature.properties, true),
+    ),
+    geometry: { type: 'Polygon', coordinates: [ring] },
+  };
+}
+
 function withProperties(
   feature: Feature,
   properties: GeoJsonProperties,
@@ -632,14 +645,7 @@ export const dataViewerReducer = createReducer(
               ),
             },
           },
-          {
-            type: 'Feature',
-            properties: patchedProperties(
-              { ...feature, properties: {} },
-              lineStyleFromProperties(feature.properties, true),
-            ),
-            geometry: { type: 'Polygon', coordinates: [ring] },
-          },
+          holeAsPolygon(feature, ring),
         ]);
       })
       .addCase(applySettings, (state, { payload }) => {
@@ -828,11 +834,32 @@ export const dataViewerReducer = createReducer(
       .addCase(dataViewerExplodeTrack, (state, { payload }) => {
         const feature = state.trackGeojson?.features[payload];
 
-        if (!feature || !isTrackLine(feature)) {
+        if (!feature) {
           return;
         }
 
-        const parts = explodeTrackFeature(feature);
+        const { geometry } = feature;
+
+        // A polygon with holes: the outer ring stays the feature, each hole a
+        // polygon of its own, as Detach hole makes it.
+        const parts = isTrackLine(feature)
+          ? explodeTrackFeature(feature)
+          : geometry.type === 'Polygon'
+            ? geometry.coordinates.length > 1
+              ? [
+                  {
+                    ...feature,
+                    geometry: {
+                      ...geometry,
+                      coordinates: [geometry.coordinates[0]!],
+                    },
+                  },
+                  ...geometry.coordinates
+                    .slice(1)
+                    .map((ring) => holeAsPolygon(feature, ring)),
+                ]
+              : null
+            : breakApart(feature);
 
         if (parts) {
           replaceFeature(state, payload, parts);

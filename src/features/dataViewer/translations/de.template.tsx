@@ -10,7 +10,6 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Teilen',
     pick: 'Klicken Sie auf die Spur an der Trennstelle',
     here: 'Hier teilen',
-    segments: 'In Abschnitte teilen',
   },
   join: {
     action: 'Verbinden',
@@ -103,6 +102,7 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Track ${n}`,
   simplifyAll: 'Alles vereinfachen',
   moreInfo: 'Mehr Infos',
+  breakApart: 'In Teile zerlegen',
   saveAsMap: 'In meinen Karten speichern',
   loginToSaveMap:
     'Melden Sie sich zuerst an, um die Strecke in Ihren Karten zu speichern.',

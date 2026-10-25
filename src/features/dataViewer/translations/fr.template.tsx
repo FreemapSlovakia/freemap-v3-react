@@ -10,6 +10,7 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unnamedTrack: ({ n }) => `Trace ${n}`,
   simplifyAll: 'Tout simplifier',
   moreInfo: 'Plus d’infos',
+  breakApart: 'Séparer en parties',
   saveAsMap: 'Enregistrer dans mes cartes',
   loginToSaveMap:
     'Connectez-vous d’abord pour enregistrer la trace dans vos cartes.',
@@ -18,7 +19,6 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Diviser',
     pick: 'Cliquez sur la trace à l’endroit de la coupure',
     here: 'Diviser ici',
-    segments: 'Diviser en segments',
   },
   join: {
     action: 'Fusionner',
