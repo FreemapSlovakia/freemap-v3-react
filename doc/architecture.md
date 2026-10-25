@@ -234,7 +234,8 @@ Two layers — global and per-feature:
   bundle lives in a small subscribable module store (`features/l10n/messagesStore.ts`);
   components read it via `useMessages()` (backed by `useSyncExternalStore`), and
   non-React callers use `getMessages()`. See the root agent file for the full
-  add-a-string checklist.
+  add-a-string checklist, and [`translations.md`](./translations.md) for how each
+  language addresses the user.
 - **Per-feature lazy** (e.g. `features/routePlanner/translations/`): a feature can
   own its own message bundle, code-split per language, to keep it out of the global
   blob. Pattern: `<Feature>Messages.ts` (the type) + `use<Feature>Messages.ts`

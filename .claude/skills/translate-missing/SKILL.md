@@ -101,6 +101,7 @@ If `$ARGUMENTS` names specific languages, process only those; otherwise process 
 
 - Edit the `.template.*` files only. Never edit the generated `.messages.*` files — they are regenerated.
 - `en.messages.tsx` / `osmTagToNameMapping-en.messages.ts` etc. are the masters; English strings only ever change there.
+- **Address the user formally** and prefer neutral wording that avoids addressing them at all. The per-language rules (vykanie, `Sie`, `vous`, `Lei`, neutral Polish, önözés, vikanje) and the exceptions for button labels are in `doc/translations.md` — read it before translating. The English source has no formal form, so don't copy its tone.
 - Keep translations natural for the target language. The Slovak hint is usually close to the intended phrasing, but Italian/German/Hungarian/French translations should match the rest of that template's style, not mirror Slavic word order. For distant targets with no close sibling in the hint set (e.g. `fr`, whose nearest is Italian), review more carefully.
 - Quoting: single quotes, trailing commas — match what Biome / the surrounding file already uses.
 - Run the skill once per language or batch several together — either is fine; the verification scan covers both.
