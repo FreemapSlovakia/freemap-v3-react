@@ -97,11 +97,12 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'a nyomvonalban tárolt magasság használata',
     add: 'Magasság hozzáadása',
     update: 'Magasság frissítése',
-    updateConfirm: 'Lecseréli a nyomvonal magasságát a domborzatmodellre?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'A hiányzó magasság ki lett töltve.'
-        : 'A magasság felül lett írva.',
+        : mode === 'clear'
+          ? 'A magasság törölve lett.'
+          : 'A magasság felül lett írva.',
   },
   fetchingError: ({ err }) =>
     addError(

@@ -165,6 +165,14 @@ export function readChannels(feature: TrackLine): Channel[] {
   });
 }
 
+/**
+ * A recording: a line with per-point data such as times. Only its elevation is
+ * taken for a measurement; any other line's is drawn from the terrain model.
+ */
+export function isRecording(feature: TrackLine): boolean {
+  return readChannels(feature).length > 0;
+}
+
 /** A channel as the line's properties editor lists it. */
 export type ChannelSummary = { key: string; filled: number; total: number };
 

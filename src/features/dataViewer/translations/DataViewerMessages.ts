@@ -139,9 +139,10 @@ export type DataViewerMessages = {
     keep: string;
     keepDesc: string;
     add: string;
+    clear: string;
+    clearDesc: string;
     update: string;
-    updateConfirm: string;
-    updatedToast: (props: { mode: 'missing' | 'all' }) => string;
+    updatedToast: (props: { mode: 'missing' | 'all' | 'clear' }) => string;
   };
   fetchingError: (props: { err: unknown }) => string;
   /** Matching a track to the routing graph failed for a reason worth showing. */

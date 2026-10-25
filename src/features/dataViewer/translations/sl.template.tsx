@@ -96,11 +96,12 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'uporabi nadmorsko višino, shranjeno v sledi',
     add: 'Dodaj nadmorsko višino',
     update: 'Posodobi nadmorsko višino',
-    updateConfirm: 'Nadmorsko višino sledi nadomestim z modelom terena?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Manjkajoča nadmorska višina je bila zapolnjena.'
-        : 'Nadmorska višina je bila prepisana.',
+        : mode === 'clear'
+          ? 'Nadmorska višina je bila odstranjena.'
+          : 'Nadmorska višina je bila prepisana.',
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri pridobivanju podatkov o sledi', err),

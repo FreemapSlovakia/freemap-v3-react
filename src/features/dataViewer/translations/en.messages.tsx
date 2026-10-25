@@ -172,12 +172,16 @@ const en: DataViewerMessages = {
     keep: 'Leave unchanged',
     keepDesc: 'use the elevation stored in the track',
     add: 'Add elevation',
+    clear: 'Clear elevation',
+    clearDesc:
+      'remove the stored elevation; profiles then read the terrain model',
     update: 'Update elevation',
-    updateConfirm: "Replace the track's elevation with the terrain model?",
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Missing elevation has been filled.'
-        : 'Elevation has been overwritten.',
+        : mode === 'clear'
+          ? 'Elevation has been cleared.'
+          : 'Elevation has been overwritten.',
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Error fetching track data', err),

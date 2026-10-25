@@ -97,12 +97,12 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'utiliser l’altitude enregistrée dans la trace',
     add: 'Ajouter l’altitude',
     update: 'Mettre à jour l’altitude',
-    updateConfirm:
-      'Remplacer l’altitude de la trace par le modèle de terrain ?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'L’altitude manquante a été complétée.'
-        : 'L’altitude a été remplacée.',
+        : mode === 'clear'
+          ? 'L’altitude a été supprimée.'
+          : 'L’altitude a été remplacée.',
   },
   fetchingError: ({ err }) =>
     addError(

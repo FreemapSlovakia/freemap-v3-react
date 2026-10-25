@@ -181,7 +181,10 @@ function partOf(feature: Feature, part: number): Position[] | undefined {
 
 const identity = (length: number) => Array.from({ length }, (_, i) => i);
 
-/** One vertex moved; elevation and channels stay with it. */
+/**
+ * One vertex moved; its channels stay with it, but not its elevation, which
+ * was of where it stood.
+ */
 export function moveVertex(
   feature: Feature,
   part: number,
@@ -199,7 +202,7 @@ export function moveVertex(
   return editPart(
     feature,
     part,
-    positions.with(index, [lon!, lat!, ...old.slice(2)]),
+    positions.with(index, [lon!, lat!]),
     identity(positions.length),
   );
 }

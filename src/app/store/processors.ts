@@ -32,10 +32,10 @@ import {
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
 import { dataViewerDeleteFeatureProcessor } from '@features/dataViewer/model/processors/dataViewerDeleteFeatureProcessor.js';
-import { dataViewerDensifyProcessor } from '@features/dataViewer/model/processors/dataViewerDensifyProcessor.js';
 import { dataViewerDrawSelectProcessor } from '@features/dataViewer/model/processors/dataViewerDrawSelectProcessor.js';
 import { dataViewerJoinTracksProcessor } from '@features/dataViewer/model/processors/dataViewerJoinTracksProcessor.js';
 import { dataViewerMatchTrackProcessor } from '@features/dataViewer/model/processors/dataViewerMatchTrackProcessor.js';
+import { dataViewerRenderProcessor } from '@features/dataViewer/model/processors/dataViewerRenderProcessor.js';
 import { dataViewerResolveElevationPromptProcessor } from '@features/dataViewer/model/processors/dataViewerResolveElevationPromptProcessor.js';
 import { dataViewerSelectProcessor } from '@features/dataViewer/model/processors/dataViewerSelectProcessor.js';
 import {
@@ -265,7 +265,7 @@ export const processors = [
   dataViewerDeleteFeatureProcessor,
   dataViewerSplitSelectionProcessor,
   dataViewerJoinTracksProcessor,
-  dataViewerDensifyProcessor,
+  dataViewerRenderProcessor,
   routePlannerFindRouteProcessor,
   routePlannerOptimizeOrderProcessor,
   galleryDeletePictureProcessor,

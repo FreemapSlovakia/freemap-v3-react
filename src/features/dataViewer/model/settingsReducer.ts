@@ -10,6 +10,7 @@ import {
 } from '@shared/colorizers/index.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import type { LabelVisibility } from '@shared/labelVisibility.js';
+import { isRecording } from '../trackChannels.js';
 import { isTrackLine } from '../trackSelection.js';
 import {
   dataViewerColorizeTrackBy,
@@ -57,17 +58,19 @@ export const dataViewerSettingsReducer = createReducer(
       })
       .addCase(dataViewerSetData, (state, action) => {
         // A persisted elevation-derived colorize mode would render as a flat
-        // mid-palette on a track that lacks full elevation; drop it so the new
-        // track starts uncolorized rather than in a misleading state. Cleared
-        // in the same dispatch as the track data, so the URL/history sees one
-        // atomic change.
+        // mid-palette on a recording that lacks full elevation (other lines are
+        // drawn from the terrain); drop it so the new track starts uncolorized
+        // rather than in a misleading state. Cleared in the same dispatch as the
+        // track data, so the URL/history sees one atomic change.
+        const recordings = (action.payload.trackGeojson?.features ?? [])
+          .filter(isTrackLine)
+          .filter(isRecording);
+
         if (
-          action.payload.trackGeojson &&
           state.colorizeTrackBy &&
           colorizerNeedsElevation(state.colorizeTrackBy) &&
-          elevationCoverage(
-            action.payload.trackGeojson.features.filter(isTrackLine),
-          ) !== 'full'
+          recordings.length > 0 &&
+          elevationCoverage(recordings) !== 'full'
         ) {
           state.colorizeTrackBy = null;
         }

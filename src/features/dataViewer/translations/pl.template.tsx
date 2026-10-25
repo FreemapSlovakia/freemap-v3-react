@@ -90,11 +90,12 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'użyj wysokości zapisanej w śladzie',
     add: 'Dodaj wysokość',
     update: 'Zaktualizuj wysokość',
-    updateConfirm: 'Zastąpić wysokość śladu modelem terenu?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Brakująca wysokość została uzupełniona.'
-        : 'Wysokość została nadpisana.',
+        : mode === 'clear'
+          ? 'Wysokość została usunięta.'
+          : 'Wysokość została nadpisana.',
   },
   upload: 'Prześlij',
   unnamedTrack: ({ n }) => `Ślad ${n}`,

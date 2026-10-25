@@ -166,12 +166,15 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keep: 'Nic neměnit',
     keepDesc: 'použít nadmořskou výšku uloženou v trase',
     add: 'Doplnit výšku',
+    clear: 'Vymazat výšku',
+    clearDesc: 'odstranit uloženou výšku; profily ji pak čtou z modelu terénu',
     update: 'Aktualizovat výšku',
-    updateConfirm: 'Nahradit nadmořskou výšku trasy modelem terénu?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Chybějící nadmořská výška byla doplněna.'
-        : 'Nadmořská výška byla přepsána.',
+        : mode === 'clear'
+          ? 'Nadmořská výška byla vymazána.'
+          : 'Nadmořská výška byla přepsána.',
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při získávání záznamu trasy', err),

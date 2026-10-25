@@ -13,7 +13,9 @@ import { useDispatch } from 'react-redux';
 import {
   dataViewerResolveElevationPrompt,
   dataViewerSetElevationPrompt,
+  type ElevationFillMode,
 } from '../model/actions.js';
+import { targetsCoverage } from '../model/elevationTargets.js';
 import { isTrackLine } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 
@@ -26,11 +28,13 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
 
   const consumer = useAppSelector((state) => state.trackViewer.elevationPrompt);
 
-  const coverage = useAppSelector((state) =>
-    elevationCoverage(
-      (state.trackViewer.trackGeojson?.features ?? []).filter(isTrackLine),
-    ),
-  );
+  const coverage = useAppSelector((state) => {
+    const { trackGeojson, elevationPrompt } = state.trackViewer;
+
+    return elevationPrompt?.type === 'update'
+      ? (targetsCoverage(trackGeojson, elevationPrompt.index) ?? 'none')
+      : elevationCoverage((trackGeojson?.features ?? []).filter(isTrackLine));
+  });
 
   if (!consumer || !tvm) {
     return null;
@@ -40,12 +44,14 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
 
   const close = () => dispatch(dataViewerSetElevationPrompt(null));
 
-  const resolve = (mode: 'missing' | 'all' | 'keep') =>
+  const resolve = (mode: ElevationFillMode) =>
     dispatch(dataViewerResolveElevationPrompt({ mode, consumer }));
 
   // "Update elevation" is an explicit change request, so offering "leave
   // unchanged" there would just duplicate Cancel.
   const offerKeep = consumer.type !== 'update';
+
+  const offerClear = consumer.type === 'update' && coverage !== 'none';
 
   const intro =
     coverage === 'none'
@@ -85,6 +91,12 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
                   <strong>{ef.keep}</strong> — {ef.keepDesc}
                 </li>
               )}
+
+              {offerClear && (
+                <li>
+                  <strong>{ef.clear}</strong> — {ef.clearDesc}
+                </li>
+              )}
             </ul>
           </>
         )}
@@ -110,6 +122,12 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
         {coverage !== 'none' && offerKeep && (
           <Button variant="secondary" onClick={() => resolve('keep')}>
             {ef.keep}
+          </Button>
+        )}
+
+        {offerClear && (
+          <Button variant="danger" onClick={() => resolve('clear')}>
+            {ef.clear}
           </Button>
         )}
 

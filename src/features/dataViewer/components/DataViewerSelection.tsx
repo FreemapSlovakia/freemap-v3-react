@@ -49,6 +49,7 @@ import {
   FaInfoCircle,
   FaMagic,
   FaMapMarkerAlt,
+  FaMountain,
   FaObjectGroup,
   FaObjectUngroup,
   FaRegStopCircle,
@@ -87,6 +88,7 @@ import {
 } from '../model/trackInfoToast.js';
 import { isSimplifiable } from '../simplifyTrack.js';
 import { isExplodable, isSplittable } from '../splitTrack.js';
+import { isRecording } from '../trackChannels.js';
 import { isTrackLine, trackLineFeatures } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 import { editableParts } from '../vertexEditing.js';
@@ -279,6 +281,10 @@ export default function DataViewerSelection(): ReactElement | null {
   const joinable = line !== undefined && lines.length > 1;
 
   const point = isPoint(feature.geometry);
+
+  const updateElevation = () => {
+    dispatch(dataViewerSetElevationPrompt({ type: 'update', index }));
+  };
 
   const polygon = feature.geometry.type === 'Polygon';
 
@@ -483,12 +489,13 @@ export default function DataViewerSelection(): ReactElement | null {
               showLabelFrom="md"
               active={trackInfoActive}
               onClick={() => {
-                // The stats depend on elevation, so settle it first when some
-                // is missing and the user hasn't decided yet.
+                // The stats depend on elevation: a recording missing some is
+                // settled first, any other line is read from the terrain.
                 if (trackInfoActive) {
                   dispatch(toastsRemove(TRACK_INFO_TOAST_ID));
                 } else if (
                   elevationDecision === 'undecided' &&
+                  isRecording(line) &&
                   elevationCoverage([line]) !== 'full'
                 ) {
                   dispatch(dataViewerSetElevationPrompt({ type: 'info' }));
@@ -574,6 +581,16 @@ export default function DataViewerSelection(): ReactElement | null {
                   </MenuLabel>
                 </Dropdown.Item>,
               ]}
+            />
+          )}
+
+          {/* A point has it in its place menu, which is its only ⋮. */}
+          {line && (
+            <Action
+              icon={<FaMountain />}
+              label={dvm?.elevationFill.update}
+              showFrom="never"
+              onClick={updateElevation}
             />
           )}
 
@@ -697,15 +714,24 @@ export default function DataViewerSelection(): ReactElement | null {
                 menuItems={
                   // A MultiPoint has no one point to project from.
                   feature.geometry.type === 'Point' && (
-                    <Dropdown.Item
-                      as="button"
-                      onClick={() => setProjecting(true)}
-                    >
-                      <TbAngle />
-                      <MenuLabel>
-                        <Text m={dm} k="projection.projectPoint" />
-                      </MenuLabel>
-                    </Dropdown.Item>
+                    <>
+                      <Dropdown.Item
+                        as="button"
+                        onClick={() => setProjecting(true)}
+                      >
+                        <TbAngle />
+                        <MenuLabel>
+                          <Text m={dm} k="projection.projectPoint" />
+                        </MenuLabel>
+                      </Dropdown.Item>
+
+                      <Dropdown.Item as="button" onClick={updateElevation}>
+                        <FaMountain />
+                        <MenuLabel>
+                          <Text m={dvm} k="elevationFill.update" />
+                        </MenuLabel>
+                      </Dropdown.Item>
+                    </>
                   )
                 }
               >

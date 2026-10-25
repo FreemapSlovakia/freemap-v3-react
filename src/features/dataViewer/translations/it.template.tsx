@@ -97,12 +97,12 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'usa la quota memorizzata nella traccia',
     add: 'Aggiungi quota',
     update: 'Aggiorna quota',
-    updateConfirm:
-      'Sostituire la quota della traccia con il modello del terreno?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'La quota mancante è stata riempita.'
-        : 'La quota è stata sovrascritta.',
+        : mode === 'clear'
+          ? 'La quota è stata rimossa.'
+          : 'La quota è stata sovrascritta.',
   },
   fetchingError: ({ err }) =>
     addError(

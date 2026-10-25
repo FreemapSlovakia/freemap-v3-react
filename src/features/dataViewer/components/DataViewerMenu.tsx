@@ -11,7 +11,6 @@ import {
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
-import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
 import {
@@ -32,10 +31,6 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
-import {
-  useConfirm,
-  useConfirmCancel,
-} from '@shared/components/ModalProvider.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
@@ -63,14 +58,16 @@ import { useSimplifyData } from '../hooks/useSimplifyData.js';
 import {
   ColorizingModeSchema,
   dataViewerColorizeTrackBy,
-  dataViewerResolveElevationPrompt,
   dataViewerSetColorizeLegend,
   dataViewerSetElevationPrompt,
 } from '../model/actions.js';
+import { targetsCoverage } from '../model/elevationTargets.js';
 import { inLinkSelector } from '../model/urlForm.js';
 import { hasOsmTraceLine } from '../osmTrace.js';
 import { isSimplifiable } from '../simplifyTrack.js';
+import { isRecording } from '../trackChannels.js';
 import { trackLineParts } from '../trackLineParts.js';
+import { isTrackLine } from '../trackSelection.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 
@@ -87,15 +84,11 @@ export function DataViewerMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const confirm = useConfirm();
-
   const simplify = useSimplifyData();
 
   const drawTool = useAppSelector(openDrawToolSelector);
 
   const inLink = useAppSelector(inLinkSelector);
-
-  const cancelConfirm = useConfirmCancel();
 
   const features = useAppSelector(
     (state) => state.trackViewer.trackGeojson?.features,
@@ -192,56 +185,23 @@ export function DataViewerMenu(): ReactElement {
     return !isAvailable || isAvailable(lineFeatures);
   };
 
-  const coverage = elevationCoverage(lineFeatures);
+  const canUpdateElevation = useMemo(
+    () => targetsCoverage(trackGeojson) !== undefined,
+    [trackGeojson],
+  );
 
-  // Overriding from the server makes sense while the track still has some
-  // recorded elevation to replace, or, fully overridden, points added since.
-  const canUpdateElevation =
-    coverage !== 'none' && (elevationDecision !== 'all' || coverage !== 'full');
+  // Only ask how to fill a recording's elevation when some is missing and the
+  // user hasn't decided yet; any other line is drawn from the terrain model.
+  const recordingsCoverage = useMemo(() => {
+    const recordings = (trackGeojson?.features ?? [])
+      .filter(isTrackLine)
+      .filter(isRecording);
 
-  // Only ask how to fill elevation when some is actually missing and the user
-  // hasn't decided yet. Tracks that already have full elevation proceed
-  // straight away — the explicit "update" button covers overriding them.
+    return recordings.length ? elevationCoverage(recordings) : 'full';
+  }, [trackGeojson]);
+
   const needsElevationDecision =
-    coverage !== 'full' && elevationDecision === 'undecided';
-
-  const handleUpdateElevation = async () => {
-    // With only some points missing, defer to the adaptive modal so the user
-    // can fill just the gaps instead of overwriting the recorded values.
-    if (coverage === 'partial') {
-      dispatch(dataViewerSetElevationPrompt({ type: 'update' }));
-
-      return;
-    }
-
-    // A fully-elevated track has no gaps to fill, so overwriting from the
-    // server is the only update — a plain confirm is enough. A success toast
-    // reports the outcome afterwards.
-    if (
-      await confirm({
-        title: tvm?.elevationFill.title,
-        message: (
-          <>
-            <p className="mb-0">{tvm?.elevationFill.updateConfirm}</p>
-
-            <p className="text-body-secondary small mb-0 mt-2">
-              {tvm?.elevationFill.premiumHiRes((label) => (
-                <PremiumGem label={label} onBeforeNavigate={cancelConfirm} />
-              ))}
-            </p>
-          </>
-        ),
-        confirmLabel: tvm?.elevationFill.update,
-      })
-    ) {
-      dispatch(
-        dataViewerResolveElevationPrompt({
-          mode: 'all',
-          consumer: { type: 'update' },
-        }),
-      );
-    }
-  };
+    recordingsCoverage !== 'full' && elevationDecision === 'undecided';
 
   const handleMoreSelect = (eventKey: string | null) => {
     switch (eventKey) {
@@ -251,7 +211,8 @@ export function DataViewerMenu(): ReactElement {
         break;
 
       case 'update-elevation':
-        void handleUpdateElevation();
+        // The prompt asks only what the coverage leaves open.
+        dispatch(dataViewerSetElevationPrompt({ type: 'update' }));
 
         break;
 
@@ -405,7 +366,7 @@ export function DataViewerMenu(): ReactElement {
 
           {hasTrack && <Dropdown.Divider />}
 
-          {hasLines && canUpdateElevation && (
+          {canUpdateElevation && (
             <Dropdown.Item as="button" eventKey="update-elevation">
               <FaMountain />
               <MenuLabel>

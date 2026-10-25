@@ -141,7 +141,9 @@ export interface DataViewerState extends DataViewerStateBase {
   holeFor: number | null;
 }
 
-export type ElevationDecision = 'undecided' | ElevationFillMode;
+export type ElevationDecision =
+  | 'undecided'
+  | Exclude<ElevationFillMode, 'clear'>;
 
 export const cleanState: DataViewerStateBase = {
   trackGeojson: null,
@@ -857,7 +859,13 @@ export const dataViewerReducer = createReducer(
       .addCase(dataViewerResolveElevationPrompt, (state, action) => {
         state.elevationPrompt = null;
 
-        state.elevationDecision = action.payload.mode;
+        const { mode, consumer } = action.payload;
+
+        // One feature's update decides nothing for the rest; with every
+        // feature's elevation cleared there is nothing decided either.
+        if (consumer.type !== 'update' || consumer.index === undefined) {
+          state.elevationDecision = mode === 'clear' ? 'undecided' : mode;
+        }
       })
       .addCase(dataViewerRestoreStored, (state, { payload }) =>
         payload === null

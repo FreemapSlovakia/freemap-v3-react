@@ -44,11 +44,29 @@ Densification exists purely so charts/colorize don't draw straight DEM-ignorant
 segments. The densified line is cached as a _derived_ slice field, distinct from the
 real geometry, and is never serialized:
 
-- **dataViewer**: `renderTrackGeojson` (vs. `trackGeojson`), built lazily by
-  `ensureRenderGeojson` (`src/features/dataViewer/model/`) **only after a server
-  elevation override** — the one state where every point is known DEM-derived, so
-  inserted DEM points add no seam. A track's own recorded elevation is left alone (no
-  DEM injected between measured points). `dataViewerDensifyProcessor` keeps it fresh.
+- **dataViewer**: `renderTrackGeojson` (vs. `trackGeojson`), from
+  `src/features/dataViewer/model/renderLines.ts`. **Any line but a recording** (drawn, a
+  converted route, a plain import) is drawn from the terrain model throughout, at its
+  vertices **and** densified between them, whatever it stores and whatever was chosen:
+  its values are a router's or a file's, which would step against the samples at every
+  vertex. A **recording** (`isRecording`: a line with per-point data such as times) keeps
+  its measurements: the elevation choice fills its gaps (*fill missing*, *override all*) —
+  filling adds no points, so its channels stay — and only after an override is it
+  densified, which drops them.
+
+  The copy is kept **per line**, against the line's geometry (which a restyle leaves
+  alone, so renaming or recolouring costs nothing), under what it was built for (a
+  recording's depends on the choice, or on its own *override all* this session,
+  `markOverridden`), so an edit costs only the line whose shape it changed: every other
+  line keeps its copy, republished at once with its current properties. Lines are fetched only while something
+  shows their elevation (`shownLines`: every line under an elevation colorize, the active
+  one for the chart or the info panel), all lines of a build in **one** request
+  (`densifyGeometry` inserts the points, `enrichElevations` fills them). The copy's
+  credits are stamped on each line drawn from the terrain — every model that answered
+  its build, so a batch over several countries credits each line with all of them —
+  never on a recording left as it is. `dataViewerRenderProcessor` republishes on any change and fetches what the shown
+  lines lack once edits settle; the chart's resolver fetches the active line itself and
+  falls back to the stored line when that fails.
 - **routePlanner**: `renderGeojson` via `ensureRouteRenderGeojson`. A planned route has
   no recorded measurement, so for **premium** the router's own (different-DEM,
   shape-point-density) elevation is ignored for rendering: `enrichElevations('all')`
@@ -69,7 +87,7 @@ real geometry, and is never serialized:
   profile and still follows the live smoothing preferences.
 
 Consumers read `renderTrackGeojson ?? trackGeojson` (`Results.tsx`,
-`DataViewerDetails.tsx`). Chart paths `await ensureRenderGeojson` first.
+`DataViewerDetails.tsx`). The chart path awaits `buildLines` for its line first.
 
 ### Bridges and tunnels — `src/features/routePlanner/model/structureElevation.ts`
 
@@ -173,8 +191,8 @@ flattens real terrain. The honest fix there is to move the way in OSM.
 
 `smoothElevationSeries` is the single entry point for both passes, so every consumer of
 terrain-model elevation applies them in the same order: `ensureRouteRenderGeojson` (after
-`levelSpans`), dataViewer's `ensureRenderGeojson` (which already runs only
-after a server elevation override), and the elevation chart's own
+`levelSpans`), dataViewer's `renderLines.ts` (on the lines it draws from the terrain
+model, and on recordings only after a server elevation override), and the elevation chart's own
 `processorHandler.ts`, which samples a drawn line or a measurement straight from the API.
 Never on recorded altitude — these correct a terrain model, not a barometer — and never on
 anything exported.
@@ -213,7 +231,8 @@ decides it (see _Crediting the terrain model_ below), for profiles and exports a
 The first two invalidate the derived caches (`routePlanner.renderGeojson` —
 but not the `sampledGeojson` under it, so a route re-derives without a request —
 and `trackViewer.renderTrackGeojson` clear on `elevationSetSettings`). `routePlannerColorizeProcessor`
-and `dataViewerDensifyProcessor` rebuild them, which has to happen whether or not the
+and `dataViewerRenderProcessor` rebuild them (the latter re-smoothing its per-line copies
+without a request), which has to happen whether or not the
 chart is open — an active elevation/steepness colorize reads the same cache. An open chart
 additionally redraws through `elevationChartProcessor` (see _What the chart shows_ below).
 
@@ -402,7 +421,7 @@ they were first reported. Getting that union to a chart opened later takes two m
 because the two caches expire differently:
 
 - **Stamped on the geometry** — `ensureRouteRenderGeojson` and dataViewer's
-  `ensureRenderGeojson` put the credits on the render feature as `fm:elevationAttributions`
+  `renderLines.ts` put the credits on the render feature as `fm:elevationAttributions`
   (`withElevationAttributions` / `readElevationAttributions`). The render line is cached, so
   on the second chart open the sampling doesn't happen again; carrying the credit _on_ the
   cached object is what makes it survive, and makes drift impossible. Stamped **only** on
@@ -616,10 +635,14 @@ report, which is what `gone` is for.
 
 ### Per-consumer elevation policy
 
-- **dataViewer** prompts once per track when elevation is missing/partial — **Fill
-  missing / Override all / Keep recorded** — and the answer drives `enrichElevations`
-  writing `z` into `trackGeojson` (cached; static data). Full-elevation tracks skip the
-  prompt; an explicit "update elevation" button overrides from the server. The prompt
+- **dataViewer** prompts once per collection when a **recording's** elevation is
+  missing/partial — **Fill missing / Override all / Keep recorded** — and the answer
+  drives `enrichElevations` writing `z` into `trackGeojson` (cached; static data). Any
+  other line never prompts: it is drawn from the terrain model (see the render copy
+  above). An explicit **Update elevation** — in the toolbar menu for every line and
+  point, in a selection's ⋮ for that feature alone — asks the same, plus **Clear**,
+  which takes the stored elevation off. Points are filled too (their `z`). A moved
+  vertex or point drops its elevation, which was of where it stood. The prompt
   notes that "Override all" avoids the recorded-vs-DEM seam (steepness spikes at gap
   edges).
 - **routePlanner** auto-fills (`'missing'`, lazy, cached per result) — no prompt.

@@ -5,6 +5,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
+import { isRecording } from '../trackChannels.js';
 import { trackEndpoints } from '../trackEndpoints.js';
 import {
   isTrackLine,
@@ -157,8 +158,9 @@ function DataViewerDetailsInt({
   if (elevationCov !== 'none') {
     // 'missing' keeps the recorded values and only fills gaps from the model, so
     // it's a mix — distinct from a full 'all' overwrite.
+    // Any line but a recording is drawn from the terrain, whatever it stores.
     const sourceValue =
-      elevationDecision === 'all'
+      elevationDecision === 'all' || !isRecording(feature)
         ? tvm?.details.sourceFilled
         : elevationDecision === 'missing'
           ? tvm?.details.sourceFilledGaps

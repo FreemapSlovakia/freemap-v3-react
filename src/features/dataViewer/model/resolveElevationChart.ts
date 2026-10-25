@@ -6,13 +6,22 @@ import {
   trackWaypoints,
 } from '../trackSelection.js';
 import { elevationCredit } from './elevationCredit.js';
-import { ensureRenderGeojson } from './ensureRenderGeojson.js';
+import { buildLines } from './renderLines.js';
 
-/** The active imported track, densified where it was elevation-overridden. */
+/** The active line, as its render copy draws it (`renderLines.ts`). */
 const resolve: ProfileResolver = async (getState, dispatch) => {
-  // Re-densify against the freshly overridden elevation (the cache is
-  // invalidated by an elevation change) so the chart stays high-resolution.
-  await ensureRenderGeojson(getState, dispatch);
+  const first = getState().trackViewer;
+
+  const shown = resolveActiveTrack(first.trackGeojson, first.activeTrackIndex);
+
+  if (shown) {
+    try {
+      await buildLines(getState, dispatch, [shown.index]);
+    } catch (err) {
+      // The stored line stands in, or the chart samples one without elevation.
+      console.warn('Sampling the line for its profile failed:', err);
+    }
+  }
 
   const trackViewer = getState().trackViewer;
 

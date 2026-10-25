@@ -67,13 +67,13 @@ describe('editableParts', () => {
 });
 
 describe('moving a vertex', () => {
-  it('keeps its elevation and its channels', () => {
+  it('keeps its channels, but not the elevation of where it stood', () => {
     const moved = moveVertex(track(), 0, 1, [17.015, 48.001]);
 
     expect(moved.geometry).toMatchObject({
       coordinates: [
         [17, 48, 200],
-        [17.015, 48.001, 210],
+        [17.015, 48.001],
         [17.02, 48, 220],
       ],
     });

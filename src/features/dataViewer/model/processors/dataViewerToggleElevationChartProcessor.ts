@@ -8,6 +8,7 @@ import {
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { elevationCoverage } from '@shared/geoutils.js';
+import { isRecording } from '../../trackChannels.js';
 import { resolveActiveTrack } from '../../trackSelection.js';
 
 export const dataViewerToggleElevationChartProcessor: Processor = {
@@ -28,11 +29,12 @@ export const dataViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    // Prompt only for partial elevation not yet decided on; full or none opens
-    // the chart at once (none sampled from the API), and a track kept partial
-    // shows its gaps.
+    // Prompt only for a recording's partial elevation not yet decided on; any
+    // other line is drawn from the terrain model, full or none opens at once,
+    // and a recording kept partial shows its gaps.
     if (
       elevationDecision !== 'undecided' ||
+      !isRecording(active.feature) ||
       elevationCoverage([active.feature]) !== 'partial'
     ) {
       // `elevationChartProcessor` draws it from here — it densifies a sparse

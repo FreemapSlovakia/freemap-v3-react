@@ -105,9 +105,10 @@ export type ElevationConsumer =
   | { type: 'chart' }
   | { type: 'colorize'; mode: ColorizingMode }
   | { type: 'info' }
-  // The explicit "update elevation" action: fills/overwrites and reports the
-  // outcome in a toast. Has no "keep" option (that would just be a cancel).
-  | { type: 'update' };
+  // The explicit "update elevation" action, of every line and point or of the
+  // one feature `index` names: fills/overwrites and reports the outcome in a
+  // toast. Has no "keep" option (that would just be a cancel).
+  | { type: 'update'; index?: number };
 
 /**
  * Opens the elevation fill/override prompt for the given consumer; `null`
@@ -121,8 +122,11 @@ export const dataViewerSetElevationPrompt =
  * point from the server, or keep the track's recorded elevation as-is. Carries
  * the consumer so the processor knows what to do once elevation is settled.
  */
-/** How the prompt fills elevation: gaps only, every point, or not at all. */
-export type ElevationFillMode = 'missing' | 'all' | 'keep';
+/**
+ * How the prompt fills elevation: gaps only, every point, not at all, or — the
+ * update alone — by taking it away.
+ */
+export type ElevationFillMode = 'missing' | 'all' | 'keep' | 'clear';
 
 export const dataViewerResolveElevationPrompt = createAction<{
   mode: ElevationFillMode;
@@ -145,9 +149,8 @@ export const dataViewerSetElevation = createAction<{
  * long segments) for the chart, colorize and details. It is never exported and
  * never treated as the source; it is cleared whenever `trackGeojson` changes.
  */
-export const dataViewerSetRenderGeojson = createAction<FeatureCollection>(
-  'DATA_VIEWER_SET_RENDER_GEOJSON',
-);
+export const dataViewerSetRenderGeojson =
+  createAction<FeatureCollection | null>('DATA_VIEWER_SET_RENDER_GEOJSON');
 
 /**
  * Snaps the selected track onto GraphHopper's routing graph, which is what lets
