@@ -5,6 +5,7 @@ import { changesetsSet } from '@features/changesets/model/actions.js';
 import { changesetCenter } from '@features/changesets/model/changesetDiff.js';
 import { fromWire, type WireItem } from '@features/dataViewer/drawingWire.js';
 import { dataViewerAddFeatures } from '@features/dataViewer/model/actions.js';
+import { normalizeName } from '@features/dataViewer/parseDataFile.js';
 import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
 import { withProps } from '@features/drawing/labelValues.js';
 import type {
@@ -17,32 +18,16 @@ import {
   normalizeProps,
   pickDrawingProps,
 } from '@features/drawing/model/actions/drawingPointActions.js';
+import { buildExportFeatureCollection } from '@features/mapFeaturesExport/model/buildExportFeatureCollection.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { loadObjectsMessages } from '@features/objects/translations/loadObjectsMessages.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import type { OsmGeojson } from '@features/osm/model/osmGeojson.js';
 import { routePlannerDelete } from '@features/routePlanner/model/actions.js';
-import {
-  ISOCHRONE_FILL_OPACITY,
-  isochroneColor,
-  isochroneLabel,
-} from '@features/routePlanner/model/isochrones.js';
-import {
-  dominantStepMode,
-  STEP_MODE_COLORS,
-  stepModeDashArray,
-  stopNumber,
-  WAYPOINT_COLORS,
-  WAYPOINT_ICONS,
-  waypointKind,
-} from '@features/routePlanner/model/routeColors.js';
-import { alternativeCoordinates } from '@features/routePlanner/model/routeGeometry.js';
-import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import { searchUnselectResult } from '@features/search/model/actions.js';
 import { hasGeometry } from '@features/search/model/resultUtils.js';
 import { activeSearchResultSelector } from '@features/search/model/selectors.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import { joinColorAlpha } from '@shared/colorAlpha.js';
 import { tagsToPoiIconSpec } from '@shared/drawingIcons.js';
 import {
   convertibleProps,
@@ -53,11 +38,7 @@ import { flattenTracks } from '@shared/flattenTracks.js';
 import { mergeLines } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { askSimplification } from '@shared/simplifyDialog.js';
-import {
-  simplifyFeature,
-  simplifyPositions,
-  simplifyRing,
-} from '@shared/simplifyGeo.js';
+import { simplifyFeature } from '@shared/simplifyGeo.js';
 import { convertibleLines } from '@shared/simplifyTolerance.js';
 import {
   lineStyleFromProperties,
@@ -313,131 +294,54 @@ function geojsonToDrawing(
 }
 
 /**
- * Turns the route-planner result into drawing features, in the colors the map
- * gives it: the active alternative as one line (or, for an isochrone, one
- * polygon per ring, named after the limit it reaches), plus a point per
- * start/finish/stop. Needs the route-planner messages for the names, so it runs
- * asynchronously.
+ * Adds the route-planner result as the data export writes it — the active
+ * alternative one line per same-mode stretch with the router's elevation, or
+ * an isochrone's bands, plus a point per start/finish/stop.
  */
 async function convertPlannedRoute(
   getState: () => RootState,
   dispatch: Dispatch,
   tolerance: number,
 ): Promise<void> {
-  const state = getState();
+  const { isochrones, alternatives, activeAlternativeIndex } =
+    getState().routePlanner;
 
-  const { language } = state.l10n;
-
-  const {
-    isochrones,
-    alternatives,
-    activeAlternativeIndex,
-    points,
-    waypoints,
-    finishOnly,
-    mode,
-  } = state.routePlanner;
-
-  const alternative = alternatives[activeAlternativeIndex];
-
-  if (!isochrones?.length && !alternative) {
+  if (!isochrones?.length && !alternatives[activeAlternativeIndex]) {
     return;
   }
 
-  const rpm = await loadRoutePlannerMessages(language);
+  const { features } = await buildExportFeatureCollection({
+    getState,
+    include: { plannedRoute: true },
+    pointMode: { props: true },
+    options: { route: 'active' },
+  });
 
-  // Keep the width and opacity the route had on the map, rather than falling
-  // back to the (narrower, opaque) drawing defaults. Opacity rides on the
-  // color's alpha, which is how a drawing feature carries it.
-  const {
-    lineWidth: width,
-    lineOpacity,
-    markerOpacity,
-  } = state.routePlannerSettings;
+  const added = features.map((feature) =>
+    normalizeName(tolerance ? simplifyFeature(feature, tolerance) : feature),
+  );
 
-  const batch = new Batch();
+  const isLine = (feature: Feature) => feature.geometry?.type !== 'Point';
 
-  let selectLine = false;
+  const lines = added.filter(isLine);
 
-  if (isochrones?.length) {
-    // A band is one polygon with its inner rings as holes, exactly as it draws
-    // on the map.
-    const lines: Line[] = [];
+  // Unnamed: a name would hang a permanent caption off every waypoint, whose
+  // marker already shows the play/stop glyph or the stop's number.
+  const waypoints = added
+    .filter((f) => !isLine(f))
+    .map(({ properties, ...rest }) => {
+      const { name: _name, ...props } = properties ?? {};
 
-    for (const isochrone of isochrones) {
-      const bucket = isochrone.properties?.['bucket'] ?? 0;
-
-      const color = isochroneColor(bucket, isochrones.length);
-
-      const start = lines.length;
-
-      for (const [i, ring] of isochrone.geometry.coordinates.entries()) {
-        lines.push({
-          ...state.drawingSettings.style,
-          type: 'polygon',
-          label: isochroneLabel(isochrone, bucket, rpm.isochroneRing, language),
-          color: joinColorAlpha(color, lineOpacity),
-          width,
-          // Only the outermost band is filled, as on the map; the inner ones
-          // keep a transparent fill so their interior stays clickable.
-          fillColor: joinColorAlpha(
-            color,
-            bucket === isochrones.length - 1
-              ? ISOCHRONE_FILL_OPACITY * lineOpacity
-              : 0,
-          ),
-          points: ringToPoints(simplifyRing(ring, tolerance), true),
-          holeOf: i > 0 ? start : undefined,
-        });
-      }
-    }
-
-    batch.lines(lines);
-  } else if (alternative) {
-    const raw = alternativeCoordinates(alternative);
-
-    const coords = simplifyPositions(raw, tolerance);
-
-    const dominant = dominantStepMode(alternative);
-
-    batch.lines([
-      {
-        ...state.drawingSettings.style,
-        type: 'line',
-        // A drawing line is one color and one dash pattern, so a multimodal
-        // route takes those of the mode covering most of it. The dash is set
-        // explicitly rather than left to the drawing defaults, which the user
-        // may have made dashed.
-        color: joinColorAlpha(STEP_MODE_COLORS[dominant], lineOpacity),
-        dashArray: stepModeDashArray(dominant) ?? [],
-        width,
-        points: coords.map(([lon, lat], id) => ({ lat: lat!, lon: lon!, id })),
-      },
-    ]);
-
-    selectLine = true;
-  }
-
-  for (const [i, pt] of points.entries()) {
-    const kind = waypointKind(i, points.length, finishOnly, mode);
-
-    const number = stopNumber(i, mode, waypoints);
-
-    batch.point({
-      ...state.drawingSettings.style,
-      coords: { lat: pt.lat, lon: pt.lon },
-      color: joinColorAlpha(WAYPOINT_COLORS[kind], markerOpacity),
-      // The marker carries the same glyph the map gives it — a play/stop icon
-      // for the ends, the visiting number for a stop. No `label`: that would
-      // hang a permanent tooltip off every waypoint.
-      icon:
-        WAYPOINT_ICONS[kind] ??
-        (number === undefined ? undefined : String(number)),
+      return { ...rest, properties: props };
     });
-  }
 
-  // The route's line is gathered before its waypoints, so it comes first.
-  batch.flush(dispatch, selectLine);
+  // The route before its waypoints, as the map stacks them.
+  dispatch(
+    dataViewerAddFeatures({
+      features: [...lines, ...waypoints],
+      select: lines.length === 1,
+    }),
+  );
 
   dispatch(routePlannerDelete());
 }

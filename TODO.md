@@ -426,12 +426,6 @@ editor; where it is stored follows from its size, not from the tool that made it
       every point, so a property-only edit of the line (removing its `times`
       channel) leaves a stale chart, while any point edit refetches a 2D
       line's profile. Key it on the line's geometry and the channels it draws.
-- [ ] **Converting a route, a search result or an object loses data.** Only the
-      2D drawing conversion is left: a planned route arrives without its
-      elevation, per-mode stretches or `fm:kind: route` (so it exports as a
-      `<trk>`), and objects keep only the carried-tag allowlist. The collection
-      can hold all of it; convert with the export builder the removed path
-      used.
 - [ ] **A line's label beside it by its angle.** Leaflet's `auto` puts it left
       or right by which half of the map the line's centre is in. Better: above
       a steep line, beside a flat one, from the bearing at the label's anchor.
