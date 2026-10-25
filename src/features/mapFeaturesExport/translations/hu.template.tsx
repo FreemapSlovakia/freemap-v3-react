@@ -20,7 +20,6 @@ const hu: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     drawingAreas: 'rajzolás - sokszögek',
     drawingPoints: 'rajzolás - pontok',
     tracking: 'élő nyomkövetés',
-    import: 'nyomvonalak és adatok',
     search: 'találat',
   },
   onlySelected: 'Csak a kijelölt elem',

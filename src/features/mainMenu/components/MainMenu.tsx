@@ -17,7 +17,6 @@ import {
   modalMenuItemProps,
 } from '@shared/hooks/useMenuHandler.js';
 import {
-  isDrawTool,
   isToolAvailable,
   toolDefinitions,
   unavailableToolsSelector,
@@ -35,7 +34,6 @@ import {
   FaFileExport,
   FaHeart,
   FaMobileAlt,
-  FaPencilRuler,
   FaPrint,
   FaRegMap,
   FaSignInAlt,
@@ -159,17 +157,6 @@ export function MainMenu(): ReactElement {
         <MenuGutter>
           <Chord modal="my-maps" />
         </MenuGutter>
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        as="button"
-        eventKey="drawing"
-        active={openTools.some(isDrawTool)}
-      >
-        <FaPencilRuler />
-        <MenuLabel>
-          <Text k="tools.measurement" />
-        </MenuLabel>
       </Dropdown.Item>
 
       {toolDefinitions

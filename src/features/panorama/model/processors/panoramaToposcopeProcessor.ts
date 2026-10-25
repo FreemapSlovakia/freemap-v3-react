@@ -1,9 +1,7 @@
-import { openTool, selectFeature } from '@app/store/actions.js';
+import { openTool } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import {
-  type DrawingPoint,
-  drawingPointSetAll,
-} from '@features/drawing/model/actions/drawingPointActions.js';
+import { pointToFeature } from '@features/dataViewer/drawingWire.js';
+import { dataViewerEditFeatures } from '@features/dataViewer/model/actions.js';
 import {
   makeToposcopeCenter,
   toposcopeCenterSelector,
@@ -11,6 +9,7 @@ import {
 import { poiSpec } from '@shared/drawingIcons.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
+import type { Feature } from 'geojson';
 import { candidateLabels } from '../../labels/fromPeaks.js';
 import { thinLabels } from '../../labels/layout.js';
 import { panoramaToToposcope } from '../actions.js';
@@ -87,22 +86,42 @@ export const panoramaToposcopeProcessor: Processor<typeof panoramaToToposcope> =
         pitch,
       );
 
-      const points: DrawingPoint[] = replace
-        ? []
-        : [...state.drawingPoints.points];
+      // Replacing takes the points away; lines and polygons stay.
+      const features: Feature[] = (
+        state.trackViewer.trackGeojson?.features ?? []
+      ).filter((feature) => !replace || feature.geometry.type !== 'Point');
 
       const center = replace ? undefined : toposcopeCenterSelector(state);
 
       // Where the picture was taken from, not where the marker now stands.
       if (center) {
-        points[center.index] = { ...center.point, coords: render.viewpoint };
+        features[center.index] = {
+          ...center.feature,
+          geometry: {
+            type: 'Point',
+            coordinates: [render.viewpoint.lon, render.viewpoint.lat],
+          },
+        };
       } else {
-        points.push(makeToposcopeCenter(state, render.viewpoint));
+        features.push(makeToposcopeCenter(state, render.viewpoint));
       }
 
       // A summit already drawn is left as it is, so appending twice from the
       // same picture doesn't double every ray.
-      const taken = new Set(points.map(({ coords }) => placeKey(coords)));
+      const taken = new Set(
+        features.flatMap(({ geometry }) =>
+          geometry.type === 'Point'
+            ? [
+                placeKey({
+                  lat: geometry.coordinates[1]!,
+                  lon: geometry.coordinates[0]!,
+                }),
+              ]
+            : [],
+        ),
+      );
+
+      const { color, markerType } = state.drawingSettings.style;
 
       for (const label of labels) {
         const key = placeKey(label);
@@ -113,30 +132,28 @@ export const panoramaToposcopeProcessor: Processor<typeof panoramaToToposcope> =
 
         taken.add(key);
 
-        points.push({
-          ...state.drawingSettings.style,
-          coords: { lat: label.lat, lon: label.lon },
-          // Referenced rather than copied, so editing the property moves the
-          // label with it — and the ray's `{label}` reads the same name.
-          label: '{p:name}',
-          props: {
-            name: label.name,
-            ...(label.ele === null
-              ? {}
-              : { ele: String(Math.round(label.ele)) }),
-          },
-          icon: PEAK_ICON,
-        });
+        features.push(
+          pointToFeature({
+            color,
+            markerType,
+            coords: { lat: label.lat, lon: label.lon },
+            // Referenced rather than copied, so editing the property moves the
+            // label with it — and the ray's `{label}` reads the same name.
+            label: '{p:name}',
+            props: {
+              name: label.name,
+              ...(label.ele === null
+                ? {}
+                : { ele: String(Math.round(label.ele)) }),
+            },
+            icon: PEAK_ICON,
+          }),
+        );
       }
 
       // One action for the lot: adding them one by one would push a history
       // entry per summit, which WebKit refuses past a hundred in ten seconds.
-      dispatch(drawingPointSetAll(points));
-
-      // The points a `draw-points` selection named are gone with them.
-      if (replace && state.main.selection?.type === 'draw-points') {
-        dispatch(selectFeature(null));
-      }
+      dispatch(dataViewerEditFeatures(features));
 
       dispatch(openTool('toposcope'));
     },

@@ -15,9 +15,7 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
     properties: 'Lastnosti',
     propertyKey: 'Ime',
     propertyValue: 'Vrednost',
-    addProperty: 'Dodaj lastnost',
     removeProperty: 'Odstrani lastnost',
-    insertIntoLabel: 'Vstavi v oznako',
     showLabel: 'Prikaži oznako',
     labelVisibility: {
       always: 'Vedno',
@@ -62,7 +60,6 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
   join: 'Združi',
   split: 'Razdeli',
   stopDrawing: 'Ustavi risanje',
-  selectPointToJoin: 'Izberite točko za združitev črt',
   defProps: {
     menuItem: 'Nastavi privzeti slog',
     title: 'Nastavitve privzetega sloga risanja',
@@ -75,7 +72,6 @@ const sl: DeepPartialWithRequiredObjects<DrawingMessages> = {
     add: 'Dodaj',
   },
   reverse: 'Obrni smer',
-  simplify: 'Poenostavi',
   cutHole: 'Izreži luknjo',
   cutHoleHint: 'Narišite luknjo znotraj tega poligona.',
   makeHole: 'Spremeni v luknjo v obdajajočem poligonu',

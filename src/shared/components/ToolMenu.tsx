@@ -12,12 +12,7 @@ import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import clsx from 'clsx';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
-import {
-  FaAngleLeft,
-  FaAngleRight,
-  FaPencilRuler,
-  FaTimes,
-} from 'react-icons/fa';
+import { FaAngleLeft, FaAngleRight, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useEscapeKbd } from '../hooks/useEscapeKbd.js';
 import { toolDefinitions } from '../toolDefinitions.js';
@@ -101,11 +96,7 @@ export function ToolMenu({
 
   const buttonIcon = collapsed && wrapCollapsedIcon !== undefined;
 
-  const icon = toolDef && (
-    <span className={iconClassName}>
-      {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}
-    </span>
-  );
+  const icon = toolDef && <span className={iconClassName}>{toolDef.icon}</span>;
 
   return (
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
@@ -119,9 +110,7 @@ export function ToolMenu({
             <>
               <LongPressTooltip
                 breakpoint="sm"
-                label={
-                  toolDef.draw ? m?.tools.measurement : m?.tools[toolDef.msgKey]
-                }
+                label={m?.tools[toolDef.msgKey]}
               >
                 {({ label, labelClassName, props }) => (
                   <span

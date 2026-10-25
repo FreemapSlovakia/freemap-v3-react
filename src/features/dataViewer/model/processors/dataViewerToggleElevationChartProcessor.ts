@@ -8,6 +8,7 @@ import {
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { elevationCoverage } from '@shared/geoutils.js';
+import { isRecording } from '../../trackChannels.js';
 import { resolveActiveTrack } from '../../trackSelection.js';
 
 export const dataViewerToggleElevationChartProcessor: Processor = {
@@ -28,15 +29,13 @@ export const dataViewerToggleElevationChartProcessor: Processor = {
       return;
     }
 
-    // Prompt only when elevation is actually missing and the user hasn't
-    // decided yet. A track with full elevation (from any source) opens the
-    // chart straight away — overriding it is the explicit "update" button's
-    // job. The chart renders the recorded coordinates as-is, so a track the
-    // user chose to keep partial shows its gaps instead of a fabricated
-    // server profile.
+    // Prompt only for a recording's partial elevation not yet decided on; any
+    // other line is drawn from the terrain model, full or none opens at once,
+    // and a recording kept partial shows its gaps.
     if (
       elevationDecision !== 'undecided' ||
-      elevationCoverage([active.feature]) === 'full'
+      !isRecording(active.feature) ||
+      elevationCoverage([active.feature]) !== 'partial'
     ) {
       // `elevationChartProcessor` draws it from here — it densifies a sparse
       // line and states the credit, so the toggle and a URL-restored chart take

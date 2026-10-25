@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import { pointToFeature } from '@features/dataViewer/drawingWire.js';
 import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
 import { describe, expect, it } from 'vitest';
 import {
@@ -13,7 +14,14 @@ import {
  * which point the dial stands on.
  */
 function makeState(points: DrawingPoint[]): RootState {
-  return { drawingPoints: { points } } as unknown as RootState;
+  return {
+    trackViewer: {
+      trackGeojson: {
+        type: 'FeatureCollection',
+        features: points.map(pointToFeature),
+      },
+    },
+  } as unknown as RootState;
 }
 
 const at = (lat: number, props?: Record<string, string>): DrawingPoint => ({
@@ -34,7 +42,7 @@ describe('toposcopeCenterSelector', () => {
 
     expect(toposcopeCenterSelector(state)).toMatchObject({
       index: 1,
-      point: { coords: { lat: 48 } },
+      coords: { lat: 48 },
     });
   });
 

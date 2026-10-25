@@ -32,25 +32,25 @@ import {
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
 import { dataViewerDeleteFeatureProcessor } from '@features/dataViewer/model/processors/dataViewerDeleteFeatureProcessor.js';
-import { dataViewerDensifyProcessor } from '@features/dataViewer/model/processors/dataViewerDensifyProcessor.js';
-import { dataViewerDownloadTrackProcessor } from '@features/dataViewer/model/processors/dataViewerDownloadTrackProcessor.js';
-import { dataViewerGpxLoadProcessor } from '@features/dataViewer/model/processors/dataViewerGpxLoadProcessor.js';
+import { dataViewerDrawSelectProcessor } from '@features/dataViewer/model/processors/dataViewerDrawSelectProcessor.js';
 import { dataViewerJoinTracksProcessor } from '@features/dataViewer/model/processors/dataViewerJoinTracksProcessor.js';
 import { dataViewerMatchTrackProcessor } from '@features/dataViewer/model/processors/dataViewerMatchTrackProcessor.js';
+import { dataViewerRenderProcessor } from '@features/dataViewer/model/processors/dataViewerRenderProcessor.js';
 import { dataViewerResolveElevationPromptProcessor } from '@features/dataViewer/model/processors/dataViewerResolveElevationPromptProcessor.js';
 import { dataViewerSelectProcessor } from '@features/dataViewer/model/processors/dataViewerSelectProcessor.js';
-import { dataViewerSetTrackDataProcessor } from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
 import {
-  dataViewerForgetStoredProcessor,
-  dataViewerRestoreStoredProcessor,
-  dataViewerStoreProcessor,
-} from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
+  dataViewerAddFeaturesProcessor,
+  dataViewerSetTrackDataProcessor,
+} from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
+import { dataViewerSplitSelectionProcessor } from '@features/dataViewer/model/processors/dataViewerSplitSelectionProcessor.js';
+import { dataViewerStaleSelectionProcessor } from '@features/dataViewer/model/processors/dataViewerStaleSelectionProcessor.js';
+import { dataViewerStoreProcessor } from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
 import { dataViewerToggleElevationChartProcessor } from '@features/dataViewer/model/processors/dataViewerToggleElevationChartProcessor.js';
 import {
   dataViewerCheckOsmAuthorizationProcessor,
   dataViewerUploadToOsmProcessor,
 } from '@features/dataViewer/model/processors/dataViewerUploadToOsmProcessor.js';
-import { drawingDiscardPartialLineProcessor } from '@features/drawing/model/processors/drawingDiscardPartialLineProcessor.js';
+import { dataViewerVertexEditProcessor } from '@features/dataViewer/model/processors/dataViewerVertexEditProcessor.js';
 import { elevationChartPendingTargetProcessor } from '@features/elevationChart/model/pendingTargetProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
 import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
@@ -179,7 +179,6 @@ import {
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
-import { convertToDataViewerProcessor } from '@/processors/convertToDataViewerProcessor.js';
 import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
 import { errorProcessor } from '@/processors/errorProcessor.js';
@@ -207,7 +206,6 @@ export const processors = [
   deleteProcessor,
   geoipProcessor,
   convertToDrawingProcessor,
-  convertToDataViewerProcessor,
   cookieConsentProcessor,
   authLogoutProcessor,
   authDisconnectProcessor,
@@ -225,7 +223,9 @@ export const processors = [
   followLocationProcessor,
   saveSettingsProcessor,
   resetAppProcessor,
-  drawingDiscardPartialLineProcessor,
+  dataViewerDrawSelectProcessor,
+  dataViewerStaleSelectionProcessor,
+  dataViewerVertexEditProcessor,
   measurementProcessor,
   changesetsProcessor,
   changesetsTrackProcessor,
@@ -254,11 +254,8 @@ export const processors = [
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
   dataViewerSetTrackDataProcessor,
+  dataViewerAddFeaturesProcessor,
   dataViewerStoreProcessor,
-  dataViewerForgetStoredProcessor,
-  dataViewerRestoreStoredProcessor,
-  dataViewerDownloadTrackProcessor,
-  dataViewerGpxLoadProcessor,
   dataViewerMatchTrackProcessor,
   dataViewerUploadToOsmProcessor,
   dataViewerCheckOsmAuthorizationProcessor,
@@ -266,8 +263,9 @@ export const processors = [
   dataViewerResolveElevationPromptProcessor,
   dataViewerSelectProcessor,
   dataViewerDeleteFeatureProcessor,
+  dataViewerSplitSelectionProcessor,
   dataViewerJoinTracksProcessor,
-  dataViewerDensifyProcessor,
+  dataViewerRenderProcessor,
   routePlannerFindRouteProcessor,
   routePlannerOptimizeOrderProcessor,
   galleryDeletePictureProcessor,

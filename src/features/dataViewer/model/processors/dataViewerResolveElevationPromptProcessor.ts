@@ -13,9 +13,16 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   creditedAttributions,
   enrichElevations,
+  fetchElevations,
+  mergeAttributions,
   newElevationCredits,
 } from '@shared/elevation.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
+import type { Feature, LineString, Point } from 'geojson';
+import { isRecording } from '../../trackChannels.js';
 import { isTrackLine, resolveActiveTrack } from '../../trackSelection.js';
+import { elevationTargets, withoutElevation } from '../elevationTargets.js';
+import { markOverridden } from '../renderLines.js';
 
 export const dataViewerResolveElevationPromptProcessor: Processor<
   typeof dataViewerResolveElevationPrompt
@@ -28,39 +35,130 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
       return;
     }
 
-    const lineFeatures = trackGeojson.features.filter(isTrackLine);
-
     const { mode, consumer } = action.payload;
 
-    // 'keep' uses the recorded elevation as-is; 'missing'/'all' fetch from the
-    // server first and cache the result back into trackGeojson so the chart,
-    // colorize and export all reuse it.
-    let lines = lineFeatures;
+    if (consumer.type === 'update') {
+      trackMatomo([
+        'trackEvent',
+        'DataViewer',
+        'updateElevation',
+        consumer.index === undefined ? mode : `${mode}-feature`,
+      ]);
+    }
+
+    // The update fills points too, and may be of one feature; the others are
+    // about the lines.
+    const { lines: lineAt, points: pointAt } =
+      consumer.type === 'update'
+        ? elevationTargets(trackGeojson, consumer.index)
+        : {
+            lines: trackGeojson.features.flatMap((f, i) =>
+              isTrackLine(f) ? [i] : [],
+            ),
+            points: [],
+          };
 
     // What answered, kept in the slice: this write is the only place the models
     // behind an overridden track are named, and the chart crediting them opens
     // separately.
     const credits = newElevationCredits();
 
-    if (mode !== 'keep') {
-      lines = await enrichElevations(
-        lineFeatures,
+    const single = consumer.type === 'update' && consumer.index !== undefined;
+
+    if (mode === 'clear') {
+      const targets = new Set([...lineAt, ...pointAt]);
+
+      dispatch(
+        dataViewerSetElevation({
+          trackGeojson: {
+            ...trackGeojson,
+            features: trackGeojson.features.map((f, i) =>
+              targets.has(i) ? withoutElevation(f) : f,
+            ),
+          },
+          // Nothing left for the models to answer for, unless others still hold
+          // what they gave.
+          attributions: single
+            ? getState().trackViewer.elevationAttributions
+            : [],
+        }),
+      );
+    }
+
+    // 'keep' uses the recorded elevation as-is; 'missing'/'all' fetch from the
+    // server first and cache the result back into trackGeojson so the chart,
+    // colorize and export all reuse it.
+    if (mode === 'missing' || mode === 'all') {
+      const { features } = trackGeojson;
+
+      const lines = await enrichElevations(
+        lineAt.map((i) => features[i] as Feature<LineString>),
         mode,
         getState,
         undefined,
         credits,
       );
 
-      let i = 0;
-
-      const features = trackGeojson.features.map((f) =>
-        isTrackLine(f) ? lines[i++]! : f,
+      const pending = pointAt.filter(
+        (i) =>
+          mode === 'all' ||
+          (features[i] as Feature<Point>).geometry.coordinates.length < 3,
       );
+
+      const position = (i: number) =>
+        (features[i] as Feature<Point>).geometry.coordinates;
+
+      const eles = await fetchElevations(
+        pending.map((i) => [position(i)[1]!, position(i)[0]!]),
+        getState,
+        undefined,
+        credits,
+      );
+
+      // Edited while the fetch ran: writing this back would undo the edit.
+      if (getState().trackViewer.trackGeojson !== trackGeojson) {
+        return;
+      }
+
+      const updated = new Map<number, Feature>(
+        lineAt.map((at, i) => [at, lines[i]!]),
+      );
+
+      for (const [k, at] of pending.entries()) {
+        const ele = eles[k];
+
+        if (ele != null) {
+          const [lon, lat] = position(at);
+
+          updated.set(at, {
+            ...features[at]!,
+            geometry: { type: 'Point', coordinates: [lon!, lat!, ele] },
+          });
+        }
+      }
+
+      // One recording overridden alone is drawn as the collection's would be.
+      if (single && mode === 'all') {
+        for (const line of lines.filter(isRecording)) {
+          markOverridden(line.geometry);
+        }
+      }
+
+      const { elevationAttributions } = getState().trackViewer;
 
       dispatch(
         dataViewerSetElevation({
-          trackGeojson: { ...trackGeojson, features },
-          attributions: creditedAttributions(credits),
+          trackGeojson: {
+            ...trackGeojson,
+            features: features.map((f, i) => updated.get(i) ?? f),
+          },
+          // One feature's update adds its models to those already credited.
+          attributions: single
+            ? mergeAttributions(
+                elevationAttributions,
+                creditedAttributions(credits),
+              )
+            : creditedAttributions(credits),
         }),
       );
     }
@@ -75,7 +173,7 @@ export const dataViewerResolveElevationPromptProcessor: Processor<
 
     if (consumer.type === 'info') {
       // The info panel's stats (ascent, descent, min/max) read the now-filled
-      // elevation from trackGeojson.
+      // elevation, densified where the render copy does.
       dispatch(trackInfoToast);
 
       return;

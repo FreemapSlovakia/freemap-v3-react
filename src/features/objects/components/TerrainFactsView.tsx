@@ -1,5 +1,4 @@
 import { convertToDrawing } from '@app/store/actions.js';
-import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { ElevationSourcesInfo } from '@features/elevationChart/components/ElevationValue.js';
 import { Text } from '@features/l10n/Text.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
@@ -16,7 +15,6 @@ import type { Feature } from 'geojson';
 import type { ReactElement, ReactNode } from 'react';
 import { Button, ButtonGroup, Dropdown, Spinner } from 'react-bootstrap';
 import { FaEllipsisV, FaMapMarkerAlt, FaPencilAlt } from 'react-icons/fa';
-import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { objectsRouteClear, objectsRouteRequest } from '../model/actions.js';
 import { type TerrainFacts, terrainCredits } from '../model/terrainFacts.js';
@@ -42,8 +40,6 @@ export function TerrainFactsView({
   const om = useObjectsMessages();
 
   const dispatch = useDispatch();
-
-  const convertToDataViewer = useConvertToDataViewer();
 
   const nfM = useNumberFormat({ maximumFractionDigits: 0 });
 
@@ -178,19 +174,6 @@ export function TerrainFactsView({
             <FaPencilAlt />
             <MenuLabel>
               <Text k="general.copyToDrawing" />
-            </MenuLabel>
-          </Dropdown.Item>
-
-          <Dropdown.Item
-            onClick={() =>
-              convertToDataViewer({ type: 'geojson', geojson: geojson() })
-            }
-          >
-            <MdShapeLine />
-            <MenuLabel>
-              <Text>
-                {(m) => m.general.copyTo({ tool: m.tools.dataViewer })}
-              </Text>
             </MenuLabel>
           </Dropdown.Item>
         </FmDropdownMenu>

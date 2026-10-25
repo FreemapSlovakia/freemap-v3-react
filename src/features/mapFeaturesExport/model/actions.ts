@@ -10,7 +10,6 @@ export type Exportable =
   | 'drawingAreas'
   | 'drawingPoints'
   | 'tracking'
-  | 'import'
   | 'search';
 
 export const ExportTargetSchema = z.enum([

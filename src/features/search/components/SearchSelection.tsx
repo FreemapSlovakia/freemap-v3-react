@@ -1,5 +1,4 @@
 import { convertToDrawing } from '@app/store/actions.js';
-import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DetailsButton } from '@features/objects/components/DetailsButton.js';
 import { useObjectActions } from '@features/objects/components/useObjectActions.js';
@@ -20,7 +19,6 @@ import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaPencilAlt, FaSearch, FaThumbtack } from 'react-icons/fa';
-import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { searchKeepResult } from '../model/actions.js';
 import {
@@ -38,8 +36,6 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
   const dispatch = useDispatch();
 
   const askConversion = useConvertPrompt();
-
-  const convertToDataViewer = useConvertToDataViewer();
 
   const selectedResult = useAppSelector(activeSearchResultSelector);
 
@@ -106,15 +102,6 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
                 }),
               );
             });
-          }}
-          showFrom="never"
-        />
-
-        <Action
-          icon={<MdShapeLine />}
-          label={m?.general.convertTo({ tool: m?.tools.dataViewer })}
-          onClick={() => {
-            convertToDataViewer({ type: 'search-result' });
           }}
           showFrom="never"
         />

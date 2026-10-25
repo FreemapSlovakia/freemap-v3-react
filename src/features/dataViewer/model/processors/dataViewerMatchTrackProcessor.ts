@@ -202,6 +202,6 @@ export const dataViewerMatchTrackProcessor: Processor<
 
     // Loading data drops the selection; the matched track sits at the original's
     // index, so reselect it to keep the toolbar on it.
-    dispatch(selectFeature({ type: 'data-viewer', id: active.index }));
+    dispatch(selectFeature({ type: 'feature', id: active.index }));
   },
 };

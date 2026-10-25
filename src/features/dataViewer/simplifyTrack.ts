@@ -3,19 +3,17 @@ import {
   readPathDetailsParts,
   remapPathDetails,
 } from '@shared/colorizers/colorize.js';
-import { cumulativeDistances, lineSegments } from '@shared/geoutils.js';
+import {
+  cumulativeDistances,
+  lineSegments,
+  positionCount,
+} from '@shared/geoutils.js';
 import {
   midLatitude,
   simplifyGeometry,
   simplifyIndices,
 } from '@shared/simplifyGeo.js';
-import type {
-  Feature,
-  LineString,
-  MultiLineString,
-  MultiPolygon,
-  Polygon,
-} from 'geojson';
+import type { Feature, LineString, MultiLineString } from 'geojson';
 import {
   isAveragable,
   meanSample,
@@ -117,15 +115,6 @@ export function simplifyTrackFeature(
   }
 
   return { ...feature, geometry, properties };
-}
-
-function positionCount(geometry: Polygon | MultiPolygon): number {
-  const rings =
-    geometry.type === 'Polygon'
-      ? geometry.coordinates
-      : geometry.coordinates.flat();
-
-  return rings.reduce((n, ring) => n + ring.length, 0);
 }
 
 /** Geometry a tolerance can thin — everything but points. */

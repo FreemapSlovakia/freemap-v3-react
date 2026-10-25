@@ -12,7 +12,7 @@ import { LongPressTooltip } from './LongPressTooltip.js';
 import { MenuLabel } from './MenuLabel.js';
 
 type Props = {
-  modal: 'drawing-batch-properties' | 'data-viewer-batch-properties';
+  modal: 'data-viewer-batch-properties';
   counts: BatchCounts;
 };
 

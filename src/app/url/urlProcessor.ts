@@ -1,3 +1,5 @@
+import { localTrack } from '@features/dataViewer/model/localTrack.js';
+import { snapshotKey } from '@features/dataViewer/trackStore.js';
 import {
   isEmptySetup,
   presetOnlyConfigs,
@@ -38,6 +40,7 @@ import {
   trackGeojsonIsSuitableForElevationChart,
 } from '../store/selectors.js';
 import type { RootState } from '../store/store.js';
+import { entryLoading } from './entryContent.js';
 import {
   getMapContentParts,
   type QueryPart,
@@ -45,7 +48,7 @@ import {
 } from './mapContentParts.js';
 import { stashUrl } from './sessionStash.js';
 import { serializeZoom } from './urlMapUtils.js';
-import { isUrlUpdatingEnabled } from './urlUpdating.js';
+import { isReplacingEntry, isUrlUpdatingEnabled } from './urlUpdating.js';
 
 // Browser-history policy for map viewport changes (pan/zoom): a contiguous run
 // of viewport-only changes collapses into a single history entry via
@@ -239,10 +242,8 @@ function updateUrl(state: RootState, forced: boolean): void {
     trackViewerSettings,
     trackingSettings,
     gallery,
-    drawingPoints,
     changesets,
     changesetInspector,
-    drawingLines,
     main,
     tracking,
     search,
@@ -257,7 +258,13 @@ function updateUrl(state: RootState, forced: boolean): void {
     auth,
   } = state;
 
-  if (!isUrlUpdatingEnabled()) {
+  // The entry's content still being read (a snapshot, an import) belongs to it:
+  // written now, the URL would pair the previous step's features with its view.
+  if (
+    !isUrlUpdatingEnabled() ||
+    state.trackViewer.restoringStored !== null ||
+    entryLoading()
+  ) {
     // URL updating is suspended while the store is mutated programmatically
     // (a feature drag, or restoring state on popstate). End any in-progress
     // viewport-coalescing session so the first write after we resume starts a
@@ -304,10 +311,8 @@ function updateUrl(state: RootState, forced: boolean): void {
     changesets.authorName,
     changesets.days,
     changesetInspector.inspected?.id,
-    drawingLines.lines,
     gallery.activeImageId,
     gallery.filter,
-    drawingPoints.points,
     main.activeModal,
     main.embedFeatures,
     main.selection,
@@ -339,6 +344,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     search.selectedResults,
     search.previewId,
     trackViewer.trackUID,
+    trackViewer.trackGeojson,
     // The derived id itself, not the fields behind it: the URL follows every
     // way a map can claim or release it — a load that starts, opens, or is
     // given up on — without this list having to name them.
@@ -466,8 +472,7 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   {
     const chartParam =
-      elevationChart.target &&
-      serializeChartTarget(elevationChart.target, drawingLines.lines);
+      elevationChart.target && serializeChartTarget(elevationChart.target);
 
     if (chartParam) {
       queryParts.push(['elevation-chart', chartParam]);
@@ -681,6 +686,12 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   const sq = mapId ? serializeQuery(historyParts) : undefined;
 
+  // The snapshot of local data this entry shows (`trackStore.ts`): every version
+  // is a step of its own, like any other content.
+  const local = localTrack(state);
+
+  const tr = local ? snapshotKey(local) : undefined;
+
   const urlSearch = serializeQuery(queryParts);
 
   // Everything the URL says apart from the viewport, as text. Whether this is
@@ -696,15 +707,16 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   const restSignature = `${serializeQuery(
     queryParts.filter(contentPart),
-  )}\n${mapId ? serializeQuery(historyParts.filter(contentPart)) : ''}`;
+  )}\n${mapId ? serializeQuery(historyParts.filter(contentPart)) : ''}\n${tr ?? ''}`;
 
   const prevHistoryState = history.state as {
     sq?: string;
-    tr?: true;
+    tr?: string | true;
   } | null;
 
   const contentChanged =
     (mapId && sq !== prevHistoryState?.sq) ||
+    tr !== prevHistoryState?.tr ||
     urlSearch !== window.location.hash.slice(1);
 
   if (!contentChanged) {
@@ -714,6 +726,9 @@ function updateUrl(state: RootState, forced: boolean): void {
 
     return;
   }
+
+  // The entry's own content arriving, which becomes the entry, not a step.
+  const replacing = isReplacingEntry();
 
   // A change confined to the coalesced params replaces the current entry when
   // it continues a recent run of them (last write was also one, and within the
@@ -746,6 +761,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     now - lastWriteTs < SETUP_COALESCE_GAP_MS;
 
   const method =
+    replacing ||
     setupRun ||
     (viewOnly &&
       (!viewChanged ||
@@ -753,7 +769,8 @@ function updateUrl(state: RootState, forced: boolean): void {
       ? 'replaceState'
       : 'pushState';
 
-  if (method === 'replaceState' && !forced) {
+  // Not deferred: a rerun would no longer know to replace, and would push.
+  if (method === 'replaceState' && !forced && !replacing) {
     // Clamped because the clock can go backwards (an NTP correction mid-pan):
     // a negative age would schedule the rewrite further out than the interval
     // and `??=` never shortens a timer, freezing viewport updates until the
@@ -783,22 +800,13 @@ function updateUrl(state: RootState, forced: boolean): void {
   // SecurityError. Normalizing also self-heals the address bar.
   const path = window.location.pathname.replace(/\/{2,}/g, '/');
 
-  // `tr` says this entry was holding a track in the browser's own storage, so
-  // a reload of it puts the track back. Carried forward rather than
-  // recomputed: it belongs to the entry, and `trackStore` sets it on the
-  // current one when it writes.
-  //
   // A refusal throws on the way out, leaving none of the bookkeeping below
   // advanced — the entry this meant to leave is still the current one, and
   // nothing has been recorded that would let the next viewport change replace
   // it. The update is dropped rather than retried: `previousRest` and
   // `previousView` have already moved on, so only a further state change
   // derives the URL again.
-  history[method](
-    { sq, tr: prevHistoryState?.tr },
-    '',
-    path + (urlSearch ? `#${urlSearch}` : ''),
-  );
+  history[method]({ sq, tr }, '', path + (urlSearch ? `#${urlSearch}` : ''));
 
   lastWriteTs = now;
 
@@ -832,29 +840,11 @@ function updateUrl(state: RootState, forced: boolean): void {
 }
 
 /**
- * `elevation-chart=` — which feature's profile is shown, and which of its lines
- * where that isn't implied. A drawn line is named by *position*, because that is
- * how the line itself is written (`line=`/`polygon=` are positional and carry no
- * id); a device by token, since which one is charted is not what `follow=` says.
+ * `elevation-chart=` — which feature's profile is shown; a device by token,
+ * since which one is charted is not what `follow=` says.
  */
 function serializeChartTarget(
   target: NonNullable<RootState['elevationChart']['target']>,
-  lines: RootState['drawingLines']['lines'],
-): string | null {
-  switch (target.type) {
-    case 'drawing': {
-      const index = lines.findIndex(({ id }) => id === target.lineId);
-
-      // The charted line is gone — deleting one writes the URL before the chart
-      // has closed. A bare `drawing` would name no line at all, and a Back to
-      // that entry would arm a request nothing can ever honour.
-      return index < 0 ? null : `drawing/${index}`;
-    }
-
-    case 'tracking':
-      return `tracking/${target.token}`;
-
-    default:
-      return target.type;
-  }
+): string {
+  return target.type === 'tracking' ? `tracking/${target.token}` : target.type;
 }

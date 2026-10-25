@@ -1,5 +1,6 @@
 import type { RootState } from '@app/store/store.js';
-import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { pointToFeature } from '@features/dataViewer/drawingWire.js';
+import { dataViewerAddFeatures } from '@features/dataViewer/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapRefocus } from '@features/map/model/actions.js';
@@ -1391,21 +1392,24 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       <Dropdown.Item
                         as="button"
                         onClick={() => {
-                          const { drawingSettings, drawingPoints } =
-                            store.getState();
+                          const { color, markerType } =
+                            store.getState().drawingSettings.style;
 
                           dispatch(
-                            drawingPointAdd({
-                              id: drawingPoints.points.length,
-                              coords: { lat, lon },
-                              color: drawingSettings.style.color,
-                              markerType: drawingSettings.style.markerType,
-                              icon: 'fa:camera',
-                              // The title, where there is one; a photo without
-                              // one leaves the point unlabelled rather than
-                              // showing the placeholder.
-                              label: '{p:name}',
-                              props: photoProps,
+                            dataViewerAddFeatures({
+                              features: [
+                                pointToFeature({
+                                  coords: { lat, lon },
+                                  color,
+                                  markerType,
+                                  icon: 'fa:camera',
+                                  // The title, where there is one; a photo
+                                  // without one leaves the point unlabelled
+                                  // rather than showing the placeholder.
+                                  label: '{p:name}',
+                                  props: photoProps,
+                                }),
+                              ],
                             }),
                           );
 

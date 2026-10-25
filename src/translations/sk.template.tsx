@@ -88,9 +88,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     hideObjectType: ({ name }) => <>Skryť typ „{name}“</>,
     copyToDrawing: 'Kopírovať do kreslenia',
     copyTo: ({ tool }) => <>Kopírovať do {tool}</>,
-    convertTo: ({ tool }) => <>Skonvertovať do {tool}</>,
     convertAllToDrawing: 'Skonvertovať všetko na kreslenie',
-    convertAllTo: ({ tool }) => <>Skonvertovať všetko do {tool}</>,
     openIn: ({ what }) => <>Otvoriť v {what}</>,
     panoramaFromHere: 'Panoráma odtiaľto',
     viewshedFromHere: 'Viditeľnosť odtiaľto',
@@ -131,6 +129,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     saved: 'Uložené.',
     visual: 'Zobrazenie',
     drawingTool: 'Kresliaci nástroj',
+    noDrawingTool: 'Výber',
     copyOk: 'Skopírované do schránky.',
     noCookies: () => (
       <>
@@ -218,11 +217,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routePlanner: 'Vyhľadávač trás',
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
-    measurement: 'Kreslenie a meranie',
     drawPoints: 'Kreslenie bodov',
     drawLines: 'Kreslenie čiar',
     drawPolygons: 'Kreslenie polygónov',
-    dataViewer: 'Trasy a dáta',
+    dataViewer: 'Kreslenie a dáta',
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
@@ -375,7 +373,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'tool-draw-lines': 'kreslenie, meranie vzdialenosti, dĺžka, pravítko',
         'tool-draw-polygons': 'kreslenie, meranie plochy, oblasť',
         'tool-import-file':
-          'gpx, kml, kmz, tcx, geojson, import, nahrať, otvoriť súbor',
+          'trasy, gpx, kml, kmz, tcx, geojson, import, nahrať, otvoriť súbor',
         'tool-map-details': 'identifikovať, čo je tu, wms',
         'tool-changesets': 'zmeny osm, sady zmien, mapéri, prispievatelia',
         'tool-tracking':

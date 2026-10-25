@@ -664,6 +664,31 @@ export function formatLocationLines(coords: LatLon): string {
   return `${formatWholeSecondCoord(coords.lat, 'SN')}\n${formatWholeSecondCoord(coords.lon, 'WE')}`;
 }
 
+/** How many positions a geometry has, all its parts and rings counted. */
+export function positionCount(geometry: Geometry | null): number {
+  switch (geometry?.type) {
+    case 'Point':
+      return 1;
+    case 'MultiPoint':
+    case 'LineString':
+      return geometry.coordinates.length;
+    case 'MultiLineString':
+    case 'Polygon':
+      return geometry.coordinates.reduce((sum, ring) => sum + ring.length, 0);
+    case 'MultiPolygon':
+      return geometry.coordinates
+        .flat()
+        .reduce((sum, ring) => sum + ring.length, 0);
+    case 'GeometryCollection':
+      return geometry.geometries.reduce(
+        (sum, part) => sum + positionCount(part),
+        0,
+      );
+    default:
+      return 0;
+  }
+}
+
 export function positionsEqual(pt1?: Position, pt2?: Position): boolean {
   if (!pt1 || !pt2) {
     throw new Error();

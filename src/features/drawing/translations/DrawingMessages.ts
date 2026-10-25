@@ -25,6 +25,37 @@ export type DrawingMessages = {
     or: string;
     textHint: string;
     type: string;
+    /** Whether a line is drawn, a recorded track or a planned route. */
+    kind: string;
+    kindLine: string;
+    kindTrack: string;
+    kindRoute: string;
+    kindHint: string;
+    /** The fieldset of how the feature is drawn. */
+    style: string;
+    /** A track's or a route's own GPX fields. */
+    trackDetails: string;
+    routeDetails: string;
+    /** A waypoint's own GPX fields. */
+    pointDetails: string;
+    pointType: string;
+    time: string;
+    elevation: string;
+    eleInvalid: string;
+    desc: string;
+    cmt: string;
+    activityType: string;
+    source: string;
+    sourceHint: string;
+    number: string;
+    numberInvalid: string;
+    /** How many of the details have a value, beside the collapsed panel's title. */
+    detailsFilled: (props: { n: number }) => string;
+    /** The line's per-point channels: heart rate, time, … */
+    channels: string;
+    addChannel: string;
+    removeChannel: string;
+    channelsHint: string;
     dashArray: string;
     lineCap: string;
     lineCapRound: string;
@@ -36,13 +67,19 @@ export type DrawingMessages = {
     lineJoinBevel: string;
     /** Heading over the feature's own data table. */
     properties: string;
+    /** Leads the property names a label can use, under the label field. */
+    labelProperties: string;
     /** Column placeholders for one row of it. */
     propertyKey: string;
     propertyValue: string;
-    addProperty: string;
+    propertyTypeText: string;
+    propertyTypeNumber: string;
+    propertyTypeMultiline: string;
+    propertyKeyMissing: string;
+    propertyKeyDuplicate: string;
+    propertyNumberInvalid: string;
+    propertyJsonInvalid: string;
     removeProperty: string;
-    /** Writes `{key}` into the label being edited. */
-    insertIntoLabel: string;
     showLabel: string;
     labelVisibility: Record<LabelVisibility, string>;
     /** Marks a field whose value differs between features edited together. */
@@ -66,7 +103,6 @@ export type DrawingMessages = {
   join: string;
   continue: string;
   stopDrawing: string;
-  selectPointToJoin: string;
   defProps: {
     menuItem: string;
     title: string;
@@ -80,7 +116,6 @@ export type DrawingMessages = {
     add: string;
   };
   reverse: string;
-  simplify: string;
   cutHole: string;
   cutHoleHint: string;
   makeHole: string;

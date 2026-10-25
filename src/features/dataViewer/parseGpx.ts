@@ -293,6 +293,15 @@ function commonProperties(el: Element): Record<string, unknown> {
     }
   }
 
+  // A track's or a route's own number; a waypoint has none.
+  const numberText = textOf(childNamed(el, 'number'))?.trim();
+
+  const number = numberText ? Number(numberText) : Number.NaN;
+
+  if (Number.isInteger(number) && number >= 0) {
+    properties['number'] = number;
+  }
+
   const links = childrenNamed(el, 'link').map((link) => ({
     href: link.getAttribute('href'),
     text: textOf(childNamed(link, 'text')),

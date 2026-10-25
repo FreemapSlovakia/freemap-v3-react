@@ -8,16 +8,12 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Importer',
   unnamedTrack: ({ n }) => `Trace ${n}`,
-  convertLossWarning:
-    'La conversion en dessin remplace la trace et supprime ses données enregistrées (altitude, fréquence cardiaque, vitesse, temps).',
   simplifyAll: 'Tout simplifier',
   moreInfo: 'Plus d’infos',
   saveAsMap: 'Enregistrer dans mes cartes',
   loginToSaveMap:
     'Connectez-vous d’abord pour enregistrer la trace dans vos cartes.',
-  style: {
-    title: 'Style par défaut',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Diviser',
     pick: 'Cliquez sur la trace à l’endroit de la coupure',
@@ -101,12 +97,12 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'utiliser l’altitude enregistrée dans la trace',
     add: 'Ajouter l’altitude',
     update: 'Mettre à jour l’altitude',
-    updateConfirm:
-      'Remplacer l’altitude de la trace par le modèle de terrain ?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'L’altitude manquante a été complétée.'
-        : 'L’altitude a été remplacée.',
+        : mode === 'clear'
+          ? 'L’altitude a été supprimée.'
+          : 'L’altitude a été remplacée.',
   },
   fetchingError: ({ err }) =>
     addError(

@@ -28,11 +28,11 @@ export default function DataViewerBatchPropertiesModal({
   const indexes = dataViewerBatchIndexes(features, kind ?? 'all');
 
   const pointValues = indexes.points.map((i) =>
-    featureEditValues(features[i]!, defaults),
+    featureEditValues(features[i]!, defaults, false),
   );
 
   const lineValues = indexes.lines.map((i) =>
-    featureEditValues(features[i]!, defaults),
+    featureEditValues(features[i]!, defaults, false),
   );
 
   return (

@@ -309,11 +309,10 @@ describe('get-app-guide', () => {
 describe('drawing tools', () => {
   const state = {
     drawingSettings: { style: { color: '#f00', markerType: 'pin', width: 3 } },
-    drawingPoints: { points: [{ coords: { lat: 1, lon: 2 } }] },
-    drawingLines: { lines: [] },
+    trackViewer: { trackGeojson: null },
   };
 
-  it('adds a marker after the ones already drawn, in the default style', async () => {
+  it('adds a marker in the default style', async () => {
     const { store, dispatched } = fakeStore(state);
 
     const tool = drawingTools.find((t) => t.name === 'add-marker')!;
@@ -321,18 +320,23 @@ describe('drawing tools', () => {
     await tool.execute({ lat: 48.1, lon: 17.1, label: 'here' }, ctx(store));
 
     expect(dispatched[0]).toMatchObject({
-      type: 'DRAWING_POINT_ADD',
+      type: 'DATA_VIEWER_ADD_FEATURES',
       payload: {
-        coords: { lat: 48.1, lon: 17.1 },
-        label: 'here',
-        color: '#f00',
-        markerType: 'pin',
-        id: 1,
+        features: [
+          {
+            geometry: { type: 'Point', coordinates: [17.1, 48.1] },
+            properties: {
+              name: 'here',
+              'freemap:color': '#f00',
+              'freemap:markerType': 'pin',
+            },
+          },
+        ],
       },
     });
   });
 
-  it('numbers the points of a drawn line', async () => {
+  it('draws a line through the points given', async () => {
     const { store, dispatched } = fakeStore(state);
 
     const tool = drawingTools.find((t) => t.name === 'draw-line')!;
@@ -348,12 +352,18 @@ describe('drawing tools', () => {
     );
 
     expect(dispatched[0]).toMatchObject({
-      type: 'DRAWING_LINE_ADD',
+      type: 'DATA_VIEWER_ADD_FEATURES',
       payload: {
-        type: 'line',
-        points: [
-          { lat: 1, lon: 2, id: 0 },
-          { lat: 3, lon: 4, id: 1 },
+        features: [
+          {
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [2, 1],
+                [4, 3],
+              ],
+            },
+          },
         ],
       },
     });
@@ -364,7 +374,7 @@ describe('drawing tools', () => {
 
     const tool = drawingTools.find((t) => t.name === 'remove-drawing')!;
 
-    const result = await tool.execute({ kind: 'line', index: 0 }, ctx(store));
+    const result = await tool.execute({ index: 0 }, ctx(store));
 
     expect(result.isError).toBe(true);
     expect(text(result)).toContain('there are 0');

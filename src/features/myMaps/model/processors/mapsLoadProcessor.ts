@@ -1,6 +1,9 @@
 import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { currentEntry, importRemote } from '@app/url/entryContent.js';
+import { replacingEntry } from '@app/url/urlUpdating.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
+import { remoteSourceOf } from '@features/dataViewer/remoteTrack.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { putOfflineMap } from '../../offlineStore.js';
@@ -69,13 +72,21 @@ export const mapsLoadProcessor: Processor = {
         }
       }
 
-      dispatch(
-        mapsLoaded({
-          merge: loadMeta.merge,
-          meta,
-          data,
-        }),
-      );
+      const loaded = () =>
+        dispatch(mapsLoaded({ merge: loadMeta.merge, meta, data }));
+
+      if (loadMeta.replaceEntry) {
+        replacingEntry(loaded);
+      } else {
+        loaded();
+      }
+
+      // An older document naming its track rather than holding it.
+      const source = remoteSourceOf(data.trackViewer);
+
+      if (source && !getState().trackViewer.trackGeojson) {
+        importRemote({ getState, dispatch }, currentEntry(), source);
+      }
 
       dispatch(setActiveModal(null));
     } catch (err) {

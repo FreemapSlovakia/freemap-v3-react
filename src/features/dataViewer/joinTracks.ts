@@ -117,11 +117,15 @@ function dropLeadingPoint(side: Side): Side {
       };
 }
 
-const reversedRows = <T>(rows: T[][]): T[][] =>
+/** Per-segment rows the other way round: the segments, and each one's values. */
+export const reversedRows = <T>(rows: T[][]): T[][] =>
   rows.map((row) => row.toReversed()).reverse();
 
 /** Spans measured from the other end, so they still cover the same stretches. */
-function reversePathDetails(details: PathDetails, length: number): PathDetails {
+export function reversePathDetails(
+  details: PathDetails,
+  length: number,
+): PathDetails {
   return Object.fromEntries(
     Object.entries(details).map(([key, spans]) => [
       key,

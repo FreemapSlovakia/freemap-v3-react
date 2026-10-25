@@ -4,19 +4,43 @@ import {
   serializeQuery,
 } from '@app/url/mapContentParts.js';
 import {
-  type DrawnLine,
-  type Line,
-  toWireHoleIndexes,
-} from '@features/drawing/model/actions/drawingLineActions.js';
+  featureToWire,
+  toWire,
+  wireForm,
+} from '@features/dataViewer/drawingWire.js';
+import { documentFeatures } from '@features/dataViewer/model/collection.js';
+import {
+  completeCollection,
+  featuresInLink,
+} from '@features/dataViewer/model/urlForm.js';
 import { presetOnlyConfigs } from '@features/map/model/layerSetup.js';
 import { inlinePresets } from '@features/map/model/mapPreset.js';
 import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
 import { savedRouteFromState } from '@features/routePlanner/model/savedRoute.js';
 import { savedSearchResultsFromState } from '@features/search/model/savedSearchResults.js';
 import { upgradeObjectFilter } from '@osm/taxon.js';
+import type { Feature } from 'geojson';
 import { hash } from 'ohash';
 import { createSelector } from 'reselect';
 import type { MapData } from './actions.js';
+
+/**
+ * Where each feature stands, in the order the document lists them — its points,
+ * then its lines, then the rest — or `undefined` when that is already the order.
+ */
+function documentOrder(features: readonly Feature[]): number[] | undefined {
+  const groups: number[][] = [[], [], []];
+
+  for (const [i, feature] of features.entries()) {
+    const wire = featureToWire(feature);
+
+    groups[!wire ? 2 : 'point' in wire ? 0 : 1]!.push(i);
+  }
+
+  const order = groups.flat();
+
+  return order.every((at, i) => at === i) ? undefined : order;
+}
 
 /**
  * The saveable map document as it currently stands. Single source of truth for
@@ -24,31 +48,24 @@ import type { MapData } from './actions.js';
  * it has unsaved changes.
  */
 export function getMapDataFromState(state: RootState): MapData {
-  const {
-    tracking,
-    drawingLines,
-    drawingPoints,
-    routePlanner,
-    objects,
-    gallery,
-    trackViewer,
-    map,
-    search,
-  } = state;
+  const { tracking, routePlanner, objects, gallery, trackViewer, map, search } =
+    state;
 
-  const holeIndexes = toWireHoleIndexes(drawingLines.lines);
+  // What the drawing form can say goes where every client reads it; the rest
+  // rides as the viewer's track.
+  const features = trackViewer.trackGeojson
+    ? completeCollection(trackViewer.trackGeojson).features
+    : [];
+
+  const { items, rest } = toWire(features);
+
+  const { points, lines } = wireForm(items);
+
+  const order = documentOrder(features);
 
   return {
-    // Without the store-only `id`: a document carries no line identity, and
-    // reading one back assigns fresh ids anyway, so a hole names its parent by
-    // position instead.
-    lines: drawingLines.lines.map(
-      ({ id: _id, holeOfId: _holeOfId, ...line }, i) => ({
-        ...line,
-        holeOf: holeIndexes[i],
-      }),
-    ),
-    points: drawingPoints.points,
+    lines,
+    points,
     tracking: {
       trackedDevices: tracking.trackedDevices,
     },
@@ -79,9 +96,12 @@ export function getMapDataFromState(state: RootState): MapData {
     // Only the fields the loader reads back; the rest of the slice is transient
     // view state (selected track, elevation decision, render cache).
     trackViewer: {
-      trackGeojson: trackViewer.trackGeojson,
+      trackGeojson: rest.length
+        ? { type: 'FeatureCollection', features: rest }
+        : null,
       trackUID: trackViewer.trackUID,
       gpxUrl: trackViewer.gpxUrl,
+      ...(order && { order }),
     },
     map: {
       lat: map.lat,
@@ -162,32 +182,23 @@ export function mapContentString(state: RootState): string {
 
 /**
  * A digest of everything that counts as a change to the map, for comparing the
- * screen against the stored copy: the content the URL carries, plus the track,
- * which it can't.
+ * screen against the stored copy: the content the URL carries, plus the
+ * features where it can't carry them.
  *
  * The map viewport and layers are deliberately absent — panning and switching
  * the background aren't edits — as are custom layers and shading, which live in
  * localStorage and merge in from there.
  */
 function fingerprint(state: RootState): string {
+  const fc = state.trackViewer.trackGeojson;
+
   return hash([
     mapContentString(state),
-    fingerprintTrack(state.trackViewer.trackGeojson),
+    // What the link carries is in the content string already.
+    featuresInLink(state.trackViewer) || !fc
+      ? ''
+      : fingerprintTrack(completeCollection(fc)),
   ]);
-}
-
-/**
- * A document's lines in store shape, so the shared serialization sees what it
- * would on screen. Giving each line its index as its id makes the `holeOf`
- * index and the store's `holeOfId` the same number, and the serializer maps it
- * straight back.
- */
-function linesAsState(lines: Line[]): DrawnLine[] {
-  return lines.map(({ holeOf, ...line }, id) => ({
-    ...line,
-    id,
-    holeOfId: holeOf,
-  }));
 }
 
 /**
@@ -201,13 +212,15 @@ function linesAsState(lines: Line[]): DrawnLine[] {
  * they do for an untouched map.
  */
 export function fingerprintDocument(data: MapData, base: RootState): string {
+  const features = documentFeatures(
+    data.points,
+    data.lines,
+    data.trackViewer?.trackGeojson,
+    data.trackViewer?.order,
+  );
+
   return fingerprint({
     ...base,
-    drawingLines: {
-      ...base.drawingLines,
-      lines: linesAsState(data.lines ?? []),
-    },
-    drawingPoints: { ...base.drawingPoints, points: data.points ?? [] },
     // Built by the same function the load uses, so the two can't disagree about
     // what a document puts on screen. Slice defaults, not live state, stand in
     // for fields the document omits (e.g. a legacy document without
@@ -239,9 +252,12 @@ export function fingerprintDocument(data: MapData, base: RootState): string {
     },
     trackViewer: {
       ...base.trackViewer,
-      trackGeojson: data.trackViewer?.trackGeojson ?? null,
-      trackUID: data.trackViewer?.trackUID ?? null,
-      gpxUrl: data.trackViewer?.gpxUrl ?? null,
+      trackGeojson: features.length
+        ? { type: 'FeatureCollection', features }
+        : null,
+      // A source the document names is downloaded into features, not kept.
+      trackUID: null,
+      gpxUrl: null,
     },
   } as RootState);
 }
@@ -257,8 +273,6 @@ export function fingerprintDocument(data: MapData, base: RootState): string {
  */
 export const fingerprintState = createSelector(
   [
-    (state: RootState) => state.drawingLines.lines,
-    (state: RootState) => state.drawingPoints.points,
     (state: RootState) => state.tracking.trackedDevices,
     (state: RootState) => state.routePlanner,
     (state: RootState) => state.objects.active,
@@ -270,8 +284,6 @@ export const fingerprintState = createSelector(
     (state: RootState) => state.search.previewId,
   ],
   (
-    lines,
-    points,
     trackedDevices,
     routePlanner,
     active,
@@ -286,8 +298,6 @@ export const fingerprintState = createSelector(
     // reading without being listed above fails here rather than silently
     // digesting a stale value.
     fingerprint({
-      drawingLines: { lines },
-      drawingPoints: { points },
       tracking: { trackedDevices },
       routePlanner,
       objects: { active },

@@ -310,6 +310,38 @@ export async function densifyAlong<G extends LineString | MultiLineString>(
   cancel?: ElevationCancel,
   credits?: ElevationCredits,
 ): Promise<Feature<G>> {
+  const inserts = planInserts(feature);
+
+  if (inserts.length === 0) {
+    return feature;
+  }
+
+  const eles = await fetchElevations(
+    inserts.map(({ lat, lon }) => [lat, lon]),
+    getState,
+    cancel,
+    credits,
+  );
+
+  return withInserts(feature, inserts, eles);
+}
+
+/**
+ * {@link densifyAlong}'s points inserted without elevation, for a caller that
+ * samples many lines in one request. The same feature when nothing is long
+ * enough to subdivide.
+ */
+export function densifyGeometry<G extends LineString | MultiLineString>(
+  feature: Feature<G>,
+): Feature<G> {
+  const inserts = planInserts(feature);
+
+  return inserts.length === 0 ? feature : withInserts(feature, inserts, []);
+}
+
+type Insert = { seg: number; after: number; lon: number; lat: number };
+
+function planInserts(feature: Feature<LineString | MultiLineString>): Insert[] {
   const segments = lineSegments(feature.geometry);
 
   // ~2 px per sample at the current viewport width, never coarser than 100 m
@@ -326,14 +358,13 @@ export async function densifyAlong<G extends LineString | MultiLineString>(
     ),
   );
 
-  if (!(stepKm > 0)) {
-    return feature;
-  }
-
   // Points to insert, tagged with their segment and the vertex they follow, so
   // one batched request fills them all.
-  const inserts: { seg: number; after: number; lon: number; lat: number }[] =
-    [];
+  const inserts: Insert[] = [];
+
+  if (!(stepKm > 0)) {
+    return inserts;
+  }
 
   for (let s = 0; s < segments.length; s++) {
     const coords = segments[s]!;
@@ -374,16 +405,16 @@ export async function densifyAlong<G extends LineString | MultiLineString>(
     }
   }
 
-  if (inserts.length === 0) {
-    return feature;
-  }
+  return inserts;
+}
 
-  const eles = await fetchElevations(
-    inserts.map(({ lat, lon }) => [lat, lon]),
-    getState,
-    cancel,
-    credits,
-  );
+/** The feature with `inserts` added, each with its `eles` value where given. */
+function withInserts<G extends LineString | MultiLineString>(
+  feature: Feature<G>,
+  inserts: Insert[],
+  eles: (number | null)[],
+): Feature<G> {
+  const segments = lineSegments(feature.geometry);
 
   // `inserts` is ordered by segment then vertex, so one cursor walks it as we
   // rebuild each segment in turn.

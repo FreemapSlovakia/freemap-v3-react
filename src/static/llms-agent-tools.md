@@ -20,8 +20,8 @@ When the page is open in a browser whose AI agent supports [WebMCP](https://gith
 | `describe-place` | What is at a point: the nearest addressable place, the OSM elements there, and the areas containing it. |
 | `add-marker` | Puts a labelled, coloured, icon-bearing marker on the map. |
 | `draw-line` / `draw-area` | Draws a line or a filled area through given points. |
-| `list-drawings` / `remove-drawing` | Lists what is drawn, and removes one by index. |
-| `open-drawing-tool` | Opens a drawing toolbar so the user can carry on by hand. |
+| `list-drawings` / `remove-drawing` | Lists the points, lines and polygons of Drawing and data — drawn or imported — and removes one by index. |
+| `open-drawing-tool` | Opens Drawing and data in a drawing mode so the user can carry on by hand. |
 | `get-elevation` | Heights above sea level of given points, from the terrain model. |
 | `sample-elevation-grid` | Reads the terrain model over a rectangle on a regular grid in one call (up to 50 000 points), optionally with slope and aspect per cell. |
 | `find-objects-in-area` | Finds POIs of given categories inside any bounding box and reports them back without touching what the map shows. |

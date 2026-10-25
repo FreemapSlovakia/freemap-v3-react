@@ -68,8 +68,12 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     panorama: { picking: null },
     viewshed: { pickingViewpoint: false },
     elevationChart: { target: null },
-    drawingLines: { joinWith: undefined, drawing: false },
-    trackViewer: { joinWith: null, splitting: false },
+    trackViewer: {
+      joinWith: null,
+      splitting: false,
+      drawing: null,
+      holeFor: null,
+    },
     changesetInspector: { inspected: null, history: null },
     ...overrides,
   } as unknown as RootState;

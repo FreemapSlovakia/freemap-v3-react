@@ -1,6 +1,5 @@
 import { convertToDrawing } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
-import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import type { SelectCallback } from '@restart/ui/types';
@@ -13,7 +12,6 @@ import { convertibleLines } from '@shared/simplifyTolerance.js';
 import type { Feature } from 'geojson';
 import type { ReactElement, ReactNode } from 'react';
 import { FaPencilAlt, FaSearch } from 'react-icons/fa';
-import { MdShapeLine } from 'react-icons/md';
 import { useDispatch, useStore } from 'react-redux';
 import type { ObjectsResult } from '../model/actions.js';
 import { objectsShowAsLookup } from '../model/actions.js';
@@ -55,8 +53,6 @@ export function ObjectsConvertMenu({
 
   const store = useStore<RootState>();
 
-  const convertToDataViewer = useConvertToDataViewer();
-
   const askConversion = useConvertPrompt();
 
   const id = object?.id;
@@ -67,10 +63,6 @@ export function ObjectsConvertMenu({
   const drawingLabel = object
     ? m?.general.copyToDrawing
     : m?.general.convertAllToDrawing;
-
-  const dataViewerLabel = (
-    object ? m?.general.copyTo : m?.general.convertAllTo
-  )?.({ tool: m?.tools.dataViewer });
 
   const convertToDrawingWithChoices = () => {
     const targets = object ? [object] : store.getState().objects.objects;
@@ -122,18 +114,6 @@ export function ObjectsConvertMenu({
         icon={<FaPencilAlt />}
         label={drawingLabel}
         onClick={convertToDrawingWithChoices}
-        showFrom="never"
-      />
-
-      <Action
-        icon={<MdShapeLine />}
-        label={dataViewerLabel}
-        onClick={() => {
-          convertToDataViewer(
-            { type: 'objects', id },
-            { geometry, title: dataViewerLabel },
-          );
-        }}
         showFrom="never"
       />
 

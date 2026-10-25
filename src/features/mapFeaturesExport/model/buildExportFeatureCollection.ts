@@ -1,9 +1,6 @@
 import type { Selection } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
-import {
-  drawingLineLabel,
-  drawingPointLabel,
-} from '@features/drawing/labelValues.js';
+import { partitionFeatures } from '@features/dataViewer/drawingWire.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import type { MarkerType } from '@features/objects/model/actions.js';
 import {
@@ -33,7 +30,7 @@ import { poiIcons } from '@osm/poiIcons.js';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
 import { tagsToPoiIconName } from '@shared/drawingIcons.js';
-import { withRenderedLabel } from '@shared/featureProperties.js';
+import { featureLabel, withRenderedLabel } from '@shared/featureProperties.js';
 import {
   buildMarkerSvg,
   resolveMarkerGlyph,
@@ -58,8 +55,8 @@ import {
   pictureExportUrls,
 } from './processors/fetchPictures.js';
 import {
-  keepDrawingLine,
-  keepDrawingPoint,
+  featureExportable,
+  keepFeature,
   keepObject,
   keepSearchResult,
   selectedTrackToken,
@@ -87,7 +84,6 @@ export interface ExportInclude {
   objects?: boolean;
   plannedRoute?: boolean;
   tracking?: boolean;
-  import?: boolean;
   search?: boolean;
 }
 
@@ -600,8 +596,6 @@ export async function buildExportFeatureCollection({
   options?: BuildExportOptions;
 }): Promise<FeatureCollection> {
   const {
-    drawingLines,
-    drawingPoints,
     objects,
     objectsSettings,
     routePlanner,
@@ -627,34 +621,18 @@ export async function buildExportFeatureCollection({
     addPictures(features, await fetchPictures(getState));
   }
 
-  // A hole has no meaning apart from the polygon it belongs to: it is written
-  // as one of its interior rings, and picking either one exports the shape.
-  const holeIndexes = new Map<number, number[]>();
+  const mapFeatures = trackViewer.trackGeojson?.features ?? [];
 
-  for (const [i, line] of drawingLines.lines.entries()) {
-    if (line.holeOfId !== undefined) {
-      const bucket = holeIndexes.get(line.holeOfId);
+  // What the drawing form can say is written as drawn shapes; the rest goes
+  // out as the loaded data it is, under the toggle its geometry falls under.
+  const partition = partitionFeatures(mapFeatures);
 
-      if (bucket) {
-        bucket.push(i);
-      } else {
-        holeIndexes.set(line.holeOfId, [i]);
-      }
-    }
-  }
-
-  for (const [lineIndex, line] of drawingLines.lines.entries()) {
+  for (const { index, line, holes } of partition.lines) {
     if (line.type === 'line' ? !include.drawingLines : !include.drawingAreas) {
       continue;
     }
 
-    if (line.holeOfId !== undefined) {
-      continue;
-    }
-
-    const holes = holeIndexes.get(line.id) ?? [];
-
-    if (![lineIndex, ...holes].some((i) => keepDrawingLine(only, i))) {
+    if (!keepFeature(only, index)) {
       continue;
     }
 
@@ -666,7 +644,7 @@ export async function buildExportFeatureCollection({
       // The feature's own data first, so a style key can't be shadowed by a
       // property that happens to share its name.
       ...line.props,
-      title: drawingLineLabel(line, drawingLines.lines) || undefined,
+      title: featureLabel(mapFeatures[index]!),
       // The label as written, template and all; `title` is what it renders to.
       'freemap:label': line.label,
       // The table again, whole: spread above it reads well for other tooling
@@ -701,13 +679,11 @@ export async function buildExportFeatureCollection({
               type: 'Polygon',
               coordinates: [
                 positions,
-                ...holes.map((i) => {
-                  const { points } = drawingLines.lines[i]!;
-
-                  return [...points, points[0]!].map(
+                ...holes.map(({ points }) =>
+                  [...points, points[0]!].map(
                     (p) => [p.lon, p.lat] as Position,
-                  );
-                }),
+                  ),
+                ),
               ],
             }
           : { type: 'LineString', coordinates: positions },
@@ -715,14 +691,14 @@ export async function buildExportFeatureCollection({
   }
 
   if (include.drawingPoints) {
-    for (const [index, p] of drawingPoints.points.entries()) {
-      if (!keepDrawingPoint(only, index)) {
+    for (const { index, point: p } of partition.points) {
+      if (!keepFeature(only, index)) {
         continue;
       }
 
       const props: Record<string, unknown> = {
         ...p.props,
-        title: drawingPointLabel(p) || undefined,
+        title: featureLabel(mapFeatures[index]!),
         'freemap:label': p.label,
         ...(p.props && { 'freemap:props': p.props }),
       };
@@ -819,12 +795,18 @@ export async function buildExportFeatureCollection({
     );
   }
 
-  if (include.import && trackViewer.trackGeojson) {
-    // A marker is baked with `name` as its caption.
-    const imported = trackViewer.trackGeojson.features.map((feature) =>
+  // A marker is baked with `name` as its caption.
+  const imported = partition.rest
+    .filter(
+      ({ index, feature }) =>
+        include[featureExportable(feature.geometry)] &&
+        keepFeature(only, index),
+    )
+    .map(({ feature }) =>
       withRenderedLabel(feature, markerMode ? 'name' : 'title'),
     );
 
+  if (imported.length) {
     if (markerMode) {
       features.push(
         ...(await convertForeignFeatures(

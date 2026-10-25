@@ -1,5 +1,4 @@
 import { convertToDrawing } from '@app/store/actions.js';
-import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
@@ -20,7 +19,6 @@ import {
   FaHistory,
   FaPencilAlt,
 } from 'react-icons/fa';
-import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   changesetsInspect,
@@ -62,8 +60,6 @@ export default function ChangesetsMenu(): ReactElement {
   );
 
   const dispatch = useDispatch();
-
-  const convertToDataViewer = useConvertToDataViewer();
 
   const backKbd = useEscapeKbd(changesetsInspect(null));
 
@@ -158,15 +154,6 @@ export default function ChangesetsMenu(): ReactElement {
             label={m?.general.convertToDrawing}
             onClick={() => {
               dispatch(convertToDrawing({ type: 'changesets' }));
-            }}
-            showFrom="never"
-          />
-
-          <Action
-            icon={<MdShapeLine />}
-            label={m?.general.convertTo({ tool: m?.tools.dataViewer })}
-            onClick={() => {
-              convertToDataViewer({ type: 'changesets' });
             }}
             showFrom="never"
           />

@@ -29,3 +29,27 @@
   grid-area: text;
   width: 4rem;
 }
+
+/* The marker SVG has no size of its own; on the map Leaflet gives it 24×40. */
+.markerPreview {
+  display: inline-flex;
+  height: 1.5rem;
+}
+
+.markerPreview > svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Upwards: the section ends the dialog, whose scrolling body clips what drops
+   below it. Over the property rows, whose input groups lift theirs up to 5. */
+.tags :global(.react-tags__listbox) {
+  top: auto;
+  bottom: calc(100% + 5px);
+  z-index: 6;
+}
+
+/* The fields inside space themselves with `mt-3`; the panel's padding is gap enough. */
+.panel > :first-child {
+  margin-top: 0 !important;
+}

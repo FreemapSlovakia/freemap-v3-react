@@ -72,8 +72,8 @@ export const dataViewerUploadToOsmProcessor: Processor<
       );
 
       const gpx = await buildGpx(getState, {
-        exportables: ['import'],
-        importFilter: isOsmTraceLine,
+        exportables: ['drawingLines'],
+        filter: isOsmTraceLine,
       });
 
       const res = await httpRequest({

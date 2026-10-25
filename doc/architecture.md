@@ -209,7 +209,8 @@ plain visit would otherwise wipe.
 installed PWA relaunched after Android reclaims its process is restarted from
 its launch intent, which carries only the manifest's `start_url` — a browser tab
 is spared, since the browser restores tabs itself. So the hash plus its
-`history.state` (`sq`, `tr`) is written to `localStorage` as the page goes away,
+`history.state` (`sq`, and `tr`, the key of the Drawing and data snapshot the entry
+shows) is written to `localStorage` as the page goes away,
 and put back at bootstrap when a **mobile** app window arrives at a bare URL.
 `index.tsx` must call `restoreStashedUrl()` before `handleLocationChange`.
 Desktop is excluded on purpose: it restores its own windows, and a
@@ -288,10 +289,16 @@ Gotcha: toast`messageKey`s referenced from processors must resolve against the
   selection toolbar's is blue). Escape closes it; taking the slot from another
   tool drops the selection unless the tool opened is the one the selected feature
   belongs to.
-- **Toolbar-only tools** (objects, tracks and data, changesets, live tracking, GPS
+- **Toolbar-only tools** (objects, drawing and data, changesets, live tracking, GPS
   recorder) accumulate: any number of them are open at once, in the order opened,
   alongside a map-click tool. Opening or closing one says nothing about the
   selection, and Escape leaves them alone — they close by their own button.
+- **The drawing tools have no toolbar of their own.** They are modes of
+  `import-file`'s (`DataViewerMenu`): opening one opens `import-file` too, and
+  closing `import-file` closes the drawing tool. Everything they draw goes into the
+  one `trackViewer.trackGeojson` collection, and a selected feature or vertex is
+  `{ type: 'feature' | 'vertex', id }` with `id` its index there — owned by any
+  drawing tool, so switching modes keeps it.
   A toolbar with something worth leaving on the screen can also offer a collapse
   button (`ToolMenu`'s `collapsible`, local state): only the GPS recorder does,
   because its strip keeps saying that the phone is recording. A toolbar with

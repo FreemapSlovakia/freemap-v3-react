@@ -1,15 +1,11 @@
-import { toWireHoleIndexes } from '@features/drawing/model/actions/drawingLineActions.js';
+import { urlWire } from '@features/dataViewer/model/urlForm.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import {
   featureIdsEqual,
   type OsmFeatureId,
   osmElementTypes,
 } from '@shared/types/featureId.js';
-import {
-  serializeDrawingLine,
-  serializeDrawingPoint,
-  serializeLatLon,
-} from '@shared/urlSerialization.js';
+import { serializeLatLon } from '@shared/urlSerialization.js';
 import type { RootState } from '../store/store.js';
 
 export type QueryPart = [string, string | number | boolean];
@@ -61,8 +57,6 @@ export function getMapContentParts(state: RootState): QueryPart[] {
   const {
     routePlanner,
     trackViewer,
-    drawingPoints,
-    drawingLines,
     gallery: { filter: galleryFilter },
     tracking,
     objects,
@@ -126,23 +120,9 @@ export function getMapContentParts(state: RootState): QueryPart[] {
     }
   }
 
-  if (trackViewer.trackUID) {
-    parts.push(['track-uid', trackViewer.trackUID]);
-  }
-
-  if (trackViewer.gpxUrl) {
-    parts.push(['import-url', trackViewer.gpxUrl]);
-  }
-
-  for (const point of drawingPoints.points) {
-    parts.push(['point', serializeDrawingPoint(point)]);
-  }
-
-  const holeIndexes = toWireHoleIndexes(drawingLines.lines);
-
-  for (const [i, line] of drawingLines.lines.entries()) {
-    parts.push([line.type, serializeDrawingLine(line, holeIndexes[i])]);
-  }
+  // Only while the link can carry every feature; otherwise a snapshot does
+  // (`localTrack`). `track-uid=` / `import-url=` are read, never written.
+  parts.push(...(urlWire(trackViewer.trackGeojson) ?? []));
 
   if (galleryFilter.userId) {
     parts.push(['gallery-user-id', galleryFilter.userId]);

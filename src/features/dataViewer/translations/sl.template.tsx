@@ -8,16 +8,12 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Naloži',
   unnamedTrack: ({ n }) => `Sled ${n}`,
-  convertLossWarning:
-    'Pretvorba v risbo nadomesti sled in zavrže njene zabeležene podatke (nadmorska višina, srčni utrip, hitrost, čas).',
   simplifyAll: 'Poenostavi vse',
   moreInfo: 'Več informacij',
   saveAsMap: 'Shrani med moje zemljevide',
   loginToSaveMap:
     'Za shranjevanje sledi med vaše zemljevide se najprej prijavite.',
-  style: {
-    title: 'Privzeti slog',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Razdeli',
     pick: 'Kliknite sled na mestu razdelitve',
@@ -100,11 +96,12 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'uporabi nadmorsko višino, shranjeno v sledi',
     add: 'Dodaj nadmorsko višino',
     update: 'Posodobi nadmorsko višino',
-    updateConfirm: 'Nadmorsko višino sledi nadomestim z modelom terena?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Manjkajoča nadmorska višina je bila zapolnjena.'
-        : 'Nadmorska višina je bila prepisana.',
+        : mode === 'clear'
+          ? 'Nadmorska višina je bila odstranjena.'
+          : 'Nadmorska višina je bila prepisana.',
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri pridobivanju podatkov o sledi', err),

@@ -6,7 +6,7 @@ import {
 } from '@features/tracking/tracks.js';
 import { lineStyleFromProperties } from '@shared/styleFromProperties.js';
 
-/** Fallback, and what the GPS recorder and the drawing tool draw a line at. */
+/** Fallback, and what the GPS recorder draws a line at. */
 const DEFAULT_WIDTH = 4;
 
 /**
@@ -31,20 +31,6 @@ export function targetLineWidth(state: RootState): number {
         lineStyleFromProperties(active?.feature.properties, false).width ??
         state.trackViewerSettings.style.width
       );
-    }
-
-    case 'drawing': {
-      const { lines } = state.drawingLines;
-
-      const line = lines.find((line) => line.id === target.lineId);
-
-      // A hole is stroked by the polygon it belongs to, in that polygon's style.
-      const style =
-        (line?.holeOfId === undefined
-          ? line
-          : lines.find(({ id }) => id === line.holeOfId)) ?? line;
-
-      return style?.width || DEFAULT_WIDTH;
     }
 
     case 'tracking':

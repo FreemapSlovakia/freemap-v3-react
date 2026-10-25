@@ -5,9 +5,6 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  style: {
-    title: 'Výchozí styl',
-  },
   split: {
     action: 'Rozdělit',
     pick: 'Klikněte na trasu v místě rozdělení',
@@ -81,13 +78,42 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   info: () => <DataViewerDetails />,
   upload: 'Nahrát',
-  unnamedTrack: ({ n }) => `Trasa ${n}`,
-  convertLossWarning:
-    'Převod na kresbu nahradí trasu a zahodí její zaznamenaná data (nadmořská výška, tep, rychlost, čas).',
+  unnamedTrack: ({ n, kind }) =>
+    `${kind === 'track' ? 'Záznam trasy' : kind === 'route' ? 'Plánovaná trasa' : 'Čára'} ${n}`,
   simplifyAll: 'Zjednodušit vše',
   moreInfo: 'Více info',
   saveAsMap: 'Uložit do mých map',
   loginToSaveMap: 'Pro uložení trasy do vašich map se nejprve přihlaste.',
+  snapshotGone: 'Data z tohoto kroku už tento prohlížeč neuchovává.',
+  snapshotFailed:
+    'Tento prohlížeč nedokázal data uchovat, takže po opětovném načtení stránky se ztratí. Chcete-li je zachovat, uložte je do svých map.',
+  vertex: {
+    menuItem: 'Údaje bodu',
+    latitude: 'Zeměpisná šířka',
+    longitude: 'Zeměpisná délka',
+    elevation: 'Nadmořská výška',
+    time: 'Čas',
+    filled: ({ filled, total }) => `${filled} z ${total} bodů`,
+    emptyHint:
+      'Prázdné pole nechá bod bez této hodnoty. Jaké hodnoty čára má, se nastavuje v jejích vlastnostech.',
+    notANumber: 'Zadejte číslo.',
+    outOfRange: 'Mimo rozsah.',
+    timeOrder: 'Čas musí ležet mezi časy předchozího a dalšího bodu.',
+    channels: {
+      heart: 'Tep',
+      cads: 'Kadence',
+      atemps: 'Teplota vzduchu',
+      wtemps: 'Teplota vody',
+      depths: 'Hloubka',
+      speeds: 'Rychlost',
+      courses: 'Směr pohybu',
+      bearings: 'Azimut',
+      powers: 'Výkon',
+      accuracies: 'Přesnost',
+      battery: 'Baterie',
+      gsmSignal: 'Signál GSM',
+    },
+  },
   details: {
     startTime: 'Čas startu',
     finishTime: 'Čas v cíli',
@@ -140,12 +166,15 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keep: 'Nic neměnit',
     keepDesc: 'použít nadmořskou výšku uloženou v trase',
     add: 'Doplnit výšku',
+    clear: 'Vymazat výšku',
+    clearDesc: 'odstranit uloženou výšku; profily ji pak čtou z modelu terénu',
     update: 'Aktualizovat výšku',
-    updateConfirm: 'Nahradit nadmořskou výšku trasy modelem terénu?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Chybějící nadmořská výška byla doplněna.'
-        : 'Nadmořská výška byla přepsána.',
+        : mode === 'clear'
+          ? 'Nadmořská výška byla vymazána.'
+          : 'Nadmořská výška byla přepsána.',
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při získávání záznamu trasy', err),
@@ -164,7 +193,7 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Některé soubory se nepodařilo načíst: ${names}.`,
   unsaved: 'Neuloženo',
   unsavedTooltip:
-    'Tato trasa není v žádné uložené mapě ani v odkazu – zůstává jen v tomto prohlížeči, takže sdílením odkazu ji nesdílíte. Uložte ji do svých map, abyste ji zachovali.',
+    'Tato data jsou na odkaz příliš velká a nejsou v žádné uložené mapě – zůstávají jen v tomto prohlížeči, takže sdílením odkazu je nesdílíte. Uložte je do svých map, abyste je zachovali.',
 };
 
 export default cs;

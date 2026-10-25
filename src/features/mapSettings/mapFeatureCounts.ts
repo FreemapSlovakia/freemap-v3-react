@@ -11,7 +11,6 @@ const MAP_FEATURE_IDS = [
   'tracking',
   'data',
   'route',
-  'drawing',
   'changesets',
 ] as const;
 
@@ -65,15 +64,6 @@ export function mapFeatureCount(
 
     case 'route':
       return some(state.routePlanner.points.length);
-
-    case 'drawing':
-      // Holes are part of their polygons, as in the list.
-      return some(
-        state.drawingLines.lines.reduce(
-          (count, line) => count + (line.holeOfId === undefined ? 1 : 0),
-          state.drawingPoints.points.length,
-        ),
-      );
 
     case 'changesets': {
       const listed = listedChangesetsSelector(state).length;

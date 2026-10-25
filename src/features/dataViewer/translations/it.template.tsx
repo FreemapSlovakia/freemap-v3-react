@@ -5,9 +5,7 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  style: {
-    title: 'Stile predefinito',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Dividi',
     pick: 'Clicchi la traccia nel punto di divisione',
@@ -41,8 +39,6 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Carica',
   unnamedTrack: ({ n }) => `Traccia ${n}`,
-  convertLossWarning:
-    'La conversione in disegno sostituisce la traccia e ne scarta i dati registrati (quota, frequenza cardiaca, velocità, tempo).',
   simplifyAll: 'Semplifica tutto',
   moreInfo: 'Maggiori info',
   saveAsMap: 'Salva nelle mie mappe',
@@ -101,12 +97,12 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'usa la quota memorizzata nella traccia',
     add: 'Aggiungi quota',
     update: 'Aggiorna quota',
-    updateConfirm:
-      'Sostituire la quota della traccia con il modello del terreno?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'La quota mancante è stata riempita.'
-        : 'La quota è stata sovrascritta.',
+        : mode === 'clear'
+          ? 'La quota è stata rimossa.'
+          : 'La quota è stata sovrascritta.',
   },
   fetchingError: ({ err }) =>
     addError(

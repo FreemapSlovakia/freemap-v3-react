@@ -120,25 +120,27 @@ export const deleteFeature = createAction<Selection | undefined>(
   'DELETE_FEATURE',
 );
 
-export interface DrawPointSelection {
-  type: 'draw-points';
+/** A point, line or polygon of the map's own features. */
+export interface FeatureSelection {
+  type: 'feature';
+  /** Index into `trackViewer.trackGeojson.features`. */
   id: number;
+  /** A polygon's hole, by ring index, where the hole rather than the shape is meant. */
+  part?: number;
+}
+
+/** One vertex of a feature; see `VertexAddress`. */
+export interface VertexSelection {
+  type: 'vertex';
+  /** Index into `trackViewer.trackGeojson.features`. */
+  id: number;
+  part: number;
+  vertex: number;
 }
 
 export interface ObjectsSelection {
   type: 'objects';
   id: OsmFeatureId;
-}
-
-export interface DrawLinePolySelection {
-  type: 'draw-line-poly';
-  id: number;
-}
-
-export interface LinePointSelection {
-  type: 'line-point';
-  lineIndex: number;
-  pointId: number;
 }
 
 export interface TrackingSelection {
@@ -163,12 +165,6 @@ export interface SearchSelection {
   id: FeatureId;
 }
 
-export interface DataViewerSelection {
-  type: 'data-viewer';
-  /** Index into `trackViewer.trackGeojson.features`. */
-  id: number;
-}
-
 export interface ChangesetElementSelection {
   type: 'changeset-element';
   /** `node/123`, an element of the inspected changeset. */
@@ -177,15 +173,13 @@ export interface ChangesetElementSelection {
 
 export type Selection =
   | ChangesetElementSelection
-  | LinePointSelection
-  | DrawPointSelection
+  | FeatureSelection
+  | VertexSelection
   | ObjectsSelection
-  | DrawLinePolySelection
   | TrackingSelection
   | RoutePointSelection
   | RouteSegmentSelection
-  | SearchSelection
-  | DataViewerSelection;
+  | SearchSelection;
 
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 
@@ -227,39 +221,11 @@ export const convertToDrawing = createAction<
       tolerance?: number;
     }
   | { type: 'planned-route'; tolerance: number }
-  // track: `id` indexes the loaded collection; omitted converts every feature
-  | { type: 'track'; tolerance: number; id?: number; carry?: ConvertCarry }
-  // tracking: `id` is a watched device's token; omitted converts every one of them
-  | { type: 'tracking'; id?: string; tolerance: number }
   | { type: 'search-result'; tolerance: number; carry?: ConvertCarry }
   | { type: 'changesets' }
   // geojson: features built by the caller, copied as they are
   | { type: 'geojson'; geojson: FeatureCollection }
 >('CONVERT_TO_DRAWING');
-
-/** What a conversion to the track viewer takes its features from. */
-export type DataViewerSource =
-  // objects: `id` omitted → every visible object, as points
-  | { type: 'objects'; id?: OsmFeatureId }
-  | { type: 'objects-geometry'; id: OsmFeatureId }
-  | { type: 'planned-route' }
-  | { type: 'changesets' }
-  | { type: 'search-result' }
-  | { type: 'drawing-point'; index: number }
-  | { type: 'drawing-line'; index: number }
-  | { type: 'geojson'; geojson: FeatureCollection };
-
-/**
- * Hands map features to the track viewer ("Tracks and data"), where they become
- * ordinary loaded data — the mirror of {@link convertToDrawing}, and like it the
- * source goes with them. One object is the exception and is copied: objects are
- * live data, refetched on every pan, so a single one cannot be taken away.
- */
-export const convertToDataViewer = createAction<{
-  source: DataViewerSource;
-  /** How it meets what the viewer already holds; see `useDataMergeMode`. */
-  mode: 'append' | 'replace';
-}>('CONVERT_TO_DATA_VIEWER');
 
 export type ExternalTarget =
   | 'apple'

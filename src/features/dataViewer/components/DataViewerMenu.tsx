@@ -1,7 +1,16 @@
-import { setActiveModal } from '@app/store/actions.js';
-import { trackGeojsonIsSuitableForElevationChart } from '@app/store/selectors.js';
+import {
+  closeTool,
+  openTool,
+  setActiveModal,
+  ToolSchema,
+} from '@app/store/actions.js';
+import {
+  openDrawToolSelector,
+  trackGeojsonIsSuitableForElevationChart,
+} from '@app/store/selectors.js';
+import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
-import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
 import {
@@ -17,19 +26,17 @@ import {
 import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { BatchPropertiesItems } from '@shared/components/BatchPropertiesItems.js';
-import { DeleteButton } from '@shared/components/DeleteButton.js';
+import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
-import {
-  useConfirm,
-  useConfirmCancel,
-} from '@shared/components/ModalProvider.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useMemo } from 'react';
@@ -38,47 +45,50 @@ import {
   FaCompressAlt,
   FaEllipsisV,
   FaMountain,
+  FaMousePointer,
   FaPaintBrush,
   FaPalette,
-  FaPencilAlt,
   FaSave,
   FaUpload,
 } from 'react-icons/fa';
 import { SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 import { dataViewerBatchCounts } from '../featureEditing.js';
-import { useConvertTrackToDrawing } from '../hooks/useConvertTrackToDrawing.js';
 import { useSimplifyData } from '../hooks/useSimplifyData.js';
 import {
   ColorizingModeSchema,
   dataViewerColorizeTrackBy,
-  dataViewerDelete,
-  dataViewerResolveElevationPrompt,
   dataViewerSetColorizeLegend,
   dataViewerSetElevationPrompt,
 } from '../model/actions.js';
+import { targetsCoverage } from '../model/elevationTargets.js';
+import { inLinkSelector } from '../model/urlForm.js';
 import { hasOsmTraceLine } from '../osmTrace.js';
 import { isSimplifiable } from '../simplifyTrack.js';
+import { isRecording } from '../trackChannels.js';
 import { trackLineParts } from '../trackLineParts.js';
+import { isTrackLine } from '../trackSelection.js';
 import { loadDataViewerMessages } from '../translations/loadDataViewerMessages.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 
 export default DataViewerMenu;
 
 export function DataViewerMenu(): ReactElement {
+  const m = useMessages();
+
   const tvm = useDataViewerMessages();
+
+  const dm = useDrawingMessages();
 
   const cm = useColorizerMessages();
 
   const dispatch = useDispatch();
 
-  const confirm = useConfirm();
-
-  const convertToDrawing = useConvertTrackToDrawing();
-
   const simplify = useSimplifyData();
 
-  const cancelConfirm = useConfirmCancel();
+  const drawTool = useAppSelector(openDrawToolSelector);
+
+  const inLink = useAppSelector(inLinkSelector);
 
   const features = useAppSelector(
     (state) => state.trackViewer.trackGeojson?.features,
@@ -101,14 +111,10 @@ export function DataViewerMenu(): ReactElement {
     Boolean(state.myMaps.activeMap),
   );
 
-  const gpxUrl = useAppSelector((state) => state.trackViewer.gpxUrl);
-
-  // A track that is in no saved map and that the URL doesn't name — neither a
-  // `track-uid=` nor an `import-url=` — exists nowhere but this browser. A reload
-  // does put it back (`trackStore.ts`), but that copy goes with the browser's
-  // storage, so it still deserves saying. The other two are re-fetched from the
-  // link and need no warning.
-  const unsaved = hasTrack && !hasActiveMap && canUpload && !gpxUrl;
+  // Data that is in no saved map and that the link doesn't carry exists nowhere
+  // but this browser. A reload does put it back (`trackStore.ts`), but that copy
+  // goes with the browser's storage, so it still deserves saying.
+  const unsaved = hasTrack && !hasActiveMap && canUpload && !inLink;
 
   const handleSaveAsMap = () => {
     if (loggedIn) {
@@ -179,60 +185,34 @@ export function DataViewerMenu(): ReactElement {
     return !isAvailable || isAvailable(lineFeatures);
   };
 
-  const coverage = elevationCoverage(lineFeatures);
+  const canUpdateElevation = useMemo(
+    () => targetsCoverage(trackGeojson) !== undefined,
+    [trackGeojson],
+  );
 
-  // Overriding from the server makes sense only while the track still has some
-  // recorded elevation to replace and hasn't already been fully overridden.
-  const canUpdateElevation = coverage !== 'none' && elevationDecision !== 'all';
+  // Only ask how to fill a recording's elevation when some is missing and the
+  // user hasn't decided yet; any other line is drawn from the terrain model.
+  const recordingsCoverage = useMemo(() => {
+    const recordings = (trackGeojson?.features ?? [])
+      .filter(isTrackLine)
+      .filter(isRecording);
 
-  // Only ask how to fill elevation when some is actually missing and the user
-  // hasn't decided yet. Tracks that already have full elevation proceed
-  // straight away — the explicit "update" button covers overriding them.
+    return recordings.length ? elevationCoverage(recordings) : 'full';
+  }, [trackGeojson]);
+
   const needsElevationDecision =
-    coverage !== 'full' && elevationDecision === 'undecided';
-
-  const handleUpdateElevation = async () => {
-    // With only some points missing, defer to the adaptive modal so the user
-    // can fill just the gaps instead of overwriting the recorded values.
-    if (coverage === 'partial') {
-      dispatch(dataViewerSetElevationPrompt({ type: 'update' }));
-
-      return;
-    }
-
-    // A fully-elevated track has no gaps to fill, so overwriting from the
-    // server is the only update — a plain confirm is enough. A success toast
-    // reports the outcome afterwards.
-    if (
-      await confirm({
-        title: tvm?.elevationFill.title,
-        message: (
-          <>
-            <p className="mb-0">{tvm?.elevationFill.updateConfirm}</p>
-
-            <p className="text-body-secondary small mb-0 mt-2">
-              {tvm?.elevationFill.premiumHiRes((label) => (
-                <PremiumGem label={label} onBeforeNavigate={cancelConfirm} />
-              ))}
-            </p>
-          </>
-        ),
-        confirmLabel: tvm?.elevationFill.update,
-      })
-    ) {
-      dispatch(
-        dataViewerResolveElevationPrompt({
-          mode: 'all',
-          consumer: { type: 'update' },
-        }),
-      );
-    }
-  };
+    recordingsCoverage !== 'full' && elevationDecision === 'undecided';
 
   const handleMoreSelect = (eventKey: string | null) => {
     switch (eventKey) {
+      case 'default-style':
+        dispatch(setActiveModal({ type: 'drawing-properties' }));
+
+        break;
+
       case 'update-elevation':
-        void handleUpdateElevation();
+        // The prompt asks only what the coverage leaves open.
+        dispatch(dataViewerSetElevationPrompt({ type: 'update' }));
 
         break;
 
@@ -241,18 +221,8 @@ export function DataViewerMenu(): ReactElement {
 
         break;
 
-      case 'convert-to-drawing':
-        void convertToDrawing();
-
-        break;
-
       case 'simplify':
         void simplify();
-
-        break;
-
-      case 'edit-style':
-        dispatch(setActiveModal({ type: 'track-viewer-style' }));
 
         break;
 
@@ -271,6 +241,37 @@ export function DataViewerMenu(): ReactElement {
           tooltip={tvm?.unsavedTooltip}
         />
       )}
+
+      {/* Drawing is a mode of this toolbar: picking one takes map clicks. */}
+      <SelectDropdown
+        breakpoint="lg"
+        name={m?.general.drawingTool}
+        value={drawTool ?? 'none'}
+        onSelect={(tool) => {
+          if (tool === 'none') {
+            if (drawTool) {
+              dispatch(closeTool(drawTool));
+            }
+          } else {
+            dispatch(openTool(ToolSchema.parse(tool)));
+          }
+        }}
+        options={[
+          {
+            value: 'none',
+            label: <Text k="general.noDrawingTool" />,
+            icon: <FaMousePointer />,
+          },
+          ...toolDefinitions
+            .filter((td) => td.draw)
+            .map(({ tool, icon, msgKey: key, kbd }) => ({
+              value: tool,
+              label: <Text k={`selections.${key as 'drawPoints'}`} />,
+              icon,
+              kbd: `g ${kbd?.slice(3).toLowerCase()}`,
+            })),
+        ]}
+      />
 
       {canUpload && (
         <LongPressTooltip breakpoint="sm" label={tvm?.upload}>
@@ -348,73 +349,66 @@ export function DataViewerMenu(): ReactElement {
         />
       )}
 
-      {hasTrack && (
-        <Dropdown id="more" onSelect={handleMoreSelect}>
-          <Dropdown.Toggle variant="secondary">
-            <FaEllipsisV />
-          </Dropdown.Toggle>
+      {/* Always there: the default style is wanted before anything is drawn. */}
+      <Dropdown id="more" onSelect={handleMoreSelect}>
+        <Dropdown.Toggle variant="secondary">
+          <FaEllipsisV />
+        </Dropdown.Toggle>
 
-          <FmDropdownMenu>
-            <Dropdown.Item as="button" eventKey="edit-style">
-              <FaPaintBrush />
+        <FmDropdownMenu>
+          <Dropdown.Item as="button" eventKey="default-style">
+            <FaPaintBrush />
+            <MenuLabel>{dm?.defProps.menuItem}</MenuLabel>
+            <MenuGutter>
+              <Chord modal="drawing-properties" />
+            </MenuGutter>
+          </Dropdown.Item>
+
+          {hasTrack && <Dropdown.Divider />}
+
+          {canUpdateElevation && (
+            <Dropdown.Item as="button" eventKey="update-elevation">
+              <FaMountain />
               <MenuLabel>
-                <Text m={tvm} k="style.title" />
+                <Text m={tvm} k="elevationFill.update" />
               </MenuLabel>
             </Dropdown.Item>
+          )}
 
-            {hasLines && canUpdateElevation && (
-              <Dropdown.Item as="button" eventKey="update-elevation">
-                <FaMountain />
-                <MenuLabel>
-                  <Text m={tvm} k="elevationFill.update" />
-                </MenuLabel>
-              </Dropdown.Item>
-            )}
-
-            {canSimplify && (
-              <Dropdown.Item as="button" eventKey="simplify">
-                <FaCompressAlt />
-                <MenuLabel>
-                  <Text m={tvm} k="simplifyAll" />
-                </MenuLabel>
-              </Dropdown.Item>
-            )}
-
-            {!hasActiveMap && (
-              <Dropdown.Item as="button" eventKey="save-as-map">
-                <FaSave />
-                <MenuLabel>
-                  <Text m={tvm} k="saveAsMap" />
-                </MenuLabel>
-              </Dropdown.Item>
-            )}
-
-            {canUploadToOsm && (
-              <Dropdown.Item as="button" eventKey="upload-to-osm">
-                <SiOpenstreetmap />
-                <MenuLabel>
-                  <Text m={tvm} k="osmUpload.menuItem" />
-                </MenuLabel>
-              </Dropdown.Item>
-            )}
-
-            <Dropdown.Item as="button" eventKey="convert-to-drawing">
-              <FaPencilAlt />
+          {canSimplify && (
+            <Dropdown.Item as="button" eventKey="simplify">
+              <FaCompressAlt />
               <MenuLabel>
-                <Text k="general.convertAllToDrawing" />
+                <Text m={tvm} k="simplifyAll" />
               </MenuLabel>
             </Dropdown.Item>
+          )}
 
-            <BatchPropertiesItems
-              modal="data-viewer-batch-properties"
-              counts={batchCounts}
-              divided
-            />
-          </FmDropdownMenu>
-        </Dropdown>
-      )}
+          {hasTrack && !hasActiveMap && (
+            <Dropdown.Item as="button" eventKey="save-as-map">
+              <FaSave />
+              <MenuLabel>
+                <Text m={tvm} k="saveAsMap" />
+              </MenuLabel>
+            </Dropdown.Item>
+          )}
 
-      {hasTrack && <DeleteButton action={dataViewerDelete()} />}
+          {canUploadToOsm && (
+            <Dropdown.Item as="button" eventKey="upload-to-osm">
+              <SiOpenstreetmap />
+              <MenuLabel>
+                <Text m={tvm} k="osmUpload.menuItem" />
+              </MenuLabel>
+            </Dropdown.Item>
+          )}
+
+          <BatchPropertiesItems
+            modal="data-viewer-batch-properties"
+            counts={batchCounts}
+            divided
+          />
+        </FmDropdownMenu>
+      </Dropdown>
     </ToolMenu>
   );
 }

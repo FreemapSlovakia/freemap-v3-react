@@ -319,13 +319,12 @@ can't be made exclusive + optics). Keep the free/open core intact.
 
 Bugs and feature requests are issues under `area: drawing`.
 
-- [ ] **No coverage for the hole wire formats.** The reducer's linking, cascade
-      delete and stale-index tolerance are tested, but nothing exercises the
-      round-trips the design leans on: URL `H` field ↔ store, document
-      `holeOf` ↔ `holeOfId` (and the my-maps fingerprint agreeing across both),
-      the GeoJSON interior rings, the GPX `fm:polygonId` / `fm:holeOf` pairing,
-      and KML `innerBoundaryIs`. These are pure functions over small fixtures —
-      cheap to pin, and the place a regression would go unnoticed longest.
+- [ ] **No coverage for holes in the file formats.** The link's `H` field ↔
+      polygon rings is pinned (`drawingWire.test.ts`); nothing exercises the GPX
+      `fm:polygonId` / `fm:holeOf` pairing, KML `innerBoundaryIs`, or a saved
+      map's `holeOf` agreeing with its fingerprint. Pure functions over small
+      fixtures — cheap to pin, and where a regression would go unnoticed
+      longest.
 
 ## Track viewer: generic geodata vs. recorded tracks
 
@@ -373,27 +372,69 @@ gpxUrl }`, which are in every saved map on the server;
       discriminated `mode: { type: 'split'; … } | { type: 'join'; … } | null`
       makes it structural, and a `useTrackModes` hook then gives the map one
       `{ armed, handleClick, handleMove, handleOut, halos }` instead of a
-      per-mode fan-out. Do it when a third mode lands, or sooner. Two details
+      per-mode fan-out. Do it when a third mode lands, or sooner. One detail
       to fold in: `joinWith.featureIndex` duplicates `main.selection.id` (pass
       `selectedIndex` in, as `useTrackSplit` already does — but note the
-      selection is cleared by paths that don't dispatch `selectFeature`), and
-      the drawing/dataViewer slices spell "not armed" as `undefined` vs `null`,
-      which is why the Delete guard reads as two conditions.
+      selection is cleared by paths that don't dispatch `selectFeature`).
 
-## Drawing vs. data viewer: one model, two storage budgets
+## Drawing + data viewer merge: one collection, storage by size
 
-The two features hold the same kind of thing — a named, styled point, line or
-polygon with a property table — and keep converging: the style modal, the
-simplify dialog and now the properties editor are literally the same component.
-The only real difference is where the features live: drawing rides in the URL,
-so it cannot carry per-point data (elevation, heart rate, cadence, times);
-loaded data lives in IndexedDB, so it cannot be shared by link. Both differences
-disappear once the user saves a map, which is why "why are there two of these?"
-is a fair question from anyone who hasn't hit either limit.
+Drawing and the data viewer become one collection of map features with one
+editor; where it is stored follows from its size, not from the tool that made it.
 
-Not a merge — the URL budget is real and doesn't go away. The aim is to stop
-presenting one model as two kinds of object. Open items are issues under
-`area: drawing` and `area: data-viewer`.
+- [x] **History for local data.** Per-entry content-hashed snapshots in
+      IndexedDB (`trackStore.ts`), `history.state.tr` naming one; Back/Forward
+      step through edits.
+- [x] **One model.** `trackViewer.trackGeojson` holds every point, line and
+      polygon; `drawingLines`/`drawingPoints` are gone. Features are addressed
+      by index (`feature`/`vertex` selections), vertex editing works per part
+      with channels kept, one toolbar (`import-file`) holds the draw modes,
+      and only "convert to drawing" remains as "add to the map".
+- [x] **Storage by size.** `urlWire`: the URL when every feature round-trips
+      and the params fit 8000 characters, else a snapshot. My Maps documents
+      keep `points`/`lines` for what those can say.
+- [x] **Richer URL codec.** `V` names per-vertex columns (`ele`, `time`
+      delta-encoded, numeric channels), `,,` breaks segments, `Y`/`G` carry
+      `fm:kind`/`_gpxType`, a point takes `/ele`.
+- [ ] **One index remap for the collection.** Feature indices are shifted in
+      `replaceFeature`, by hand in join, in the main reducer for hole edits,
+      in `deleteProcessor` and `dataViewerSplitSelectionProcessor`, and cleaned
+      up after by the stale-selection processor. Make `replaceFeature` the only
+      length-changing primitive and apply its `old → new | null` map to every
+      index holder, the selection included.
+- [ ] **Per-feature caches on the hot path.** Each edit re-hashes the whole
+      collection (`snapshotKey`, the
+      saved-map fingerprint), re-validates it (`storeSnapshot`) and
+      re-serializes it (`urlWire`). Key, hash, validate and encode per feature.
+- [ ] **One answer to "where do the features live"** (link, remote file,
+      snapshot) instead of `featuresInLink`, `homedElsewhere`, `localTrack`
+      and `getMapContentParts` each asking. Restoring an entry is already one
+      place (`entryContent.ts`); deciding where to write it is not.
+- [ ] **One feature folder, one name.** The tool is "Drawing and data", but its
+      code is split over `src/features/drawing/` (the point/line tools, styles
+      and `drawingSettings`, the property editor, labels, JOSM export, and the
+      `DrawingPoint`/`Line` document types in `model/actions/`, which hold no
+      actions any more) and `src/features/dataViewer/`, under the slice name
+      `trackViewer`. Step 1: move `drawing/` into `dataViewer/` and merge the
+      two translation bundles — mechanical, about 70 importers, all caught by
+      `tsc`. Step 2, optional: rename `dataViewer` / `trackViewer` to one name.
+      `trackViewerSettings` and `drawingSettings` are localStorage keys
+      (`persistence.ts`), so renaming them needs a migration; map documents keep
+      `trackViewer` / `points` / `lines` on the wire.
+- [ ] **Chart identity: what it draws, not the whole collection.** The
+      track-viewer target's identity is the active line's geometry paired with
+      every point, so a property-only edit of the line (removing its `times`
+      channel) leaves a stale chart, while any point edit refetches a 2D
+      line's profile. Key it on the line's geometry and the channels it draws.
+- [ ] **A line's label beside it by its angle.** Leaflet's `auto` puts it left
+      or right by which half of the map the line's centre is in. Better: above
+      a steep line, beside a flat one, from the bearing at the label's anchor.
+- [ ] **Chart identity across reloads.** `elevation-chart=track-viewer` reopens
+      on the first line, not the one charted; naming the line by index in the
+      param would fix it.
+- [ ] **A link with both `track-uid=` and drawing params** loads the track
+      and ignores the params; drawing beside such a track makes the whole
+      collection local.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 

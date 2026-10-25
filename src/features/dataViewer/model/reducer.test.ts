@@ -4,15 +4,23 @@ import {
   openTool,
   selectFeature,
 } from '@app/store/actions.js';
-import type { Feature, FeatureCollection } from 'geojson';
+import type { Feature, FeatureCollection, Polygon } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
+  dataViewerCutHole,
   dataViewerDelete,
   dataViewerDeleteFeature,
+  dataViewerDeleteVertex,
+  dataViewerDrawAppend,
+  dataViewerDrawStart,
+  dataViewerDrawStop,
+  dataViewerEditFeatures,
   dataViewerExplodeTrack,
   dataViewerGpxLoad,
+  dataViewerInsertVertex,
   dataViewerJoinTracks,
   dataViewerSetData,
+  dataViewerSetFeatureProperties,
   dataViewerSetJoining,
   dataViewerSetSplitting,
   dataViewerSetTrackUID,
@@ -22,7 +30,16 @@ import { dataViewerInitialState, dataViewerReducer } from './reducer.js';
 
 /** Pure reducer tests for the track-viewer slice. */
 
-const fc: FeatureCollection = { type: 'FeatureCollection', features: [] };
+const fc: FeatureCollection = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'Point', coordinates: [17, 48] },
+    },
+  ],
+};
 
 describe('dataViewerReducer — setData', () => {
   it('stores the geojson', () => {
@@ -32,6 +49,17 @@ describe('dataViewerReducer — setData', () => {
     );
 
     expect(next.trackGeojson).toBe(fc);
+  });
+
+  it('takes an empty collection for none', () => {
+    const next = dataViewerReducer(
+      { ...dataViewerInitialState, trackGeojson: fc },
+      dataViewerSetData({
+        trackGeojson: { type: 'FeatureCollection', features: [] },
+      }),
+    );
+
+    expect(next.trackGeojson).toBeNull();
   });
 
   it('keeps the existing geojson when the payload omits it', () => {
@@ -338,6 +366,38 @@ describe('dataViewerReducer — joining', () => {
     expect(next.joinWith).toBeNull();
   });
 
+  describe('a full elevation override', () => {
+    const credits = [{ type: 'data' as const, name: 'DMR 5.0' }];
+
+    const overridden = {
+      ...dataViewerInitialState,
+      trackGeojson: {
+        type: 'FeatureCollection' as const,
+        features: [track('a', [straight(3)])],
+      },
+      elevationDecision: 'all' as const,
+      elevationAttributions: credits,
+    };
+
+    // The values are still the model's, so are their credits; a point added
+    // without one is what "Update elevation" is then offered for.
+    it('holds, credits and all, once a point is added', () => {
+      const next = dataViewerReducer(
+        overridden,
+        dataViewerInsertVertex({
+          index: 0,
+          part: 0,
+          vertex: 1,
+          position: [17.05, 48],
+        }),
+      );
+
+      expect(next.elevationDecision).toBe('all');
+
+      expect(next.elevationAttributions).toEqual(credits);
+    });
+  });
+
   it('reopens the elevation decision, which was one track’s', () => {
     const next = dataViewerReducer(
       {
@@ -400,5 +460,170 @@ describe('dataViewerReducer — joining', () => {
     expect(
       dataViewerReducer(state, dataViewerJoinTracks(0)).trackGeojson?.features,
     ).toHaveLength(2);
+  });
+});
+
+describe('dataViewerReducer — drawing', () => {
+  const draw = (...actions: Parameters<typeof dataViewerReducer>[1][]) =>
+    actions.reduce(dataViewerReducer, dataViewerInitialState);
+
+  const start = (type: 'line' | 'polygon') =>
+    dataViewerDrawStart({
+      type,
+      position: [0, 0],
+      index: 0,
+      properties: {},
+    });
+
+  it('draws a line vertex by vertex into a new feature', () => {
+    const state = draw(
+      start('line'),
+      dataViewerDrawAppend([1, 0]),
+      dataViewerDrawAppend([1, 1]),
+    );
+
+    expect(state.drawing).toEqual({ index: 0, part: 0 });
+
+    expect(state.trackGeojson?.features[0]?.geometry).toEqual({
+      type: 'LineString',
+      coordinates: [
+        [0, 0],
+        [1, 0],
+        [1, 1],
+      ],
+    });
+  });
+
+  it('keeps a polygon ring closed as it grows', () => {
+    const state = draw(
+      start('polygon'),
+      dataViewerDrawAppend([1, 0]),
+      dataViewerDrawAppend([1, 1]),
+    );
+
+    expect(state.trackGeojson?.features[0]?.geometry).toEqual({
+      type: 'Polygon',
+      coordinates: [
+        [
+          [0, 0],
+          [1, 0],
+          [1, 1],
+          [0, 0],
+        ],
+      ],
+    });
+  });
+
+  it('drops a drawing that ended too short to be a line', () => {
+    const state = draw(start('line'), dataViewerDrawStop());
+
+    expect(state.drawing).toBeNull();
+
+    expect(state.trackGeojson).toBeNull();
+  });
+
+  it('ends the drawing on a selection, keeping a finished line', () => {
+    const state = draw(
+      start('line'),
+      dataViewerDrawAppend([1, 0]),
+      selectFeature(null),
+    );
+
+    expect(state.drawing).toBeNull();
+
+    expect(state.trackGeojson?.features).toHaveLength(1);
+  });
+
+  it('cuts a hole as a further ring of the polygon', () => {
+    const state = draw(
+      start('polygon'),
+      dataViewerDrawAppend([4, 0]),
+      dataViewerDrawAppend([4, 4]),
+      dataViewerDrawStop(),
+      dataViewerCutHole(0),
+      dataViewerDrawStart({ ring: 0, position: [1, 1] }),
+      dataViewerDrawAppend([2, 1]),
+      dataViewerDrawAppend([2, 2]),
+      dataViewerDrawStop(),
+    );
+
+    expect(
+      (state.trackGeojson!.features[0]!.geometry as Polygon).coordinates,
+    ).toHaveLength(2);
+  });
+
+  it('turns a polygon typed as a line into its open outline', () => {
+    const state = draw(
+      start('polygon'),
+      dataViewerDrawAppend([1, 0]),
+      dataViewerDrawAppend([1, 1]),
+      dataViewerDrawStop(),
+      dataViewerSetFeatureProperties([
+        { index: 0, properties: { 'freemap:type': 'line' } },
+      ]),
+    );
+
+    expect(state.trackGeojson?.features[0]?.geometry).toEqual({
+      type: 'LineString',
+      coordinates: [
+        [0, 0],
+        [1, 0],
+        [1, 1],
+      ],
+    });
+  });
+
+  it('deletes a vertex, and the line with its last but one', () => {
+    const line = draw(
+      start('line'),
+      dataViewerDrawAppend([1, 0]),
+      dataViewerDrawAppend([1, 1]),
+      dataViewerDrawStop(),
+    );
+
+    const once = dataViewerReducer(
+      line,
+      dataViewerDeleteVertex({ index: 0, part: 0, vertex: 1 }),
+    );
+
+    expect(once.trackGeojson?.features[0]?.geometry).toMatchObject({
+      coordinates: [
+        [0, 0],
+        [1, 1],
+      ],
+    });
+
+    expect(
+      dataViewerReducer(
+        once,
+        dataViewerDeleteVertex({ index: 0, part: 0, vertex: 0 }),
+      ).trackGeojson,
+    ).toBeNull();
+  });
+
+  const peak: Feature = {
+    type: 'Feature',
+    properties: {},
+    geometry: { type: 'Point', coordinates: [17, 48] },
+  };
+
+  it('takes an edit of the collection with nothing on the map yet', () => {
+    expect(
+      dataViewerReducer(dataViewerInitialState, dataViewerEditFeatures([peak]))
+        .trackGeojson?.features,
+    ).toEqual([peak]);
+  });
+
+  it('drops a line still being drawn from an edit built before it ended', () => {
+    const drawing = draw(start('line'));
+
+    const edited = dataViewerReducer(
+      drawing,
+      dataViewerEditFeatures([...drawing.trackGeojson!.features, peak]),
+    );
+
+    expect(edited.drawing).toBeNull();
+
+    expect(edited.trackGeojson?.features).toEqual([peak]);
   });
 });

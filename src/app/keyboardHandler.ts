@@ -5,13 +5,12 @@ import {
 } from '@features/changesets/model/actions.js';
 import { historyHosted } from '@features/changesets/model/inspectorToast.js';
 import {
+  dataViewerCutHole,
+  dataViewerDrawStop,
   dataViewerSetJoining,
   dataViewerSetSplitting,
 } from '@features/dataViewer/model/actions.js';
-import {
-  drawingLineJoinStart,
-  drawingLineStopDrawing,
-} from '@features/drawing/model/actions/drawingLineActions.js';
+import { editableParts } from '@features/dataViewer/vertexEditing.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import {
   galleryCancelShowOnTheMap,
@@ -74,6 +73,24 @@ const isSuspendedModal = (state: RootState) =>
   Boolean(state.mapLibrary.preview) ||
   state.toposcope.pickingCenter;
 
+/** A selected vertex goes only while its line or ring keeps enough of them. */
+function vertexDeletable(state: RootState): boolean {
+  const { selection } = state.main;
+
+  if (selection?.type !== 'vertex') {
+    return true;
+  }
+
+  const feature = state.trackViewer.trackGeojson?.features[selection.id];
+
+  const vertices = feature && editableParts(feature.geometry)?.[selection.part];
+
+  return (
+    vertices !== undefined &&
+    vertices.length > (feature?.geometry.type === 'Polygon' ? 3 : 2)
+  );
+}
+
 // Overlays that own their open-state outside main.activeModal: the gallery
 // viewer (own + Wikimedia Commons photos), and the Wikipedia preview (shown
 // while loading or once previewed). The picking/selecting overlays are tracked
@@ -124,10 +141,6 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
 
   // Before the chart and the panels below it: a mode waiting on a click has
   // put them away, so Escape has to be about the mode itself.
-  if (state.drawingLines.joinWith) {
-    return drawingLineJoinStart(undefined);
-  }
-
   if (state.trackViewer.joinWith) {
     return dataViewerSetJoining(null);
   }
@@ -155,8 +168,12 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
   // Waiting for a hole to be drawn is a mode of its own — no line is being
   // drawn yet — so leaving it must not fall through to clearing the
   // selection, which would drop the polygon the hole was meant for.
-  if (state.drawingLines.drawing || state.drawingLines.holeFor !== undefined) {
-    return drawingLineStopDrawing();
+  if (state.trackViewer.drawing) {
+    return dataViewerDrawStop();
+  }
+
+  if (state.trackViewer.holeFor !== null) {
+    return dataViewerCutHole(null);
   }
 
   if (state.gallery.showPosition) {
@@ -316,7 +333,6 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
 
   if (
     event.code === 'Delete' &&
-    state.drawingLines.joinWith === undefined &&
     // An armed mode has no toolbar of its own to delete from, so the key would
     // take away the very track it is aimed at.
     state.trackViewer.joinWith === null &&
@@ -324,12 +340,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     !keyTimer &&
     !showingModal &&
     !suspendedModal &&
-    (state.main.selection?.type !== 'line-point' ||
-      state.drawingLines.lines[state.main.selection.lineIndex].points.length >
-        (state.drawingLines.lines[state.main.selection.lineIndex].type ===
-        'line'
-          ? 2
-          : 3))
+    vertexDeletable(state)
   ) {
     return deleteFeature();
   }

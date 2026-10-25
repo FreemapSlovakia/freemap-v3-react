@@ -33,14 +33,14 @@ describe('measurementStale', () => {
   it('keeps the readout in selecting mode while a line is selected', () => {
     // No draw tool open (e.g. after converting a route to a drawing), yet a
     // selected line or vertex stays measured.
-    expect(measurementStale(state(null, 'draw-line-poly'))).toBe(false);
-    expect(measurementStale(state(null, 'line-point'))).toBe(false);
+    expect(measurementStale(state(null, 'feature'))).toBe(false);
+    expect(measurementStale(state(null, 'vertex'))).toBe(false);
   });
 
-  it('dismisses the readout with no draw tool and no line selected', () => {
+  it('dismisses the readout with no draw tool and no feature selected', () => {
     expect(measurementStale(state(null))).toBe(true);
     expect(measurementStale(state(null, 'search'))).toBe(true);
-    expect(measurementStale(state(null, 'draw-points'))).toBe(true);
+    expect(measurementStale(state(null, 'objects'))).toBe(true);
     expect(measurementStale(state('route-planner'))).toBe(true);
   });
 });

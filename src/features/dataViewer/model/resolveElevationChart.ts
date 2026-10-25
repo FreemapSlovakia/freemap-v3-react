@@ -1,17 +1,27 @@
 import type { ProfileResolver } from '@features/elevationChart/model/resolve.js';
+import { elevationCoverage } from '@shared/geoutils.js';
 import {
   isTrackLine,
   resolveActiveTrack,
   trackWaypoints,
 } from '../trackSelection.js';
 import { elevationCredit } from './elevationCredit.js';
-import { ensureRenderGeojson } from './ensureRenderGeojson.js';
+import { buildLines } from './renderLines.js';
 
-/** The active imported track, densified where it was elevation-overridden. */
+/** The active line, as its render copy draws it (`renderLines.ts`). */
 const resolve: ProfileResolver = async (getState, dispatch) => {
-  // Re-densify against the freshly overridden elevation (the cache is
-  // invalidated by an elevation change) so the chart stays high-resolution.
-  await ensureRenderGeojson(getState, dispatch);
+  const first = getState().trackViewer;
+
+  const shown = resolveActiveTrack(first.trackGeojson, first.activeTrackIndex);
+
+  if (shown) {
+    try {
+      await buildLines(getState, dispatch, [shown.index]);
+    } catch (err) {
+      // The stored line stands in, or the chart samples one without elevation.
+      console.warn('Sampling the line for its profile failed:', err);
+    }
+  }
 
   const trackViewer = getState().trackViewer;
 
@@ -37,15 +47,21 @@ const resolve: ProfileResolver = async (getState, dispatch) => {
 
   const drawn = rendered && isTrackLine(rendered) ? rendered : active.feature;
 
+  // A line with no elevation of its own — a drawn one, typically — is sampled
+  // from the elevation API, and nothing is written into it.
+  const sampled = elevationCoverage([drawn]) === 'none';
+
   return {
     status: 'ok',
     source: {
       trackGeojson: drawn,
       // Recorded elevation is shown as-is, gaps included; a fill or override has
       // already written the server's values into these same coordinates.
-      keepRecorded: true,
+      keepRecorded: !sampled,
       waypoints: trackWaypoints(trackGeojson),
-      credit: elevationCredit(trackViewer, drawn),
+      credit: sampled
+        ? { provenance: 'terrain-model' }
+        : elevationCredit(trackViewer, drawn),
     },
   };
 };

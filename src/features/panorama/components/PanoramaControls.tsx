@@ -8,6 +8,7 @@ import {
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { pointFeaturesSelector } from '@features/toposcope/centerPoint.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   FloatingWindowControls,
@@ -149,7 +150,7 @@ export function PanoramaControls({
   const [dateDraft, setDateDraft] = useState<string | null>(null);
 
   const hasDrawnPoints = useAppSelector(
-    (state) => state.drawingPoints.points.length > 0,
+    (state) => pointFeaturesSelector(state).length > 0,
   );
 
   const confirmChoice = useConfirmChoice();

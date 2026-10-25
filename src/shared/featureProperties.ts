@@ -5,8 +5,22 @@ import {
 import { geometryLabelValues } from '@features/drawing/labelValues.js';
 import type { DrawingProps } from '@features/drawing/model/actions/drawingPointActions.js';
 import { isClosedGeometry } from '@shared/geoutils.js';
+import { parseDecimal } from '@shared/numberValidator.js';
 import { lineStyleFromProperties } from '@shared/styleFromProperties.js';
 import type { Feature } from 'geojson';
+
+/**
+ * togeojson's KML keys that mean nothing once imported: references into the
+ * file's style table, already resolved into the properties, and the icon hot
+ * spot, which our icons don't use.
+ */
+export const KML_IMPORT_KEYS = [
+  'styleUrl',
+  'styleHash',
+  'styleMapHash',
+  'icon-offset',
+  'icon-offset-units',
+];
 
 /**
  * Property keys the editor owns rather than shows: the label it edits, the
@@ -37,14 +51,27 @@ const RESERVED_KEYS = new Set([
   'icon-color',
   'icon-opacity',
   'sym',
-  'styleUrl',
-  'styleHash',
+  ...KML_IMPORT_KEYS,
 ]);
+
+/** The properties without `keys`. */
+export function withoutKeys(
+  properties: Record<string, unknown> | null | undefined,
+  keys: readonly string[],
+): Record<string, unknown> {
+  const out = { ...properties };
+
+  for (const key of keys) {
+    delete out[key];
+  }
+
+  return out;
+}
 
 /** Ours: the style the editor writes, and the provenance the parser stamps. */
 const RESERVED_PREFIXES = ['freemap:', 'fm:', 'osmand:', 'gpx_style:'];
 
-function isDataKey(key: string): boolean {
+export function isDataKey(key: string): boolean {
   return (
     !RESERVED_KEYS.has(key) &&
     !RESERVED_PREFIXES.some((prefix) => key.startsWith(prefix))
@@ -102,13 +129,134 @@ function plainData(
 }
 
 /**
- * The feature's own data, as editable rows. A nested value has no row form, so
- * it stays out of the table and survives untouched.
+ * The feature's own data as text, which labels and text exports read. Nulls
+ * and nested values are left out; {@link typedDataTable} shows them.
  */
 export function featureDataProps(
   properties: Record<string, unknown> | null | undefined,
 ): DrawingProps {
   return { ...plainData(properties), ...ownTable(properties) };
+}
+
+/**
+ * A property row's type; `true`, `false` and `null` are their own value, and
+ * `multiline` is text edited in a box of its own.
+ */
+export type PropType =
+  | 'text'
+  | 'multiline'
+  | 'number'
+  | 'true'
+  | 'false'
+  | 'null'
+  | 'json';
+
+export type PropTypes = Record<string, PropType>;
+
+function propTypeOf(value: unknown): PropType {
+  return typeof value === 'number'
+    ? 'number'
+    : value === true
+      ? 'true'
+      : value === false
+        ? 'false'
+        : value === null
+          ? 'null'
+          : typeof value === 'object'
+            ? 'json'
+            : typeof value === 'string' && value.includes('\n')
+              ? 'multiline'
+              : 'text';
+}
+
+/** A row's text as the value of its type; `undefined` when it reads as none. */
+export function typedValue(text: string, type: PropType): unknown {
+  switch (type) {
+    case 'text':
+    case 'multiline':
+      return text;
+
+    case 'number':
+      return parseDecimal(text);
+
+    case 'true':
+      return true;
+
+    case 'false':
+      return false;
+
+    case 'null':
+      return null;
+
+    case 'json':
+      try {
+        return JSON.parse(text);
+      } catch {
+        return undefined;
+      }
+  }
+}
+
+/**
+ * The rows as a text table holds them — as their values read back, so ` 12`
+ * is `12` and JSON `"6"` is `6` — less those that read as null or nested.
+ */
+export function textRows(
+  props: Readonly<DrawingProps>,
+  types: Readonly<PropTypes>,
+): DrawingProps {
+  return Object.fromEntries(
+    Object.entries(props).flatMap(([key, text]) => {
+      const value = typedValue(text, types[key] ?? 'text');
+
+      return value === undefined
+        ? [[key, text]]
+        : isScalar(value)
+          ? [[key, String(value)]]
+          : [];
+    }),
+  );
+}
+
+/** A value as a row's text: JSON for a nested one, empty for null. */
+export const valueText = (value: unknown) =>
+  value === null
+    ? ''
+    : typeof value === 'object'
+      ? JSON.stringify(value)
+      : String(value);
+
+/** The feature's own data as the editor's rows: each as text, and its type. */
+export function typedDataTable(
+  properties: Record<string, unknown> | null | undefined,
+): { props: DrawingProps; types: PropTypes } {
+  const props = featureDataProps(properties);
+
+  for (const [key, value] of Object.entries(properties ?? {})) {
+    if (isDataKey(key) && !Object.hasOwn(props, key) && value !== undefined) {
+      props[key] = valueText(value);
+    }
+  }
+
+  const own = ownTable(properties) ?? {};
+
+  // Our own table's text wins over a plain value it doesn't match, and is
+  // never null or nested.
+  const types = Object.fromEntries(
+    Object.entries(props).map(([key, text]): [string, PropType] => {
+      const value = properties?.[key];
+
+      return [
+        key,
+        (!Object.hasOwn(own, key) || isScalar(value)) &&
+        valueText(value) === text
+          ? propTypeOf(value)
+          : propTypeOf(text),
+      ];
+    }),
+  );
+
+  return { props, types };
 }
 
 /** The label as the author wrote it, template and all, where the file carries one. */
@@ -318,19 +466,40 @@ export function featureExportTable(
   };
 }
 
+/** An edited row's value in the type it had, when the text still reads as one. */
+function retyped(before: unknown, value: string): unknown {
+  if (isScalar(before) && String(before) === value) {
+    return before;
+  }
+
+  const n = typeof before === 'number' && typedValue(value, 'number');
+
+  if (typeof n === 'number') {
+    return n;
+  }
+
+  if (typeof before === 'boolean' && (value === 'true' || value === 'false')) {
+    return value === 'true';
+  }
+
+  return value;
+}
+
 /**
- * Puts the edited table back, keeping everything the table never showed. A row
- * that reads the same as before keeps the value it had, so a GeoJSON `"ele":
- * 1234` stays a number unless the user actually retyped it.
+ * Puts the edited table back, keeping everything the table never showed.
+ * `types`, from {@link typedDataTable}, gives each row its value's type;
+ * without, a number or boolean stays one while its row still reads as one.
  */
 export function mergeFeatureDataProps(
   properties: Record<string, unknown> | null | undefined,
   props: DrawingProps,
+  types?: Readonly<PropTypes>,
 ): Record<string, unknown> {
   const out: Record<string, unknown> = {};
 
+  // The typed table shows nulls and nested values too, so they are its to drop.
   for (const [key, value] of Object.entries(properties ?? {})) {
-    if (!isDataKey(key) || !isScalar(value)) {
+    if (!isDataKey(key) || (!types && !isScalar(value))) {
       out[key] = value;
     }
   }
@@ -342,15 +511,20 @@ export function mergeFeatureDataProps(
       continue;
     }
 
-    const before = properties?.[key];
+    const typed = types && typedValue(value, types[key] ?? 'text');
 
-    out[key] = isScalar(before) && String(before) === value ? before : value;
+    // Not `??`: a typed `null` is a value.
+    out[key] = !types
+      ? retyped(properties?.[key], value)
+      : typed === undefined
+        ? value
+        : typed;
   }
 
   // Both statements stay the same, or the edit shows on screen while every
   // reader of the other copy keeps answering with the old one.
   if (ownTable(properties)) {
-    out[OWN_TABLE] = { ...props };
+    out[OWN_TABLE] = types ? textRows(props, types) : { ...props };
   }
 
   return out;

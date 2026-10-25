@@ -4,6 +4,7 @@ import { flattenTracks } from '@shared/flattenTracks.js';
 import { stitchLines } from '@shared/geoutils.js';
 import type { Feature, LineString, Position } from 'geojson';
 import type { Exportable } from './model/actions.js';
+import { featureExportable } from './model/selectionFilter.js';
 
 export type GarminCourse = {
   distance?: number;
@@ -97,34 +98,51 @@ export function getExportables(): Partial<
       return course;
     },
 
-    import({ trackViewer }: RootState) {
-      const { trackGeojson } = trackViewer;
+    // The selected line, or the only one.
+    drawingLines({ trackViewer, main: { selection } }: RootState) {
+      const all = trackViewer.trackGeojson?.features ?? [];
 
-      if (!trackGeojson) {
+      const lines = all.filter(
+        ({ geometry }) => featureExportable(geometry) === 'drawingLines',
+      );
+
+      if (lines.length === 0) {
         return null;
       }
 
-      const cached = courses.get(trackGeojson);
+      const selected =
+        selection?.type === 'feature' || selection?.type === 'vertex'
+          ? all[selection.id]
+          : undefined;
+
+      const line =
+        selected && lines.includes(selected)
+          ? selected
+          : lines.length === 1
+            ? lines[0]
+            : undefined;
+
+      if (!line) {
+        return 'garmin.multipleLines';
+      }
+
+      const cached = courses.get(line);
 
       if (cached !== undefined) {
         return cached;
       }
 
-      // Flattened and stitched for the same two reasons as `search` above. A
-      // `<trk>` of several `<trkseg>` — any paused and resumed recording —
-      // arrives as one `MultiLineString`, which stitching alone would leave
-      // untouched.
+      // Flattened and stitched for the same two reasons as `search` above: a
+      // paused and resumed recording arrives as one `MultiLineString`.
       const features = structuredClone(
-        trackGeojson.features.flatMap((feature) =>
-          flattenTracks(feature).map((part) => part as Feature),
-        ),
+        flattenTracks(line).map((part) => part as Feature),
       );
 
       stitchLines(features);
 
       const course = toCourse(features);
 
-      courses.set(trackGeojson, course);
+      courses.set(line, course);
 
       return course;
     },
@@ -179,36 +197,6 @@ export function getExportables(): Partial<
         distance: alternative.distance,
         elapsedSeconds: alternative.duration,
       };
-    },
-
-    drawingLines({ drawingLines, main: { selection } }: RootState) {
-      const lines = drawingLines.lines.filter((line) => line.type === 'line');
-
-      if (lines.length === 0) {
-        return null;
-      }
-
-      let line;
-
-      if (selection?.type === 'draw-line-poly') {
-        const { id } = selection;
-
-        line = drawingLines.lines[id];
-
-        if (!lines.includes(line)) {
-          line = undefined;
-        }
-      }
-
-      if (line) {
-        // nothing
-      } else if (lines.length === 1) {
-        line = lines[0];
-      } else {
-        return 'garmin.multipleLines';
-      }
-
-      return { coordinates: line.points.map((p) => [p.lon, p.lat]) };
     },
   };
 }

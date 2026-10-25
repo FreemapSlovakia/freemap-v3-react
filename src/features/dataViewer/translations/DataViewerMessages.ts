@@ -1,12 +1,12 @@
+import type { LineKind } from '@shared/components/FeaturePropertiesModal.js';
 import type { JSX, ReactNode } from 'react';
 import type { OsmGpxVisibility } from '../model/actions.js';
 
 export type DataViewerMessages = {
   info: () => JSX.Element;
   upload: string;
-  /** Label for a selected line, by its position among the loaded lines. */
-  unnamedTrack: (props: { n: number }) => string;
-  convertLossWarning: string;
+  /** Label for a selected line without one: its kind, numbered among its kind. */
+  unnamedTrack: (props: { n: number; kind: LineKind }) => string;
   /** The tool menu's simplification, which takes every loaded feature. */
   simplifyAll: string;
   moreInfo: string;
@@ -14,8 +14,40 @@ export type DataViewerMessages = {
   unsaved: string;
   unsavedTooltip: string;
   loginToSaveMap: string;
-  style: {
-    title: string;
+  /** A history step whose data this browser no longer keeps. */
+  snapshotGone: string;
+  /** This browser refused to keep the data, so a reload will not find it. */
+  snapshotFailed: string;
+  /** The dialog of one vertex's position and recorded values. */
+  vertex: {
+    menuItem: string;
+    latitude: string;
+    longitude: string;
+    elevation: string;
+    time: string;
+    /** How many of a line's points have a value of a channel. */
+    filled: (props: { filled: number; total: number }) => string;
+    /** Under the fields: what clearing one does. */
+    emptyHint: string;
+    notANumber: string;
+    outOfRange: string;
+    /** A time before the previous point's or after the next one's. */
+    timeOrder: string;
+    /** Names of the per-point channels, by their key in the data. */
+    channels: {
+      heart: string;
+      cads: string;
+      atemps: string;
+      wtemps: string;
+      depths: string;
+      speeds: string;
+      courses: string;
+      bearings: string;
+      powers: string;
+      accuracies: string;
+      battery: string;
+      gsmSignal: string;
+    };
   };
   /** Cutting a track in two, or into the segments a paused recording left. */
   split: {
@@ -107,9 +139,10 @@ export type DataViewerMessages = {
     keep: string;
     keepDesc: string;
     add: string;
+    clear: string;
+    clearDesc: string;
     update: string;
-    updateConfirm: string;
-    updatedToast: (props: { mode: 'missing' | 'all' }) => string;
+    updatedToast: (props: { mode: 'missing' | 'all' | 'clear' }) => string;
   };
   fetchingError: (props: { err: unknown }) => string;
   /** Matching a track to the routing graph failed for a reason worth showing. */

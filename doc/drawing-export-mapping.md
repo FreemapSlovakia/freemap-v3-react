@@ -252,7 +252,7 @@ they're audited by eye and exercised through round-trip exports.
 | `src/features/export/model/processors/gpxExportProcessorHandler.ts`             | GPX writer (`addDrawingPoints`, `addDrawingLines`, marker SVG builder for Locus icon)                                  |
 | `src/features/export/model/processors/geojsonExportProcessorHandler.ts`         | GeoJSON writer                                                                                                         |
 | `src/features/dataViewer/parseGpx.ts`                                           | GPX → GeoJSON reader; writes the canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk/rte features |
-| `src/processors/convertToDrawingProcessor.ts`                                   | Turns parsed features into drawing state                                                                               |
+| `src/processors/convertToDrawingProcessor.ts`                                   | Turns other tools' features into features of the collection                                                            |
 | `src/shared/styleFromProperties.ts`                                             | `*StyleFromProperties` priority chains, and the `*StyleToProperties` writers the data viewer's properties editor uses  |
 | `src/shared/featureProperties.ts`                                               | Which property keys are the feature's own data vs. style/bookkeeping; the `freemap:props` table reader                 |
 | `src/shared/drawingIcons.tsx`                                                   | iconSpec parser, FA loader, POI name↔URL maps, `tagsToPoiIconSpec`                                                     |
@@ -263,12 +263,14 @@ they're audited by eye and exercised through round-trip exports.
 If you add a new persisted field to a drawing point/line, the full
 checklist is:
 
-1. Add it to the Zod schema (`DrawingPointSchema` /
-   `LineSchema`) and the action payloads. If the field can't be carried
-   verbatim (like `holeOf`, an index out here but a parent id in the
-   store), the URL (`serializeDrawingLine` / `locationChangeHandler`) and
-   the map document (`mapDocument.ts`) must agree on the wire form, or a
-   map restored from its URL reads as having unsaved changes.
+1. Add it to the Zod schema (`DrawingPointSchema` / `LineSchema`) and to
+   the wire conversion in `dataViewer/drawingWire.ts` (`featureToWire`,
+   `pointToFeature` / `lineToFeature`). A feature whose wire form doesn't
+   read back as the feature is never written to the URL, so a field missing
+   there quietly sends every collection that has it to a browser snapshot.
+   The URL (`serializeDrawingLine` / `locationChangeHandler`) and the map
+   document (`mapDocument.ts`) must agree on the wire form, or a map
+   restored from its URL reads as having unsaved changes.
 2. **GPX writer** (`addDrawingPoints` / `addDrawingLines`):
    emit it as `<fm:fieldName>` always; emit it in foreign namespaces
    (osmand/locus/gpx_style) wherever a sensible counterpart exists.

@@ -1,14 +1,17 @@
 import { openTool, selectFeature } from '@app/store/actions.js';
+import type { MyStore } from '@app/store/store.js';
 import {
-  drawingLineAdd,
-  drawingLineDelete,
-} from '@features/drawing/model/actions/drawingLineActions.js';
+  lineToFeature,
+  pointToFeature,
+} from '@features/dataViewer/drawingWire.js';
 import {
-  drawingMeasure,
-  drawingPointAdd,
-  drawingPointDelete,
-} from '@features/drawing/model/actions/drawingPointActions.js';
+  dataViewerAddFeatures,
+  dataViewerDeleteFeature,
+} from '@features/dataViewer/model/actions.js';
+import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
+import { featureLabel } from '@shared/featureProperties.js';
+import type { Feature } from 'geojson';
 import z from 'zod';
 import { defineTool } from '../tool.js';
 
@@ -21,6 +24,18 @@ const ColorSchema = z
   .string()
   .optional()
   .describe('CSS hex colour, alpha allowed (#ff0000, #ff000080).');
+
+/** Adds one feature after the others, and answers the index it landed at. */
+function add(store: MyStore, feature: Feature): { index: number } {
+  store.dispatch(dataViewerAddFeatures({ features: [feature] }));
+
+  store.dispatch(drawingMeasure({}));
+
+  return {
+    index:
+      (store.getState().trackViewer.trackGeojson?.features.length ?? 1) - 1,
+  };
+}
 
 export const drawingTools = [
   defineTool({
@@ -37,20 +52,16 @@ export const drawingTools = [
     execute({ lat, lon, label, color, markerType, icon }, { store }) {
       const { style } = store.getState().drawingSettings;
 
-      store.dispatch(
-        drawingPointAdd({
+      return add(
+        store,
+        pointToFeature({
           coords: { lat, lon },
           label,
           color: color ?? style.color,
           markerType: markerType ?? style.markerType,
           icon,
-          id: store.getState().drawingPoints.points.length,
         }),
       );
-
-      store.dispatch(drawingMeasure({}));
-
-      return { index: store.getState().drawingPoints.points.length - 1 };
     },
   }),
 
@@ -67,8 +78,9 @@ export const drawingTools = [
     execute({ points, label, color, width }, { store }) {
       const { style } = store.getState().drawingSettings;
 
-      store.dispatch(
-        drawingLineAdd({
+      return add(
+        store,
+        lineToFeature({
           type: 'line',
           points: points.map((point, id) => ({ ...point, id })),
           label,
@@ -79,10 +91,6 @@ export const drawingTools = [
           lineJoin: style.lineJoin,
         }),
       );
-
-      store.dispatch(drawingMeasure({}));
-
-      return { index: store.getState().drawingLines.lines.length - 1 };
     },
   }),
 
@@ -99,8 +107,9 @@ export const drawingTools = [
     execute({ points, label, color, fillColor }, { store }) {
       const { style } = store.getState().drawingSettings;
 
-      store.dispatch(
-        drawingLineAdd({
+      return add(
+        store,
+        lineToFeature({
           type: 'polygon',
           points: points.map((point, id) => ({ ...point, id })),
           label,
@@ -112,32 +121,22 @@ export const drawingTools = [
           lineJoin: style.lineJoin,
         }),
       );
-
-      store.dispatch(drawingMeasure({}));
-
-      return { index: store.getState().drawingLines.lines.length - 1 };
     },
   }),
 
   defineTool({
     name: 'list-drawings',
     description:
-      'Lists what is drawn on the map, with the index each one is removed by.',
+      'Lists the map features — drawn and loaded alike — with the index each one is removed by.',
     input: z.object({}),
     execute(_args, { store }) {
-      const { drawingPoints, drawingLines } = store.getState();
+      const features = store.getState().trackViewer.trackGeojson?.features;
 
       return {
-        markers: drawingPoints.points.map((point, index) => ({
+        features: (features ?? []).map((feature, index) => ({
           index,
-          label: point.label,
-          ...point.coords,
-        })),
-        lines: drawingLines.lines.map((line, index) => ({
-          index,
-          type: line.type,
-          label: line.label,
-          points: line.points.length,
+          geometry: feature.geometry.type,
+          label: featureLabel(feature, { singleLine: true }),
         })),
       };
     },
@@ -146,32 +145,23 @@ export const drawingTools = [
   defineTool({
     name: 'remove-drawing',
     description:
-      'Removes one drawn marker, line or area by its index from list-drawings. Removing shifts the indexes of what comes after it, so list them again between removals.',
+      'Removes one map feature by its index from list-drawings. Removing shifts the indexes of what comes after it, so list them again between removals.',
     input: z.object({
-      kind: z.enum(['marker', 'line']),
       index: z.number().int().min(0),
     }),
-    execute({ kind, index }, { store }) {
-      const state = store.getState();
-
+    execute({ index }, { store }) {
       const count =
-        kind === 'marker'
-          ? state.drawingPoints.points.length
-          : state.drawingLines.lines.length;
+        store.getState().trackViewer.trackGeojson?.features.length ?? 0;
 
       if (index >= count) {
-        throw new Error(`There is no ${kind} ${index}; there are ${count}.`);
+        throw new Error(`There is no feature ${index}; there are ${count}.`);
       }
 
       // As `deleteProcessor` does: what follows shifts into the deleted index,
       // and a selection left behind would then point at the wrong feature.
       store.dispatch(selectFeature(null));
 
-      store.dispatch(
-        kind === 'marker'
-          ? drawingPointDelete({ index })
-          : drawingLineDelete({ lineIndex: index }),
-      );
+      store.dispatch(dataViewerDeleteFeature(index));
 
       store.dispatch(drawingMeasure({}));
     },

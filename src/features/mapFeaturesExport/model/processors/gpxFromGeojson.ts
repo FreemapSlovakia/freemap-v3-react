@@ -66,21 +66,72 @@ function coordPropAt(
 
 // `<trk>`/`<rte>` child elements carrying the feature's own metadata, in GPX
 // 1.1 schema order (they precede `<extensions>` and the points).
-const LINE_META = ['name', 'cmt', 'desc', 'src', 'type'] as const;
+const LINE_META = [
+  'name',
+  'cmt',
+  'desc',
+  'src',
+  'links',
+  'number',
+  'type',
+] as const;
 
-function addLineMeta(parent: Element, feature: Feature): void {
-  for (const tag of LINE_META) {
+// `<wpt>` child elements carrying the same, in GPX 1.1 schema order (these
+// follow `<ele>`).
+const WAYPOINT_META = [
+  'time',
+  'name',
+  'cmt',
+  'desc',
+  'src',
+  'links',
+  'sym',
+  'type',
+] as const;
+
+/** `<link>`s as the reader keeps them: `{ href, text?, type? }` each. */
+function addLinks(parent: Element, links: unknown): void {
+  if (!Array.isArray(links)) {
+    return;
+  }
+
+  for (const link of links) {
+    const href = (link as { href?: unknown } | null)?.href;
+
+    if (typeof href !== 'string' || !href) {
+      continue;
+    }
+
+    const linkEle = createElement(parent, 'link', undefined, { href });
+
+    for (const tag of ['text', 'type'] as const) {
+      const value = (link as Record<string, unknown>)[tag];
+
+      if (typeof value === 'string' && value) {
+        createElement(linkEle, tag, value);
+      }
+    }
+  }
+}
+
+function addMeta(
+  parent: Element,
+  feature: Feature,
+  tags: readonly string[],
+): void {
+  for (const tag of tags) {
     const value = feature.properties?.[tag];
 
-    if (value != null && value !== '') {
+    if (tag === 'links') {
+      addLinks(parent, value);
+    } else if (value != null && value !== '') {
       createElement(parent, tag, String(value));
     }
   }
 }
 
-// `<wpt>` child elements carrying the same, in GPX 1.1 schema order (these
-// follow `<ele>`).
-const WAYPOINT_META = ['time', 'name', 'cmt', 'desc', 'sym', 'type'] as const;
+const addLineMeta = (parent: Element, feature: Feature) =>
+  addMeta(parent, feature, LINE_META);
 
 /** What GPX has an element of its own for, so no table row repeats it. */
 const NATIVE_KEYS = new Set<string>([...LINE_META, ...WAYPOINT_META, 'ele']);
@@ -103,13 +154,7 @@ function addWaypoint(doc: Document, coord: number[], feature: Feature): void {
     createElement(wptEle, 'ele', String(ele));
   }
 
-  for (const tag of WAYPOINT_META) {
-    const value = feature.properties?.[tag];
-
-    if (value != null && value !== '') {
-      createElement(wptEle, tag, String(value));
-    }
-  }
+  addMeta(wptEle, feature, WAYPOINT_META);
 
   addExtensions(wptEle, feature);
 }

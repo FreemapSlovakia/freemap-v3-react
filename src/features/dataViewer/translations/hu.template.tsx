@@ -5,9 +5,7 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  style: {
-    title: 'Alapértelmezett stílus',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Felosztás',
     pick: 'Kattintson a nyomvonalra a felosztás helyén',
@@ -41,8 +39,6 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Feltöltés',
   unnamedTrack: ({ n }) => `${n}. nyomvonal`,
-  convertLossWarning:
-    'A rajzzá alakítás lecseréli a nyomvonalat, és eldobja a rögzített adatait (magasság, pulzusszám, sebesség, idő).',
   simplifyAll: 'Összes egyszerűsítése',
   moreInfo: 'További információ',
   saveAsMap: 'Mentés a térképeim közé',
@@ -101,11 +97,12 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'a nyomvonalban tárolt magasság használata',
     add: 'Magasság hozzáadása',
     update: 'Magasság frissítése',
-    updateConfirm: 'Lecseréli a nyomvonal magasságát a domborzatmodellre?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'A hiányzó magasság ki lett töltve.'
-        : 'A magasság felül lett írva.',
+        : mode === 'clear'
+          ? 'A magasság törölve lett.'
+          : 'A magasság felül lett írva.',
   },
   fetchingError: ({ err }) =>
     addError(

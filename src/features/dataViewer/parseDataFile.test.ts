@@ -179,6 +179,57 @@ describe('parseDataFile', () => {
     }
   });
 
+  it('keeps a GeoJSON file’s styleUrl, which is its own datum', () => {
+    const geojson = JSON.stringify({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { styleUrl: '#s' },
+          geometry: { type: 'Point', coordinates: [17, 48] },
+        },
+      ],
+    });
+
+    expect(
+      parseDataFile(geojson, 'x.geojson')?.features[0]?.properties,
+    ).toMatchObject({ styleUrl: '#s' });
+  });
+
+  it('drops KML style references, the style already resolved', () => {
+    const styled = `<?xml version="1.0"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document>
+  <Style id="s"><LineStyle><color>ff0000ff</color><width>3</width></LineStyle></Style>
+  <Placemark><name>Path</name><styleUrl>#s</styleUrl>
+    <LineString><coordinates>17,48 17.1,48.1</coordinates></LineString>
+  </Placemark></Document></kml>`;
+
+    const properties = parseDataFile(styled, 'path.kml')?.features[0]
+      ?.properties;
+
+    expect(properties).not.toHaveProperty('styleUrl');
+
+    expect(properties).not.toHaveProperty('styleHash');
+
+    expect(properties).toHaveProperty('stroke');
+  });
+
+  it('drops a KML icon’s hot spot, so the point can go in a link', () => {
+    const point = `<?xml version="1.0"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document>
+  <Style id="s"><IconStyle><Icon><href>https://x/y.png</href></Icon>
+    <hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/></IconStyle></Style>
+  <Placemark><name>Hut</name><styleUrl>#s</styleUrl>
+    <Point><coordinates>17,48</coordinates></Point>
+  </Placemark></Document></kml>`;
+
+    const properties = parseDataFile(point, 'hut.kml')?.features[0]?.properties;
+
+    expect(properties).not.toHaveProperty('icon-offset');
+
+    expect(properties).not.toHaveProperty('icon-offset-units');
+  });
+
   it('detects KML by content when the extension is generic', () => {
     expect(parseDataFile(KML, 'path.xml')).not.toBeNull();
   });

@@ -49,20 +49,26 @@
     }
   }
 
+  /* Each arrow 1px into its box (Leaflet sets 12px): edge to edge, both
+     anti-aliased at a fractional pixel, they leave a hairline at any zoom. */
   & .leaflet-tooltip-top:before {
     border-top-color: var(--bs-body-bg);
+    margin-bottom: -11px;
   }
 
   & .leaflet-tooltip-bottom:before {
     border-bottom-color: var(--bs-body-bg);
+    margin-top: -11px;
   }
 
   & .leaflet-tooltip-left:before {
     border-left-color: var(--bs-body-bg);
+    margin-right: -11px;
   }
 
   & .leaflet-tooltip-right:before {
     border-right-color: var(--bs-body-bg);
+    margin-left: -11px;
   }
 }
 

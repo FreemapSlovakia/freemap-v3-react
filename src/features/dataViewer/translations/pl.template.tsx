@@ -5,9 +5,7 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  style: {
-    title: 'Domyślny styl',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Podziel',
     pick: 'Kliknij ślad w miejscu podziału',
@@ -92,16 +90,15 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'użyj wysokości zapisanej w śladzie',
     add: 'Dodaj wysokość',
     update: 'Zaktualizuj wysokość',
-    updateConfirm: 'Zastąpić wysokość śladu modelem terenu?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Brakująca wysokość została uzupełniona.'
-        : 'Wysokość została nadpisana.',
+        : mode === 'clear'
+          ? 'Wysokość została usunięta.'
+          : 'Wysokość została nadpisana.',
   },
   upload: 'Prześlij',
   unnamedTrack: ({ n }) => `Ślad ${n}`,
-  convertLossWarning:
-    'Konwersja na rysunek zastępuje ślad i odrzuca jego zarejestrowane dane (wysokość, tętno, prędkość, czas).',
   simplifyAll: 'Uprość wszystko',
   moreInfo: 'Więcej informacji',
   saveAsMap: 'Zapisz w moich mapach',

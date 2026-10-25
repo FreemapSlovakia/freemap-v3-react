@@ -23,13 +23,6 @@ import {
 import { listedChangesetsSelector } from '@features/changesets/model/selectors.js';
 import { useChangesetsMessages } from '@features/changesets/translations/useChangesetsMessages.js';
 import { dataViewerBatchCounts } from '@features/dataViewer/featureEditing.js';
-import { drawingBatchCounts } from '@features/drawing/featureProperties.js';
-import { interpolateLabel } from '@features/drawing/interpolateLabel.js';
-import {
-  lineLabelValues,
-  pointLabelValues,
-} from '@features/drawing/labelValues.js';
-import type { DrawnLine } from '@features/drawing/model/actions/drawingLineActions.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import { selectRecorderLines } from '@features/gpsRecorder/model/selectors.js';
 import { recorderLineLength } from '@features/gpsRecorder/segments.js';
@@ -70,6 +63,7 @@ import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { featureLabel } from '@shared/featureProperties.js';
+import { formatLocationLines } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
@@ -215,9 +209,6 @@ export function MapFeatureItems({
 
     case 'route':
       return <RouteItems />;
-
-    case 'drawing':
-      return <DrawingItems />;
 
     case 'changesets':
       return elements ? <ChangesetElementItems /> : <ChangesetListItems />;
@@ -627,16 +618,28 @@ function DataItems(): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  // Once per loaded file: a recorded track can have tens of thousands of points.
+  // Once per change: a recorded track can have tens of thousands of points. A
+  // point shows where it is, having no size.
   const sizes = useMemo(
     () =>
       (features ?? []).map((feature) => {
-        const type = feature.geometry?.type;
+        const { geometry } = feature;
+
+        const type = geometry?.type;
 
         if (type === 'Polygon' || type === 'MultiPolygon') {
           const m2 = turfArea(feature);
 
           return formatArea(m2, naturalAreaUnit(m2), language);
+        }
+
+        if (geometry?.type === 'Point') {
+          const [lon, lat] = geometry.coordinates;
+
+          return formatLocationLines({ lat: lat!, lon: lon! }).replace(
+            /\s+/g,
+            ' ',
+          );
         }
 
         return type === 'LineString' || type === 'MultiLineString'
@@ -699,7 +702,11 @@ function DataItems(): ReactElement {
           label: name || size || `#${index + 1}`,
           subline: name ? size : undefined,
           muted: !name,
-          selects: { type: 'data-viewer', id: index },
+          selects: { type: 'feature', id: index },
+          actions: [
+            selectFeature({ type: 'feature', id: index }),
+            drawingMeasure({}),
+          ],
           bbox: () => geojsonBbox(feature.geometry),
         };
       })}
@@ -871,124 +878,6 @@ function RouteItems(): ReactElement {
         totals && <div className="small text-muted mt-2">{totals}</div>
       }
       items={items}
-    />
-  );
-}
-
-/** An item's label, and its size or where it is: under the label, or in its place. */
-function naming(
-  label: string | undefined,
-  measure: string,
-  values: Record<string, string | undefined>,
-) {
-  const named = label ? interpolateLabel(label, values).trim() : '';
-
-  const measured = interpolateLabel(measure, values).replace(/\s+/g, ' ');
-
-  return { named, measured };
-}
-
-// By line: an unchanged line keeps its identity, so a drag re-measures only
-// the line dragged.
-const lineNamings = new WeakMap<
-  DrawnLine,
-  { language: string; named: string; measured: string }
->();
-
-function DrawingItems(): ReactElement {
-  const points = useAppSelector((state) => state.drawingPoints.points);
-
-  const lines = useAppSelector((state) => state.drawingLines.lines);
-
-  const language = useAppSelector((state) => state.l10n.language);
-
-  // Polygons a hole changes the area of; the rest are measured by themselves.
-  const withHoles = new Set(lines.flatMap((line) => line.holeOfId ?? []));
-
-  const lineNaming = (line: DrawnLine) => {
-    const cacheable = !withHoles.has(line.id);
-
-    const cached = cacheable ? lineNamings.get(line) : undefined;
-
-    if (cached?.language === language) {
-      return cached;
-    }
-
-    const fresh = {
-      language,
-      ...naming(
-        line.label,
-        line.type === 'polygon' ? '{area}' : '{length}',
-        lineLabelValues(line, lines),
-      ),
-    };
-
-    // Never kept with a hole's area in: the hole can go while the polygon stays.
-    if (cacheable) {
-      lineNamings.set(line, fresh);
-    }
-
-    return fresh;
-  };
-
-  return (
-    <ItemList
-      items={[
-        ...lines.flatMap((line, index): Item[] => {
-          // A hole is part of its polygon, selected with it.
-          if (line.holeOfId !== undefined) {
-            return [];
-          }
-
-          const selects: Selection = { type: 'draw-line-poly', id: index };
-
-          const { named, measured } = lineNaming(line);
-
-          return [
-            {
-              key: `line-${line.id}`,
-              icon:
-                line.type === 'polygon' ? <FaDrawPolygon /> : <MdPolyline />,
-              color: line.color,
-              label: named || measured,
-              subline: named ? measured : undefined,
-              muted: !named,
-              selects,
-              actions: [selectFeature(selects), drawingMeasure({})],
-              bbox: () => latLonBbox(line.points),
-            },
-          ];
-        }),
-        ...points.map((point, index): Item => {
-          const selects: Selection = { type: 'draw-points', id: index };
-
-          const values = pointLabelValues(point);
-
-          const named = point.label
-            ? interpolateLabel(point.label, values).trim()
-            : '';
-
-          return {
-            key: `point-${index}`,
-            icon: <FaMapMarkerAlt />,
-            color: point.color,
-            // Where it is, only where it has no label: a point shows nothing more.
-            label:
-              named ||
-              interpolateLabel('{location}', values).replace(/\s+/g, ' '),
-            muted: !named,
-            selects,
-            actions: [selectFeature(selects), drawingMeasure({})],
-            bbox: () => latLonBbox([point.coords]),
-          };
-        }),
-      ]}
-      footer={
-        <BatchFooter
-          modal="drawing-batch-properties"
-          counts={drawingBatchCounts(points, lines)}
-        />
-      }
     />
   );
 }
