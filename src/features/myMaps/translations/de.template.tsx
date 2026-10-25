@@ -14,7 +14,7 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     'Nicht gespeicherte Änderungen verwerfen und die gespeicherte Karte neu laden?',
   unsaved: 'Nicht gespeicherte Änderungen',
   unsavedTooltip:
-    'Die Karte enthält nicht gespeicherte Änderungen, die sich nicht im Link widerspiegeln. Speichern Sie die Karte, um sie zu behalten.',
+    'Die Karte enthält nicht gespeicherte Änderungen, die sich nicht in der Seitenadresse (URL) widerspiegeln. Speichern Sie die Karte, um sie zu behalten.',
   disconnect: 'Trennen',
   disconnectAndClear: 'Trennen und leeren',
   deleteConfirm: (name) => (

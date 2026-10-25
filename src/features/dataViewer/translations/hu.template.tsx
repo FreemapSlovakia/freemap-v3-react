@@ -16,7 +16,8 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Összefűzés',
     asLine: 'Összefűzés egy vonallá',
     asSegments: 'Összefűzés szakaszok megtartásával',
-    pick: 'Kattintson a nyomvonalra, amellyel összefűzi',
+    pick: 'Kattintson a hozzáfűzendő nyomvonalra',
+    pickEnd: 'Válasszon pontot a vonalak összekapcsolásához',
   },
   osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
@@ -117,7 +118,7 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Néhány fájlt nem sikerült betölteni: ${names}.`,
   unsaved: 'Nem mentett',
   unsavedTooltip:
-    'Ez a nyomvonal nem szerepel egyetlen mentett térképen sem, és nem része a hivatkozásnak – csak ebben a böngészőben marad meg, ezért a hivatkozás megosztásával nem osztja meg. Mentse a térképei közé, hogy megmaradjon.',
+    'Ezek az adatok nem férnek el az oldal címében (URL), és egyetlen mentett térképen sem szerepelnek – csak ebben a böngészőben maradnak meg. Mentse őket a térképei közé, hogy megmaradjanak.',
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a nyomvonal illesztésekor', err),
 };

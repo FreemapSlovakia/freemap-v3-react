@@ -11,7 +11,7 @@ const en: MyMapsMessages = {
   reloadConfirm: 'Discard your unsaved changes and reload the saved map?',
   unsaved: 'Unsaved changes',
   unsavedTooltip:
-    'The map has unsaved changes that are not reflected in the link. Save the map to keep them.',
+    'The map has unsaved changes that are not reflected in the page address (URL). Save the map to keep them.',
   disconnect: 'Disconnect',
   disconnectAndClear: 'Disconnect and clear',
   deleteConfirm: (name) => (

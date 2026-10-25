@@ -241,7 +241,7 @@ export default function DataViewerSelection(): ReactElement | null {
   if (joinWith) {
     return (
       <PromptToolbar
-        prompt={dvm?.join.pick}
+        prompt={joinWith.end === undefined ? dvm?.join.pick : dvm?.join.pickEnd}
         cancel={dataViewerSetJoining(null)}
       />
     );

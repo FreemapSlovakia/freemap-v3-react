@@ -43,6 +43,7 @@ import type {
   Feature,
   FeatureCollection,
   GeoJsonProperties,
+  Geometry,
   Position,
 } from 'geojson';
 import {
@@ -59,7 +60,7 @@ import {
 } from 'react';
 import { FaFlag, FaPlay, FaStop } from 'react-icons/fa';
 import { RiScissorsFill } from 'react-icons/ri';
-import { Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
+import { CircleMarker, Pane, Polygon, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { isPoint } from '../featureEditing.js';
@@ -277,14 +278,12 @@ export default function DataViewerResult({
   const features = useMemo(
     () =>
       trackGeojson.features.flatMap((feature, featureIndex) => {
-        const geom = feature.geometry;
+        // A collection's lines too, as the polygons and points below open it.
+        const segments = lineCoordinates(feature.geometry);
 
-        if (geom.type !== 'LineString' && geom.type !== 'MultiLineString') {
+        if (segments.length === 0) {
           return [];
         }
-
-        const segments =
-          geom.type === 'LineString' ? [geom.coordinates] : geom.coordinates;
 
         // A permanent label goes on the longest segment only, not a stray
         // fragment; a hover label stays on every segment.
@@ -859,8 +858,49 @@ export default function DataViewerResult({
       {handles.map((props) => (
         <VertexHandles key={`${props.index}-${props.part}`} {...props} />
       ))}
+
+      {/* Armed from an end vertex, the end of another line it is to meet. */}
+      {join.ends.length > 0 && (
+        <Pane name="fm-trackviewer-join-ends" style={{ zIndex: 620 }} />
+      )}
+
+      {join.ends.map(({ featureIndex, end, position }) => (
+        <CircleMarker
+          key={`join-${featureKey(featureIndex)}-${end}`}
+          pane="fm-trackviewer-join-ends"
+          center={[position[1]!, position[0]!]}
+          radius={8}
+          pathOptions={{
+            color: SECOND_SELECTION_COLOR,
+            fillColor: '#fff',
+            fillOpacity: 1,
+            weight: 3,
+          }}
+          bubblingMouseEvents={false}
+          eventHandlers={{
+            click: () => join.handleEnd(featureIndex, end),
+          }}
+        />
+      ))}
     </>
   );
+}
+
+/** The line segments a geometry draws, a collection's members' included. */
+function lineCoordinates(geometry: Geometry | null): Position[][] {
+  switch (geometry?.type) {
+    case 'LineString':
+      return [geometry.coordinates];
+
+    case 'MultiLineString':
+      return geometry.coordinates;
+
+    case 'GeometryCollection':
+      return geometry.geometries.flatMap(lineCoordinates);
+
+    default:
+      return [];
+  }
 }
 
 function WaypointMarker({

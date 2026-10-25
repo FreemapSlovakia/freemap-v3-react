@@ -11,7 +11,7 @@ import {
 import type { Feature, Geometry, Position } from 'geojson';
 import { reversedRows, reversePathDetails } from './joinTracks.js';
 import { readChannels, writeChannels } from './trackChannels.js';
-import { isTrackLine } from './trackSelection.js';
+import { isTrackLine, type TrackLine } from './trackSelection.js';
 
 /**
  * A geometry's vertex-editable parts — the point, a line, each segment, each
@@ -309,6 +309,15 @@ export function deletePart(feature: Feature, part: number): Feature {
     };
   }
 
+  if (geometry.type === 'MultiLineString' && isTrackLine(feature)) {
+    return (
+      withSegments(
+        feature,
+        geometry.coordinates.flatMap((_, i) => (i === part ? [] : [i])),
+      ) ?? feature
+    );
+  }
+
   return feature;
 }
 
@@ -389,8 +398,9 @@ export function isCompleteFeature(feature: Feature): boolean {
 }
 
 /**
- * The feature without its incomplete parts: a hole or a segment still short of
- * one. `undefined` when what is left is no feature at all.
+ * The feature without its incomplete parts: a hole short of a ring, an empty
+ * segment (a lone fix is data, and stays). `undefined` when what is left is no
+ * feature at all.
  */
 export function completed(feature: Feature): Feature | undefined {
   const { geometry } = feature;
@@ -407,5 +417,57 @@ export function completed(feature: Feature): Feature | undefined {
       : undefined;
   }
 
+  if (geometry.type === 'MultiLineString' && isTrackLine(feature)) {
+    // An empty segment has no ends for a join or a continue to reach for.
+    const kept = withSegments(
+      feature,
+      geometry.coordinates.flatMap((s, i) => (s.length > 0 ? [i] : [])),
+    );
+
+    return kept && isCompleteFeature(kept) ? kept : undefined;
+  }
+
   return isCompleteFeature(feature) ? feature : undefined;
+}
+
+/**
+ * A gapped line with only the segments `kept` names, picked out of its
+ * per-point data and path details too; one left is a plain line.
+ */
+function withSegments(feature: TrackLine, kept: number[]): Feature | undefined {
+  const segments = lineSegments(feature.geometry);
+
+  if (kept.length === 0) {
+    return undefined;
+  }
+
+  if (kept.length === segments.length) {
+    return feature;
+  }
+
+  const pick = <T>(rows: T[]) => kept.map((i) => rows[i]!);
+
+  const single = kept.length === 1;
+
+  const properties = { ...feature.properties };
+
+  writeChannels(properties, readChannels(feature), single, (ch) =>
+    pick(ch.segments),
+  );
+
+  const details = readPathDetailsParts(feature);
+
+  if (details) {
+    properties[PATH_DETAILS_PROP] = pick(details);
+  }
+
+  const picked = pick(segments);
+
+  return {
+    ...feature,
+    properties,
+    geometry: single
+      ? { type: 'LineString', coordinates: picked[0]! }
+      : { type: 'MultiLineString', coordinates: picked },
+  };
 }

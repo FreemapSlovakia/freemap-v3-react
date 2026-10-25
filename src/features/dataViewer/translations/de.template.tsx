@@ -16,7 +16,8 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Verbinden',
     asLine: 'Zu einer Linie verbinden',
     asSegments: 'Verbinden, Abschnitte behalten',
-    pick: 'Klicken Sie auf die Spur zum Verbinden',
+    pick: 'Klicken Sie auf die Spur, die angehängt werden soll',
+    pickEnd: 'Punkt zum Verbinden der Linien wählen',
   },
   osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
@@ -116,7 +117,7 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Einige Dateien konnten nicht geladen werden: ${names}.`,
   unsaved: 'Nicht gespeichert',
   unsavedTooltip:
-    'Dieser Track ist in keiner gespeicherten Karte enthalten und nicht Teil des Links – er bleibt nur in diesem Browser, das Teilen des Links gibt ihn also nicht weiter. Speichern Sie ihn in Ihren Karten, um ihn zu behalten.',
+    'Diese Daten passen nicht in die Seitenadresse (URL) und sind in keiner gespeicherten Karte – sie bleiben nur in diesem Browser. Speichern Sie sie in Ihren Karten, um sie zu behalten.',
 };
 
 export default de;

@@ -11,6 +11,7 @@ import { MdTimeline } from 'react-icons/md';
 import { RiScissorsFill } from 'react-icons/ri';
 import { TbArrowsJoin } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
+import type { LineEnd } from '../joinTracks.js';
 import {
   dataViewerDrawContinue,
   dataViewerSetJoining,
@@ -63,9 +64,17 @@ export default function DataViewerVertexSelection(): ReactElement | null {
 
   const line = isTrackLine(feature) ? feature : undefined;
 
-  const end = vertex === 0 || vertex === vertices.length - 1;
+  // A line's own ends: of a gapped one, the first segment's start and the last
+  // one's end, not the ends of a gap.
+  const lastPart = (editableParts(feature.geometry)?.length ?? 1) - 1;
 
-  const single = feature.geometry.type === 'LineString';
+  const lineEnd: LineEnd | undefined = !line
+    ? undefined
+    : part === 0 && vertex === 0
+      ? 'start'
+      : part === lastPart && vertex === vertices.length - 1
+        ? 'end'
+        : undefined;
 
   return (
     <Selection
@@ -112,7 +121,7 @@ export default function DataViewerVertexSelection(): ReactElement | null {
         </LongPressTooltip>
       )}
 
-      {single && end && trackLineFeatures(trackGeojson).length > 1 && (
+      {lineEnd && trackLineFeatures(trackGeojson).length > 1 && (
         <LongPressTooltip breakpoint="sm" label={dm?.join}>
           {({ label, labelClassName, props }) => (
             <Button
@@ -121,8 +130,13 @@ export default function DataViewerVertexSelection(): ReactElement | null {
                 // The armed join's prompt rides the line's own selection.
                 dispatch(selectFeature({ type: 'feature', id: index }));
 
+                // This end meets the line clicked next.
                 dispatch(
-                  dataViewerSetJoining({ featureIndex: index, mode: 'line' }),
+                  dataViewerSetJoining({
+                    featureIndex: index,
+                    mode: 'line',
+                    end: lineEnd,
+                  }),
                 );
               }}
               {...props}
@@ -134,7 +148,7 @@ export default function DataViewerVertexSelection(): ReactElement | null {
         </LongPressTooltip>
       )}
 
-      {single && end && (
+      {lineEnd && (
         <LongPressTooltip breakpoint="sm" label={dm?.continue}>
           {({ label, labelClassName, props }) => (
             <Button

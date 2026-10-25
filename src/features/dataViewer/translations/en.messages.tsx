@@ -13,7 +13,7 @@ const en: DataViewerMessages = {
   saveAsMap: 'Save to my maps',
   unsaved: 'Unsaved',
   unsavedTooltip:
-    'This data is too large for the link and is not in any saved map — it is kept only in this browser, so sharing the link will not share it. Save it to your maps to keep it.',
+    'This data cannot be put in the page address (URL) and is not in any saved map — it stays only in this browser. Save it to your maps to keep it.',
   loginToSaveMap: 'Log in first to save the track to your maps.',
   snapshotGone:
     'The data shown at this step is no longer kept in this browser.',
@@ -58,6 +58,7 @@ const en: DataViewerMessages = {
     asLine: 'Join into one line',
     asSegments: 'Join keeping segments',
     pick: 'Click the track to join with',
+    pickEnd: 'Select point to join lines',
   },
   osmUpload: {
     menuItem: 'Upload GPS trace to OpenStreetMap',

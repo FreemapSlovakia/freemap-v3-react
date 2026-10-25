@@ -16,7 +16,8 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Połącz',
     asLine: 'Połącz w jedną linię',
     asSegments: 'Połącz z zachowaniem odcinków',
-    pick: 'Kliknij ślad, z którym połączyć',
+    pick: 'Kliknij ślad, który chcesz dołączyć',
+    pickEnd: 'Wybierz punkt do połączenia linii',
   },
   osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
@@ -117,7 +118,7 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Nie udało się wczytać niektórych plików: ${names}.`,
   unsaved: 'Niezapisane',
   unsavedTooltip:
-    'Ten ślad nie znajduje się w żadnej zapisanej mapie ani nie jest częścią odnośnika – pozostaje tylko w tej przeglądarce, więc udostępnienie odnośnika go nie udostępni. Zapisz go w swoich mapach, aby go zachować.',
+    'Tych danych nie da się umieścić w adresie strony (URL) i nie ma ich w żadnej zapisanej mapie – zostają tylko w tej przeglądarce. Zapisz je w swoich mapach, aby je zachować.',
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Wystąpił błąd podczas dopasowywania śladu', err),
 };

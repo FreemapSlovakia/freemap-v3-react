@@ -2,6 +2,7 @@ import type { Feature, Polygon } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
   completed,
+  deletePart,
   deleteVertex,
   editableParts,
   insertVertex,
@@ -226,5 +227,71 @@ describe('completed', () => {
         geometry: { type: 'LineString', coordinates: [[0, 0]] },
       }),
     ).toBeUndefined();
+  });
+
+  // Three segments: a full one, a lone fix, and an empty one.
+  const gapped = (): Feature => ({
+    type: 'Feature',
+    properties: {
+      coordinateProperties: { times: [['t0', 't1'], ['t2'], []] },
+    },
+    geometry: {
+      type: 'MultiLineString',
+      coordinates: [
+        [
+          [17, 48],
+          [17.01, 48],
+        ],
+        [[17.02, 48]],
+        [],
+      ],
+    },
+  });
+
+  it('drops an empty segment, data and all, and keeps a lone fix', () => {
+    const kept = completed(gapped())!;
+
+    expect(kept.geometry.type).toBe('MultiLineString');
+
+    expect(
+      (kept.geometry as { coordinates: unknown[] }).coordinates,
+    ).toHaveLength(2);
+
+    expect(channel(kept, 'times')).toEqual([['t0', 't1'], ['t2']]);
+  });
+
+  it('drops one segment of a gapped line, one left being a plain line', () => {
+    const kept = deletePart(completed(gapped())!, 1);
+
+    expect(kept.geometry).toEqual({
+      type: 'LineString',
+      coordinates: [
+        [17, 48],
+        [17.01, 48],
+      ],
+    });
+
+    expect(channel(kept, 'times')).toEqual(['t0', 't1']);
+  });
+
+  it('leaves a complete gapped line the same object', () => {
+    const whole: Feature = {
+      ...gapped(),
+      geometry: {
+        type: 'MultiLineString',
+        coordinates: [
+          [
+            [17, 48],
+            [17.01, 48],
+          ],
+          [
+            [17.02, 48],
+            [17.03, 48],
+          ],
+        ],
+      },
+    };
+
+    expect(completed(whole)).toBe(whole);
   });
 });

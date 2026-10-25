@@ -56,7 +56,7 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     'Abandonner vos modifications non enregistrées et recharger la carte enregistrée ?',
   unsaved: 'Modifications non enregistrées',
   unsavedTooltip:
-    'La carte comporte des modifications non enregistrées qui ne sont pas reflétées dans le lien. Enregistrez la carte pour les conserver.',
+    "La carte comporte des modifications non enregistrées qui ne sont pas reflétées dans l'adresse de la page (URL). Enregistrez la carte pour les conserver.",
   disconnect: 'Déconnecter',
   disconnectAndClear: 'Déconnecter et vider',
   deleteTitle: 'Suppression de la carte',

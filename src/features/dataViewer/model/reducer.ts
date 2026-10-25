@@ -16,7 +16,7 @@ import {
   original,
 } from '@reduxjs/toolkit';
 import { ELEVATION_ATTRIBUTIONS_PROP } from '@shared/elevation.js';
-import { withoutPerPointData } from '@shared/geoutils.js';
+import { lineSegments, withoutPerPointData } from '@shared/geoutils.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import { lineStyleFromProperties } from '@shared/styleFromProperties.js';
 import { isDrawTool, isMapClickTool } from '@shared/toolDefinitions.js';
@@ -30,6 +30,7 @@ import { patchedProperties } from '../featureEditing.js';
 import {
   canJoinTracks,
   joinTrackFeatures,
+  type LineEnd,
   type TrackJoinMode,
 } from '../joinTracks.js';
 import { simplifyDataFeature } from '../simplifyTrack.js';
@@ -128,9 +129,9 @@ export interface DataViewerState extends DataViewerStateBase {
   // confirming the cut from the toolbar. A pointer that can hover cuts outright
   // and never sets this.
   splitPoint: TrackSplitPoint | null;
-  // The track a join is armed on, and how the two are put together; the next
-  // line clicked is joined onto it.
-  joinWith: { featureIndex: number; mode: TrackJoinMode } | null;
+  // The track a join is armed on, how the two are put together, and the end
+  // armed from, if any; the next line clicked is joined onto it.
+  joinWith: { featureIndex: number; mode: TrackJoinMode; end?: LineEnd } | null;
   // The snapshot still being read back, if any. The only way to tell "nothing
   // loaded" from "not loaded yet" on a reload, and which of several quick
   // history steps a finished read still stands for.
@@ -452,9 +453,16 @@ export const dataViewerReducer = createReducer(
           return;
         }
 
-        const edited = deleteVertex(feature, payload.part, payload.vertex);
+        const deleted = deleteVertex(feature, payload.part, payload.vertex);
 
-        // The last vertex of a hole takes the hole along; of a line, the line.
+        // The last vertex of a hole takes the hole along; of a segment, that
+        // segment alone; of a line, the line.
+        const edited =
+          deleted.geometry.type === 'MultiLineString' &&
+          (editableParts(deleted.geometry)?.[payload.part]?.length ?? 0) < 2
+            ? deletePart(deleted, payload.part)
+            : deleted;
+
         const kept =
           payload.part > 0 && feature.geometry.type === 'Polygon'
             ? completed(edited)
@@ -548,16 +556,20 @@ export const dataViewerReducer = createReducer(
 
         const feature = baseFeature(state, payload.index);
 
-        if (feature?.geometry.type !== 'LineString') {
+        if (!feature || !isTrackLine(feature)) {
           return;
         }
 
-        // Drawing appends at the end, so a line continued from its start turns.
-        if (payload.vertex === 0) {
+        // Drawing appends at the end of the last segment, so a line continued
+        // from its start turns — a gapped one segments and all.
+        if (payload.part === 0 && payload.vertex === 0) {
           setFeature(state, payload.index, reverseFeature(feature));
         }
 
-        state.drawing = { index: payload.index, part: 0 };
+        state.drawing = {
+          index: payload.index,
+          part: lineSegments(feature.geometry).length - 1,
+        };
       })
       .addCase(dataViewerReverse, (state, { payload }) => {
         const feature = baseFeature(state, payload);
@@ -765,7 +777,7 @@ export const dataViewerReducer = createReducer(
           replaceFeature(state, payload.featureIndex, halves);
         }
       })
-      .addCase(dataViewerJoinTracks, (state, { payload }) => {
+      .addCase(dataViewerJoinTracks, (state, { payload, meta }) => {
         const { joinWith } = state;
 
         const features = state.trackGeojson?.features;
@@ -784,6 +796,7 @@ export const dataViewerReducer = createReducer(
           features[target] as TrackLine,
           features[payload] as TrackLine,
           joinWith.mode,
+          { a: joinWith.end, b: meta.end },
         );
 
         features.splice(payload, 1);

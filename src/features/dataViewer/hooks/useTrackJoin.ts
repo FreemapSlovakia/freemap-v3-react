@@ -1,8 +1,11 @@
+import { lineSegments, positionsEqual } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import type { Position } from 'geojson';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { canJoinTracks } from '../joinTracks.js';
+import { canJoinTracks, type LineEnd } from '../joinTracks.js';
 import { dataViewerJoinTracks } from '../model/actions.js';
+import { isTrackLine } from '../trackSelection.js';
 
 /**
  * The armed join: while it is on, every line but the armed one offers itself as
@@ -69,6 +72,53 @@ export function useTrackJoin() {
       }
 
       return featureIndex === joinWith.featureIndex;
+    },
+
+    /**
+     * Armed from an end vertex, the ends of the other lines, each to be picked
+     * as the one that meets it.
+     */
+    ends:
+      joinWith?.end === undefined
+        ? []
+        : (trackGeojson?.features ?? []).flatMap(
+            (
+              feature,
+              featureIndex,
+            ): {
+              featureIndex: number;
+              end: LineEnd | undefined;
+              position: Position;
+            }[] => {
+              if (!isCandidate(featureIndex) || !isTrackLine(feature)) {
+                return [];
+              }
+
+              const segments = lineSegments(feature.geometry);
+
+              const first = segments[0]?.[0];
+
+              const last = segments.at(-1)?.at(-1);
+
+              if (!first || !last) {
+                return [];
+              }
+
+              // A loop's ends are one spot: either may meet it, and the join
+              // takes the one that turns nothing round.
+              return positionsEqual(first, last)
+                ? [{ featureIndex, end: undefined, position: first }]
+                : [
+                    { featureIndex, end: 'start', position: first },
+                    { featureIndex, end: 'end', position: last },
+                  ];
+            },
+          ),
+
+    handleEnd(featureIndex: number, end: LineEnd | undefined) {
+      if (isCandidate(featureIndex)) {
+        dispatch(dataViewerJoinTracks(featureIndex, end));
+      }
     },
   };
 }

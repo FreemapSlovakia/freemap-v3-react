@@ -14,7 +14,7 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     'Elveti a nem mentett módosításokat, és újratölti a mentett térképet?',
   unsaved: 'Nem mentett módosítások',
   unsavedTooltip:
-    'A térképen nem mentett módosítások vannak, amelyek nem jelennek meg a hivatkozásban. Mentse a térképet, hogy megmaradjanak.',
+    'A térképen nem mentett módosítások vannak, amelyek nem jelennek meg az oldal címében (URL). Mentse a térképet, hogy megmaradjanak.',
   disconnect: 'Leválasztás',
   disconnectAndClear: 'Lecsatlakozás és törlés',
   deleteConfirm: (name) => (

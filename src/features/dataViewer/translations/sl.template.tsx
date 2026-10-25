@@ -25,6 +25,7 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     asLine: 'Združi v eno črto',
     asSegments: 'Združi z ohranitvijo odsekov',
     pick: 'Kliknite sled, s katero želite združiti',
+    pickEnd: 'Izberite točko za združitev črt',
   },
   osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
@@ -114,7 +115,7 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Nekaterih datotek ni bilo mogoče naložiti: ${names}.`,
   unsaved: 'Ni shranjeno',
   unsavedTooltip:
-    'Ta sled ni v nobenem shranjenem zemljevidu in ni del povezave – ostane samo v tem brskalniku, zato je z deljenjem povezave ne boste delili. Shranite jo med svoje zemljevide, da jo ohranite.',
+    'Teh podatkov ni mogoče vstaviti v naslov strani (URL) in niso v nobenem shranjenem zemljevidu – ostanejo samo v tem brskalniku. Shranite jih med svoje zemljevide, da jih ohranite.',
 };
 
 export default sl;

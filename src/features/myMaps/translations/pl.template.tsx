@@ -13,7 +13,7 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     'Odrzucić niezapisane zmiany i wczytać ponownie zapisaną mapę?',
   unsaved: 'Niezapisane zmiany',
   unsavedTooltip:
-    'Mapa zawiera niezapisane zmiany, które nie są odzwierciedlone w odnośniku. Zapisz mapę, aby je zachować.',
+    'Mapa zawiera niezapisane zmiany, które nie są odzwierciedlone w adresie strony (URL). Zapisz mapę, aby je zachować.',
   disconnect: 'Odłącz',
   disconnectAndClear: 'Odłącz i wyczyść',
   deleteConfirm: (name) => (

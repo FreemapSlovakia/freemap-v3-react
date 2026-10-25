@@ -15,7 +15,7 @@ import type {
   Position,
 } from 'geojson';
 import z from 'zod';
-import type { TrackJoinMode } from '../joinTracks.js';
+import type { LineEnd, TrackJoinMode } from '../joinTracks.js';
 import type { TrackSplitPoint } from '../splitTrack.js';
 
 export { type ColorizingMode, ColorizingModeSchema };
@@ -256,15 +256,22 @@ export const dataViewerSplitTrack = createAction<TrackSplitPoint>(
 export const dataViewerSetJoining = createAction<{
   featureIndex: number;
   mode: TrackJoinMode;
+  /** Armed from this end vertex, which then meets the other line. */
+  end?: LineEnd;
 } | null>('DATA_VIEWER_SET_JOINING');
 
 /**
  * Joins the armed track with the one this index names, which the result takes
- * the place of. Like {@link dataViewerSplitTrack} this edits the loaded data,
- * so the result is no longer the file it came from.
+ * the place of — at `end` of it where one was clicked. Like
+ * {@link dataViewerSplitTrack} this edits the loaded data, so the result is no
+ * longer the file it came from.
  */
-export const dataViewerJoinTracks = createAction<number>(
+export const dataViewerJoinTracks = createAction(
   'DATA_VIEWER_JOIN_TRACKS',
+  (featureIndex: number, end?: LineEnd) => ({
+    payload: featureIndex,
+    meta: { end },
+  }),
 );
 
 /**

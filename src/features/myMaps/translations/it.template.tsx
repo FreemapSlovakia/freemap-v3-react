@@ -13,7 +13,7 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     'Vuole scartare le modifiche non salvate e ricaricare la mappa salvata?',
   unsaved: 'Modifiche non salvate',
   unsavedTooltip:
-    'La mappa contiene modifiche non salvate che non si riflettono nel collegamento. Salvi la mappa per conservarle.',
+    "La mappa contiene modifiche non salvate che non si riflettono nell'indirizzo della pagina (URL). Salvi la mappa per conservarle.",
   disconnect: 'Disconnetti',
   disconnectAndClear: 'Disconnetti e svuota',
   deleteConfirm: (name) => (

@@ -12,6 +12,7 @@ import {
   dataViewerDeleteFeature,
   dataViewerDeleteVertex,
   dataViewerDrawAppend,
+  dataViewerDrawContinue,
   dataViewerDrawStart,
   dataViewerDrawStop,
   dataViewerEditFeatures,
@@ -625,5 +626,69 @@ describe('dataViewerReducer — drawing', () => {
     expect(edited.drawing).toBeNull();
 
     expect(edited.trackGeojson?.features).toEqual([peak]);
+  });
+});
+
+describe('dataViewerReducer — continuing a gapped line', () => {
+  const gapped = {
+    ...dataViewerInitialState,
+    trackGeojson: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'MultiLineString',
+            coordinates: [
+              [
+                [17, 48],
+                [17.1, 48],
+              ],
+              [
+                [17.2, 48],
+                [17.3, 48],
+              ],
+            ],
+          },
+        },
+      ],
+    } satisfies FeatureCollection,
+  };
+
+  const segments = (state: { trackGeojson: FeatureCollection | null }) =>
+    (state.trackGeojson!.features[0]!.geometry as { coordinates: number[][][] })
+      .coordinates;
+
+  it('draws on from its end, on its last segment', () => {
+    const next = dataViewerReducer(
+      gapped,
+      dataViewerDrawContinue({ index: 0, part: 1, vertex: 1 }),
+    );
+
+    expect(next.drawing).toEqual({ index: 0, part: 1 });
+
+    expect(segments(next)).toEqual(segments(gapped));
+  });
+
+  it('draws on from its start, turned round with its gap', () => {
+    const next = dataViewerReducer(
+      gapped,
+      dataViewerDrawContinue({ index: 0, part: 0, vertex: 0 }),
+    );
+
+    expect(next.drawing).toEqual({ index: 0, part: 1 });
+
+    // The start is now the last segment's end, the gap kept.
+    expect(segments(next)).toEqual([
+      [
+        [17.3, 48],
+        [17.2, 48],
+      ],
+      [
+        [17.1, 48],
+        [17, 48],
+      ],
+    ]);
   });
 });

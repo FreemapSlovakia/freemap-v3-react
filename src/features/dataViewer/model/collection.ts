@@ -6,6 +6,7 @@ import type { Feature, FeatureCollection } from 'geojson';
 import { fromWire, wireItems } from '../drawingWire.js';
 import { closable } from '../featureEditing.js';
 import { withCanonicalTimesAll } from '../trackChannels.js';
+import { completed } from '../vertexEditing.js';
 
 /**
  * The geometry the properties' line/polygon type asks for: a polygon turned
@@ -66,7 +67,10 @@ export function ingest(features: readonly Feature[]): Feature[] {
   return features.map((feature) =>
     feature.geometry?.type === 'LineString' && closable(feature.geometry)
       ? withTypedGeometry(feature)
-      : feature,
+      : feature.geometry?.type === 'MultiLineString'
+        ? // Without the empty segments a file may hold, which no edit expects.
+          (completed(feature) ?? feature)
+        : feature,
   );
 }
 

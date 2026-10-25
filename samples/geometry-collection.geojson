@@ -1,0 +1,67 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hut, path and garden"
+      },
+      "geometry": {
+        "type": "GeometryCollection",
+        "geometries": [
+          {
+            "type": "Point",
+            "coordinates": [
+              21.1,
+              48.79
+            ]
+          },
+          {
+            "type": "LineString",
+            "coordinates": [
+              [
+                21.1,
+                48.79
+              ],
+              [
+                21.105,
+                48.785
+              ],
+              [
+                21.112,
+                48.782
+              ]
+            ]
+          },
+          {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  21.112,
+                  48.78
+                ],
+                [
+                  21.116,
+                  48.78
+                ],
+                [
+                  21.116,
+                  48.783
+                ],
+                [
+                  21.112,
+                  48.783
+                ],
+                [
+                  21.112,
+                  48.78
+                ]
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -64,6 +64,8 @@ export type DataViewerMessages = {
     asSegments: string;
     /** Stands in for the track's name while the other one is being picked. */
     pick: string;
+    /** The same, armed from an end point: the other line's end is picked. */
+    pickEnd: string;
   };
   /** Uploading the loaded data as a GPS trace to the user's OSM account. */
   osmUpload: {

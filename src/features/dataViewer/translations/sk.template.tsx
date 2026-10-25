@@ -14,7 +14,7 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   saveAsMap: 'Uložiť do mojich máp',
   unsaved: 'Neuložené',
   unsavedTooltip:
-    'Tieto dáta sú na odkaz príliš veľké a nie sú v žiadnej uloženej mape – zostávajú len v tomto prehliadači, takže zdieľaním odkazu ich nezdieľate. Uložte ich do svojich máp, aby ste ich zachovali.',
+    'Tieto dáta sa nedajú vložiť do adresy stránky (URL) a nie sú v žiadnej uloženej mape – zostávajú len v tomto prehliadači. Uložte ich do svojich máp, aby ste ich zachovali.',
   loginToSaveMap: 'Pre uloženie trasy do vašich máp sa najprv prihláste.',
   snapshotGone: 'Dáta z tohto kroku už tento prehliadač neuchováva.',
   snapshotFailed:
@@ -56,7 +56,8 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Spojiť',
     asLine: 'Spojiť do jednej čiary',
     asSegments: 'Spojiť so zachovaním úsekov',
-    pick: 'Kliknite na trasu, s ktorou spojiť',
+    pick: 'Kliknite na trasu, ktorú chcete pripojiť',
+    pickEnd: 'Zvoľte bod pre spojenie čiar',
   },
   osmUpload: {
     menuItem: 'Nahrať GPS stopu na OpenStreetMap',

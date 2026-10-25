@@ -15,7 +15,8 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     action: 'Spojit',
     asLine: 'Spojit do jedné čáry',
     asSegments: 'Spojit se zachováním úseků',
-    pick: 'Klikněte na trasu, se kterou spojit',
+    pick: 'Klikněte na trasu, kterou chcete připojit',
+    pickEnd: 'Zvolte bod pro spojení čar',
   },
   osmUpload: {
     menuItem: 'Nahrát GPS stopu na OpenStreetMap',
@@ -193,7 +194,7 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Některé soubory se nepodařilo načíst: ${names}.`,
   unsaved: 'Neuloženo',
   unsavedTooltip:
-    'Tato data jsou na odkaz příliš velká a nejsou v žádné uložené mapě – zůstávají jen v tomto prohlížeči, takže sdílením odkazu je nesdílíte. Uložte je do svých map, abyste je zachovali.',
+    'Tato data nejde vložit do adresy stránky (URL) a nejsou v žádné uložené mapě – zůstávají jen v tomto prohlížeči. Uložte je do svých map, abyste je zachovali.',
 };
 
 export default cs;

@@ -12,7 +12,7 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   reloadConfirm: 'Zahodiť neuložené zmeny a znovu načítať uloženú mapu?',
   unsaved: 'Neuložené zmeny',
   unsavedTooltip:
-    'Mapa má neuložené zmeny, ktoré sa neodrážajú v odkaze. Uložte mapu, aby ste ich zachovali.',
+    'Mapa má neuložené zmeny, ktoré sa neodrážajú v adrese stránky (URL). Uložte mapu, aby ste ich zachovali.',
   disconnect: 'Odpojiť',
   disconnectAndClear: 'Odpojiť a vyčistiť',
   deleteConfirm: (name) => (

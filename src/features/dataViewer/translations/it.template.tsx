@@ -17,6 +17,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     asLine: 'Unisci in una sola linea',
     asSegments: 'Unisci mantenendo i segmenti',
     pick: 'Clicchi la traccia da unire',
+    pickEnd: 'Selezioni un punto per unire le linee',
   },
   osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
@@ -116,7 +117,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   someFilesFailed: ({ names }) => `Impossibile caricare alcuni file: ${names}.`,
   unsaved: 'Non salvata',
   unsavedTooltip:
-    'Questa traccia non si trova in nessuna mappa salvata e non fa parte del collegamento: resta solo in questo browser, quindi condividere il collegamento non la condivide. La salvi nelle sue mappe per conservarla.',
+    "Questi dati non possono stare nell'indirizzo della pagina (URL) e non sono in nessuna mappa salvata: restano solo in questo browser. Li salvi nelle sue mappe per conservarli.",
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Errore durante l’aggancio della traccia', err),
 };

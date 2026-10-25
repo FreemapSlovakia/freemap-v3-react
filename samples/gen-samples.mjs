@@ -416,6 +416,83 @@ write(
   ]),
 );
 
+// Multi geometries: each type on its own, then all of them in one collection.
+const ring = (lon, lat, dLon, dLat) => [
+  [lon, lat],
+  [lon + dLon, lat],
+  [lon + dLon, lat + dLat],
+  [lon, lat + dLat],
+  [lon, lat],
+];
+
+const multiPoint = {
+  type: 'Feature',
+  properties: { name: 'Three springs' },
+  geometry: {
+    type: 'MultiPoint',
+    coordinates: [0, 20, 40].map((i) => [pts[i].lon, pts[i].lat, pts[i].ele]),
+  },
+};
+
+// A recording with a pause: two segments, times per segment.
+const segmentsOf = [pts.slice(0, 25), pts.slice(35)];
+
+const multiLine = {
+  type: 'Feature',
+  properties: {
+    name: 'Ride with a pause',
+    coordinateProperties: {
+      times: segmentsOf.map((seg) => seg.map((p) => p.time)),
+    },
+  },
+  geometry: {
+    type: 'MultiLineString',
+    coordinates: segmentsOf.map((seg) => seg.map((p) => [p.lon, p.lat, p.ele])),
+  },
+};
+
+// Two areas, the first with a hole.
+const multiPolygon = {
+  type: 'Feature',
+  properties: { name: 'Two meadows' },
+  geometry: {
+    type: 'MultiPolygon',
+    coordinates: [
+      [ring(21.06, 48.76, 0.03, 0.02), ring(21.07, 48.765, 0.01, 0.008)],
+      [ring(21.11, 48.77, 0.02, 0.015)],
+    ],
+  },
+};
+
+const geometryCollection = {
+  type: 'Feature',
+  properties: { name: 'Hut, path and garden' },
+  geometry: {
+    type: 'GeometryCollection',
+    geometries: [
+      { type: 'Point', coordinates: [21.1, 48.79] },
+      {
+        type: 'LineString',
+        coordinates: [
+          [21.1, 48.79],
+          [21.105, 48.785],
+          [21.112, 48.782],
+        ],
+      },
+      { type: 'Polygon', coordinates: [ring(21.112, 48.78, 0.004, 0.003)] },
+    ],
+  },
+};
+
+write('multi-point.geojson', fc([multiPoint]));
+write('multi-line.geojson', fc([multiLine]));
+write('multi-polygon.geojson', fc([multiPolygon]));
+write('geometry-collection.geojson', fc([geometryCollection]));
+write(
+  'multi-all.geojson',
+  fc([multiPoint, multiLine, multiPolygon, geometryCollection]),
+);
+
 // Mixed collection: point, line (3D), polygon.
 write(
   'collection-mixed.geojson',

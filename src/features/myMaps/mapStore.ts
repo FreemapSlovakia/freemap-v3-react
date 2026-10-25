@@ -55,7 +55,7 @@ export const KEEP = 5;
 // having unsaved changes on every reload. Such a record is still read — its
 // track is the one part of a map nothing else holds offline — but it is reported
 // as not comparable, and the restore lets the stored document decide instead.
-const VERSION = 3;
+const VERSION = 4;
 
 const RecordSchema = z.object({
   // Absent in copies written before the digest carried a version.
