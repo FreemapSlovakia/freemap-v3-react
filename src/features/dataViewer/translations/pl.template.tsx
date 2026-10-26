@@ -64,6 +64,39 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Dołącz',
     replace: 'Zastąp',
   },
+  trace: {
+    streams: 'Wyznaczanie cieków wodnych',
+    forests: 'Wyznaczanie lasów',
+    streamsHelp:
+      'Służy do wyznaczania linii cieków wodnych z wysokorozdzielczego modelu terenu w wybranym wielokącie. Przydatne do mapowania w OpenStreetMap.',
+    forestsHelp:
+      'Służy do wyznaczania obszarów pokrytych wybranymi klasami punktów LiDAR w zaznaczonym wielokącie. Przydatne zwłaszcza do mapowania pokrycia terenu w OpenStreetMap.',
+    pixelSize: 'Rozmiar piksela',
+    pixelSizeHint: 'Puste – własna rozdzielczość modelu terenu.',
+    threshold: 'Minimalna powierzchnia zlewni',
+    minLength: 'Minimalna długość cieku',
+    simplify: 'Tolerancja upraszczania',
+    classes: 'Klasy punktów',
+    classNames: {
+      lowVegetation: 'Niska roślinność',
+      mediumVegetation: 'Średnia roślinność',
+      highVegetation: 'Wysoka roślinność',
+      building: 'Budynki',
+      water: 'Woda',
+    },
+    output: 'Wynik',
+    outputJosm: 'Otwórz w JOSM',
+    outputOsm: 'Pobierz jako OSM XML',
+    outputGeojson: 'Pobierz jako GeoJSON',
+    tooBig: ({ max }) => `Wielokąt jest za duży; limit wynosi ${max}.`,
+    run: 'Wyznacz',
+    legacy: ({ phrase, item }) => (
+      <>
+        Zamiast <i>easter egga</i> <code>{phrase}</code> należy użyć pozycji{' '}
+        <i>{item}</i> w menu ⋮ zaznaczonego wielokąta.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Dane wysokości',
     introNone: 'Brak jeszcze danych o wysokości.',

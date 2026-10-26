@@ -72,6 +72,39 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Pripni',
     replace: 'Nadomesti',
   },
+  trace: {
+    streams: 'Izris vodotokov',
+    forests: 'Izris gozdov',
+    streamsHelp:
+      'Služi za izpeljavo črt vodotokov iz modela reliefa visoke ločljivosti v izbranem poligonu. Primerno za kartiranje v OpenStreetMap.',
+    forestsHelp:
+      'Služi za izris površin, ki jih v izbranem poligonu pokrivajo izbrani razredi točk LiDAR. Primerno predvsem za kartiranje pokrovnosti tal v OpenStreetMap.',
+    pixelSize: 'Velikost slikovne točke',
+    pixelSizeHint: 'Prazno za lastno ločljivost modela reliefa.',
+    threshold: 'Najmanjša površina povodja',
+    minLength: 'Najmanjša dolžina vodotoka',
+    simplify: 'Toleranca poenostavitve',
+    classes: 'Razredi točk',
+    classNames: {
+      lowVegetation: 'Nizka vegetacija',
+      mediumVegetation: 'Srednja vegetacija',
+      highVegetation: 'Visoka vegetacija',
+      building: 'Stavbe',
+      water: 'Voda',
+    },
+    output: 'Rezultat',
+    outputJosm: 'Odpri v JOSM',
+    outputOsm: 'Prenesi kot OSM XML',
+    outputGeojson: 'Prenesi kot GeoJSON',
+    tooBig: ({ max }) => `Poligon je prevelik; omejitev je ${max}.`,
+    run: 'Izriši',
+    legacy: ({ phrase, item }) => (
+      <>
+        Namesto <i>velikonočnega jajca</i> <code>{phrase}</code> uporabite
+        postavko <i>{item}</i> v meniju ⋮ izbranega poligona.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Podatki o nadmorski višini',
     introNone: 'Podatkov o nadmorski višini še ni.',

@@ -1,7 +1,7 @@
 import { batchChanges, batchOf } from '@shared/batchProperties.js';
 import { BatchFeaturePropertiesModal } from '@shared/components/BatchFeaturePropertiesModal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useBatchKind } from '@shared/hooks/useBatchKind.js';
+import { useHeldModal } from '@shared/hooks/useHeldModal.js';
 import type { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import {
@@ -18,7 +18,7 @@ export default function DataViewerBatchPropertiesModal({
 }: Props): ReactElement | null {
   const dispatch = useDispatch();
 
-  const kind = useBatchKind('data-viewer-batch-properties');
+  const kind = useHeldModal('data-viewer-batch-properties')?.kind;
 
   const features =
     useAppSelector((state) => state.trackViewer.trackGeojson?.features) ?? [];

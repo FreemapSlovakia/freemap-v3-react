@@ -72,6 +72,40 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Ajouter',
     replace: 'Remplacer',
   },
+  trace: {
+    streams: 'Tracé des cours d’eau',
+    forests: 'Tracé des forêts',
+    streamsHelp:
+      'Sert à déduire les lignes des cours d’eau du modèle de terrain haute résolution dans le polygone sélectionné. Utile pour cartographier dans OpenStreetMap.',
+    forestsHelp:
+      'Sert à tracer les surfaces couvertes par les classes de points LiDAR choisies dans le polygone sélectionné. Utile surtout pour cartographier l’occupation du sol dans OpenStreetMap.',
+    pixelSize: 'Taille de pixel',
+    pixelSizeHint: 'Vide pour la résolution propre du modèle de terrain.',
+    threshold: 'Surface minimale du bassin versant',
+    minLength: 'Longueur minimale du cours d’eau',
+    simplify: 'Tolérance de simplification',
+    classes: 'Classes de points',
+    classNames: {
+      lowVegetation: 'Végétation basse',
+      mediumVegetation: 'Végétation moyenne',
+      highVegetation: 'Végétation haute',
+      building: 'Bâtiments',
+      water: 'Eau',
+    },
+    output: 'Résultat',
+    outputJosm: 'Ouvrir dans JOSM',
+    outputOsm: 'Télécharger en OSM XML',
+    outputGeojson: 'Télécharger en GeoJSON',
+    tooBig: ({ max }) =>
+      `Le polygone est trop grand ; la limite est de ${max}.`,
+    run: 'Tracer',
+    legacy: ({ phrase, item }) => (
+      <>
+        Au lieu de l’<i>easter egg</i> <code>{phrase}</code>, utilisez l’élément{' '}
+        <i>{item}</i> du menu ⋮ du polygone sélectionné.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Données d’altitude',
     introNone: 'Il n’y a pas encore de données d’altitude.',

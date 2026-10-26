@@ -147,6 +147,39 @@ const en: DataViewerMessages = {
     append: 'Append',
     replace: 'Replace',
   },
+  trace: {
+    streams: 'Waterway tracing',
+    forests: 'Forest tracing',
+    streamsHelp:
+      'Derives waterway lines from the high-resolution terrain model within the selected polygon. Suited to mapping in OpenStreetMap.',
+    forestsHelp:
+      'Traces areas covered by the chosen LiDAR point classes within the selected polygon. Suited mainly to mapping land cover in OpenStreetMap.',
+    pixelSize: 'Pixel size',
+    pixelSizeHint: 'Empty for the terrain model’s own resolution.',
+    threshold: 'Minimum catchment area',
+    minLength: 'Minimum stream length',
+    simplify: 'Simplification tolerance',
+    classes: 'Point classes',
+    classNames: {
+      lowVegetation: 'Low vegetation',
+      mediumVegetation: 'Medium vegetation',
+      highVegetation: 'High vegetation',
+      building: 'Buildings',
+      water: 'Water',
+    },
+    output: 'Result',
+    outputJosm: 'Open in JOSM',
+    outputOsm: 'Download as OSM XML',
+    outputGeojson: 'Download as GeoJSON',
+    tooBig: ({ max }) => `The polygon is too large; the limit is ${max}.`,
+    run: 'Trace',
+    legacy: ({ phrase, item }) => (
+      <>
+        Instead of the <i>easter egg</i> <code>{phrase}</code>, use the{' '}
+        <i>{item}</i> item in the ⋮ menu of the selected polygon.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Elevation data',
     introNone: 'There is no elevation data yet.',

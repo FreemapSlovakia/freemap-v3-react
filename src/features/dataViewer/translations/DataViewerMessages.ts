@@ -128,6 +128,34 @@ export type DataViewerMessages = {
     append: string;
     replace: string;
   };
+  /** Tracing waterways from the terrain, or forests from LiDAR, within a polygon. */
+  trace: {
+    streams: string;
+    forests: string;
+    streamsHelp: string;
+    forestsHelp: string;
+    pixelSize: string;
+    pixelSizeHint: string;
+    threshold: string;
+    minLength: string;
+    simplify: string;
+    classes: string;
+    classNames: {
+      lowVegetation: string;
+      mediumVegetation: string;
+      highVegetation: string;
+      building: string;
+      water: string;
+    };
+    output: string;
+    outputJosm: string;
+    outputOsm: string;
+    outputGeojson: string;
+    tooBig: (props: { max: string }) => string;
+    run: string;
+    /** Shown when opened by typing a trace phrase as a polygon's label. */
+    legacy: (props: { phrase: string; item: string }) => JSX.Element;
+  };
   elevationFill: {
     title: string;
     introNone: string;

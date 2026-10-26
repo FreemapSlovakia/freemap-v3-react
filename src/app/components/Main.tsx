@@ -498,6 +498,12 @@ const dataViewerPropertiesModalFactory = () =>
     '@features/dataViewer/components/DataViewerPropertiesModal.js'
   );
 
+const dataViewerTraceModalFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-trace-modal" */
+    '@features/dataViewer/components/DataViewerTraceModal.js'
+  );
+
 const dataViewerVertexModalFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-vertex-modal" */
@@ -1363,6 +1369,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'data-viewer-properties'}
         factory={dataViewerPropertiesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'data-viewer-trace'}
+        factory={dataViewerTraceModalFactory}
       />
 
       <AsyncModal

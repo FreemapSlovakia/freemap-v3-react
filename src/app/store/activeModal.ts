@@ -1,3 +1,4 @@
+import type { TraceKind } from '@features/dataViewer/traceServices.js';
 import {
   type Document,
   DocumentSchema,
@@ -130,6 +131,8 @@ export type ActiveModal =
   | { type: 'tracking-watched'; token?: string }
   /** The properties of every feature of a kind at once. */
   | { type: 'data-viewer-batch-properties'; kind: BatchKind }
+  /** What to trace within the selected polygon. */
+  | { type: 'data-viewer-trace'; kind: TraceKind; legacy?: boolean }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
   | { type: 'wiki'; key: string };

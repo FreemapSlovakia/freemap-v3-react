@@ -6,6 +6,7 @@ import {
 import { cachedMapsSettingsInitialState } from '@features/cachedMaps/model/settingsReducer.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
 import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
+import { TraceOutputSchema } from '@features/dataViewer/traceServices.js';
 import {
   DrawingSettingsCompatSchema,
   DrawingStyleSchema,
@@ -384,6 +385,7 @@ export const PersistedDataViewerSettingsSchema = z
     labelVisibility: LabelVisibilitySchema,
     colorizeTrackBy: ColorizingModeSchema.nullable(),
     colorizeLegend: z.boolean(),
+    traceOutput: TraceOutputSchema.nullable(),
   })
   .partial();
 
@@ -709,6 +711,7 @@ const PERSIST: PersistEntry[] = [
       labelVisibility: t.labelVisibility,
       colorizeTrackBy: t.colorizeTrackBy,
       colorizeLegend: t.colorizeLegend,
+      traceOutput: t.traceOutput,
     }),
   }),
   defineEntry({

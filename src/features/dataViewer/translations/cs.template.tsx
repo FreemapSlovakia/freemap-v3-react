@@ -142,6 +142,39 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Připojit',
     replace: 'Nahradit',
   },
+  trace: {
+    streams: 'Trasování vodních toků',
+    forests: 'Trasování lesů',
+    streamsHelp:
+      'Slouží k odvození linií vodních toků z výškového modelu s vysokým rozlišením ve zvoleném polygonu. Vhodné pro mapování v OpenStreetMap.',
+    forestsHelp:
+      'Slouží k vytrasování ploch pokrytých vybranými třídami bodů LiDAR ve zvoleném polygonu. Vhodné především pro mapování krajinného pokryvu v OpenStreetMap.',
+    pixelSize: 'Velikost pixelu',
+    pixelSizeHint: 'Prázdné pro vlastní rozlišení výškového modelu.',
+    threshold: 'Minimální plocha povodí',
+    minLength: 'Minimální délka toku',
+    simplify: 'Tolerance zjednodušení',
+    classes: 'Třídy bodů',
+    classNames: {
+      lowVegetation: 'Nízká vegetace',
+      mediumVegetation: 'Střední vegetace',
+      highVegetation: 'Vysoká vegetace',
+      building: 'Budovy',
+      water: 'Voda',
+    },
+    output: 'Výsledek',
+    outputJosm: 'Otevřít v JOSM',
+    outputOsm: 'Stáhnout jako OSM XML',
+    outputGeojson: 'Stáhnout jako GeoJSON',
+    tooBig: ({ max }) => `Polygon je příliš velký; limit je ${max}.`,
+    run: 'Vytrasovat',
+    legacy: ({ phrase, item }) => (
+      <>
+        Místo <i>velikonočního vajíčka</i> <code>{phrase}</code> použijte
+        položku <i>{item}</i> v nabídce ⋮ označeného polygonu.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Nadmořská výška',
     introNone: 'Údaje o nadmořské výšce zatím chybí.',

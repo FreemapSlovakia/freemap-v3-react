@@ -16,11 +16,14 @@ import {
   toastsAdd,
   toastsRemove,
 } from '@features/toasts/model/actions.js';
+import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { PromptToolbar } from '@shared/components/PromptToolbar.js';
 import {
   Action,
+  ActionDivider,
+  ActionItems,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
@@ -56,6 +59,8 @@ import {
   FaRegStopCircle,
   FaTag,
   FaTimes,
+  FaTree,
+  FaWater,
 } from 'react-icons/fa';
 import { RiScissorsFill } from 'react-icons/ri';
 import {
@@ -67,6 +72,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { isPoint, lineKindOf } from '../featureEditing.js';
 import { useSimplifyData } from '../hooks/useSimplifyData.js';
+import { useTraceKinds } from '../hooks/useTraceKinds.js';
 import {
   dataViewerAddFeatures,
   dataViewerCutHole,
@@ -88,11 +94,17 @@ import {
 } from '../model/trackInfoToast.js';
 import { isSimplifiable } from '../simplifyTrack.js';
 import { breakApart, isExplodable, isSplittable } from '../splitTrack.js';
+import type { TraceKind } from '../traceServices.js';
 import { isRecording } from '../trackChannels.js';
 import { isTrackLine, trackLineFeatures } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 import { editableParts } from '../vertexEditing.js';
 import { DataViewerToggleButton } from './DataViewerToggleButton.js';
+
+const TRACE_ITEMS: { kind: TraceKind; icon: ReactElement; flag?: string }[] = [
+  { kind: 'streams', icon: <FaWater /> },
+  { kind: 'forests', icon: <FaTree />, flag: 'sk' },
+];
 
 /**
  * The polygon a "make this a hole" would attach `inner` to: the smallest one
@@ -210,6 +222,12 @@ export default function DataViewerSelection(): ReactElement | null {
 
   const language = useAppSelector((state) => state.l10n.language);
 
+  const traceKinds = useTraceKinds(
+    !window.fmEmbedded &&
+      hole === undefined &&
+      feature?.geometry.type === 'Polygon',
+  );
+
   const stopKbd = useEscapeKbd(
     cuttingHole ? dataViewerCutHole(null) : dataViewerDrawStop(),
   );
@@ -307,6 +325,8 @@ export default function DataViewerSelection(): ReactElement | null {
   };
 
   const polygon = feature.geometry.type === 'Polygon';
+
+  const traces = TRACE_ITEMS.filter(({ kind }) => traceKinds[kind]);
 
   const lastVertex =
     feature.geometry.type === 'Point'
@@ -712,6 +732,30 @@ export default function DataViewerSelection(): ReactElement | null {
                 }}
               />
             )}
+
+          {traces.length > 0 && <ActionDivider />}
+
+          {traces.length > 0 && (
+            <ActionItems>
+              {traces.map(({ kind, icon, flag }) => (
+                <Dropdown.Item
+                  key={kind}
+                  as="button"
+                  onClick={() => {
+                    dispatch(
+                      setActiveModal({ type: 'data-viewer-trace', kind }),
+                    );
+                  }}
+                >
+                  {icon}
+                  <MenuLabel>
+                    <Text m={dvm} k={`trace.${kind}`} />
+                  </MenuLabel>
+                  {flag && <CountryFlag country={flag} />}
+                </Dropdown.Item>
+              ))}
+            </ActionItems>
+          )}
         </ResponsiveActions>
 
         {placeMenu && (

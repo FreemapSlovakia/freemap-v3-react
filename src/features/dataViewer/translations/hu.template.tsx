@@ -72,6 +72,39 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Hozzáfűzés',
     replace: 'Csere',
   },
+  trace: {
+    streams: 'Vízfolyások kirajzolása',
+    forests: 'Erdők kirajzolása',
+    streamsHelp:
+      'A kijelölt sokszögön belül a nagy felbontású domborzatmodellből vezeti le a vízfolyások vonalait. OpenStreetMapbe való térképezéshez hasznos.',
+    forestsHelp:
+      'A kijelölt sokszögön belül a kiválasztott LiDAR-pontosztályok által fedett területek kirajzolására szolgál. Elsősorban a felszínborítás OpenStreetMapbe való térképezéséhez hasznos.',
+    pixelSize: 'Pixelméret',
+    pixelSizeHint: 'Üresen a domborzatmodell saját felbontása.',
+    threshold: 'Legkisebb vízgyűjtő terület',
+    minLength: 'Legkisebb vízfolyáshossz',
+    simplify: 'Egyszerűsítési tűrés',
+    classes: 'Pontosztályok',
+    classNames: {
+      lowVegetation: 'Alacsony növényzet',
+      mediumVegetation: 'Közepes növényzet',
+      highVegetation: 'Magas növényzet',
+      building: 'Épületek',
+      water: 'Víz',
+    },
+    output: 'Eredmény',
+    outputJosm: 'Megnyitás JOSM-ben',
+    outputOsm: 'Letöltés OSM XML-ként',
+    outputGeojson: 'Letöltés GeoJSON-ként',
+    tooBig: ({ max }) => `A sokszög túl nagy; a határ ${max}.`,
+    run: 'Kirajzolás',
+    legacy: ({ phrase, item }) => (
+      <>
+        A <code>{phrase}</code> <i>easter egg</i> helyett a kijelölt sokszög ⋮
+        menüjének <i>{item}</i> elemét használja.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Magassági adatok',
     introNone: 'Még nincsenek magassági adatok.',

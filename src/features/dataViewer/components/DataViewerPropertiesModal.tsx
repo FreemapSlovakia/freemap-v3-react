@@ -11,7 +11,6 @@ import type { Feature, GeoJsonProperties, Position } from 'geojson';
 import { type ReactElement, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { channelLabel } from '../channelLabel.js';
-import { runDeveloperCommand } from '../developerCommands.js';
 import { sameValue } from '../drawingWire.js';
 import {
   closable,
@@ -22,6 +21,7 @@ import {
   lineKindOf,
 } from '../featureEditing.js';
 import { dataViewerSetFeatureProperties } from '../model/actions.js';
+import { TRACE_PHRASES, type TraceKind } from '../traceServices.js';
 import {
   channelSummaries,
   hasChannel,
@@ -154,12 +154,6 @@ export default function DataViewerPropertiesModal({
     return null;
   }
 
-  // The outline developer commands take as their area of interest.
-  const ring: Position[] | undefined =
-    feature.geometry.type === 'Polygon'
-      ? feature.geometry.coordinates[0]
-      : undefined;
-
   const initial = featureEditValues(feature, defaults);
 
   return (
@@ -184,12 +178,29 @@ export default function DataViewerPropertiesModal({
       }
       closable={
         closable(feature.geometry) ||
-        ring !== undefined ||
+        feature.geometry.type === 'Polygon' ||
         (feature.geometry.type === 'LineString' &&
           feature.geometry.coordinates.length > 2)
       }
       onSave={(values, { rows }) => {
-        if (ring && runDeveloperCommand(values.label, ring, dispatch)) {
+        const legacyKind =
+          feature.geometry.type === 'Polygon'
+            ? (Object.keys(TRACE_PHRASES) as TraceKind[]).find(
+                (kind) => TRACE_PHRASES[kind] === values.label,
+              )
+            : undefined;
+
+        // A polygon labelled with a trace phrase opens the trace modal instead of saving.
+        if (legacyKind) {
+          dispatch(
+            setActiveModal({
+              type: 'data-viewer-trace',
+              kind: legacyKind,
+              legacy: true,
+            }),
+          );
+
+          // The trace modal replaces this one; closing would close it.
           return true;
         }
 

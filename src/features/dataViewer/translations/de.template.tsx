@@ -64,6 +64,40 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Anhängen',
     replace: 'Ersetzen',
   },
+  trace: {
+    streams: 'Gewässerverfolgung',
+    forests: 'Waldverfolgung',
+    streamsHelp:
+      'Dient dazu, im gewählten Polygon Gewässerlinien aus dem hochauflösenden Geländemodell abzuleiten. Geeignet zum Erfassen in OpenStreetMap.',
+    forestsHelp:
+      'Dient dazu, im gewählten Polygon die Flächen nachzuzeichnen, die die ausgewählten LiDAR-Punktklassen bedecken. Geeignet vor allem zum Erfassen der Bodenbedeckung in OpenStreetMap.',
+    pixelSize: 'Pixelgröße',
+    pixelSizeHint: 'Leer für die eigene Auflösung des Geländemodells.',
+    threshold: 'Minimale Einzugsgebietsfläche',
+    minLength: 'Minimale Gewässerlänge',
+    simplify: 'Vereinfachungstoleranz',
+    classes: 'Punktklassen',
+    classNames: {
+      lowVegetation: 'Niedrige Vegetation',
+      mediumVegetation: 'Mittlere Vegetation',
+      highVegetation: 'Hohe Vegetation',
+      building: 'Gebäude',
+      water: 'Wasser',
+    },
+    output: 'Ergebnis',
+    outputJosm: 'In JOSM öffnen',
+    outputOsm: 'Als OSM XML herunterladen',
+    outputGeojson: 'Als GeoJSON herunterladen',
+    tooBig: ({ max }) =>
+      `Das Polygon ist zu groß; die Grenze liegt bei ${max}.`,
+    run: 'Nachzeichnen',
+    legacy: ({ phrase, item }) => (
+      <>
+        Verwenden Sie statt des <i>Easter Eggs</i> <code>{phrase}</code> den
+        Eintrag <i>{item}</i> im ⋮-Menü des ausgewählten Polygons.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Höhendaten',
     introNone: 'Es sind noch keine Höhendaten vorhanden.',

@@ -17,6 +17,7 @@ import type {
 import z from 'zod';
 import type { LineEnd, TrackJoinMode } from '../joinTracks.js';
 import type { TrackSplitPoint } from '../splitTrack.js';
+import type { TraceOutput } from '../traceServices.js';
 
 export { type ColorizingMode, ColorizingModeSchema };
 
@@ -81,6 +82,10 @@ export const dataViewerColorizeTrackBy = createAction<ColorizingMode | null>(
 
 export const dataViewerSetColorizeLegend = createAction<boolean | undefined>(
   'DATA_VIEWER_SET_COLORIZE_LEGEND',
+);
+
+export const dataViewerSetTraceOutput = createAction<TraceOutput>(
+  'DATA_VIEWER_SET_TRACE_OUTPUT',
 );
 
 /**

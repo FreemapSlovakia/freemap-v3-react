@@ -71,6 +71,39 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Aggiungi',
     replace: 'Sostituisci',
   },
+  trace: {
+    streams: 'Tracciamento dei corsi d’acqua',
+    forests: 'Tracciamento dei boschi',
+    streamsHelp:
+      'Serve a ricavare le linee dei corsi d’acqua dal modello del terreno ad alta risoluzione nel poligono selezionato. Adatto alla mappatura in OpenStreetMap.',
+    forestsHelp:
+      'Serve a tracciare le aree coperte dalle classi di punti LiDAR scelte nel poligono selezionato. Adatto soprattutto a mappare la copertura del suolo in OpenStreetMap.',
+    pixelSize: 'Dimensione del pixel',
+    pixelSizeHint: 'Vuoto per la risoluzione propria del modello del terreno.',
+    threshold: 'Area minima del bacino',
+    minLength: 'Lunghezza minima del corso d’acqua',
+    simplify: 'Tolleranza di semplificazione',
+    classes: 'Classi di punti',
+    classNames: {
+      lowVegetation: 'Vegetazione bassa',
+      mediumVegetation: 'Vegetazione media',
+      highVegetation: 'Vegetazione alta',
+      building: 'Edifici',
+      water: 'Acqua',
+    },
+    output: 'Risultato',
+    outputJosm: 'Apri in JOSM',
+    outputOsm: 'Scarica come OSM XML',
+    outputGeojson: 'Scarica come GeoJSON',
+    tooBig: ({ max }) => `Il poligono è troppo grande; il limite è ${max}.`,
+    run: 'Traccia',
+    legacy: ({ phrase, item }) => (
+      <>
+        Invece dell’<i>easter egg</i> <code>{phrase}</code>, usi la voce{' '}
+        <i>{item}</i> nel menu ⋮ del poligono selezionato.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Dati di quota',
     introNone: 'Non ci sono ancora dati di quota.',

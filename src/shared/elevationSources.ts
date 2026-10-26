@@ -21,6 +21,19 @@ const sources = rememberedJson(
 export const useDtmCountries = sources.useValue;
 
 /**
+ * The country each part-of-a-country area lies in. A new one needs its name in
+ * premium's `dtmAreaNames`, which is keyed by this table.
+ */
+export const DTM_SUB_AREAS = { en: 'gb', wls: 'gb' } as const;
+
+/** The country code a national model's area lies in. */
+export function dtmAreaCountry(token: string): string {
+  return Object.hasOwn(DTM_SUB_AREAS, token)
+    ? DTM_SUB_AREAS[token as keyof typeof DTM_SUB_AREAS]
+    : token;
+}
+
+/**
  * The LiDAR-derived terrain model GraphHopper is built on: it serves its own
  * elevation from it, which a route's profile keeps on the free tier, and weighs
  * every route by it — so a premium route, whose profile is re-read from the

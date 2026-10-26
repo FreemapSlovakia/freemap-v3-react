@@ -10,6 +10,7 @@ import {
 } from '@shared/colorizers/index.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import type { LabelVisibility } from '@shared/labelVisibility.js';
+import type { TraceOutput } from '../traceServices.js';
 import { isRecording } from '../trackChannels.js';
 import { isTrackLine } from '../trackSelection.js';
 import {
@@ -18,6 +19,7 @@ import {
   dataViewerSetData,
   dataViewerSetLabelVisibility,
   dataViewerSetStyle,
+  dataViewerSetTraceOutput,
 } from './actions.js';
 
 // Persisted track-viewer display preferences. A dedicated settings slice (not
@@ -31,6 +33,8 @@ export interface DataViewerSettingsState {
   colorizeTrackBy: ColorizingMode | null;
   // Whether the colorize legend is shown; independent of the other tools.
   colorizeLegend: boolean;
+  // The trace modal's last result; unset, it is chosen by the device.
+  traceOutput: TraceOutput | null;
 }
 
 export const dataViewerSettingsInitialState: DataViewerSettingsState = {
@@ -38,6 +42,7 @@ export const dataViewerSettingsInitialState: DataViewerSettingsState = {
   labelVisibility: 'always',
   colorizeTrackBy: null,
   colorizeLegend: true,
+  traceOutput: null,
 };
 
 export const dataViewerSettingsReducer = createReducer(
@@ -55,6 +60,9 @@ export const dataViewerSettingsReducer = createReducer(
       })
       .addCase(dataViewerSetColorizeLegend, (state, { payload }) => {
         toggleColorizeLegend(state, payload);
+      })
+      .addCase(dataViewerSetTraceOutput, (state, action) => {
+        state.traceOutput = action.payload;
       })
       .addCase(dataViewerSetData, (state, action) => {
         // A persisted elevation-derived colorize mode would render as a flat

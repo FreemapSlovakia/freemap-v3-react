@@ -146,6 +146,39 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Pripojiť',
     replace: 'Nahradiť',
   },
+  trace: {
+    streams: 'Trasovanie vodných tokov',
+    forests: 'Trasovanie lesov',
+    streamsHelp:
+      'Slúži na odvodenie línií vodných tokov z výškového modelu s vysokým rozlíšením vo zvolenom polygóne. Vhodné na mapovanie v OpenStreetMap.',
+    forestsHelp:
+      'Slúži na vytrasovanie plôch pokrytých vybranými triedami bodov LiDAR vo zvolenom polygóne. Vhodné najmä na mapovanie krajinnej pokrývky v OpenStreetMap.',
+    pixelSize: 'Veľkosť pixela',
+    pixelSizeHint: 'Prázdne pre vlastné rozlíšenie výškového modelu.',
+    threshold: 'Minimálna plocha povodia',
+    minLength: 'Minimálna dĺžka toku',
+    simplify: 'Tolerancia zjednodušenia',
+    classes: 'Triedy bodov',
+    classNames: {
+      lowVegetation: 'Nízka vegetácia',
+      mediumVegetation: 'Stredná vegetácia',
+      highVegetation: 'Vysoká vegetácia',
+      building: 'Budovy',
+      water: 'Voda',
+    },
+    output: 'Výsledok',
+    outputJosm: 'Otvoriť v JOSM',
+    outputOsm: 'Stiahnuť ako OSM XML',
+    outputGeojson: 'Stiahnuť ako GeoJSON',
+    tooBig: ({ max }) => `Polygón je priveľký; limit je ${max}.`,
+    run: 'Vytrasovať',
+    legacy: ({ phrase, item }) => (
+      <>
+        Namiesto <i>veľkonočného vajíčka</i> <code>{phrase}</code> použite
+        položku <i>{item}</i> v ponuke ⋮ označeného polygónu.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Nadmorská výška',
     introNone: 'Údaje o nadmorskej výške zatiaľ chýbajú.',
