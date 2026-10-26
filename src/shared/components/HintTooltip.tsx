@@ -13,6 +13,10 @@ type Props = {
  * only to a mouse — a finger never gets at it.
  */
 export function HintTooltip({ hint, children }: Props): ReactElement {
+  if (hint == null) {
+    return <>{children}</>;
+  }
+
   return (
     <LongPressTooltip label={hint} toggleOnClick>
       {({ props }) => (

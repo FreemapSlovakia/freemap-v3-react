@@ -1,38 +1,24 @@
+import z from 'zod';
 import type { AttributionDef } from './mapDefinitions.js';
+import { rememberedJson } from './rememberedJson.js';
 
 /**
- * Countries the elevation API answers from a national high-resolution terrain
- * model, for a read that presents premium credentials; past their borders such a
- * read falls back to the global 30 m GEDTM30. This is what the premium offer
- * advertises, so it must track the models the API actually holds.
- *
- * A non-premium read gets none of these: it is answered from SRTM everywhere.
- * Neither is what GraphHopper returns from its own graph — that is Sonny's.
- *
- * Only the countries: a read credits whatever the API reports for the very
- * points it answered (`readElevationAttributions`), so no model is named here.
- *
- * Coverage is per country, so `gb` overstates a model that covers England
- * alone; a read elsewhere in the UK still falls back to GEDTM30.
+ * A token naming a national model by its area — a country, or a part of one
+ * (`en`, `wls`) — rather than a model of its own (`gedtm30`, `sonny`, `srtm`).
  */
-export const ELEVATION_API_DTM_COUNTRIES = [
-  'at',
-  'be',
-  'ch',
-  'cz',
-  'es',
-  'fi',
-  'fr',
-  'gb',
-  'hr',
-  'it',
-  'lu',
-  'no',
-  'pl',
-  'se',
-  'si',
-  'sk',
-];
+const NATIONAL_TOKEN = /^[a-z]{2,3}$/;
+
+// The API's source names as a read reports them, kept to the national models'.
+const sources = rememberedJson(
+  `${process.env['API_URL']}/geotools/elevation/sources`,
+  'fm.elevationSources',
+  z
+    .array(z.string())
+    .transform((names) => names.filter((name) => NATIONAL_TOKEN.test(name))),
+);
+
+/** Areas a premium read answers from a national model; `null` until known. */
+export const useDtmCountries = sources.useValue;
 
 /**
  * The LiDAR-derived terrain model GraphHopper is built on: it serves its own
@@ -47,20 +33,14 @@ export const SONNY_ATTR: AttributionDef = {
   url: 'https://sonny.4lima.de/',
 };
 
-/** A token naming a country's national model rather than a model of its own. */
-const COUNTRY_TOKEN = /^[a-z]{2}$/;
-
 /**
- * Whether every model that answered is a national one — LiDAR-derived, so a
- * reading off it is worth a decimal. Recognized by the country code it is
- * reported under, since a global model the API gains is named by a model id we
- * would not know: the decimal is then withheld rather than claimed off a 30 m
- * grid. Nothing reported is treated the same way.
+ * Whether every model that answered is a national, LiDAR-derived one, so a
+ * reading is worth a decimal. An unknown model id, or nothing reported, isn't.
  */
 export function hasSubMeterPrecision(tokens: string[]): boolean {
   return (
     tokens.length > 0 &&
-    tokens.every((token) => COUNTRY_TOKEN.test(token.toLowerCase()))
+    tokens.every((token) => NATIONAL_TOKEN.test(token.toLowerCase()))
   );
 }
 

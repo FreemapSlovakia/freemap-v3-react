@@ -53,7 +53,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <p className="mb-0">Freemap pozostaje bezpłatny i otwarty.</p>
     </>
   ),
-  dtmAreaNames: { gb: 'Anglia' },
+  dtmAreaNames: { en: 'Anglia', wls: 'Walia' },
   purchaseAfterLogin: (
     <>
       Wybór dostawcy logowania loguje do konta Freemap lub tworzy bezpłatne

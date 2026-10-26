@@ -54,7 +54,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <p className="mb-0">A Freemap ingyenes és nyílt marad.</p>
     </>
   ),
-  dtmAreaNames: { gb: 'Anglia' },
+  dtmAreaNames: { en: 'Anglia', wls: 'Wales' },
   purchaseAfterLogin: (
     <>
       A bejelentkezési szolgáltató kiválasztásával bejelentkezik, vagy ingyenes

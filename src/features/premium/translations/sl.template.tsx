@@ -54,7 +54,7 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <p className="mb-0">Freemap ostaja brezplačen in odprt.</p>
     </>
   ),
-  dtmAreaNames: { gb: 'Anglija' },
+  dtmAreaNames: { en: 'Anglija', wls: 'Wales' },
   purchaseAfterLogin: (
     <>
       Z izbiro ponudnika prijave se prijavite ali si ustvarite brezplačen račun

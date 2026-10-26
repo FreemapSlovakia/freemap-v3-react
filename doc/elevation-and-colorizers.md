@@ -264,24 +264,23 @@ elevation, which never went through the API at all.
 Nothing carries them to the chart, onto geometry, or into the store — the credit travels
 alone.
 
-`ELEVATION_API_DTM_COUNTRIES` remains for the one place that credits before any read has
-happened: the premium offer's country list. It names no model — a read credits whatever the
-API reports for the points it answered.
-
-Coverage is reported per country (`/geotools/covered-countries` answers `alpha2` codes), so a
-model covering only part of one is listed for the whole of it, an over-credit rather than a
-missing one. England's LIDAR composite is the case, and the premium offer's country list names
-such an area through `dtmAreaNames` instead of the country — `Intl.DisplayNames` names
-countries alone.
+The one place that names coverage before any read has happened — the country list behind the
+premium offer and the elevation prompt — comes from the API itself: `useDtmCountries` reads
+`GET /geotools/elevation/sources` (the source names a read would report, remembered in
+`localStorage`) and keeps the national models' — two- or three-letter area codes (`sk`, `en`,
+`wls`), not a model id such as `sonny`, whose patchwork falls back to SRTM unannounced. It names no model — a read credits whatever the
+API reports for the points it answered. Until the list arrives, the phrase shows no tooltip.
+`Intl.DisplayNames` names countries alone, so a code for part of one is named through
+`dtmAreaNames`.
 
 Which model answers depends on the read, not only on the place: a **premium** read gets the
 national models and GEDTM30 past their borders, while a **non-premium** one is answered from
 **SRTM everywhere**. So a non-premium profile has exactly one source to
 credit, known without waiting on coverage, and the upsell gem always applies to it.
 
-`hasSubMeterPrecision` gives the point readout a decimal when every token is a 2-letter
-country code, since those are the LiDAR-derived national models. A global model is reported
-under its own id (`gedtm30`, `srtm`), which fails that test — so a model the API gains and
+`hasSubMeterPrecision` gives the point readout a decimal when every token is such an area
+code, since those are the LiDAR-derived national models. Any other model is reported under its
+own id (`gedtm30`, `srtm`, `sonny`), which fails that test — so a model the API gains and
 we've never heard of withholds the decimal rather than claiming it off a 30 m grid.
 
 GraphHopper serves its own elevation from **Sonny's LiDAR DTM**, which no read of ours

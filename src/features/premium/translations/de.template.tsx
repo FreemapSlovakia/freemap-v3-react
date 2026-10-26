@@ -56,7 +56,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
     </>
   ),
 
-  dtmAreaNames: { gb: 'England' },
+  dtmAreaNames: { en: 'England', wls: 'Wales' },
   purchaseAfterLogin: (
     <>
       Mit der Wahl eines Anmeldeanbieters melden Sie sich an oder erstellen ein

@@ -46,7 +46,7 @@ const en: PremiumMessages = {
       <p className="mb-0">Freemap stays free and open.</p>
     </>
   ),
-  dtmAreaNames: { gb: 'England' },
+  dtmAreaNames: { en: 'England', wls: 'Wales' },
   purchaseAfterLogin: (
     <>
       Choosing a login provider signs you in or creates a free Freemap account.

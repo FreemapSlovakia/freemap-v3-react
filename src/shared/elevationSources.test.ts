@@ -7,6 +7,10 @@ describe('hasSubMeterPrecision', () => {
     expect(hasSubMeterPrecision(['SK'])).toBe(true);
   });
 
+  it('holds for a model of part of a country', () => {
+    expect(hasSubMeterPrecision(['en', 'wls'])).toBe(true);
+  });
+
   it('does not hold for a global model, nor beside a national one', () => {
     expect(hasSubMeterPrecision(['srtm'])).toBe(false);
     expect(hasSubMeterPrecision(['gedtm30'])).toBe(false);
