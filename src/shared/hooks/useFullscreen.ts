@@ -1,17 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 
+/** Resolves to whether the document went fullscreen. */
+export async function requestDocumentFullscreen(): Promise<boolean> {
+  try {
+    // Some WebViews advertise the API but reject (or throw synchronously)
+    // with "Fullscreen is not supported"; `await` catches both.
+    await document.body.requestFullscreen();
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function toggleFullscreen(): void {
   if (document.fullscreenElement) {
     document.exitFullscreen().catch(() => {});
   } else {
-    try {
-      // Some WebViews advertise the API but reject (or throw synchronously)
-      // with "Fullscreen is not supported"; swallow both.
-      document.body.requestFullscreen().catch(() => {});
-    } catch {
-      // ignore
-    }
+    void requestDocumentFullscreen();
   }
 }
 

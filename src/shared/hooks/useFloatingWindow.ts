@@ -1,4 +1,5 @@
 import windowClasses from '@shared/components/FloatingWindow.module.css';
+import { requestDocumentFullscreen } from '@shared/hooks/useFullscreen.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { clamp } from '@shared/mathUtils.js';
 import clsx from 'clsx';
@@ -43,6 +44,14 @@ function pointerInView(e: PointerEvent) {
     clamp(e.clientX, 0, window.innerWidth),
     clamp(e.clientY, 0, window.innerHeight),
   ] as const;
+}
+
+function leaveBrowserFullscreen(owns: RefObject<boolean>) {
+  if (owns.current && document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
+
+  owns.current = false;
 }
 
 // Where the window sat and how big it was when it was last dragged or resized.
@@ -210,6 +219,64 @@ export function useFloatingWindow({
   // Deliberately not remembered: a panel that reopened covering the map would
   // give no clue what had happened.
   const [fullscreen, setFullscreen] = useState(false);
+
+  // `fullscreen` as of the latest toggle, for a request settling later; false
+  // once the panel is closed.
+  const wantFullscreenRef = useRef(false);
+
+  // Whether the browser's fullscreen is ours to leave: one already on (an
+  // embedded map's) is left alone.
+  const ownsBrowserFullscreenRef = useRef(false);
+
+  // Full screen takes the browser's too. The document rather than the box goes
+  // fullscreen, or tooltips and modals portaled to `body` would be hidden.
+  const toggleFullscreen = useCallback(() => {
+    const next = !wantFullscreenRef.current;
+
+    wantFullscreenRef.current = next;
+
+    setFullscreen(next);
+
+    if (!next) {
+      leaveBrowserFullscreen(ownsBrowserFullscreenRef);
+    } else if (document.fullscreenEnabled && !document.fullscreenElement) {
+      requestDocumentFullscreen().then((granted) => {
+        if (!granted) {
+          return;
+        }
+
+        // Toggled off or closed while the request was pending.
+        if (wantFullscreenRef.current) {
+          ownsBrowserFullscreenRef.current = true;
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      });
+    }
+  }, []);
+
+  // Leaving the browser's fullscreen by Esc or its own UI restores the window.
+  useEffect(() => {
+    const handler = () => {
+      if (ownsBrowserFullscreenRef.current && !document.fullscreenElement) {
+        ownsBrowserFullscreenRef.current = false;
+
+        wantFullscreenRef.current = false;
+
+        setFullscreen(false);
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handler);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handler);
+
+      wantFullscreenRef.current = false;
+
+      leaveBrowserFullscreen(ownsBrowserFullscreenRef);
+    };
+  }, []);
 
   const [footerEl, setFooterEl] = useState<HTMLDivElement | null>(null);
 
@@ -628,7 +695,7 @@ export function useFloatingWindow({
       ),
     },
     fullscreen,
-    toggleFullscreen: useCallback(() => setFullscreen((v) => !v), []),
+    toggleFullscreen,
     bottomProps: { ref: setFooterEl, className: 'd-flex flex-column' },
     moveHandleRef,
     resizeHandleProps: {
