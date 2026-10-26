@@ -1,9 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { useDtmCountryNames } from '@features/premium/hooks/useDtmCountryNames.js';
 import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
@@ -25,6 +27,8 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
   const tvm = useDataViewerMessages();
 
   const dispatch = useDispatch();
+
+  const dtmCountries = useDtmCountryNames();
 
   const consumer = useAppSelector((state) => state.trackViewer.elevationPrompt);
 
@@ -102,9 +106,14 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
         )}
 
         <p className="text-body-secondary small mb-0">
-          {ef.premiumHiRes((label) => (
-            <PremiumGem label={label} onBeforeNavigate={close} />
-          ))}
+          {ef.premiumHiRes(
+            (label) => (
+              <PremiumGem label={label} onBeforeNavigate={close} />
+            ),
+            (label) => (
+              <HintTooltip hint={dtmCountries}>{label}</HintTooltip>
+            ),
+          )}
         </p>
       </Modal.Body>
 

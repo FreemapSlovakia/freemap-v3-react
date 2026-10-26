@@ -66,16 +66,16 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   elevationFill: {
     title: 'Höhendaten',
-    introNone: 'Diese Spur enthält keine Höhendaten.',
-    introPartial: 'Bei einigen Punkten dieser Spur fehlt die Höhe.',
+    introNone: 'Es sind noch keine Höhendaten vorhanden.',
+    introPartial: 'Bei einigen Punkten fehlt die Höhe.',
     introFull:
-      'Diese Spur hat bereits Höhendaten, aber ein Geländemodell ist oft ' +
+      'Höhendaten sind bereits vorhanden, aber ein Geländemodell ist oft ' +
       'genauer.',
-    premiumHiRes: (premiumLink) => (
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        Mit {premiumLink('Premium-Zugang')} werden die Höhendaten in
-        unterstützten Ländern aus einem hochauflösenden nationalen Modell
-        abgetastet — derzeit Slowakei (DMR 5.0: ÚGKK SR), weitere folgen.
+        Mit {premiumLink('Premium-Zugang')} werden die Höhendaten in{' '}
+        {countries('vielen europäischen Ländern')} aus hochauflösenden
+        nationalen Geländemodellen abgetastet.
       </>
     ),
     question: 'Was möchten Sie tun?',

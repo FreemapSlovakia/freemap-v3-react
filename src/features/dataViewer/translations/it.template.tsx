@@ -73,16 +73,16 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   elevationFill: {
     title: 'Dati di quota',
-    introNone: 'Questa traccia non ha dati di quota.',
-    introPartial: 'In alcuni punti di questa traccia manca la quota.',
+    introNone: 'Non ci sono ancora dati di quota.',
+    introPartial: 'In alcuni punti manca la quota.',
     introFull:
-      'Questa traccia ha già la quota, ma un modello del terreno è spesso ' +
+      'I dati di quota sono già presenti, ma un modello del terreno è spesso ' +
       'più preciso.',
-    premiumHiRes: (premiumLink) => (
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        Con l’{premiumLink('accesso premium')}, nei paesi supportati la quota è
-        campionata da un modello nazionale ad alta risoluzione — per ora
-        Slovacchia (DMR 5.0: ÚGKK SR), altri in arrivo.
+        Con l’{premiumLink('accesso premium')}, in{' '}
+        {countries('molti paesi europei')} la quota è campionata da modelli
+        nazionali del terreno ad alta risoluzione.
       </>
     ),
     question: 'Cosa vuole fare?',

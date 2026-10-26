@@ -74,16 +74,16 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   elevationFill: {
     title: 'Données d’altitude',
-    introNone: 'Cette trace ne comporte pas de données d’altitude.',
-    introPartial: 'L’altitude de certains points de cette trace est manquante.',
+    introNone: 'Il n’y a pas encore de données d’altitude.',
+    introPartial: 'L’altitude de certains points est manquante.',
     introFull:
-      'Cette trace comporte déjà une altitude, mais un modèle de terrain est souvent plus ' +
-      'précis.',
-    premiumHiRes: (premiumLink) => (
+      'Les données d’altitude sont déjà présentes, mais un modèle de terrain ' +
+      'est souvent plus précis.',
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        Avec {premiumLink('l’accès premium')}, l’altitude dans les pays pris en
-        charge est échantillonnée à partir d’un modèle national haute résolution
-        — actuellement la Slovaquie (DMR 5.0 : ÚGKK SR), d’autres à venir.
+        Avec {premiumLink('l’accès premium')}, l’altitude dans{' '}
+        {countries('de nombreux pays européens')} est échantillonnée à partir de
+        modèles nationaux de terrain haute résolution.
       </>
     ),
     question: 'Que souhaitez-vous faire ?',

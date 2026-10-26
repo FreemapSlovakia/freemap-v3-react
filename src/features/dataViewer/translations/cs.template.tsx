@@ -144,16 +144,15 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   elevationFill: {
     title: 'Nadmořská výška',
-    introNone: 'Tato trasa nemá údaje o nadmořské výšce.',
-    introPartial: 'Této trase chybí nadmořská výška u některých bodů.',
+    introNone: 'Údaje o nadmořské výšce zatím chybí.',
+    introPartial: 'Některým bodům chybí nadmořská výška.',
     introFull:
-      'Tato trasa už má nadmořskou výšku, ale model terénu bývá často ' +
-      'přesnější.',
-    premiumHiRes: (premiumLink) => (
+      'Nadmořská výška už je zadaná, ale model terénu bývá často přesnější.',
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        S {premiumLink('prémiovým přístupem')} se nadmořská výška v
-        podporovaných zemích získává z národního modelu ve vysokém rozlišení —
-        zatím Slovensko (DMR 5.0: ÚGKK SR), další přibudou.
+        S {premiumLink('prémiovým přístupem')} se nadmořská výška v{' '}
+        {countries('mnoha evropských zemích')} získává z národních modelů terénu
+        ve vysokém rozlišení.
       </>
     ),
     question: 'Co chcete udělat?',

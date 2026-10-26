@@ -133,7 +133,11 @@ export type DataViewerMessages = {
     introNone: string;
     introPartial: string;
     introFull: string;
-    premiumHiRes: (premiumLink: (label: ReactNode) => ReactNode) => ReactNode;
+    /** `countries` wraps its label in the tooltip listing them. */
+    premiumHiRes: (
+      premiumLink: (label: ReactNode) => ReactNode,
+      countries: (label: ReactNode) => ReactNode,
+    ) => ReactNode;
     question: string;
     overrideAll: string;
     overrideAllDesc: string;

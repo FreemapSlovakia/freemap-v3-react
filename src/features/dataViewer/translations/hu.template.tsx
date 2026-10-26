@@ -74,16 +74,15 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   elevationFill: {
     title: 'Magassági adatok',
-    introNone: 'Ennek a nyomvonalnak nincsenek magassági adatai.',
-    introPartial: 'A nyomvonal néhány pontjáról hiányzik a magasság.',
+    introNone: 'Még nincsenek magassági adatok.',
+    introPartial: 'Néhány pontról hiányzik a magasság.',
     introFull:
-      'A nyomvonalnak már vannak magassági adatai, de egy domborzatmodell ' +
-      'gyakran pontosabb.',
-    premiumHiRes: (premiumLink) => (
+      'Már vannak magassági adatok, de egy domborzatmodell gyakran pontosabb.',
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        {premiumLink('Prémium hozzáféréssel')} a magassági adatokat a támogatott
-        országokban nagy felbontású nemzeti modellből mintavételezzük — egyelőre
-        Szlovákia (DMR 5.0: ÚGKK SR), továbbiak hamarosan.
+        {premiumLink('Prémium hozzáféréssel')} a magassági adatokat{' '}
+        {countries('számos európai országban')} nagy felbontású nemzeti
+        domborzatmodellekből mintavételezzük.
       </>
     ),
     question: 'Mit szeretne tenni?',

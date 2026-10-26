@@ -149,16 +149,16 @@ const en: DataViewerMessages = {
   },
   elevationFill: {
     title: 'Elevation data',
-    introNone: 'This track has no elevation data.',
-    introPartial: 'This track is missing elevation for some points.',
+    introNone: 'There is no elevation data yet.',
+    introPartial: 'Some points are missing elevation.',
     introFull:
-      'This track already has elevation, but a terrain model is often more ' +
+      'Elevation data is already present, but a terrain model is often more ' +
       'precise.',
-    premiumHiRes: (premiumLink) => (
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        With {premiumLink('premium access')}, elevation in supported countries
-        is sampled from a high-resolution national model — currently Slovakia
-        (DMR 5.0: ÚGKK SR), with more to follow.
+        With {premiumLink('premium access')}, elevation in{' '}
+        {countries('many European countries')} is sampled from high-resolution
+        national terrain models.
       </>
     ),
     question: 'What would you like to do?',

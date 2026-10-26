@@ -74,15 +74,15 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   elevationFill: {
     title: 'Podatki o nadmorski višini',
-    introNone: 'Ta sled nima podatkov o nadmorski višini.',
-    introPartial: 'Tej sledi za nekatere točke manjka nadmorska višina.',
+    introNone: 'Podatkov o nadmorski višini še ni.',
+    introPartial: 'Nekaterim točkam manjka nadmorska višina.',
     introFull:
-      'Ta sled že ima nadmorsko višino, vendar je model terena pogosto natančnejši.',
-    premiumHiRes: (premiumLink) => (
+      'Nadmorska višina je že podana, vendar je model terena pogosto natančnejši.',
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        S {premiumLink('premium dostopom')} se nadmorska višina v podprtih
-        državah pridobi iz nacionalnega modela visoke ločljivosti — zaenkrat
-        Slovaška (DMR 5.0: ÚGKK SR), sledijo še druge.
+        S {premiumLink('premium dostopom')} se nadmorska višina v{' '}
+        {countries('številnih evropskih državah')} pridobi iz nacionalnih
+        modelov terena visoke ločljivosti.
       </>
     ),
     question: 'Kaj želite storiti?',

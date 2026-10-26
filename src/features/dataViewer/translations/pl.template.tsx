@@ -66,16 +66,16 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   elevationFill: {
     title: 'Dane wysokości',
-    introNone: 'Ten ślad nie zawiera danych o wysokości.',
-    introPartial: 'W niektórych punktach tego śladu brakuje wysokości.',
+    introNone: 'Brak jeszcze danych o wysokości.',
+    introPartial: 'W niektórych punktach brakuje wysokości.',
     introFull:
-      'Ten ślad ma już dane wysokości, ale model terenu jest często ' +
+      'Dane wysokości są już dostępne, ale model terenu jest często ' +
       'dokładniejszy.',
-    premiumHiRes: (premiumLink) => (
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        Z {premiumLink('dostępem premium')} wysokość w obsługiwanych krajach
-        jest próbkowana z krajowego modelu w wysokiej rozdzielczości — na razie
-        Słowacja (DMR 5.0: ÚGKK SR), kolejne wkrótce.
+        Z {premiumLink('dostępem premium')} wysokość w{' '}
+        {countries('wielu krajach europejskich')} jest próbkowana z krajowych
+        modeli terenu w wysokiej rozdzielczości.
       </>
     ),
     question: 'Co zrobić?',
