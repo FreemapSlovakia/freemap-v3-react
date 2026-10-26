@@ -49,11 +49,21 @@ export function snapToDevicePixels(map: LeafletMap): () => void {
     });
   };
 
+  // Leaflet ends a zoom on a 250 ms timer, which can beat the tile containers'
+  // CSS transition, so a snap at `zoomend` measures a tile still moving.
+  const onTransitionEnd = (e: TransitionEvent) => {
+    if (e.propertyName === 'transform') {
+      snapSoon();
+    }
+  };
+
   const unwatchDpr = watchDevicePixelRatio(snap);
 
   map.on('move zoomend viewreset resize', snap);
 
   map.on('layeradd', snapSoon);
+
+  pane.addEventListener('transitionend', onTransitionEnd);
 
   // The first layers are added before this runs, as child effects go first.
   snapSoon();
@@ -62,6 +72,8 @@ export function snapToDevicePixels(map: LeafletMap): () => void {
     map.off('move zoomend viewreset resize', snap);
 
     map.off('layeradd', snapSoon);
+
+    pane.removeEventListener('transitionend', onTransitionEnd);
 
     unwatchDpr();
 
