@@ -17,6 +17,7 @@ import {
   GeoJSONPositionSchema,
   GeoJSONPropertiesSchema,
 } from 'zod-geojson';
+import type { TransportScope } from './legTransports.js';
 
 export const RoutePointSchema = z.object({
   ...LatLonSchema.shape,
@@ -260,9 +261,13 @@ export const routePlannerSetStart = createAction<NewRoutePoint>(
   'ROUTE_PLANNER_SET_START',
 );
 
-export const routePlannerSetFinish = createAction<NewRoutePoint | null>(
-  'ROUTE_PLANNER_SET_FINISH',
-);
+export const routePlannerSetFinish = createAction<
+  | (NewRoutePoint & {
+      /** The transport of the leg reaching the new finish; the route's otherwise. */
+      legTransport?: TransportType;
+    })
+  | null
+>('ROUTE_PLANNER_SET_FINISH');
 
 export const routePlannerSetFromCurrentPosition = createAction<PickMode>(
   'ROUTE_PLANNER_SET_FROM_CURRENT_POSITION',
@@ -286,6 +291,12 @@ export const routePlannerRemovePoint = createAction<number>(
 export const routePlannerSetTransportType = createAction<TransportType>(
   'ROUTE_PLANNER_SET_TRANSPORT_TYPE',
 );
+
+/** Applies a transport to the legs of a `route`-mode route that `scope` names. */
+export const routePlannerChangeTransport = createAction<{
+  transport: TransportType;
+  scope: TransportScope;
+}>('ROUTE_PLANNER_CHANGE_TRANSPORT');
 
 export const routePlannerSetMode = createAction<RoutingMode>(
   'ROUTE_PLANNER_SET_OSRM_MODE',

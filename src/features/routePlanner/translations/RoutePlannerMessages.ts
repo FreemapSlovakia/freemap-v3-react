@@ -6,7 +6,20 @@ type Err = { err: string };
 
 export type RoutePlannerMessages = {
   selectHomeLocation: string;
-  default: string;
+  /** Which legs a transport chosen in the transport menu applies to. */
+  transportScope: {
+    title: string;
+    route: string;
+    /** The trailing run of legs sharing a transport. */
+    lastSection: string;
+    /** Legs added from now on, leaving the drawn ones. */
+    next: string;
+    leg: string;
+    /** The run of neighbouring legs sharing the selected leg's transport. */
+    section: string;
+    /** Every leg sharing the selected leg's transport. */
+    sameTransport: string;
+  };
   leg: string;
   manualTooltip: string;
   ghParams: {

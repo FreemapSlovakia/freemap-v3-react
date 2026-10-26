@@ -113,7 +113,15 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas wyszukiwania trasy', err),
   manualTooltip: 'Połącz następny odcinek prostą linią',
-  default: 'Domyślna',
+  transportScope: {
+    title: 'Zastosuj do',
+    route: 'Cała trasa',
+    lastSection: 'Ostatnia część',
+    next: 'Nowe odcinki',
+    leg: 'Ten odcinek',
+    section: 'Cała część',
+    sameTransport: 'Ten sam środek transportu',
+  },
   leg: 'Odcinek trasy',
   stop: 'Postój',
   transportTypeLabel: 'Środek transportu',

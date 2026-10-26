@@ -114,7 +114,15 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Finden der Route', err),
   manualTooltip: 'Folgenden Abschnitt mit einer geraden Linie verbinden',
-  default: 'Standard',
+  transportScope: {
+    title: 'Anwenden auf',
+    route: 'Ganze Route',
+    lastSection: 'Letzter Teil',
+    next: 'Neue Abschnitte',
+    leg: 'Dieser Abschnitt',
+    section: 'Ganzer Teil',
+    sameTransport: 'Gleiches Verkehrsmittel',
+  },
   leg: 'Routenabschnitt',
   stop: 'Halt',
   transportTypeLabel: 'Verkehrsmittel',

@@ -105,9 +105,9 @@ import {
   routePlannerSetPickMode,
   routePlannerSetRoundtripParams,
   routePlannerSetStart,
-  routePlannerSetTransportType,
   routePlannerSwapEnds,
 } from '../model/actions.js';
+import { legTransports } from '../model/legTransports.js';
 import { pathDetailKeys, routeColorizeFeatures } from '../model/pathDetails.js';
 import {
   getFinish,
@@ -122,7 +122,7 @@ import { plannedRouteLines } from '../model/routeGeometry.js';
 import { MAX_ALTERNATIVES } from '../model/settingsReducer.js';
 import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
-import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
+import { RouteTransportSelect } from './RouteTransportSelect.js';
 
 const modeIcons: Record<RoutingMode, ReactElement> = {
   route: <MdTimeline />,
@@ -573,9 +573,11 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const colorizeBy = useRouteColorizeMode();
 
-  const premiumColorize = usePremiumColorizeLock(
-    useAppSelector(routePremiumUnlockedSelector),
-  );
+  const premiumUnlocked = useAppSelector(routePremiumUnlockedSelector);
+
+  const premiumColorize = usePremiumColorizeLock(premiumUnlocked);
+
+  const points = useAppSelector((state) => state.routePlanner.points);
 
   const colorizeLegend = useAppSelector(
     (state) => state.routePlannerSettings.colorizeLegend,
@@ -716,11 +718,24 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const activeTTDef = transportTypeDefs[activeTransportType];
 
-  // Only GraphHopper reports path details, and only the ones this profile asks
-  // for; a mode reading anything else can never be filled in here.
-  const offeredDetails = new Set(
-    activeTTDef.api === 'gh' ? pathDetailKeys(activeTransportType) : [],
-  );
+  // Only GraphHopper reports path details, and only the ones the legs' profiles
+  // ask for; a mode reading anything else can never be filled in here.
+  const offeredDetails = useMemo(() => {
+    const legs = legTransports(points, activeTransportType);
+
+    const transports =
+      activeMode === 'route' && premiumUnlocked && legs.length > 0
+        ? new Set(legs)
+        : [activeTransportType];
+
+    return new Set(
+      [...transports].flatMap((transport) =>
+        transportTypeDefs[transport].api === 'gh'
+          ? pathDetailKeys(transport)
+          : [],
+      ),
+    );
+  }, [points, activeTransportType, activeMode, premiumUnlocked]);
 
   const [routePlannerDropdownOpen, setRoutePlannerDropdownOpen] =
     useState(false);
@@ -734,12 +749,7 @@ export default function RoutePlannerMenu(): ReactElement {
         !(activeTTDef?.api === 'gh' && activeMode !== 'route')
       }
     >
-      <RoutePlannerTransportType
-        onChange={(transportType) =>
-          dispatch(routePlannerSetTransportType(transportType!))
-        }
-        value={activeTransportType}
-      />
+      <RouteTransportSelect />
 
       {activeTTDef?.api === 'gh' && (
         <Dropdown

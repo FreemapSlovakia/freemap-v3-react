@@ -2,6 +2,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapsLoaded, mapsLoadFailed } from '@features/myMaps/model/actions.js';
 import {
   routePlannerAddPoint,
+  routePlannerChangeTransport,
   routePlannerFindRoute,
   routePlannerRecompute,
   routePlannerRemovePoint,
@@ -24,6 +25,7 @@ export const updateRouteTypes = [
   routePlannerSetFinish,
   routePlannerSwapEnds,
   routePlannerAddPoint,
+  routePlannerChangeTransport,
   routePlannerSetPoint,
   routePlannerSetPoints,
   routePlannerRemovePoint,

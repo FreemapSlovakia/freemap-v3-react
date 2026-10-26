@@ -113,7 +113,15 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt az útvonaltervezésnél', err),
   manualTooltip: 'A következő szakasz összekötése egyenes vonallal',
-  default: 'Alapértelmezett',
+  transportScope: {
+    title: 'Alkalmazás erre',
+    route: 'Teljes útvonal',
+    lastSection: 'Utolsó rész',
+    next: 'Új szakaszok',
+    leg: 'Ez a szakasz',
+    section: 'Teljes rész',
+    sameTransport: 'Azonos közlekedési mód',
+  },
   leg: 'Útvonal szakasz',
   stop: 'Megálló',
   transportTypeLabel: 'Közlekedési mód',

@@ -4,7 +4,15 @@ import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const en: RoutePlannerMessages = {
   selectHomeLocation: 'Select on the map',
-  default: 'Route default',
+  transportScope: {
+    title: 'Apply to',
+    route: 'Whole route',
+    lastSection: 'Last part',
+    next: 'New segments',
+    leg: 'This segment',
+    section: 'Whole part',
+    sameTransport: 'Same transport',
+  },
   leg: 'Route leg',
   manualTooltip: 'Connect following segment with direct line',
   ghParams: {

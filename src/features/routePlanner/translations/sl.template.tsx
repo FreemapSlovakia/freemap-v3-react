@@ -5,7 +5,15 @@ import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   selectHomeLocation: 'Izberi na zemljevidu',
-  default: 'Privzeta',
+  transportScope: {
+    title: 'Uporabi za',
+    route: 'Celotno pot',
+    lastSection: 'Zadnji del',
+    next: 'Nove odseke',
+    leg: 'Ta odsek',
+    section: 'Celoten del',
+    sameTransport: 'Isti način prevoza',
+  },
   leg: 'Odsek poti',
   manualTooltip: 'Poveži naslednji segment z ravno črto',
   ghParams: {

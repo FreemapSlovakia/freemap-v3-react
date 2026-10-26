@@ -27,6 +27,7 @@ import {
   type RoutingMode,
   routeKey,
   routePlannerAddPoint,
+  routePlannerChangeTransport,
   routePlannerDelete,
   routePlannerRecompute,
   routePlannerRemovePoint,
@@ -54,6 +55,7 @@ import {
   type SavedRoute,
   type Waypoint,
 } from './actions.js';
+import { applyTransport, legTransports } from './legTransports.js';
 
 export interface SampledRouteLine {
   line: Feature<LineString>;
@@ -236,6 +238,19 @@ export const storedRouteIsShowingSelector = createSelector(
   storedRouteIsShowing,
 );
 
+/** Whether the user can give legs transports of their own. */
+export function multimodalEditingSelector(state: RootState): boolean {
+  return isPremium(state.auth.user) && state.routePlanner.mode === 'route';
+}
+
+/** Whether Shift+click on the map adds a direct-line leg. */
+export function directLegsSelector(state: RootState): boolean {
+  return (
+    multimodalEditingSelector(state) &&
+    transportTypeDefs[state.routePlanner.transportType].api !== 'manual'
+  );
+}
+
 /**
  * Whether the premium route features apply: the user has premium, or this exact
  * route arrived from someone who does. `route-params-hash` is the key of the
@@ -373,46 +388,54 @@ export const routePlannerReducer = createReducer(
           ) &&
             getStart(state)) ||
           state.finishOnly
-            ? [
-                {
-                  transport: state.points[0]?.transport,
-                  ...payload,
-                },
-                ...state.points,
-              ]
+            ? [{ ...payload }, ...state.points]
             : [
-                { manual: state.points[0]?.transport, ...payload },
+                { transport: state.points[0]?.transport, ...payload },
                 ...state.points.slice(1),
               ],
         finishOnly: false,
         pickMode: getFinish(state) ? state.pickMode : 'finish',
       }))
-      .addCase(routePlannerSetFinish, (state, { payload }) =>
+      .addCase(routePlannerSetFinish, (state, { payload }) => {
         // only possible in (round)trip mode
-        payload === null
-          ? {
-              ...state,
-              points: state.points.slice(0, state.points.length - 1),
-              pickMode: getStart(state) ? 'finish' : 'start',
-              finishOnly: false,
-            }
-          : {
-              ...state,
-              points:
-                state.points.length > 1
-                  ? [
-                      ...state.points.slice(0, -1),
-                      {
-                        ...state.points.at(-1)!,
-                        transport: state.points.at(-2)!.transport,
-                      },
-                      { ...payload },
-                    ]
-                  : [...state.points, { ...payload }],
-              pickMode: getStart(state) ? 'finish' : 'start',
-              finishOnly: state.points.length === 0,
-            },
-      )
+        if (payload === null) {
+          return {
+            ...state,
+            points: state.points.slice(0, state.points.length - 1),
+            pickMode: getStart(state) ? 'finish' : 'start',
+            finishOnly: false,
+          };
+        }
+
+        const { legTransport, ...point } = payload;
+
+        // A link may end with an empty point, which the new finish takes over.
+        const points = state.points.at(-1)
+          ? state.points
+          : state.points.slice(0, -1);
+
+        const last = points.at(-1);
+
+        return {
+          ...state,
+          points: last
+            ? [
+                ...points.slice(0, -1),
+                {
+                  ...last,
+                  // Otherwise the route's transport, which a point never stores.
+                  transport:
+                    legTransport && legTransport !== state.transportType
+                      ? legTransport
+                      : undefined,
+                },
+                point,
+              ]
+            : [point],
+          pickMode: getStart(state) ? 'finish' : 'start',
+          finishOnly: points.length === 0,
+        };
+      })
       .addCase(routePlannerSwapEnds, (state) => {
         state.points.reverse();
 
@@ -439,7 +462,36 @@ export const routePlannerReducer = createReducer(
       })
       .addCase(routePlannerRemovePoint, (state, action) => {
         state.points.splice(action.payload, 1);
+
+        // A finish starts no leg.
+        delete state.points.at(-1)?.transport;
       })
+      .addCase(
+        routePlannerChangeTransport,
+        (state, { payload: { transport, scope } }) => {
+          const next = {
+            ...state,
+            ...applyTransport(
+              state.points,
+              state.transportType,
+              transport,
+              scope,
+            ),
+          };
+
+          // Every leg as it was: the result on screen still answers for the
+          // route, and findRouteProcessorHandler skips routing it again.
+          if (
+            state.resultKey === routeKey(state) &&
+            legTransports(next.points, next.transportType).join() ===
+              legTransports(state.points, state.transportType).join()
+          ) {
+            next.resultKey = routeKey(next);
+          }
+
+          return next;
+        },
+      )
       .addCase(
         routePlannerSetTransportType,
         (state, { payload: transportType }) => ({

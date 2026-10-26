@@ -29,6 +29,7 @@ import {
   SELECTION_COLOR,
 } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
@@ -71,6 +72,7 @@ import {
 } from '../model/actions.js';
 import { ISOCHRONE_FILL_OPACITY, isochroneColor } from '../model/isochrones.js';
 import { routeColorizeFeatures, tolledMeters } from '../model/pathDetails.js';
+import { directLegsSelector } from '../model/reducer.js';
 import {
   INACTIVE_ALTERNATIVE_COLOR,
   STEP_MODE_COLORS,
@@ -181,19 +183,37 @@ export function RoutePlannerResult(): ReactElement {
   const onlyStart =
     transportTypeDefs[transportType]?.api === 'gh' && mode !== 'route';
 
+  const directLegs = useAppSelector(directLegsSelector);
+
   useMapEvent(
     'click',
     useCallback(
-      ({ latlng }: LeafletMouseEvent) => {
-        if (window.fmEmbedded || draggingRef.current) {
-          // nothing
-        } else if (tool !== 'route-planner') {
-          // nothing
-        } else if (pickMode === 'start' || onlyStart) {
+      ({ latlng, originalEvent }: LeafletMouseEvent) => {
+        if (
+          window.fmEmbedded ||
+          draggingRef.current ||
+          tool !== 'route-planner'
+        ) {
+          return;
+        }
+
+        // In route mode a new start or finish joins the route with a new leg.
+        const direct =
+          directLegs &&
+          originalEvent.shiftKey &&
+          points.length > 0 &&
+          pickMode !== null;
+
+        if (direct) {
+          trackMatomo(['trackEvent', 'RoutePlanner', 'directLeg']);
+        }
+
+        if (pickMode === 'start' || onlyStart) {
           dispatch(
             routePlannerSetStart({
               lat: latlng.lat,
               lon: latlng.lng,
+              ...(direct ? { transport: 'manual' } : {}),
             }),
           );
         } else if (pickMode === 'finish') {
@@ -201,11 +221,12 @@ export function RoutePlannerResult(): ReactElement {
             routePlannerSetFinish({
               lat: latlng.lat,
               lon: latlng.lng,
+              legTransport: direct ? 'manual' : undefined,
             }),
           );
         }
       },
-      [pickMode, dispatch, tool, onlyStart],
+      [pickMode, dispatch, tool, onlyStart, directLegs, points.length],
     ),
   );
 

@@ -5,7 +5,15 @@ import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   selectHomeLocation: 'Vybrať na mape',
-  default: 'Predvolený',
+  transportScope: {
+    title: 'Použiť na',
+    route: 'Celú trasu',
+    lastSection: 'Poslednú časť',
+    next: 'Nové úseky',
+    leg: 'Tento úsek',
+    section: 'Celú časť',
+    sameTransport: 'Rovnaký spôsob dopravy',
+  },
   leg: 'Úsek trasy',
   manualTooltip: 'Prepoj nasledujúci segment priamou čiarou',
   ghParams: {

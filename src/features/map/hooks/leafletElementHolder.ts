@@ -1,4 +1,5 @@
 import type { Map as LeafletMap } from 'leaflet';
+import './boxZoomTolerance.js';
 import './touchMouseCompat.js';
 
 type Listener = (map: LeafletMap) => void;
