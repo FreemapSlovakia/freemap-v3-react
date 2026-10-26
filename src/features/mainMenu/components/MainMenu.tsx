@@ -25,7 +25,6 @@ import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
-  FaCamera,
   FaChevronRight,
   FaCode,
   FaDatabase,
@@ -46,10 +45,6 @@ import classes from './MainMenu.module.css';
 
 export function MainMenu(): ReactElement {
   const user = useAppSelector((state) => state.auth.user);
-
-  const galleryActive = useAppSelector((state) =>
-    state.map.layers.includes('I'),
-  );
 
   const openTools = useAppSelector(openToolsSelector);
 
@@ -129,23 +124,6 @@ export function MainMenu(): ReactElement {
         </MenuLabel>
         <MenuGutter>
           <Chord command="clear-map-features" />
-        </MenuGutter>
-      </Dropdown.Item>
-
-      {/* Only a layer toggle, so it works offline; the layer menu is where the
-          layer that draws nothing is marked. */}
-      <Dropdown.Item
-        href="#layers=I"
-        key="gallery"
-        eventKey="gallery"
-        active={galleryActive}
-      >
-        <FaCamera />
-        <MenuLabel>
-          <Text k="tools.photos" />
-        </MenuLabel>
-        <MenuGutter>
-          <kbd>⇧f</kbd>
         </MenuGutter>
       </Dropdown.Item>
 

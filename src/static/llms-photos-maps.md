@@ -2,7 +2,7 @@
 
 ### Photos
 
-- Access: Main menu > Photos
+- Access: the Photos overlay in the map layers menu (see [Map Layers](/llms-layers.md))
 - Keyboard shortcut: <kbd>shift</kbd> <kbd>f</kbd>
 - Layer code: `I` (e.g. `/#layers=X~I`)
 

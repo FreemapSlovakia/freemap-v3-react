@@ -23,7 +23,6 @@ import {
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import type { Submenu } from '@features/mainMenu/components/submenu.js';
-import { mapRefocus } from '@features/map/model/actions.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Language } from '@shared/langUtils.js';
@@ -40,7 +39,6 @@ export type EventKey =
   | 'fullscreen'
   | 'reset-app'
   | 'close'
-  | 'gallery'
   | 'galEmails'
   | `submenu-${NonNullable<Submenu> | ''}`
   | `document-${Document}`
@@ -101,8 +99,6 @@ export function useMenuHandler({
   const lon = useAppSelector((state) => at?.lon ?? state.map.lon);
 
   const zoom = useAppSelector((state) => state.map.zoom);
-
-  const layers = useAppSelector((state) => state.map.layers);
 
   const openTools = useAppSelector(openToolsSelector);
 
@@ -285,20 +281,6 @@ export function useMenuHandler({
         return;
       }
 
-      if (key === 'gallery') {
-        dispatch(
-          mapRefocus({
-            layers: layers.includes('I')
-              ? layers.filter((o) => o !== 'I')
-              : [...layers, 'I'],
-          }),
-        );
-
-        setShow(false);
-
-        return;
-      }
-
       if (key === 'close' || key === 'url') {
         setShow(false);
 
@@ -333,7 +315,6 @@ export function useMenuHandler({
       pointTags,
       imageUrl,
       zoom,
-      layers,
       openTools,
       sendGalleryEmails,
     ],
