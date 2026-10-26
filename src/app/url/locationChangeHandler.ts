@@ -1027,9 +1027,9 @@ export function parseFeatureParams(params: URLSearchParams): WireItem[] {
 
     if (points.length > 0) {
       // `H` is geometry-only (the index of the polygon this ring is a hole
-      // of), so it stays out of the style-field codec the point params share.
+      // of, and its member), so it stays out of the style-field codec.
       // biome-ignore lint/suspicious/noControlCharactersInRegex: the field separator
-      const holeOf = /\x1eH(\d+)/.exec(m[2] ?? '');
+      const holeOf = /\x1eH(\d+)(?:\.(\d+))?/.exec(m[2] ?? '');
 
       items.push({
         kind: 'line',
@@ -1042,6 +1042,7 @@ export function parseFeatureParams(params: URLSearchParams): WireItem[] {
           ...fields,
           breaks: breaks.length ? breaks : undefined,
           holeOf: holeOf ? Number(holeOf[1]) : undefined,
+          member: holeOf?.[2] ? Number(holeOf[2]) : undefined,
         }),
       });
     }
@@ -1912,8 +1913,20 @@ function handleViewshed(
   }
 }
 
+const COORD = String.raw`-?\d+(?:\.\d+)?`;
+
+// The elevation as JS writes a number, which may be in exponent form.
+const ELE = String.raw`-?\d+(?:\.\d+)?(?:e[-+]?\d+)?`;
+
+// A multi-point's further members only before a field or the end: what else
+// follows a `,` is a legacy label.
+const POINT_PARAM = new RegExp(
+  String.raw`^(${COORD})\/(${COORD})(?:\/(${ELE}))?((?:,${COORD}\/${COORD}(?:\/${ELE})?)*(?=\x1e|$))?([\s\S]*)$`,
+);
+
 /**
- * One `point=` value: `lat/lon` followed by optional style fields. Returns
+ * One `point=` value: `lat/lon[/ele]`, a multi-point's further members after
+ * commas, then optional style fields. Returns
  * `undefined` for anything that isn't a pair of coordinates.
  *
  * The tail is matched with `[\s\S]` rather than `.` because a label may be
@@ -1921,23 +1934,32 @@ function handleViewshed(
  * fails against the anchored end, and the point is dropped altogether.
  */
 export function parseDrawingPointParam(value: string | undefined) {
-  const m = value
-    ? // The elevation as JS writes a number, which may be in exponent form.
-      /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)(?:\/(-?\d+(?:\.\d+)?(?:e[-+]?\d+)?))?([\s\S]*)$/.exec(
-        value,
-      )
-    : null;
+  const m = value ? POINT_PARAM.exec(value) : null;
 
   if (!m) {
     return undefined;
   }
 
   const { label, color, markerType, icon, props, typed, verbatim, kind } =
-    parseColorAndLabel(m[4] ?? '');
+    parseColorAndLabel(m[5] ?? '');
 
   return {
     coords: { lat: parseFloat(m[1]!), lon: parseFloat(m[2]!) },
     ...(m[3] !== undefined && { ele: parseFloat(m[3]) }),
+    ...(m[4] && {
+      more: m[4]
+        .slice(1)
+        .split(',')
+        .map((member) => {
+          const [lat, lon, ele] = member.split('/');
+
+          return {
+            lat: parseFloat(lat!),
+            lon: parseFloat(lon!),
+            ...(ele !== undefined && { ele: parseFloat(ele) }),
+          };
+        }),
+    }),
     label,
     color,
     markerType,

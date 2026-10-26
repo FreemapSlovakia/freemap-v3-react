@@ -73,17 +73,22 @@ function serializeKind(kind: string | undefined): string {
   return kind === undefined ? '' : `\x1eY${kind}`;
 }
 
+const serializePosition = (p: LatLon & { ele?: number }) =>
+  `${serializeLatLon(p)}${p.ele === undefined ? '' : `/${p.ele}`}`;
+
+/** A multi-point's members follow the first, comma-separated. */
 export function serializeDrawingPoint(
   point: DrawingPoint & {
     ele?: number;
+    more?: (LatLon & { ele?: number })[];
     kind?: string;
     typed?: Record<string, TypedValue>;
     verbatim?: Record<string, string>;
   },
 ): string {
-  return `${serializeLatLon(point.coords)}${
-    point.ele === undefined ? '' : `/${point.ele}`
-  }${point.color ? `\x1eC${point.color}` : ''}${
+  return `${[{ ...point.coords, ele: point.ele }, ...(point.more ?? [])]
+    .map(serializePosition)
+    .join(',')}${point.color ? `\x1eC${point.color}` : ''}${
     point.label ? `\x1eL${point.label}` : ''
   }${
     // Each value its code, `pin` too: unset means the viewer's default style.
@@ -146,13 +151,16 @@ function serializeVertices(
 
 /**
  * `holeOf` is passed separately rather than read off the line because only the
- * caller knows what position its parent takes in the list being written.
+ * caller knows what position its parent takes in the list being written. A
+ * polygon's breaks start a multi-polygon's members; `H` names a hole's member
+ * after a dot.
  */
 export function serializeDrawingLine(
   line: Line & {
     points: (Point & { v?: (number | null)[] })[];
     columns?: string[];
     breaks?: number[];
+    member?: number;
     kind?: string;
     gpxType?: string;
     typed?: Record<string, TypedValue>;
@@ -185,7 +193,11 @@ export function serializeDrawingLine(
         : line.lineJoin === 'round'
           ? '\x1eJr'
           : ''
-  }${holeOf === undefined ? '' : `\x1eH${holeOf}`}${serializeDrawingProps(line.props)}${serializeTypedProps(line.typed)}${serializePairs('M', line.verbatim)}${
+  }${
+    holeOf === undefined
+      ? ''
+      : `\x1eH${holeOf}${line.member ? `.${line.member}` : ''}`
+  }${serializeDrawingProps(line.props)}${serializeTypedProps(line.typed)}${serializePairs('M', line.verbatim)}${
     line.columns?.length ? `\x1eV${line.columns.join('\x1f')}` : ''
   }${serializeKind(line.kind)}${line.gpxType === undefined ? '' : `\x1eG${line.gpxType}`}`;
 }

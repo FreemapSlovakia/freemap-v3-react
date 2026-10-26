@@ -95,13 +95,15 @@ These place standalone map annotations — markers, lines, filled areas — not 
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `point` (repeatable), `info-point` | Point(s) / markers | r/w | `lat/lon[/ele][<style fields>]` |
+| `point` (repeatable), `info-point` | Point(s) / markers | r/w | `lat/lon[/ele][,lat/lon[/ele]…][<style fields>]` |
 | `line`, `polygon` (repeatable) | Line / polygon | r/w | `vertex,vertex,…[<style fields>]` |
 | `distance-measurement-points`, `area-measurement-points`, `elevation-measurement-point` | Legacy measurement aliases | read-only | coords |
 
 These params carry the whole Drawing and data collection, in order, whenever it fits: every feature must read back meaning the same (`featureToWire` round-trips it and compares — times as instants, a style as the one it resolves to, so `.000Z`, an offset or a simplestyle-only style still fit; coordinates at the link's 6 decimals), and the encoded params must stay within `URL_FEATURES_BUDGET` (8000 characters, `model/urlForm.ts`). Otherwise none of them are written and the collection lives in a browser snapshot named by `history.state.tr` (see [elevation-and-colorizers.md](./elevation-and-colorizers.md#local-data-has-history)). A `track-uid` or `import-url` link is read on its own; once its track is here, the entry is replaced by these params or a snapshot ([entry-content.md](./entry-content.md)).
 
-**Vertices with values.** A vertex is `lat/lon` followed by `/value` per column the `V` field names — `ele`, `time`, or any per-point channel key (`heart`, `cad`, …); an empty value is a gap, and trailing gaps are dropped. `time` is epoch seconds: the first value is absolute and each later one the difference from the previous one, in whole milliseconds. An empty vertex (`,,`) starts a new segment, making the line a `MultiLineString`. A channel holding anything but numbers cannot be written, which sends the collection to a snapshot.
+**Vertices with values.** A vertex is `lat/lon` followed by `/value` per column the `V` field names — `ele`, `time`, or any per-point channel key (`heart`, `cad`, …); an empty value is a gap, and trailing gaps are dropped. `time` is epoch seconds: the first value is absolute and each later one the difference from the previous one, in whole milliseconds. An empty vertex (`,,`) starts a new segment, making the line a `MultiLineString`. A channel holding anything but numbers cannot be written, which sends the collection to a snapshot. A polygon's rings carry their elevation the same way, each param its own `Vele`.
+
+**Multi-geometries.** A `point` with further comma-separated positions is a `MultiPoint`; they are read as members only when a style field or the end follows, since a legacy link wrote `,label` there. A `polygon` broken by `,,` is a `MultiPolygon`, one member per run of vertices, and its holes name their member after a dot (`H3.1`; none is the first). Either needs two members or more — one would read back as a plain point or polygon. A `GeometryCollection` has no link form and sends the collection to a snapshot.
 
 ## Toposcope
 
@@ -161,8 +163,8 @@ Fields are joined by the record-separator character `\x1e` (URL-encoded `%1E`). 
 | `P` | Properties — key/value pairs joined by the unit separator `\x1f` (URL-encoded `%1F`), drawing geometry only | `Pname%1FSitno%1Fele%1F1009` |
 | `M` | Keys the editor owns but can't always reproduce, written back verbatim: a point's `sym`, `marker-symbol` or `icon` that no icon of ours says (an unmapped Garmin symbol, a KML image URL), simplestyle `marker-size`, and a `title` beside the `name` — key/value pairs like `P`'s (links only) | `Msym%1FFlag, Blue` |
 | `Q` | Properties whose values aren't strings — numbers, booleans, `null`, objects and arrays — as key/JSON pairs joined by `\x1f`, so they read back with their type; JSON escapes both separators inside a string (links only; a saved map's `lines` keep the plain shape) | `Qnumber%1F3%1Fflag%1Ftrue%1Fx%1Fnull` |
-| `H` | Hole of the polygon at this position among the `line`/`polygon` params | `H0` |
-| `V` | Columns of the vertex values, joined by `\x1f` (lines only) | `Vele%1Ftime%1Fheart` |
+| `H` | Hole of the polygon at this position among the `line`/`polygon` params, then `.member` for a multi-polygon's later member | `H0`, `H0.2` |
+| `V` | Columns of the vertex values, joined by `\x1f` (lines; a polygon ring only `ele`) | `Vele%1Ftime%1Fheart` |
 | `Y` | `fm:kind` — what the feature is (`track`, `route`, …) | `Ytrack` |
 | `G` | GPX element it came from (`_gpxType`, lines only) | `Gtrk` |
 

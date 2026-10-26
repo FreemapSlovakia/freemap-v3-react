@@ -36,7 +36,8 @@ import type { TrackLine } from './trackSelection.js';
 
 // The drawing form of a feature, for the URL and a saved map's `points`/`lines`:
 // used only where it reads back exactly. The URL's `extended` form also carries
-// a recording's per-vertex values, segments and provenance stamps.
+// a recording's per-vertex values, segments and provenance stamps, and
+// multi-points and multi-polygons.
 
 /** A vertex; `v` holds its values in its line's `columns`, `null` where missing. */
 export type WireVertex = Point & { v?: (number | null)[] };
@@ -48,8 +49,13 @@ export type WireLine = Omit<Line, 'points'> & {
    * channel of `coordinateProperties` by its key.
    */
   columns?: string[];
-  /** The vertex each segment after the first starts at — a paused recording. */
+  /**
+   * The vertex each segment after the first starts at — a paused recording,
+   * or a multi-polygon's next member.
+   */
   breaks?: number[];
+  /** The member of a multi-polygon a hole is in, when not the first. */
+  member?: number;
   /** `fm:kind` and togeojson's `_gpxType`, as an import stamped them. */
   kind?: string;
   gpxType?: string;
@@ -60,6 +66,8 @@ export type WireLine = Omit<Line, 'points'> & {
 
 export type WirePoint = DrawingPoint & {
   ele?: number;
+  /** A multi-point's members after the first. */
+  more?: WirePosition[];
   kind?: string;
   typed?: Record<string, TypedValue>;
   verbatim?: Verbatim;
@@ -81,6 +89,8 @@ export const VERBATIM_KEYS = [
 export type VerbatimKey = (typeof VERBATIM_KEYS)[number];
 
 export type Verbatim = Partial<Record<VerbatimKey, string>>;
+
+export type WirePosition = { lat: number; lon: number; ele?: number };
 
 /** The table a label template reads: the text values and the typed ones. */
 function labelTable(
@@ -154,14 +164,18 @@ function labelled(
   return withEditedLabel({ geometry, properties }, label ?? '', props ?? {});
 }
 
+const pointPosition = ({ lat, lon, ele }: WirePosition): Position =>
+  ele === undefined ? [lon, lat] : [lon, lat, ele];
+
 export function pointToFeature(point: WirePoint): Feature {
-  const geometry: Geometry = {
-    type: 'Point',
-    coordinates:
-      point.ele === undefined
-        ? [point.coords.lon, point.coords.lat]
-        : [point.coords.lon, point.coords.lat, point.ele],
-  };
+  const first = pointPosition({ ...point.coords, ele: point.ele });
+
+  const geometry: Geometry = point.more
+    ? {
+        type: 'MultiPoint',
+        coordinates: [first, ...point.more.map(pointPosition)],
+      }
+    : { type: 'Point', coordinates: first };
 
   return {
     type: 'Feature',
@@ -190,10 +204,25 @@ export function pointToFeature(point: WirePoint): Feature {
   };
 }
 
-const ring = (points: Point[]): Position[] => [
-  ...points.map((p): Position => [p.lon, p.lat]),
-  ...(points[0] ? [[points[0].lon, points[0].lat]] : []),
-];
+/** A vertex as a position, with its elevation where `columns` has one. */
+const positionIn =
+  (columns: readonly string[] | undefined) =>
+  (p: WireVertex): Position => {
+    const ele = columns?.indexOf('ele') ?? -1;
+
+    const z = ele < 0 ? null : (p.v?.[ele] ?? null);
+
+    return z === null ? [p.lon, p.lat] : [p.lon, p.lat, z];
+  };
+
+/** A ring's vertices, closed. */
+const ring = (ringLine: { points: WireVertex[]; columns?: string[] }) => {
+  const position = positionIn(ringLine.columns);
+
+  const { points } = ringLine;
+
+  return [...points, ...points.slice(0, 1)].map(position);
+};
 
 /**
  * Seconds since the epoch as the ISO time a GPX file writes; `null` past what
@@ -216,22 +245,20 @@ function segmentsOf<T>(items: T[], breaks: number[] | undefined): T[][] {
 export function lineToFeature(line: WireLine, holes: WireLine[] = []): Feature {
   const columns = line.columns ?? [];
 
-  const ele = columns.indexOf('ele');
-
-  const position = (p: WireVertex): Position => {
-    const z = ele < 0 ? null : (p.v?.[ele] ?? null);
-
-    return z === null ? [p.lon, p.lat] : [p.lon, p.lat, z];
-  };
+  const position = positionIn(columns);
 
   const segments = segmentsOf(line.points, line.breaks);
 
+  const rings = (outer: WireVertex[], member: number) => [
+    ring({ points: outer, columns }),
+    ...holes.filter((h) => (h.member ?? 0) === member).map(ring),
+  ];
+
   const geometry: Geometry =
     line.type === 'polygon'
-      ? {
-          type: 'Polygon',
-          coordinates: [ring(line.points), ...holes.map((h) => ring(h.points))],
-        }
+      ? segments.length > 1
+        ? { type: 'MultiPolygon', coordinates: segments.map(rings) }
+        : { type: 'Polygon', coordinates: rings(line.points, 0) }
       : segments.length > 1
         ? {
             type: 'MultiLineString',
@@ -436,16 +463,18 @@ function comparable(
   properties: GeoJsonProperties,
   geometry: Geometry,
 ): GeoJsonProperties {
+  const areal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
+
   const style = lineStyleFromProperties(
     properties,
-    geometry.type === 'Polygon' ||
+    areal ||
       ((geometry.type === 'LineString' ||
         geometry.type === 'MultiLineString') &&
         isClosedGeometry(geometry)),
   );
 
   const natural =
-    (style.type === 'polygon' && geometry.type === 'Polygon') ||
+    (style.type === 'polygon' && areal) ||
     (style.type === 'line' &&
       (geometry.type === 'LineString' || geometry.type === 'MultiLineString'));
 
@@ -541,7 +570,8 @@ const wireCaches = [
 /**
  * The feature as the URL and a saved map's `points`/`lines` hold it: one point,
  * or a line, or a polygon followed by its holes (`holeOf` 0 — the caller places
- * them). `extended` takes recorded data too, which only the URL can say.
+ * them). `extended` takes recorded data and multi-geometries too, which only
+ * the URL can say.
  * `undefined` when that form would lose anything.
  */
 export function featureToWire(feature: Feature, extended = false): FeatureWire {
@@ -572,16 +602,36 @@ function encodeFeature(feature: Feature, extended: boolean): FeatureWire {
   const kind = extended ? stamp(properties, 'fm:kind') : undefined;
 
   const verbatim = extended
-    ? verbatimOf(properties, geometry.type === 'Point')
+    ? verbatimOf(
+        properties,
+        geometry.type === 'Point' || geometry.type === 'MultiPoint',
+      )
     : undefined;
 
-  if (geometry.type === 'Point') {
-    const [lon, lat, ele] = geometry.coordinates;
+  if (
+    geometry.type === 'Point' ||
+    (extended && geometry.type === 'MultiPoint')
+  ) {
+    const positions =
+      geometry.type === 'Point' ? [geometry.coordinates] : geometry.coordinates;
 
-    if (
-      geometry.coordinates.length > (extended ? 3 : 2) ||
+    const members = positions.map(([lon, lat, ele, ...more]) =>
       lon === undefined ||
-      lat === undefined
+      lat === undefined ||
+      more.length > 0 ||
+      (ele !== undefined && !Number.isFinite(ele))
+        ? undefined
+        : { lat, lon, ...(ele !== undefined && { ele }) },
+    );
+
+    const [first, ...others] = members;
+
+    // A lone member would read back as a plain point.
+    if (
+      !first ||
+      others.some((m) => !m) ||
+      (geometry.type === 'MultiPoint' && others.length === 0) ||
+      (!extended && first.ele !== undefined)
     ) {
       return undefined;
     }
@@ -589,8 +639,11 @@ function encodeFeature(feature: Feature, extended: boolean): FeatureWire {
     const style = pointStyleFromProperties(properties);
 
     const point: WirePoint = {
-      coords: { lat, lon },
-      ...(ele !== undefined && { ele }),
+      coords: { lat: first.lat, lon: first.lon },
+      ...(first.ele !== undefined && { ele: first.ele }),
+      ...(geometry.type === 'MultiPoint' && {
+        more: others as WirePosition[],
+      }),
       ...(label !== undefined && { label }),
       ...(style.color !== undefined && { color: style.color }),
       ...(style.markerType !== undefined && { markerType: style.markerType }),
@@ -601,31 +654,78 @@ function encodeFeature(feature: Feature, extended: boolean): FeatureWire {
       ...(kind !== undefined && { kind }),
     };
 
+    const back = pointToFeature(point);
+
     return (!extended || linkSafe(point)) &&
-      sameValue(
-        comparablePoint(pointToFeature(point).properties),
-        comparablePoint(properties),
-      )
+      sameValue(back.geometry, geometry) &&
+      sameValue(comparablePoint(back.properties), comparablePoint(properties))
       ? { point }
       : undefined;
   }
 
   let lines: WireLine[];
 
-  if (geometry.type === 'Polygon') {
-    if (!geometry.coordinates.every(flat)) {
+  if (
+    geometry.type === 'Polygon' ||
+    (extended && geometry.type === 'MultiPolygon')
+  ) {
+    const members =
+      geometry.type === 'Polygon'
+        ? [geometry.coordinates]
+        : geometry.coordinates;
+
+    // A ring of under three vertices reads back as nothing.
+    if (
+      !members.every(
+        (rings) =>
+          rings.length > 0 &&
+          rings.every(
+            (r) =>
+              (!extended || r.length > 3) &&
+              r.every((p) => p.length <= (extended ? 3 : 2)),
+          ),
+      )
+    ) {
       return undefined;
     }
 
-    lines = geometry.coordinates.map((r, i) => ({
-      type: 'polygon',
-      points: r.slice(0, -1).map(([lon, lat], id) => ({
-        lat: lat!,
-        lon: lon!,
-        id,
-      })),
-      ...(i > 0 && { holeOf: 0 }),
-    }));
+    // Open rings, as vertices; elevation as an `ele` column, as a line's.
+    const ringLine = (open: Position[]) => {
+      const withEle = open.some((p) => p.length === 3);
+
+      return {
+        type: 'polygon' as const,
+        points: open.map(([lon, lat, z], id) => ({
+          lat: lat!,
+          lon: lon!,
+          id,
+          ...(withEle && { v: [z ?? null] }),
+        })),
+        ...(withEle && { columns: ['ele'] }),
+      };
+    };
+
+    // The members' outer rings as one line, broken between them; the holes
+    // after it, each naming its member.
+    let at = 0;
+
+    const breaks = members.slice(0, -1).map(([r]) => (at += r!.length - 1));
+
+    lines = [
+      {
+        ...ringLine(members.flatMap(([r]) => r!.slice(0, -1))),
+        ...(breaks.length > 0 && { breaks }),
+      },
+      ...members.flatMap(([, ...holes], member) =>
+        holes.map(
+          (r): WireLine => ({
+            ...ringLine(r.slice(0, -1)),
+            holeOf: 0,
+            ...(member > 0 && { member }),
+          }),
+        ),
+      ),
+    ];
   } else if (
     geometry.type === 'LineString' ||
     (extended && geometry.type === 'MultiLineString')
@@ -667,7 +767,7 @@ function encodeFeature(feature: Feature, extended: boolean): FeatureWire {
 
   const style = lineStyleFromProperties(
     properties,
-    geometry.type === 'Polygon',
+    geometry.type === 'Polygon' || geometry.type === 'MultiPolygon',
   );
 
   const [outer, ...holes] = lines;
@@ -813,7 +913,8 @@ export function fromWire(items: readonly WireItem[]): Feature[] {
 
     if (
       (line.type === 'line' && line.points.length > 1) ||
-      (line.type === 'polygon' && line.points.length > 2)
+      (line.type === 'polygon' &&
+        segmentsOf(line.points, line.breaks).every((s) => s.length > 2))
     ) {
       features.push(
         lineToFeature(

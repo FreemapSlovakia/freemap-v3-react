@@ -1,4 +1,7 @@
-import { parseFeatureParams } from '@app/url/locationChangeHandler.js';
+import {
+  parseDrawingPointParam,
+  parseFeatureParams,
+} from '@app/url/locationChangeHandler.js';
 import { serializeQuery } from '@app/url/mapContentParts.js';
 import type { Feature, FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
@@ -201,6 +204,150 @@ describe('urlWire', () => {
       type: 'Point',
       coordinates: [17, 48, 1e-7],
     });
+  });
+
+  describe('carries multi-geometries', () => {
+    const back = (feature: Feature, paramCount = 1) => {
+      const params = urlWire(fc(feature));
+
+      expect(params).toHaveLength(paramCount);
+
+      return fromWire(
+        parseFeatureParams(new URLSearchParams(serializeQuery(params ?? []))),
+      );
+    };
+
+    const square = (x: number, y: number, size: number) => [
+      [x, y],
+      [x + size, y],
+      [x + size, y + size],
+      [x, y + size],
+      [x, y],
+    ];
+
+    it('a multi-point, elevations and all', () => {
+      const feature: Feature = {
+        type: 'Feature',
+        properties: { name: 'Huts', color: '#ff0000' },
+        geometry: {
+          type: 'MultiPoint',
+          coordinates: [
+            [17.1, 48.1],
+            [17.2, 48.2, 812.5],
+            [17.3, 48.3],
+          ],
+        },
+      };
+
+      const [point] = back(feature);
+
+      expect(point?.geometry).toEqual(feature.geometry);
+
+      expect(point?.properties).toMatchObject({ name: 'Huts' });
+    });
+
+    it('a multi-polygon, each member with its own holes', () => {
+      const feature: Feature = {
+        type: 'Feature',
+        properties: { name: 'Fields' },
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [
+            [square(17, 48, 1), square(17.25, 48.25, 0.25)],
+            [square(18, 48, 1)],
+            [
+              square(19, 48, 1),
+              square(19.25, 48.25, 0.25),
+              square(19.5, 48.5, 0.25),
+            ],
+          ],
+        },
+      };
+
+      // The outer rings in one param, a hole in each of its own.
+      const [polygon] = back(feature, 4);
+
+      expect(polygon?.geometry).toEqual(feature.geometry);
+
+      expect(polygon?.properties).toMatchObject({ name: 'Fields' });
+    });
+
+    it('a polygon with elevation, a hole of it with only some', () => {
+      const raised = (r: number[][], ele: (i: number) => number | undefined) =>
+        r.map(([x, y], i) => {
+          const z = ele(i % (r.length - 1));
+
+          return z === undefined ? [x!, y!] : [x!, y!, z];
+        });
+
+      const feature: Feature = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [
+            [
+              raised(square(17, 48, 1), (i) => 400 + i),
+              raised(square(17.25, 48.25, 0.25), (i) =>
+                i === 1 ? 512.5 : undefined,
+              ),
+            ],
+            [square(18, 48, 1)],
+          ],
+        },
+      };
+
+      const [polygon] = back(feature, 2);
+
+      expect(polygon?.geometry).toEqual(feature.geometry);
+    });
+
+    it('but no ring too short to read back', () => {
+      const sliver = [
+        [18, 48],
+        [19, 48],
+        [18, 48],
+      ];
+
+      for (const coordinates of [
+        [[square(17, 48, 1)], [sliver]],
+        [[square(17, 48, 1), sliver], [square(18, 48, 1)]],
+        [[square(17, 48, 1)], [[]]],
+      ]) {
+        expect(
+          urlWire(
+            fc({
+              type: 'Feature',
+              properties: {},
+              geometry: { type: 'MultiPolygon', coordinates },
+            }),
+          ),
+        ).toBeUndefined();
+      }
+    });
+
+    it('but a lone member only as itself', () => {
+      expect(
+        urlWire(
+          fc({
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'MultiPoint', coordinates: [[17, 48]] },
+          }),
+        ),
+      ).toBeUndefined();
+    });
+  });
+
+  it('reads a legacy label after a comma, coordinates or not', () => {
+    expect(parseDrawingPointParam('48/17,Hut')).toMatchObject({
+      coords: { lat: 48, lon: 17 },
+      label: 'Hut',
+    });
+
+    expect(parseDrawingPointParam('48/17,48.5/17.5,x')).not.toHaveProperty(
+      'more',
+    );
   });
 
   describe('carries what an import says, by meaning', () => {
