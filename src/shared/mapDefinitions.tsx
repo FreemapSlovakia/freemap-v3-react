@@ -181,11 +181,12 @@ const PREMIUM_GATED_TILE_HOSTS = [
   process.env['FM_MAPSERVER_URL'],
   process.env['FM_TERRAIN_TILES_URL'],
   'https://sk-hires-shading.tiles.freemap.sk',
+  'https://ortofoto.tiles.freemap.sk',
 ];
 
 /**
  * Whether a tile URL's server serves premium zooms only to a premium account's
- * token: the renderer and both terrain shadings. Decided by host, as a saved map
+ * token: the renderer, both terrain shadings and the orthophoto. Decided by host, as a saved map
  * keeps its source's URL under an id of its own. Other servers must not get the
  * header, which they would refuse in the CORS preflight.
  */

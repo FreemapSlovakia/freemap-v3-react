@@ -561,6 +561,11 @@ export function Layers(): ReactNode {
                 <ScaledTileLayer
                   {...commonProps}
                   className={`${commonProps.className} fm-detail`}
+                  tileAuth={premiumTileAuth(
+                    detail.url,
+                    detail.premiumFromZoom,
+                    user,
+                  )}
                   premiumFromZoom={detailPremiumFromZoom}
                   premiumOnlyText={prm?.premiumOnly}
                   onPremiumClick={
