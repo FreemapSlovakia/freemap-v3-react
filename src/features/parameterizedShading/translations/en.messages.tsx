@@ -27,6 +27,8 @@ const en: ShadingMessages = {
   repeats: 'Number of repeats',
   contourInterval: 'Contour interval (m)',
   lineWidth: 'Line width (px)',
+  solid: 'Single colour',
+  gradient: 'Gradient',
   presets: 'Presets',
   addToExisting: 'Add to existing',
   withBackground: 'With background',

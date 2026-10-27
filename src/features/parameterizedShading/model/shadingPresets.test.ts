@@ -14,6 +14,41 @@ describe('shadingPreset serialization', () => {
   });
 });
 
+describe('gradient on a single-colour type', () => {
+  it.each([
+    '00000000!slope-igor_2.0_0.000_9E959100_30.000_8A2408FF',
+    '00000000!hillshade-classic~1.50~0.10_315.0_45.0_1.0_0.200_1C3C48FF_0.800_FFF0DCFF',
+    '00000000!hillshade-igor_135.0_1.0_0.000_00000000_2.000_000000FF',
+    '00000000!slope-classic_45.0_1.0_0.000_00000000_1.000_FF0000FF',
+  ])('%s reads back as written', (s) => {
+    expect(serializeShading(parseShading(s))).toBe(s);
+  });
+
+  it('keeps the colour of a link from before exaggeration', () => {
+    const [c] = parseShading(
+      '00000000!hillshade-igor_315.0_00000099',
+    ).components;
+
+    expect(c?.colorStops).toEqual([{ value: 0, color: [0, 0, 0, 0.6] }]);
+  });
+
+  it('gives a layer without a colour one stop', () => {
+    const [c] = parseShading('00000000!slope-igor').components;
+
+    expect(c?.colorStops).toHaveLength(1);
+  });
+
+  it('reads one colour as before', () => {
+    const [c] = parseShading('00000000!slope-igor_2.0_8A2408FF').components;
+
+    expect(c).toMatchObject({
+      type: 'slope-igor',
+      exaggeration: 2,
+      colorStops: [{ value: 0, color: [0x8a, 0x24, 0x08, 1] }],
+    });
+  });
+});
+
 const background = (preset: Parameters<typeof shadingPreset>[0], bg: boolean) =>
   shadingPreset(preset, () => 0, undefined, bg).backgroundColor;
 

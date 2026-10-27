@@ -284,6 +284,8 @@ export default function ShadingSection({ target }: Props): ReactElement {
 
       {(selectedComponent || showsBackground) && (
         <ShadingColorPicker
+          // Fresh per layer: the picker remembers its last colour and gradient.
+          key={id ?? 'background'}
           shading={shading}
           selectedId={id}
           component={selectedComponent}

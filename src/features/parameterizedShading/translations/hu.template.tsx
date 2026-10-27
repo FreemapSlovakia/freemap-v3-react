@@ -28,6 +28,8 @@ const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Ismétlések száma',
   contourInterval: 'Szintköz (m)',
   lineWidth: 'Vonalvastagság (px)',
+  solid: 'Egyszínű',
+  gradient: 'Színátmenet',
   presets: 'Előbeállítások',
   addToExisting: 'Hozzáadás a meglévőhöz',
   withBackground: 'Háttérrel',

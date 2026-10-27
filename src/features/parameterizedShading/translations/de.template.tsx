@@ -28,6 +28,8 @@ const de: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Anzahl der Wiederholungen',
   contourInterval: 'Höhenlinienabstand (m)',
   lineWidth: 'Linienstärke (px)',
+  solid: 'Einfarbig',
+  gradient: 'Verlauf',
   presets: 'Voreinstellungen',
   addToExisting: 'Zum Bestehenden hinzufügen',
   withBackground: 'Mit Hintergrund',

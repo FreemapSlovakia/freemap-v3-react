@@ -17,6 +17,7 @@ import {
 import type { Messages } from '@/translations/messagesInterface.js';
 import {
   type Color,
+  MAX_COLOR_STOPS,
   SHADING_COMPONENT_TYPES,
   type Shading,
 } from '../model/Shading.js';
@@ -434,19 +435,21 @@ class LShadingLayer extends LGridLayer {
         dw.f32(component.contrast);
         dw.f32(component.brightness);
         dw.f32('exaggeration' in component ? component.exaggeration : 1.0);
-        dw.u32(component.colorStops.length);
+        const stops = component.colorStops.slice(0, MAX_COLOR_STOPS);
+
+        dw.u32(stops.length);
         dw.f32('interval' in component ? component.interval : NaN);
         dw.f32('lineWidth' in component ? component.lineWidth : NaN);
         dw.pad32(3);
 
-        for (const colorStop of component.colorStops) {
+        for (const colorStop of stops) {
           dw.f32(colorStop.value);
           dw.pad32(3);
 
           writeColor(colorStop.color);
         }
 
-        dw.pad32(8 * (16 - component.colorStops.length));
+        dw.pad32(8 * (MAX_COLOR_STOPS - stops.length));
       }
 
       device.queue.writeBuffer(shadingBuffer, 0, shadingData);

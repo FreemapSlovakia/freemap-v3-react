@@ -2,7 +2,7 @@ import { Text } from '@features/l10n/Text.js';
 import Color from 'color';
 import type { ReactElement } from 'react';
 import { ListGroup } from 'react-bootstrap';
-import type { Shading } from '../model/Shading.js';
+import { type Shading, swatchColor } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 import classes from './ShadingControl.module.css';
 
@@ -46,7 +46,9 @@ export function ShadingComponentList({
             <span
               className={`rounded border ${classes.shadingColor}`}
               style={{
-                backgroundColor: Color(component.colorStops[0].color).hexa(),
+                backgroundColor: Color(
+                  swatchColor(component.colorStops),
+                ).hexa(),
               }}
             />
           ) : (

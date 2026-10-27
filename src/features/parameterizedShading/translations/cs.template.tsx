@@ -28,6 +28,8 @@ const cs: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Počet opakování',
   contourInterval: 'Interval vrstevnic (m)',
   lineWidth: 'Tloušťka čáry (px)',
+  solid: 'Jedna barva',
+  gradient: 'Přechod',
   presets: 'Předvolby',
   addToExisting: 'Přidat ke stávajícímu',
   withBackground: 'S pozadím',

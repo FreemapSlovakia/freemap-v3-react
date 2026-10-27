@@ -260,6 +260,14 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
             color = component.colors[0].color;
         }
 
+        // Hillshade and slope with a gradient look their number up on the stops,
+        // slope-igor's in degrees, and take the colour as colour relief does.
+        if component.method < 4u && component.color_count > 1u {
+            color = interpolate_color(component.colors, component.color_count, select(intensity, intensity * 90.0, component.method == 2u));
+
+            intensity = 1.0;
+        }
+
         // Contours take contrast and brightness on the line only, faded by its
         // antialiasing; off it they must stay clear, not tint or erase the tile.
         let modulated = select(

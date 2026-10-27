@@ -12,6 +12,9 @@ export const SHADING_COMPONENT_TYPES = [
   'contours',
 ] as const;
 
+/** What the shader holds per component (`NUM_STOPS` in `shading.wgsl`). */
+export const MAX_COLOR_STOPS = 16;
+
 export const ColorSchema = z.tuple([
   z.number(),
   z.number(),
@@ -32,6 +35,10 @@ export function hexaToColor(hexa: string): Color {
     c.alpha(),
   ];
 }
+
+/** A gradient's most opaque stop, which shows what it draws better than its first. */
+export const swatchColor = (stops: ColorStop[]): Color =>
+  stops.reduce((a, b) => (b.color[3] > a.color[3] ? b : a)).color;
 
 /** The inverse of `hexaToColor`. */
 export const colorToHexa = ([r, g, b, a]: Color) =>
@@ -143,26 +150,38 @@ export function serializeShading(shading: Shading) {
 
     const sub: string[] = [component.type + levels];
 
+    // One colour, or `value_colour` pairs for a gradient.
+    const colors = () => {
+      if (component.colorStops.length === 1) {
+        sub.push(Color(component.colorStops[0].color).hexa().slice(1));
+      } else {
+        for (const cs of component.colorStops) {
+          sub.push(cs.value.toFixed(3));
+          sub.push(Color(cs.color).hexa().slice(1));
+        }
+      }
+    };
+
     switch (component.type) {
       case 'hillshade-classic':
         sub.push((component.azimuth * (180 / Math.PI)).toFixed(1));
         sub.push((component.elevation * (180 / Math.PI)).toFixed(1));
         sub.push(component.exaggeration.toFixed(1));
-        sub.push(Color(component.colorStops[0].color).hexa().slice(1));
+        colors();
         break;
       case 'hillshade-igor':
         sub.push((component.azimuth * (180 / Math.PI)).toFixed(1));
         sub.push(component.exaggeration.toFixed(1));
-        sub.push(Color(component.colorStops[0].color).hexa().slice(1));
+        colors();
         break;
       case 'slope-classic':
         sub.push((component.elevation * (180 / Math.PI)).toFixed(1));
         sub.push(component.exaggeration.toFixed(1));
-        sub.push(Color(component.colorStops[0].color).hexa().slice(1));
+        colors();
         break;
       case 'slope-igor':
         sub.push(component.exaggeration.toFixed(1));
-        sub.push(Color(component.colorStops[0].color).hexa().slice(1));
+        colors();
         break;
       case 'contours':
         sub.push(component.interval.toFixed(1));
@@ -208,6 +227,23 @@ function parseColor(color = '00000000'): Color {
   }
 }
 
+/** How many parameters precede a component's colours. */
+const PARAM_COUNTS: Record<ShadingComponentType, number> = {
+  'hillshade-igor': 2,
+  'hillshade-classic': 3,
+  'slope-igor': 1,
+  'slope-classic': 2,
+  'color-relief': 0,
+  aspect: 0,
+  curvature: 1,
+  contours: 2,
+};
+
+const isShadingComponentType = (
+  type: string | undefined,
+): type is ShadingComponentType =>
+  (SHADING_COMPONENT_TYPES as readonly (string | undefined)[]).includes(type);
+
 /** The inverse of `serializeShading`; an unknown component is skipped. */
 export function parseShading(serialized: string): Shading {
   const [bg, ...comps] = serialized.split('!');
@@ -218,38 +254,38 @@ export function parseShading(serialized: string): Shading {
 
       const [type, contrast, brightness] = typeAndLevels.split('~');
 
-      let colorStops: ColorStop[];
-
-      switch (type) {
-        case 'hillshade-classic':
-        case 'hillshade-igor':
-        case 'slope-classic':
-        case 'slope-igor':
-        case 'contours':
-          colorStops = [{ value: 0, color: parseColor(params.pop()) }];
-
-          break;
-        case 'aspect':
-        case 'color-relief':
-        case 'curvature':
-          colorStops = [];
-
-          // Curvature's exaggeration precedes its stops.
-          for (
-            let i = type === 'curvature' ? 1 : 0;
-            i < params.length;
-            i += 2
-          ) {
-            colorStops.push({
-              value: Number(params[i]),
-              color: parseColor(params[i + 1]),
-            });
-          }
-
-          break;
-        default:
-          return undefined;
+      if (!isShadingComponentType(type)) {
+        return undefined;
       }
+
+      const colors = params.splice(PARAM_COUNTS[type]);
+
+      // Links from before exaggeration have one parameter fewer; their last
+      // one is still the colour.
+      if (colors.length === 0) {
+        const last = params.pop();
+
+        if (last !== undefined) {
+          colors.push(last);
+        }
+      }
+
+      // One colour (transparent when none), or `value_colour` pairs.
+      const colorStops: ColorStop[] =
+        colors.length <= 1
+          ? [{ value: 0, color: parseColor(colors[0]) }]
+          : Array.from(
+              {
+                length: Math.min(
+                  Math.floor(colors.length / 2),
+                  MAX_COLOR_STOPS,
+                ),
+              },
+              (_, i) => ({
+                value: Number(colors[2 * i]),
+                color: parseColor(colors[2 * i + 1]),
+              }),
+            );
 
       const base = {
         id: Math.random(),

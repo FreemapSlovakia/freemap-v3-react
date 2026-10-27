@@ -28,6 +28,8 @@ const sl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Število ponovitev',
   contourInterval: 'Ekvidistanca (m)',
   lineWidth: 'Debelina črte (px)',
+  solid: 'Ena barva',
+  gradient: 'Prelivanje',
   presets: 'Prednastavitve',
   addToExisting: 'Dodaj k obstoječemu',
   withBackground: 'Z ozadjem',

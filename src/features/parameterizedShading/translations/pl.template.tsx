@@ -28,6 +28,8 @@ const pl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   repeats: 'Liczba powtórzeń',
   contourInterval: 'Cięcie warstwicowe (m)',
   lineWidth: 'Grubość linii (px)',
+  solid: 'Jeden kolor',
+  gradient: 'Gradient',
   presets: 'Ustawienia wstępne',
   addToExisting: 'Dodaj do istniejącego',
   withBackground: 'Z tłem',

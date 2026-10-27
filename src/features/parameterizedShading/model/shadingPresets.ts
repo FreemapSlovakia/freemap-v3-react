@@ -125,12 +125,18 @@ const relief = (stops: [number, Color][]): ShadingComponent => ({
   colorStops: stops.map(([value, color]) => ({ value, color })),
 });
 
-const slope = (color: Color, exaggeration = 1): ShadingComponent => ({
+const slope = (color: Color): ShadingComponent => ({
   id: 0,
   type: 'slope-igor',
   ...levels,
-  exaggeration,
+  exaggeration: 1,
   colorStops: [{ value: 0, color }],
+});
+
+/** Slope coloured by stops over its steepness in degrees. */
+const slopeRamp = (stops: [number, Color][]): ShadingComponent => ({
+  ...slope([0, 0, 0, 1]),
+  colorStops: stops.map(([value, color]) => ({ value, color })),
 });
 
 /** `ridge` on convex ground, `hollow` on concave, clear from `gap` to -`gap`. */
@@ -393,14 +399,17 @@ function buildOwn(preset: ShadingPreset, p: PresetParams): Shading {
       };
 
     // Micro-relief: hollows teal and ridges cream whichever way they face,
-    // steep ground rust.
+    // moderate slopes brown and steep ones red.
     case 'lidar':
       return {
         backgroundColor: [0x9e, 0x95, 0x91, 1],
         components: [
-          // Exaggerated, so moderate slopes take a brown tint and only steep
-          // ones the full red.
-          slope([0x8a, 0x24, 0x08, 1], 2),
+          slopeRamp([
+            [0, [0x9e, 0x95, 0x91, 0]],
+            [8, [0xa8, 0x7a, 0x60, 0.4]],
+            [20, [0xa0, 0x60, 0x3a, 0.7]],
+            [32, [0x8a, 0x1e, 0x06, 1]],
+          ]),
           curvature(0.07, 0.007, [0xee, 0xd6, 0xb0, 1], [0x2e, 0x58, 0x66, 1]),
           igor(315, [0x2e, 0x58, 0x66, 0.35]),
         ],

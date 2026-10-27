@@ -6,10 +6,11 @@ import {
   useEffect,
   useRef,
 } from 'react';
-import type {
-  Color,
-  ShadingComponent,
-  ShadingComponentType,
+import {
+  type Color,
+  type ShadingComponent,
+  type ShadingComponentType,
+  swatchColor,
 } from '../model/Shading.js';
 
 export type Props = {
@@ -321,7 +322,7 @@ export function ShadingComponentControl({
           cy={cy}
           r={7}
           style={{
-            fill: `rgba(${shading.colorStops[0].color.join(',')})`,
+            fill: `rgba(${swatchColor(shading.colorStops).join(',')})`,
             stroke: guide,
             cursor: 'move',
           }}
