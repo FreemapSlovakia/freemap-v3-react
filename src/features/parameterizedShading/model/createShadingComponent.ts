@@ -5,11 +5,11 @@ import type {
 } from './Shading.js';
 
 /** Hollows teal, ridges cream, flat ground clear. */
-export const CURVATURE_STOPS: ColorStop[] = [
-  { value: -0.15, color: [0xff, 0xf2, 0xd6, 0.9] },
-  { value: -0.01, color: [0xff, 0xf2, 0xd6, 0] },
-  { value: 0.01, color: [0x1c, 0x5c, 0x66, 0] },
-  { value: 0.15, color: [0x1c, 0x5c, 0x66, 0.9] },
+const CURVATURE_STOPS: ColorStop[] = [
+  { value: -0.07, color: [0xee, 0xd6, 0xb0, 1] },
+  { value: -0.007, color: [0xee, 0xd6, 0xb0, 0] },
+  { value: 0.007, color: [0x2e, 0x58, 0x66, 0] },
+  { value: 0.07, color: [0x2e, 0x58, 0x66, 1] },
 ];
 
 /** Builds a freshly-added shading component of `type` with sensible defaults. */

@@ -1,4 +1,3 @@
-import { CURVATURE_STOPS } from './createShadingComponent.js';
 import {
   type Color,
   isOpaqueShading,
@@ -126,11 +125,11 @@ const relief = (stops: [number, Color][]): ShadingComponent => ({
   colorStops: stops.map(([value, color]) => ({ value, color })),
 });
 
-const slope = (color: Color): ShadingComponent => ({
+const slope = (color: Color, exaggeration = 1): ShadingComponent => ({
   id: 0,
   type: 'slope-igor',
   ...levels,
-  exaggeration: 1,
+  exaggeration,
   colorStops: [{ value: 0, color }],
 });
 
@@ -397,18 +396,13 @@ function buildOwn(preset: ShadingPreset, p: PresetParams): Shading {
     // steep ground rust.
     case 'lidar':
       return {
-        backgroundColor: [0xa0, 0x98, 0x94, 1],
+        backgroundColor: [0x9e, 0x95, 0x91, 1],
         components: [
-          slope([0xb0, 0x48, 0x1c, 0.6]),
-          {
-            id: 0,
-            type: 'curvature',
-            ...levels,
-            exaggeration: 1,
-            colorStops: CURVATURE_STOPS,
-          },
-          igor(315, [0x1c, 0x3c, 0x48, 0.35]),
-          igor(135, [0xff, 0xf0, 0xdc, 0.25]),
+          // Exaggerated, so moderate slopes take a brown tint and only steep
+          // ones the full red.
+          slope([0x8a, 0x24, 0x08, 1], 2),
+          curvature(0.07, 0.007, [0xee, 0xd6, 0xb0, 1], [0x2e, 0x58, 0x66, 1]),
+          igor(315, [0x2e, 0x58, 0x66, 0.35]),
         ],
       };
 
