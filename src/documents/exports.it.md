@@ -2,7 +2,7 @@
 title: Mappa per apparati GPS
 ---
 
-Freemap crea esportazioni regolari di mappe per varie applicazioni/dispositivi mobili. Puoi scaricarli qui. Se la procedura di installazione della mappa per la tua applicazione/dispositivo non è elencata qui, devi cercarla sul sito web dell'applicazione/dispositivo che stai utilizzando.
+Freemap crea esportazioni regolari di mappe per varie applicazioni/dispositivi mobili. Può scaricarle qui. Se la procedura di installazione della mappa per la sua applicazione/dispositivo non è elencata qui, la cerchi sul sito web dell'applicazione/dispositivo che sta utilizzando.
 
 Dati mappa © OpenStreetMap Contributors. Concesso in licenza in base a ODbL 1.0.
 
@@ -90,7 +90,7 @@ Mappe aggiuntive per OruxMaps:
 - [mappa Austria - sever V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-austria_north.zip)
 - [mappa Austria - juh V5](mf-v4-map://download.freemap.sk/LocusMap/freemapV5-austria_south.zip)
 
-Se stai utilizzando un'applicazione in grado di visualizzare mappe in formato mapsforge, ma non è possibile scaricare la mappa tramite i link sopra riportati, puoi scaricare i seguenti file manualmente e salvarli nella cartella in cui l'applicazione lo richiede. Puoi scoprire esattamente dove si trova direttamente nell'applicazione o sul sito Web dell'applicazione.
+Se utilizza un'applicazione in grado di visualizzare mappe in formato mapsforge, ma non è possibile scaricare la mappa tramite i link sopra riportati, può scaricare i seguenti file manualmente e salvarli nella cartella in cui l'applicazione lo richiede. Dove si trova esattamente lo scopre direttamente nell'applicazione o sul sito web dell'applicazione.
 
 - [stile per la mappa V5](https://download.freemap.sk/LocusMap/freemapV5.zip)
 - [mappa Slovacchia V5](https://download.freemap.sk/LocusMap/freemapV5-slovakia.zip)
@@ -131,7 +131,7 @@ In un'applicazione che consente di aggiungere una propria mappa online (tile XYZ
 - <sup>2</sup> Per gli schermi ad alta risoluzione aggiunga dopo `{y}` il suffisso `@2x`, `@3x` o `@4x`.
 - Se l'applicazione scrive i segnaposto in modo diverso, ad es. `{zoom}` invece di `{z}`, adatti l'indirizzo di conseguenza.
 - I livelli di zoom più dettagliati (colonna _Premium da_) richiedono l'abbonamento premium: crei in _Account › App tokens_ un token con i permessi per gli zoom premium della mappa outdoor, delle ombreggiature del terreno e delle ortofoto, e lo aggiunga all'indirizzo come `?token=fm_…`.
-- Citi la fonte: _© contributori di OpenStreetMap e Freemap Slovakia_ (mappa outdoor e livelli), _LLS: ÚGKK SR_ (ombreggiatura), _GKÚ Bratislava, NLC e ČÚZK_ (ortofoto), _Národné lesnícke centrum_ (strade forestali). La mappa outdoor e i livelli sono inoltre realizzati con dati altimetrici regionali, anch'essi da citare: ogni tile ne riporta i codici nell'intestazione `X-Attribution` e il loro significato è su [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
+- Citi la fonte: _© contributori di OpenStreetMap e Freemap Slovakia_ (mappa outdoor e livelli), _LLS: ÚGKK SR_ (ombreggiatura), _GKÚ Bratislava, NLC e ČÚZK_ (ortofoto), _Národné lesnícke centrum_ (strade forestali). La mappa outdoor e i sentieri KST usano inoltre dati altimetrici regionali, anch'essi da citare: ogni loro tile ne riporta i codici nell'intestazione `X-Attribution` e il loro significato è su [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
 
 ## Mappe Garmin <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 

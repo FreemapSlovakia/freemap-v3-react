@@ -133,7 +133,7 @@ In an app that lets you add your own online map (XYZ tiles), enter one of these 
 - <sup>2</sup> For high-resolution screens, add `@2x`, `@3x` or `@4x` after `{y}`.
 - If the app writes the placeholders differently, such as `{zoom}` instead of `{z}`, adjust the address to match.
 - The most detailed zooms (the _Premium from_ column) need premium: create a token under _Account › App tokens_ with the permissions for the premium zooms of the outdoor map, the terrain shadings and the aerial imagery, and append it to the address as `?token=fm_…`.
-- Credit the source: _© OpenStreetMap contributors and Freemap Slovakia_ (outdoor map and overlays), _LLS: ÚGKK SR_ (hillshading), _GKÚ Bratislava, NLC and ČÚZK_ (orthophotos), _Národné lesnícke centrum_ (forest roads). The outdoor map and overlays are also made from regional elevation data, which must be credited too: each tile lists its codes in the `X-Attribution` header, and what they mean is at [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
+- Credit the source: _© OpenStreetMap contributors and Freemap Slovakia_ (outdoor map and overlays), _LLS: ÚGKK SR_ (hillshading), _GKÚ Bratislava, NLC and ČÚZK_ (orthophotos), _Národné lesnícke centrum_ (forest roads). The outdoor map and KST also use regional elevation data, which must be credited too: each of their tiles lists the data's codes in the `X-Attribution` header, and what they mean is at [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
 
 ## Garmin Map <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 
