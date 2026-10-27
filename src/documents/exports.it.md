@@ -32,7 +32,7 @@ Versione precedente (mappa aggiornata, stile non più)
 
 Mappe aggiuntive per Locus
 
-- [Ortofotomosaico SR, ombreggiatura DMR5, Sentieri forestali NLC (online)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
+- [Mappa outdoor, sentieri KST, livelli di sentieri e curve di livello, ombreggiatura dettagliata e DMP1, ortofoto, strade forestali NLC (online)](locus-actions://https/backend.freemap.sk/locus/install) — se ha effettuato l'accesso, il link aggiunge anche i suoi livelli di zoom premium, tramite un token per app chiamato “Locus Map”
 - [Strade forestali NLC (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 ### OruxMaps

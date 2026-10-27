@@ -34,7 +34,7 @@ Older version (map updated, style not):
 
 Additional maps for Locus:
 
-- [Orthophoto SR, DMR5 hillshading, NLC forest roads (online)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
+- [Outdoor map, KST hiking trails, trail and contour overlays, detailed and DMP1 hillshading, orthophoto, NLC forest roads (online)](locus-actions://https/backend.freemap.sk/locus/install) — when you are logged in, the link also brings your premium zooms, through an app token named “Locus Map”
 - [NLC forest roads (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 ### OruxMaps

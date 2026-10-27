@@ -117,6 +117,7 @@ export const AppTokenScopeSchema = z.enum([
   'tracking:write',
   'tiles:outdoor',
   'tiles:shading',
+  'tiles:aerial',
 ]);
 
 export type AppTokenScope = z.infer<typeof AppTokenScopeSchema>;

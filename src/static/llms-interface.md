@@ -73,12 +73,14 @@ For each provider the modal shows either a **Connect** button (to link it) or a 
 Lets another application or a script use the Freemap API as the user, without a login. Any logged-in user can create any number of tokens, premium or not.
 
 - **New token** asks for a note, the permissions and an expiry (never, 30, 90 or 365 days, or a chosen date). The token (`fm_…`) is shown once, with a copy button; only its hash is kept.
-- Permissions: view photos (including premium photos, when the account has premium), upload/edit/rate/comment photos, view My maps, change My maps, view tracked devices, manage tracked devices, and premium zooms (19+) of the outdoor map in other apps.
+- Permissions: view photos (including premium photos, when the account has premium), upload/edit/rate/comment photos, view My maps, change My maps, view tracked devices, manage tracked devices, and the premium zooms of the outdoor map, the terrain shadings and the aerial imagery in other apps.
 - A token never reaches the account itself: not the profile, login providers, purchases, logout, account deletion or other tokens.
 - The list shows each token's note, permissions, creation date, expiry and last use with the client's user agent; **Revoke** deletes it at once.
 - Usage: send `Authorization: Bearer fm_…` with each request to `https://backend.freemap.sk`; a WebSocket connection takes it as the `authToken` query parameter. Even on endpoints that also work without login, an unknown, deleted or expired token gets HTTP 401, and a request needing a permission the token lacks gets HTTP 403.
 - Outdoor map zooms 19+ (the base map, KST and the overlays): served to the Freemap web app — the free quarter of tiles to anyone, the rest to premium accounts — and to other apps such as JOSM or Locus only with the token of a premium account holding that permission, as `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}?token=fm_…` or an `Authorization` header. Other websites get them in no case. A refused tile is an image: for an app, how to add a token; for another website, freemap@freemap.sk to contact.
 - Terrain shading zooms 16+ (parametric shading at `https://terrain.tiles.freemap.sk`, and the detailed Slovak shading at `https://sk-hires-shading.tiles.freemap.sk`): the same, with the terrain-shading permission. The detailed shading is also open to mappers: iD on openstreetmap.org and JOSM, without a token.
+- Aerial imagery zoom 20 (the Slovak and Czech orthophoto at `https://ortofoto.tiles.freemap.sk`): the same, with the aerial permission.
+- Locus Map: the Map exports page installs the online maps into Locus from one link. Logged in, it creates a token noted "Locus Map" with the three tile permissions, which every later install reuses, so a premium account gets its premium zooms there.
 
 ### Fullscreen
 

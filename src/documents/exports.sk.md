@@ -32,7 +32,7 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 
 Dodatočné mapy pre Locus
 
-- [Ortofotomozaika SR, DMR5 hillshading, Lesné cesty NLC (online)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
+- [Outdoorová mapa, turistické trasy KST, vrstvy trás a vrstevníc, detailné a DMP1 tieňovanie, ortofotomozaika, lesné cesty NLC (online)](locus-actions://https/backend.freemap.sk/locus/install) — po prihlásení odkaz pridá aj vaše prémiové priblíženia cez aplikačný token „Locus Map“
 - [Lesné cesty NLC (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 ### OruxMaps

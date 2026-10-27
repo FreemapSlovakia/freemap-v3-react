@@ -11,7 +11,11 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { getDocuments } from '@/documents/index.js';
-import { DocumentSchema, documentShow } from '../model/actions.js';
+import {
+  DocumentSchema,
+  documentShow,
+  locusInstall,
+} from '../model/actions.js';
 import { useDocumentsMessages } from '../translations/useDocumentsMessages.js';
 
 type Props = { show: boolean };
@@ -113,6 +117,18 @@ function DocumentModal({ show }: Props): ReactElement | null {
               dispatch(documentShow(document.data));
             }
           }
+        };
+      }
+
+      for (const elem of Array.from(
+        ref?.querySelectorAll(
+          'a[href^="locus-actions:"][href$="/locus/install"]',
+        ) ?? [],
+      )) {
+        (elem as HTMLAnchorElement).onclick = (e) => {
+          e.preventDefault();
+
+          dispatch(locusInstall());
         };
       }
     }

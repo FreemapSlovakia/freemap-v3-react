@@ -52,6 +52,8 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
         'Prémiové priblíženia (19+) turistickej mapy v aplikáciách ako JOSM či Locus, ak máte prémiový prístup',
       'tiles:shading':
         'Prémiové priblíženia (16+) tieňovaní terénu v aplikáciách ako JOSM či Locus, ak máte prémiový prístup',
+      'tiles:aerial':
+        'Prémiové priblíženie (20) slovenskej a českej leteckej mapy v aplikáciách ako JOSM či Locus, ak máte prémiový prístup',
     },
     expiration: 'Platnosť do',
     never: 'Bez obmedzenia',

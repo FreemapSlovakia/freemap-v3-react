@@ -50,6 +50,8 @@ const en: AuthMessages = {
         'Premium zooms (19+) of the outdoor map in apps such as JOSM or Locus, if you have premium',
       'tiles:shading':
         'Premium zooms (16+) of the terrain shadings in apps such as JOSM or Locus, if you have premium',
+      'tiles:aerial':
+        'Premium zooms (20) of the Slovak and Czech aerial imagery in apps such as JOSM or Locus, if you have premium',
     },
     expiration: 'Expires',
     never: 'Never',
