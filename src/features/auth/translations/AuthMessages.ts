@@ -51,5 +51,6 @@ export type AuthMessages = {
     revoke: string;
     revokeConfirm: (props: { name: string }) => string;
     noNote: string;
+    edit: string;
   };
 };

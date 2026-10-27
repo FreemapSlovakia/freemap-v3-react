@@ -41,6 +41,7 @@ import {
   FaClipboard,
   FaInfoCircle,
   FaKey,
+  FaPencilAlt,
   FaPlus,
   FaTimes,
   FaTrash,
@@ -49,6 +50,13 @@ import { useDispatch } from 'react-redux';
 import z from 'zod';
 
 const EXPIRATION_DAYS = [30, 90, 365] as const;
+
+/** The `datetime-local` value of a date. */
+function toLocalInput(date: Date) {
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+    .toISOString()
+    .slice(0, 16);
+}
 
 export function AppTokensSection(): ReactElement | null {
   const m = useMessages();
@@ -77,7 +85,8 @@ export function AppTokensSection(): ReactElement | null {
     | { type: 'success'; tokens: AppToken[] }
   >({ type: 'fetching' });
 
-  const [showForm, setShowForm] = useState(false);
+  // The token being edited, or 'new'.
+  const [form, setForm] = useState<AppToken | 'new' | null>(null);
 
   const [note, setNote] = useState('');
 
@@ -166,7 +175,7 @@ export function AppTokensSection(): ReactElement | null {
     };
   }, [authToken]);
 
-  const canCreate =
+  const canSubmit =
     online &&
     !busy &&
     scopes.size > 0 &&
@@ -175,9 +184,17 @@ export function AppTokensSection(): ReactElement | null {
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
 
-    if (!canCreate) {
+    if (!canSubmit || !form) {
       return;
     }
+
+    const editing = form === 'new' ? null : form;
+
+    // An unchanged expiry is not sent, so an expired token can still be renamed.
+    const keepExpiry =
+      editing !== null &&
+      (expiration === 'custom' ? expiresOn : expiration) ===
+        (editing.expiresAt ? toLocalInput(editing.expiresAt) : 'never');
 
     const expiresAt =
       expiration === 'never'
@@ -186,7 +203,7 @@ export function AppTokensSection(): ReactElement | null {
           ? new Date(expiresOn)
           : new Date(Date.now() + Number(expiration) * 86_400_000);
 
-    if (expiresAt && expiresAt <= new Date()) {
+    if (!keepExpiry && expiresAt && expiresAt <= new Date()) {
       dispatch(
         toastsAdd({
           messageKey: 'appTokens.pastDate',
@@ -200,40 +217,65 @@ export function AppTokensSection(): ReactElement | null {
 
     setBusy(true);
 
+    // Cancelled and reopened while the request ran: leave the new form open.
+    const closeForm = () => setForm((f) => (f === form ? null : f));
+
+    const body = {
+      note: note.trim() || null,
+      scopes: [...scopes],
+      ...(keepExpiry ? {} : { expiresAt: expiresAt?.toISOString() ?? null }),
+    };
+
     try {
-      const res = await request('', {
-        method: 'POST',
-        body: JSON.stringify({
-          note: note.trim() || null,
-          scopes: [...scopes],
-          expiresAt: expiresAt?.toISOString() ?? null,
-        }),
-      });
+      if (editing) {
+        const res = await request(`/${editing.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(body),
+        });
 
-      const { token, ...appToken } = CreatedAppTokenSchema.parse(
-        await res.json(),
-      );
+        const appToken = AppTokenSchema.parse(await res.json());
 
-      trackMatomo(['trackEvent', 'Auth', 'createAppToken']);
+        trackMatomo(['trackEvent', 'Auth', 'editAppToken']);
 
-      setList((list) =>
-        list.type === 'success'
-          ? { type: 'success', tokens: [appToken, ...list.tokens] }
-          : list,
-      );
+        setList((list) =>
+          list.type === 'success'
+            ? {
+                type: 'success',
+                tokens: list.tokens.map((t) =>
+                  t.id === appToken.id ? appToken : t,
+                ),
+              }
+            : list,
+        );
+      } else {
+        const res = await request('', {
+          method: 'POST',
+          body: JSON.stringify(body),
+        });
 
-      setCreated(token);
+        const { token, ...appToken } = CreatedAppTokenSchema.parse(
+          await res.json(),
+        );
 
-      setShowForm(false);
+        trackMatomo(['trackEvent', 'Auth', 'createAppToken']);
 
-      setNote('');
+        setList((list) =>
+          list.type === 'success'
+            ? { type: 'success', tokens: [appToken, ...list.tokens] }
+            : list,
+        );
 
-      setScopes(new Set());
+        setCreated(token);
+      }
 
-      setExpiration('never');
-
-      setExpiresOn('');
+      closeForm();
     } catch (err) {
+      if (editing && err instanceof HttpError && err.status === 404) {
+        removeFromList(editing.id);
+
+        closeForm();
+      }
+
       reportError(err);
     }
 
@@ -268,6 +310,27 @@ export function AppTokensSection(): ReactElement | null {
     removeFromList(appToken.id);
   };
 
+  const openForm = (target: AppToken | 'new') => {
+    const appToken = target === 'new' ? null : target;
+
+    setNote(appToken?.note ?? '');
+
+    setScopes(
+      new Set(
+        appToken?.scopes.filter(
+          (scope): scope is AppTokenScope =>
+            AppTokenScopeSchema.safeParse(scope).success,
+        ),
+      ),
+    );
+
+    setExpiration(appToken?.expiresAt ? 'custom' : 'never');
+
+    setExpiresOn(appToken?.expiresAt ? toLocalInput(appToken.expiresAt) : '');
+
+    setForm(target);
+  };
+
   const toggleScope = (scope: AppTokenScope) => {
     setScopes((scopes) => {
       const next = new Set(scopes);
@@ -279,6 +342,91 @@ export function AppTokensSection(): ReactElement | null {
       return next;
     });
   };
+
+  const formElement = form && (
+    <Form onSubmit={handleSubmit}>
+      <fieldset className={form === 'new' ? 'border rounded p-3' : undefined}>
+        <legend>
+          <Text
+            m={am}
+            k={form === 'new' ? 'appTokens.create' : 'appTokens.edit'}
+          />
+        </legend>
+
+        <Form.Group controlId="appTokenNote" className="mb-3">
+          <Form.Label>
+            <Text m={am} k="appTokens.note" />
+          </Form.Label>
+
+          <Form.Control
+            value={note}
+            onChange={(e) => setNote(e.currentTarget.value)}
+            maxLength={255}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>
+            <Text m={am} k="appTokens.scopes" />
+          </Form.Label>
+
+          {AppTokenScopeSchema.options.map((scope) => (
+            <Form.Check
+              key={scope}
+              id={`appTokenScope-${scope}`}
+              type="checkbox"
+              label={
+                <>
+                  <Badge bg="secondary">{scope}</Badge>{' '}
+                  {am?.appTokens.scopeNames[scope]}
+                </>
+              }
+              checked={scopes.has(scope)}
+              onChange={() => toggleScope(scope)}
+            />
+          ))}
+        </Form.Group>
+
+        <Form.Group controlId="appTokenExpiration" className="mb-3">
+          <Form.Label>
+            <Text m={am} k="appTokens.expiration" />
+          </Form.Label>
+
+          <Form.Select
+            value={expiration}
+            onChange={(e) => setExpiration(e.currentTarget.value)}
+          >
+            <option value="never">{am?.appTokens.never}</option>
+
+            {EXPIRATION_DAYS.map((count) => (
+              <option key={count} value={count}>
+                {am?.appTokens.days({ count })}
+              </option>
+            ))}
+
+            <option value="custom">{am?.appTokens.customDate}</option>
+          </Form.Select>
+
+          {expiration === 'custom' && (
+            <div className="mt-2">
+              <DateTime value={expiresOn} onChange={setExpiresOn} />
+            </div>
+          )}
+        </Form.Group>
+
+        <div className="d-flex gap-2">
+          <Button type="submit" variant="primary" disabled={!canSubmit}>
+            <FaCheck />{' '}
+            {form === 'new' ? am?.appTokens.create : m?.general.save}
+          </Button>
+
+          <Button variant="dark" onClick={() => setForm(null)}>
+            <FaTimes /> {m?.general.cancel}
+          </Button>
+        </div>
+      </fieldset>
+    </Form>
+  );
 
   return (
     <>
@@ -379,177 +527,129 @@ export function AppTokensSection(): ReactElement | null {
               </p>
             ) : (
               <ListGroup className="mb-3">
-                {list.tokens.map((appToken) => (
-                  <ListGroup.Item
-                    key={appToken.id}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <div className="flex-grow-1 min-w-0">
-                      <div className="d-flex flex-wrap align-items-center gap-1 mb-1">
-                        <FaKey />
-                        <strong className="me-1">
-                          {appToken.note ?? am?.appTokens.noNote}
-                        </strong>
-                        {appToken.scopes.map((scope) => {
-                          const known = AppTokenScopeSchema.safeParse(scope);
+                {list.tokens.map((appToken) =>
+                  form !== 'new' && form?.id === appToken.id ? (
+                    <ListGroup.Item key={appToken.id}>
+                      {formElement}
+                    </ListGroup.Item>
+                  ) : (
+                    <ListGroup.Item
+                      key={appToken.id}
+                      className="d-flex align-items-center gap-2"
+                    >
+                      <div className="flex-grow-1 min-w-0">
+                        <div className="d-flex flex-wrap align-items-center gap-1 mb-1">
+                          <FaKey />
+                          <strong className="me-1">
+                            {appToken.note ?? am?.appTokens.noNote}
+                          </strong>
+                          {appToken.scopes.map((scope) => {
+                            const known = AppTokenScopeSchema.safeParse(scope);
 
-                          return (
-                            <LongPressTooltip
-                              key={scope}
-                              label={
-                                known.success
-                                  ? am?.appTokens.scopeNames[known.data]
-                                  : scope
-                              }
-                              hideLabel
-                              toggleOnClick
-                            >
-                              {({ props }) => (
-                                <Badge bg="secondary" {...props}>
-                                  {scope}
-                                </Badge>
+                            return (
+                              <LongPressTooltip
+                                key={scope}
+                                label={
+                                  known.success
+                                    ? am?.appTokens.scopeNames[known.data]
+                                    : scope
+                                }
+                                hideLabel
+                                toggleOnClick
+                              >
+                                {({ props }) => (
+                                  <Badge bg="secondary" {...props}>
+                                    {scope}
+                                  </Badge>
+                                )}
+                              </LongPressTooltip>
+                            );
+                          })}
+                        </div>
+
+                        <small className="text-muted">
+                          {m?.general.createdAt}:{' '}
+                          <strong>
+                            {dateFormat.format(appToken.createdAt)}
+                          </strong>
+                          {' · '}
+                          {am?.appTokens.expiration}:{' '}
+                          <strong>
+                            {appToken.expiresAt
+                              ? dateFormat.format(appToken.expiresAt)
+                              : am?.appTokens.never}
+                          </strong>
+                          {' · '}
+                          {appToken.lastUsedAt ? (
+                            <>
+                              {am?.appTokens.lastUsed}:{' '}
+                              <strong>
+                                {dateFormat.format(appToken.lastUsedAt)}
+                              </strong>
+                              {appToken.lastUserAgent && (
+                                <> ({appToken.lastUserAgent})</>
                               )}
-                            </LongPressTooltip>
-                          );
-                        })}
+                            </>
+                          ) : (
+                            am?.appTokens.neverUsed
+                          )}
+                        </small>
                       </div>
 
-                      <small className="text-muted">
-                        {m?.general.createdAt}:{' '}
-                        <strong>{dateFormat.format(appToken.createdAt)}</strong>
-                        {' · '}
-                        {am?.appTokens.expiration}:{' '}
-                        <strong>
-                          {appToken.expiresAt
-                            ? dateFormat.format(appToken.expiresAt)
-                            : am?.appTokens.never}
-                        </strong>
-                        {' · '}
-                        {appToken.lastUsedAt ? (
-                          <>
-                            {am?.appTokens.lastUsed}:{' '}
-                            <strong>
-                              {dateFormat.format(appToken.lastUsedAt)}
-                            </strong>
-                            {appToken.lastUserAgent && (
-                              <> ({appToken.lastUserAgent})</>
-                            )}
-                          </>
-                        ) : (
-                          am?.appTokens.neverUsed
-                        )}
-                      </small>
-                    </div>
-
-                    <LongPressTooltip
-                      label={am?.appTokens.revoke}
-                      disabled={!online}
-                      wrapperClassName="d-inline-block flex-shrink-0"
-                    >
-                      {({ props }) => (
-                        <Button
-                          size="sm"
-                          variant="danger"
-                          className="flex-shrink-0"
-                          disabled={!online}
-                          onClick={() => handleRevoke(appToken)}
-                          {...props}
+                      <div className="d-flex flex-column gap-2 flex-shrink-0 align-self-start">
+                        <LongPressTooltip
+                          label={am?.appTokens.edit}
+                          disabled={!online || form !== null}
+                          wrapperClassName="d-inline-block flex-shrink-0"
                         >
-                          <FaTrash />
-                        </Button>
-                      )}
-                    </LongPressTooltip>
-                  </ListGroup.Item>
-                ))}
+                          {({ props }) => (
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="flex-shrink-0"
+                              disabled={!online || form !== null}
+                              onClick={() => openForm(appToken)}
+                              {...props}
+                            >
+                              <FaPencilAlt />
+                            </Button>
+                          )}
+                        </LongPressTooltip>
+
+                        <LongPressTooltip
+                          label={am?.appTokens.revoke}
+                          disabled={!online}
+                          wrapperClassName="d-inline-block flex-shrink-0"
+                        >
+                          {({ props }) => (
+                            <Button
+                              size="sm"
+                              variant="danger"
+                              className="flex-shrink-0"
+                              disabled={!online}
+                              onClick={() => handleRevoke(appToken)}
+                              {...props}
+                            >
+                              <FaTrash />
+                            </Button>
+                          )}
+                        </LongPressTooltip>
+                      </div>
+                    </ListGroup.Item>
+                  ),
+                )}
               </ListGroup>
             );
         }
       })()}
 
-      {showForm ? (
-        <Form onSubmit={handleSubmit}>
-          <fieldset className="border rounded p-3">
-            <legend>
-              <Text m={am} k="appTokens.create" />
-            </legend>
-
-            <Form.Group controlId="appTokenNote" className="mb-3">
-              <Form.Label>
-                <Text m={am} k="appTokens.note" />
-              </Form.Label>
-
-              <Form.Control
-                value={note}
-                onChange={(e) => setNote(e.currentTarget.value)}
-                maxLength={255}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>
-                <Text m={am} k="appTokens.scopes" />
-              </Form.Label>
-
-              {AppTokenScopeSchema.options.map((scope) => (
-                <Form.Check
-                  key={scope}
-                  id={`appTokenScope-${scope}`}
-                  type="checkbox"
-                  label={
-                    <>
-                      <Badge bg="secondary">{scope}</Badge>{' '}
-                      {am?.appTokens.scopeNames[scope]}
-                    </>
-                  }
-                  checked={scopes.has(scope)}
-                  onChange={() => toggleScope(scope)}
-                />
-              ))}
-            </Form.Group>
-
-            <Form.Group controlId="appTokenExpiration" className="mb-3">
-              <Form.Label>
-                <Text m={am} k="appTokens.expiration" />
-              </Form.Label>
-
-              <Form.Select
-                value={expiration}
-                onChange={(e) => setExpiration(e.currentTarget.value)}
-              >
-                <option value="never">{am?.appTokens.never}</option>
-
-                {EXPIRATION_DAYS.map((count) => (
-                  <option key={count} value={count}>
-                    {am?.appTokens.days({ count })}
-                  </option>
-                ))}
-
-                <option value="custom">{am?.appTokens.customDate}</option>
-              </Form.Select>
-
-              {expiration === 'custom' && (
-                <div className="mt-2">
-                  <DateTime value={expiresOn} onChange={setExpiresOn} />
-                </div>
-              )}
-            </Form.Group>
-
-            <div className="d-flex gap-2">
-              <Button type="submit" variant="primary" disabled={!canCreate}>
-                <FaCheck /> {am?.appTokens.create}
-              </Button>
-
-              <Button variant="dark" onClick={() => setShowForm(false)}>
-                <FaTimes /> {m?.general.cancel}
-              </Button>
-            </div>
-          </fieldset>
-        </Form>
+      {form === 'new' ? (
+        formElement
       ) : (
         <Button
           variant="secondary"
-          disabled={!online || list.type !== 'success'}
-          onClick={() => setShowForm(true)}
+          disabled={!online || list.type !== 'success' || form !== null}
+          onClick={() => openForm('new')}
         >
           <FaPlus /> {am?.appTokens.create}
         </Button>

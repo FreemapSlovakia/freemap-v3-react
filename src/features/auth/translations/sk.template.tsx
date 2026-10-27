@@ -67,6 +67,7 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     revokeConfirm: ({ name }) =>
       `Zmazať token „${name}“? Aplikácie, ktoré ho používajú, prestanú fungovať.`,
     noNote: 'Bez názvu',
+    edit: 'Upraviť token',
   },
   connectLabel: 'Pripojiť',
   connectSuccess: ({ provider }) =>

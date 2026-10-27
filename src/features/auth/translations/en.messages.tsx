@@ -65,6 +65,7 @@ const en: AuthMessages = {
     revokeConfirm: ({ name }) =>
       `Delete the token “${name}”? Applications using it will stop working.`,
     noNote: 'Untitled',
+    edit: 'Edit token',
   },
   connectLabel: 'Connect',
   connectSuccess: ({ provider }) =>
