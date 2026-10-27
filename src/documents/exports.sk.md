@@ -32,7 +32,7 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 
 Dodatočné mapy pre Locus
 
-- [Outdoorová mapa, turistické trasy KST, vrstvy trás a vrstevníc, detailné a DMP1 tieňovanie, ortofotomozaika, lesné cesty NLC (online)](locus-actions://https/backend.freemap.sk/locus/install) — po prihlásení odkaz pridá aj vaše prémiové priblíženia cez aplikačný token „Locus Map“
+- [Outdoorová mapa, turistické trasy KST, vrstvy trás a vrstevníc, detailné a DMP1 tieňovanie, ortofotomozaika, lesné cesty NLC (online)](locus-actions://https/backend.freemap.sk/locus/install) — po prihlásení odkaz pridá aj aplikačný token „Map apps“, s ktorým s prémiovým prístupom uvidíte aj najpodrobnejšie zobrazenie
 - [Lesné cesty NLC (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 ### OruxMaps
@@ -55,7 +55,7 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 
 Doplnkové mapy pre OruxMaps:
 
-- [Outdoor (aj v rozlíšení @2x, @3x a @4x), ortofotomozaika SR, tieňovanie DMR5 a DMP1, lesné cesty NLC (online)](https://download.freemap.sk/OruxMaps/onlinemapsources.xml) — súbor uložte do priečinka `oruxmaps/mapfiles/customonlinemaps/`, reštartujte OruxMaps a obnovte zoznam máp. Ak tam už súbor `onlinemapsources.xml` máte, zlúčte ich obsah.
+- [Outdoorová mapa, turistické trasy KST, vrstvy trás a vrstevníc, detailné a DMP1 tieňovanie, ortofotomozaika, lesné cesty NLC (online)](https://backend.freemap.sk/oruxmaps/onlinemapsources.xml) — súbor uložte do priečinka `oruxmaps/mapfiles/customonlinemaps/`, reštartujte OruxMaps a obnovte zoznam máp. Starší súbor od Freemapu nahraďte, súbor s mapami iných poskytovateľov s ním zlúčte. Po prihlásení súbor obsahuje aj aplikačný token „Map apps“, s ktorým s prémiovým prístupom uvidíte aj najpodrobnejšie zobrazenie.
 
 ### BackCountry Navigator
 
@@ -102,6 +102,34 @@ Pokiaľ používate aplikáciu, ktorá vie zobraziť mapy vo formáte mapsforge,
 - [POI Česká republika](https://download.freemap.sk/LocusMap/freemapV5-czech-poi.zip)
 
 Uvedené mapy vo formáte mapsforge sa aktualizujú každý utorok a piatok.
+
+### Online mapy pre iné aplikácie
+
+Do aplikácie, ktorá vie pridať vlastnú online mapu (dlaždice XYZ), zadajte niektorú z týchto adries:
+
+| Mapa | Adresa | Zoom | Prémium od |
+| --- | --- | --- | --- |
+| Outdoorová mapa | `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}` | 5–20 | 19 |
+| Turistické trasy KST | `https://outdoor.tiles.freemap.sk/kst/{z}/{x}/{y}` | 5–20 | 19 |
+| Vrstva: outdoorová mapa bez podkladu | `https://outdoor.tiles.freemap.sk/o/aerial/{z}/{x}/{y}` | 5–20 | 19 |
+| Vrstva: turistické trasy | `https://outdoor.tiles.freemap.sk/o/hiking/{z}/{x}/{y}` | 9–20 | 19 |
+| Vrstva: cyklotrasy | `https://outdoor.tiles.freemap.sk/o/bicycle/{z}/{x}/{y}` | 9–20 | 19 |
+| Vrstva: lyžiarske trasy | `https://outdoor.tiles.freemap.sk/o/ski/{z}/{x}/{y}` | 9–20 | 19 |
+| Vrstva: jazdecké trasy | `https://outdoor.tiles.freemap.sk/o/horse/{z}/{x}/{y}` | 9–20 | 19 |
+| Vrstva: náročnosť MTB | `https://outdoor.tiles.freemap.sk/o/mtb/{z}/{x}/{y}` | 12–20 | 19 |
+| Vrstva: náročnosť chodníkov (SAC) | `https://outdoor.tiles.freemap.sk/o/sac/{z}/{x}/{y}` | 12–20 | 19 |
+| Vrstva: zjazdnosť ciest | `https://outdoor.tiles.freemap.sk/o/smoothness/{z}/{x}/{y}` | 12–20 | 19 |
+| Vrstva: vrstevnice | `https://outdoor.tiles.freemap.sk/o/contours/{z}/{x}/{y}` | 12–20 | 19 |
+| Detailné tieňovanie (SR) | `https://sk-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 16 |
+| Tieňovanie DMP1 (SR) | `https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–18 | |
+| Ortofotomozaika SR a ČR | `https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 20 |
+| Ortofotomozaika SR 2017–2019 | `https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
+| Ortofotomozaika SR 2020–2022 | `https://ofmozaika2c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
+| Lesné cesty NLC (SR) | `https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png` | 11–15 | |
+
+- Pre displeje s vysokým rozlíšením pridajte za `{y}` príponu `@2x`, `@3x` alebo `@4x` (outdoorová mapa a KST), resp. `@2x` alebo `@3x` (vrstvy). Vrstvy sú priehľadné a kladú sa na inú mapu.
+- Najpodrobnejšie zobrazenie (stĺpec Prémium od) vyžaduje prémiový prístup: vytvorte si v menu Účet › Aplikačné tokeny token s oprávneniami na prémiové zobrazenie turistickej mapy, tieňovaní terénu a leteckej mapy a pripíšte ho k adrese ako `?token=fm_…`.
+- Uveďte zdroj: © prispievatelia OpenStreetMap a Freemap Slovakia (outdoorová mapa a vrstvy), LLS: ÚGKK SR (tieňovanie), GKÚ Bratislava, NLC a ČÚZK (ortofotomozaiky), Národné lesnícke centrum (lesné cesty).
 
 ## Garmin mapa <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 

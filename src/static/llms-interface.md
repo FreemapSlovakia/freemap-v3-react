@@ -80,7 +80,7 @@ Lets another application or a script use the Freemap API as the user, without a 
 - Outdoor map zooms 19+ (the base map, KST and the overlays): served to the Freemap web app — the free quarter of tiles to anyone, the rest to premium accounts — and to other apps such as JOSM or Locus only with the token of a premium account holding that permission, as `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}?token=fm_…` or an `Authorization` header. Other websites get them in no case. A refused tile is an image: for an app, how to add a token; for another website, freemap@freemap.sk to contact.
 - Terrain shading zooms 16+ (parametric shading at `https://terrain.tiles.freemap.sk`, and the detailed Slovak shading at `https://sk-hires-shading.tiles.freemap.sk`): the same, with the terrain-shading permission. The detailed shading is also open to mappers: iD on openstreetmap.org and JOSM, without a token.
 - Aerial imagery zoom 20 (the Slovak and Czech orthophoto at `https://ortofoto.tiles.freemap.sk`): the same, with the aerial permission.
-- Locus Map: the Map exports page installs the online maps into Locus from one link. Logged in, it creates a token noted "Locus Map" with the three tile permissions, which every later install reuses, so a premium account gets its premium zooms there.
+- Locus Map and OruxMaps: the Map exports page installs the online maps into Locus from one link and downloads them for OruxMaps as `onlinemapsources.xml`; both carry the same maps. Logged in, either creates a token noted "Map apps" with the three tile permissions, which every later install reuses, so a premium account gets its premium zooms there. The page also lists every map's tile URL template for other apps.
 
 ### Fullscreen
 

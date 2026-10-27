@@ -34,7 +34,7 @@ Older version (map updated, style not):
 
 Additional maps for Locus:
 
-- [Outdoor map, KST hiking trails, trail and contour overlays, detailed and DMP1 hillshading, orthophoto, NLC forest roads (online)](locus-actions://https/backend.freemap.sk/locus/install) — when you are logged in, the link also brings your premium zooms, through an app token named “Locus Map”
+- [Outdoor map, KST hiking trails, trail and contour overlays, detailed and DMP1 hillshading, orthophoto, NLC forest roads (online)](locus-actions://https/backend.freemap.sk/locus/install) — when you are logged in, the link also adds an app token named “Map apps”, which shows you the most detailed zooms if you have premium
 - [NLC forest roads (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 ### OruxMaps
@@ -57,7 +57,7 @@ Older version (map updated, style not):
 
 Additional maps for OruxMaps:
 
-- [Outdoor (also in @2x, @3x and @4x resolution), Orthophoto SR, DMR5 and DMP1 hillshading, NLC forest roads (online)](https://download.freemap.sk/OruxMaps/onlinemapsources.xml) — save the file to the `oruxmaps/mapfiles/customonlinemaps/` folder, restart OruxMaps and refresh the map list. If you already have an `onlinemapsources.xml` there, merge the two.
+- [Outdoor map, KST hiking trails, trail and contour overlays, detailed and DMP1 hillshading, orthophoto, NLC forest roads (online)](https://backend.freemap.sk/oruxmaps/onlinemapsources.xml) — save the file to the `oruxmaps/mapfiles/customonlinemaps/` folder, restart OruxMaps and refresh the map list. Replace an older Freemap file; merge it with a file holding other providers' maps. When you are logged in, the file also carries an app token named “Map apps”, which shows you the most detailed zooms if you have premium.
 
 ### BackCountry Navigator
 
@@ -104,6 +104,34 @@ If you're using an app that supports Mapsforge format but doesn't support automa
 - [POI Czech Republic](https://download.freemap.sk/LocusMap/freemapV5-czech-poi.zip)
 
 Maps in Mapsforge format are updated every Tuesday and Friday.
+
+### Online maps for other apps
+
+In an app that lets you add your own online map (XYZ tiles), enter one of these addresses:
+
+| Map | Address | Zoom | Premium from |
+| --- | --- | --- | --- |
+| Outdoor map | `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}` | 5–20 | 19 |
+| KST hiking trails | `https://outdoor.tiles.freemap.sk/kst/{z}/{x}/{y}` | 5–20 | 19 |
+| Overlay: outdoor map without base | `https://outdoor.tiles.freemap.sk/o/aerial/{z}/{x}/{y}` | 5–20 | 19 |
+| Overlay: hiking trails | `https://outdoor.tiles.freemap.sk/o/hiking/{z}/{x}/{y}` | 9–20 | 19 |
+| Overlay: bicycle trails | `https://outdoor.tiles.freemap.sk/o/bicycle/{z}/{x}/{y}` | 9–20 | 19 |
+| Overlay: ski trails | `https://outdoor.tiles.freemap.sk/o/ski/{z}/{x}/{y}` | 9–20 | 19 |
+| Overlay: horse trails | `https://outdoor.tiles.freemap.sk/o/horse/{z}/{x}/{y}` | 9–20 | 19 |
+| Overlay: MTB difficulty | `https://outdoor.tiles.freemap.sk/o/mtb/{z}/{x}/{y}` | 12–20 | 19 |
+| Overlay: hiking difficulty (SAC) | `https://outdoor.tiles.freemap.sk/o/sac/{z}/{x}/{y}` | 12–20 | 19 |
+| Overlay: road smoothness | `https://outdoor.tiles.freemap.sk/o/smoothness/{z}/{x}/{y}` | 12–20 | 19 |
+| Overlay: contour lines | `https://outdoor.tiles.freemap.sk/o/contours/{z}/{x}/{y}` | 12–20 | 19 |
+| Detailed hillshading (SK) | `https://sk-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 16 |
+| DMP1 hillshading (SK) | `https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–18 | |
+| Orthophoto SK and CZ | `https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 20 |
+| Orthophoto SK 2017–2019 | `https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
+| Orthophoto SK 2020–2022 | `https://ofmozaika2c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
+| NLC forest roads (SK) | `https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png` | 11–15 | |
+
+- For high-resolution screens, add `@2x`, `@3x` or `@4x` after `{y}` (outdoor map and KST), or `@2x` or `@3x` (overlays). Overlays are transparent and go over another map.
+- The most detailed zooms (the Premium from column) need premium: create a token under Account › App tokens with the permissions for the premium zooms of the outdoor map, the terrain shadings and the aerial imagery, and append it to the address as `?token=fm_…`.
+- Credit the source: © OpenStreetMap contributors and Freemap Slovakia (outdoor map and overlays), LLS: ÚGKK SR (hillshading), GKÚ Bratislava, NLC and ČÚZK (orthophotos), Národné lesnícke centrum (forest roads).
 
 ## Garmin Map <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 

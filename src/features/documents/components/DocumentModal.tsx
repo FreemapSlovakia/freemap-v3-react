@@ -15,6 +15,7 @@ import {
   DocumentSchema,
   documentShow,
   locusInstall,
+  oruxMapsDownload,
 } from '../model/actions.js';
 import { useDocumentsMessages } from '../translations/useDocumentsMessages.js';
 
@@ -129,6 +130,17 @@ function DocumentModal({ show }: Props): ReactElement | null {
           e.preventDefault();
 
           dispatch(locusInstall());
+        };
+      }
+
+      for (const elem of Array.from(
+        ref?.querySelectorAll('a[href$="/oruxmaps/onlinemapsources.xml"]') ??
+          [],
+      )) {
+        (elem as HTMLAnchorElement).onclick = (e) => {
+          e.preventDefault();
+
+          dispatch(oruxMapsDownload());
         };
       }
     }

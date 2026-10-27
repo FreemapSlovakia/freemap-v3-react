@@ -32,7 +32,7 @@ Versione precedente (mappa aggiornata, stile non più)
 
 Mappe aggiuntive per Locus
 
-- [Mappa outdoor, sentieri KST, livelli di sentieri e curve di livello, ombreggiatura dettagliata e DMP1, ortofoto, strade forestali NLC (online)](locus-actions://https/backend.freemap.sk/locus/install) — se ha effettuato l'accesso, il link aggiunge anche i suoi livelli di zoom premium, tramite un token per app chiamato “Locus Map”
+- [Mappa outdoor, sentieri KST, livelli di sentieri e curve di livello, ombreggiatura dettagliata e DMP1, ortofoto, strade forestali NLC (online)](locus-actions://https/backend.freemap.sk/locus/install) — se ha effettuato l'accesso, il link aggiunge anche un token per app chiamato “Map apps”, con cui, se ha l'abbonamento premium, vedrà anche i livelli di zoom più dettagliati
 - [Strade forestali NLC (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 ### OruxMaps
@@ -55,7 +55,7 @@ Versione precedente (mappa aggiornata, stile non più)
 
 Mappe aggiuntive per OruxMaps:
 
-- [Outdoor (anche in risoluzione @2x, @3x e @4x), ortofoto SR, ombreggiatura DMR5 e DMP1, strade forestali NLC (online)](https://download.freemap.sk/OruxMaps/onlinemapsources.xml) — salva il file nella cartella `oruxmaps/mapfiles/customonlinemaps/`, riavvia OruxMaps e aggiorna l'elenco delle mappe. Se lì hai già un file `onlinemapsources.xml`, unisci il contenuto dei due.
+- [Mappa outdoor, sentieri KST, livelli di sentieri e curve di livello, ombreggiatura dettagliata e DMP1, ortofoto, strade forestali NLC (online)](https://backend.freemap.sk/oruxmaps/onlinemapsources.xml) — salvi il file nella cartella `oruxmaps/mapfiles/customonlinemaps/`, riavvii OruxMaps e aggiorni l'elenco delle mappe. Sostituisca un file Freemap precedente; se il file contiene mappe di altri fornitori, unisca il contenuto dei due. Se ha effettuato l'accesso, il file contiene anche un token per app chiamato “Map apps”, con cui, se ha l'abbonamento premium, vedrà anche i livelli di zoom più dettagliati.
 
 ### BackCountry Navigator
 
@@ -102,6 +102,34 @@ Se stai utilizzando un'applicazione in grado di visualizzare mappe in formato ma
 - [POI Repubblica Ceca](https://download.freemap.sk/LocusMap/freemapV5-czech-poi.zip)
 
 Le mappe elencate in formato mapsforge vengono aggiornate ogni martedì e venerdì.
+
+### Mappe online per altre applicazioni
+
+In un'applicazione che consente di aggiungere una propria mappa online (tile XYZ), inserisca uno di questi indirizzi:
+
+| Mappa | Indirizzo | Zoom | Premium da |
+| --- | --- | --- | --- |
+| Mappa outdoor | `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}` | 5–20 | 19 |
+| Sentieri KST | `https://outdoor.tiles.freemap.sk/kst/{z}/{x}/{y}` | 5–20 | 19 |
+| Livello: mappa outdoor senza sfondo | `https://outdoor.tiles.freemap.sk/o/aerial/{z}/{x}/{y}` | 5–20 | 19 |
+| Livello: sentieri escursionistici | `https://outdoor.tiles.freemap.sk/o/hiking/{z}/{x}/{y}` | 9–20 | 19 |
+| Livello: percorsi ciclabili | `https://outdoor.tiles.freemap.sk/o/bicycle/{z}/{x}/{y}` | 9–20 | 19 |
+| Livello: piste da sci | `https://outdoor.tiles.freemap.sk/o/ski/{z}/{x}/{y}` | 9–20 | 19 |
+| Livello: percorsi equestri | `https://outdoor.tiles.freemap.sk/o/horse/{z}/{x}/{y}` | 9–20 | 19 |
+| Livello: difficoltà MTB | `https://outdoor.tiles.freemap.sk/o/mtb/{z}/{x}/{y}` | 12–20 | 19 |
+| Livello: difficoltà dei sentieri (SAC) | `https://outdoor.tiles.freemap.sk/o/sac/{z}/{x}/{y}` | 12–20 | 19 |
+| Livello: percorribilità delle strade | `https://outdoor.tiles.freemap.sk/o/smoothness/{z}/{x}/{y}` | 12–20 | 19 |
+| Livello: curve di livello | `https://outdoor.tiles.freemap.sk/o/contours/{z}/{x}/{y}` | 12–20 | 19 |
+| Ombreggiatura dettagliata (SK) | `https://sk-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 16 |
+| Ombreggiatura DMP1 (SK) | `https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–18 | |
+| Ortofoto SK e CZ | `https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 20 |
+| Ortofoto SK 2017–2019 | `https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
+| Ortofoto SK 2020–2022 | `https://ofmozaika2c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
+| Strade forestali NLC (SK) | `https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png` | 11–15 | |
+
+- Per gli schermi ad alta risoluzione aggiunga dopo `{y}` il suffisso `@2x`, `@3x` o `@4x` (mappa outdoor e KST), oppure `@2x` o `@3x` (livelli). I livelli sono trasparenti e vanno sovrapposti a un'altra mappa.
+- I livelli di zoom più dettagliati (colonna Premium da) richiedono l'abbonamento premium: crei in Account › App tokens un token con i permessi per gli zoom premium della mappa outdoor, delle ombreggiature del terreno e delle ortofoto, e lo aggiunga all'indirizzo come `?token=fm_…`.
+- Citi la fonte: © contributori di OpenStreetMap e Freemap Slovakia (mappa outdoor e livelli), LLS: ÚGKK SR (ombreggiatura), GKÚ Bratislava, NLC e ČÚZK (ortofoto), Národné lesnícke centrum (strade forestali).
 
 ## Mappe Garmin <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 

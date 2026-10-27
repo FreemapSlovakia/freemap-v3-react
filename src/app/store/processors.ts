@@ -52,6 +52,7 @@ import {
 } from '@features/dataViewer/model/processors/dataViewerUploadToOsmProcessor.js';
 import { dataViewerVertexEditProcessor } from '@features/dataViewer/model/processors/dataViewerVertexEditProcessor.js';
 import { locusInstallProcessor } from '@features/documents/model/locusInstallProcessor.js';
+import { oruxMapsDownloadProcessor } from '@features/documents/model/oruxMapsDownloadProcessor.js';
 import { elevationChartPendingTargetProcessor } from '@features/elevationChart/model/pendingTargetProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
 import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
@@ -335,6 +336,7 @@ export const processors = [
   ...authProcessors,
   downloadMapProcessor,
   locusInstallProcessor,
+  oruxMapsDownloadProcessor,
   purchaseProcessor,
   cacheTilesStartProcessor,
   cacheTilesRestartProcessor,
