@@ -125,6 +125,7 @@ Do aplikácie, ktorá vie pridať vlastnú online mapu (dlaždice XYZ), zadajte 
 | Ortofotomozaika SR a ČR | <code>https://<wbr>ortofoto<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 20 |
 | Ortofotomozaika SR 2017–2019 | <code>https://<wbr>ofmozaika1c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
 | Ortofotomozaika SR 2020–2022 | <code>https://<wbr>ofmozaika2c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
+| Ortofotomozaika ČR 2022–2023 | <code>https://<wbr>ortofoto-cz-2022-2023<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | |
 | Lesné cesty NLC (SR) | <code>https://<wbr>nlc<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.png</code> | 11–15 | |
 
 - <sup>1</sup> Priehľadná vrstva, ktorá sa kladie na inú mapu.
