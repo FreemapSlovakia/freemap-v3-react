@@ -1,7 +1,7 @@
 ---
-title: Map Exports
+title: Maps for GPS devices
 listed: false
-icon: FaExternalLinkAlt
+icon: FaMobileAlt
 ---
 
 Freemap Slovakia regularly generates map exports for various mobile applications and devices. You can download them here. If the installation procedure for your app or device is not listed, please refer to the official website of the application or device you are using.

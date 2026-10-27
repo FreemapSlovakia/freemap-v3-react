@@ -1,5 +1,5 @@
 ---
-title: Mappa per apparati GPS
+title: Mappe per dispositivi GPS
 ---
 
 Freemap crea esportazioni regolari di mappe per varie applicazioni/dispositivi mobili. Può scaricarle qui. Se la procedura di installazione della mappa per la sua applicazione/dispositivo non è elencata qui, la cerchi sul sito web dell'applicazione/dispositivo che sta utilizzando.

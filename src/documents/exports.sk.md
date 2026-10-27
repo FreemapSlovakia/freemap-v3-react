@@ -1,5 +1,5 @@
 ---
-title: Exporty máp
+title: Mapy pre GPS zariadenia
 ---
 
 Freemap Slovakia vytvára pravidelné exporty mapy pre rôzne mobilné aplikácie/zariadenia. Tu si ich môžete stiahnuť. Ak tu nie je uvedený postup inštalácie mapy pre Vašu aplikáciu/zariadenie, je potrebné ho hľadať na webovej stránke Vami používanej aplikácie/zariadenia.
