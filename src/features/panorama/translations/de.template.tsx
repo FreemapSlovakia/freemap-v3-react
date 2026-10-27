@@ -93,6 +93,9 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Die Zeiten gelten in der Zeitzone dieses Geräts und markieren, wann der letzte Rand der Scheibe hinter dem Gelände verschwindet oder der erste auftaucht. Das Gelände ist nackter Boden, Bäume und Gebäude können sie also früher verdecken.',
     today: 'Heute',
     lit: (percent) => `${percent} beleuchtet`,
+    elevation: (deg) => `Höhe ${deg}`,
+    overTerrain: (deg) => `${deg} über dem Gelände`,
+    belowTerrain: (deg) => `${deg} unter dem Gelände`,
     unfolded: (
       <>
         Nicht über einem entfalteten Bild: sein fernes Gelände ist höher

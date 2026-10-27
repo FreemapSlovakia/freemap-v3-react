@@ -24,7 +24,8 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickViewpoint: 'Wybierz na mapie',
   pickViewpointPrompt: 'Kliknij na mapie miejsce obserwacji',
   lookAt: 'Spójrz na miejsce na mapie',
-  pickTargetPrompt: 'Kliknij na mapie miejsce, na które ma być skierowany widok',
+  pickTargetPrompt:
+    'Kliknij na mapie miejsce, na które ma być skierowany widok',
   createToposcope: 'Utwórz tablicę panoramiczną z tego widoku',
   toposcopeMergeModal: {
     title: 'Mapa nie jest pusta',
@@ -94,6 +95,9 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Godziny są w strefie czasowej tego urządzenia i oznaczają, kiedy za terenem znika ostatni skrawek tarczy lub pojawia się pierwszy. Teren to goła ziemia, więc drzewa i budynki mogą ją zasłonić wcześniej.',
     today: 'Dziś',
     lit: (percent) => `oświetlony w ${percent}`,
+    elevation: (deg) => `wysokość ${deg}`,
+    overTerrain: (deg) => `${deg} nad terenem`,
+    belowTerrain: (deg) => `${deg} pod terenem`,
     unfolded: (
       <>
         Nie na rozwiniętym obrazie: jego odległy teren jest narysowany wyżej,

@@ -93,6 +93,9 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Gli orari sono nel fuso orario di questo dispositivo e indicano quando l’ultimo spicchio del disco scompare dietro il terreno o il primo riappare. Il terreno è nudo, quindi alberi ed edifici possono nasconderlo prima.',
     today: 'Oggi',
     lit: (percent) => `illuminata al ${percent}`,
+    elevation: (deg) => `altezza ${deg}`,
+    overTerrain: (deg) => `${deg} sopra il terreno`,
+    belowTerrain: (deg) => `${deg} sotto il terreno`,
     unfolded: (
       <>
         Non su un’immagine dispiegata: il terreno lontano è disegnato più in

@@ -1314,6 +1314,13 @@ Meeus, so changing the day costs no render.
   zoomed in, so the split at a whole minute shows.
 - **Times are the browser's zone**; the day is local midnight to midnight, and
   `skyDate` `null` means today, so the paths follow the clock past midnight.
+- **The pointer reads a path by bearing**, not by closeness to its line: where
+  each path crosses the pointer's column, interpolated between the two minute
+  samples either side, it says the time, the elevation and how far the centre
+  stands over (or below) the skyline at that bearing. The pointer's height
+  only picks between crossings of one column. Hover for a mouse or pen, a
+  press for anything, like the distance readout; the skyline part is left out
+  where the frame clips the column.
 - **A lifted picture gets no tracks at all** — no paths, no footer times — its
   skyline standing higher than it is; the menu is disabled with a tooltip
   saying so.

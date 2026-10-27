@@ -61,24 +61,53 @@ export function horizonProfile(
   return profile;
 }
 
+type Columns = Pick<
+  PanoramaRenderInfo,
+  'azStart' | 'stepDeg' | 'width' | 'fov'
+>;
+
+/** The profile's column at a bearing, `null` off the end of a slice. */
+function profileColumn(
+  render: Columns,
+  profile: HorizonProfile,
+  azimuth: number,
+): number | null {
+  const column = columnAt(render, azimuth);
+
+  return column === null
+    ? null
+    : Math.min(Math.floor(column), profile.altitudes.length - 1);
+}
+
+/** The skyline's altitude at a bearing; `null` off a slice or where the frame clips it. */
+export function skylineAt(
+  render: Columns,
+  profile: HorizonProfile,
+  azimuth: number,
+): number | null {
+  const x = profileColumn(render, profile, azimuth);
+
+  return x === null || profile.clippedTop[x] || profile.clippedBottom[x]
+    ? null
+    : (profile.altitudes[x] ?? null);
+}
+
 /**
  * Whether a body's upper limb clears the skyline at its bearing: `null` where
  * the picture cannot say — off the end of a slice, or past the frame's edge on
  * a column it clips.
  */
 export function limbVisible(
-  render: Pick<PanoramaRenderInfo, 'azStart' | 'stepDeg' | 'width' | 'fov'>,
+  render: Columns,
   profile: HorizonProfile,
   azimuth: number,
   limb: number,
 ): boolean | null {
-  const column = columnAt(render, azimuth);
+  const x = profileColumn(render, profile, azimuth);
 
-  if (column === null) {
+  if (x === null) {
     return null;
   }
-
-  const x = Math.min(Math.floor(column), profile.altitudes.length - 1);
 
   const horizon = profile.altitudes[x] ?? 0;
 

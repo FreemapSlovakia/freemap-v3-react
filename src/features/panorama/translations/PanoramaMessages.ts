@@ -108,6 +108,11 @@ export type PanoramaMessages = {
     today: string;
     /** The moon's lit fraction, `percent` already formatted. */
     lit: (percent: string) => string;
+    /** A path's height above the horizon at the pointer's bearing, `deg` formatted. */
+    elevation: (deg: string) => string;
+    /** How far the body's centre stands above or below the terrain's skyline. */
+    overTerrain: (deg: string) => string;
+    belowTerrain: (deg: string) => string;
     /** Why the menu is off under an unfolded picture; setting names in italics. */
     unfolded: ReactNode;
   };

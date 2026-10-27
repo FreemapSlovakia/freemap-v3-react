@@ -93,6 +93,9 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Časy sú v časovom pásme tohto zariadenia a označujú, kedy za terénom zmizne posledný kúsok disku, alebo sa objaví prvý. Terén je holá zem, takže stromy a budovy ho môžu zakryť skôr.',
     today: 'Dnes',
     lit: (percent) => `osvetlený na ${percent}`,
+    elevation: (deg) => `výška ${deg}`,
+    overTerrain: (deg) => `${deg} nad terénom`,
+    belowTerrain: (deg) => `${deg} pod terénom`,
     unfolded: (
       <>
         Nie cez rozvinutý obrázok: jeho vzdialený terén je nakreslený vyššie,

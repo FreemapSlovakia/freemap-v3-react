@@ -95,6 +95,9 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Časi so v časovem pasu te naprave in označujejo, kdaj za terenom izgine zadnji delček diska ali se prikaže prvi. Teren je gola zemlja, zato ga drevesa in stavbe lahko zakrijejo prej.',
     today: 'Danes',
     lit: (percent) => `osvetljena ${percent}`,
+    elevation: (deg) => `višina ${deg}`,
+    overTerrain: (deg) => `${deg} nad terenom`,
+    belowTerrain: (deg) => `${deg} pod terenom`,
     unfolded: (
       <>
         Ne na razgrnjeni sliki: njeno oddaljeno površje je narisano višje, kot

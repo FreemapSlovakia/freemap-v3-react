@@ -93,6 +93,9 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Les heures sont dans le fuseau horaire de cet appareil et indiquent quand le dernier croissant du disque passe derrière le relief ou quand le premier réapparaît. Le relief est le sol nu : arbres et bâtiments peuvent le cacher plus tôt.',
     today: 'Aujourd’hui',
     lit: (percent) => `éclairée à ${percent}`,
+    elevation: (deg) => `hauteur ${deg}`,
+    overTerrain: (deg) => `${deg} au-dessus du relief`,
+    belowTerrain: (deg) => `${deg} sous le relief`,
     unfolded: (
       <>
         Pas sur une image dépliée : son relief lointain est dessiné plus haut

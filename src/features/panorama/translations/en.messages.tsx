@@ -97,6 +97,9 @@ const en: PanoramaMessages = {
       'Times are in this device’s time zone and mark when the last sliver of the disc goes behind the terrain or the first one comes out. The terrain is bare earth, so trees and buildings can hide it sooner.',
     today: 'Today',
     lit: (percent) => `${percent} lit`,
+    elevation: (deg) => `elevation ${deg}`,
+    overTerrain: (deg) => `${deg} above the terrain`,
+    belowTerrain: (deg) => `${deg} below the terrain`,
     unfolded: (
       <>
         Not over an unfolded picture: its distant terrain is drawn higher than

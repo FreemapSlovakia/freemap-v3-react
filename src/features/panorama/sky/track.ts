@@ -1,3 +1,4 @@
+import { angleDiff } from '@shared/mathUtils.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
 import { type SkyBody, skyPosition } from './astro.js';
@@ -131,6 +132,70 @@ export function withCentreCrossings(
     // Carries the new state, so the path ends the old run on it.
     return [{ ...hi, centreVisible: sample.centreVisible }, sample];
   });
+}
+
+/** Widest bearing step between two samples that is still read across. */
+const MAX_SPAN_DEG = 10;
+
+/**
+ * Where the path crosses a bearing, interpolated between the samples either
+ * side; of several crossings within `[low, high]` the one nearest `altitude`.
+ * Only over stretches the picture can read and at or above `altFloor`, which
+ * is what is drawn.
+ */
+export function trackAt(
+  samples: TrackSample[],
+  azimuth: number,
+  altitude: number,
+  altFloor: number,
+  [low, high]: [number, number],
+): { time: number; altitude: number } | null {
+  let best: { time: number; altitude: number } | null = null;
+
+  let bestGap = Infinity;
+
+  for (let i = 1; i < samples.length; i++) {
+    const a = samples[i - 1];
+
+    const b = samples[i];
+
+    if (
+      !a ||
+      !b ||
+      a.centreVisible === null ||
+      b.centreVisible === null ||
+      a.altitude < altFloor ||
+      b.altitude < altFloor
+    ) {
+      continue;
+    }
+
+    const span = angleDiff(b.azimuth, a.azimuth);
+
+    // Near the zenith the bearing swings by up to a half-turn in a minute, and
+    // a straight line across that is not the path.
+    if (span === 0 || Math.abs(span) > MAX_SPAN_DEG) {
+      continue;
+    }
+
+    const t = angleDiff(azimuth, a.azimuth) / span;
+
+    if (t < 0 || t >= 1) {
+      continue;
+    }
+
+    const at = a.altitude + t * (b.altitude - a.altitude);
+
+    const gap = Math.abs(at - altitude);
+
+    if (at >= low && at <= high && gap < bestGap) {
+      bestGap = gap;
+
+      best = { time: a.time + t * (b.time - a.time), altitude: at };
+    }
+  }
+
+  return best;
 }
 
 /**

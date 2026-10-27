@@ -93,6 +93,9 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
       'Az időpontok az eszköz időzónájában értendők, és azt jelzik, mikor tűnik el a korong utolsó szelete a terep mögött, vagy mikor bukkan fel az első. A terep csupasz felszín, így a fák és az épületek korábban eltakarhatják.',
     today: 'Ma',
     lit: (percent) => `${percent}-ban megvilágítva`,
+    elevation: (deg) => `magasság: ${deg}`,
+    overTerrain: (deg) => `${deg} a terep felett`,
+    belowTerrain: (deg) => `${deg} a terep alatt`,
     unfolded: (
       <>
         Kibontott képen nem: a távoli terep magasabban van rajzolva, mint ahol

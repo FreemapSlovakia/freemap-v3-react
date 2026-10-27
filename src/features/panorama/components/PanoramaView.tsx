@@ -50,6 +50,7 @@ import {
   readAlong,
 } from '../ray.js';
 import type { PanoramaRenderData } from '../renderHolder.js';
+import { horizonProfile, skylineAt } from '../sky/horizon.js';
 import type { SkyTrack } from '../sky/useSky.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import {
@@ -258,6 +259,9 @@ export function PanoramaView({
    * readout: the counterpart in the picture of the mark it leaves on the map.
    */
   const [picked, setPicked] = useState<{ az: number; iy: number } | null>(null);
+
+  /** Which point of the sky paths to read out: sky or terrain, hover or press. */
+  const [skyAim, setSkyAim] = useState<{ az: number; iy: number } | null>(null);
 
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -527,6 +531,8 @@ export function PanoramaView({
     setHover(null);
 
     setPicked(null);
+
+    setSkyAim(null);
 
     setPanoramaHover(null);
   }, [render.id]);
@@ -964,11 +970,20 @@ export function PanoramaView({
     // A pointer hovering: say how far away whatever is under it stands.
     const sample = sampleGround(e);
 
+    // Past the end of a slice: nothing under the pointer to read.
     if (!sample) {
+      setHover(null);
+
+      setSkyAim(null);
+
+      setPanoramaHover(null);
+
       return;
     }
 
     setHover(hoverReading(sample));
+
+    setSkyAim({ az: sample.az, iy: sample.iy });
 
     // The map follows the pointer, so what is under it can be found without
     // committing to it — the press is what leaves a mark behind.
@@ -1016,8 +1031,19 @@ export function PanoramaView({
         // sees. It stays until the next press, the way the mark does.
         setHover(hoverReading(sample));
 
+        setSkyAim({ az: sample.az, iy: sample.iy });
+
         setPicked(sample.ground ? { az: sample.az, iy: sample.iy } : null);
       }
+    } else if (e.pointerType !== 'touch') {
+      // The picture moved under a still mouse: read what is under it now.
+      const sample = sampleGround(e);
+
+      setHover(sample && hoverReading(sample));
+
+      setSkyAim(sample && { az: sample.az, iy: sample.iy });
+
+      setPanoramaHover(sample?.ground ?? null);
     }
   };
 
@@ -1060,6 +1086,14 @@ export function PanoramaView({
     (altitude: number) =>
       ((render.altMax - altitude) / render.stepDeg - clampedOffsetY) * scale,
     [clampedOffsetY, render.altMax, render.stepDeg, scale],
+  );
+
+  const skyline = useCallback(
+    (az: number) =>
+      data.depth
+        ? skylineAt(render, horizonProfile(render, data.depth), az)
+        : null,
+    [data.depth, render],
   );
 
   const anchor = useCallback(
@@ -1322,6 +1356,8 @@ export function PanoramaView({
         if (e.pointerType !== 'touch') {
           setHover(null);
 
+          setSkyAim(null);
+
           setPanoramaHover(null);
         }
       }}
@@ -1340,6 +1376,20 @@ export function PanoramaView({
             screenY={screenY}
             width={width}
             altMin={render.altMin}
+            aim={
+              skyAim && !dragging
+                ? {
+                    azimuth: skyAim.az,
+                    altitude: render.altMax - skyAim.iy * render.stepDeg,
+                    band: [
+                      render.altMax -
+                        (clampedOffsetY + height / scale) * render.stepDeg,
+                      render.altMax - clampedOffsetY * render.stepDeg,
+                    ],
+                  }
+                : null
+            }
+            skyline={skyline}
           />
         )}
 

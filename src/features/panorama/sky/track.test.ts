@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { PanoramaDepth } from '../depth.js';
-import { horizonProfile } from './horizon.js';
+import { horizonProfile, skylineAt } from './horizon.js';
 import {
   dayTrack,
   skyEvents,
   skyObserver,
   type TrackSample,
+  trackAt,
   withCentreCrossings,
 } from './track.js';
 
@@ -138,5 +139,76 @@ describe('skyEvents', () => {
     expect(
       skyEvents([sample(0, false), sample(1, null), sample(2, true)]),
     ).toEqual([]);
+  });
+});
+
+describe('trackAt', () => {
+  const at = (
+    minute: number,
+    azimuth: number,
+    altitude: number,
+    visible: boolean | null = true,
+  ): TrackSample => ({
+    time: minute * 60_000,
+    azimuth,
+    altitude,
+    radius: 0.25,
+    visible,
+    centreVisible: visible,
+  });
+
+  const all: [number, number] = [-90, 90];
+
+  it('interpolates between the samples either side, across north', () => {
+    expect(trackAt([at(0, 358, 10), at(1, 2, 20)], 359, 0, -5, all)).toEqual({
+      time: 15_000,
+      altitude: 12.5,
+    });
+  });
+
+  it('picks the crossing nearest the pointer, among those on screen', () => {
+    const samples = [at(0, 90, 10), at(1, 100, 10), at(2, 90, 30)];
+
+    expect(trackAt(samples, 95, 28, -5, all)?.altitude).toBe(20);
+
+    expect(trackAt(samples, 95, 0, -5, all)?.altitude).toBe(10);
+
+    expect(trackAt(samples, 95, 28, -5, [0, 15])?.altitude).toBe(10);
+  });
+
+  it('skips what is not drawn', () => {
+    expect(
+      trackAt([at(0, 90, -10), at(1, 100, -9)], 95, 0, -5, all),
+    ).toBeNull();
+
+    expect(
+      trackAt([at(0, 90, 10, null), at(1, 100, 9)], 95, 0, -5, all),
+    ).toBeNull();
+  });
+
+  it('does not read across a swing past the zenith', () => {
+    expect(
+      trackAt([at(0, 10, 89), at(1, 170, 89)], 90, 89, -5, all),
+    ).toBeNull();
+  });
+});
+
+describe('skylineAt', () => {
+  const profile = horizonProfile(
+    frame,
+    depthOf([
+      [0, 0, 5000],
+      [0, 1000, 4000],
+    ]),
+  );
+
+  const slice = { azStart: 0, stepDeg: 1, width: 3, fov: 3 };
+
+  it('reads the column at a bearing, and nothing where the frame clips it', () => {
+    expect(skylineAt(slice, profile, 1.5)).toBe(3);
+
+    expect(skylineAt(slice, profile, 0.5)).toBeNull();
+
+    expect(skylineAt(slice, profile, 2.5)).toBeNull();
   });
 });

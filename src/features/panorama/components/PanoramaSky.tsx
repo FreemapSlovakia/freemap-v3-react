@@ -10,7 +10,7 @@ import {
   moonIllumination,
   type SkyBody,
 } from '../sky/astro.js';
-import type { TrackSample } from '../sky/track.js';
+import { type TrackSample, trackAt } from '../sky/track.js';
 import type { SkyTrack } from '../sky/useSky.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import { MoonPhase, moonLitPath } from './MoonPhase.js';
@@ -184,7 +184,19 @@ type Props = {
   screenY: (altitude: number) => number;
   width: number;
   altMin: number;
+  /**
+   * Where the pointer rests or a press landed, which picks the point to read
+   * out, and the altitudes on screen, which it must be among.
+   */
+  aim: { azimuth: number; altitude: number; band: [number, number] } | null;
+  /** The terrain's skyline at a bearing, `null` where the picture cannot say. */
+  skyline: (azimuth: number) => number | null;
 };
+
+/** Past this far right the readout goes on the left of its point. */
+const READING_FLIP_PX = 160;
+
+const READING_LINE_PX = 13;
 
 /**
  * The day's paths over the picture: solid where the body's centre clears the
@@ -197,10 +209,22 @@ export function PanoramaSky({
   screenY,
   width,
   altMin,
+  aim,
+  skyline,
 }: Props): ReactElement {
   const hourFormat = useDateTimeFormat({ hour: 'numeric' });
 
   const timeFormat = useDateTimeFormat({ timeStyle: 'short' });
+
+  const nfDeg = useNumberFormat({
+    style: 'unit',
+    unit: 'degree',
+    unitDisplay: 'narrow',
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+
+  const m = usePanoramaMessages();
 
   // What a pan leaves alone, worked out once per day rather than per frame.
   const layout = useMemo(
@@ -238,9 +262,99 @@ export function PanoramaSky({
   const disc = (altitude: number, radius: number) =>
     Math.max(MIN_DISC_PX, screenY(altitude - radius) - screenY(altitude));
 
+  /** Where each path crosses the aimed bearing, and what to say about it. */
+  const readings = layout.map(({ track }) => {
+    const at =
+      aim &&
+      trackAt(
+        track.samples,
+        aim.azimuth,
+        aim.altitude,
+        altMin - BELOW_FRAME_DEG,
+        aim.band,
+      );
+
+    if (!aim || !at || !m) {
+      return null;
+    }
+
+    const lines = [
+      `${timeFormat.format(at.time)} · ${m.sky.elevation(nfDeg.format(at.altitude))}`,
+    ];
+
+    const ground = skyline(aim.azimuth);
+
+    if (ground !== null) {
+      // Rounded as printed, so it never says "0.0° below".
+      const over = Math.round((at.altitude - ground) * 10) / 10;
+
+      lines.push(
+        over >= 0
+          ? m.sky.overTerrain(nfDeg.format(over))
+          : m.sky.belowTerrain(nfDeg.format(-over)),
+      );
+    }
+
+    return { x: screenX(aim.azimuth), y: screenY(at.altitude), lines };
+  });
+
+  const [first, second] = readings;
+
+  const reading = (i: number, ink: string) => {
+    const r = readings[i];
+
+    if (!r) {
+      return null;
+    }
+
+    const { x, y, lines } = r;
+
+    let left = x > width - READING_FLIP_PX;
+
+    // Both at one bearing: close together, the second goes the other side.
+    if (
+      i === 1 &&
+      first &&
+      second &&
+      Math.abs(first.y - second.y) < 2 * READING_LINE_PX + 8
+    ) {
+      left = !left;
+    }
+
+    const tx = left ? x - 8 : x + 8;
+
+    // Above the point, or below it where the frame's top would cut it off.
+    const top =
+      y < lines.length * READING_LINE_PX + 8
+        ? y + 8 + READING_LINE_PX
+        : y - 8 - (lines.length - 1) * READING_LINE_PX;
+
+    return (
+      <g>
+        <circle cx={x} cy={y} r={3.5} fill={ink} stroke={HALO} />
+
+        <text
+          y={top}
+          textAnchor={left ? 'end' : 'start'}
+          fontSize={11}
+          fill={ink}
+          stroke={HALO}
+          strokeWidth={3}
+          paintOrder="stroke"
+        >
+          {lines.map((line, i) => (
+            <tspan key={line} x={tx} dy={i === 0 ? 0 : READING_LINE_PX}>
+              {line}
+            </tspan>
+          ))}
+        </text>
+      </g>
+    );
+  };
+
   return (
     <g>
-      {layout.map(({ track, segments, hours, events, nowMoon }) => {
+      {layout.map(({ track, segments, hours, events, nowMoon }, i) => {
         const ink = SKY_INK[track.body];
 
         const now = track.now;
@@ -380,6 +494,8 @@ export function PanoramaSky({
                 />
               </g>
             )}
+
+            {reading(i, ink)}
           </g>
         );
       })}
