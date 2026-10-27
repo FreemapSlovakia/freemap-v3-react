@@ -109,27 +109,29 @@ In un'applicazione che consente di aggiungere una propria mappa online (tile XYZ
 
 | Mappa | Indirizzo | Zoom | Premium da |
 | --- | --- | --- | --- |
-| Mappa outdoor | `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}` | 5–20 | 19 |
-| Sentieri KST | `https://outdoor.tiles.freemap.sk/kst/{z}/{x}/{y}` | 5–20 | 19 |
-| Livello: mappa outdoor senza sfondo | `https://outdoor.tiles.freemap.sk/o/aerial/{z}/{x}/{y}` | 5–20 | 19 |
-| Livello: sentieri escursionistici | `https://outdoor.tiles.freemap.sk/o/hiking/{z}/{x}/{y}` | 9–20 | 19 |
-| Livello: percorsi ciclabili | `https://outdoor.tiles.freemap.sk/o/bicycle/{z}/{x}/{y}` | 9–20 | 19 |
-| Livello: piste da sci | `https://outdoor.tiles.freemap.sk/o/ski/{z}/{x}/{y}` | 9–20 | 19 |
-| Livello: percorsi equestri | `https://outdoor.tiles.freemap.sk/o/horse/{z}/{x}/{y}` | 9–20 | 19 |
-| Livello: difficoltà MTB | `https://outdoor.tiles.freemap.sk/o/mtb/{z}/{x}/{y}` | 12–20 | 19 |
-| Livello: difficoltà dei sentieri (SAC) | `https://outdoor.tiles.freemap.sk/o/sac/{z}/{x}/{y}` | 12–20 | 19 |
-| Livello: percorribilità delle strade | `https://outdoor.tiles.freemap.sk/o/smoothness/{z}/{x}/{y}` | 12–20 | 19 |
-| Livello: curve di livello | `https://outdoor.tiles.freemap.sk/o/contours/{z}/{x}/{y}` | 12–20 | 19 |
-| Ombreggiatura dettagliata (SK) | `https://sk-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 16 |
-| Ombreggiatura DMP1 (SK) | `https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–18 | |
-| Ortofoto SK e CZ | `https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 20 |
-| Ortofoto SK 2017–2019 | `https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
-| Ortofoto SK 2020–2022 | `https://ofmozaika2c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
-| Strade forestali NLC (SK) | `https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png` | 11–15 | |
+| Mappa outdoor <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Sentieri KST <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>kst/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Mappa outdoor senza sfondo <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>aerial/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Sentieri escursionistici <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>hiking/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Percorsi ciclabili <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>bicycle/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Piste da sci <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>ski/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Percorsi equestri <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>horse/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Difficoltà MTB <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>mtb/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Difficoltà dei sentieri (SAC) <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>sac/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Percorribilità delle strade <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>smoothness/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Curve di livello <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>contours/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Ombreggiatura dettagliata (SK) | <code>https://<wbr>sk-hires-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 16 |
+| Ombreggiatura DMP1 (SK) | <code>https://<wbr>dmp1-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–18 | |
+| Ortofoto SK e CZ | <code>https://<wbr>ortofoto<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 20 |
+| Ortofoto SK 2017–2019 | <code>https://<wbr>ofmozaika1c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
+| Ortofoto SK 2020–2022 | <code>https://<wbr>ofmozaika2c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
+| Strade forestali NLC (SK) | <code>https://<wbr>nlc<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.png</code> | 11–15 | |
 
-- Per gli schermi ad alta risoluzione aggiunga dopo `{y}` il suffisso `@2x`, `@3x` o `@4x` (mappa outdoor e KST), oppure `@2x` o `@3x` (livelli). I livelli sono trasparenti e vanno sovrapposti a un'altra mappa.
-- I livelli di zoom più dettagliati (colonna Premium da) richiedono l'abbonamento premium: crei in Account › App tokens un token con i permessi per gli zoom premium della mappa outdoor, delle ombreggiature del terreno e delle ortofoto, e lo aggiunga all'indirizzo come `?token=fm_…`.
-- Citi la fonte: © contributori di OpenStreetMap e Freemap Slovakia (mappa outdoor e livelli), LLS: ÚGKK SR (ombreggiatura), GKÚ Bratislava, NLC e ČÚZK (ortofoto), Národné lesnícke centrum (strade forestali).
+- <sup>1</sup> Livello trasparente da sovrapporre a un'altra mappa.
+- <sup>2</sup> Per gli schermi ad alta risoluzione aggiunga dopo `{y}` il suffisso `@2x`, `@3x` o `@4x`.
+- Se l'applicazione scrive i segnaposto in modo diverso, ad es. `{zoom}` invece di `{z}`, adatti l'indirizzo di conseguenza.
+- I livelli di zoom più dettagliati (colonna _Premium da_) richiedono l'abbonamento premium: crei in _Account › App tokens_ un token con i permessi per gli zoom premium della mappa outdoor, delle ombreggiature del terreno e delle ortofoto, e lo aggiunga all'indirizzo come `?token=fm_…`.
+- Citi la fonte: _© contributori di OpenStreetMap e Freemap Slovakia_ (mappa outdoor e livelli), _LLS: ÚGKK SR_ (ombreggiatura), _GKÚ Bratislava, NLC e ČÚZK_ (ortofoto), _Národné lesnícke centrum_ (strade forestali). La mappa outdoor e i livelli sono inoltre realizzati con dati altimetrici regionali, anch'essi da citare: ogni tile ne riporta i codici nell'intestazione `X-Attribution` e il loro significato è su [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
 
 ## Mappe Garmin <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 

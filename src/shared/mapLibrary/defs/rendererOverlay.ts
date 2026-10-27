@@ -13,7 +13,7 @@ export function rendererOverlay(
 ): MapBody<'tile'> {
   return {
     url: rendererTileUrl(type),
-    extraScales: [2, 3],
+    extraScales: [2, 3, 4],
     attribution: OUTDOOR_ATTRIBUTION,
     minZoom,
     maxNativeZoom: 20,

@@ -322,6 +322,11 @@ button#freemap-logo {
     border: 1px solid black;
     padding: 0 0.5em;
   }
+
+  /* long URLs break at their <wbr>s, mid-word only if a part still overflows */
+  & td code {
+    overflow-wrap: break-word;
+  }
 }
 
 .pe-none {

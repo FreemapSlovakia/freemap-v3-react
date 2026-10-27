@@ -109,27 +109,29 @@ Do aplikácie, ktorá vie pridať vlastnú online mapu (dlaždice XYZ), zadajte 
 
 | Mapa | Adresa | Zoom | Prémium od |
 | --- | --- | --- | --- |
-| Outdoorová mapa | `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}` | 5–20 | 19 |
-| Turistické trasy KST | `https://outdoor.tiles.freemap.sk/kst/{z}/{x}/{y}` | 5–20 | 19 |
-| Vrstva: outdoorová mapa bez podkladu | `https://outdoor.tiles.freemap.sk/o/aerial/{z}/{x}/{y}` | 5–20 | 19 |
-| Vrstva: turistické trasy | `https://outdoor.tiles.freemap.sk/o/hiking/{z}/{x}/{y}` | 9–20 | 19 |
-| Vrstva: cyklotrasy | `https://outdoor.tiles.freemap.sk/o/bicycle/{z}/{x}/{y}` | 9–20 | 19 |
-| Vrstva: lyžiarske trasy | `https://outdoor.tiles.freemap.sk/o/ski/{z}/{x}/{y}` | 9–20 | 19 |
-| Vrstva: jazdecké trasy | `https://outdoor.tiles.freemap.sk/o/horse/{z}/{x}/{y}` | 9–20 | 19 |
-| Vrstva: náročnosť MTB | `https://outdoor.tiles.freemap.sk/o/mtb/{z}/{x}/{y}` | 12–20 | 19 |
-| Vrstva: náročnosť chodníkov (SAC) | `https://outdoor.tiles.freemap.sk/o/sac/{z}/{x}/{y}` | 12–20 | 19 |
-| Vrstva: zjazdnosť ciest | `https://outdoor.tiles.freemap.sk/o/smoothness/{z}/{x}/{y}` | 12–20 | 19 |
-| Vrstva: vrstevnice | `https://outdoor.tiles.freemap.sk/o/contours/{z}/{x}/{y}` | 12–20 | 19 |
-| Detailné tieňovanie (SR) | `https://sk-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 16 |
-| Tieňovanie DMP1 (SR) | `https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–18 | |
-| Ortofotomozaika SR a ČR | `https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 20 |
-| Ortofotomozaika SR 2017–2019 | `https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
-| Ortofotomozaika SR 2020–2022 | `https://ofmozaika2c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
-| Lesné cesty NLC (SR) | `https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png` | 11–15 | |
+| Outdoorová mapa <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Turistické trasy KST <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>kst/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Outdoorová mapa bez podkladu <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>aerial/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Turistické trasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>hiking/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Cyklotrasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>bicycle/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Lyžiarske trasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>ski/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Jazdecké trasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>horse/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Náročnosť MTB <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>mtb/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Náročnosť chodníkov (SAC) <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>sac/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Zjazdnosť ciest <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>smoothness/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Vrstevnice <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>contours/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Detailné tieňovanie (SR) | <code>https://<wbr>sk-hires-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 16 |
+| Tieňovanie DMP1 (SR) | <code>https://<wbr>dmp1-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–18 | |
+| Ortofotomozaika SR a ČR | <code>https://<wbr>ortofoto<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 20 |
+| Ortofotomozaika SR 2017–2019 | <code>https://<wbr>ofmozaika1c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
+| Ortofotomozaika SR 2020–2022 | <code>https://<wbr>ofmozaika2c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
+| Lesné cesty NLC (SR) | <code>https://<wbr>nlc<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.png</code> | 11–15 | |
 
-- Pre displeje s vysokým rozlíšením pridajte za `{y}` príponu `@2x`, `@3x` alebo `@4x` (outdoorová mapa a KST), resp. `@2x` alebo `@3x` (vrstvy). Vrstvy sú priehľadné a kladú sa na inú mapu.
-- Najpodrobnejšie zobrazenie (stĺpec Prémium od) vyžaduje prémiový prístup: vytvorte si v menu Účet › Aplikačné tokeny token s oprávneniami na prémiové zobrazenie turistickej mapy, tieňovaní terénu a leteckej mapy a pripíšte ho k adrese ako `?token=fm_…`.
-- Uveďte zdroj: © prispievatelia OpenStreetMap a Freemap Slovakia (outdoorová mapa a vrstvy), LLS: ÚGKK SR (tieňovanie), GKÚ Bratislava, NLC a ČÚZK (ortofotomozaiky), Národné lesnícke centrum (lesné cesty).
+- <sup>1</sup> Priehľadná vrstva, ktorá sa kladie na inú mapu.
+- <sup>2</sup> Pre displeje s vysokým rozlíšením pridajte za `{y}` príponu `@2x`, `@3x` alebo `@4x`.
+- Ak aplikácia zapisuje premenné inak, napr. `{zoom}` namiesto `{z}`, upravte adresu podľa nej.
+- Najpodrobnejšie zobrazenie (stĺpec _Prémium od_) vyžaduje prémiový prístup: vytvorte si v menu _Účet › Aplikačné tokeny_ token s oprávneniami na prémiové zobrazenie turistickej mapy, tieňovaní terénu a leteckej mapy a pripíšte ho k adrese ako `?token=fm_…`.
+- Uveďte zdroj: _© prispievatelia OpenStreetMap a Freemap Slovakia_ (outdoorová mapa a vrstvy), _LLS: ÚGKK SR_ (tieňovanie), _GKÚ Bratislava, NLC a ČÚZK_ (ortofotomozaiky), _Národné lesnícke centrum_ (lesné cesty). Outdoorová mapa a vrstvy sú navyše vytvorené z výškových dát podľa oblasti, ktoré tiež treba uviesť: každá dlaždica uvádza ich kódy v hlavičke `X-Attribution` a ich význam je na [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
 
 ## Garmin mapa <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 

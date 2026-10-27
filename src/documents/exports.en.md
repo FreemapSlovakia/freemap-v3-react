@@ -111,27 +111,29 @@ In an app that lets you add your own online map (XYZ tiles), enter one of these 
 
 | Map | Address | Zoom | Premium from |
 | --- | --- | --- | --- |
-| Outdoor map | `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}` | 5–20 | 19 |
-| KST hiking trails | `https://outdoor.tiles.freemap.sk/kst/{z}/{x}/{y}` | 5–20 | 19 |
-| Overlay: outdoor map without base | `https://outdoor.tiles.freemap.sk/o/aerial/{z}/{x}/{y}` | 5–20 | 19 |
-| Overlay: hiking trails | `https://outdoor.tiles.freemap.sk/o/hiking/{z}/{x}/{y}` | 9–20 | 19 |
-| Overlay: bicycle trails | `https://outdoor.tiles.freemap.sk/o/bicycle/{z}/{x}/{y}` | 9–20 | 19 |
-| Overlay: ski trails | `https://outdoor.tiles.freemap.sk/o/ski/{z}/{x}/{y}` | 9–20 | 19 |
-| Overlay: horse trails | `https://outdoor.tiles.freemap.sk/o/horse/{z}/{x}/{y}` | 9–20 | 19 |
-| Overlay: MTB difficulty | `https://outdoor.tiles.freemap.sk/o/mtb/{z}/{x}/{y}` | 12–20 | 19 |
-| Overlay: hiking difficulty (SAC) | `https://outdoor.tiles.freemap.sk/o/sac/{z}/{x}/{y}` | 12–20 | 19 |
-| Overlay: road smoothness | `https://outdoor.tiles.freemap.sk/o/smoothness/{z}/{x}/{y}` | 12–20 | 19 |
-| Overlay: contour lines | `https://outdoor.tiles.freemap.sk/o/contours/{z}/{x}/{y}` | 12–20 | 19 |
-| Detailed hillshading (SK) | `https://sk-hires-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 16 |
-| DMP1 hillshading (SK) | `https://dmp1-shading.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–18 | |
-| Orthophoto SK and CZ | `https://ortofoto.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–20 | 20 |
-| Orthophoto SK 2017–2019 | `https://ofmozaika1c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
-| Orthophoto SK 2020–2022 | `https://ofmozaika2c.tiles.freemap.sk/{z}/{x}/{y}.jpg` | 0–19 | |
-| NLC forest roads (SK) | `https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png` | 11–15 | |
+| Outdoor map <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| KST hiking trails <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>kst/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Outdoor map without base <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>aerial/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Hiking trails <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>hiking/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Bicycle trails <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>bicycle/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Ski trails <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>ski/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Horse trails <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>horse/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| MTB difficulty <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>mtb/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Hiking difficulty (SAC) <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>sac/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Road smoothness <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>smoothness/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Contour lines <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>contours/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Detailed hillshading (SK) | <code>https://<wbr>sk-hires-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 16 |
+| DMP1 hillshading (SK) | <code>https://<wbr>dmp1-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–18 | |
+| Orthophoto SK and CZ | <code>https://<wbr>ortofoto<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 20 |
+| Orthophoto SK 2017–2019 | <code>https://<wbr>ofmozaika1c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
+| Orthophoto SK 2020–2022 | <code>https://<wbr>ofmozaika2c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
+| NLC forest roads (SK) | <code>https://<wbr>nlc<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.png</code> | 11–15 | |
 
-- For high-resolution screens, add `@2x`, `@3x` or `@4x` after `{y}` (outdoor map and KST), or `@2x` or `@3x` (overlays). Overlays are transparent and go over another map.
-- The most detailed zooms (the Premium from column) need premium: create a token under Account › App tokens with the permissions for the premium zooms of the outdoor map, the terrain shadings and the aerial imagery, and append it to the address as `?token=fm_…`.
-- Credit the source: © OpenStreetMap contributors and Freemap Slovakia (outdoor map and overlays), LLS: ÚGKK SR (hillshading), GKÚ Bratislava, NLC and ČÚZK (orthophotos), Národné lesnícke centrum (forest roads).
+- <sup>1</sup> A transparent overlay that goes over another map.
+- <sup>2</sup> For high-resolution screens, add `@2x`, `@3x` or `@4x` after `{y}`.
+- If the app writes the placeholders differently, such as `{zoom}` instead of `{z}`, adjust the address to match.
+- The most detailed zooms (the _Premium from_ column) need premium: create a token under _Account › App tokens_ with the permissions for the premium zooms of the outdoor map, the terrain shadings and the aerial imagery, and append it to the address as `?token=fm_…`.
+- Credit the source: _© OpenStreetMap contributors and Freemap Slovakia_ (outdoor map and overlays), _LLS: ÚGKK SR_ (hillshading), _GKÚ Bratislava, NLC and ČÚZK_ (orthophotos), _Národné lesnícke centrum_ (forest roads). The outdoor map and overlays are also made from regional elevation data, which must be credited too: each tile lists its codes in the `X-Attribution` header, and what they mean is at [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
 
 ## Garmin Map <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 
