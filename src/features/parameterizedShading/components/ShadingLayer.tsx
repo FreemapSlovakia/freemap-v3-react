@@ -371,7 +371,8 @@ class LShadingLayer extends LGridLayer {
 
     const shadingBuffer = device.createBuffer({
       size:
-        8 * 4 + 8 /* MAX_COMPONENTS */ * 4 * (8 + 16 /* colors len */ * 8 * 8),
+        // Header, then per component 12 words and 16 stops of 8 words each.
+        8 * 4 + 8 /* MAX_COMPONENTS */ * 4 * (12 + 16 /* colors len */ * 8),
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
@@ -434,7 +435,9 @@ class LShadingLayer extends LGridLayer {
         dw.f32(component.brightness);
         dw.f32('exaggeration' in component ? component.exaggeration : 1.0);
         dw.u32(component.colorStops.length);
-        dw.pad32(1);
+        dw.f32('interval' in component ? component.interval : NaN);
+        dw.f32('lineWidth' in component ? component.lineWidth : NaN);
+        dw.pad32(3);
 
         for (const colorStop of component.colorStops) {
           dw.f32(colorStop.value);

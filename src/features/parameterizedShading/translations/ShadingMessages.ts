@@ -22,6 +22,8 @@ export type ShadingMessages = {
   highlightColor: string;
   darkColor: string;
   repeats: string;
+  contourInterval: string;
+  lineWidth: string;
   presets: string;
   addToExisting: string;
   withBackground: string;
@@ -48,7 +50,11 @@ export type ShadingMessages = {
     watercolor: string;
     autumn: string;
     aspect: string;
+    lidar: string;
+    microRelief: string;
+    ridgesValleys: string;
     contour: string;
+    contourLines: string;
     fog: string;
     metallic: string;
   };
@@ -59,5 +65,7 @@ export type ShadingMessages = {
     'slope-classic': string;
     'color-relief': string;
     aspect: string;
+    curvature: string;
+    contours: string;
   };
 };

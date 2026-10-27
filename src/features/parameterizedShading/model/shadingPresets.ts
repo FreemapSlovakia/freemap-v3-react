@@ -1,3 +1,4 @@
+import { CURVATURE_STOPS } from './createShadingComponent.js';
 import {
   type Color,
   isOpaqueShading,
@@ -15,6 +16,10 @@ export const MAP_PRESETS = [
   'slope',
   'hypsometric',
   'aspect',
+  'lidar',
+  'microRelief',
+  'ridgesValleys',
+  'contourLines',
   'contour',
   'fog',
 ] as const;
@@ -126,6 +131,38 @@ const slope = (color: Color): ShadingComponent => ({
   type: 'slope-igor',
   ...levels,
   exaggeration: 1,
+  colorStops: [{ value: 0, color }],
+});
+
+/** `ridge` on convex ground, `hollow` on concave, clear from `gap` to -`gap`. */
+const curvature = (
+  extent: number,
+  gap: number,
+  ridge: Color,
+  hollow: Color,
+): ShadingComponent => ({
+  id: 0,
+  type: 'curvature',
+  ...levels,
+  exaggeration: 1,
+  colorStops: [
+    { value: -extent, color: ridge },
+    { value: -gap, color: [ridge[0], ridge[1], ridge[2], 0] },
+    { value: gap, color: [hollow[0], hollow[1], hollow[2], 0] },
+    { value: extent, color: hollow },
+  ],
+});
+
+const contours = (
+  interval: number,
+  lineWidth: number,
+  color: Color,
+): ShadingComponent => ({
+  id: 0,
+  type: 'contours',
+  ...levels,
+  interval,
+  lineWidth,
   colorStops: [{ value: 0, color }],
 });
 
@@ -356,6 +393,61 @@ function buildOwn(preset: ShadingPreset, p: PresetParams): Shading {
         ],
       };
 
+    // Micro-relief: hollows teal and ridges cream whichever way they face,
+    // steep ground rust.
+    case 'lidar':
+      return {
+        backgroundColor: [0xa0, 0x98, 0x94, 1],
+        components: [
+          slope([0xb0, 0x48, 0x1c, 0.6]),
+          {
+            id: 0,
+            type: 'curvature',
+            ...levels,
+            exaggeration: 1,
+            colorStops: CURVATURE_STOPS,
+          },
+          igor(315, [0x1c, 0x3c, 0x48, 0.35]),
+          igor(135, [0xff, 0xf0, 0xdc, 0.25]),
+        ],
+      };
+
+    // A local relief model as in archaeology: ridges light, hollows dark.
+    case 'microRelief':
+      return {
+        backgroundColor: [0xb4, 0xb4, 0xb4, 1],
+        components: [
+          curvature(0.12, 0.005, [255, 255, 255, 0.9], [0, 0, 0, 0.9]),
+          slope([0, 0, 0, 0.4]),
+        ],
+      };
+
+    // Ridge lines orange, the drainage network blue.
+    case 'ridgesValleys':
+      return {
+        backgroundColor: [0xf4, 0xf0, 0xe6, 1],
+        components: [
+          curvature(
+            0.25,
+            0.02,
+            [0xc8, 0x64, 0x1e, 0.8],
+            [0x1e, 0x5a, 0xb4, 0.8],
+          ),
+          igor(315, [0, 0, 0, 0.4]),
+        ],
+      };
+
+    // Index lines every 100 m over 20 m ones.
+    case 'contourLines':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          igor(315, [0, 0, 0, 0.6]),
+          contours(20, 0.75, [0x8b, 0x5a, 0x2b, 0.7]),
+          contours(100, 1.5, [0x8b, 0x5a, 0x2b, 0.9]),
+        ],
+      };
+
     case 'aspect':
       return {
         backgroundColor: [0, 0, 0, 0],
@@ -397,6 +489,7 @@ const OPTIONAL_BACKGROUND: ReadonlySet<ShadingPreset> = new Set([
   'glacier',
   'ink',
   'watercolor',
+  'ridgesValleys',
 ]);
 
 /** Whether the preset covers what is beneath even without a background asked for. */

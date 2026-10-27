@@ -1,4 +1,16 @@
-import type { ShadingComponent, ShadingComponentType } from './Shading.js';
+import type {
+  ColorStop,
+  ShadingComponent,
+  ShadingComponentType,
+} from './Shading.js';
+
+/** Hollows teal, ridges cream, flat ground clear. */
+export const CURVATURE_STOPS: ColorStop[] = [
+  { value: -0.15, color: [0xff, 0xf2, 0xd6, 0.9] },
+  { value: -0.01, color: [0xff, 0xf2, 0xd6, 0] },
+  { value: 0.01, color: [0x1c, 0x5c, 0x66, 0] },
+  { value: 0.15, color: [0x1c, 0x5c, 0x66, 0.9] },
+];
 
 /** Builds a freshly-added shading component of `type` with sensible defaults. */
 export function createDefaultShadingComponent(
@@ -19,17 +31,21 @@ export function createDefaultShadingComponent(
     brightness: 0,
     contrast: 1,
     colorStops:
-      type === 'color-relief' || type === 'aspect'
-        ? [
-            { value: interpolate(0 / 6), color: [255, 0, 0, 1] },
-            { value: interpolate(1 / 6), color: [255, 255, 0, 1] },
-            { value: interpolate(2 / 6), color: [0, 255, 0, 1] },
-            { value: interpolate(3 / 6), color: [0, 255, 255, 1] },
-            { value: interpolate(4 / 6), color: [0, 0, 255, 1] },
-            { value: interpolate(5 / 6), color: [255, 0, 255, 1] },
-            { value: interpolate(6 / 6), color: [255, 0, 0, 1] },
-          ]
-        : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
+      type === 'curvature'
+        ? CURVATURE_STOPS
+        : type === 'color-relief' || type === 'aspect'
+          ? [
+              { value: interpolate(0 / 6), color: [255, 0, 0, 1] },
+              { value: interpolate(1 / 6), color: [255, 255, 0, 1] },
+              { value: interpolate(2 / 6), color: [0, 255, 0, 1] },
+              { value: interpolate(3 / 6), color: [0, 255, 255, 1] },
+              { value: interpolate(4 / 6), color: [0, 0, 255, 1] },
+              { value: interpolate(5 / 6), color: [255, 0, 255, 1] },
+              { value: interpolate(6 / 6), color: [255, 0, 0, 1] },
+            ]
+          : type === 'contours'
+            ? [{ value: 0, color: [0x8b, 0x5a, 0x2b, 0.8] }]
+            : [{ value: 0, color: [0xff, 0xff, 0xff, 1] }],
   };
 
   return type === 'hillshade-classic'
@@ -44,7 +60,9 @@ export function createDefaultShadingComponent(
       ? { type, ...base, elevation: 45 * (Math.PI / 180), exaggeration: 1 }
       : type === 'hillshade-igor'
         ? { type, ...base, azimuth: 315 * (Math.PI / 180), exaggeration: 1 }
-        : type === 'slope-igor'
+        : type === 'slope-igor' || type === 'curvature'
           ? { type, ...base, exaggeration: 1 }
-          : { type, ...base };
+          : type === 'contours'
+            ? { type, ...base, interval: 20, lineWidth: 1 }
+            : { type, ...base };
 }

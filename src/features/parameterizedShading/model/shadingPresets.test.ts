@@ -1,5 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { isOpaquePreset, shadingPreset } from './shadingPresets.js';
+import { parseShading, serializeShading } from './Shading.js';
+import {
+  isOpaquePreset,
+  SHADING_PRESETS,
+  shadingPreset,
+} from './shadingPresets.js';
+
+describe('shadingPreset serialization', () => {
+  it.each(SHADING_PRESETS)('%s reads back as written', (preset) => {
+    const s = serializeShading(shadingPreset(preset, () => 0));
+
+    expect(serializeShading(parseShading(s))).toBe(s);
+  });
+});
 
 const background = (preset: Parameters<typeof shadingPreset>[0], bg: boolean) =>
   shadingPreset(preset, () => 0, undefined, bg).backgroundColor;

@@ -8,6 +8,8 @@ export const SHADING_COMPONENT_TYPES = [
   'slope-classic',
   'color-relief',
   'aspect',
+  'curvature',
+  'contours',
 ] as const;
 
 export const ColorSchema = z.tuple([
@@ -86,6 +88,19 @@ export const ShadingComponentSchema = z.discriminatedUnion('type', [
     ...ShadingComponentBaseShape,
     type: z.literal('aspect'),
   }),
+  /** Stops over the neighbourhood's mean height above the point, per metre of ground. */
+  z.object({
+    ...ShadingComponentBaseShape,
+    type: z.literal('curvature'),
+    exaggeration: z.number(),
+  }),
+  /** A line every `interval` metres, `lineWidth` pixels wide. */
+  z.object({
+    ...ShadingComponentBaseShape,
+    type: z.literal('contours'),
+    interval: z.number(),
+    lineWidth: z.number(),
+  }),
 ]);
 
 export type ShadingComponent = z.infer<typeof ShadingComponentSchema>;
@@ -149,10 +164,23 @@ export function serializeShading(shading: Shading) {
         sub.push(component.exaggeration.toFixed(1));
         sub.push(Color(component.colorStops[0].color).hexa().slice(1));
         break;
+      case 'contours':
+        sub.push(component.interval.toFixed(1));
+        sub.push(component.lineWidth.toFixed(2));
+        sub.push(Color(component.colorStops[0].color).hexa().slice(1));
+        break;
       case 'aspect':
       case 'color-relief':
         for (const cs of component.colorStops) {
           sub.push(cs.value.toFixed(1));
+          sub.push(Color(cs.color).hexa().slice(1));
+        }
+        break;
+      case 'curvature':
+        sub.push(component.exaggeration.toFixed(1));
+
+        for (const cs of component.colorStops) {
+          sub.push(cs.value.toFixed(3));
           sub.push(Color(cs.color).hexa().slice(1));
         }
         break;
@@ -197,14 +225,21 @@ export function parseShading(serialized: string): Shading {
         case 'hillshade-igor':
         case 'slope-classic':
         case 'slope-igor':
+        case 'contours':
           colorStops = [{ value: 0, color: parseColor(params.pop()) }];
 
           break;
         case 'aspect':
         case 'color-relief':
+        case 'curvature':
           colorStops = [];
 
-          for (let i = 0; i < params.length; i += 2) {
+          // Curvature's exaggeration precedes its stops.
+          for (
+            let i = type === 'curvature' ? 1 : 0;
+            i < params.length;
+            i += 2
+          ) {
             colorStops.push({
               value: Number(params[i]),
               color: parseColor(params[i + 1]),
@@ -249,7 +284,15 @@ export function parseShading(serialized: string): Shading {
             exaggeration: Number(params.shift()),
           };
         case 'slope-igor':
+        case 'curvature':
           return { ...base, type, exaggeration: Number(params.shift()) };
+        case 'contours':
+          return {
+            ...base,
+            type,
+            interval: Number(params.shift()),
+            lineWidth: Number(params.shift()),
+          };
         default:
           return { ...base, type };
       }

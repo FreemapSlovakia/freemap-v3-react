@@ -32,7 +32,10 @@ struct ShadingComponent {
     brightness: f32,
     exaggeration: f32,
     color_count: u32,
-    _pad: f32,
+    interval: f32,
+    line_width: f32,
+    _pad1: f32,
+    _pad2: vec2<f32>,
     colors: array<ColorStop, NUM_STOPS>
 };
 
@@ -66,7 +69,8 @@ fn normalize_angle(angle: f32) -> f32 {
     return select(ang, TAU + ang, ang < 0.0);
 }
 
-fn get_normal(pos: vec2<i32>, exaggeration: f32) -> vec3<f32> {
+// Height change per pixel, by Horn's method.
+fn get_gradient(pos: vec2<i32>) -> vec2<f32> {
     let nn = get_elev(pos + vec2(-1, -1));
     let nz = get_elev(pos + vec2(-1, 0));
     let np = get_elev(pos + vec2(-1, 1));
@@ -80,21 +84,46 @@ fn get_normal(pos: vec2<i32>, exaggeration: f32) -> vec3<f32> {
 
     let dzdy = -nn - 2.0 * zn - pn + np + 2.0 * zp + pp;
 
-    // Ground size of a pixel shrinks with cos(latitude); the row's latitude comes
-    // from the tile's Web Mercator y. The texture is the tile plus a 2 px buffer.
+    return vec2(dzdx, dzdy) / 8.0;
+}
+
+fn get_normal(gradient: vec2<f32>, pos: vec2<i32>, exaggeration: f32) -> vec3<f32> {
+    let g = gradient / (ground_px(pos.y) / exaggeration);
+
+    let normal = normalize(vec3(-g.x, -g.y, 1.0));
+
+    return select(normal, vec3(0.0, 0.0, 0.0), sign(normal.z) == 0.0);
+}
+
+// Ground size of a pixel shrinks with cos(latitude); the row's latitude comes
+// from the tile's Web Mercator y. The texture is the tile plus a 2 px buffer.
+fn ground_px(y: i32) -> f32 {
     let tiles = f32(1u << shading.zoom);
 
     let rows = f32(textureDimensions(elev, 0).y - 4u);
 
-    let merc_y = PI * (1.0 - 2.0 * (f32(shading.tile_y) + (f32(pos.y - 2) + 0.5) / rows) / tiles);
+    let merc_y = PI * (1.0 - 2.0 * (f32(shading.tile_y) + (f32(y - 2) + 0.5) / rows) / tiles);
 
     let lat = atan(sinh(merc_y));
 
-    let meter_per_pixel = EQUATOR_M * cos(lat) / rows / tiles * 8 / exaggeration;
+    return EQUATOR_M * cos(lat) / rows / tiles;
+}
 
-    let normal = normalize(vec3(-dzdx / meter_per_pixel, -dzdy / meter_per_pixel, 1.0));
+// How far the 5×5 neighbourhood's mean lies above the centre, per pixel of
+// ground: positive in hollows, negative on ridges. Steady across zooms for sharp
+// creases, growing with pixel size on smooth ground. NaN when any of it has no data.
+fn get_curvature(pos: vec2<i32>, exaggeration: f32) -> f32 {
+    var sum = 0.0;
 
-    return select(normal, vec3(0.0, 0.0, 0.0), sign(normal.z) == 0.0);
+    for (var dy = -2; dy <= 2; dy++) {
+        for (var dx = -2; dx <= 2; dx++) {
+            sum += get_elev(pos + vec2(dx, dy));
+        }
+    }
+
+    let centre = get_elev(pos);
+
+    return ((sum - centre) / 24.0 - centre) / ground_px(pos.y) * exaggeration;
 }
 
 @fragment
@@ -113,17 +142,33 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     var sum_alpha = 0.0;
     var alpha_product = 1.0;
 
-    var normal = vec3<f32>(0.0);
+    // Read once, on the first layer that needs it.
+    var gradient = vec2<f32>(0.0);
+
+    var has_gradient = false;
+
+    var normal = vec3(0.0, 0.0, 1.0);
+
+    // Exaggeration the normal was computed with; reused while it stays the same.
+    var normal_exaggeration = -1.0;
 
     for (var i = 0u; i < shading.component_count; i = i + 1u) {
         let component = shading.components[i];
 
         var intensity = 0.0;
 
-        if is_nan {
-            normal = vec3(0.0, 0.0, 1.0);
-        } else if component.method != 4u && all(normal == vec3<f32>(0.0)) {
-            normal = get_normal(pos2, component.exaggeration);
+        let needs_normal = component.method < 4u || component.method == 5u;
+
+        if (needs_normal || component.method == 7u) && !has_gradient {
+            gradient = get_gradient(pos2);
+
+            has_gradient = true;
+        }
+
+        if !is_nan && needs_normal && component.exaggeration != normal_exaggeration {
+            normal = get_normal(gradient, pos2, component.exaggeration);
+
+            normal_exaggeration = component.exaggeration;
 
             if !(normal.x > -10.0 || normal.x < 10.0) {
                 normal = vec3(0.0, 0.0, 1.0);
@@ -191,9 +236,37 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
                 color = interpolate_color(component.colors, component.color_count, angle_0_2pi);
             }
+        // curvature
+        } else if component.method == 6u {
+            intensity = 1.0;
+
+            let curvature = get_curvature(pos2, component.exaggeration);
+
+            if curvature < 0.0 || curvature >= 0.0 {
+                color = interpolate_color(component.colors, component.color_count, curvature);
+            } else {
+                color = vec4(0.0);
+            }
+        // contours
+        } else if component.method == 7u {
+            // Pixels to the nearest contour: its height away over the gradient.
+            let off = abs(fract(elev / component.interval + 0.5) - 0.5) * component.interval;
+
+            let px = off / length(gradient);
+
+            // Antialiased over one pixel; NaN (no data, or flat on the line) draws nothing.
+            intensity = select(0.0, clamp(component.line_width * 0.5 + 0.5 - px, 0.0, 1.0), !is_nan && px >= 0.0);
+
+            color = component.colors[0].color;
         }
 
-        let modulated = component.contrast * (intensity - 0.5) + 0.5 + component.brightness;
+        // Contours take contrast and brightness on the line only, faded by its
+        // antialiasing; off it they must stay clear, not tint or erase the tile.
+        let modulated = select(
+            component.contrast * (intensity - 0.5) + 0.5 + component.brightness,
+            intensity * max(component.contrast * 0.5 + 0.5 + component.brightness, 0.0),
+            component.method == 7u
+        );
 
         let alpha = color.a * modulated;
 

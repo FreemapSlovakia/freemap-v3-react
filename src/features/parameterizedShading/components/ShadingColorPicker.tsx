@@ -50,15 +50,29 @@ export function ShadingColorPicker({
   const latestShadingRef = useRef(shading);
 
   const isGradientComponent =
-    component?.type === 'aspect' || component?.type === 'color-relief';
+    component?.type === 'aspect' ||
+    component?.type === 'color-relief' ||
+    component?.type === 'curvature';
 
   // For gradient components the stop value is stored in real units (aspect in
-  // radians, color-relief in meters). `max` scales those into the picker's 0-100%
-  // stops; `displayMax`/`unit` make the stop input read back in user-facing units.
+  // radians, color-relief in meters). `min`/`max` map those onto the picker's
+  // 0-100% stops; `display*`/`unit` make the stop input read back in user-facing units.
   const stopScale =
     component?.type === 'aspect'
-      ? { max: 2 * Math.PI, displayMax: 360, unit: '°' }
-      : { max: colorReliefMax, displayMax: colorReliefMax, unit: 'm' };
+      ? { min: 0, max: 2 * Math.PI, displayMin: 0, displayMax: 360, unit: '°' }
+      : component?.type === 'curvature'
+        ? // The picker keeps whole percents, so a narrow range for fine stops.
+          { min: -0.5, max: 0.5, displayMin: -50, displayMax: 50, unit: '%' }
+        : {
+            min: 0,
+            max: colorReliefMax,
+            displayMin: 0,
+            displayMax: colorReliefMax,
+            unit: 'm',
+          };
+
+  const toPercent = (value: number) =>
+    (100 * (value - stopScale.min)) / (stopScale.max - stopScale.min);
 
   // The picker takes its width in pixels; it spans the panel.
   const [box, setBox] = useState<HTMLDivElement | null>(null);
@@ -94,7 +108,7 @@ export function ShadingColorPicker({
         disableLightMode={dark ? true : undefined}
         {...(isGradientComponent
           ? {
-              stopMin: 0,
+              stopMin: stopScale.displayMin,
               stopMax: stopScale.displayMax,
               stopUnit: stopScale.unit,
             }
@@ -124,17 +138,14 @@ export function ShadingColorPicker({
 
           if (!component) {
             v = Color.rgb(shading.backgroundColor).string();
-          } else if (
-            component.type === 'aspect' ||
-            component.type === 'color-relief'
-          ) {
+          } else if (isGradientComponent) {
             v =
               'linear-gradient(90deg, ' +
               component.colorStops
                 .map(
                   (colorStop, i) =>
                     (activeStopIndex === i ? 'RGBA' : 'rgba') +
-                    `(${colorStop.color.join(',')}) ${(100 * colorStop.value) / stopScale.max}%`,
+                    `(${colorStop.color.join(',')}) ${toPercent(colorStop.value)}%`,
                 )
                 .join(', ') +
               ')';
@@ -155,7 +166,8 @@ export function ShadingColorPicker({
 
           if (picked.startsWith('linear-gradient(')) {
             colorStops = [
-              ...picked.matchAll(/(r)gba?\(([^)]+)\) (\d+(?:\.\d+)?%)/gi),
+              // Stops outside the picker's range come back below 0 or above 100%.
+              ...picked.matchAll(/(r)gba?\(([^)]+)\) (-?\d+(?:\.\d+)?%)/gi),
             ].map(([, r, rgba, stop], i) => {
               if (r === 'R') {
                 activeIndex = i;
@@ -168,7 +180,9 @@ export function ShadingColorPicker({
               }
 
               return {
-                value: (parseFloat(stop) / 100) * stopScale.max,
+                value:
+                  stopScale.min +
+                  (parseFloat(stop) / 100) * (stopScale.max - stopScale.min),
                 color: c,
               };
             });

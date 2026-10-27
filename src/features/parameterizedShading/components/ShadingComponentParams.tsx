@@ -18,7 +18,9 @@ type Param =
   | 'azimuth'
   | 'elevation'
   | 'contrast'
-  | 'brightness';
+  | 'brightness'
+  | 'interval'
+  | 'lineWidth';
 
 // A label may wrap onto a second line, so the input keeps to the bottom.
 const FIELD = 'd-flex flex-column justify-content-end';
@@ -195,7 +197,9 @@ export function ShadingComponentParams({
                     max={100}
                     value={component.exaggeration}
                     fractionDigits={1}
-                    onChange={(value) => patch('exaggeration', value)}
+                    onChange={(value) =>
+                      patch('exaggeration', Math.round(value * 10) / 10)
+                    }
                   />
                 }
                 min={-1}
@@ -259,6 +263,53 @@ export function ShadingComponentParams({
                   />
                 </Form.Group>
               )}
+            </div>
+          )}
+
+          {component.type === 'contours' && (
+            <div className={ROW}>
+              <Form.Group
+                controlId="contour-interval"
+                className={FIELD}
+                style={FIELD_STYLE}
+              >
+                <Form.Label>
+                  <Text m={sm} k="contourInterval" />
+                </Form.Label>
+
+                <NumberField
+                  min={0.5}
+                  max={10000}
+                  step={0.5}
+                  value={component.interval}
+                  fractionDigits={1}
+                  // To what the link keeps, so server tiles draw the same lines.
+                  onChange={(value) =>
+                    patch('interval', Math.round(value * 10) / 10)
+                  }
+                />
+              </Form.Group>
+
+              <Form.Group
+                controlId="contour-line-width"
+                className={FIELD}
+                style={FIELD_STYLE}
+              >
+                <Form.Label>
+                  <Text m={sm} k="lineWidth" />
+                </Form.Label>
+
+                <NumberField
+                  min={0.25}
+                  max={20}
+                  step={0.25}
+                  value={component.lineWidth}
+                  fractionDigits={2}
+                  onChange={(value) =>
+                    patch('lineWidth', Math.round(value * 100) / 100)
+                  }
+                />
+              </Form.Group>
             </div>
           )}
 
