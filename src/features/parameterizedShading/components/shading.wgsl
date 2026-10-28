@@ -12,7 +12,8 @@ struct Shading {
     component_count: u32,
     zoom: u32,
     tile_y: u32,
-    _pad: f32,
+    // Texture pixels beyond each tile edge.
+    border: u32,
     background_color: vec4<f32>,
     components: array<ShadingComponent, 8>,
 };
@@ -34,7 +35,7 @@ struct ShadingComponent {
     color_count: u32,
     interval: f32,
     line_width: f32,
-    _pad1: f32,
+    radius: u32,
     _pad2: vec2<f32>,
     colors: array<ColorStop, NUM_STOPS>
 };
@@ -96,39 +97,56 @@ fn get_normal(gradient: vec2<f32>, pos: vec2<i32>, exaggeration: f32) -> vec3<f3
 }
 
 // Ground size of a pixel shrinks with cos(latitude); the row's latitude comes
-// from the tile's Web Mercator y. The texture is the tile plus a 2 px buffer.
+// from the tile's Web Mercator y. The texture is the tile plus its border.
 fn ground_px(y: i32) -> f32 {
     let tiles = f32(1u << shading.zoom);
 
-    let rows = f32(textureDimensions(elev, 0).y - 4u);
+    let rows = f32(textureDimensions(elev, 0).y - 2u * shading.border);
 
-    let merc_y = PI * (1.0 - 2.0 * (f32(shading.tile_y) + (f32(y - 2) + 0.5) / rows) / tiles);
+    let merc_y = PI * (1.0 - 2.0 * (f32(shading.tile_y) + (f32(y - i32(shading.border)) + 0.5) / rows) / tiles);
 
     let lat = atan(sinh(merc_y));
 
     return EQUATOR_M * cos(lat) / rows / tiles;
 }
 
-// How far the 5×5 neighbourhood's mean lies above the centre, per pixel of
-// ground: positive in hollows, negative on ridges. Steady across zooms for sharp
-// creases, growing with pixel size on smooth ground. NaN when any of it has no data.
-fn get_curvature(pos: vec2<i32>, exaggeration: f32) -> f32 {
+// How far the mean height within `radius` pixels lies above the centre, per
+// pixel of ground: positive in hollows, negative on ridges. Pixels without data
+// are left out; NaN when the centre has none. Every pixel up to 8 away, sparser
+// beyond, as terrain-tiles samples.
+fn get_curvature(pos: vec2<i32>, exaggeration: f32, radius: u32) -> f32 {
+    let r = i32(min(radius, shading.border));
+
+    let step = max((r + 7) / 8, 1);
+
+    let reach = r / step;
+
     var sum = 0.0;
 
-    for (var dy = -2; dy <= 2; dy++) {
-        for (var dx = -2; dx <= 2; dx++) {
-            sum += get_elev(pos + vec2(dx, dy));
+    var n = 0.0;
+
+    for (var i = -reach; i <= reach; i++) {
+        for (var j = -reach; j <= reach; j++) {
+            let h = get_elev(pos + vec2(j, i) * step);
+
+            let ok = h < 0.0 || h >= 0.0;
+
+            sum += select(0.0, h, ok);
+
+            n += select(0.0, 1.0, ok);
         }
     }
 
     let centre = get_elev(pos);
 
-    return ((sum - centre) / 24.0 - centre) / ground_px(pos.y) * exaggeration;
+    return ((sum - centre) / (n - 1.0) - centre) / ground_px(pos.y) * exaggeration;
 }
 
 @fragment
 fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
-    let pos2 = vec2<i32>(i32(pos.x + 2), i32(pos.y + 2));
+    let border = f32(shading.border);
+
+    let pos2 = vec2<i32>(i32(pos.x + border), i32(pos.y + border));
 
     var elev = get_elev(pos2); // TODO make lazy-memo
 
@@ -240,7 +258,7 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
         } else if component.method == 6u {
             intensity = 1.0;
 
-            let curvature = get_curvature(pos2, component.exaggeration);
+            let curvature = get_curvature(pos2, component.exaggeration, component.radius);
 
             if curvature < 0.0 || curvature >= 0.0 {
                 color = interpolate_color(component.colors, component.color_count, curvature);

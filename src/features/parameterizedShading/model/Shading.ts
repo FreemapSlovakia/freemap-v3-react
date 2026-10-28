@@ -15,6 +15,11 @@ export const SHADING_COMPONENT_TYPES = [
 /** What the shader holds per component (`NUM_STOPS` in `shading.wgsl`). */
 export const MAX_COLOR_STOPS = 16;
 
+/** Curvature's neighbourhood, pixels each way: by default 5×5. */
+export const DEFAULT_CURVATURE_RADIUS = 2;
+
+export const MAX_CURVATURE_RADIUS = 32;
+
 export const ColorSchema = z.tuple([
   z.number(),
   z.number(),
@@ -95,11 +100,15 @@ export const ShadingComponentSchema = z.discriminatedUnion('type', [
     ...ShadingComponentBaseShape,
     type: z.literal('aspect'),
   }),
-  /** Stops over the neighbourhood's mean height above the point, per metre of ground. */
+  /**
+   * Stops over the mean height within `radius` pixels above the point, per
+   * metre of ground: a local relief model.
+   */
   z.object({
     ...ShadingComponentBaseShape,
     type: z.literal('curvature'),
     exaggeration: z.number(),
+    radius: z.number().default(DEFAULT_CURVATURE_RADIUS),
   }),
   /** A line every `interval` metres, `lineWidth` pixels wide. */
   z.object({
@@ -198,6 +207,11 @@ export function serializeShading(shading: Shading) {
       case 'curvature':
         sub.push(component.exaggeration.toFixed(1));
 
+        // Only when not the default, so links from before it still read.
+        if (component.radius !== DEFAULT_CURVATURE_RADIUS) {
+          sub.push(component.radius.toFixed(0));
+        }
+
         for (const cs of component.colorStops) {
           sub.push(cs.value.toFixed(3));
           sub.push(Color(cs.color).hexa().slice(1));
@@ -258,11 +272,16 @@ export function parseShading(serialized: string): Shading {
         return undefined;
       }
 
-      const colors = params.splice(PARAM_COUNTS[type]);
+      // A curvature radius makes the count after the exaggeration odd.
+      const colors = params.splice(
+        type === 'curvature' && params.length % 2 === 0
+          ? 2
+          : PARAM_COUNTS[type],
+      );
 
       // Links from before exaggeration have one parameter fewer; their last
-      // one is still the colour.
-      if (colors.length === 0) {
+      // one is still the colour. Curvature came later.
+      if (colors.length === 0 && type !== 'curvature') {
         const last = params.pop();
 
         if (last !== undefined) {
@@ -320,8 +339,24 @@ export function parseShading(serialized: string): Shading {
             exaggeration: Number(params.shift()),
           };
         case 'slope-igor':
-        case 'curvature':
           return { ...base, type, exaggeration: Number(params.shift()) };
+        case 'curvature': {
+          const exaggeration = Number(params.shift());
+
+          const radius = Math.round(
+            Number(params.shift() ?? DEFAULT_CURVATURE_RADIUS),
+          );
+
+          return {
+            ...base,
+            type,
+            exaggeration,
+            // As the server accepts it.
+            radius: Number.isFinite(radius)
+              ? Math.min(Math.max(radius, 1), MAX_CURVATURE_RADIUS)
+              : DEFAULT_CURVATURE_RADIUS,
+          };
+        }
         case 'contours':
           return {
             ...base,

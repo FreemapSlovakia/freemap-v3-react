@@ -1,7 +1,8 @@
-import type {
-  ColorStop,
-  ShadingComponent,
-  ShadingComponentType,
+import {
+  type ColorStop,
+  DEFAULT_CURVATURE_RADIUS,
+  type ShadingComponent,
+  type ShadingComponentType,
 } from './Shading.js';
 
 /** Hollows teal, ridges cream, flat ground clear. */
@@ -60,9 +61,16 @@ export function createDefaultShadingComponent(
       ? { type, ...base, elevation: 45 * (Math.PI / 180), exaggeration: 1 }
       : type === 'hillshade-igor'
         ? { type, ...base, azimuth: 315 * (Math.PI / 180), exaggeration: 1 }
-        : type === 'slope-igor' || type === 'curvature'
+        : type === 'slope-igor'
           ? { type, ...base, exaggeration: 1 }
-          : type === 'contours'
-            ? { type, ...base, interval: 20, lineWidth: 1 }
-            : { type, ...base };
+          : type === 'curvature'
+            ? {
+                type,
+                ...base,
+                exaggeration: 1,
+                radius: DEFAULT_CURVATURE_RADIUS,
+              }
+            : type === 'contours'
+              ? { type, ...base, interval: 20, lineWidth: 1 }
+              : { type, ...base };
 }

@@ -4,6 +4,7 @@ import {
   type EventedProps,
   updateGridLayer,
 } from '@react-leaflet/core';
+import { TERRAIN_TILES_URL } from '@shared/mapDefinitions.js';
 import { noteTileCodes } from '@shared/tileAttribution.js';
 import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
@@ -42,6 +43,19 @@ type CanvasEx = HTMLCanvasElement & {
   _gpuCleanup?: () => void;
   _gpuUnloaded?: boolean;
 };
+
+// Elevation borders a tile is fetched with, so a radius change refetches only
+// when it outgrows the one at hand.
+const BORDERS = [2, 8, 16, 32];
+
+/** The border `shading` reads beyond a tile's edge, rounded up to `BORDERS`. */
+function elevationBorder(shading: Shading) {
+  const radius = Math.max(
+    ...shading.components.map((c) => (c.type === 'curvature' ? c.radius : 0)),
+  );
+
+  return BORDERS.find((b) => b >= radius) ?? BORDERS[BORDERS.length - 1];
+}
 
 class TileNotFoundError extends Error {}
 
@@ -295,7 +309,15 @@ class LShadingLayer extends LGridLayer {
     // zoomOffset-adjusted `zoom` which is only used for URL templating.
     const key = `${x}/${y}/${coords.z}`;
 
-    const url = Util.template(this._options.url, { x, y, z: zoom });
+    const border = elevationBorder(this.shading);
+
+    const templated = Util.template(this._options.url, { x, y, z: zoom });
+
+    // Only terrain-tiles serves a border other than 2 px.
+    const url =
+      border > 2 && templated.startsWith(`${TERRAIN_TILES_URL}/`)
+        ? `${templated}${templated.includes('?') ? '&' : '?'}buffer=${border}`
+        : templated;
 
     const controller = new AbortController();
 
@@ -352,6 +374,9 @@ class LShadingLayer extends LGridLayer {
     if (!Number.isInteger(tileSize)) {
       throw new Error('Tile is not square');
     }
+
+    // Other sources are taken to hold a 2 px border.
+    const tileBorder = tileSize === 256 + 2 * border ? border : 2;
 
     const texture = device.createTexture({
       size: [tileSize, tileSize],
@@ -424,7 +449,7 @@ class LShadingLayer extends LGridLayer {
       dw.u32(shading.components.length);
       dw.u32(zoom);
       dw.u32(y);
-      dw.pad32(1);
+      dw.u32(tileBorder);
 
       writeColor(shading.backgroundColor);
 
@@ -440,7 +465,8 @@ class LShadingLayer extends LGridLayer {
         dw.u32(stops.length);
         dw.f32('interval' in component ? component.interval : NaN);
         dw.f32('lineWidth' in component ? component.lineWidth : NaN);
-        dw.pad32(3);
+        dw.u32('radius' in component ? component.radius : 0);
+        dw.pad32(2);
 
         for (const colorStop of stops) {
           dw.f32(colorStop.value);
@@ -617,6 +643,11 @@ export default createTileLayerComponent<LShadingLayer, Props>(
 
     if (JSON.stringify(props.shading) !== JSON.stringify(prevProps.shading)) {
       instance.setShading(props.shading);
+
+      // Tiles fetched with a narrower border can't serve the wider radius.
+      if (elevationBorder(props.shading) > elevationBorder(prevProps.shading)) {
+        instance.redraw();
+      }
     } else if (
       (
         [

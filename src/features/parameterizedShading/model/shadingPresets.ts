@@ -1,5 +1,6 @@
 import {
   type Color,
+  DEFAULT_CURVATURE_RADIUS,
   isOpaqueShading,
   type Shading,
   type ShadingComponent,
@@ -150,6 +151,7 @@ const curvature = (
   type: 'curvature',
   ...levels,
   exaggeration: 1,
+  radius: DEFAULT_CURVATURE_RADIUS,
   colorStops: [
     { value: -extent, color: ridge },
     { value: -gap, color: [ridge[0], ridge[1], ridge[2], 0] },

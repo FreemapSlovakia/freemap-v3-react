@@ -38,6 +38,40 @@ describe('gradient on a single-colour type', () => {
     expect(c?.colorStops).toHaveLength(1);
   });
 
+  it.each([
+    '00000000!curvature_1.0_-0.070_EED6B0FF_0.070_2E5866FF',
+    '00000000!curvature_1.0_16_-0.070_EED6B0FF_0.070_2E5866FF',
+  ])('%s reads back as written', (s) => {
+    expect(serializeShading(parseShading(s))).toBe(s);
+  });
+
+  it('reads a curvature radius only where written', () => {
+    const radius = (s: string) => {
+      const [c] = parseShading(`00000000!curvature_1.0_${s}`).components;
+
+      return c?.type === 'curvature' ? c.radius : undefined;
+    };
+
+    expect(radius('-0.070_EED6B0FF_0.070_2E5866FF')).toBe(2);
+
+    expect(radius('16_-0.070_EED6B0FF_0.070_2E5866FF')).toBe(16);
+
+    expect(radius('16')).toBe(16);
+  });
+
+  it.each([
+    ['50', 32],
+    ['0', 1],
+    ['16.4', 16],
+    ['x', 2],
+  ])('brings radius %s to %s, as the server takes it', (r, expected) => {
+    const [c] = parseShading(
+      `00000000!curvature_1.0_${r}_-0.070_EED6B0FF_0.070_2E5866FF`,
+    ).components;
+
+    expect(c?.type === 'curvature' && c.radius).toBe(expected);
+  });
+
   it('reads one colour as before', () => {
     const [c] = parseShading('00000000!slope-igor_2.0_8A2408FF').components;
 

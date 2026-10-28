@@ -24,6 +24,7 @@ export type ShadingMessages = {
   repeats: string;
   contourInterval: string;
   lineWidth: string;
+  radius: string;
   /** The colour picker's switch between one colour and a gradient. */
   solid: string;
   gradient: string;

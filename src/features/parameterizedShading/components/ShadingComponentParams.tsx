@@ -9,8 +9,12 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Accordion, Form } from 'react-bootstrap';
-import type { Shading, ShadingComponent } from '../model/Shading.js';
+import { Accordion, Form, InputGroup } from 'react-bootstrap';
+import {
+  MAX_CURVATURE_RADIUS,
+  type Shading,
+  type ShadingComponent,
+} from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 
 type Param =
@@ -20,13 +24,14 @@ type Param =
   | 'contrast'
   | 'brightness'
   | 'interval'
-  | 'lineWidth';
+  | 'lineWidth'
+  | 'radius';
 
 // A label may wrap onto a second line, so the input keeps to the bottom.
 const FIELD = 'd-flex flex-column justify-content-end';
 
-// An equal share, but never narrower than a value such as 315.5 needs.
-const FIELD_STYLE = { flex: '1 1 5.5rem', minWidth: '5.5rem' };
+// An equal share, but never narrower than a value such as 315.5 and its unit need.
+const FIELD_STYLE = { flex: '1 1 8rem', minWidth: '8rem' };
 
 // Fields side by side; one too narrow for its value moves to the next line.
 const ROW = 'd-flex flex-wrap gap-2';
@@ -39,6 +44,8 @@ type NumberFieldProps = {
   step?: number;
   /** Small, beside a slider's name. */
   compact?: boolean;
+  /** Shown after the value. */
+  unit?: string;
   onChange: (value: number) => void;
 };
 
@@ -52,11 +59,12 @@ function NumberField({
   max,
   step,
   compact,
+  unit,
   onChange,
 }: NumberFieldProps): ReactElement {
   const [draft, setDraft] = useState<{ text: string; value: number }>();
 
-  return (
+  const control = (
     <Form.Control
       type="number"
       size={compact ? 'sm' : undefined}
@@ -87,6 +95,15 @@ function NumberField({
       }}
       onBlur={() => setDraft(undefined)}
     />
+  );
+
+  return unit ? (
+    <InputGroup>
+      {control}
+      <InputGroup.Text>{unit}</InputGroup.Text>
+    </InputGroup>
+  ) : (
+    control
   );
 }
 
@@ -235,6 +252,7 @@ export function ShadingComponentParams({
                     step={5}
                     value={(component.azimuth / Math.PI) * 180}
                     fractionDigits={1}
+                    unit="°"
                     onChange={(value) =>
                       patch('azimuth', (value / 180) * Math.PI)
                     }
@@ -257,12 +275,37 @@ export function ShadingComponentParams({
                     max={90}
                     value={(component.elevation / Math.PI) * 180}
                     fractionDigits={1}
+                    unit="°"
                     onChange={(value) =>
                       patch('elevation', (value / 180) * Math.PI)
                     }
                   />
                 </Form.Group>
               )}
+            </div>
+          )}
+
+          {component.type === 'curvature' && (
+            <div className={ROW}>
+              <Form.Group
+                controlId="curvature-radius"
+                className={FIELD}
+                style={FIELD_STYLE}
+              >
+                <Form.Label>
+                  <Text m={sm} k="radius" />
+                </Form.Label>
+
+                <NumberField
+                  min={1}
+                  max={MAX_CURVATURE_RADIUS}
+                  step={1}
+                  value={component.radius}
+                  fractionDigits={0}
+                  unit="px"
+                  onChange={(value) => patch('radius', Math.round(value))}
+                />
+              </Form.Group>
             </div>
           )}
 
@@ -283,6 +326,7 @@ export function ShadingComponentParams({
                   step={0.5}
                   value={component.interval}
                   fractionDigits={1}
+                  unit="m"
                   // To what the link keeps, so server tiles draw the same lines.
                   onChange={(value) =>
                     patch('interval', Math.round(value * 10) / 10)
@@ -305,6 +349,7 @@ export function ShadingComponentParams({
                   step={0.25}
                   value={component.lineWidth}
                   fractionDigits={2}
+                  unit="px"
                   onChange={(value) =>
                     patch('lineWidth', Math.round(value * 100) / 100)
                   }
