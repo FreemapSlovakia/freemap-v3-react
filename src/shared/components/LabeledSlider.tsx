@@ -7,6 +7,8 @@ type Props = {
   id: string;
   /** Names the setting, above the slider. */
   label: ReactNode;
+  /** Before the name. */
+  icon?: ReactNode;
   /** Says where it stands, beside the name. */
   valueLabel: ReactNode;
   /** What the setting means, behind the name, for one whose name can't carry it. */
@@ -53,6 +55,7 @@ function withHint(label: ReactNode, hint: ReactNode): ReactNode {
 export function LabeledSlider({
   id,
   label,
+  icon,
   valueLabel,
   hint,
   min,
@@ -68,6 +71,7 @@ export function LabeledSlider({
           labels with a column of centred values between them. */}
       <div className="d-flex justify-content-between align-items-baseline gap-2">
         <Form.Label className="mb-0" htmlFor={id}>
+          {icon && <>{icon} </>}
           {withHint(label, hint)}
         </Form.Label>
 

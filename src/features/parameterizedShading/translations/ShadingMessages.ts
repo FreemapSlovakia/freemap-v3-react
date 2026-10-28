@@ -14,7 +14,6 @@ export type ShadingMessages = {
   exaggerationHint: string;
   azimuth: string;
   lightElevation: string;
-  parameters: string;
   contrast: string;
   brightness: string;
   minElevation: string;
@@ -36,6 +35,8 @@ export type ShadingMessages = {
   /** The colour picker's switch between one colour and a gradient. */
   solid: string;
   gradient: string;
+  /** Names the colour picker of a layer coloured by stops. */
+  colorGradient: string;
   presets: string;
   addToExisting: string;
   withBackground: string;

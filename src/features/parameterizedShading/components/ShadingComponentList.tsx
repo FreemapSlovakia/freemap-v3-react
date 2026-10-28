@@ -1,14 +1,18 @@
 import { Text } from '@features/l10n/Text.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import Color from 'color';
 import type { ReactElement } from 'react';
 import { ListGroup } from 'react-bootstrap';
+import { FaExclamationTriangle } from 'react-icons/fa';
 import {
+  type RadiusUnit,
   type Shading,
   type ShadingComponent,
   swatchColor,
 } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 import classes from './ShadingControl.module.css';
+import { radiusAt, useCentreTile } from './useCentreTile.js';
 
 /**
  * A layer's colours: its one colour, its stops left to right, or aspect's
@@ -36,6 +40,26 @@ function swatchBackground({ type, colorStops }: ShadingComponent) {
   return type === 'aspect'
     ? `conic-gradient(${stops})`
     : `linear-gradient(90deg, ${stops})`;
+}
+
+/** Flags a metre radius that at the map's zoom falls outside the pixels a tile holds. */
+function RadiusWarning(props: {
+  radius: number;
+  radiusUnit: RadiusUnit;
+}): ReactElement | null {
+  const sm = useShadingMessages();
+
+  const { z, y } = useCentreTile();
+
+  const { px, drawn } = radiusAt(props, z, y);
+
+  return px === drawn ? null : (
+    <LongPressTooltip label={sm?.radiusOutOfRange({ px, drawn })}>
+      {({ props }) => (
+        <FaExclamationTriangle className="text-warning ms-2" {...props} />
+      )}
+    </LongPressTooltip>
+  );
 }
 
 type Props = {
@@ -80,6 +104,13 @@ export function ShadingComponentList({
           />
           <span>
             <Text m={sm} k={`types.${component.type}`} />
+
+            {'radius' in component && (
+              <RadiusWarning
+                radius={component.radius}
+                radiusUnit={component.radiusUnit}
+              />
+            )}
           </span>
           <small>
             {(component.type === 'hillshade-classic' ||

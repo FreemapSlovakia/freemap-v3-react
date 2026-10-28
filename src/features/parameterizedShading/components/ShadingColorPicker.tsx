@@ -4,6 +4,7 @@ import ColorPicker from '@zdila/react-gradient-color-picker';
 import Color from 'color';
 import { produce } from 'immer';
 import { type ReactElement, useLayoutEffect, useRef, useState } from 'react';
+import { MdGradient, MdPalette } from 'react-icons/md';
 import {
   type ColorStop,
   type Color as ColorType,
@@ -142,8 +143,19 @@ export function ShadingColorPicker({
 
   return (
     <div ref={setBox}>
+      <div className="form-label mt-3">
+        {isGradientComponent ? (
+          <>
+            <MdGradient /> {sm?.colorGradient}
+          </>
+        ) : (
+          <>
+            <MdPalette /> {sm?.color}
+          </>
+        )}
+      </div>
+
       <ColorPicker
-        className="mt-3"
         style={PICKER_STYLE}
         // It follows the OS scheme otherwise, not the app's.
         disableDarkMode={dark ? undefined : true}
