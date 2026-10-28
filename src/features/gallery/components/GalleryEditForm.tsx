@@ -158,7 +158,11 @@ export function GalleryEditForm({
         </Form.Group>
       )}
 
-      <Form.Group controlId="location" className="mb-3">
+      <Form.Group
+        controlId="location"
+        className="mb-3"
+        data-position-pick={id ?? -1}
+      >
         <InputGroup>
           <Form.Control
             type="text"

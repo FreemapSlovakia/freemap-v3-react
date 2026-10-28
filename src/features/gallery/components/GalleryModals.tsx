@@ -3,7 +3,7 @@ import { useMap } from '@features/map/hooks/useMap.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LeafletMouseEvent } from 'leaflet';
-import { type ReactElement, useEffect, useLayoutEffect, useRef } from 'react';
+import { type ReactElement, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../model/actions.js';
 import './gallery.css';
@@ -23,9 +23,11 @@ const galleryUploadModalFactory = () =>
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();
 
-  const isPickingPosition = useAppSelector(
-    (state) => state.gallery.pickingPositionForId !== null,
+  const pickingPositionForId = useAppSelector(
+    (state) => state.gallery.pickingPositionForId,
   );
+
+  const isPickingPosition = pickingPositionForId !== null;
 
   const showGalleryViewer = useAppSelector(showGalleryViewerSelector);
 
@@ -57,34 +59,25 @@ export function GalleryModals(): ReactElement {
     };
   }, [dispatch, isPickingPosition, map]);
 
-  const scrollTop = useRef(-1);
+  const pickedItemId = useRef<number | null>(null);
 
-  const prevPickingPosition = useRef(false);
-
-  // preserving upload modal scroll
-  useLayoutEffect(() => {
-    if (!isPickingPosition && prevPickingPosition.current) {
-      const el = document.querySelector('.modal');
-
-      if (el) {
-        el.scrollTop = scrollTop.current;
+  // The reopened modal is a fresh instance scrolled to the top; bring back the
+  // position field just picked for. A passive effect runs after the upload
+  // items' own effects have appended their preview canvases.
+  useEffect(() => {
+    if (pickingPositionForId !== null) {
+      pickedItemId.current = pickingPositionForId;
+    } else if (pickedItemId.current !== null) {
+      // picking can also end without its modal coming back
+      if (showUploadModal || showGalleryViewer) {
+        document
+          .querySelector(`[data-position-pick="${pickedItemId.current}"]`)
+          ?.scrollIntoView({ block: 'center' });
       }
+
+      pickedItemId.current = null;
     }
-
-    prevPickingPosition.current = isPickingPosition;
-
-    if (showUploadModal) {
-      const to = setInterval(() => {
-        const el = document.querySelector('.modal');
-
-        if (el instanceof HTMLElement) {
-          scrollTop.current = el.scrollTop;
-        }
-      }, 500);
-
-      return () => clearInterval(to);
-    }
-  }, [isPickingPosition, showUploadModal]);
+  }, [pickingPositionForId, showUploadModal, showGalleryViewer]);
 
   return (
     <>
