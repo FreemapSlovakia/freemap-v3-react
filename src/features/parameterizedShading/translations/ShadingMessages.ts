@@ -65,6 +65,10 @@ export type ShadingMessages = {
     lidar: string;
     microRelief: string;
     ridgesValleys: string;
+    skyView: string;
+    openness: string;
+    archaeological: string;
+    snow: string;
     contour: string;
     contourLines: string;
     fog: string;

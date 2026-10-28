@@ -4,6 +4,7 @@ import {
   isOpaqueShading,
   type Shading,
   type ShadingComponent,
+  type SkyMode,
 } from './Shading.js';
 
 export const MAP_PRESETS = [
@@ -19,6 +20,9 @@ export const MAP_PRESETS = [
   'lidar',
   'microRelief',
   'ridgesValleys',
+  'skyView',
+  'openness',
+  'archaeological',
   'contourLines',
   'contour',
   'fog',
@@ -31,6 +35,7 @@ export const ARTISTIC_PRESETS = [
   'moonlight',
   'golden',
   'glacier',
+  'snow',
   'mars',
   'ink',
   'blueprint',
@@ -159,6 +164,22 @@ const curvature = (
     { value: gap, color: [hollow[0], hollow[1], hollow[2], 0] },
     { value: extent, color: hollow },
   ],
+});
+
+/** A sky view walked out `radius` pixels, coloured by stops over its value. */
+const skyView = (
+  skyMode: SkyMode,
+  radius: number,
+  stops: [number, Color][],
+): ShadingComponent => ({
+  id: 0,
+  type: 'sky-view',
+  ...levels,
+  skyMode,
+  exaggeration: 1,
+  radius,
+  radiusUnit: 'px',
+  colorStops: stops.map(([value, color]) => ({ value, color })),
 });
 
 const contours = (
@@ -402,19 +423,94 @@ function buildOwn(preset: ShadingPreset, p: PresetParams): Shading {
       };
 
     // Micro-relief: hollows teal and ridges cream whichever way they face,
-    // moderate slopes brown and steep ones red.
+    // valley floors teal where the sky closes in, moderate slopes brown and
+    // steep ones red.
     case 'lidar':
       return {
         backgroundColor: [0x9e, 0x95, 0x91, 1],
         components: [
           slopeRamp([
             [0, [0x9e, 0x95, 0x91, 0]],
-            [8, [0xa8, 0x7a, 0x60, 0.4]],
-            [20, [0xa0, 0x60, 0x3a, 0.7]],
-            [32, [0x8a, 0x1e, 0x06, 1]],
+            [5, [0xa8, 0x7a, 0x60, 0.35]],
+            [15, [0xa0, 0x60, 0x3a, 0.65]],
+            [30, [0x8a, 0x1e, 0x06, 0.95]],
           ]),
-          curvature(0.07, 0.007, [0xee, 0xd6, 0xb0, 1], [0x2e, 0x58, 0x66, 1]),
-          igor(315, [0x2e, 0x58, 0x66, 0.35]),
+          skyView('svf', 16, [
+            [0.75, [0x2e, 0x58, 0x66, 0.8]],
+            [0.97, [0x2e, 0x58, 0x66, 0]],
+          ]),
+          curvature(
+            0.07,
+            0.007,
+            [0xee, 0xd6, 0xb0, 0.85],
+            [0x2e, 0x58, 0x66, 1],
+          ),
+          igor(315, [0x2e, 0x58, 0x66, 0.25]),
+        ],
+      };
+
+    // The sky-view factor as archaeology shows it: the less sky, the darker.
+    // Most lowland lies above 0.8, mountains far below, hence the bend.
+    case 'skyView':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          skyView('svf', 16, [
+            [0.4, [0, 0, 0, 0.95]],
+            [0.8, [0, 0, 0, 0.6]],
+            [0.995, [0, 0, 0, 0]],
+          ]),
+        ],
+      };
+
+    // Positive openness: hollows dark and ridges light, on any slope.
+    case 'openness':
+      return {
+        backgroundColor: [0xa0, 0xa0, 0xa0, 1],
+        components: [
+          skyView('pos', 16, [
+            [78, [0, 0, 0, 0.85]],
+            [89, [0, 0, 0, 0]],
+            [91, [255, 255, 255, 0]],
+            [100, [255, 255, 255, 0.9]],
+          ]),
+        ],
+      };
+
+    // After the Visualization for Archaeological Topography: slope, sky view,
+    // openness and a hillshade blended in grey.
+    case 'archaeological':
+      return {
+        backgroundColor: [255, 255, 255, 1],
+        components: [
+          slopeRamp([
+            [0, [0, 0, 0, 0]],
+            [60, [0, 0, 0, 0.45]],
+          ]),
+          skyView('svf', 16, [
+            [0.6, [0, 0, 0, 0.5]],
+            [1, [0, 0, 0, 0]],
+          ]),
+          skyView('pos', 8, [
+            [75, [0, 0, 0, 0.35]],
+            [90, [0, 0, 0, 0]],
+            [105, [255, 255, 255, 0.5]],
+          ]),
+          igor(315, [0, 0, 0, 0.2]),
+        ],
+      };
+
+    // Blue where the sky closes in, as shade on snow.
+    case 'snow':
+      return {
+        backgroundColor: [255, 255, 255, 1],
+        components: [
+          skyView('svf', 16, [
+            [0.4, [0x2a, 0x4a, 0x7a, 0.95]],
+            [0.8, [0x2a, 0x4a, 0x7a, 0.6]],
+            [0.995, [0x2a, 0x4a, 0x7a, 0]],
+          ]),
+          igor(315, [0x6a, 0x8a, 0xb4, 0.4]),
         ],
       };
 
@@ -496,6 +592,9 @@ const OPTIONAL_BACKGROUND: ReadonlySet<ShadingPreset> = new Set([
   'ink',
   'watercolor',
   'ridgesValleys',
+  'openness',
+  'archaeological',
+  'snow',
 ]);
 
 /** Whether the preset covers what is beneath even without a background asked for. */
