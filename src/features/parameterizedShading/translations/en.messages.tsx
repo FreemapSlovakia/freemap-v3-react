@@ -28,6 +28,14 @@ const en: ShadingMessages = {
   contourInterval: 'Contour interval',
   lineWidth: 'Line width',
   radius: 'Radius',
+  radiusOutOfRange: ({ px, drawn }) =>
+    `At this zoom that is ${px} px, outside 1–64 px; drawn as ${drawn} px.`,
+  skyMode: 'Show',
+  skyModes: {
+    svf: 'Sky-view factor',
+    pos: 'Positive openness',
+    neg: 'Negative openness',
+  },
   solid: 'Single colour',
   gradient: 'Gradient',
   presets: 'Presets',
@@ -73,6 +81,7 @@ const en: ShadingMessages = {
     aspect: 'Aspect',
     curvature: 'Curvature',
     contours: 'Contour lines',
+    'sky-view': 'Sky view / openness',
   },
 };
 

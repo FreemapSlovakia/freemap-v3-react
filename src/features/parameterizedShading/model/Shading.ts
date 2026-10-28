@@ -10,6 +10,7 @@ export const SHADING_COMPONENT_TYPES = [
   'aspect',
   'curvature',
   'contours',
+  'sky-view',
 ] as const;
 
 /** What the shader holds per component (`NUM_STOPS` in `shading.wgsl`). */
@@ -18,7 +19,43 @@ export const MAX_COLOR_STOPS = 16;
 /** Curvature's neighbourhood, pixels each way: by default 5×5. */
 export const DEFAULT_CURVATURE_RADIUS = 2;
 
-export const MAX_CURVATURE_RADIUS = 32;
+/** The widest neighbourhood in pixels: the widest border terrain-tiles serves. */
+export const MAX_RADIUS_PX = 64;
+
+export const MAX_RADIUS_M = 10_000;
+
+export const RADIUS_UNITS = ['px', 'm'] as const;
+
+export type RadiusUnit = (typeof RADIUS_UNITS)[number];
+
+/** Sky-view factor (0–1), or positive or negative openness (degrees). */
+export const SKY_MODES = ['svf', 'pos', 'neg'] as const;
+
+export type SkyMode = (typeof SKY_MODES)[number];
+
+/** Ground metres per pixel along the middle of tile row `y` at zoom `z`, as terrain-tiles takes it. */
+export function centreGroundPx(z: number, y: number) {
+  const px = (2 * Math.PI * 6378137) / 256 / 2 ** z;
+
+  const mercY = Math.PI * (1 - (2 * (y + 0.5)) / 2 ** z);
+
+  return px * Math.cos(Math.atan(Math.sinh(mercY)));
+}
+
+/** A metre radius in pixels at tile `z`/`y`, unclamped. */
+export const metresToPx = (metres: number, z: number, y: number) =>
+  Math.round(metres / centreGroundPx(z, y));
+
+/** A layer's radius in pixels at tile `z`/`y`, as terrain-tiles reads it. */
+export function radiusPx(
+  c: { radius: number; radiusUnit: RadiusUnit },
+  z: number,
+  y: number,
+) {
+  return c.radiusUnit === 'px'
+    ? c.radius
+    : Math.min(Math.max(metresToPx(c.radius, z, y), 1), MAX_RADIUS_PX);
+}
 
 export const ColorSchema = z.tuple([
   z.number(),
@@ -67,6 +104,12 @@ const ShadingComponentBaseShape = {
   colorStops: z.array(ColorStopSchema),
 };
 
+/** How far a neighbourhood reaches each way, in pixels or ground metres. */
+const RadiusShape = {
+  radius: z.number().default(DEFAULT_CURVATURE_RADIUS),
+  radiusUnit: z.enum(RADIUS_UNITS).default('px'),
+};
+
 export const ShadingComponentSchema = z.discriminatedUnion('type', [
   z.object({
     ...ShadingComponentBaseShape,
@@ -101,14 +144,14 @@ export const ShadingComponentSchema = z.discriminatedUnion('type', [
     type: z.literal('aspect'),
   }),
   /**
-   * Stops over the mean height within `radius` pixels above the point, per
-   * metre of ground: a local relief model.
+   * Stops over the mean height within `radius` above the point, per metre of
+   * ground: a local relief model.
    */
   z.object({
     ...ShadingComponentBaseShape,
     type: z.literal('curvature'),
     exaggeration: z.number(),
-    radius: z.number().default(DEFAULT_CURVATURE_RADIUS),
+    ...RadiusShape,
   }),
   /** A line every `interval` metres, `lineWidth` pixels wide. */
   z.object({
@@ -116,6 +159,14 @@ export const ShadingComponentSchema = z.discriminatedUnion('type', [
     type: z.literal('contours'),
     interval: z.number(),
     lineWidth: z.number(),
+  }),
+  /** Stops over what the horizon within `radius` leaves of the sky. */
+  z.object({
+    ...ShadingComponentBaseShape,
+    type: z.literal('sky-view'),
+    skyMode: z.enum(SKY_MODES),
+    exaggeration: z.number(),
+    ...RadiusShape,
   }),
 ]);
 
@@ -164,12 +215,16 @@ export function serializeShading(shading: Shading) {
       if (component.colorStops.length === 1) {
         sub.push(Color(component.colorStops[0].color).hexa().slice(1));
       } else {
-        for (const cs of component.colorStops) {
-          sub.push(cs.value.toFixed(3));
-          sub.push(Color(cs.color).hexa().slice(1));
-        }
+        stopPairs();
       }
     };
+
+    function stopPairs() {
+      for (const cs of component.colorStops) {
+        sub.push(cs.value.toFixed(3));
+        sub.push(Color(cs.color).hexa().slice(1));
+      }
+    }
 
     switch (component.type) {
       case 'hillshade-classic':
@@ -208,14 +263,20 @@ export function serializeShading(shading: Shading) {
         sub.push(component.exaggeration.toFixed(1));
 
         // Only when not the default, so links from before it still read.
-        if (component.radius !== DEFAULT_CURVATURE_RADIUS) {
-          sub.push(component.radius.toFixed(0));
+        if (
+          component.radius !== DEFAULT_CURVATURE_RADIUS ||
+          component.radiusUnit !== 'px'
+        ) {
+          sub.push(serializeRadius(component));
         }
 
-        for (const cs of component.colorStops) {
-          sub.push(cs.value.toFixed(3));
-          sub.push(Color(cs.color).hexa().slice(1));
-        }
+        stopPairs();
+        break;
+      case 'sky-view':
+        sub.push(component.skyMode);
+        sub.push(component.exaggeration.toFixed(1));
+        sub.push(serializeRadius(component));
+        stopPairs();
         break;
     }
 
@@ -223,6 +284,34 @@ export function serializeShading(shading: Shading) {
   }
 
   return parts.join('!');
+}
+
+/** Pixels as a whole number, metres with an `m`. */
+const serializeRadius = (c: { radius: number; radiusUnit: RadiusUnit }) =>
+  c.radiusUnit === 'm' ? `${c.radius.toFixed(1)}m` : c.radius.toFixed(0);
+
+/** As terrain-tiles accepts it: whole pixels 1…64, or metres up to 10 km. */
+function parseRadius(s: string | undefined): {
+  radius: number;
+  radiusUnit: RadiusUnit;
+} {
+  const metres = s?.endsWith('m');
+
+  const n = Number(metres ? s?.slice(0, -1) : s);
+
+  if (s === undefined || !Number.isFinite(n)) {
+    return { radius: DEFAULT_CURVATURE_RADIUS, radiusUnit: 'px' };
+  }
+
+  return metres
+    ? {
+        radius: Math.min(Math.max(Math.round(n * 10) / 10, 0.1), MAX_RADIUS_M),
+        radiusUnit: 'm',
+      }
+    : {
+        radius: Math.min(Math.max(Math.round(n), 1), MAX_RADIUS_PX),
+        radiusUnit: 'px',
+      };
 }
 
 function parseColor(color = '00000000'): Color {
@@ -251,6 +340,7 @@ const PARAM_COUNTS: Record<ShadingComponentType, number> = {
   aspect: 0,
   curvature: 1,
   contours: 2,
+  'sky-view': 3,
 };
 
 const isShadingComponentType = (
@@ -280,8 +370,8 @@ export function parseShading(serialized: string): Shading {
       );
 
       // Links from before exaggeration have one parameter fewer; their last
-      // one is still the colour. Curvature came later.
-      if (colors.length === 0 && type !== 'curvature') {
+      // one is still the colour. Curvature and sky view came later.
+      if (colors.length === 0 && type !== 'curvature' && type !== 'sky-view') {
         const last = params.pop();
 
         if (last !== undefined) {
@@ -340,21 +430,22 @@ export function parseShading(serialized: string): Shading {
           };
         case 'slope-igor':
           return { ...base, type, exaggeration: Number(params.shift()) };
-        case 'curvature': {
-          const exaggeration = Number(params.shift());
-
-          const radius = Math.round(
-            Number(params.shift() ?? DEFAULT_CURVATURE_RADIUS),
-          );
+        case 'curvature':
+          return {
+            ...base,
+            type,
+            exaggeration: Number(params.shift()),
+            ...parseRadius(params.shift()),
+          };
+        case 'sky-view': {
+          const mode = params.shift();
 
           return {
             ...base,
             type,
-            exaggeration,
-            // As the server accepts it.
-            radius: Number.isFinite(radius)
-              ? Math.min(Math.max(radius, 1), MAX_CURVATURE_RADIUS)
-              : DEFAULT_CURVATURE_RADIUS,
+            skyMode: SKY_MODES.find((m) => m === mode) ?? 'svf',
+            exaggeration: Number(params.shift()),
+            ...parseRadius(params.shift()),
           };
         }
         case 'contours':

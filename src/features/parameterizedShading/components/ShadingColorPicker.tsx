@@ -64,6 +64,7 @@ export function ShadingColorPicker({
     component?.type === 'aspect' ||
     component?.type === 'color-relief' ||
     component?.type === 'curvature' ||
+    component?.type === 'sky-view' ||
     (switchable && component.colorStops.length > 1);
 
   // For gradient components the stop value is stored in real units (aspect in
@@ -88,6 +89,11 @@ export function ShadingColorPicker({
           displayMax: 50,
           unit: '%',
         };
+      // The sky-view factor is a share; openness an angle from the zenith.
+      case 'sky-view':
+        return component.skyMode === 'svf'
+          ? { min: 0, max: 1, displayMin: 0, displayMax: 100, unit: '%' }
+          : { min: 0, max: 180, displayMin: 0, displayMax: 180, unit: '°' };
       case 'slope-igor':
         return { min: 0, max: 90, displayMin: 0, displayMax: 90, unit: '°' };
       // Igor's hillshade reaches 2 on the steepest slopes facing away.

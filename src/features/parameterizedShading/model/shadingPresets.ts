@@ -152,6 +152,7 @@ const curvature = (
   ...levels,
   exaggeration: 1,
   radius: DEFAULT_CURVATURE_RADIUS,
+  radiusUnit: 'px',
   colorStops: [
     { value: -extent, color: ridge },
     { value: -gap, color: [ridge[0], ridge[1], ridge[2], 0] },

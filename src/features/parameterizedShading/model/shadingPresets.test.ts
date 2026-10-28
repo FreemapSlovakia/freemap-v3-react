@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseShading, serializeShading } from './Shading.js';
+import { parseShading, radiusPx, serializeShading } from './Shading.js';
 import {
   isOpaquePreset,
   SHADING_PRESETS,
@@ -41,6 +41,10 @@ describe('gradient on a single-colour type', () => {
   it.each([
     '00000000!curvature_1.0_-0.070_EED6B0FF_0.070_2E5866FF',
     '00000000!curvature_1.0_16_-0.070_EED6B0FF_0.070_2E5866FF',
+    '00000000!curvature_1.0_12.5m_-0.070_EED6B0FF_0.070_2E5866FF',
+    '00000000!curvature_1.0_2.0m_-0.070_EED6B0FF_0.070_2E5866FF',
+    'FFFFFFFF!sky-view_svf_1.0_10_0.600_000000CC_1.000_00000000',
+    '00000000!sky-view~1.20~0.05_pos_2.0_20.0m_70.000_000000CC_90.000_00000000_110.000_FFFFFFCC',
   ])('%s reads back as written', (s) => {
     expect(serializeShading(parseShading(s))).toBe(s);
   });
@@ -60,16 +64,28 @@ describe('gradient on a single-colour type', () => {
   });
 
   it.each([
-    ['50', 32],
-    ['0', 1],
-    ['16.4', 16],
-    ['x', 2],
-  ])('brings radius %s to %s, as the server takes it', (r, expected) => {
+    ['80', 64, 'px'],
+    ['0', 1, 'px'],
+    ['16.4', 16, 'px'],
+    ['x', 2, 'px'],
+    ['0m', 0.1, 'm'],
+    ['12.34m', 12.3, 'm'],
+    ['20000m', 10_000, 'm'],
+  ])('brings radius %s to %s %s, as the server takes it', (r, radius, unit) => {
     const [c] = parseShading(
       `00000000!curvature_1.0_${r}_-0.070_EED6B0FF_0.070_2E5866FF`,
     ).components;
 
-    expect(c?.type === 'curvature' && c.radius).toBe(expected);
+    expect(c).toMatchObject({ radius, radiusUnit: unit });
+  });
+
+  it('turns metres into pixels as terrain-tiles does', () => {
+    // terrain-tiles' own test: 20 m is 51 px at z18 near 48° N.
+    expect(radiusPx({ radius: 20, radiusUnit: 'm' }, 18, 90_180)).toBe(51);
+
+    expect(radiusPx({ radius: 20, radiusUnit: 'm' }, 15, 11_272)).toBe(6);
+
+    expect(radiusPx({ radius: 100, radiusUnit: 'm' }, 18, 90_180)).toBe(64);
   });
 
   it('reads one colour as before', () => {

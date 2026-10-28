@@ -29,6 +29,14 @@ const pl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   contourInterval: 'Cięcie warstwicowe',
   lineWidth: 'Grubość linii',
   radius: 'Promień',
+  radiusOutOfRange: ({ px, drawn }) =>
+    `Przy tym powiększeniu to ${px} px, poza zakresem 1–64 px; rysowane jako ${drawn} px.`,
+  skyMode: 'Pokaż',
+  skyModes: {
+    svf: 'Współczynnik widoczności nieba',
+    pos: 'Otwartość dodatnia',
+    neg: 'Otwartość ujemna',
+  },
   solid: 'Jeden kolor',
   gradient: 'Gradient',
   presets: 'Ustawienia wstępne',
@@ -74,6 +82,7 @@ const pl: DeepPartialWithRequiredObjects<ShadingMessages> = {
     aspect: 'Ekspozycja',
     curvature: 'Krzywizna',
     contours: 'Warstwice',
+    'sky-view': 'Widoczność nieba / otwartość',
   },
 };
 

@@ -35,8 +35,11 @@ struct ShadingComponent {
     color_count: u32,
     interval: f32,
     line_width: f32,
+    // In pixels, as resolved for this tile.
     radius: u32,
-    _pad2: vec2<f32>,
+    // 0 sky-view factor, 1 positive openness, 2 negative openness.
+    sky_mode: u32,
+    _pad2: f32,
     colors: array<ColorStop, NUM_STOPS>
 };
 
@@ -140,6 +143,92 @@ fn get_curvature(pos: vec2<i32>, exaggeration: f32, radius: u32) -> f32 {
     let centre = get_elev(pos);
 
     return ((sum - centre) / (n - 1.0) - centre) / ground_px(pos.y) * exaggeration;
+}
+
+const S = 0.38268343;
+
+const C = 0.9238795;
+
+const H = 0.70710677;
+
+// Unit steps every 22.5° clockwise from north, the literals terrain-tiles uses:
+// sin() here is too loose to round the same offsets.
+const SKY_DIRECTIONS = array<vec2<f32>, 16>(
+    vec2(0.0, -1.0), vec2(S, -C), vec2(H, -H), vec2(C, -S),
+    vec2(1.0, 0.0), vec2(C, S), vec2(H, H), vec2(S, C),
+    vec2(0.0, 1.0), vec2(-S, C), vec2(-H, H), vec2(-C, S),
+    vec2(-1.0, 0.0), vec2(-C, -S), vec2(-H, -H), vec2(-S, -C),
+);
+
+// Distances walked out along each direction, pixels: denser near.
+const SKY_STEPS = array<i32, 12>(1, 2, 3, 4, 6, 8, 11, 16, 23, 32, 45, 64);
+
+// The sky view from the horizon within `radius`, walked as terrain-tiles walks
+// it: sky-view factor 0–1, or openness in degrees. Pixels without data are left
+// out; NaN when the centre has none.
+fn get_sky_view(pos: vec2<i32>, exaggeration: f32, radius: u32, mode: u32) -> f32 {
+    let r = i32(min(radius, shading.border));
+
+    let run = ground_px(pos.y) / exaggeration;
+
+    let h0 = get_elev(pos);
+
+    // Locals, as some compilers can't index a const array by a variable.
+    var directions = SKY_DIRECTIONS;
+
+    var steps = SKY_STEPS;
+
+    var sum = 0.0;
+
+    var n = 0.0;
+
+    for (var k = 0; k < 16; k++) {
+        let dir = directions[k];
+
+        var hi = -1e30;
+
+        var lo = 1e30;
+
+        var any = false;
+
+        for (var s = 0; s < 13; s++) {
+            // The steps below `r`, then `r` itself.
+            let d = select(r, steps[min(s, 11)], s < 12 && steps[min(s, 11)] < r);
+
+            // floor(+0.5), as round() takes halves to even.
+            let o = floor(dir * f32(d) + 0.5);
+
+            let t = (get_elev(pos + vec2<i32>(o)) - h0) / (length(o) * run);
+
+            if t < 0.0 || t >= 0.0 {
+                hi = max(hi, t);
+
+                lo = min(lo, t);
+
+                any = true;
+            }
+
+            if d == r {
+                break;
+            }
+        }
+
+        if any {
+            n += 1.0;
+
+            if mode == 0u {
+                let t = max(hi, 0.0);
+
+                sum += t / sqrt(1.0 + t * t);
+            } else if mode == 1u {
+                sum += 90.0 - degrees(atan(hi));
+            } else {
+                sum += 90.0 + degrees(atan(lo));
+            }
+        }
+    }
+
+    return select(sum / n, 1.0 - sum / n, mode == 0u);
 }
 
 @fragment
@@ -276,6 +365,17 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
             intensity = select(0.0, clamp(component.line_width * 0.5 + 0.5 - px, 0.0, 1.0), !is_nan && px >= 0.0);
 
             color = component.colors[0].color;
+        // sky view
+        } else if component.method == 8u {
+            intensity = 1.0;
+
+            let v = get_sky_view(pos2, component.exaggeration, component.radius, component.sky_mode);
+
+            if v < 0.0 || v >= 0.0 {
+                color = interpolate_color(component.colors, component.color_count, v);
+            } else {
+                color = vec4(0.0);
+            }
         }
 
         // Hillshade and slope with a gradient look their number up on the stops,

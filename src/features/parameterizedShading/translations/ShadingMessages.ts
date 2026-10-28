@@ -25,6 +25,14 @@ export type ShadingMessages = {
   contourInterval: string;
   lineWidth: string;
   radius: string;
+  /** A metre radius that at this zoom falls outside the pixels a tile holds. */
+  radiusOutOfRange: (args: { px: number; drawn: number }) => string;
+  skyMode: string;
+  skyModes: {
+    svf: string;
+    pos: string;
+    neg: string;
+  };
   /** The colour picker's switch between one colour and a gradient. */
   solid: string;
   gradient: string;
@@ -71,5 +79,6 @@ export type ShadingMessages = {
     aspect: string;
     curvature: string;
     contours: string;
+    'sky-view': string;
   };
 };

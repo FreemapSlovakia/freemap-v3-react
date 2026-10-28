@@ -29,6 +29,14 @@ const cs: DeepPartialWithRequiredObjects<ShadingMessages> = {
   contourInterval: 'Interval vrstevnic',
   lineWidth: 'Tloušťka čáry',
   radius: 'Poloměr',
+  radiusOutOfRange: ({ px, drawn }) =>
+    `Při tomto přiblížení je to ${px} px, mimo 1–64 px; vykreslí se jako ${drawn} px.`,
+  skyMode: 'Zobrazit',
+  skyModes: {
+    svf: 'Faktor výhledu na oblohu',
+    pos: 'Kladná otevřenost',
+    neg: 'Záporná otevřenost',
+  },
   solid: 'Jedna barva',
   gradient: 'Přechod',
   presets: 'Předvolby',
@@ -74,6 +82,7 @@ const cs: DeepPartialWithRequiredObjects<ShadingMessages> = {
     aspect: 'Orientace',
     curvature: 'Zakřivení',
     contours: 'Vrstevnice',
+    'sky-view': 'Výhled na oblohu / otevřenost',
   },
 };
 

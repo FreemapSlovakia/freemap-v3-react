@@ -19,8 +19,12 @@ import type { Messages } from '@/translations/messagesInterface.js';
 import {
   type Color,
   MAX_COLOR_STOPS,
+  MAX_RADIUS_PX,
+  radiusPx,
   SHADING_COMPONENT_TYPES,
   type Shading,
+  type ShadingComponent,
+  SKY_MODES,
 } from '../model/Shading.js';
 import { DataWriter } from './DataWriter.js';
 import classes from './ShadingLayer.module.css';
@@ -40,21 +44,27 @@ type ShadingLayerOptions = GridLayerOptions & {
 
 type CanvasEx = HTMLCanvasElement & {
   _render: (shading: Shading) => void;
+  /** Whether its elevation border is too narrow for `shading`. */
+  _outgrown?: (shading: Shading) => boolean;
   _gpuCleanup?: () => void;
   _gpuUnloaded?: boolean;
 };
 
 // Elevation borders a tile is fetched with, so a radius change refetches only
 // when it outgrows the one at hand.
-const BORDERS = [2, 8, 16, 32];
+const BORDERS = [2, 8, 16, 32, MAX_RADIUS_PX];
 
-/** The border `shading` reads beyond a tile's edge, rounded up to `BORDERS`. */
-function elevationBorder(shading: Shading) {
+/** A layer's radius in pixels on the elevation tile `z`/`y`. */
+const componentRadius = (c: ShadingComponent, z: number, y: number) =>
+  'radius' in c ? radiusPx(c, z, y) : 0;
+
+/** The border `shading` reads beyond tile `z`/`y`, rounded up to `BORDERS`. */
+function elevationBorder(shading: Shading, z: number, y: number) {
   const radius = Math.max(
-    ...shading.components.map((c) => (c.type === 'curvature' ? c.radius : 0)),
+    ...shading.components.map((c) => componentRadius(c, z, y)),
   );
 
-  return BORDERS.find((b) => b >= radius) ?? BORDERS[BORDERS.length - 1];
+  return BORDERS.find((b) => b >= radius) ?? MAX_RADIUS_PX;
 }
 
 class TileNotFoundError extends Error {}
@@ -309,13 +319,15 @@ class LShadingLayer extends LGridLayer {
     // zoomOffset-adjusted `zoom` which is only used for URL templating.
     const key = `${x}/${y}/${coords.z}`;
 
-    const border = elevationBorder(this.shading);
+    const border = elevationBorder(this.shading, zoom, y);
 
     const templated = Util.template(this._options.url, { x, y, z: zoom });
 
     // Only terrain-tiles serves a border other than 2 px.
+    const widens = templated.startsWith(`${TERRAIN_TILES_URL}/`);
+
     const url =
-      border > 2 && templated.startsWith(`${TERRAIN_TILES_URL}/`)
+      border > 2 && widens
         ? `${templated}${templated.includes('?') ? '&' : '?'}buffer=${border}`
         : templated;
 
@@ -434,6 +446,9 @@ class LShadingLayer extends LGridLayer {
       return false;
     }
 
+    canvasEx._outgrown = (shading: Shading) =>
+      widens && elevationBorder(shading, zoom, y) > tileBorder;
+
     canvasEx._render = (shading: Shading) => {
       const shadingData = new ArrayBuffer(shadingBuffer.size);
 
@@ -465,8 +480,13 @@ class LShadingLayer extends LGridLayer {
         dw.u32(stops.length);
         dw.f32('interval' in component ? component.interval : NaN);
         dw.f32('lineWidth' in component ? component.lineWidth : NaN);
-        dw.u32('radius' in component ? component.radius : 0);
-        dw.pad32(2);
+        dw.u32(componentRadius(component, zoom, y));
+        dw.u32(
+          component.type === 'sky-view'
+            ? SKY_MODES.indexOf(component.skyMode)
+            : 0,
+        );
+        dw.pad32(1);
 
         for (const colorStop of stops) {
           dw.f32(colorStop.value);
@@ -585,8 +605,19 @@ class LShadingLayer extends LGridLayer {
   setShading(shading: Shading) {
     this.shading = shading;
 
+    let outgrown = false;
+
     for (const tile in this._tiles) {
-      (this._tiles[tile].el as CanvasEx)._render?.(shading);
+      const canvas = this._tiles[tile].el as CanvasEx;
+
+      canvas._render?.(shading);
+
+      outgrown ||= canvas._outgrown?.(shading) ?? false;
+    }
+
+    // Tiles fetched with a narrower border can't serve the wider radius.
+    if (outgrown) {
+      this.redraw();
     }
   }
 
@@ -643,11 +674,6 @@ export default createTileLayerComponent<LShadingLayer, Props>(
 
     if (JSON.stringify(props.shading) !== JSON.stringify(prevProps.shading)) {
       instance.setShading(props.shading);
-
-      // Tiles fetched with a narrower border can't serve the wider radius.
-      if (elevationBorder(props.shading) > elevationBorder(prevProps.shading)) {
-        instance.redraw();
-      }
     } else if (
       (
         [

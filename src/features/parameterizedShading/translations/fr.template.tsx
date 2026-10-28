@@ -29,6 +29,14 @@ const fr: DeepPartialWithRequiredObjects<ShadingMessages> = {
   contourInterval: 'Équidistance',
   lineWidth: 'Épaisseur du trait',
   radius: 'Rayon',
+  radiusOutOfRange: ({ px, drawn }) =>
+    `À ce niveau de zoom, cela fait ${px} px, hors de 1–64 px ; dessiné à ${drawn} px.`,
+  skyMode: 'Afficher',
+  skyModes: {
+    svf: 'Facteur de vue du ciel',
+    pos: 'Ouverture positive',
+    neg: 'Ouverture négative',
+  },
   solid: 'Couleur unie',
   gradient: 'Dégradé',
   presets: 'Préréglages',
@@ -74,6 +82,7 @@ const fr: DeepPartialWithRequiredObjects<ShadingMessages> = {
     aspect: 'Exposition',
     curvature: 'Courbure',
     contours: 'Courbes de niveau',
+    'sky-view': 'Vue du ciel / ouverture',
   },
 };
 

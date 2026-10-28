@@ -29,6 +29,14 @@ const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
   contourInterval: 'Szintköz',
   lineWidth: 'Vonalvastagság',
   radius: 'Sugár',
+  radiusOutOfRange: ({ px, drawn }) =>
+    `Ezen a nagyításon ez ${px} px, az 1–64 px tartományon kívül; ${drawn} px-ként rajzolva.`,
+  skyMode: 'Megjelenítés',
+  skyModes: {
+    svf: 'Égbolt-láthatósági tényező',
+    pos: 'Pozitív nyitottság',
+    neg: 'Negatív nyitottság',
+  },
   solid: 'Egyszínű',
   gradient: 'Színátmenet',
   presets: 'Előbeállítások',
@@ -74,6 +82,7 @@ const hu: DeepPartialWithRequiredObjects<ShadingMessages> = {
     aspect: 'Kitettség',
     curvature: 'Görbület',
     contours: 'Szintvonalak',
+    'sky-view': 'Égbolt-láthatóság / nyitottság',
   },
 };
 

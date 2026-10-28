@@ -2,9 +2,41 @@ import { Text } from '@features/l10n/Text.js';
 import Color from 'color';
 import type { ReactElement } from 'react';
 import { ListGroup } from 'react-bootstrap';
-import { type Shading, swatchColor } from '../model/Shading.js';
+import {
+  type Shading,
+  type ShadingComponent,
+  swatchColor,
+} from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 import classes from './ShadingControl.module.css';
+
+/**
+ * A layer's colours: its one colour, its stops left to right, or aspect's
+ * round the compass.
+ */
+function swatchBackground({ type, colorStops }: ShadingComponent) {
+  if (colorStops.length < 2) {
+    return Color(swatchColor(colorStops)).hexa();
+  }
+
+  const values = colorStops.map((s) => s.value);
+
+  const [min, max] =
+    type === 'aspect'
+      ? [0, 2 * Math.PI]
+      : [Math.min(...values), Math.max(...values)];
+
+  const at = (v: number) =>
+    max > min ? (((v - min) / (max - min)) * 100).toFixed(1) : '0';
+
+  const stops = colorStops
+    .map((s) => `${Color(s.color).hexa()} ${at(s.value)}%`)
+    .join(', ');
+
+  return type === 'aspect'
+    ? `conic-gradient(${stops})`
+    : `linear-gradient(90deg, ${stops})`;
+}
 
 type Props = {
   shading: Shading;
@@ -42,21 +74,10 @@ export function ShadingComponentList({
 
       {shading.components.map((component) => (
         <ListGroup.Item action key={component.id} eventKey={component.id}>
-          {/^hillshade-|^slope-/.test(component.type) ? (
-            <span
-              className={`rounded border ${classes.shadingColor}`}
-              style={{
-                backgroundColor: Color(
-                  swatchColor(component.colorStops),
-                ).hexa(),
-              }}
-            />
-          ) : (
-            <span
-              className={`rounded border ${classes.shadingColor}`}
-              style={{ visibility: 'hidden' }}
-            />
-          )}
+          <span
+            className={`rounded border ${classes.shadingColor}`}
+            style={{ background: swatchBackground(component) }}
+          />
           <span>
             <Text m={sm} k={`types.${component.type}`} />
           </span>

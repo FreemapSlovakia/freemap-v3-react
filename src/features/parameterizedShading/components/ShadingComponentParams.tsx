@@ -1,19 +1,32 @@
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { Text } from '@features/l10n/Text.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 import { produce } from 'immer';
 import {
   type ReactElement,
+  type ReactNode,
   type PointerEvent as ReactPointerEvent,
   useEffect,
   useRef,
   useState,
 } from 'react';
 import { Accordion, Form, InputGroup } from 'react-bootstrap';
+import { FaExclamationTriangle } from 'react-icons/fa';
+import { skyViewStops } from '../model/createShadingComponent.js';
 import {
-  MAX_CURVATURE_RADIUS,
+  centreGroundPx,
+  MAX_RADIUS_M,
+  MAX_RADIUS_PX,
+  metresToPx,
+  RADIUS_UNITS,
+  type RadiusUnit,
   type Shading,
   type ShadingComponent,
+  SKY_MODES,
+  type SkyMode,
 } from '../model/Shading.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 
@@ -24,8 +37,7 @@ type Param =
   | 'contrast'
   | 'brightness'
   | 'interval'
-  | 'lineWidth'
-  | 'radius';
+  | 'lineWidth';
 
 // A label may wrap onto a second line, so the input keeps to the bottom.
 const FIELD = 'd-flex flex-column justify-content-end';
@@ -44,8 +56,8 @@ type NumberFieldProps = {
   step?: number;
   /** Small, beside a slider's name. */
   compact?: boolean;
-  /** Shown after the value. */
-  unit?: string;
+  /** Shown after the value: a unit, or input-group addons. */
+  unit?: ReactNode;
   onChange: (value: number) => void;
 };
 
@@ -98,12 +110,110 @@ function NumberField({
   );
 
   return unit ? (
-    <InputGroup>
+    <InputGroup className="flex-nowrap">
       {control}
-      <InputGroup.Text>{unit}</InputGroup.Text>
+      {typeof unit === 'string' ? (
+        <InputGroup.Text>{unit}</InputGroup.Text>
+      ) : (
+        unit
+      )}
     </InputGroup>
   ) : (
     control
+  );
+}
+
+/** The elevation tile's zoom and row at the map's centre, as the layer fetches it. */
+function useCentreTile() {
+  const zoom = useAppSelector((state) => state.map.zoom);
+
+  const lat = useAppSelector((state) => state.map.lat);
+
+  const dpr = useDevicePixelRatio();
+
+  // A dense screen takes tiles a zoom deeper (`Layers`).
+  const z = Math.min(Math.round(zoom) + (dpr > 1.4 ? 1 : 0), 18);
+
+  const rad = (lat * Math.PI) / 180;
+
+  const y = Math.floor(
+    ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * 2 ** z,
+  );
+
+  return { z, y };
+}
+
+type RadiusFieldProps = {
+  radius: number;
+  radiusUnit: RadiusUnit;
+  onChange: (radius: number, radiusUnit: RadiusUnit) => void;
+};
+
+/** A radius in pixels or ground metres, flagged where metres fall outside the pixels a tile holds. */
+function RadiusField({
+  radius,
+  radiusUnit,
+  onChange,
+}: RadiusFieldProps): ReactElement {
+  const sm = useShadingMessages();
+
+  const { z, y } = useCentreTile();
+
+  const px = radiusUnit === 'm' ? metresToPx(radius, z, y) : radius;
+
+  const drawn = Math.min(Math.max(px, 1), MAX_RADIUS_PX);
+
+  return (
+    <NumberField
+      min={radiusUnit === 'm' ? 0.1 : 1}
+      max={radiusUnit === 'm' ? MAX_RADIUS_M : MAX_RADIUS_PX}
+      step={radiusUnit === 'm' ? 0.5 : 1}
+      value={radius}
+      fractionDigits={radiusUnit === 'm' ? 1 : 0}
+      onChange={(value) =>
+        onChange(
+          radiusUnit === 'm' ? Math.round(value * 10) / 10 : Math.round(value),
+          radiusUnit,
+        )
+      }
+      unit={
+        <>
+          <Form.Select
+            className="flex-grow-0 w-auto"
+            value={radiusUnit}
+            // Switched, it keeps its size at this zoom.
+            onChange={(e) => {
+              const unit = e.currentTarget.value as RadiusUnit;
+
+              const ground = centreGroundPx(z, y);
+
+              onChange(
+                unit === 'm'
+                  ? Math.max(Math.round(drawn * ground * 10) / 10, 0.1)
+                  : drawn,
+                unit,
+              );
+            }}
+          >
+            {RADIUS_UNITS.map((u) => (
+              <option key={u} value={u}>
+                {u}
+              </option>
+            ))}
+          </Form.Select>
+
+          {px !== drawn && (
+            <LongPressTooltip label={sm?.radiusOutOfRange({ px, drawn })}>
+              {({ props }) => (
+                <InputGroup.Text className="text-warning" {...props}>
+                  <FaExclamationTriangle />
+                </InputGroup.Text>
+              )}
+            </LongPressTooltip>
+          )}
+        </>
+      }
+    />
   );
 }
 
@@ -125,14 +235,12 @@ export function ShadingComponentParams({
 
   const endDragRef = useRef<(() => void) | null>(null);
 
-  function patch(key: Param, value: number) {
+  function update(change: (c: ShadingComponent) => void) {
     const next = produce(shading, (draft) => {
-      const c = draft.components.find((x) => x.id === component.id) as
-        | Record<Param, number>
-        | undefined;
+      const c = draft.components.find((x) => x.id === component.id);
 
       if (c) {
-        c[key] = value;
+        change(c);
       }
     });
 
@@ -141,6 +249,12 @@ export function ShadingComponentParams({
     }
 
     onChange(next);
+  }
+
+  function patch(key: Param, value: number) {
+    update((c) => {
+      (c as unknown as Record<Param, number>)[key] = value;
+    });
   }
 
   // Suspend history writes for a slider drag, as the dial does, so the stream
@@ -199,6 +313,36 @@ export function ShadingComponentParams({
         </Accordion.Header>
 
         <Accordion.Body className="d-flex flex-column gap-3 p-2">
+          {component.type === 'sky-view' && (
+            <Form.Group controlId="sky-mode">
+              <Form.Label>
+                <Text m={sm} k="skyMode" />
+              </Form.Label>
+
+              <Form.Select
+                value={component.skyMode}
+                // Each mode has its own scale, so its own stops.
+                onChange={(e) => {
+                  const mode = e.currentTarget.value as SkyMode;
+
+                  update((c) => {
+                    if (c.type === 'sky-view') {
+                      c.skyMode = mode;
+
+                      c.colorStops = skyViewStops(mode);
+                    }
+                  });
+                }}
+              >
+                {SKY_MODES.map((mode) => (
+                  <option key={mode} value={mode}>
+                    {sm?.skyModes[mode]}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )}
+
           {'exaggeration' in component && (
             <div onPointerDown={handleSliderPointerDown}>
               {/* Logarithmic, so 1 sits in the middle of 0.1–10. */}
@@ -285,28 +429,26 @@ export function ShadingComponentParams({
             </div>
           )}
 
-          {component.type === 'curvature' && (
-            <div className={ROW}>
-              <Form.Group
-                controlId="curvature-radius"
-                className={FIELD}
-                style={FIELD_STYLE}
-              >
-                <Form.Label>
-                  <Text m={sm} k="radius" />
-                </Form.Label>
+          {'radius' in component && (
+            <Form.Group controlId="shading-radius">
+              <Form.Label>
+                <Text m={sm} k="radius" />
+              </Form.Label>
 
-                <NumberField
-                  min={1}
-                  max={MAX_CURVATURE_RADIUS}
-                  step={1}
-                  value={component.radius}
-                  fractionDigits={0}
-                  unit="px"
-                  onChange={(value) => patch('radius', Math.round(value))}
-                />
-              </Form.Group>
-            </div>
+              <RadiusField
+                radius={component.radius}
+                radiusUnit={component.radiusUnit}
+                onChange={(radius, radiusUnit) =>
+                  update((c) => {
+                    if ('radius' in c) {
+                      c.radius = radius;
+
+                      c.radiusUnit = radiusUnit;
+                    }
+                  })
+                }
+              />
+            </Form.Group>
           )}
 
           {component.type === 'contours' && (

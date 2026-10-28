@@ -29,6 +29,14 @@ const sl: DeepPartialWithRequiredObjects<ShadingMessages> = {
   contourInterval: 'Ekvidistanca',
   lineWidth: 'Debelina črte',
   radius: 'Polmer',
+  radiusOutOfRange: ({ px, drawn }) =>
+    `Pri tej povečavi je to ${px} px, zunaj 1–64 px; izrisano kot ${drawn} px.`,
+  skyMode: 'Prikaz',
+  skyModes: {
+    svf: 'Faktor vidnosti neba',
+    pos: 'Pozitivna odprtost',
+    neg: 'Negativna odprtost',
+  },
   solid: 'Ena barva',
   gradient: 'Prelivanje',
   presets: 'Prednastavitve',
@@ -74,6 +82,7 @@ const sl: DeepPartialWithRequiredObjects<ShadingMessages> = {
     aspect: 'Usmerjenost',
     curvature: 'Ukrivljenost',
     contours: 'Plastnice',
+    'sky-view': 'Vidnost neba / odprtost',
   },
 };
 
