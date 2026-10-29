@@ -24,6 +24,12 @@ const MAP = 'map=13/48.7483/19.1480&layers=X';
 // A hiking route across Banská Bystrica.
 const ROUTE = 'points=48.7356/19.1458,48.7800/19.2350&transport=hiking';
 
+// The High Tatras and their valleys in the "Hypsometric tints + shading" preset.
+const SHADED =
+  'map=12/49.1200/20.1000&layers=h&l.h=s00000000!color-relief_0.0_5A9E5AFF_200.0_A8C878FF_500.0_E8DC96FF_1000.0_D4A868FF_1600.0_B07C54FF_2300.0_968278FF_3000.0_FFFFFFFF!hillshade-igor_135.0_1.0_000000CC';
+
+const LAYERS_PANEL = '[class*="MapLayersPanel-module__panel"]';
+
 // A track from Banská Bystrica north-east, as a drawn line.
 const TRACK_LINE =
   '48.7395/19.1530,48.7520/19.1700,48.7650/19.1850,48.7780/19.1980,48.7905/19.2073';
@@ -174,6 +180,102 @@ const shots = [
       await page.waitForTimeout(2000);
     },
     crop: '.modal-content',
+  },
+  {
+    name: 'maps-menu',
+    hash: MAP,
+    mobile: true,
+    // Tall enough for the whole menu to open upwards.
+    viewport: { width: 1280, height: 900 },
+    steps: async (page) => {
+      // The map menu's toggle is the only bottom-bar button with a title.
+      await page.locator('.fm-ib-scroller-bottom button[title]').click();
+    },
+    crop: '.fm-ib-scroller-bottom .fm-toolbar, .dropdown-menu.show',
+  },
+  {
+    name: 'maps-layers-panel',
+    hash: 'map=14/48.7483/19.1480&layers=S~xh~xc',
+    mobile: true,
+    steps: async (page) => {
+      await page.keyboard.press('.');
+    },
+    crop: '[class*="MapLayersPanel-module__panel"]',
+  },
+  {
+    name: 'maps-installed',
+    hash: `${MAP}&show=installed-maps`,
+    // The filter chips fill ~450 px; taller shows table rows below them.
+    viewport: { width: 1280, height: 1400 },
+    crop: '.modal-content',
+  },
+  {
+    name: 'shading-map',
+    hash: SHADED,
+    viewport: { width: 820, height: 520 },
+  },
+  {
+    name: 'shading-panel',
+    hash: SHADED,
+    mobile: true,
+    // Tall enough for the selected layer's settings down to its colour.
+    viewport: { width: 1280, height: 1200 },
+    mobileViewport: { width: 390, height: 1100 },
+    steps: async (page) => {
+      // A lone base map's panel opens straight on its settings.
+      await page.keyboard.press('.');
+
+      const items = page.locator(`${LAYERS_PANEL} .list-group-item`);
+
+      await items.first().waitFor();
+
+      await items.last().click();
+    },
+    crop: LAYERS_PANEL,
+  },
+  {
+    name: 'shading-presets',
+    hash: SHADED,
+    // The presets menu runs down past 1200 px.
+    viewport: { width: 1280, height: 1500 },
+    steps: async (page) => {
+      await page.keyboard.press('.');
+
+      await page
+        .locator(`${LAYERS_PANEL} .dropdown.ms-auto > .dropdown-toggle`)
+        .click();
+    },
+    crop: `${LAYERS_PANEL}, .dropdown-menu.show`,
+  },
+  {
+    name: 'custom-maps-form',
+    hash: `${MAP}&show=installed-maps`,
+    // The whole form fits without scrolling inside the modal.
+    viewport: { width: 1280, height: 1000 },
+    steps: async (page, lang) => {
+      await page
+        .locator('.modal-content button', {
+          hasText: { en: 'New custom map', sk: 'Nová vlastná mapa' }[lang],
+        })
+        .click();
+
+      await page.locator('.modal-content input#name').fill('OpenTopoMap');
+
+      await page
+        .locator('.modal-content input#url')
+        .fill('https://tile.opentopomap.org/{z}/{x}/{y}.png');
+    },
+    crop: '.modal-content',
+  },
+  {
+    name: 'weather-radar-toolbar',
+    hash: 'map=8/48.7483/19.1480&layers=X~R',
+    mobile: true,
+    steps: async (page) => {
+      // The slider renders once the frame list has loaded.
+      await page.waitForSelector('.fm-toolbar:has(input[type=range])');
+    },
+    crop: '.fm-toolbar:has(input[type=range])',
   },
   {
     name: 'devices-open-in',

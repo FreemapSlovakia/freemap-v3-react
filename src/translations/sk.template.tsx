@@ -400,6 +400,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'manual-shortcuts': 'klávesnica, klávesy, skratky',
         'manual-route-planner':
           'pomoc, návod, navigácia, trasa, plánovanie trasy, zastávky',
+        'manual-maps':
+          'pomoc, návod, vrstvy, podkladová mapa, prekrytie, správca máp, knižnica, inštalovať, predvoľba, legenda, priehľadnosť',
+        'manual-custom-maps':
+          'pomoc, návod, vlastná mapa, wms, tms, adresa dlaždíc, pridať mapu',
+        'manual-shading':
+          'pomoc, návod, tieňovanie, reliéf, terén, výškopis, lidar, dmr',
+        'manual-weather-radar':
+          'pomoc, návod, dážď, zrážky, počasie, predpoveď, búrka, meteoradar',
         'manual-drawing':
           'pomoc, návod, meranie, vzdialenosť, plocha, čiara, polygón, bod',
         'manual-tracks':

@@ -363,6 +363,14 @@ const messages: Messages = {
         'manual-shortcuts': 'keyboard, keys, hotkeys, chords',
         'manual-route-planner':
           'help, navigation, directions, waypoints, plan a route, how to',
+        'manual-maps':
+          'help, layers, base map, overlay, map manager, library, install, preset, legend, opacity',
+        'manual-custom-maps':
+          'help, own map, wms, tms, tiles url, add map source',
+        'manual-shading':
+          'help, hillshade, relief, terrain, sky view, openness, lidar, dem',
+        'manual-weather-radar':
+          'help, rain, precipitation, weather, forecast, storm, animation',
         'manual-drawing': 'help, measure, distance, area, line, polygon, point',
         'manual-tracks':
           'help, gpx, kml, track, import, elevation profile, colorize, export',

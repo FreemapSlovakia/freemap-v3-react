@@ -39,7 +39,7 @@ The in-app manual: Info & help → Manual, `#show=manual` (first chapter) or `#s
 - A shot marked `mobile` is taken a second time on a touch phone (390 × 760) as `<name>.<lang>.mobile.webp`; the renderer then emits a `<picture>` whose phone-width source (below Bootstrap's `sm`) is that file, so a reader on a phone sees the phone UI instead of a shrunken desktop toolbar. Mark every shot of something the phone lays out differently — toolbars, the search box, the full screen. Chapters reference only the desktop file.
 - Toasts (attribution, cookie consent) are hidden by CSS for every shot.
 - Images are written to a temp directory and copied in at the end: writing into `src/` mid-run makes the dev server rebuild, and the next page then asks for chunks that aren't there. For the same reason, edit nothing under `src/` while it runs; a shot that fails with "the app did not start" or a zero-height crop usually caught a rebuild — run it again.
-- In a chapter: `![Alt text](./images/<name>.<lang>.webp)` — each language file names its own language's image.
+- In a chapter: `![Alt text](./images/<name>.<lang>.webp)` — each language file names its own language's image. An image named but not yet captured fails the build ("Module not found"), so capture the shot first.
 - WebP quality 85; a full map view costs ~600 KB at 2×, a cropped control 10–40 KB. Images load lazily, when their chapter is opened.
 
 ## Moving a document into the manual

@@ -7,6 +7,14 @@
     "width": 321,
     "height": 454
   },
+  "custom-maps-form.en.webp": {
+    "width": 816,
+    "height": 937
+  },
+  "custom-maps-form.sk.webp": {
+    "width": 816,
+    "height": 937
+  },
   "devices-garmin-export.en.webp": {
     "width": 816,
     "height": 760
@@ -62,6 +70,46 @@
   "map-toolbar.sk.webp": {
     "width": 639,
     "height": 64
+  },
+  "maps-installed.en.webp": {
+    "width": 816,
+    "height": 1360
+  },
+  "maps-installed.sk.webp": {
+    "width": 816,
+    "height": 1360
+  },
+  "maps-layers-panel.en.mobile.webp": {
+    "width": 296,
+    "height": 226
+  },
+  "maps-layers-panel.en.webp": {
+    "width": 336,
+    "height": 226
+  },
+  "maps-layers-panel.sk.mobile.webp": {
+    "width": 296,
+    "height": 226
+  },
+  "maps-layers-panel.sk.webp": {
+    "width": 336,
+    "height": 226
+  },
+  "maps-menu.en.mobile.webp": {
+    "width": 312,
+    "height": 476
+  },
+  "maps-menu.en.webp": {
+    "width": 639,
+    "height": 764
+  },
+  "maps-menu.sk.mobile.webp": {
+    "width": 341,
+    "height": 476
+  },
+  "maps-menu.sk.webp": {
+    "width": 639,
+    "height": 764
   },
   "offline-new-map.en.webp": {
     "width": 516,
@@ -151,6 +199,38 @@
     "width": 772,
     "height": 608
   },
+  "shading-map.en.webp": {
+    "width": 820,
+    "height": 520
+  },
+  "shading-map.sk.webp": {
+    "width": 820,
+    "height": 520
+  },
+  "shading-panel.en.mobile.webp": {
+    "width": 296,
+    "height": 995
+  },
+  "shading-panel.en.webp": {
+    "width": 336,
+    "height": 1095
+  },
+  "shading-panel.sk.mobile.webp": {
+    "width": 296,
+    "height": 995
+  },
+  "shading-panel.sk.webp": {
+    "width": 336,
+    "height": 1095
+  },
+  "shading-presets.en.webp": {
+    "width": 541,
+    "height": 1444
+  },
+  "shading-presets.sk.webp": {
+    "width": 510,
+    "height": 1444
+  },
   "tracking-toolbar.en.mobile.webp": {
     "width": 302,
     "height": 64
@@ -182,5 +262,21 @@
   "tracks-profile.sk.webp": {
     "width": 656,
     "height": 416
+  },
+  "weather-radar-toolbar.en.mobile.webp": {
+    "width": 390,
+    "height": 104
+  },
+  "weather-radar-toolbar.en.webp": {
+    "width": 742,
+    "height": 64
+  },
+  "weather-radar-toolbar.sk.mobile.webp": {
+    "width": 390,
+    "height": 104
+  },
+  "weather-radar-toolbar.sk.webp": {
+    "width": 722,
+    "height": 64
   }
 }
