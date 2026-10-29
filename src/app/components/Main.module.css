@@ -31,8 +31,7 @@
 
 .type-zoom-control {
   display: flex;
-  /* when too narrow, the credits button wraps above the map controls into the
-     corner rather than pushing them up */
+  /* wraps only `.stacked`, the later line going up */
   flex-wrap: wrap-reverse;
   justify-content: center;
   pointer-events: none;
@@ -42,7 +41,18 @@
   left: 0;
   right: 0;
 
-  & > div:first-child {
+  /* wrap-reverse makes flex-start the bottom; the auto margins keep the scale
+     and the credits in their corners */
+  & > .scale {
+    align-self: flex-start;
+    margin: 0 auto 0.5rem 0.5rem;
+    /* the scale's `maxWidth`, so the bar doesn't reflow as it changes length */
+    flex: 0 0 100px;
+    font-size: 0.75rem;
+    pointer-events: auto;
+  }
+
+  & > .controls {
     flex-grow: 1;
     display: flex;
     justify-content: center;
@@ -53,11 +63,44 @@
     }
   }
 
-  /* wrap-reverse makes flex-start the bottom */
-  & > div:last-child {
+  /* A wrapper: the toolbar's own left margin is set inline. */
+  & > .credits {
     align-self: flex-start;
     margin-left: auto;
     pointer-events: auto;
+  }
+}
+
+/* `useStackedBar` decides these. Too narrow for one line: last, the scale
+   wraps up a line by itself — no wider box, which the hook would measure. */
+.scale-up {
+  & > .controls {
+    order: 0;
+  }
+
+  & > .credits {
+    order: 1;
+  }
+
+  & > .scale {
+    order: 2;
+  }
+}
+
+/* Narrower still: the toolbar alone at the bottom, the scale and the credits
+   on the line above. */
+.stacked {
+  & > .controls {
+    order: 0;
+    flex-basis: 100%;
+  }
+
+  & > .scale {
+    order: 1;
+  }
+
+  & > .credits {
+    order: 2;
   }
 }
 

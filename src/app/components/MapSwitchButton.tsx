@@ -278,7 +278,55 @@ export function MapSwitchButton(): ReactElement {
     [dispatch, handlePossibleBadgeClick],
   );
 
-  const isWide = useMediaQuery({ query: '(min-width: 576px)' });
+  const wideScreen = useMediaQuery({ query: '(min-width: 576px)' });
+
+  const [buttonGroup, setButtonGroup] = useState<HTMLDivElement | null>(null);
+
+  // The toolbar's width with its map buttons, kept from when they were last
+  // shown, and the widest it may be: the whole bottom bar.
+  const [fullWidth, setFullWidth] = useState<number>();
+
+  const [roomWidth, setRoomWidth] = useState(Number.POSITIVE_INFINITY);
+
+  // All map buttons or none, as on a narrow screen: never some, which would
+  // overrule the user's choice of what is in the toolbar.
+  const isWide =
+    wideScreen && (fullWidth === undefined || fullWidth <= roomWidth);
+
+  useEffect(() => {
+    const toolbar = buttonGroup?.closest<HTMLElement>('.fm-toolbar');
+
+    // toolbar < scroller < its box in the bottom bar < the bar
+    const bar = toolbar?.parentElement?.parentElement?.parentElement;
+
+    if (!toolbar || !bar) {
+      return;
+    }
+
+    const measure = () => {
+      setRoomWidth(bar.clientWidth);
+
+      if (isWide) {
+        const style = getComputedStyle(toolbar);
+
+        setFullWidth(
+          toolbar.offsetWidth +
+            Number.parseFloat(style.marginLeft) +
+            Number.parseFloat(style.marginRight),
+        );
+      }
+    };
+
+    const observer = new ResizeObserver(measure);
+
+    observer.observe(bar);
+
+    observer.observe(toolbar);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [buttonGroup, isWide]);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
@@ -866,11 +914,13 @@ export function MapSwitchButton(): ReactElement {
 
   return (
     <>
-      <div className="px-1 d-none d-sm-block">
-        <Text k="mapLayers.switch" />
-      </div>
+      {isWide && (
+        <div className="px-1">
+          <Text k="mapLayers.switch" />
+        </div>
+      )}
 
-      <ButtonGroup>
+      <ButtonGroup ref={setButtonGroup}>
         {toolbarButtons.flatMap(({ kind, button }, i) =>
           i > 0 && kind === 'overlay' && toolbarButtons[i - 1].kind === 'base'
             ? [seam('seam-overlays'), button]
@@ -893,8 +943,7 @@ export function MapSwitchButton(): ReactElement {
             className="text-nowrap"
             variant={isWide ? 'secondary' : 'primary'}
           >
-            <FaEllipsisV className="d-none d-sm-block" />
-            <FaRegMap className="d-sm-none" />
+            {isWide ? <FaEllipsisV /> : <FaRegMap />}
           </Dropdown.Toggle>
 
           <FmDropdownMenu>

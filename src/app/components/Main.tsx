@@ -93,10 +93,12 @@ import { Layers } from './Layers.js';
 // `SingleCopyCssPlugin` in `rspack.config.ts` fails the build for any shared
 // stylesheet that lacks an importer here.
 import '@shared/components/FloatingWindow.module.css';
+import { useStackedBar } from '../hooks/useStackedBar.js';
 import { LocationResult } from './LocationResult.js';
 import classes from './Main.module.css';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapControls } from './MapControls.js';
+import { MapScale } from './MapScale.js';
 import { Results } from './Results.js';
 import { Tools } from './Tools.js';
 import { useHtmlMeta } from './useHtmlMeta.js';
@@ -824,6 +826,8 @@ export function Main(): ReactElement {
 
   const scMapControls = useScrollClasses('horizontal');
 
+  const [setBottomBar, bottomBarLayout] = useStackedBar();
+
   const elevationChartTarget = useAppSelector(
     (state) => state.elevationChart.target?.type,
   );
@@ -1145,8 +1149,19 @@ export function Main(): ReactElement {
             </div>
           </div>
 
-          <div className={classes.typeZoomControl}>
-            <div>
+          <div
+            ref={setBottomBar}
+            className={
+              bottomBarLayout === 'stacked'
+                ? `${classes.typeZoomControl} ${classes.stacked}`
+                : bottomBarLayout === 'scale-up'
+                  ? `${classes.typeZoomControl} ${classes.scaleUp}`
+                  : classes.typeZoomControl
+            }
+          >
+            <MapScale className={classes.scale} />
+
+            <div className={classes.controls}>
               <div
                 className="fm-ib-scroller fm-ib-scroller-bottom"
                 ref={scMapControls}
@@ -1157,7 +1172,9 @@ export function Main(): ReactElement {
               </div>
             </div>
 
-            <CopyrightButton />
+            <div className={classes.credits}>
+              <CopyrightButton />
+            </div>
           </div>
 
           <MapContextMenu />

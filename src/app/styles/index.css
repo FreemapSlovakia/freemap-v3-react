@@ -266,11 +266,9 @@ button#freemap-logo {
   );
 }
 
-/* Down to the toolbar's own top margin (`mt-2` / `m-2`). */
+/* Down to the toolbar's own top margin (`mt-2`). */
 .fm-ib-scroller-top::before,
-.fm-ib-scroller-top > div:first-child::before,
-.fm-ib-scroller-bottom::before,
-.fm-ib-scroller-bottom > div:first-child::before {
+.fm-ib-scroller-top > div:first-child::before {
   margin-top: 0.5rem;
 }
 

@@ -23,7 +23,7 @@ import '../leafletTileZoomFix.js';
 import '../doubleTapDragZoom.js';
 import 'leaflet/dist/leaflet.css';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
-import { MapContainer, Pane, ScaleControl } from 'react-leaflet';
+import { MapContainer, Pane } from 'react-leaflet';
 import './leaflet.css';
 
 type Props = {
@@ -151,8 +151,6 @@ export function TheMap({ children }: Props): ReactElement {
       // One-finger zoom: double-tap, hold the second tap and drag.
       doubleTapDragZoom
     >
-      <ScaleControl imperial={false} position="bottomleft" />
-
       {/* Holds the interactive handles of the active selection mode (export/cache
           rectangle, photo-location marker); exempt from fm-features-noninteractive
           so it stays grabbable while everything else is click-through. */}

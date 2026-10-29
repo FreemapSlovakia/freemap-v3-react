@@ -131,18 +131,6 @@ a.leaflet-control-layers-toggle {
   pointer-events: none;
 }
 
-@media (max-width: 720px) {
-  .leaflet-control-scale {
-    margin-bottom: 4rem !important;
-  }
-}
-
-@media (max-width: 271px) {
-  .leaflet-control-scale {
-    margin-bottom: 7.5rem !important;
-  }
-}
-
 .fm-base-layer .fm-demo-tile {
   box-shadow: 5px 5px 8px #0004;
 }

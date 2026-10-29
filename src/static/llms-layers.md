@@ -28,6 +28,8 @@ With the **Distance and bearing** preference on (the default), panning the map a
 
 There is also a button with three vertical dots that opens a menu listing additional maps, a "Filter maps" box, and a "Show all maps" item.
 
+On a phone-width screen, and wherever the toolbar with all its map buttons would be wider than the window, it shows no map buttons at all: the three-dot button becomes a map button whose menu lists the maps chosen for the toolbar, with a "Show more" item. The map scale sits at the bottom left beside the toolbar and the info button; when they don't fit one row, the scale moves up a row, and when even the toolbar and the info button don't fit together, the toolbar takes the bottom row alone.
+
 ### Maps
 
 Pre-defined map layers.

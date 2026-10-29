@@ -101,7 +101,8 @@ export function MapControls(): ReactElement | null {
   const fullscreen = useFullscreen();
 
   return !map ? null : (
-    <Toolbar className="m-2">
+    // No top margin: only the wrapped credits button sits above, with its own.
+    <Toolbar className="mx-2 mb-2">
       {!previewing &&
         (!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
           <>
