@@ -1,4 +1,20 @@
 {
+  "changesets-toolbar.en.mobile.webp": {
+    "width": 390,
+    "height": 146
+  },
+  "changesets-toolbar.en.webp": {
+    "width": 661,
+    "height": 64
+  },
+  "changesets-toolbar.sk.mobile.webp": {
+    "width": 390,
+    "height": 146
+  },
+  "changesets-toolbar.sk.webp": {
+    "width": 660,
+    "height": 64
+  },
   "context-menu.en.webp": {
     "width": 387,
     "height": 454
@@ -54,6 +70,30 @@
   "drawing-toolbar.sk.webp": {
     "width": 488,
     "height": 207
+  },
+  "map-details-results.en.mobile.webp": {
+    "width": 390,
+    "height": 756
+  },
+  "map-details-results.en.webp": {
+    "width": 1280,
+    "height": 700
+  },
+  "map-details-results.sk.mobile.webp": {
+    "width": 390,
+    "height": 756
+  },
+  "map-details-results.sk.webp": {
+    "width": 1157,
+    "height": 700
+  },
+  "map-details-selected.en.webp": {
+    "width": 1280,
+    "height": 760
+  },
+  "map-details-selected.sk.webp": {
+    "width": 1280,
+    "height": 760
   },
   "map-export-dialog.en.webp": {
     "width": 816,
@@ -126,6 +166,30 @@
   "maps-menu.sk.webp": {
     "width": 639,
     "height": 764
+  },
+  "objects-details.en.webp": {
+    "width": 396,
+    "height": 631
+  },
+  "objects-details.sk.webp": {
+    "width": 396,
+    "height": 631
+  },
+  "objects-search.en.mobile.webp": {
+    "width": 390,
+    "height": 730
+  },
+  "objects-search.en.webp": {
+    "width": 781,
+    "height": 640
+  },
+  "objects-search.sk.mobile.webp": {
+    "width": 390,
+    "height": 730
+  },
+  "objects-search.sk.webp": {
+    "width": 920,
+    "height": 640
   },
   "offline-new-map.en.webp": {
     "width": 516,

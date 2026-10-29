@@ -378,6 +378,14 @@ const messages: Messages = {
           'help, direction dial, peaks, summits, orientation table, print',
         'manual-map-export':
           'help, print, pdf, png, svg, jpeg, webp, image, poster, export map',
+        'manual-objects':
+          'help, poi, points of interest, places, categories, amenities, osm',
+        'manual-map-details':
+          'help, identify, what is here, features, osm element, history, wms',
+        'manual-changesets':
+          'help, osm edits, changesets, mappers, contributions, recent changes',
+        'manual-my-maps':
+          'help, saved maps, save map, share map, account, unsaved',
         'manual-drawing': 'help, measure, distance, area, line, polygon, point',
         'manual-tracks':
           'help, gpx, kml, track, import, elevation profile, colorize, export',

@@ -342,6 +342,70 @@ const shots = [
     crop: '.modal-content',
   },
   {
+    name: 'objects-search',
+    hash: MAP,
+    mobile: true,
+    steps: async (page, lang) => {
+      await page
+        .locator('.fm-toolbar.mt-2 input')
+        .fill(lang === 'sk' ? 'prameň' : 'spring');
+    },
+    crop: '.fm-toolbar.mt-2, .dropdown-menu.show',
+  },
+  {
+    name: 'objects-details',
+    // Peaks around Chopok; the first marker is Prašivá, with prominence and key col.
+    hash: 'map=14/48.9380/19.5800&layers=X&objects=natural=peak',
+    steps: async (page) => {
+      // The details popup is a toast: shown, while the others stay hidden.
+      await page.addStyleTag({
+        content:
+          '[class*="Toasts-module__toasts"] { display: flex !important; } [class*="Toast-module__toast"]:not(:has(.lead)) { display: none !important; }',
+      });
+
+      await page.locator('.leaflet-marker-icon').first().click();
+
+      await page.locator('[class*="Toast-module__toast"]:has(.lead)').waitFor();
+    },
+    crop: '[class*="Toast-module__toast"]:has(.lead)',
+  },
+  {
+    name: 'map-details-results',
+    hash: 'map=17/48.7360/19.1460&layers=X&tools=map-details',
+    mobile: true,
+    // The list holds ~40 rows; a lower viewport keeps the crop shorter.
+    viewport: { width: 1280, height: 700 },
+    steps: async (page) => {
+      // Near Námestie SNP in Banská Bystrica, in the middle on a phone too.
+      await page.mouse.click(page.viewportSize().width / 2, 400);
+
+      await page.locator('.dropdown-menu.show .dropdown-item').nth(5).waitFor();
+    },
+    crop: '.fm-toolbar.mt-2, .dropdown-menu.show',
+  },
+  {
+    name: 'map-details-selected',
+    hash: 'map=17/48.7360/19.1460&layers=X&tools=map-details',
+    viewport: { width: 1280, height: 760 },
+    steps: async (page) => {
+      await page.mouse.click(640, 400);
+
+      // Its name is Slovak in either language.
+      await page
+        .locator('.dropdown-menu.show .dropdown-item', { hasText: 'Katedrála' })
+        .click();
+
+      // The map moves to it and its details open.
+      await page.waitForTimeout(3000);
+    },
+  },
+  {
+    name: 'changesets-toolbar',
+    hash: `${MAP}&tools=changesets`,
+    mobile: true,
+    crop: '.fm-toolbar:has(#days)',
+  },
+  {
     name: 'custom-maps-form',
     hash: `${MAP}&show=installed-maps`,
     // The whole form fits without scrolling inside the modal.

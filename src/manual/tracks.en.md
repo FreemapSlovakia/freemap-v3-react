@@ -20,7 +20,7 @@ Tracks are drawn as lines – a recorded track with a start and a finish marker 
 - :FaChartArea: **Elevation profile** – see below.
 - :FaInfoCircle: **More info** – distance, total climb and descent, the lowest and highest point and, for a recording, its start and finish time, duration and average speed.
 
-A small track is kept in the page address, so you share it along with the link. A large one stays only in this browser and the toolbar shows **Unsaved**; you keep it with :FaEllipsisV: → :FaSave: **Save to my maps** (you need to be logged in).
+A small track is kept in the page address, so you share it along with the link. A large one stays only in this browser and the toolbar shows the :FaExclamationTriangle.text-warning: warning that it is not saved; you keep it with :FaEllipsisV: → :FaSave: **Save to my maps** (you need to be logged in).
 
 ## Elevation profile
 

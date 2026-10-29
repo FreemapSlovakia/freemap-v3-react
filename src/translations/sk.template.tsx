@@ -415,6 +415,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'pomoc, návod, orientačná ružica, vrcholy, kopce, toposkop, tlač',
         'manual-map-export':
           'pomoc, návod, tlač, pdf, png, svg, jpeg, webp, obrázok, plagát, export mapy',
+        'manual-objects':
+          'pomoc, návod, poi, body záujmu, miesta, kategórie, objekty, osm',
+        'manual-map-details':
+          'pomoc, návod, čo je tu, detaily, prvky, osm prvok, história, wms',
+        'manual-changesets':
+          'pomoc, návod, zmeny osm, sady zmien, mapéri, prispievatelia',
+        'manual-my-maps':
+          'pomoc, návod, uložené mapy, uložiť mapu, zdieľať mapu, účet, neuložené',
         'manual-drawing':
           'pomoc, návod, meranie, vzdialenosť, plocha, čiara, polygón, bod',
         'manual-tracks':
