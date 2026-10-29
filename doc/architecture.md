@@ -25,7 +25,7 @@ src/
                    commandDefinitions.tsx = what the search box can do)
   translations/   global i18n master (en.messages.tsx) + per-language files + Messages type
   processors/     a handful of cross-cutting processors not owned by one feature
-  osm/, sw/, processors/, pica-gpu/, documents/, images/, static/
+  osm/, sw/, processors/, pica-gpu/, documents/, manual/, images/, static/
 ```
 
 ### Backend services

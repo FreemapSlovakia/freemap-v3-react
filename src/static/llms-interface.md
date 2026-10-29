@@ -101,19 +101,21 @@ Clears the data layer (all interactive map elements of various tools) from the m
 
 Opens a submenu:
 
+- Manual
 - Map legend
 - Contacts
 - OpenStreetMap documentation
 - About Freemap Association
 - About OpenStreetMap
 - Map License
-- Keyboard Shortcuts
 - Garmin
 - Freemap.sk for Geocaching Extension
 - Advertise with Us
 - **Reset application** — clears all locally stored settings (signing you out) and reloads the page; confirmed first
 
 Most items open a modal with the selected topic; **Reset application** instead wipes the persisted state and reloads.
+
+The **Manual** is the user guide, in chapters listed beside the open one (a drop-down on a narrow screen): currently Getting started (the screen, moving the map, choosing a map, search, locating, the context menu, links) and Keyboard shortcuts. URL path: `/#show=manual` opens the first chapter, `/#show=manual/<chapter>` a given one (`getting-started`, `shortcuts`); the old `/#document=shortcuts` opens the shortcuts chapter. Each chapter is also offered by the search box. Chapters exist in English and Slovak; other languages get the English text.
 
 The **Advertise with Us** page (also opened from the "place your own ad here" banner) describes the audience, where the ad appears in the interface, the accepted formats, and the address to ask for an offer at.
 

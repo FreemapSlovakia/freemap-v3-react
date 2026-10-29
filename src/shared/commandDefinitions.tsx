@@ -37,11 +37,13 @@ import {
   FaPrint,
   FaRegAddressCard,
   FaRegMap,
+  FaRegQuestionCircle,
   FaSignInAlt,
   FaSlidersH,
   FaUser,
 } from 'react-icons/fa';
 import { getDocuments } from '@/documents/index.js';
+import { getManualChapters } from '@/manual/index.js';
 import type { Messages } from '../translations/messagesInterface.js';
 import { layerName } from './layerName.js';
 import type { CustomLayerDef, MapIndexEntry } from './mapDefinitions.js';
@@ -272,6 +274,26 @@ export function getCommands(ctx: CommandContext): Command[] {
       badges: <Chord command="clear-map-features" />,
       action: clearMapFeatures(),
     });
+
+    add({
+      id: 'modal-manual',
+      kind: 'function',
+      icon: <FaRegQuestionCircle />,
+      label: m.mainMenu.manual,
+      href: '#show=manual',
+      action: setActiveModal({ type: 'manual' }),
+    });
+
+    for (const chapter of getManualChapters(ctx.language)) {
+      add({
+        id: `manual-${chapter.key}`,
+        kind: 'function',
+        icon: chapter.icon ?? <FaRegQuestionCircle />,
+        label: chapter.title,
+        href: `#show=manual/${chapter.key}`,
+        action: setActiveModal({ type: 'manual', chapter: chapter.key }),
+      });
+    }
 
     for (const doc of getDocuments(ctx.language)) {
       const key = DocumentSchema.safeParse(doc.key);

@@ -1,0 +1,34 @@
+{
+  "context-menu.en.webp": {
+    "width": 387,
+    "height": 454
+  },
+  "context-menu.sk.webp": {
+    "width": 321,
+    "height": 454
+  },
+  "map-toolbar.en.webp": {
+    "width": 639,
+    "height": 64
+  },
+  "map-toolbar.sk.webp": {
+    "width": 639,
+    "height": 64
+  },
+  "screen.en.webp": {
+    "width": 820,
+    "height": 520
+  },
+  "screen.sk.webp": {
+    "width": 820,
+    "height": 520
+  },
+  "search-functions.en.webp": {
+    "width": 751,
+    "height": 576
+  },
+  "search-functions.sk.webp": {
+    "width": 772,
+    "height": 576
+  }
+}

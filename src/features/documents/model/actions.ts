@@ -14,7 +14,6 @@ export const DocumentSchema = z.enum([
   'termsOfService',
   'refundPolicy',
   'premium',
-  'shortcuts',
   'tracking',
 ]);
 

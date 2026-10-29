@@ -638,6 +638,10 @@ const config: Configuration = {
         },
       }),
     new RspackMarkdownDictPlugin({ dir: 'src/documents' }),
+    new RspackMarkdownDictPlugin({
+      dir: 'src/manual',
+      modulePath: 'node_modules/virtual/manual-dict.js',
+    }),
     new RspackSyncLanguagesPlugin({
       root: __dirname,
       script: path.resolve(

@@ -258,6 +258,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
     status: 'Stav služeb',
     language: 'Jazyk',
+    manual: 'Příručka',
   },
 
   main: {
@@ -367,6 +368,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-embed': 'iframe, embed, web, html kód, vložení',
         'modal-support-us': 'darovat, přispět, podpora, peníze',
         'modal-legend': 'značky, symboly, vysvětlivky',
+        'modal-manual': 'nápověda, návod, dokumentace, manuál, help',
         'modal-about': 'kontakt, e-mail, zpětná vazba',
         'modal-installed-maps':
           'správce map, knihovna map, odinstalovat, nastavení vrstev, vrstvy, správa map, panel nástrojů, nabídka, průhlednost, zkratka, vlastní mapy, vlastní mapa, wms, tms, přidat mapu',

@@ -1,5 +1,3 @@
-import { setActiveModal } from '@app/store/actions.js';
-import { decodeActiveModal } from '@app/store/activeModal.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -11,12 +9,8 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { getDocuments } from '@/documents/index.js';
-import {
-  DocumentSchema,
-  documentShow,
-  locusInstall,
-  oruxMapsDownload,
-} from '../model/actions.js';
+import { useMarkdownLinks } from '../hooks/useMarkdownLinks.js';
+import { documentShow } from '../model/actions.js';
 import { useDocumentsMessages } from '../translations/useDocumentsMessages.js';
 
 type Props = { show: boolean };
@@ -82,69 +76,7 @@ function DocumentModal({ show }: Props): ReactElement | null {
 
   const loaded = !loading && Boolean(content) && Boolean(ref);
 
-  // effect is to handle local hrefs properly
-  useEffect(() => {
-    if (loaded) {
-      for (const elem of Array.from(
-        ref?.querySelectorAll('a[href^="#"]') ?? [],
-      )) {
-        const a = elem as HTMLAnchorElement;
-
-        a.onclick = (e) => {
-          const { href } = a;
-
-          e.preventDefault();
-
-          const i = href.lastIndexOf('#');
-
-          if (i === -1) {
-            return;
-          }
-
-          const sp = new URLSearchParams(href.slice(i + 1));
-
-          if (sp.size !== 1) {
-            return;
-          }
-
-          const modal = decodeActiveModal(sp.get('show') ?? '');
-
-          if (modal) {
-            dispatch(setActiveModal(modal));
-          } else {
-            const document = DocumentSchema.safeParse(sp.get('document'));
-
-            if (document.success) {
-              dispatch(documentShow(document.data));
-            }
-          }
-        };
-      }
-
-      for (const elem of Array.from(
-        ref?.querySelectorAll(
-          'a[href^="locus-actions:"][href$="/locus/install"]',
-        ) ?? [],
-      )) {
-        (elem as HTMLAnchorElement).onclick = (e) => {
-          e.preventDefault();
-
-          dispatch(locusInstall());
-        };
-      }
-
-      for (const elem of Array.from(
-        ref?.querySelectorAll('a[href$="/oruxmaps/onlinemapsources.xml"]') ??
-          [],
-      )) {
-        (elem as HTMLAnchorElement).onclick = (e) => {
-          e.preventDefault();
-
-          dispatch(oruxMapsDownload());
-        };
-      }
-    }
-  }, [loaded, ref, dispatch]);
+  useMarkdownLinks(ref, loaded);
 
   if (!document) {
     return null;

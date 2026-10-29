@@ -325,6 +325,17 @@ button#freemap-logo {
   & td code {
     overflow-wrap: break-word;
   }
+
+  & img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 1rem;
+  }
+
+  & .fm-md-icon {
+    vertical-align: -0.125em;
+  }
 }
 
 .pe-none {

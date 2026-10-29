@@ -23,6 +23,7 @@ const URL_MODAL_IDS = [
   'installed-maps',
   'legend',
   'login',
+  'manual',
   'map-features-export',
   'map-preferences',
   'map-to-document-export',
@@ -64,6 +65,11 @@ const MODAL_RENAMES: Record<string, string> = {
   'buy-credits': 'credits-purchase',
   maps: 'my-maps',
   'premium-switch': 'premium',
+};
+
+/** Documents that became manual chapters, so their old links still open. */
+const DOCUMENTS_IN_MANUAL: Record<string, string> = {
+  shortcuts: 'shortcuts',
 };
 
 /**
@@ -115,8 +121,13 @@ export type CustomMapRequest = {
  */
 export type ActiveModal =
   | {
-      type: Exclude<ModalId, 'tracking-watched' | 'my-maps' | 'installed-maps'>;
+      type: Exclude<
+        ModalId,
+        'tracking-watched' | 'my-maps' | 'installed-maps' | 'manual'
+      >;
     }
+  /** Without `chapter`, the first one. */
+  | { type: 'manual'; chapter?: string }
   | { type: 'my-maps'; add?: boolean }
   /**
    * The map library on its Installed maps tab (`available-maps` is the other).
@@ -154,6 +165,8 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
         : 'tracking-watched';
     case 'document':
       return `document/${modal.key}`;
+    case 'manual':
+      return modal.chapter ? `manual/${modal.chapter}` : 'manual';
     case 'gallery-viewer':
       return `gallery-viewer/${modal.id}`;
     case 'wiki':
@@ -192,10 +205,18 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
         ? { type: 'tracking-watched', token: arg }
         : { type: 'tracking-watched' };
     case 'document': {
+      const chapter = arg === undefined ? undefined : DOCUMENTS_IN_MANUAL[arg];
+
+      if (chapter !== undefined) {
+        return { type: 'manual', chapter };
+      }
+
       const r = DocumentSchema.safeParse(arg);
 
       return r.success ? { type: 'document', key: r.data } : null;
     }
+    case 'manual':
+      return arg ? { type: 'manual', chapter: arg } : { type: 'manual' };
     case 'gallery-viewer': {
       const id = Number(arg);
 
@@ -236,6 +257,7 @@ export function modalOf(modalId: ModalId): ActiveModal {
     case 'my-maps':
     case 'installed-maps':
     case 'tracking-watched':
+    case 'manual':
       return { type: modalId };
     default:
       return { type: modalId };

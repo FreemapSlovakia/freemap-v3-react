@@ -252,6 +252,7 @@ const messages: Messages = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Services status',
     language: 'Language',
+    manual: 'Manual',
   },
 
   main: {
@@ -357,6 +358,9 @@ const messages: Messages = {
         'modal-embed': 'iframe, website, html code',
         'modal-support-us': 'donate, contribute, sponsor, money',
         'modal-legend': 'symbols, map key',
+        'modal-manual': 'help, guide, documentation, how to, tutorial',
+        'manual-getting-started': 'basics, introduction, first steps, help',
+        'manual-shortcuts': 'keyboard, keys, hotkeys, chords',
         'modal-about': 'contact, e-mail, feedback',
         'modal-installed-maps':
           'map manager, map library, uninstall, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',

@@ -73,6 +73,14 @@ declare module 'virtual/markdown-dict.js' {
   export default dict;
 }
 
+declare module 'virtual/manual-dict.js' {
+  import type { MarkdownEntry } from 'virtual/markdown-dict.js';
+
+  const dict: MarkdownEntry[];
+
+  export default dict;
+}
+
 /**
  * `Intl.DurationFormat` (ECMA-402), which turns `{ hours, minutes }` into a
  * localized "5h 54m" / "5 h, 54 min" / "5 ó és 54 p" and drops zero-valued

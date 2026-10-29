@@ -255,6 +255,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/FR:Page_principale',
     status: 'État des services',
     language: 'Langue',
+    manual: 'Manuel',
   },
   main: {
     title: shared.title,
@@ -354,6 +355,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-embed': 'iframe, intégrer, site web, code html',
         'modal-support-us': 'faire un don, soutenir, contribuer, argent',
         'modal-legend': 'symboles, légende de la carte',
+        'modal-manual': "aide, guide, mode d'emploi, documentation, help",
         'modal-about': 'contact, e-mail, avis',
         'modal-installed-maps':
           'gestionnaire de cartes, bibliothèque de cartes, désinstaller, configuration des couches, couches, gérer les cartes, barre d’outils, menu, opacité, raccourci, cartes personnalisées, carte personnalisée, wms, tms, ajouter une source',

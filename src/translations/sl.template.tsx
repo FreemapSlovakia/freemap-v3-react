@@ -256,6 +256,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Stanje storitev',
     language: 'Jezik',
+    manual: 'Priročnik',
   },
 
   main: {
@@ -359,6 +360,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-embed': 'iframe, vgradnja, spletna stran, html koda',
         'modal-support-us': 'donacija, podpri, prispevaj, denar',
         'modal-legend': 'simboli, legenda karte',
+        'modal-manual': 'pomoč, navodila, dokumentacija, vodič, help',
         'modal-about': 'kontakt, e-pošta, povratne informacije',
         'modal-installed-maps':
           'upravljalnik kart, knjižnica kart, odstrani, zemljevid, nastavitev slojev, sloji, upravljanje kart, orodna vrstica, meni, prosojnost, bližnjica, karte po meri, lastna karta, wms, tms, dodaj vir karte',

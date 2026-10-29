@@ -258,6 +258,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
     status: 'Stav služieb',
     language: 'Jazyk',
+    manual: 'Príručka',
   },
   main: {
     title: shared.title,
@@ -394,6 +395,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-embed': 'iframe, embed, web, html kód, vloženie',
         'modal-support-us': 'darovať, prispieť, podpora, peniaze',
         'modal-legend': 'značky, symboly, vysvetlivky',
+        'modal-manual': 'pomoc, návod, nápoveda, dokumentácia, manuál, help',
+        'manual-getting-started': 'základy, úvod, prvé kroky, pomoc',
+        'manual-shortcuts': 'klávesnica, klávesy, skratky',
         'modal-about': 'kontakt, e-mail, spätná väzba',
         'modal-installed-maps':
           'správca máp, knižnica máp, odinštalovať, nastavenie vrstiev, vrstvy, správa máp, panel nástrojov, menu, priehľadnosť, skratka, vlastné mapy, vlastná mapa, wms, tms, pridať mapu',
